@@ -1,0 +1,209 @@
+{
+  "schema": "lay.v10.e1-traversal-d2-implementation-preflight-static.v1",
+  "observed_at": "2026-08-25T15:08:26Z",
+  "verdict": "P0_STATIC_PASS_P1_REQUIRED",
+  "authority_ready": false,
+  "paper": {
+    "contract": {
+      "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_CONTRACT_2026-08-25.md",
+      "sha256": "2a34829ac0ccf36f092a55f3c26cbbd3a1d9083834a9174eac036120e964933d"
+    },
+    "structural_review": {
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_ROUTE_V4_2026-08-25/STRUCTURAL_REVIEW.json",
+      "sha256": "00438023ff26b3b5b0cc9b46dbb6687c1f9cde5687d2d222901b9d2cfdfc730e",
+      "verdict": "D2_PAPER_REVIEWED",
+      "local_pass": "8/8"
+    },
+    "implementation_preflight_contract": {
+      "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_CONTRACT_2026-08-25.md",
+      "sha256": "55b95e4fcab3872ffd0e2b098722a8603f910b7b638b3f1a9b79f1dbebe981d2"
+    }
+  },
+  "predecessors": {
+    "d1_decision_sha256": "80530f9f5787f846ce2cf222c1b60e3ae42887ce95a11ac153ec7271cce98baf",
+    "d1_correction_v2_sha256": "004bc1f5d7cd493525cfb9287e79e8159f983b41a51a2374eaeb7931c72aad38",
+    "c1_remote_input_audit_sha256": "50dd3c02bc932546b535c46ff44f3bd7f18fde360cbbb020bc9a447461eccab0"
+  },
+  "exact_inputs": {
+    "v10_source": {
+      "mode": "0444",
+      "size_bytes": 91518,
+      "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c"
+    },
+    "production_prefix": {
+      "size_bytes": 39047,
+      "sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26"
+    },
+    "d1_fragment": {
+      "mode": "0664",
+      "size_bytes": 113204,
+      "sha256": "bbd8b8d318810eec721812f21efbeb5f231dacba774cb5ade854e2201c6c7665"
+    },
+    "cargo_lock": {
+      "mode": "0444",
+      "size_bytes": 70770,
+      "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"
+    },
+    "package": {
+      "remote_mode": "0444",
+      "size_bytes": 140556462,
+      "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"
+    },
+    "sidecar": {
+      "mode": "0444",
+      "size_bytes": 3689884,
+      "sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd"
+    },
+    "v7": {
+      "remote_mode": "0444",
+      "size_bytes": 1606189,
+      "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"
+    },
+    "schedule": {
+      "remote_mode": "0444",
+      "size_bytes": 174941,
+      "sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78"
+    }
+  },
+  "historical_build": {
+    "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)",
+    "rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
+    "llvm": "22.1.6",
+    "host": "x86_64-unknown-linux-gnu",
+    "profile": "release",
+    "target_features": [
+      "fxsr",
+      "sse",
+      "sse2"
+    ],
+    "rustflags": []
+  },
+  "target_host": {
+    "ssh": "e@192.168.3.94",
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "machine_id_exact_file_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+    "kernel": "6.8.0-124-generic",
+    "online_cpus": "0-19",
+    "cpu_core": {
+      "type": 4,
+      "cpus": "0-11",
+      "instructions": "event=0xc0",
+      "max_precise": 3
+    },
+    "cpu_atom": {
+      "type": 10,
+      "cpus": "12-19",
+      "instructions": "event=0xc0",
+      "max_precise": 3
+    },
+    "sysctls": {
+      "perf_event_paranoid": 4,
+      "kptr_restrict": 1,
+      "perf_event_max_sample_rate": 8000
+    }
+  },
+  "remote_binaries": {
+    "perf_wrapper": {
+      "path": "/usr/bin/perf",
+      "mode": "0755",
+      "size_bytes": 1622,
+      "sha256": "2d0953085bf720a25efbe24f853e97d27b1f12f18a398255ff82cbafde254dad"
+    },
+    "perf_resolved": {
+      "path": "/usr/lib/linux-tools/6.8.0-124-generic/perf",
+      "resolved_path": "/usr/lib/linux-hwe-6.8-tools-6.8.0-124/perf",
+      "mode": "0755",
+      "size_bytes": 11627592,
+      "sha256": "b0741eb0e6e769ba9ee0ae4e27f0c60909b51be4bc560802aef4bcd91130692e"
+    },
+    "yes": {
+      "path": "/usr/bin/yes",
+      "mode": "0755",
+      "size_bytes": 31112,
+      "sha256": "ee431b97fb62f59ee94fa698dbc98971001bbb1cbd9c5e32ce4ab4c5530924d8",
+      "elf_type": "ET_DYN",
+      "build_id": "8c99ebc2c856857219acc612c2d9be3172b74be5"
+    },
+    "taskset": {
+      "path": "/usr/bin/taskset",
+      "mode": "0755",
+      "size_bytes": 22912,
+      "sha256": "63e52c4b99a688ccd7bab6edbc6df2af1acad124eb852adcb4d20043d28eb2d3"
+    },
+    "sudo": {
+      "path": "/usr/bin/sudo",
+      "sha256": "1e000f41739201f030cdc588fbe50d5438570f5386104c9521543824827fb985"
+    },
+    "readelf": {
+      "path": "/usr/bin/readelf",
+      "sha256": "04db0000749aff89e4af21429340b00b536fc6f80e811c872c006507881a5560"
+    }
+  },
+  "probe_contract": {
+    "transaction_count": 1,
+    "subruns": [
+      {
+        "id": "T-CAP",
+        "cpu": 0,
+        "event": "task-clock:u",
+        "period": 100000
+      },
+      {
+        "id": "I-CORE-CAP",
+        "cpu": 0,
+        "event": "cpu_core/event=0xc0/upp",
+        "period": 5000000,
+        "precise_ip": 2
+      },
+      {
+        "id": "I-ATOM-CAP",
+        "cpu": 12,
+        "event": "cpu_atom/event=0xc0/upp",
+        "period": 5000000,
+        "precise_ip": 2
+      }
+    ],
+    "known_risk": "task-clock nominal 10000 samples/s exceeds target perf_event_max_sample_rate 8000; any throttle or period drift blocks capability",
+    "event_substitution": false,
+    "retry_permitted": false
+  },
+  "denominator_feasibility": {
+    "examined_edges_20_rounds": 502915120,
+    "single_traversal_cpu_seconds": 13.060706,
+    "fixed_traversal_cpu_seconds": 22.500422,
+    "predicted_task_clock_samples_single": 130607,
+    "predicted_task_clock_samples_fixed": 225004,
+    "predicted_instruction_samples": 36573,
+    "task_clock_minimum": 50000,
+    "instruction_minimum": 20000,
+    "period_change_authorized": false
+  },
+  "d2_path_absence": {
+    "remote_build_result_state_and_probe_paths_absent": true,
+    "local_probe_controller_absent": true,
+    "local_probe_result_absent": true
+  },
+  "static_execution_audit": {
+    "remote_system_cargo_version_queries": 1,
+    "remote_system_rustc_version_queries": 1,
+    "remote_login_cargo_version_queries": 1,
+    "remote_login_rustc_version_queries": 1,
+    "cargo_build_check_test": 0,
+    "rustc_compilation": 0,
+    "perf_invocations_by_p0_static_audit": 0,
+    "externally_reported_post_paper_perf_version_query": 1,
+    "perf_record_stat_before_probe": 0,
+    "pmu_events_before_probe": 0,
+    "d2_subject_execution": 0
+  },
+  "installed_runtime": {
+    "lay_version": "1.0.43",
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+    "ibus_daemon_pid": 2076194,
+    "lay_daemon_pid": 3410795,
+    "lay_ibus_engine_pid": 3410820,
+    "runtime_authority_changed": false
+  },
+  "p1_probe_executed": false,
+  "final_implementation_ready": false
+}

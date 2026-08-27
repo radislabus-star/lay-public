@@ -1,0 +1,124 @@
+{
+  "schema": "lay.v10.e1-remaining-cost-d1-pmu-interpretation-correction.v1",
+  "task_id": "slice8b-v10-e1-remaining-cost-d1-pmu-interpretation-correction-v1-20260825",
+  "verdict": "D1_PMU_INTERPRETATION_PASS_FROM_SEALED_EVIDENCE",
+  "supersedes_only": "the PMU capability-gap interpretation in the immutable D1 decision",
+  "does_not_rewrite": {
+    "original_d1_verdict": "D1_OBSERVED_WITH_CAPABILITY_GAP",
+    "original_d1_decision_sha256": "80530f9f5787f846ce2cf222c1b60e3ae42887ce95a11ac153ec7271cce98baf",
+    "original_d1_manifest_sha256": "c6e6f0674f773fd397a1fcc0b383fb1e7d1693a768b06e1c6fd21bb7291dcd83"
+  },
+  "source_identity": {
+    "d1_executable_sha256": "550f0d80ee49b114ac621b2f5099323480fd45847956a6807393511a8027d8fd",
+    "d1_executable_build_id": "9bdc0fb00420fd6358341d1a198927859cff89b8",
+    "d1_fragment_sha256": "bbd8b8d318810eec721812f21efbeb5f231dacba774cb5ade854e2201c6c7665",
+    "d1_controller_sha256": "09b217d43094e532c07e1d7710a31b8e50fbce36d51df470833d77e94c50116a",
+    "accepted_hybrid_parser_precedent_sha256": "2531326a23b65b03c0105fb7243a27841961bae194018655b4f311efcb05526f"
+  },
+  "interpretation": {
+    "perf_counter_value_semantics": "scaled hybrid count",
+    "perf_pcnt_running_semantics": "event running time divided by enabling time",
+    "aggregation_method": "hybrid-runtime-weighted",
+    "formula": "sum(counter_value_i * event_runtime_i / sum(event_runtime))",
+    "required_pmus": ["atom", "core"],
+    "all_requested_events_have_both_pmus": true,
+    "reported_running_percent_sum_per_event": 99.0,
+    "maximum_runtime_share_vs_reported_percent_difference_points": 0.9738062263725809,
+    "original_parser_defect": "required every hybrid row to report 100 percent running and therefore rejected a complete two-PMU runtime partition"
+  },
+  "routes": {
+    "P-FIXED-G0": {
+      "raw_perf_sha256": "e33de56392cde33934732e204995f72e3c7181e4e54bf50c9ce63a63de3799d0",
+      "subject_sha256": "0c3c32e9dda51c10222ee549e22cdfa28d622671d623927b20f8cfc5d4a201ef",
+      "requests": 7640,
+      "examined_edges": 502915120,
+      "per_request": {"instructions": 23934876.5598414, "cycles": 9441024.190265348, "branches": 2589260.530631888, "branch_misses": 41589.78920544547},
+      "per_examined_edge": {"instructions": 363.60500936457885, "cycles": 143.42266109165152, "branches": 39.33457091929872, "branch_misses": 0.6318083845433071},
+      "ipc": 2.5351991560958695,
+      "branch_miss_rate": 0.01606241964198783,
+      "atom_runtime_share": 0.3983686980064776,
+      "core_runtime_share": 0.6016313019935224
+    },
+    "P-REVERSED-G0": {
+      "raw_perf_sha256": "935d449ecfa427369048d4f379d96acf89087624b571d5e8927f806b3f71a84c",
+      "subject_sha256": "057d20ed6cec7f4580e1cdb9c170df70890cdfe4cf9d0b85ce5edf9ebb63ad6c",
+      "requests": 7640,
+      "examined_edges": 502915120,
+      "per_request": {"instructions": 23935583.225726895, "cycles": 9249154.47717115, "branches": 2589205.2552572475, "branch_misses": 41609.9373708562},
+      "per_examined_edge": {"instructions": 363.61574463013454, "cycles": 140.5078857155609, "branches": 39.333731207296715, "branch_misses": 0.6321144639941256},
+      "ipc": 2.587867170432165,
+      "branch_miss_rate": 0.016070544151093998,
+      "atom_runtime_share": 0.4209382772562125,
+      "core_runtime_share": 0.5790617227437874
+    },
+    "P-FIXED-G2": {
+      "raw_perf_sha256": "8d753f00511986b5be52029fe994aa52912c6e41fdbfc655deb2ba97e767eb67",
+      "subject_sha256": "68dda92fd61de254880be555f26aef583e85e5a59698eaa11054d5b599ed19ad",
+      "requests": 7640,
+      "examined_edges": 502915120,
+      "per_request": {"l1_dcache_loads": 4413013.507928048, "llc_loads": 6051.748428589993, "llc_load_misses": 60.870681086210205},
+      "llc_miss_rate": 0.010058362769780992
+    },
+    "P-REVERSED-G2": {
+      "raw_perf_sha256": "d3593db49405b657a4176688855dda2915ff725a3a6155fcbf38f0c392745d41",
+      "subject_sha256": "05150b9413c51833a7998f66af6668651884482480fad7755d5e90ea6145c84d",
+      "requests": 7640,
+      "examined_edges": 502915120,
+      "per_request": {"l1_dcache_loads": 4412114.950422174, "llc_loads": 5927.011010774059, "llc_load_misses": 83.34896372141834},
+      "llc_miss_rate": 0.01406256265930795
+    },
+    "P-FIXED-G3": {
+      "raw_perf_sha256": "edce73cd2eb34d1621aad86e5e8be77efcd1adec82fb5d04746e06d1121db69e",
+      "subject_sha256": "68cb3c642c255fcf6a2e2b59515ab76db8c6be5a4e664df58a8050f8798a9b9",
+      "requests": 7640,
+      "examined_edges": 502915120,
+      "per_request": {"dtlb_loads": 4413598.57220963, "dtlb_load_misses": 970.9871088129071},
+      "dtlb_miss_rate": 0.0002199989629611446
+    },
+    "P-REVERSED-G3": {
+      "raw_perf_sha256": "b407dce5fe270ff1379e1e247d98e1a4083b741e19d8eaa917855dbef1c625c7",
+      "subject_sha256": "73be77802f72d1f14dd0d3cf2085ceecae56c2d551b6b55a96ba40c589df9860",
+      "requests": 7640,
+      "examined_edges": 502915120,
+      "per_request": {"dtlb_loads": 4411861.65019661, "dtlb_load_misses": 888.4444132726239},
+      "dtlb_miss_rate": 0.00020137630862314808
+    }
+  },
+  "comparison": {
+    "instructions_per_request_fixed_vs_reversed_delta_percent": 0.002952452600823996,
+    "cycles_per_request_reversed_vs_fixed_delta_percent": -2.03229765359606,
+    "branch_miss_rate_fixed_percent": 1.606241964198783,
+    "branch_miss_rate_reversed_percent": 1.6070544151093998,
+    "llc_loads_per_request_fixed": 6051.748428589993,
+    "llc_loads_per_request_reversed": 5927.011010774059,
+    "llc_misses_per_request_fixed": 60.870681086210205,
+    "llc_misses_per_request_reversed": 83.34896372141834,
+    "dtlb_misses_per_request_fixed": 970.9871088129071,
+    "dtlb_misses_per_request_reversed": 888.4444132726239
+  },
+  "scientific_result": {
+    "pmu_capability_gap_for_the_six_completed_routes": "RESOLVED_FROM_SEALED_RAW_EVIDENCE",
+    "instruction_work_is_mapping_invariant": true,
+    "cycles_per_request_improve_on_reversed_mapping_percent": 2.03229765359606,
+    "llc_miss_count_is_small_relative_to_instruction_and_l1_load_work": true,
+    "dominant_remaining_cost": "packed traversal instruction work",
+    "placement_and_hybrid_execution": "material to cycles and wall tail but insufficient",
+    "next_algorithmic_gate": "traversal-internal decomposition only"
+  },
+  "execution_audit": {
+    "new_d1_execution": false,
+    "new_perf_stat_or_record": false,
+    "new_pmu_event": false,
+    "new_cargo_or_rustc": false,
+    "sealed_raw_evidence_only": true
+  },
+  "claim_boundary": {
+    "diagnostic_only": true,
+    "formal_b_pass": false,
+    "v12_admitted": false,
+    "production_integration_admitted": false,
+    "deployment_authority": false,
+    "runtime_authority_changed": false,
+    "d1_rerun_permitted": false
+  }
+}

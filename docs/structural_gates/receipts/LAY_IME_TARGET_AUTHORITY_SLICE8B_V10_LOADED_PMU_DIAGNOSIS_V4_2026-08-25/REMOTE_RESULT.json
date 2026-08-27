@@ -1,0 +1,2017 @@
+{
+  "background_after": [
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+      "comm": "nando-operator-",
+      "cpu_seconds": 883955.79,
+      "cpus_allowed_list": "0-19",
+      "pid": 150005,
+      "rss_bytes": 2012721152
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+      "comm": "nando-transitio",
+      "cpu_seconds": 276804.06,
+      "cpus_allowed_list": "0-19",
+      "pid": 298492,
+      "rss_bytes": 3744075776
+    },
+    {
+      "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+      "comm": "nginx",
+      "cpu_seconds": 1.35,
+      "cpus_allowed_list": "0-19",
+      "pid": 682430,
+      "rss_bytes": 2736128
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+      "comm": "nando-transitio",
+      "cpu_seconds": 42951.57,
+      "cpus_allowed_list": "0-19",
+      "pid": 1816591,
+      "rss_bytes": 229797888
+    },
+    {
+      "cmdline": "bash /opt/nando-wave/bin/nando-live-transition-gate --status-mode --project-root /opt/nando-wave",
+      "comm": "bash",
+      "cpu_seconds": 0.02,
+      "cpus_allowed_list": "0-19",
+      "pid": 2312645,
+      "rss_bytes": 4689920
+    },
+    {
+      "cmdline": "jq -r .runtime.registry /opt/nando-wave/ops/phase-center-test-server/gates/nando-live-transition-gate.profile.json",
+      "comm": "jq",
+      "cpu_seconds": 0.0,
+      "cpus_allowed_list": "0-19",
+      "pid": 2312723,
+      "rss_bytes": 3313664
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+      "comm": "nando-gateway-c",
+      "cpu_seconds": 49.32,
+      "cpus_allowed_list": "0-19",
+      "pid": 3051880,
+      "rss_bytes": 4759552
+    },
+    {
+      "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+      "comm": "btop",
+      "cpu_seconds": 40992.46,
+      "cpus_allowed_list": "0-19",
+      "pid": 3481471,
+      "rss_bytes": 3981312
+    }
+  ],
+  "background_before": [
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+      "comm": "nando-operator-",
+      "cpu_seconds": 883941.16,
+      "cpus_allowed_list": "0-19",
+      "pid": 150005,
+      "rss_bytes": 2012721152
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+      "comm": "nando-transitio",
+      "cpu_seconds": 276803.78,
+      "cpus_allowed_list": "0-19",
+      "pid": 298492,
+      "rss_bytes": 3740438528
+    },
+    {
+      "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+      "comm": "nginx",
+      "cpu_seconds": 1.35,
+      "cpus_allowed_list": "0-19",
+      "pid": 682430,
+      "rss_bytes": 2736128
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+      "comm": "nando-transitio",
+      "cpu_seconds": 42950.88,
+      "cpus_allowed_list": "0-19",
+      "pid": 1816591,
+      "rss_bytes": 227549184
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+      "comm": "nando-gateway-c",
+      "cpu_seconds": 49.32,
+      "cpus_allowed_list": "0-19",
+      "pid": 3051880,
+      "rss_bytes": 4759552
+    },
+    {
+      "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+      "comm": "btop",
+      "cpu_seconds": 40991.84,
+      "cpus_allowed_list": "0-19",
+      "pid": 3481471,
+      "rss_bytes": 3981312
+    }
+  ],
+  "capability": {
+    "command": [
+      "/usr/bin/sudo",
+      "-n",
+      "/usr/bin/perf",
+      "stat",
+      "--json-output",
+      "--no-big-num",
+      "--delay=-1",
+      "--control=fifo:/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/capability/control.fifo,/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/capability/ack.fifo",
+      "--event",
+      "cycles,instructions",
+      "--",
+      "/usr/bin/sudo",
+      "-n",
+      "-u",
+      "e",
+      "/usr/bin/env",
+      "HOME=/home/e",
+      "LANG=C.UTF-8",
+      "LC_ALL=C.UTF-8",
+      "PATH=/usr/bin:/bin",
+      "/usr/bin/taskset",
+      "-c",
+      "0",
+      "/usr/bin/python3",
+      "-c",
+      "import pathlib,time,sys;r=pathlib.Path(sys.argv[1]);g=pathlib.Path(sys.argv[2]);d=pathlib.Path(sys.argv[3]);s=pathlib.Path(sys.argv[4]);r.write_text('ready\\n');\nwhile not g.exists(): time.sleep(0.001);\nx=0\nfor i in range(2000000): x=(x+i)^((x<<1)&0xffffffff);\nd.write_text(str(x)+'\\n');\nwhile not s.exists(): time.sleep(0.001)",
+      "/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/capability/workload-ready",
+      "/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/capability/workload-go",
+      "/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/capability/workload-done",
+      "/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/capability/workload-stop"
+    ],
+    "counters": {
+      "cycles": {
+        "aggregate_method": "single-pmu-or-unqualified-exact",
+        "counted_pmus": [
+          "core"
+        ],
+        "counted_rows": [
+          {
+            "counter-value": "760269787.000000",
+            "event": "cpu_core/cycles/",
+            "event-runtime": 200577892,
+            "metric-unit": "GHz",
+            "metric-value": "0.000000",
+            "pcnt-running": 100.0,
+            "unit": ""
+          }
+        ],
+        "inactive_rows": [
+          {
+            "counter-value": "<not counted>",
+            "event": "cpu_atom/cycles/",
+            "event-runtime": 0,
+            "metric-unit": "",
+            "metric-value": "0.000000",
+            "pcnt-running": 0.0,
+            "unit": ""
+          }
+        ],
+        "minimum_running_percent": 100.0,
+        "perf_reported_value_sum": 760269787.0,
+        "required_pmus": [
+          "core"
+        ],
+        "rows": [
+          {
+            "counter-value": "<not counted>",
+            "event": "cpu_atom/cycles/",
+            "event-runtime": 0,
+            "metric-unit": "",
+            "metric-value": "0.000000",
+            "pcnt-running": 0.0,
+            "unit": ""
+          },
+          {
+            "counter-value": "760269787.000000",
+            "event": "cpu_core/cycles/",
+            "event-runtime": 200577892,
+            "metric-unit": "GHz",
+            "metric-value": "0.000000",
+            "pcnt-running": 100.0,
+            "unit": ""
+          }
+        ],
+        "runtime_weights": {
+          "core": 1.0
+        },
+        "value": 760269787.0
+      },
+      "instructions": {
+        "aggregate_method": "single-pmu-or-unqualified-exact",
+        "counted_pmus": [
+          "core"
+        ],
+        "counted_rows": [
+          {
+            "counter-value": "4201465454.000000",
+            "event": "cpu_core/instructions/",
+            "event-runtime": 200577892,
+            "metric-unit": "insn per cycle",
+            "metric-value": "5.526282",
+            "pcnt-running": 100.0,
+            "unit": ""
+          }
+        ],
+        "inactive_rows": [
+          {
+            "counter-value": "<not counted>",
+            "event": "cpu_atom/instructions/",
+            "event-runtime": 0,
+            "metric-unit": "",
+            "metric-value": "0.000000",
+            "pcnt-running": 0.0,
+            "unit": ""
+          }
+        ],
+        "minimum_running_percent": 100.0,
+        "perf_reported_value_sum": 4201465454.0,
+        "required_pmus": [
+          "core"
+        ],
+        "rows": [
+          {
+            "counter-value": "<not counted>",
+            "event": "cpu_atom/instructions/",
+            "event-runtime": 0,
+            "metric-unit": "",
+            "metric-value": "0.000000",
+            "pcnt-running": 0.0,
+            "unit": ""
+          },
+          {
+            "counter-value": "4201465454.000000",
+            "event": "cpu_core/instructions/",
+            "event-runtime": 200577892,
+            "metric-unit": "insn per cycle",
+            "metric-value": "5.526282",
+            "pcnt-running": 100.0,
+            "unit": ""
+          }
+        ],
+        "runtime_weights": {
+          "core": 1.0
+        },
+        "value": 4201465454.0
+      }
+    },
+    "disable_ack": "ack\n\u0000",
+    "enable_ack": "ack\n\u0000",
+    "kptr_restrict": "1",
+    "marker": "/home/e/.local/state/lay/slice8b-v10-loaded-pmu-diagnosis-v4-20260825/markers/capability.consumed-before-exec",
+    "nmi_watchdog": "1",
+    "perf_event_paranoid": "4",
+    "perf_version": "perf version 6.8.12",
+    "pmu_event_opened": true,
+    "raw_sha256": "cfb53da3afac7fdaf989aa12d5740cc672fc16a1ab89d0b26cf8c37cdead3642",
+    "runtime_authority_changed": false,
+    "schema": "lay.v10.loaded-pmu-capability.v1",
+    "verdict": "PASS"
+  },
+  "claim": "LOADED_EXECUTOR_PROXY_DIAGNOSTIC_ONLY",
+  "completed_at": "2026-08-25T09:28:19.518681+00:00",
+  "environment_intentionally_loaded": true,
+  "formal_b_pass": false,
+  "inputs": {
+    "b0a_receipt": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/INPUT_CLOSURE.json",
+      "sha256": "48176ec6faae86f43ddda8404542367be5b6c9d6813762dedb829b4946593eb3",
+      "size_bytes": 366665
+    },
+    "b1_receipt": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b1-environment-v1/ENVIRONMENT_RECEIPT.json",
+      "sha256": "12c591b447f0025548e96272a4e8d5d4f23debc8458ae99fce61b2e751673925",
+      "size_bytes": 229467
+    },
+    "elf": {
+      "build_id": "9829fb05f34bd353877fb6d71f1f8523e084af55",
+      "mode": "0555",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf",
+      "sha256": "f7bcee37d5dffd583577d66c982c2a28072889b8aac2ccbed22612aa6d4feb09",
+      "size_bytes": 20542920
+    },
+    "package": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+      "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+      "size_bytes": 140556462
+    },
+    "schedule": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+      "sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78",
+      "size_bytes": 174941
+    },
+    "sidecar": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+      "sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd",
+      "size_bytes": 3689884
+    },
+    "v7": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+      "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+      "size_bytes": 1606189
+    }
+  },
+  "parity": {
+    "command": [
+      "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf",
+      "--exact",
+      "nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_semantic_parity",
+      "--ignored",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "marker": "/home/e/.local/state/lay/slice8b-v10-loaded-pmu-diagnosis-v4-20260825/markers/parity.consumed-before-exec",
+    "perf_invoked": false,
+    "receipt": {
+      "completeness_mismatches": 0,
+      "false_certificates": 0,
+      "full_row_mismatches": 0,
+      "full_source_closure": "WATCH",
+      "historical_executable_identity_proven": false,
+      "installed_lay_changed": false,
+      "maximum_product_states": 35590,
+      "maximum_scratch_bytes": 6656,
+      "peak_mismatches": 0,
+      "records": 382,
+      "runtime_authority_changed": false,
+      "schedule_sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78",
+      "schema": "lay.v10.hardware-diagnostic-proxy-parity.v1",
+      "target_form_retained": 382,
+      "target_lemma_retained": 382,
+      "terminal_mismatches": 0,
+      "test": "nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_semantic_parity",
+      "verdict": "PASS",
+      "work_mismatches": 0
+    },
+    "receipt_sha256": "24abcaf29ffd07a8082a662b3166eddd70867e2ef6b55e9edf510aec230ab227",
+    "runtime_authority_changed": false,
+    "schema": "lay.v10.loaded-pmu-parity-wrapper.v1",
+    "verdict": "PASS"
+  },
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.loaded-pmu-diagnosis.v4",
+  "stable_host_after": {
+    "boot_id": "5e35be95-c789-4ce9-b74e-3d42c3b81a3a",
+    "frequency_policy": [
+      {
+        "affected_cpus": "0",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy0"
+      },
+      {
+        "affected_cpus": "1",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy1"
+      },
+      {
+        "affected_cpus": "10",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy10"
+      },
+      {
+        "affected_cpus": "11",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy11"
+      },
+      {
+        "affected_cpus": "12",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy12"
+      },
+      {
+        "affected_cpus": "13",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy13"
+      },
+      {
+        "affected_cpus": "14",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy14"
+      },
+      {
+        "affected_cpus": "15",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy15"
+      },
+      {
+        "affected_cpus": "16",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy16"
+      },
+      {
+        "affected_cpus": "17",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy17"
+      },
+      {
+        "affected_cpus": "18",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy18"
+      },
+      {
+        "affected_cpus": "19",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy19"
+      },
+      {
+        "affected_cpus": "2",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy2"
+      },
+      {
+        "affected_cpus": "3",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy3"
+      },
+      {
+        "affected_cpus": "4",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy4"
+      },
+      {
+        "affected_cpus": "5",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy5"
+      },
+      {
+        "affected_cpus": "6",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy6"
+      },
+      {
+        "affected_cpus": "7",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy7"
+      },
+      {
+        "affected_cpus": "8",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy8"
+      },
+      {
+        "affected_cpus": "9",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy9"
+      }
+    ],
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "kernel": "6.8.0-124-generic",
+    "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+    "online_cpus": "0-19",
+    "pstate": {
+      "max_perf_pct": "100",
+      "min_perf_pct": "8",
+      "no_turbo": "0",
+      "status": "active"
+    },
+    "smt_active": "1"
+  },
+  "stable_host_before": {
+    "boot_id": "5e35be95-c789-4ce9-b74e-3d42c3b81a3a",
+    "frequency_policy": [
+      {
+        "affected_cpus": "0",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy0"
+      },
+      {
+        "affected_cpus": "1",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy1"
+      },
+      {
+        "affected_cpus": "10",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy10"
+      },
+      {
+        "affected_cpus": "11",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy11"
+      },
+      {
+        "affected_cpus": "12",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy12"
+      },
+      {
+        "affected_cpus": "13",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy13"
+      },
+      {
+        "affected_cpus": "14",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy14"
+      },
+      {
+        "affected_cpus": "15",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy15"
+      },
+      {
+        "affected_cpus": "16",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy16"
+      },
+      {
+        "affected_cpus": "17",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy17"
+      },
+      {
+        "affected_cpus": "18",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy18"
+      },
+      {
+        "affected_cpus": "19",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy19"
+      },
+      {
+        "affected_cpus": "2",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy2"
+      },
+      {
+        "affected_cpus": "3",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy3"
+      },
+      {
+        "affected_cpus": "4",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy4"
+      },
+      {
+        "affected_cpus": "5",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy5"
+      },
+      {
+        "affected_cpus": "6",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy6"
+      },
+      {
+        "affected_cpus": "7",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy7"
+      },
+      {
+        "affected_cpus": "8",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy8"
+      },
+      {
+        "affected_cpus": "9",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy9"
+      }
+    ],
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "kernel": "6.8.0-124-generic",
+    "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+    "online_cpus": "0-19",
+    "pstate": {
+      "max_perf_pct": "100",
+      "min_perf_pct": "8",
+      "no_turbo": "0",
+      "status": "active"
+    },
+    "smt_active": "1"
+  },
+  "stable_host_unchanged": true,
+  "started_at": "2026-08-25T09:28:04.717162+00:00",
+  "task_id": "slice8b-v10-loaded-pmu-diagnosis-v4-20260825",
+  "third_dirty_latency_run": false,
+  "v12_admitted": false,
+  "verdict": "LOADED_PMU_DIAGNOSTIC_OBSERVED",
+  "windows": {
+    "B5-G2C": {
+      "background_process_cpu_deltas": [
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+          "comm": "nando-operator-",
+          "cpu_percent_during_window": 107.23578310358603,
+          "cpu_seconds_delta": 1.1199999999953434,
+          "pid": 150005
+        },
+        {
+          "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+          "comm": "btop",
+          "cpu_percent_during_window": 3.8298493966561646,
+          "cpu_seconds_delta": 0.040000000000873115,
+          "pid": 3481471
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+          "comm": "nando-transitio",
+          "cpu_percent_during_window": 1.914924698676405,
+          "cpu_seconds_delta": 0.020000000004074536,
+          "pid": 1816591
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+          "comm": "nando-transitio",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 298492
+        },
+        {
+          "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+          "comm": "nginx",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 682430
+        },
+        {
+          "cmdline": "bash /opt/nando-wave/bin/nando-live-transition-gate --status-mode --project-root /opt/nando-wave",
+          "comm": "bash",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 2312337
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+          "comm": "nando-gateway-c",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 3051880
+        }
+      ],
+      "command": [
+        "/usr/bin/sudo",
+        "-n",
+        "/usr/bin/perf",
+        "stat",
+        "--json-output",
+        "--no-big-num",
+        "--delay=-1",
+        "--control=fifo:/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/perf-control.fifo,/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/perf-ack.fifo",
+        "--event",
+        "L1-dcache-loads,LLC-loads,LLC-load-misses",
+        "--",
+        "/usr/bin/sudo",
+        "-n",
+        "-u",
+        "e",
+        "/usr/bin/env",
+        "HOME=/home/e",
+        "LANG=C.UTF-8",
+        "LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/control",
+        "LAY_V10_HW_CPU_LIST=0",
+        "LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+        "LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+        "LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/subject-receipt.json",
+        "LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+        "LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+        "LC_ALL=C.UTF-8",
+        "LOGNAME=e",
+        "PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+        "RUST_TEST_THREADS=1",
+        "USER=e",
+        "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf",
+        "--exact",
+        "nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b5_proxy",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "counters": {
+        "L1-dcache-loads": {
+          "aggregate_method": "single-pmu-or-unqualified-exact",
+          "counted_pmus": [
+            "core"
+          ],
+          "counted_rows": [
+            {
+              "counter-value": "2550508268.000000",
+              "event": "cpu_core/L1-dcache-loads/",
+              "event-runtime": 1025544555,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 100.0,
+              "unit": ""
+            }
+          ],
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/L1-dcache-loads/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "minimum_running_percent": 100.0,
+          "perf_reported_value_sum": 2550508268.0,
+          "required_pmus": [
+            "core"
+          ],
+          "rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/L1-dcache-loads/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "2550508268.000000",
+              "event": "cpu_core/L1-dcache-loads/",
+              "event-runtime": 1025544555,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 100.0,
+              "unit": ""
+            }
+          ],
+          "runtime_weights": {
+            "core": 1.0
+          },
+          "value": 2550508268.0
+        },
+        "LLC-load-misses": {
+          "aggregate_method": "single-pmu-or-unqualified-exact",
+          "counted_pmus": [
+            "core"
+          ],
+          "counted_rows": [
+            {
+              "counter-value": "27469.000000",
+              "event": "cpu_core/LLC-load-misses/",
+              "event-runtime": 1025532145,
+              "metric-unit": "of all LL-cache accesses",
+              "metric-value": "1.554640",
+              "pcnt-running": 100.0,
+              "unit": ""
+            }
+          ],
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/LLC-load-misses/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "minimum_running_percent": 100.0,
+          "perf_reported_value_sum": 27469.0,
+          "required_pmus": [
+            "core"
+          ],
+          "rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/LLC-load-misses/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "27469.000000",
+              "event": "cpu_core/LLC-load-misses/",
+              "event-runtime": 1025532145,
+              "metric-unit": "of all LL-cache accesses",
+              "metric-value": "1.554640",
+              "pcnt-running": 100.0,
+              "unit": ""
+            }
+          ],
+          "runtime_weights": {
+            "core": 1.0
+          },
+          "value": 27469.0
+        },
+        "LLC-loads": {
+          "aggregate_method": "single-pmu-or-unqualified-exact",
+          "counted_pmus": [
+            "core"
+          ],
+          "counted_rows": [
+            {
+              "counter-value": "1766904.000000",
+              "event": "cpu_core/LLC-loads/",
+              "event-runtime": 1025532145,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 100.0,
+              "unit": ""
+            }
+          ],
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/LLC-loads/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "minimum_running_percent": 100.0,
+          "perf_reported_value_sum": 1766904.0,
+          "required_pmus": [
+            "core"
+          ],
+          "rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/LLC-loads/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "1766904.000000",
+              "event": "cpu_core/LLC-loads/",
+              "event-runtime": 1025532145,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 100.0,
+              "unit": ""
+            }
+          ],
+          "runtime_weights": {
+            "core": 1.0
+          },
+          "value": 1766904.0
+        }
+      },
+      "derived": {
+        "L1-dcache-loads_per_request": 6676723.214659686,
+        "LLC-load-misses_per_request": 71.90837696335079,
+        "LLC-loads_per_request": 4625.4031413612565,
+        "llc_load_miss_rate": 0.015546402068250455
+      },
+      "disable_ack": "ack\n\u0000",
+      "enable_ack": "ack\n\u0000",
+      "environment_intentionally_loaded": true,
+      "events": [
+        "L1-dcache-loads",
+        "LLC-loads",
+        "LLC-load-misses"
+      ],
+      "executor_window_wall_ns_diagnostic": 1044427492,
+      "formal_b_pass": false,
+      "group": "G2C",
+      "marker": "/home/e/.local/state/lay/slice8b-v10-loaded-pmu-diagnosis-v4-20260825/markers/b5-g2c.consumed-before-exec",
+      "pmu_event_opened": true,
+      "process_tree_at_ready": [
+        {
+          "cmdline": "/usr/bin/sudo -n /usr/bin/perf stat --json-output --no-big-num --delay=-1 --control=fifo:/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/perf-control.fifo,/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/perf-ack.fifo --event L1-dcache-loads,LLC-loads,LLC-load-misses -- /usr/bin/sudo -n -u e /usr/bin/env HOME=/home/e LANG=C.UTF-8 LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/control LAY_V10_HW_CPU_LIST=0 LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/subject-receipt.json LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json LC_ALL=C.UTF-8 LOGNAME=e PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin RUST_TEST_THREADS=1 USER=e /home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b5_proxy --ignored --nocapture --test-threads=1",
+          "comm": "sudo",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312420
+        },
+        {
+          "cmdline": "/usr/lib/linux-tools/6.8.0-124-generic/perf stat --json-output --no-big-num --delay=-1 --control=fifo:/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/perf-control.fifo,/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/perf-ack.fifo --event L1-dcache-loads,LLC-loads,LLC-load-misses -- /usr/bin/sudo -n -u e /usr/bin/env HOME=/home/e LANG=C.UTF-8 LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/control LAY_V10_HW_CPU_LIST=0 LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/subject-receipt.json LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json LC_ALL=C.UTF-8 LOGNAME=e PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin RUST_TEST_THREADS=1 USER=e /home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b5_proxy --ignored --nocapture --test-threads=1",
+          "comm": "perf",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312421
+        },
+        {
+          "cmdline": "/usr/bin/sudo -n -u e /usr/bin/env HOME=/home/e LANG=C.UTF-8 LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/control LAY_V10_HW_CPU_LIST=0 LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g2c/subject-receipt.json LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json LC_ALL=C.UTF-8 LOGNAME=e PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin RUST_TEST_THREADS=1 USER=e /home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b5_proxy --ignored --nocapture --test-threads=1",
+          "comm": "sudo",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312424
+        },
+        {
+          "cmdline": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b5_proxy --ignored --nocapture --test-threads=1",
+          "comm": "diagnostic-test",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312425
+        }
+      ],
+      "raw_perf_sha256": "2b0eacb74d86a7a68b3c46e6464a3ae87511f1c7685b0c5652be8a39400dc6f5",
+      "requests": 382,
+      "route": "B5",
+      "runtime_authority_changed": false,
+      "sample_summary": {
+        "cpu_psi_some_avg10": {
+          "maximum": 4.12,
+          "minimum": 3.7
+        },
+        "io_psi_full_avg10": {
+          "maximum": 0.0,
+          "minimum": 0.0
+        },
+        "maximum_temperature_c": {
+          "maximum": 69.0,
+          "minimum": 69.0
+        },
+        "memory_psi_full_avg10": {
+          "maximum": 0.0,
+          "minimum": 0.0
+        },
+        "procs_running": {
+          "maximum": 4.0,
+          "minimum": 2.0
+        },
+        "samples": 49
+      },
+      "schema": "lay.v10.loaded-pmu-profile-window.v1",
+      "subject_receipt_sha256": "4fc640d93a70e06b6a7ca6eb51b7043d6436b4c05e75cc654d33665bbb8351f1",
+      "throttle_counters_unchanged": true,
+      "verdict": "LOADED_PMU_WINDOW_OBSERVED",
+      "workers": 1
+    },
+    "B5-G3": {
+      "background_process_cpu_deltas": [
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+          "comm": "nando-operator-",
+          "cpu_percent_during_window": 107.74664521268824,
+          "cpu_seconds_delta": 1.1099999999860302,
+          "pid": 150005
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+          "comm": "nando-transitio",
+          "cpu_percent_during_window": 49.50521536881269,
+          "cpu_seconds_delta": 0.5100000000020373,
+          "pid": 1816591
+        },
+        {
+          "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+          "comm": "btop",
+          "cpu_percent_during_window": 4.853452487401619,
+          "cpu_seconds_delta": 0.05000000000291038,
+          "pid": 3481471
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+          "comm": "nando-transitio",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 298492
+        },
+        {
+          "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+          "comm": "nginx",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 682430
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+          "comm": "nando-gateway-c",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 3051880
+        }
+      ],
+      "command": [
+        "/usr/bin/sudo",
+        "-n",
+        "/usr/bin/perf",
+        "stat",
+        "--json-output",
+        "--no-big-num",
+        "--delay=-1",
+        "--control=fifo:/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/perf-control.fifo,/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/perf-ack.fifo",
+        "--event",
+        "dTLB-loads,dTLB-load-misses",
+        "--",
+        "/usr/bin/sudo",
+        "-n",
+        "-u",
+        "e",
+        "/usr/bin/env",
+        "HOME=/home/e",
+        "LANG=C.UTF-8",
+        "LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/control",
+        "LAY_V10_HW_CPU_LIST=0",
+        "LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+        "LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+        "LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/subject-receipt.json",
+        "LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+        "LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+        "LC_ALL=C.UTF-8",
+        "LOGNAME=e",
+        "PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+        "RUST_TEST_THREADS=1",
+        "USER=e",
+        "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf",
+        "--exact",
+        "nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b5_proxy",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "counters": {
+        "dTLB-load-misses": {
+          "aggregate_method": "single-pmu-or-unqualified-exact",
+          "counted_pmus": [
+            "core"
+          ],
+          "counted_rows": [
+            {
+              "counter-value": "3407.000000",
+              "event": "cpu_core/dTLB-load-misses/",
+              "event-runtime": 1022216577,
+              "metric-unit": "of all dTLB cache accesses",
+              "metric-value": "0.000134",
+              "pcnt-running": 100.0,
+              "unit": ""
+            }
+          ],
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/dTLB-load-misses/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "minimum_running_percent": 100.0,
+          "perf_reported_value_sum": 3407.0,
+          "required_pmus": [
+            "core"
+          ],
+          "rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/dTLB-load-misses/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "3407.000000",
+              "event": "cpu_core/dTLB-load-misses/",
+              "event-runtime": 1022216577,
+              "metric-unit": "of all dTLB cache accesses",
+              "metric-value": "0.000134",
+              "pcnt-running": 100.0,
+              "unit": ""
+            }
+          ],
+          "runtime_weights": {
+            "core": 1.0
+          },
+          "value": 3407.0
+        },
+        "dTLB-loads": {
+          "aggregate_method": "single-pmu-or-unqualified-exact",
+          "counted_pmus": [
+            "core"
+          ],
+          "counted_rows": [
+            {
+              "counter-value": "2550612581.000000",
+              "event": "cpu_core/dTLB-loads/",
+              "event-runtime": 1022216577,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 100.0,
+              "unit": ""
+            }
+          ],
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/dTLB-loads/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "minimum_running_percent": 100.0,
+          "perf_reported_value_sum": 2550612581.0,
+          "required_pmus": [
+            "core"
+          ],
+          "rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/dTLB-loads/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "2550612581.000000",
+              "event": "cpu_core/dTLB-loads/",
+              "event-runtime": 1022216577,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 100.0,
+              "unit": ""
+            }
+          ],
+          "runtime_weights": {
+            "core": 1.0
+          },
+          "value": 2550612581.0
+        }
+      },
+      "derived": {
+        "dTLB-load-misses_per_request": 8.918848167539267,
+        "dTLB-loads_per_request": 6676996.285340314,
+        "dtlb_load_miss_rate": 1.3357575452185068e-06
+      },
+      "disable_ack": "ack\n\u0000",
+      "enable_ack": "ack\n\u0000",
+      "environment_intentionally_loaded": true,
+      "events": [
+        "dTLB-loads",
+        "dTLB-load-misses"
+      ],
+      "executor_window_wall_ns_diagnostic": 1030194488,
+      "formal_b_pass": false,
+      "group": "G3",
+      "marker": "/home/e/.local/state/lay/slice8b-v10-loaded-pmu-diagnosis-v4-20260825/markers/b5-g3.consumed-before-exec",
+      "pmu_event_opened": true,
+      "process_tree_at_ready": [
+        {
+          "cmdline": "/usr/bin/sudo -n /usr/bin/perf stat --json-output --no-big-num --delay=-1 --control=fifo:/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/perf-control.fifo,/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/perf-ack.fifo --event dTLB-loads,dTLB-load-misses -- /usr/bin/sudo -n -u e /usr/bin/env HOME=/home/e LANG=C.UTF-8 LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/control LAY_V10_HW_CPU_LIST=0 LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/subject-receipt.json LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json LC_ALL=C.UTF-8 LOGNAME=e PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin RUST_TEST_THREADS=1 USER=e /home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b5_proxy --ignored --nocapture --test-threads=1",
+          "comm": "sudo",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312585
+        },
+        {
+          "cmdline": "/usr/lib/linux-tools/6.8.0-124-generic/perf stat --json-output --no-big-num --delay=-1 --control=fifo:/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/perf-control.fifo,/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/perf-ack.fifo --event dTLB-loads,dTLB-load-misses -- /usr/bin/sudo -n -u e /usr/bin/env HOME=/home/e LANG=C.UTF-8 LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/control LAY_V10_HW_CPU_LIST=0 LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/subject-receipt.json LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json LC_ALL=C.UTF-8 LOGNAME=e PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin RUST_TEST_THREADS=1 USER=e /home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b5_proxy --ignored --nocapture --test-threads=1",
+          "comm": "perf",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312586
+        },
+        {
+          "cmdline": "/usr/bin/sudo -n -u e /usr/bin/env HOME=/home/e LANG=C.UTF-8 LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/control LAY_V10_HW_CPU_LIST=0 LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b5-g3/subject-receipt.json LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json LC_ALL=C.UTF-8 LOGNAME=e PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin RUST_TEST_THREADS=1 USER=e /home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b5_proxy --ignored --nocapture --test-threads=1",
+          "comm": "sudo",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312589
+        },
+        {
+          "cmdline": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b5_proxy --ignored --nocapture --test-threads=1",
+          "comm": "diagnostic-test",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312590
+        }
+      ],
+      "raw_perf_sha256": "3404620b3be89b01969c98b2e18a1ed3c0a6843a2d802760936d42ced1c29e00",
+      "requests": 382,
+      "route": "B5",
+      "runtime_authority_changed": false,
+      "sample_summary": {
+        "cpu_psi_some_avg10": {
+          "maximum": 5.89,
+          "minimum": 4.82
+        },
+        "io_psi_full_avg10": {
+          "maximum": 3.26,
+          "minimum": 2.88
+        },
+        "maximum_temperature_c": {
+          "maximum": 69.0,
+          "minimum": 69.0
+        },
+        "memory_psi_full_avg10": {
+          "maximum": 0.0,
+          "minimum": 0.0
+        },
+        "procs_running": {
+          "maximum": 5.0,
+          "minimum": 2.0
+        },
+        "samples": 49
+      },
+      "schema": "lay.v10.loaded-pmu-profile-window.v1",
+      "subject_receipt_sha256": "4fc640d93a70e06b6a7ca6eb51b7043d6436b4c05e75cc654d33665bbb8351f1",
+      "throttle_counters_unchanged": true,
+      "verdict": "LOADED_PMU_WINDOW_OBSERVED",
+      "workers": 1
+    },
+    "B6-G2C": {
+      "background_process_cpu_deltas": [
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+          "comm": "nando-operator-",
+          "cpu_percent_during_window": 496.4638279760577,
+          "cpu_seconds_delta": 0.7099999999627471,
+          "pid": 150005
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+          "comm": "nando-transitio",
+          "cpu_percent_during_window": 160.82631050723262,
+          "cpu_seconds_delta": 0.2300000000395812,
+          "pid": 298492
+        },
+        {
+          "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+          "comm": "btop",
+          "cpu_percent_during_window": 34.962241410634135,
+          "cpu_seconds_delta": 0.05000000000291038,
+          "pid": 3481471
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+          "comm": "nando-transitio",
+          "cpu_percent_during_window": 13.984896566288722,
+          "cpu_seconds_delta": 0.020000000004074536,
+          "pid": 1816591
+        },
+        {
+          "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+          "comm": "nginx",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 682430
+        },
+        {
+          "cmdline": "bash /opt/nando-wave/bin/nando-live-transition-gate --status-mode --project-root /opt/nando-wave",
+          "comm": "bash",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 2312337
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+          "comm": "nando-gateway-c",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 3051880
+        }
+      ],
+      "command": [
+        "/usr/bin/sudo",
+        "-n",
+        "/usr/bin/perf",
+        "stat",
+        "--json-output",
+        "--no-big-num",
+        "--delay=-1",
+        "--control=fifo:/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/perf-control.fifo,/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/perf-ack.fifo",
+        "--event",
+        "L1-dcache-loads,LLC-loads,LLC-load-misses",
+        "--",
+        "/usr/bin/sudo",
+        "-n",
+        "-u",
+        "e",
+        "/usr/bin/env",
+        "HOME=/home/e",
+        "LANG=C.UTF-8",
+        "LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/control",
+        "LAY_V10_HW_CPU_LIST=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
+        "LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+        "LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+        "LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/subject-receipt.json",
+        "LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+        "LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+        "LC_ALL=C.UTF-8",
+        "LOGNAME=e",
+        "PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+        "RUST_TEST_THREADS=1",
+        "USER=e",
+        "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf",
+        "--exact",
+        "nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b6_proxy",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "counters": {
+        "L1-dcache-loads": {
+          "aggregate_method": "hybrid-runtime-weighted",
+          "counted_pmus": [
+            "atom",
+            "core"
+          ],
+          "counted_rows": [
+            {
+              "counter-value": "2528998388.000000",
+              "event": "cpu_atom/L1-dcache-loads/",
+              "event-runtime": 679860354,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 38.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "2565266505.000000",
+              "event": "cpu_core/L1-dcache-loads/",
+              "event-runtime": 1101695274,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 61.0,
+              "unit": ""
+            }
+          ],
+          "inactive_rows": [],
+          "minimum_running_percent": 38.0,
+          "perf_reported_value_sum": 5094264893.0,
+          "required_pmus": [
+            "core",
+            "atom"
+          ],
+          "rows": [
+            {
+              "counter-value": "2528998388.000000",
+              "event": "cpu_atom/L1-dcache-loads/",
+              "event-runtime": 679860354,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 38.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "2565266505.000000",
+              "event": "cpu_core/L1-dcache-loads/",
+              "event-runtime": 1101695274,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 61.0,
+              "unit": ""
+            }
+          ],
+          "runtime_weights": {
+            "atom": 0.38161051123799095,
+            "core": 0.618389488762009
+          },
+          "value": 2551426210.3299904
+        },
+        "LLC-load-misses": {
+          "aggregate_method": "hybrid-runtime-weighted",
+          "counted_pmus": [
+            "atom",
+            "core"
+          ],
+          "counted_rows": [
+            {
+              "counter-value": "0.000000",
+              "event": "cpu_atom/LLC-load-misses/",
+              "event-runtime": 679860354,
+              "metric-unit": "of all LL-cache accesses",
+              "metric-value": "0.000000",
+              "pcnt-running": 38.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "11686.000000",
+              "event": "cpu_core/LLC-load-misses/",
+              "event-runtime": 1101685116,
+              "metric-unit": "of all LL-cache accesses",
+              "metric-value": "0.709980",
+              "pcnt-running": 61.0,
+              "unit": ""
+            }
+          ],
+          "inactive_rows": [],
+          "minimum_running_percent": 38.0,
+          "perf_reported_value_sum": 11686.0,
+          "required_pmus": [
+            "core",
+            "atom"
+          ],
+          "rows": [
+            {
+              "counter-value": "0.000000",
+              "event": "cpu_atom/LLC-load-misses/",
+              "event-runtime": 679860354,
+              "metric-unit": "of all LL-cache accesses",
+              "metric-value": "0.000000",
+              "pcnt-running": 38.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "11686.000000",
+              "event": "cpu_core/LLC-load-misses/",
+              "event-runtime": 1101685116,
+              "metric-unit": "of all LL-cache accesses",
+              "metric-value": "0.709980",
+              "pcnt-running": 61.0,
+              "unit": ""
+            }
+          ],
+          "runtime_weights": {
+            "atom": 0.3816126871013851,
+            "core": 0.6183873128986149
+          },
+          "value": 7226.474138533214
+        },
+        "LLC-loads": {
+          "aggregate_method": "hybrid-runtime-weighted",
+          "counted_pmus": [
+            "atom",
+            "core"
+          ],
+          "counted_rows": [
+            {
+              "counter-value": "1492133.000000",
+              "event": "cpu_atom/LLC-loads/",
+              "event-runtime": 679860354,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 38.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "1645962.000000",
+              "event": "cpu_core/LLC-loads/",
+              "event-runtime": 1101695274,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 61.0,
+              "unit": ""
+            }
+          ],
+          "inactive_rows": [],
+          "minimum_running_percent": 38.0,
+          "perf_reported_value_sum": 3138095.0,
+          "required_pmus": [
+            "core",
+            "atom"
+          ],
+          "rows": [
+            {
+              "counter-value": "1492133.000000",
+              "event": "cpu_atom/LLC-loads/",
+              "event-runtime": 679860354,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 38.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "1645962.000000",
+              "event": "cpu_core/LLC-loads/",
+              "event-runtime": 1101695274,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 61.0,
+              "unit": ""
+            }
+          ],
+          "runtime_weights": {
+            "atom": 0.38161051123799095,
+            "core": 0.618389488762009
+          },
+          "value": 1587259.2366667711
+        }
+      },
+      "derived": {
+        "L1-dcache-loads_per_request": 6679126.205052331,
+        "LLC-load-misses_per_request": 18.917471566840874,
+        "LLC-loads_per_request": 4155.12889179783,
+        "llc_load_miss_rate": 0.004552800180081949
+      },
+      "disable_ack": "ack\n\u0000",
+      "enable_ack": "ack\n\u0000",
+      "environment_intentionally_loaded": true,
+      "events": [
+        "L1-dcache-loads",
+        "LLC-loads",
+        "LLC-load-misses"
+      ],
+      "executor_window_wall_ns_diagnostic": 143011426,
+      "formal_b_pass": false,
+      "group": "G2C",
+      "marker": "/home/e/.local/state/lay/slice8b-v10-loaded-pmu-diagnosis-v4-20260825/markers/b6-g2c.consumed-before-exec",
+      "pmu_event_opened": true,
+      "process_tree_at_ready": [
+        {
+          "cmdline": "/usr/bin/sudo -n /usr/bin/perf stat --json-output --no-big-num --delay=-1 --control=fifo:/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/perf-control.fifo,/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/perf-ack.fifo --event L1-dcache-loads,LLC-loads,LLC-load-misses -- /usr/bin/sudo -n -u e /usr/bin/env HOME=/home/e LANG=C.UTF-8 LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/control LAY_V10_HW_CPU_LIST=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/subject-receipt.json LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json LC_ALL=C.UTF-8 LOGNAME=e PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin RUST_TEST_THREADS=1 USER=e /home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b6_proxy --ignored --nocapture --test-threads=1",
+          "comm": "sudo",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312498
+        },
+        {
+          "cmdline": "/usr/lib/linux-tools/6.8.0-124-generic/perf stat --json-output --no-big-num --delay=-1 --control=fifo:/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/perf-control.fifo,/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/perf-ack.fifo --event L1-dcache-loads,LLC-loads,LLC-load-misses -- /usr/bin/sudo -n -u e /usr/bin/env HOME=/home/e LANG=C.UTF-8 LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/control LAY_V10_HW_CPU_LIST=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/subject-receipt.json LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json LC_ALL=C.UTF-8 LOGNAME=e PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin RUST_TEST_THREADS=1 USER=e /home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b6_proxy --ignored --nocapture --test-threads=1",
+          "comm": "perf",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312499
+        },
+        {
+          "cmdline": "/usr/bin/sudo -n -u e /usr/bin/env HOME=/home/e LANG=C.UTF-8 LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/control LAY_V10_HW_CPU_LIST=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g2c/subject-receipt.json LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json LC_ALL=C.UTF-8 LOGNAME=e PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin RUST_TEST_THREADS=1 USER=e /home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b6_proxy --ignored --nocapture --test-threads=1",
+          "comm": "sudo",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312502
+        },
+        {
+          "cmdline": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b6_proxy --ignored --nocapture --test-threads=1",
+          "comm": "diagnostic-test",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312503
+        }
+      ],
+      "raw_perf_sha256": "c709db5d0ae78af82c43d69b7b9f737ca4751413b22b3f7dc57bbf3942cbe521",
+      "requests": 382,
+      "route": "B6",
+      "runtime_authority_changed": false,
+      "sample_summary": {
+        "cpu_psi_some_avg10": {
+          "maximum": 6.09,
+          "minimum": 6.09
+        },
+        "io_psi_full_avg10": {
+          "maximum": 1.08,
+          "minimum": 1.08
+        },
+        "maximum_temperature_c": {
+          "maximum": 69.0,
+          "minimum": 69.0
+        },
+        "memory_psi_full_avg10": {
+          "maximum": 0.0,
+          "minimum": 0.0
+        },
+        "procs_running": {
+          "maximum": 23.0,
+          "minimum": 3.0
+        },
+        "samples": 9
+      },
+      "schema": "lay.v10.loaded-pmu-profile-window.v1",
+      "subject_receipt_sha256": "2e589418dbd445160f7a1c5fda81a76f4a7cd837b81c320bcbb48ab3a22d9497",
+      "throttle_counters_unchanged": true,
+      "verdict": "LOADED_PMU_WINDOW_OBSERVED",
+      "workers": 20
+    },
+    "B6-G3": {
+      "background_process_cpu_deltas": [
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+          "comm": "nando-operator-",
+          "cpu_percent_during_window": 504.3266653421962,
+          "cpu_seconds_delta": 0.7000000000698492,
+          "pid": 150005
+        },
+        {
+          "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+          "comm": "btop",
+          "cpu_percent_during_window": 21.613999940241506,
+          "cpu_seconds_delta": 0.029999999998835847,
+          "pid": 3481471
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+          "comm": "nando-transitio",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 298492
+        },
+        {
+          "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+          "comm": "nginx",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 682430
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+          "comm": "nando-transitio",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 1816591
+        },
+        {
+          "cmdline": "bash /opt/nando-wave/bin/nando-live-transition-gate --status-mode --project-root /opt/nando-wave",
+          "comm": "bash",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 2312645
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+          "comm": "nando-gateway-c",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 3051880
+        }
+      ],
+      "command": [
+        "/usr/bin/sudo",
+        "-n",
+        "/usr/bin/perf",
+        "stat",
+        "--json-output",
+        "--no-big-num",
+        "--delay=-1",
+        "--control=fifo:/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/perf-control.fifo,/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/perf-ack.fifo",
+        "--event",
+        "dTLB-loads,dTLB-load-misses",
+        "--",
+        "/usr/bin/sudo",
+        "-n",
+        "-u",
+        "e",
+        "/usr/bin/env",
+        "HOME=/home/e",
+        "LANG=C.UTF-8",
+        "LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/control",
+        "LAY_V10_HW_CPU_LIST=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
+        "LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+        "LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+        "LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/subject-receipt.json",
+        "LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+        "LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+        "LC_ALL=C.UTF-8",
+        "LOGNAME=e",
+        "PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+        "RUST_TEST_THREADS=1",
+        "USER=e",
+        "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf",
+        "--exact",
+        "nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b6_proxy",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "counters": {
+        "dTLB-load-misses": {
+          "aggregate_method": "hybrid-runtime-weighted",
+          "counted_pmus": [
+            "atom",
+            "core"
+          ],
+          "counted_rows": [
+            {
+              "counter-value": "42930.000000",
+              "event": "cpu_atom/dTLB-load-misses/",
+              "event-runtime": 688749827,
+              "metric-unit": "of all dTLB cache accesses",
+              "metric-value": "0.001719",
+              "pcnt-running": 38.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "125095.000000",
+              "event": "cpu_core/dTLB-load-misses/",
+              "event-runtime": 1093994275,
+              "metric-unit": "of all dTLB cache accesses",
+              "metric-value": "0.004839",
+              "pcnt-running": 61.0,
+              "unit": ""
+            }
+          ],
+          "inactive_rows": [],
+          "minimum_running_percent": 38.0,
+          "perf_reported_value_sum": 168025.0,
+          "required_pmus": [
+            "core",
+            "atom"
+          ],
+          "rows": [
+            {
+              "counter-value": "42930.000000",
+              "event": "cpu_atom/dTLB-load-misses/",
+              "event-runtime": 688749827,
+              "metric-unit": "of all dTLB cache accesses",
+              "metric-value": "0.001719",
+              "pcnt-running": 38.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "125095.000000",
+              "event": "cpu_core/dTLB-load-misses/",
+              "event-runtime": 1093994275,
+              "metric-unit": "of all dTLB cache accesses",
+              "metric-value": "0.004839",
+              "pcnt-running": 61.0,
+              "unit": ""
+            }
+          ],
+          "runtime_weights": {
+            "atom": 0.38634250772576667,
+            "core": 0.6136574922742333
+          },
+          "value": 93351.16785271237
+        },
+        "dTLB-loads": {
+          "aggregate_method": "hybrid-runtime-weighted",
+          "counted_pmus": [
+            "atom",
+            "core"
+          ],
+          "counted_rows": [
+            {
+              "counter-value": "2498021223.000000",
+              "event": "cpu_atom/dTLB-loads/",
+              "event-runtime": 688749827,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 38.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "2584953821.000000",
+              "event": "cpu_core/dTLB-loads/",
+              "event-runtime": 1093994275,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 61.0,
+              "unit": ""
+            }
+          ],
+          "inactive_rows": [],
+          "minimum_running_percent": 38.0,
+          "perf_reported_value_sum": 5082975044.0,
+          "required_pmus": [
+            "core",
+            "atom"
+          ],
+          "rows": [
+            {
+              "counter-value": "2498021223.000000",
+              "event": "cpu_atom/dTLB-loads/",
+              "event-runtime": 688749827,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 38.0,
+              "unit": ""
+            },
+            {
+              "counter-value": "2584953821.000000",
+              "event": "cpu_core/dTLB-loads/",
+              "event-runtime": 1093994275,
+              "metric-unit": "(null)",
+              "metric-value": "0.000000",
+              "pcnt-running": 61.0,
+              "unit": ""
+            }
+          ],
+          "runtime_weights": {
+            "atom": 0.38634250772576667,
+            "core": 0.6136574922742333
+          },
+          "value": 2551368063.0855637
+        }
+      },
+      "derived": {
+        "dTLB-load-misses_per_request": 244.37478495474443,
+        "dTLB-loads_per_request": 6678973.987134984,
+        "dtlb_load_miss_rate": 3.6588671467422736e-05
+      },
+      "disable_ack": "ack\n\u0000",
+      "enable_ack": "ack\n\u0000",
+      "environment_intentionally_loaded": true,
+      "events": [
+        "dTLB-loads",
+        "dTLB-load-misses"
+      ],
+      "executor_window_wall_ns_diagnostic": 138798927,
+      "formal_b_pass": false,
+      "group": "G3",
+      "marker": "/home/e/.local/state/lay/slice8b-v10-loaded-pmu-diagnosis-v4-20260825/markers/b6-g3.consumed-before-exec",
+      "pmu_event_opened": true,
+      "process_tree_at_ready": [
+        {
+          "cmdline": "/usr/bin/sudo -n /usr/bin/perf stat --json-output --no-big-num --delay=-1 --control=fifo:/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/perf-control.fifo,/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/perf-ack.fifo --event dTLB-loads,dTLB-load-misses -- /usr/bin/sudo -n -u e /usr/bin/env HOME=/home/e LANG=C.UTF-8 LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/control LAY_V10_HW_CPU_LIST=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/subject-receipt.json LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json LC_ALL=C.UTF-8 LOGNAME=e PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin RUST_TEST_THREADS=1 USER=e /home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b6_proxy --ignored --nocapture --test-threads=1",
+          "comm": "sudo",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312629
+        },
+        {
+          "cmdline": "/usr/lib/linux-tools/6.8.0-124-generic/perf stat --json-output --no-big-num --delay=-1 --control=fifo:/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/perf-control.fifo,/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/perf-ack.fifo --event dTLB-loads,dTLB-load-misses -- /usr/bin/sudo -n -u e /usr/bin/env HOME=/home/e LANG=C.UTF-8 LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/control LAY_V10_HW_CPU_LIST=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/subject-receipt.json LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json LC_ALL=C.UTF-8 LOGNAME=e PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin RUST_TEST_THREADS=1 USER=e /home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b6_proxy --ignored --nocapture --test-threads=1",
+          "comm": "perf",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312630
+        },
+        {
+          "cmdline": "/usr/bin/sudo -n -u e /usr/bin/env HOME=/home/e LANG=C.UTF-8 LAY_V10_HW_CONTROL_DIR=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/control LAY_V10_HW_CPU_LIST=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 LAY_V10_HW_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json LAY_V10_HW_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa LAY_V10_HW_SUBJECT_RECEIPT=/home/e/.local/share/lay/provenance/.slice8b-v10-loaded-pmu-diagnosis-v4-20260825.stage-2312308-1787650084700554834/b6-g3/subject-receipt.json LAY_V10_HW_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin LAY_V10_HW_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json LC_ALL=C.UTF-8 LOGNAME=e PATH=/home/e/.cargo/bin:/usr/local/bin:/usr/bin:/bin RUST_TEST_THREADS=1 USER=e /home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b6_proxy --ignored --nocapture --test-threads=1",
+          "comm": "sudo",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312633
+        },
+        {
+          "cmdline": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b6_proxy --ignored --nocapture --test-threads=1",
+          "comm": "diagnostic-test",
+          "cpus_allowed_list": "0-19",
+          "pid": 2312635
+        }
+      ],
+      "raw_perf_sha256": "2fdb06e03e6e656e543a5046d9c37b3b60ead1b5d0ee981288821126eba93d94",
+      "requests": 382,
+      "route": "B6",
+      "runtime_authority_changed": false,
+      "sample_summary": {
+        "cpu_psi_some_avg10": {
+          "maximum": 4.82,
+          "minimum": 4.31
+        },
+        "io_psi_full_avg10": {
+          "maximum": 3.26,
+          "minimum": 3.03
+        },
+        "maximum_temperature_c": {
+          "maximum": 69.0,
+          "minimum": 69.0
+        },
+        "memory_psi_full_avg10": {
+          "maximum": 0.0,
+          "minimum": 0.0
+        },
+        "procs_running": {
+          "maximum": 26.0,
+          "minimum": 2.0
+        },
+        "samples": 9
+      },
+      "schema": "lay.v10.loaded-pmu-profile-window.v1",
+      "subject_receipt_sha256": "2e589418dbd445160f7a1c5fda81a76f4a7cd837b81c320bcbb48ab3a22d9497",
+      "throttle_counters_unchanged": true,
+      "verdict": "LOADED_PMU_WINDOW_OBSERVED",
+      "workers": 20
+    }
+  }
+}

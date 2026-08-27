@@ -1,0 +1,6 @@
+{
+  "build_marker_consumed": true,
+  "error": "guarded A1 build failed with 101",
+  "retry_permitted": false,
+  "schema": "lay.v10.structural-work-a1-build-failure.v1"
+}

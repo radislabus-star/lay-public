@@ -1,0 +1,38 @@
+{
+  "schema": "lay.slice8b-v7-provenance-conservation.v1",
+  "source": {
+    "path": "slice8b-v7-fixed-13x100.json",
+    "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+    "proof_source_sha256": "ed1a0f56824a6b4ab0f683789dfbcbbab919723bacdca44eea48e163e2222202"
+  },
+  "measured": {
+    "no_field_records": 382,
+    "incomplete_records": 0,
+    "joint_bucket_sum": 382,
+    "availability_bucket_sum": 382,
+    "damage_class_bucket_sum": 382,
+    "target_exact_l11": 1,
+    "target_absent_l11": 381,
+    "target_exact_v13": 382,
+    "target_absent_v13": 0,
+    "productive_hypothesis_covered": 377,
+    "productive_hypothesis_absent": 5,
+    "productive_exact_born": 378,
+    "productive_exact_not_born": 4
+  },
+  "conservation": {
+    "records_equal_no_field": true,
+    "all_records_complete": true,
+    "joint_buckets_equal_records": true,
+    "availability_buckets_equal_records": true,
+    "damage_class_buckets_equal_records": true,
+    "l11_partition_equal_records": true,
+    "v13_partition_equal_records": true,
+    "productive_hypothesis_partition_equal_records": true,
+    "productive_birth_partition_equal_records": true
+  },
+  "all_conservation_checks_pass": true,
+  "runtime_authority_changed": false,
+  "promotion_eligible": false,
+  "verdict": "PASS_V7_MEASUREMENT_CONSERVATION_COVERAGE_OPEN"
+}

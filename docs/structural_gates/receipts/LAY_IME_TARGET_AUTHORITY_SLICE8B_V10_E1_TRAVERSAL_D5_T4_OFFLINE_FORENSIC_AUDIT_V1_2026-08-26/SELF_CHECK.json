@@ -1,0 +1,22 @@
+{
+  "auditor": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d5-t4-offline-forensic-audit.py",
+    "sha256": "0ac9dadda3d41cb29682a61b3fe6af7e3d0f2104cbeb97d84772cfbe9eae3936",
+    "size_bytes": 36760
+  },
+  "external_commands": 0,
+  "input_count": 13,
+  "manifest_count": 7,
+  "marker_mutations": 0,
+  "perf_readers": 0,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "remote_reads": 0,
+  "remote_writes": 0,
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.e1-traversal-d5-t4-offline-forensic-self-check.v1",
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-d5-t4-offline-forensic-v1-20260826",
+  "verdict": "D5_T4_FORENSIC_AUDITOR_VERIFIED_UNRUN"
+}

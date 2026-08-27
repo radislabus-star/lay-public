@@ -1,0 +1,27 @@
+{
+  "schema": "lay.v10.e1-traversal-d3-structural-review.v1",
+  "task_id": "d3-estimator-recovery-v2",
+  "verdict": "STRUCTURALLY_ACCEPTED_WITH_SPLIT",
+  "authority_ready": false,
+  "safe_to_implement": false,
+  "paper_sha256": "ebe80974392a05527bea67944f381cfd2f74fb0be1c5b2ba3bf4a5aba22be11a",
+  "route_set_sha256": "3938468db7c6c7d91d9f77b3b482b387b45057db7ba4c3da076978d80c25b204",
+  "route_receipts": {
+    "decision": "aea0b601790b29c9fe665b719a3cd5f5a27d42c5b4f09a932e0d7160a2c8b8bd",
+    "envelope": "84bbf31acc87380c90dc70eec27ccc07fc4bc7ad35d8306e922b5a409d93a640",
+    "history": "8bcb9cd1df539460a566f1912cdf3023bb1d562de08040cf5a89bfaf452495f6",
+    "one_shot": "e5ca3350e0a82f112622049eb396f0ef54d9fd7327fd3c4cccb965e0624b8c42",
+    "reuse": "2cdccac5868310f5c1c35d0df2abecfcfd8a9a2e9cf7708e67277ed0ccea861a",
+    "sampling": "d28ad9e3752ccf171e7a17477b10852b8d3680ec37f5218ca2bba943eb1797d4",
+    "t2_denominator": "01449115fae1a78a95a095f523a39948c0d8c0a8684af360910ba3f9e35dc56d",
+    "u2_denominator": "2c7fd15477a8115cba890049a16ec6bf60a82f26773acf83006f9dc35bffdab5"
+  },
+  "all_routes_pass_receipt_sha256": "25e6490c52462b56a762af5323d1ec41798fa6063edfa9c0642a955b08b08aff",
+  "routes_required": 8,
+  "routes_passed": 8,
+  "route_conflicts": 0,
+  "route_weak_triads": 0,
+  "aggregate_claim_boundary_pass": true,
+  "implementation_preflight_required": true,
+  "claim_boundary": "structural coherence only; no marker creation, subject execution, perf event, scientific result or optimization authority"
+}

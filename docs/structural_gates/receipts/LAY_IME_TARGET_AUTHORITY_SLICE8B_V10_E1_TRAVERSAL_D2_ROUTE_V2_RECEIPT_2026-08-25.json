@@ -1,0 +1,1523 @@
+{
+  "verdict": "VETO",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-e1-traversal-d2-route-v2",
+  "domain": "code",
+  "complexity_score": 57,
+  "mandatory_gate": true,
+  "limits": [
+    "roles target limit exceeded: 25>24"
+  ],
+  "stable_triads": [
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s5",
+    "s6",
+    "s7",
+    "s8"
+  ],
+  "weak_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8"
+  ],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.0,
+      "c2": 0.0,
+      "c3": 0.0,
+      "c4": 0.0,
+      "c5": 0.0,
+      "c6": 0.0,
+      "c7": 0.0,
+      "c8": 0.0
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 16,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": -0.018,
+      "c2": -0.0443,
+      "c3": -0.0125,
+      "c4": -0.0028,
+      "c5": -0.0139,
+      "c6": -0.0222,
+      "c7": 0.0762,
+      "c8": 0.0014
+    },
+    "source_self_score": 0.3523,
+    "stable": [],
+    "weak": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "weak_details": {
+      "c1": {
+        "nearest_source": "s5",
+        "nearest_source_score": 0.0332,
+        "score": -0.018,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c2": {
+        "nearest_source": "s1",
+        "nearest_source_score": 0.0391,
+        "score": -0.0443,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c3": {
+        "nearest_source": "s6",
+        "nearest_source_score": 0.041,
+        "score": -0.0125,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c4": {
+        "nearest_source": "s1",
+        "nearest_source_score": 0.0273,
+        "score": -0.0028,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c5": {
+        "nearest_source": "s6",
+        "nearest_source_score": 0.0469,
+        "score": -0.0139,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c6": {
+        "nearest_source": "s3",
+        "nearest_source_score": 0.0371,
+        "score": -0.0222,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c7": {
+        "nearest_source": "s4",
+        "nearest_source_score": 0.0566,
+        "score": 0.0762,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c8": {
+        "nearest_source": "s6",
+        "nearest_source_score": 0.0391,
+        "score": 0.0014,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      }
+    }
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "d2-attribution": "d2-control",
+      "d2-build": "d2-closure",
+      "d2-closure": "d2-sampling",
+      "d2-control": "d2-closure",
+      "d2-decision": "d2-validity",
+      "d2-map": "d2-validity",
+      "d2-sampling": "d2-validity",
+      "d2-validity": "d2-map"
+    },
+    "scores": {
+      "d2-attribution": 0.0566,
+      "d2-build": 0.0391,
+      "d2-closure": 0.0332,
+      "d2-control": 0.0273,
+      "d2-decision": 0.0391,
+      "d2-map": 0.041,
+      "d2-sampling": 0.0469,
+      "d2-validity": 0.0371
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "d2-attribution": 1,
+      "d2-build": 1,
+      "d2-closure": 1,
+      "d2-control": 1,
+      "d2-decision": 1,
+      "d2-map": 1,
+      "d2-sampling": 1,
+      "d2-validity": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.3659,
+      "norm": 93.659,
+      "triads": 8
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "d2-attribution": "d2-control",
+      "d2-build": "d2-closure",
+      "d2-closure": "d2-sampling",
+      "d2-control": "d2-closure",
+      "d2-decision": "d2-validity",
+      "d2-map": "d2-validity",
+      "d2-sampling": "d2-validity",
+      "d2-validity": "d2-map"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "d2-attribution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-build": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-closure": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-control": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-map": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-sampling": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-validity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "d2-attribution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-build": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-closure": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-control": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-map": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-sampling": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-validity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "d2-attribution": {
+        "dominant_score": 0.0566,
+        "dominant_source_group": "d2-control",
+        "exact_source_groups": []
+      },
+      "d2-build": {
+        "dominant_score": 0.0391,
+        "dominant_source_group": "d2-closure",
+        "exact_source_groups": []
+      },
+      "d2-closure": {
+        "dominant_score": 0.0332,
+        "dominant_source_group": "d2-sampling",
+        "exact_source_groups": []
+      },
+      "d2-control": {
+        "dominant_score": 0.0273,
+        "dominant_source_group": "d2-closure",
+        "exact_source_groups": []
+      },
+      "d2-decision": {
+        "dominant_score": 0.0391,
+        "dominant_source_group": "d2-validity",
+        "exact_source_groups": []
+      },
+      "d2-map": {
+        "dominant_score": 0.041,
+        "dominant_source_group": "d2-validity",
+        "exact_source_groups": []
+      },
+      "d2-sampling": {
+        "dominant_score": 0.0469,
+        "dominant_source_group": "d2-validity",
+        "exact_source_groups": []
+      },
+      "d2-validity": {
+        "dominant_score": 0.0371,
+        "dominant_source_group": "d2-map",
+        "exact_source_groups": []
+      }
+    },
+    "interference_matrix": {
+      "d2-attribution": {
+        "d2-attribution": 0.043,
+        "d2-build": 0.0059,
+        "d2-closure": 0.0156,
+        "d2-control": 0.0566,
+        "d2-decision": -0.0156,
+        "d2-map": 0.0449,
+        "d2-sampling": 0.0078,
+        "d2-validity": 0.0566
+      },
+      "d2-build": {
+        "d2-attribution": -0.0195,
+        "d2-build": -0.0215,
+        "d2-closure": 0.0391,
+        "d2-control": -0.0059,
+        "d2-decision": -0.0234,
+        "d2-map": -0.0371,
+        "d2-sampling": -0.0273,
+        "d2-validity": -0.0293
+      },
+      "d2-closure": {
+        "d2-attribution": -0.0098,
+        "d2-build": 0.0,
+        "d2-closure": -0.0059,
+        "d2-control": 0.0273,
+        "d2-decision": -0.0098,
+        "d2-map": -0.0195,
+        "d2-sampling": 0.0332,
+        "d2-validity": -0.0664
+      },
+      "d2-control": {
+        "d2-attribution": -0.0117,
+        "d2-build": 0.0137,
+        "d2-closure": 0.0273,
+        "d2-control": 0.0137,
+        "d2-decision": -0.0117,
+        "d2-map": -0.0176,
+        "d2-sampling": -0.0078,
+        "d2-validity": -0.0137
+      },
+      "d2-decision": {
+        "d2-attribution": 0.0059,
+        "d2-build": 0.0313,
+        "d2-closure": -0.0684,
+        "d2-control": 0.0352,
+        "d2-decision": 0.0254,
+        "d2-map": -0.0664,
+        "d2-sampling": 0.002,
+        "d2-validity": 0.0391
+      },
+      "d2-map": {
+        "d2-attribution": 0.0234,
+        "d2-build": -0.0723,
+        "d2-closure": 0.0234,
+        "d2-control": -0.002,
+        "d2-decision": -0.0313,
+        "d2-map": 0.0059,
+        "d2-sampling": -0.0234,
+        "d2-validity": 0.041
+      },
+      "d2-sampling": {
+        "d2-attribution": 0.0215,
+        "d2-build": -0.0117,
+        "d2-closure": 0.0371,
+        "d2-control": -0.0586,
+        "d2-decision": -0.0254,
+        "d2-map": -0.0156,
+        "d2-sampling": -0.0332,
+        "d2-validity": 0.0469
+      },
+      "d2-validity": {
+        "d2-attribution": -0.0273,
+        "d2-build": -0.0566,
+        "d2-closure": -0.0156,
+        "d2-control": 0.0254,
+        "d2-decision": 0.0156,
+        "d2-map": 0.0371,
+        "d2-sampling": -0.0195,
+        "d2-validity": -0.0215
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [
+        {
+          "center": "attribution owner",
+          "group": "d2-attribution",
+          "kind": "owner_conflict",
+          "owners": [
+            "attribution owner",
+            "d2-attribution"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        },
+        {
+          "center": "d2-build",
+          "group": "d2-build",
+          "kind": "owner_conflict",
+          "owners": [
+            "d2-build",
+            "one-build owner"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        },
+        {
+          "center": "d2-closure",
+          "group": "d2-closure",
+          "kind": "owner_conflict",
+          "owners": [
+            "d2-closure",
+            "immutable-closure owner"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        },
+        {
+          "center": "control owner",
+          "group": "d2-control",
+          "kind": "owner_conflict",
+          "owners": [
+            "control owner",
+            "d2-control"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        },
+        {
+          "center": "d2-decision",
+          "group": "d2-decision",
+          "kind": "owner_conflict",
+          "owners": [
+            "d2-decision",
+            "decision owner"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        },
+        {
+          "center": "d2-map",
+          "group": "d2-map",
+          "kind": "owner_conflict",
+          "owners": [
+            "d2-map",
+            "machine-closure owner"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        },
+        {
+          "center": "d2-sampling",
+          "group": "d2-sampling",
+          "kind": "owner_conflict",
+          "owners": [
+            "d2-sampling",
+            "sampling owner"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        },
+        {
+          "center": "d2-validity",
+          "group": "d2-validity",
+          "kind": "owner_conflict",
+          "owners": [
+            "d2-validity",
+            "validity owner"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        }
+      ],
+      "group_centers": {
+        "d2-attribution": {
+          "gravity": 0.5,
+          "owner": "attribution owner",
+          "owners": {
+            "attribution owner": 1,
+            "d2-attribution": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "d2-build": {
+          "gravity": 0.5,
+          "owner": "d2-build",
+          "owners": {
+            "d2-build": 1,
+            "one-build owner": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "d2-closure": {
+          "gravity": 0.5,
+          "owner": "d2-closure",
+          "owners": {
+            "d2-closure": 1,
+            "immutable-closure owner": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "d2-control": {
+          "gravity": 0.5,
+          "owner": "control owner",
+          "owners": {
+            "control owner": 1,
+            "d2-control": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "d2-decision": {
+          "gravity": 0.5,
+          "owner": "d2-decision",
+          "owners": {
+            "d2-decision": 1,
+            "decision owner": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "d2-map": {
+          "gravity": 0.5,
+          "owner": "d2-map",
+          "owners": {
+            "d2-map": 1,
+            "machine-closure owner": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "d2-sampling": {
+          "gravity": 0.5,
+          "owner": "d2-sampling",
+          "owners": {
+            "d2-sampling": 1,
+            "sampling owner": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "d2-validity": {
+          "gravity": 0.5,
+          "owner": "d2-validity",
+          "owners": {
+            "d2-validity": 1,
+            "validity owner": 1
+          },
+          "support": 1,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "attribution": {
+          "gravity": 0.5,
+          "owner": "attribution owner",
+          "owners": {
+            "attribution owner": 1,
+            "d2-attribution": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "build": {
+          "gravity": 0.5,
+          "owner": "d2-build",
+          "owners": {
+            "d2-build": 1,
+            "one-build owner": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "closure": {
+          "gravity": 0.5,
+          "owner": "d2-closure",
+          "owners": {
+            "d2-closure": 1,
+            "immutable-closure owner": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "control": {
+          "gravity": 0.5,
+          "owner": "control owner",
+          "owners": {
+            "control owner": 1,
+            "d2-control": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "decision": {
+          "gravity": 0.5,
+          "owner": "d2-decision",
+          "owners": {
+            "d2-decision": 1,
+            "decision owner": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "map": {
+          "gravity": 0.5,
+          "owner": "d2-map",
+          "owners": {
+            "d2-map": 1,
+            "machine-closure owner": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "sampling": {
+          "gravity": 0.5,
+          "owner": "d2-sampling",
+          "owners": {
+            "d2-sampling": 1,
+            "sampling owner": 1
+          },
+          "support": 1,
+          "total": 2
+        },
+        "validity": {
+          "gravity": 0.5,
+          "owner": "d2-validity",
+          "owners": {
+            "d2-validity": 1,
+            "validity owner": 1
+          },
+          "support": 1,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-attribution"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-build"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-closure"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-control"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-decision"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-map"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-sampling"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-validity"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-attribution"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-build"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-closure"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-control"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-decision"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-map"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-sampling"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-validity"
+      }
+    ],
+    "repair_tasks": [
+      {
+        "candidate_group": "d2-attribution",
+        "dominant_source_group": "d2-control",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0566,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "d2-build",
+        "dominant_source_group": "d2-closure",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0391,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "d2-closure",
+        "dominant_source_group": "d2-sampling",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0332,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "d2-control",
+        "dominant_source_group": "d2-closure",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0273,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "d2-decision",
+        "dominant_source_group": "d2-validity",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0391,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "d2-map",
+        "dominant_source_group": "d2-validity",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.041,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "d2-sampling",
+        "dominant_source_group": "d2-validity",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0469,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "d2-validity",
+        "dominant_source_group": "d2-map",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0371,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      }
+    ],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "attribution": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-f attribution",
+            "d2-f frozen formulas and publication list"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "attribution owner",
+            "d2-attribution"
+          ],
+          "scopes": [
+            "attribution"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "build": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-b one symbolized build",
+            "d2-b source identity and one-shot rules"
+          ],
+          "layers": [
+            "ui"
+          ],
+          "outputs": [],
+          "owners": [
+            "d2-build",
+            "one-build owner"
+          ],
+          "scopes": [
+            "build"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "closure": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-a immutable input closure",
+            "d2-a owner prohibition and closure list"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "d2-closure",
+            "immutable-closure owner"
+          ],
+          "scopes": [
+            "closure"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "control": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-d parity and unsampled validity gates",
+            "d2-d semantic and unsampled controls"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "control owner",
+            "d2-control"
+          ],
+          "scopes": [
+            "control"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "decision": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2 decision boundary",
+            "d2 decision states and no-implementation rule"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "d2-decision",
+            "decision owner"
+          ],
+          "scopes": [
+            "decision"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "map": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-c map fields and frozen buckets",
+            "d2-c pre-measurement machine closure"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "d2-map",
+            "machine-closure owner"
+          ],
+          "scopes": [
+            "map"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "sampling": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-e external ip sampling",
+            "d2-e fixed events periods and route order"
+          ],
+          "layers": [
+            "core",
+            "runtime"
+          ],
+          "outputs": [],
+          "owners": [
+            "d2-sampling",
+            "sampling owner"
+          ],
+          "scopes": [
+            "sampling"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "validity": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-e required sampling validity",
+            "d2-e required sampling validity conjuncts"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "d2-validity",
+            "validity owner"
+          ],
+          "scopes": [
+            "validity"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "attribution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "build": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "closure": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "control": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "map": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "sampling": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "validity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "attribution": {
+          "attribution": 0.043,
+          "build": 0.0059,
+          "closure": 0.0156,
+          "control": 0.0566,
+          "decision": -0.0156,
+          "map": 0.0449,
+          "sampling": 0.0078,
+          "validity": 0.0566
+        },
+        "build": {
+          "attribution": -0.0195,
+          "build": -0.0215,
+          "closure": 0.0391,
+          "control": -0.0059,
+          "decision": -0.0234,
+          "map": -0.0371,
+          "sampling": -0.0273,
+          "validity": -0.0293
+        },
+        "closure": {
+          "attribution": -0.0098,
+          "build": 0.0,
+          "closure": -0.0059,
+          "control": 0.0273,
+          "decision": -0.0098,
+          "map": -0.0195,
+          "sampling": 0.0332,
+          "validity": -0.0664
+        },
+        "control": {
+          "attribution": -0.0117,
+          "build": 0.0137,
+          "closure": 0.0273,
+          "control": 0.0137,
+          "decision": -0.0117,
+          "map": -0.0176,
+          "sampling": -0.0078,
+          "validity": -0.0137
+        },
+        "decision": {
+          "attribution": 0.0059,
+          "build": 0.0313,
+          "closure": -0.0684,
+          "control": 0.0352,
+          "decision": 0.0254,
+          "map": -0.0664,
+          "sampling": 0.002,
+          "validity": 0.0391
+        },
+        "map": {
+          "attribution": 0.0234,
+          "build": -0.0723,
+          "closure": 0.0234,
+          "control": -0.002,
+          "decision": -0.0313,
+          "map": 0.0059,
+          "sampling": -0.0234,
+          "validity": 0.041
+        },
+        "sampling": {
+          "attribution": 0.0215,
+          "build": -0.0117,
+          "closure": 0.0371,
+          "control": -0.0586,
+          "decision": -0.0254,
+          "map": -0.0156,
+          "sampling": -0.0332,
+          "validity": 0.0469
+        },
+        "validity": {
+          "attribution": -0.0273,
+          "build": -0.0566,
+          "closure": -0.0156,
+          "control": 0.0254,
+          "decision": 0.0156,
+          "map": 0.0371,
+          "sampling": -0.0195,
+          "validity": -0.0215
+        }
+      },
+      "source": {
+        "attribution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "build": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "closure": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "control": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "map": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "sampling": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "validity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "d2-attribution": 1,
+      "d2-build": 1,
+      "d2-closure": 1,
+      "d2-control": 1,
+      "d2-decision": 1,
+      "d2-map": 1,
+      "d2-sampling": 1,
+      "d2-validity": 1
+    },
+    "stable_groups": [],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 8,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 8,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "d2-attribution"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "d2-build"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "d2-closure"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "d2-control"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "d2-decision"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "d2-map"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "d2-sampling"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "d2-validity"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "d2-attribution"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "d2-build"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "d2-closure"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "d2-control"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "d2-decision"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "d2-map"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "d2-sampling"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "d2-validity"
+    }
+  ],
+  "agent_decision": {
+    "action": "REPAIR_REQUIRED",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Apply the repair_queue before editing or accepting this route.",
+    "repair_count": 16,
+    "repair_queue": [
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-attribution"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-build"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-closure"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-control"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-decision"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-map"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-sampling"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "d2-validity"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-attribution"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-build"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-closure"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-control"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-decision"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-map"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-sampling"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-validity"
+      }
+    ],
+    "safe_to_edit": false
+  },
+  "explanation": [
+    "At least one candidate triad has weak composite-mode support.",
+    "Task exceeds target or hard limits and should be split."
+  ],
+  "repair_prompt": "Repair the candidate answer using only one coherent structural route.\nNANDA verdict: VETO.\nPrimary repair_queue:\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\nRecheck or remove weak candidate triads:\n- c1: score=-0.018, nearest_source=s5, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c2: score=-0.0443, nearest_source=s1, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c3: score=-0.0125, nearest_source=s6, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c4: score=-0.0028, nearest_source=s1, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c5: score=-0.0139, nearest_source=s6, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c6: score=-0.0222, nearest_source=s3, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c7: score=0.0762, nearest_source=s4, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c8: score=0.0014, nearest_source=s6, why=candidate triad does not resonate with the composite source memory above the stability threshold\nSplit the task before retrying:\n- roles target limit exceeded: 25>24",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-e1-traversal-d2-route-v2.trace.json"
+}

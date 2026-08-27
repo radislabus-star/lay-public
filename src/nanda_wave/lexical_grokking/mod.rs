@@ -58,6 +58,8 @@ pub use proof::{
     prove_l1_lexical_grokking_composite, prove_l1_lexical_grokking_package,
     prove_l1_lexical_grokking_scale_package, prove_l1_lexical_grokking_scale_package_range,
 };
+#[cfg(test)]
+pub(in crate::nanda_wave) use proof::{prepare_fixed_heldout_cases, FixedHeldoutCase};
 pub(crate) use runtime::ExactL11SurfaceIndexV1;
 pub use runtime::{
     benchmark_diverse_restoration as benchmark_l1_diverse_restoration,
@@ -78,6 +80,14 @@ pub use service::{
 pub use typed_basin::{
     diagnose_l1_typed_basin_quality_class, prove_l1_typed_basin_implicit_forward,
     prove_l1_typed_basin_quality,
+};
+#[cfg(test)]
+pub(in crate::nanda_wave) use typed_edit_traversal::{
+    phase7d_certificate_keys, phase7d_retrieval_lanes,
+};
+pub(in crate::nanda_wave) use typed_edit_traversal::{
+    phase7d_semantics_digest, Phase7dCertificateClass, Phase7dCertificateEvidence,
+    Phase7dCertificateOracle, Phase7dRetrievalLane,
 };
 #[cfg(feature = "lexical-compiler")]
 pub use typed_edit_traversal::{

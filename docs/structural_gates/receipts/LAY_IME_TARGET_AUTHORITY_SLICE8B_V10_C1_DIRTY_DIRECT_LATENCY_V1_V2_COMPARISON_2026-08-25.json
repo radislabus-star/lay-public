@@ -1,0 +1,120 @@
+{
+  "schema": "lay.v10.c1-dirty-direct-latency-replication-comparison.v1",
+  "task_id": "slice8b-v10-c1-dirty-direct-latency-v1-v2-comparison-20260825",
+  "recorded_at": "2026-08-25T07:44:53Z",
+  "verdict": "LOADED_THRESHOLD_MISS_REPRODUCED",
+  "authority_ready": false,
+  "replication": {
+    "errors": 0,
+    "unresolved": 0,
+    "loaded_runs": 2,
+    "threshold_miss_reproduced": true,
+    "single_search_failed_both_runs": true,
+    "single_total_passed_both_runs": true,
+    "twenty_total_failed_both_runs": true,
+    "fairness_failed_both_runs": true
+  },
+  "thresholds_us": {
+    "single_search_p99": 3000,
+    "single_total_p99": 5000,
+    "twenty_total_p99": 5000,
+    "maximum_run_worker_total_p99": 5000
+  },
+  "runs": {
+    "V1": {
+      "remote_result_sha256": "9c74bf3f74f794ddd7e5c46df56f88e1443f6e320afb425dd015d20adecb207e",
+      "local_index_sha256": "17f6a08653a372a80a64d9e7a92c34382ab2a2368587d41b1940283e4bc99113",
+      "manifest_sha256": "71a85212a53c0b9df71815dacb7476064516a91f361d4e323a92c5eb983c5c83",
+      "sample_counts": {
+        "S": 191000,
+        "T": 477500
+      },
+      "single_search_p99_us": 3940,
+      "single_total_p99_us": 4098,
+      "twenty_total_p99_us": 17349,
+      "maximum_run_worker_total_p99_us": 57917,
+      "errors": 0,
+      "unresolved": 0,
+      "thresholds_would_pass": false
+    },
+    "V2": {
+      "remote_result_sha256": "57e1de132b75f12749bedf506302791900bbf97b35796e2b90bf40806bc98a35",
+      "local_index_sha256": "38f97cddb53af117238d5cd8b5e5ca7e9b76f67dc81fa6711a3adf8aef0494fb",
+      "manifest_sha256": "0db8f2f988cc2f4c9b52d6e1ea083e07a9e941815142eb095041b121118066d3",
+      "sample_counts": {
+        "S": 191000,
+        "T": 477500
+      },
+      "single_search_p99_us": 3938,
+      "single_total_p99_us": 4098,
+      "twenty_total_p99_us": 16336,
+      "maximum_run_worker_total_p99_us": 58618,
+      "errors": 0,
+      "unresolved": 0,
+      "thresholds_would_pass": false
+    }
+  },
+  "v2_minus_v1_us": {
+    "single_search_p99": -2,
+    "single_total_p99": 0,
+    "twenty_total_p99": -1013,
+    "maximum_run_worker_total_p99": 701
+  },
+  "v2_routes_total_p99_us": {
+    "S1": 4082,
+    "S2": 4080,
+    "S3": 4086,
+    "S4": 4237,
+    "S5": 4083,
+    "T1": 15614,
+    "T2": 14059,
+    "T3": 17810,
+    "T4": 13662,
+    "T5": 17691
+  },
+  "v2_loaded_environment": {
+    "foreign_process_control": false,
+    "host_tuning": false,
+    "nando_authority_cpu_percent_observed": {
+      "minimum_route_window": 87.2888148262762,
+      "maximum_route_window": 99.99212195064149
+    },
+    "btop_cpu_percent_observed": {
+      "minimum_route_window": 4.213801564099541,
+      "maximum_route_window": 7.22343274639882
+    },
+    "nando_transition_k1_maximum_cpu_percent": 81.48558577760778,
+    "cpu_psi_some_maximum_avg10": 10.14,
+    "io_psi_full_maximum_avg10": 0.18,
+    "maximum_temperature_c": 80.0,
+    "thermal_throttle_counter_drift": false
+  },
+  "process_observer_caveat": {
+    "local_index_process_arrays_empty": true,
+    "cause": "OVERLY_ANCHORED_PGREP_F_PATTERN_INHERITED_FROM_V1",
+    "pid_continuity_proven_by_local_index": false,
+    "independent_post_run_snapshot": {
+      "observed_at": "2026-08-25T07:44:53Z",
+      "ibus_daemon_pid": 2076194,
+      "lay_daemon_pid": 3410795,
+      "lay_ibus_engine_pid": 3410820,
+      "lay_version": "1.0.43",
+      "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+      "scope": "CURRENT_POST_RUN_PRESENCE_ONLY_NOT_PID_CONTINUITY_PROOF"
+    }
+  },
+  "scope": {
+    "claim": "TWO_LOADED_PRODUCT_DIAGNOSTIC_RUNS_REPRODUCE_THE_FROZEN_THRESHOLD_MISS",
+    "does_not_prove": [
+      "CLEAN_C1_PASS_OR_FAIL",
+      "CAUSE_ATTRIBUTION",
+      "FORMAL_B_HARDWARE_CHARACTERIZATION",
+      "END_TO_END_INSTALLED_RUNTIME_LATENCY",
+      "PID_CONTINUITY_DURING_V2"
+    ],
+    "clean_c1_verdict": "NOT_MEASURED_BLOCKED_ENVIRONMENT",
+    "clean_markers_consumed": false,
+    "v12_admitted": false,
+    "runtime_authority_changed": false
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "b_matrix": "HOLD_UNTIL_C1_FAIL_PAPER_DECISION",
+  "c1_implementation": "NOT_STARTED",
+  "clean_result_published": false,
+  "controller": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-c1-supersede-clean-v2.py",
+    "sha256": "9f6d6b2c6a6042d98940ec15cb361bae0424c89c4c7e9a8f8093c5e14f45c060",
+    "size_bytes": 24282
+  },
+  "documentation_updated": false,
+  "installed_lay_changed": false,
+  "measurement_produced": false,
+  "old_route_physically_runnable": false,
+  "preflight": {
+    "manifest_identity_sha256": "c4fb686565e3d8e7415c4bc675913d2f3ad6952d42cd4ed23964913c3e0a48ca",
+    "manifest_sha256": "729951e4670a1dd61f4bc29e1350981d5cd84e3bcc609436474a3e228482a90c",
+    "receipt_sha256": "54e1687c3c5095e9d826a347c2defb6971e93f87d70293d44724f184197bddbd",
+    "verdict": "READY_TO_IMPLEMENT"
+  },
+  "recorded_at": "2026-08-24T23:25:07.717566+00:00",
+  "remote_after": {
+    "entries": [
+      "SHA256SUMS",
+      "SUPERSEDED_UNRUN.json"
+    ],
+    "file_count": 2,
+    "final_exists": false,
+    "final_path": "/home/e/.local/share/lay/provenance/slice8b-v10-clean-speed-v2-20260825",
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+    "sha256sums": "76c7bc00053e642fc83b089e2bcfd088d1788f99d5e38bbe7aa6ccdd55e9f35d  SUPERSEDED_UNRUN.json\n",
+    "sha256sums_mode": "0444",
+    "sha256sums_sha256": "407ad04a066f916077a816f88ef03fc8dca1e8bbfbdb6061abb675134d2023bd",
+    "sha256sums_verified": true,
+    "state_exists": true,
+    "state_mode": "0555",
+    "state_path": "/home/e/.local/state/lay/slice8b-v10-clean-speed-v2-20260825",
+    "tombstone": {
+      "clean_result_published": false,
+      "identities": {
+        "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+        "c1_contract_sha256": "1a35eeb0f5bb1e83e6785750a3a3857805bc62c93bc25d88d450874ae9f3f3d6",
+        "c1_order_sha256": "6cfa8c1156bde7cede5320f6924d3eb5c0e179907c08e82e2121885d7517f406",
+        "c1_structural_receipt_sha256": "d85d413d81e14b93f3de77b7e598bb766fb3fdd69519a1e225e5a3e2f7f69925",
+        "clean_v2_controller_sha256": "10167af258b0412582b17667deb41f14594b5ec12dd88f3aba12094d707383a5",
+        "preflight_manifest_identity_sha256": "c4fb686565e3d8e7415c4bc675913d2f3ad6952d42cd4ed23964913c3e0a48ca",
+        "preflight_manifest_sha256": "729951e4670a1dd61f4bc29e1350981d5cd84e3bcc609436474a3e228482a90c",
+        "preflight_receipt_sha256": "54e1687c3c5095e9d826a347c2defb6971e93f87d70293d44724f184197bddbd",
+        "remote_absence_audit_sha256": "2d196b500cdd26acb25514e2fa90b0b7159566d22a3613c7e9b5fee652a2997d",
+        "supersession_controller_sha256": "9f6d6b2c6a6042d98940ec15cb361bae0424c89c4c7e9a8f8093c5e14f45c060"
+      },
+      "measurement_produced": false,
+      "old_route_physically_runnable": false,
+      "published_at": "2026-08-24T23:25:07.061428+00:00",
+      "remote_final_path": "/home/e/.local/share/lay/provenance/slice8b-v10-clean-speed-v2-20260825",
+      "remote_state_path": "/home/e/.local/state/lay/slice8b-v10-clean-speed-v2-20260825",
+      "rollback": "RETAIN_TOMBSTONE",
+      "schema": "lay.v10.clean-speed-v2-superseded-unrun.v1",
+      "scope": {
+        "b_matrix": "HOLD_UNTIL_C1_FAIL_PAPER_DECISION",
+        "c1_implementation": "NOT_STARTED",
+        "installed_lay_changed": false,
+        "runtime_authority_changed": false,
+        "v12": "NOT_ADMITTED"
+      },
+      "status": "SUPERSEDED_UNRUN_BY_C1",
+      "subject_executed": false,
+      "supersession_task_id": "slice8b-v10-clean-speed-v2-supersession-v1-20260825",
+      "task_id": "slice8b-v10-clean-speed-v2-20260825"
+    },
+    "tombstone_mode": "0444",
+    "tombstone_sha256": "76c7bc00053e642fc83b089e2bcfd088d1788f99d5e38bbe7aa6ccdd55e9f35d",
+    "writable_objects": 0
+  },
+  "remote_before": {
+    "final_exists": false,
+    "final_path": "/home/e/.local/share/lay/provenance/slice8b-v10-clean-speed-v2-20260825",
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+    "state_exists": false,
+    "state_path": "/home/e/.local/state/lay/slice8b-v10-clean-speed-v2-20260825"
+  },
+  "remote_sha256sums_sha256": "407ad04a066f916077a816f88ef03fc8dca1e8bbfbdb6061abb675134d2023bd",
+  "remote_tombstone_sha256": "76c7bc00053e642fc83b089e2bcfd088d1788f99d5e38bbe7aa6ccdd55e9f35d",
+  "rollback": "RETAIN_TOMBSTONE",
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.clean-speed-v2-supersession-local-index.v1",
+  "status": "SUPERSEDED_UNRUN_BY_C1",
+  "subject_executed": false,
+  "task_id": "slice8b-v10-clean-speed-v2-supersession-v1-20260825",
+  "v12": "NOT_ADMITTED",
+  "verdict": "CLEAN_V2_SUPERSEDED_UNRUN_INDEXED"
+}

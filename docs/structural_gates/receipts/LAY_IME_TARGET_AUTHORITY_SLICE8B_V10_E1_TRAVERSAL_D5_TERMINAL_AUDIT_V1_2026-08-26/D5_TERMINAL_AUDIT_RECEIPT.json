@@ -1,0 +1,93 @@
+{
+  "bootstrap_audit_sha256": "8d3be4ec3d7f44acf01bc9c10bff04b076eede4ac5869795b3502dee00d42049",
+  "cargo_invocations": 0,
+  "claim_valid": false,
+  "controller_sha256": "6e5ea4a68d4541043ad95eda12b94e0e9efa0d21e3d4ba2c62a80565ddc626d0",
+  "marker_audit_sha256": "8bd945422cbc14dc8f91f440e3c1c0fd253208daea1acf825acc8cae141cd32f",
+  "markers_available": 2,
+  "markers_consumed": 2,
+  "markers_created": 4,
+  "next_action_admitted": "none; terminal D5 blocked verdict and no route retry",
+  "optimization_authority": false,
+  "perf_readers": 4,
+  "perf_record": 1,
+  "perf_stat": 0,
+  "pmu_events_opened": 1,
+  "remote_controller_sha256": "767e2cfd907527f92bcea1db54b69a9763f29b04a8f76701940abc2336cd2714",
+  "retry_permitted": false,
+  "route_receipt_sha256": {
+    "T4-FIXED": "d337dcddcd74e95e8009e520347f6e3cf6c1319c46bf7e896862200af8f5cbbf",
+    "T4-REVERSED": null,
+    "U4-FIXED": "229b901d65516d7eb6041668d2974409a721e601a6acb03d52d66929895903e4",
+    "U4-REVERSED": null
+  },
+  "runtime_authority_changed": false,
+  "rustc_compilations": 0,
+  "schema": "lay.v10.e1-traversal-d5-terminal-audit.v1",
+  "science": {
+    "blocked_validation": {
+      "cause": "provenance",
+      "observation_complete": false,
+      "route": "T4-FIXED",
+      "verdict": "BLOCKED_PROVENANCE",
+      "violation_count": 1
+    },
+    "bucket_inflation_claim": null,
+    "claim_valid": false,
+    "executed_routes": [
+      "U4-FIXED",
+      "T4-FIXED"
+    ],
+    "passed_route_metrics": {
+      "U4-FIXED": {
+        "cpu_per_edge_ns": 44.80000023463204,
+        "denominator_edges": 502915120
+      }
+    },
+    "route_summaries": {
+      "T4-FIXED": {
+        "observation_complete": false,
+        "perf_readers": 4,
+        "perf_record": 1,
+        "selected_cause": "provenance",
+        "subject_executions": 1,
+        "verdict": "BLOCKED_PROVENANCE"
+      },
+      "U4-FIXED": {
+        "observation_complete": true,
+        "perf_readers": 0,
+        "perf_record": 0,
+        "selected_cause": null,
+        "subject_executions": 1,
+        "verdict": "U4_FIXED_PASS"
+      }
+    },
+    "terminal": {
+      "blocked": true,
+      "cause": "provenance",
+      "route": "T4-FIXED",
+      "verdict": "BLOCKED_PROVENANCE"
+    }
+  },
+  "subject_executions": 2,
+  "task_id": "slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826",
+  "terminal_cause": "provenance",
+  "terminal_projection": {
+    "active_subjects": 0,
+    "executed_routes": [
+      "U4-FIXED",
+      "T4-FIXED"
+    ],
+    "markers_available": 2,
+    "markers_consumed": 2,
+    "markers_created": 4,
+    "predecessor_drift": 0,
+    "runtime_authority_changed": false,
+    "terminal_route": "T4-FIXED",
+    "terminal_verdict": "BLOCKED_PROVENANCE"
+  },
+  "terminal_route": "T4-FIXED",
+  "terminal_scope": "D5 fixed/reversed twenty-worker TID estimator terminal closure",
+  "transaction_id": "3ee46e2c915677e1b2d3cd6bcc9709e0232252dbc120745b097d736537779036",
+  "verdict": "BLOCKED_PROVENANCE"
+}

@@ -1,0 +1,338 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_2026-08-25",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "dirty-v1-controller",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-hardware-dirty.py",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 33012,
+        "sha256": "f0aa4b55a803ef204d1d898cec70eb282757009a71ef5d9310417b2ac17a45e8"
+      }
+    },
+    {
+      "id": "dirty-v1-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_DIRTY_SPEED_V1_2026-08-25/REMOTE_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 177315,
+        "sha256": "9255310624b55d370db55800f88eb6a04172d555235aecc6587d0ac15826af48"
+      }
+    },
+    {
+      "id": "v7-b1-blocked-index",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V7_2026-08-25/B1_BLOCKED_ENVIRONMENT_B2_NOT_ADMITTED_RECEIPT.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2565,
+        "sha256": "4babf6b0c066c2985489f664a79cb1bb3fb1bb908dfc06d6efd87dfabb24a0ed"
+      }
+    },
+    {
+      "id": "sealed-proxy-test-source",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_hardware_test_module.rs.inc",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 30104,
+        "sha256": "178ec12a3029fe04ae02b060de2e58f83c6481f05fbba2443ad233e9e9d94757"
+      }
+    },
+    {
+      "id": "active-v11-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 124127,
+        "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"
+      }
+    },
+    {
+      "id": "owning-contract-before-clean-preparation",
+      "kind": "file",
+      "path": "../../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 51915,
+        "sha256": "ee29dd4e7d473acddff712cb2ffab8d972b79b5c9dcdb6a39db8cd8d42a3a651"
+      }
+    },
+    {
+      "id": "clean-v2-controller-before-implementation",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-hardware-clean.py",
+      "expect": {}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "implement-clean-controller",
+        "kind": "local_source_edit"
+      },
+      {
+        "id": "repeatable-readiness-check",
+        "kind": "remote_read_only_observation"
+      },
+      {
+        "id": "future-one-clean-b5-b6-run",
+        "kind": "remote_diagnostic_execution"
+      },
+      {
+        "id": "future-clean-evidence-publication",
+        "kind": "remote_and_local_evidence_write"
+      },
+      {
+        "id": "record-prepared-state",
+        "kind": "documentation_edit"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "cargo_build_check_test",
+      "perf_or_pmu",
+      "host_tuning",
+      "foreign_process_or_service_stop",
+      "runtime_deployment_or_restart",
+      "installed_lay_mutation",
+      "formal_b_promotion",
+      "per_query_p99_claim",
+      "v12_action",
+      "adaptive_measurement_retry"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "dirty-v1-controller-reuse-veto-scan",
+      "path": "../../../scripts/lay-v10-hardware-dirty.py",
+      "sha256": "f0aa4b55a803ef204d1d898cec70eb282757009a71ef5d9310417b2ac17a45e8",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?:synthetic_fixture|generate_fixture|fixture_writer)"
+        },
+        {
+          "effect": "cargo_build_check_test",
+          "regex": "(?:/usr/bin/cargo|cargo\\s+(?:build|check|test))"
+        },
+        {
+          "effect": "perf_or_pmu",
+          "regex": "(?:/usr/bin/perf|perf_event_open|_rdtsc|rdpmc)"
+        },
+        {
+          "effect": "host_tuning",
+          "regex": "(?:cpupower|sysctl\\s+-w|/sys/.{0,80}(?:write|chmod))"
+        },
+        {
+          "effect": "foreign_process_or_service_stop",
+          "regex": "(?:systemctl\\s+(?:stop|kill)|pkill|killall)"
+        },
+        {
+          "effect": "runtime_deployment_or_restart",
+          "regex": "(?:gnome-extensions|lay-runtime-control|ibus-daemon.{0,60}restart|install-release)"
+        },
+        {
+          "effect": "installed_lay_mutation",
+          "regex": "(?:\\.local/(?:bin|lib)/lay).{0,100}(?:write|remove|rename|install)"
+        },
+        {
+          "effect": "formal_b_promotion",
+          "regex": "formal_b_pass\\\"?\\s*[:=]\\s*(?:True|true)"
+        },
+        {
+          "effect": "per_query_p99_claim",
+          "regex": "per_query_p99_observed\\\"?\\s*[:=]\\s*(?:True|true)"
+        },
+        {
+          "effect": "v12_action",
+          "regex": "(?:ExactFusedBandTransition|\\bV12\\b)"
+        },
+        {
+          "effect": "adaptive_measurement_retry",
+          "regex": "(?:retry_measurement|adaptive_repeat|increase_repetitions)"
+        }
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "preserve-dirty-v1-controller",
+      "path": "../../../scripts/lay-v10-hardware-dirty.py",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "dirty-v1-controller"
+    },
+    {
+      "id": "preserve-dirty-v1-receipt",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_DIRTY_SPEED_V1_2026-08-25/REMOTE_RECEIPT.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "dirty-v1-receipt"
+    },
+    {
+      "id": "preserve-b1-blocked",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V7_2026-08-25/B1_BLOCKED_ENVIRONMENT_B2_NOT_ADMITTED_RECEIPT.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "v7-b1-blocked-index"
+    },
+    {
+      "id": "preserve-proxy-source",
+      "path": "../../../scripts/lay_v10_hardware_test_module.rs.inc",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "sealed-proxy-test-source"
+    },
+    {
+      "id": "preserve-active-v11",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "active-v11-source"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "DIRTY_V1_OBSERVED_CLEAN_V2_ABSENT",
+    "steps": [
+      {
+        "id": "implement-clean-controller",
+        "from": "DIRTY_V1_OBSERVED_CLEAN_V2_ABSENT",
+        "to": "CLEAN_V2_IMPLEMENTED_UNRUN",
+        "mutates": true,
+        "failure_state": "CLEAN_V2_IMPLEMENTATION_REJECTED",
+        "cleanup": "remove only an incomplete new clean controller and preserve all V1 and sealed evidence",
+        "preserves": [
+          "preserve-dirty-v1-controller",
+          "preserve-dirty-v1-receipt",
+          "preserve-b1-blocked",
+          "preserve-proxy-source",
+          "preserve-active-v11"
+        ],
+        "test_id": "controller-fault"
+      },
+      {
+        "id": "self-check-clean-controller",
+        "from": "CLEAN_V2_IMPLEMENTED_UNRUN",
+        "to": "CLEAN_TEST_PREPARED_UNRUN",
+        "mutates": false
+      },
+      {
+        "id": "observe-three-quiet-samples",
+        "from": "CLEAN_TEST_PREPARED_UNRUN",
+        "to": "CLEAN_ENVIRONMENT_ADMITTED_ATTEMPT_UNUSED",
+        "mutates": false
+      },
+      {
+        "id": "execute-one-clean-b5-b6-run",
+        "from": "CLEAN_ENVIRONMENT_ADMITTED_ATTEMPT_UNUSED",
+        "to": "CLEAN_SPEED_OBSERVED_NO_FORMAL_PROMOTION",
+        "mutates": true,
+        "failure_state": "CLEAN_MEASUREMENT_FAILED_NO_RETRY",
+        "cleanup": "terminate only the controller-owned diagnostic child, retain the consumed marker and publish failure evidence",
+        "preserves": [
+          "preserve-dirty-v1-controller",
+          "preserve-dirty-v1-receipt",
+          "preserve-b1-blocked",
+          "preserve-proxy-source",
+          "preserve-active-v11"
+        ],
+        "test_id": "measurement-fault"
+      }
+    ],
+    "terminal_states": [
+      "CLEAN_TEST_PREPARED_UNRUN",
+      "CLEAN_SPEED_OBSERVED_NO_FORMAL_PROMOTION",
+      "CLEAN_V2_IMPLEMENTATION_REJECTED",
+      "CLEAN_MEASUREMENT_FAILED_NO_RETRY"
+    ]
+  },
+  "invariants": [
+    {
+      "id": "readiness-does-not-consume",
+      "statement": "readiness checks are read-only and never create the measurement marker or final output",
+      "test_id": "readiness-repeatability"
+    },
+    {
+      "id": "measurement-is-one-shot",
+      "statement": "only an admitted environment can consume one combined B5/B6 measurement marker",
+      "test_id": "one-shot-marker"
+    },
+    {
+      "id": "same-physical-route",
+      "statement": "clean V2 uses the same sealed ELF, schedule, package, sidecar, CPU lists and route order as dirty V1",
+      "test_id": "v1-v2-route-parity"
+    },
+    {
+      "id": "claim-boundary",
+      "statement": "clean aggregate wall timing is not per-query p99 and cannot promote formal B or admit V12",
+      "test_id": "claim-boundary"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "sealed-input-identity",
+      "producer": "dirty V1 verified sealed input identities",
+      "consumer": "clean V2 pre-execution verifier",
+      "comparison": "exact path, size, SHA-256, mode and Build ID",
+      "test_id": "sealed-input-parity"
+    },
+    {
+      "id": "dirty-clean-comparison",
+      "producer": "dirty V1 route and denominator identities",
+      "consumer": "clean V2 route and denominator identities",
+      "comparison": "same 382-entry schedule, route order, CPU maps and timing boundaries",
+      "test_id": "v1-v2-route-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "tests": [
+    {
+      "id": "controller-fault",
+      "kind": "fault_injection",
+      "expected": "a failed implementation leaves no remote marker, subject or output"
+    },
+    {
+      "id": "measurement-fault",
+      "kind": "fault_injection",
+      "expected": "a failed future run terminates only its own child, retains the consumed marker and cannot retry"
+    },
+    {
+      "id": "readiness-repeatability",
+      "kind": "integration",
+      "expected": "two blocked readiness checks return the same blocker classes without remote writes or consumed attempt"
+    },
+    {
+      "id": "one-shot-marker",
+      "kind": "integration",
+      "expected": "the combined marker is absent while prepared and create-new exactly once after clean admission"
+    },
+    {
+      "id": "v1-v2-route-parity",
+      "kind": "parity",
+      "expected": "V2 resolves the exact V1 ELF, assets, 382-entry schedule, B5 CPU 0, B6 CPUs 0..19 and B5 then B6 order"
+    },
+    {
+      "id": "claim-boundary",
+      "kind": "integration",
+      "expected": "prepared and future result receipts keep formal_b_pass=false, per_query_p99_observed=false and v12_admitted=false"
+    },
+    {
+      "id": "sealed-input-parity",
+      "kind": "parity",
+      "expected": "all sealed input identities match dirty V1 before readiness and again before future subject execution"
+    }
+  ]
+}

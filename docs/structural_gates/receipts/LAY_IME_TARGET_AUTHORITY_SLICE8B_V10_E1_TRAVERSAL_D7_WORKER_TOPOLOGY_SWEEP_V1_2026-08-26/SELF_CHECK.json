@@ -1,0 +1,231 @@
+{
+  "admission_files": {
+    "d1_decision": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/D1_DECISION.json",
+      "sha256": "80530f9f5787f846ce2cf222c1b60e3ae42887ce95a11ac153ec7271cce98baf",
+      "size_bytes": 5361257
+    },
+    "d6_receipt": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_V1_2026-08-26/D6_CONCURRENCY_ACCOUNTING_RECEIPT.json",
+      "sha256": "cc1fc1c7e74258cd7fec7eed5a113bbaeb3a4bf8ee3b269825f4cd282f5755dc",
+      "size_bytes": 1280
+    },
+    "e1_decision": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_2026-08-25/E1_DECISION.json",
+      "sha256": "b334c047d29b21c27923fba9b38bbf17bb642cc72c9b112add1c38d8c9b0beab",
+      "size_bytes": 202202
+    },
+    "fragment": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay_v10_e1_traversal_d7_worker_topology_test_module.rs.inc",
+      "sha256": "8c9ff3aaf43942aff6090b1350cef1828e24ea5664d312bde2ebdf29be6687ce",
+      "size_bytes": 123880
+    },
+    "paper": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_2026-08-26.md",
+      "sha256": "090c39efec9916c1a9bea050c6385a17c00b95532e08592730b3b83ede591a23",
+      "size_bytes": 8540
+    },
+    "preflight": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_IMPLEMENTATION_V2_2026-08-26.json",
+      "sha256": "c35e144ed81bd244bbf7d2233f0f8da86fb6fd4aedd1f6d5e25608b9bd0cc700",
+      "size_bytes": 19001
+    },
+    "preflight_receipt": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_IMPLEMENTATION_V2_PREFLIGHT_2026-08-26.json",
+      "sha256": "bb92b6d1059090b0da024cca686202c19386b85b97fc2563adcca84107400c20",
+      "size_bytes": 7774
+    },
+    "structural_review": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_STRUCTURAL_REVIEW_V1_2026-08-26.json",
+      "sha256": "c94d5d927e27c6f0aeaa5be331b4894bbd6d41f3aaab16a1f8bfe0a7c233da3e",
+      "size_bytes": 1040
+    },
+    "terminal_auditor": {
+      "mode": "0555",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d7-terminal-audit.py",
+      "sha256": "27604a1aef85c93228c5f4f3fc3aba4bbd892754036ef4d12769e2a94129f6e1",
+      "size_bytes": 32710
+    },
+    "v10_source": {
+      "mode": "0444",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c",
+      "size_bytes": 91518
+    }
+  },
+  "assembled_source_sha256": "c9f6400304eed2d84717cbef84b17e5ba1817e08f8d9e68580b5d441d1f13803",
+  "cargo_invocations": 0,
+  "command_graph": {
+    "BUILD": {
+      "external": [
+        "cargo-guard"
+      ],
+      "function": "remote_build_once"
+    },
+    "PARITY": {
+      "external": [
+        "diagnostic-test-elf"
+      ],
+      "function": "run_parity_route"
+    },
+    "TERMINAL-AUDIT": {
+      "external": [
+        "terminal-auditor.py"
+      ],
+      "function": "run_independent_terminal_audit"
+    },
+    "W1": {
+      "external": [
+        "perf stat",
+        "diagnostic-test-elf"
+      ],
+      "function": "run_worker_route"
+    },
+    "W12": {
+      "external": [
+        "perf stat",
+        "diagnostic-test-elf"
+      ],
+      "function": "run_worker_route"
+    },
+    "W14": {
+      "external": [
+        "perf stat",
+        "diagnostic-test-elf"
+      ],
+      "function": "run_worker_route"
+    },
+    "W20": {
+      "external": [
+        "perf stat",
+        "diagnostic-test-elf"
+      ],
+      "function": "run_worker_route"
+    },
+    "W6": {
+      "external": [
+        "perf stat",
+        "diagnostic-test-elf"
+      ],
+      "function": "run_worker_route"
+    }
+  },
+  "controller_sha256": "b7cfc353e1ff823446cb2c3e5f9ffcd3deca133b0371d268eb40df2609e65258",
+  "fragment_sha256": "8c9ff3aaf43942aff6090b1350cef1828e24ea5664d312bde2ebdf29be6687ce",
+  "marker_identities": {
+    "W1": {
+      "mode": "0400",
+      "sha256": "f97536385b7a4d3670584b6129776f33d54b4957aa8779400b2c3c3f9a24eb47",
+      "size_bytes": 242
+    },
+    "W12": {
+      "mode": "0400",
+      "sha256": "7a5dea250b26f5d48d928b2453024ef03f2b01329edd2384a7356c3d8f817ebb",
+      "size_bytes": 243
+    },
+    "W14": {
+      "mode": "0400",
+      "sha256": "b98f80062168e6c1e24d7fcd597944847ea7c49759c64273321c80441a4a10d6",
+      "size_bytes": 243
+    },
+    "W20": {
+      "mode": "0400",
+      "sha256": "d4c11758c906c51b6d4eba176306aa16c060d4aaeffa57ab7b19100a8fb89582",
+      "size_bytes": 243
+    },
+    "W6": {
+      "mode": "0400",
+      "sha256": "0e199a378e12f8e11f3dd8427134e44bd98d673256b9c7f20a0aa0f40821f770",
+      "size_bytes": 242
+    },
+    "build": {
+      "mode": "0400",
+      "sha256": "9fe40a4938ab7b37c12831309aca66304d707433633c19e7bb3dc9940db9836d",
+      "size_bytes": 245
+    },
+    "parity": {
+      "mode": "0400",
+      "sha256": "0a43e9d69aa0ac015ce3c05d05913654f7208cbdb3c4a444b01db935702c8963",
+      "size_bytes": 246
+    }
+  },
+  "perf_stat_invocations": 0,
+  "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+  "routes": {
+    "W1": [
+      0
+    ],
+    "W12": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "W14": [
+      0,
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "W20": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "W6": [
+      0,
+      2,
+      4,
+      6,
+      8,
+      10
+    ]
+  },
+  "runtime_authority_changed": false,
+  "subject_executions": 0,
+  "terminal_auditor_sha256": "27604a1aef85c93228c5f4f3fc3aba4bbd892754036ef4d12769e2a94129f6e1",
+  "verdict": "D7_CONTROLLER_VERIFIED_UNRUN"
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "lay.v10.exact-fused-band-transition-m1-remote-build-audit.v1",
+  "recorded_at": "2026-08-25T10:48:00Z",
+  "host": "e-MEGA-MINI-M1-13th",
+  "remote_build": "/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/build-v1",
+  "manifest": {
+    "sha256": "5f4703b52f9c9d92121f658a50490c5b98161971290c2a6a0c0f95f2b01c0526",
+    "bytes": 1140,
+    "mode": "0444",
+    "verification": "PASS"
+  },
+  "provenance": {
+    "sha256": "031b7002fa002deda65895ade867fd7e5a3edb31d5b9d8917df087481070e051",
+    "bytes": 2169,
+    "mode": "0444"
+  },
+  "elf": {
+    "sha256": "a8fb59fb3745d5b60bf455957b0c1da200a6419b2f65ceee02a4558bf03c1e89",
+    "build_id": "31949c25f1fdb513d064b4953aea1ebc5d8828d9",
+    "bytes": 20510360,
+    "mode": "0444"
+  },
+  "source": {
+    "recovered_v10_sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c",
+    "production_prefix_bytes": 39047,
+    "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+    "fragment_sha256": "bdef992d1f9bec095b3f683b384f1e7d23323823625cf3547dc44480511f0d76",
+    "final_source_sha256": "daa88ef64b14775cd766cdfd219ba4575f62c9123f5b2eef4dbdfb0c7c2e5ca2"
+  },
+  "executed_transition_subject": false,
+  "rebuild_admitted": false,
+  "runtime_authority_changed": false
+}

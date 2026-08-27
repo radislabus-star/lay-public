@@ -1,0 +1,25 @@
+{
+  "actions": [
+    "self-check",
+    "audit"
+  ],
+  "auditor": {
+    "mode": "0664",
+    "path": "scripts/lay-v10-e1-traversal-w1-machine-cost-decomposition.py",
+    "sha256": "d8a45ae8e2db5b86eec82c365fc7923f021a92729516e530d6a847a6fb8a1293",
+    "size_bytes": 51650
+  },
+  "cargo_or_rustc": 0,
+  "external_executables": [
+    "/usr/bin/objdump"
+  ],
+  "marker_mutations": 0,
+  "network_or_remote": 0,
+  "perf_or_pmu": 0,
+  "planned_objdump_invocations": 4,
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.e1-traversal-w1-machine-cost-decomposition-self-check.v1",
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-w1-machine-cost-decomposition-v1-20260826",
+  "verdict": "W1_DECOMPOSITION_AUDITOR_VERIFIED_UNRUN"
+}

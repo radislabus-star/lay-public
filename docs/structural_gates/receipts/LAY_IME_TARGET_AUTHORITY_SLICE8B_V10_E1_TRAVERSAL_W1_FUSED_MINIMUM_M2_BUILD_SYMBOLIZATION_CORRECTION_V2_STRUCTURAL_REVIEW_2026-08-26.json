@@ -1,0 +1,60 @@
+{
+  "all_routes_pass": true,
+  "authority_ready": false,
+  "code_admitted": false,
+  "correction": {
+    "mode": "0444",
+    "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_BUILD_SYMBOLIZATION_CORRECTION_V2_2026-08-26.md",
+    "sha256": "0302c8e8ab56068c7b483525334424fcfb0753fd28786383532073756e1ff054",
+    "size_bytes": 3434
+  },
+  "final_gate": {
+    "agent_action": "SAFE_TO_EDIT",
+    "authority_ready": false,
+    "complexity_score": 28,
+    "conflicts": 0,
+    "evidence_gaps": 0,
+    "stable_triads": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5"
+    ],
+    "verdict": "PASS",
+    "weak_triads": []
+  },
+  "initial_gate": {
+    "authority_ready": false,
+    "initial_verdict": "VETO",
+    "repairs": [
+      {
+        "candidate": "c3",
+        "final_status": "REPAIRED",
+        "reason": "candidate used a broader optimization-setting object than its frozen source triad",
+        "repair": "made candidate relation, object and evidence identical to the exact unchanged build-setting list"
+      },
+      {
+        "candidate": "c5",
+        "final_status": "REPAIRED",
+        "reason": "candidate collapsed exact DWARF, symbol and machine-owner obligations into generic ownership evidence",
+        "repair": "made candidate relation, object and evidence identical to the corrected read-only build-audit contract"
+      }
+    ],
+    "weak_triads": [
+      "c3",
+      "c5"
+    ]
+  },
+  "next_action_admitted": "revised offline implementation preflight only; no remote access, Cargo, rustc, perf, PMU, subject, marker, ELF, runtime or production action",
+  "route": {
+    "mode": "0444",
+    "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_BUILD_SYMBOLIZATION_CORRECTION_V2_ROUTE.md",
+    "sha256": "4ca2b7d0f02801e0fbb47271a4c05163316df31109988efdd7500b0d697cb434",
+    "size_bytes": 2696
+  },
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.e1-traversal-w1-fused-minimum-m2-build-symbolization-correction-structural-review.v2",
+  "task_id": "w1-fused-minimum-m2-build-symbolization-correction-v2",
+  "verdict": "STRUCTURALLY_ACCEPTED_AFTER_REPAIR"
+}

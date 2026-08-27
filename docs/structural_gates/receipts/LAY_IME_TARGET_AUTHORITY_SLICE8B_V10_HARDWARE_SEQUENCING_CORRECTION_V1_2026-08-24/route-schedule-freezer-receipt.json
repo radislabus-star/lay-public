@@ -1,0 +1,320 @@
+{
+  "verdict": "VETO",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-b-sequencing-schedule-freezer",
+  "domain": "code",
+  "complexity_score": 10,
+  "mandatory_gate": false,
+  "limits": [],
+  "stable_triads": [
+    "c15",
+    "c16"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c15",
+      "c16"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c15": 0.5,
+      "c16": 0.5
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 4,
+    "missing_triads": [
+      "s15",
+      "s16",
+      "c15",
+      "c16"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c15": 0.7085,
+      "c16": 0.7085
+    },
+    "source_self_score": 0.7085,
+    "stable": [
+      "c15",
+      "c16"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "schedule-freezer": "schedule-freezer"
+    },
+    "scores": {
+      "schedule-freezer": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "schedule-freezer": 2
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.7085,
+      "norm": 45.3431,
+      "triads": 2
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "schedule-freezer": "schedule-freezer"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "schedule-freezer": {
+          "norm": 45.3431,
+          "self_coherence": 0.7085,
+          "triads": 2
+        }
+      },
+      "source": {
+        "schedule-freezer": {
+          "norm": 45.3431,
+          "self_coherence": 0.7085,
+          "triads": 2
+        }
+      }
+    },
+    "group_links": {
+      "schedule-freezer": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "schedule-freezer",
+        "exact_source_groups": [
+          "schedule-freezer"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "schedule-freezer": {
+        "schedule-freezer": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [
+        {
+          "center": "b0 diagnostic executable",
+          "group": "schedule-freezer",
+          "kind": "owner_conflict",
+          "owners": [
+            "b0 diagnostic executable",
+            "b0 schedule-freezer"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        }
+      ],
+      "group_centers": {
+        "schedule-freezer": {
+          "gravity": 0.5,
+          "owner": "b0 diagnostic executable",
+          "owners": {
+            "b0 diagnostic executable": 2,
+            "b0 schedule-freezer": 2
+          },
+          "support": 2,
+          "total": 4
+        }
+      },
+      "route_centers": {
+        "execution": {
+          "gravity": 0.5,
+          "owner": "b0 diagnostic executable",
+          "owners": {
+            "b0 diagnostic executable": 2,
+            "b0 schedule-freezer": 2
+          },
+          "support": 2,
+          "total": 4
+        }
+      }
+    },
+    "repair_queue": [
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "schedule-freezer"
+      }
+    ],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "execution": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "b contract lines 153..192",
+            "b contract lines 153..206",
+            "parse_v7_cases is test-only and historical elf lacks freezer entrypoint",
+            "user sequencing correction 2026-08-24"
+          ],
+          "layers": [
+            "core",
+            "ui"
+          ],
+          "outputs": [],
+          "owners": [
+            "b0 diagnostic executable",
+            "b0 schedule-freezer"
+          ],
+          "scopes": [
+            "execution"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "execution": {
+          "norm": 45.3431,
+          "self_coherence": 0.7085,
+          "triads": 2
+        }
+      },
+      "interference_matrix": {
+        "execution": {
+          "execution": 1.0
+        }
+      },
+      "source": {
+        "execution": {
+          "norm": 45.3431,
+          "self_coherence": 0.7085,
+          "triads": 2
+        }
+      }
+    },
+    "source_group_sizes": {
+      "schedule-freezer": 2
+    },
+    "stable_groups": [
+      "schedule-freezer"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 1,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 1,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "schedule-freezer"
+    }
+  ],
+  "agent_decision": {
+    "action": "REPAIR_REQUIRED",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Apply the repair_queue before editing or accepting this route.",
+    "repair_count": 1,
+    "repair_queue": [
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "schedule-freezer"
+      }
+    ],
+    "safe_to_edit": false
+  },
+  "explanation": [
+    "No decisive structural signal was found."
+  ],
+  "repair_prompt": "Repair the candidate answer using only one coherent structural route.\nNANDA verdict: VETO.\nPrimary repair_queue:\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-b-sequencing-schedule-freezer.trace.json"
+}

@@ -1,0 +1,434 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "id": "authority-paper",
+      "kind": "file",
+      "path": "../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 195857,
+        "sha256": "10bb01bb0d4fcfbd3cf3134fdced5f08c15afc544af4222b744f368f9c7d953b"
+      }
+    },
+    {
+      "id": "slice6-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE6_BOUNDARY_INTERNALIZATION_2026-08-20/final-receipt.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2688,
+        "sha256": "434b550498875ce88d00727187143562a2a804f2f214a042c0fbb7c5bb7dc546"
+      }
+    },
+    {
+      "id": "atomic-live-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/final-release-1.0.34-live-deployment-pass-v1.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 3322,
+        "sha256": "8784efd520a26be83856f09e6fc5f916fa5f8561cea0927dd1e5f704e0339398"
+      }
+    },
+    {
+      "id": "live-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 43416,
+        "sha256": "f302e0177b87c95f2d3be56163680501c20526b51d1dbf95dff72f681fea9596"
+      }
+    },
+    {
+      "id": "material-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 57384,
+        "sha256": "aa770bf9d71673cc7714b2265f7d5970c02bd6afb30a91de6593d15772232b1f"
+      }
+    },
+    {
+      "id": "candidate-state-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/candidate_state.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 24208,
+        "sha256": "b69b1b4f33bb9856dc7993f17a0509fb2202d5d7390ba15b2665b945efc56320"
+      }
+    },
+    {
+      "id": "cohort-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/conflict_cohort.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 25373,
+        "sha256": "0e4635bca16a79c5a696d8add87203aa5771960223d87e4d3cbb0756865357f9"
+      }
+    },
+    {
+      "id": "bridge-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 109138,
+        "sha256": "bf47a5a7b4ae33541efc15a8de91fa406abd69044653f89aff0a6bfd4f143708"
+      }
+    },
+    {
+      "id": "vocabulary-owner",
+      "kind": "file",
+      "path": "../../../src/typing_transition/target_evidence.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 51805,
+        "sha256": "af909f2a5a1abe5908f11ea87f2594d27663b8b19ec3a2faa8bb9402c30eb158"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "engine-frame-library-frame",
+      "producer": "exact lay-ibus-engine InputFrameIdentity",
+      "consumer": "library LexicalAuthorityFrameV1",
+      "comparison": "path focus tail text context token layout output capability and config identity are lossless and byte-bound",
+      "test_id": "frame-carrier-parity"
+    },
+    {
+      "id": "material-frame-generation",
+      "producer": "prepared material exact digest and cache field generation",
+      "consumer": "frame settlement lease",
+      "comparison": "material package tuple digest generation and lease identity match before every target bind",
+      "test_id": "stale-frame-matrix"
+    },
+    {
+      "id": "cohort-certificate",
+      "producer": "complete conflict cohort lexical Winner",
+      "consumer": "candidate-specific L2Certified authority evidence",
+      "comparison": "winner target frame evidence cohort preservation and completeness hashes are byte-identical",
+      "test_id": "winner-certificate-parity"
+    },
+    {
+      "id": "certificate-verifier",
+      "producer": "candidate-specific L2Certified certificate",
+      "consumer": "TransitionDecisionCore and verifier",
+      "comparison": "only the exact candidate and exact frame may consume the certificate",
+      "test_id": "certificate-consumer-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "single-field-owner",
+      "statement": "one Productive V90 field produces all lexical material and no second ranker or candidate dictionary is introduced",
+      "test_id": "observed-route-cardinality"
+    },
+    {
+      "id": "no-synthetic-frame",
+      "statement": "a caller without exact frame evidence cannot receive L2Certified",
+      "test_id": "missing-frame-abstains"
+    },
+    {
+      "id": "complete-cohort-only",
+      "statement": "incomplete overflow failed or multiple-component material cannot produce Winner authority",
+      "test_id": "cohort-fault-matrix"
+    },
+    {
+      "id": "l11-retention",
+      "statement": "every grounded L1.1 candidate remains in the bounded material and cohort",
+      "test_id": "fixed-retention-proof"
+    },
+    {
+      "id": "context-separation",
+      "statement": "L3 and L4 may rank but cannot mint or replace L2Certified evidence",
+      "test_id": "context-cannot-certify"
+    },
+    {
+      "id": "boundary-non-authoritative",
+      "statement": "the temporary parallel boundary producer remains display-only and cannot bypass the complete cohort",
+      "test_id": "boundary-authority-zero"
+    },
+    {
+      "id": "backend-unchanged",
+      "statement": "verifier SafetyGate and installed atomic backend policy are not weakened or bypassed",
+      "test_id": "atomic-verifier-regression"
+    },
+    {
+      "id": "systemic-only",
+      "statement": "no fixture word phrase suffix source ID test name or case-specific runtime branch is added",
+      "test_id": "systemic-source-scan"
+    },
+    {
+      "id": "no-local-heavy-proof",
+      "statement": "Cargo and fixed lexical proofs run only on e@192.168.3.94 through scripts/cargo-guard.sh",
+      "test_id": "remote-proof-provenance"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "slice6-proof",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE6_BOUNDARY_INTERNALIZATION_2026-08-20/final-receipt.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain scoped Slice 6 evidence",
+      "baseline_check_id": "slice6-receipt"
+    },
+    {
+      "id": "atomic-live-proof",
+      "path": "../receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/final-release-1.0.34-live-deployment-pass-v1.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain accepted atomic backend evidence",
+      "baseline_check_id": "atomic-live-receipt"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [
+    {
+      "id": "canonical-candidate-parity",
+      "baseline": "current CanonicalL2Field bounded candidate projection",
+      "candidate": "Slice 8 cohort-backed projection",
+      "stable_fields": [
+        "replacement",
+        "origin",
+        "error_class",
+        "morphology_slot_evidence",
+        "grounded_l11_membership"
+      ],
+      "expected_to_change_fields": [
+        "authority_evidence",
+        "gate_reason",
+        "lexical_verdict"
+      ],
+      "observed_not_compared_fields": [
+        "timing",
+        "cache_generation",
+        "trace_sequence"
+      ],
+      "test_id": "candidate-parity"
+    }
+  ],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "source_checks": [
+    {
+      "id": "live-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "sha256": "f302e0177b87c95f2d3be56163680501c20526b51d1dbf95dff72f681fea9596",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_case_runtime_branch",
+          "regex": "(?i)(?:observed|candidate|surface)\\s*==\\s*\""
+        },
+        {
+          "effect": "raise_frontier",
+          "regex": "MAX_(?:ACTIVE|TARGET|CONTOUR|BOUNDARY).{0,80}(?:96|128|256)"
+        }
+      ]
+    },
+    {
+      "id": "material-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "sha256": "aa770bf9d71673cc7714b2265f7d5970c02bd6afb30a91de6593d15772232b1f",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "synthetic_frame_defaults",
+          "regex": "ExactInputFrameV1::new\\(\\s*1\\s*,\\s*0"
+        },
+        {
+          "effect": "raise_global_target_limit",
+          "regex": "MAX_TARGETS_PER_FIELD\\s*[:=].*(?:75|96|128)"
+        }
+      ]
+    },
+    {
+      "id": "bridge-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "bf47a5a7b4ae33541efc15a8de91fa406abd69044653f89aff0a6bfd4f143708",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "package_rebuild",
+          "regex": "(?:compile|reinduce|rebuild).{0,100}(?:V9|V13|V90|package)"
+        },
+        {
+          "effect": "new_fallback_route",
+          "regex": "(?:fallback|legacy).{0,100}(?:authority|winner|apply)"
+        }
+      ]
+    },
+    {
+      "id": "vocabulary-owner-pinned",
+      "path": "../../../src/typing_transition/target_evidence.rs",
+      "sha256": "af909f2a5a1abe5908f11ea87f2594d27663b8b19ec3a2faa8bb9402c30eb158",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "weaken_incomplete_authority",
+          "regex": "(?:Overflow|Failed|UpstreamIncomplete).{0,100}(?:Winner|L2Certified)"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "add-typed-frame-carrier",
+        "kind": "source_edit"
+      },
+      {
+        "id": "integrate-live-cohort-compare",
+        "kind": "source_edit"
+      },
+      {
+        "id": "add-candidate-specific-certificate",
+        "kind": "source_edit"
+      },
+      {
+        "id": "run-remote-fixed-proofs",
+        "kind": "remote_test"
+      }
+    ],
+    "forbidden": [
+      "runtime_deployment",
+      "restart_lay_daemon",
+      "restart_global_ibus_daemon",
+      "rewrite_any_package",
+      "package_rebuild",
+      "raise_frontier",
+      "raise_global_target_limit",
+      "literal_case_runtime_branch",
+      "synthetic_frame_defaults",
+      "new_fallback_route",
+      "weaken_incomplete_authority",
+      "weaken_verifier",
+      "generated_traffic",
+      "synthetic_fixture"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "SLICE7_ATOMIC_BACKEND_PASS_SLICE8_UNIMPLEMENTED",
+    "steps": [
+      {
+        "id": "implement-frame-carrier",
+        "from": "SLICE7_ATOMIC_BACKEND_PASS_SLICE8_UNIMPLEMENTED",
+        "to": "SLICE8A_FRAME_CARRIER_READY_BEHAVIOR_UNCHANGED",
+        "mutates": true,
+        "failure_state": "SLICE8A_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain failed diff and receipt; do not deploy or synthesize missing identity",
+        "preserves": [
+          "slice6-proof",
+          "atomic-live-proof"
+        ],
+        "test_id": "frame-carrier-parity"
+      },
+      {
+        "id": "implement-cohort-compare",
+        "from": "SLICE8A_FRAME_CARRIER_READY_BEHAVIOR_UNCHANGED",
+        "to": "SLICE8B_COHORT_COMPARE_READY_AUTHORITY_UNCHANGED",
+        "mutates": true,
+        "failure_state": "SLICE8B_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain first divergence evidence; no authority flip or fallback",
+        "preserves": [
+          "slice6-proof",
+          "atomic-live-proof"
+        ],
+        "test_id": "candidate-parity"
+      },
+      {
+        "id": "run-remote-promotion-proof",
+        "from": "SLICE8B_COHORT_COMPARE_READY_AUTHORITY_UNCHANGED",
+        "to": "SLICE8_PROMOTION_PROVED_NOT_DEPLOYED",
+        "mutates": false,
+        "failure_state": "SLICE8_PROMOTION_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain exact failed denominator and stop before authority flip",
+        "preserves": [
+          "slice6-proof",
+          "atomic-live-proof"
+        ],
+        "test_id": "fixed-retention-proof"
+      }
+    ],
+    "terminal_states": [
+      "SLICE8_PROMOTION_PROVED_NOT_DEPLOYED",
+      "SLICE8A_REJECTED_RUNTIME_UNCHANGED",
+      "SLICE8B_REJECTED_RUNTIME_UNCHANGED",
+      "SLICE8_PROMOTION_REJECTED_RUNTIME_UNCHANGED"
+    ]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_V1_2026-08-23",
+  "tests": [
+    {
+      "id": "frame-carrier-parity",
+      "kind": "parity",
+      "expected": "exact engine frame fields reach the library unchanged and missing fields remain unavailable"
+    },
+    {
+      "id": "stale-frame-matrix",
+      "kind": "fault_injection",
+      "expected": "focus tail text layout config package field generation and lease faults all block authority"
+    },
+    {
+      "id": "winner-certificate-parity",
+      "kind": "parity",
+      "expected": "one complete cohort Winner produces one candidate-specific certificate with matching hashes"
+    },
+    {
+      "id": "certificate-consumer-parity",
+      "kind": "fault_injection",
+      "expected": "candidate frame or certificate substitution is rejected before verifier authority"
+    },
+    {
+      "id": "observed-route-cardinality",
+      "kind": "integration",
+      "expected": "one field producer one cohort rank owner one DecisionCore one verifier and one atomic mutator"
+    },
+    {
+      "id": "missing-frame-abstains",
+      "kind": "integration",
+      "expected": "frame-less callers retain suggestions and receive zero L2Certified authority"
+    },
+    {
+      "id": "cohort-fault-matrix",
+      "kind": "fault_injection",
+      "expected": "incomplete overflow failed multiple-component and unresolved cohorts never produce Winner authority"
+    },
+    {
+      "id": "fixed-retention-proof",
+      "kind": "integration",
+      "expected": "fixed 13-class material proof retains every grounded target with false authority and singleton equal to zero"
+    },
+    {
+      "id": "context-cannot-certify",
+      "kind": "integration",
+      "expected": "L3 and L4 score perturbations cannot create or move L2Certified evidence"
+    },
+    {
+      "id": "boundary-authority-zero",
+      "kind": "integration",
+      "expected": "parallel boundary candidates remain visible only and grant zero automatic authority"
+    },
+    {
+      "id": "atomic-verifier-regression",
+      "kind": "integration",
+      "expected": "verifier atomic frame Space and double Shift software denominators do not regress"
+    },
+    {
+      "id": "systemic-source-scan",
+      "kind": "integration",
+      "expected": "no literal fixture test name or case-specific runtime branch is introduced"
+    },
+    {
+      "id": "remote-proof-provenance",
+      "kind": "integration",
+      "expected": "Cargo and fixed proof logs identify e@192.168.3.94 and scripts/cargo-guard.sh"
+    },
+    {
+      "id": "candidate-parity",
+      "kind": "parity",
+      "expected": "bounded replacement surfaces origins classes morphology slots and grounded L1.1 membership remain identical before authority flip"
+    }
+  ]
+}
+

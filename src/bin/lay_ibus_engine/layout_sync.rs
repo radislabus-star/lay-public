@@ -20,7 +20,7 @@ impl LayIbusEngine {
         if self.atomic_speculation {
             if target_is_ru != self.layout_is_ru {
                 let previous_is_ru = self.layout_is_ru;
-                self.layout_is_ru = target_is_ru;
+                self.set_layout_is_ru(target_is_ru);
                 self.publish_tail_handoff();
                 self.deferred_layout_actions
                     .push(DeferredLayoutAction::BackgroundSwitch {
@@ -41,7 +41,7 @@ impl LayIbusEngine {
         // key path responsive by changing this engine's decoder immediately;
         // the process-level IBus engine switch is a postcondition owned by one
         // latest-only background worker.
-        self.layout_is_ru = target_is_ru;
+        self.set_layout_is_ru(target_is_ru);
         self.publish_tail_handoff();
         trace::record(format!(
             r#"{{"kind":"ibus_layout_sync_owner","owner":"{owner}","target_is_ru":{target_is_ru}}}"#
@@ -64,7 +64,7 @@ impl LayIbusEngine {
         if self.atomic_speculation {
             if target_is_ru != self.layout_is_ru {
                 let previous_is_ru = self.layout_is_ru;
-                self.layout_is_ru = target_is_ru;
+                self.set_layout_is_ru(target_is_ru);
                 self.publish_tail_handoff();
                 self.deferred_layout_actions
                     .push(DeferredLayoutAction::BlockingSwitch {
@@ -83,7 +83,7 @@ impl LayIbusEngine {
         }
         let ok = switch_active_ime_engine(target_engine).is_ok();
         if ok {
-            self.layout_is_ru = target_is_ru;
+            self.set_layout_is_ru(target_is_ru);
         }
         trace::record_layout_sync(target_is_ru, target_engine, ok);
     }
@@ -96,7 +96,7 @@ impl LayIbusEngine {
         let target_engine = ime_engine_for_layout(target_is_ru);
         if self.atomic_speculation {
             let previous_is_ru = self.layout_is_ru;
-            self.layout_is_ru = target_is_ru;
+            self.set_layout_is_ru(target_is_ru);
             self.publish_tail_handoff();
             self.deferred_layout_actions
                 .push(DeferredLayoutAction::BlockingSwitch {
@@ -111,7 +111,7 @@ impl LayIbusEngine {
             .or_else(|_| switch_active_ime_engine(target_engine))
             .is_ok();
         if ok {
-            self.layout_is_ru = target_is_ru;
+            self.set_layout_is_ru(target_is_ru);
         }
         trace::record_layout_sync(target_is_ru, target_engine, ok);
         ok
@@ -143,7 +143,7 @@ impl LayIbusEngine {
                         switch_active_ime_engine(engine)
                     };
                     let ok = result.is_ok();
-                    self.layout_is_ru = if ok { target_is_ru } else { previous_is_ru };
+                    self.set_layout_is_ru(if ok { target_is_ru } else { previous_is_ru });
                     self.publish_tail_handoff();
                     trace::record_layout_sync(target_is_ru, engine, ok);
                 }

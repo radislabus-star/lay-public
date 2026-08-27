@@ -1,0 +1,165 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "v10-paper-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-target-authority-slice8-lexical-readout-2026-08-23.md",
+      "sha256": "103ca9277535429712ccf4fb09b7c9a2cf63a0ec79c3ee29b65ca33c7d711859",
+      "size_bytes": 56980
+    },
+    {
+      "exists": true,
+      "id": "v10-route-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_EXACT_V13_TYPED_PEAK_V10_ROUTE_2026-08-24.json",
+      "sha256": "461e30d1efb40169a00a8b1ebf7796e189852403abf5edabe76b11b81db3dae0",
+      "size_bytes": 4706
+    },
+    {
+      "exists": true,
+      "id": "v10-route-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v10-exact-v13-typed-peak-route.json",
+      "sha256": "9c8583e9a802ab927c104dfc783f9a4f828f1c59ea77bb31660317f60d8650a4",
+      "size_bytes": 6657
+    },
+    {
+      "exists": true,
+      "id": "v9-measured-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v9-exact-v13-typed-peak-abc.json",
+      "sha256": "956a329e29811b5fea8b7afce1912d2d2b5040516cbcf3160d926b969bbc3a04",
+      "size_bytes": 5327
+    },
+    {
+      "exists": true,
+      "id": "v7-fixed-denominator",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-fixed-13x100.json",
+      "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+      "size_bytes": 1606189
+    },
+    {
+      "exists": true,
+      "id": "v9-search-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "sha256": "eebdcff8e72afc78437984d11f7a3c3d7fd045a6087ca83aedbd9c1fde7bc97a",
+      "size_bytes": 78668
+    },
+    {
+      "exists": true,
+      "id": "phase7d-semantics-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "d983d16169c7526d56e9f78299524ab80d3d4f3e67ff19770f07a7ae6e61045d",
+      "size_bytes": 88634
+    },
+    {
+      "exists": true,
+      "id": "v13-runtime-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/runtime.rs",
+      "sha256": "cb94bd3ffaf61b31f7cce8d2051ae9087cf8aba26487c037ba6fbeaaa57f0966",
+      "size_bytes": 142756
+    },
+    {
+      "exists": true,
+      "id": "v13-storage-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/runtime_storage.rs",
+      "sha256": "2c1f23cbf88f51ef3018a19db0146675f8abb24ed00f16d0c710d9347965b32c",
+      "size_bytes": 7160
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 9,
+    "forbidden_side_effect_kinds": [
+      "fallback_authority",
+      "full_13x100_proof",
+      "generated_traffic",
+      "l11_package_rebuild",
+      "latency_budget_increase",
+      "literal_case_branch",
+      "production_bridge_edit",
+      "queue_truncation",
+      "rerun_v9_proof",
+      "restart_global_ibus_daemon",
+      "restart_lay_daemon",
+      "restart_lay_ibus_engine",
+      "runtime_authority_flip",
+      "runtime_deployment",
+      "synthetic_fixed_denominator",
+      "synthetic_fixture",
+      "target_conditioned_search",
+      "v13_package_rebuild",
+      "v13_runtime_edit",
+      "v13_storage_edit",
+      "v90_package_rebuild",
+      "weaken_verifier"
+    ],
+    "identity_contracts": 5,
+    "invariants": 7,
+    "planned_side_effect_kinds": [
+      "documentation_edit",
+      "generated_graph_update",
+      "local_test",
+      "proof_artifact_write",
+      "remote_file_write",
+      "remote_test",
+      "source_edit"
+    ],
+    "preserved_artifacts": 4,
+    "runtime_comparisons": 2,
+    "source_checks": 3,
+    "tests": 14
+  },
+  "manifest_sha256": "828af1f0f3a2e313776bd0e22b607dc658df948a1f71ed08014d4089db3b78ae",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "v9-search-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "sha256": "eebdcff8e72afc78437984d11f7a3c3d7fd045a6087ca83aedbd9c1fde7bc97a",
+      "size_bytes": 78668
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "v13-runtime-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/runtime.rs",
+      "sha256": "cb94bd3ffaf61b31f7cce8d2051ae9087cf8aba26487c037ba6fbeaaa57f0966",
+      "size_bytes": 142756
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "v13-storage-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/runtime_storage.rs",
+      "sha256": "2c1f23cbf88f51ef3018a19db0146675f8abb24ed00f16d0c710d9347965b32c",
+      "size_bytes": 7160
+    }
+  ],
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_EXACT_V13_TYPED_PEAK_V10_ABC_V2_2026-08-24",
+  "verdict": "READY_TO_IMPLEMENT"
+}

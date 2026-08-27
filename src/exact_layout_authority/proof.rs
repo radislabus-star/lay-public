@@ -275,6 +275,7 @@ fn observe_row(row: &OracleRow, scope: &str) -> ObservedRow {
         text: &text,
         committed_tail: &committed_tail,
         config: &config,
+        lexical_authority_frame: None,
         active_layout_is_ru: Some(decoder == ActiveDecoderLayout::Ru),
     };
     let prepared =

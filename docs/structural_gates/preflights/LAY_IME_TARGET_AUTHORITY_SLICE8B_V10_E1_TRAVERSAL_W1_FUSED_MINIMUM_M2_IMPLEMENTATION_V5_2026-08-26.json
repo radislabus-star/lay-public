@@ -1,0 +1,99 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V5_2026-08-26",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {"id":"failure-publication-correction-v3","kind":"file","path":"../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_FAILURE_PUBLICATION_CORRECTION_V3_2026-08-26.md","expect":{"mode":"0444","size_bytes":5328,"sha256":"09a29b68ab3e7ee9ea68e7d2a892080efc5fbd159d930c3881ea37241f3fb88c"}},
+    {"id":"failure-publication-route-v3","kind":"file","path":"../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_FAILURE_PUBLICATION_CORRECTION_V3_ROUTE.md","expect":{"mode":"0444","size_bytes":2983,"sha256":"76d6e7ed6bce0eb7565f0c97a7126b77b789a3f96d24b5dd7079424544f929b8"}},
+    {"id":"failure-publication-review-v3","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_FAILURE_PUBLICATION_CORRECTION_V3_STRUCTURAL_REVIEW_2026-08-26.json","expect":{"mode":"0444","size_bytes":15633,"sha256":"2e15f3e3c5a8c5a9ffda38cd616f06cdadea66958be11693412ac923ee5f1553"}},
+    {"id":"implementation-preflight-v4-blocked","kind":"file","path":"LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V4_2026-08-26.json","expect":{"mode":"0444","size_bytes":12547,"sha256":"040da8d41c7f3591afb14e33f3777e939d7dc703ed23632b421f818923cc34f9"}},
+    {"id":"implementation-preflight-v4-blocked-receipt","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V4_PREFLIGHT_2026-08-26.json","expect":{"mode":"0444","size_bytes":10238,"sha256":"221742dac8e8ffbd162c13bc9c0f524dca056507ba15cc1aced46e4b652f38fa"}},
+    {"id":"implementation-preflight-v3","kind":"file","path":"LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V3_2026-08-26.json","expect":{"mode":"0444","size_bytes":12492,"sha256":"06043cceb8264f9bfe95abe54131e332a684815b0f0a6ab3cf1356158c035520"}},
+    {"id":"implementation-preflight-v3-receipt","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V3_PREFLIGHT_2026-08-26.json","expect":{"mode":"0444","size_bytes":8213,"sha256":"6ff65d0136cb713e0af9e6930c2a27708dd4c3b762d82b5fc22fa6ee000b33ae"}},
+    {"id":"code-route-v2","kind":"file","path":"LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_CODE_ROUTE_V2_2026-08-26.json","expect":{"mode":"0444","size_bytes":7291,"sha256":"e5664270e836b6077b0dcac3aa57759b3aeb432bf42704f7f6311240abe5d54d"}},
+    {"id":"code-route-v2-receipt","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_CODE_ROUTE_V2_RECEIPT_2026-08-26.json","expect":{"mode":"0444","size_bytes":7758,"sha256":"2ea9921cf28cedcd10c3f6575f9af1ff0315dd61e26089f6bc7a8fc152372a75"}},
+    {"id":"implementation-receipt-v2","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_SELF_CHECK_V2_2026-08-26.json","expect":{"mode":"0444","size_bytes":19763,"sha256":"ecc3d5a4f99b060c7bae647674380ca313c6f30c3301e64881a9643f9f696133"}},
+    {"id":"v2-local-controller","kind":"file","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2.py","expect":{"mode":"0555","size_bytes":30867,"sha256":"0454bdd5dc4051987cc94a293496dd4a39836cb5b981d3fd219d29bcc217e5e3"}},
+    {"id":"v2-remote-controller","kind":"file","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-remote.py","expect":{"mode":"0555","size_bytes":40111,"sha256":"14c7c60814927a8f3bcfc607a391d78552fdf8cdd51253eccd429d1f40c50dd6"}},
+    {"id":"v2-bootstrap-auditor","kind":"file","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-bootstrap-audit.py","expect":{"mode":"0555","size_bytes":11635,"sha256":"c8cbc0d869f6b6adb8c685590bb0dadc6189639d48e17c13f555e2c104da8a32"}},
+    {"id":"v2-build-auditor","kind":"file","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-build-audit.py","expect":{"mode":"0555","size_bytes":18905,"sha256":"1b1a692bfa4512a6ca5c7be87a2d13cf801723148e4acbfb66467888354284e7"}},
+    {"id":"v2-terminal-auditor","kind":"file","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-terminal-audit.py","expect":{"mode":"0555","size_bytes":33287,"sha256":"6238770526d1b241200fc9c4eb2850670b7c73fef05d53116fd1ba64fd8d54af"}},
+    {"id":"m2-rust-fragment","kind":"file","path":"../../../scripts/lay_v10_e1_traversal_w1_fused_minimum_m2_test_module.rs.inc","expect":{"mode":"0444","size_bytes":155810,"sha256":"b0a775420edf9e9d6e7f0b59f9ad840e4822cd0fdd0adc2429ea22a3e9e3a175"}},
+    {"id":"v3-local-controller-absent","kind":"absent","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-v3.py","expect":{}},
+    {"id":"v3-bootstrap-auditor-absent","kind":"absent","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-bootstrap-audit-v3.py","expect":{}},
+    {"id":"v3-build-auditor-absent","kind":"absent","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-build-audit-v3.py","expect":{}},
+    {"id":"v3-terminal-auditor-absent","kind":"absent","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-terminal-audit-v3.py","expect":{}},
+    {"id":"implementation-receipt-v3-absent","kind":"absent","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_SELF_CHECK_V3_2026-08-26.json","expect":{}},
+    {"id":"execution-admission-v1-absent","kind":"absent","path":"LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_EXECUTION_ADMISSION_V1_2026-08-26.json","expect":{}},
+    {"id":"execution-admission-v2-absent","kind":"absent","path":"LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_EXECUTION_ADMISSION_V2_2026-08-26.json","expect":{}},
+    {"id":"controller-failure-v1-absent","kind":"absent","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_CONTROLLER_FAILURE_V1_2026-08-26","expect":{}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id":"create-v3-local-source-set","kind":"local_source_edit"},
+      {"id":"run-v3-static-and-fault-checks","kind":"local_read_only_process_with_disposable_temp_state"},
+      {"id":"publish-v3-implementation-receipt","kind":"local_evidence_write"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "synthetic_fixture_as_scientific_evidence",
+      "network_or_remote_access",
+      "remote_namespace_or_state_read_or_write",
+      "execution_admission_creation",
+      "marker_creation_consumption_recreation_or_retirement",
+      "cargo_or_rustc",
+      "perf_record_or_stat_or_reader",
+      "pmu_event_or_subject_or_elf_execution",
+      "diagnostic_elf_or_build_artifact",
+      "v2_source_or_receipt_modification",
+      "live_src_edit",
+      "production_code_edit_build_install_restart_deployment_or_runtime_change"
+    ]
+  },
+  "identity_contracts": [
+    {"id":"v2-history-v3-repair","producer":"sealed V2 implementation receipt and source hashes","consumer":"V3 implementation receipt","comparison":"all V2 bytes and modes remain exact while V3 uses new source paths","test_id":"v2-history-parity"},
+    {"id":"intent-before-action","producer":"V3 durable journal intent","consumer":"every future external action dispatcher","comparison":"intent is atomically written and fsynced before callable invocation","test_id":"journal-order-parity"},
+    {"id":"failure-default","producer":"uncompleted intent or caught exception","consumer":"controller-failure receipt","comparison":"exact action id maps to BLOCKED_PROVENANCE retry false with unknown values preserved","test_id":"failure-schema-parity"},
+    {"id":"implementation-receipt-v3","producer":"V3 local self-check","consumer":"V3 controller and three V3 auditors","comparison":"exact V3 receipt path schema task transaction and source hashes","test_id":"receipt-identity-parity"},
+    {"id":"scientific-contract-preservation","producer":"sealed M2 V1 plus symbolization V2","consumer":"V3 source command graph","comparison":"remote controller Rust fragment routes build parity events denominators thresholds and decisions unchanged","test_id":"scientific-route-parity"}
+  ],
+  "invariants": [
+    {"id":"offline-v3-repair-only","statement":"this pass creates and checks local V3 sources only and performs no network remote Cargo perf marker ELF subject or runtime action","test_id":"offline-command-graph"},
+    {"id":"v2-history-immutable","statement":"sealed V2 sources receipts preflights and code-route evidence are never modified","test_id":"v2-history-parity"},
+    {"id":"durable-intent-before-action","statement":"every future external action has a fsynced immutable intent whose default is terminal BLOCKED_PROVENANCE","test_id":"failure-publication-faults"},
+    {"id":"unknown-is-not-zero","statement":"failure receipts preserve unknown remote marker Cargo perf and subject facts as UNKNOWN rather than zero","test_id":"unknown-projection-fault"},
+    {"id":"no-retry-after-intent","statement":"an uncompleted intent permanently forbids retry resume or marker recreation","test_id":"hard-crash-intent-fault"},
+    {"id":"scientific-route-unchanged","statement":"candidate source remote producer build parity route order events denominators thresholds and final verdict logic remain byte exact","test_id":"scientific-route-parity"}
+  ],
+  "preserved_artifacts": [
+    {"id":"v2-implementation-receipt","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_SELF_CHECK_V2_2026-08-26.json","baseline_check_id":"implementation-receipt-v2","policy":"immutable","cursor_policy":"exact_bytes","rollback_policy":"never_modify"},
+    {"id":"v2-local-controller","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2.py","baseline_check_id":"v2-local-controller","policy":"immutable","cursor_policy":"exact_bytes","rollback_policy":"never_modify"},
+    {"id":"v2-remote-controller","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-remote.py","baseline_check_id":"v2-remote-controller","policy":"immutable","cursor_policy":"exact_bytes","rollback_policy":"never_modify"},
+    {"id":"m2-rust-fragment","path":"../../../scripts/lay_v10_e1_traversal_w1_fused_minimum_m2_test_module.rs.inc","baseline_check_id":"m2-rust-fragment","policy":"immutable","cursor_policy":"exact_bytes","rollback_policy":"never_modify"},
+    {"id":"failure-publication-correction","path":"../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_FAILURE_PUBLICATION_CORRECTION_V3_2026-08-26.md","baseline_check_id":"failure-publication-correction-v3","policy":"immutable","cursor_policy":"exact_bytes","rollback_policy":"never_modify"}
+  ],
+  "runtime_comparisons": [],
+  "state_machine": {
+    "initial_state":"V2_VERIFIED_UNRUN_EXECUTION_SUPERSEDED",
+    "steps":[
+      {"id":"create-check-and-seal-v3","from":"V2_VERIFIED_UNRUN_EXECUTION_SUPERSEDED","to":"M2_CONTROLLER_V3_VERIFIED_UNRUN","failure_state":"BLOCKED_M2_V3_IMPLEMENTATION_PROVENANCE","mutates":true,"cleanup":"retain V3 source diagnostics but publish no V3 authority receipt on failure; preserve all V2 history","preserves":["v2-implementation-receipt","v2-local-controller","v2-remote-controller","m2-rust-fragment","failure-publication-correction"],"test_id":"self-check-publication-fault"}
+    ],
+    "terminal_states":["M2_CONTROLLER_V3_VERIFIED_UNRUN","BLOCKED_M2_V3_IMPLEMENTATION_PROVENANCE"]
+  },
+  "tests": [
+    {"id":"baseline-parity","kind":"parity","expected":"all pinned V2 and correction modes sizes hashes verdicts and absent V3 paths match"},
+    {"id":"v2-history-parity","kind":"parity","expected":"every sealed V2 source and receipt remains byte and mode exact after V3 creation"},
+    {"id":"offline-command-graph","kind":"parity","expected":"V3 implementation pass performs zero network remote Cargo rustc perf PMU subject marker ELF or runtime actions"},
+    {"id":"failure-publication-faults","kind":"fault_injection","expected":"every declared external-action exception produces one terminal provenance observation and no later action"},
+    {"id":"journal-order-parity","kind":"parity","expected":"every external action registry entry has exactly one intent writer ordered before its callable"},
+    {"id":"failure-schema-parity","kind":"parity","expected":"uncompleted intent and caught exception use one BLOCKED_PROVENANCE retry-false schema with exact known-or-UNKNOWN fields"},
+    {"id":"unknown-projection-fault","kind":"fault_injection","expected":"lost responses leave affected remote counters and marker facts UNKNOWN rather than zero"},
+    {"id":"hard-crash-intent-fault","kind":"fault_injection","expected":"intent without completion is terminal BLOCKED_PROVENANCE with retry false"},
+    {"id":"receipt-identity-parity","kind":"parity","expected":"V3 main and auditors pin one exact V3 implementation receipt identity"},
+    {"id":"scientific-route-parity","kind":"parity","expected":"remote controller and Rust fragment hashes plus M2 command graph and decision constants are unchanged"},
+    {"id":"self-check-publication-fault","kind":"fault_injection","expected":"V3 receipt publication is atomic or absent and all immutable predecessors remain exact"}
+  ]
+}

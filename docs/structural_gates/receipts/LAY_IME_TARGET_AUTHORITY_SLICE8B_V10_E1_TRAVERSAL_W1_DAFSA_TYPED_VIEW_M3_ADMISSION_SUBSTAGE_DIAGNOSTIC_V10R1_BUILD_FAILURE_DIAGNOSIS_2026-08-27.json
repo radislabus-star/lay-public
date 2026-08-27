@@ -1,0 +1,54 @@
+{
+  "schema": "lay.v10r1-build-failure-diagnosis.v1",
+  "task_id": "slice8b-v10-e1-traversal-w1-dafsa-typed-view-m3-admission-substage-v10r1-20260827",
+  "transaction_id": "7d067078f66e4c64724e5f6568304c0d6f6ab1c1ada92e09a98e05a19f0e1f17",
+  "verdict": "V10R1_BUILD_DEFECT_CONFIRMED",
+  "failure_class": "BLOCKED_BUILD",
+  "defect": "test-only AdmissionTraceCounters derived Default for arrays of lengths 36 and 43 that do not implement Default under the frozen Rust toolchain",
+  "v10r1_controller_implementation_receipt_sha256": "d9b91168dbaa850ba5901c1b2f65f7119b3591be7918cd6a7126fad6f06451d4",
+  "v10r1_execution_journal_sha256sums_sha256": "ff91735880941eea9c382d10d953e2e2fee1f9cd2a13b0db366716a96a58be7f",
+  "v10r1_build_audit_receipt_sha256": "73ca7d3c5c678d3056cb74048e005d6edde81b72386324fdcbd08ca2ac0e39d9",
+  "v10r1_build_audit_sha256sums_sha256": "cb251c4bcf0b95d0138042fb52a163f024768805eb8a19eaf9bdffda84b94c96",
+  "v10r1_remote_build_failure_sha256": "53a580db9d86945d58c86142c6b1aa0f75b66ae92af3557d350be0ee0406a936",
+  "v10r1_cargo_log_sha256": "36f8022d4d1a8cd4bb681a933e9c9243e6ffb31caf78502f23f13acf078a2704",
+  "v10r1_remote_build_failure_sha256sums_sha256": "8a45beb9eedb08921f8860ee45aa8c94974ffbcfa70ec6b09cbe77e6614b56a2",
+  "source_before_repair": {
+    "path": "src/typing_transition/proposal_admission.rs",
+    "mode": "0664",
+    "size_bytes": 87732,
+    "sha256": "b563f8a9400f9ca61d1d4bf4f31c06b146b30d6f2d78cd364e4d69636aafd3e3"
+  },
+  "compiler_observation": {
+    "cargo_exit_code": 101,
+    "rust_error": "E0277",
+    "failing_fields": [
+      "stage_calls: [u64; 36]",
+      "stage_hits: [u64; 36]",
+      "stage_elapsed_ns: [u64; 36]",
+      "reason_counts: [u64; 43]"
+    ],
+    "cause": "derive(Default) cannot construct the frozen large-array fields",
+    "repair": "replace derive(Default) with an explicit test-only Default implementation that initializes every counter and array to zero"
+  },
+  "one_shot_state": {
+    "build_marker_consumed_before_cargo": true,
+    "trace_marker_consumed": false,
+    "trace_marker_status": "RETIRED_UNCONSUMED_BY_TERMINAL_V10R1",
+    "cargo_invocations": 1,
+    "rustc_compilations": 1,
+    "test_elf_created": false,
+    "test_elf_executed": false,
+    "subject_executions": 0,
+    "perf_record_invocations": 0,
+    "perf_stat_invocations": 0,
+    "runtime_authority_changed": false
+  },
+  "scientific_interpretation": {
+    "admission_substages_tested": false,
+    "latency_tested": false,
+    "semantic_result_created": false,
+    "mechanism_result_created": false
+  },
+  "retry_v10r1_permitted": false,
+  "fresh_namespace_required": true
+}

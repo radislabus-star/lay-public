@@ -1,0 +1,3230 @@
+{
+  "build_executed": false,
+  "claim": "LOADED_PRODUCT_DIAGNOSTIC_ONLY",
+  "clean_c1_verdict": "NOT_MEASURED_BLOCKED_ENVIRONMENT",
+  "clean_final_published": false,
+  "clean_markers_consumed": false,
+  "clean_state_after": {
+    "clean_final_exists": false,
+    "marker_directory_mode": "0700",
+    "markers": {
+      "S1.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S1.available",
+        "sha256": "f028d63160b0aeefd7ca4e1ada8a197c709b10716fd3c93beda6b7b9882cd243",
+        "size_bytes": 74
+      },
+      "S2.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S2.available",
+        "sha256": "397a8c55872a5c8042d6df257219b110461e299d036fc6c89ea49cce7e8c1ac0",
+        "size_bytes": 74
+      },
+      "S3.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S3.available",
+        "sha256": "708271bf41a591fd1b498a6ded57e323f61b1ef8d970981ea37a374c3f5271c8",
+        "size_bytes": 74
+      },
+      "S4.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S4.available",
+        "sha256": "ca8af16cb93ffd3f45540c69d1293c4c8c14a15bfb6fe3df3ee15b649ac0753b",
+        "size_bytes": 74
+      },
+      "S5.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S5.available",
+        "sha256": "7a92b4bad71d71fc4cdb01f20b4eebe09e98bc3a7b140d7ae26ac90040501f55",
+        "size_bytes": 74
+      },
+      "T1.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T1.available",
+        "sha256": "758e441f84344a8ff6c62417ae4c95be68d64bb0cdb7320e9eaac1d02cecb378",
+        "size_bytes": 74
+      },
+      "T2.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T2.available",
+        "sha256": "8a7bc8f4c9efc60f9bebe02511d8081bcfbd48c2c6675c6cf7ef5cbdcad15032",
+        "size_bytes": 74
+      },
+      "T3.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T3.available",
+        "sha256": "693783d090caf1d88bf8b511af1a8bb7e2499d50cebb136422fbde0621158426",
+        "size_bytes": 74
+      },
+      "T4.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T4.available",
+        "sha256": "36f18a57c12eb9f3432bd5c880ba58d058db51fa6052ed8a19d69e944c374774",
+        "size_bytes": 74
+      },
+      "T5.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T5.available",
+        "sha256": "6507a188c42204a6503d3db8e14a9dd99a8613cc4a4fd3aa8dd04d13935592e2",
+        "size_bytes": 74
+      },
+      "build.consumed-before-exec": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/build.consumed-before-exec",
+        "sha256": "bbac14eee57fa62c991b25f4a1e6431e5ed4e4bc3f4d72421953e8129938296e",
+        "size_bytes": 77
+      },
+      "parity.consumed-before-exec": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/parity.consumed-before-exec",
+        "sha256": "5aa62de54dc764afe69d649043b1248b1b7d4b7b403956469b23bfad47ae67c6",
+        "size_bytes": 78
+      }
+    },
+    "state_mode": "0700",
+    "state_path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825"
+  },
+  "clean_state_before": {
+    "clean_final_exists": false,
+    "marker_directory_mode": "0700",
+    "markers": {
+      "S1.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S1.available",
+        "sha256": "f028d63160b0aeefd7ca4e1ada8a197c709b10716fd3c93beda6b7b9882cd243",
+        "size_bytes": 74
+      },
+      "S2.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S2.available",
+        "sha256": "397a8c55872a5c8042d6df257219b110461e299d036fc6c89ea49cce7e8c1ac0",
+        "size_bytes": 74
+      },
+      "S3.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S3.available",
+        "sha256": "708271bf41a591fd1b498a6ded57e323f61b1ef8d970981ea37a374c3f5271c8",
+        "size_bytes": 74
+      },
+      "S4.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S4.available",
+        "sha256": "ca8af16cb93ffd3f45540c69d1293c4c8c14a15bfb6fe3df3ee15b649ac0753b",
+        "size_bytes": 74
+      },
+      "S5.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S5.available",
+        "sha256": "7a92b4bad71d71fc4cdb01f20b4eebe09e98bc3a7b140d7ae26ac90040501f55",
+        "size_bytes": 74
+      },
+      "T1.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T1.available",
+        "sha256": "758e441f84344a8ff6c62417ae4c95be68d64bb0cdb7320e9eaac1d02cecb378",
+        "size_bytes": 74
+      },
+      "T2.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T2.available",
+        "sha256": "8a7bc8f4c9efc60f9bebe02511d8081bcfbd48c2c6675c6cf7ef5cbdcad15032",
+        "size_bytes": 74
+      },
+      "T3.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T3.available",
+        "sha256": "693783d090caf1d88bf8b511af1a8bb7e2499d50cebb136422fbde0621158426",
+        "size_bytes": 74
+      },
+      "T4.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T4.available",
+        "sha256": "36f18a57c12eb9f3432bd5c880ba58d058db51fa6052ed8a19d69e944c374774",
+        "size_bytes": 74
+      },
+      "T5.available": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T5.available",
+        "sha256": "6507a188c42204a6503d3db8e14a9dd99a8613cc4a4fd3aa8dd04d13935592e2",
+        "size_bytes": 74
+      },
+      "build.consumed-before-exec": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/build.consumed-before-exec",
+        "sha256": "bbac14eee57fa62c991b25f4a1e6431e5ed4e4bc3f4d72421953e8129938296e",
+        "size_bytes": 77
+      },
+      "parity.consumed-before-exec": {
+        "mode": "0400",
+        "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/parity.consumed-before-exec",
+        "sha256": "5aa62de54dc764afe69d649043b1248b1b7d4b7b403956469b23bfad47ae67c6",
+        "size_bytes": 78
+      }
+    },
+    "state_mode": "0700",
+    "state_path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825"
+  },
+  "clean_state_unchanged": true,
+  "completed_at": "2026-08-25T02:18:46.973517+00:00",
+  "completed_routes": [
+    "S1",
+    "T1",
+    "T2",
+    "S2",
+    "S3",
+    "T3",
+    "T4",
+    "S4",
+    "S5",
+    "T5"
+  ],
+  "environment_intentionally_loaded": true,
+  "errors": 0,
+  "excess_us": {
+    "fairness": 52917,
+    "single_search": 940,
+    "single_total": 0,
+    "twenty_total": 12349
+  },
+  "fairness": {
+    "maximum_run": "T1",
+    "maximum_total_p99_us": 57917,
+    "maximum_worker": 19,
+    "minimum_total_p99_us": 7089,
+    "spread_us": 50828
+  },
+  "fixed_order": [
+    "S1",
+    "T1",
+    "T2",
+    "S2",
+    "S3",
+    "T3",
+    "T4",
+    "S4",
+    "S5",
+    "T5"
+  ],
+  "foreign_process_control": false,
+  "formal_b_pass": false,
+  "host_tuning": false,
+  "installed_lay_changed": false,
+  "parity_rerun": false,
+  "perf_invoked": false,
+  "pmu_event_opened": false,
+  "pooled": {
+    "S": {
+      "search_max_us": 7099,
+      "search_p99_us": 3940,
+      "total_max_us": 7197,
+      "total_p99_us": 4098
+    },
+    "T": {
+      "search_max_us": 78220,
+      "search_p99_us": 16196,
+      "total_max_us": 78239,
+      "total_p99_us": 17349
+    }
+  },
+  "query_diagnostics": {
+    "per_query": {
+      "0": {
+        "search_max_us": 25900,
+        "search_p99_us": 16956,
+        "total_max_us": 26020,
+        "total_p99_us": 17036
+      },
+      "1": {
+        "search_max_us": 52786,
+        "search_p99_us": 23370,
+        "total_max_us": 52794,
+        "total_p99_us": 23388
+      },
+      "10": {
+        "search_max_us": 14262,
+        "search_p99_us": 5745,
+        "total_max_us": 20247,
+        "total_p99_us": 5773
+      },
+      "100": {
+        "search_max_us": 24995,
+        "search_p99_us": 16610,
+        "total_max_us": 35087,
+        "total_p99_us": 16949
+      },
+      "101": {
+        "search_max_us": 52061,
+        "search_p99_us": 32981,
+        "total_max_us": 52109,
+        "total_p99_us": 33221
+      },
+      "102": {
+        "search_max_us": 46978,
+        "search_p99_us": 27650,
+        "total_max_us": 47017,
+        "total_p99_us": 27717
+      },
+      "103": {
+        "search_max_us": 35224,
+        "search_p99_us": 26154,
+        "total_max_us": 35295,
+        "total_p99_us": 26418
+      },
+      "104": {
+        "search_max_us": 37428,
+        "search_p99_us": 13743,
+        "total_max_us": 37444,
+        "total_p99_us": 13756
+      },
+      "105": {
+        "search_max_us": 33143,
+        "search_p99_us": 16573,
+        "total_max_us": 33162,
+        "total_p99_us": 16630
+      },
+      "106": {
+        "search_max_us": 25201,
+        "search_p99_us": 10170,
+        "total_max_us": 25283,
+        "total_p99_us": 10375
+      },
+      "107": {
+        "search_max_us": 30374,
+        "search_p99_us": 11449,
+        "total_max_us": 30425,
+        "total_p99_us": 11650
+      },
+      "108": {
+        "search_max_us": 29606,
+        "search_p99_us": 10635,
+        "total_max_us": 29615,
+        "total_p99_us": 10663
+      },
+      "109": {
+        "search_max_us": 19726,
+        "search_p99_us": 6923,
+        "total_max_us": 19750,
+        "total_p99_us": 7300
+      },
+      "11": {
+        "search_max_us": 25381,
+        "search_p99_us": 4594,
+        "total_max_us": 25500,
+        "total_p99_us": 4731
+      },
+      "110": {
+        "search_max_us": 14952,
+        "search_p99_us": 5048,
+        "total_max_us": 20233,
+        "total_p99_us": 6739
+      },
+      "111": {
+        "search_max_us": 16637,
+        "search_p99_us": 5243,
+        "total_max_us": 16687,
+        "total_p99_us": 5318
+      },
+      "112": {
+        "search_max_us": 15561,
+        "search_p99_us": 4012,
+        "total_max_us": 15575,
+        "total_p99_us": 4023
+      },
+      "113": {
+        "search_max_us": 12957,
+        "search_p99_us": 4404,
+        "total_max_us": 12997,
+        "total_p99_us": 4444
+      },
+      "114": {
+        "search_max_us": 14225,
+        "search_p99_us": 5292,
+        "total_max_us": 14250,
+        "total_p99_us": 5312
+      },
+      "115": {
+        "search_max_us": 11537,
+        "search_p99_us": 4929,
+        "total_max_us": 11554,
+        "total_p99_us": 4950
+      },
+      "116": {
+        "search_max_us": 11960,
+        "search_p99_us": 5567,
+        "total_max_us": 11987,
+        "total_p99_us": 5603
+      },
+      "117": {
+        "search_max_us": 18535,
+        "search_p99_us": 5004,
+        "total_max_us": 18545,
+        "total_p99_us": 5018
+      },
+      "118": {
+        "search_max_us": 17124,
+        "search_p99_us": 5855,
+        "total_max_us": 17127,
+        "total_p99_us": 5870
+      },
+      "119": {
+        "search_max_us": 5497,
+        "search_p99_us": 3258,
+        "total_max_us": 14422,
+        "total_p99_us": 3324
+      },
+      "12": {
+        "search_max_us": 29962,
+        "search_p99_us": 5481,
+        "total_max_us": 30002,
+        "total_p99_us": 5750
+      },
+      "120": {
+        "search_max_us": 36002,
+        "search_p99_us": 20650,
+        "total_max_us": 48004,
+        "total_p99_us": 27184
+      },
+      "121": {
+        "search_max_us": 78220,
+        "search_p99_us": 48725,
+        "total_max_us": 78239,
+        "total_p99_us": 48742
+      },
+      "122": {
+        "search_max_us": 54800,
+        "search_p99_us": 46995,
+        "total_max_us": 54847,
+        "total_p99_us": 47817
+      },
+      "123": {
+        "search_max_us": 36182,
+        "search_p99_us": 29432,
+        "total_max_us": 36204,
+        "total_p99_us": 29644
+      },
+      "124": {
+        "search_max_us": 46947,
+        "search_p99_us": 11354,
+        "total_max_us": 47297,
+        "total_p99_us": 14728
+      },
+      "125": {
+        "search_max_us": 57819,
+        "search_p99_us": 16437,
+        "total_max_us": 57843,
+        "total_p99_us": 16459
+      },
+      "126": {
+        "search_max_us": 24752,
+        "search_p99_us": 10038,
+        "total_max_us": 28634,
+        "total_p99_us": 10701
+      },
+      "127": {
+        "search_max_us": 26881,
+        "search_p99_us": 11987,
+        "total_max_us": 26909,
+        "total_p99_us": 12013
+      },
+      "128": {
+        "search_max_us": 23906,
+        "search_p99_us": 11289,
+        "total_max_us": 23950,
+        "total_p99_us": 11570
+      },
+      "129": {
+        "search_max_us": 21138,
+        "search_p99_us": 4644,
+        "total_max_us": 21147,
+        "total_p99_us": 4664
+      },
+      "13": {
+        "search_max_us": 26778,
+        "search_p99_us": 6092,
+        "total_max_us": 27065,
+        "total_p99_us": 8946
+      },
+      "130": {
+        "search_max_us": 32548,
+        "search_p99_us": 5733,
+        "total_max_us": 32670,
+        "total_p99_us": 8381
+      },
+      "131": {
+        "search_max_us": 25966,
+        "search_p99_us": 5586,
+        "total_max_us": 25978,
+        "total_p99_us": 5613
+      },
+      "132": {
+        "search_max_us": 26327,
+        "search_p99_us": 6238,
+        "total_max_us": 26335,
+        "total_p99_us": 6267
+      },
+      "133": {
+        "search_max_us": 29644,
+        "search_p99_us": 6278,
+        "total_max_us": 29736,
+        "total_p99_us": 9612
+      },
+      "134": {
+        "search_max_us": 25642,
+        "search_p99_us": 5591,
+        "total_max_us": 26546,
+        "total_p99_us": 9500
+      },
+      "135": {
+        "search_max_us": 16906,
+        "search_p99_us": 5137,
+        "total_max_us": 16936,
+        "total_p99_us": 5198
+      },
+      "136": {
+        "search_max_us": 12602,
+        "search_p99_us": 5874,
+        "total_max_us": 12655,
+        "total_p99_us": 5932
+      },
+      "137": {
+        "search_max_us": 16327,
+        "search_p99_us": 5667,
+        "total_max_us": 16366,
+        "total_p99_us": 5757
+      },
+      "138": {
+        "search_max_us": 12836,
+        "search_p99_us": 4765,
+        "total_max_us": 12942,
+        "total_p99_us": 4896
+      },
+      "139": {
+        "search_max_us": 12660,
+        "search_p99_us": 6792,
+        "total_max_us": 12686,
+        "total_p99_us": 6843
+      },
+      "14": {
+        "search_max_us": 22257,
+        "search_p99_us": 4802,
+        "total_max_us": 22297,
+        "total_p99_us": 4931
+      },
+      "140": {
+        "search_max_us": 20639,
+        "search_p99_us": 14634,
+        "total_max_us": 20661,
+        "total_p99_us": 15658
+      },
+      "141": {
+        "search_max_us": 48100,
+        "search_p99_us": 27238,
+        "total_max_us": 48112,
+        "total_p99_us": 27249
+      },
+      "142": {
+        "search_max_us": 45977,
+        "search_p99_us": 25751,
+        "total_max_us": 46198,
+        "total_p99_us": 25940
+      },
+      "143": {
+        "search_max_us": 45471,
+        "search_p99_us": 19748,
+        "total_max_us": 49010,
+        "total_p99_us": 24404
+      },
+      "144": {
+        "search_max_us": 27558,
+        "search_p99_us": 12551,
+        "total_max_us": 27638,
+        "total_p99_us": 12635
+      },
+      "145": {
+        "search_max_us": 48478,
+        "search_p99_us": 22200,
+        "total_max_us": 52400,
+        "total_p99_us": 25116
+      },
+      "146": {
+        "search_max_us": 31960,
+        "search_p99_us": 13734,
+        "total_max_us": 32159,
+        "total_p99_us": 13947
+      },
+      "147": {
+        "search_max_us": 24821,
+        "search_p99_us": 9824,
+        "total_max_us": 24828,
+        "total_p99_us": 9838
+      },
+      "148": {
+        "search_max_us": 51538,
+        "search_p99_us": 13708,
+        "total_max_us": 51572,
+        "total_p99_us": 15265
+      },
+      "149": {
+        "search_max_us": 30064,
+        "search_p99_us": 12319,
+        "total_max_us": 30164,
+        "total_p99_us": 12621
+      },
+      "15": {
+        "search_max_us": 14757,
+        "search_p99_us": 6520,
+        "total_max_us": 14769,
+        "total_p99_us": 6547
+      },
+      "150": {
+        "search_max_us": 23523,
+        "search_p99_us": 11546,
+        "total_max_us": 23531,
+        "total_p99_us": 11618
+      },
+      "151": {
+        "search_max_us": 23460,
+        "search_p99_us": 8550,
+        "total_max_us": 23780,
+        "total_p99_us": 11271
+      },
+      "152": {
+        "search_max_us": 20233,
+        "search_p99_us": 5359,
+        "total_max_us": 27035,
+        "total_p99_us": 7971
+      },
+      "153": {
+        "search_max_us": 19290,
+        "search_p99_us": 5391,
+        "total_max_us": 20001,
+        "total_p99_us": 5419
+      },
+      "154": {
+        "search_max_us": 15314,
+        "search_p99_us": 5908,
+        "total_max_us": 18378,
+        "total_p99_us": 5998
+      },
+      "155": {
+        "search_max_us": 16223,
+        "search_p99_us": 4712,
+        "total_max_us": 16244,
+        "total_p99_us": 4752
+      },
+      "156": {
+        "search_max_us": 12918,
+        "search_p99_us": 4797,
+        "total_max_us": 12923,
+        "total_p99_us": 4809
+      },
+      "157": {
+        "search_max_us": 22428,
+        "search_p99_us": 5830,
+        "total_max_us": 22440,
+        "total_p99_us": 5842
+      },
+      "158": {
+        "search_max_us": 6672,
+        "search_p99_us": 4700,
+        "total_max_us": 14583,
+        "total_p99_us": 8774
+      },
+      "159": {
+        "search_max_us": 10260,
+        "search_p99_us": 4475,
+        "total_max_us": 10306,
+        "total_p99_us": 4533
+      },
+      "16": {
+        "search_max_us": 11016,
+        "search_p99_us": 3411,
+        "total_max_us": 14770,
+        "total_p99_us": 3996
+      },
+      "160": {
+        "search_max_us": 27518,
+        "search_p99_us": 16997,
+        "total_max_us": 27523,
+        "total_p99_us": 17478
+      },
+      "161": {
+        "search_max_us": 71752,
+        "search_p99_us": 39429,
+        "total_max_us": 71781,
+        "total_p99_us": 41901
+      },
+      "162": {
+        "search_max_us": 53342,
+        "search_p99_us": 44091,
+        "total_max_us": 53401,
+        "total_p99_us": 44208
+      },
+      "163": {
+        "search_max_us": 37257,
+        "search_p99_us": 22240,
+        "total_max_us": 37271,
+        "total_p99_us": 22249
+      },
+      "164": {
+        "search_max_us": 42458,
+        "search_p99_us": 32665,
+        "total_max_us": 42474,
+        "total_p99_us": 32682
+      },
+      "165": {
+        "search_max_us": 32338,
+        "search_p99_us": 17207,
+        "total_max_us": 32446,
+        "total_p99_us": 17432
+      },
+      "166": {
+        "search_max_us": 24426,
+        "search_p99_us": 10765,
+        "total_max_us": 28973,
+        "total_p99_us": 12779
+      },
+      "167": {
+        "search_max_us": 43684,
+        "search_p99_us": 16378,
+        "total_max_us": 43698,
+        "total_p99_us": 16391
+      },
+      "168": {
+        "search_max_us": 26976,
+        "search_p99_us": 10435,
+        "total_max_us": 26998,
+        "total_p99_us": 10468
+      },
+      "169": {
+        "search_max_us": 29261,
+        "search_p99_us": 8360,
+        "total_max_us": 29290,
+        "total_p99_us": 8394
+      },
+      "17": {
+        "search_max_us": 13086,
+        "search_p99_us": 4942,
+        "total_max_us": 17510,
+        "total_p99_us": 5048
+      },
+      "170": {
+        "search_max_us": 12896,
+        "search_p99_us": 4739,
+        "total_max_us": 19344,
+        "total_p99_us": 6733
+      },
+      "171": {
+        "search_max_us": 30203,
+        "search_p99_us": 6388,
+        "total_max_us": 30251,
+        "total_p99_us": 6457
+      },
+      "172": {
+        "search_max_us": 27191,
+        "search_p99_us": 5401,
+        "total_max_us": 27210,
+        "total_p99_us": 5419
+      },
+      "173": {
+        "search_max_us": 24971,
+        "search_p99_us": 6998,
+        "total_max_us": 25018,
+        "total_p99_us": 7458
+      },
+      "174": {
+        "search_max_us": 24217,
+        "search_p99_us": 11801,
+        "total_max_us": 24607,
+        "total_p99_us": 12779
+      },
+      "175": {
+        "search_max_us": 31545,
+        "search_p99_us": 9802,
+        "total_max_us": 31558,
+        "total_p99_us": 9816
+      },
+      "176": {
+        "search_max_us": 11659,
+        "search_p99_us": 5677,
+        "total_max_us": 11689,
+        "total_p99_us": 5775
+      },
+      "177": {
+        "search_max_us": 17744,
+        "search_p99_us": 4468,
+        "total_max_us": 17768,
+        "total_p99_us": 4503
+      },
+      "178": {
+        "search_max_us": 5575,
+        "search_p99_us": 4367,
+        "total_max_us": 5589,
+        "total_p99_us": 4383
+      },
+      "179": {
+        "search_max_us": 8569,
+        "search_p99_us": 6401,
+        "total_max_us": 8582,
+        "total_p99_us": 6418
+      },
+      "18": {
+        "search_max_us": 17557,
+        "search_p99_us": 5663,
+        "total_max_us": 17566,
+        "total_p99_us": 5673
+      },
+      "180": {
+        "search_max_us": 26406,
+        "search_p99_us": 16364,
+        "total_max_us": 26418,
+        "total_p99_us": 17244
+      },
+      "181": {
+        "search_max_us": 56301,
+        "search_p99_us": 29267,
+        "total_max_us": 56312,
+        "total_p99_us": 29279
+      },
+      "182": {
+        "search_max_us": 53607,
+        "search_p99_us": 26373,
+        "total_max_us": 53726,
+        "total_p99_us": 26481
+      },
+      "183": {
+        "search_max_us": 22412,
+        "search_p99_us": 8357,
+        "total_max_us": 22426,
+        "total_p99_us": 8372
+      },
+      "184": {
+        "search_max_us": 39153,
+        "search_p99_us": 11311,
+        "total_max_us": 39160,
+        "total_p99_us": 11321
+      },
+      "185": {
+        "search_max_us": 15284,
+        "search_p99_us": 6291,
+        "total_max_us": 22380,
+        "total_p99_us": 9903
+      },
+      "186": {
+        "search_max_us": 28923,
+        "search_p99_us": 8235,
+        "total_max_us": 31629,
+        "total_p99_us": 10704
+      },
+      "187": {
+        "search_max_us": 37815,
+        "search_p99_us": 10664,
+        "total_max_us": 37891,
+        "total_p99_us": 10829
+      },
+      "188": {
+        "search_max_us": 30143,
+        "search_p99_us": 11747,
+        "total_max_us": 30148,
+        "total_p99_us": 11758
+      },
+      "189": {
+        "search_max_us": 47137,
+        "search_p99_us": 8450,
+        "total_max_us": 47159,
+        "total_p99_us": 8615
+      },
+      "19": {
+        "search_max_us": 7979,
+        "search_p99_us": 3786,
+        "total_max_us": 13870,
+        "total_p99_us": 5744
+      },
+      "190": {
+        "search_max_us": 20493,
+        "search_p99_us": 6111,
+        "total_max_us": 20509,
+        "total_p99_us": 6127
+      },
+      "191": {
+        "search_max_us": 9973,
+        "search_p99_us": 3943,
+        "total_max_us": 9985,
+        "total_p99_us": 3951
+      },
+      "192": {
+        "search_max_us": 11726,
+        "search_p99_us": 7699,
+        "total_max_us": 11731,
+        "total_p99_us": 7704
+      },
+      "193": {
+        "search_max_us": 12756,
+        "search_p99_us": 3872,
+        "total_max_us": 21443,
+        "total_p99_us": 10588
+      },
+      "194": {
+        "search_max_us": 34853,
+        "search_p99_us": 8751,
+        "total_max_us": 34888,
+        "total_p99_us": 11642
+      },
+      "195": {
+        "search_max_us": 18393,
+        "search_p99_us": 11362,
+        "total_max_us": 18428,
+        "total_p99_us": 11377
+      },
+      "196": {
+        "search_max_us": 23415,
+        "search_p99_us": 6055,
+        "total_max_us": 23831,
+        "total_p99_us": 9484
+      },
+      "197": {
+        "search_max_us": 21890,
+        "search_p99_us": 6296,
+        "total_max_us": 21925,
+        "total_p99_us": 6456
+      },
+      "198": {
+        "search_max_us": 8702,
+        "search_p99_us": 5034,
+        "total_max_us": 14868,
+        "total_p99_us": 5124
+      },
+      "199": {
+        "search_max_us": 13840,
+        "search_p99_us": 6288,
+        "total_max_us": 14368,
+        "total_p99_us": 6897
+      },
+      "2": {
+        "search_max_us": 47540,
+        "search_p99_us": 26164,
+        "total_max_us": 47551,
+        "total_p99_us": 26187
+      },
+      "20": {
+        "search_max_us": 20692,
+        "search_p99_us": 11666,
+        "total_max_us": 20818,
+        "total_p99_us": 12750
+      },
+      "200": {
+        "search_max_us": 28835,
+        "search_p99_us": 17689,
+        "total_max_us": 53052,
+        "total_p99_us": 24003
+      },
+      "201": {
+        "search_max_us": 45978,
+        "search_p99_us": 22082,
+        "total_max_us": 46011,
+        "total_p99_us": 22111
+      },
+      "202": {
+        "search_max_us": 53296,
+        "search_p99_us": 29980,
+        "total_max_us": 53443,
+        "total_p99_us": 33071
+      },
+      "203": {
+        "search_max_us": 30836,
+        "search_p99_us": 16177,
+        "total_max_us": 30876,
+        "total_p99_us": 16295
+      },
+      "204": {
+        "search_max_us": 31017,
+        "search_p99_us": 18878,
+        "total_max_us": 31330,
+        "total_p99_us": 19124
+      },
+      "205": {
+        "search_max_us": 38271,
+        "search_p99_us": 17913,
+        "total_max_us": 40050,
+        "total_p99_us": 18689
+      },
+      "206": {
+        "search_max_us": 32228,
+        "search_p99_us": 7370,
+        "total_max_us": 37623,
+        "total_p99_us": 12642
+      },
+      "207": {
+        "search_max_us": 26632,
+        "search_p99_us": 11938,
+        "total_max_us": 26688,
+        "total_p99_us": 11997
+      },
+      "208": {
+        "search_max_us": 39312,
+        "search_p99_us": 11530,
+        "total_max_us": 39859,
+        "total_p99_us": 15257
+      },
+      "209": {
+        "search_max_us": 28529,
+        "search_p99_us": 12586,
+        "total_max_us": 33609,
+        "total_p99_us": 12821
+      },
+      "21": {
+        "search_max_us": 44909,
+        "search_p99_us": 14575,
+        "total_max_us": 44973,
+        "total_p99_us": 15130
+      },
+      "210": {
+        "search_max_us": 24501,
+        "search_p99_us": 6650,
+        "total_max_us": 29405,
+        "total_p99_us": 8844
+      },
+      "211": {
+        "search_max_us": 44970,
+        "search_p99_us": 6408,
+        "total_max_us": 45648,
+        "total_p99_us": 12437
+      },
+      "212": {
+        "search_max_us": 20165,
+        "search_p99_us": 7216,
+        "total_max_us": 21873,
+        "total_p99_us": 10752
+      },
+      "213": {
+        "search_max_us": 27588,
+        "search_p99_us": 12338,
+        "total_max_us": 31529,
+        "total_p99_us": 15876
+      },
+      "214": {
+        "search_max_us": 23527,
+        "search_p99_us": 8757,
+        "total_max_us": 23598,
+        "total_p99_us": 8971
+      },
+      "215": {
+        "search_max_us": 17444,
+        "search_p99_us": 6042,
+        "total_max_us": 17502,
+        "total_p99_us": 7667
+      },
+      "216": {
+        "search_max_us": 26311,
+        "search_p99_us": 6897,
+        "total_max_us": 26385,
+        "total_p99_us": 6999
+      },
+      "217": {
+        "search_max_us": 19382,
+        "search_p99_us": 4575,
+        "total_max_us": 19772,
+        "total_p99_us": 5295
+      },
+      "218": {
+        "search_max_us": 5358,
+        "search_p99_us": 5205,
+        "total_max_us": 5434,
+        "total_p99_us": 5264
+      },
+      "219": {
+        "search_max_us": 4198,
+        "search_p99_us": 3957,
+        "total_max_us": 6581,
+        "total_p99_us": 4829
+      },
+      "22": {
+        "search_max_us": 37447,
+        "search_p99_us": 9386,
+        "total_max_us": 37471,
+        "total_p99_us": 9411
+      },
+      "220": {
+        "search_max_us": 22552,
+        "search_p99_us": 10660,
+        "total_max_us": 44018,
+        "total_p99_us": 13699
+      },
+      "221": {
+        "search_max_us": 44079,
+        "search_p99_us": 14487,
+        "total_max_us": 44386,
+        "total_p99_us": 17301
+      },
+      "222": {
+        "search_max_us": 28002,
+        "search_p99_us": 12918,
+        "total_max_us": 35145,
+        "total_p99_us": 16643
+      },
+      "223": {
+        "search_max_us": 41993,
+        "search_p99_us": 17434,
+        "total_max_us": 58663,
+        "total_p99_us": 25769
+      },
+      "224": {
+        "search_max_us": 30671,
+        "search_p99_us": 12830,
+        "total_max_us": 30728,
+        "total_p99_us": 12937
+      },
+      "225": {
+        "search_max_us": 50319,
+        "search_p99_us": 11540,
+        "total_max_us": 53085,
+        "total_p99_us": 14819
+      },
+      "226": {
+        "search_max_us": 32186,
+        "search_p99_us": 11403,
+        "total_max_us": 32223,
+        "total_p99_us": 11440
+      },
+      "227": {
+        "search_max_us": 34695,
+        "search_p99_us": 10506,
+        "total_max_us": 35292,
+        "total_p99_us": 11189
+      },
+      "228": {
+        "search_max_us": 16981,
+        "search_p99_us": 7961,
+        "total_max_us": 21737,
+        "total_p99_us": 11056
+      },
+      "229": {
+        "search_max_us": 17101,
+        "search_p99_us": 8414,
+        "total_max_us": 32872,
+        "total_p99_us": 8636
+      },
+      "23": {
+        "search_max_us": 32662,
+        "search_p99_us": 11192,
+        "total_max_us": 32686,
+        "total_p99_us": 11239
+      },
+      "230": {
+        "search_max_us": 24427,
+        "search_p99_us": 6481,
+        "total_max_us": 24596,
+        "total_p99_us": 9584
+      },
+      "231": {
+        "search_max_us": 18303,
+        "search_p99_us": 4566,
+        "total_max_us": 18362,
+        "total_p99_us": 4626
+      },
+      "232": {
+        "search_max_us": 18162,
+        "search_p99_us": 6155,
+        "total_max_us": 18173,
+        "total_p99_us": 6186
+      },
+      "233": {
+        "search_max_us": 18553,
+        "search_p99_us": 5004,
+        "total_max_us": 18570,
+        "total_p99_us": 5031
+      },
+      "234": {
+        "search_max_us": 12176,
+        "search_p99_us": 6247,
+        "total_max_us": 18834,
+        "total_p99_us": 6290
+      },
+      "235": {
+        "search_max_us": 22242,
+        "search_p99_us": 5175,
+        "total_max_us": 22261,
+        "total_p99_us": 5303
+      },
+      "236": {
+        "search_max_us": 23411,
+        "search_p99_us": 6136,
+        "total_max_us": 23429,
+        "total_p99_us": 6206
+      },
+      "237": {
+        "search_max_us": 29737,
+        "search_p99_us": 6158,
+        "total_max_us": 29748,
+        "total_p99_us": 6176
+      },
+      "238": {
+        "search_max_us": 11191,
+        "search_p99_us": 5477,
+        "total_max_us": 11209,
+        "total_p99_us": 5522
+      },
+      "239": {
+        "search_max_us": 11509,
+        "search_p99_us": 5763,
+        "total_max_us": 11520,
+        "total_p99_us": 5774
+      },
+      "24": {
+        "search_max_us": 32779,
+        "search_p99_us": 11954,
+        "total_max_us": 32797,
+        "total_p99_us": 12341
+      },
+      "240": {
+        "search_max_us": 28753,
+        "search_p99_us": 14456,
+        "total_max_us": 28761,
+        "total_p99_us": 14479
+      },
+      "241": {
+        "search_max_us": 59575,
+        "search_p99_us": 21701,
+        "total_max_us": 59603,
+        "total_p99_us": 21721
+      },
+      "242": {
+        "search_max_us": 45644,
+        "search_p99_us": 15603,
+        "total_max_us": 45665,
+        "total_p99_us": 15626
+      },
+      "243": {
+        "search_max_us": 34706,
+        "search_p99_us": 18198,
+        "total_max_us": 48249,
+        "total_p99_us": 25882
+      },
+      "244": {
+        "search_max_us": 35536,
+        "search_p99_us": 17630,
+        "total_max_us": 35557,
+        "total_p99_us": 17651
+      },
+      "245": {
+        "search_max_us": 44645,
+        "search_p99_us": 11567,
+        "total_max_us": 44666,
+        "total_p99_us": 11610
+      },
+      "246": {
+        "search_max_us": 24703,
+        "search_p99_us": 9933,
+        "total_max_us": 24720,
+        "total_p99_us": 10018
+      },
+      "247": {
+        "search_max_us": 17109,
+        "search_p99_us": 8304,
+        "total_max_us": 17126,
+        "total_p99_us": 8368
+      },
+      "248": {
+        "search_max_us": 16496,
+        "search_p99_us": 9739,
+        "total_max_us": 19449,
+        "total_p99_us": 10516
+      },
+      "249": {
+        "search_max_us": 17602,
+        "search_p99_us": 8884,
+        "total_max_us": 17705,
+        "total_p99_us": 10011
+      },
+      "25": {
+        "search_max_us": 16856,
+        "search_p99_us": 7292,
+        "total_max_us": 20221,
+        "total_p99_us": 7721
+      },
+      "250": {
+        "search_max_us": 26521,
+        "search_p99_us": 12266,
+        "total_max_us": 30124,
+        "total_p99_us": 12306
+      },
+      "251": {
+        "search_max_us": 29929,
+        "search_p99_us": 14570,
+        "total_max_us": 29943,
+        "total_p99_us": 14592
+      },
+      "252": {
+        "search_max_us": 25521,
+        "search_p99_us": 8239,
+        "total_max_us": 25528,
+        "total_p99_us": 8244
+      },
+      "253": {
+        "search_max_us": 22701,
+        "search_p99_us": 8713,
+        "total_max_us": 22711,
+        "total_p99_us": 8733
+      },
+      "254": {
+        "search_max_us": 30814,
+        "search_p99_us": 13769,
+        "total_max_us": 31523,
+        "total_p99_us": 16735
+      },
+      "255": {
+        "search_max_us": 30056,
+        "search_p99_us": 15368,
+        "total_max_us": 30076,
+        "total_p99_us": 15400
+      },
+      "256": {
+        "search_max_us": 29809,
+        "search_p99_us": 9708,
+        "total_max_us": 29820,
+        "total_p99_us": 9714
+      },
+      "257": {
+        "search_max_us": 17376,
+        "search_p99_us": 6317,
+        "total_max_us": 17383,
+        "total_p99_us": 6334
+      },
+      "258": {
+        "search_max_us": 16225,
+        "search_p99_us": 5099,
+        "total_max_us": 16246,
+        "total_p99_us": 5142
+      },
+      "259": {
+        "search_max_us": 15870,
+        "search_p99_us": 4983,
+        "total_max_us": 15941,
+        "total_p99_us": 5068
+      },
+      "26": {
+        "search_max_us": 24554,
+        "search_p99_us": 6675,
+        "total_max_us": 24624,
+        "total_p99_us": 7530
+      },
+      "260": {
+        "search_max_us": 20507,
+        "search_p99_us": 10685,
+        "total_max_us": 20530,
+        "total_p99_us": 10713
+      },
+      "261": {
+        "search_max_us": 29933,
+        "search_p99_us": 17526,
+        "total_max_us": 33455,
+        "total_p99_us": 17604
+      },
+      "262": {
+        "search_max_us": 50274,
+        "search_p99_us": 14193,
+        "total_max_us": 50283,
+        "total_p99_us": 14208
+      },
+      "263": {
+        "search_max_us": 43264,
+        "search_p99_us": 24178,
+        "total_max_us": 43337,
+        "total_p99_us": 24220
+      },
+      "264": {
+        "search_max_us": 48965,
+        "search_p99_us": 11710,
+        "total_max_us": 48985,
+        "total_p99_us": 13568
+      },
+      "265": {
+        "search_max_us": 33020,
+        "search_p99_us": 12098,
+        "total_max_us": 33033,
+        "total_p99_us": 12109
+      },
+      "266": {
+        "search_max_us": 26889,
+        "search_p99_us": 12068,
+        "total_max_us": 26896,
+        "total_p99_us": 12073
+      },
+      "267": {
+        "search_max_us": 29907,
+        "search_p99_us": 8487,
+        "total_max_us": 29925,
+        "total_p99_us": 8805
+      },
+      "268": {
+        "search_max_us": 23033,
+        "search_p99_us": 8100,
+        "total_max_us": 23068,
+        "total_p99_us": 8256
+      },
+      "269": {
+        "search_max_us": 23395,
+        "search_p99_us": 11013,
+        "total_max_us": 23412,
+        "total_p99_us": 11022
+      },
+      "27": {
+        "search_max_us": 11264,
+        "search_p99_us": 5147,
+        "total_max_us": 29613,
+        "total_p99_us": 9513
+      },
+      "270": {
+        "search_max_us": 31281,
+        "search_p99_us": 9967,
+        "total_max_us": 31306,
+        "total_p99_us": 9986
+      },
+      "271": {
+        "search_max_us": 30318,
+        "search_p99_us": 8476,
+        "total_max_us": 30330,
+        "total_p99_us": 9165
+      },
+      "272": {
+        "search_max_us": 18962,
+        "search_p99_us": 6773,
+        "total_max_us": 18983,
+        "total_p99_us": 7139
+      },
+      "273": {
+        "search_max_us": 27055,
+        "search_p99_us": 12327,
+        "total_max_us": 27081,
+        "total_p99_us": 12350
+      },
+      "274": {
+        "search_max_us": 26599,
+        "search_p99_us": 11543,
+        "total_max_us": 26708,
+        "total_p99_us": 11563
+      },
+      "275": {
+        "search_max_us": 23066,
+        "search_p99_us": 6488,
+        "total_max_us": 23076,
+        "total_p99_us": 8263
+      },
+      "276": {
+        "search_max_us": 19063,
+        "search_p99_us": 4401,
+        "total_max_us": 19084,
+        "total_p99_us": 4429
+      },
+      "277": {
+        "search_max_us": 23326,
+        "search_p99_us": 6863,
+        "total_max_us": 23349,
+        "total_p99_us": 6882
+      },
+      "278": {
+        "search_max_us": 9808,
+        "search_p99_us": 6304,
+        "total_max_us": 14638,
+        "total_p99_us": 6360
+      },
+      "279": {
+        "search_max_us": 6622,
+        "search_p99_us": 5250,
+        "total_max_us": 6627,
+        "total_p99_us": 5256
+      },
+      "28": {
+        "search_max_us": 33877,
+        "search_p99_us": 4254,
+        "total_max_us": 33918,
+        "total_p99_us": 5772
+      },
+      "280": {
+        "search_max_us": 20362,
+        "search_p99_us": 11491,
+        "total_max_us": 20388,
+        "total_p99_us": 11614
+      },
+      "281": {
+        "search_max_us": 39766,
+        "search_p99_us": 24181,
+        "total_max_us": 39775,
+        "total_p99_us": 24197
+      },
+      "282": {
+        "search_max_us": 58244,
+        "search_p99_us": 30298,
+        "total_max_us": 58261,
+        "total_p99_us": 30303
+      },
+      "283": {
+        "search_max_us": 48964,
+        "search_p99_us": 28632,
+        "total_max_us": 48990,
+        "total_p99_us": 28655
+      },
+      "284": {
+        "search_max_us": 33114,
+        "search_p99_us": 17439,
+        "total_max_us": 33144,
+        "total_p99_us": 17470
+      },
+      "285": {
+        "search_max_us": 31572,
+        "search_p99_us": 10514,
+        "total_max_us": 31713,
+        "total_p99_us": 10847
+      },
+      "286": {
+        "search_max_us": 35580,
+        "search_p99_us": 13927,
+        "total_max_us": 35592,
+        "total_p99_us": 13940
+      },
+      "287": {
+        "search_max_us": 38026,
+        "search_p99_us": 11300,
+        "total_max_us": 38239,
+        "total_p99_us": 11624
+      },
+      "288": {
+        "search_max_us": 31077,
+        "search_p99_us": 10551,
+        "total_max_us": 31097,
+        "total_p99_us": 10609
+      },
+      "289": {
+        "search_max_us": 32047,
+        "search_p99_us": 11229,
+        "total_max_us": 32091,
+        "total_p99_us": 11342
+      },
+      "29": {
+        "search_max_us": 32708,
+        "search_p99_us": 6418,
+        "total_max_us": 32731,
+        "total_p99_us": 7326
+      },
+      "290": {
+        "search_max_us": 40483,
+        "search_p99_us": 13025,
+        "total_max_us": 40520,
+        "total_p99_us": 13155
+      },
+      "291": {
+        "search_max_us": 28919,
+        "search_p99_us": 8381,
+        "total_max_us": 28938,
+        "total_p99_us": 8398
+      },
+      "292": {
+        "search_max_us": 27832,
+        "search_p99_us": 8045,
+        "total_max_us": 27851,
+        "total_p99_us": 8069
+      },
+      "293": {
+        "search_max_us": 23713,
+        "search_p99_us": 7943,
+        "total_max_us": 23736,
+        "total_p99_us": 8341
+      },
+      "294": {
+        "search_max_us": 19032,
+        "search_p99_us": 4773,
+        "total_max_us": 19046,
+        "total_p99_us": 4788
+      },
+      "295": {
+        "search_max_us": 29319,
+        "search_p99_us": 9248,
+        "total_max_us": 29332,
+        "total_p99_us": 9378
+      },
+      "296": {
+        "search_max_us": 20312,
+        "search_p99_us": 6745,
+        "total_max_us": 20337,
+        "total_p99_us": 7264
+      },
+      "297": {
+        "search_max_us": 26203,
+        "search_p99_us": 5157,
+        "total_max_us": 26213,
+        "total_p99_us": 5165
+      },
+      "298": {
+        "search_max_us": 23506,
+        "search_p99_us": 8803,
+        "total_max_us": 23519,
+        "total_p99_us": 8819
+      },
+      "299": {
+        "search_max_us": 18093,
+        "search_p99_us": 6003,
+        "total_max_us": 18108,
+        "total_p99_us": 6014
+      },
+      "3": {
+        "search_max_us": 37112,
+        "search_p99_us": 16669,
+        "total_max_us": 43259,
+        "total_p99_us": 16682
+      },
+      "30": {
+        "search_max_us": 24181,
+        "search_p99_us": 6424,
+        "total_max_us": 24188,
+        "total_p99_us": 6457
+      },
+      "300": {
+        "search_max_us": 19754,
+        "search_p99_us": 10580,
+        "total_max_us": 19771,
+        "total_p99_us": 10594
+      },
+      "301": {
+        "search_max_us": 25592,
+        "search_p99_us": 16244,
+        "total_max_us": 25617,
+        "total_p99_us": 16263
+      },
+      "302": {
+        "search_max_us": 52281,
+        "search_p99_us": 13338,
+        "total_max_us": 52322,
+        "total_p99_us": 13401
+      },
+      "303": {
+        "search_max_us": 44774,
+        "search_p99_us": 20260,
+        "total_max_us": 44789,
+        "total_p99_us": 20271
+      },
+      "304": {
+        "search_max_us": 44625,
+        "search_p99_us": 17143,
+        "total_max_us": 44638,
+        "total_p99_us": 17155
+      },
+      "305": {
+        "search_max_us": 36184,
+        "search_p99_us": 13026,
+        "total_max_us": 36207,
+        "total_p99_us": 14694
+      },
+      "306": {
+        "search_max_us": 32951,
+        "search_p99_us": 11202,
+        "total_max_us": 32963,
+        "total_p99_us": 11212
+      },
+      "307": {
+        "search_max_us": 33305,
+        "search_p99_us": 11745,
+        "total_max_us": 33321,
+        "total_p99_us": 11874
+      },
+      "308": {
+        "search_max_us": 45910,
+        "search_p99_us": 15709,
+        "total_max_us": 45947,
+        "total_p99_us": 15745
+      },
+      "309": {
+        "search_max_us": 46823,
+        "search_p99_us": 8346,
+        "total_max_us": 46847,
+        "total_p99_us": 8358
+      },
+      "31": {
+        "search_max_us": 10121,
+        "search_p99_us": 3762,
+        "total_max_us": 16975,
+        "total_p99_us": 3820
+      },
+      "310": {
+        "search_max_us": 42238,
+        "search_p99_us": 8232,
+        "total_max_us": 42276,
+        "total_p99_us": 9086
+      },
+      "311": {
+        "search_max_us": 21840,
+        "search_p99_us": 5183,
+        "total_max_us": 22054,
+        "total_p99_us": 6564
+      },
+      "312": {
+        "search_max_us": 40814,
+        "search_p99_us": 5736,
+        "total_max_us": 40846,
+        "total_p99_us": 6252
+      },
+      "313": {
+        "search_max_us": 29223,
+        "search_p99_us": 7427,
+        "total_max_us": 29770,
+        "total_p99_us": 12380
+      },
+      "314": {
+        "search_max_us": 38479,
+        "search_p99_us": 22100,
+        "total_max_us": 38693,
+        "total_p99_us": 22719
+      },
+      "315": {
+        "search_max_us": 30201,
+        "search_p99_us": 14388,
+        "total_max_us": 30411,
+        "total_p99_us": 16449
+      },
+      "316": {
+        "search_max_us": 27360,
+        "search_p99_us": 11701,
+        "total_max_us": 27406,
+        "total_p99_us": 11746
+      },
+      "317": {
+        "search_max_us": 21609,
+        "search_p99_us": 10083,
+        "total_max_us": 22009,
+        "total_p99_us": 11796
+      },
+      "318": {
+        "search_max_us": 18520,
+        "search_p99_us": 3519,
+        "total_max_us": 24055,
+        "total_p99_us": 9867
+      },
+      "319": {
+        "search_max_us": 14313,
+        "search_p99_us": 5422,
+        "total_max_us": 14525,
+        "total_p99_us": 5664
+      },
+      "32": {
+        "search_max_us": 16847,
+        "search_p99_us": 5375,
+        "total_max_us": 16865,
+        "total_p99_us": 5395
+      },
+      "320": {
+        "search_max_us": 11585,
+        "search_p99_us": 3136,
+        "total_max_us": 11692,
+        "total_p99_us": 4045
+      },
+      "321": {
+        "search_max_us": 13596,
+        "search_p99_us": 7155,
+        "total_max_us": 16841,
+        "total_p99_us": 8876
+      },
+      "322": {
+        "search_max_us": 23506,
+        "search_p99_us": 6589,
+        "total_max_us": 24391,
+        "total_p99_us": 11793
+      },
+      "323": {
+        "search_max_us": 26306,
+        "search_p99_us": 5832,
+        "total_max_us": 26440,
+        "total_p99_us": 8268
+      },
+      "324": {
+        "search_max_us": 30343,
+        "search_p99_us": 6061,
+        "total_max_us": 30395,
+        "total_p99_us": 8449
+      },
+      "325": {
+        "search_max_us": 20319,
+        "search_p99_us": 8766,
+        "total_max_us": 22394,
+        "total_p99_us": 10907
+      },
+      "326": {
+        "search_max_us": 31610,
+        "search_p99_us": 6787,
+        "total_max_us": 31661,
+        "total_p99_us": 8171
+      },
+      "327": {
+        "search_max_us": 30603,
+        "search_p99_us": 9559,
+        "total_max_us": 32181,
+        "total_p99_us": 14252
+      },
+      "328": {
+        "search_max_us": 21063,
+        "search_p99_us": 9017,
+        "total_max_us": 33033,
+        "total_p99_us": 11431
+      },
+      "329": {
+        "search_max_us": 30895,
+        "search_p99_us": 7839,
+        "total_max_us": 30986,
+        "total_p99_us": 9433
+      },
+      "33": {
+        "search_max_us": 10214,
+        "search_p99_us": 3527,
+        "total_max_us": 10232,
+        "total_p99_us": 3549
+      },
+      "330": {
+        "search_max_us": 30448,
+        "search_p99_us": 11086,
+        "total_max_us": 30717,
+        "total_p99_us": 12620
+      },
+      "331": {
+        "search_max_us": 47824,
+        "search_p99_us": 12586,
+        "total_max_us": 47959,
+        "total_p99_us": 12826
+      },
+      "332": {
+        "search_max_us": 26398,
+        "search_p99_us": 7094,
+        "total_max_us": 26424,
+        "total_p99_us": 7165
+      },
+      "333": {
+        "search_max_us": 28066,
+        "search_p99_us": 11162,
+        "total_max_us": 28111,
+        "total_p99_us": 11724
+      },
+      "334": {
+        "search_max_us": 16468,
+        "search_p99_us": 4983,
+        "total_max_us": 16796,
+        "total_p99_us": 7479
+      },
+      "335": {
+        "search_max_us": 19714,
+        "search_p99_us": 9040,
+        "total_max_us": 19948,
+        "total_p99_us": 10800
+      },
+      "336": {
+        "search_max_us": 12994,
+        "search_p99_us": 5067,
+        "total_max_us": 13025,
+        "total_p99_us": 5118
+      },
+      "337": {
+        "search_max_us": 16316,
+        "search_p99_us": 5501,
+        "total_max_us": 16340,
+        "total_p99_us": 5525
+      },
+      "338": {
+        "search_max_us": 24448,
+        "search_p99_us": 5837,
+        "total_max_us": 24493,
+        "total_p99_us": 5915
+      },
+      "339": {
+        "search_max_us": 17941,
+        "search_p99_us": 3609,
+        "total_max_us": 18032,
+        "total_p99_us": 3788
+      },
+      "34": {
+        "search_max_us": 14211,
+        "search_p99_us": 6665,
+        "total_max_us": 19005,
+        "total_p99_us": 9848
+      },
+      "340": {
+        "search_max_us": 26246,
+        "search_p99_us": 9557,
+        "total_max_us": 26388,
+        "total_p99_us": 11022
+      },
+      "341": {
+        "search_max_us": 17655,
+        "search_p99_us": 6430,
+        "total_max_us": 23661,
+        "total_p99_us": 9552
+      },
+      "342": {
+        "search_max_us": 12138,
+        "search_p99_us": 3352,
+        "total_max_us": 31427,
+        "total_p99_us": 11703
+      },
+      "343": {
+        "search_max_us": 38643,
+        "search_p99_us": 11891,
+        "total_max_us": 38877,
+        "total_p99_us": 13731
+      },
+      "344": {
+        "search_max_us": 29055,
+        "search_p99_us": 11009,
+        "total_max_us": 31907,
+        "total_p99_us": 13383
+      },
+      "345": {
+        "search_max_us": 32068,
+        "search_p99_us": 7964,
+        "total_max_us": 32084,
+        "total_p99_us": 7979
+      },
+      "346": {
+        "search_max_us": 25150,
+        "search_p99_us": 6934,
+        "total_max_us": 28216,
+        "total_p99_us": 6977
+      },
+      "347": {
+        "search_max_us": 34439,
+        "search_p99_us": 6733,
+        "total_max_us": 34530,
+        "total_p99_us": 9346
+      },
+      "348": {
+        "search_max_us": 24663,
+        "search_p99_us": 7631,
+        "total_max_us": 24864,
+        "total_p99_us": 8998
+      },
+      "349": {
+        "search_max_us": 15877,
+        "search_p99_us": 9080,
+        "total_max_us": 15910,
+        "total_p99_us": 9175
+      },
+      "35": {
+        "search_max_us": 21335,
+        "search_p99_us": 5436,
+        "total_max_us": 21350,
+        "total_p99_us": 5458
+      },
+      "350": {
+        "search_max_us": 22366,
+        "search_p99_us": 5708,
+        "total_max_us": 22588,
+        "total_p99_us": 8826
+      },
+      "351": {
+        "search_max_us": 24779,
+        "search_p99_us": 6863,
+        "total_max_us": 24876,
+        "total_p99_us": 7254
+      },
+      "352": {
+        "search_max_us": 26312,
+        "search_p99_us": 5863,
+        "total_max_us": 26591,
+        "total_p99_us": 8988
+      },
+      "353": {
+        "search_max_us": 34589,
+        "search_p99_us": 8830,
+        "total_max_us": 34643,
+        "total_p99_us": 10627
+      },
+      "354": {
+        "search_max_us": 23491,
+        "search_p99_us": 8583,
+        "total_max_us": 26253,
+        "total_p99_us": 8616
+      },
+      "355": {
+        "search_max_us": 22296,
+        "search_p99_us": 6745,
+        "total_max_us": 23237,
+        "total_p99_us": 12683
+      },
+      "356": {
+        "search_max_us": 28385,
+        "search_p99_us": 13558,
+        "total_max_us": 29547,
+        "total_p99_us": 16820
+      },
+      "357": {
+        "search_max_us": 17120,
+        "search_p99_us": 7853,
+        "total_max_us": 17406,
+        "total_p99_us": 9610
+      },
+      "358": {
+        "search_max_us": 20223,
+        "search_p99_us": 9161,
+        "total_max_us": 20247,
+        "total_p99_us": 9211
+      },
+      "359": {
+        "search_max_us": 17333,
+        "search_p99_us": 6128,
+        "total_max_us": 17352,
+        "total_p99_us": 6150
+      },
+      "36": {
+        "search_max_us": 12169,
+        "search_p99_us": 5088,
+        "total_max_us": 14532,
+        "total_p99_us": 5938
+      },
+      "360": {
+        "search_max_us": 12871,
+        "search_p99_us": 6043,
+        "total_max_us": 24011,
+        "total_p99_us": 12940
+      },
+      "361": {
+        "search_max_us": 26004,
+        "search_p99_us": 14040,
+        "total_max_us": 26018,
+        "total_p99_us": 14090
+      },
+      "362": {
+        "search_max_us": 42956,
+        "search_p99_us": 10312,
+        "total_max_us": 61355,
+        "total_p99_us": 19133
+      },
+      "363": {
+        "search_max_us": 41360,
+        "search_p99_us": 15952,
+        "total_max_us": 42025,
+        "total_p99_us": 17033
+      },
+      "364": {
+        "search_max_us": 28018,
+        "search_p99_us": 13280,
+        "total_max_us": 33605,
+        "total_p99_us": 13682
+      },
+      "365": {
+        "search_max_us": 47284,
+        "search_p99_us": 14319,
+        "total_max_us": 47503,
+        "total_p99_us": 14617
+      },
+      "366": {
+        "search_max_us": 29527,
+        "search_p99_us": 9085,
+        "total_max_us": 29643,
+        "total_p99_us": 9959
+      },
+      "367": {
+        "search_max_us": 26262,
+        "search_p99_us": 8495,
+        "total_max_us": 27703,
+        "total_p99_us": 9778
+      },
+      "368": {
+        "search_max_us": 25740,
+        "search_p99_us": 8126,
+        "total_max_us": 27882,
+        "total_p99_us": 12147
+      },
+      "369": {
+        "search_max_us": 36047,
+        "search_p99_us": 9091,
+        "total_max_us": 36151,
+        "total_p99_us": 9340
+      },
+      "37": {
+        "search_max_us": 15622,
+        "search_p99_us": 5529,
+        "total_max_us": 17273,
+        "total_p99_us": 6632
+      },
+      "370": {
+        "search_max_us": 39448,
+        "search_p99_us": 11400,
+        "total_max_us": 44027,
+        "total_p99_us": 15498
+      },
+      "371": {
+        "search_max_us": 32239,
+        "search_p99_us": 12041,
+        "total_max_us": 33852,
+        "total_p99_us": 16049
+      },
+      "372": {
+        "search_max_us": 22893,
+        "search_p99_us": 10438,
+        "total_max_us": 23034,
+        "total_p99_us": 11310
+      },
+      "373": {
+        "search_max_us": 30382,
+        "search_p99_us": 11129,
+        "total_max_us": 31771,
+        "total_p99_us": 16727
+      },
+      "374": {
+        "search_max_us": 28044,
+        "search_p99_us": 12331,
+        "total_max_us": 28493,
+        "total_p99_us": 13502
+      },
+      "375": {
+        "search_max_us": 20062,
+        "search_p99_us": 6177,
+        "total_max_us": 26501,
+        "total_p99_us": 16730
+      },
+      "376": {
+        "search_max_us": 17807,
+        "search_p99_us": 5931,
+        "total_max_us": 18206,
+        "total_p99_us": 8314
+      },
+      "377": {
+        "search_max_us": 14017,
+        "search_p99_us": 6396,
+        "total_max_us": 14138,
+        "total_p99_us": 6557
+      },
+      "378": {
+        "search_max_us": 18854,
+        "search_p99_us": 7738,
+        "total_max_us": 20340,
+        "total_p99_us": 9001
+      },
+      "379": {
+        "search_max_us": 15877,
+        "search_p99_us": 7008,
+        "total_max_us": 16172,
+        "total_p99_us": 7305
+      },
+      "38": {
+        "search_max_us": 13865,
+        "search_p99_us": 6040,
+        "total_max_us": 17362,
+        "total_p99_us": 6148
+      },
+      "380": {
+        "search_max_us": 57265,
+        "search_p99_us": 40462,
+        "total_max_us": 65140,
+        "total_p99_us": 42333
+      },
+      "381": {
+        "search_max_us": 62940,
+        "search_p99_us": 41161,
+        "total_max_us": 66617,
+        "total_p99_us": 54586
+      },
+      "39": {
+        "search_max_us": 12713,
+        "search_p99_us": 4964,
+        "total_max_us": 12720,
+        "total_p99_us": 4974
+      },
+      "4": {
+        "search_max_us": 34152,
+        "search_p99_us": 10442,
+        "total_max_us": 34185,
+        "total_p99_us": 11036
+      },
+      "40": {
+        "search_max_us": 23993,
+        "search_p99_us": 16134,
+        "total_max_us": 30032,
+        "total_p99_us": 17413
+      },
+      "41": {
+        "search_max_us": 62333,
+        "search_p99_us": 36224,
+        "total_max_us": 62342,
+        "total_p99_us": 36254
+      },
+      "42": {
+        "search_max_us": 58289,
+        "search_p99_us": 39910,
+        "total_max_us": 58380,
+        "total_p99_us": 40541
+      },
+      "43": {
+        "search_max_us": 42291,
+        "search_p99_us": 26990,
+        "total_max_us": 42299,
+        "total_p99_us": 27108
+      },
+      "44": {
+        "search_max_us": 20930,
+        "search_p99_us": 8631,
+        "total_max_us": 24064,
+        "total_p99_us": 12516
+      },
+      "45": {
+        "search_max_us": 34411,
+        "search_p99_us": 10452,
+        "total_max_us": 48481,
+        "total_p99_us": 15564
+      },
+      "46": {
+        "search_max_us": 24737,
+        "search_p99_us": 13793,
+        "total_max_us": 28298,
+        "total_p99_us": 16168
+      },
+      "47": {
+        "search_max_us": 25287,
+        "search_p99_us": 15991,
+        "total_max_us": 25411,
+        "total_p99_us": 16066
+      },
+      "48": {
+        "search_max_us": 45086,
+        "search_p99_us": 23209,
+        "total_max_us": 45111,
+        "total_p99_us": 23227
+      },
+      "49": {
+        "search_max_us": 18894,
+        "search_p99_us": 7455,
+        "total_max_us": 18937,
+        "total_p99_us": 8119
+      },
+      "5": {
+        "search_max_us": 42662,
+        "search_p99_us": 7179,
+        "total_max_us": 42671,
+        "total_p99_us": 7207
+      },
+      "50": {
+        "search_max_us": 30854,
+        "search_p99_us": 5533,
+        "total_max_us": 31095,
+        "total_p99_us": 8393
+      },
+      "51": {
+        "search_max_us": 27588,
+        "search_p99_us": 5286,
+        "total_max_us": 27603,
+        "total_p99_us": 5306
+      },
+      "52": {
+        "search_max_us": 24378,
+        "search_p99_us": 7003,
+        "total_max_us": 24454,
+        "total_p99_us": 8169
+      },
+      "53": {
+        "search_max_us": 25026,
+        "search_p99_us": 6948,
+        "total_max_us": 25239,
+        "total_p99_us": 9360
+      },
+      "54": {
+        "search_max_us": 17260,
+        "search_p99_us": 5914,
+        "total_max_us": 17283,
+        "total_p99_us": 5965
+      },
+      "55": {
+        "search_max_us": 11624,
+        "search_p99_us": 5790,
+        "total_max_us": 20122,
+        "total_p99_us": 5792
+      },
+      "56": {
+        "search_max_us": 7746,
+        "search_p99_us": 4876,
+        "total_max_us": 11585,
+        "total_p99_us": 4920
+      },
+      "57": {
+        "search_max_us": 13291,
+        "search_p99_us": 5054,
+        "total_max_us": 13325,
+        "total_p99_us": 5095
+      },
+      "58": {
+        "search_max_us": 7898,
+        "search_p99_us": 4999,
+        "total_max_us": 14715,
+        "total_p99_us": 7575
+      },
+      "59": {
+        "search_max_us": 11103,
+        "search_p99_us": 6404,
+        "total_max_us": 11150,
+        "total_p99_us": 6449
+      },
+      "6": {
+        "search_max_us": 14195,
+        "search_p99_us": 6947,
+        "total_max_us": 14220,
+        "total_p99_us": 7040
+      },
+      "60": {
+        "search_max_us": 34294,
+        "search_p99_us": 17024,
+        "total_max_us": 34305,
+        "total_p99_us": 17032
+      },
+      "61": {
+        "search_max_us": 62777,
+        "search_p99_us": 34787,
+        "total_max_us": 62897,
+        "total_p99_us": 34933
+      },
+      "62": {
+        "search_max_us": 43282,
+        "search_p99_us": 25294,
+        "total_max_us": 43897,
+        "total_p99_us": 25332
+      },
+      "63": {
+        "search_max_us": 49467,
+        "search_p99_us": 31421,
+        "total_max_us": 49522,
+        "total_p99_us": 32608
+      },
+      "64": {
+        "search_max_us": 29216,
+        "search_p99_us": 18527,
+        "total_max_us": 31444,
+        "total_p99_us": 21849
+      },
+      "65": {
+        "search_max_us": 33042,
+        "search_p99_us": 17383,
+        "total_max_us": 33076,
+        "total_p99_us": 17414
+      },
+      "66": {
+        "search_max_us": 16460,
+        "search_p99_us": 4734,
+        "total_max_us": 16470,
+        "total_p99_us": 4742
+      },
+      "67": {
+        "search_max_us": 13757,
+        "search_p99_us": 4659,
+        "total_max_us": 13768,
+        "total_p99_us": 4669
+      },
+      "68": {
+        "search_max_us": 13777,
+        "search_p99_us": 4648,
+        "total_max_us": 13786,
+        "total_p99_us": 4655
+      },
+      "69": {
+        "search_max_us": 16764,
+        "search_p99_us": 4653,
+        "total_max_us": 16768,
+        "total_p99_us": 4729
+      },
+      "7": {
+        "search_max_us": 21170,
+        "search_p99_us": 12084,
+        "total_max_us": 21205,
+        "total_p99_us": 12143
+      },
+      "70": {
+        "search_max_us": 13779,
+        "search_p99_us": 4648,
+        "total_max_us": 13789,
+        "total_p99_us": 4657
+      },
+      "71": {
+        "search_max_us": 27612,
+        "search_p99_us": 11864,
+        "total_max_us": 27644,
+        "total_p99_us": 12034
+      },
+      "72": {
+        "search_max_us": 27036,
+        "search_p99_us": 10815,
+        "total_max_us": 27219,
+        "total_p99_us": 11312
+      },
+      "73": {
+        "search_max_us": 27435,
+        "search_p99_us": 8594,
+        "total_max_us": 39053,
+        "total_p99_us": 9948
+      },
+      "74": {
+        "search_max_us": 31847,
+        "search_p99_us": 5038,
+        "total_max_us": 32030,
+        "total_p99_us": 7178
+      },
+      "75": {
+        "search_max_us": 16870,
+        "search_p99_us": 4939,
+        "total_max_us": 16942,
+        "total_p99_us": 5072
+      },
+      "76": {
+        "search_max_us": 31048,
+        "search_p99_us": 6214,
+        "total_max_us": 31058,
+        "total_p99_us": 6455
+      },
+      "77": {
+        "search_max_us": 20434,
+        "search_p99_us": 6309,
+        "total_max_us": 20470,
+        "total_p99_us": 6550
+      },
+      "78": {
+        "search_max_us": 16538,
+        "search_p99_us": 5721,
+        "total_max_us": 16548,
+        "total_p99_us": 5733
+      },
+      "79": {
+        "search_max_us": 13394,
+        "search_p99_us": 4560,
+        "total_max_us": 13415,
+        "total_p99_us": 4587
+      },
+      "8": {
+        "search_max_us": 26706,
+        "search_p99_us": 11481,
+        "total_max_us": 26732,
+        "total_p99_us": 11503
+      },
+      "80": {
+        "search_max_us": 31998,
+        "search_p99_us": 19667,
+        "total_max_us": 35027,
+        "total_p99_us": 23007
+      },
+      "81": {
+        "search_max_us": 59594,
+        "search_p99_us": 38622,
+        "total_max_us": 59610,
+        "total_p99_us": 38638
+      },
+      "82": {
+        "search_max_us": 52930,
+        "search_p99_us": 40757,
+        "total_max_us": 53018,
+        "total_p99_us": 42259
+      },
+      "83": {
+        "search_max_us": 43397,
+        "search_p99_us": 25531,
+        "total_max_us": 43435,
+        "total_p99_us": 25752
+      },
+      "84": {
+        "search_max_us": 32081,
+        "search_p99_us": 25791,
+        "total_max_us": 38236,
+        "total_p99_us": 25826
+      },
+      "85": {
+        "search_max_us": 18791,
+        "search_p99_us": 9811,
+        "total_max_us": 18812,
+        "total_p99_us": 9829
+      },
+      "86": {
+        "search_max_us": 23208,
+        "search_p99_us": 11635,
+        "total_max_us": 23229,
+        "total_p99_us": 11661
+      },
+      "87": {
+        "search_max_us": 18572,
+        "search_p99_us": 6859,
+        "total_max_us": 18585,
+        "total_p99_us": 8228
+      },
+      "88": {
+        "search_max_us": 22840,
+        "search_p99_us": 11015,
+        "total_max_us": 22857,
+        "total_p99_us": 11033
+      },
+      "89": {
+        "search_max_us": 17296,
+        "search_p99_us": 10632,
+        "total_max_us": 17736,
+        "total_p99_us": 10873
+      },
+      "9": {
+        "search_max_us": 31378,
+        "search_p99_us": 11051,
+        "total_max_us": 31747,
+        "total_p99_us": 12389
+      },
+      "90": {
+        "search_max_us": 24993,
+        "search_p99_us": 6009,
+        "total_max_us": 25024,
+        "total_p99_us": 6113
+      },
+      "91": {
+        "search_max_us": 44218,
+        "search_p99_us": 6369,
+        "total_max_us": 44355,
+        "total_p99_us": 8687
+      },
+      "92": {
+        "search_max_us": 23547,
+        "search_p99_us": 6035,
+        "total_max_us": 23563,
+        "total_p99_us": 6622
+      },
+      "93": {
+        "search_max_us": 21644,
+        "search_p99_us": 6358,
+        "total_max_us": 22173,
+        "total_p99_us": 6675
+      },
+      "94": {
+        "search_max_us": 29362,
+        "search_p99_us": 5437,
+        "total_max_us": 29388,
+        "total_p99_us": 5565
+      },
+      "95": {
+        "search_max_us": 28981,
+        "search_p99_us": 6362,
+        "total_max_us": 29003,
+        "total_p99_us": 6812
+      },
+      "96": {
+        "search_max_us": 18194,
+        "search_p99_us": 6018,
+        "total_max_us": 18249,
+        "total_p99_us": 6054
+      },
+      "97": {
+        "search_max_us": 15301,
+        "search_p99_us": 5681,
+        "total_max_us": 15313,
+        "total_p99_us": 5696
+      },
+      "98": {
+        "search_max_us": 10887,
+        "search_p99_us": 6557,
+        "total_max_us": 10896,
+        "total_p99_us": 6566
+      },
+      "99": {
+        "search_max_us": 6525,
+        "search_p99_us": 4853,
+        "total_max_us": 19039,
+        "total_p99_us": 6641
+      }
+    },
+    "worst_query_ordinal": 381,
+    "worst_query_total_p99_us": 54586
+  },
+  "quiet_admission_executed": false,
+  "retry_permitted": false,
+  "routes": {
+    "S1": {
+      "search_max_us": 5045,
+      "search_p99_us": 3913,
+      "total_max_us": 5052,
+      "total_p99_us": 4078
+    },
+    "S2": {
+      "search_max_us": 7086,
+      "search_p99_us": 3921,
+      "total_max_us": 7197,
+      "total_p99_us": 4087
+    },
+    "S3": {
+      "search_max_us": 5986,
+      "search_p99_us": 3917,
+      "total_max_us": 6043,
+      "total_p99_us": 4086
+    },
+    "S4": {
+      "search_max_us": 6359,
+      "search_p99_us": 4101,
+      "total_max_us": 6395,
+      "total_p99_us": 4234
+    },
+    "S5": {
+      "search_max_us": 7099,
+      "search_p99_us": 3923,
+      "total_max_us": 7118,
+      "total_p99_us": 4088
+    },
+    "T1": {
+      "search_max_us": 62777,
+      "search_p99_us": 16530,
+      "total_max_us": 66617,
+      "total_p99_us": 18355,
+      "workers": {
+        "0": {
+          "search_max_us": 42662,
+          "search_p99_us": 17110,
+          "total_max_us": 42671,
+          "total_p99_us": 18764
+        },
+        "1": {
+          "search_max_us": 35581,
+          "search_p99_us": 6248,
+          "total_max_us": 35659,
+          "total_p99_us": 8846
+        },
+        "10": {
+          "search_max_us": 35645,
+          "search_p99_us": 8250,
+          "total_max_us": 41955,
+          "total_p99_us": 13275
+        },
+        "11": {
+          "search_max_us": 31124,
+          "search_p99_us": 7735,
+          "total_max_us": 47696,
+          "total_p99_us": 11135
+        },
+        "12": {
+          "search_max_us": 51675,
+          "search_p99_us": 16727,
+          "total_max_us": 51698,
+          "total_p99_us": 17623
+        },
+        "13": {
+          "search_max_us": 29106,
+          "search_p99_us": 11545,
+          "total_max_us": 29124,
+          "total_p99_us": 11992
+        },
+        "14": {
+          "search_max_us": 33009,
+          "search_p99_us": 9619,
+          "total_max_us": 33027,
+          "total_p99_us": 10368
+        },
+        "15": {
+          "search_max_us": 40231,
+          "search_p99_us": 11131,
+          "total_max_us": 40274,
+          "total_p99_us": 12389
+        },
+        "16": {
+          "search_max_us": 31610,
+          "search_p99_us": 9221,
+          "total_max_us": 31661,
+          "total_p99_us": 11260
+        },
+        "17": {
+          "search_max_us": 25313,
+          "search_p99_us": 7780,
+          "total_max_us": 25327,
+          "total_p99_us": 10216
+        },
+        "18": {
+          "search_max_us": 39448,
+          "search_p99_us": 13013,
+          "total_max_us": 44027,
+          "total_p99_us": 16466
+        },
+        "19": {
+          "search_max_us": 58647,
+          "search_p99_us": 47481,
+          "total_max_us": 66617,
+          "total_p99_us": 57917
+        },
+        "2": {
+          "search_max_us": 39132,
+          "search_p99_us": 24363,
+          "total_max_us": 40510,
+          "total_p99_us": 26193
+        },
+        "3": {
+          "search_max_us": 62777,
+          "search_p99_us": 20132,
+          "total_max_us": 62897,
+          "total_p99_us": 22357
+        },
+        "4": {
+          "search_max_us": 59562,
+          "search_p99_us": 23208,
+          "total_max_us": 59578,
+          "total_p99_us": 25569
+        },
+        "5": {
+          "search_max_us": 46569,
+          "search_p99_us": 19150,
+          "total_max_us": 46604,
+          "total_p99_us": 19317
+        },
+        "6": {
+          "search_max_us": 45376,
+          "search_p99_us": 17569,
+          "total_max_us": 45419,
+          "total_p99_us": 19820
+        },
+        "7": {
+          "search_max_us": 39211,
+          "search_p99_us": 9704,
+          "total_max_us": 41170,
+          "total_p99_us": 13271
+        },
+        "8": {
+          "search_max_us": 44077,
+          "search_p99_us": 19459,
+          "total_max_us": 44135,
+          "total_p99_us": 20269
+        },
+        "9": {
+          "search_max_us": 38257,
+          "search_p99_us": 7065,
+          "total_max_us": 38269,
+          "total_p99_us": 9442
+        }
+      }
+    },
+    "T2": {
+      "search_max_us": 78220,
+      "search_p99_us": 15967,
+      "total_max_us": 78239,
+      "total_p99_us": 16611,
+      "workers": {
+        "0": {
+          "search_max_us": 34790,
+          "search_p99_us": 10686,
+          "total_max_us": 34809,
+          "total_p99_us": 10993
+        },
+        "1": {
+          "search_max_us": 24181,
+          "search_p99_us": 6487,
+          "total_max_us": 24188,
+          "total_p99_us": 7089
+        },
+        "10": {
+          "search_max_us": 41807,
+          "search_p99_us": 9974,
+          "total_max_us": 42119,
+          "total_p99_us": 12767
+        },
+        "11": {
+          "search_max_us": 29886,
+          "search_p99_us": 6223,
+          "total_max_us": 58663,
+          "total_p99_us": 7701
+        },
+        "12": {
+          "search_max_us": 34706,
+          "search_p99_us": 11561,
+          "total_max_us": 48249,
+          "total_p99_us": 12146
+        },
+        "13": {
+          "search_max_us": 50274,
+          "search_p99_us": 20494,
+          "total_max_us": 50283,
+          "total_p99_us": 20508
+        },
+        "14": {
+          "search_max_us": 39884,
+          "search_p99_us": 9847,
+          "total_max_us": 39906,
+          "total_p99_us": 10216
+        },
+        "15": {
+          "search_max_us": 29223,
+          "search_p99_us": 8232,
+          "total_max_us": 29770,
+          "total_p99_us": 8666
+        },
+        "16": {
+          "search_max_us": 27988,
+          "search_p99_us": 7699,
+          "total_max_us": 30568,
+          "total_p99_us": 9534
+        },
+        "17": {
+          "search_max_us": 24124,
+          "search_p99_us": 8718,
+          "total_max_us": 25528,
+          "total_p99_us": 9360
+        },
+        "18": {
+          "search_max_us": 30382,
+          "search_p99_us": 10534,
+          "total_max_us": 31771,
+          "total_p99_us": 14088
+        },
+        "19": {
+          "search_max_us": 47666,
+          "search_p99_us": 36241,
+          "total_max_us": 57896,
+          "total_p99_us": 38155
+        },
+        "2": {
+          "search_max_us": 51133,
+          "search_p99_us": 27088,
+          "total_max_us": 51171,
+          "total_p99_us": 27626
+        },
+        "3": {
+          "search_max_us": 37775,
+          "search_p99_us": 18675,
+          "total_max_us": 43897,
+          "total_p99_us": 19260
+        },
+        "4": {
+          "search_max_us": 53984,
+          "search_p99_us": 23502,
+          "total_max_us": 53999,
+          "total_p99_us": 23562
+        },
+        "5": {
+          "search_max_us": 37739,
+          "search_p99_us": 10802,
+          "total_max_us": 37819,
+          "total_p99_us": 11462
+        },
+        "6": {
+          "search_max_us": 78220,
+          "search_p99_us": 24049,
+          "total_max_us": 78239,
+          "total_p99_us": 24311
+        },
+        "7": {
+          "search_max_us": 41809,
+          "search_p99_us": 10522,
+          "total_max_us": 42010,
+          "total_p99_us": 11651
+        },
+        "8": {
+          "search_max_us": 56968,
+          "search_p99_us": 29920,
+          "total_max_us": 57008,
+          "total_p99_us": 30191
+        },
+        "9": {
+          "search_max_us": 32643,
+          "search_p99_us": 7472,
+          "total_max_us": 32648,
+          "total_p99_us": 7808
+        }
+      }
+    },
+    "T3": {
+      "search_max_us": 71752,
+      "search_p99_us": 15204,
+      "total_max_us": 71781,
+      "total_p99_us": 16304,
+      "workers": {
+        "0": {
+          "search_max_us": 29125,
+          "search_p99_us": 10861,
+          "total_max_us": 29139,
+          "total_p99_us": 11134
+        },
+        "1": {
+          "search_max_us": 21555,
+          "search_p99_us": 6502,
+          "total_max_us": 21879,
+          "total_p99_us": 7530
+        },
+        "10": {
+          "search_max_us": 53296,
+          "search_p99_us": 15933,
+          "total_max_us": 53443,
+          "total_p99_us": 17863
+        },
+        "11": {
+          "search_max_us": 50319,
+          "search_p99_us": 12025,
+          "total_max_us": 53085,
+          "total_p99_us": 14778
+        },
+        "12": {
+          "search_max_us": 44723,
+          "search_p99_us": 12881,
+          "total_max_us": 44744,
+          "total_p99_us": 13450
+        },
+        "13": {
+          "search_max_us": 29700,
+          "search_p99_us": 10683,
+          "total_max_us": 29714,
+          "total_p99_us": 11080
+        },
+        "14": {
+          "search_max_us": 29210,
+          "search_p99_us": 11983,
+          "total_max_us": 29224,
+          "total_p99_us": 12057
+        },
+        "15": {
+          "search_max_us": 52281,
+          "search_p99_us": 16266,
+          "total_max_us": 52322,
+          "total_p99_us": 16636
+        },
+        "16": {
+          "search_max_us": 40204,
+          "search_p99_us": 7639,
+          "total_max_us": 40487,
+          "total_p99_us": 9743
+        },
+        "17": {
+          "search_max_us": 34439,
+          "search_p99_us": 8767,
+          "total_max_us": 34530,
+          "total_p99_us": 10403
+        },
+        "18": {
+          "search_max_us": 47284,
+          "search_p99_us": 12041,
+          "total_max_us": 61355,
+          "total_p99_us": 16541
+        },
+        "19": {
+          "search_max_us": 62940,
+          "search_p99_us": 42250,
+          "total_max_us": 65140,
+          "total_p99_us": 51492
+        },
+        "2": {
+          "search_max_us": 51071,
+          "search_p99_us": 14313,
+          "total_max_us": 51094,
+          "total_p99_us": 15602
+        },
+        "3": {
+          "search_max_us": 49467,
+          "search_p99_us": 19963,
+          "total_max_us": 49522,
+          "total_p99_us": 20712
+        },
+        "4": {
+          "search_max_us": 59594,
+          "search_p99_us": 25714,
+          "total_max_us": 59610,
+          "total_p99_us": 26553
+        },
+        "5": {
+          "search_max_us": 42008,
+          "search_p99_us": 12302,
+          "total_max_us": 48072,
+          "total_p99_us": 13141
+        },
+        "6": {
+          "search_max_us": 68613,
+          "search_p99_us": 36002,
+          "total_max_us": 68624,
+          "total_p99_us": 38034
+        },
+        "7": {
+          "search_max_us": 45389,
+          "search_p99_us": 12211,
+          "total_max_us": 45433,
+          "total_p99_us": 12579
+        },
+        "8": {
+          "search_max_us": 71752,
+          "search_p99_us": 18913,
+          "total_max_us": 71781,
+          "total_p99_us": 19642
+        },
+        "9": {
+          "search_max_us": 38186,
+          "search_p99_us": 8536,
+          "total_max_us": 38197,
+          "total_p99_us": 10255
+        }
+      }
+    },
+    "T4": {
+      "search_max_us": 66364,
+      "search_p99_us": 18241,
+      "total_max_us": 66376,
+      "total_p99_us": 19922,
+      "workers": {
+        "0": {
+          "search_max_us": 35146,
+          "search_p99_us": 14076,
+          "total_max_us": 35163,
+          "total_p99_us": 14273
+        },
+        "1": {
+          "search_max_us": 32708,
+          "search_p99_us": 12622,
+          "total_max_us": 32731,
+          "total_p99_us": 14611
+        },
+        "10": {
+          "search_max_us": 36985,
+          "search_p99_us": 20810,
+          "total_max_us": 45810,
+          "total_p99_us": 22172
+        },
+        "11": {
+          "search_max_us": 34695,
+          "search_p99_us": 11826,
+          "total_max_us": 38646,
+          "total_p99_us": 14280
+        },
+        "12": {
+          "search_max_us": 33308,
+          "search_p99_us": 15471,
+          "total_max_us": 33335,
+          "total_p99_us": 15909
+        },
+        "13": {
+          "search_max_us": 42773,
+          "search_p99_us": 11123,
+          "total_max_us": 42788,
+          "total_p99_us": 11421
+        },
+        "14": {
+          "search_max_us": 58244,
+          "search_p99_us": 28862,
+          "total_max_us": 58261,
+          "total_p99_us": 29332
+        },
+        "15": {
+          "search_max_us": 46823,
+          "search_p99_us": 23503,
+          "total_max_us": 46847,
+          "total_p99_us": 23987
+        },
+        "16": {
+          "search_max_us": 30895,
+          "search_p99_us": 11408,
+          "total_max_us": 33033,
+          "total_p99_us": 12865
+        },
+        "17": {
+          "search_max_us": 38643,
+          "search_p99_us": 12620,
+          "total_max_us": 38877,
+          "total_p99_us": 14859
+        },
+        "18": {
+          "search_max_us": 41360,
+          "search_p99_us": 13913,
+          "total_max_us": 42025,
+          "total_p99_us": 18804
+        },
+        "19": {
+          "search_max_us": 54942,
+          "search_p99_us": 30084,
+          "total_max_us": 55957,
+          "total_p99_us": 33687
+        },
+        "2": {
+          "search_max_us": 51615,
+          "search_p99_us": 21035,
+          "total_max_us": 51642,
+          "total_p99_us": 21173
+        },
+        "3": {
+          "search_max_us": 43282,
+          "search_p99_us": 19500,
+          "total_max_us": 49946,
+          "total_p99_us": 19898
+        },
+        "4": {
+          "search_max_us": 32051,
+          "search_p99_us": 19753,
+          "total_max_us": 32090,
+          "total_p99_us": 19901
+        },
+        "5": {
+          "search_max_us": 32504,
+          "search_p99_us": 14112,
+          "total_max_us": 32574,
+          "total_p99_us": 15330
+        },
+        "6": {
+          "search_max_us": 66364,
+          "search_p99_us": 27387,
+          "total_max_us": 66376,
+          "total_p99_us": 27950
+        },
+        "7": {
+          "search_max_us": 51538,
+          "search_p99_us": 17705,
+          "total_max_us": 52400,
+          "total_p99_us": 20082
+        },
+        "8": {
+          "search_max_us": 48247,
+          "search_p99_us": 27024,
+          "total_max_us": 48284,
+          "total_p99_us": 27196
+        },
+        "9": {
+          "search_max_us": 56301,
+          "search_p99_us": 11105,
+          "total_max_us": 56312,
+          "total_p99_us": 11283
+        }
+      }
+    },
+    "T5": {
+      "search_max_us": 69726,
+      "search_p99_us": 14172,
+      "total_max_us": 69754,
+      "total_p99_us": 15505,
+      "workers": {
+        "0": {
+          "search_max_us": 52786,
+          "search_p99_us": 14030,
+          "total_max_us": 52794,
+          "total_p99_us": 14252
+        },
+        "1": {
+          "search_max_us": 44909,
+          "search_p99_us": 7904,
+          "total_max_us": 44973,
+          "total_p99_us": 9693
+        },
+        "10": {
+          "search_max_us": 45978,
+          "search_p99_us": 14767,
+          "total_max_us": 46011,
+          "total_p99_us": 17293
+        },
+        "11": {
+          "search_max_us": 44079,
+          "search_p99_us": 8778,
+          "total_max_us": 44386,
+          "total_p99_us": 11738
+        },
+        "12": {
+          "search_max_us": 59575,
+          "search_p99_us": 11873,
+          "total_max_us": 59603,
+          "total_p99_us": 13385
+        },
+        "13": {
+          "search_max_us": 43988,
+          "search_p99_us": 11031,
+          "total_max_us": 44008,
+          "total_p99_us": 11124
+        },
+        "14": {
+          "search_max_us": 45830,
+          "search_p99_us": 9835,
+          "total_max_us": 45844,
+          "total_p99_us": 10422
+        },
+        "15": {
+          "search_max_us": 31692,
+          "search_p99_us": 8175,
+          "total_max_us": 31726,
+          "total_p99_us": 9298
+        },
+        "16": {
+          "search_max_us": 47824,
+          "search_p99_us": 8534,
+          "total_max_us": 47959,
+          "total_p99_us": 10683
+        },
+        "17": {
+          "search_max_us": 34589,
+          "search_p99_us": 10794,
+          "total_max_us": 34643,
+          "total_p99_us": 12321
+        },
+        "18": {
+          "search_max_us": 25740,
+          "search_p99_us": 7572,
+          "total_max_us": 26619,
+          "total_p99_us": 11329
+        },
+        "19": {
+          "search_max_us": 58379,
+          "search_p99_us": 39271,
+          "total_max_us": 60298,
+          "total_p99_us": 49129
+        },
+        "2": {
+          "search_max_us": 62333,
+          "search_p99_us": 14242,
+          "total_max_us": 62342,
+          "total_p99_us": 15911
+        },
+        "3": {
+          "search_max_us": 49115,
+          "search_p99_us": 16261,
+          "total_max_us": 49170,
+          "total_p99_us": 16768
+        },
+        "4": {
+          "search_max_us": 51326,
+          "search_p99_us": 26587,
+          "total_max_us": 51339,
+          "total_p99_us": 29469
+        },
+        "5": {
+          "search_max_us": 52061,
+          "search_p99_us": 17943,
+          "total_max_us": 52109,
+          "total_p99_us": 19660
+        },
+        "6": {
+          "search_max_us": 62923,
+          "search_p99_us": 20920,
+          "total_max_us": 62941,
+          "total_p99_us": 25659
+        },
+        "7": {
+          "search_max_us": 48100,
+          "search_p99_us": 16683,
+          "total_max_us": 48112,
+          "total_p99_us": 18341
+        },
+        "8": {
+          "search_max_us": 69726,
+          "search_p99_us": 16199,
+          "total_max_us": 69754,
+          "total_p99_us": 16684
+        },
+        "9": {
+          "search_max_us": 53607,
+          "search_p99_us": 20419,
+          "total_max_us": 53726,
+          "total_p99_us": 21140
+        }
+      }
+    }
+  },
+  "runtime_authority_changed": false,
+  "sample_counts": {
+    "S": 191000,
+    "T": 477500
+  },
+  "schema": "lay.v10.c1-dirty-direct-latency.v1",
+  "started_at": "2026-08-25T02:06:25.640343+00:00",
+  "task_id": "slice8b-v10-c1-dirty-direct-latency-v1-20260825",
+  "threshold_comparisons": {
+    "errors": true,
+    "fairness": false,
+    "s_pooled_search": false,
+    "s_pooled_total": true,
+    "s_runs_search": false,
+    "s_runs_total": true,
+    "t_pooled_total": false,
+    "t_runs_total": false,
+    "unresolved": true
+  },
+  "thresholds_us": {
+    "fairness_total_p99_us": 5000,
+    "single_search_p99_us": 3000,
+    "single_total_p99_us": 5000,
+    "twenty_total_p99_us": 5000
+  },
+  "thresholds_would_pass": false,
+  "unresolved": 0,
+  "v12_admitted": false,
+  "verdict": "DIRTY_LOAD_OBSERVATION"
+}

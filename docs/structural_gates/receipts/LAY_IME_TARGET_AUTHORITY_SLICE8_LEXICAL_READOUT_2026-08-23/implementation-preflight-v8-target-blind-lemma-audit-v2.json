@@ -1,0 +1,132 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "v8-paper-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-target-authority-slice8-lexical-readout-2026-08-23.md",
+      "sha256": "d2fd03a06562da2421d0ec649bbdced1caf3e163b4b3a2e535d572b99b1362c0",
+      "size_bytes": 29374
+    },
+    {
+      "exists": true,
+      "id": "v7-fixed-receipt",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-fixed-13x100.json",
+      "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+      "size_bytes": 1606189
+    },
+    {
+      "exists": true,
+      "id": "v8-route-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v8-typed-contour-material-route.json",
+      "sha256": "2f071b44ef74e33bb11a8115c5c6a069dfbb9af2c215130e48934d944eca44ee",
+      "size_bytes": 7416
+    },
+    {
+      "exists": true,
+      "id": "contour-birth-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs",
+      "sha256": "9e8358b32ac721d2541332d6175e920d8bf4ce4bf98ca710737e4e058dc95677",
+      "size_bytes": 21028
+    },
+    {
+      "exists": true,
+      "id": "canonical-v13-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/runtime.rs",
+      "sha256": "cb94bd3ffaf61b31f7cce8d2051ae9087cf8aba26487c037ba6fbeaaa57f0966",
+      "size_bytes": 142756
+    },
+    {
+      "exists": true,
+      "id": "production-bridge-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad",
+      "size_bytes": 111807
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 6,
+    "forbidden_side_effect_kinds": [
+      "audit_leaks_into_runtime",
+      "canonical_v13_runtime_edit",
+      "fallback_authority",
+      "full_13x100_proof",
+      "generated_traffic",
+      "literal_case_runtime_branch",
+      "package_rebuild",
+      "package_write",
+      "production_bridge_edit",
+      "raise_global_limit",
+      "restart_global_ibus_daemon",
+      "restart_lay_daemon",
+      "restart_lay_ibus_engine",
+      "runtime_authority_flip",
+      "runtime_deployment",
+      "synthetic_fixture",
+      "target_conditioned_enumerator",
+      "weaken_verifier"
+    ],
+    "identity_contracts": 3,
+    "invariants": 6,
+    "planned_side_effect_kinds": [
+      "documentation_edit",
+      "filesystem_read",
+      "proof_artifact_write",
+      "remote_test",
+      "source_edit"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 1,
+    "source_checks": 3,
+    "tests": 11
+  },
+  "manifest_sha256": "234003c236bfab99eb8d94eb8887f665a2e4d6fe667eb2de9b0220b0e0112a27",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "contour-owner-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs",
+      "sha256": "9e8358b32ac721d2541332d6175e920d8bf4ce4bf98ca710737e4e058dc95677",
+      "size_bytes": 21028
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "production-bridge-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad",
+      "size_bytes": 111807
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "canonical-v13-runtime-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/runtime.rs",
+      "sha256": "cb94bd3ffaf61b31f7cce8d2051ae9087cf8aba26487c037ba6fbeaaa57f0966",
+      "size_bytes": 142756
+    }
+  ],
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_TARGET_BLIND_LEMMA_AUDIT_V8_V2_2026-08-24",
+  "verdict": "READY_TO_IMPLEMENT"
+}

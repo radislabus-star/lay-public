@@ -1,0 +1,139 @@
+{
+  "admission": {
+    "controller": {
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-uv-validity.py",
+      "sha256": "b6d974356507aa38619d06eb9274aca2c7ea4f4a1f48063152d0885269ecdbaa",
+      "size_bytes": 26606
+    },
+    "d1_correction": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_PMU_INTERPRETATION_CORRECTION_V2_2026-08-25/CORRECTION.json",
+      "sha256": "004bc1f5d7cd493525cfb9287e79e8159f983b41a51a2374eaeb7931c72aad38",
+      "size_bytes": 1932
+    },
+    "d1_decision": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/D1_DECISION.json",
+      "sha256": "80530f9f5787f846ce2cf222c1b60e3ae42887ce95a11ac153ec7271cce98baf",
+      "size_bytes": 5361257
+    },
+    "d1_structures": [
+      {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-SINGLE/subject/structure.json",
+        "sha256": "90d24adee563be803c390b41b18b41624b999db37b34c26650cb362f03d06712",
+        "size_bytes": 172206
+      },
+      {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-FIXED/subject/structure.json",
+        "sha256": "90d24adee563be803c390b41b18b41624b999db37b34c26650cb362f03d06712",
+        "size_bytes": 172206
+      },
+      {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-REVERSED/subject/structure.json",
+        "sha256": "90d24adee563be803c390b41b18b41624b999db37b34c26650cb362f03d06712",
+        "size_bytes": 172206
+      }
+    ],
+    "parity_receipt": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_PARITY_V1_2026-08-26/REMOTE_EVIDENCE/D2_PARITY_RECEIPT.json",
+      "sha256": "d2519797c6b21976dc6246830e187391a344acb9ec63a7b5a7816161cf306f74",
+      "size_bytes": 2199
+    },
+    "preflight": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_IMPLEMENTATION_V4_2026-08-25.json",
+      "sha256": "e9d6328b9f610ede73ae2e8d3c819b9728ac0fc5e4c263e9fe25a61978f80f5a",
+      "size_bytes": 98316
+    },
+    "preflight_receipt": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_IMPLEMENTATION_V4_PREFLIGHT_2026-08-25.json",
+      "sha256": "740c008d59fb4689826537e46a35da554bde863358d2c18382f315395ee835e0",
+      "size_bytes": 14171
+    },
+    "remote_controller": {
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-uv-validity-remote.py",
+      "sha256": "a111b0a6f52843493adaab7d5a774413a657f34c01b40a76e17540a8a05ccc79",
+      "size_bytes": 54751
+    },
+    "u_single_salvage": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_U_SINGLE_SALVAGE_V1_2026-08-26/U_SINGLE_SALVAGE_RECEIPT.json",
+      "sha256": "9617502776537ca4181bd9bf195e1fd5b8fbd2679f1dfd00737f128cb88bfe0b",
+      "size_bytes": 2531
+    }
+  },
+  "cargo_invocations": 0,
+  "command_graph": {
+    "cargo_routes": [],
+    "dispatch": {
+      "U": [
+        "provenance",
+        "thermal",
+        "semantic",
+        "perturbation"
+      ],
+      "V": [
+        "provenance",
+        "thermal",
+        "capability",
+        "denominator",
+        "perturbation"
+      ]
+    },
+    "external_actions": [
+      "self-check",
+      "run-once"
+    ],
+    "marker_mutation_routes": [
+      "U-SINGLE",
+      "U-FIXED",
+      "U-REVERSED",
+      "V-FIXED-INSTR",
+      "V-REVERSED-INSTR"
+    ],
+    "perf_record_routes": [],
+    "perf_stat_reachable_only_from": [
+      "V-FIXED-INSTR",
+      "V-REVERSED-INSTR"
+    ],
+    "remote_actions": [
+      "probe-before",
+      "run-once",
+      "probe-after"
+    ],
+    "route_registry": [
+      "U-SINGLE",
+      "U-FIXED",
+      "U-REVERSED",
+      "V-FIXED-INSTR",
+      "V-REVERSED-INSTR"
+    ],
+    "u_routes": [
+      "U-SINGLE",
+      "U-FIXED",
+      "U-REVERSED"
+    ],
+    "v_routes": [
+      "V-FIXED-INSTR",
+      "V-REVERSED-INSTR"
+    ]
+  },
+  "marker_mutations": 0,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_probe_sha256": "7ff8efd67515bda5c8c6b23e0131b7237c7f4c0beed5cac3438660e4ecf9d35c",
+  "route": "V-FIXED-INSTR",
+  "schema": "lay.v10.e1-traversal-d2-primary-only-uv-self-check.v1",
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+  "verdict": "D2_UV_CONTROLLER_VERIFIED_ROUTE_UNRUN"
+}

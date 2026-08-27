@@ -1,0 +1,979 @@
+{
+  "verdict": "PASS",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "w1-dafsa-typed-view-m3-final-materialization-v9-mechanism-decision-v1-route-v2",
+  "domain": "general",
+  "complexity_score": 47,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.1304,
+      "c2": 0.1304,
+      "c3": 0.1304,
+      "c4": 0.1304,
+      "c5": 0.1304,
+      "c6": 0.1304,
+      "c7": 0.1304,
+      "c8": 0.1304
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 16,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.3369,
+      "c2": 0.3299,
+      "c3": 0.3479,
+      "c4": 0.3535,
+      "c5": 0.3382,
+      "c6": 0.3618,
+      "c7": 0.3645,
+      "c8": 0.3908
+    },
+    "source_self_score": 0.3529,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "aggregate-result": "aggregate-result",
+      "causal-boundary": "causal-boundary",
+      "claim-boundary": "claim-boundary",
+      "parity-boundary": "parity-boundary",
+      "reproducibility": "reproducibility",
+      "stop-boundary": "stop-boundary",
+      "successor-boundary": "successor-boundary",
+      "timer-boundary": "timer-boundary"
+    },
+    "scores": {
+      "aggregate-result": 1.0,
+      "causal-boundary": 1.0,
+      "claim-boundary": 1.0,
+      "parity-boundary": 1.0,
+      "reproducibility": 1.0,
+      "stop-boundary": 1.0,
+      "successor-boundary": 1.0,
+      "timer-boundary": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "aggregate-result": 1,
+      "causal-boundary": 1,
+      "claim-boundary": 1,
+      "parity-boundary": 1,
+      "reproducibility": 1,
+      "stop-boundary": 1,
+      "successor-boundary": 1,
+      "timer-boundary": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.3529,
+      "norm": 90.3549,
+      "triads": 8
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "aggregate-result": "aggregate-result",
+      "causal-boundary": "causal-boundary",
+      "claim-boundary": "claim-boundary",
+      "parity-boundary": "parity-boundary",
+      "reproducibility": "reproducibility",
+      "stop-boundary": "stop-boundary",
+      "successor-boundary": "successor-boundary",
+      "timer-boundary": "timer-boundary"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "aggregate-result": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "causal-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "claim-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "reproducibility": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "stop-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "successor-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "timer-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "aggregate-result": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "causal-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "claim-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "reproducibility": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "stop-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "successor-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "timer-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "aggregate-result": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "aggregate-result",
+        "exact_source_groups": [
+          "aggregate-result"
+        ]
+      },
+      "causal-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "causal-boundary",
+        "exact_source_groups": [
+          "causal-boundary"
+        ]
+      },
+      "claim-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "claim-boundary",
+        "exact_source_groups": [
+          "claim-boundary"
+        ]
+      },
+      "parity-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "parity-boundary",
+        "exact_source_groups": [
+          "parity-boundary"
+        ]
+      },
+      "reproducibility": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "reproducibility",
+        "exact_source_groups": [
+          "reproducibility"
+        ]
+      },
+      "stop-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "stop-boundary",
+        "exact_source_groups": [
+          "stop-boundary"
+        ]
+      },
+      "successor-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "successor-boundary",
+        "exact_source_groups": [
+          "successor-boundary"
+        ]
+      },
+      "timer-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "timer-boundary",
+        "exact_source_groups": [
+          "timer-boundary"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "aggregate-result": {
+        "aggregate-result": 1.0,
+        "causal-boundary": -0.041,
+        "claim-boundary": 0.0137,
+        "parity-boundary": -0.0176,
+        "reproducibility": -0.0195,
+        "stop-boundary": 0.0098,
+        "successor-boundary": 0.0059,
+        "timer-boundary": 0.0
+      },
+      "causal-boundary": {
+        "aggregate-result": -0.041,
+        "causal-boundary": 1.0,
+        "claim-boundary": -0.0156,
+        "parity-boundary": 0.0156,
+        "reproducibility": -0.0098,
+        "stop-boundary": -0.0039,
+        "successor-boundary": 0.043,
+        "timer-boundary": -0.0332
+      },
+      "claim-boundary": {
+        "aggregate-result": 0.0137,
+        "causal-boundary": -0.0156,
+        "claim-boundary": 1.0,
+        "parity-boundary": 0.0117,
+        "reproducibility": -0.0176,
+        "stop-boundary": 0.0,
+        "successor-boundary": -0.0117,
+        "timer-boundary": 0.002
+      },
+      "parity-boundary": {
+        "aggregate-result": -0.0176,
+        "causal-boundary": 0.0156,
+        "claim-boundary": 0.0117,
+        "parity-boundary": 1.0,
+        "reproducibility": 0.041,
+        "stop-boundary": 0.0469,
+        "successor-boundary": -0.0195,
+        "timer-boundary": -0.0488
+      },
+      "reproducibility": {
+        "aggregate-result": -0.0195,
+        "causal-boundary": -0.0098,
+        "claim-boundary": -0.0176,
+        "parity-boundary": 0.041,
+        "reproducibility": 1.0,
+        "stop-boundary": 0.0254,
+        "successor-boundary": -0.0137,
+        "timer-boundary": -0.0078
+      },
+      "stop-boundary": {
+        "aggregate-result": 0.0098,
+        "causal-boundary": -0.0039,
+        "claim-boundary": 0.0,
+        "parity-boundary": 0.0469,
+        "reproducibility": 0.0254,
+        "stop-boundary": 1.0,
+        "successor-boundary": 0.0117,
+        "timer-boundary": 0.0137
+      },
+      "successor-boundary": {
+        "aggregate-result": 0.0059,
+        "causal-boundary": 0.043,
+        "claim-boundary": -0.0117,
+        "parity-boundary": -0.0195,
+        "reproducibility": -0.0137,
+        "stop-boundary": 0.0117,
+        "successor-boundary": 1.0,
+        "timer-boundary": 0.0059
+      },
+      "timer-boundary": {
+        "aggregate-result": 0.0,
+        "causal-boundary": -0.0332,
+        "claim-boundary": 0.002,
+        "parity-boundary": -0.0488,
+        "reproducibility": -0.0078,
+        "stop-boundary": 0.0137,
+        "successor-boundary": 0.0059,
+        "timer-boundary": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "aggregate-result": {
+          "gravity": 1.0,
+          "owner": "aggregate-result",
+          "owners": {
+            "aggregate-result": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "causal-boundary": {
+          "gravity": 1.0,
+          "owner": "causal-boundary",
+          "owners": {
+            "causal-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "claim-boundary": {
+          "gravity": 1.0,
+          "owner": "claim-boundary",
+          "owners": {
+            "claim-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "parity-boundary": {
+          "gravity": 1.0,
+          "owner": "parity-boundary",
+          "owners": {
+            "parity-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "reproducibility": {
+          "gravity": 1.0,
+          "owner": "reproducibility",
+          "owners": {
+            "reproducibility": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "stop-boundary": {
+          "gravity": 1.0,
+          "owner": "stop-boundary",
+          "owners": {
+            "stop-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "successor-boundary": {
+          "gravity": 1.0,
+          "owner": "successor-boundary",
+          "owners": {
+            "successor-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "timer-boundary": {
+          "gravity": 1.0,
+          "owner": "timer-boundary",
+          "owners": {
+            "timer-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "aggregate-result": {
+          "gravity": 1.0,
+          "owner": "aggregate-result",
+          "owners": {
+            "aggregate-result": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "causal-boundary": {
+          "gravity": 1.0,
+          "owner": "causal-boundary",
+          "owners": {
+            "causal-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "claim-boundary": {
+          "gravity": 1.0,
+          "owner": "claim-boundary",
+          "owners": {
+            "claim-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "parity-boundary": {
+          "gravity": 1.0,
+          "owner": "parity-boundary",
+          "owners": {
+            "parity-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "reproducibility": {
+          "gravity": 1.0,
+          "owner": "reproducibility",
+          "owners": {
+            "reproducibility": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "stop-boundary": {
+          "gravity": 1.0,
+          "owner": "stop-boundary",
+          "owners": {
+            "stop-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "successor-boundary": {
+          "gravity": 1.0,
+          "owner": "successor-boundary",
+          "owners": {
+            "successor-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "timer-boundary": {
+          "gravity": 1.0,
+          "owner": "timer-boundary",
+          "owners": {
+            "timer-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "aggregate-result": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate keeps the exact measured aggregate claim",
+            "gate_us owns 99.2595087301865 percent of the fixed tail and is largest in 16 of 16 rows"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "aggregate-result"
+          ],
+          "scopes": [
+            "aggregate-result"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "causal-boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "48 and 51 surface cases are much cheaper than several lower-cardinality cases",
+            "candidate preserves the causal limitation"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "causal-boundary"
+          ],
+          "scopes": [
+            "causal-boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "claim-boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate does not invent a submechanism",
+            "no internal predicate or override has a separate v9 timer"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "claim-boundary"
+          ],
+          "scopes": [
+            "claim-boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "parity-boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate keeps observation separate from authority",
+            "observer cannot become a second authority owner"
+          ],
+          "layers": [
+            "test"
+          ],
+          "outputs": [],
+          "owners": [
+            "parity-boundary"
+          ],
+          "scopes": [
+            "parity-boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "reproducibility": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate retains reproducibility evidence without case special-casing",
+            "ordinals 375 371 223 and 366 recur with stable gate ranges"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "reproducibility"
+          ],
+          "scopes": [
+            "reproducibility"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "stop-boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate claims no production authority",
+            "v8r3 remains blocked_latency and v9 is diagnostic only"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "stop-boundary"
+          ],
+          "scopes": [
+            "stop-boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "successor-boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "aggregate result cannot select an optimization",
+            "candidate stops before implementation"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "successor-boundary"
+          ],
+          "scopes": [
+            "successor-boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "timer-boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate uses the exact measured code boundary",
+            "exact timer placement in pinned live.rs source"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "timer-boundary"
+          ],
+          "scopes": [
+            "timer-boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "aggregate-result": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "causal-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "claim-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "reproducibility": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "stop-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "successor-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "timer-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "aggregate-result": {
+          "aggregate-result": 1.0,
+          "causal-boundary": -0.041,
+          "claim-boundary": 0.0137,
+          "parity-boundary": -0.0176,
+          "reproducibility": -0.0195,
+          "stop-boundary": 0.0098,
+          "successor-boundary": 0.0059,
+          "timer-boundary": 0.0
+        },
+        "causal-boundary": {
+          "aggregate-result": -0.041,
+          "causal-boundary": 1.0,
+          "claim-boundary": -0.0156,
+          "parity-boundary": 0.0156,
+          "reproducibility": -0.0098,
+          "stop-boundary": -0.0039,
+          "successor-boundary": 0.043,
+          "timer-boundary": -0.0332
+        },
+        "claim-boundary": {
+          "aggregate-result": 0.0137,
+          "causal-boundary": -0.0156,
+          "claim-boundary": 1.0,
+          "parity-boundary": 0.0117,
+          "reproducibility": -0.0176,
+          "stop-boundary": 0.0,
+          "successor-boundary": -0.0117,
+          "timer-boundary": 0.002
+        },
+        "parity-boundary": {
+          "aggregate-result": -0.0176,
+          "causal-boundary": 0.0156,
+          "claim-boundary": 0.0117,
+          "parity-boundary": 1.0,
+          "reproducibility": 0.041,
+          "stop-boundary": 0.0469,
+          "successor-boundary": -0.0195,
+          "timer-boundary": -0.0488
+        },
+        "reproducibility": {
+          "aggregate-result": -0.0195,
+          "causal-boundary": -0.0098,
+          "claim-boundary": -0.0176,
+          "parity-boundary": 0.041,
+          "reproducibility": 1.0,
+          "stop-boundary": 0.0254,
+          "successor-boundary": -0.0137,
+          "timer-boundary": -0.0078
+        },
+        "stop-boundary": {
+          "aggregate-result": 0.0098,
+          "causal-boundary": -0.0039,
+          "claim-boundary": 0.0,
+          "parity-boundary": 0.0469,
+          "reproducibility": 0.0254,
+          "stop-boundary": 1.0,
+          "successor-boundary": 0.0117,
+          "timer-boundary": 0.0137
+        },
+        "successor-boundary": {
+          "aggregate-result": 0.0059,
+          "causal-boundary": 0.043,
+          "claim-boundary": -0.0117,
+          "parity-boundary": -0.0195,
+          "reproducibility": -0.0137,
+          "stop-boundary": 0.0117,
+          "successor-boundary": 1.0,
+          "timer-boundary": 0.0059
+        },
+        "timer-boundary": {
+          "aggregate-result": 0.0,
+          "causal-boundary": -0.0332,
+          "claim-boundary": 0.002,
+          "parity-boundary": -0.0488,
+          "reproducibility": -0.0078,
+          "stop-boundary": 0.0137,
+          "successor-boundary": 0.0059,
+          "timer-boundary": 1.0
+        }
+      },
+      "source": {
+        "aggregate-result": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "causal-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "claim-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "reproducibility": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "stop-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "successor-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "timer-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "aggregate-result": 1,
+      "causal-boundary": 1,
+      "claim-boundary": 1,
+      "parity-boundary": 1,
+      "reproducibility": 1,
+      "stop-boundary": 1,
+      "successor-boundary": 1,
+      "timer-boundary": 1
+    },
+    "stable_groups": [
+      "aggregate-result",
+      "causal-boundary",
+      "claim-boundary",
+      "parity-boundary",
+      "reproducibility",
+      "stop-boundary",
+      "successor-boundary",
+      "timer-boundary"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [],
+  "agent_decision": {
+    "action": "SAFE_TO_EDIT",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Proceed only within the checked route boundary.",
+    "repair_count": 0,
+    "repair_queue": [],
+    "safe_to_edit": true
+  },
+  "explanation": [
+    "Candidate structure is coherent with source triads.",
+    "Structural coherence only: trusted proof was not established and authority is false."
+  ],
+  "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+  "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-final-materialization-v9-mechanism-decision-v1-route-v2.trace.json"
+}

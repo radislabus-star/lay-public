@@ -1,0 +1,91 @@
+{
+  "inputs": {
+    "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_INTERPRETATION_V1_2026-08-26.md": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_INTERPRETATION_V1_2026-08-26.md",
+      "sha256": "5624f6337c8df385e317f5a08b7886d3aa30768c10920bb34fa94639a2063856",
+      "size_bytes": 5313
+    },
+    "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_IMPLEMENTATION_V2_2026-08-26.json": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_IMPLEMENTATION_V2_2026-08-26.json",
+      "sha256": "24fa7822e4eeb7bba11ea7bd7f2f9db39a10d71da51e3bfbe9ca98aff71441d4",
+      "size_bytes": 13601
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json",
+      "sha256": "2b93aedf11101a8bc5fc7ed4ffaa056b50476d96cdd2eabf9d185f59ee60f846",
+      "size_bytes": 390324
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/D5_ROUTE_RECEIPT.json": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/D5_ROUTE_RECEIPT.json",
+      "sha256": "d337dcddcd74e95e8009e520347f6e3cf6c1319c46bf7e896862200af8f5cbbf",
+      "size_bytes": 68243
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/OBSERVATION.json": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/OBSERVATION.json",
+      "sha256": "55501b090feb7d525d5942e732795006c3bc9e626386bf381b7174364ab3fe44",
+      "size_bytes": 61044
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/perf.data": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/perf.data",
+      "sha256": "02c140c235641ed177139e8fd5b37eb4cdcc5fc952443326d944c2c7322d62b6",
+      "size_bytes": 7126578
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/raw-records.stdout": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/raw-records.stdout",
+      "sha256": "bdfd0b7bf9786ad20586606156df78a810c72d0c4fca128b30c9215d461cb89a",
+      "size_bytes": 151281354
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/samples.stdout": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/samples.stdout",
+      "sha256": "e50f8c8f002ea6ea7433c4375239ba101eb54bd3a6b4bde44156e43210ac21a0",
+      "size_bytes": 30432151
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/subject/SUBJECT_RECEIPT.json": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/subject/SUBJECT_RECEIPT.json",
+      "sha256": "341fdfb60d4874f2a0ec0b7458561bdba22706286aa2be6492733ff1d4a5119f",
+      "size_bytes": 1737
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_IMPLEMENTATION_V2_PREFLIGHT_2026-08-26.json": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_IMPLEMENTATION_V2_PREFLIGHT_2026-08-26.json",
+      "sha256": "4025eb23fbcf459eb2b5d20babdc1aac8a2688795bad5e936331bd16bd2fcc14",
+      "size_bytes": 9025
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_STRUCTURAL_REVIEW_V1_2026-08-26.json": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_STRUCTURAL_REVIEW_V1_2026-08-26.json",
+      "sha256": "318a8c8327373f7067ec793a00c4ad8f153aaf0255aa8e30f15aec4a1a0545c4",
+      "size_bytes": 1134
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_TERMINAL_AUDIT_V1_2026-08-26/D5_TERMINAL_AUDIT_RECEIPT.json": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_TERMINAL_AUDIT_V1_2026-08-26/D5_TERMINAL_AUDIT_RECEIPT.json",
+      "sha256": "b37e24bd87d063063d83dd30f084d7fda81fc9bdd4f1759a1643b2e6809c741a",
+      "size_bytes": 2964
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_U4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/D5_ROUTE_RECEIPT.json": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_U4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/D5_ROUTE_RECEIPT.json",
+      "sha256": "229b901d65516d7eb6041668d2974409a721e601a6acb03d52d66929895903e4",
+      "size_bytes": 45133
+    }
+  },
+  "manifests": {
+    "d5-terminal": 7,
+    "map-local": 32,
+    "map-remote": 22,
+    "t4-local": 40,
+    "t4-remote": 30,
+    "u4-local": 29,
+    "u4-remote": 19
+  }
+}

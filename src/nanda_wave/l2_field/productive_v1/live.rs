@@ -14,16 +14,25 @@ use crate::nanda_wave::lexical_grokking::restoration::{
 use crate::nanda_wave::L11SeedSurface;
 use crate::text_case::apply_word_case;
 use crate::typing_transition::target_evidence::{
-    stable_bytes_ref, EnumerationCompletenessV1, MaterialTargetIdentityV1,
-    NormalizationLayoutProfileIdV1, PreparedMaterialKeyV1, SeparatorProfileIdV1,
+    stable_bytes_ref, EnumerationCompletenessV1, EnumerationWorkCountersV1, GroundingNamespaceV1,
+    MaterialTargetIdentityV1, NormalizationLayoutProfileIdV1, PreparedMaterialKeyV1,
+    SeparatorProfileIdV1, TargetRelationV1, VerdictMembershipV1,
 };
 use crate::typing_transition::{action as action_operator, decision::TransitionDecisionCore};
-use crate::word_reader::replace_last_text_word;
+use crate::word_reader::{replace_last_text_word, split_edge_whitespace, split_ws_segments};
 
 use super::calibrate::{CandidateProvenanceClassV1, ProductiveCalibratedVerdictV1};
 use super::composite::{CompositeGroundedVerdictV1, CompositeL2LatticeV1, CompositeSurfaceGroupV1};
+use super::contour_birth::{TypedContourBirthEnumerationV1, TypedContourBirthV1};
+#[cfg(test)]
+use super::material_frame::prepare_context_neutral_productive_material_with_contours;
+use super::material_frame::{
+    prepare_context_neutral_productive_material_with_contours_and_exact_peaks, ExactPackageTupleV1,
+    ExactPeakBirthEnumerationV1, PreparedTargetMaterialShadowV1,
+};
 use super::packaged_runtime::{
-    PackagedGroundedLemmaV1, PackagedProductiveCandidateV1, PackagedProductiveRuntimeV1,
+    ContextNeutralProductiveEnumerationV1, PackagedGroundedLemmaV1, PackagedProductiveCandidateV1,
+    PackagedProductiveRuntimeV1,
 };
 use super::scene::{BoundaryKindV1, L2LocalSceneV1, LocalTokenObservationV1};
 
@@ -32,6 +41,8 @@ pub(super) const PRODUCTIVE_V90_GROUNDED_SOURCE_ID: &str = "ProductiveL2V90Groun
 pub(super) const PRODUCTIVE_V90_GROUNDED_WINNER_SOURCE_ID: &str = "ProductiveL2V90GroundedWinner";
 pub(super) const PRODUCTIVE_V90_LAYOUT_SOURCE_ID: &str = "ProductiveL2V90Layout";
 pub(super) const PRODUCTIVE_V90_CONTOUR_SOURCE_ID: &str = "ProductiveL2V90Contour";
+pub(in crate::nanda_wave::l2_field) const PRODUCTIVE_V90_TYPED_EXACT_SOURCE_ID: &str =
+    "ProductiveL2V90TypedExact";
 const MAX_ACTIVE_PACKAGE_LEMMAS: usize = 32;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -89,6 +100,12 @@ struct CanonicalContourProvenance {
     lemma_relations: BTreeMap<u32, CanonicalContourRelation>,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(in crate::nanda_wave::l2_field) enum PreparedFieldMaterialScopeV1 {
+    ContextNeutral,
+    ContextShapedObservation,
+}
+
 /// Immutable L1.1 -> Productive V90 field material. Text replacement and
 /// request-time L3/L4 ranking are intentionally outside this value.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -99,6 +116,8 @@ pub(in crate::nanda_wave::l2_field) struct PreparedCanonicalTokenField {
     common_l3_required: bool,
     authority: L2FieldAuthority,
     contour_provenance: CanonicalContourProvenance,
+    prepared_material: PreparedTargetMaterialShadowV1,
+    material_scope: PreparedFieldMaterialScopeV1,
 }
 
 impl PreparedCanonicalTokenField {
@@ -107,6 +126,8 @@ impl PreparedCanonicalTokenField {
         contour_provenance: CanonicalContourProvenance,
         productive_package_sha256: [u8; 32],
         lattice: CompositeL2LatticeV1,
+        prepared_material: PreparedTargetMaterialShadowV1,
+        material_scope: PreparedFieldMaterialScopeV1,
     ) -> Self {
         let common_l3_required = lattice_surface_count(&lattice) > 1;
         let authority = live_authority(&lattice, common_l3_required);
@@ -117,6 +138,8 @@ impl PreparedCanonicalTokenField {
             common_l3_required,
             authority,
             contour_provenance,
+            prepared_material,
+            material_scope,
         }
     }
 
@@ -143,6 +166,97 @@ impl PreparedCanonicalTokenField {
 
     pub(in crate::nanda_wave::l2_field) fn common_completeness(&self) -> EnumerationCompletenessV1 {
         self.lattice.common_completeness()
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn prepared_material(
+        &self,
+    ) -> &PreparedTargetMaterialShadowV1 {
+        &self.prepared_material
+    }
+
+    pub(in crate::nanda_wave::l2_field) const fn material_scope(
+        &self,
+    ) -> PreparedFieldMaterialScopeV1 {
+        self.material_scope
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn legacy_authority(&self) -> &L2FieldAuthority {
+        &self.authority
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn replacement_lattice_surfaces(&self) -> Vec<&str> {
+        self.lattice
+            .surface_groups
+            .iter()
+            .filter(|group| {
+                !group
+                    .normalized_surface
+                    .eq_ignore_ascii_case(&self.observed)
+            })
+            .map(|group| group.normalized_surface.as_str())
+            .collect()
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn replacement_grounded_l11_surfaces(&self) -> Vec<&str> {
+        self.lattice
+            .grounded_candidates
+            .iter()
+            .filter(|candidate| {
+                !candidate
+                    .normalized_surface
+                    .eq_ignore_ascii_case(&self.observed)
+            })
+            .map(|candidate| candidate.normalized_surface.as_str())
+            .collect()
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn original_has_grounded_l11_evidence(&self) -> bool {
+        self.lattice.grounded_candidates.iter().any(|candidate| {
+            candidate
+                .normalized_surface
+                .eq_ignore_ascii_case(&self.observed)
+        })
+    }
+
+    #[cfg(test)]
+    pub(in crate::nanda_wave::l2_field) fn exact_peak_candidate_rows(&self) -> Vec<(u32, String)> {
+        self.prepared_material.exact_peak_candidate_rows()
+    }
+
+    #[cfg(test)]
+    pub(in crate::nanda_wave::l2_field) fn exact_peak_certificate_rows(
+        &self,
+    ) -> Vec<(u32, String, u8, String)> {
+        self.prepared_material.exact_peak_certificate_rows()
+    }
+
+    #[cfg(test)]
+    pub(in crate::nanda_wave::l2_field) fn exact_peak_material_completeness(
+        &self,
+    ) -> EnumerationCompletenessV1 {
+        self.prepared_material.completeness()
+    }
+
+    #[cfg(test)]
+    pub(in crate::nanda_wave::l2_field) fn exact_peak_lattice_surfaces(&self) -> Vec<&str> {
+        self.lattice
+            .surface_groups
+            .iter()
+            .filter(|group| group.exact_peak_birth)
+            .map(|group| group.normalized_surface.as_str())
+            .collect()
+    }
+
+    #[cfg(test)]
+    pub(in crate::nanda_wave::l2_field) fn exact_peak_surface_has_independent_authority(
+        &self,
+        surface: &str,
+    ) -> bool {
+        matches!(
+            &self.authority,
+            L2FieldAuthority::Winner { surface: winner }
+                if winner.eq_ignore_ascii_case(surface)
+        )
     }
 
     pub(in crate::nanda_wave::l2_field) fn common_material_target_identity(
@@ -175,6 +289,57 @@ pub(in crate::nanda_wave::l2_field) fn prepare_live_productive_v1_field(
     form_groundings: &[CanonicalFormGrounding],
     surface_groundings: &[CanonicalSurfaceGrounding],
 ) -> Result<PreparedCanonicalTokenField, String> {
+    prepare_live_productive_v1_field_inner(
+        context_prefix,
+        observed,
+        canonical_index,
+        runtime,
+        contour_seeds,
+        form_groundings,
+        surface_groundings,
+        ExactPeakBirthEnumerationV1::complete_empty(),
+    )
+}
+
+pub(in crate::nanda_wave::l2_field) fn prepare_live_productive_v1_field_with_exact_peaks(
+    context_prefix: &str,
+    observed: &str,
+    canonical_index: &StandaloneL2Field,
+    runtime: &PackagedProductiveRuntimeV1,
+    contour_seeds: &[CanonicalContourSeed],
+    form_groundings: &[CanonicalFormGrounding],
+    surface_groundings: &[CanonicalSurfaceGrounding],
+    exact_peaks: ExactPeakBirthEnumerationV1,
+) -> Result<PreparedCanonicalTokenField, String> {
+    prepare_live_productive_v1_field_inner(
+        context_prefix,
+        observed,
+        canonical_index,
+        runtime,
+        contour_seeds,
+        form_groundings,
+        surface_groundings,
+        exact_peaks,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn prepare_live_productive_v1_field_inner(
+    context_prefix: &str,
+    observed: &str,
+    canonical_index: &StandaloneL2Field,
+    runtime: &PackagedProductiveRuntimeV1,
+    contour_seeds: &[CanonicalContourSeed],
+    form_groundings: &[CanonicalFormGrounding],
+    surface_groundings: &[CanonicalSurfaceGrounding],
+    exact_peaks: ExactPeakBirthEnumerationV1,
+) -> Result<PreparedCanonicalTokenField, String> {
+    let normalized_observed = super::super::compositional::normalize_surface(observed);
+    let exact_peak_surfaces = exact_peaks
+        .normalized_surfaces()
+        .filter(|surface| !surface.eq_ignore_ascii_case(&normalized_observed))
+        .map(str::to_string)
+        .collect::<BTreeSet<_>>();
     let l11_seeds = contour_seeds
         .iter()
         .map(|evidence| evidence.seed.clone())
@@ -232,6 +397,31 @@ pub(in crate::nanda_wave::l2_field) fn prepare_live_productive_v1_field(
         return Err(format!("productive V90 integrity error: {error}"));
     }
 
+    let contour_births = shared_field_contour_births(
+        observed,
+        &restoration,
+        canonical_index,
+        contour_seeds,
+        form_groundings,
+        surface_groundings,
+    );
+    let prepared_material =
+        prepare_context_neutral_productive_material_with_contours_and_exact_peaks(
+            observed,
+            ExactPackageTupleV1 {
+                l11_sha256: runtime.l11_package_sha256(),
+                canonical_l2_sha256: runtime.canonical_l2_package_sha256(),
+                productive_sha256: runtime.package_sha256(),
+            },
+            ContextNeutralProductiveEnumerationV1 {
+                readout: productive.clone(),
+                productive_work: EnumerationWorkCountersV1::default(),
+                aggregate_work: EnumerationWorkCountersV1::default(),
+                work_budget_exceeded: false,
+            },
+            contour_births,
+            exact_peaks,
+        )?;
     let surface_by_terminal = l11_seeds
         .iter()
         .filter_map(|seed| {
@@ -250,6 +440,7 @@ pub(in crate::nanda_wave::l2_field) fn prepare_live_productive_v1_field(
             .iter()
             .map(|grounding| grounding.normalized_surface.clone()),
     )?;
+    lattice.merge_exact_peak_surfaces(exact_peak_surfaces)?;
     if !lattice.grounded_winner_is_preserved() {
         return Err("productive V90 dropped the grounded L1.1 winner".to_string());
     }
@@ -259,7 +450,170 @@ pub(in crate::nanda_wave::l2_field) fn prepare_live_productive_v1_field(
         contour_provenance,
         runtime.package_sha256(),
         lattice,
+        prepared_material,
+        PreparedFieldMaterialScopeV1::ContextShapedObservation,
     ))
+}
+
+fn shared_field_contour_births(
+    observed: &str,
+    restoration: &RestorationReadout,
+    canonical_index: &StandaloneL2Field,
+    contour_seeds: &[CanonicalContourSeed],
+    form_groundings: &[CanonicalFormGrounding],
+    surface_groundings: &[CanonicalSurfaceGrounding],
+) -> TypedContourBirthEnumerationV1 {
+    let mut births = BTreeMap::<
+        (
+            String,
+            GroundingNamespaceV1,
+            u32,
+            TargetRelationV1,
+            VerdictMembershipV1,
+        ),
+        TypedContourBirthV1,
+    >::new();
+    let l11_tied = match restoration {
+        RestorationReadout::Tied { candidates, .. } => candidates
+            .iter()
+            .map(|candidate| candidate.terminal_id)
+            .collect::<BTreeSet<_>>(),
+        _ => BTreeSet::new(),
+    };
+    for evidence in contour_seeds {
+        let Some(terminal_id) = evidence.seed.terminal_id else {
+            continue;
+        };
+        let membership = if evidence.seed.authority {
+            VerdictMembershipV1::L11Winner
+        } else if l11_tied.contains(&terminal_id) {
+            VerdictMembershipV1::L11Tied
+        } else {
+            VerdictMembershipV1::Grounded
+        };
+        insert_shared_contour_birth(
+            &mut births,
+            observed,
+            &evidence.query_surface,
+            &evidence.seed.surface,
+            GroundingNamespaceV1::L11Terminal,
+            terminal_id,
+            shared_target_relation(evidence.relation),
+            membership,
+            evidence.seed.score_milli,
+        );
+    }
+    for grounding in form_groundings {
+        insert_shared_contour_birth(
+            &mut births,
+            observed,
+            observed,
+            &grounding.normalized_surface,
+            GroundingNamespaceV1::CanonicalForm,
+            grounding.form_ref,
+            shared_target_relation(grounding.relation),
+            VerdictMembershipV1::Grounded,
+            grounding.support_milli,
+        );
+    }
+    for grounding in surface_groundings {
+        let Some(form_ref) = canonical_index.form_ref_for_surface(&grounding.normalized_surface)
+        else {
+            continue;
+        };
+        insert_shared_contour_birth(
+            &mut births,
+            observed,
+            observed,
+            &grounding.normalized_surface,
+            GroundingNamespaceV1::CanonicalForm,
+            form_ref,
+            shared_target_relation(grounding.relation),
+            VerdictMembershipV1::Grounded,
+            grounding.support_milli,
+        );
+    }
+    let births = births.into_values().collect::<Vec<_>>();
+    let mut digest_bytes = b"lay-shared-canonical-field-contours-v1\0".to_vec();
+    for birth in &births {
+        digest_bytes.extend_from_slice(&(birth.normalized_surface.len() as u64).to_le_bytes());
+        digest_bytes.extend_from_slice(birth.normalized_surface.as_bytes());
+        digest_bytes.push(birth.grounding_namespace as u8);
+        digest_bytes.extend_from_slice(&birth.grounding_ref.to_le_bytes());
+        digest_bytes.push(birth.relation as u8);
+        digest_bytes.push(birth.verdict_membership as u8);
+    }
+    let first = stable_bytes_ref(&digest_bytes) as u64;
+    digest_bytes.push(1);
+    let second = stable_bytes_ref(&digest_bytes) as u64;
+    TypedContourBirthEnumerationV1 {
+        logical_match_count: births.len(),
+        births,
+        work: EnumerationWorkCountersV1::default(),
+        all_seen_digest: [first, second],
+        overflow_reason: None,
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn insert_shared_contour_birth(
+    births: &mut BTreeMap<
+        (
+            String,
+            GroundingNamespaceV1,
+            u32,
+            TargetRelationV1,
+            VerdictMembershipV1,
+        ),
+        TypedContourBirthV1,
+    >,
+    observed: &str,
+    query_surface: &str,
+    surface: &str,
+    namespace: GroundingNamespaceV1,
+    grounding_ref: u32,
+    relation: TargetRelationV1,
+    membership: VerdictMembershipV1,
+    support_milli: u32,
+) {
+    let normalized_surface = super::super::compositional::normalize_surface(surface);
+    if normalized_surface.is_empty() {
+        return;
+    }
+    let mut derivation_bytes = b"lay-shared-canonical-field-derivation-v1\0".to_vec();
+    for value in [observed, query_surface, normalized_surface.as_str()] {
+        derivation_bytes.extend_from_slice(&(value.len() as u64).to_le_bytes());
+        derivation_bytes.extend_from_slice(value.as_bytes());
+    }
+    let operator_ref = 0x5348_0000_u32 | u32::from(relation as u8);
+    let derivation_ref = stable_bytes_ref(&derivation_bytes);
+    let key = (
+        normalized_surface.clone(),
+        namespace,
+        grounding_ref,
+        relation,
+        membership,
+    );
+    births.entry(key).or_insert(TypedContourBirthV1 {
+        normalized_surface,
+        grounding_namespace: namespace,
+        grounding_ref,
+        relation,
+        operator_ref,
+        derivation_ref,
+        verdict_membership: membership,
+        support_milli: support_milli.min(u32::from(u16::MAX)) as u16,
+    });
+}
+
+const fn shared_target_relation(relation: CanonicalContourRelation) -> TargetRelationV1 {
+    match relation {
+        CanonicalContourRelation::ExactLayout => TargetRelationV1::ExactLayout,
+        CanonicalContourRelation::LayoutThenTypo => TargetRelationV1::LayoutThenTypo,
+        CanonicalContourRelation::Identity | CanonicalContourRelation::InverseGeometry => {
+            TargetRelationV1::L11Restoration
+        }
+    }
 }
 
 pub(in crate::nanda_wave::l2_field) fn materialize_live_productive_v1_field(
@@ -270,12 +624,14 @@ pub(in crate::nanda_wave::l2_field) fn materialize_live_productive_v1_field(
     if field.observed != observed {
         return Err("productive V90 field token identity mismatch".to_string());
     }
+    let exact_layout_surfaces = field.prepared_material.exact_peak_layout_surfaces();
     let candidates = materialize_live_candidates(
         original,
         observed,
         &field.lattice,
         field.common_l3_required,
         &field.contour_provenance,
+        &exact_layout_surfaces,
     )?;
     Ok(CanonicalL2FieldReadout::new(
         candidates,
@@ -297,8 +653,12 @@ fn materialize_live_candidates(
     lattice: &CompositeL2LatticeV1,
     common_l3_required: bool,
     contour_provenance: &CanonicalContourProvenance,
+    exact_layout_surfaces: &BTreeSet<String>,
 ) -> Result<Vec<UnifiedCorrectionCandidate>, String> {
     let trace_stages = std::env::var_os("LAY_L2_FIELD_TRACE").is_some();
+    #[cfg(test)]
+    let admission_trace_session =
+        crate::typing_transition::proposal_admission::begin_admission_trace_session()?;
     let setup_started = trace_stages.then(std::time::Instant::now);
     let protected_surface = lattice
         .grounded_candidates
@@ -344,8 +704,14 @@ fn materialize_live_candidates(
         }
         let stage_started = trace_stages.then(std::time::Instant::now);
         let projected = apply_word_case(observed, &group.normalized_surface);
-        let replacement = replace_last_text_word(original, &projected)
-            .ok_or_else(|| "productive V90 cannot replace the active word".to_string())?;
+        let replacement = if group.exact_peak_birth
+            && exact_layout_surfaces.contains(&group.normalized_surface)
+        {
+            replace_last_exact_layout_token(original, &projected)
+        } else {
+            replace_last_text_word(original, &projected)
+        }
+        .ok_or_else(|| "productive V90 cannot replace the active word".to_string())?;
         let productive_nodes = productive_by_surface
             .get(group.normalized_surface.as_str())
             .cloned()
@@ -387,17 +753,27 @@ fn materialize_live_candidates(
             origin,
         );
         let is_protected = protected_surface == Some(group.normalized_surface.as_str());
-        if !candidate_has_live_authority(
+        #[cfg(test)]
+        let post_override_started = admission_trace_session.post_override_started();
+        let live_authority_override = !candidate_has_live_authority(
             &field_authority,
             origin,
             is_protected,
             &group.normalized_surface,
-        ) && gate.action == CandidateGateAction::Eligible
-        {
+        ) && gate.action == CandidateGateAction::Eligible;
+        if live_authority_override {
             gate = CandidateGateDecision {
                 action: CandidateGateAction::SuggestOnly,
                 reason: live_authority_deferral_reason(&field_authority),
             };
+        }
+        #[cfg(test)]
+        if let Some(started) = post_override_started {
+            crate::typing_transition::proposal_admission::record_live_authority_override(
+                started.elapsed(),
+                live_authority_override,
+                &gate,
+            );
         }
         gate_us += stage_started
             .map(|started| started.elapsed().as_micros())
@@ -410,6 +786,8 @@ fn materialize_live_candidates(
             PRODUCTIVE_V90_LAYOUT_SOURCE_ID
         } else if is_protected {
             PRODUCTIVE_V90_GROUNDED_WINNER_SOURCE_ID
+        } else if group.exact_peak_birth {
+            PRODUCTIVE_V90_TYPED_EXACT_SOURCE_ID
         } else if group.contour_grounding {
             PRODUCTIVE_V90_CONTOUR_SOURCE_ID
         } else if !productive_nodes.is_empty() {
@@ -434,6 +812,9 @@ fn materialize_live_candidates(
             .map(|started| started.elapsed().as_micros())
             .unwrap_or_default();
     }
+    #[cfg(test)]
+    let admission_trace_line =
+        admission_trace_session.finish_line(lattice.surface_groups.len(), candidates.len())?;
     if trace_stages {
         eprintln!(
             "productive_v90_materialization_trace surfaces={} emitted={} setup_us={} projection_us={} classify_us={} gate_us={} evidence_us={}",
@@ -446,7 +827,32 @@ fn materialize_live_candidates(
             evidence_us,
         );
     }
+    #[cfg(test)]
+    if let Some(line) = admission_trace_line {
+        eprintln!("{line}");
+    }
     Ok(candidates)
+}
+
+fn replace_last_exact_layout_token(text: &str, replacement: &str) -> Option<String> {
+    let (leading_ws, core, trailing_ws) = split_edge_whitespace(text);
+    let segments = split_ws_segments(core);
+    let replace_index = segments
+        .iter()
+        .enumerate()
+        .rev()
+        .find_map(|(index, (_, is_whitespace))| (!*is_whitespace).then_some(index))?;
+    let mut output = String::with_capacity(text.len().saturating_add(replacement.len()));
+    output.push_str(leading_ws);
+    for (index, (segment, _)) in segments.iter().enumerate() {
+        if index == replace_index {
+            output.push_str(replacement);
+        } else {
+            output.push_str(segment);
+        }
+    }
+    output.push_str(trailing_ws);
+    Some(output)
 }
 
 fn candidate_has_live_authority(
@@ -840,6 +1246,14 @@ mod tests {
     use super::super::types::ProductiveCandidateIdentityV1;
     use super::*;
 
+    #[test]
+    fn exact_layout_replacement_consumes_physical_boundary_keys() {
+        assert_eq!(
+            replace_last_exact_layout_token("  уже [elt.ob[  ", "худеющих").as_deref(),
+            Some("  уже худеющих  ")
+        );
+    }
+
     fn productive_candidate(
         lemma_id: u32,
         target_slot_id: u32,
@@ -888,6 +1302,72 @@ mod tests {
         }
     }
 
+    fn prepared_test_material(
+        observed: &str,
+        package_sha256: [u8; 32],
+        readout: &PackagedProductiveReadoutV1,
+    ) -> PreparedTargetMaterialShadowV1 {
+        prepare_context_neutral_productive_material_with_contours(
+            observed,
+            ExactPackageTupleV1 {
+                l11_sha256: package_sha256,
+                canonical_l2_sha256: package_sha256,
+                productive_sha256: package_sha256,
+            },
+            ContextNeutralProductiveEnumerationV1 {
+                readout: readout.clone(),
+                productive_work: EnumerationWorkCountersV1::default(),
+                aggregate_work: EnumerationWorkCountersV1::default(),
+                work_budget_exceeded: false,
+            },
+            TypedContourBirthEnumerationV1::complete_empty(),
+        )
+        .expect("test material must use the production preparation contract")
+    }
+
+    fn lexical_frame(
+        context: &str,
+        observed: &str,
+        with_coordinates: bool,
+    ) -> crate::lexical_authority_frame::LexicalAuthorityFrameV1 {
+        let config = crate::config::LayConfig::default();
+        let config_identity =
+            crate::lexical_authority_frame::LexicalAuthorityConfigIdentityV1::from_config(&config);
+        let scalar_count = observed.chars().count() as u32;
+        let coordinates = with_coordinates.then(|| {
+            crate::lexical_authority_frame::LexicalAuthorityCoordinatesV1::new(
+                41,
+                [41, 42],
+                43,
+                observed.to_string(),
+                context.to_string(),
+                scalar_count,
+                (scalar_count, scalar_count),
+                String::new(),
+                0,
+                44,
+                config_identity.identity_fingerprint(),
+            )
+            .expect("valid test coordinates")
+        });
+        crate::lexical_authority_frame::LexicalAuthorityFrameV1::from_exact_parts(
+            "/test/cohort".to_string(),
+            Some("focus".to_string()),
+            42,
+            format!("{context}{observed}"),
+            context.to_string(),
+            observed.to_string(),
+            false,
+            true,
+            crate::exact_layout_authority::FactoryEngineProfile::Ru,
+            None,
+            1,
+            2,
+            config_identity,
+        )
+        .with_coordinates(coordinates)
+    }
+
     fn surface_group(
         surface: &str,
         grounded: bool,
@@ -899,6 +1379,7 @@ mod tests {
             productive_identities,
             grounded_protection: false,
             contour_grounding: false,
+            exact_peak_birth: false,
         }
     }
 
@@ -978,6 +1459,28 @@ mod tests {
     }
 
     #[test]
+    fn shared_contour_carries_exact_original_root_to_preservation_material() {
+        let mut births = BTreeMap::new();
+        insert_shared_contour_birth(
+            &mut births,
+            "форм",
+            "форм",
+            "форм",
+            GroundingNamespaceV1::L11Terminal,
+            7,
+            TargetRelationV1::L11Restoration,
+            VerdictMembershipV1::L11Winner,
+            1_000,
+        );
+
+        let birth = births.values().next().expect("exact original root");
+        assert_eq!(birth.normalized_surface, "форм");
+        assert_eq!(birth.grounding_namespace, GroundingNamespaceV1::L11Terminal);
+        assert_eq!(birth.verdict_membership, VerdictMembershipV1::L11Winner);
+        assert_eq!(birth.support_milli, 1_000);
+    }
+
+    #[test]
     fn non_authoritative_single_seed_remains_abstain() {
         let readout = l11_restoration_readout(
             "форма",
@@ -1027,6 +1530,7 @@ mod tests {
             &lattice,
             common_l3_required,
             &CanonicalContourProvenance::default(),
+            &BTreeSet::new(),
         )
         .expect("common L3 candidates");
         assert_eq!(candidates.len(), 2);
@@ -1039,6 +1543,51 @@ mod tests {
                 .iter()
                 .any(|evidence| evidence.lemma_id == 17)
         }));
+    }
+
+    #[test]
+    fn exact_peak_without_independent_authority_is_suggestion_only() {
+        let productive = PackagedProductiveReadoutV1 {
+            verdict: ProductiveCalibratedVerdictV1::Abstain {
+                suggestions: Vec::new(),
+                productive_overflow: false,
+            },
+            candidates: Vec::new(),
+            logical_terminal_count: 0,
+            logical_surface_basin_count: 0,
+            integrity_error: None,
+        };
+        let l11 = RestorationReadout::Abstain {
+            reason: AbstainReason::NoCandidates,
+            geometry_distance: None,
+            candidates: Vec::new(),
+        };
+        let mut lattice = CompositeL2LatticeV1::assemble(&l11, |_| None, productive, None)
+            .expect("empty base lattice");
+        lattice
+            .merge_exact_peak_surfaces(["тяжёл".to_string()])
+            .expect("one exact peak");
+
+        let candidates = materialize_live_candidates(
+            "тжял",
+            "тжял",
+            &lattice,
+            false,
+            &CanonicalContourProvenance::default(),
+            &BTreeSet::new(),
+        )
+        .expect("exact peak materialization");
+
+        assert_eq!(candidates.len(), 1);
+        assert_eq!(
+            candidates[0].source_id,
+            PRODUCTIVE_V90_TYPED_EXACT_SOURCE_ID
+        );
+        assert_eq!(candidates[0].gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(
+            candidates[0].gate.reason,
+            "productive_v90_lattice_abstained"
+        );
     }
 
     #[test]
@@ -1060,6 +1609,7 @@ mod tests {
             geometry_distance: None,
             candidates: Vec::new(),
         };
+        let prepared_material = prepared_test_material("форм", [7; 32], &productive);
         let lattice = CompositeL2LatticeV1::assemble(&l11, |_| None, productive, None)
             .expect("two-slot productive lattice");
         let common_l3_required = lattice_surface_count(&lattice) > 1;
@@ -1071,11 +1621,19 @@ mod tests {
                 &lattice,
                 common_l3_required,
                 &provenance,
+                &BTreeSet::new(),
             )
             .expect("direct materialization"),
             live_authority(&lattice, common_l3_required),
         );
-        let field = PreparedCanonicalTokenField::from_lattice("форм", provenance, [7; 32], lattice);
+        let field = PreparedCanonicalTokenField::from_lattice(
+            "форм",
+            provenance,
+            [7; 32],
+            lattice,
+            prepared_material,
+            PreparedFieldMaterialScopeV1::ContextNeutral,
+        );
 
         let actual = materialize_live_productive_v1_field("нужна форм", "форм", &field)
             .expect("immutable field materialization");
@@ -1129,6 +1687,7 @@ mod tests {
             geometry_distance: None,
             candidates: Vec::new(),
         };
+        let prepared_material = prepared_test_material("форм", [0; 32], &productive);
         let lattice = CompositeL2LatticeV1::assemble(&l11, |_| None, productive, None)
             .expect("empty productive lattice");
         let field = PreparedCanonicalTokenField::from_lattice(
@@ -1136,11 +1695,228 @@ mod tests {
             CanonicalContourProvenance::default(),
             [0; 32],
             lattice,
+            prepared_material,
+            PreparedFieldMaterialScopeV1::ContextNeutral,
         );
 
         let error = materialize_live_productive_v1_field("нужна форма", "форма", &field)
             .expect_err("mismatched token identity must fail closed");
 
         assert_eq!(error, "productive V90 field token identity mismatch");
+    }
+
+    #[test]
+    fn cohort_compare_reuses_one_field_and_preserves_live_authority() {
+        let nominative = productive_candidate(17, 1, 101, "форма");
+        let genitive = productive_candidate(17, 2, 102, "формы");
+        let productive = PackagedProductiveReadoutV1 {
+            verdict: ProductiveCalibratedVerdictV1::Winner {
+                candidate: readout_candidate(&nominative),
+                calibration_stratum_id: 1,
+            },
+            candidates: vec![nominative, genitive],
+            logical_terminal_count: 2,
+            logical_surface_basin_count: 2,
+            integrity_error: None,
+        };
+        let l11 = RestorationReadout::Abstain {
+            reason: AbstainReason::NoCandidates,
+            geometry_distance: None,
+            candidates: Vec::new(),
+        };
+        let prepared_material = prepared_test_material("форм", [7; 32], &productive);
+        let lattice = CompositeL2LatticeV1::assemble(&l11, |_| None, productive, None)
+            .expect("two-slot productive lattice");
+        let field = PreparedCanonicalTokenField::from_lattice(
+            "форм",
+            CanonicalContourProvenance::default(),
+            [7; 32],
+            lattice,
+            prepared_material,
+            PreparedFieldMaterialScopeV1::ContextNeutral,
+        );
+        let authority_before = field.legacy_authority().clone();
+        let frame = lexical_frame("нужна ", "форм", true);
+
+        let compare =
+            super::super::cohort_compare::compare_shared_canonical_cohort(&field, Some(&frame), 91);
+
+        assert_eq!(
+            compare.status,
+            super::super::cohort_compare::CohortCompareStatusV1::Ready
+        );
+        assert_eq!(compare.field_candidate_count, 2);
+        assert_eq!(compare.material_target_count, 2);
+        assert_eq!(compare.retained_field_candidate_count, 2);
+        assert_eq!(compare.grounded_l11_loss_count, 0);
+        assert!(compare.complete_for_authority);
+        assert_eq!(compare.first_divergence, None);
+        assert_eq!(field.legacy_authority(), &authority_before);
+
+        let mut context_shaped = field.clone();
+        context_shaped.material_scope = PreparedFieldMaterialScopeV1::ContextShapedObservation;
+        let context_shaped_compare = super::super::cohort_compare::compare_shared_canonical_cohort(
+            &context_shaped,
+            Some(&frame),
+            91,
+        );
+        assert_eq!(
+            context_shaped_compare.material_scope,
+            PreparedFieldMaterialScopeV1::ContextShapedObservation
+        );
+        assert!(!context_shaped_compare.complete_for_authority);
+        assert_eq!(context_shaped.legacy_authority(), &authority_before);
+    }
+
+    #[test]
+    fn cohort_compare_keeps_original_grounding_outside_replacement_membership() {
+        let replacement = productive_candidate(17, 2, 102, "формы");
+        let productive = PackagedProductiveReadoutV1 {
+            verdict: ProductiveCalibratedVerdictV1::Winner {
+                candidate: readout_candidate(&replacement),
+                calibration_stratum_id: 1,
+            },
+            candidates: vec![replacement],
+            logical_terminal_count: 1,
+            logical_surface_basin_count: 1,
+            integrity_error: None,
+        };
+        let original_seed = L11SeedSurface {
+            terminal_id: Some(7),
+            surface: "форм".to_string(),
+            authority: true,
+            score_milli: 1_000,
+        };
+        let l11 = l11_restoration_readout("форм", std::slice::from_ref(&original_seed));
+        let lattice = CompositeL2LatticeV1::assemble(
+            &l11,
+            |terminal_id| (terminal_id == 7).then(|| "форм".to_string()),
+            productive.clone(),
+            None,
+        )
+        .expect("original plus replacement lattice");
+        let original_birth = TypedContourBirthV1 {
+            normalized_surface: "форм".to_string(),
+            grounding_namespace: GroundingNamespaceV1::L11Terminal,
+            grounding_ref: 7,
+            relation: TargetRelationV1::L11Restoration,
+            operator_ref: 701,
+            derivation_ref: 702,
+            verdict_membership: VerdictMembershipV1::L11Winner,
+            support_milli: 1_000,
+        };
+        let prepared_material = prepare_context_neutral_productive_material_with_contours(
+            "форм",
+            ExactPackageTupleV1 {
+                l11_sha256: [7; 32],
+                canonical_l2_sha256: [7; 32],
+                productive_sha256: [7; 32],
+            },
+            ContextNeutralProductiveEnumerationV1 {
+                readout: productive,
+                productive_work: EnumerationWorkCountersV1::default(),
+                aggregate_work: EnumerationWorkCountersV1::default(),
+                work_budget_exceeded: false,
+            },
+            TypedContourBirthEnumerationV1 {
+                births: vec![original_birth],
+                work: EnumerationWorkCountersV1::default(),
+                logical_match_count: 1,
+                all_seen_digest: [71, 73],
+                overflow_reason: None,
+            },
+        )
+        .expect("separate original material");
+        let field = PreparedCanonicalTokenField::from_lattice(
+            "форм",
+            CanonicalContourProvenance::default(),
+            [7; 32],
+            lattice,
+            prepared_material,
+            PreparedFieldMaterialScopeV1::ContextNeutral,
+        );
+        let frame = lexical_frame("нужна ", "форм", true);
+
+        let compare =
+            super::super::cohort_compare::compare_shared_canonical_cohort(&field, Some(&frame), 91);
+
+        assert_eq!(
+            compare.status,
+            super::super::cohort_compare::CohortCompareStatusV1::Ready
+        );
+        assert_eq!(compare.field_candidate_count, 1);
+        assert_eq!(compare.material_target_count, 1);
+        assert_eq!(compare.retained_field_candidate_count, 1);
+        assert_eq!(compare.grounded_l11_loss_count, 0);
+        assert!(compare.unretained_field_candidate_surfaces.is_empty());
+        assert!(compare.lost_grounded_l11_surfaces.is_empty());
+        assert!(field.original_has_grounded_l11_evidence());
+        assert!(field
+            .prepared_material()
+            .original_has_grounded_l11_evidence());
+    }
+
+    #[test]
+    fn unavailable_cohort_comparison_cannot_change_live_authority() {
+        let candidate = productive_candidate(17, 1, 101, "форма");
+        let productive = PackagedProductiveReadoutV1 {
+            verdict: ProductiveCalibratedVerdictV1::Winner {
+                candidate: readout_candidate(&candidate),
+                calibration_stratum_id: 1,
+            },
+            candidates: vec![candidate],
+            logical_terminal_count: 1,
+            logical_surface_basin_count: 1,
+            integrity_error: None,
+        };
+        let l11 = RestorationReadout::Abstain {
+            reason: AbstainReason::NoCandidates,
+            geometry_distance: None,
+            candidates: Vec::new(),
+        };
+        let prepared_material = prepared_test_material("форм", [7; 32], &productive);
+        let lattice = CompositeL2LatticeV1::assemble(&l11, |_| None, productive, None)
+            .expect("single-slot productive lattice");
+        let field = PreparedCanonicalTokenField::from_lattice(
+            "форм",
+            CanonicalContourProvenance::default(),
+            [7; 32],
+            lattice,
+            prepared_material,
+            PreparedFieldMaterialScopeV1::ContextNeutral,
+        );
+        let authority_before = field.legacy_authority().clone();
+
+        let missing =
+            super::super::cohort_compare::compare_shared_canonical_cohort(&field, None, 91);
+        let no_coordinates = lexical_frame("нужна ", "форм", false);
+        let incomplete = super::super::cohort_compare::compare_shared_canonical_cohort(
+            &field,
+            Some(&no_coordinates),
+            91,
+        );
+        let wrong_token = lexical_frame("нужна ", "форма", true);
+        let mismatch = super::super::cohort_compare::compare_shared_canonical_cohort(
+            &field,
+            Some(&wrong_token),
+            91,
+        );
+
+        assert_eq!(
+            missing.status,
+            super::super::cohort_compare::CohortCompareStatusV1::MissingFrame
+        );
+        assert_eq!(
+            incomplete.status,
+            super::super::cohort_compare::CohortCompareStatusV1::MissingCoordinates
+        );
+        assert_eq!(
+            mismatch.status,
+            super::super::cohort_compare::CohortCompareStatusV1::FrameMismatch
+        );
+        assert!(!missing.complete_for_authority);
+        assert!(!incomplete.complete_for_authority);
+        assert!(!mismatch.complete_for_authority);
+        assert_eq!(field.legacy_authority(), &authority_before);
     }
 }

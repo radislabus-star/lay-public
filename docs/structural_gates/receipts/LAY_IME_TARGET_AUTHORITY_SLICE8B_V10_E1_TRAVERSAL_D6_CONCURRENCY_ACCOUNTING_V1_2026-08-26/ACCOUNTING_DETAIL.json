@@ -1,0 +1,462 @@
+{
+  "claim_boundary": {
+    "aggregate_accounting_complete": true,
+    "microarchitectural_root_cause_isolated": false,
+    "optimization_authority": false,
+    "production_twenty_worker_concurrency_established": false
+  },
+  "denominator": {
+    "examined_edges_per_round": 25145756,
+    "measured_edges": 502915120,
+    "measured_rounds": 20
+  },
+  "fixed_minus_single_ns_per_edge": 18.770001603849174,
+  "paired_core_class": {
+    "E": {
+      "edges": 395310780,
+      "ns_per_edge": 46.75424073181106,
+      "traversal_cpu_ns": 18482455372
+    },
+    "E_minus_P_ns_per_edge": 3.7773763746083517,
+    "E_over_P": 1.0878932521277644,
+    "P": {
+      "edges": 395310780,
+      "ns_per_edge": 42.97686435720271,
+      "traversal_cpu_ns": 16989217771
+    },
+    "crossing_workers": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ]
+  },
+  "pmu_accounting": {
+    "B5": {
+      "cycles_per_request": 10307715.70157068,
+      "instructions_per_request": 42378604.08638743,
+      "ipc": 4.111347781927068,
+      "task_clock_ms_per_request": 2.718744138743456
+    },
+    "B6": {
+      "cycles_per_request": 14178114.9039857,
+      "instructions_per_request": 42388812.24250459,
+      "ipc": 2.9897354147262836,
+      "task_clock_ms_per_request": 4.691073743455497
+    },
+    "combined_factor": 1.7254561312355083,
+    "effective_frequency_ghz": {
+      "B5": 3.791351879965682,
+      "B6": 3.0223602696004392
+    },
+    "factors": {
+      "frequency_loss": 1.2544341315295626,
+      "instructions": 1.0002408799519764,
+      "ipc_loss": 1.3751543904775503
+    },
+    "observed_fixed_ns_per_edge": 44.735012045372585,
+    "predicted_fixed_ns_per_edge": 44.80148646392056,
+    "residual_ns_per_edge": 0.0664744185479762,
+    "residual_percent_of_observed": 0.14859595540189946,
+    "shapley_scaled_to_observed_ns_per_edge": {
+      "frequency_loss": 7.818895891062021,
+      "instructions": 0.008392593113451266,
+      "ipc_loss": 10.942713119673702
+    },
+    "shapley_unscaled_ns_per_edge": {
+      "frequency_loss": 7.846586701591249,
+      "instructions": 0.008422315686688128,
+      "ipc_loss": 10.981467005119212
+    },
+    "source": {
+      "mode": "0664",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_LOADED_PMU_DIAGNOSIS_COMBINED_V3_V4_2026-08-25.json",
+      "sha256": "ea9a19cace1eab5418f783dfb6c18a4de2adb7281356afffd12bb2b28cdacbd1",
+      "size_bytes": 4621
+    }
+  },
+  "reversed_minus_single_ns_per_edge": 18.73175307395809,
+  "routes": {
+    "C-FIXED": {
+      "measured_edges": 502915120,
+      "outer_thread_cpu_ns": 23819506212,
+      "outer_thread_cpu_per_edge_ns": 47.362875492786934,
+      "outer_wall_ns": 25621341136,
+      "phase_thread_cpu_ns": {
+        "certificate": 1240570288,
+        "eqmask": 7832819,
+        "lanes": 13234353,
+        "merge": 8532535,
+        "oracle": 17588267,
+        "traversal": 22497913951
+      },
+      "phase_thread_cpu_per_edge_ns": {
+        "certificate": 2.466758780288809,
+        "eqmask": 0.01557483298573326,
+        "lanes": 0.026315281592647285,
+        "merge": 0.016966153254648616,
+        "oracle": 0.03497263514367991,
+        "traversal": 44.735012045372585
+      },
+      "phase_wall_ns": {
+        "certificate": 1987929853,
+        "eqmask": 2363384,
+        "lanes": 12352087,
+        "merge": 5845592,
+        "oracle": 29512631,
+        "traversal": 23519344193
+      },
+      "records": 7640,
+      "route": "C-FIXED",
+      "samples": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-FIXED/subject/component-samples.bin",
+        "sha256": "cbd7e0b3a0e303a3a4cf40ef05c19af8c1cd2f6589691bfdda46405b88f09329",
+        "size_bytes": 901520
+      },
+      "structure": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-FIXED/subject/structure.json",
+        "sha256": "90d24adee563be803c390b41b18b41624b999db37b34c26650cb362f03d06712",
+        "size_bytes": 172206
+      },
+      "subject_receipt": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-FIXED/subject/SUBJECT_RECEIPT.json",
+        "sha256": "3a769208be287a21caa3004291d66c3326892f086091d229786f2bf39591e00e",
+        "size_bytes": 1736
+      },
+      "workers": {
+        "0": {
+          "edges": 25482740,
+          "ns_per_edge": 43.00180973474595,
+          "traversal_cpu_ns": 1095803937
+        },
+        "1": {
+          "edges": 25870020,
+          "ns_per_edge": 44.4734286251035,
+          "traversal_cpu_ns": 1150528488
+        },
+        "2": {
+          "edges": 27276920,
+          "ns_per_edge": 41.7209754987,
+          "traversal_cpu_ns": 1138019711
+        },
+        "3": {
+          "edges": 21611160,
+          "ns_per_edge": 43.02430642316285,
+          "traversal_cpu_ns": 929805170
+        },
+        "4": {
+          "edges": 25776220,
+          "ns_per_edge": 44.57079226511878,
+          "traversal_cpu_ns": 1148866547
+        },
+        "5": {
+          "edges": 24942220,
+          "ns_per_edge": 45.2237593125231,
+          "traversal_cpu_ns": 1127980954
+        },
+        "6": {
+          "edges": 28045040,
+          "ns_per_edge": 39.818325486431824,
+          "traversal_cpu_ns": 1116706531
+        },
+        "7": {
+          "edges": 26195060,
+          "ns_per_edge": 43.39797232760681,
+          "traversal_cpu_ns": 1136812489
+        },
+        "8": {
+          "edges": 27393660,
+          "ns_per_edge": 44.49743718071992,
+          "traversal_cpu_ns": 1218947665
+        },
+        "9": {
+          "edges": 26860180,
+          "ns_per_edge": 43.962902891938924,
+          "traversal_cpu_ns": 1180851485
+        },
+        "10": {
+          "edges": 27033660,
+          "ns_per_edge": 43.76510217262479,
+          "traversal_cpu_ns": 1183130892
+        },
+        "11": {
+          "edges": 26316840,
+          "ns_per_edge": 44.298649533910606,
+          "traversal_cpu_ns": 1165800472
+        },
+        "12": {
+          "edges": 25911600,
+          "ns_per_edge": 46.95276949319996,
+          "traversal_cpu_ns": 1216621382
+        },
+        "13": {
+          "edges": 27528160,
+          "ns_per_edge": 47.0892138450227,
+          "traversal_cpu_ns": 1296279413
+        },
+        "14": {
+          "edges": 26417780,
+          "ns_per_edge": 46.69513721440636,
+          "traversal_cpu_ns": 1233581862
+        },
+        "15": {
+          "edges": 26784960,
+          "ns_per_edge": 46.74017635269943,
+          "traversal_cpu_ns": 1251933754
+        },
+        "16": {
+          "edges": 25526180,
+          "ns_per_edge": 46.658688452404554,
+          "traversal_cpu_ns": 1191018080
+        },
+        "17": {
+          "edges": 27595780,
+          "ns_per_edge": 47.122935572033114,
+          "traversal_cpu_ns": 1300394163
+        },
+        "18": {
+          "edges": 27284640,
+          "ns_per_edge": 46.2850177609087,
+          "traversal_cpu_ns": 1262870047
+        },
+        "19": {
+          "edges": 3062300,
+          "ns_per_edge": 49.62312934722267,
+          "traversal_cpu_ns": 151960909
+        }
+      }
+    },
+    "C-REVERSED": {
+      "measured_edges": 502915120,
+      "outer_thread_cpu_ns": 23754377655,
+      "outer_thread_cpu_per_edge_ns": 47.233373407027415,
+      "outer_wall_ns": 25225877853,
+      "phase_thread_cpu_ns": {
+        "certificate": 1193658979,
+        "eqmask": 7914187,
+        "lanes": 13151156,
+        "merge": 8410430,
+        "oracle": 18602207,
+        "traversal": 22478678187
+      },
+      "phase_thread_cpu_per_edge_ns": {
+        "certificate": 2.3734799999650043,
+        "eqmask": 0.01573662569540562,
+        "lanes": 0.026149852086371952,
+        "merge": 0.01672335880456328,
+        "oracle": 0.03698876064811891,
+        "traversal": 44.6967635154815
+      },
+      "phase_wall_ns": {
+        "certificate": 1663597146,
+        "eqmask": 2390699,
+        "lanes": 31093872,
+        "merge": 5672418,
+        "oracle": 41077234,
+        "traversal": 23426917901
+      },
+      "records": 7640,
+      "route": "C-REVERSED",
+      "samples": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-REVERSED/subject/component-samples.bin",
+        "sha256": "516786df8948c691f3d113fb67fe66d865dfdcdae6dca795211c8e31061e13eb",
+        "size_bytes": 901520
+      },
+      "structure": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-REVERSED/subject/structure.json",
+        "sha256": "90d24adee563be803c390b41b18b41624b999db37b34c26650cb362f03d06712",
+        "size_bytes": 172206
+      },
+      "subject_receipt": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-REVERSED/subject/SUBJECT_RECEIPT.json",
+        "sha256": "e4a0456e85eb0c5cf94d75007e8e58c4e09b087fd810a3d6ac899e9fc1dd41f5",
+        "size_bytes": 1742
+      },
+      "workers": {
+        "0": {
+          "edges": 25482740,
+          "ns_per_edge": 46.00385633570016,
+          "traversal_cpu_ns": 1172304310
+        },
+        "1": {
+          "edges": 25870020,
+          "ns_per_edge": 46.86309067406983,
+          "traversal_cpu_ns": 1212349093
+        },
+        "2": {
+          "edges": 27276920,
+          "ns_per_edge": 46.78482713590831,
+          "traversal_cpu_ns": 1276145987
+        },
+        "3": {
+          "edges": 21611160,
+          "ns_per_edge": 46.014004847495464,
+          "traversal_cpu_ns": 994416021
+        },
+        "4": {
+          "edges": 25776220,
+          "ns_per_edge": 46.59915631539457,
+          "traversal_cpu_ns": 1201150105
+        },
+        "5": {
+          "edges": 24942220,
+          "ns_per_edge": 47.0016126471501,
+          "traversal_cpu_ns": 1172324563
+        },
+        "6": {
+          "edges": 28045040,
+          "ns_per_edge": 47.33597923197828,
+          "traversal_cpu_ns": 1327539431
+        },
+        "7": {
+          "edges": 26195060,
+          "ns_per_edge": 46.633458827733165,
+          "traversal_cpu_ns": 1221566252
+        },
+        "8": {
+          "edges": 27393660,
+          "ns_per_edge": 45.27799038171606,
+          "traversal_cpu_ns": 1240329874
+        },
+        "9": {
+          "edges": 26860180,
+          "ns_per_edge": 44.60620286237844,
+          "traversal_cpu_ns": 1198130638
+        },
+        "10": {
+          "edges": 27033660,
+          "ns_per_edge": 41.77512401206496,
+          "traversal_cpu_ns": 1129334499
+        },
+        "11": {
+          "edges": 26316840,
+          "ns_per_edge": 45.15714918660447,
+          "traversal_cpu_ns": 1188393470
+        },
+        "12": {
+          "edges": 25911600,
+          "ns_per_edge": 44.27737152472252,
+          "traversal_cpu_ns": 1147297540
+        },
+        "13": {
+          "edges": 27528160,
+          "ns_per_edge": 43.46976666802286,
+          "traversal_cpu_ns": 1196642692
+        },
+        "14": {
+          "edges": 26417780,
+          "ns_per_edge": 45.57092859430278,
+          "traversal_cpu_ns": 1203882766
+        },
+        "15": {
+          "edges": 26784960,
+          "ns_per_edge": 43.979092856588174,
+          "traversal_cpu_ns": 1177978243
+        },
+        "16": {
+          "edges": 25526180,
+          "ns_per_edge": 43.71982258998408,
+          "traversal_cpu_ns": 1116000061
+        },
+        "17": {
+          "edges": 27595780,
+          "ns_per_edge": 44.22263164875209,
+          "traversal_cpu_ns": 1220358014
+        },
+        "18": {
+          "edges": 27284640,
+          "ns_per_edge": 34.35823422995502,
+          "traversal_cpu_ns": 937452052
+        },
+        "19": {
+          "edges": 3062300,
+          "ns_per_edge": 47.376996375273485,
+          "traversal_cpu_ns": 145082576
+        }
+      }
+    },
+    "C-SINGLE": {
+      "measured_edges": 502915120,
+      "outer_thread_cpu_ns": 13707713591,
+      "outer_thread_cpu_per_edge_ns": 27.25651515707064,
+      "outer_wall_ns": 13710658275,
+      "phase_thread_cpu_ns": {
+        "certificate": 611023569,
+        "eqmask": 4076911,
+        "lanes": 5925995,
+        "merge": 5136326,
+        "oracle": 8616152,
+        "traversal": 13058196342
+      },
+      "phase_thread_cpu_per_edge_ns": {
+        "certificate": 1.2149636085707665,
+        "eqmask": 0.00810655881652554,
+        "lanes": 0.011783290587882902,
+        "merge": 0.010213107134261544,
+        "oracle": 0.017132417891909873,
+        "traversal": 25.96501044152341
+      },
+      "phase_wall_ns": {
+        "certificate": 609378452,
+        "eqmask": 1343629,
+        "lanes": 4553547,
+        "merge": 3781127,
+        "oracle": 7228213,
+        "traversal": 13058829296
+      },
+      "records": 7640,
+      "route": "C-SINGLE",
+      "samples": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-SINGLE/subject/component-samples.bin",
+        "sha256": "b520bcd979449e60f6a03ce477375e98e774a1999eff02d22840a0e8b07832b9",
+        "size_bytes": 901520
+      },
+      "structure": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-SINGLE/subject/structure.json",
+        "sha256": "90d24adee563be803c390b41b18b41624b999db37b34c26650cb362f03d06712",
+        "size_bytes": 172206
+      },
+      "subject_receipt": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-SINGLE/subject/SUBJECT_RECEIPT.json",
+        "sha256": "ad93644b96928afc760614b2a841d4ac2c0f451edca093867bd16717c85a54c8",
+        "size_bytes": 943
+      },
+      "workers": {
+        "255": {
+          "edges": 502915120,
+          "ns_per_edge": 25.96501044152341,
+          "traversal_cpu_ns": 13058196342
+        }
+      }
+    }
+  },
+  "schema": "lay.v10.e1-traversal-d6-concurrency-accounting-detail.v1",
+  "task_id": "slice8b-v10-e1-traversal-d6-concurrency-accounting-v1-20260826",
+  "throughput": {
+    "parallel_efficiency": 0.5804180943371233,
+    "single_edges_per_second": 38513367.913027816,
+    "twenty_total_edges_per_second": 447077112.2116823,
+    "twenty_vs_single_scaling": 11.608361886742466
+  }
+}

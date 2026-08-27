@@ -1,0 +1,39 @@
+{
+  "claim_boundary": {
+    "causal_attribution": false,
+    "formal_b_pass": false,
+    "latency_proven": false,
+    "runtime_authority_changed": false,
+    "v12_admitted": false
+  },
+  "derived": {
+    "b5_instructions_per_band_cell": 93.22432828923517,
+    "b5_instructions_per_examined_edge": 643.7916108388231,
+    "b5_instructions_per_surviving_edge": 2008.7577305887164,
+    "b5_instructions_per_transition": 643.7916108388231,
+    "b6_instructions_per_examined_edge": 643.9466873311247,
+    "band_cells_per_transition": 6.905832658202839,
+    "edges_per_expanded_state": 3.119902905634739,
+    "survival_rate": 0.32049241231800707
+  },
+  "pmu_input": {
+    "b5_instructions_per_request": 42378604.08638743,
+    "b6_instructions_per_request": 42388812.24250459,
+    "receipt_sha256": "ea9a19cace1eab5418f783dfb6c18a4de2adb7281356afffd12bb2b28cdacbd1"
+  },
+  "requests": 382,
+  "schema": "lay.v10.structural-work-a1-physical-model.v1",
+  "structural_per_request": {
+    "band_cells_evaluated": 454587.390052356,
+    "certificate_calls": 46.07329842931937,
+    "edges_examined": 65826.58638743455,
+    "expanded_states": 21098.921465968586,
+    "pruned_edges": 44729.66492146597,
+    "query_symbol_comparisons": 449874.390052356,
+    "stack_pops": 21098.921465968586,
+    "stack_pushes": 21098.921465968586,
+    "surviving_edges": 21096.921465968586,
+    "terminal_refs_post_dedup": 46.07329842931937,
+    "transition_calls": 65826.58638743455
+  }
+}

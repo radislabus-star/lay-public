@@ -1,0 +1,23 @@
+	Command being timed: "target/release/lay-nanda-wave-train --prove-productive-paradigm-v1-semantic proof-input/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m --memory /home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/phase8i.v9.bin --l2-package /home/e/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin --axis-schema data/morphology/productive_v1_ru_axis_schema.json --work-dir /home/e/projects/lay-productive-v1-build-20260811/work/full-v1-v63-reinduce --heldout-per-class 1 --workers 20 --receipt proof-out/slice8b-v5-smoke-13x1.json"
+	User time (seconds): 16.90
+	System time (seconds): 0.61
+	Percent of CPU this job got: 117%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:14.93
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 830052
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 138245
+	Voluntary context switches: 9609
+	Involuntary context switches: 72
+	Swaps: 0
+	File system inputs: 18304
+	File system outputs: 480
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

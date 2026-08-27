@@ -1,0 +1,94 @@
+{
+  "schema": "lay.slice8a.frame-carrier-receipt.v1",
+  "date": "2026-08-24",
+  "scope": "source_only_behavior_unchanged",
+  "baseline_commit": "e4b5447",
+  "source_branch": "codex/l1-exact-peak-search",
+  "remote_host": "e@192.168.3.94",
+  "remote_checkout": "/home/e/projects/lay-slice8a-e4b5447",
+  "cargo_guard": "scripts/cargo-guard.sh",
+  "preflight_receipt": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/implementation-preflight-v3.json",
+  "verdict": "PASS_SLICE8A_SOURCE_ONLY",
+  "facts": {
+    "library_frame_type": "LexicalAuthorityFrameV1",
+    "library_config_identity_type": "LexicalAuthorityConfigIdentityV1",
+    "engine_conversion_reconstructs_text": false,
+    "non_ime_callers_use_none": true,
+    "candidate_or_authority_consumer_added": false,
+    "candidate_packages_changed": false,
+    "runtime_authority_changed": false,
+    "installed_runtime_changed": false,
+    "global_ibus_daemon_restarted": false,
+    "global_ibus_daemon_pid": 2076194
+  },
+  "tests": [
+    {
+      "command": "scripts/cargo-guard.sh check --lib --bin lay-ibus-engine",
+      "result": "PASS",
+      "elapsed_seconds": 9.63
+    },
+    {
+      "command": "scripts/cargo-guard.sh check --all-targets",
+      "result": "PASS",
+      "elapsed_seconds": 0.24
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-ibus-engine lexical_authority_frame_conversion_is_lossless -- --nocapture",
+      "result": "PASS",
+      "passed": 1,
+      "failed": 0,
+      "field_parity": "13/13"
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --lib correction_boundary_preserves_frame_presence_and_identity -- --nocapture",
+      "result": "PASS",
+      "passed": 1,
+      "failed": 0,
+      "assertions": [
+        "same frame reference reaches CorrectionRequest",
+        "missing frame remains None",
+        "deterministic InputGateDecision is exactly equal with and without carried frame"
+      ]
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-ibus-engine space_autocorrect_prefetch::proof::v27_race_fault_and_space_effect_matrix -- --exact --nocapture",
+      "result": "PASS",
+      "passed": 1,
+      "failed": 0,
+      "identity_faults": 13,
+      "lock_contention": "PASS",
+      "lock_poison": "PASS",
+      "complete_publication": "PASS",
+      "fallback_space_cases": 5,
+      "exact_space": "PASS"
+    }
+  ],
+  "non_gates": [
+    {
+      "command": "scripts/cargo-guard.sh test --lib ime_correction::tests -- --nocapture",
+      "result": "NOT_ACCEPTED_AS_SLICE8A_GATE",
+      "passed": 13,
+      "failed": 27,
+      "reason": "isolated proof checkout did not reproduce installed model and source-id environment; transport tests and all-target compile are the owned Slice 8A evidence"
+    }
+  ],
+  "source_sha256": {
+    "src/lexical_authority_frame.rs": "310fc0b4c99c5742a1e117eb8f22974fe4dcfad5f69f38499044849f05a0e9ce",
+    "src/bin/lay_ibus_engine/engine/types.rs": "1429741a6a3dd287a41e1d483710cdced89f25d5d5b879d794af1f6cd45fddb8",
+    "src/bin/lay_ibus_engine/composition_commit.rs": "d58912725008abd5d7d2aa64620d5c3148e4ed27f691ad40d89d1430bb4312c5",
+    "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs": "9f8c66bb79c787baac59a313677ba1cda391c54b721be84a5ee3704a76f146b4",
+    "src/ime_correction.rs": "d5a5163134acd2711cff60632573ca5569144a09851968c0669c9c98767f9b0e",
+    "src/input_gate.rs": "6a204ac78045e9f3fef719c739c893057e7ce8e927b72a0d56bdae965f70da8a",
+    "src/correction_core.rs": "bc73c503e8fef1c01068ba2725eea5cdb728d8ef907bde0d8d986b9ecec71e8f"
+  },
+  "open_gates": [
+    "Slice 8B shared material frame state cohort compare",
+    "fixed Productive target retention and false-authority proof",
+    "single-client and 20-client latency",
+    "Slice 8C lexical authority flip",
+    "Slice 9 context certification",
+    "Slice 10 compatibility removal",
+    "Slice 11 performance and failure proof",
+    "Slice 12 exact-byte physical release"
+  ]
+}

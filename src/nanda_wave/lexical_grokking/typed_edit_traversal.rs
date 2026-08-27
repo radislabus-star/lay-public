@@ -12,7 +12,6 @@ use std::thread;
 use std::time::Instant;
 
 use serde::Serialize;
-#[cfg(any(test, feature = "lexical-compiler"))]
 use sha2::{Digest, Sha256};
 
 use crate::dict::{detect_direction, project_char, Direction};
@@ -247,6 +246,176 @@ impl TypedCertificate {
             Self::OmissionTransposition { .. } => "omission_transposition",
         }
     }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(u8)]
+pub(in crate::nanda_wave) enum Phase7dCertificateClass {
+    Identity = 1,
+    PunctuationSuffix = 2,
+    PrefixTruncation = 3,
+    SuffixTruncation = 4,
+    MissingLetter = 5,
+    ExtraLetter = 6,
+    Substitution = 7,
+    KeyboardLayout = 8,
+    AdjacentTransposition = 9,
+    NonAdjacentTransposition = 10,
+    RepeatedFragment = 11,
+    SparseMultiOmission = 12,
+    OmissionTransposition = 13,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub(in crate::nanda_wave) struct Phase7dCertificateEvidence {
+    pub(in crate::nanda_wave) class: Phase7dCertificateClass,
+    pub(in crate::nanda_wave) canonical_key: String,
+}
+
+impl TypedCertificate {
+    fn evidence_class(&self) -> Phase7dCertificateClass {
+        match self {
+            Self::Identity => Phase7dCertificateClass::Identity,
+            Self::PunctuationSuffix { .. } => Phase7dCertificateClass::PunctuationSuffix,
+            Self::PrefixTruncation { .. } => Phase7dCertificateClass::PrefixTruncation,
+            Self::SuffixTruncation { .. } => Phase7dCertificateClass::SuffixTruncation,
+            Self::MissingLetter { .. } => Phase7dCertificateClass::MissingLetter,
+            Self::ExtraLetter { .. } => Phase7dCertificateClass::ExtraLetter,
+            Self::SingleSubstitution { .. } | Self::DoubleSubstitution { .. } => {
+                Phase7dCertificateClass::Substitution
+            }
+            Self::KeyboardLayout { .. } => Phase7dCertificateClass::KeyboardLayout,
+            Self::AdjacentTransposition { .. } => Phase7dCertificateClass::AdjacentTransposition,
+            Self::NonAdjacentTransposition { .. } => {
+                Phase7dCertificateClass::NonAdjacentTransposition
+            }
+            Self::RepeatedFragment { .. } => Phase7dCertificateClass::RepeatedFragment,
+            Self::SparseMultiOmission { .. } => Phase7dCertificateClass::SparseMultiOmission,
+            Self::OmissionTransposition { .. } => Phase7dCertificateClass::OmissionTransposition,
+        }
+    }
+
+    fn evidence(&self) -> Result<Phase7dCertificateEvidence, String> {
+        Ok(Phase7dCertificateEvidence {
+            class: self.evidence_class(),
+            canonical_key: serde_json::to_string(self).map_err(|error| error.to_string())?,
+        })
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(in crate::nanda_wave) struct Phase7dRetrievalLane {
+    pub(in crate::nanda_wave) symbols: Box<[u32]>,
+    pub(in crate::nanda_wave) maximum_levenshtein_distance: u8,
+}
+
+pub(in crate::nanda_wave) struct Phase7dCertificateOracle {
+    query: L1TypedQueryField,
+}
+
+impl Phase7dCertificateOracle {
+    pub(in crate::nanda_wave) fn new(raw: &str) -> Result<Self, String> {
+        L1TypedQueryField::encode(raw).map(|query| Self { query })
+    }
+
+    pub(in crate::nanda_wave) fn retrieval_lanes(&self) -> Vec<Phase7dRetrievalLane> {
+        let mut lanes = Vec::new();
+        if !self.query.lexical_symbols.is_empty() {
+            lanes.push(Phase7dRetrievalLane {
+                symbols: self.query.lexical_symbols.clone(),
+                // Every admitted Phase 7D lexical operator is inside this ordinary
+                // edit-distance superset. Exact admission still uses certificates.
+                maximum_levenshtein_distance: 3,
+            });
+        }
+        let projected = self
+            .query
+            .raw_layout_symbols
+            .iter()
+            .filter_map(|symbol| char::from_u32(*symbol))
+            .map(|character| {
+                project_char(character, self.query.layout_direction.as_dict_direction())
+            })
+            .collect::<String>();
+        let projected = normalize_lexical_surface(&projected)
+            .chars()
+            .map(|character| character as u32)
+            .collect::<Box<[_]>>();
+        if !projected.is_empty() && lanes.iter().all(|lane| lane.symbols != projected) {
+            lanes.push(Phase7dRetrievalLane {
+                symbols: projected,
+                maximum_levenshtein_distance: 0,
+            });
+        }
+        lanes
+    }
+
+    pub(in crate::nanda_wave) fn certificate_keys(
+        &self,
+        expected: &str,
+    ) -> Result<Vec<String>, String> {
+        self.certificate_evidence(expected).map(|evidence| {
+            evidence
+                .into_iter()
+                .map(|certificate| certificate.canonical_key)
+                .collect()
+        })
+    }
+
+    pub(in crate::nanda_wave) fn certificate_evidence(
+        &self,
+        expected: &str,
+    ) -> Result<Vec<Phase7dCertificateEvidence>, String> {
+        let target = normalize_lexical_surface(expected)
+            .chars()
+            .map(|character| character as u32)
+            .collect::<Vec<_>>();
+        self.certificate_evidence_for_symbols(&target)
+    }
+
+    pub(in crate::nanda_wave) fn certificate_keys_for_symbols(
+        &self,
+        target: &[u32],
+    ) -> Result<Vec<String>, String> {
+        self.certificate_evidence_for_symbols(target)
+            .map(|evidence| {
+                evidence
+                    .into_iter()
+                    .map(|certificate| certificate.canonical_key)
+                    .collect()
+            })
+    }
+
+    pub(in crate::nanda_wave) fn certificate_evidence_for_symbols(
+        &self,
+        target: &[u32],
+    ) -> Result<Vec<Phase7dCertificateEvidence>, String> {
+        direct_typed_certificates(&self.query, &target, TraversalScope::Phase7D)
+            .into_iter()
+            .map(|certificate| certificate.evidence())
+            .collect()
+    }
+}
+
+pub(in crate::nanda_wave) fn phase7d_semantics_digest() -> [u8; 32] {
+    // Binding the sidecar to this source makes any operator-algebra edit
+    // invalidate proof artifacts even when a human forgets to bump a tag.
+    Sha256::digest(include_bytes!("typed_edit_traversal.rs")).into()
+}
+
+#[cfg(any(test, feature = "lexical-compiler"))]
+pub(in crate::nanda_wave) fn phase7d_retrieval_lanes(
+    raw: &str,
+) -> Result<Vec<Phase7dRetrievalLane>, String> {
+    Phase7dCertificateOracle::new(raw).map(|oracle| oracle.retrieval_lanes())
+}
+
+#[cfg(any(test, feature = "lexical-compiler"))]
+pub(in crate::nanda_wave) fn phase7d_certificate_keys(
+    observed: &str,
+    expected: &str,
+) -> Result<Vec<String>, String> {
+    Phase7dCertificateOracle::new(observed)?.certificate_keys(expected)
 }
 
 type TerminalEvents = BTreeMap<u32, BTreeSet<TypedCertificate>>;
@@ -1202,6 +1371,217 @@ fn permutation_key(mut value: u64) -> u64 {
     value ^ (value >> 31)
 }
 
+fn direct_typed_certificates(
+    query: &L1TypedQueryField,
+    target: &[u32],
+    scope: TraversalScope,
+) -> BTreeSet<TypedCertificate> {
+    let mut certificates = BTreeSet::new();
+    if target == query.lexical_symbols.as_ref() {
+        certificates.insert(TypedCertificate::Identity);
+        if query.trailing_punctuation_len > 0 {
+            certificates.insert(TypedCertificate::PunctuationSuffix {
+                raw_start: query.trailing_punctuation_start,
+                raw_len: query.trailing_punctuation_len,
+            });
+        }
+    }
+    if target.len() == query.lexical_symbols.len() + 1 {
+        for target_position in 0..target.len() {
+            if target
+                .iter()
+                .enumerate()
+                .filter_map(|(index, symbol)| (index != target_position).then_some(*symbol))
+                .eq(query.lexical_symbols.iter().copied())
+            {
+                let target_position = target_position as u8;
+                if target_position == 0 {
+                    certificates.insert(TypedCertificate::PrefixTruncation { target_position });
+                } else if usize::from(target_position) + 1 == target.len() {
+                    certificates.insert(TypedCertificate::SuffixTruncation { target_position });
+                } else if scope.admits_phase7b() {
+                    certificates.insert(TypedCertificate::MissingLetter { target_position });
+                }
+            }
+        }
+        if scope.admits_phase7d() {
+            for transposed_target in 0..target.len().saturating_sub(1) {
+                if target[transposed_target] == target[transposed_target + 1] {
+                    continue;
+                }
+                for omitted_target in 0..target.len() {
+                    if omitted_target == transposed_target
+                        || omitted_target == transposed_target + 1
+                    {
+                        continue;
+                    }
+                    let matches = (0..target.len())
+                        .filter(|position| *position != omitted_target)
+                        .map(|position| {
+                            if position == transposed_target {
+                                target[transposed_target + 1]
+                            } else if position == transposed_target + 1 {
+                                target[transposed_target]
+                            } else {
+                                target[position]
+                            }
+                        })
+                        .eq(query.lexical_symbols.iter().copied());
+                    if matches {
+                        certificates.insert(TypedCertificate::OmissionTransposition {
+                            omitted_target: omitted_target as u8,
+                            transposed_target: transposed_target as u8,
+                        });
+                    }
+                }
+            }
+            for transposed_target in 0..target.len().saturating_sub(2) {
+                let omitted_target = transposed_target + 1;
+                if target[transposed_target] == target[transposed_target + 2] {
+                    continue;
+                }
+                let matches = target[..transposed_target]
+                    .iter()
+                    .copied()
+                    .chain(std::iter::once(target[transposed_target + 2]))
+                    .chain(std::iter::once(target[transposed_target]))
+                    .chain(target[transposed_target + 3..].iter().copied())
+                    .eq(query.lexical_symbols.iter().copied());
+                if matches {
+                    certificates.insert(TypedCertificate::OmissionTransposition {
+                        omitted_target: omitted_target as u8,
+                        transposed_target: transposed_target as u8,
+                    });
+                }
+            }
+        }
+    }
+    if scope.admits_phase7b() && query.lexical_symbols.len() == target.len() + 1 {
+        for input_position in 0..query.lexical_symbols.len() {
+            if query
+                .lexical_symbols
+                .iter()
+                .enumerate()
+                .filter_map(|(index, symbol)| (index != input_position).then_some(*symbol))
+                .eq(target.iter().copied())
+            {
+                certificates.insert(TypedCertificate::ExtraLetter {
+                    input_position: input_position as u8,
+                });
+            }
+        }
+    }
+    if scope.admits_phase7b() && query.lexical_symbols.len() == target.len() {
+        let mismatches = query
+            .lexical_symbols
+            .iter()
+            .zip(target)
+            .enumerate()
+            .filter_map(|(position, (observed, expected))| {
+                (observed != expected).then_some(position)
+            })
+            .collect::<Vec<_>>();
+        if let [position] = mismatches.as_slice() {
+            certificates.insert(TypedCertificate::SingleSubstitution {
+                position: *position as u8,
+            });
+        }
+        if scope.admits_phase7d() {
+            if let [first, second] = mismatches.as_slice() {
+                certificates.insert(TypedCertificate::DoubleSubstitution {
+                    first: *first as u8,
+                    second: *second as u8,
+                });
+            }
+        }
+        if scope.admits_phase7c() {
+            if let [first, second] = mismatches.as_slice() {
+                if query.lexical_symbols[*first] == target[*second]
+                    && query.lexical_symbols[*second] == target[*first]
+                {
+                    if *second == *first + 1 {
+                        certificates.insert(TypedCertificate::AdjacentTransposition {
+                            position: *first as u8,
+                        });
+                    } else if *second > *first + 1 {
+                        certificates.insert(TypedCertificate::NonAdjacentTransposition {
+                            first: *first as u8,
+                            second: *second as u8,
+                        });
+                    }
+                }
+            }
+        }
+    }
+    if scope.admits_phase7b() && query.raw_layout_symbols.len() == target.len() {
+        let direction = query.layout_direction;
+        let mut changed = false;
+        let projected_matches =
+            query
+                .raw_layout_symbols
+                .iter()
+                .zip(target)
+                .all(|(raw, expected)| {
+                    let Some(raw_character) = char::from_u32(*raw) else {
+                        return false;
+                    };
+                    let projected =
+                        project_char(raw_character, direction.as_dict_direction()) as u32;
+                    changed |= projected != *raw;
+                    projected == *expected
+                });
+        if projected_matches && changed {
+            certificates.insert(TypedCertificate::KeyboardLayout { direction });
+        }
+    }
+    if scope.admits_phase7c() && query.lexical_symbols.len() == target.len() + 2 {
+        for input_start in 0..=target.len() {
+            if !query.lexical_symbols[..input_start]
+                .iter()
+                .chain(&query.lexical_symbols[input_start + 2..])
+                .copied()
+                .eq(target.iter().copied())
+            {
+                continue;
+            }
+            let first = query.lexical_symbols[input_start];
+            let second = query.lexical_symbols[input_start + 1];
+            for source_target_start in 0..target.len().saturating_sub(1) {
+                if source_target_start + 2 <= input_start
+                    && target[source_target_start] == first
+                    && target[source_target_start + 1] == second
+                {
+                    certificates.insert(TypedCertificate::RepeatedFragment {
+                        input_start: input_start as u8,
+                        source_target_start: source_target_start as u8,
+                        len: 2,
+                    });
+                }
+            }
+        }
+    }
+    if scope.admits_phase7d() && query.lexical_symbols.len() + 2 == target.len() {
+        for first in 0..target.len().saturating_sub(1) {
+            for second in first + 1..target.len() {
+                if target
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(position, symbol)| {
+                        (position != first && position != second).then_some(*symbol)
+                    })
+                    .eq(query.lexical_symbols.iter().copied())
+                {
+                    certificates.insert(TypedCertificate::SparseMultiOmission {
+                        first: first as u8,
+                        second: second as u8,
+                    });
+                }
+            }
+        }
+    }
+    certificates
+}
+
 #[cfg(any(test, feature = "lexical-compiler"))]
 fn direct_typed_oracle(
     package: &LexicalGrokkingPackage,
@@ -1215,209 +1595,7 @@ fn direct_typed_oracle(
             .chars()
             .map(|character| character as u32)
             .collect::<Vec<_>>();
-        let mut certificates = BTreeSet::new();
-        if target.as_slice() == query.lexical_symbols.as_ref() {
-            certificates.insert(TypedCertificate::Identity);
-            if query.trailing_punctuation_len > 0 {
-                certificates.insert(TypedCertificate::PunctuationSuffix {
-                    raw_start: query.trailing_punctuation_start,
-                    raw_len: query.trailing_punctuation_len,
-                });
-            }
-        }
-        if target.len() == query.lexical_symbols.len() + 1 {
-            for target_position in 0..target.len() {
-                if target
-                    .iter()
-                    .enumerate()
-                    .filter_map(|(index, symbol)| (index != target_position).then_some(*symbol))
-                    .eq(query.lexical_symbols.iter().copied())
-                {
-                    let target_position = target_position as u8;
-                    if target_position == 0 {
-                        certificates.insert(TypedCertificate::PrefixTruncation { target_position });
-                    } else if usize::from(target_position) + 1 == target.len() {
-                        certificates.insert(TypedCertificate::SuffixTruncation { target_position });
-                    } else if scope.admits_phase7b() {
-                        certificates.insert(TypedCertificate::MissingLetter { target_position });
-                    }
-                }
-            }
-            if scope.admits_phase7d() {
-                for transposed_target in 0..target.len().saturating_sub(1) {
-                    if target[transposed_target] == target[transposed_target + 1] {
-                        continue;
-                    }
-                    for omitted_target in 0..target.len() {
-                        if omitted_target == transposed_target
-                            || omitted_target == transposed_target + 1
-                        {
-                            continue;
-                        }
-                        let matches = (0..target.len())
-                            .filter(|position| *position != omitted_target)
-                            .map(|position| {
-                                if position == transposed_target {
-                                    target[transposed_target + 1]
-                                } else if position == transposed_target + 1 {
-                                    target[transposed_target]
-                                } else {
-                                    target[position]
-                                }
-                            })
-                            .eq(query.lexical_symbols.iter().copied());
-                        if matches {
-                            certificates.insert(TypedCertificate::OmissionTransposition {
-                                omitted_target: omitted_target as u8,
-                                transposed_target: transposed_target as u8,
-                            });
-                        }
-                    }
-                }
-                for transposed_target in 0..target.len().saturating_sub(2) {
-                    let omitted_target = transposed_target + 1;
-                    if target[transposed_target] == target[transposed_target + 2] {
-                        continue;
-                    }
-                    let matches = target[..transposed_target]
-                        .iter()
-                        .copied()
-                        .chain(std::iter::once(target[transposed_target + 2]))
-                        .chain(std::iter::once(target[transposed_target]))
-                        .chain(target[transposed_target + 3..].iter().copied())
-                        .eq(query.lexical_symbols.iter().copied());
-                    if matches {
-                        certificates.insert(TypedCertificate::OmissionTransposition {
-                            omitted_target: omitted_target as u8,
-                            transposed_target: transposed_target as u8,
-                        });
-                    }
-                }
-            }
-        }
-        if scope.admits_phase7b() && query.lexical_symbols.len() == target.len() + 1 {
-            for input_position in 0..query.lexical_symbols.len() {
-                if query
-                    .lexical_symbols
-                    .iter()
-                    .enumerate()
-                    .filter_map(|(index, symbol)| (index != input_position).then_some(*symbol))
-                    .eq(target.iter().copied())
-                {
-                    certificates.insert(TypedCertificate::ExtraLetter {
-                        input_position: input_position as u8,
-                    });
-                }
-            }
-        }
-        if scope.admits_phase7b() && query.lexical_symbols.len() == target.len() {
-            let mismatches = query
-                .lexical_symbols
-                .iter()
-                .zip(&target)
-                .enumerate()
-                .filter_map(|(position, (observed, expected))| {
-                    (observed != expected).then_some(position)
-                })
-                .collect::<Vec<_>>();
-            if let [position] = mismatches.as_slice() {
-                certificates.insert(TypedCertificate::SingleSubstitution {
-                    position: *position as u8,
-                });
-            }
-            if scope.admits_phase7d() {
-                if let [first, second] = mismatches.as_slice() {
-                    certificates.insert(TypedCertificate::DoubleSubstitution {
-                        first: *first as u8,
-                        second: *second as u8,
-                    });
-                }
-            }
-            if scope.admits_phase7c() {
-                if let [first, second] = mismatches.as_slice() {
-                    if query.lexical_symbols[*first] == target[*second]
-                        && query.lexical_symbols[*second] == target[*first]
-                    {
-                        if *second == *first + 1 {
-                            certificates.insert(TypedCertificate::AdjacentTransposition {
-                                position: *first as u8,
-                            });
-                        } else if *second > *first + 1 {
-                            certificates.insert(TypedCertificate::NonAdjacentTransposition {
-                                first: *first as u8,
-                                second: *second as u8,
-                            });
-                        }
-                    }
-                }
-            }
-        }
-        if scope.admits_phase7b() && query.raw_layout_symbols.len() == target.len() {
-            let direction = query.layout_direction;
-            let mut changed = false;
-            let projected_matches =
-                query
-                    .raw_layout_symbols
-                    .iter()
-                    .zip(&target)
-                    .all(|(raw, expected)| {
-                        let Some(raw_character) = char::from_u32(*raw) else {
-                            return false;
-                        };
-                        let projected =
-                            project_char(raw_character, direction.as_dict_direction()) as u32;
-                        changed |= projected != *raw;
-                        projected == *expected
-                    });
-            if projected_matches && changed {
-                certificates.insert(TypedCertificate::KeyboardLayout { direction });
-            }
-        }
-        if scope.admits_phase7c() && query.lexical_symbols.len() == target.len() + 2 {
-            for input_start in 0..=target.len() {
-                if !query.lexical_symbols[..input_start]
-                    .iter()
-                    .chain(&query.lexical_symbols[input_start + 2..])
-                    .copied()
-                    .eq(target.iter().copied())
-                {
-                    continue;
-                }
-                let first = query.lexical_symbols[input_start];
-                let second = query.lexical_symbols[input_start + 1];
-                for source_target_start in 0..target.len().saturating_sub(1) {
-                    if source_target_start + 2 <= input_start
-                        && target[source_target_start] == first
-                        && target[source_target_start + 1] == second
-                    {
-                        certificates.insert(TypedCertificate::RepeatedFragment {
-                            input_start: input_start as u8,
-                            source_target_start: source_target_start as u8,
-                            len: 2,
-                        });
-                    }
-                }
-            }
-        }
-        if scope.admits_phase7d() && query.lexical_symbols.len() + 2 == target.len() {
-            for first in 0..target.len().saturating_sub(1) {
-                for second in first + 1..target.len() {
-                    if target
-                        .iter()
-                        .enumerate()
-                        .filter_map(|(position, symbol)| {
-                            (position != first && position != second).then_some(*symbol)
-                        })
-                        .eq(query.lexical_symbols.iter().copied())
-                    {
-                        certificates.insert(TypedCertificate::SparseMultiOmission {
-                            first: first as u8,
-                            second: second as u8,
-                        });
-                    }
-                }
-            }
-        }
+        let certificates = direct_typed_certificates(query, &target, scope);
         if !certificates.is_empty() {
             events.insert(center_id as u32, certificates);
         }

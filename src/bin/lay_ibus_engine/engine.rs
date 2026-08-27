@@ -1,11 +1,17 @@
 use lay::config::LayConfig;
 use std::collections::BTreeSet;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
 
 use super::preedit::PreeditFastState;
 use super::protocol::Shared;
 
 const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
+
+pub(super) fn next_input_identity() -> u64 {
+    static NEXT: AtomicU64 = AtomicU64::new(1);
+    NEXT.fetch_add(1, Ordering::Relaxed).max(1)
+}
 
 #[path = "engine/types.rs"]
 mod types;
@@ -24,6 +30,8 @@ pub(crate) struct LayIbusEngine {
     pub(super) tail_buffer: String,
     pub(super) tail_epoch: u64,
     pub(super) focus_receipt: Option<String>,
+    pub(super) focus_serial: u64,
+    pub(super) runtime_owner_lease_identity: u64,
     pub(super) preedit_suffix: String,
     pub(super) preedit_candidates: Vec<String>,
     pub(super) preedit_replacement_targets: Vec<Option<String>>,
@@ -38,6 +46,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) surrounding_observation_revision: u64,
     pub(super) factory_engine_profile: lay::exact_layout_authority::FactoryEngineProfile,
     pub(super) layout_is_ru: bool,
+    pub(super) layout_generation: u64,
     pub(super) shift_active: bool,
     pub(super) shift_used_as_modifier: bool,
     pub(super) shift_pressed_at: Option<Instant>,
@@ -61,6 +70,13 @@ pub(crate) struct LayIbusEngine {
 }
 
 impl LayIbusEngine {
+    pub(super) fn set_layout_is_ru(&mut self, target_is_ru: bool) {
+        if self.layout_is_ru != target_is_ru {
+            self.layout_is_ru = target_is_ru;
+            self.layout_generation = next_input_identity();
+        }
+    }
+
     pub(super) fn initial_word_input_mode(&self) -> WordInputMode {
         if self.cursor_cell_width > 0
             && self.cursor_cell_width <= 3
@@ -85,6 +101,8 @@ impl LayIbusEngine {
         }
 
         let replaces_existing_focus = self.focus_receipt.replace(receipt).is_some();
+        self.focus_serial = next_input_identity();
+        self.runtime_owner_lease_identity = next_input_identity();
         if replaces_existing_focus {
             self.buffer.clear();
             self.composition_cursor = 0;
@@ -134,6 +152,9 @@ impl LayIbusEngine {
         if !changed {
             return false;
         }
+
+        self.focus_serial = next_input_identity();
+        self.runtime_owner_lease_identity = next_input_identity();
 
         self.buffer.clear();
         self.composition_cursor = 0;

@@ -1,0 +1,366 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "id": "slice8-paper-with-v5-failure",
+      "kind": "file",
+      "path": "../../ime-target-authority-slice8-lexical-readout-2026-08-23.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 12834,
+        "sha256": "15e6a4fd5909dcef353ce15a1488bbb080484cf0f41e17cf5b43795195a0dcee"
+      }
+    },
+    {
+      "id": "v5-smoke-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-smoke-13x1.json",
+      "expect": {
+        "mode": "0600",
+        "size_bytes": 118847,
+        "sha256": "db904421965290ae1c87ceb15ebb003952d92b06f7c5029a44c2840b88b473b0"
+      }
+    },
+    {
+      "id": "v5-fixed-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-fixed-13x100.json",
+      "expect": {
+        "mode": "0600",
+        "size_bytes": 1252535,
+        "sha256": "8e2d72b3dfff0d1efca2438315e41340dfac417377029b702e3d56dcc96c3769"
+      }
+    },
+    {
+      "id": "v5-ready-preflight",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/implementation-preflight-v5-original-material.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 5399,
+        "sha256": "cab4e03b7f7ae8ad1978370d07651bb86e899e6995e4c85a16882e522599daa6"
+      }
+    },
+    {
+      "id": "proof-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 214602,
+        "sha256": "2080fa90c08758d2dc6404cdfb830a3ee475e0bb19a6b3df5a27fe6c781baa67"
+      }
+    },
+    {
+      "id": "production-bridge-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 111807,
+        "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "fixed-attempt-identity",
+      "producer": "every immutable lemma-heldout ProofCaseV1 proof_identity",
+      "consumer": "exactly one typed live cohort proof outcome",
+      "comparison": "proof identity and damage class are preserved one-to-one before outcome partitioning",
+      "test_id": "attempt-identity-parity"
+    },
+    {
+      "id": "production-availability-outcome",
+      "producer": "ObservedCanonicalL2FieldReadout availability and optional cohort comparator",
+      "consumer": "ProducedField or NoField proof outcome",
+      "comparison": "Ready with a comparator becomes ProducedField; UnsupportedInput or EmptyL11Lattice without a comparator becomes NoField; every other missing comparator remains an error",
+      "test_id": "outcome-partition"
+    },
+    {
+      "id": "produced-field-comparator",
+      "producer": "one production-prepared canonical field",
+      "consumer": "one frame-bound cohort comparison",
+      "comparison": "replacement membership original grounding legacy authority and field generation are compared from the same field",
+      "test_id": "produced-field-identity-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "full-attempt-denominator",
+      "statement": "every fixed lemma-heldout attempt is counted exactly once as ProducedField NoField or Error",
+      "test_id": "outcome-partition"
+    },
+    {
+      "id": "no-field-not-ready",
+      "statement": "an upstream no-field observation never increments comparator READY retention or authority counters",
+      "test_id": "no-field-cannot-pass-comparator"
+    },
+    {
+      "id": "transient-unavailability-is-error",
+      "statement": "service package or Productive failures remain proof errors and cannot be relabeled as expected no-field coverage",
+      "test_id": "transient-no-field-fault"
+    },
+    {
+      "id": "produced-field-completeness",
+      "statement": "every produced field reaches comparator READY and has zero replacement retention grounded L1.1 and legacy parity failures",
+      "test_id": "produced-field-gate"
+    },
+    {
+      "id": "coverage-debt-visible",
+      "statement": "nonzero NoField count keeps production field coverage incomplete and promotion ineligible even when the produced-field comparator passes",
+      "test_id": "coverage-not-promotion"
+    },
+    {
+      "id": "observation-only",
+      "statement": "the revision changes proof accounting only and cannot change candidate birth live authority package bytes verifier mutation or installed runtime",
+      "test_id": "stable-runtime-projection"
+    },
+    {
+      "id": "systemic-only",
+      "statement": "no fixed surface class-specific branch frontier increase fallback route or gate weakening is introduced",
+      "test_id": "systemic-source-scan"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "v5-smoke",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-smoke-13x1.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain the scoped V5 13x1 PASS",
+      "baseline_check_id": "v5-smoke-receipt"
+    },
+    {
+      "id": "v5-fixed-failure",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-fixed-13x100.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain the mixed-denominator failure and all 382 upstream observations",
+      "baseline_check_id": "v5-fixed-receipt"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [
+    {
+      "id": "v5-v6-produced-field-projection",
+      "source": "the same fixed Productive proof sample packages production bridge and temporary L1.1 service",
+      "comparison": "exact_stable_projection",
+      "reason": "V6 separates proof outcomes without changing field production or cohort computation",
+      "baseline": "V5 mixed errors plus 918 produced-field comparisons",
+      "candidate": "V6 typed 1300-attempt partition plus the same produced-field comparisons",
+      "stable_fields": [
+        "fixed_proof_identities",
+        "production_availability_by_identity",
+        "produced_field_count",
+        "produced_field_status_counts",
+        "candidate_retention_failures",
+        "grounded_l11_losses",
+        "legacy_decision_parity_failures",
+        "runtime_authority_changed"
+      ],
+      "expected_to_change_fields": [
+        "live_cohort_report_schema",
+        "errors",
+        "no_field_counts",
+        "scoped_comparator_verdict",
+        "production_coverage_verdict"
+      ],
+      "observed_not_compared_fields": [
+        "thread_schedule",
+        "cache_disposition",
+        "latency_percentiles",
+        "trace_sequence"
+      ],
+      "test_id": "stable-runtime-projection"
+    }
+  ],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "source_checks": [
+    {
+      "id": "proof-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "2080fa90c08758d2dc6404cdfb830a3ee475e0bb19a6b3df5a27fe6c781baa67",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?:systemctl|lay-runtime-control|install-release)"
+        },
+        {
+          "effect": "restart_lay_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}lay-daemon"
+        },
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}ibus-daemon"
+        },
+        {
+          "effect": "literal_case_runtime_branch",
+          "regex": "(?:кристаллизатор|данорм|ЕленаПросит)"
+        },
+        {
+          "effect": "raise_global_target_limit",
+          "regex": "MAX_TARGETS_PER_FIELD\\s*[:=].*(?:75|96|128|256)"
+        },
+        {
+          "effect": "new_fallback_route",
+          "regex": "(?:fallback_authority|fallback_winner|legacy_fallback)"
+        },
+        {
+          "effect": "weaken_incomplete_authority",
+          "regex": "(?:Overflow|Failed|UpstreamIncomplete).{0,100}(?:Winner|L2Certified)"
+        },
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?:write|create|generate)_synthetic_fixture"
+        }
+      ]
+    },
+    {
+      "id": "production-bridge-pinned",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "package_rebuild",
+          "regex": "(?:compile|reinduce|rebuild).{0,100}(?:V9|V13|V90|package)"
+        },
+        {
+          "effect": "weaken_verifier",
+          "regex": "(?:SafetyGate|verifier).{0,120}(?:bypass|disable|skip|weaken)"
+        },
+        {
+          "effect": "rewrite_any_package",
+          "regex": "(?:File::create|OpenOptions::new).{0,300}(?:p2m|p2r|V9|V13|V90)"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "record-v5-mixed-denominator",
+        "kind": "documentation_edit"
+      },
+      {
+        "id": "separate-proof-outcomes",
+        "kind": "source_edit"
+      },
+      {
+        "id": "run-v6-fixed-proofs",
+        "kind": "remote_test"
+      }
+    ],
+    "forbidden": [
+      "runtime_deployment",
+      "restart_lay_daemon",
+      "restart_global_ibus_daemon",
+      "rewrite_any_package",
+      "package_rebuild",
+      "raise_global_target_limit",
+      "literal_case_runtime_branch",
+      "new_fallback_route",
+      "weaken_incomplete_authority",
+      "weaken_verifier",
+      "generated_traffic",
+      "synthetic_fixture"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "SLICE8B_V5_MIXED_DENOMINATOR_FAIL_RUNTIME_UNCHANGED",
+    "steps": [
+      {
+        "id": "implement-typed-proof-outcome-partition",
+        "from": "SLICE8B_V5_MIXED_DENOMINATOR_FAIL_RUNTIME_UNCHANGED",
+        "to": "SLICE8B_V6_READY_FOR_FIXED_PROOF_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "SLICE8B_V6_ACCOUNTING_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain V5 receipts and the failed V6 source diff; do not change production bridge birth or expected fixed attempts",
+        "preserves": [
+          "v5-smoke",
+          "v5-fixed-failure"
+        ],
+        "test_id": "outcome-partition-fault"
+      },
+      {
+        "id": "run-v6-remote-fixed-proof",
+        "from": "SLICE8B_V6_READY_FOR_FIXED_PROOF_RUNTIME_UNCHANGED",
+        "to": "SLICE8B_PRODUCED_FIELD_COMPARATOR_PROVED_UPSTREAM_COVERAGE_OPEN",
+        "mutates": false,
+        "failure_state": "SLICE8B_V6_FIXED_PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain the complete failed denominator and stop before Slice 8C",
+        "preserves": [
+          "v5-smoke",
+          "v5-fixed-failure"
+        ],
+        "test_id": "fixed-denominator-proof"
+      }
+    ],
+    "terminal_states": [
+      "SLICE8B_PRODUCED_FIELD_COMPARATOR_PROVED_UPSTREAM_COVERAGE_OPEN",
+      "SLICE8B_V6_ACCOUNTING_REJECTED_RUNTIME_UNCHANGED",
+      "SLICE8B_V6_FIXED_PROOF_FAILED_RUNTIME_UNCHANGED"
+    ]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_DENOMINATOR_SEPARATION_V6_2026-08-24",
+  "tests": [
+    {
+      "id": "attempt-identity-parity",
+      "kind": "parity",
+      "expected": "all 1300 fixed lemma-heldout proof identities produce one and only one typed proof outcome"
+    },
+    {
+      "id": "outcome-partition",
+      "kind": "parity",
+      "expected": "ProducedField plus NoField plus Error equals the unchanged fixed attempt denominator with no duplicate or missing identity"
+    },
+    {
+      "id": "outcome-partition-fault",
+      "kind": "fault_injection",
+      "expected": "a duplicated omitted or unclassified proof identity fails denominator conservation and cannot produce a scoped PASS"
+    },
+    {
+      "id": "no-field-cannot-pass-comparator",
+      "kind": "fault_injection",
+      "expected": "UnsupportedInput and EmptyL11Lattice remain explicit NoField outcomes and cannot increment READY retention or authority"
+    },
+    {
+      "id": "transient-no-field-fault",
+      "kind": "fault_injection",
+      "expected": "L11 service canonical package Productive package and Productive readout failures remain Error and fail the scoped comparator proof"
+    },
+    {
+      "id": "produced-field-gate",
+      "kind": "integration",
+      "expected": "every ProducedField is READY with candidate retention grounded L1.1 loss and legacy parity failures all zero"
+    },
+    {
+      "id": "produced-field-identity-parity",
+      "kind": "parity",
+      "expected": "each production-prepared field is consumed by exactly one comparator carrying the same proof identity field generation and observed surface"
+    },
+    {
+      "id": "coverage-not-promotion",
+      "kind": "parity",
+      "expected": "nonzero NoField count is reported as incomplete production coverage and keeps promotion_eligible false"
+    },
+    {
+      "id": "stable-runtime-projection",
+      "kind": "parity",
+      "expected": "V5 and V6 preserve fixed identities production availability produced-field comparator results legacy authority and runtime_authority_changed false"
+    },
+    {
+      "id": "fixed-denominator-proof",
+      "kind": "integration",
+      "expected": "remote 13x1 and 13x100 account for every attempt while produced-field comparator passes and upstream coverage remains separately open"
+    },
+    {
+      "id": "systemic-source-scan",
+      "kind": "integration",
+      "expected": "only proof accounting and owning documentation change; production bridge packages limits authority verifier and installed runtime do not change"
+    }
+  ]
+}

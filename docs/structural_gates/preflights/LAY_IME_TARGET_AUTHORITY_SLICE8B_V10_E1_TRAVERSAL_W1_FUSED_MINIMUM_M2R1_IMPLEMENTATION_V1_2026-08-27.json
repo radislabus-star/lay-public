@@ -1,0 +1,239 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "expect": {"mode": "0444", "sha256": "72c95d64bbc32d880e564bdf0f68246765a0d24c109b57d5f7608ffb90e2c45b", "size_bytes": 4632},
+      "id": "m2r1-repair-contract",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_BUILD_CLOSURE_REPAIR_V1_2026-08-27.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "4ce80699d44045c2c8e1ac1d7908573da3814e67f9862597a8af250d78d839a5", "size_bytes": 4874},
+      "id": "m2r1-repair-route",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_BUILD_CLOSURE_REPAIR_V1_ROUTE_2026-08-27.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "90d11f455fe7014a6b121dfcb5276eee20c84bdb91016dff03761dc4afc12899", "size_bytes": 28628},
+      "id": "m2r1-structural-review",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_BUILD_CLOSURE_REPAIR_V1_STRUCTURAL_REVIEW_2026-08-27.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "3e8eb29b82b5a5245b2a5f1f146ae72c1f6892fe46f234bcbffcd6220718c736", "size_bytes": 2652},
+      "id": "m2r1-local-compile-proof",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_LOCAL_COMPILE_PROOF_V1_2026-08-27.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "21c2098f7c457c4939d6aef2b36e13ed895f7e8f77e040d8b99950f5db2cf85c", "size_bytes": 1755},
+      "id": "m2-terminal-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_TERMINAL_AUDIT_V2_2026-08-26/M2_TERMINAL_AUDIT_RECEIPT.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "60d80d86a68aa671ff419f1b9e242527b87b93981e029a7b27aeccd5c4a53c7b", "size_bytes": 10008},
+      "id": "m2-cargo-log",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_TERMINAL_AUDIT_V2_2026-08-26/REMOTE_EVIDENCE/build-failure-v1/cargo.log"
+    },
+    {
+      "expect": {"mode": "0555", "sha256": "4f2f6484d7ada483688b59a2403354548d4aaffdc594074c4447326c7b8c1f7f", "size_bytes": 65528},
+      "id": "m2-v3-local-controller",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-v3.py"
+    },
+    {
+      "expect": {"mode": "0555", "sha256": "14c7c60814927a8f3bcfc607a391d78552fdf8cdd51253eccd429d1f40c50dd6", "size_bytes": 40111},
+      "id": "m2-v3-remote-controller",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-remote.py"
+    },
+    {
+      "expect": {"mode": "0555", "sha256": "30da6d116df0fa5d5372dc8718c86bb3e46c4cb59edcc918429cceb523959869", "size_bytes": 11644},
+      "id": "m2-v3-bootstrap-auditor",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-bootstrap-audit-v3.py"
+    },
+    {
+      "expect": {"mode": "0555", "sha256": "091e97c8aa0e1d8a7455fefba0fb038ea04566996b149d4a10feaad0e1d5030e", "size_bytes": 18914},
+      "id": "m2-v3-build-auditor",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-build-audit-v3.py"
+    },
+    {
+      "expect": {"mode": "0555", "sha256": "1656e3a2fa8b772a5ef8c01daab7daf03b751c73fc2ac4bbda02a1ed6520b92b", "size_bytes": 33296},
+      "id": "m2-v3-terminal-auditor",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-terminal-audit-v3.py"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "b0a775420edf9e9d6e7f0b59f9ad840e4822cd0fdd0adc2429ea22a3e9e3a175", "size_bytes": 155810},
+      "id": "m2-original-fragment",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_e1_traversal_w1_fused_minimum_m2_test_module.rs.inc"
+    },
+    {
+      "expect": {"mode": "0644", "sha256": "a6ea388d5d76f8223511fd4822cff2df9fd0c3394fc200f4fc52db956522ce5b", "size_bytes": 156122},
+      "id": "m2r1-candidate-fragment",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_e1_traversal_w1_fused_minimum_m2r1_test_module.rs.inc"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "comparison": "new task_id and transaction_id are exact in local controller remote controller auditors markers states and receipts",
+      "consumer": "all M2R1 producers and auditors",
+      "id": "m2r1-namespace-parity",
+      "producer": "sealed M2R1 local controller",
+      "test_id": "namespace-parity"
+    },
+    {
+      "comparison": "SHA-256 byte identity after upload and evidence mirroring",
+      "consumer": "remote bootstrap copies",
+      "id": "m2r1-source-parity",
+      "producer": "sealed local controller remote controller auditors and fragment",
+      "test_id": "source-parity"
+    },
+    {
+      "comparison": "route registry marker registry events denominators thresholds and failure dispatch equal effective M2 V3",
+      "consumer": "M2R1 terminal auditor",
+      "id": "scientific-contract-parity",
+      "producer": "M2R1 controller source set",
+      "test_id": "scientific-contract-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "old-m2-immutable",
+      "statement": "M2R1 never writes resumes or recreates original M2 state",
+      "test_id": "old-m2-preservation"
+    },
+    {
+      "id": "repair-only-signature",
+      "statement": "the only Rust delta from M2 is explicit peak field projection in m2_result_signature",
+      "test_id": "fragment-delta"
+    },
+    {
+      "id": "prefixes-preserved",
+      "statement": "D1 fragment and production source prefixes remain exact",
+      "test_id": "prefix-hashes"
+    },
+    {
+      "id": "build-closed-before-markers",
+      "statement": "the repaired exact assembly has a sealed successful disposable compile proof before M2R1 markers exist",
+      "test_id": "compile-proof"
+    },
+    {
+      "id": "one-shot-fail-closed",
+      "statement": "every mutating execution action is journaled and every route marker is consumed before execution with no retry",
+      "test_id": "failure-injection"
+    },
+    {
+      "id": "terminal-only-decision",
+      "statement": "only the terminal auditor may interpret all six completed physical routes",
+      "test_id": "terminal-state-model"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "baseline_check_id": "m2-terminal-receipt",
+      "cursor_policy": "whole_file",
+      "id": "m2-terminal-evidence",
+      "path": "original M2 terminal receipt and tree",
+      "policy": "immutable",
+      "rollback_policy": "never modify"
+    },
+    {
+      "baseline_check_id": "m2-v3-local-controller",
+      "cursor_policy": "whole_file",
+      "id": "m2-v3-source-set",
+      "path": "original M2 V3 controller and auditors",
+      "policy": "immutable",
+      "rollback_policy": "never modify"
+    },
+    {
+      "baseline_check_id": "m2-original-fragment",
+      "cursor_policy": "whole_file",
+      "id": "m2-original-fragment-evidence",
+      "path": "original M2 Rust fragment",
+      "policy": "immutable",
+      "rollback_policy": "never modify"
+    }
+  ],
+  "reuses_existing_implementation": false,
+  "runtime_comparisons": [],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "side_effects": {
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "network_or_remote_access_during_implementation",
+      "remote_namespace_or_marker_mutation_during_implementation",
+      "cargo_or_rustc_during_implementation",
+      "perf_or_pmu_or_subject_execution_during_implementation",
+      "old_m2_source_state_marker_or_receipt_modification",
+      "live_src_edit",
+      "production_build_install_restart_deployment_or_runtime_authority_change"
+    ],
+    "planned": [
+      {"id": "create-m2r1-controller-source-set", "kind": "local_source_edit"},
+      {"id": "run-static-self-checks", "kind": "local_read_only_process_with_disposable_state"},
+      {"id": "publish-m2r1-implementation-receipt", "kind": "local_evidence_write"},
+      {"id": "later-independent-live-admission", "kind": "separate_future_transaction"},
+      {"id": "later-one-shot-m2r1-execution", "kind": "separate_future_transaction"}
+    ]
+  },
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "steps": [
+      {
+        "cleanup": "retain incomplete new files as non-authoritative evidence; old M2 unchanged",
+        "failure_state": "BLOCKED_BEFORE_CODE",
+        "from": "PREFLIGHT_READY",
+        "id": "create-m2r1-source-set",
+        "mutates": true,
+        "preserves": ["m2-terminal-evidence", "m2-v3-source-set", "m2-original-fragment-evidence"],
+        "test_id": "source-creation-fault",
+        "to": "M2R1_SOURCES_CREATED_UNVERIFIED"
+      },
+      {
+        "cleanup": "publish no execution admission and retain failed self-check output",
+        "failure_state": "BLOCKED_BEFORE_CODE",
+        "from": "M2R1_SOURCES_CREATED_UNVERIFIED",
+        "id": "run-static-self-checks",
+        "mutates": false,
+        "preserves": ["m2-terminal-evidence", "m2-v3-source-set", "m2-original-fragment-evidence"],
+        "test_id": "static-self-check",
+        "to": "M2R1_STATIC_SELF_CHECK_PASS"
+      },
+      {
+        "cleanup": "atomic stage removal before rename; no partial final receipt",
+        "failure_state": "BLOCKED_BEFORE_CODE",
+        "from": "M2R1_STATIC_SELF_CHECK_PASS",
+        "id": "seal-implementation-receipt",
+        "mutates": true,
+        "preserves": ["m2-terminal-evidence", "m2-v3-source-set", "m2-original-fragment-evidence"],
+        "test_id": "receipt-publication-fault",
+        "to": "M2R1_CONTROLLER_VERIFIED_UNRUN"
+      }
+    ],
+    "terminal_states": ["M2R1_CONTROLLER_VERIFIED_UNRUN", "BLOCKED_BEFORE_CODE"]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_IMPLEMENTATION_V1_2026-08-27",
+  "tests": [
+    {"expected": "new files cannot alter any immutable M2 artifact", "id": "source-creation-fault", "kind": "fault_injection"},
+    {"expected": "all Python sources compile and closed command graph equals effective M2 V3", "id": "static-self-check", "kind": "static"},
+    {"expected": "partial receipt never reaches final path and successful receipt is immutable", "id": "receipt-publication-fault", "kind": "fault_injection"},
+    {"expected": "old M2 hashes and modes remain exact before and after self-check", "id": "old-m2-preservation", "kind": "parity"},
+    {"expected": "exactly one function body changes and only peak field JSON projection differs", "id": "fragment-delta", "kind": "static"},
+    {"expected": "D1 and production prefix hashes equal pinned values", "id": "prefix-hashes", "kind": "parity"},
+    {"expected": "sealed local compile proof verdict and exact assembled SHA pass", "id": "compile-proof", "kind": "evidence"},
+    {"expected": "all external actions have durable intent before action and terminal no-retry dispatch", "id": "failure-injection", "kind": "fault_injection"},
+    {"expected": "new task and transaction IDs agree across all producers consumers and marker values", "id": "namespace-parity", "kind": "parity"},
+    {"expected": "uploaded controller auditor and fragment bytes match local sealed SHA-256", "id": "source-parity", "kind": "parity"},
+    {"expected": "route marker event denominator threshold and failure tables match effective M2 V3", "id": "scientific-contract-parity", "kind": "parity"},
+    {"expected": "intermediate routes cannot publish mechanism verdict and terminal projections are exhaustive", "id": "terminal-state-model", "kind": "model"}
+  ]
+}

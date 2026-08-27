@@ -1,0 +1,653 @@
+{
+  "verdict": "VETO",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-e1-traversal-d2-secondary-gap-v5",
+  "domain": "code",
+  "complexity_score": 42,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.1429,
+      "c2": 0.1429,
+      "c3": 0.1429,
+      "c4": 0.1429,
+      "c5": 0.1429,
+      "c6": 0.1429,
+      "c7": 0.1429
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 14,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.3561,
+      "c2": 0.3627,
+      "c3": 0.3973,
+      "c4": 0.3392,
+      "c5": 0.4069,
+      "c6": 0.3819,
+      "c7": 0.4105
+    },
+    "source_self_score": 0.3792,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "secondary-gap": "secondary-gap"
+    },
+    "scores": {
+      "secondary-gap": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "secondary-gap": 7
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.3792,
+      "norm": 84.947,
+      "triads": 7
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "secondary-gap": "secondary-gap"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "secondary-gap": {
+          "norm": 84.947,
+          "self_coherence": 0.3792,
+          "triads": 7
+        }
+      },
+      "source": {
+        "secondary-gap": {
+          "norm": 84.947,
+          "self_coherence": 0.3792,
+          "triads": 7
+        }
+      }
+    },
+    "group_links": {
+      "secondary-gap": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "secondary-gap",
+        "exact_source_groups": [
+          "secondary-gap"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "secondary-gap": {
+        "secondary-gap": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [
+        {
+          "center": "attribution owner",
+          "group": "secondary-gap",
+          "kind": "owner_conflict",
+          "owners": [
+            "attribution owner",
+            "correction owner",
+            "d2 decision owner",
+            "implementation-preflight owner",
+            "precise evidence owner",
+            "primary sampling owner",
+            "sequence owner"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        }
+      ],
+      "group_centers": {
+        "secondary-gap": {
+          "gravity": 0.1429,
+          "owner": "attribution owner",
+          "owners": {
+            "attribution owner": 2,
+            "correction owner": 2,
+            "d2 decision owner": 2,
+            "implementation-preflight owner": 2,
+            "precise evidence owner": 2,
+            "primary sampling owner": 2,
+            "sequence owner": 2
+          },
+          "support": 2,
+          "total": 14
+        }
+      },
+      "route_centers": {
+        "admission": {
+          "gravity": 1.0,
+          "owner": "correction owner",
+          "owners": {
+            "correction owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "attribution": {
+          "gravity": 1.0,
+          "owner": "attribution owner",
+          "owners": {
+            "attribution owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "capability": {
+          "gravity": 1.0,
+          "owner": "precise evidence owner",
+          "owners": {
+            "precise evidence owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "decision": {
+          "gravity": 1.0,
+          "owner": "d2 decision owner",
+          "owners": {
+            "d2 decision owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "preflight": {
+          "gravity": 1.0,
+          "owner": "implementation-preflight owner",
+          "owners": {
+            "implementation-preflight owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "sampling": {
+          "gravity": 1.0,
+          "owner": "primary sampling owner",
+          "owners": {
+            "primary sampling owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "sequencing": {
+          "gravity": 1.0,
+          "owner": "sequence owner",
+          "owners": {
+            "sequence owner": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "secondary-gap"
+      }
+    ],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "admission": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "v5 sequencing overlay"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "correction owner"
+          ],
+          "scopes": [
+            "admission"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "attribution": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "v5 hard ceiling"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "attribution owner"
+          ],
+          "scopes": [
+            "attribution"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "capability": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "sealed precise v3 receipt and 79 unknown ip samples"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "precise evidence owner"
+          ],
+          "scopes": [
+            "capability"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "decision": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "reviewed d2 v4 decision"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "d2 decision owner"
+          ],
+          "scopes": [
+            "decision"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "preflight": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "v5 authority boundary"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "implementation-preflight owner"
+          ],
+          "scopes": [
+            "preflight"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "sampling": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "primary-only route contract"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "primary sampling owner"
+          ],
+          "scopes": [
+            "sampling"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "sequencing": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "sealed marker ledger"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "sequence owner"
+          ],
+          "scopes": [
+            "sequencing"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "admission": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "attribution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "capability": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "preflight": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "sampling": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "sequencing": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "admission": {
+          "admission": 1.0,
+          "attribution": -0.0234,
+          "capability": -0.0293,
+          "decision": -0.0137,
+          "preflight": -0.002,
+          "sampling": -0.0313,
+          "sequencing": 0.0
+        },
+        "attribution": {
+          "admission": -0.0234,
+          "attribution": 1.0,
+          "capability": -0.0566,
+          "decision": 0.0566,
+          "preflight": 0.0215,
+          "sampling": -0.0078,
+          "sequencing": 0.0234
+        },
+        "capability": {
+          "admission": -0.0293,
+          "attribution": -0.0566,
+          "capability": 1.0,
+          "decision": -0.0234,
+          "preflight": -0.0117,
+          "sampling": 0.0723,
+          "sequencing": -0.0059
+        },
+        "decision": {
+          "admission": -0.0137,
+          "attribution": 0.0566,
+          "capability": -0.0234,
+          "decision": 1.0,
+          "preflight": 0.0352,
+          "sampling": 0.0254,
+          "sequencing": -0.0254
+        },
+        "preflight": {
+          "admission": -0.002,
+          "attribution": 0.0215,
+          "capability": -0.0117,
+          "decision": 0.0352,
+          "preflight": 1.0,
+          "sampling": 0.0488,
+          "sequencing": -0.002
+        },
+        "sampling": {
+          "admission": -0.0313,
+          "attribution": -0.0078,
+          "capability": 0.0723,
+          "decision": 0.0254,
+          "preflight": 0.0488,
+          "sampling": 1.0,
+          "sequencing": -0.0273
+        },
+        "sequencing": {
+          "admission": 0.0,
+          "attribution": 0.0234,
+          "capability": -0.0059,
+          "decision": -0.0254,
+          "preflight": -0.002,
+          "sampling": -0.0273,
+          "sequencing": 1.0
+        }
+      },
+      "source": {
+        "admission": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "attribution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "capability": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "preflight": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "sampling": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "sequencing": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "secondary-gap": 7
+    },
+    "stable_groups": [
+      "secondary-gap"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 1,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 1,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "secondary-gap"
+    }
+  ],
+  "agent_decision": {
+    "action": "REPAIR_REQUIRED",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Apply the repair_queue before editing or accepting this route.",
+    "repair_count": 1,
+    "repair_queue": [
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "secondary-gap"
+      }
+    ],
+    "safe_to_edit": false
+  },
+  "explanation": [
+    "No decisive structural signal was found."
+  ],
+  "repair_prompt": "Repair the candidate answer using only one coherent structural route.\nNANDA verdict: VETO.\nPrimary repair_queue:\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-e1-traversal-d2-secondary-gap-v5.trace.json"
+}

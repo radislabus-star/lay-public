@@ -1,0 +1,551 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_SUBSTAGE_DIAGNOSTIC_V10_IMPLEMENTATION_V1_2026-08-27",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "v10-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_SUBSTAGE_DIAGNOSTIC_V10_2026-08-27.md",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 14154,
+        "sha256": "afb4709efd22a63119527d21d126629a08a811e2b4e73a68c211144df946bd27"
+      }
+    },
+    {
+      "id": "v10-split-packet",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_SUBSTAGE_DIAGNOSTIC_V10_SPLIT_PACKET_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 11197,
+        "sha256": "4e2b5086b5ef45ea2162d7c4dc5f805489ca17e97d95dadec3fa0fe8891442ba"
+      }
+    },
+    {
+      "id": "v10-split-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_SUBSTAGE_DIAGNOSTIC_V10_SPLIT_RECEIPT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 23262,
+        "sha256": "19fde401142400eea62e40f543de5271abd4b89bb36d61cc9ff26857df63bf25"
+      }
+    },
+    {
+      "id": "v9-mechanism-decision",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_V9_MECHANISM_DECISION_V1_2026-08-27.md",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 8679,
+        "sha256": "3c2e2792d7e6f62abe016c89c132a8df5c171bb9d3c529b1419c39013789f8fe"
+      }
+    },
+    {
+      "id": "v9-mechanism-structural-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_V9_MECHANISM_DECISION_V1_ROUTE_V2_RECEIPT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 25637,
+        "sha256": "b83eb3096ebc676d8373a76960c61db57c081ca869f2d0779df080c87da95602"
+      }
+    },
+    {
+      "id": "v9-terminal",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_V9_OFFLINE_TERMINAL_AUDIT_V2_2026-08-27/TERMINAL_AUDIT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 9008,
+        "sha256": "7105b503ce7a0079e441fe736c3e40717ab4f77bd7289c2d67536abb8507f6a8"
+      }
+    },
+    {
+      "id": "v8r3-terminal",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R3_TERMINAL_AUDIT_V1_2026-08-27/TERMINAL_AUDIT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 32242,
+        "sha256": "2115a4ce7c8a79fffde043b87c5aa462014873a0365df3a6e82892f395f6aedc"
+      }
+    },
+    {
+      "id": "live-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 70181,
+        "sha256": "87180990b6883641483a46886074e5350f35e351454d734f0c3c9da723d758bd"
+      }
+    },
+    {
+      "id": "proposal-admission-source",
+      "kind": "file",
+      "path": "../../../src/typing_transition/proposal_admission.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 70639,
+        "sha256": "dd4a37a8c0430c9ff145f9ae9cbbbc735164ece833a143a19af644ac7ad835ca"
+      }
+    },
+    {
+      "id": "decision-source-protected",
+      "kind": "file",
+      "path": "../../../src/typing_transition/decision.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 45197,
+        "sha256": "ad3c6d450c01811844a49e9c714d0eb9ff80f7de7d2f03a2e8b3e290deda3691"
+      }
+    },
+    {
+      "id": "v8-test-source-protected",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 253080,
+        "sha256": "28f87a76fc1996989e980cab51f0443bd95e656fcae3a2ff61f581db9c3a7ee2"
+      }
+    },
+    {
+      "id": "cargo-toml-protected",
+      "kind": "file",
+      "path": "../../../Cargo.toml",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2399,
+        "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b"
+      }
+    },
+    {
+      "id": "cargo-lock-protected",
+      "kind": "file",
+      "path": "../../../Cargo.lock",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 70770,
+        "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"
+      }
+    },
+    {
+      "id": "cargo-guard-protected",
+      "kind": "file",
+      "path": "../../../scripts/cargo-guard.sh",
+      "expect": {
+        "mode": "0775",
+        "size_bytes": 2534,
+        "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"
+      }
+    },
+    {
+      "id": "v13-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 140556462,
+        "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"
+      }
+    },
+    {
+      "id": "v7-fixed-proof",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+      "expect": {
+        "mode": "0400",
+        "size_bytes": 1606189,
+        "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"
+      }
+    },
+    {
+      "id": "productive-v90",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 17309944,
+        "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44"
+      }
+    },
+    {
+      "id": "productive-v90-recovery",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 2123112,
+        "sha256": "de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e"
+      }
+    },
+    {
+      "id": "l11-v9",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 77962328,
+        "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7"
+      }
+    },
+    {
+      "id": "l11-v9-proof",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.4983930495e793c1d28c7558fe006ddf8097ee575bebb1afd3f1dba4ddb1d01d.proof.json",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 539536,
+        "sha256": "4983930495e793c1d28c7558fe006ddf8097ee575bebb1afd3f1dba4ddb1d01d"
+      }
+    },
+    {
+      "id": "v10-local-controller-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-dafsa-typed-view-m3-v10.py",
+      "expect": {}
+    },
+    {
+      "id": "v10-remote-controller-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-dafsa-typed-view-m3-v10-remote.py",
+      "expect": {}
+    },
+    {
+      "id": "v10-auditor-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-dafsa-typed-view-m3-v10-audit.py",
+      "expect": {}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "edit-test-only-observer",
+        "kind": "local_test_source_edit"
+      },
+      {
+        "id": "create-v10-controllers",
+        "kind": "local_controller_source_write"
+      },
+      {
+        "id": "run-static-self-checks",
+        "kind": "local_read_only_static_check"
+      },
+      {
+        "id": "publish-implementation-receipt",
+        "kind": "local_evidence_write"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "cargo_or_rustc_execution",
+      "network_or_remote_write",
+      "remote_namespace_or_marker_creation",
+      "build_or_trace_marker_consumption",
+      "scientific_subject_execution",
+      "perf_or_pmu_execution",
+      "daemon_or_ibus_execution",
+      "install_restart_or_runtime_activation",
+      "production_authority_or_runtime_edit",
+      "decision_or_v8_test_owner_edit",
+      "candidate_producer_ranking_safety_or_verifier_edit",
+      "package_sidecar_schedule_or_proof_edit",
+      "duplicated_candidate_admission_implementation",
+      "optimization_or_latency_pass_claim"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "steps": [
+      {
+        "id": "edit-test-only-observer",
+        "from": "PREFLIGHT_READY",
+        "to": "OBSERVER_SOURCE_EDITED",
+        "mutates": true,
+        "failure_state": "BLOCKED_SOURCE_EDIT",
+        "cleanup": "retain the exact partial diff; do not touch protected source or publish implementation PASS",
+        "preserves": [
+          "immutable-predecessors",
+          "protected-source",
+          "fixed-inputs"
+        ],
+        "test_id": "observer-edit-fault"
+      },
+      {
+        "id": "create-v10-controllers",
+        "from": "OBSERVER_SOURCE_EDITED",
+        "to": "CONTROLLERS_WRITTEN",
+        "mutates": true,
+        "failure_state": "BLOCKED_CONTROLLER",
+        "cleanup": "retain incomplete controller bytes and diagnostics; create no execution authority",
+        "preserves": [
+          "immutable-predecessors",
+          "protected-source",
+          "fixed-inputs"
+        ],
+        "test_id": "controller-write-fault"
+      },
+      {
+        "id": "run-static-self-checks",
+        "from": "CONTROLLERS_WRITTEN",
+        "to": "STATIC_SELF_CHECK_PASS",
+        "mutates": false
+      },
+      {
+        "id": "publish-implementation-receipt",
+        "from": "STATIC_SELF_CHECK_PASS",
+        "to": "V10_CONTROLLER_VERIFIED_UNRUN",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "remove an incomplete receipt stage; retain source and static-check evidence",
+        "preserves": [
+          "immutable-predecessors",
+          "protected-source",
+          "fixed-inputs"
+        ],
+        "test_id": "receipt-publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "V10_CONTROLLER_VERIFIED_UNRUN",
+      "BLOCKED_SOURCE_EDIT",
+      "BLOCKED_CONTROLLER",
+      "BLOCKED_PROVENANCE"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "immutable-predecessors",
+      "path": "V8R3, V9 and V10 paper/structural receipts",
+      "policy": "immutable_whole_file",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify or supersede during implementation",
+      "baseline_check_id": "v10-paper"
+    },
+    {
+      "id": "protected-source",
+      "path": "decision.rs, v13_typed_peak.rs, Cargo inputs and every source outside live.rs and proposal_admission.rs",
+      "policy": "immutable_during_v10_implementation",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "decision-source-protected"
+    },
+    {
+      "id": "fixed-inputs",
+      "path": "V13 package, V7 proof, Productive V90/recovery and L1.1 V9/proof",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v13-package"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "predicate-registry-to-trace-schema",
+      "producer": "fixed 36-leaf observer registry plus separate live-authority override",
+      "consumer": "one deterministic V10 aggregate trace row per request",
+      "comparison": "exact ordered stage names, array cardinality and schema version",
+      "test_id": "registry-schema-parity"
+    },
+    {
+      "id": "source-to-bootstrap",
+      "producer": "canonical full source closure after instrumentation",
+      "consumer": "future target-host isolated build bootstrap",
+      "comparison": "exact relative path, mode, size and SHA-256 for every source input",
+      "test_id": "source-closure-parity"
+    },
+    {
+      "id": "controller-to-remote",
+      "producer": "local controller pinned remote-controller and auditor hashes",
+      "consumer": "future bootstrap and independent audits",
+      "comparison": "exact task, transaction, route, marker, command and script SHA-256 identities",
+      "test_id": "controller-command-graph-parity"
+    },
+    {
+      "id": "v9-to-v10-row-sequence",
+      "producer": "1910 V9 aggregate rows in sealed schedule order",
+      "consumer": "1910 V10 substage rows from the same request loop",
+      "comparison": "exact line count and positional surface/emitted/admission cardinality join",
+      "test_id": "trace-row-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "test-only-erasure",
+      "statement": "non-test builds contain no V10 clock, registry, counter, environment lookup or trace output",
+      "test_id": "cfg-erasure-static"
+    },
+    {
+      "id": "single-authority-implementation",
+      "statement": "the observer wraps existing admission expressions in place and never duplicates candidate_admission",
+      "test_id": "no-duplicate-admission-static"
+    },
+    {
+      "id": "closed-two-route-graph",
+      "statement": "the future executable graph contains exactly BUILD then TRACE and no other route",
+      "test_id": "controller-command-graph-parity"
+    },
+    {
+      "id": "markers-before-action",
+      "statement": "each future route atomically consumes its own marker before Cargo or ELF execution and never recreates it",
+      "test_id": "marker-state-model"
+    },
+    {
+      "id": "complete-request-row",
+      "statement": "one request session emits one aggregate row only after all admission and post-override observations are complete",
+      "test_id": "trace-row-parity"
+    },
+    {
+      "id": "implementation-remains-unrun",
+      "statement": "the implementation pass performs no Cargo, rustc, remote write, marker, subject, perf or PMU action",
+      "test_id": "claim-boundary-static"
+    }
+  ],
+  "tests": [
+    {
+      "id": "observer-edit-fault",
+      "kind": "fault_injection",
+      "expected": "partial Rust observer edit cannot touch protected source or publish implementation PASS"
+    },
+    {
+      "id": "controller-write-fault",
+      "kind": "fault_injection",
+      "expected": "partial controller creation retains bytes and creates no remote namespace, marker or execution authority"
+    },
+    {
+      "id": "receipt-publication-fault",
+      "kind": "fault_injection",
+      "expected": "an incomplete receipt stage is not published as V10_CONTROLLER_VERIFIED_UNRUN"
+    },
+    {
+      "id": "registry-schema-parity",
+      "kind": "parity",
+      "expected": "the ordered 36-leaf registry, separate override and fixed arrays are exact in producer and auditor"
+    },
+    {
+      "id": "source-closure-parity",
+      "kind": "parity",
+      "expected": "the future bootstrap receives exactly the post-edit canonical source closure and protected inputs"
+    },
+    {
+      "id": "controller-command-graph-parity",
+      "kind": "parity",
+      "expected": "local, remote and auditor registries expose exactly BUILD and TRACE with frozen commands and marker names"
+    },
+    {
+      "id": "trace-row-parity",
+      "kind": "parity",
+      "expected": "1910 V9 and V10 rows join positionally and all 1528 measured cases reproduce four-round counts and histograms"
+    },
+    {
+      "id": "cfg-erasure-static",
+      "kind": "unit",
+      "expected": "static expansion and source checks prove V10 observer code is cfg(test) and production wrappers evaluate only original expressions"
+    },
+    {
+      "id": "no-duplicate-admission-static",
+      "kind": "unit",
+      "expected": "there is exactly one candidate_admission implementation and all timed predicates remain in that function"
+    },
+    {
+      "id": "marker-state-model",
+      "kind": "model",
+      "expected": "BUILD and TRACE markers are created only after bootstrap audit, consumed before action and never recreated after any failure"
+    },
+    {
+      "id": "claim-boundary-static",
+      "kind": "unit",
+      "expected": "implementation evidence reports zero Cargo, rustc, remote writes, markers, subjects, perf and PMU and no runtime authority change"
+    }
+  ],
+  "implementation_scope": {
+    "allowed_existing_source_edits": [
+      "src/nanda_wave/l2_field/productive_v1/live.rs",
+      "src/typing_transition/proposal_admission.rs"
+    ],
+    "allowed_new_files": [
+      "scripts/lay-v10-e1-traversal-w1-dafsa-typed-view-m3-v10.py",
+      "scripts/lay-v10-e1-traversal-w1-dafsa-typed-view-m3-v10-remote.py",
+      "scripts/lay-v10-e1-traversal-w1-dafsa-typed-view-m3-v10-audit.py",
+      "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_SUBSTAGE_DIAGNOSTIC_V10_IMPLEMENTATION_V1_2026-08-27/IMPLEMENTATION_RECEIPT.json"
+    ],
+    "routes": [
+      "BUILD",
+      "TRACE"
+    ],
+    "markers": {
+      "BUILD": "build.available",
+      "TRACE": "trace.available"
+    },
+    "stage_registry": [
+      "unchanged",
+      "explain_candidate",
+      "replacement_glues_separate_words",
+      "boundary_glues_short_function_tail",
+      "boundary_eats_known_current_word",
+      "boundary_changes_non_whitespace_surface",
+      "multiword_last_vowel_completion",
+      "adjacent_transposition_boundary_competition",
+      "boundary_splits_known_word",
+      "boundary_splits_weak_tail",
+      "reflexive_suffix_requires_grammar",
+      "known_current_surface_drift",
+      "verify_action_operator",
+      "surface_changes_left_context",
+      "l2_surface_stem_truncation",
+      "structural_over_compress",
+      "structural_function_prefix_drop",
+      "structural_phrase_part_growth",
+      "structural_short_initial_growth",
+      "structural_short_case_vowel",
+      "structural_soft_sign_vowel",
+      "structural_short_internal_consonant",
+      "structural_short_same_length_multi_edit",
+      "structural_same_tail_consonant",
+      "structural_infinitive_overreach",
+      "structural_protected_context_authority",
+      "structural_known_word_different_known",
+      "structural_short_layout_context",
+      "structural_short_cyrillic_ascii",
+      "structural_short_nanda_shrink",
+      "structural_short_nanda_internal_vowel",
+      "structural_nanda_unknown_word",
+      "unproven_stable_surface_shape",
+      "semantic_surface_authority",
+      "completion_only",
+      "final_class_dispatch"
+    ],
+    "post_admission_stage": "live_authority_override",
+    "build_argv": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--offline",
+      "--locked",
+      "--release",
+      "--lib",
+      "--no-run",
+      "m3_v8"
+    ],
+    "trace_environment": {
+      "LAY_L2_FIELD_TRACE": "1",
+      "LAY_PROPOSAL_ADMISSION_TRACE": "1"
+    },
+    "expected_rows": {
+      "v9_aggregate": 1910,
+      "v10_substage": 1910,
+      "measured": 1528
+    },
+    "implementation_terminal": "V10_CONTROLLER_VERIFIED_UNRUN",
+    "execution_admission": false,
+    "runtime_authority_changed": false
+  }
+}

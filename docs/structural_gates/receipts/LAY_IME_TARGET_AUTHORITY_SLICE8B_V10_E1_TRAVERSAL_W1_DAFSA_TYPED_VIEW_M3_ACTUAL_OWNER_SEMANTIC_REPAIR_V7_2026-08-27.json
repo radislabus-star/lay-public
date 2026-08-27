@@ -1,0 +1,30 @@
+{
+  "schema": "nanda.semantic-repair-execution-admission-receipt.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_SEMANTIC_REPAIR_V7_2026-08-27",
+  "manifest": {
+    "mode": "0444",
+    "size_bytes": 5332,
+    "sha256": "639e2ba15660bbdccb2b098e3419f7045aaf0fe328a6d0e0283fba1eba5307a1"
+  },
+  "checks": {
+    "v5_terminal_immutable": "PASS",
+    "v5_retry_forbidden": "PASS",
+    "v6_diagnosis_immutable": "PASS",
+    "v6_retry_forbidden": "PASS",
+    "v7_route_pass": "PASS",
+    "v7_route_repairs_zero": "PASS",
+    "semantic_repair_sources_exact": "PASS",
+    "unchanged_owner_sources_exact": "PASS",
+    "protected_sources_unchanged": "PASS",
+    "fixed_inputs_unchanged": "PASS",
+    "rustfmt": "PASS",
+    "git_diff_check": "PASS",
+    "owner_receipt_absent": "PASS"
+  },
+  "historical_cargo_invocations": 4,
+  "new_cargo_invocations_admitted": 1,
+  "retry_under_v7_permitted": false,
+  "blockers": [],
+  "safe_to_execute": true,
+  "verdict": "READY_TO_EXECUTE_ONE_SEMANTICALLY_REPAIRED_OWNER_PROOF"
+}

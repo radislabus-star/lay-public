@@ -1,0 +1,44 @@
+{
+  "schema": "lay.v10.hardware-b0a-attempt-blocked.v1",
+  "task_id": "slice8b-v10-hardware-b0-b2-v3-20260824",
+  "attempt": 2,
+  "observed_at": "2026-08-24T23:42:13+03:00",
+  "verdict": "B0A_FAILED_BUILD_UNUSED",
+  "failure": {
+    "owner": "local B0a dispatcher",
+    "operation": "read-only remote identity probe",
+    "class": "ABSENT_OUTPUT_PARENT_ASSUMED_EXISTING",
+    "detail": "remote Python started with correct argv, verified host and V13, then stat of the not-yet-created /home/e/.local/share/lay/provenance output parent raised FileNotFoundError"
+  },
+  "post_failure_audit": {
+    "remote_provenance_root_exists": false,
+    "remote_state_root_exists": false,
+    "remote_staging_paths": 0,
+    "build_marker_created": false,
+    "build_marker_consumed": false,
+    "freezer_marker_created": false,
+    "cargo_or_rustc_processes": 0,
+    "perf_processes": 0,
+    "diagnostic_executable_processes": 0,
+    "remote_filesystem_writes_by_b0a": 0
+  },
+  "read_only_full_route_audit": {
+    "nearest_existing_output_parent": "/home/e/.local/share/lay",
+    "nearest_existing_output_parent_device": 66306,
+    "home_device": 66306,
+    "free_bytes": 291327811584,
+    "source_dependency_rows": 509,
+    "source_unique_destinations": 508,
+    "source_mismatches": 0,
+    "v13_size_bytes": 140556462,
+    "v13_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "cargo_version": "cargo 1.97.1 (c980f4866 2026-06-30)",
+    "rustc_release": "1.97.1",
+    "llvm_version": "22.1.6",
+    "perf_executable_invoked": false
+  },
+  "next_action": "new preflight for nearest-existing-parent device resolution; no B0a retry under V5",
+  "later_gates_admitted": false,
+  "runtime_authority_changed": false,
+  "installed_lay_changed": false
+}

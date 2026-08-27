@@ -1,0 +1,30 @@
+{
+  "all_routes_pass": true,
+  "authority_ready": false,
+  "paper": {
+    "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_V1_2026-08-26.md",
+    "sha256": "1470dabcabee76f1bac78bab592c0a7c670a2813fb9a190dd40bdbb216f99d2e",
+    "size_bytes": 8811
+  },
+  "routes": [
+    {
+      "authority_ready": false,
+      "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_V1_ROUTE_A_EVIDENCE.md",
+      "sha256": "dde9f4a0a56e4ac9e7705cfb3cd8dc0aabad6f8784b7c3e4877a8cb9e5bb66fc",
+      "size_bytes": 2944,
+      "task_id": "w1-machine-cost-decomposition-evidence-v1",
+      "verdict": "PASS"
+    },
+    {
+      "authority_ready": false,
+      "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_V1_ROUTE_B_BOUNDARY.md",
+      "sha256": "2cbfb34a4ac9f9272428c2e629c8b188f14f20a28a543f4c0c8136298e77c70b",
+      "size_bytes": 2804,
+      "task_id": "w1-machine-cost-decomposition-boundary-v1",
+      "verdict": "PASS"
+    }
+  ],
+  "schema": "lay.v10.e1-traversal-w1-machine-cost-decomposition-structural-review.v1",
+  "task_id": "slice8b-v10-e1-traversal-w1-machine-cost-decomposition-v1-20260826",
+  "verdict": "STRUCTURALLY_ACCEPTED_WITH_SPLIT"
+}

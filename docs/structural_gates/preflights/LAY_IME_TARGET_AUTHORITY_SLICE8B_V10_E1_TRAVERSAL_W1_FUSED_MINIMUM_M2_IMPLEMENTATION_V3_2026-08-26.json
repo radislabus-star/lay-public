@@ -1,0 +1,252 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "expect": {"mode": "0444", "sha256": "0302c8e8ab56068c7b483525334424fcfb0753fd28786383532073756e1ff054", "size_bytes": 3434},
+      "id": "m2-symbolization-correction-v2",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_BUILD_SYMBOLIZATION_CORRECTION_V2_2026-08-26.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "4ca2b7d0f02801e0fbb47271a4c05163316df31109988efdd7500b0d697cb434", "size_bytes": 2696},
+      "id": "m2-symbolization-route-v2",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_BUILD_SYMBOLIZATION_CORRECTION_V2_ROUTE.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "2ebc1323b54ed2b2ff4da27f2f7a25fd45117f5e123cc3a2aa116538d2d629ba", "size_bytes": 2197},
+      "id": "m2-symbolization-structural-review-v2",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_BUILD_SYMBOLIZATION_CORRECTION_V2_STRUCTURAL_REVIEW_2026-08-26.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "1947f11e4662a8fb37b25bc851a6813f2ebe6ff45d2a8d653b552012dbe7db82", "size_bytes": 11640},
+      "id": "m2-paper-v1",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_V1_2026-08-26.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "ec3b24e7edeaffbeb0da38aecabdbd9252a15f6b12a4e0f826351ff90c1814cc", "size_bytes": 2743},
+      "id": "m2-structural-review-v1",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_STRUCTURAL_REVIEW_V1_2026-08-26.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "e34d5a2c247d91addb05a4088fb66a21e375e0b9b83793ffb6211c89d83a1459", "size_bytes": 13668},
+      "id": "m2-implementation-preflight-manifest-v1",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V1_2026-08-26.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "7fa6189de7c1c4b771522092b98a868a8b9be9091354dbecc7b3ea6fbff94e04", "size_bytes": 9415},
+      "id": "m2-implementation-preflight-receipt-v1",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V1_PREFLIGHT_2026-08-26.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "e6e3720711029d8dfcf0bd1eea56e0abf6bae37a10a51c01fba392a1fa8639af", "size_bytes": 13732},
+      "id": "m2-implementation-preflight-manifest-v2-blocked",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V2_2026-08-26.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "4f32b6fa725f7cf7289bb7faa27b35ac8070a10b8a38f5da71deebe8bd00e7ea", "size_bytes": 12708},
+      "id": "m2-implementation-preflight-receipt-v2-blocked",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V2_PREFLIGHT_2026-08-26.json"
+    },
+    {
+      "expect": {"mode": "0664", "sha256": "acda6177eb536aeb43503568ef0f2d8c90c869dd66b2e64f923ced0b8819986c", "size_bytes": 23280},
+      "id": "m2-local-controller-unverified",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2.py"
+    },
+    {
+      "expect": {"mode": "0664", "sha256": "4ae311f5767555ec2ce0e9b322cd7cc7e85d709d27fadd92e6c4c3d001cc6e2d", "size_bytes": 36660},
+      "id": "m2-remote-controller-unverified",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-remote.py"
+    },
+    {
+      "expect": {"mode": "0664", "sha256": "177762411e098883bd96e02df4c03f0e47f231d4d83f86c50d87b7bea612c29f", "size_bytes": 11635},
+      "id": "m2-bootstrap-auditor-unverified",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-bootstrap-audit.py"
+    },
+    {
+      "expect": {"mode": "0664", "sha256": "225a2b3271dc315ff03c93b02f7dffdb4455468ca2e6ea0c4a4ecf8e5f90adee", "size_bytes": 15343},
+      "id": "m2-build-auditor-unverified",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-build-audit.py"
+    },
+    {
+      "expect": {"mode": "0664", "sha256": "4d57255dea9ebe834d363623a3d15cf71c43485829c9baff57f2b7cafcedceb1", "size_bytes": 30238},
+      "id": "m2-terminal-auditor-unverified",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-terminal-audit.py"
+    },
+    {
+      "expect": {"mode": "0664", "sha256": "b0a775420edf9e9d6e7f0b59f9ad840e4822cd0fdd0adc2429ea22a3e9e3a175", "size_bytes": 155810},
+      "id": "m2-rust-fragment-unverified",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_e1_traversal_w1_fused_minimum_m2_test_module.rs.inc"
+    },
+    {
+      "expect": {},
+      "id": "m2-self-check-receipt-v2-absent",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_SELF_CHECK_V2_2026-08-26.json"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "comparison": "exact CARGO_PROFILE_RELEASE_DEBUG=2 and CARGO_PROFILE_RELEASE_STRIP=none from build producer through PREBUILD and build receipt into read-only audit",
+      "consumer": "M2 build auditor",
+      "id": "symbolization-environment",
+      "producer": "M2 remote build controller",
+      "test_id": "build-environment-parity"
+    },
+    {
+      "comparison": "opt-level 3 LTO true codegen-units 1 panic abort incremental false target and dependency closure unchanged",
+      "consumer": "B physical validity pair",
+      "id": "optimization-context",
+      "producer": "corrected symbolized build",
+      "test_id": "optimization-context-parity"
+    },
+    {
+      "comparison": "exact V10 production prefix plus exact M2 fragment SHA size and assembled-source identity",
+      "consumer": "future one-build controller",
+      "id": "source-assembly",
+      "producer": "sealed M2 fragment",
+      "test_id": "source-assembly-parity"
+    },
+    {
+      "comparison": "parity and route exceptions always produce one complete immutable wrapper or no authority receipt",
+      "consumer": "terminal auditor",
+      "id": "failure-publication",
+      "producer": "M2 remote controller",
+      "test_id": "failure-publication-fault"
+    },
+    {
+      "comparison": "all five Python sources agree on exact V2 implementation receipt path schema task and transaction",
+      "consumer": "future execution admission",
+      "id": "implementation-receipt-v2",
+      "producer": "local M2 self-check",
+      "test_id": "receipt-identity-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "offline-repair-only",
+      "statement": "this pass edits and statically checks local sources only and cannot execute SSH Cargo rustc perf PMU subjects markers ELF or runtime actions",
+      "test_id": "offline-command-graph"
+    },
+    {
+      "id": "symbolization-only-build-delta",
+      "statement": "only debug retention and strip disable overrides differ from the frozen D7 build context",
+      "test_id": "optimization-context-parity"
+    },
+    {
+      "id": "machine-ownership-required",
+      "statement": "build audit requires symbols DWARF and distinct non-folded B G I machine owners before parity admission",
+      "test_id": "build-audit-ownership"
+    },
+    {
+      "id": "remote-execution-deferred",
+      "statement": "all future execution actions require a separately sealed execution admission absent during this pass",
+      "test_id": "execution-gate"
+    },
+    {
+      "id": "fault-closed-publication",
+      "statement": "controller exceptions preserve evidence and cannot strand a consumed route without an immutable blocked observation",
+      "test_id": "failure-publication-fault"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "baseline_check_id": "m2-symbolization-correction-v2",
+      "cursor_policy": "exact_bytes",
+      "id": "symbolization-correction",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_BUILD_SYMBOLIZATION_CORRECTION_V2_2026-08-26.md",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    },
+    {
+      "baseline_check_id": "m2-paper-v1",
+      "cursor_policy": "exact_bytes",
+      "id": "m2-paper",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_V1_2026-08-26.md",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    },
+    {
+      "baseline_check_id": "m2-implementation-preflight-receipt-v1",
+      "cursor_policy": "exact_bytes",
+      "id": "v1-preflight-history",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V1_PREFLIGHT_2026-08-26.json",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    }
+  ],
+  "reuses_existing_implementation": false,
+  "runtime_comparisons": [],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "side_effects": {
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "synthetic_fixture_as_evidence",
+      "network_or_remote_access",
+      "remote_namespace_or_state_read_or_write",
+      "cargo_or_rustc",
+      "perf_record_or_stat_or_reader",
+      "pmu_event_or_subject_or_elf_execution",
+      "marker_creation_consumption_recreation_or_retirement",
+      "diagnostic_elf_or_build_artifact",
+      "live_src_edit",
+      "production_code_edit_build_install_restart_deployment_or_runtime_change"
+    ],
+    "planned": [
+      {"id": "repair-m2-controller-sources", "kind": "local_source_edit"},
+      {"id": "run-static-self-checks", "kind": "local_read_only_process"},
+      {"id": "publish-v2-implementation-self-check", "kind": "local_evidence_write"}
+    ]
+  },
+  "state_machine": {
+    "initial_state": "M2_SOURCES_CREATED_UNVERIFIED",
+    "steps": [
+      {
+        "cleanup": "retain non-authoritative source and diagnostics; publish no authority receipt on failure; preserve all immutable paper and preflight history",
+        "failure_state": "BLOCKED_M2_IMPLEMENTATION_PROVENANCE",
+        "from": "M2_SOURCES_CREATED_UNVERIFIED",
+        "id": "repair-static-self-check-and-seal-v2",
+        "mutates": true,
+        "preserves": [
+          "symbolization-correction",
+          "m2-paper",
+          "v1-preflight-history"
+        ],
+        "test_id": "self-check-publication-fault",
+        "to": "M2_CONTROLLER_VERIFIED_UNRUN"
+      }
+    ],
+    "terminal_states": [
+      "M2_CONTROLLER_VERIFIED_UNRUN",
+      "BLOCKED_M2_IMPLEMENTATION_PROVENANCE"
+    ]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V3_2026-08-26",
+  "tests": [
+    {"expected": "all pinned modes sizes hashes and predecessor verdicts match", "id": "baseline-parity", "kind": "parity"},
+    {"expected": "exact debug 2 and strip none values flow through build producer PREBUILD receipt and auditor", "id": "build-environment-parity", "kind": "parity"},
+    {"expected": "opt LTO codegen panic incremental target and dependency settings remain exact", "id": "optimization-context-parity", "kind": "parity"},
+    {"expected": "auditor blocks absent symbols DWARF or non-distinct B G I machine owners", "id": "build-audit-ownership", "kind": "fault_injection"},
+    {"expected": "no network remote Cargo rustc perf PMU subject marker ELF or runtime action runs", "id": "offline-command-graph", "kind": "parity"},
+    {"expected": "future execution actions hard-require a separately sealed admission that remains absent", "id": "execution-gate", "kind": "parity"},
+    {"expected": "assembled source is exact V10 prefix plus exact sealed M2 fragment", "id": "source-assembly-parity", "kind": "parity"},
+    {"expected": "every failure path maps to one complete blocked wrapper or no authority receipt", "id": "failure-publication-fault", "kind": "parity"},
+    {"expected": "all source consumers pin the exact V2 receipt path schema task and transaction", "id": "receipt-identity-parity", "kind": "parity"},
+    {"expected": "self-check receipt publication is atomic or absent and immutable predecessors remain exact", "id": "self-check-publication-fault", "kind": "fault_injection"}
+  ]
+}

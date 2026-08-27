@@ -1,0 +1,479 @@
+{
+  "verdict": "PASS",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-b-hardware-route-skeleton-v3",
+  "domain": "code",
+  "complexity_score": 36,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8",
+    "c9"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.2,
+      "c2": 0.2,
+      "c3": 0.2,
+      "c4": 0.2,
+      "c5": 0.2,
+      "c6": 0.2,
+      "c7": 0.2,
+      "c8": 0.2,
+      "c9": 0.2
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 18,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "s9",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.3273,
+      "c2": 0.3451,
+      "c3": 0.3229,
+      "c4": 0.3305,
+      "c5": 0.3761,
+      "c6": 0.3343,
+      "c7": 0.3368,
+      "c8": 0.3153,
+      "c9": 0.3964
+    },
+    "source_self_score": 0.3427,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "global-skeleton": "global-skeleton"
+    },
+    "scores": {
+      "global-skeleton": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "global-skeleton": 9
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.3427,
+      "norm": 98.7117,
+      "triads": 9
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "global-skeleton": "global-skeleton"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "global-skeleton": {
+          "norm": 98.7117,
+          "self_coherence": 0.3427,
+          "triads": 9
+        }
+      },
+      "source": {
+        "global-skeleton": {
+          "norm": 98.7117,
+          "self_coherence": 0.3427,
+          "triads": 9
+        }
+      }
+    },
+    "group_links": {
+      "global-skeleton": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "global-skeleton",
+        "exact_source_groups": [
+          "global-skeleton"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "global-skeleton": {
+        "global-skeleton": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "global-skeleton": {
+          "gravity": 1.0,
+          "owner": "b evidence contract",
+          "owners": {
+            "b evidence contract": 18
+          },
+          "support": 18,
+          "total": 18
+        }
+      },
+      "route_centers": {
+        "admission": {
+          "gravity": 1.0,
+          "owner": "b evidence contract",
+          "owners": {
+            "b evidence contract": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "audit": {
+          "gravity": 1.0,
+          "owner": "b evidence contract",
+          "owners": {
+            "b evidence contract": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "proof": {
+          "gravity": 1.0,
+          "owner": "b evidence contract",
+          "owners": {
+            "b evidence contract": 6
+          },
+          "support": 6,
+          "total": 6
+        },
+        "sequencing": {
+          "gravity": 1.0,
+          "owner": "b evidence contract",
+          "owners": {
+            "b evidence contract": 8
+          },
+          "support": 8,
+          "total": 8
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "admission": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "contract final b status",
+            "current user and p0 boundary"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "b evidence contract"
+          ],
+          "scopes": [
+            "admission"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "audit": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "contract design-window audit note",
+            "verified session trace"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "b evidence contract"
+          ],
+          "scopes": [
+            "audit"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "proof": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 3,
+          "entrypoints": [],
+          "evidence_paths": [
+            "contract b3 and claim boundary",
+            "contract b4 b5 and b6",
+            "contract b7 and claim boundary",
+            "p0 frozen denominator contract",
+            "phase attribution is impossible in exact elf",
+            "sealed source and user claim boundary"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "b evidence contract"
+          ],
+          "scopes": [
+            "proof"
+          ],
+          "source_triads": 3,
+          "triads": 6
+        },
+        "sequencing": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 4,
+          "entrypoints": [],
+          "evidence_paths": [
+            "contract b0 diagnostic-build and freezer owners",
+            "contract b0 freezer and b0b owners",
+            "contract b0a and diagnostic-build owner",
+            "contract b0b and admission sequence",
+            "freezer entrypoint must exist first",
+            "immutable provenance precedes mutation",
+            "schedule identity is frozen before environment and pmu gates",
+            "staged schedule precedes immutable publication"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "b evidence contract"
+          ],
+          "scopes": [
+            "sequencing"
+          ],
+          "source_triads": 4,
+          "triads": 8
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "admission": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "audit": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proof": {
+          "norm": 54.626,
+          "self_coherence": 0.569,
+          "triads": 3
+        },
+        "sequencing": {
+          "norm": 63.6239,
+          "self_coherence": 0.4971,
+          "triads": 4
+        }
+      },
+      "interference_matrix": {
+        "admission": {
+          "admission": 1.0,
+          "audit": 0.0742,
+          "proof": 0.0046,
+          "sequencing": 0.0707
+        },
+        "audit": {
+          "admission": 0.0742,
+          "audit": 1.0,
+          "proof": -0.0069,
+          "sequencing": -0.0118
+        },
+        "proof": {
+          "admission": 0.0046,
+          "audit": -0.0069,
+          "proof": 1.0,
+          "sequencing": 0.0403
+        },
+        "sequencing": {
+          "admission": 0.0707,
+          "audit": -0.0118,
+          "proof": 0.0403,
+          "sequencing": 1.0
+        }
+      },
+      "source": {
+        "admission": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "audit": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proof": {
+          "norm": 54.626,
+          "self_coherence": 0.569,
+          "triads": 3
+        },
+        "sequencing": {
+          "norm": 63.6239,
+          "self_coherence": 0.4971,
+          "triads": 4
+        }
+      }
+    },
+    "source_group_sizes": {
+      "global-skeleton": 9
+    },
+    "stable_groups": [
+      "global-skeleton"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [],
+  "agent_decision": {
+    "action": "SAFE_TO_EDIT",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Proceed only within the checked route boundary.",
+    "repair_count": 0,
+    "repair_queue": [],
+    "safe_to_edit": true
+  },
+  "explanation": [
+    "Candidate structure is coherent with source triads.",
+    "Structural coherence only: trusted proof was not established and authority is false."
+  ],
+  "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-b-hardware-route-skeleton-v3.trace.json"
+}

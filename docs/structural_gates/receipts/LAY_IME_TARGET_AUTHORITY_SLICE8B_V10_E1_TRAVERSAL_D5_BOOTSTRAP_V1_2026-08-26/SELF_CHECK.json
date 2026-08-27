@@ -1,0 +1,189 @@
+{
+  "command_graph": {
+    "auditor_actions": [
+      "self-check",
+      "audit"
+    ],
+    "auditor_remote_mutation_calls": 0,
+    "bootstrap_scientific_marker_calls": 0,
+    "fixed_or_reversed_routes": [
+      "U4-FIXED",
+      "T4-FIXED",
+      "U4-REVERSED",
+      "T4-REVERSED"
+    ],
+    "marker_auditor_actions": [
+      "self-check",
+      "audit"
+    ],
+    "perf_record_reachable_only_from": [
+      "T4-FIXED",
+      "T4-REVERSED"
+    ],
+    "perf_stat_routes": [],
+    "pid_attach": false,
+    "route_registry": [
+      "U4-FIXED",
+      "T4-FIXED",
+      "U4-REVERSED",
+      "T4-REVERSED"
+    ],
+    "route_stage_mode": "0755",
+    "sigint_lifecycle": false,
+    "subject_command": [
+      "/usr/bin/taskset",
+      "--cpu-list",
+      "0-19",
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/build-v1/d2-test-elf",
+      "--exact",
+      "nanda_wave::l2_field::v13_typed_peak::tests::v10_d1_component_twenty",
+      "--ignored",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "t4_denominator_edges": 528060876,
+    "t4_dispatch": [
+      [
+        "provenance",
+        "BLOCKED_PROVENANCE"
+      ],
+      [
+        "thermal",
+        "BLOCKED_THERMAL"
+      ],
+      [
+        "capability",
+        "BLOCKED_CAPABILITY"
+      ],
+      [
+        "bucket_map",
+        "BLOCKED_BUCKET_MAP"
+      ],
+      [
+        "perturbation",
+        "BLOCKED_PERTURBATION"
+      ],
+      [
+        "sample_coverage",
+        "BLOCKED_SAMPLE_COVERAGE"
+      ]
+    ],
+    "terminal_auditor_actions": [
+      "self-check",
+      "audit"
+    ],
+    "u4_denominator_edges": 502915120,
+    "u4_dispatch": [
+      [
+        "provenance",
+        "BLOCKED_PROVENANCE"
+      ],
+      [
+        "thermal",
+        "BLOCKED_THERMAL"
+      ],
+      [
+        "semantic",
+        "BLOCKED_SEMANTIC"
+      ]
+    ]
+  },
+  "inputs": {
+    "bootstrap_auditor": {
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d5-bootstrap-audit.py",
+      "sha256": "2779a75160d1b8c2e0a0912582ad598335ff096aa71b781a877fa1fe53968c2a",
+      "size_bytes": 17936
+    },
+    "controller": {
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d5-multiworker-tid.py",
+      "sha256": "6e5ea4a68d4541043ad95eda12b94e0e9efa0d21e3d4ba2c62a80565ddc626d0",
+      "size_bytes": 45923
+    },
+    "d2_terminal": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_TERMINAL_AUDIT_V1_2026-08-26/T_SINGLE_TERMINAL_AUDIT_RECEIPT.json",
+      "sha256": "75dc2703e279524a76c49a455b6081634d1c67274106da45f0d7d610af95e608",
+      "size_bytes": 14907
+    },
+    "d3_terminal": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_TERMINAL_AUDIT_V1_2026-08-26/D3_TERMINAL_AUDIT_RECEIPT.json",
+      "sha256": "7f4c0fd9466cced361c21858ea2017910adc7b92db7c1edfe02f3be09d5c4299",
+      "size_bytes": 3706
+    },
+    "d4_terminal": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26/D4_TERMINAL_AUDIT_RECEIPT.json",
+      "sha256": "f748a7c448f7f142a342efa2b916a8995969044567a3aaa9a7de3aff6ba8645b",
+      "size_bytes": 3685
+    },
+    "elf": {
+      "mode": "0555",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf",
+      "sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178",
+      "size_bytes": 317706232
+    },
+    "map": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json",
+      "sha256": "2b93aedf11101a8bc5fc7ed4ffaa056b50476d96cdd2eabf9d185f59ee60f846",
+      "size_bytes": 390324
+    },
+    "marker_auditor": {
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d5-marker-audit.py",
+      "sha256": "c55d8700879a05806b566e238eccf3e23a9b2b146eb9fd145cff3c3be4282df3",
+      "size_bytes": 13067
+    },
+    "paper": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_MULTIWORKER_TID_ESTIMATOR_V1_2026-08-26.md",
+      "sha256": "cfe512a162d257ecf5b3c37c2dbb1c39ecacf831b70954f46912035d00169c87",
+      "size_bytes": 9319
+    },
+    "preflight": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_MULTIWORKER_TID_IMPLEMENTATION_V3_2026-08-26.json",
+      "sha256": "4c51d24eaa8cdd1052f5220d453fc3ad5d8e5d0b43fda7c972d3b0c8063ef77a",
+      "size_bytes": 29159
+    },
+    "preflight_receipt": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_MULTIWORKER_TID_IMPLEMENTATION_V3_PREFLIGHT_2026-08-26.json",
+      "sha256": "78cde27fbf1062122fb74e3c0f5028c29784e9d16417cad7ae0638864ef6455b",
+      "size_bytes": 12074
+    },
+    "remote_controller": {
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d5-multiworker-tid-remote.py",
+      "sha256": "767e2cfd907527f92bcea1db54b69a9763f29b04a8f76701940abc2336cd2714",
+      "size_bytes": 104188
+    },
+    "ssh_identity": {
+      "mode": "0600",
+      "path": "/home/ubu/.ssh/mega-mini-admin",
+      "sha256": "696e9bc14a328c22c86487bcdd7675fe4ea006d1c273e511a597c0035dd3a6b8",
+      "size_bytes": 411
+    },
+    "terminal_auditor": {
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d5-terminal-audit.py",
+      "sha256": "99a6ac3bd7b6e490db4256cbea968e3d7fce052bec305b67af1be3a08a50f1b0",
+      "size_bytes": 37381
+    }
+  },
+  "marker_mutations": 0,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_probe_sha256": "1a59235e7a118975ffe27d79f973078aed0cac6215529ce19f17e73f459954dc",
+  "remote_writes": 0,
+  "schema": "lay.v10.e1-traversal-d5-controller-self-check.v1",
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826",
+  "transaction_id": "3ee46e2c915677e1b2d3cd6bcc9709e0232252dbc120745b097d736537779036",
+  "verdict": "D5_CONTROLLER_VERIFIED_UNRUN"
+}

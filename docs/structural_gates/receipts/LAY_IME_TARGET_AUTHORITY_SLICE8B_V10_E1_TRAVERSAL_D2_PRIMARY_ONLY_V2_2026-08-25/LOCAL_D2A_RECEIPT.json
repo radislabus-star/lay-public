@@ -1,0 +1,55 @@
+{
+  "bucket_map_created": false,
+  "cargo_invocations": 0,
+  "controller": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-primary-only.py",
+    "sha256": "9329a32b9e4e9edf5d83ddf624e8c9ce6a456494057f4ea3ef5aff6f382d6ec0",
+    "size_bytes": 64492
+  },
+  "controller_state": "PRIMARY_ONLY_CONTROLLER_VERIFIED_UNRUN",
+  "d2_subject": 0,
+  "markers_consumed": 0,
+  "markers_created": 11,
+  "markers_expected": 11,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "remote_manifest_entries": 37,
+  "remote_output": [
+    "{\"controller\": \"PRIMARY_ONLY_CONTROLLER_VERIFIED_UNRUN\", \"markers\": 11, \"result\": \"/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/d2a-v1\", \"state\": \"D2A_CLOSED_ALL_MARKERS_AVAILABLE\"}"
+  ],
+  "remote_receipt_sha256": "998ca180a976384acb215b9e72a8d956fd830fdf6a1c0641b59eea10cbb00e0f",
+  "runtime_after": {
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+    "ibus_daemon_pid": [
+      2076194
+    ],
+    "lay_daemon_pid": [
+      3410795
+    ],
+    "lay_ibus_engine_pid": [
+      3410820
+    ],
+    "lay_version": "lay 1.0.43"
+  },
+  "runtime_authority_changed": false,
+  "runtime_before": {
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+    "ibus_daemon_pid": [
+      2076194
+    ],
+    "lay_daemon_pid": [
+      3410795
+    ],
+    "lay_ibus_engine_pid": [
+      3410820
+    ],
+    "lay_version": "lay 1.0.43"
+  },
+  "runtime_stable": true,
+  "rustc_compilations": 0,
+  "schema": "lay.v10.e1-traversal-d2-primary-only-local-d2a.v1",
+  "stop_before_cargo": true,
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "verdict": "D2A_CLOSED_ALL_MARKERS_AVAILABLE"
+}

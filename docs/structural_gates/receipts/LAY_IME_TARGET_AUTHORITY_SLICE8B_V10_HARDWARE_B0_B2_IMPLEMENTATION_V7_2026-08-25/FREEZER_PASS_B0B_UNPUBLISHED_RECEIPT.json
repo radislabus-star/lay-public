@@ -1,0 +1,45 @@
+{
+  "schema": "lay.v10.hardware-freezer-local-index.v1",
+  "task_id": "slice8b-v10-hardware-b0-b2-v3-20260824",
+  "recorded_at": "2026-08-25T00:21:36+03:00",
+  "state": "FREEZER_OUTPUT_STAGED_EXECUTABLE_UNCHANGED",
+  "remote_receipt": {
+    "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/schedule-freezer-v1/WRAPPER_RECEIPT.json",
+    "size_bytes": 754,
+    "sha256": "c2bd03c307e576ea8b2d8bb113856e84dfb53251decdc21d4b7ad1f75e8cb801"
+  },
+  "publication": {
+    "root_mode": "0555",
+    "writable_objects": 0,
+    "schedule_path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/schedule-freezer-v1/query-schedule.json",
+    "schedule_size_bytes": 174941,
+    "schedule_sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78"
+  },
+  "schedule": {
+    "schema": "lay.v10.hardware-query-schedule.v1",
+    "entries": 382,
+    "unique_composite_identities": 382,
+    "first_source_ordinal": 0,
+    "last_source_ordinal": 381,
+    "b5_requests": 382,
+    "b6_workers": 20,
+    "forbidden_target_keys": 0
+  },
+  "execution": {
+    "executable_sha256_before_and_after": "f7bcee37d5dffd583577d66c982c2a28072889b8aac2ccbed22612aa6d4feb09",
+    "exit_code": 0,
+    "freezer_marker_consumed_before_exec": true,
+    "retry_permitted": false,
+    "perf_invoked": false,
+    "pmu_event_opened": false,
+    "search_enumeration_executed": false,
+    "latency_observed": false
+  },
+  "decision": {
+    "b0b_schedule_published": false,
+    "next_permitted_transition": "B0b independent validation and immutable publication",
+    "build_or_freezer_retry": false,
+    "b3_parity_b5_b6_v12_admitted": false,
+    "runtime_authority_changed": false
+  }
+}

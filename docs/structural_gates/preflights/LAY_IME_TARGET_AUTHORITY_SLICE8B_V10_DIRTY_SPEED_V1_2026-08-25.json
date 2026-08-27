@@ -1,0 +1,400 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_DIRTY_SPEED_V1_2026-08-25",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "v7-manifest",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V7_2026-08-25.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 70889,
+        "sha256": "71c9a5b1de02d14ac175c0f4a32b5bfdbc9037097147aab10f0cddaba7dde1ab"
+      }
+    },
+    {
+      "id": "v7-preflight-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_PREFLIGHT_V7_2026-08-25.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 22741,
+        "sha256": "e67d8fc1af6ba63680a5185c4a269baf1dc0b7f752baa4759a1a94d0c2a0044f"
+      }
+    },
+    {
+      "id": "v7-b1-blocked-index",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V7_2026-08-25/B1_BLOCKED_ENVIRONMENT_B2_NOT_ADMITTED_RECEIPT.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2565,
+        "sha256": "4babf6b0c066c2985489f664a79cb1bb3fb1bb908dfc06d6efd87dfabb24a0ed"
+      }
+    },
+    {
+      "id": "sealed-proxy-test-source",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_hardware_test_module.rs.inc",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 30104,
+        "sha256": "178ec12a3029fe04ae02b060de2e58f83c6481f05fbba2443ad233e9e9d94757"
+      }
+    },
+    {
+      "id": "b0-b2-controller",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-hardware-b0-b2.py",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 109604,
+        "sha256": "95b3c6e70499f7ec5b4a0c7407baec831a116b2d96a0fe5f2bbce4f2e2363b75"
+      }
+    },
+    {
+      "id": "active-v11-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 124127,
+        "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"
+      }
+    },
+    {
+      "id": "owning-contract-before-dirty-run",
+      "kind": "file",
+      "path": "../../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 49273,
+        "sha256": "9564438505c39f5a780bc15d9311c829c9ca11b3c2a6719b4e2a20282fe10c26"
+      }
+    },
+    {
+      "id": "dirty-controller-before-implementation",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-hardware-dirty.py",
+      "expect": {}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "implement-dirty-controller",
+        "kind": "local_source_edit"
+      },
+      {
+        "id": "observe-current-load",
+        "kind": "remote_load_observation"
+      },
+      {
+        "id": "run-one-dirty-b5",
+        "kind": "remote_diagnostic_execution"
+      },
+      {
+        "id": "run-one-dirty-b6",
+        "kind": "remote_diagnostic_execution"
+      },
+      {
+        "id": "publish-dirty-evidence",
+        "kind": "remote_and_local_evidence_write"
+      },
+      {
+        "id": "record-dirty-result",
+        "kind": "documentation_edit"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "cargo_build_check_test",
+      "perf_or_pmu",
+      "host_tuning",
+      "foreign_process_or_service_stop",
+      "runtime_deployment_or_restart",
+      "installed_lay_mutation",
+      "formal_b_promotion",
+      "v12_action",
+      "retry_or_adaptive_repetition",
+      "historical_b3_execution"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "sealed-proxy-test-source-veto-scan",
+      "path": "../../../scripts/lay_v10_hardware_test_module.rs.inc",
+      "sha256": "178ec12a3029fe04ae02b060de2e58f83c6481f05fbba2443ad233e9e9d94757",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?:synthetic_fixture|generate_fixture|fixture_writer)"
+        },
+        {
+          "effect": "cargo_build_check_test",
+          "regex": "(?:Command::new\\([^)]*\\\"cargo\\\"|cargo\\s+(?:build|check|test))"
+        },
+        {
+          "effect": "perf_or_pmu",
+          "regex": "(?:Command::new\\([^)]*\\\"perf\\\"|perf_event_open|_rdtsc|rdpmc)"
+        },
+        {
+          "effect": "host_tuning",
+          "regex": "(?:cpupower|sysctl\\s+-w|scaling_governor|energy_performance_preference)"
+        },
+        {
+          "effect": "foreign_process_or_service_stop",
+          "regex": "(?:systemctl\\s+(?:stop|kill)|pkill|killall)"
+        },
+        {
+          "effect": "runtime_deployment_or_restart",
+          "regex": "(?:gnome-extensions|lay-runtime-control|ibus-daemon|install-release)"
+        },
+        {
+          "effect": "installed_lay_mutation",
+          "regex": "(?:\\.local/(?:bin|lib)/lay).{0,100}(?:write|remove|rename|install)"
+        },
+        {
+          "effect": "formal_b_promotion",
+          "regex": "(?:authority_ready|formal_b_pass)\\s*[:=]\\s*true"
+        },
+        {
+          "effect": "v12_action",
+          "regex": "(?:ExactFusedBandTransition|\\bV12\\b)"
+        },
+        {
+          "effect": "retry_or_adaptive_repetition",
+          "regex": "(?:retry_after|adaptive_repeat|increase_repetitions)"
+        },
+        {
+          "effect": "historical_b3_execution",
+          "regex": "(?:historical_v10_measurement|v10_full_v13_abc_proof)"
+        }
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "preserve-v7-manifest",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V7_2026-08-25.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "v7-manifest"
+    },
+    {
+      "id": "preserve-v7-receipt",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_PREFLIGHT_V7_2026-08-25.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "v7-preflight-receipt"
+    },
+    {
+      "id": "preserve-b1-blocked",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V7_2026-08-25/B1_BLOCKED_ENVIRONMENT_B2_NOT_ADMITTED_RECEIPT.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "v7-b1-blocked-index"
+    },
+    {
+      "id": "preserve-proxy-source",
+      "path": "../../../scripts/lay_v10_hardware_test_module.rs.inc",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "sealed-proxy-test-source"
+    },
+    {
+      "id": "preserve-b0-b2-controller",
+      "path": "../../../scripts/lay-v10-hardware-b0-b2.py",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "b0-b2-controller"
+    },
+    {
+      "id": "preserve-active-v11",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "active-v11-source"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "V7_BLOCKED_ENVIRONMENT_DIRTY_ROUTE_UNRUN",
+    "steps": [
+      {
+        "id": "implement-controller",
+        "from": "V7_BLOCKED_ENVIRONMENT_DIRTY_ROUTE_UNRUN",
+        "to": "DIRTY_CONTROLLER_IMPLEMENTED_UNRUN",
+        "mutates": true,
+        "failure_state": "DIRTY_CONTROLLER_REJECTED_NO_REMOTE_EXECUTION",
+        "cleanup": "remove only an incomplete new controller; preserve V7, B1 and all sealed artifacts",
+        "preserves": [
+          "preserve-v7-manifest",
+          "preserve-v7-receipt",
+          "preserve-b1-blocked",
+          "preserve-proxy-source",
+          "preserve-b0-b2-controller",
+          "preserve-active-v11"
+        ],
+        "test_id": "controller-fault"
+      },
+      {
+        "id": "self-check-controller",
+        "from": "DIRTY_CONTROLLER_IMPLEMENTED_UNRUN",
+        "to": "DIRTY_CONTROLLER_VERIFIED_UNRUN",
+        "mutates": false
+      },
+      {
+        "id": "execute-dirty-b5-once",
+        "from": "DIRTY_CONTROLLER_VERIFIED_UNRUN",
+        "to": "DIRTY_B5_RECORDED",
+        "mutates": true,
+        "failure_state": "DIRTY_B5_FAILED_B6_UNRUN",
+        "cleanup": "terminate only the controller-owned B5 child, retain consumed marker and failed evidence, do not run B6",
+        "preserves": [
+          "preserve-v7-manifest",
+          "preserve-v7-receipt",
+          "preserve-b1-blocked",
+          "preserve-proxy-source",
+          "preserve-b0-b2-controller",
+          "preserve-active-v11"
+        ],
+        "test_id": "dirty-route-fault"
+      },
+      {
+        "id": "execute-dirty-b6-once",
+        "from": "DIRTY_B5_RECORDED",
+        "to": "DIRTY_B5_B6_RECORDED",
+        "mutates": true,
+        "failure_state": "DIRTY_B6_FAILED_B5_RETAINED",
+        "cleanup": "terminate only the controller-owned B6 child and retain both the accepted B5 evidence and consumed B6 marker",
+        "preserves": [
+          "preserve-v7-manifest",
+          "preserve-v7-receipt",
+          "preserve-b1-blocked",
+          "preserve-proxy-source",
+          "preserve-b0-b2-controller",
+          "preserve-active-v11"
+        ],
+        "test_id": "dirty-route-fault"
+      },
+      {
+        "id": "publish-result",
+        "from": "DIRTY_B5_B6_RECORDED",
+        "to": "DIRTY_RESULT_RECORDED_NO_FORMAL_PROMOTION",
+        "mutates": true,
+        "failure_state": "DIRTY_RESULT_PUBLICATION_FAILED_REMOTE_EVIDENCE_RETAINED",
+        "cleanup": "retain immutable remote evidence and remove only incomplete local publication files",
+        "preserves": [
+          "preserve-v7-manifest",
+          "preserve-v7-receipt",
+          "preserve-b1-blocked",
+          "preserve-proxy-source",
+          "preserve-b0-b2-controller",
+          "preserve-active-v11"
+        ],
+        "test_id": "publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "DIRTY_RESULT_RECORDED_NO_FORMAL_PROMOTION",
+      "DIRTY_CONTROLLER_REJECTED_NO_REMOTE_EXECUTION",
+      "DIRTY_B5_FAILED_B6_UNRUN",
+      "DIRTY_B6_FAILED_B5_RETAINED",
+      "DIRTY_RESULT_PUBLICATION_FAILED_REMOTE_EVIDENCE_RETAINED"
+    ]
+  },
+  "invariants": [
+    {
+      "id": "one-run-per-route",
+      "statement": "B5 and B6 each consume one create-new marker and cannot be retried or adaptively repeated under V1",
+      "test_id": "one-run-marker"
+    },
+    {
+      "id": "dirty-boundary",
+      "statement": "the environment is intentionally dirty and results cannot promote formal B, weaken B1 or admit V12",
+      "test_id": "claim-boundary"
+    },
+    {
+      "id": "host-noninterference",
+      "statement": "the controller changes no host policy and stops no process except its own failed diagnostic child",
+      "test_id": "noninterference"
+    },
+    {
+      "id": "measurement-scope",
+      "statement": "reported timing is controller wall time for the executor window and is not per-query p99",
+      "test_id": "receipt-semantics"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "sealed-input-identity",
+      "producer": "B0a, diagnostic-build-v1 and B0b sealed hashes",
+      "consumer": "dirty controller pre-execution verifier",
+      "comparison": "exact SHA-256, size, Build ID, mode, schedule count and schema",
+      "test_id": "sealed-input-parity"
+    },
+    {
+      "id": "subject-output-identity",
+      "producer": "sealed B5 and B6 test entrypoints",
+      "consumer": "dirty route receipt validator",
+      "comparison": "route, schedule SHA-256, request count and error absence",
+      "test_id": "subject-output-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "tests": [
+    {
+      "id": "controller-fault",
+      "kind": "fault_injection",
+      "expected": "a failed local implementation leaves no remote marker, subject or result"
+    },
+    {
+      "id": "dirty-route-fault",
+      "kind": "fault_injection",
+      "expected": "a simulated child failure terminates only that child, retains a consumed marker and cannot retry the route"
+    },
+    {
+      "id": "publication-fault",
+      "kind": "fault_injection",
+      "expected": "publication failure exposes no partial final tree and retains already sealed remote evidence"
+    },
+    {
+      "id": "one-run-marker",
+      "kind": "integration",
+      "expected": "create-new markers exist once for B5 and B6 and a second invocation is rejected before subject execution"
+    },
+    {
+      "id": "claim-boundary",
+      "kind": "integration",
+      "expected": "receipt says DIRTY_DIAGNOSTIC_ONLY, formal_b_pass=false, b1_unchanged=true and v12_admitted=false"
+    },
+    {
+      "id": "noninterference",
+      "kind": "parity",
+      "expected": "stable host identity and policy projection, throttle counters, installed Lay and V11 bytes remain unchanged"
+    },
+    {
+      "id": "receipt-semantics",
+      "kind": "unit",
+      "expected": "receipt exposes wall window, requests, throughput, mean batch cost and explicitly leaves per-query p99 unobserved"
+    },
+    {
+      "id": "sealed-input-parity",
+      "kind": "parity",
+      "expected": "remote sealed ELF, Build ID, package, sidecar, V7 and schedule exactly match preregistered identities before either run"
+    },
+    {
+      "id": "subject-output-parity",
+      "kind": "parity",
+      "expected": "B5 and B6 subject receipts report the expected route, exact schedule SHA, 382 requests and no error"
+    }
+  ]
+}

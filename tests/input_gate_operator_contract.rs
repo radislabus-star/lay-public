@@ -8,6 +8,7 @@ fn request<'a>(trigger: InputGateTrigger, text_tail: &'a str) -> InputGateReques
     InputGateRequest {
         trigger,
         text_tail,
+        lexical_authority_frame: None,
         auto_replace: true,
         typing_assist: true,
         auto_switch_layout: true,

@@ -1,0 +1,453 @@
+{
+  "verdict": "VETO",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-b-hardware-perf-audit-correction-v3",
+  "domain": "code",
+  "complexity_score": 34,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.15,
+      "c2": 0.15,
+      "c3": 0.15,
+      "c4": 0.15,
+      "c5": 0.15,
+      "c6": 0.15,
+      "c7": 0.15
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 14,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.3754,
+      "c2": 0.3899,
+      "c3": 0.3921,
+      "c4": 0.4081,
+      "c5": 0.374,
+      "c6": 0.3921,
+      "c7": 0.358
+    },
+    "source_self_score": 0.3842,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "audit-boundary-v3": "audit-boundary-v3"
+    },
+    "scores": {
+      "audit-boundary-v3": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "audit-boundary-v3": 7
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.3842,
+      "norm": 86.0697,
+      "triads": 7
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "audit-boundary-v3": "audit-boundary-v3"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "audit-boundary-v3": {
+          "norm": 86.0697,
+          "self_coherence": 0.3842,
+          "triads": 7
+        }
+      },
+      "source": {
+        "audit-boundary-v3": {
+          "norm": 86.0697,
+          "self_coherence": 0.3842,
+          "triads": 7
+        }
+      }
+    },
+    "group_links": {
+      "audit-boundary-v3": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "audit-boundary-v3",
+        "exact_source_groups": [
+          "audit-boundary-v3"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "audit-boundary-v3": {
+        "audit-boundary-v3": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [
+        {
+          "center": "audit-boundary-v3",
+          "group": "audit-boundary-v3",
+          "kind": "owner_conflict",
+          "owners": [
+            "audit-boundary-v3",
+            "b audit owner"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        }
+      ],
+      "group_centers": {
+        "audit-boundary-v3": {
+          "gravity": 0.8571,
+          "owner": "audit-boundary-v3",
+          "owners": {
+            "audit-boundary-v3": 12,
+            "b audit owner": 2
+          },
+          "support": 12,
+          "total": 14
+        }
+      },
+      "route_centers": {
+        "admission": {
+          "gravity": 1.0,
+          "owner": "audit-boundary-v3",
+          "owners": {
+            "audit-boundary-v3": 4
+          },
+          "support": 4,
+          "total": 4
+        },
+        "audit": {
+          "gravity": 0.6667,
+          "owner": "audit-boundary-v3",
+          "owners": {
+            "audit-boundary-v3": 4,
+            "b audit owner": 2
+          },
+          "support": 4,
+          "total": 6
+        },
+        "sequencing": {
+          "gravity": 1.0,
+          "owner": "audit-boundary-v3",
+          "owners": {
+            "audit-boundary-v3": 4
+          },
+          "support": 4,
+          "total": 4
+        }
+      }
+    },
+    "repair_queue": [
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "audit-boundary-v3"
+      }
+    ],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "admission": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "corrected contract claim boundary",
+            "existing stop boundary remains binding",
+            "perf_audit_correction_v3 provenance decision",
+            "v2 frozen audit input changed after publication"
+          ],
+          "layers": [
+            "core",
+            "ui"
+          ],
+          "outputs": [],
+          "owners": [
+            "audit-boundary-v3"
+          ],
+          "scopes": [
+            "admission"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "audit": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 3,
+          "entrypoints": [],
+          "evidence_paths": [
+            "exact argv perf --version and output perf version 6.8.12",
+            "no stat record event open or subject in either event",
+            "perf_audit_correction_v3 event ordinal 2",
+            "perf_audit_correction_v3 events and totals",
+            "perf_audit_correction_v3 totals",
+            "session trace timestamps 17:33:52z and 19:29:33.706z"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "audit-boundary-v3",
+            "b audit owner"
+          ],
+          "scopes": [
+            "audit"
+          ],
+          "source_triads": 3,
+          "triads": 6
+        },
+        "sequencing": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "corrected contract admission section",
+            "corrected contract sequence",
+            "correction changes invocation provenance only",
+            "fail-closed sequencing after unauthorized version query"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "audit-boundary-v3"
+          ],
+          "scopes": [
+            "sequencing"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "admission": {
+          "norm": 45.3872,
+          "self_coherence": 0.7092,
+          "triads": 2
+        },
+        "audit": {
+          "norm": 55.9285,
+          "self_coherence": 0.5826,
+          "triads": 3
+        },
+        "sequencing": {
+          "norm": 45.5631,
+          "self_coherence": 0.7119,
+          "triads": 2
+        }
+      },
+      "interference_matrix": {
+        "admission": {
+          "admission": 1.0,
+          "audit": 0.015,
+          "sequencing": 0.0058
+        },
+        "audit": {
+          "admission": 0.015,
+          "audit": 1.0,
+          "sequencing": 0.0086
+        },
+        "sequencing": {
+          "admission": 0.0058,
+          "audit": 0.0086,
+          "sequencing": 1.0
+        }
+      },
+      "source": {
+        "admission": {
+          "norm": 45.3872,
+          "self_coherence": 0.7092,
+          "triads": 2
+        },
+        "audit": {
+          "norm": 55.9285,
+          "self_coherence": 0.5826,
+          "triads": 3
+        },
+        "sequencing": {
+          "norm": 45.5631,
+          "self_coherence": 0.7119,
+          "triads": 2
+        }
+      }
+    },
+    "source_group_sizes": {
+      "audit-boundary-v3": 7
+    },
+    "stable_groups": [
+      "audit-boundary-v3"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 1,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 1,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "audit-boundary-v3"
+    }
+  ],
+  "agent_decision": {
+    "action": "REPAIR_REQUIRED",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Apply the repair_queue before editing or accepting this route.",
+    "repair_count": 1,
+    "repair_queue": [
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "audit-boundary-v3"
+      }
+    ],
+    "safe_to_edit": false
+  },
+  "explanation": [
+    "No decisive structural signal was found."
+  ],
+  "repair_prompt": "Repair the candidate answer using only one coherent structural route.\nNANDA verdict: VETO.\nPrimary repair_queue:\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-b-hardware-perf-audit-correction-v3.trace.json"
+}

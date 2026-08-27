@@ -1,0 +1,174 @@
+{
+  "schema": "lay.m3-test-source-integration-audit.v1",
+  "task_id": "slice8b-v10-e1-traversal-w1-dafsa-typed-view-m3-test-source-integration-v1-20260827",
+  "audit_scope": "read-only revalidation of the single admitted local Cargo proof and its published evidence",
+  "verdict": "M3_TEST_SOURCE_INTEGRATION_AUDITED",
+  "predecessor_closure": {
+    "m3_terminal": {
+      "sha256": "a84355e42bad335d45b379c7e76d2b353bed6c23c30593e1c721be0c0058f324",
+      "mode": "0444"
+    },
+    "source_lifetime_decision": {
+      "sha256": "e7b0f66170776677c2b153254aa01a303fdf8538aec273678196dec723715b24",
+      "mode": "0444"
+    },
+    "integration_paper": {
+      "sha256": "9f653e10c00a5155b701d1124e577af2fe70d40f5a0a7a9c880a2df92d8adee6",
+      "mode": "0444"
+    },
+    "format_correction_v2": {
+      "sha256": "45bdcc219e1934309ea1ae218c02f96c10c33de73df6450a22fafcaffb1db48a",
+      "mode": "0444"
+    },
+    "format_correction_route_v3_receipt": {
+      "sha256": "649863cf32de5e53a63b4c26b7a81eeaeb4395a7492dc7f8ad104a59e2eec313",
+      "mode": "0444",
+      "verdict": "PASS"
+    },
+    "code_route_v3_receipt": {
+      "sha256": "528000decdb1facb6af4a63dcd2c4ab9706793bd347ec7fb5cb368e5960af1b4",
+      "mode": "0444",
+      "verdict": "PASS"
+    },
+    "implementation_preflight_v3": {
+      "file_sha256": "708a9c0e3be4b4ccc48432bef56f670b8ad6a71404398574cd687044855fbc0f",
+      "mode": "0444"
+    },
+    "implementation_preflight_v3_receipt": {
+      "sha256": "c42bc313b37f90d6caecade4a26ba464da0c258114ccef2cc07b059f5d7f2585",
+      "mode": "0444",
+      "verdict": "READY_TO_IMPLEMENT",
+      "blockers": 0
+    }
+  },
+  "implementation": {
+    "source_files": [
+      {
+        "path": "src/nanda_wave/l2_field/v13_typed_peak.rs",
+        "bytes": 152276,
+        "sha256": "1cdc2ad9040fa97bc8a2705e5d192a27ab298f0551f4f22d5e6bc79f73f4c3ee"
+      },
+      {
+        "path": "src/nanda_wave/l2_field/v13_typed_peak/typed_exact.rs",
+        "bytes": 26203,
+        "sha256": "325bdd386b13de77bd030ef1af0fecb12be8bdd2bdd3c841d10257647a4ceaf4"
+      }
+    ],
+    "edited_path_count": 2,
+    "test_only_reachability": true,
+    "typed_module_forbidden_api_matches": 0,
+    "unsafe_or_native_reinterpretation": false,
+    "global_cache_or_second_owner": false
+  },
+  "format_identity": {
+    "historical_v10_sidecar": {
+      "magic": "LAYV13D2",
+      "bytes": 3689884,
+      "sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd",
+      "role": "immutable historical M3 evidence; not loaded by the current parser"
+    },
+    "current_v11_reconstruction": {
+      "magic": "LAYV13D3",
+      "bytes": 2460144,
+      "sha256": "5ebffb813ba0ca1e0080ec01756a2dafc51346297558d37cdd135abfde6acfaa",
+      "count": 1,
+      "in_memory_only": true,
+      "sidecar_file_written": false,
+      "validated_by_current_byte_view": true
+    }
+  },
+  "cargo_proof": {
+    "invocations": 1,
+    "argv": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--offline",
+      "--locked",
+      "--release",
+      "--lib",
+      "nanda_wave::l2_field::v13_typed_peak::tests::m3_test_source_integration_fixed_proof",
+      "--",
+      "--ignored",
+      "--exact",
+      "--nocapture"
+    ],
+    "receipt_environment": "LAY_M3_TEST_SOURCE_INTEGRATION_RECEIPT",
+    "exit_status": 0,
+    "tests_passed": 1,
+    "tests_failed": 0,
+    "tests_filtered_out": 1623,
+    "proof_seconds": 12.96,
+    "integration_receipt": {
+      "bytes": 2755,
+      "sha256": "1e3e372c858e09e571590be4262e4d923a48e32dede937aac8f18556f10dfe99"
+    },
+    "cargo_log": {
+      "bytes": 44578,
+      "sha256": "04d56d0ec3536c9fba2038dbfb2c334c183c1f510b58fff329678273c430f5a0"
+    }
+  },
+  "proof": {
+    "fixed_cases": 382,
+    "schedules": 2,
+    "schedule_names": [
+      "FORWARD",
+      "REVERSED"
+    ],
+    "per_schedule": {
+      "queries": 382,
+      "byte_examined_edges": 25145756,
+      "typed_examined_edges": 25145756,
+      "byte_expanded_states": 8059788,
+      "typed_expanded_states": 8059788,
+      "transition_checks": 25145756,
+      "terminal_distance_checks": 8059788
+    },
+    "exact_result_mismatches": 0,
+    "generic_result_mismatches": 0,
+    "work_mismatches": 0,
+    "rank_prefix_mismatches": 0,
+    "terminal_rank_mismatches": 0,
+    "transition_check_mismatches": 0,
+    "total_mismatches": 0,
+    "typed_materializations": 1,
+    "typed_states": 81128,
+    "typed_edges": 226341,
+    "typed_payload_bytes": 3689628,
+    "root_state": 81127,
+    "identity_match": true,
+    "symbol_digest_match": true
+  },
+  "protected_artifacts": {
+    "l2_field_mod_sha256": "c76c28debdac8e43d360a5a82811ea86e3e6f03b98e4f81cb6678e07953e0953",
+    "cargo_toml_sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b",
+    "cargo_lock_sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1",
+    "cargo_guard_sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe",
+    "m3_fragment_sha256": "5a2e164c47c88677b74baf44d500c939749c98deff3092a1621086cf6e800875",
+    "package_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "v7_sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"
+  },
+  "audit_checks": {
+    "expected": 24,
+    "passed": 24,
+    "failed": 0,
+    "unknown": 0
+  },
+  "execution_boundary": {
+    "network_or_remote": 0,
+    "perf_or_pmu": 0,
+    "installed_lay_changes": 0,
+    "production_source_changes": 0,
+    "runtime_authority_changes": 0,
+    "sidecar_files_written": 0,
+    "end_to_end_requests_measured": 0
+  },
+  "claim_boundary": {
+    "test_source_parity_proven": true,
+    "m3_machine_gain_transferred": false,
+    "end_to_end_latency_proven": false,
+    "rss_or_reload_proven": false,
+    "production_generation_owner_proven": false,
+    "production_authority_admitted": false
+  },
+  "next_action_admitted": "actual-owner consequence analysis and paper only"
+}

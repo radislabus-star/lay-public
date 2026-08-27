@@ -1,0 +1,21 @@
+{
+  "schema": "lay.v10.clean-speed-v2-supersession-remote-audit.v1",
+  "task_id": "slice8b-v10-clean-speed-v2-20260825",
+  "observed_at": "2026-08-24T23:10:28Z",
+  "remote": "e@192.168.3.94",
+  "hostname": "e-MEGA-MINI-M1-13th",
+  "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+  "observations": {
+    "final_path": {
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-clean-speed-v2-20260825",
+      "exists": false
+    },
+    "state_path": {
+      "path": "/home/e/.local/state/lay/slice8b-v10-clean-speed-v2-20260825",
+      "exists": false
+    }
+  },
+  "subject_executed_by_audit": false,
+  "remote_writes_by_audit": false,
+  "claim": "READ_ONLY_POINT_IN_TIME_OBSERVATION"
+}

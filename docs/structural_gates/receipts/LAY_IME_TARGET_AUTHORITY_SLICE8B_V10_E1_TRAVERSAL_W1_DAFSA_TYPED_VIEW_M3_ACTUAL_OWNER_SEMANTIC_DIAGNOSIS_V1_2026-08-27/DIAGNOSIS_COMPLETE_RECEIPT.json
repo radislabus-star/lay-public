@@ -1,0 +1,68 @@
+{
+  "schema": "lay.m3-actual-owner-semantic-diagnosis-complete.v1",
+  "execution_admission": {
+    "manifest_sha256": "4206ff615883dbcaa4d0c21c16a08d020a92fef85d56aeb0c93a7e57154bd445",
+    "receipt_sha256": "f7f6ab6d28cc05516360cf8d1bd01056547c88cb2176c206ad19b77104534e1b"
+  },
+  "cargo": {
+    "invocations": 1,
+    "exit_status": 0,
+    "compile_completed": true,
+    "diagnostic_test_passed": true,
+    "test_elapsed_seconds": 13.60,
+    "log": {
+      "path": "CARGO.log",
+      "size_bytes": 39841,
+      "sha256": "e71ea1fc52172752ca38da14c7be89957badd03a48001dedc8db2d09f0c71fb2"
+    }
+  },
+  "diagnosis_receipt": {
+    "path": "DIAGNOSIS_RECEIPT.json",
+    "size_bytes": 242032,
+    "sha256": "62c57eb1f8cc6f8408d0255ab74f8acc18840b76ade7ef34dc9540615ca687e0",
+    "raw_verdict": "BLOCKED_SEMANTIC",
+    "diagnostic_verdict": "M3_ACTUAL_OWNER_SEMANTIC_DIAGNOSIS_COMPLETE"
+  },
+  "denominator": {
+    "cases": 382,
+    "schedules": 2,
+    "owner_requests": "764/764",
+    "candidate_mismatches": 0,
+    "certificate_mismatches": 0,
+    "schedule_mismatches": 0,
+    "completeness_mismatches": 0
+  },
+  "causes": [
+    {
+      "class": "punctuation_suffix",
+      "cases": 36,
+      "schedule_observations": 72,
+      "lattice_marker_mismatches": 72,
+      "emitted_surface_mismatches": 72,
+      "gate_mismatches": 72,
+      "cause": "normalized exact surface was compared with raw observed instead of normalized observed"
+    },
+    {
+      "class": "layout_projection",
+      "case_index": 68,
+      "schedule_observations": 2,
+      "damaged_surface": "[elt.ob[",
+      "expected_surface": "худеющих",
+      "actual_surface": "[худеющих[",
+      "emitted_surface_mismatches": 2,
+      "cause": "generic punctuation-preserving last-word replacement retained physical layout brackets that belong to the projected token"
+    }
+  ],
+  "total_reconciliation": {
+    "lattice_marker_mismatches": 72,
+    "emitted_surface_mismatches": 74,
+    "lattice_mismatches": 146,
+    "gate_mismatches": 72,
+    "unexplained_mismatches": 0
+  },
+  "owner_behavior_changed_for_diagnosis": false,
+  "runtime_authority_changed": false,
+  "production_activation_admitted": false,
+  "next_action": "separate semantic repair paper and execution admission",
+  "verdict": "M3_ACTUAL_OWNER_SEMANTIC_DIAGNOSIS_COMPLETE"
+}

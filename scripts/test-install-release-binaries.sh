@@ -13,12 +13,23 @@ for binary in \
     printf '#!/usr/bin/env sh\nexit 0\n' >"$SOURCE_DIR/$binary"
     chmod +x "$SOURCE_DIR/$binary"
 done
+cat >"$SOURCE_DIR/lay-nanda-wave-train" <<'EOF'
+#!/usr/bin/env sh
+set -eu
+if [ "${1:-}" = "--compile-v13-exact-sidecar" ]; then
+    shift 2
+    [ "${1:-}" = "--out" ]
+    printf 'verified exact V13 sidecar fixture\n' >"$2"
+fi
+EOF
+chmod +x "$SOURCE_DIR/lay-nanda-wave-train"
 
 FIXTURE="$TMP/LAY-L2-TEST.bin"
 printf 'verified canonical L2 fixture\n' >"$FIXTURE"
 FIXTURE_BYTES="$(stat -c %s "$FIXTURE")"
 FIXTURE_SHA256="$(sha256sum "$FIXTURE" | awk '{print $1}')"
 PACKAGE_NAME="LAY-L2-TEST.bin"
+SIDECAR_NAME="LAY-L2-TEST.dafsa"
 
 run_install() {
     local home="$1"
@@ -29,6 +40,7 @@ run_install() {
     LAY_L2_MODEL_DIR="$home/models" \
     LAY_L2_PACKAGE_CACHE_DIR="$home/cache" \
     LAY_L2_PACKAGE_NAME="$PACKAGE_NAME" \
+    LAY_EXACT_V13_SIDECAR_NAME="$SIDECAR_NAME" \
     LAY_L2_PACKAGE_SOURCE="$home/missing/$PACKAGE_NAME" \
     LAY_L2_PACKAGE_URL="file://$FIXTURE" \
     LAY_L2_PACKAGE_BYTES="$FIXTURE_BYTES" \
@@ -41,6 +53,7 @@ HOME_OK="$TMP/home-ok"
 run_install "$HOME_OK" >/dev/null
 cmp -s "$FIXTURE" "$HOME_OK/models/$PACKAGE_NAME"
 cmp -s "$FIXTURE" "$HOME_OK/cache/$PACKAGE_NAME"
+grep -q 'verified exact V13 sidecar fixture' "$HOME_OK/models/$SIDECAR_NAME"
 test -x "$HOME_OK/libexec/lay"
 test -L "$HOME_OK/bin/lay"
 
@@ -54,6 +67,7 @@ LAY_INSTALL_BIN_DIR="$HOME_OK/bin" \
 LAY_L2_MODEL_DIR="$HOME_OK/models" \
 LAY_L2_PACKAGE_CACHE_DIR="$HOME_OK/cache" \
 LAY_L2_PACKAGE_NAME="$PACKAGE_NAME" \
+LAY_EXACT_V13_SIDECAR_NAME="$SIDECAR_NAME" \
 LAY_L2_PACKAGE_SOURCE="$HOME_OK/missing/$PACKAGE_NAME" \
 LAY_L2_PACKAGE_URL="file://$FIXTURE" \
 LAY_L2_PACKAGE_BYTES="$FIXTURE_BYTES" \
@@ -61,6 +75,7 @@ LAY_L2_PACKAGE_SHA256="$FIXTURE_SHA256" \
 LAY_L2_OFFLINE=1 \
 bash "$ROOT/scripts/install-release-binaries.sh" >/dev/null
 cmp -s "$TMP/fixture-away" "$HOME_OK/models/$PACKAGE_NAME"
+grep -q 'verified exact V13 sidecar fixture' "$HOME_OK/models/$SIDECAR_NAME"
 mv "$TMP/fixture-away" "$FIXTURE"
 
 echo "== unavailable package fails before partial binary installation =="
@@ -72,6 +87,7 @@ if HOME="$HOME_FAIL" \
     LAY_L2_MODEL_DIR="$HOME_FAIL/models" \
     LAY_L2_PACKAGE_CACHE_DIR="$HOME_FAIL/cache" \
     LAY_L2_PACKAGE_NAME="$PACKAGE_NAME" \
+    LAY_EXACT_V13_SIDECAR_NAME="$SIDECAR_NAME" \
     LAY_L2_PACKAGE_SOURCE="$HOME_FAIL/missing/$PACKAGE_NAME" \
     LAY_L2_PACKAGE_BYTES="$FIXTURE_BYTES" \
     LAY_L2_PACKAGE_SHA256="$FIXTURE_SHA256" \
@@ -93,6 +109,7 @@ if HOME="$HOME_BAD" \
     LAY_L2_MODEL_DIR="$HOME_BAD/models" \
     LAY_L2_PACKAGE_CACHE_DIR="$HOME_BAD/cache" \
     LAY_L2_PACKAGE_NAME="$PACKAGE_NAME" \
+    LAY_EXACT_V13_SIDECAR_NAME="$SIDECAR_NAME" \
     LAY_L2_PACKAGE_SOURCE="$HOME_BAD/missing/$PACKAGE_NAME" \
     LAY_L2_PACKAGE_URL="file://$TMP/corrupt.bin" \
     LAY_L2_PACKAGE_BYTES="$FIXTURE_BYTES" \

@@ -1,0 +1,142 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_EXECUTION_ADMISSION_V2_IMPLEMENTATION_V1_2026-08-27",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {"id":"admission-contract","kind":"file","path":"../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_EXECUTION_ADMISSION_V2_CONTRACT_2026-08-27.md","expect":{"mode":"0444","size_bytes":7888,"sha256":"c7316ae70472451f1ccbdc2b10be6b04f30995d94530c3b2f83c751f8857b49e"}},
+    {"id":"admission-route","kind":"file","path":"../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_EXECUTION_ADMISSION_V2_ROUTE_2026-08-27.md","expect":{"mode":"0444","size_bytes":5184,"sha256":"9f1768fc8d5d678b14a344ad447890cc82247a47a2e5c527c776a404da6a889f"}},
+    {"id":"admission-structural-review","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_EXECUTION_ADMISSION_V2_STRUCTURAL_REVIEW_2026-08-27.json","expect":{"mode":"0444","size_bytes":28213,"sha256":"e430e62849bbe2024fa49afef8a5dd147f27312c30e526c95fb77e1777851cc3"}},
+    {"id":"m2-v3-controller","kind":"file","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-v3.py","expect":{"mode":"0555","size_bytes":65528,"sha256":"4f2f6484d7ada483688b59a2403354548d4aaffdc594074c4447326c7b8c1f7f"}},
+    {"id":"m2-remote-controller","kind":"file","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-remote.py","expect":{"mode":"0555","size_bytes":40111,"sha256":"14c7c60814927a8f3bcfc607a391d78552fdf8cdd51253eccd429d1f40c50dd6"}},
+    {"id":"m2-bootstrap-auditor","kind":"file","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-bootstrap-audit-v3.py","expect":{"mode":"0555","size_bytes":11644,"sha256":"30da6d116df0fa5d5372dc8718c86bb3e46c4cb59edcc918429cceb523959869"}},
+    {"id":"m2-build-auditor","kind":"file","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-build-audit-v3.py","expect":{"mode":"0555","size_bytes":18914,"sha256":"091e97c8aa0e1d8a7455fefba0fb038ea04566996b149d4a10feaad0e1d5030e"}},
+    {"id":"m2-terminal-auditor","kind":"file","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-terminal-audit-v3.py","expect":{"mode":"0555","size_bytes":33296,"sha256":"1656e3a2fa8b772a5ef8c01daab7daf03b751c73fc2ac4bbda02a1ed6520b92b"}},
+    {"id":"m2-fragment","kind":"file","path":"../../../scripts/lay_v10_e1_traversal_w1_fused_minimum_m2_test_module.rs.inc","expect":{"mode":"0444","size_bytes":155810,"sha256":"b0a775420edf9e9d6e7f0b59f9ad840e4822cd0fdd0adc2429ea22a3e9e3a175"}},
+    {"id":"m2-implementation-receipt-v3","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_SELF_CHECK_V3_2026-08-26.json","expect":{"mode":"0444","size_bytes":23876,"sha256":"55b938ef7851bcf560c1e165e0ebe3c1c5906df6f8c9c5a76559488f0ab35f0a"}},
+    {"id":"m2-implementation-preflight-v5","kind":"file","path":"LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V5_2026-08-26.json","expect":{"mode":"0444","size_bytes":13532,"sha256":"60a676d2d59d296e5e8445b61311ff46edd9a62d3aa950da78a1ea0c9c3b2598"}},
+    {"id":"m2-implementation-preflight-v5-receipt","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V5_PREFLIGHT_2026-08-26.json","expect":{"mode":"0444","size_bytes":10700,"sha256":"a33fadd7fdfe135e1f726f91b9a2cae85bc7b27343a3ab21ed55f91a9c2561c3"}},
+    {"id":"m2-code-route-v5","kind":"file","path":"LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_CODE_ROUTE_V5_2026-08-26.json","expect":{"mode":"0444","size_bytes":8849,"sha256":"0fdfa5ece5b1e53a4d4acd661c4403978f0524b086c1fd5d52ef50c1521501d3"}},
+    {"id":"m2-code-route-v5-receipt","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_CODE_ROUTE_V5_RECEIPT_2026-08-26.json","expect":{"mode":"0444","size_bytes":9682,"sha256":"54b66f7a30d6f7b6edc67c2eb07748259e78fa45f4d26c9da241325e2a455acb"}},
+    {"id":"live-preflight-source-absent","kind":"absent","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-live-preflight.py","expect":{}},
+    {"id":"admission-auditor-source-absent","kind":"absent","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-admission-audit.py","expect":{}},
+    {"id":"admission-implementation-receipt-absent","kind":"absent","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_EXECUTION_ADMISSION_V2_IMPLEMENTATION_SELF_CHECK_V1_2026-08-27.json","expect":{}},
+    {"id":"live-preflight-result-absent","kind":"absent","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_LIVE_PREFLIGHT_V1_2026-08-27","expect":{}},
+    {"id":"admission-audit-result-absent","kind":"absent","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_EXECUTION_ADMISSION_AUDIT_V1_2026-08-27","expect":{}},
+    {"id":"execution-admission-v1-absent","kind":"absent","path":"LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_EXECUTION_ADMISSION_V1_2026-08-26.json","expect":{}},
+    {"id":"execution-admission-v2-absent","kind":"absent","path":"LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_EXECUTION_ADMISSION_V2_2026-08-26.json","expect":{}},
+    {"id":"execution-journal-absent","kind":"absent","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_EXECUTION_JOURNAL_V1_2026-08-26","expect":{}},
+    {"id":"bootstrap-audit-absent","kind":"absent","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_BOOTSTRAP_AUDIT_V2_2026-08-26","expect":{}},
+    {"id":"build-audit-absent","kind":"absent","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_BUILD_AUDIT_V2_2026-08-26","expect":{}},
+    {"id":"terminal-audit-absent","kind":"absent","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_TERMINAL_AUDIT_V2_2026-08-26","expect":{}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id":"create-admission-source-set","kind":"local_source_edit"},
+      {"id":"run-static-self-check","kind":"local_read_only_process_with_disposable_temp_state"},
+      {"id":"publish-implementation-receipt","kind":"local_evidence_write"},
+      {"id":"future-remote-live-snapshots","kind":"ssh_read_only_observation"},
+      {"id":"future-disposable-uid-proof","kind":"remote_probe_owned_create_write_fsync_rename_read_unlink_rmdir"},
+      {"id":"future-live-preflight-publication","kind":"local_immutable_evidence_write"},
+      {"id":"future-independent-admission-publication","kind":"local_atomic_authorization_write"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "synthetic_fixture_as_scientific_evidence",
+      "m2_remote_parent_state_cache_or_marker_creation",
+      "m2_marker_consumption_recreation_or_retirement",
+      "cargo_build_test_or_rustc_compilation",
+      "perf_record_stat_reader_or_open_perf_event",
+      "pmu_or_subject_or_diagnostic_elf_execution",
+      "production_source_edit_build_install_restart_deployment_or_runtime_change",
+      "modification_of_sealed_m2_controller_auditors_fragment_receipts_or_papers",
+      "admission_publication_by_live_preflight_producer",
+      "execution_controller_run_in_implementation_or_admission_transaction"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "M2_CONTROLLER_V3_VERIFIED_UNRUN",
+    "steps": [
+      {
+        "id":"implement-admission-source-set",
+        "from":"M2_CONTROLLER_V3_VERIFIED_UNRUN",
+        "to":"M2_ADMISSION_CONTROLLER_VERIFIED_UNRUN",
+        "failure_state":"BLOCKED_ADMISSION_IMPLEMENTATION_PROVENANCE",
+        "mutates":true,
+        "cleanup":"retain diagnostics; publish no implementation authority receipt unless all static and fault checks pass",
+        "preserves":["m2-v3-source-set","m2-v3-receipt","m2-scientific-state"],
+        "test_id":"implementation-publication-fault"
+      },
+      {
+        "id":"produce-live-preflight-evidence",
+        "from":"M2_ADMISSION_CONTROLLER_VERIFIED_UNRUN",
+        "to":"M2_LIVE_PREFLIGHT_PASS_UNADMITTED",
+        "failure_state":"BLOCKED_PROVENANCE",
+        "mutates":true,
+        "cleanup":"remove only the producer-owned disposable UID probe; retain complete local diagnostics; leave execution admission absent",
+        "preserves":["m2-v3-source-set","m2-v3-receipt","m2-scientific-state","production-runtime"],
+        "test_id":"producer-fault-closure"
+      },
+      {
+        "id":"audit-and-publish-execution-admission",
+        "from":"M2_LIVE_PREFLIGHT_PASS_UNADMITTED",
+        "to":"M2_EXECUTION_ADMITTED",
+        "failure_state":"BLOCKED_PROVENANCE",
+        "mutates":true,
+        "cleanup":"retain producer and auditor evidence; atomically leave fixed admission absent on every failed or unknown predicate",
+        "preserves":["m2-v3-source-set","m2-v3-receipt","m2-scientific-state","production-runtime"],
+        "test_id":"admission-publication-fault"
+      }
+    ],
+    "terminal_states":[
+      "M2_ADMISSION_CONTROLLER_VERIFIED_UNRUN",
+      "M2_EXECUTION_ADMITTED",
+      "BLOCKED_ADMISSION_IMPLEMENTATION_PROVENANCE",
+      "BLOCKED_PROVENANCE"
+    ]
+  },
+  "preserved_artifacts": [
+    {"id":"m2-v3-source-set","path":"../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-v3.py","baseline_check_id":"m2-v3-controller","policy":"immutable","cursor_policy":"exact_bytes","rollback_policy":"never_modify"},
+    {"id":"m2-v3-receipt","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_SELF_CHECK_V3_2026-08-26.json","baseline_check_id":"m2-implementation-receipt-v3","policy":"immutable","cursor_policy":"exact_bytes","rollback_policy":"never_modify"},
+    {"id":"m2-scientific-state","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_EXECUTION_JOURNAL_V1_2026-08-26","baseline_check_id":"execution-journal-absent","policy":"absent_until_separate_controller_run","cursor_policy":"no_records","rollback_policy":"never_create_in_admission"},
+    {"id":"production-runtime","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_SELF_CHECK_V3_2026-08-26.json","baseline_check_id":"m2-implementation-receipt-v3","policy":"exact_runtime_projection","cursor_policy":"runtime_before_equals_runtime_after","rollback_policy":"never_modify"}
+  ],
+  "identity_contracts": [
+    {"id":"producer-auditor-identity","producer":"sealed live-preflight source and producer receipt","consumer":"independent admission auditor","comparison":"exact source SHA receipt SHA task and transaction identities","test_id":"producer-auditor-parity"},
+    {"id":"admission-controller-identity","producer":"independent admission artifact","consumer":"sealed M2 V3 verify_execution_admission","comparison":"exact seven controller-consumed SHA fields plus task transaction verdict and safe_to_execute","test_id":"admission-controller-parity"},
+    {"id":"remote-input-identity","producer":"frozen M2 remote input closure","consumer":"producer and auditor live snapshots","comparison":"exact path size mode and SHA-256 for all seven inputs","test_id":"remote-input-parity"},
+    {"id":"runtime-identity","producer":"V3 runtime_before projection","consumer":"implementation producer and admission auditor runtime snapshots","comparison":"exact installed runtime target and SHA-256 map","test_id":"runtime-parity"}
+  ],
+  "runtime_comparisons": [
+    {"id":"remote-live-state","source":"three independent live snapshots","comparison":"exact_stable_projection","reason":"M2 may run only on the pinned idle host and absent namespace","stable_fields":["hostname","machine-id SHA-256","kernel","CPU topology","tool versions","input identities","M2 path absence","zero conflicting processes","zero perf_event descriptors"],"expected_to_change_fields":["snapshot monotonic timestamp","process IDs of controller-owned observation commands"],"observed_not_compared_fields":["load average","unrelated idle process IDs","wall clock"],"test_id":"remote-live-parity"},
+    {"id":"local-runtime-state","source":"V3 receipt and admission before/after observations","comparison":"exact_stable_projection","reason":"research admission cannot change installed Lay authority","stable_fields":["installed runtime targets and SHA-256"],"expected_to_change_fields":[],"observed_not_compared_fields":["process CPU time","wall clock"],"test_id":"runtime-parity"}
+  ],
+  "invariants": [
+    {"id":"producer-unadmitted","statement":"live producer has no call path to fixed execution-admission publication","test_id":"producer-boundary"},
+    {"id":"auditor-single-owner","statement":"only independent auditor can atomically publish the fixed 0444 admission","test_id":"auditor-owner"},
+    {"id":"dirty-host-veto","statement":"any process or open perf-event conflict leaves admission absent","test_id":"conflict-veto"},
+    {"id":"uid-proof-clean","statement":"actual UID e probe completes all operations and its directory is absent before producer PASS","test_id":"uid-probe-fault"},
+    {"id":"future-path-owned-by-bootstrap","statement":"admission never creates or modifies the future M2 parent state cache or markers","test_id":"namespace-boundary"},
+    {"id":"zero-scientific-execution","statement":"implementation and admission have zero Cargo compilation perf PMU subject ELF and marker events","test_id":"zero-execution-ledger"},
+    {"id":"unknown-is-blocked","statement":"incomplete or lost remote observation is BLOCKED_PROVENANCE and never PASS","test_id":"unknown-dispatch"}
+  ],
+  "tests": [
+    {"id":"implementation-publication-fault","kind":"fault_injection","expected":"partial implementation receipt absent and no execution admission"},
+    {"id":"producer-fault-closure","kind":"fault_injection","expected":"probe cleaned when owned and admission absent for each producer failure boundary"},
+    {"id":"admission-publication-fault","kind":"fault_injection","expected":"partial admission absent and immutable producer evidence retained"},
+    {"id":"producer-auditor-parity","kind":"parity","expected":"auditor pins exact producer source and receipt identities"},
+    {"id":"admission-controller-parity","kind":"parity","expected":"admission satisfies exact sealed V3 consumer schema"},
+    {"id":"remote-input-parity","kind":"parity","expected":"all frozen remote input path size mode SHA tuples match"},
+    {"id":"runtime-parity","kind":"parity","expected":"installed runtime projection remains exact"},
+    {"id":"remote-live-parity","kind":"parity","expected":"all three snapshots match pinned stable host projection and are conflict-free"},
+    {"id":"producer-boundary","kind":"parity","expected":"producer source contains no execution-admission output path or publisher"},
+    {"id":"auditor-owner","kind":"parity","expected":"exactly one admission publisher exists in auditor source"},
+    {"id":"conflict-veto","kind":"fault_injection","expected":"synthetic process and perf-event observations veto publication without becoming scientific evidence"},
+    {"id":"uid-probe-fault","kind":"fault_injection","expected":"each failed probe operation blocks producer PASS and cleanup status is explicit"},
+    {"id":"namespace-boundary","kind":"parity","expected":"admission sources have no M2 namespace cache marker mutation call"},
+    {"id":"zero-execution-ledger","kind":"parity","expected":"Cargo compilation perf PMU subject ELF marker and runtime mutation counts are zero"},
+    {"id":"unknown-dispatch","kind":"fault_injection","expected":"missing malformed or lost snapshot selects BLOCKED_PROVENANCE"}
+  ]
+}

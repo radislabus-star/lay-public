@@ -1,0 +1,314 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRECISE_CAPABILITY_V2_2026-08-25",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "shutdown-repair-contract",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_CAPABILITY_SHUTDOWN_REPAIR_V2_2026-08-25.md",
+      "expect": {"mode": "0664", "size_bytes": 6952, "sha256": "e0499e8c435169a66e0e30bfe46b0953b6635010745cdf45302bddfe2a3b6521"}
+    },
+    {
+      "id": "shutdown-repair-route",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_CAPABILITY_SHUTDOWN_REPAIR_V2_ROUTE_RECEIPT_2026-08-25.json",
+      "expect": {"mode": "0444", "size_bytes": 19548, "sha256": "adaf25cb931c7b86f8d0416b4c0d4e0c61179fabf04789a6617601b36c3e810e"}
+    },
+    {
+      "id": "tcap-interpretation-contract",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_INTERPRETATION_CORRECTION_V3_2026-08-25.md",
+      "expect": {"mode": "0664", "size_bytes": 4205, "sha256": "57c4e7fab83e36067fc383e4c30545c76a4eb7deec6bf3b2c0b5bf57cc4d1ac8"}
+    },
+    {
+      "id": "tcap-interpretation-route",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_INTERPRETATION_CORRECTION_V3_ROUTE_RECEIPT_2026-08-25.json",
+      "expect": {"mode": "0444", "size_bytes": 16104, "sha256": "62d8e2a2266492404b33c10a499581f283cdf683d4cc753d855f496f78c8e872"}
+    },
+    {
+      "id": "tcap-recovery-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_INTERPRETATION_V3_2026-08-25/T_CAP_INTERPRETATION_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 8541, "sha256": "f1d572a364312cc6c311ddc49316379b8b63748672c138f5fda50ba615cae2cb"}
+    },
+    {
+      "id": "tcap-recovery-manifest",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_INTERPRETATION_V3_2026-08-25/SHA256SUMS",
+      "expect": {"mode": "0444", "size_bytes": 353, "sha256": "8d4fe8a2ba0a3b7da2210ace0c9eafcee68ea39628facda3b3e8297e76a59cd3"}
+    },
+    {
+      "id": "tcap-remote-yes",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_INTERPRETATION_V3_2026-08-25/REMOTE_YES.elf",
+      "expect": {"mode": "0444", "size_bytes": 31112, "sha256": "ee431b97fb62f59ee94fa698dbc98971001bbb1cbd9c5e32ce4ab4c5530924d8"}
+    },
+    {
+      "id": "tcap-normalization",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_INTERPRETATION_V3_2026-08-25/YES_IP_NORMALIZATION.json",
+      "expect": {"mode": "0444", "size_bytes": 175401, "sha256": "fb95a9c451afbb73396523593623804858971f8eb709cde000dabf15e1999ad2"}
+    },
+    {
+      "id": "p0-static-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P0_STATIC_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 7003, "sha256": "9b6aff3d74d36e7f5868fff596eb17326e819bf45496bbe4f3cf50870a7f71e0"}
+    },
+    {
+      "id": "active-v11",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {"mode": "0664", "size_bytes": 124127, "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"}
+    },
+    {
+      "id": "precise-controller-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-e1-traversal-d2-precise-capability-v2.py",
+      "expect": {}
+    },
+    {
+      "id": "precise-result-absent",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRECISE_CAPABILITY_V2_2026-08-25",
+      "expect": {}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "create-precise-only-controller", "kind": "local_source_create"},
+      {"id": "create-two-marker-remote-state", "kind": "remote_state_create"},
+      {"id": "run-one-i-core-benign-record", "kind": "remote_benign_capability_probe"},
+      {"id": "read-i-core-perf-data", "kind": "remote_perf_data_read"},
+      {"id": "run-one-i-atom-benign-record-after-core-pass", "kind": "remote_benign_capability_probe"},
+      {"id": "read-i-atom-perf-data", "kind": "remote_perf_data_read"},
+      {"id": "publish-immutable-precise-receipts", "kind": "remote_and_local_evidence_write"},
+      {"id": "record-precise-result", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "tcap_record_reader_or_event_repetition",
+      "third_or_substituted_precise_event",
+      "event_period_precision_cpu_or_privilege_substitution",
+      "adaptive_frequency_period_or_probe_retry",
+      "reader_skip_after_controller_requested_sigint",
+      "cargo_build_check_test_or_rustc_compilation",
+      "d2_controller_fragment_elf_build_or_execution",
+      "v10_v13_package_sidecar_schedule_or_search_execution",
+      "perf_stat",
+      "foreign_process_stop_reaffinity_repriority_or_policy_change",
+      "host_governor_smt_turbo_thermal_or_perf_sysctl_tuning",
+      "d2_bucket_map_or_attribution_publication",
+      "full_b_v12_runtime_integration_or_deployment",
+      "installed_lay_mutation_or_process_restart",
+      "runtime_authority_change"
+    ]
+  },
+  "source_checks": [],
+  "state_machine": {
+    "initial_state": "TCAP_RECOVERED_PRECISE_CONTROLLER_ABSENT",
+    "steps": [
+      {
+        "id": "create-precise-controller",
+        "from": "TCAP_RECOVERED_PRECISE_CONTROLLER_ABSENT",
+        "to": "PRECISE_CONTROLLER_UNRUN",
+        "mutates": true,
+        "failure_state": "PRECISE_CONTROLLER_REJECTED",
+        "cleanup": "remove only partial new controller and preserve all sealed evidence",
+        "preserves": ["shutdown-repair", "tcap-recovery", "p0-host", "active-v11", "installed-runtime"],
+        "test_id": "controller-creation-fault"
+      },
+      {
+        "id": "self-check-precise-controller",
+        "from": "PRECISE_CONTROLLER_UNRUN",
+        "to": "PRECISE_CONTROLLER_VERIFIED_UNRUN",
+        "mutates": false,
+        "test_id": "controller-static-parity"
+      },
+      {
+        "id": "create-remote-precise-state",
+        "from": "PRECISE_CONTROLLER_VERIFIED_UNRUN",
+        "to": "I_CORE_AVAILABLE_I_ATOM_AVAILABLE",
+        "mutates": true,
+        "failure_state": "PRECISE_STATE_TERMINAL",
+        "cleanup": "retain failed state or remove only unpublished empty stage; no event retry",
+        "preserves": ["shutdown-repair", "tcap-recovery", "p0-host", "active-v11", "installed-runtime"],
+        "test_id": "remote-state-fault"
+      },
+      {
+        "id": "consume-i-core-and-run",
+        "from": "I_CORE_AVAILABLE_I_ATOM_AVAILABLE",
+        "to": "I_CORE_OBSERVED_I_ATOM_AVAILABLE",
+        "mutates": true,
+        "failure_state": "I_CORE_TERMINAL_I_ATOM_UNCONSUMED",
+        "cleanup": "retain consumed I-CORE marker, perf data, maps, logs and first failure; leave I-ATOM available and stop",
+        "preserves": ["shutdown-repair", "tcap-recovery", "p0-host", "active-v11", "installed-runtime"],
+        "test_id": "i-core-fault"
+      },
+      {
+        "id": "consume-i-atom-and-run-after-core-pass",
+        "from": "I_CORE_OBSERVED_I_ATOM_AVAILABLE",
+        "to": "I_CORE_PASS_I_ATOM_OBSERVED",
+        "mutates": true,
+        "failure_state": "I_ATOM_TERMINAL",
+        "cleanup": "retain both consumed markers, all perf data, maps, logs and first failure; never retry",
+        "preserves": ["shutdown-repair", "tcap-recovery", "p0-host", "active-v11", "installed-runtime"],
+        "test_id": "i-atom-fault"
+      },
+      {
+        "id": "publish-precise-receipt",
+        "from": "I_CORE_PASS_I_ATOM_OBSERVED",
+        "to": "PRECISE_RECEIPT_PUBLISHED",
+        "mutates": true,
+        "failure_state": "PRECISE_PUBLICATION_FAILED_REMOTE_RETAINED",
+        "cleanup": "retain sealed remote evidence and remove only incomplete local copy",
+        "preserves": ["shutdown-repair", "tcap-recovery", "p0-host", "active-v11", "installed-runtime"],
+        "test_id": "publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "PRECISE_RECEIPT_PUBLISHED",
+      "PRECISE_CONTROLLER_REJECTED",
+      "PRECISE_STATE_TERMINAL",
+      "I_CORE_TERMINAL_I_ATOM_UNCONSUMED",
+      "I_ATOM_TERMINAL",
+      "PRECISE_PUBLICATION_FAILED_REMOTE_RETAINED"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "shutdown-repair",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_CAPABILITY_SHUTDOWN_REPAIR_V2_2026-08-25.md",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "shutdown-repair-contract"
+    },
+    {
+      "id": "tcap-recovery",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_INTERPRETATION_V3_2026-08-25/T_CAP_INTERPRETATION_RECEIPT.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "tcap-recovery-receipt"
+    },
+    {
+      "id": "p0-host",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P0_STATIC_RECEIPT.json",
+      "policy": "immutable_observation",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "p0-static-receipt"
+    },
+    {
+      "id": "active-v11",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "active-v11"
+    },
+    {
+      "id": "installed-runtime",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "policy": "immutable_observation",
+      "rollback_policy": "no_runtime_mutation_permitted",
+      "baseline_check_id": "active-v11"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "i-core-event",
+      "producer": "shutdown repair V2 frozen cpu_core selector on CPU 0",
+      "consumer": "I-CORE perf data evlist and sample rows",
+      "comparison": "type 4 config 0xc0 period 5000000 precise_ip 2 exclude_kernel 1 CPU 0 exact event label",
+      "test_id": "i-core-event-parity"
+    },
+    {
+      "id": "i-atom-event",
+      "producer": "shutdown repair V2 frozen cpu_atom selector on CPU 12",
+      "consumer": "I-ATOM perf data evlist and sample rows",
+      "comparison": "type 10 config 0xc0 period 5000000 precise_ip 2 exclude_kernel 1 CPU 12 exact event label",
+      "test_id": "i-atom-event-parity"
+    },
+    {
+      "id": "benign-subject",
+      "producer": "SHA-pinned remote yes ELF and taskset-pinned PID",
+      "consumer": "both precise sample DSO rows and live maps",
+      "comparison": "exact SHA Build ID argv PID CPU affinity full DSO path and zero D2 path",
+      "test_id": "benign-boundary"
+    },
+    {
+      "id": "precise-pie-normalization",
+      "producer": "yes Build ID plus ET_DYN PT_LOAD and each live PID map",
+      "consumer": "I-CORE and I-ATOM runtime sample IPs",
+      "comparison": "Build ID plus normalized ELF virtual IP inside exactly one executable PT_LOAD",
+      "test_id": "pie-normalization"
+    },
+    {
+      "id": "marker-order",
+      "producer": "separate I-CORE and I-ATOM available markers",
+      "consumer": "precise controller",
+      "comparison": "I-CORE consumed before record and I-ATOM consumed only after complete I-CORE PASS",
+      "test_id": "marker-sequence-parity"
+    },
+    {
+      "id": "local-remote-controller",
+      "producer": "locally reviewed precise-only controller",
+      "consumer": "remote root controller",
+      "comparison": "exact SHA mode and static source scan before either marker is consumed",
+      "test_id": "controller-static-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "target-host-stability",
+      "source": "pinned mini-PC projection before and after precise probes",
+      "comparison": "exact_stable_projection",
+      "reason": "capability is valid only for the pinned hybrid PMUs and unchanged kernel without host tuning",
+      "stable_fields": ["hostname", "machine_id_exact_file_sha256", "kernel", "online_cpus", "cpu_core_type_and_cpus", "cpu_atom_type_and_cpus", "perf_wrapper_sha256", "resolved_perf_sha256", "perf_event_paranoid", "kptr_restrict", "perf_event_max_sample_rate"],
+      "expected_to_change_fields": ["wall_clock", "load_average", "pressure", "temperature", "process_cpu_time"],
+      "observed_not_compared_fields": ["foreign_process_pid_set", "filesystem_cache_residency"],
+      "test_id": "target-host-parity"
+    },
+    {
+      "id": "installed-runtime-stability",
+      "source": "local installed Lay projection before and after precise probes",
+      "comparison": "exact_stable_projection",
+      "reason": "benign remote precise probes cannot mutate installed Lay or runtime authority",
+      "stable_fields": ["lay_version", "active_v11_sha256", "ibus_daemon_pid", "lay_daemon_pid", "lay_ibus_engine_pid", "runtime_authority_changed"],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": ["process_cpu_time", "host_load", "temperature"],
+      "test_id": "runtime-noninterference"
+    }
+  ],
+  "invariants": [
+    {"id": "never-repeat-tcap", "statement": "precise controller has no T-CAP record reader or event route", "test_id": "tcap-absence"},
+    {"id": "controlled-shutdown", "statement": "perf is alive after fixed interval and controller accepts only 0 or negative SIGINT after exactly one requested SIGINT", "test_id": "shutdown-protocol"},
+    {"id": "readers-after-shutdown", "statement": "accepted controller shutdown is not capability PASS and all four readers remain mandatory", "test_id": "reader-continuation"},
+    {"id": "sequential-markers", "statement": "I-ATOM marker remains available unless I-CORE completed PASS", "test_id": "marker-sequence-parity"},
+    {"id": "loaded-host-policy", "statement": "Nando btop and K1 are neither stopped nor treated as blockers", "test_id": "foreign-noninterference"},
+    {"id": "capability-only", "statement": "PASS can admit only the later final D2 implementation preflight", "test_id": "later-gate-absence"}
+  ],
+  "tests": [
+    {"id": "controller-creation-fault", "kind": "fault_injection", "expected": "partial controller creates no remote state or evidence"},
+    {"id": "controller-static-parity", "kind": "parity", "expected": "local and remote controller SHA and source boundary are exact"},
+    {"id": "remote-state-fault", "kind": "fault_injection", "expected": "failed state setup opens no event and consumes no marker"},
+    {"id": "i-core-fault", "kind": "fault_injection", "expected": "I-CORE failure is terminal and leaves I-ATOM unconsumed"},
+    {"id": "i-atom-fault", "kind": "fault_injection", "expected": "I-ATOM failure retains both markers and all first-failure evidence"},
+    {"id": "publication-fault", "kind": "fault_injection", "expected": "remote final is retained and incomplete local copy is not authoritative"},
+    {"id": "i-core-event-parity", "kind": "parity", "expected": "I-CORE event type config period precision privilege CPU and label are exact"},
+    {"id": "i-atom-event-parity", "kind": "parity", "expected": "I-ATOM event type config period precision privilege CPU and label are exact"},
+    {"id": "benign-boundary", "kind": "integration", "expected": "only exact taskset-pinned yes PIDs are sampled"},
+    {"id": "pie-normalization", "kind": "parity", "expected": "every precise yes IP normalizes unambiguously through exact Build ID and PT_LOAD"},
+    {"id": "marker-sequence-parity", "kind": "integration", "expected": "I-ATOM cannot start before complete I-CORE PASS"},
+    {"id": "shutdown-protocol", "kind": "integration", "expected": "exactly one controller SIGINT accepts only 0 or negative SIGINT after pre-shutdown liveness"},
+    {"id": "reader-continuation", "kind": "integration", "expected": "four readers execute after every accepted controlled shutdown"},
+    {"id": "tcap-absence", "kind": "integration", "expected": "zero T-CAP record reader software event or subject route exists"},
+    {"id": "foreign-noninterference", "kind": "integration", "expected": "zero foreign process control or host policy tuning occurs"},
+    {"id": "target-host-parity", "kind": "parity", "expected": "pinned mini-PC hybrid PMU projection is stable"},
+    {"id": "runtime-noninterference", "kind": "parity", "expected": "Lay version V11 SHA and daemon PIDs remain unchanged"},
+    {"id": "later-gate-absence", "kind": "integration", "expected": "zero D2 build subject bucket map full B V12 integration or deployment action occurs"}
+  ]
+}

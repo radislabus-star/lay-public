@@ -1,0 +1,224 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "immutable_v13", "role": "producer"},
+    {"id": "v11_packed_compiler", "role": "orchestrator"},
+    {"id": "v11_packed_sidecar", "role": "producer"},
+    {"id": "observed_token", "role": "interface"},
+    {"id": "typed_token_frame", "role": "producer"},
+    {"id": "phase7d_lane_oracle", "role": "producer"},
+    {"id": "query_local_dla_builder", "role": "orchestrator"},
+    {"id": "query_local_dla", "role": "producer"},
+    {"id": "packed_dafsa_dla_intersection", "role": "orchestrator"},
+    {"id": "v11_born_lattice", "role": "producer"},
+    {"id": "v10_banded_proof_oracle", "role": "observer"},
+    {"id": "v10_banded_proof_lattice", "role": "observer"},
+    {"id": "full_row_proof_oracle", "role": "observer"},
+    {"id": "full_row_proof_lattice", "role": "observer"},
+    {"id": "target_labels", "role": "observer"},
+    {"id": "v11_parity_audit", "role": "observer"},
+    {"id": "fixed_v11_proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {
+      "id": "build-v13-compiler",
+      "from": "immutable_v13",
+      "relation": "calls",
+      "to": "v11_packed_compiler",
+      "events": ["sidecar_build"]
+    },
+    {
+      "id": "build-compiler-sidecar",
+      "from": "v11_packed_compiler",
+      "relation": "delegates",
+      "to": "v11_packed_sidecar",
+      "events": ["sidecar_build"]
+    },
+    {
+      "id": "query-token-frame",
+      "from": "observed_token",
+      "relation": "calls",
+      "to": "typed_token_frame",
+      "events": ["proof_query", "proof_parity"]
+    },
+    {
+      "id": "query-frame-intersection",
+      "from": "typed_token_frame",
+      "relation": "calls",
+      "to": "packed_dafsa_dla_intersection",
+      "events": ["proof_query", "proof_parity"]
+    },
+    {
+      "id": "query-intersection-lanes",
+      "from": "packed_dafsa_dla_intersection",
+      "relation": "calls",
+      "to": "phase7d_lane_oracle",
+      "events": ["proof_query", "proof_parity"]
+    },
+    {
+      "id": "query-intersection-dla-builder",
+      "from": "packed_dafsa_dla_intersection",
+      "relation": "calls",
+      "to": "query_local_dla_builder",
+      "events": ["proof_query", "proof_parity"]
+    },
+    {
+      "id": "query-builder-dla",
+      "from": "query_local_dla_builder",
+      "relation": "delegates",
+      "to": "query_local_dla",
+      "events": ["proof_query", "proof_parity"]
+    },
+    {
+      "id": "query-intersection-sidecar",
+      "from": "packed_dafsa_dla_intersection",
+      "relation": "calls",
+      "to": "v11_packed_sidecar",
+      "events": ["proof_query", "proof_parity"]
+    },
+    {
+      "id": "query-intersection-lattice",
+      "from": "packed_dafsa_dla_intersection",
+      "relation": "delegates",
+      "to": "v11_born_lattice",
+      "events": ["proof_query", "proof_parity"]
+    },
+    {
+      "id": "parity-token-v10-banded",
+      "from": "observed_token",
+      "relation": "calls",
+      "to": "v10_banded_proof_oracle",
+      "events": ["proof_parity"]
+    },
+    {
+      "id": "parity-v10-banded-lattice",
+      "from": "v10_banded_proof_oracle",
+      "relation": "delegates",
+      "to": "v10_banded_proof_lattice",
+      "events": ["proof_parity"]
+    },
+    {
+      "id": "parity-token-full-row",
+      "from": "observed_token",
+      "relation": "calls",
+      "to": "full_row_proof_oracle",
+      "events": ["proof_parity"]
+    },
+    {
+      "id": "parity-full-row-lattice",
+      "from": "full_row_proof_oracle",
+      "relation": "delegates",
+      "to": "full_row_proof_lattice",
+      "events": ["proof_parity"]
+    },
+    {
+      "id": "observe-v11",
+      "from": "v11_born_lattice",
+      "relation": "observes",
+      "to": "v11_parity_audit",
+      "events": ["proof_observation"]
+    },
+    {
+      "id": "observe-v10-banded",
+      "from": "v10_banded_proof_lattice",
+      "relation": "observes",
+      "to": "v11_parity_audit",
+      "events": ["proof_observation"]
+    },
+    {
+      "id": "observe-full-row",
+      "from": "full_row_proof_lattice",
+      "relation": "observes",
+      "to": "v11_parity_audit",
+      "events": ["proof_observation"]
+    },
+    {
+      "id": "observe-target-labels",
+      "from": "target_labels",
+      "relation": "observes",
+      "to": "v11_parity_audit",
+      "events": ["proof_observation"]
+    },
+    {
+      "id": "prove-v11",
+      "from": "v11_parity_audit",
+      "relation": "proves",
+      "to": "fixed_v11_proof",
+      "events": ["proof_observation"]
+    }
+  ],
+  "routes": [
+    {
+      "id": "v11-sidecar-build",
+      "event": "sidecar_build",
+      "kind": "execution",
+      "entry": "immutable_v13",
+      "terminal": "v11_packed_sidecar",
+      "required_roles": ["producer", "orchestrator"],
+      "path_cardinality": [
+        {"from": "immutable_v13", "to": "v11_packed_sidecar", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "v11-proof-query",
+      "event": "proof_query",
+      "kind": "execution",
+      "entry": "observed_token",
+      "terminal": "v11_born_lattice",
+      "required_roles": ["interface", "producer", "orchestrator"],
+      "path_cardinality": [
+        {"from": "observed_token", "to": "v11_born_lattice", "min": 1, "max": 1},
+        {"from": "packed_dafsa_dla_intersection", "to": "phase7d_lane_oracle", "min": 1, "max": 1},
+        {"from": "packed_dafsa_dla_intersection", "to": "query_local_dla", "min": 1, "max": 1},
+        {"from": "packed_dafsa_dla_intersection", "to": "v11_packed_sidecar", "min": 1, "max": 1},
+        {"from": "target_labels", "to": "packed_dafsa_dla_intersection", "min": 0, "max": 0}
+      ]
+    },
+    {
+      "id": "v11-parity-execution",
+      "event": "proof_parity",
+      "kind": "execution",
+      "entry": "observed_token",
+      "terminal": "v11_born_lattice",
+      "required_roles": ["interface", "producer", "orchestrator"],
+      "path_cardinality": [
+        {"from": "observed_token", "to": "v11_born_lattice", "min": 1, "max": 1},
+        {"from": "packed_dafsa_dla_intersection", "to": "query_local_dla", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "v10-banded-parity-execution",
+      "event": "proof_parity",
+      "kind": "execution",
+      "entry": "observed_token",
+      "terminal": "v10_banded_proof_lattice",
+      "required_roles": ["interface", "observer"],
+      "path_cardinality": [
+        {"from": "observed_token", "to": "v10_banded_proof_lattice", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "full-row-parity-execution",
+      "event": "proof_parity",
+      "kind": "execution",
+      "entry": "observed_token",
+      "terminal": "full_row_proof_lattice",
+      "required_roles": ["interface", "observer"],
+      "path_cardinality": [
+        {"from": "observed_token", "to": "full_row_proof_lattice", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "v11-proof-observation",
+      "event": "proof_observation",
+      "kind": "proof",
+      "entry": "v11_parity_audit",
+      "terminal": "fixed_v11_proof",
+      "required_roles": ["observer", "proof_owner"],
+      "path_cardinality": [
+        {"from": "v11_parity_audit", "to": "fixed_v11_proof", "min": 1, "max": 1}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "schema": "lay.v10.e1-traversal-d2-benign-capability-probe-local-recovery.v1",
+  "task_id": "slice8b-v10-e1-traversal-d2-capability-probe-20260825",
+  "verdict": "BLOCKED_CAPABILITY",
+  "safe_to_implement_d2": false,
+  "failure_class": "CONTROLLER_SHUTDOWN_RETURN_CODE_REJECTED",
+  "failure_detail": "The controller sent SIGINT after the fixed two-second T-CAP interval. perf finalized a nonempty perf.data file and returned -2; the controller required return code 0 and stopped before perf-data readers or either precise-instruction subrun.",
+  "authoritative_remote_receipt": {
+    "path": "P1_REMOTE_EVIDENCE/PROBE_RECEIPT.json",
+    "sha256": "1c41c796458b862813601c8853788675b25b0d221b3447e16237f5f87ed6a8dc",
+    "verdict": "BLOCKED_CAPABILITY",
+    "retained_unchanged": true
+  },
+  "local_remote_evidence": {
+    "path": "P1_REMOTE_EVIDENCE",
+    "manifest_sha256": "06c86e7aa849d467c8985ef3b0910090e3d1d8666b576d50d4bc82dc0ab03a55",
+    "manifest_entries_checked": 9,
+    "manifest_entries_passed": 9,
+    "files_including_manifest": 10,
+    "file_bytes": 326867,
+    "directory_mode": "0555",
+    "file_mode": "0444",
+    "source_remote_tree_retained": true
+  },
+  "executed_facts": {
+    "probe_marker_consumed_before_first_record": true,
+    "probe_marker_available_after_run": false,
+    "retry_permitted": false,
+    "subruns_required": [
+      "T-CAP",
+      "I-CORE-CAP",
+      "I-ATOM-CAP"
+    ],
+    "subruns_started": [
+      "T-CAP"
+    ],
+    "subruns_completed_by_controller": [],
+    "subruns_not_started": [
+      "I-CORE-CAP",
+      "I-ATOM-CAP"
+    ],
+    "perf_record_invocations": 1,
+    "perf_record_return_code": -2,
+    "perf_stat_invocations": 0,
+    "perf_data_reader_invocations": 0,
+    "software_event_record_invocations": 1,
+    "precise_instruction_event_invocations": 0,
+    "pmu_event_invocations": 0,
+    "task_clock_perf_data_bytes": 277698,
+    "task_clock_perf_data_sha256": "43e67a0b370c14adab60cd229d925f168f7fbaa94930ed2805876d1b01039a99",
+    "record_command_sha256": "d2aa8bec8fcdcb0bf0fbc702c08592d0e14bd0285a93569b03d36bf9f5f423b3",
+    "record_stderr_sha256": "db3ab945169f69ed13ac5cb9cfaf18cd3c78077436f2d787bd048c2fbad4e951",
+    "controller_sha256": "4b025b93e80cbba66b2ea44a9b0845de883053b5586f9fc4e892a20fdb4f2626"
+  },
+  "remote_receipt_count_correction": {
+    "remote_perf_record_invocations": 0,
+    "effective_perf_record_invocations": 1,
+    "remote_software_events_opened": 0,
+    "effective_claim": "one task-clock record invocation produced nonempty perf.data; sample validity was not evaluated",
+    "all_other_remote_fields_unchanged": true
+  },
+  "not_proven": [
+    "T-CAP event identity, period stability, lost-sample, throttle, Build-ID or IP-normalization capability",
+    "I-CORE-CAP precise retired-instruction capability",
+    "I-ATOM-CAP precise retired-instruction capability",
+    "P1 capability PASS",
+    "D2 implementation readiness"
+  ],
+  "forbidden_effects_confirmed_absent": {
+    "cargo_build_check_test": 0,
+    "rustc_compilation": 0,
+    "d2_elf_built": false,
+    "d2_subject_executed": false,
+    "v10_v13_package_sidecar_schedule_loaded": false,
+    "foreign_process_control": false,
+    "host_policy_tuning": false,
+    "runtime_authority_changed": false,
+    "full_b_admitted": false,
+    "v12_admitted": false,
+    "runtime_integration_admitted": false
+  },
+  "local_publication_recovery": {
+    "reason": "The original local copy verified the remote manifest but failed while renaming a copied read-only directory across parent directories.",
+    "remote_probe_rerun": false,
+    "new_perf_invocation": false,
+    "new_subject_execution": false,
+    "recovery_method": "direct scp of the already sealed remote final, local SHA256SUMS verification, then local chmod a-w",
+    "local_runtime_precondition_had_passed": true,
+    "local_runtime_after": {
+      "lay_version": "lay 1.0.43",
+      "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+      "pids": {
+        "ibus-daemon": 2076194,
+        "lay-daemon": 3410795,
+        "lay-ibus-engine": 3410820
+      }
+    }
+  },
+  "preflight_inputs": {
+    "probe_preflight_manifest_sha256": "3ba58e28846e15b53b0e8fd73a6ced836b15293105b36f3e7d435406ac126188",
+    "probe_preflight_receipt_sha256": "71d98b03f63ed99118f22e2334bb6a0717c68eae1d75110faa08c35de502b399",
+    "p0_static_receipt_sha256": "9b6aff3d74d36e7f5868fff596eb17326e819bf45496bbe4f3cf50870a7f71e0"
+  },
+  "next_state": "D2_IMPLEMENTATION_BLOCKED_CAPABILITY_PROBE_TERMINAL_NO_RETRY"
+}

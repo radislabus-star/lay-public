@@ -10,7 +10,7 @@
 **Статус: alpha.** Основной сценарий уже рабочий. Главная зона активной
 доводки — автопомощь после пробела и редкие desktop edge cases.
 
-Текущая версия: **1.0.27**.
+Текущая версия: **1.0.44**.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -50,6 +50,18 @@ and pinned SHA-256 match the released model contract.
 
 По умолчанию double Shift исправляет **1 последнее слово**. Параметры модели и
 внутренние тайминги не выставляются в пользовательский интерфейс.
+
+## Что нового в 1.0.44
+
+- exact V13 search загружается один раз на процесс из проверенного typed
+  sidecar и переиспользуется всеми запросами;
+- exact-кандидаты входят в общий bounded L2 material без самостоятельного
+  права на автозамену: authority по-прежнему проходит через L3,
+  `TransitionDecisionCore` и verifier;
+- при заполнении общего лимита сохраняются exact и grounded цели, а
+  низкоприоритетный productive tail удаляется с явным incomplete verdict;
+- release installer собирает и атомарно устанавливает V13 sidecar вместе с
+  бинарниками и canonical L2 package.
 
 ## Что нового в 1.0.27
 

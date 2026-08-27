@@ -1,0 +1,168 @@
+{
+  "schema": "lay.slice8b.v10.e1.traversal.d2.paper-review.v1",
+  "date": "2026-08-25",
+  "verdict": "D2_PAPER_REVIEWED",
+  "authority_ready": false,
+  "exact_source_correction": {
+    "state_decode_calls": 8059788,
+    "edge_decode_calls": 25145756,
+    "total_field_helper_calls": 107676420,
+    "redundant_second_state_decode": "ABSENT_AT_SOURCE_LEVEL"
+  },
+  "artifacts": {
+    "contract_sha256": "2a34829ac0ccf36f092a55f3c26cbbd3a1d9083834a9174eac036120e964933d",
+    "global_skeleton_sha256": "39e274dbd5d4e2c34e2c366ddeb7ad83ed270bf0a67ba394bc8d7671c9996261",
+    "route_set_sha256": "b2e5384199796a6456cd74025a83e17916687b262545b15bce60fd7f16e24f25",
+    "global_skeleton_receipt_sha256": "4321f2412854735948308d7548a34ddb0bd70dff708cde849b003cffcefa30e0"
+  },
+  "retained_revisions": [
+    {
+      "revision": "V1",
+      "verdict": "VETO",
+      "reason": "routes_target_limit_and_map_owner_conflict"
+    },
+    {
+      "revision": "V2",
+      "verdict": "VETO",
+      "reason": "abstract_contract_owner_conflicted_with_concrete_owners"
+    },
+    {
+      "revision": "V3",
+      "verdict": "VETO",
+      "reason": "weak_monolithic_composite"
+    }
+  ],
+  "global_skeleton": {
+    "verdict": "PASS",
+    "authority_ready": false,
+    "conflicts": 0,
+    "evidence_gaps": 0,
+    "weak_triads": 0,
+    "owner_conflicts": 0
+  },
+  "local_routes": {
+    "required": 8,
+    "pass": 8,
+    "receipts": [
+      {
+        "task_id": "lay-v10-e1-traversal-d2-local-attribution-v4",
+        "verdict": "PASS",
+        "authority_ready": false,
+        "conflicts": 0,
+        "evidence_gaps": 0,
+        "weak_triads": 0,
+        "owner_conflicts": 0
+      },
+      {
+        "task_id": "lay-v10-e1-traversal-d2-local-build-v4",
+        "verdict": "PASS",
+        "authority_ready": false,
+        "conflicts": 0,
+        "evidence_gaps": 0,
+        "weak_triads": 0,
+        "owner_conflicts": 0
+      },
+      {
+        "task_id": "lay-v10-e1-traversal-d2-local-closure-v4",
+        "verdict": "PASS",
+        "authority_ready": false,
+        "conflicts": 0,
+        "evidence_gaps": 0,
+        "weak_triads": 0,
+        "owner_conflicts": 0
+      },
+      {
+        "task_id": "lay-v10-e1-traversal-d2-local-control-v4",
+        "verdict": "PASS",
+        "authority_ready": false,
+        "conflicts": 0,
+        "evidence_gaps": 0,
+        "weak_triads": 0,
+        "owner_conflicts": 0
+      },
+      {
+        "task_id": "lay-v10-e1-traversal-d2-local-decision-v4",
+        "verdict": "PASS",
+        "authority_ready": false,
+        "conflicts": 0,
+        "evidence_gaps": 0,
+        "weak_triads": 0,
+        "owner_conflicts": 0
+      },
+      {
+        "task_id": "lay-v10-e1-traversal-d2-local-map-v4",
+        "verdict": "PASS",
+        "authority_ready": false,
+        "conflicts": 0,
+        "evidence_gaps": 0,
+        "weak_triads": 0,
+        "owner_conflicts": 0
+      },
+      {
+        "task_id": "lay-v10-e1-traversal-d2-local-sampling-v4",
+        "verdict": "PASS",
+        "authority_ready": false,
+        "conflicts": 0,
+        "evidence_gaps": 0,
+        "weak_triads": 0,
+        "owner_conflicts": 0
+      },
+      {
+        "task_id": "lay-v10-e1-traversal-d2-local-validity-v4",
+        "verdict": "PASS",
+        "authority_ready": false,
+        "conflicts": 0,
+        "evidence_gaps": 0,
+        "weak_triads": 0,
+        "owner_conflicts": 0
+      }
+    ],
+    "receipt_hashes": [
+      {
+        "sha256": "42a19fa8b0b08a4d1885b550c4560da91ffede79432b43c74b105483cca1d626",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_ROUTE_V4_2026-08-25/route-attribution-receipt.json"
+      },
+      {
+        "sha256": "644784292485eb370c840f1d75c9483950d4ad46a599eef40dd973f7d02f5380",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_ROUTE_V4_2026-08-25/route-build-receipt.json"
+      },
+      {
+        "sha256": "ce5ee90e0b52f49cc0787431771430a1f342cd2f52d6917d3a2710695f743d75",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_ROUTE_V4_2026-08-25/route-closure-receipt.json"
+      },
+      {
+        "sha256": "0e395f673e1f402d8289cff0d7667d50ca4c5f72059a35117ace045306009818",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_ROUTE_V4_2026-08-25/route-control-receipt.json"
+      },
+      {
+        "sha256": "fb37cb4bb64b1fd582037098595e5a331cb5dd784ce2e9af3bc6c81c6722b9a0",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_ROUTE_V4_2026-08-25/route-decision-receipt.json"
+      },
+      {
+        "sha256": "3168ab38e544007f4916f797ddf6b803bf5b2b8090c251a1321ccfdd857d7186",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_ROUTE_V4_2026-08-25/route-map-receipt.json"
+      },
+      {
+        "sha256": "5593b993322009739da500d28717a33a3c555cdbde0530e18d768eb65338e39d",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_ROUTE_V4_2026-08-25/route-sampling-receipt.json"
+      },
+      {
+        "sha256": "df30d080aa53dc6cc0bcbd2eb44d13286b47523ebcf1c20ca5d81e634245c85b",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_ROUTE_V4_2026-08-25/route-validity-receipt.json"
+      }
+    ]
+  },
+  "execution_boundary": {
+    "implementation_preflight": "NOT_CREATED",
+    "controller": "NOT_CREATED",
+    "build": "NOT_STARTED",
+    "bucket_map": "NOT_CREATED",
+    "subject_execution": "NOT_STARTED",
+    "perf_record": "NOT_STARTED",
+    "pmu_event": "NOT_STARTED",
+    "full_b": "NOT_ADMITTED",
+    "v12": "NOT_ADMITTED",
+    "runtime_integration": "NOT_ADMITTED",
+    "runtime_authority_changed": false
+  }
+}

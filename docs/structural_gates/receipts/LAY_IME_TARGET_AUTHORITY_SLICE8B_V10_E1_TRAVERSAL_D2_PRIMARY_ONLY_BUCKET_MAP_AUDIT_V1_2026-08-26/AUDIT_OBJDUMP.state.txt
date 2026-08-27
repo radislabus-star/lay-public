@@ -1,0 +1,82 @@
+
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000009266b0 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::state>:
+  9266b0:	53                   	push   %rbx
+  9266b1:	48 89 fb             	mov    %rdi,%rbx
+  9266b4:	39 d1                	cmp    %edx,%ecx
+  9266b6:	73 6f                	jae    926727 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::state+0x77>
+  9266b8:	89 c8                	mov    %ecx,%eax
+  9266ba:	48 c1 e0 02          	shl    $0x2,%rax
+  9266be:	48 8b 4e 20          	mov    0x20(%rsi),%rcx
+  9266c2:	48 8d 14 40          	lea    (%rax,%rax,2),%rdx
+  9266c6:	48 81 c2 04 01 00 00 	add    $0x104,%rdx
+  9266cd:	48 39 ca             	cmp    %rcx,%rdx
+  9266d0:	77 14                	ja     9266e6 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::state+0x36>
+  9266d2:	48 8d 04 40          	lea    (%rax,%rax,2),%rax
+  9266d6:	48 8d 90 08 01 00 00 	lea    0x108(%rax),%rdx
+  9266dd:	48 39 ca             	cmp    %rcx,%rdx
+  9266e0:	0f 86 8a 00 00 00    	jbe    926770 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::state+0xc0>
+  9266e6:	bf 17 00 00 00       	mov    $0x17,%edi
+  9266eb:	ff 15 bf 8c a9 00    	call   *0xa98cbf(%rip)        # 13bf3b0 <malloc@GLIBC_2.2.5>
+  9266f1:	48 85 c0             	test   %rax,%rax
+  9266f4:	0f 84 ff 00 00 00    	je     9267f9 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::state+0x149>
+  9266fa:	0f 10 05 10 b4 82 ff 	movups -0x7d4bf0(%rip),%xmm0        # 151b11 <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x6b2c1>
+  926701:	0f 11 00             	movups %xmm0,(%rax)
+  926704:	48 b9 41 46 53 41 20 75 33 32 	movabs $0x3233752041534641,%rcx
+  92670e:	48 89 48 0f          	mov    %rcx,0xf(%rax)
+  926712:	48 c7 03 17 00 00 00 	movq   $0x17,(%rbx)
+  926719:	48 89 43 08          	mov    %rax,0x8(%rbx)
+  92671d:	48 c7 43 10 17 00 00 00 	movq   $0x17,0x10(%rbx)
+  926725:	5b                   	pop    %rbx
+  926726:	c3                   	ret
+  926727:	bf 29 00 00 00       	mov    $0x29,%edi
+  92672c:	ff 15 7e 8c a9 00    	call   *0xa98c7e(%rip)        # 13bf3b0 <malloc@GLIBC_2.2.5>
+  926732:	48 85 c0             	test   %rax,%rax
+  926735:	0f 84 af 00 00 00    	je     9267ea <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::state+0x13a>
+  92673b:	0f 10 05 ab 5c 85 ff 	movups -0x7aa355(%rip),%xmm0        # 17c3ed <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x95b9d>
+  926742:	0f 11 40 19          	movups %xmm0,0x19(%rax)
+  926746:	0f 10 05 97 5c 85 ff 	movups -0x7aa369(%rip),%xmm0        # 17c3e4 <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x95b94>
+  92674d:	0f 11 40 10          	movups %xmm0,0x10(%rax)
+  926751:	0f 10 05 7c 5c 85 ff 	movups -0x7aa384(%rip),%xmm0        # 17c3d4 <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x95b84>
+  926758:	0f 11 00             	movups %xmm0,(%rax)
+  92675b:	48 c7 03 29 00 00 00 	movq   $0x29,(%rbx)
+  926762:	48 89 43 08          	mov    %rax,0x8(%rbx)
+  926766:	48 c7 43 10 29 00 00 00 	movq   $0x29,0x10(%rbx)
+  92676e:	5b                   	pop    %rbx
+  92676f:	c3                   	ret
+  926770:	48 8d 90 0a 01 00 00 	lea    0x10a(%rax),%rdx
+  926777:	48 39 ca             	cmp    %rcx,%rdx
+  92677a:	77 0c                	ja     926788 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::state+0xd8>
+  92677c:	48 8d 90 0c 01 00 00 	lea    0x10c(%rax),%rdx
+  926783:	48 39 ca             	cmp    %rcx,%rdx
+  926786:	76 29                	jbe    9267b1 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::state+0x101>
+  926788:	bf 17 00 00 00       	mov    $0x17,%edi
+  92678d:	ff 15 1d 8c a9 00    	call   *0xa98c1d(%rip)        # 13bf3b0 <malloc@GLIBC_2.2.5>
+  926793:	48 85 c0             	test   %rax,%rax
+  926796:	74 61                	je     9267f9 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::state+0x149>
+  926798:	0f 10 05 5b b3 82 ff 	movups -0x7d4ca5(%rip),%xmm0        # 151afa <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x6b2aa>
+  92679f:	0f 11 00             	movups %xmm0,(%rax)
+  9267a2:	48 b9 41 46 53 41 20 75 31 36 	movabs $0x3631752041534641,%rcx
+  9267ac:	e9 5d ff ff ff       	jmp    92670e <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::state+0x5e>
+  9267b1:	48 8b 4e 18          	mov    0x18(%rsi),%rcx
+  9267b5:	8b 94 01 00 01 00 00 	mov    0x100(%rcx,%rax,1),%edx
+  9267bc:	8b b4 01 04 01 00 00 	mov    0x104(%rcx,%rax,1),%esi
+  9267c3:	0f b7 bc 01 08 01 00 00 	movzwl 0x108(%rcx,%rax,1),%edi
+  9267cb:	0f b7 84 01 0a 01 00 00 	movzwl 0x10a(%rcx,%rax,1),%eax
+  9267d3:	89 53 08             	mov    %edx,0x8(%rbx)
+  9267d6:	89 73 0c             	mov    %esi,0xc(%rbx)
+  9267d9:	66 89 7b 10          	mov    %di,0x10(%rbx)
+  9267dd:	66 89 43 12          	mov    %ax,0x12(%rbx)
+  9267e1:	48 c7 03 ff ff ff ff 	movq   $0xffffffffffffffff,(%rbx)
+  9267e8:	5b                   	pop    %rbx
+  9267e9:	c3                   	ret
+  9267ea:	bf 01 00 00 00       	mov    $0x1,%edi
+  9267ef:	be 29 00 00 00       	mov    $0x29,%esi
+  9267f4:	e8 f2 02 77 00       	call   1096aeb <alloc::raw_vec::handle_error>
+  9267f9:	bf 01 00 00 00       	mov    $0x1,%edi
+  9267fe:	be 17 00 00 00       	mov    $0x17,%esi
+  926803:	e8 e3 02 77 00       	call   1096aeb <alloc::raw_vec::handle_error>

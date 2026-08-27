@@ -1,0 +1,726 @@
+{
+  "verdict": "VETO",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-c1-dirty-load-route-v1",
+  "domain": "code",
+  "complexity_score": 48,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.1304,
+      "c2": 0.1304,
+      "c3": 0.1304,
+      "c4": 0.1304,
+      "c5": 0.1304,
+      "c6": 0.1304,
+      "c7": 0.1304,
+      "c8": 0.1304
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 16,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.3634,
+      "c2": 0.3964,
+      "c3": 0.3401,
+      "c4": 0.3153,
+      "c5": 0.3016,
+      "c6": 0.3813,
+      "c7": 0.395,
+      "c8": 0.3497
+    },
+    "source_self_score": 0.3554,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "dirty-direct-v1": "dirty-direct-v1"
+    },
+    "scores": {
+      "dirty-direct-v1": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "dirty-direct-v1": 8
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.3554,
+      "norm": 90.9725,
+      "triads": 8
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "dirty-direct-v1": "dirty-direct-v1"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "dirty-direct-v1": {
+          "norm": 90.9725,
+          "self_coherence": 0.3554,
+          "triads": 8
+        }
+      },
+      "source": {
+        "dirty-direct-v1": {
+          "norm": 90.9725,
+          "self_coherence": 0.3554,
+          "triads": 8
+        }
+      }
+    },
+    "group_links": {
+      "dirty-direct-v1": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "dirty-direct-v1",
+        "exact_source_groups": [
+          "dirty-direct-v1"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "dirty-direct-v1": {
+        "dirty-direct-v1": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [
+        {
+          "center": "dirty matrix owner",
+          "group": "dirty-direct-v1",
+          "kind": "owner_conflict",
+          "owners": [
+            "dirty matrix owner",
+            "dirty route state owner",
+            "dirty-direct-v1",
+            "environment observer",
+            "production timing owner",
+            "publication owner",
+            "sealed c1 subject owner",
+            "threshold comparison owner"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        }
+      ],
+      "group_centers": {
+        "dirty-direct-v1": {
+          "gravity": 0.125,
+          "owner": "dirty matrix owner",
+          "owners": {
+            "dirty matrix owner": 2,
+            "dirty route state owner": 2,
+            "dirty-direct-v1": 2,
+            "environment observer": 2,
+            "production timing owner": 2,
+            "publication owner": 2,
+            "sealed c1 subject owner": 2,
+            "threshold comparison owner": 2
+          },
+          "support": 2,
+          "total": 16
+        }
+      },
+      "route_centers": {
+        "authority": {
+          "gravity": 1.0,
+          "owner": "dirty-direct-v1",
+          "owners": {
+            "dirty-direct-v1": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "decision": {
+          "gravity": 1.0,
+          "owner": "threshold comparison owner",
+          "owners": {
+            "threshold comparison owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "environment": {
+          "gravity": 1.0,
+          "owner": "environment observer",
+          "owners": {
+            "environment observer": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "execution": {
+          "gravity": 1.0,
+          "owner": "dirty matrix owner",
+          "owners": {
+            "dirty matrix owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "observation": {
+          "gravity": 1.0,
+          "owner": "production timing owner",
+          "owners": {
+            "production timing owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "provenance": {
+          "gravity": 1.0,
+          "owner": "sealed c1 subject owner",
+          "owners": {
+            "sealed c1 subject owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "publication": {
+          "gravity": 1.0,
+          "owner": "publication owner",
+          "owners": {
+            "publication owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "state": {
+          "gravity": 1.0,
+          "owner": "dirty route state owner",
+          "owners": {
+            "dirty route state owner": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "dirty-direct-v1"
+      }
+    ],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "authority": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "dirty-load claim boundary",
+            "receipt uses only dirty_load_observation and thresholds_would_pass"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "dirty-direct-v1"
+          ],
+          "scopes": [
+            "authority"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "decision": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "preregistered c1 nearest-rank thresholds",
+            "same nearest-rank parser and fixed sample denominators"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "threshold comparison owner"
+          ],
+          "scopes": [
+            "decision"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "environment": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "loaded environment contract",
+            "no quiet admission and static vetoes on control commands"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "environment observer"
+          ],
+          "scopes": [
+            "environment"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "execution": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "dirty-load contract fixed workload",
+            "one create-new dirty marker per fixed route"
+          ],
+          "layers": [
+            "runtime"
+          ],
+          "outputs": [],
+          "owners": [
+            "dirty matrix owner"
+          ],
+          "scopes": [
+            "execution"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "observation": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "primitive c1 sample bytes are parsed without external timing substitution",
+            "sealed c1 test-only observer calls exact production search"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "production timing owner"
+          ],
+          "scopes": [
+            "observation"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "provenance": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "c1 implementation and parity receipts",
+            "controller must verify exact elf and parity receipt before execution"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "sealed c1 subject owner"
+          ],
+          "scopes": [
+            "provenance"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "publication": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "staged manifest then final rename contract",
+            "write manifest seal stage and final rename with no post-rename mutation"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "publication owner"
+          ],
+          "scopes": [
+            "publication"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "state": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "new dirty paths and exact marker assertions before and after",
+            "separate path and exact before-after marker snapshot"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "dirty route state owner"
+          ],
+          "scopes": [
+            "state"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "authority": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "observation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "provenance": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "publication": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "state": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "authority": {
+          "authority": 1.0,
+          "decision": 0.0664,
+          "environment": -0.0156,
+          "execution": 0.041,
+          "observation": -0.0566,
+          "provenance": 0.0918,
+          "publication": 0.0117,
+          "state": -0.0156
+        },
+        "decision": {
+          "authority": 0.0664,
+          "decision": 1.0,
+          "environment": -0.0195,
+          "execution": -0.0176,
+          "observation": -0.0059,
+          "provenance": 0.0254,
+          "publication": -0.0039,
+          "state": 0.0391
+        },
+        "environment": {
+          "authority": -0.0156,
+          "decision": -0.0195,
+          "environment": 1.0,
+          "execution": -0.0449,
+          "observation": -0.0293,
+          "provenance": -0.041,
+          "publication": 0.0234,
+          "state": -0.0156
+        },
+        "execution": {
+          "authority": 0.041,
+          "decision": -0.0176,
+          "environment": -0.0449,
+          "execution": 1.0,
+          "observation": -0.0039,
+          "provenance": -0.0273,
+          "publication": -0.0176,
+          "state": 0.0371
+        },
+        "observation": {
+          "authority": -0.0566,
+          "decision": -0.0059,
+          "environment": -0.0293,
+          "execution": -0.0039,
+          "observation": 1.0,
+          "provenance": -0.0703,
+          "publication": -0.0176,
+          "state": 0.0801
+        },
+        "provenance": {
+          "authority": 0.0918,
+          "decision": 0.0254,
+          "environment": -0.041,
+          "execution": -0.0273,
+          "observation": -0.0703,
+          "provenance": 1.0,
+          "publication": 0.0254,
+          "state": 0.0293
+        },
+        "publication": {
+          "authority": 0.0117,
+          "decision": -0.0039,
+          "environment": 0.0234,
+          "execution": -0.0176,
+          "observation": -0.0176,
+          "provenance": 0.0254,
+          "publication": 1.0,
+          "state": -0.0273
+        },
+        "state": {
+          "authority": -0.0156,
+          "decision": 0.0391,
+          "environment": -0.0156,
+          "execution": 0.0371,
+          "observation": 0.0801,
+          "provenance": 0.0293,
+          "publication": -0.0273,
+          "state": 1.0
+        }
+      },
+      "source": {
+        "authority": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "observation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "provenance": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "publication": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "state": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "dirty-direct-v1": 8
+    },
+    "stable_groups": [
+      "dirty-direct-v1"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 1,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 1,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "dirty-direct-v1"
+    }
+  ],
+  "agent_decision": {
+    "action": "REPAIR_REQUIRED",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Apply the repair_queue before editing or accepting this route.",
+    "repair_count": 1,
+    "repair_queue": [
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "dirty-direct-v1"
+      }
+    ],
+    "safe_to_edit": false
+  },
+  "explanation": [
+    "No decisive structural signal was found."
+  ],
+  "repair_prompt": "Repair the candidate answer using only one coherent structural route.\nNANDA verdict: VETO.\nPrimary repair_queue:\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-c1-dirty-load-route-v1.trace.json"
+}

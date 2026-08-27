@@ -1719,3 +1719,311 @@ working IBus installation and services are immutable in that scope.
 Design document:
 
 `/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-receipt-v1-2026-08-20.md`
+
+## 19. Current Completion Audit, 2026-08-23
+
+Authoritative source/runtime checkpoint:
+
+```text
+source branch              codex/l1-exact-peak-search
+source commit              e4b5447
+public/main                e4b5447
+installed Lay              1.0.39
+global ibus-daemon PID     2076194, unchanged
+active engine              lay-ime-us
+loaded extension           1.0.39
+```
+
+Requirement matrix:
+
+| Requirement | Current evidence | Verdict | Next gate |
+|---|---|---|---|
+| canonical L2 owner without recrystallization | V13 SHA preserved; one `CanonicalL2Field`; active engine maps V9 + V90 + V13 | PASS | retain package bytes |
+| online proof-gated L3 | generations 9 and 10 admitted; differential regression counters zero | PASS | continue append-only admissions |
+| sentence L3 | fixed targeted and 80k differential receipts | PASS | no source change required |
+| typed L4 | V2 typed event replay parity | PASS | retain compatibility reader |
+| cross-scene causal L4 | organic V2 loaded; 10/10 heldout; false supports 0; automatic apply 0 | PASS_SHADOW | independent authority remains intentionally disabled |
+| L1.1 quality | direct Phase8I V9 fixed 13 x 20,000 `PASS_C_QUALITY` | PASS | retain exact package/proof SHA |
+| L1.1/productive absolute latency | historical first-touch PASS is not sufficient for current Productive cohort; measured class p99 remains above 5 ms | OPEN | current route proof after Slice 8 integration |
+| crash-safe physical mutation | backend atomic release 1.0.34 deployed; global IBus preserved | PASS | retain atomic denominator |
+| lexical candidate-specific authority | complete material/frame/state/cohort exists only in proof; live still uses `common_l3_required` field-wide settlement | OPEN, FIRST CODE BLOCKER | Slice 8 typed frame + cohort migration |
+| context authority for lexical ties | no independently promoted `ContextCertified` bytes | OPEN | Slice 9 calibration after lexical-only gate |
+| compatibility route removal | parallel boundary and legacy field-wide authority remain | OPEN | Slice 10 after bounded compare |
+| final multi-client product gate | broad smoke and fixed atomic route passed; complete current WeChat/Telegram matrix and 1.0.39 Double Shift cases are not all recorded | OPEN | Slice 11/12 exact-byte physical gate |
+
+The previously open Slice 7 backend problem is closed by the atomic backend
+work deployed in `1.0.34`; repeating storage durability experiments is
+forbidden. The first current implementation blocker is Slice 8: pass exact IME
+frame identity into the library and replace field-wide lexical authority with
+the complete candidate-specific cohort. Contract:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-target-authority-slice8-lexical-readout-2026-08-23.md`
+
+No runtime, package, process or installed authority changed during this audit.
+
+### Slice 8A Typed Frame Carrier, 2026-08-24
+
+`LexicalAuthorityFrameV1` now carries the exact IBus frame unchanged through
+active-composition, InputGate and CorrectionRequest. Frame-less callers remain
+explicitly `None`; the field is not yet consumed by candidate generation or
+authority settlement. Remote all-target compilation, 13-field conversion
+parity, frame-presence parity, deterministic decision parity and the existing
+13-dimension stale-frame matrix passed. This closes Slice 8A only. Runtime,
+packages, installed `1.0.39` and global `ibus-daemon` PID `2076194` are
+unchanged.
+
+Receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8a-frame-carrier-receipt.json`
+
+Next gate: Slice 8B must reuse one prepared Productive field to derive the
+legacy and complete-cohort verdicts without issuing new authority.
+
+### Slice 8B V10 Physical Cost Decision, 2026-08-25
+
+Loaded direct latency missed the frozen thresholds in two independent runs:
+single-search p99 was `3.940 / 3.938 ms`, while 20-worker total p99 was
+`17.349 / 16.336 ms`. A third loaded replication is closed as unnecessary.
+Clean C1 remains unmeasured, but it is no longer the next engineering blocker.
+
+Process-scoped PMU measured `42.379M` instructions/request in B5 and `42.389M`
+in B6. The exact source-preserving structural observer then found `65,826.6`
+examined edges and transitions/request, `454,587.4` evaluated band cells, the
+same number of cells scanned again by `minimum()`, and a `67.95%` prune rate.
+All 382 semantic records retained exact V10 parity with zero false certificates.
+
+This confirms excessive generic executor work independently of foreign host
+load. Nando, btop and K1 are not blockers for the next step and must remain
+untouched. The admitted next paper gate is a source-preserving transition
+microproof comparing exact V10 generic recurrence, equality-isolated generic
+recurrence, fused unrolled scalar radius-3 code and an optional pre-registered
+SWAR candidate on one identical trace.
+
+The microproof is not V12. Full B, full executor implementation, runtime
+integration and installed authority changes remain unadmitted.
+
+Decision receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_PMU_DECISION_2026-08-25.json`
+
+M1 contract:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_CONTRACT_2026-08-25.md`
+
+### Slice 8B Exact Fused Band Transition M1 PASS, 2026-08-25
+
+The sealed source-preserving M1 executable completed exact parity and three
+process-scoped PMU replays on one `25,145,756`-transition trace. Schedule parity
+was `382/382`; terminal, peak, completeness, work, scratch, transition and
+packed-state mismatches were all zero. The additional `714,026` long-query
+stress cases for lengths `23..96` and radii `0..3` also had zero transition and
+packed-state mismatches.
+
+```text
+G0 exact generic                596.362 instructions/transition
+G1 equality-isolated generic   502.733 instructions/transition   -15.700%
+U1 packed fused scalar         477.598 instructions/transition    -5.000% from G1
+G0 -> U1                                                       -19.915%
+
+projected delta/query            7.818 M instructions
+projected whole-query saving      18.448%
+frozen M1 gate                    15.000%
+verdict                           M1_PASS
+```
+
+The result shows that equality handling is the larger measured lever, while
+packing, fixed radius-3 unrolling and fused minimum contribute an additional
+but smaller reduction. The combined exact route has enough instruction-level
+projection to admit a separate full-executor candidate paper and implementation
+preflight.
+
+This is not a latency PASS and does not authorize production edits, V12, full
+B, runtime integration or deployment. Nando, btop and K1 were not controlled;
+the installed Lay and runtime authority were unchanged. The next step is the
+full-executor candidate contract, not direct implementation.
+
+Exact receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_2026-08-25/`
+
+Decision SHA-256:
+`f75bdc6995bcdc8553b267ae43e511321bb34fe9d4d9acb14a610104356573a1`.
+
+### Slice 8B Exact Fused Full Executor E1 REJECT, 2026-08-25
+
+The source-preserving E1 executable passed exact semantic and structural
+parity on all `382` records. Terminal, peak, completeness, work, rank-prefix,
+terminal-rank, reverse-schedule and certificate mismatches were zero. The
+`714,026` long-query transition stress cases also remained exact. Candidate
+scratch fell from `6,656` to `6,144 B`.
+
+Process-scoped PMU showed that the code change was physically substantial:
+
+```text
+E0 instructions/query           42.910 M
+E1 instructions/query           23.838 M
+actual reduction                  44.446%
+frozen instruction gate           15.000%    PASS
+
+E0 cycles/query diagnostic       10.289 M
+E1 cycles/query diagnostic        6.827 M
+```
+
+The complete loaded matrix ran without controlling Nando, btop or K1. It
+improved every headline metric relative to loaded V10 replication V2, but the
+conjunctive latency contract still failed:
+
+```text
+S pooled search p99               3.047 ms    <= 3 ms   FAIL
+S pooled total p99                3.197 ms    <= 5 ms   PASS
+T pooled total p99               11.512 ms    <= 5 ms   FAIL
+worst run x worker total p99     38.097 ms    <= 5 ms   FAIL
+```
+
+All five concurrent runs failed; the worst query remained ordinal `381` at
+`34.988 ms` total p99. There were no errors, unresolved results or thermal
+throttle changes. Maximum temperature was `80 C`.
+
+Therefore the final verdict is `E1_REJECT`, despite physical PASS. The generic
+V10 code was demonstrably expensive, but transition fusion alone does not make
+the exact route acceptable under the target loaded workload. E1 is not admitted
+for production integration. The next step is a separately contracted targeted
+diagnosis of remaining concurrent and non-transition costs; full B, V12,
+runtime integration and deployment remain unadmitted.
+
+Exact receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_2026-08-25/`
+
+Decision SHA-256:
+`b334c047d29b21c27923fba9b38bbf17bb642cc72c9b112add1c38d8c9b0beab`.
+
+### Slice 8B E1 Remaining-Cost D1 observed, 2026-08-25
+
+D1 completed exact parity and loaded component/PMU observation with one sealed
+source-preserving executable. Semantic parity was `382/382`; terminal, peak and
+work mismatches and false certificates were zero. Maximum product states stayed
+`35,590` and scratch stayed `6,144 B`.
+
+The single-client thread-CPU denominator assigns `95.262%` to packed traversal
+and `4.458%` to certificate materialization. Oracle, lane, EqMask and merge work
+are each below `0.1%`. Traversal CPU cost rises from `25.97 ns/edge` single to
+about `44.7 ns/edge` in both twenty-worker mappings.
+
+Reversing worker placement moves the heavy query-381 shard from CPU 19 to CPU 0
+and lowers its wall p99 from `39.655 ms` to `22.928 ms`, but does not restore the
+`5 ms` total gate. Placement is a secondary lever; traversal work remains the
+dominant route.
+
+The original immutable D1 receipt retained a PMU capability gap because its
+parser rejected the normal two-row hybrid runtime partition. A no-rerun
+correction based on the six sealed raw files and the installed `perf 7.0.12`
+semantics recovers the process counts:
+
+```text
+                         fixed          reversed
+instructions/request     23.935 M        23.936 M
+cycles/request             9.441 M         9.249 M
+IPC                         2.535           2.588
+branch miss rate            1.606%          1.607%
+LLC misses/request             60.9            83.3
+dTLB misses/request           971             888
+```
+
+The post-edit observed-source route passes all `20/20` markers. No D1 rerun,
+new PMU event, Cargo build, runtime installation or authority change occurred
+during correction publication. Correction V1 is retained with one copied
+subject-hash typo; correction V2 overlays only that field and is current.
+
+Observed-source route receipt:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_OBSERVED_ROUTE_V3_RECEIPT_2026-08-25.json`
+
+Authoritative evidence:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/`
+
+Superseding PMU interpretation:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_PMU_INTERPRETATION_CORRECTION_V2_2026-08-25/`
+
+Correction SHA-256:
+`004bc1f5d7cd493525cfb9287e79e8159f983b41a51a2374eaeb7931c72aad38`.
+
+Decision: do not optimize oracle/lanes/EqMask/merge and do not admit V12. The
+next paper gate may decompose only packed traversal internals. Full B,
+production integration and deployment remain unadmitted.
+
+### Slice 8B D2 Traversal Attribution paper reviewed, 2026-08-25
+
+D2 is frozen as an external sampling design over exact D1 Rust bytes. Exact V10
+has one state decode per expanded state: `edge_range()` reuses `PackedState` and
+does not perform the proposed second `state()` call. The corrected source ledger
+contains `8,059,788` state decodes, `25,145,756` edge decodes and transition
+calls, and `107,676,420` field-helper calls. These counts are not promoted to
+machine-load or instruction counts.
+
+The future route requires one symbolized release build, a machine-byte-hashed
+instruction bucket map sealed before any subject execution, exact parity and
+unsampled D1 controls, then separate fixed-period task-clock and precise
+instruction IP samples for single, fixed and reversed mappings. Attribution is
+withheld on perturbation, lost samples, insufficient coverage, excess
+unattributed work or map mismatch. Ordinary Nando/btop/K1 load remains present
+and is not controlled.
+
+Structural review retained monolithic V1-V3 as `VETO`. The repaired V4 global
+skeleton is `PASS`; all eight local owner routes are `PASS`, with
+`authority_ready=false` and no conflicts or gaps.
+
+Contract:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_CONTRACT_2026-08-25.md`
+
+Review evidence:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_ROUTE_V4_2026-08-25/`
+
+Current boundary: D2 paper `REVIEWED`; implementation preflight, controller,
+build, bucket map and measurements `NOT STARTED`. Full B, V12, runtime
+integration and deployment remain `NOT ADMITTED`; runtime authority is
+unchanged.
+
+### Slice 8B D2 capability preflight blocked, 2026-08-25
+
+The D2 implementation preflight closed P0 static identity and admitted one
+benign capability-probe transaction only. Probe-preflight V1 remains blocked;
+V2 admitted the controller, which passed its unrun static checks.
+
+The transaction consumed its marker and started `T-CAP` only. Frozen
+`task-clock:u` recording on CPU 0 produced `277,698` bytes of perf data. The
+controller sent `SIGINT` after two seconds; perf finalized the capture with
+return code `-2`, while the controller required zero. It therefore published
+`BLOCKED_CAPABILITY` before any perf-data reader or either hybrid precise-
+instruction subrun.
+
+```text
+T-CAP record invocation                 1
+I-CORE-CAP / I-ATOM-CAP                 0 / 0
+PMU event invocation                    0
+D2 executable / subject                 0 / 0
+probe retry                             forbidden
+final D2 implementation authority       absent
+```
+
+This blocks the route because capability is incomplete; it does not prove a
+hardware capability failure. The immutable remote receipt's zero invocation
+count was based on completed subruns and is superseded only for that execution
+boundary by the local recovery receipt. Local publication was recovered from
+the sealed remote final without another probe; `9/9` manifest entries pass and
+the evidence tree is read-only.
+
+Evidence:
+
+`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/`
+
+Effective receipt SHA-256:
+`cf8b06fb55f220d6051fcc8c1f193389481698cf0f64f31dc5109bae2e850dc5`.
+
+Next state: `D2_IMPLEMENTATION_BLOCKED_CAPABILITY_PROBE_TERMINAL_NO_RETRY`.
+Full B, V12, runtime integration and deployment remain not admitted; runtime
+authority is unchanged.

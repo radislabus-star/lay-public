@@ -1,0 +1,24 @@
+{
+  "type": "stats",
+  "report": {
+    "status": "ready",
+    "message": null,
+    "socket": "/tmp/lay-slice8b-v6-l11.sock",
+    "requests_served": 1515,
+    "uptime_ms": 581710,
+    "host": {
+      "package_path": "/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/phase8i.v9.bin",
+      "package_bytes": 77962328,
+      "terminal_count": 852582,
+      "atom_count": 218763,
+      "forward_relations": 0,
+      "reverse_relations": 0,
+      "exact_surface_count": 852582,
+      "character_anchor_count": 852582,
+      "manifest_generation": 0,
+      "delta_count": 0,
+      "tombstone_count": 0,
+      "query_failures": 0
+    }
+  }
+}

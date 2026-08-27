@@ -76,6 +76,8 @@ pub(crate) enum TargetRelationV1 {
     MorphologySlot = 11,
     BoundarySplit = 12,
     BoundaryMerge = 13,
+    /// Candidate retained by the exact bounded L1.1 restoration lattice.
+    L11Restoration = 14,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]

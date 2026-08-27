@@ -1,0 +1,141 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_DIRECT_EXEC_V8R2_V1_2026-08-27",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "v8r2-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R2_DIRECT_EXEC_CORRECTION_V1_2026-08-27.md",
+      "expect": {"mode": "0444", "size_bytes": 6064, "sha256": "70d845ca606995ba9335ebfeda25d9b002a53df51a85611929920bc750787d49"}
+    },
+    {
+      "id": "v8r2-structural-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R2_DIRECT_EXEC_CORRECTION_V1_ROUTE_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 19928, "sha256": "8667bbd509dadebff6ad3eb31a9e119aff1c8b985be9a96ebe2fabf74e0e7452"}
+    },
+    {
+      "id": "v8r1-lifecycle-diagnosis",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R1_PSS_HELPER_LIFECYCLE_DIAGNOSIS_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 2758, "sha256": "9b05af87d83c937dcc1e4eab0e398ab3d93ef49ac3e0bfb8089a58ba3d64bae0"}
+    },
+    {
+      "id": "v8r1-build-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R1_BUILD_AUDIT_V1_2026-08-27/BUILD_AUDIT.json",
+      "expect": {"mode": "0444", "size_bytes": 241788, "sha256": "d7d5e7110171e5c6546016ff0c9374c323804014ef8cfa7a690ad7d1d11c8340"}
+    },
+    {
+      "id": "v8r1-terminal-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R1_TERMINAL_AUDIT_V1_2026-08-27/TERMINAL_AUDIT.json",
+      "expect": {"mode": "0444", "size_bytes": 246090, "sha256": "04d0e17158a63a49088e8c8ff9dc25df67e50ac6a97b770ea3fcf1a73d67ec91"}
+    },
+    {
+      "id": "v8r1-journal-manifest",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R1_EXECUTION_JOURNAL_V1_2026-08-27/SHA256SUMS",
+      "expect": {"mode": "0444", "size_bytes": 2895, "sha256": "c6c9d648bdbc02ee8f10639099fc4add6141488600f771188e2b6f69445d91a4"}
+    },
+    {
+      "id": "v8r1-controller-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_REMOTE_CONTROLLER_V8R1_V1_2026-08-27/IMPLEMENTATION_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 8439, "sha256": "4c16d6c34409f8395354796c48d4364319bbc52c6dbbb309600b3443bdd2f99c"}
+    },
+    {
+      "id": "v8r1-sealed-elf",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R1_BUILD_AUDIT_V1_2026-08-27/REMOTE_BUILD/m3-v8r1-test-elf",
+      "expect": {"mode": "0444", "size_bytes": 320613368, "sha256": "0af3cc6679396650245e924976d8a3bb432dfa6a1086b1c46bcfa7497307afea"}
+    },
+    {
+      "id": "v8-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {"mode": "0664", "size_bytes": 253080, "sha256": "28f87a76fc1996989e980cab51f0443bd95e656fcae3a2ff61f581db9c3a7ee2"}
+    },
+    {
+      "id": "v8-source-implementation",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_IMPLEMENTATION_V8_2026-08-27/IMPLEMENTATION_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 5477, "sha256": "cf4b38d81cc7f9ea9125855194635fafde9c76c9d022f7185635e8bb6c2f29e5"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "write-remote-producer", "kind": "local_script_edit"},
+      {"id": "write-independent-auditor", "kind": "local_script_edit"},
+      {"id": "write-local-controller", "kind": "local_script_edit"},
+      {"id": "run-static-fault-checks", "kind": "local_static_and_fault_injection_test"},
+      {"id": "publish-controller-receipt", "kind": "local_evidence_write"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "network_or_remote_write_during_controller_implementation",
+      "remote_namespace_or_marker_creation",
+      "cargo_or_rustc_execution",
+      "new_build_or_source_edit",
+      "scientific_test_or_test_elf_execution",
+      "loader_mediated_elf_execution",
+      "perf_or_pmu_execution",
+      "v8r1_namespace_or_evidence_mutation",
+      "production_bridge_cache_reload_or_runtime_edit",
+      "installed_package_receipt_or_runtime_authority_edit",
+      "daemon_ibus_install_restart_or_deployment",
+      "production_or_product_latency_claim"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "steps": [
+      {"id": "write-remote-producer", "from": "PREFLIGHT_READY", "to": "REMOTE_PRODUCER_WRITTEN", "mutates": true, "failure_state": "BLOCKED_CONTROLLER_SOURCE", "cleanup": "retain partial bytes and create no remote state", "preserves": ["v8r1-history", "v8-source", "runtime"], "test_id": "remote-producer-write-fault"},
+      {"id": "write-independent-auditor", "from": "REMOTE_PRODUCER_WRITTEN", "to": "AUDITOR_WRITTEN", "mutates": true, "failure_state": "BLOCKED_CONTROLLER_SOURCE", "cleanup": "retain partial bytes and create no remote state", "preserves": ["v8r1-history", "v8-source", "runtime"], "test_id": "auditor-write-fault"},
+      {"id": "write-local-controller", "from": "AUDITOR_WRITTEN", "to": "CONTROLLER_GRAPH_WRITTEN", "mutates": true, "failure_state": "BLOCKED_CONTROLLER_SOURCE", "cleanup": "retain partial bytes and create no remote state", "preserves": ["v8r1-history", "v8-source", "runtime"], "test_id": "controller-write-fault"},
+      {"id": "run-static-fault-checks", "from": "CONTROLLER_GRAPH_WRITTEN", "to": "STATIC_PASS", "mutates": false, "failure_state": "BLOCKED_CONTROLLER_STATIC", "cleanup": "retain diagnostics and publish no PASS", "preserves": ["v8r1-history", "v8-source", "runtime"], "test_id": "static-fault"},
+      {"id": "publish-controller-receipt", "from": "STATIC_PASS", "to": "M3_V8R2_CONTROLLERS_VERIFIED_UNRUN", "mutates": true, "failure_state": "BLOCKED_PROVENANCE", "cleanup": "remove incomplete receipt stage and retain controller bytes", "preserves": ["v8r1-history", "v8-source", "runtime"], "test_id": "receipt-publication-fault"}
+    ],
+    "terminal_states": ["M3_V8R2_CONTROLLERS_VERIFIED_UNRUN", "BLOCKED_CONTROLLER_SOURCE", "BLOCKED_CONTROLLER_STATIC", "BLOCKED_PROVENANCE"]
+  },
+  "preserved_artifacts": [
+    {"id": "v8r1-history", "path": "V8R1 controller build E2E terminal and journal evidence", "policy": "immutable", "cursor_policy": "whole_file", "rollback_policy": "never modify", "baseline_check_id": "v8r1-journal-manifest"},
+    {"id": "v8-source", "path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "policy": "immutable", "cursor_policy": "whole_file", "rollback_policy": "never modify", "baseline_check_id": "v8-source"},
+    {"id": "v8r1-elf", "path": "V8R1 sealed ELF", "policy": "copy bytes only", "cursor_policy": "whole_file", "rollback_policy": "never modify original", "baseline_check_id": "v8r1-sealed-elf"},
+    {"id": "runtime", "path": "installed Lay packages receipts daemon and IBus", "policy": "immutable", "cursor_policy": "stable projection", "rollback_policy": "never modify", "baseline_check_id": "v8-source-implementation"}
+  ],
+  "identity_contracts": [
+    {"id": "v8r1-build-to-v8r2-copy", "producer": "audited V8R1 ELF", "consumer": "V8R2 executable copy", "comparison": "SHA size Build ID and machine bytes exact; only mode becomes 0555", "test_id": "elf-copy-parity"},
+    {"id": "direct-command", "producer": "V8R2 executable copy", "consumer": "one scientific subject and its helpers", "comparison": "argv starts with sudo env taskset and exact executable; ld-linux Cargo rustc perf absent", "test_id": "direct-command-parity"},
+    {"id": "route-to-marker", "producer": "exact E2E route", "consumer": "one e2e.available marker", "comparison": "task transaction route and controller SHA exact with atomic consumption", "test_id": "marker-parity"},
+    {"id": "producer-to-auditor", "producer": "remote immutable observations", "consumer": "independent local auditor", "comparison": "auditor recomputes bytes marker state complete receipt and failure priority", "test_id": "auditor-parity"},
+    {"id": "v8r1-to-v8r2-separation", "producer": "terminal V8R1 namespace", "consumer": "fresh V8R2 namespace", "comparison": "paths task transaction and markers distinct; predecessor remains read-only", "test_id": "namespace-parity"}
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "one-route", "statement": "reachable route registry is exactly E2E", "test_id": "direct-command-parity"},
+    {"id": "no-build", "statement": "Cargo rustc build marker and source edit are unreachable", "test_id": "no-build-static"},
+    {"id": "exact-copy", "statement": "V8R2 executable copy has exact V8R1 ELF bytes and mode 0555", "test_id": "elf-copy-parity"},
+    {"id": "direct-exec", "statement": "scientific parent starts directly from the executable copy without ld-linux", "test_id": "direct-command-parity"},
+    {"id": "one-marker", "statement": "one e2e marker is created after bootstrap audit and consumed before the one subject", "test_id": "marker-parity"},
+    {"id": "complete-or-provenance", "statement": "an incomplete scientific receipt dispatches BLOCKED_PROVENANCE before all other classes", "test_id": "auditor-parity"},
+    {"id": "runtime-unchanged", "statement": "production runtime and V8R1 evidence remain unchanged", "test_id": "namespace-parity"}
+  ],
+  "tests": [
+    {"id": "remote-producer-write-fault", "kind": "fault_injection", "expected": "partial producer creates no remote state"},
+    {"id": "auditor-write-fault", "kind": "fault_injection", "expected": "partial auditor creates no remote state"},
+    {"id": "controller-write-fault", "kind": "fault_injection", "expected": "partial controller creates no remote state"},
+    {"id": "static-fault", "kind": "fault_injection", "expected": "static failure publishes no implementation PASS"},
+    {"id": "receipt-publication-fault", "kind": "fault_injection", "expected": "incomplete implementation receipt is not published"},
+    {"id": "elf-copy-parity", "kind": "parity", "expected": "source and executable copy SHA size Build ID exact and source remains mode 0444"},
+    {"id": "direct-command-parity", "kind": "parity", "expected": "only exact direct E2E command is reachable"},
+    {"id": "marker-parity", "kind": "parity", "expected": "one canonical marker is consumed atomically before subject"},
+    {"id": "auditor-parity", "kind": "parity", "expected": "independent terminal dispatch accepts only a complete V8 receipt"},
+    {"id": "namespace-parity", "kind": "parity", "expected": "V8R1 and V8R2 namespaces and state are distinct"},
+    {"id": "no-build-static", "kind": "static", "expected": "no reachable Cargo rustc perf PMU loader install daemon or production-edit command"}
+  ]
+}

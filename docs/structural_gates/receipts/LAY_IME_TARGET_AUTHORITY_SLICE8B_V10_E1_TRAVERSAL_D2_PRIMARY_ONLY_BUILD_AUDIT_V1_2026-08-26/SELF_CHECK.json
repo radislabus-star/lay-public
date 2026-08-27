@@ -1,0 +1,192 @@
+{
+  "admission": {
+    "build_manifest": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/SHA256SUMS",
+      "sha256": "aead466e48392f22db9394fc601724b7d8e90930f515c993390c37ab4702f28b",
+      "size_bytes": 65533
+    },
+    "build_receipt": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/D2_BUILD_RECEIPT.json",
+      "sha256": "a49a05bdf95ddbcc5cad78ef2376e861498a4311828d06abec83404f66b50953",
+      "size_bytes": 1667
+    },
+    "d1_decision": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/D1_DECISION.json",
+      "sha256": "80530f9f5787f846ce2cf222c1b60e3ae42887ce95a11ac153ec7271cce98baf",
+      "size_bytes": 5361257
+    },
+    "d2_source": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/assembled_d2_source.rs",
+      "sha256": "6cd9edece91ac2e0c0e6dda7658e104dcf8953f1c16b1acff6108ea44ada0181",
+      "size_bytes": 204722
+    },
+    "d2_workspace_source": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/source/src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "sha256": "6cd9edece91ac2e0c0e6dda7658e104dcf8953f1c16b1acff6108ea44ada0181",
+      "size_bytes": 204722
+    },
+    "local_build_receipt": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/LOCAL_BUILD_RECEIPT.json",
+      "sha256": "5bed316600b1e04b7973d78697f5133f22fc3264f7027ddeafba4ad3360df240",
+      "size_bytes": 2558
+    }
+  },
+  "auditor": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-build-audit.py",
+    "sha256": "b0fe23eb6ad13128bdbc10060db6632ed820221ac86eefa70b32f6073c2390d9",
+    "size_bytes": 32462
+  },
+  "bucket_map_created": false,
+  "command_graph": {
+    "bucket_map_generation": [],
+    "elf_execution": [],
+    "external_actions": [
+      "self-check",
+      "audit"
+    ],
+    "local_readers": [
+      [
+        "/usr/bin/readelf",
+        "-hW|-nW|-SW|-lW",
+        "<sealed-D2-ELF>"
+      ],
+      [
+        "/usr/bin/nm",
+        "-nS",
+        "-C",
+        "<sealed-D2-ELF>"
+      ],
+      [
+        "/usr/bin/addr2line",
+        "-a",
+        "-f",
+        "-i",
+        "-C",
+        "-e",
+        "<sealed-D2-ELF>",
+        "<hot-addresses>"
+      ]
+    ],
+    "marker_mutations": [],
+    "perf_routes": [],
+    "remote_readers": [
+      "readelf sealed D1",
+      "cargo -V",
+      "rustc -Vv",
+      "state projection"
+    ],
+    "remote_writes": []
+  },
+  "elf_executed": false,
+  "local_elf": {
+    "build_id": "eb951f1a7526a9f1cb365040c10989aa5d3fc50f",
+    "dwarf_sections_present": [
+      ".debug_abbrev",
+      ".debug_info",
+      ".debug_line",
+      ".debug_loc",
+      ".debug_ranges"
+    ],
+    "elf": {
+      "mode": "0555",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf",
+      "sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178",
+      "size_bytes": 317706232
+    },
+    "elf_type": "ET_DYN",
+    "executable_pt_load": {
+      "align": 4096,
+      "filesz": 15981232,
+      "flags": "RE",
+      "memsz": 15981232,
+      "offset": 4154048,
+      "paddr": 4158144,
+      "vaddr": 4158144
+    },
+    "executable_pt_load_end_exclusive": 20139376,
+    "hot_symbol": {
+      "end_exclusive": 7836590,
+      "inline_frames_resolved": true,
+      "name": "lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>",
+      "size_bytes": 4238,
+      "source_anchor": "src/nanda_wave/l2_field/v13_typed_peak.rs:3105",
+      "source_line_resolved": true,
+      "start": 7832352
+    },
+    "pie": true,
+    "pt_load": [
+      {
+        "align": 4096,
+        "filesz": 4154040,
+        "flags": "R",
+        "memsz": 4154040,
+        "offset": 0,
+        "paddr": 0,
+        "vaddr": 0
+      },
+      {
+        "align": 4096,
+        "filesz": 15981232,
+        "flags": "RE",
+        "memsz": 15981232,
+        "offset": 4154048,
+        "paddr": 4158144,
+        "vaddr": 4158144
+      },
+      {
+        "align": 4096,
+        "filesz": 565064,
+        "flags": "RW",
+        "memsz": 565904,
+        "offset": 20135280,
+        "paddr": 20143472,
+        "vaddr": 20143472
+      },
+      {
+        "align": 4096,
+        "filesz": 6800,
+        "flags": "RW",
+        "memsz": 7204,
+        "offset": 20700344,
+        "paddr": 20712632,
+        "vaddr": 20712632
+      }
+    ],
+    "remaining_executable_slack_bytes": 313,
+    "strtab_present": true,
+    "symtab_present": true,
+    "text": {
+      "address": 4158144,
+      "end_address_exclusive": 20139063,
+      "offset": 4154048,
+      "sha256": "f57eba60bc4b1cadbeb2dfc524af59a7ab011a2e64afb0e1a0fe610755129d94",
+      "size_bytes": 15980919
+    },
+    "text_inside_executable_pt_load": true
+  },
+  "local_reader_outputs_sha256": {
+    "D2_ELF_HEADER.txt": "f8c1878f760c381a948901c3ff81e2679231db31fc6877189b9cdc2e7c4b00d4",
+    "D2_ELF_NOTES.txt": "315279798fefe784e26963366ebdfddf798d5b2998561d28f20aa620cd4b1048",
+    "D2_ELF_PROGRAM_HEADERS.txt": "40d8654f1f438d8048256e4bc52558afb3f029a05da51287275c08ef53ad31f0",
+    "D2_ELF_SECTIONS.txt": "1951fde3c503507e3f87dd2bfa60170857162b7728a7891a3262e5db622e42b5",
+    "D2_HOT_ADDR2LINE.txt": "60c8003ad1d8107d873eb137647026cab0c8904faa31148a9170161e9623fb7f",
+    "D2_HOT_SYMBOL.txt": "9e52f70c8a9d4ab99b7d85e84b2719b98003a3377d255c36b22c071077b60d12"
+  },
+  "marker_mutations": 0,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_projection_sha256": "4727aa4fc8be59be05905fe79e7fd14676d0c857f36067e7ad0452140e3e1853",
+  "remote_writes": 0,
+  "schema": "lay.v10.e1-traversal-d2-primary-only-build-auditor-self-check.v1",
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+  "verdict": "D2_BUILD_AUDITOR_VERIFIED_UNRUN"
+}

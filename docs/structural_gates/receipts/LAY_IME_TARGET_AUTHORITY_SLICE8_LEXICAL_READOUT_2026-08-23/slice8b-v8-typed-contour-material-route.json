@@ -1,0 +1,320 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_TYPED_CONTOUR_MATERIAL_V8_ROUTE_2026-08-24.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 13,
+  "edge_count": 16,
+  "routes": [
+    {
+      "id": "seeded-execution",
+      "event": "seeded_token",
+      "kind": "execution",
+      "entry": "canonical_token",
+      "via": [],
+      "terminal": "typed_material_owner",
+      "path_count": 1,
+      "paths": [
+        [
+          "canonical_token",
+          "field_orchestrator",
+          "typed_material_owner"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "canonical_token"
+        ],
+        "orchestrator": [
+          "field_orchestrator"
+        ],
+        "producer": [
+          "typed_material_owner"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "canonical_token",
+          "to": "field_orchestrator",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "canonical_token",
+              "field_orchestrator"
+            ]
+          ]
+        },
+        {
+          "from": "field_orchestrator",
+          "to": "v13_compound_material",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 0,
+          "max": 0,
+          "paths": []
+        },
+        {
+          "from": "field_orchestrator",
+          "to": "typed_material_owner",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "field_orchestrator",
+              "typed_material_owner"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unseeded-execution",
+      "event": "unseeded_token",
+      "kind": "execution",
+      "entry": "canonical_token",
+      "via": [],
+      "terminal": "typed_material_owner",
+      "path_count": 1,
+      "paths": [
+        [
+          "canonical_token",
+          "field_orchestrator",
+          "typed_material_owner"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "canonical_token"
+        ],
+        "orchestrator": [
+          "field_orchestrator"
+        ],
+        "producer": [
+          "typed_material_owner"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "canonical_token",
+          "to": "field_orchestrator",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "canonical_token",
+              "field_orchestrator"
+            ]
+          ]
+        },
+        {
+          "from": "field_orchestrator",
+          "to": "v13_compound_material",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "field_orchestrator",
+              "v13_compound_material"
+            ]
+          ]
+        },
+        {
+          "from": "field_orchestrator",
+          "to": "typed_material_owner",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "field_orchestrator",
+              "typed_material_owner"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seeded-authority",
+      "event": "seeded_token",
+      "kind": "authority",
+      "entry": "typed_material_owner",
+      "via": [],
+      "terminal": "text_output",
+      "path_count": 1,
+      "paths": [
+        [
+          "typed_material_owner",
+          "productive_v90",
+          "common_l3",
+          "decision_core",
+          "verifier",
+          "text_output"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "common_l3"
+        ],
+        "candidate_rank_owner": [
+          "decision_core"
+        ],
+        "producer": [
+          "productive_v90",
+          "typed_material_owner"
+        ],
+        "mutation_owner": [
+          "text_output"
+        ],
+        "authorization_owner": [
+          "verifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "unseeded-authority",
+      "event": "unseeded_token",
+      "kind": "authority",
+      "entry": "typed_material_owner",
+      "via": [],
+      "terminal": "text_output",
+      "path_count": 1,
+      "paths": [
+        [
+          "typed_material_owner",
+          "productive_v90",
+          "common_l3",
+          "decision_core",
+          "verifier",
+          "text_output"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "common_l3"
+        ],
+        "candidate_rank_owner": [
+          "decision_core"
+        ],
+        "producer": [
+          "productive_v90",
+          "typed_material_owner"
+        ],
+        "mutation_owner": [
+          "text_output"
+        ],
+        "authorization_owner": [
+          "verifier"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "proof-observation",
+      "event": "proof_observation",
+      "kind": "proof",
+      "entry": "cohort_observer",
+      "via": [],
+      "terminal": "fixed_proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "cohort_observer",
+          "fixed_proof"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "cohort_observer"
+        ],
+        "proof_owner": [
+          "fixed_proof"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "seeded_token": {
+      "candidate_rank_owner": [
+        "decision_core"
+      ],
+      "render_owner": [],
+      "evidence_owner": [
+        "common_l3"
+      ],
+      "mutation_owner": [
+        "text_output"
+      ],
+      "authorization_owner": [
+        "verifier"
+      ],
+      "display_rank_owner": []
+    },
+    "unseeded_token": {
+      "candidate_rank_owner": [
+        "decision_core"
+      ],
+      "render_owner": [],
+      "evidence_owner": [
+        "common_l3"
+      ],
+      "mutation_owner": [
+        "text_output"
+      ],
+      "authorization_owner": [
+        "verifier"
+      ],
+      "display_rank_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

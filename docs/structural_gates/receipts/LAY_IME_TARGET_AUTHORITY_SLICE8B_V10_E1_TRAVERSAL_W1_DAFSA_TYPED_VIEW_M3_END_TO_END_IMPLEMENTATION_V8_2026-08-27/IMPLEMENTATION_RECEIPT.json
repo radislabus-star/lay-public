@@ -1,0 +1,148 @@
+{
+  "schema": "lay.m3-end-to-end-v8-implementation.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_IMPLEMENTATION_V8_2026-08-27",
+  "generated_at_utc": "2026-08-27T04:16:13Z",
+  "verdict": "M3_END_TO_END_V8_IMPLEMENTED_UNRUN",
+  "preflight": {
+    "effective_version": "V2",
+    "verdict": "READY_TO_IMPLEMENT",
+    "reported_manifest_sha256": "cb282f9c579b145107a1ed38a68ca3ce09d909cc3aeb1847fcfbc3bd7e2e82e1",
+    "manifest_file_sha256": "5c092ab60903be64d9a89f9d76f4e325539ea25e8fcb7ae04bd967d825f49361",
+    "manifest_mode": "0444",
+    "receipt_file_sha256": "2b8eda4c0facaf1bde60adb4a99c7ed262d168dffa1ab326e01d3facc23db81b",
+    "receipt_mode": "0444"
+  },
+  "source": {
+    "path": "src/nanda_wave/l2_field/v13_typed_peak.rs",
+    "before_size_bytes": 188626,
+    "before_sha256": "385b56d819b057141fa6966dcdd695eaac215aea8867630e2468c7263f692072",
+    "after_size_bytes": 253080,
+    "after_sha256": "28f87a76fc1996989e980cab51f0443bd95e656fcae3a2ff61f581db9c3a7ee2",
+    "mode": "0664",
+    "only_admitted_source_edited": true,
+    "production_source_edited": false,
+    "typed_exact_source_edited": false
+  },
+  "protected_identities": [
+    {
+      "path": "src/nanda_wave/l2_field/mod.rs",
+      "sha256": "c76c28debdac8e43d360a5a82811ea86e3e6f03b98e4f81cb6678e07953e0953"
+    },
+    {
+      "path": "src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad"
+    },
+    {
+      "path": "src/nanda_wave/l2_field/cache.rs",
+      "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07"
+    },
+    {
+      "path": "src/nanda_wave/l2_field/v13_typed_peak/typed_exact.rs",
+      "sha256": "325bdd386b13de77bd030ef1af0fecb12be8bdd2bdd3c841d10257647a4ceaf4"
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b"
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"
+    },
+    {
+      "path": "scripts/cargo-guard.sh",
+      "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"
+    }
+  ],
+  "implemented_contract": {
+    "test_only_module": "nanda_wave::l2_field::v13_typed_peak::tests::m3_v8",
+    "generation_owner": "RwLock<Arc<PublishedGeneration<ExactGeneration>>>",
+    "one_typed_materialization_per_published_generation": true,
+    "per_request_typed_materialization": false,
+    "stale_commit_fails_closed": true,
+    "failed_next_generation_preserves_current": true,
+    "validated_mmap_sidecar_retained_by_generation": true,
+    "physical_test_ignored": true,
+    "pss_helper_ignored": true,
+    "physical_test_executed": false,
+    "pss_helper_executed": false
+  },
+  "test_registry": [
+    {
+      "name": "nanda_wave::l2_field::v13_typed_peak::tests::m3_v8::generation_owner_state_machine_is_fail_closed",
+      "kind": "non_scientific_unit",
+      "executed": true,
+      "passed": true
+    },
+    {
+      "name": "nanda_wave::l2_field::v13_typed_peak::tests::m3_v8::m3_end_to_end_physical_proof",
+      "kind": "future_one_shot_scientific_action",
+      "executed": false,
+      "ignored": true
+    },
+    {
+      "name": "nanda_wave::l2_field::v13_typed_peak::tests::m3_v8::m3_end_to_end_pss_helper",
+      "kind": "future_physical_action_helper",
+      "executed": false,
+      "ignored": true
+    }
+  ],
+  "local_verification": {
+    "rustfmt_check": "PASS",
+    "git_diff_check": "PASS",
+    "cargo_guard_status_before_bytes": 5364068352,
+    "cargo_guard_status_after_bytes": 5364203520,
+    "cargo_guard_budget_bytes": 12884901888,
+    "cargo_invocations": 3,
+    "rustc_compilations": 2,
+    "compile_only_invocations": 2,
+    "non_scientific_unit_test_invocations": 1,
+    "unit_tests_passed": 1,
+    "unit_tests_failed": 0,
+    "measured_tests_executed": 0,
+    "final_compile_exit": 0,
+    "final_compile_project_warnings": 123,
+    "new_v8_compiler_warnings": 0,
+    "first_compile_exit": 0,
+    "first_compile_log_retained": false,
+    "final_compile_log": {
+      "path": "CARGO_NO_RUN.log",
+      "size_bytes": 39426,
+      "sha256": "d01d5038c0b081ac10affc320b62bc015c79c014a04a783c56d5b7cf6d8d063e"
+    },
+    "unit_test_log": {
+      "path": "GENERATION_OWNER_UNIT.log",
+      "size_bytes": 39579,
+      "sha256": "f267ab41294f89e4fb9fdfcc7f65f0cb415ba3b523b0c368056126733d0f5b13"
+    },
+    "local_compile_only_test_elf": {
+      "path": "target/release/deps/lay-8b3af2179d6f9249",
+      "size_bytes": 20889248,
+      "sha256": "9a1e8960dd8572d7613a50e29720df6b80792827cfdc73f1fdbd0d7e533e0f69",
+      "scientific_authority": false,
+      "remote_execution_admitted": false
+    }
+  },
+  "side_effect_ledger": {
+    "local_source_edits": 1,
+    "local_evidence_trees_created": 1,
+    "remote_connections": 0,
+    "remote_writes": 0,
+    "remote_builds": 0,
+    "scientific_subjects": 0,
+    "perf_record_invocations": 0,
+    "perf_stat_invocations": 0,
+    "pmu_events": 0,
+    "installed_packages_changed": 0,
+    "runtime_processes_restarted": 0,
+    "runtime_authority_changed": false
+  },
+  "claim_boundary": {
+    "implementation_compiles": true,
+    "generation_owner_unit_contract_passes": true,
+    "end_to_end_latency_proven": false,
+    "rss_proven": false,
+    "target_host_environment_proven": false,
+    "production_authority_admitted": false,
+    "next_action_admitted": "independent remote execution preflight only"
+  }
+}

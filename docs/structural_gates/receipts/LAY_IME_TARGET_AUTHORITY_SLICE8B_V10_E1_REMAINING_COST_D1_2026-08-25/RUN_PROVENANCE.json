@@ -1,0 +1,28 @@
+{
+  "adaptive_rerun": false,
+  "clean_c1_marker_consumed": false,
+  "controller_sha256": "09b217d43094e532c07e1d7710a31b8e50fbce36d51df470833d77e94c50116a",
+  "foreign_process_control": false,
+  "fragment_sha256": "bbd8b8d318810eec721812f21efbeb5f231dacba774cb5ade854e2201c6c7665",
+  "full_b_executed": false,
+  "host_tuning": false,
+  "installed_lay_changed": false,
+  "markers_consumed": [
+    "C-FIXED.consumed-before-exec",
+    "C-REVERSED.consumed-before-exec",
+    "C-SINGLE.consumed-before-exec",
+    "P-FIXED-G0.consumed-before-exec",
+    "P-FIXED-G2.consumed-before-exec",
+    "P-FIXED-G3.consumed-before-exec",
+    "P-REVERSED-G0.consumed-before-exec",
+    "P-REVERSED-G2.consumed-before-exec",
+    "P-REVERSED-G3.consumed-before-exec",
+    "build.consumed-before-exec",
+    "parity.consumed-before-exec"
+  ],
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.e1-remaining-cost-d1-run-provenance.v1",
+  "task_id": "slice8b-v10-e1-remaining-cost-d1-20260825",
+  "third_loaded_e0_v10_run": false,
+  "v12_admitted": false
+}

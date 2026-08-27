@@ -1,0 +1,20 @@
+{
+  "auditor": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d5-bootstrap-audit.py",
+    "sha256": "2779a75160d1b8c2e0a0912582ad598335ff096aa71b781a877fa1fe53968c2a",
+    "size_bytes": 17936
+  },
+  "local_controller_sha256": "6e5ea4a68d4541043ad95eda12b94e0e9efa0d21e3d4ba2c62a80565ddc626d0",
+  "markers_created": 0,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "remote_controller_sha256": "767e2cfd907527f92bcea1db54b69a9763f29b04a8f76701940abc2336cd2714",
+  "remote_writes": 0,
+  "schema": "lay.v10.e1-traversal-d5-bootstrap-audit-self-check.v1",
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826",
+  "terminal_auditor_skeleton_sha256": "99a6ac3bd7b6e490db4256cbea968e3d7fce052bec305b67af1be3a08a50f1b0",
+  "transaction_id": "3ee46e2c915677e1b2d3cd6bcc9709e0232252dbc120745b097d736537779036",
+  "verdict": "D5_BOOTSTRAP_AUDITOR_VERIFIED_UNRUN"
+}

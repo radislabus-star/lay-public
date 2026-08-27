@@ -1,0 +1,167 @@
+{
+  "command_graph": {
+    "cargo_route": false,
+    "external_command": "/usr/bin/ssh only",
+    "marker_write_route": false,
+    "perf_route": false,
+    "pmu_route": false,
+    "remote_write_route": false,
+    "rustc_route": false,
+    "shell_true": false,
+    "subject_route": false,
+    "subprocess_run_lines": [
+      368
+    ]
+  },
+  "frozen_contract": {
+    "dispatch": [
+      {
+        "cause": "source ELF receipt route or marker drift",
+        "terminal": "BLOCKED_PROVENANCE"
+      },
+      {
+        "cause": "thermal throttle-counter drift",
+        "terminal": "BLOCKED_THERMAL"
+      },
+      {
+        "cause": "exact task-clock event cannot produce valid evidence",
+        "terminal": "BLOCKED_CAPABILITY"
+      },
+      {
+        "cause": "Build-ID IP normalization sealed range or machine-byte identity failure",
+        "terminal": "BLOCKED_BUCKET_MAP"
+      },
+      {
+        "cause": "sampled traversal CPU per edge versus paired U delta above 5 percent",
+        "terminal": "BLOCKED_PERTURBATION"
+      },
+      {
+        "cause": "lost throttle unthrottle adaptive period fewer than 50000 traversal samples or more than 5 percent UNATTRIBUTED",
+        "terminal": "BLOCKED_SAMPLE_COVERAGE"
+      }
+    ],
+    "estimator": {
+      "cpu_per_edge_denominator": "existing primitive CPU samples from only the twenty measured component rounds",
+      "reason": "byte-identical component route has no external measured-only enable handshake",
+      "sample_stream": "one frozen 382-query warmup traversal round plus twenty measured rounds",
+      "time_filter_or_warmup_subtraction": false
+    },
+    "hard_gates": {
+      "adaptive_period": false,
+      "dso_build_id": "exact D2",
+      "ip_normalization": "unique",
+      "lost": 0,
+      "machine_byte_mismatch": 0,
+      "sampled_traversal_cpu_per_edge_vs_paired_u_delta_percent_max": 5.0,
+      "throttle_unthrottle": "0/0",
+      "traversal_samples_min": 50000,
+      "unattributed_traversal_percent_max": 5.0
+    },
+    "lifecycle": "whole-process perf command wrapping; perf starts before the D2 subject and exits after the child; --pid attach and controller SIGINT are forbidden",
+    "sample_cpu_subset_gate": false
+  },
+  "historical_manifest_entries": 35,
+  "identities": {
+    "bucket_map": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json",
+      "sha256": "2b93aedf11101a8bc5fc7ed4ffaa056b50476d96cdd2eabf9d185f59ee60f846",
+      "size_bytes": 390324
+    },
+    "bucket_map_audit": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_AUDIT_V1_2026-08-26/D2_BUCKET_MAP_AUDIT_RECEIPT.json",
+      "sha256": "8d2e52574adca52d5a090067cdf071afba922363ccee8fc9eb4a4158cb92cba7",
+      "size_bytes": 4363
+    },
+    "controller": {
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-t-single-terminal-audit.py",
+      "sha256": "dd8827905de66c344bf281fdef44d545cf57a002e95fa30d4210a0930cb18cf4",
+      "size_bytes": 33817
+    },
+    "correction": {
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_T_SINGLE_ESTIMATOR_SCOPE_CORRECTION_V1_2026-08-26.md",
+      "sha256": "88c12093bb3cf76395b3f5c37d48991ebb90a3c34a6581d5801f3cd4fb2001f4",
+      "size_bytes": 4497
+    },
+    "fragment": {
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc",
+      "sha256": "bbd8b8d318810eec721812f21efbeb5f231dacba774cb5ade854e2201c6c7665",
+      "size_bytes": 113204
+    },
+    "historical_local_receipt": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_V1_2026-08-26/LOCAL_T_ROUTE_RECEIPT.json",
+      "sha256": "8e20921889924dc7967c770bac7827b4e4553a68aecd9c08617a17db9538b10c",
+      "size_bytes": 1671
+    },
+    "historical_remote_receipt": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/D2_T_ROUTE_RECEIPT.json",
+      "sha256": "afaeb7d3caffb1967dd76021e42b94664803cef5d0ed72ec574fb54526a8fa0d",
+      "size_bytes": 59774
+    },
+    "observation": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/OBSERVATION.json",
+      "sha256": "ff492ade004efff36c0f1200f5a7a02cc34445f08b6d3e9958fcd5e096f7b66a",
+      "size_bytes": 54644
+    },
+    "preflight": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_IMPLEMENTATION_V4_2026-08-25.json",
+      "sha256": "e9d6328b9f610ede73ae2e8d3c819b9728ac0fc5e4c263e9fe25a61978f80f5a",
+      "size_bytes": 98316
+    },
+    "raw_records": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/raw-records.stdout",
+      "sha256": "6536eb150de8d27b91b088f2de50b9bd41528e8bad5987ad71be381ce370669f",
+      "size_bytes": 148065081
+    },
+    "remote_controller": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/inputs/remote-controller.py",
+      "sha256": "428452cd2937deb644299d8d1ad0280d649eeaf7da6b3b05452a07f26b11146b",
+      "size_bytes": 53227
+    },
+    "samples": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/samples.stdout",
+      "sha256": "883763966d1d0b8e6ad142a4a22214c33db23764b14e96099b1cf2d11b9d78e3",
+      "size_bytes": 26445088
+    },
+    "subject_receipt": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/subject/SUBJECT_RECEIPT.json",
+      "sha256": "b3e4c3843ccc6f8ef298866cbbbcb82469004b192ad5b8257d0a47975cf65bae",
+      "size_bytes": 943
+    }
+  },
+  "remote_manifest_entries": 25,
+  "schema": "lay.v10.e1-traversal-d2-t-single-terminal-audit-self-check.v1",
+  "side_effects": {
+    "cargo": 0,
+    "d2_subject": 0,
+    "marker_mutations": 0,
+    "perf_record": 0,
+    "perf_stat": 0,
+    "pmu": 0,
+    "remote_writes": 0,
+    "rustc": 0
+  },
+  "source_order": {
+    "dense_alphabet_validation_calls_shared_edge_decoder": true,
+    "load_calls_dense_alphabet_validation": true,
+    "order": [
+      "d1_load_inputs",
+      "d1_pin_current_thread(0)",
+      "warmup",
+      "twenty measured rounds"
+    ]
+  },
+  "verdict": "PASS_UNRUN"
+}

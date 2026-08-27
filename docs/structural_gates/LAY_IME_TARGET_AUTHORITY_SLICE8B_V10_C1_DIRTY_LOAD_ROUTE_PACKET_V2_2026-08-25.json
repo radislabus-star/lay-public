@@ -1,0 +1,201 @@
+{
+  "task_id": "lay-v10-c1-dirty-load-route-v2",
+  "domain": "code",
+  "query": "Separate a loaded direct-latency observation from formal clean C1 without consuming clean markers or changing the sealed subject.",
+  "triads": [
+    {
+      "id": "s1",
+      "subject": "sealed C1 subject owner",
+      "relation": "supplies",
+      "object": "exact existing ELF and completed parity prerequisite",
+      "evidence": "C1 implementation and parity receipts",
+      "confidence": 1.0,
+      "subject_role": "provenance owner",
+      "object_role": "execution input",
+      "route": "provenance",
+      "group": "dirty-direct-provenance-v2"
+    },
+    {
+      "id": "s2",
+      "subject": "dirty route state owner",
+      "relation": "is_disjoint_from",
+      "object": "clean C1 state markers and final path",
+      "evidence": "separate path and exact before-after marker snapshot",
+      "confidence": 1.0,
+      "subject_role": "state owner",
+      "object_role": "protected clean state",
+      "route": "state",
+      "group": "dirty-direct-state-v2"
+    },
+    {
+      "id": "s3",
+      "subject": "dirty matrix owner",
+      "relation": "executes",
+      "object": "fixed S1 T1 T2 S2 S3 T3 T4 S4 S5 T5 order once",
+      "evidence": "dirty-load contract fixed workload",
+      "confidence": 1.0,
+      "subject_role": "execution owner",
+      "object_role": "sample producer",
+      "route": "execution",
+      "group": "dirty-direct-execution-v2"
+    },
+    {
+      "id": "s4",
+      "subject": "production timing owner",
+      "relation": "supplies",
+      "object": "search_elapsed_us and total_elapsed_us",
+      "evidence": "sealed C1 test-only observer calls exact production search",
+      "confidence": 1.0,
+      "subject_role": "observation owner",
+      "object_role": "latency evidence",
+      "route": "observation",
+      "group": "dirty-direct-observation-v2"
+    },
+    {
+      "id": "s5",
+      "subject": "environment observer",
+      "relation": "records_without_controlling",
+      "object": "Nando btop PSI process CPU thermal and policy state",
+      "evidence": "loaded environment contract",
+      "confidence": 1.0,
+      "subject_role": "observation owner",
+      "object_role": "background condition",
+      "route": "environment",
+      "group": "dirty-direct-environment-v2"
+    },
+    {
+      "id": "s6",
+      "subject": "threshold comparison owner",
+      "relation": "computes",
+      "object": "frozen pooled run and fairness comparisons",
+      "evidence": "preregistered C1 nearest-rank thresholds",
+      "confidence": 1.0,
+      "subject_role": "decision owner",
+      "object_role": "diagnostic comparison",
+      "route": "decision",
+      "group": "dirty-direct-decision-v2"
+    },
+    {
+      "id": "s7",
+      "subject": "dirty observation verdict",
+      "relation": "does_not_promote",
+      "object": "C1 PASS C1 FAIL formal B runtime integration or V12",
+      "evidence": "dirty-load claim boundary",
+      "confidence": 1.0,
+      "subject_role": "scoped evidence",
+      "object_role": "forbidden authority",
+      "route": "authority",
+      "group": "dirty-direct-authority-v2"
+    },
+    {
+      "id": "s8",
+      "subject": "publication owner",
+      "relation": "seals",
+      "object": "separate immutable remote result and local index",
+      "evidence": "staged manifest then final rename contract",
+      "confidence": 1.0,
+      "subject_role": "evidence owner",
+      "object_role": "immutable receipt",
+      "route": "publication",
+      "group": "dirty-direct-publication-v2"
+    }
+  ],
+  "candidate_triads": [
+    {
+      "id": "c1",
+      "subject": "sealed C1 subject owner",
+      "relation": "supplies",
+      "object": "exact existing ELF and completed parity prerequisite",
+      "evidence": "controller must verify exact ELF and parity receipt before execution",
+      "confidence": 1.0,
+      "subject_role": "provenance owner",
+      "object_role": "execution input",
+      "route": "provenance",
+      "group": "dirty-direct-provenance-v2"
+    },
+    {
+      "id": "c2",
+      "subject": "dirty route state owner",
+      "relation": "is_disjoint_from",
+      "object": "clean C1 state markers and final path",
+      "evidence": "new dirty paths and exact marker assertions before and after",
+      "confidence": 1.0,
+      "subject_role": "state owner",
+      "object_role": "protected clean state",
+      "route": "state",
+      "group": "dirty-direct-state-v2"
+    },
+    {
+      "id": "c3",
+      "subject": "dirty matrix owner",
+      "relation": "executes",
+      "object": "fixed S1 T1 T2 S2 S3 T3 T4 S4 S5 T5 order once",
+      "evidence": "one create-new dirty marker per fixed route",
+      "confidence": 1.0,
+      "subject_role": "execution owner",
+      "object_role": "sample producer",
+      "route": "execution",
+      "group": "dirty-direct-execution-v2"
+    },
+    {
+      "id": "c4",
+      "subject": "production timing owner",
+      "relation": "supplies",
+      "object": "search_elapsed_us and total_elapsed_us",
+      "evidence": "primitive C1 sample bytes are parsed without external timing substitution",
+      "confidence": 1.0,
+      "subject_role": "observation owner",
+      "object_role": "latency evidence",
+      "route": "observation",
+      "group": "dirty-direct-observation-v2"
+    },
+    {
+      "id": "c5",
+      "subject": "environment observer",
+      "relation": "records_without_controlling",
+      "object": "Nando btop PSI process CPU thermal and policy state",
+      "evidence": "no quiet admission and static vetoes on control commands",
+      "confidence": 1.0,
+      "subject_role": "observation owner",
+      "object_role": "background condition",
+      "route": "environment",
+      "group": "dirty-direct-environment-v2"
+    },
+    {
+      "id": "c6",
+      "subject": "threshold comparison owner",
+      "relation": "computes",
+      "object": "frozen pooled run and fairness comparisons",
+      "evidence": "same nearest-rank parser and fixed sample denominators",
+      "confidence": 1.0,
+      "subject_role": "decision owner",
+      "object_role": "diagnostic comparison",
+      "route": "decision",
+      "group": "dirty-direct-decision-v2"
+    },
+    {
+      "id": "c7",
+      "subject": "dirty observation verdict",
+      "relation": "does_not_promote",
+      "object": "C1 PASS C1 FAIL formal B runtime integration or V12",
+      "evidence": "receipt uses only DIRTY_LOAD_OBSERVATION and thresholds_would_pass",
+      "confidence": 1.0,
+      "subject_role": "scoped evidence",
+      "object_role": "forbidden authority",
+      "route": "authority",
+      "group": "dirty-direct-authority-v2"
+    },
+    {
+      "id": "c8",
+      "subject": "publication owner",
+      "relation": "seals",
+      "object": "separate immutable remote result and local index",
+      "evidence": "write manifest seal stage and final rename with no post-rename mutation",
+      "confidence": 1.0,
+      "subject_role": "evidence owner",
+      "object_role": "immutable receipt",
+      "route": "publication",
+      "group": "dirty-direct-publication-v2"
+    }
+  ]
+}

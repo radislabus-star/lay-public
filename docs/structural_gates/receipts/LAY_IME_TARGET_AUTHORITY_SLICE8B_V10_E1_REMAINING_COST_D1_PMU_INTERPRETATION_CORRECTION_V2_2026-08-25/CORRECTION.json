@@ -1,0 +1,44 @@
+{
+  "schema": "lay.v10.e1-remaining-cost-d1-pmu-interpretation-correction.v2",
+  "task_id": "slice8b-v10-e1-remaining-cost-d1-pmu-interpretation-correction-v2-20260825",
+  "verdict": "D1_PMU_INTERPRETATION_PASS_FROM_SEALED_EVIDENCE",
+  "supersedes": {
+    "directory": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_PMU_INTERPRETATION_CORRECTION_V1_2026-08-25",
+    "correction_sha256": "3e36d48f7593d1ae5aa9ce18034e259c24a7361412f6c4efe588c617ecfa3004",
+    "manifest_sha256": "87be131a1281944dcf6207453dba0e6b7a7475b4904e300fff48306a2eb005b4",
+    "reason": "V1 copied one P-FIXED-G3 subject SHA-256 with one omitted hexadecimal character"
+  },
+  "field_correction": {
+    "json_pointer": "/routes/P-FIXED-G3/subject_sha256",
+    "v1_incorrect": "68cb3c642c255fcf6a2e2b59515ab76db8c6be5a4e664df58a8050f8798a9b9",
+    "v2_correct": "68cb3c642c255fcf6a2e2b59515ab76db8c6cbe5a4e664df58a8050f8798a9b9",
+    "authoritative_source": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/P-FIXED-G3/PMU_WRAPPER.json"
+  },
+  "effective_document": {
+    "base": "correction-v1 CORRECTION.json",
+    "overlay": "replace only /routes/P-FIXED-G3/subject_sha256 with v2_correct",
+    "all_other_v1_fields_unchanged": true
+  },
+  "verification": {
+    "sealed_routes_checked": 6,
+    "counter_values_recomputed": 18,
+    "counter_values_exactly_matched": 18,
+    "raw_perf_sha256_matched": 6,
+    "subject_sha256_matched_after_overlay": 6,
+    "original_d1_manifest_pass": true,
+    "v1_manifest_pass": true,
+    "new_subject_execution": false,
+    "new_perf_stat_or_record": false,
+    "new_pmu_event": false,
+    "new_cargo_or_rustc": false
+  },
+  "claim_boundary": {
+    "diagnostic_only": true,
+    "formal_b_pass": false,
+    "v12_admitted": false,
+    "production_integration_admitted": false,
+    "deployment_authority": false,
+    "runtime_authority_changed": false,
+    "d1_rerun_permitted": false
+  }
+}

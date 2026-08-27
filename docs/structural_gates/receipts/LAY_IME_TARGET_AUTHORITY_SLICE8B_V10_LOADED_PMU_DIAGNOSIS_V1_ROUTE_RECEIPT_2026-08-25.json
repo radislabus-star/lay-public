@@ -1,0 +1,979 @@
+{
+  "verdict": "PASS",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-loaded-pmu-diagnosis-v1",
+  "domain": "code",
+  "complexity_score": 51,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.1364,
+      "c2": 0.1364,
+      "c3": 0.1364,
+      "c4": 0.1364,
+      "c5": 0.1364,
+      "c6": 0.1364,
+      "c7": 0.1364,
+      "c8": 0.1364
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 16,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.3392,
+      "c2": 0.4167,
+      "c3": 0.3299,
+      "c4": 0.3713,
+      "c5": 0.4073,
+      "c6": 0.3566,
+      "c7": 0.3406,
+      "c8": 0.3633
+    },
+    "source_self_score": 0.3656,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "loaded-pmu-admission-v1": "loaded-pmu-admission-v1",
+      "loaded-pmu-boundary-v1": "loaded-pmu-boundary-v1",
+      "loaded-pmu-capability-v1": "loaded-pmu-capability-v1",
+      "loaded-pmu-environment-v1": "loaded-pmu-environment-v1",
+      "loaded-pmu-measurement-v1": "loaded-pmu-measurement-v1",
+      "loaded-pmu-parity-v1": "loaded-pmu-parity-v1",
+      "loaded-pmu-publication-v1": "loaded-pmu-publication-v1",
+      "loaded-pmu-sequence-v1": "loaded-pmu-sequence-v1"
+    },
+    "scores": {
+      "loaded-pmu-admission-v1": 1.0,
+      "loaded-pmu-boundary-v1": 1.0,
+      "loaded-pmu-capability-v1": 1.0,
+      "loaded-pmu-environment-v1": 1.0,
+      "loaded-pmu-measurement-v1": 1.0,
+      "loaded-pmu-parity-v1": 1.0,
+      "loaded-pmu-publication-v1": 1.0,
+      "loaded-pmu-sequence-v1": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "loaded-pmu-admission-v1": 1,
+      "loaded-pmu-boundary-v1": 1,
+      "loaded-pmu-capability-v1": 1,
+      "loaded-pmu-environment-v1": 1,
+      "loaded-pmu-measurement-v1": 1,
+      "loaded-pmu-parity-v1": 1,
+      "loaded-pmu-publication-v1": 1,
+      "loaded-pmu-sequence-v1": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.3656,
+      "norm": 93.5949,
+      "triads": 8
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "loaded-pmu-admission-v1": "loaded-pmu-admission-v1",
+      "loaded-pmu-boundary-v1": "loaded-pmu-boundary-v1",
+      "loaded-pmu-capability-v1": "loaded-pmu-capability-v1",
+      "loaded-pmu-environment-v1": "loaded-pmu-environment-v1",
+      "loaded-pmu-measurement-v1": "loaded-pmu-measurement-v1",
+      "loaded-pmu-parity-v1": "loaded-pmu-parity-v1",
+      "loaded-pmu-publication-v1": "loaded-pmu-publication-v1",
+      "loaded-pmu-sequence-v1": "loaded-pmu-sequence-v1"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "loaded-pmu-admission-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-boundary-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-capability-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-environment-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-measurement-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-parity-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-publication-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-sequence-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "loaded-pmu-admission-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-boundary-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-capability-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-environment-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-measurement-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-parity-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-publication-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "loaded-pmu-sequence-v1": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "loaded-pmu-admission-v1": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "loaded-pmu-admission-v1",
+        "exact_source_groups": [
+          "loaded-pmu-admission-v1"
+        ]
+      },
+      "loaded-pmu-boundary-v1": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "loaded-pmu-boundary-v1",
+        "exact_source_groups": [
+          "loaded-pmu-boundary-v1"
+        ]
+      },
+      "loaded-pmu-capability-v1": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "loaded-pmu-capability-v1",
+        "exact_source_groups": [
+          "loaded-pmu-capability-v1"
+        ]
+      },
+      "loaded-pmu-environment-v1": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "loaded-pmu-environment-v1",
+        "exact_source_groups": [
+          "loaded-pmu-environment-v1"
+        ]
+      },
+      "loaded-pmu-measurement-v1": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "loaded-pmu-measurement-v1",
+        "exact_source_groups": [
+          "loaded-pmu-measurement-v1"
+        ]
+      },
+      "loaded-pmu-parity-v1": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "loaded-pmu-parity-v1",
+        "exact_source_groups": [
+          "loaded-pmu-parity-v1"
+        ]
+      },
+      "loaded-pmu-publication-v1": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "loaded-pmu-publication-v1",
+        "exact_source_groups": [
+          "loaded-pmu-publication-v1"
+        ]
+      },
+      "loaded-pmu-sequence-v1": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "loaded-pmu-sequence-v1",
+        "exact_source_groups": [
+          "loaded-pmu-sequence-v1"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "loaded-pmu-admission-v1": {
+        "loaded-pmu-admission-v1": 1.0,
+        "loaded-pmu-boundary-v1": -0.0137,
+        "loaded-pmu-capability-v1": -0.0391,
+        "loaded-pmu-environment-v1": 0.0449,
+        "loaded-pmu-measurement-v1": 0.0156,
+        "loaded-pmu-parity-v1": 0.0371,
+        "loaded-pmu-publication-v1": -0.0098,
+        "loaded-pmu-sequence-v1": 0.0273
+      },
+      "loaded-pmu-boundary-v1": {
+        "loaded-pmu-admission-v1": -0.0137,
+        "loaded-pmu-boundary-v1": 1.0,
+        "loaded-pmu-capability-v1": -0.0254,
+        "loaded-pmu-environment-v1": 0.0391,
+        "loaded-pmu-measurement-v1": -0.0137,
+        "loaded-pmu-parity-v1": 0.0313,
+        "loaded-pmu-publication-v1": -0.0234,
+        "loaded-pmu-sequence-v1": 0.002
+      },
+      "loaded-pmu-capability-v1": {
+        "loaded-pmu-admission-v1": -0.0391,
+        "loaded-pmu-boundary-v1": -0.0254,
+        "loaded-pmu-capability-v1": 1.0,
+        "loaded-pmu-environment-v1": 0.0488,
+        "loaded-pmu-measurement-v1": 0.0078,
+        "loaded-pmu-parity-v1": -0.0176,
+        "loaded-pmu-publication-v1": 0.0098,
+        "loaded-pmu-sequence-v1": -0.0195
+      },
+      "loaded-pmu-environment-v1": {
+        "loaded-pmu-admission-v1": 0.0449,
+        "loaded-pmu-boundary-v1": 0.0391,
+        "loaded-pmu-capability-v1": 0.0488,
+        "loaded-pmu-environment-v1": 1.0,
+        "loaded-pmu-measurement-v1": 0.0449,
+        "loaded-pmu-parity-v1": 0.0,
+        "loaded-pmu-publication-v1": 0.0234,
+        "loaded-pmu-sequence-v1": -0.0098
+      },
+      "loaded-pmu-measurement-v1": {
+        "loaded-pmu-admission-v1": 0.0156,
+        "loaded-pmu-boundary-v1": -0.0137,
+        "loaded-pmu-capability-v1": 0.0078,
+        "loaded-pmu-environment-v1": 0.0449,
+        "loaded-pmu-measurement-v1": 1.0,
+        "loaded-pmu-parity-v1": 0.0605,
+        "loaded-pmu-publication-v1": 0.0137,
+        "loaded-pmu-sequence-v1": -0.043
+      },
+      "loaded-pmu-parity-v1": {
+        "loaded-pmu-admission-v1": 0.0371,
+        "loaded-pmu-boundary-v1": 0.0313,
+        "loaded-pmu-capability-v1": -0.0176,
+        "loaded-pmu-environment-v1": 0.0,
+        "loaded-pmu-measurement-v1": 0.0605,
+        "loaded-pmu-parity-v1": 1.0,
+        "loaded-pmu-publication-v1": 0.0508,
+        "loaded-pmu-sequence-v1": 0.0566
+      },
+      "loaded-pmu-publication-v1": {
+        "loaded-pmu-admission-v1": -0.0098,
+        "loaded-pmu-boundary-v1": -0.0234,
+        "loaded-pmu-capability-v1": 0.0098,
+        "loaded-pmu-environment-v1": 0.0234,
+        "loaded-pmu-measurement-v1": 0.0137,
+        "loaded-pmu-parity-v1": 0.0508,
+        "loaded-pmu-publication-v1": 1.0,
+        "loaded-pmu-sequence-v1": -0.0215
+      },
+      "loaded-pmu-sequence-v1": {
+        "loaded-pmu-admission-v1": 0.0273,
+        "loaded-pmu-boundary-v1": 0.002,
+        "loaded-pmu-capability-v1": -0.0195,
+        "loaded-pmu-environment-v1": -0.0098,
+        "loaded-pmu-measurement-v1": -0.043,
+        "loaded-pmu-parity-v1": 0.0566,
+        "loaded-pmu-publication-v1": -0.0215,
+        "loaded-pmu-sequence-v1": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "loaded-pmu-admission-v1": {
+          "gravity": 1.0,
+          "owner": "loaded-pmu-admission-v1",
+          "owners": {
+            "loaded-pmu-admission-v1": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "loaded-pmu-boundary-v1": {
+          "gravity": 1.0,
+          "owner": "loaded-pmu-boundary-v1",
+          "owners": {
+            "loaded-pmu-boundary-v1": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "loaded-pmu-capability-v1": {
+          "gravity": 1.0,
+          "owner": "capability owner",
+          "owners": {
+            "capability owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "loaded-pmu-environment-v1": {
+          "gravity": 1.0,
+          "owner": "environment owner",
+          "owners": {
+            "environment owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "loaded-pmu-measurement-v1": {
+          "gravity": 1.0,
+          "owner": "measurement owner",
+          "owners": {
+            "measurement owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "loaded-pmu-parity-v1": {
+          "gravity": 1.0,
+          "owner": "parity owner",
+          "owners": {
+            "parity owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "loaded-pmu-publication-v1": {
+          "gravity": 1.0,
+          "owner": "publication owner",
+          "owners": {
+            "publication owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "loaded-pmu-sequence-v1": {
+          "gravity": 1.0,
+          "owner": "loaded pmu contract",
+          "owners": {
+            "loaded pmu contract": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "admission": {
+          "gravity": 1.0,
+          "owner": "loaded-pmu-admission-v1",
+          "owners": {
+            "loaded-pmu-admission-v1": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "boundary": {
+          "gravity": 1.0,
+          "owner": "loaded-pmu-boundary-v1",
+          "owners": {
+            "loaded-pmu-boundary-v1": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "capability": {
+          "gravity": 1.0,
+          "owner": "capability owner",
+          "owners": {
+            "capability owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "environment": {
+          "gravity": 1.0,
+          "owner": "environment owner",
+          "owners": {
+            "environment owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "measurement": {
+          "gravity": 1.0,
+          "owner": "measurement owner",
+          "owners": {
+            "measurement owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "parity": {
+          "gravity": 1.0,
+          "owner": "parity owner",
+          "owners": {
+            "parity owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "publication": {
+          "gravity": 1.0,
+          "owner": "publication owner",
+          "owners": {
+            "publication owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "sequencing": {
+          "gravity": 1.0,
+          "owner": "loaded pmu contract",
+          "owners": {
+            "loaded pmu contract": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "admission": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "contract claim boundary",
+            "explicit user and contract boundary"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "loaded-pmu-admission-v1"
+          ],
+          "scopes": [
+            "admission"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "contract claim boundary",
+            "explicit denominator boundary"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "loaded-pmu-boundary-v1"
+          ],
+          "scopes": [
+            "boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "capability": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "benign fixed perf probe",
+            "contract sequence"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "capability owner"
+          ],
+          "scopes": [
+            "capability"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "environment": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "contract loaded boundary",
+            "user loaded-host decision"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "environment owner"
+          ],
+          "scopes": [
+            "environment"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "measurement": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "contract run matrix",
+            "existing ready and done barriers"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "measurement owner"
+          ],
+          "scopes": [
+            "measurement"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "parity": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "contract sequence",
+            "same sealed elf semantic prerequisite"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "parity owner"
+          ],
+          "scopes": [
+            "parity"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "publication": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "atomic final rename and read-only tree",
+            "contract publication sequence"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "publication owner"
+          ],
+          "scopes": [
+            "publication"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "sequencing": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "comparison receipt 01b9c10c",
+            "frozen comparison evidence"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "loaded pmu contract"
+          ],
+          "scopes": [
+            "sequencing"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "admission": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "capability": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "measurement": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "publication": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "sequencing": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "admission": {
+          "admission": 1.0,
+          "boundary": -0.0137,
+          "capability": -0.0391,
+          "environment": 0.0449,
+          "measurement": 0.0156,
+          "parity": 0.0371,
+          "publication": -0.0098,
+          "sequencing": 0.0273
+        },
+        "boundary": {
+          "admission": -0.0137,
+          "boundary": 1.0,
+          "capability": -0.0254,
+          "environment": 0.0391,
+          "measurement": -0.0137,
+          "parity": 0.0313,
+          "publication": -0.0234,
+          "sequencing": 0.002
+        },
+        "capability": {
+          "admission": -0.0391,
+          "boundary": -0.0254,
+          "capability": 1.0,
+          "environment": 0.0488,
+          "measurement": 0.0078,
+          "parity": -0.0176,
+          "publication": 0.0098,
+          "sequencing": -0.0195
+        },
+        "environment": {
+          "admission": 0.0449,
+          "boundary": 0.0391,
+          "capability": 0.0488,
+          "environment": 1.0,
+          "measurement": 0.0449,
+          "parity": 0.0,
+          "publication": 0.0234,
+          "sequencing": -0.0098
+        },
+        "measurement": {
+          "admission": 0.0156,
+          "boundary": -0.0137,
+          "capability": 0.0078,
+          "environment": 0.0449,
+          "measurement": 1.0,
+          "parity": 0.0605,
+          "publication": 0.0137,
+          "sequencing": -0.043
+        },
+        "parity": {
+          "admission": 0.0371,
+          "boundary": 0.0313,
+          "capability": -0.0176,
+          "environment": 0.0,
+          "measurement": 0.0605,
+          "parity": 1.0,
+          "publication": 0.0508,
+          "sequencing": 0.0566
+        },
+        "publication": {
+          "admission": -0.0098,
+          "boundary": -0.0234,
+          "capability": 0.0098,
+          "environment": 0.0234,
+          "measurement": 0.0137,
+          "parity": 0.0508,
+          "publication": 1.0,
+          "sequencing": -0.0215
+        },
+        "sequencing": {
+          "admission": 0.0273,
+          "boundary": 0.002,
+          "capability": -0.0195,
+          "environment": -0.0098,
+          "measurement": -0.043,
+          "parity": 0.0566,
+          "publication": -0.0215,
+          "sequencing": 1.0
+        }
+      },
+      "source": {
+        "admission": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "capability": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "measurement": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "publication": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "sequencing": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "loaded-pmu-admission-v1": 1,
+      "loaded-pmu-boundary-v1": 1,
+      "loaded-pmu-capability-v1": 1,
+      "loaded-pmu-environment-v1": 1,
+      "loaded-pmu-measurement-v1": 1,
+      "loaded-pmu-parity-v1": 1,
+      "loaded-pmu-publication-v1": 1,
+      "loaded-pmu-sequence-v1": 1
+    },
+    "stable_groups": [
+      "loaded-pmu-admission-v1",
+      "loaded-pmu-boundary-v1",
+      "loaded-pmu-capability-v1",
+      "loaded-pmu-environment-v1",
+      "loaded-pmu-measurement-v1",
+      "loaded-pmu-parity-v1",
+      "loaded-pmu-publication-v1",
+      "loaded-pmu-sequence-v1"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [],
+  "agent_decision": {
+    "action": "SAFE_TO_EDIT",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Proceed only within the checked route boundary.",
+    "repair_count": 0,
+    "repair_queue": [],
+    "safe_to_edit": true
+  },
+  "explanation": [
+    "Candidate structure is coherent with source triads.",
+    "Structural coherence only: trusted proof was not established and authority is false."
+  ],
+  "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-loaded-pmu-diagnosis-v1.trace.json"
+}

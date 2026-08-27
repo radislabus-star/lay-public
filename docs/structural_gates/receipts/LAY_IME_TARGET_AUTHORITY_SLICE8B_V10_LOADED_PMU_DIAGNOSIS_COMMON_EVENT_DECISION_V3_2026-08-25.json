@@ -1,0 +1,68 @@
+{
+  "schema": "lay.v10.loaded-pmu-common-event-decision.v1",
+  "task_id": "slice8b-v10-loaded-pmu-diagnosis-v3-20260825",
+  "verdict": "G0_G1_OBSERVED_G2_BLOCKED_BY_NONCOMMON_EVENT",
+  "controller_sha256": "98c518cf8f7c9506370880921708ad9e3adaf8d89b3340e322ed13b1e9c9d634",
+  "preflight_manifest_sha256": "8ebb6541e1ff6b9b25b3622b4d5a2b82c3dc5456d39cee995c491b880b00dd5e",
+  "preflight_receipt_sha256": "d0726a76ba3918d62550d75006dd29c7ea023f6d9dbfd4a2d56c2b33f9d90504",
+  "remote_result_sha256": "fb625d92f27fc783b6d88358fb119b087fb7bca35d7bbb99ad665864f6afcc67",
+  "remote_final_manifest_sha256": "ee0be2e14eb51aafb943cdc789af1e1a0312f63c89ff72677c5b20bd6873dbf7",
+  "remote_state_manifest_sha256": "5e75666d3bfb0351077b7229134f8df20a0af16c1f7883e09852fef983f9fc21",
+  "remote_final_files": 52,
+  "remote_final_bytes": 789973,
+  "remote_state_files": 11,
+  "remote_state_bytes": 2649,
+  "remote_writable_objects": 0,
+  "completed_windows": {
+    "B5-G0": {"receipt_sha256": "4ac72ef24cb235089120f5a6e2b3f39cbf3f1a3e4a04cfbb6367fa5b99eb386b"},
+    "B6-G0": {"receipt_sha256": "923f68f929d9acca6067681b3f4611f383a39aa5990fd38a9b6cc933ac343027"},
+    "B5-G1": {"receipt_sha256": "4e4116e417ca100f2d5b0ef04f2d2bbe4193a9644ec9b52150dc9f1e72046267"},
+    "B6-G1": {"receipt_sha256": "e027a93984b6063815f26901ad4f4e309b9f4b8d432a41e576aef81def457d6e"}
+  },
+  "g0_comparison": {
+    "instructions_per_request_b5": 42378604.08638743,
+    "instructions_per_request_b6": 42388812.24250459,
+    "instructions_delta_percent": 0.024087995197641376,
+    "cycles_per_request_b5": 10307715.70157068,
+    "cycles_per_request_b6": 14178114.9039857,
+    "cycles_delta_percent": 37.54856376010886,
+    "ipc_b5": 4.111347781927068,
+    "ipc_b6": 2.9897354147262836,
+    "ipc_delta_percent": -27.28089246381057,
+    "task_clock_per_request_ms_b5": 2.718744138743456,
+    "task_clock_per_request_ms_b6": 4.691073743455497
+  },
+  "g1_comparison": {
+    "branches_delta_percent": 0.025676718428435663,
+    "branch_misses_delta_percent": 2.4518704622253917,
+    "branch_miss_rate_b5": 0.006812448266441873,
+    "branch_miss_rate_b6": 0.006977689031675672,
+    "generic_cache_miss_rate_b5": 0.016830658886532453,
+    "generic_cache_miss_rate_b6": 0.009352440754353807
+  },
+  "g2_failure": {
+    "route": "B5",
+    "perf_raw_sha256": "f88003560f991413ebadd65ee590f4424a6a20374b7c570c39a0603382d8681c",
+    "required_core_L1_dcache_load_misses": 10055873,
+    "required_core_running_percent": 100.0,
+    "nonrequired_atom_value": "<not supported>",
+    "nonrequired_atom_event_runtime": 0
+  },
+  "sudo_perf_list_without_event_open": {
+    "L1-dcache-loads": ["cpu_core", "cpu_atom"],
+    "L1-dcache-load-misses": ["cpu_core"],
+    "LLC-loads": ["cpu_core", "cpu_atom"],
+    "LLC-load-misses": ["cpu_core", "cpu_atom"],
+    "dTLB-loads": ["cpu_core", "cpu_atom"],
+    "dTLB-load-misses": ["cpu_core", "cpu_atom"]
+  },
+  "next_fixed_groups": {
+    "G2C": ["L1-dcache-loads", "LLC-loads", "LLC-load-misses"],
+    "G3": ["dTLB-loads", "dTLB-load-misses"]
+  },
+  "L1_dcache_load_miss_cross_pmu_comparison": "UNAVAILABLE_AND_NOT_SUBSTITUTED",
+  "retry_permitted_under_v3": false,
+  "formal_b_pass": false,
+  "v12_admitted": false,
+  "runtime_authority_changed": false
+}

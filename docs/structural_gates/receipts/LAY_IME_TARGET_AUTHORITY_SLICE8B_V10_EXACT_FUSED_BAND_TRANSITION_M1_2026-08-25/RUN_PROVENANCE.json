@@ -1,0 +1,49 @@
+{
+  "adaptive_rerun": false,
+  "base_controller_sha256": "9d027e5c0b82b683773b4a9a140859ce95662f54bed39f4a8d04077550faa190",
+  "build_executed": false,
+  "clean_c1_marker_consumed": false,
+  "controller_v2_sha256": "7902bbfc9f75ee44bd1f43e008a2de3dd2aba6ba7ab68b49eedaa22da6c3693c",
+  "foreign_process_control": false,
+  "fragment_sha256": "bdef992d1f9bec095b3f683b384f1e7d23323823625cf3547dc44480511f0d76",
+  "host_tuning": false,
+  "installed_lay_changed": false,
+  "markers_consumed": [
+    "parity",
+    "g0",
+    "g1",
+    "u1"
+  ],
+  "measurement_controller_v1_sha256": "3132a8f29f25ffef44d9e2fce724e88f56f3798515b6c57de350b1d659028237",
+  "result_namespace": "/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/result-v2",
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.exact-fused-band-transition-m1-run.v2",
+  "sealed_elf_reused": true,
+  "state_namespace": "/home/e/.local/state/lay/slice8b-v10-exact-fused-band-transition-m1-20260825-run-v2",
+  "task_id": "slice8b-v10-exact-fused-band-transition-m1-20260825-run-v2",
+  "third_loaded_c1_run": false,
+  "v1_projection_after": {
+    "build_manifest_sha256": "5f4703b52f9c9d92121f658a50490c5b98161971290c2a6a0c0f95f2b01c0526",
+    "failure_manifest_sha256": "9e34abc512307db4730aba857701b73fd7727b03ccc0ca052e58ef0318a2391c",
+    "markers": [
+      "build.consumed-before-exec",
+      "g0.available",
+      "g1.available",
+      "parity.consumed-before-exec",
+      "u1.available"
+    ],
+    "result_v1_exists": false
+  },
+  "v1_projection_before": {
+    "build_manifest_sha256": "5f4703b52f9c9d92121f658a50490c5b98161971290c2a6a0c0f95f2b01c0526",
+    "failure_manifest_sha256": "9e34abc512307db4730aba857701b73fd7727b03ccc0ca052e58ef0318a2391c",
+    "markers": [
+      "build.consumed-before-exec",
+      "g0.available",
+      "g1.available",
+      "parity.consumed-before-exec",
+      "u1.available"
+    ],
+    "result_v1_exists": false
+  }
+}

@@ -1,0 +1,291 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_DIAGNOSTIC_V9_IMPLEMENTATION_V1_2026-08-27",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "v9-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_DIAGNOSTIC_V9_2026-08-27.md",
+      "expect": {"mode": "0444", "size_bytes": 9188, "sha256": "98000de5d6a502d4bf1b2005deca476bfdd12539f02528a4b450f240f3d9ed27"}
+    },
+    {
+      "id": "v9-route",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_DIAGNOSTIC_V9_ROUTE_V2_2026-08-27.md",
+      "expect": {"mode": "0444", "size_bytes": 4287, "sha256": "7270e79ccd5c64f33dc5d1a3f95ff4dbea9a8f13baebc81aa97254a80d7fe860"}
+    },
+    {
+      "id": "v9-route-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_DIAGNOSTIC_V9_ROUTE_V2_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 22907, "sha256": "84171ed96027ae674e50618398af2d881f44b83fd7265a4b5e5cd92d8b9be00f"}
+    },
+    {
+      "id": "latency-decision",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R3_LATENCY_FAILURE_DECISION_V1_2026-08-27.md",
+      "expect": {"mode": "0444", "size_bytes": 7181, "sha256": "45e2e279997f7a93072bcfd74ad11d2566f55b442685d1be2a75e905dd543a8a"}
+    },
+    {
+      "id": "v8r3-terminal",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R3_TERMINAL_AUDIT_V1_2026-08-27/TERMINAL_AUDIT.json",
+      "expect": {"mode": "0444", "size_bytes": 32242, "sha256": "2115a4ce7c8a79fffde043b87c5aa462014873a0365df3a6e82892f395f6aedc"}
+    },
+    {
+      "id": "v8r3-subject",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R3_TERMINAL_AUDIT_V1_2026-08-27/REMOTE_E2E/subject/SUBJECT_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 10379, "sha256": "65cd8a6f08d77c192ae0eb24fa3df106ee5030e7a8bbdfdf44d08429f7d9bfd5"}
+    },
+    {
+      "id": "v8r3-journal",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R3_EXECUTION_JOURNAL_V1_2026-08-27/SHA256SUMS",
+      "expect": {"mode": "0444", "size_bytes": 2317, "sha256": "1c176cb2b9e986011fba901996260ad34bf59d71d864ae663045800a8bf9cdfc"}
+    },
+    {
+      "id": "sealed-elf",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R1_BUILD_AUDIT_V1_2026-08-27/REMOTE_BUILD/m3-v8r1-test-elf",
+      "expect": {"mode": "0444", "size_bytes": 320613368, "sha256": "0af3cc6679396650245e924976d8a3bb432dfa6a1086b1c46bcfa7497307afea"}
+    },
+    {
+      "id": "v8-test-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {"mode": "0664", "size_bytes": 253080, "sha256": "28f87a76fc1996989e980cab51f0443bd95e656fcae3a2ff61f581db9c3a7ee2"}
+    },
+    {
+      "id": "trace-producer-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "expect": {"mode": "0664", "size_bytes": 70181, "sha256": "87180990b6883641483a46886074e5350f35e351454d734f0c3c9da723d758bd"}
+    },
+    {
+      "id": "proposal-admission-source",
+      "kind": "file",
+      "path": "../../../src/typing_transition/proposal_admission.rs",
+      "expect": {"mode": "0664", "size_bytes": 70639, "sha256": "dd4a37a8c0430c9ff145f9ae9cbbbc735164ece833a143a19af644ac7ad835ca"}
+    },
+    {
+      "id": "cargo-toml",
+      "kind": "file",
+      "path": "../../../Cargo.toml",
+      "expect": {"mode": "0664", "size_bytes": 2399, "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b"}
+    },
+    {
+      "id": "cargo-lock",
+      "kind": "file",
+      "path": "../../../Cargo.lock",
+      "expect": {"mode": "0664", "size_bytes": 70770, "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"}
+    },
+    {
+      "id": "cargo-guard",
+      "kind": "file",
+      "path": "../../../scripts/cargo-guard.sh",
+      "expect": {"mode": "0775", "size_bytes": 2534, "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "write-v9-remote-producer", "kind": "local_script_edit"},
+      {"id": "write-v9-independent-auditor", "kind": "local_script_edit"},
+      {"id": "write-v9-local-controller", "kind": "local_script_edit"},
+      {"id": "run-v9-static-fault-checks", "kind": "local_static_and_fault_injection_test"},
+      {"id": "publish-v9-controller-receipt", "kind": "local_evidence_write"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "network_or_remote_write_during_controller_implementation",
+      "remote_namespace_cache_or_marker_creation",
+      "cargo_or_rustc_execution",
+      "source_or_elf_edit_or_build",
+      "scientific_subject_execution",
+      "perf_or_pmu_execution",
+      "v8r1_v8r2_or_v8r3_evidence_state_marker_or_journal_mutation",
+      "runtime_authority_or_installed_package_edit",
+      "daemon_ibus_install_restart_or_deployment",
+      "latency_or_production_claim"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "steps": [
+      {
+        "id": "write-remote-producer",
+        "from": "PREFLIGHT_READY",
+        "to": "REMOTE_PRODUCER_WRITTEN",
+        "mutates": true,
+        "failure_state": "BLOCKED_CONTROLLER_SOURCE",
+        "cleanup": "retain partial local bytes and create no remote state",
+        "preserves": ["v8r3-history", "v8-source", "trace-source", "runtime"],
+        "test_id": "remote-producer-write-fault"
+      },
+      {
+        "id": "write-independent-auditor",
+        "from": "REMOTE_PRODUCER_WRITTEN",
+        "to": "AUDITOR_WRITTEN",
+        "mutates": true,
+        "failure_state": "BLOCKED_CONTROLLER_SOURCE",
+        "cleanup": "retain partial local bytes and create no remote state",
+        "preserves": ["v8r3-history", "v8-source", "trace-source", "runtime"],
+        "test_id": "auditor-write-fault"
+      },
+      {
+        "id": "write-local-controller",
+        "from": "AUDITOR_WRITTEN",
+        "to": "CONTROLLER_GRAPH_WRITTEN",
+        "mutates": true,
+        "failure_state": "BLOCKED_CONTROLLER_SOURCE",
+        "cleanup": "retain partial local bytes and create no remote state",
+        "preserves": ["v8r3-history", "v8-source", "trace-source", "runtime"],
+        "test_id": "controller-write-fault"
+      },
+      {
+        "id": "run-static-fault-checks",
+        "from": "CONTROLLER_GRAPH_WRITTEN",
+        "to": "STATIC_PASS",
+        "mutates": false,
+        "failure_state": "BLOCKED_CONTROLLER_STATIC",
+        "cleanup": "retain diagnostics and publish no PASS",
+        "preserves": ["v8r3-history", "v8-source", "trace-source", "runtime"],
+        "test_id": "static-fault"
+      },
+      {
+        "id": "publish-controller-receipt",
+        "from": "STATIC_PASS",
+        "to": "M3_V9_CONTROLLERS_VERIFIED_UNRUN",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "remove incomplete receipt stage and retain controller bytes",
+        "preserves": ["v8r3-history", "v8-source", "trace-source", "runtime"],
+        "test_id": "receipt-publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "M3_V9_CONTROLLERS_VERIFIED_UNRUN",
+      "BLOCKED_CONTROLLER_SOURCE",
+      "BLOCKED_CONTROLLER_STATIC",
+      "BLOCKED_PROVENANCE"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "v8r3-history",
+      "path": "V8R3 terminal evidence and consumed marker",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v8r3-terminal"
+    },
+    {
+      "id": "v8-source",
+      "path": "src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v8-test-source"
+    },
+    {
+      "id": "trace-source",
+      "path": "src/nanda_wave/l2_field/productive_v1/live.rs",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "trace-producer-source"
+    },
+    {
+      "id": "sealed-elf",
+      "path": "V8R3 remote ELF and sealed local mirror",
+      "policy": "read and execute exact bytes only",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "sealed-elf"
+    },
+    {
+      "id": "runtime",
+      "path": "installed Lay runtime and authority receipts",
+      "policy": "immutable stable projection",
+      "cursor_policy": "stable_projection",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "cargo-toml"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "decision-to-route",
+      "producer": "sealed V9 paper",
+      "consumer": "effective structural route V2",
+      "comparison": "task scope one route trace cardinality failure dispatch and claim boundary exact",
+      "test_id": "paper-route-parity"
+    },
+    {
+      "id": "v8r3-to-v9",
+      "producer": "immutable V8R3 BLOCKED_LATENCY terminal",
+      "consumer": "V9 read-only predecessor closure",
+      "comparison": "task transaction terminal receipt subject receipt marker and no-retry state exact",
+      "test_id": "terminal-predecessor-parity"
+    },
+    {
+      "id": "trace-producer-to-parser",
+      "producer": "exact live.rs trace format in sealed ELF source",
+      "consumer": "anchored V9 stderr parser",
+      "comparison": "literal field names order integer grammar 1910 rows and deterministic ordinal mapping",
+      "test_id": "trace-parser-parity"
+    },
+    {
+      "id": "route-to-marker",
+      "producer": "exact TRACE route",
+      "consumer": "one trace.available marker",
+      "comparison": "task transaction route and controller SHA exact with atomic consumption before subject",
+      "test_id": "marker-parity"
+    },
+    {
+      "id": "response-to-journal",
+      "producer": "complete structured external response",
+      "consumer": "durable completion before verdict classification",
+      "comparison": "response bytes SHA admission flag and UNKNOWN fallback exact",
+      "test_id": "response-retention-parity"
+    },
+    {
+      "id": "producer-to-auditor",
+      "producer": "remote immutable trace observations",
+      "consumer": "independent local terminal auditor",
+      "comparison": "auditor recomputes identities rows distributions tail shares and failure priority",
+      "test_id": "auditor-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "one-route", "statement": "reachable route registry is exactly TRACE", "test_id": "direct-command-parity"},
+    {"id": "no-build", "statement": "Cargo rustc source edit ELF copy perf PMU install and runtime actions are unreachable", "test_id": "no-build-static"},
+    {"id": "exact-trace", "statement": "parser accepts only exact ordered trace rows and derives no unavailable case identity or outer join", "test_id": "trace-parser-parity"},
+    {"id": "one-marker", "statement": "one marker is created after UID audit and consumed before the one subject", "test_id": "marker-parity"},
+    {"id": "response-first", "statement": "complete external response is durable before verdict dispatch", "test_id": "response-retention-parity"},
+    {"id": "complete-or-provenance", "statement": "incomplete or unknown observation dispatches BLOCKED_PROVENANCE", "test_id": "auditor-parity"},
+    {"id": "latency-nonauthoritative", "statement": "traced timing cannot alter V8R3 latency or production authority", "test_id": "claim-boundary-parity"},
+    {"id": "runtime-unchanged", "statement": "runtime source Cargo inputs and V8R3 evidence remain unchanged", "test_id": "namespace-parity"}
+  ],
+  "tests": [
+    {"id": "remote-producer-write-fault", "kind": "fault_injection", "expected": "partial producer creates no remote state"},
+    {"id": "auditor-write-fault", "kind": "fault_injection", "expected": "partial auditor creates no remote state"},
+    {"id": "controller-write-fault", "kind": "fault_injection", "expected": "partial controller creates no remote state"},
+    {"id": "static-fault", "kind": "fault_injection", "expected": "static failure publishes no implementation PASS"},
+    {"id": "receipt-publication-fault", "kind": "fault_injection", "expected": "incomplete implementation receipt is not published"},
+    {"id": "paper-route-parity", "kind": "parity", "expected": "effective route preserves the exact sealed V9 contract"},
+    {"id": "terminal-predecessor-parity", "kind": "parity", "expected": "V8R3 remains terminal BLOCKED_LATENCY with consumed marker and exact receipts"},
+    {"id": "trace-parser-parity", "kind": "parity", "expected": "exact trace grammar cardinality phase mapping distributions and tail estimator"},
+    {"id": "direct-command-parity", "kind": "parity", "expected": "only exact direct traced V8 subject command is reachable"},
+    {"id": "marker-parity", "kind": "parity", "expected": "one canonical trace marker is consumed atomically before subject"},
+    {"id": "response-retention-parity", "kind": "parity", "expected": "valid blocked response is retained with pending intent false before terminal dispatch"},
+    {"id": "auditor-parity", "kind": "parity", "expected": "independent terminal dispatch verifies every predicate and priority"},
+    {"id": "claim-boundary-parity", "kind": "parity", "expected": "trace timing is diagnostic only and grants no source or production authority"},
+    {"id": "namespace-parity", "kind": "parity", "expected": "V8R3 and V9 namespace state marker and evidence ownership remain distinct"},
+    {"id": "no-build-static", "kind": "parity", "expected": "no reachable Cargo rustc source edit ELF copy perf PMU install daemon or production command"}
+  ]
+}

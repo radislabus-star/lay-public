@@ -16,6 +16,12 @@ pub(super) fn preflight_manual_replay(ctx: &ManualOutputCommon<'_>) -> Result<()
         layout_preflight.restore_initial_best_effort("manual replay readiness failure");
         return Err(error);
     }
+    if let Some(lease) = &ctx.delegated_tail_lease {
+        if let Err(error) = lease.validate_after_controlled_layout_handoff(ctx.n_backspaces) {
+            layout_preflight.restore_initial_best_effort("manual replay tail lease failure");
+            return Err(error);
+        }
+    }
     if let Err(error) = mutation_preflight.consume() {
         layout_preflight.restore_initial_best_effort("manual replay");
         return Err(error);

@@ -1,0 +1,34 @@
+{
+  "schema": "nanda.execution-admission-receipt.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_EXECUTION_ADMISSION_V3_2026-08-27",
+  "manifest": {
+    "path": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_EXECUTION_ADMISSION_V3_2026-08-27.json",
+    "mode": "0444",
+    "size_bytes": 5995,
+    "sha256": "880ea03491ce883c2315a7d759670495637c9dcc0faa4f252030859b1acd14e3"
+  },
+  "checks": {
+    "v2_manifest_actual_identity": "PASS",
+    "v2_receipt_actual_identity": "PASS",
+    "v2_hash_defect_explicit": "PASS",
+    "seven_staged_source_identities": "PASS",
+    "protected_source_identities": "PASS",
+    "fixed_input_identities": "PASS",
+    "rustfmt": "PASS",
+    "git_diff_check": "PASS",
+    "owner_receipt_absent": "PASS",
+    "cargo_or_rustc_processes": "PASS",
+    "cargo_invocations_before_admission": 0,
+    "network_or_remote_used": false,
+    "runtime_authority_changed": false
+  },
+  "claim_boundary": {
+    "admits_exactly_one_focused_local_cargo_guard_test": true,
+    "retry_permitted": false,
+    "production_activation_admitted": false,
+    "end_to_end_performance_claim_admitted": false
+  },
+  "blockers": [],
+  "safe_to_execute": true,
+  "verdict": "READY_TO_EXECUTE_ONE_FOCUSED_OWNER_PROOF"
+}

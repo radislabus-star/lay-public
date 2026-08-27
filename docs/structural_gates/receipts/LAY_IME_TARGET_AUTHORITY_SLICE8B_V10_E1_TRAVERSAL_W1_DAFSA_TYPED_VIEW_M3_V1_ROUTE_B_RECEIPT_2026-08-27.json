@@ -1,0 +1,551 @@
+{
+  "verdict": "PASS",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "w1-dafsa-typed-view-m3-v1-route-b",
+  "domain": "general",
+  "complexity_score": 23,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.2727,
+      "c2": 0.2727,
+      "c3": 0.2727,
+      "c4": 0.2727
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 8,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "c1",
+      "c2",
+      "c3",
+      "c4"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.4966,
+      "c2": 0.5222,
+      "c3": 0.4532,
+      "c4": 0.5104
+    },
+    "source_self_score": 0.4956,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "measurement": "measurement",
+      "one-shot": "one-shot",
+      "ordering": "ordering",
+      "terminal": "terminal"
+    },
+    "scores": {
+      "measurement": 1.0,
+      "one-shot": 1.0,
+      "ordering": 1.0,
+      "terminal": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "measurement": 1,
+      "one-shot": 1,
+      "ordering": 1,
+      "terminal": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.4956,
+      "norm": 63.435,
+      "triads": 4
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "measurement": "measurement",
+      "one-shot": "one-shot",
+      "ordering": "ordering",
+      "terminal": "terminal"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "measurement": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "one-shot": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "ordering": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "measurement": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "one-shot": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "ordering": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "measurement": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "measurement",
+        "exact_source_groups": [
+          "measurement"
+        ]
+      },
+      "one-shot": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "one-shot",
+        "exact_source_groups": [
+          "one-shot"
+        ]
+      },
+      "ordering": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "ordering",
+        "exact_source_groups": [
+          "ordering"
+        ]
+      },
+      "terminal": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "terminal",
+        "exact_source_groups": [
+          "terminal"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "measurement": {
+        "measurement": 1.0,
+        "one-shot": -0.0078,
+        "ordering": -0.0645,
+        "terminal": -0.0293
+      },
+      "one-shot": {
+        "measurement": -0.0078,
+        "one-shot": 1.0,
+        "ordering": 0.0254,
+        "terminal": 0.0176
+      },
+      "ordering": {
+        "measurement": -0.0645,
+        "one-shot": 0.0254,
+        "ordering": 1.0,
+        "terminal": 0.0234
+      },
+      "terminal": {
+        "measurement": -0.0293,
+        "one-shot": 0.0176,
+        "ordering": 0.0234,
+        "terminal": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "measurement": {
+          "gravity": 1.0,
+          "owner": "perf stat",
+          "owners": {
+            "perf stat": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "one-shot": {
+          "gravity": 1.0,
+          "owner": "m3 physical controller",
+          "owners": {
+            "m3 physical controller": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "ordering": {
+          "gravity": 1.0,
+          "owner": "ordering",
+          "owners": {
+            "ordering": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "terminal": {
+          "gravity": 1.0,
+          "owner": "terminal auditor",
+          "owners": {
+            "terminal auditor": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "decision": {
+          "gravity": 1.0,
+          "owner": "terminal auditor",
+          "owners": {
+            "terminal auditor": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "execution": {
+          "gravity": 1.0,
+          "owner": "m3 physical controller",
+          "owners": {
+            "m3 physical controller": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "observation": {
+          "gravity": 1.0,
+          "owner": "perf stat",
+          "owners": {
+            "perf stat": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "parity": {
+          "gravity": 1.0,
+          "owner": "ordering",
+          "owners": {
+            "ordering": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "decision": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "intermediate route values cannot select a branch",
+            "pair reconciliation and dispatch priority are frozen"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "terminal auditor"
+          ],
+          "scopes": [
+            "decision"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "execution": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "closed route registry equals marker registry",
+            "six one-shot markers include build parity and four physical routes"
+          ],
+          "layers": [
+            "runtime"
+          ],
+          "outputs": [],
+          "owners": [
+            "m3 physical controller"
+          ],
+          "scopes": [
+            "execution"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "observation": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "exact inherited fifo command owns five frozen events",
+            "perf has observation authority and no verdict authority"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "perf stat"
+          ],
+          "scopes": [
+            "observation"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "parity": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "no route is reachable before exact parity",
+            "parity marker and state gate precede b0"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "ordering"
+          ],
+          "scopes": [
+            "parity"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "observation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "decision": {
+          "decision": 1.0,
+          "execution": 0.0176,
+          "observation": -0.0293,
+          "parity": 0.0234
+        },
+        "execution": {
+          "decision": 0.0176,
+          "execution": 1.0,
+          "observation": -0.0078,
+          "parity": 0.0254
+        },
+        "observation": {
+          "decision": -0.0293,
+          "execution": -0.0078,
+          "observation": 1.0,
+          "parity": -0.0645
+        },
+        "parity": {
+          "decision": 0.0234,
+          "execution": 0.0254,
+          "observation": -0.0645,
+          "parity": 1.0
+        }
+      },
+      "source": {
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "observation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "measurement": 1,
+      "one-shot": 1,
+      "ordering": 1,
+      "terminal": 1
+    },
+    "stable_groups": [
+      "measurement",
+      "one-shot",
+      "ordering",
+      "terminal"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [],
+  "agent_decision": {
+    "action": "SAFE_TO_EDIT",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Proceed only within the checked route boundary.",
+    "repair_count": 0,
+    "repair_queue": [],
+    "safe_to_edit": true
+  },
+  "explanation": [
+    "Candidate structure is coherent with source triads.",
+    "Structural coherence only: trusted proof was not established and authority is false."
+  ],
+  "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+  "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-v1-route-b.trace.json"
+}

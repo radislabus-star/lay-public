@@ -1,0 +1,46 @@
+{
+  "schema": "lay.v10.hardware-pre-b2-perf-audit-correction.v3",
+  "date": "2026-08-24",
+  "session_id": "019dd9bc-b358-7d01-b32d-7e64d0b9509a",
+  "events": [
+    {
+      "ordinal": 1,
+      "timestamp_utc": "2026-08-24T17:33:52Z",
+      "invocation": "bare perf through shell command substitution",
+      "arguments": [],
+      "result": "usage text only",
+      "perf_stat_or_record": false,
+      "pmu_event_opened_or_measured": false,
+      "v10_or_proxy_subject_executed": false
+    },
+    {
+      "ordinal": 2,
+      "call_timestamp_utc": "2026-08-24T19:29:33.706Z",
+      "completion_timestamp_utc": "2026-08-24T19:29:34.617Z",
+      "invocation": "perf --version during remote wrapper inspection",
+      "arguments": [
+        "--version"
+      ],
+      "result": "perf version 6.8.12",
+      "perf_stat_or_record": false,
+      "pmu_event_opened_or_measured": false,
+      "v10_or_proxy_subject_executed": false
+    }
+  ],
+  "totals": {
+    "pre_b2_perf_executable_invocations": 2,
+    "perf_stat_or_record_invocations": 0,
+    "pmu_events_opened_or_measured": 0,
+    "v10_or_proxy_subject_executions": 0
+  },
+  "provenance_decision": {
+    "preflight_v1_preserved": true,
+    "preflight_v2_preserved": true,
+    "preflight_v2_execution_authority_superseded": true,
+    "reason": "the frozen pre-B2 perf invocation count changed after V2 publication",
+    "required_next_artifact": "implementation preflight V3",
+    "controller_code_created": false,
+    "b0a_started": false,
+    "runtime_authority_changed": false
+  }
+}

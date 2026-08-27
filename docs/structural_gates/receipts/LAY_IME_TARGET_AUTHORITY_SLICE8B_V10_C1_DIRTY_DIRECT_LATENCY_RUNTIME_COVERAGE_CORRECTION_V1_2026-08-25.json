@@ -1,0 +1,36 @@
+{
+  "schema": "lay.v10.c1-dirty-direct-runtime-coverage-correction.v1",
+  "task_id": "slice8b-v10-c1-dirty-direct-latency-v1-20260825",
+  "observed_at": "2026-08-25T05:20:45+03:00",
+  "verdict": "PROCESS_PROJECTION_COVERAGE_CORRECTED",
+  "immutable_result_unchanged": true,
+  "executed_controller_sha256": "ef7c8f87c66665bd9319992023268cbda2e5bba8d3583cf5dd1d3ff37a34e628",
+  "local_index_sha256": "17f6a08653a372a80a64d9e7a92c34382ab2a2368587d41b1940283e4bc99113",
+  "latency_result_sha256": "9c74bf3f74f794ddd7e5c46df56f88e1443f6e320afb425dd015d20adecb207e",
+  "issue": {
+    "field": "LOCAL_INDEX.json runtime_before/runtime_after lay_processes",
+    "observer_pattern": "^(ibus-daemon|lay-daemon|lay-ibus-engine)( |$)",
+    "observed_before": [],
+    "observed_after": [],
+    "cause": "pgrep -f sees full command lines beginning with /usr/bin or /home/ubu/.local/bin, so the anchored basename pattern did not cover the live processes",
+    "effect": "the equality of the two empty arrays is not process-continuity evidence"
+  },
+  "independent_post_run_scan": {
+    "pattern": "(^|/)(ibus-daemon|lay-daemon|lay-ibus-engine)( |$)",
+    "processes": [
+      {"pid": 2076194, "command": "/usr/bin/ibus-daemon --panel disable"},
+      {"pid": 3410795, "command": "/home/ubu/.local/bin/lay-daemon"},
+      {"pid": 3410820, "command": "/home/ubu/.local/bin/lay-ibus-engine --ibus --managed"}
+    ]
+  },
+  "scope": {
+    "latency_samples_changed": false,
+    "remote_result_changed": false,
+    "clean_c1_markers_changed": false,
+    "lay_version": "lay 1.0.43",
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+    "runtime_authority_changed": false,
+    "controller_internal_pid_continuity_proof": "NOT_PROVEN_BY_ORIGINAL_FIELD",
+    "post_run_process_presence": "PASS"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "controller": {
+    "mode": "0664",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-u-single-salvage.py",
+    "sha256": "69ae26c6279cdaaeccf683b83031f573143ab39f32293f9aca0dae0e7d99e108",
+    "size_bytes": 15786
+  },
+  "correction": {
+    "mode": "0664",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_U_SINGLE_WORKER_SENTINEL_CORRECTION_V1_2026-08-26.md",
+    "sha256": "83247dee0ea6511a3c49cb6c8a4c8011e2de7f52739fb9d8cf5a683ca78ca755",
+    "size_bytes": 2416
+  },
+  "fragment": {
+    "mode": "0664",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc",
+    "sha256": "bbd8b8d318810eec721812f21efbeb5f231dacba774cb5ade854e2201c6c7665",
+    "size_bytes": 113204
+  },
+  "historical_local_manifest_entries": 24,
+  "historical_receipt": {
+    "mode": "0444",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_U_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/D2_UV_ROUTE_RECEIPT.json",
+    "sha256": "46d52ac863e25da861f803096a6918a47a1f4b7138c0167c1f4724ad7b26dac8",
+    "size_bytes": 43275
+  },
+  "historical_remote_manifest_entries": 14,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_writes": 0,
+  "subject_executions": 0,
+  "verdict": "U_SINGLE_SALVAGE_CONTROLLER_VERIFIED_UNRUN"
+}

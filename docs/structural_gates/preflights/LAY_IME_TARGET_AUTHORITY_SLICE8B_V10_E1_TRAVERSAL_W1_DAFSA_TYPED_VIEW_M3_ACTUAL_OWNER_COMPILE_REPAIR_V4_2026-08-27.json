@@ -1,0 +1,71 @@
+{
+  "schema": "nanda.compile-repair-execution-admission.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_COMPILE_REPAIR_V4_2026-08-27",
+  "predecessors": {
+    "v3_admission_manifest_sha256": "880ea03491ce883c2315a7d759670495637c9dcc0faa4f252030859b1acd14e3",
+    "v3_admission_receipt_sha256": "c82777fb53efd22d7ab70b150616ca5d816b70770d7dd3e7e970fb91091e4f60",
+    "v3_blocked_build_receipt_sha256": "cac18cb0a6f9d7246c8c0ebc26ee6985b26c2e7abc9d271b37b4f7cd17515b25",
+    "v3_cargo_log_sha256": "aa3a6e45bbffbde3e99a063e3d8367a2e51ac2e6f4f696adc85dcf3db828babd",
+    "v3_verdict": "BLOCKED_BUILD",
+    "v3_cargo_exit_status": 101,
+    "v3_scientific_owner_proof_started": false
+  },
+  "repair": {
+    "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+    "before_sha256": "594462fd545d84b58e7fd67795a7b90f08c112a767b5cfcdc80f3e311bc6ab7f",
+    "after_sha256": "eaa2ce25c49ef0b3f8e39b31f75a1107d44f2b91816458efca97b4d1bce07ea3",
+    "after_size_bytes": 68573,
+    "after_mode": "0664",
+    "semantic_change": false,
+    "change": "restore one existing material helper import required by two unchanged test call sites",
+    "runtime_logic_changed": false,
+    "proof_denominator_changed": false,
+    "fixed_inputs_changed": false
+  },
+  "unchanged_staged_sources": {
+    "typed_edit_traversal_sha256": "16b6cc0128099e99c5a77037feac5cf49efd2ed088f6ddb2ade433da92241e5b",
+    "lexical_mod_sha256": "5a468ecb672d3c01cb327c6a270932ca1b5cad91457f0f869c8f219c4eb79511",
+    "material_frame_sha256": "6acd10e90c21acf5e7372eecfd110980f55588ef6b18ee31c1d75a8d13b35bc7",
+    "composite_sha256": "121c46e83d0e890188ba32a36cb603ccbe049d8412e478e469eb9ac13796d9f7",
+    "productive_mod_sha256": "277f53d188018ac2703a8fbdee74a7f3a304128e4124652c54cdf9ff687ca252",
+    "v13_test_sha256": "154619792bca1b003147082903f2fc6f15e704c977e2466fd21d60cf25a84377"
+  },
+  "protected_identities_unchanged": true,
+  "fixed_input_identities_unchanged": true,
+  "static_checks": {
+    "rustfmt_check": "PASS",
+    "git_diff_check": "PASS",
+    "missing_import_now_reachable": "PASS",
+    "old_owner_receipt_created": false,
+    "new_owner_receipt_created": false,
+    "scientific_owner_requests_before_v4": 0
+  },
+  "execution": {
+    "environment": {
+      "LAY_M3_ACTUAL_OWNER_RECEIPT": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_V2_2026-08-27/OWNER_RECEIPT.json"
+    },
+    "argv": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--offline",
+      "--locked",
+      "--release",
+      "--lib",
+      "nanda_wave::l2_field::v13_typed_peak::tests::m3_actual_owner_fixed_proof",
+      "--",
+      "--ignored",
+      "--exact",
+      "--nocapture"
+    ],
+    "new_cargo_invocations_admitted": 1,
+    "retry_under_v4_permitted": false
+  },
+  "claim_boundary": {
+    "compile_repair_only": true,
+    "production_activation_admitted": false,
+    "end_to_end_performance_claim_admitted": false,
+    "next_if_pass": "separate end-to-end latency RSS reload preflight"
+  },
+  "verdict": "READY_TO_EXECUTE_ONE_COMPILE_REPAIRED_OWNER_PROOF",
+  "safe_to_execute": true
+}

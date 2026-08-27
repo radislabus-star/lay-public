@@ -176,6 +176,7 @@ fn action_log_writes_candidate_score_trace_from_input_gate() {
     let decision = decide_input_gate(InputGateRequest {
         trigger: InputGateTrigger::Space,
         text_tail: "lfdfq ",
+        lexical_authority_frame: None,
         auto_replace: true,
         typing_assist: true,
         auto_switch_layout: true,

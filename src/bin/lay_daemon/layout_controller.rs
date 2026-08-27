@@ -24,7 +24,15 @@ const LAYOUT_SWITCH_SETTLE_MS: u64 = 12;
 const MANUAL_REPLAY_READY_SETTLE_MS: u64 = 8;
 const TRIGGER_RELEASE_SETTLE_MS: u64 = 80;
 
+pub(super) use ime_bridge::ImeDelegatedTailLease;
 pub(super) use verify::verify_current_layout;
+
+pub(super) fn capture_ime_delegated_tail_lease(
+    expected_suffix: &str,
+    backspaces: u32,
+) -> Result<ImeDelegatedTailLease, String> {
+    ime_bridge::capture_delegated_tail_lease(expected_suffix, backspaces)
+}
 
 pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {
     match active_layout_backend() {

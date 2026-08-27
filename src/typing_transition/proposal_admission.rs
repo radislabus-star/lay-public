@@ -17,6 +17,632 @@ use crate::word_reader::{
 };
 const REPEATED_DELETE_SURFACE_MARGIN: f64 = 0.25;
 
+#[cfg(test)]
+const ADMISSION_TRACE_ENV: &str = "LAY_PROPOSAL_ADMISSION_TRACE";
+#[cfg(test)]
+const ADMISSION_TRACE_SCHEMA: &str = "v10-admission-substage-v1";
+#[cfg(test)]
+const ADMISSION_TRACE_STAGE_COUNT: usize = 36;
+#[cfg(test)]
+const ADMISSION_TRACE_STAGE_NAMES: [&str; ADMISSION_TRACE_STAGE_COUNT] = [
+    "unchanged",
+    "explain_candidate",
+    "replacement_glues_separate_words",
+    "boundary_glues_short_function_tail",
+    "boundary_eats_known_current_word",
+    "boundary_changes_non_whitespace_surface",
+    "multiword_last_vowel_completion",
+    "adjacent_transposition_boundary_competition",
+    "boundary_splits_known_word",
+    "boundary_splits_weak_tail",
+    "reflexive_suffix_requires_grammar",
+    "known_current_surface_drift",
+    "verify_action_operator",
+    "surface_changes_left_context",
+    "l2_surface_stem_truncation",
+    "structural_over_compress",
+    "structural_function_prefix_drop",
+    "structural_phrase_part_growth",
+    "structural_short_initial_growth",
+    "structural_short_case_vowel",
+    "structural_soft_sign_vowel",
+    "structural_short_internal_consonant",
+    "structural_short_same_length_multi_edit",
+    "structural_same_tail_consonant",
+    "structural_infinitive_overreach",
+    "structural_protected_context_authority",
+    "structural_known_word_different_known",
+    "structural_short_layout_context",
+    "structural_short_cyrillic_ascii",
+    "structural_short_nanda_shrink",
+    "structural_short_nanda_internal_vowel",
+    "structural_nanda_unknown_word",
+    "unproven_stable_surface_shape",
+    "semantic_surface_authority",
+    "completion_only",
+    "final_class_dispatch",
+];
+
+#[cfg(test)]
+const ADMISSION_TRACE_REASON_NAMES: [&str; 43] = [
+    "unchanged",
+    "unexplained_signal_loss",
+    "word_count_shrink_requires_boundary_class",
+    "unsafe_boundary_glue_short_function_tail",
+    "moved_prefix_eats_known_current_word",
+    "boundary_operator_changes_surface",
+    "unsafe_multi_word_vowel_completion",
+    "single_letter_boundary_beats_transposition",
+    "known_single_word_boundary_split",
+    "weak_boundary_split_tail",
+    "reflexive_suffix_requires_grammar_proof",
+    "known_current_word_surface_drift",
+    "edit_transition_not_verified",
+    "surface_left_context_apply_blocked",
+    "l2_surface_stem_truncation_low",
+    "candidate_over_compresses_word",
+    "function_prefix_letter_drop",
+    "known_phrase_part_one_letter_growth",
+    "short_initial_letter_growth",
+    "short_case_vowel_drift",
+    "soft_sign_vowel_drift",
+    "short_internal_consonant_drift",
+    "short_same_length_multi_edit_drift",
+    "same_tail_single_consonant_drift",
+    "known_form_to_infinitive_overreach",
+    "protected_current_surface_rewrite_requires_context_authority",
+    "known_word_to_different_known_word",
+    "short_layout_without_phrase_context",
+    "short_cyrillic_to_ascii_layout",
+    "short_nanda_word_shrink",
+    "short_nanda_internal_vowel_growth",
+    "nanda_surface_unknown_word",
+    "unproven_stable_surface_shape_drift",
+    "semantic_wave_surface_authority_low",
+    "completion_is_not_autocorrect",
+    "protected_or_technical",
+    "single_step_typo_still_unknown",
+    "unknown_error_class",
+    "class_allows_apply",
+    "productive_v90_lattice_requires_common_l3",
+    "productive_v90_lattice_abstained",
+    "productive_v90_lattice_unavailable",
+    "productive_v90_non_winner_requires_common_l3",
+];
+
+#[cfg(test)]
+#[repr(usize)]
+#[derive(Clone, Copy)]
+enum AdmissionTraceStage {
+    Unchanged,
+    ExplainCandidate,
+    ReplacementGluesSeparateWords,
+    BoundaryGluesShortFunctionTail,
+    BoundaryEatsKnownCurrentWord,
+    BoundaryChangesNonWhitespaceSurface,
+    MultiwordLastVowelCompletion,
+    AdjacentTranspositionBoundaryCompetition,
+    BoundarySplitsKnownWord,
+    BoundarySplitsWeakTail,
+    ReflexiveSuffixRequiresGrammar,
+    KnownCurrentSurfaceDrift,
+    VerifyActionOperator,
+    SurfaceChangesLeftContext,
+    L2SurfaceStemTruncation,
+    StructuralOverCompress,
+    StructuralFunctionPrefixDrop,
+    StructuralPhrasePartGrowth,
+    StructuralShortInitialGrowth,
+    StructuralShortCaseVowel,
+    StructuralSoftSignVowel,
+    StructuralShortInternalConsonant,
+    StructuralShortSameLengthMultiEdit,
+    StructuralSameTailConsonant,
+    StructuralInfinitiveOverreach,
+    StructuralProtectedContextAuthority,
+    StructuralKnownWordDifferentKnown,
+    StructuralShortLayoutContext,
+    StructuralShortCyrillicAscii,
+    StructuralShortNandaShrink,
+    StructuralShortNandaInternalVowel,
+    StructuralNandaUnknownWord,
+    UnprovenStableSurfaceShape,
+    SemanticSurfaceAuthority,
+    CompletionOnly,
+    FinalClassDispatch,
+}
+
+#[cfg(test)]
+struct AdmissionTraceCounters {
+    stage_calls: [u64; ADMISSION_TRACE_STAGE_COUNT],
+    stage_hits: [u64; ADMISSION_TRACE_STAGE_COUNT],
+    stage_elapsed_ns: [u64; ADMISSION_TRACE_STAGE_COUNT],
+    admission_calls: u64,
+    admission_elapsed_ns: u64,
+    post_override_calls: u64,
+    post_override_hits: u64,
+    post_override_elapsed_ns: u64,
+    action_counts: [u64; 4],
+    reason_counts: [u64; ADMISSION_TRACE_REASON_NAMES.len()],
+    unknown_reasons: u64,
+}
+
+#[cfg(test)]
+impl Default for AdmissionTraceCounters {
+    fn default() -> Self {
+        Self {
+            stage_calls: [0; ADMISSION_TRACE_STAGE_COUNT],
+            stage_hits: [0; ADMISSION_TRACE_STAGE_COUNT],
+            stage_elapsed_ns: [0; ADMISSION_TRACE_STAGE_COUNT],
+            admission_calls: 0,
+            admission_elapsed_ns: 0,
+            post_override_calls: 0,
+            post_override_hits: 0,
+            post_override_elapsed_ns: 0,
+            action_counts: [0; 4],
+            reason_counts: [0; ADMISSION_TRACE_REASON_NAMES.len()],
+            unknown_reasons: 0,
+        }
+    }
+}
+
+#[cfg(test)]
+std::thread_local! {
+    static ADMISSION_TRACE: std::cell::RefCell<Option<AdmissionTraceCounters>> =
+        const { std::cell::RefCell::new(None) };
+}
+
+#[cfg(test)]
+fn duration_ns(duration: std::time::Duration) -> u64 {
+    u64::try_from(duration.as_nanos()).unwrap_or(u64::MAX)
+}
+
+#[cfg(test)]
+fn admission_trace_active() -> bool {
+    ADMISSION_TRACE.with(|trace| trace.borrow().is_some())
+}
+
+#[cfg(test)]
+fn trace_stage_value<T>(
+    stage: AdmissionTraceStage,
+    observe: impl FnOnce() -> T,
+    hit: impl FnOnce(&T) -> bool,
+) -> T {
+    if !admission_trace_active() {
+        return observe();
+    }
+    let started = std::time::Instant::now();
+    let value = observe();
+    let elapsed_ns = duration_ns(started.elapsed());
+    let hit = hit(&value);
+    ADMISSION_TRACE.with(|trace| {
+        if let Some(trace) = trace.borrow_mut().as_mut() {
+            let index = stage as usize;
+            trace.stage_calls[index] = trace.stage_calls[index].saturating_add(1);
+            trace.stage_hits[index] = trace.stage_hits[index].saturating_add(u64::from(hit));
+            trace.stage_elapsed_ns[index] =
+                trace.stage_elapsed_ns[index].saturating_add(elapsed_ns);
+        }
+    });
+    value
+}
+
+#[cfg(test)]
+fn trace_stage_bool(stage: AdmissionTraceStage, observe: impl FnOnce() -> bool) -> bool {
+    trace_stage_value(stage, observe, |value| *value)
+}
+
+#[cfg(test)]
+fn record_admission(elapsed: std::time::Duration) {
+    ADMISSION_TRACE.with(|trace| {
+        if let Some(trace) = trace.borrow_mut().as_mut() {
+            trace.admission_calls = trace.admission_calls.saturating_add(1);
+            trace.admission_elapsed_ns = trace
+                .admission_elapsed_ns
+                .saturating_add(duration_ns(elapsed));
+        }
+    });
+}
+
+#[cfg(test)]
+pub(crate) fn record_live_authority_override(
+    elapsed: std::time::Duration,
+    override_hit: bool,
+    decision: &CandidateGateDecision,
+) {
+    ADMISSION_TRACE.with(|trace| {
+        let mut trace = trace.borrow_mut();
+        let Some(trace) = trace.as_mut() else {
+            return;
+        };
+        trace.post_override_calls = trace.post_override_calls.saturating_add(1);
+        trace.post_override_hits = trace
+            .post_override_hits
+            .saturating_add(u64::from(override_hit));
+        trace.post_override_elapsed_ns = trace
+            .post_override_elapsed_ns
+            .saturating_add(duration_ns(elapsed));
+        let action_index = match decision.action {
+            CandidateGateAction::Eligible => 0,
+            CandidateGateAction::SuggestOnly => 1,
+            CandidateGateAction::KeepOriginal => 2,
+            CandidateGateAction::Veto => 3,
+        };
+        trace.action_counts[action_index] = trace.action_counts[action_index].saturating_add(1);
+        if let Some(reason_index) = ADMISSION_TRACE_REASON_NAMES
+            .iter()
+            .position(|reason| *reason == decision.reason)
+        {
+            trace.reason_counts[reason_index] = trace.reason_counts[reason_index].saturating_add(1);
+        } else {
+            trace.unknown_reasons = trace.unknown_reasons.saturating_add(1);
+        }
+    });
+}
+
+#[cfg(test)]
+pub(crate) struct AdmissionTraceSession {
+    active: bool,
+    finished: bool,
+}
+
+#[cfg(test)]
+impl AdmissionTraceSession {
+    pub(crate) fn post_override_started(&self) -> Option<std::time::Instant> {
+        self.active.then(std::time::Instant::now)
+    }
+
+    pub(crate) fn finish_line(
+        mut self,
+        surfaces: usize,
+        emitted: usize,
+    ) -> Result<Option<String>, String> {
+        if !self.active {
+            self.finished = true;
+            return Ok(None);
+        }
+        let trace = ADMISSION_TRACE.with(|trace| trace.borrow_mut().take());
+        self.finished = true;
+        let trace = trace.ok_or_else(|| "V10 admission trace session disappeared".to_string())?;
+        if trace.unknown_reasons != 0 {
+            return Err(format!(
+                "V10 admission trace observed {} unknown final reasons",
+                trace.unknown_reasons
+            ));
+        }
+        let emitted = u64::try_from(emitted)
+            .map_err(|_| "V10 emitted candidate count does not fit u64".to_string())?;
+        let action_total = trace.action_counts.iter().copied().sum::<u64>();
+        let reason_total = trace.reason_counts.iter().copied().sum::<u64>();
+        if trace.admission_calls != emitted
+            || trace.post_override_calls != emitted
+            || action_total != emitted
+            || reason_total != emitted
+        {
+            return Err(format!(
+                "V10 admission trace cardinality mismatch: emitted={emitted} admission={} post={} actions={action_total} reasons={reason_total}",
+                trace.admission_calls, trace.post_override_calls
+            ));
+        }
+        let leaf_elapsed_ns = trace.stage_elapsed_ns.iter().copied().sum::<u64>();
+        let residual_ns = trace.admission_elapsed_ns.saturating_sub(leaf_elapsed_ns);
+        let mut line = format!(
+            "proposal_admission_substage_trace schema={ADMISSION_TRACE_SCHEMA} surfaces={surfaces} emitted={emitted} admission_calls={} admission_ns={} leaf_ns={leaf_elapsed_ns} residual_ns={residual_ns} post_calls={} post_hits={} post_ns={} stages=",
+            trace.admission_calls,
+            trace.admission_elapsed_ns,
+            trace.post_override_calls,
+            trace.post_override_hits,
+            trace.post_override_elapsed_ns,
+        );
+        use std::fmt::Write as _;
+        for (index, name) in ADMISSION_TRACE_STAGE_NAMES.iter().enumerate() {
+            if index != 0 {
+                line.push(',');
+            }
+            write!(
+                line,
+                "{name}:{}:{}:{}",
+                trace.stage_calls[index], trace.stage_hits[index], trace.stage_elapsed_ns[index]
+            )
+            .expect("writing to String cannot fail");
+        }
+        line.push_str(" actions=");
+        for (index, name) in ["eligible", "suggest_only", "keep_original", "veto"]
+            .iter()
+            .enumerate()
+        {
+            if index != 0 {
+                line.push(',');
+            }
+            write!(line, "{name}:{}", trace.action_counts[index])
+                .expect("writing to String cannot fail");
+        }
+        line.push_str(" reasons=");
+        for (index, name) in ADMISSION_TRACE_REASON_NAMES.iter().enumerate() {
+            if index != 0 {
+                line.push(',');
+            }
+            write!(line, "{name}:{}", trace.reason_counts[index])
+                .expect("writing to String cannot fail");
+        }
+        write!(line, " unknown_reasons={}", trace.unknown_reasons)
+            .expect("writing to String cannot fail");
+        Ok(Some(line))
+    }
+}
+
+#[cfg(test)]
+impl Drop for AdmissionTraceSession {
+    fn drop(&mut self) {
+        if self.active && !self.finished {
+            ADMISSION_TRACE.with(|trace| {
+                trace.borrow_mut().take();
+            });
+        }
+    }
+}
+
+#[cfg(test)]
+pub(crate) fn begin_admission_trace_session() -> Result<AdmissionTraceSession, String> {
+    let active = std::env::var(ADMISSION_TRACE_ENV).as_deref() == Ok("1");
+    if active {
+        ADMISSION_TRACE.with(|trace| {
+            let mut trace = trace.borrow_mut();
+            if trace.is_some() {
+                return Err("V10 admission trace session is already active".to_string());
+            }
+            *trace = Some(AdmissionTraceCounters::default());
+            Ok(())
+        })?;
+    }
+    Ok(AdmissionTraceSession {
+        active,
+        finished: false,
+    })
+}
+
+#[cfg(test)]
+macro_rules! admission_trace_bool {
+    ($stage:ident, $expression:expr) => {
+        trace_stage_bool(AdmissionTraceStage::$stage, || $expression)
+    };
+}
+
+#[cfg(not(test))]
+macro_rules! admission_trace_bool {
+    ($stage:ident, $expression:expr) => {
+        $expression
+    };
+}
+
+#[cfg(test)]
+macro_rules! admission_trace_value {
+    ($stage:ident, $expression:expr, $hit:expr) => {
+        trace_stage_value(AdmissionTraceStage::$stage, || $expression, $hit)
+    };
+}
+
+#[cfg(not(test))]
+macro_rules! admission_trace_value {
+    ($stage:ident, $expression:expr, $hit:expr) => {
+        $expression
+    };
+}
+
+#[cfg(test)]
+const ADMISSION_FACT_REUSE_ENV: &str = "LAY_PROPOSAL_ADMISSION_FACT_REUSE";
+
+#[cfg(test)]
+static ADMISSION_FACT_REUSE_FROM_ENV: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+
+#[cfg(test)]
+std::thread_local! {
+    static ADMISSION_FACT_REUSE_OVERRIDE: std::cell::Cell<Option<bool>> =
+        const { std::cell::Cell::new(None) };
+}
+
+#[cfg(test)]
+fn configured_admission_fact_reuse() -> bool {
+    ADMISSION_FACT_REUSE_OVERRIDE
+        .with(std::cell::Cell::get)
+        .unwrap_or_else(|| {
+            *ADMISSION_FACT_REUSE_FROM_ENV.get_or_init(|| {
+                match std::env::var(ADMISSION_FACT_REUSE_ENV) {
+                    Ok(value) if value == "REUSE" => true,
+                    Ok(value) if value == "UNCACHED" => false,
+                    Err(std::env::VarError::NotPresent) => false,
+                    Ok(value) => panic!(
+                        "{ADMISSION_FACT_REUSE_ENV} must be UNCACHED or REUSE, got {value:?}"
+                    ),
+                    Err(std::env::VarError::NotUnicode(_)) => {
+                        panic!("{ADMISSION_FACT_REUSE_ENV} must be valid UTF-8")
+                    }
+                }
+            })
+        })
+}
+
+#[cfg(test)]
+struct AdmissionFactReuseOverride {
+    previous: Option<bool>,
+}
+
+#[cfg(test)]
+impl Drop for AdmissionFactReuseOverride {
+    fn drop(&mut self) {
+        ADMISSION_FACT_REUSE_OVERRIDE.with(|slot| slot.set(self.previous));
+    }
+}
+
+#[cfg(test)]
+fn with_admission_fact_reuse<T>(reuse: bool, run: impl FnOnce() -> T) -> T {
+    let previous = ADMISSION_FACT_REUSE_OVERRIDE.with(|slot| {
+        let previous = slot.get();
+        slot.set(Some(reuse));
+        previous
+    });
+    let _guard = AdmissionFactReuseOverride { previous };
+    run()
+}
+
+#[derive(Debug)]
+struct AdmissionWordFacts {
+    word: String,
+    lower: std::cell::OnceCell<String>,
+    cyrillic_letters_only: std::cell::OnceCell<bool>,
+    char_len: std::cell::OnceCell<usize>,
+    known_russian: std::cell::OnceCell<bool>,
+    protected_current: std::cell::OnceCell<bool>,
+}
+
+impl AdmissionWordFacts {
+    fn new(word: String) -> Self {
+        Self {
+            word,
+            lower: std::cell::OnceCell::new(),
+            cyrillic_letters_only: std::cell::OnceCell::new(),
+            char_len: std::cell::OnceCell::new(),
+            known_russian: std::cell::OnceCell::new(),
+            protected_current: std::cell::OnceCell::new(),
+        }
+    }
+
+    fn word(&self) -> &str {
+        &self.word
+    }
+
+    fn lower(&self) -> &str {
+        self.lower.get_or_init(|| self.word.to_lowercase())
+    }
+
+    fn is_cyrillic_letters_only(&self) -> bool {
+        *self
+            .cyrillic_letters_only
+            .get_or_init(|| is_cyrillic_letters_only(&self.word))
+    }
+
+    fn char_len(&self) -> usize {
+        *self.char_len.get_or_init(|| self.lower().chars().count())
+    }
+
+    fn is_known_russian(&self) -> bool {
+        *self
+            .known_russian
+            .get_or_init(|| known_russian_autocorrect_token(self.lower()))
+    }
+
+    fn is_protected_current(&self) -> bool {
+        *self.protected_current.get_or_init(|| {
+            let field = crate::hot_field::HotFieldSnapshot::current();
+            self.is_known_russian()
+                || crate::phrase_lexicon::is_known_russian_phrase_part(self.lower())
+                || field
+                    .input_surface_readout(self.lower())
+                    .has_phase_authority()
+                || field.word_readout(self.lower()).is_known()
+                || crate::nanda_wave::l2::l2_surface_foundation_contains(self.lower())
+                || crate::nanda_wave::l2::l2_surface_foundation_has_authority(self.lower())
+                || crate::russian_lexicon::is_reference_backed_russian_form(self.lower())
+                || crate::russian_lexicon::is_center_backed_russian_form(self.lower())
+                || crate::russian_lexicon::is_reference_known_russian_word_or_form(self.lower())
+                || crate::russian_lexicon::russian_dictionary().contains(self.lower())
+                || crate::russian_lexicon::russian_short_dictionary().contains(self.lower())
+        })
+    }
+}
+
+#[cfg(test)]
+#[derive(Debug, Default, PartialEq, Eq)]
+struct AdmissionLexicalFactSnapshot {
+    original_word: bool,
+    replacement_word: bool,
+    original_lower: bool,
+    replacement_lower: bool,
+    original_known: bool,
+    replacement_known: bool,
+    original_protected: bool,
+    replacement_protected: bool,
+}
+
+struct AdmissionLexicalFacts<'a> {
+    original: &'a str,
+    replacement: &'a str,
+    reuse: bool,
+    original_word: std::cell::OnceCell<Option<AdmissionWordFacts>>,
+    replacement_word: std::cell::OnceCell<Option<AdmissionWordFacts>>,
+}
+
+impl<'a> AdmissionLexicalFacts<'a> {
+    fn new(original: &'a str, replacement: &'a str) -> Self {
+        #[cfg(test)]
+        let reuse = configured_admission_fact_reuse();
+        #[cfg(not(test))]
+        let reuse = true;
+
+        Self::with_mode(original, replacement, reuse)
+    }
+
+    fn with_mode(original: &'a str, replacement: &'a str, reuse: bool) -> Self {
+        Self {
+            original,
+            replacement,
+            reuse,
+            original_word: std::cell::OnceCell::new(),
+            replacement_word: std::cell::OnceCell::new(),
+        }
+    }
+
+    fn reuses_facts(&self) -> bool {
+        self.reuse
+    }
+
+    fn assert_pair(&self, original: &str, replacement: &str) {
+        debug_assert_eq!(
+            self.original, original,
+            "lexical fact original identity drift"
+        );
+        debug_assert_eq!(
+            self.replacement, replacement,
+            "lexical fact replacement identity drift"
+        );
+    }
+
+    fn original_word(&self) -> Option<&AdmissionWordFacts> {
+        self.original_word
+            .get_or_init(|| last_text_word(self.original).map(AdmissionWordFacts::new))
+            .as_ref()
+    }
+
+    fn replacement_word(&self) -> Option<&AdmissionWordFacts> {
+        self.replacement_word
+            .get_or_init(|| last_text_word(self.replacement).map(AdmissionWordFacts::new))
+            .as_ref()
+    }
+
+    #[cfg(test)]
+    fn snapshot(&self) -> AdmissionLexicalFactSnapshot {
+        let original = self.original_word.get().and_then(Option::as_ref);
+        let replacement = self.replacement_word.get().and_then(Option::as_ref);
+        AdmissionLexicalFactSnapshot {
+            original_word: self.original_word.get().is_some(),
+            replacement_word: self.replacement_word.get().is_some(),
+            original_lower: original.is_some_and(|word| word.lower.get().is_some()),
+            replacement_lower: replacement.is_some_and(|word| word.lower.get().is_some()),
+            original_known: original.is_some_and(|word| word.known_russian.get().is_some()),
+            replacement_known: replacement.is_some_and(|word| word.known_russian.get().is_some()),
+            original_protected: original.is_some_and(|word| word.protected_current.get().is_some()),
+            replacement_protected: replacement
+                .is_some_and(|word| word.protected_current.get().is_some()),
+        }
+    }
+}
+
+macro_rules! admission_fact_call {
+    ($facts:expr, $cached:ident, $uncached:ident $(, $arg:expr)* $(,)?) => {
+        $cached($($arg,)* $facts)
+    };
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CandidateGateAction {
     /// Producer supplied evidence and no structural constraint blocked it. Only
@@ -102,6 +728,13 @@ pub(crate) fn gate_candidate_with_origin(
     error_class: TypingErrorClass,
     origin: CandidateOrigin,
 ) -> CandidateGateDecision {
+    #[cfg(test)]
+    if admission_trace_active() {
+        let started = std::time::Instant::now();
+        let decision = candidate_admission(original, replacement, error_class, origin);
+        record_admission(started.elapsed());
+        return decision;
+    }
     candidate_admission(original, replacement, error_class, origin)
 }
 
@@ -111,152 +744,252 @@ fn candidate_admission(
     error_class: TypingErrorClass,
     origin: CandidateOrigin,
 ) -> CandidateGateDecision {
-    if original == replacement {
+    let lexical_facts = AdmissionLexicalFacts::new(original, replacement);
+    candidate_admission_with_facts(original, replacement, error_class, origin, &lexical_facts)
+}
+
+fn candidate_admission_with_facts(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+    lexical_facts: &AdmissionLexicalFacts<'_>,
+) -> CandidateGateDecision {
+    if admission_trace_bool!(Unchanged, original == replacement) {
         return CandidateGateDecision {
             action: CandidateGateAction::KeepOriginal,
             reason: "unchanged",
         };
     }
-    let explanation = explain_candidate(original, replacement, error_class, origin);
-    if explanation.blocks_apply() {
+    let (explanation, explanation_blocks_apply) = admission_trace_value!(
+        ExplainCandidate,
+        {
+            let explanation = explain_candidate(original, replacement, error_class, origin);
+            let blocks_apply = explanation.blocks_apply();
+            (explanation, blocks_apply)
+        },
+        |value: &(crate::candidate_explanation::CandidateExplanation, bool)| value.1
+    );
+    if explanation_blocks_apply {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "unexplained_signal_loss",
         };
     }
-    if replacement_glues_separate_words_without_boundary_class(original, replacement, error_class) {
+    drop(explanation);
+    if admission_trace_bool!(
+        ReplacementGluesSeparateWords,
+        replacement_glues_separate_words_without_boundary_class(original, replacement, error_class)
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "word_count_shrink_requires_boundary_class",
         };
     }
-    if boundary_candidate_glues_short_function_tail(original, replacement, error_class) {
+    if admission_trace_bool!(
+        BoundaryGluesShortFunctionTail,
+        boundary_candidate_glues_short_function_tail(original, replacement, error_class)
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "unsafe_boundary_glue_short_function_tail",
         };
     }
-    if boundary_candidate_eats_known_current_word(original, replacement, error_class, origin) {
+    if admission_trace_bool!(
+        BoundaryEatsKnownCurrentWord,
+        boundary_candidate_eats_known_current_word(original, replacement, error_class, origin)
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "moved_prefix_eats_known_current_word",
         };
     }
-    if boundary_operator_changes_non_whitespace_surface(original, replacement, error_class, origin)
-    {
+    if admission_trace_bool!(
+        BoundaryChangesNonWhitespaceSurface,
+        boundary_operator_changes_non_whitespace_surface(
+            original,
+            replacement,
+            error_class,
+            origin
+        )
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "boundary_operator_changes_surface",
         };
     }
-    if multi_word_candidate_only_completes_last_vowel(original, replacement, error_class) {
+    if admission_trace_bool!(
+        MultiwordLastVowelCompletion,
+        multi_word_candidate_only_completes_last_vowel(original, replacement, error_class)
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "unsafe_multi_word_vowel_completion",
         };
     }
-    if adjacent_transposition_competes_with_single_letter_boundary(
-        original,
-        replacement,
-        error_class,
+    if admission_trace_bool!(
+        AdjacentTranspositionBoundaryCompetition,
+        adjacent_transposition_competes_with_single_letter_boundary(
+            original,
+            replacement,
+            error_class,
+        )
     ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "single_letter_boundary_beats_transposition",
         };
     }
-    if boundary_candidate_splits_known_russian_word(original, replacement, error_class) {
+    if admission_trace_bool!(
+        BoundarySplitsKnownWord,
+        boundary_candidate_splits_known_russian_word(original, replacement, error_class)
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "known_single_word_boundary_split",
         };
     }
-    if boundary_candidate_splits_to_short_function_and_weak_tail(original, replacement, error_class)
-    {
+    if admission_trace_bool!(
+        BoundarySplitsWeakTail,
+        boundary_candidate_splits_to_short_function_and_weak_tail(
+            original,
+            replacement,
+            error_class,
+        )
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "weak_boundary_split_tail",
         };
     }
-    if reflexive_suffix_candidate_requires_grammar_proof(original, replacement, error_class) {
+    if admission_trace_bool!(
+        ReflexiveSuffixRequiresGrammar,
+        reflexive_suffix_candidate_requires_grammar_proof(original, replacement, error_class)
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "reflexive_suffix_requires_grammar_proof",
         };
     }
-    if known_current_word_gets_unproven_surface_drift(original, replacement, error_class, origin) {
+    if admission_trace_bool!(
+        KnownCurrentSurfaceDrift,
+        admission_fact_call!(
+            lexical_facts,
+            known_current_word_gets_unproven_surface_drift_with_facts,
+            known_current_word_gets_unproven_surface_drift,
+            original,
+            replacement,
+            error_class,
+            origin,
+        )
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "known_current_word_surface_drift",
         };
     }
-    if let Some(reason) =
+    let action_blocker = admission_trace_value!(
+        VerifyActionOperator,
         action_operator::verify_action_operator(original, replacement, error_class, origin)
-            .apply_blocker()
-    {
+            .apply_blocker(),
+        |value: &Option<&'static str>| value.is_some()
+    );
+    if let Some(reason) = action_blocker {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason,
         };
     }
-    if surface_candidate_changes_left_context(original, replacement, origin) {
+    if admission_trace_bool!(
+        SurfaceChangesLeftContext,
+        surface_candidate_changes_left_context(original, replacement, origin)
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "surface_left_context_apply_blocked",
         };
     }
-    if l2_surface_candidate_truncates_to_stem_without_deletion_proof(original, replacement, origin)
-    {
+    if admission_trace_bool!(
+        L2SurfaceStemTruncation,
+        l2_surface_candidate_truncates_to_stem_without_deletion_proof(
+            original,
+            replacement,
+            origin,
+        )
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "l2_surface_stem_truncation_low",
         };
     }
-    if let Some(decision) = structural_context_gate(original, replacement, error_class, origin) {
+    if let Some(decision) =
+        structural_context_gate(original, replacement, error_class, origin, lexical_facts)
+    {
         return decision;
     }
-    if unproven_stable_surface_shape_drift(original, replacement, error_class, origin) {
+    if admission_trace_bool!(
+        UnprovenStableSurfaceShape,
+        admission_fact_call!(
+            lexical_facts,
+            unproven_stable_surface_shape_drift_with_facts,
+            unproven_stable_surface_shape_drift,
+            original,
+            replacement,
+            error_class,
+            origin,
+        )
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "unproven_stable_surface_shape_drift",
         };
     }
-    if semantic_candidate_lacks_surface_authority(original, replacement, origin) {
+    if admission_trace_bool!(
+        SemanticSurfaceAuthority,
+        semantic_candidate_lacks_surface_authority(original, replacement, origin)
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "semantic_wave_surface_authority_low",
         };
     }
-    if error_class == TypingErrorClass::CompletionOnly {
+    if admission_trace_bool!(
+        CompletionOnly,
+        error_class == TypingErrorClass::CompletionOnly
+    ) {
         return CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "completion_is_not_autocorrect",
         };
     }
-    match error_class {
-        TypingErrorClass::TechnicalToken | TypingErrorClass::ProtectedToken => {
-            CandidateGateDecision {
-                action: CandidateGateAction::Veto,
-                reason: "protected_or_technical",
+    admission_trace_value!(
+        FinalClassDispatch,
+        match error_class {
+            TypingErrorClass::TechnicalToken | TypingErrorClass::ProtectedToken => {
+                CandidateGateDecision {
+                    action: CandidateGateAction::Veto,
+                    reason: "protected_or_technical",
+                }
             }
-        }
-        TypingErrorClass::RepeatedLetter | TypingErrorClass::ExtraLetter
-            if replacement_last_word_is_unknown_cyrillic(original, replacement) =>
-        {
-            CandidateGateDecision {
+            TypingErrorClass::RepeatedLetter | TypingErrorClass::ExtraLetter
+                if replacement_last_word_is_unknown_cyrillic(original, replacement) =>
+            {
+                CandidateGateDecision {
+                    action: CandidateGateAction::SuggestOnly,
+                    reason: "single_step_typo_still_unknown",
+                }
+            }
+            TypingErrorClass::Unknown => CandidateGateDecision {
                 action: CandidateGateAction::SuggestOnly,
-                reason: "single_step_typo_still_unknown",
-            }
-        }
-        TypingErrorClass::Unknown => CandidateGateDecision {
-            action: CandidateGateAction::SuggestOnly,
-            reason: "unknown_error_class",
+                reason: "unknown_error_class",
+            },
+            _ => CandidateGateDecision {
+                action: CandidateGateAction::Eligible,
+                reason: "class_allows_apply",
+            },
         },
-        _ => CandidateGateDecision {
-            action: CandidateGateAction::Eligible,
-            reason: "class_allows_apply",
-        },
-    }
+        |_value: &CandidateGateDecision| true
+    )
 }
 
 fn surface_candidate_changes_left_context(
@@ -289,112 +1022,188 @@ fn structural_context_gate(
     replacement: &str,
     error_class: TypingErrorClass,
     origin: CandidateOrigin,
+    lexical_facts: &AdmissionLexicalFacts<'_>,
 ) -> Option<CandidateGateDecision> {
-    if candidate_over_compresses_word(original, replacement, error_class) {
+    if admission_trace_bool!(
+        StructuralOverCompress,
+        candidate_over_compresses_word(original, replacement, error_class)
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::KeepOriginal,
             reason: "candidate_over_compresses_word",
         });
     }
-    if candidate_drops_letter_after_one_letter_function_prefix(original, replacement, error_class) {
+    if admission_trace_bool!(
+        StructuralFunctionPrefixDrop,
+        candidate_drops_letter_after_one_letter_function_prefix(original, replacement, error_class,)
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::KeepOriginal,
             reason: "function_prefix_letter_drop",
         });
     }
-    if known_phrase_part_only_grows_by_one_letter(original, replacement, error_class) {
+    if admission_trace_bool!(
+        StructuralPhrasePartGrowth,
+        known_phrase_part_only_grows_by_one_letter(original, replacement, error_class)
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "known_phrase_part_one_letter_growth",
         });
     }
-    if short_word_only_grows_initial_letter(original, replacement, error_class) {
+    if admission_trace_bool!(
+        StructuralShortInitialGrowth,
+        short_word_only_grows_initial_letter(original, replacement, error_class)
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "short_initial_letter_growth",
         });
     }
-    if short_word_gets_case_vowel_drift(original, replacement, error_class) {
+    if admission_trace_bool!(
+        StructuralShortCaseVowel,
+        short_word_gets_case_vowel_drift(original, replacement, error_class)
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "short_case_vowel_drift",
         });
     }
-    if soft_sign_word_gets_vowel_drift(original, replacement, error_class) {
+    if admission_trace_bool!(
+        StructuralSoftSignVowel,
+        soft_sign_word_gets_vowel_drift(original, replacement, error_class)
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "soft_sign_vowel_drift",
         });
     }
-    if short_word_gets_internal_consonant_drift(original, replacement, error_class) {
+    if admission_trace_bool!(
+        StructuralShortInternalConsonant,
+        short_word_gets_internal_consonant_drift(original, replacement, error_class)
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "short_internal_consonant_drift",
         });
     }
-    if short_word_same_length_multi_edit_drift(original, replacement, error_class) {
+    if admission_trace_bool!(
+        StructuralShortSameLengthMultiEdit,
+        short_word_same_length_multi_edit_drift(original, replacement, error_class)
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "short_same_length_multi_edit_drift",
         });
     }
-    if same_tail_single_consonant_drift(original, replacement, error_class) {
+    if admission_trace_bool!(
+        StructuralSameTailConsonant,
+        same_tail_single_consonant_drift(original, replacement, error_class)
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "same_tail_single_consonant_drift",
         });
     }
-    if stable_known_form_grows_into_infinitive_overreach(original, replacement, error_class, origin)
-    {
+    if admission_trace_bool!(
+        StructuralInfinitiveOverreach,
+        admission_fact_call!(
+            lexical_facts,
+            stable_known_form_grows_into_infinitive_overreach_with_facts,
+            stable_known_form_grows_into_infinitive_overreach,
+            original,
+            replacement,
+            error_class,
+            origin,
+        )
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "known_form_to_infinitive_overreach",
         });
     }
-    if protected_current_surface_rewrite_requires_context_authority(
-        original,
-        replacement,
-        error_class,
-        origin,
+    if admission_trace_bool!(
+        StructuralProtectedContextAuthority,
+        admission_fact_call!(
+            lexical_facts,
+            protected_current_surface_rewrite_requires_context_authority_with_facts,
+            protected_current_surface_rewrite_requires_context_authority,
+            original,
+            replacement,
+            error_class,
+            origin,
+        )
     ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "protected_current_surface_rewrite_requires_context_authority",
         });
     }
-    if origin != CandidateOrigin::L3Context
-        && known_russian_word_rewritten_to_different_known_word(original, replacement, error_class)
-    {
+    if admission_trace_bool!(
+        StructuralKnownWordDifferentKnown,
+        origin != CandidateOrigin::L3Context
+            && admission_fact_call!(
+                lexical_facts,
+                known_russian_word_rewritten_to_different_known_word_with_facts,
+                known_russian_word_rewritten_to_different_known_word,
+                original,
+                replacement,
+                error_class,
+            )
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "known_word_to_different_known_word",
         });
     }
-    if short_layout_candidate_lacks_phrase_context(original, replacement, error_class, origin) {
+    if admission_trace_bool!(
+        StructuralShortLayoutContext,
+        short_layout_candidate_lacks_phrase_context(original, replacement, error_class, origin)
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::KeepOriginal,
             reason: "short_layout_without_phrase_context",
         });
     }
-    if short_cyrillic_word_switches_to_ascii_layout(original, replacement, error_class, origin) {
+    if admission_trace_bool!(
+        StructuralShortCyrillicAscii,
+        short_cyrillic_word_switches_to_ascii_layout(original, replacement, error_class, origin,)
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::KeepOriginal,
             reason: "short_cyrillic_to_ascii_layout",
         });
     }
-    if short_nanda_composite_candidate_shrinks_word(original, replacement, error_class, origin) {
+    if admission_trace_bool!(
+        StructuralShortNandaShrink,
+        short_nanda_composite_candidate_shrinks_word(original, replacement, error_class, origin,)
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "short_nanda_word_shrink",
         });
     }
-    if short_nanda_candidate_inserts_internal_vowel(original, replacement, error_class, origin) {
+    if admission_trace_bool!(
+        StructuralShortNandaInternalVowel,
+        short_nanda_candidate_inserts_internal_vowel(original, replacement, error_class, origin,)
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "short_nanda_internal_vowel_growth",
         });
     }
-    if nanda_surface_candidate_outputs_unknown_word(original, replacement, error_class, origin) {
+    if admission_trace_bool!(
+        StructuralNandaUnknownWord,
+        admission_fact_call!(
+            lexical_facts,
+            nanda_surface_candidate_outputs_unknown_word_with_facts,
+            nanda_surface_candidate_outputs_unknown_word,
+            original,
+            replacement,
+            error_class,
+            origin,
+        )
+    ) {
         return Some(CandidateGateDecision {
             action: CandidateGateAction::SuggestOnly,
             reason: "nanda_surface_unknown_word",
@@ -501,6 +1310,74 @@ fn known_current_word_gets_unproven_surface_drift(
         || inserted_char_position_for_missing_letter(&original_lower, &replacement_lower).is_some()
 }
 
+fn known_current_word_gets_unproven_surface_drift_with_facts(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+    facts: &AdmissionLexicalFacts<'_>,
+) -> bool {
+    if !facts.reuses_facts() {
+        return known_current_word_gets_unproven_surface_drift(
+            original,
+            replacement,
+            error_class,
+            origin,
+        );
+    }
+    facts.assert_pair(original, replacement);
+    if matches!(
+        error_class,
+        TypingErrorClass::WrongLayout
+            | TypingErrorClass::PartialLayout
+            | TypingErrorClass::SplitWord
+            | TypingErrorClass::GluedWords
+            | TypingErrorClass::CaseNoise
+            | TypingErrorClass::TechnicalToken
+            | TypingErrorClass::ProtectedToken
+            | TypingErrorClass::CompletionOnly
+            | TypingErrorClass::Unknown
+    ) {
+        return false;
+    }
+    if matches!(
+        origin.source_role(),
+        CorrectionSourceRole::Layout
+            | CorrectionSourceRole::Boundary
+            | CorrectionSourceRole::Technical
+    ) {
+        return false;
+    }
+    let Some(original_word) = facts.original_word() else {
+        return false;
+    };
+    let Some(replacement_word) = facts.replacement_word() else {
+        return false;
+    };
+    if !original_word.is_cyrillic_letters_only() || !replacement_word.is_cyrillic_letters_only() {
+        return false;
+    }
+    if verified_surface_to_lexical_center_repair_with_facts(
+        original_word,
+        replacement_word,
+        error_class,
+    ) {
+        return false;
+    }
+    if original_word.lower() == replacement_word.lower() || !original_word.is_protected_current() {
+        return false;
+    }
+    if original_word.char_len() < 4 || replacement_word.char_len() > original_word.char_len() + 1 {
+        return false;
+    }
+    damerau_levenshtein(original_word.lower(), replacement_word.lower()) <= 1
+        || inserted_char_position_for_missing_letter(
+            original_word.lower(),
+            replacement_word.lower(),
+        )
+        .is_some()
+}
+
 fn stable_known_form_grows_into_infinitive_overreach(
     original: &str,
     replacement: &str,
@@ -566,6 +1443,76 @@ fn stable_known_form_grows_into_infinitive_overreach(
     common_prefix_chars(&original_lower, &replacement_lower) >= original_len.saturating_sub(2)
 }
 
+fn stable_known_form_grows_into_infinitive_overreach_with_facts(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+    facts: &AdmissionLexicalFacts<'_>,
+) -> bool {
+    if !facts.reuses_facts() {
+        return stable_known_form_grows_into_infinitive_overreach(
+            original,
+            replacement,
+            error_class,
+            origin,
+        );
+    }
+    facts.assert_pair(original, replacement);
+    if matches!(
+        error_class,
+        TypingErrorClass::WrongLayout
+            | TypingErrorClass::PartialLayout
+            | TypingErrorClass::SplitWord
+            | TypingErrorClass::GluedWords
+            | TypingErrorClass::CaseNoise
+            | TypingErrorClass::RepeatedLetter
+            | TypingErrorClass::AdjacentTransposition
+            | TypingErrorClass::GrammarAgreement
+            | TypingErrorClass::TechnicalToken
+            | TypingErrorClass::ProtectedToken
+            | TypingErrorClass::CompletionOnly
+            | TypingErrorClass::Unknown
+    ) {
+        return false;
+    }
+    if matches!(
+        origin.source_role(),
+        CorrectionSourceRole::Layout
+            | CorrectionSourceRole::Boundary
+            | CorrectionSourceRole::Technical
+    ) {
+        return false;
+    }
+    if candidate_changes_non_last_word(original, replacement) {
+        return false;
+    }
+    let Some(original_word) = facts.original_word() else {
+        return false;
+    };
+    let Some(replacement_word) = facts.replacement_word() else {
+        return false;
+    };
+    if !original_word.is_cyrillic_letters_only() || !replacement_word.is_cyrillic_letters_only() {
+        return false;
+    }
+    if original_word.lower() == replacement_word.lower()
+        || !original_word.is_protected_current()
+        || !replacement_word.is_known_russian()
+    {
+        return false;
+    }
+    if replacement_word.char_len() <= original_word.char_len()
+        || replacement_word.char_len() > original_word.char_len() + 4
+        || russian_infinitive_like_tail(original_word.lower())
+        || !russian_infinitive_like_tail(replacement_word.lower())
+    {
+        return false;
+    }
+    common_prefix_chars(original_word.lower(), replacement_word.lower())
+        >= original_word.char_len().saturating_sub(2)
+}
+
 fn protected_current_surface_rewrite_requires_context_authority(
     original: &str,
     replacement: &str,
@@ -616,6 +1563,62 @@ fn protected_current_surface_rewrite_requires_context_authority(
     true
 }
 
+fn protected_current_surface_rewrite_requires_context_authority_with_facts(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+    facts: &AdmissionLexicalFacts<'_>,
+) -> bool {
+    if !facts.reuses_facts() {
+        return protected_current_surface_rewrite_requires_context_authority(
+            original,
+            replacement,
+            error_class,
+            origin,
+        );
+    }
+    facts.assert_pair(original, replacement);
+    if origin != CandidateOrigin::L2Surface {
+        return false;
+    }
+    if matches!(
+        error_class,
+        TypingErrorClass::WrongLayout
+            | TypingErrorClass::PartialLayout
+            | TypingErrorClass::SplitWord
+            | TypingErrorClass::GluedWords
+            | TypingErrorClass::BoundaryShift
+            | TypingErrorClass::CaseNoise
+            | TypingErrorClass::TechnicalToken
+            | TypingErrorClass::ProtectedToken
+            | TypingErrorClass::CompletionOnly
+            | TypingErrorClass::Unknown
+    ) {
+        return false;
+    }
+    if candidate_changes_non_last_word(original, replacement) {
+        return false;
+    }
+    let Some(original_word) = facts.original_word() else {
+        return false;
+    };
+    let Some(replacement_word) = facts.replacement_word() else {
+        return false;
+    };
+    if !original_word.is_cyrillic_letters_only() || !replacement_word.is_cyrillic_letters_only() {
+        return false;
+    }
+    if original_word.lower() == replacement_word.lower()
+        || !original_word.is_protected_current()
+        || original_word.char_len() < 4
+        || replacement_word.char_len() < 4
+    {
+        return false;
+    }
+    true
+}
+
 fn verified_surface_to_lexical_center_repair(
     original_lower: &str,
     replacement_lower: &str,
@@ -635,6 +1638,29 @@ fn verified_surface_to_lexical_center_repair(
             || crate::text_metrics::sparse_internal_omission_count(
                 original_lower,
                 replacement_lower,
+            )
+            .is_some())
+}
+
+fn verified_surface_to_lexical_center_repair_with_facts(
+    original: &AdmissionWordFacts,
+    replacement: &AdmissionWordFacts,
+    error_class: TypingErrorClass,
+) -> bool {
+    matches!(
+        error_class,
+        TypingErrorClass::LetterSubstitution
+            | TypingErrorClass::MissingLetter
+            | TypingErrorClass::SparseInternalMultiOmission
+            | TypingErrorClass::ExtraLetter
+            | TypingErrorClass::RepeatedLetter
+            | TypingErrorClass::AdjacentTransposition
+    ) && !original.is_known_russian()
+        && replacement.is_known_russian()
+        && (damerau_levenshtein(original.lower(), replacement.lower()) <= 1
+            || crate::text_metrics::sparse_internal_omission_count(
+                original.lower(),
+                replacement.lower(),
             )
             .is_some())
 }
@@ -696,6 +1722,73 @@ fn unproven_stable_surface_shape_drift(
         || unproven_short_vowel_substitution(&original_lower, &replacement_lower)
         || unproven_tail_vowel_substitution(&original_lower, &replacement_lower)
         || unproven_inflection_tail_vowel_to_consonant(&original_lower, &replacement_lower)
+}
+
+fn unproven_stable_surface_shape_drift_with_facts(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+    facts: &AdmissionLexicalFacts<'_>,
+) -> bool {
+    if !facts.reuses_facts() {
+        return unproven_stable_surface_shape_drift(original, replacement, error_class, origin);
+    }
+    facts.assert_pair(original, replacement);
+    if matches!(
+        error_class,
+        TypingErrorClass::WrongLayout
+            | TypingErrorClass::PartialLayout
+            | TypingErrorClass::SplitWord
+            | TypingErrorClass::GluedWords
+            | TypingErrorClass::CaseNoise
+            | TypingErrorClass::RepeatedLetter
+            | TypingErrorClass::AdjacentTransposition
+            | TypingErrorClass::TechnicalToken
+            | TypingErrorClass::ProtectedToken
+            | TypingErrorClass::CompletionOnly
+            | TypingErrorClass::Unknown
+    ) {
+        return false;
+    }
+    if matches!(
+        origin.source_role(),
+        CorrectionSourceRole::Layout
+            | CorrectionSourceRole::Boundary
+            | CorrectionSourceRole::Technical
+    ) {
+        return false;
+    }
+    if candidate_changes_non_last_word(original, replacement) {
+        return false;
+    }
+    let Some(original_word) = facts.original_word() else {
+        return false;
+    };
+    let Some(replacement_word) = facts.replacement_word() else {
+        return false;
+    };
+    if !original_word.is_cyrillic_letters_only() || !replacement_word.is_cyrillic_letters_only() {
+        return false;
+    }
+    if verified_surface_to_lexical_center_repair_with_facts(
+        original_word,
+        replacement_word,
+        error_class,
+    ) {
+        return false;
+    }
+    if original_word.lower() == replacement_word.lower() {
+        return false;
+    }
+    unproven_internal_vowel_insertion(original_word.lower(), replacement_word.lower())
+        || unproven_soft_sign_tail_insertion(original_word.lower(), replacement_word.lower())
+        || unproven_short_vowel_substitution(original_word.lower(), replacement_word.lower())
+        || unproven_tail_vowel_substitution(original_word.lower(), replacement_word.lower())
+        || unproven_inflection_tail_vowel_to_consonant(
+            original_word.lower(),
+            replacement_word.lower(),
+        )
 }
 
 fn unproven_internal_vowel_insertion(original: &str, replacement: &str) -> bool {
@@ -1334,6 +2427,49 @@ fn known_russian_word_rewritten_to_different_known_word(
         && known_russian_autocorrect_token(&replacement_lower)
 }
 
+fn known_russian_word_rewritten_to_different_known_word_with_facts(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    facts: &AdmissionLexicalFacts<'_>,
+) -> bool {
+    if !facts.reuses_facts() {
+        return known_russian_word_rewritten_to_different_known_word(
+            original,
+            replacement,
+            error_class,
+        );
+    }
+    facts.assert_pair(original, replacement);
+    if !matches!(
+        error_class,
+        TypingErrorClass::CompositeTypo
+            | TypingErrorClass::BoundaryShift
+            | TypingErrorClass::MissingLetter
+            | TypingErrorClass::SparseInternalMultiOmission
+            | TypingErrorClass::ExtraLetter
+            | TypingErrorClass::RepeatedLetter
+            | TypingErrorClass::AdjacentTransposition
+            | TypingErrorClass::LetterSubstitution
+            | TypingErrorClass::GrammarAgreement
+    ) {
+        return false;
+    }
+    let Some(original_word) = facts.original_word() else {
+        return false;
+    };
+    let Some(replacement_word) = facts.replacement_word() else {
+        return false;
+    };
+    if !original_word.is_cyrillic_letters_only() || !replacement_word.is_cyrillic_letters_only() {
+        return false;
+    }
+    if original_word.lower() == replacement_word.lower() {
+        return false;
+    }
+    original_word.is_known_russian() && replacement_word.is_known_russian()
+}
+
 fn known_russian_autocorrect_token(lower: &str) -> bool {
     crate::lexicon::is_common_ru_word(lower)
         || crate::lexicon::is_ru_live_protected_word(lower)
@@ -1746,6 +2882,41 @@ fn nanda_surface_candidate_outputs_unknown_word(
         && !crate::phrase_lexicon::is_known_russian_phrase_part(&replacement_lower)
 }
 
+fn nanda_surface_candidate_outputs_unknown_word_with_facts(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+    facts: &AdmissionLexicalFacts<'_>,
+) -> bool {
+    if !facts.reuses_facts() {
+        return nanda_surface_candidate_outputs_unknown_word(
+            original,
+            replacement,
+            error_class,
+            origin,
+        );
+    }
+    facts.assert_pair(original, replacement);
+    if !matches!(error_class, TypingErrorClass::CompositeTypo) || !origin.is_surface_or_context() {
+        return false;
+    }
+    let Some(original_word) = facts.original_word() else {
+        return false;
+    };
+    let Some(replacement_word) = facts.replacement_word() else {
+        return false;
+    };
+    if original_word.word() == replacement_word.word()
+        || !replacement_word.is_cyrillic_letters_only()
+    {
+        return false;
+    }
+    !crate::russian_lexicon::is_known_russian_word_or_form(replacement_word.lower())
+        && !crate::lexicon::is_common_ru_word(replacement_word.lower())
+        && !crate::phrase_lexicon::is_known_russian_phrase_part(replacement_word.lower())
+}
+
 fn short_nanda_candidate_inserts_internal_vowel(
     original: &str,
     replacement: &str,
@@ -1912,6 +3083,264 @@ pub(crate) fn should_prefer_composite_after_repeated_repair(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[derive(Clone, Copy)]
+    struct AdmissionFixture {
+        original: &'static str,
+        replacement: &'static str,
+        error_class: TypingErrorClass,
+        origin: CandidateOrigin,
+    }
+
+    const EXISTING_ADMISSION_FIXTURES: &[AdmissionFixture] = &[
+        AdmissionFixture {
+            original: "40 000 р ",
+            replacement: "40 000 h ",
+            error_class: TypingErrorClass::WrongLayout,
+            origin: CandidateOrigin::DeterministicTypo,
+        },
+        AdmissionFixture {
+            original: "Екб ",
+            replacement: "Tr, ",
+            error_class: TypingErrorClass::WrongLayout,
+            origin: CandidateOrigin::DeterministicTypo,
+        },
+        AdmissionFixture {
+            original: "дфн ",
+            replacement: "lay ",
+            error_class: TypingErrorClass::WrongLayout,
+            origin: CandidateOrigin::Layout,
+        },
+        AdmissionFixture {
+            original: "в коде ",
+            replacement: "в код ",
+            error_class: TypingErrorClass::ExtraLetter,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "закинем ",
+            replacement: "закон ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "китайцы ",
+            replacement: "китайы ",
+            error_class: TypingErrorClass::ExtraLetter,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "ходу ",
+            replacement: "ход ",
+            error_class: TypingErrorClass::ExtraLetter,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "делаем ",
+            replacement: "деваем ",
+            error_class: TypingErrorClass::LetterSubstitution,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "допусти мнабираю ",
+            replacement: "допустим набираю ",
+            error_class: TypingErrorClass::BoundaryShift,
+            origin: CandidateOrigin::Boundary,
+        },
+        AdmissionFixture {
+            original: "я думаю допусти мнабираю ",
+            replacement: "я думаю допустим набираю ",
+            error_class: TypingErrorClass::BoundaryShift,
+            origin: CandidateOrigin::Boundary,
+        },
+        AdmissionFixture {
+            original: "тоесть ",
+            replacement: "есть ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "что получилось содержкой ",
+            replacement: "что получилось содержать ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "патерна ",
+            replacement: "пара ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::L3Context,
+        },
+        AdmissionFixture {
+            original: "я прохоил ",
+            replacement: "я проход ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "ответили вчате ",
+            replacement: "ответили вате ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::L3Context,
+        },
+        AdmissionFixture {
+            original: "будет примать ",
+            replacement: "будет придать ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::L3Context,
+        },
+        AdmissionFixture {
+            original: "видешь ",
+            replacement: "видишь ",
+            error_class: TypingErrorClass::LetterSubstitution,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "дожь ",
+            replacement: "дождь ",
+            error_class: TypingErrorClass::MissingLetter,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "твой ",
+            replacement: "тывой ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::DeterministicTypo,
+        },
+        AdmissionFixture {
+            original: "что нравится? ",
+            replacement: "что нравиться? ",
+            error_class: TypingErrorClass::MissingLetter,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "Читал логи ",
+            replacement: "Читал логик ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "смотри, ",
+            replacement: "смотори, ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::DeterministicTypo,
+        },
+        AdmissionFixture {
+            original: "давай там посмотри ",
+            replacement: "давай там просмотри ",
+            error_class: TypingErrorClass::MissingLetter,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "посмотри ",
+            replacement: "посмотреть ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "искать хрень! ",
+            replacement: "искать хрену ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::DeterministicTypo,
+        },
+        AdmissionFixture {
+            original: "тели ",
+            replacement: "тел ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::L2Surface,
+        },
+        AdmissionFixture {
+            original: "нас моного ",
+            replacement: "нас мюоного ",
+            error_class: TypingErrorClass::CompositeTypo,
+            origin: CandidateOrigin::L2Surface,
+        },
+    ];
+
+    #[test]
+    fn lexical_fact_reuse_preserves_existing_fixture_decisions_under_both_authorities() {
+        let previous_policy = crate::hot_field::process_policy();
+        for policy in [
+            crate::hot_field::HotFieldPolicy::ime(),
+            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
+                crate::text_backend::TextBackendPreference::Uinput,
+            ),
+        ] {
+            crate::hot_field::set_process_policy(policy);
+            for fixture in EXISTING_ADMISSION_FIXTURES {
+                let uncached = with_admission_fact_reuse(false, || {
+                    candidate_admission(
+                        fixture.original,
+                        fixture.replacement,
+                        fixture.error_class,
+                        fixture.origin,
+                    )
+                });
+                let reused = with_admission_fact_reuse(true, || {
+                    candidate_admission(
+                        fixture.original,
+                        fixture.replacement,
+                        fixture.error_class,
+                        fixture.origin,
+                    )
+                });
+                assert_eq!(
+                    reused, uncached,
+                    "policy={policy:?} original={:?} replacement={:?} class={:?} origin={:?}",
+                    fixture.original, fixture.replacement, fixture.error_class, fixture.origin
+                );
+            }
+        }
+        crate::hot_field::set_process_policy(previous_policy);
+    }
+
+    #[test]
+    fn lexical_fact_owner_is_lazy_call_local_and_uncached_mode_retains_nothing() {
+        let unchanged = AdmissionLexicalFacts::with_mode("слово ", "слово ", true);
+        let decision = candidate_admission_with_facts(
+            "слово ",
+            "слово ",
+            TypingErrorClass::LetterSubstitution,
+            CandidateOrigin::DeterministicTypo,
+            &unchanged,
+        );
+        assert_eq!(decision.reason, "unchanged");
+        assert_eq!(
+            unchanged.snapshot(),
+            AdmissionLexicalFactSnapshot::default()
+        );
+
+        let uncached = AdmissionLexicalFacts::with_mode("посмотри ", "посмотреть ", false);
+        let _ = candidate_admission_with_facts(
+            "посмотри ",
+            "посмотреть ",
+            TypingErrorClass::CompositeTypo,
+            CandidateOrigin::L2Surface,
+            &uncached,
+        );
+        assert_eq!(uncached.snapshot(), AdmissionLexicalFactSnapshot::default());
+
+        let reused = AdmissionLexicalFacts::with_mode("посмотри ", "посмотреть ", true);
+        let _ = candidate_admission_with_facts(
+            "посмотри ",
+            "посмотреть ",
+            TypingErrorClass::CompositeTypo,
+            CandidateOrigin::L2Surface,
+            &reused,
+        );
+        let snapshot = reused.snapshot();
+        assert!(snapshot.original_word && snapshot.replacement_word);
+        assert!(snapshot.original_lower && snapshot.replacement_lower);
+        assert!(snapshot.original_known && snapshot.replacement_known);
+        assert!(snapshot.original_protected);
+        assert!(!snapshot.replacement_protected);
+
+        let next_call = AdmissionLexicalFacts::with_mode("дожь ", "дождь ", true);
+        assert_eq!(
+            next_call.snapshot(),
+            AdmissionLexicalFactSnapshot::default()
+        );
+    }
 
     #[test]
     fn short_cyrillic_to_ascii_layout_is_never_applyable_from_logs() {

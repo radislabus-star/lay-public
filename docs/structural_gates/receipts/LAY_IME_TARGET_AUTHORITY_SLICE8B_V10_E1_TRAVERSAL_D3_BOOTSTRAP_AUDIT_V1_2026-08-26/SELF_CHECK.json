@@ -1,0 +1,47 @@
+{
+  "auditor": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d3-bootstrap-audit.py",
+    "sha256": "59f963d6327f00baf561113e8ff98b781b2eae22d83c68cbfa0e2d2c56610db6",
+    "size_bytes": 29206
+  },
+  "bootstrap_sources": {
+    "auditor_sha256": "59f963d6327f00baf561113e8ff98b781b2eae22d83c68cbfa0e2d2c56610db6",
+    "command_graph": {
+      "perf_record_routes": [
+        "T2-SINGLE"
+      ],
+      "perf_stat_routes": [],
+      "pid_attach": false,
+      "route_stage_mode": "0755",
+      "routes": [
+        "U2-SINGLE",
+        "T2-SINGLE"
+      ],
+      "signal_lifecycle": false,
+      "t2_edges": 528060876,
+      "u2_edges": 502915120
+    },
+    "local_bootstrap_mirror_present": false,
+    "local_controller_sha256": "8f48f4ac95a288d3c58cf60946a7e176f5b527d7a11c51d22680efd89c22acb2",
+    "remote_controller_sha256": "3540c797130f537330c18b3739baddacfac5eba1f8fdaa201e3af1f30e3a6e85",
+    "transport_defect": "scp as e cannot traverse authoritative root-owned D3 parent mode 0700"
+  },
+  "d2_terminal": {
+    "mode": "0444",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_TERMINAL_AUDIT_V1_2026-08-26/T_SINGLE_TERMINAL_AUDIT_RECEIPT.json",
+    "sha256": "75dc2703e279524a76c49a455b6081634d1c67274106da45f0d7d610af95e608",
+    "size_bytes": 14907
+  },
+  "marker_mutations": 0,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_projection_mutations": 0,
+  "remote_writes": 0,
+  "schema": "lay.v10.e1-traversal-d3-bootstrap-audit-self-check.v1",
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826",
+  "transaction_id": "e88555465ee51b7caed891217e8941ceb0b412ed82981d7c88cde71c3eb452e1",
+  "verdict": "D3_BOOTSTRAP_AUDITOR_VERIFIED_UNRUN"
+}

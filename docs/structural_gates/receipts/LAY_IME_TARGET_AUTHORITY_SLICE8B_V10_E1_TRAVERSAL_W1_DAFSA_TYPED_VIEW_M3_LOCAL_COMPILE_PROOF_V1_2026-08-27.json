@@ -1,0 +1,65 @@
+{
+  "schema": "lay.v10.e1-traversal-w1-dafsa-typed-view-m3-local-compile-proof.v1",
+  "task_id": "slice8b-v10-e1-traversal-w1-dafsa-typed-view-m3-v1-20260827",
+  "transaction_id": "03ae2d28e6c943c4f20aad58dc4160550314e14bff057ecc4fd60d97c69e35de",
+  "verdict": "M3_LOCAL_COMPILE_PROOF_PASS",
+  "v10_source_sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c",
+  "fragment": {
+    "sha256": "5a2e164c47c88677b74baf44d500c939749c98deff3092a1621086cf6e800875",
+    "size_bytes": 149110,
+    "d1_prefix_sha256": "bbd8b8d318810eec721812f21efbeb5f231dacba774cb5ade854e2201c6c7665",
+    "d1_prefix_size_bytes": 113204
+  },
+  "assembled_source": {
+    "sha256": "56a0c3243ec8ea9fc3a4f8bf49c4b56f10e5ba38b1158026271dd34218f13aba",
+    "size_bytes": 240628,
+    "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26"
+  },
+  "input_closure": {
+    "source": "read-only copy of sealed D2 REMOTE_EVIDENCE/source",
+    "cargo_toml_sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b",
+    "cargo_lock_sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1",
+    "cargo_guard_sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"
+  },
+  "cargo": {
+    "argv": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--offline",
+      "--locked",
+      "--release",
+      "--lib",
+      "--no-run",
+      "nanda_wave::l2_field::v13_typed_peak::tests::v10_m3_dafsa_typed_view_physical"
+    ],
+    "exit_code": 0,
+    "invocations": 1,
+    "log_sha256": "8b0853692e8fdf4366e13bfad32d668418ca52b1cceee0b853ea2da406a39378",
+    "version": "cargo 1.97.1 (c980f4866 2026-06-30)"
+  },
+  "rustc": {
+    "release": "1.97.1",
+    "commit_hash": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+    "host": "x86_64-unknown-linux-gnu",
+    "llvm": "22.1.6"
+  },
+  "disposable_elf": {
+    "sha256_before_cleanup": "25da14fb931b6f01b66051768b28b6be250bd4ba2d1f8cff4fe52480d4e1e921",
+    "size_bytes_before_cleanup": 319945968,
+    "executed": false,
+    "retained": false,
+    "promotable_to_scientific_route": false
+  },
+  "disposable_original_path": "/tmp/lay-m3-compile-proof-oKRaAp",
+  "disposable_original_path_present_after_cleanup": false,
+  "cleanup": "moved intact to the user Trash after evidence capture",
+  "markers_created": 0,
+  "markers_consumed": 0,
+  "perf_stat_invocations": 0,
+  "perf_record_invocations": 0,
+  "pmu_events": 0,
+  "subject_executions": 0,
+  "remote_namespace_created": false,
+  "scientific_evidence": false,
+  "runtime_authority_changed": false
+}

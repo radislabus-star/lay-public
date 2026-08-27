@@ -32,6 +32,8 @@ pub struct ActiveCompositionAutocorrectRequest<'a> {
     pub text: &'a str,
     pub committed_tail: &'a str,
     pub config: &'a LayConfig,
+    pub lexical_authority_frame:
+        Option<&'a crate::lexical_authority_frame::LexicalAuthorityFrameV1>,
     /// Layout that produced the live token. `None` is reserved for callers
     /// that do not own physical/IME layout evidence.
     pub active_layout_is_ru: Option<bool>,
@@ -153,6 +155,7 @@ fn decide_active_composition_autocorrect_with_evidence(
     let gate_request = InputGateRequest {
         trigger: InputGateTrigger::Space,
         text_tail: &gate_text,
+        lexical_authority_frame: request.lexical_authority_frame,
         auto_replace: gate_config.auto_replace,
         typing_assist: gate_config.typing_assist,
         auto_switch_layout: gate_config.auto_switch_layout,
@@ -430,6 +433,7 @@ mod tests {
                 text: "прохоил ",
                 committed_tail: "я прохоил",
                 config: &cfg,
+                lexical_authority_frame: None,
                 active_layout_is_ru: None,
             })
             .expect("decision");
@@ -501,6 +505,7 @@ mod tests {
             text: "ghbdtn ",
             committed_tail: "ghbdtn",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: Some(false),
         };
         let prepared = prepare_exact_layout_active_composition_autocorrect_observed(
@@ -535,6 +540,7 @@ mod tests {
                     text: &text,
                     committed_tail: token,
                     config: &cfg,
+                    lexical_authority_frame: None,
                     active_layout_is_ru: Some(false),
                 },
                 &exact_us_frame(token),
@@ -559,6 +565,7 @@ mod tests {
                     text: &text,
                     committed_tail,
                     config: &cfg,
+                    lexical_authority_frame: None,
                     active_layout_is_ru: Some(false),
                 },
                 &exact_us_frame(token),
@@ -581,6 +588,7 @@ mod tests {
             text: "ghbdtn ",
             committed_tail: "ghbdtn",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: Some(false),
         };
         for profile in [FactoryEngineProfile::Unknown, FactoryEngineProfile::Ru] {
@@ -624,6 +632,7 @@ mod tests {
                     text: typed,
                     committed_tail: &committed_tail,
                     config: &cfg,
+                    lexical_authority_frame: None,
                     active_layout_is_ru: None,
                 })
                 .unwrap_or_else(|| panic!("missing layout transition for {typed:?}"));
@@ -639,6 +648,7 @@ mod tests {
             text: "yt ",
             committed_tail: "yt",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: Some(false),
         })
         .expect("short wrong-layout function word");
@@ -662,6 +672,7 @@ mod tests {
                     text: &text,
                     committed_tail: tail,
                     config: &cfg,
+                    lexical_authority_frame: None,
                     active_layout_is_ru: None,
                 })
                 .unwrap_or_else(|| panic!("dual-layout decision for tail={tail:?}"));
@@ -677,6 +688,7 @@ mod tests {
             text: "привет ",
             committed_tail: "смотрим привет",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: None,
         });
 
@@ -690,6 +702,7 @@ mod tests {
             text: "pdf ",
             committed_tail: "pdf",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: Some(false),
         });
 
@@ -706,6 +719,7 @@ mod tests {
             text: "ye;ty ",
             committed_tail: "ye;ty",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: Some(false),
         })
         .expect("internal layout-letter symbol must remain eligible for projection");
@@ -722,6 +736,7 @@ mod tests {
             text: "зва ",
             committed_tail: "зва",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: Some(true),
         })
         .expect("unknown active-layout surface may project to a known opposite-layout token");
@@ -736,6 +751,7 @@ mod tests {
             text: "прохоил ",
             committed_tail: "прохоил",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: Some(true),
         })
         .expect("ordinary typo correction");
@@ -750,6 +766,7 @@ mod tests {
             text: "читайл ",
             committed_tail: "читайл",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: Some(true),
         })
         .expect("final-consonant extra-letter correction");
@@ -766,6 +783,7 @@ mod tests {
             text: "тоесть ",
             committed_tail: "тоесть",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: None,
         })
         .expect("boundary decision");
@@ -787,6 +805,7 @@ mod tests {
             text: "вотслов ",
             committed_tail: original,
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: Some(true),
         })
         .expect("boundary decision");
@@ -830,6 +849,7 @@ mod tests {
             text: "тоесть ",
             committed_tail: "тоесть",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: None,
         })
         .expect("boundary decision");
@@ -850,6 +870,7 @@ mod tests {
             text: "тоесть ",
             committed_tail: "тоесть тоесть",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: None,
         })
         .expect("boundary decision");
@@ -872,6 +893,7 @@ mod tests {
             text: "автозаменет ",
             committed_tail: "блять зайди в лог посмотреть как он автозаменет",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: None,
         })
         .expect("autozamena decision");
@@ -905,6 +927,7 @@ mod tests {
                     text: &text,
                     committed_tail,
                     config: &cfg,
+                    lexical_authority_frame: None,
                     active_layout_is_ru: None,
                 })
                 .unwrap_or_else(|| panic!("missing shared decision for {committed_tail:?}"));
@@ -934,6 +957,7 @@ mod tests {
             text: "мло ",
             committed_tail: "мло",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: Some(true),
         });
 
@@ -966,6 +990,7 @@ mod tests {
             text: "врмея ",
             committed_tail: "врмея",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: None,
         })
         .expect("canonical live-owner decision");
@@ -989,6 +1014,7 @@ mod tests {
             text: "пку ",
             committed_tail: "пку",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: None,
         });
 
@@ -1018,6 +1044,7 @@ mod tests {
                     text: "посмотри ",
                     committed_tail: "давай там посмотри",
                     config: &cfg,
+                    lexical_authority_frame: None,
                     active_layout_is_ru: None,
                 });
 
@@ -1042,6 +1069,7 @@ mod tests {
             text,
             committed_tail,
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: None,
         })
         .expect("decision");

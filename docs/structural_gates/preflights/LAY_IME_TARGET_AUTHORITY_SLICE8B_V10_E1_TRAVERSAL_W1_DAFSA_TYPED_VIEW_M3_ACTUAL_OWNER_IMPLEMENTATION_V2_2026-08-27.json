@@ -1,0 +1,692 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_IMPLEMENTATION_V2_2026-08-27",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "implementation-preflight-v1",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_IMPLEMENTATION_V1_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 21064,
+        "sha256": "26712577d6ca513933ff2323833d93ae6a4d2d81220e5528501b9a712467af8c"
+      }
+    },
+    {
+      "id": "implementation-preflight-v1-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_IMPLEMENTATION_V1_PREFLIGHT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 14177,
+        "sha256": "de8c271f4c8c2e97c1806dd35a20840fa3edc76948ef517cb5221609c9bf4854"
+      }
+    },
+    {
+      "id": "consequence-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_CONSEQUENCE_V1_2026-08-27.md",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 12103,
+        "sha256": "7269ff22ccb4744e4dc1824a6f2e92880b9dea5a9e2316759464b9c6eac6dbe9"
+      }
+    },
+    {
+      "id": "consequence-route-a",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_CONSEQUENCE_V1_ROUTE_A_RECEIPT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 11131,
+        "sha256": "c87d1eac157eed6d8fc9dc6a2fedf74312f341bd3e837cec9faea2fca8f36834"
+      }
+    },
+    {
+      "id": "consequence-route-b",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_CONSEQUENCE_V1_ROUTE_B_RECEIPT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 17816,
+        "sha256": "17e2eec81dd23c470274cd70289f30e605a41a1f361b5903410a5ab16770872e"
+      }
+    },
+    {
+      "id": "consequence-route-c1-v2",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_CONSEQUENCE_V1_ROUTE_C1_V2_RECEIPT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 16028,
+        "sha256": "b091eaeb7a77e0853c994df1279e786057927b4198b6d00604696c07533f83a6"
+      }
+    },
+    {
+      "id": "consequence-route-c2",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_CONSEQUENCE_V1_ROUTE_C2_RECEIPT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 15905,
+        "sha256": "1d01a5a2b605c16e4ab55dd651e5ac3e18e07a00383eedc7312cdfa787b5ab88"
+      }
+    },
+    {
+      "id": "code-route-v2",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_CODE_ROUTE_V2_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 9228,
+        "sha256": "684e72291b6d6387086215adb79d47c151205d85cc82ecd385d79c3b9ef34b93"
+      }
+    },
+    {
+      "id": "code-route-v2-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_CODE_ROUTE_V2_RECEIPT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 11136,
+        "sha256": "9e672fb38818f268ed8f652bfa58a7582f053266227a3a13afc5f56a61ae68ab"
+      }
+    },
+    {
+      "id": "m3-terminal",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TERMINAL_AUDIT_V1_2026-08-27/M3_TERMINAL_AUDIT_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 12548,
+        "sha256": "a84355e42bad335d45b379c7e76d2b353bed6c23c30593e1c721be0c0058f324"
+      }
+    },
+    {
+      "id": "source-lifetime-decision",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_SOURCE_LIFETIME_DECISION_V1_2026-08-27.md",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 6132,
+        "sha256": "e7b0f66170776677c2b153254aa01a303fdf8538aec273678196dec723715b24"
+      }
+    },
+    {
+      "id": "test-source-integration",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TEST_SOURCE_INTEGRATION_V1_2026-08-27/INTEGRATION_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 2755,
+        "sha256": "1e3e372c858e09e571590be4262e4d923a48e32dede937aac8f18556f10dfe99"
+      }
+    },
+    {
+      "id": "test-source-integration-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TEST_SOURCE_INTEGRATION_V1_2026-08-27/INTEGRATION_AUDIT_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 5908,
+        "sha256": "5a6deb02bc6ec703afe375e25c1cc3d40b5a1d012d90ce63914cad0d17a4ae3d"
+      }
+    },
+    {
+      "id": "typed-edit-traversal-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 88634,
+        "sha256": "d983d16169c7526d56e9f78299524ab80d3d4f3e67ff19770f07a7ae6e61045d"
+      }
+    },
+    {
+      "id": "lexical-module-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/lexical_grokking/mod.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 3828,
+        "sha256": "6ed793225c94eed46794fd7084a5b5862ed5164b55a724719734c055356a341b"
+      }
+    },
+    {
+      "id": "material-frame-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 61490,
+        "sha256": "01d625a67f6f13f75fc69af6ef3df78dd42f8f0bf72a757edb5d8851b059d5cd"
+      }
+    },
+    {
+      "id": "live-owner-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 64800,
+        "sha256": "991c1b7d1cd7daf465bfd73b1570e7541b0bd8b93810d2706bec97623b7a2294"
+      }
+    },
+    {
+      "id": "composite-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/composite.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 20584,
+        "sha256": "2cd6eb3a843d202080053d739e7a201f64d8866f8e594caa05d6af32b03eef4a"
+      }
+    },
+    {
+      "id": "productive-module-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/mod.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2313,
+        "sha256": "d67d45f52c3b60c38dfa18da4a434079ef07fe58002e1ba1f2a6dd6cf47a4d40"
+      }
+    },
+    {
+      "id": "v13-test-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 152276,
+        "sha256": "1cdc2ad9040fa97bc8a2705e5d192a27ab298f0551f4f22d5e6bc79f73f4c3ee"
+      }
+    },
+    {
+      "id": "typed-exact-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak/typed_exact.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 26203,
+        "sha256": "325bdd386b13de77bd030ef1af0fecb12be8bdd2bdd3c841d10257647a4ceaf4"
+      }
+    },
+    {
+      "id": "l2-module-protected",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/mod.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 52483,
+        "sha256": "c76c28debdac8e43d360a5a82811ea86e3e6f03b98e4f81cb6678e07953e0953"
+      }
+    },
+    {
+      "id": "bridge-protected",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 111807,
+        "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad"
+      }
+    },
+    {
+      "id": "cache-protected",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 23664,
+        "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07"
+      }
+    },
+    {
+      "id": "cargo-toml",
+      "kind": "file",
+      "path": "../../../Cargo.toml",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2399,
+        "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b"
+      }
+    },
+    {
+      "id": "cargo-lock",
+      "kind": "file",
+      "path": "../../../Cargo.lock",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 70770,
+        "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"
+      }
+    },
+    {
+      "id": "cargo-guard",
+      "kind": "file",
+      "path": "../../../scripts/cargo-guard.sh",
+      "expect": {
+        "mode": "0775",
+        "size_bytes": 2534,
+        "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"
+      }
+    },
+    {
+      "id": "v13-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 140556462,
+        "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"
+      }
+    },
+    {
+      "id": "v7-fixed-proof",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+      "expect": {
+        "mode": "0400",
+        "size_bytes": 1606189,
+        "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"
+      }
+    },
+    {
+      "id": "l11-admission-receipt",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/active.installed.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 955,
+        "sha256": "52076ffdf4f17e8b02d2334ec8d04fc10991a16c7dffccbf03849b8985c8eb2e"
+      }
+    },
+    {
+      "id": "l11-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 77962328,
+        "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7"
+      }
+    },
+    {
+      "id": "productive-v90-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 17309944,
+        "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44"
+      }
+    },
+    {
+      "id": "productive-v90-recovery",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 2123112,
+        "sha256": "de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "edit-structured-certificate-api",
+        "kind": "local_test_compiled_source_edit"
+      },
+      {
+        "id": "edit-exact-peak-material-lane",
+        "kind": "local_shadow_source_edit"
+      },
+      {
+        "id": "edit-test-only-owner-entry",
+        "kind": "local_test_entry_source_edit"
+      },
+      {
+        "id": "edit-fixed-owner-proof",
+        "kind": "local_test_source_edit"
+      },
+      {
+        "id": "format-admitted-source",
+        "kind": "local_format_edit"
+      },
+      {
+        "id": "run-static-route-checks",
+        "kind": "local_read_only_process"
+      },
+      {
+        "id": "run-one-focused-cargo-proof",
+        "kind": "one_local_cargo_guard_test"
+      },
+      {
+        "id": "publish-owner-receipt",
+        "kind": "local_evidence_write"
+      },
+      {
+        "id": "update-owning-architecture",
+        "kind": "local_documentation_edit"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "network_or_remote_access",
+      "l2_field_mod_edit",
+      "bridge_or_cache_edit",
+      "live_bridge_callsite_or_cache_key_change",
+      "installed_package_discovery_or_reload_edit",
+      "daemon_ibus_worker_queue_or_runtime_authority_edit",
+      "cargo_toml_lock_or_guard_edit",
+      "global_static_once_lock_mutex_rwlock_or_cache",
+      "unsafe_or_unchecked_indexing_or_native_byte_reinterpretation",
+      "sidecar_package_v7_l11_or_v90_input_mutation",
+      "sidecar_file_write_or_publication",
+      "capacity_increase_or_top_k_repair",
+      "candidate_rank_decisioncore_safetygate_verifier_or_feedback_change",
+      "performance_promotion_claim",
+      "second_or_unscoped_cargo_invocation",
+      "build_install_restart_deployment_or_runtime_authority_change"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "steps": [
+      {
+        "id": "edit-admitted-sources",
+        "from": "PREFLIGHT_READY",
+        "to": "OWNER_SOURCES_EDITED_UNVERIFIED",
+        "mutates": true,
+        "failure_state": "BLOCKED_SOURCE_EDIT",
+        "cleanup": "retain exact partial diff as non-authoritative evidence and preserve protected source",
+        "preserves": [
+          "protected-runtime",
+          "cargo-inputs",
+          "m3-evidence",
+          "fixed-inputs"
+        ],
+        "test_id": "source-edit-fault"
+      },
+      {
+        "id": "format-admitted-sources",
+        "from": "OWNER_SOURCES_EDITED_UNVERIFIED",
+        "to": "OWNER_SOURCES_FORMATTED_UNVERIFIED",
+        "mutates": true,
+        "failure_state": "BLOCKED_SOURCE_EDIT",
+        "cleanup": "retain formatter diagnostics and exact diff without touching protected source",
+        "preserves": [
+          "protected-runtime",
+          "cargo-inputs",
+          "m3-evidence",
+          "fixed-inputs"
+        ],
+        "test_id": "format-fault"
+      },
+      {
+        "id": "static-source-and-route-check",
+        "from": "OWNER_SOURCES_FORMATTED_UNVERIFIED",
+        "to": "STATIC_ROUTE_PASS",
+        "mutates": false,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "publish no PASS and retain static diagnostics",
+        "preserves": [
+          "protected-runtime",
+          "cargo-inputs",
+          "m3-evidence",
+          "fixed-inputs"
+        ],
+        "test_id": "source-route-static"
+      },
+      {
+        "id": "focused-local-owner-proof",
+        "from": "STATIC_ROUTE_PASS",
+        "to": "LOCAL_OWNER_PROOF_PASS",
+        "mutates": true,
+        "failure_state": "BLOCKED_SEMANTIC",
+        "cleanup": "retain Cargo log and any failed staged receipt; do not run Cargo again automatically",
+        "preserves": [
+          "protected-runtime",
+          "cargo-inputs",
+          "m3-evidence",
+          "fixed-inputs"
+        ],
+        "test_id": "focused-cargo-fault"
+      },
+      {
+        "id": "publish-owner-receipt",
+        "from": "LOCAL_OWNER_PROOF_PASS",
+        "to": "M3_ACTUAL_OWNER_PARITY_PASS",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "remove incomplete receipt stage before atomic publication and retain proof logs",
+        "preserves": [
+          "protected-runtime",
+          "cargo-inputs",
+          "m3-evidence",
+          "fixed-inputs"
+        ],
+        "test_id": "receipt-publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "M3_ACTUAL_OWNER_PARITY_PASS",
+      "BLOCKED_SOURCE_EDIT",
+      "BLOCKED_PROVENANCE",
+      "BLOCKED_SEMANTIC",
+      "BLOCKED_CAPACITY",
+      "BLOCKED_CERTIFICATE",
+      "BLOCKED_OWNER_IDENTITY",
+      "BLOCKED_BUILD"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "protected-runtime",
+      "path": "src/nanda_wave/l2_field/mod.rs bridge.rs and cache.rs",
+      "policy": "immutable_during_owner_proof",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "l2-module-protected"
+    },
+    {
+      "id": "cargo-inputs",
+      "path": "Cargo.toml Cargo.lock and scripts/cargo-guard.sh",
+      "policy": "immutable_during_owner_proof",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "cargo-lock"
+    },
+    {
+      "id": "m3-evidence",
+      "path": "M3 terminal source decision integration and consequence receipts",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "m3-terminal"
+    },
+    {
+      "id": "fixed-inputs",
+      "path": "V13 V7 L11 and Productive V90 installed inputs",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v13-package"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "typed-search-to-structured-certificate",
+      "producer": "Phase7dCertificateOracle canonical serialized keys",
+      "consumer": "structured certificate evidence",
+      "comparison": "ordered canonical keys exact for every retained form",
+      "test_id": "structured-certificate-parity"
+    },
+    {
+      "id": "structured-certificate-to-exact-peak",
+      "producer": "typed exact form refs surfaces and structured certificates",
+      "consumer": "exact-peak Born enumeration",
+      "comparison": "form ref surface class and canonical key exact with zero ref collision",
+      "test_id": "exact-peak-adapter-parity"
+    },
+    {
+      "id": "exact-peak-to-prepared-material",
+      "producer": "complete exact-peak Born enumeration",
+      "consumer": "PreparedCanonicalTokenField exact material",
+      "comparison": "candidate and certificate sets exact with complete compact evidence",
+      "test_id": "prepared-material-parity"
+    },
+    {
+      "id": "exact-peak-to-composite-lattice",
+      "producer": "complete exact-peak candidate surfaces",
+      "consumer": "PreparedCanonicalTokenField composite lattice",
+      "comparison": "all non-observed exact surfaces retained once as Born without direct authority",
+      "test_id": "lattice-born-parity"
+    },
+    {
+      "id": "live-empty-lane-preservation",
+      "producer": "existing prepare_live_productive_v1_field wrapper",
+      "consumer": "new private preparation core with empty exact enumeration",
+      "comparison": "existing tests and protected bridge callsite remain exact",
+      "test_id": "empty-lane-parity"
+    },
+    {
+      "id": "generation-lifetime",
+      "producer": "one validated V13 byte generation",
+      "consumer": "one typed materialization borrowed by all fixed cases",
+      "comparison": "materialization count one and identity exact",
+      "test_id": "generation-lifetime-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "structured-not-string-parsed",
+      "statement": "the owner adapter consumes an exhaustive structured Phase 7D class rather than parsing JSON kind strings",
+      "test_id": "structured-certificate-parity"
+    },
+    {
+      "id": "dedicated-exact-lane",
+      "statement": "exact peaks never enter the eight-target contour lane",
+      "test_id": "source-route-static"
+    },
+    {
+      "id": "born-only",
+      "statement": "every exact peak remains Born and cannot directly authorize mutation",
+      "test_id": "lattice-born-parity"
+    },
+    {
+      "id": "capacity-fail-closed",
+      "statement": "more than 74 total targets or four roots per target blocks parity without capacity change",
+      "test_id": "capacity-fail-closed"
+    },
+    {
+      "id": "full-fixed-denominator",
+      "statement": "all 382 fixed cases run forward and reversed with target-blind results frozen before labels",
+      "test_id": "fixed-owner-parity"
+    },
+    {
+      "id": "one-generation-owner",
+      "statement": "one typed materialization serves all fixed requests and no global or per-token typed owner is created",
+      "test_id": "generation-lifetime-parity"
+    },
+    {
+      "id": "protected-live-route",
+      "statement": "l2_field mod bridge cache install discovery reload daemon and IBus source remain unchanged",
+      "test_id": "protected-source-parity"
+    },
+    {
+      "id": "no-performance-promotion",
+      "statement": "owner parity admits only a later end-to-end latency RSS reload preflight",
+      "test_id": "claim-boundary-static"
+    }
+  ],
+  "tests": [
+    {
+      "id": "source-edit-fault",
+      "kind": "fault_injection",
+      "expected": "partial source diff cannot alter protected runtime or publish PASS"
+    },
+    {
+      "id": "format-fault",
+      "kind": "fault_injection",
+      "expected": "formatter failure retains diagnostics and cannot publish PASS"
+    },
+    {
+      "id": "focused-cargo-fault",
+      "kind": "fault_injection",
+      "expected": "nonzero or interrupted Cargo proof retains logs and publishes no PASS"
+    },
+    {
+      "id": "receipt-publication-fault",
+      "kind": "fault_injection",
+      "expected": "no partial final receipt and no production authority"
+    },
+    {
+      "id": "source-route-static",
+      "kind": "unit",
+      "expected": "only admitted source paths change and exact peaks have a dedicated lane"
+    },
+    {
+      "id": "protected-source-parity",
+      "kind": "parity",
+      "expected": "l2_field mod bridge cache Cargo and installed input hashes remain exact"
+    },
+    {
+      "id": "structured-certificate-parity",
+      "kind": "parity",
+      "expected": "structured evidence emits the exact existing canonical certificate keys"
+    },
+    {
+      "id": "exact-peak-adapter-parity",
+      "kind": "parity",
+      "expected": "form refs surfaces classes and keys survive adaptation without collision"
+    },
+    {
+      "id": "prepared-material-parity",
+      "kind": "parity",
+      "expected": "prepared exact material retains every candidate and certificate exactly"
+    },
+    {
+      "id": "lattice-born-parity",
+      "kind": "parity",
+      "expected": "every non-observed exact surface is present once and remains SuggestOnly or independently authorized"
+    },
+    {
+      "id": "capacity-fail-closed",
+      "kind": "unit",
+      "expected": "target root and collision overflow returns a blocked result without truncation"
+    },
+    {
+      "id": "empty-lane-parity",
+      "kind": "parity",
+      "expected": "the existing live wrapper passes an empty lane and preserves existing behavior"
+    },
+    {
+      "id": "generation-lifetime-parity",
+      "kind": "parity",
+      "expected": "one typed materialization with exact package root and symbol identities serves all queries"
+    },
+    {
+      "id": "fixed-owner-parity",
+      "kind": "integration",
+      "expected": "382 cases times two schedules have zero candidate certificate completeness owner and lattice mismatch"
+    },
+    {
+      "id": "claim-boundary-static",
+      "kind": "unit",
+      "expected": "receipt denies live activation install restart deployment and end-to-end performance transfer"
+    },
+    {
+      "id": "focused-cargo-proof",
+      "kind": "integration",
+      "expected": "one exact cargo-guard release lib test exits zero and atomically writes a complete owner receipt"
+    }
+  ]
+}

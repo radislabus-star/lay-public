@@ -1,0 +1,27 @@
+{
+  "schema": "lay.v10.e1-traversal-d4-all-routes-pass.v1",
+  "task_id": "d4-estimator-recovery-v1",
+  "verdict": "PASS",
+  "authority_ready": false,
+  "safe_to_edit": true,
+  "routes_required": 11,
+  "routes_passed": 11,
+  "route_conflicts": 0,
+  "route_weak_triads": 0,
+  "route_receipts": {
+    "audit": "0ce4b3d190de828b190a48da4a87448f5c2179e7f63c50cfa86a407fb741be7c",
+    "bootstrap": "5aac232d9a657319fbba05e2fdae31a1d709f000a257075961cddc27c26fe220",
+    "decision": "ae6027e2584bb7e7e6dc698de0e875b1767f83e968b907441d4f0034b1019eec",
+    "envelope": "8a378f6ba140c5f3e269b0dbce5cff7538b29d237a9b1acd15226c96b6b1f524",
+    "history": "731d25cddaa2e2524a031632815077571a25a9ddf9bc6d4ec4fbf6a37f0d6c0c",
+    "markers": "403cf70ed1f6d5c53380ae61f24f11a9c4478c373179da07d89516245e3a23b6",
+    "one_shot": "4edda58c09649b56d1e743fb5828e3a9d3012207a0f723d94d404e6f55172aa5",
+    "reuse": "95bde88e649bdb3b32e0fe727b53d91b9dc7362a2bbde8290a730713124aa10b",
+    "sampling": "ad3dad50f0cab8d81a9bb3919a57dd836ae17affce322c27d6229a5f0b8b0ff7",
+    "t3_denominator": "ee5893f5dbe41d3a11814a3ca6218bea3f2c1bf6d9680cc1940a41a4e34b42ab",
+    "u3_denominator": "7278e77e0427bf35554d7e303e119525f463bb2adabe0b44b63fc0ad781b413c"
+  },
+  "aggregate_claim_boundary_pass": true,
+  "implementation_preflight_required": true,
+  "claim_boundary": "structural coherence only; no namespace, marker, subject, perf, scientific result or optimization authority"
+}

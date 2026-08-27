@@ -1,0 +1,69 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "--version"
+      ],
+      "exit_status": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_size_bytes": 0,
+      "stdout_sha256": "9e64f2a24ea3a3c22b070d14eb2dcbe381044179b53c84323c1b7f00c3b13282",
+      "stdout_size_bytes": 288
+    },
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "--disassemble",
+        "--demangle",
+        "--wide",
+        "-M",
+        "intel",
+        "--start-address=0x778320",
+        "--stop-address=0x7793ae",
+        "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf"
+      ],
+      "exit_status": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_size_bytes": 0,
+      "stdout_sha256": "8f252f7130c2144a39823f9fa5a32405fc60371eeaeea556e08a6eb44d225b36",
+      "stdout_size_bytes": 61383
+    },
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "--disassemble",
+        "--demangle",
+        "--wide",
+        "-M",
+        "intel",
+        "--start-address=0x926520",
+        "--stop-address=0x926643",
+        "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf"
+      ],
+      "exit_status": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_size_bytes": 0,
+      "stdout_sha256": "941eae3d5780d491ab93dfc7363a0630bf719317c3ecfccea66db79ea275ce37",
+      "stdout_size_bytes": 4788
+    },
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "--disassemble",
+        "--demangle",
+        "--wide",
+        "-M",
+        "intel",
+        "--start-address=0x9266b0",
+        "--stop-address=0x926808",
+        "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf"
+      ],
+      "exit_status": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_size_bytes": 0,
+      "stdout_sha256": "565f9a86b465142dd691c527dd4187f585fbdf12b9b5813dbbd52744e14eb205",
+      "stdout_size_bytes": 5793
+    }
+  ]
+}

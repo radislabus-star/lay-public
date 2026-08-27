@@ -1,0 +1,159 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "test_entry", "role": "interface"},
+    {"id": "parity_runner", "role": "orchestrator"},
+    {"id": "e0_executor", "role": "producer"},
+    {"id": "e0_semantic_evidence", "role": "evidence_owner"},
+    {"id": "e1_executor", "role": "producer"},
+    {"id": "parity_observer", "role": "observer"},
+    {"id": "e0_pmu_runner", "role": "orchestrator"},
+    {"id": "e1_pmu_runner", "role": "orchestrator"},
+    {"id": "pmu_observer", "role": "observer"},
+    {"id": "latency_runner", "role": "orchestrator"},
+    {"id": "latency_observer", "role": "observer"},
+    {"id": "decision_proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "exec-parity-entry-runner", "from": "test_entry", "relation": "calls", "to": "parity_runner", "events": ["parity"]},
+    {"id": "exec-parity-runner-e0", "from": "parity_runner", "relation": "calls", "to": "e0_executor", "events": ["parity"]},
+    {"id": "exec-parity-runner-e1", "from": "parity_runner", "relation": "calls", "to": "e1_executor", "events": ["parity"]},
+    {"id": "authority-e0-semantic", "from": "e0_executor", "relation": "produces_for", "to": "e0_semantic_evidence", "events": ["parity"]},
+    {"id": "observe-parity-e0", "from": "e0_semantic_evidence", "relation": "observes", "to": "parity_observer", "events": ["parity"]},
+    {"id": "observe-parity-e1", "from": "e1_executor", "relation": "observes", "to": "parity_observer", "events": ["parity"]},
+    {"id": "proof-parity-decision", "from": "parity_observer", "relation": "proves", "to": "decision_proof", "events": ["parity_decision"]},
+
+    {"id": "exec-e0-pmu-entry-runner", "from": "test_entry", "relation": "calls", "to": "e0_pmu_runner", "events": ["e0_pmu"]},
+    {"id": "exec-e0-pmu-runner-e0", "from": "e0_pmu_runner", "relation": "calls", "to": "e0_executor", "events": ["e0_pmu"]},
+    {"id": "observe-e0-pmu", "from": "e0_executor", "relation": "observes", "to": "pmu_observer", "events": ["e0_pmu"]},
+    {"id": "exec-e1-pmu-entry-runner", "from": "test_entry", "relation": "calls", "to": "e1_pmu_runner", "events": ["e1_pmu"]},
+    {"id": "exec-e1-pmu-runner-e1", "from": "e1_pmu_runner", "relation": "calls", "to": "e1_executor", "events": ["e1_pmu"]},
+    {"id": "observe-e1-pmu", "from": "e1_executor", "relation": "observes", "to": "pmu_observer", "events": ["e1_pmu"]},
+    {"id": "proof-pmu-decision", "from": "pmu_observer", "relation": "proves", "to": "decision_proof", "events": ["physical_decision"]},
+
+    {"id": "exec-latency-entry-runner", "from": "test_entry", "relation": "calls", "to": "latency_runner", "events": ["e1_latency"]},
+    {"id": "exec-latency-runner-e1", "from": "latency_runner", "relation": "calls", "to": "e1_executor", "events": ["e1_latency"]},
+    {"id": "observe-e1-latency", "from": "e1_executor", "relation": "observes", "to": "latency_observer", "events": ["e1_latency"]},
+    {"id": "proof-latency-decision", "from": "latency_observer", "relation": "proves", "to": "decision_proof", "events": ["latency_decision"]}
+  ],
+  "routes": [
+    {
+      "id": "parity-e0-execution",
+      "event": "parity",
+      "kind": "execution",
+      "entry": "test_entry",
+      "terminal": "e0_executor",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "test_entry", "to": "e0_executor", "min": 1, "max": 1}]
+    },
+    {
+      "id": "parity-e1-execution",
+      "event": "parity",
+      "kind": "execution",
+      "entry": "test_entry",
+      "terminal": "e1_executor",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "test_entry", "to": "e1_executor", "min": 1, "max": 1}]
+    },
+    {
+      "id": "e0-semantic-authority",
+      "event": "parity",
+      "kind": "authority",
+      "entry": "e0_executor",
+      "terminal": "e0_semantic_evidence",
+      "required_roles": ["producer", "evidence_owner"]
+    },
+    {
+      "id": "parity-e0-observation",
+      "event": "parity",
+      "kind": "observation",
+      "entry": "e0_semantic_evidence",
+      "terminal": "parity_observer",
+      "required_roles": ["evidence_owner", "observer"]
+    },
+    {
+      "id": "parity-e1-observation",
+      "event": "parity",
+      "kind": "observation",
+      "entry": "e1_executor",
+      "terminal": "parity_observer",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "parity-decision-proof",
+      "event": "parity_decision",
+      "kind": "proof",
+      "entry": "parity_observer",
+      "terminal": "decision_proof",
+      "required_roles": ["observer", "proof_owner"]
+    },
+    {
+      "id": "e0-pmu-execution",
+      "event": "e0_pmu",
+      "kind": "execution",
+      "entry": "test_entry",
+      "terminal": "e0_executor",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "test_entry", "to": "e0_executor", "min": 1, "max": 1}]
+    },
+    {
+      "id": "e0-pmu-observation",
+      "event": "e0_pmu",
+      "kind": "observation",
+      "entry": "e0_executor",
+      "terminal": "pmu_observer",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "e1-pmu-execution",
+      "event": "e1_pmu",
+      "kind": "execution",
+      "entry": "test_entry",
+      "terminal": "e1_executor",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "test_entry", "to": "e1_executor", "min": 1, "max": 1}]
+    },
+    {
+      "id": "e1-pmu-observation",
+      "event": "e1_pmu",
+      "kind": "observation",
+      "entry": "e1_executor",
+      "terminal": "pmu_observer",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "physical-decision-proof",
+      "event": "physical_decision",
+      "kind": "proof",
+      "entry": "pmu_observer",
+      "terminal": "decision_proof",
+      "required_roles": ["observer", "proof_owner"]
+    },
+    {
+      "id": "e1-latency-execution",
+      "event": "e1_latency",
+      "kind": "execution",
+      "entry": "test_entry",
+      "terminal": "e1_executor",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "test_entry", "to": "e1_executor", "min": 1, "max": 1}]
+    },
+    {
+      "id": "e1-latency-observation",
+      "event": "e1_latency",
+      "kind": "observation",
+      "entry": "e1_executor",
+      "terminal": "latency_observer",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "latency-decision-proof",
+      "event": "latency_decision",
+      "kind": "proof",
+      "entry": "latency_observer",
+      "terminal": "decision_proof",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

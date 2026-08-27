@@ -1,0 +1,65 @@
+{
+  "schema": "lay.v11-paired-execution-failure-interpretation.v1",
+  "task_id": "slice8b-v11-admission-lexical-fact-reuse-paired-v3-20260827",
+  "transaction_id": "edc8266912d2d41ce112997f32dfe1f0748ae2699f777e70af55a54f55e0461e",
+  "verdict": "BLOCKED_PROVENANCE",
+  "controller_projection": "BLOCKED_SEMANTIC",
+  "controller_projection_correct": false,
+  "reason": "the subject produced no scientific observation because its PSS helper could not execute the sealed 0444 test ELF",
+  "build": {
+    "cargo_invocations": 1,
+    "cargo_exit_code": 0,
+    "receipt_sha256": "4733bbe15515dff2af424dacb7caef8368bf2b1ef3dcd48fa849320c06ca56e5",
+    "source_sha256": "e8a6a182753084659e00ccd5e20238d585d859437824609a987ea03ce6edca72",
+    "elf_sha256": "dbd5feb315e9537b0797cb98d6f38dd66fdc6ee3e562bf9db479ed2c9f34b51a",
+    "elf_size_bytes": 321129832,
+    "elf_build_id": "533bd03d86a8381f80e3c3c9c8d1b7c0bd4cc7e7",
+    "live_sealed_mode": "0444",
+    "reusable_bytes": true
+  },
+  "b0": {
+    "mode": "UNCACHED",
+    "marker_consumed": true,
+    "subject_executions": 1,
+    "exit_code": 101,
+    "wrapper_sha256": "592ad7dd7871cde70dd990dff5aff7058b54b06e30dc81f7b9fdfb1ff21cf351",
+    "subject_receipt_sha256": "a1d1361e6b0144dbeb676858f20a91f57a03e50d23cbbfb391ed7a7f576c9a62",
+    "subject_verdict": "BLOCKED_PROVENANCE",
+    "observation_complete": false,
+    "error": "PSS helper exited with exit status: 1",
+    "scientific_measurement_produced": false
+  },
+  "b1": {
+    "mode": "REUSE",
+    "marker_consumed": false,
+    "status": "RETIRED_UNCONSUMED_WITH_TERMINAL_NAMESPACE"
+  },
+  "cause": {
+    "main_lifecycle": "ld-linux reads the 0444 ELF",
+    "helper_lifecycle": "std::process::Command::new(std::env::current_exe()) executes the ELF directly",
+    "new_elf_executable_for_uid_e": false,
+    "historical_working_v8r3_elf_mode": "0555",
+    "historical_working_v8r3_elf_executable_for_uid_e": true,
+    "semantic_capability_tested": false,
+    "performance_tested": false
+  },
+  "side_effect_ledger": {
+    "remote_builds": 1,
+    "subject_executions": 1,
+    "b0_markers_consumed": 1,
+    "b1_markers_consumed": 0,
+    "perf_record_invocations": 0,
+    "perf_stat_invocations": 0,
+    "pmu_events": 0,
+    "runtime_authority_changed": false,
+    "installed_lay_changed": false
+  },
+  "claim_boundary": {
+    "b0_latency_valid": false,
+    "b1_latency_valid": false,
+    "lexical_fact_reuse_rejected": false,
+    "lexical_fact_reuse_accepted": false,
+    "retry_in_same_namespace": false,
+    "next_action_admitted": "new repair namespace may reuse the exact built ELF bytes through a 0555 executable projection with fresh B0R and B1R markers; no second Cargo build"
+  }
+}

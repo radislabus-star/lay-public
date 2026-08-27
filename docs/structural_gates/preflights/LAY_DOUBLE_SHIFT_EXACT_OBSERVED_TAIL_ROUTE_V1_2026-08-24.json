@@ -1,0 +1,61 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id":"physical-double-shift","role":"interface"},
+    {"id":"daemon-trigger-dispatch","role":"orchestrator"},
+    {"id":"ime-v3-outcome","role":"producer"},
+    {"id":"physical-input-grab","role":"orchestrator"},
+    {"id":"ime-tail-snapshot","role":"evidence_owner"},
+    {"id":"daemon-exact-tail-planner","role":"authorization_owner"},
+    {"id":"daemon-uinput-output","role":"mutation_owner"},
+    {"id":"ime-proven-authority","role":"authorization_owner"},
+    {"id":"ime-proven-output","role":"mutation_owner"},
+    {"id":"pending-undo-planner","role":"authorization_owner"},
+    {"id":"configured-undo-output","role":"mutation_owner"},
+    {"id":"fail-closed-terminal","role":"observer"},
+    {"id":"route-proof","role":"proof_owner"}
+  ],
+  "edges": [
+    {"id":"handled-entry","from":"physical-double-shift","relation":"calls","to":"daemon-trigger-dispatch","events":["ime-proven-handled"]},
+    {"id":"handled-v3","from":"daemon-trigger-dispatch","relation":"delegates","to":"ime-v3-outcome","events":["ime-proven-handled"]},
+    {"id":"handled-authority-exec","from":"ime-v3-outcome","relation":"delegates","to":"ime-proven-authority","events":["ime-proven-handled"]},
+    {"id":"handled-output-exec","from":"ime-proven-authority","relation":"delegates","to":"ime-proven-output","events":["ime-proven-handled"]},
+    {"id":"handled-authority-data","from":"ime-v3-outcome","relation":"passes_to","to":"ime-proven-authority","events":["ime-proven-handled"]},
+    {"id":"handled-output-data","from":"ime-proven-authority","relation":"authorizes","to":"ime-proven-output","events":["ime-proven-handled"]},
+
+    {"id":"delegated-entry","from":"physical-double-shift","relation":"calls","to":"daemon-trigger-dispatch","events":["delegated-exact-tail"]},
+    {"id":"delegated-v3","from":"daemon-trigger-dispatch","relation":"delegates","to":"ime-v3-outcome","events":["delegated-exact-tail"]},
+    {"id":"delegated-grab","from":"ime-v3-outcome","relation":"delegates","to":"physical-input-grab","events":["delegated-exact-tail"]},
+    {"id":"delegated-snapshot-exec","from":"physical-input-grab","relation":"calls","to":"ime-tail-snapshot","events":["delegated-exact-tail"]},
+    {"id":"delegated-plan-exec","from":"ime-tail-snapshot","relation":"delegates","to":"daemon-exact-tail-planner","events":["delegated-exact-tail"]},
+    {"id":"delegated-execute","from":"daemon-exact-tail-planner","relation":"delegates","to":"daemon-uinput-output","events":["delegated-exact-tail"]},
+    {"id":"delegated-snapshot-data","from":"ime-v3-outcome","relation":"produces_for","to":"ime-tail-snapshot","events":["delegated-exact-tail"]},
+    {"id":"delegated-plan-data","from":"ime-tail-snapshot","relation":"passes_to","to":"daemon-exact-tail-planner","events":["delegated-exact-tail"]},
+    {"id":"delegated-authorize","from":"daemon-exact-tail-planner","relation":"authorizes","to":"daemon-uinput-output","events":["delegated-exact-tail"]},
+
+    {"id":"mismatch-entry","from":"physical-double-shift","relation":"calls","to":"daemon-trigger-dispatch","events":["delegated-tail-mismatch"]},
+    {"id":"mismatch-v3","from":"daemon-trigger-dispatch","relation":"delegates","to":"ime-v3-outcome","events":["delegated-tail-mismatch"]},
+    {"id":"mismatch-grab","from":"ime-v3-outcome","relation":"delegates","to":"physical-input-grab","events":["delegated-tail-mismatch"]},
+    {"id":"mismatch-snapshot","from":"physical-input-grab","relation":"calls","to":"ime-tail-snapshot","events":["delegated-tail-mismatch"]},
+    {"id":"mismatch-stop","from":"ime-tail-snapshot","relation":"observes","to":"fail-closed-terminal","events":["delegated-tail-mismatch"]},
+
+    {"id":"undo-entry","from":"physical-double-shift","relation":"calls","to":"daemon-trigger-dispatch","events":["pending-autocorrect-undo"]},
+    {"id":"undo-plan","from":"daemon-trigger-dispatch","relation":"passes_to","to":"pending-undo-planner","events":["pending-autocorrect-undo"]},
+    {"id":"undo-output","from":"pending-undo-planner","relation":"authorizes","to":"configured-undo-output","events":["pending-autocorrect-undo"]},
+
+    {"id":"blocked-entry","from":"physical-double-shift","relation":"calls","to":"daemon-trigger-dispatch","events":["atomic-or-error-blocked"]},
+    {"id":"blocked-v3","from":"daemon-trigger-dispatch","relation":"delegates","to":"ime-v3-outcome","events":["atomic-or-error-blocked"]},
+    {"id":"blocked-stop","from":"ime-v3-outcome","relation":"observes","to":"fail-closed-terminal","events":["atomic-or-error-blocked"]},
+    {"id":"proof-route","from":"fail-closed-terminal","relation":"proves","to":"route-proof","events":["exact-tail-route-proof"]}
+  ],
+  "routes": [
+    {"id":"ime-proven-execution","event":"ime-proven-handled","kind":"execution","entry":"physical-double-shift","terminal":"ime-proven-output","required_roles":["interface","orchestrator","producer","authorization_owner","mutation_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"ime-proven-output","min":1,"max":1}]},
+    {"id":"delegated-exact-execution","event":"delegated-exact-tail","kind":"execution","entry":"physical-double-shift","terminal":"daemon-uinput-output","required_roles":["interface","orchestrator","producer","evidence_owner","authorization_owner","mutation_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"daemon-uinput-output","min":1,"max":1}]},
+    {"id":"delegated-exact-authority","event":"delegated-exact-tail","kind":"authority","entry":"ime-v3-outcome","terminal":"daemon-uinput-output","required_roles":["producer","evidence_owner","authorization_owner","mutation_owner"],"path_cardinality":[{"from":"ime-v3-outcome","to":"daemon-uinput-output","min":1,"max":1}]},
+    {"id":"delegated-mismatch-stop","event":"delegated-tail-mismatch","kind":"execution","entry":"physical-double-shift","terminal":"ime-tail-snapshot","required_roles":["interface","orchestrator","producer","evidence_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"ime-tail-snapshot","min":1,"max":1}]},
+    {"id":"pending-undo-authority","event":"pending-autocorrect-undo","kind":"authority","entry":"daemon-trigger-dispatch","terminal":"configured-undo-output","required_roles":["orchestrator","authorization_owner","mutation_owner"],"path_cardinality":[{"from":"daemon-trigger-dispatch","to":"configured-undo-output","min":1,"max":1}]},
+    {"id":"blocked-execution","event":"atomic-or-error-blocked","kind":"execution","entry":"physical-double-shift","terminal":"ime-v3-outcome","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"physical-double-shift","to":"ime-v3-outcome","min":1,"max":1}]},
+    {"id":"route-proof","event":"exact-tail-route-proof","kind":"proof","entry":"fail-closed-terminal","terminal":"route-proof","required_roles":["observer","proof_owner"]}
+  ]
+}

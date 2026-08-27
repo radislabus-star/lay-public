@@ -1,0 +1,58 @@
+{
+  "schema": "lay.v10r3-transport-failure-diagnosis.v1",
+  "task_id": "slice8b-v10-e1-traversal-w1-dafsa-typed-view-m3-admission-substage-v10r3-20260827",
+  "transaction_id": "8fa454ad944ce8ba9e6256bc55bdf8ff8231cf26bac7eaab591ad8564515436c",
+  "verdict": "BLOCKED_PROVENANCE",
+  "failure_class": "SSH_MULTILINE_PYTHON_C_TRANSPORT_QUOTING",
+  "failed_action": "live-admission",
+  "external_action_intent_durable": true,
+  "external_actions_completed": 0,
+  "observed_failure": {
+    "python_error": "Argument expected for the -c option",
+    "shell_error": "multiline Python source was interpreted by the remote shell",
+    "root_cause": "ssh_python passed a multiline program as an argv element after python3 -c; OpenSSH concatenated remote argv into a shell command without preserving the multiline argument as one quoted word"
+  },
+  "scientific_scope": {
+    "execution_admission_published": false,
+    "remote_namespace_created": false,
+    "remote_state_created": false,
+    "remote_cache_created": false,
+    "markers_created": 0,
+    "markers_consumed": 0,
+    "cargo_invocations": 0,
+    "rustc_compilations": 0,
+    "subject_executions": 0,
+    "perf_record_invocations": 0,
+    "perf_stat_invocations": 0,
+    "old_v10r2_elf_executed": false,
+    "quiet_estimator_tested": false,
+    "admission_substage_trace_tested": false,
+    "runtime_authority_changed": false
+  },
+  "independent_live_projection_after_failure": {
+    "v10r3_parent_exists": false,
+    "v10r3_state_exists": false,
+    "v10r3_cache_exists": false,
+    "v10r3_markers": [],
+    "v10r3_trace_exists": false,
+    "observer_transport": "pinned V10R2 python3-stdin SSH helper",
+    "observation_read_only": true
+  },
+  "immutable_evidence": {
+    "implementation_receipt_sha256": "7719b69b7a218b4d525aa0cf583c610d035ea6a458561c53a60f36a7a9188286",
+    "local_controller_sha256": "306af1cfb25d61d0b8ed9e7275c0e717c620ce31b1e2425bdeff180b092855c3",
+    "remote_controller_sha256": "45e2be766310a38d104629977c246f5513cf0d020c5fa1562b17a9a738b46f07",
+    "auditor_sha256": "6ba4d2794071e81aff7c358813797dc7210406bf351a463de34055e529f84de3",
+    "execution_journal_manifest_sha256": "5baf0039407a6a3e752326440e47b13a4005327f365665eecaa78331d1d693c6",
+    "controller_failure_sha256": "583e8cf071a64e65734ba47e9502fe47597b5328e9635331b7d1d8237206ada7"
+  },
+  "repair_boundary": {
+    "old_namespace_retry_permitted": false,
+    "new_namespace_required": true,
+    "admitted_change": "replace multiline python3 -c SSH transport with python3 - stdin transport and add an exact live read-only transport self-test before any new namespace write",
+    "scientific_contract_change": false,
+    "sealed_elf_change": false,
+    "quiet_contract_change": false,
+    "marker_contract_change": false
+  }
+}

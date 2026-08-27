@@ -1,0 +1,144 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_IMPLEMENTATION_V1_2026-08-25",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id":"d1-contract","kind":"file","path":"../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_CONTRACT_2026-08-25.md","expect":{"mode":"0664","size_bytes":9171,"sha256":"8b018bd57216748bed4d191b8c369e7b1c0c34e9b488f6dad4a4287b1e81bbb6"}},
+    {"id":"d1-code-route-v2","kind":"file","path":"LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_CODE_ROUTE_V2_2026-08-25.json","expect":{"mode":"0664","size_bytes":4622,"sha256":"4852287e4941a00e26bd2ba3e9de76afd1f78e2adb7587bdcb6d5e68cd021c27"}},
+    {"id":"d1-code-route-v2-receipt","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_CODE_ROUTE_V2_RECEIPT_2026-08-25.json","expect":{"mode":"0664","size_bytes":9100,"sha256":"f771d9ac99df160a657fdd04a5e2ba2ea867b9de3ffec1e07932fac508ff3078"}},
+    {"id":"d1-remote-audit","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_REMOTE_PREFLIGHT_AUDIT_V1_2026-08-25.json","expect":{"mode":"0664","size_bytes":1112,"sha256":"32baa62dc42c370fd156b415a294218abac4ccc60055acff77941cefbf4d7d12"}},
+    {"id":"e1-decision","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_2026-08-25/E1_DECISION.json","expect":{"mode":"0444","size_bytes":202202,"sha256":"b334c047d29b21c27923fba9b38bbf17bb642cc72c9b112add1c38d8c9b0beab"}},
+    {"id":"e1-manifest","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_2026-08-25/SHA256SUMS","expect":{"mode":"0444","size_bytes":6544,"sha256":"99c5fb3155ea0b0b66bb6295676f55f75e9aeba1ee2bc209b77d07add2f483f0"}},
+    {"id":"e1-controller","kind":"file","path":"../../../scripts/lay-v10-exact-fused-executor-e1.py","expect":{"mode":"0755","size_bytes":44355,"sha256":"2c5a6cd6bb5ed25c39d8369b5406c0df09455a16fd9e3dc7e76b8731a9f2b3f8"}},
+    {"id":"e1-fragment","kind":"file","path":"../../../scripts/lay_v10_exact_fused_executor_e1_test_module.rs.inc","expect":{"mode":"0664","size_bytes":77406,"sha256":"1726a22ad7bf4d9212761a9ffd61660ee46f94e3148af6d61b864d554b1d410d"}},
+    {"id":"cargo-guard","kind":"file","path":"../../../scripts/cargo-guard.sh","expect":{"mode":"0775","size_bytes":2534,"sha256":"a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"}},
+    {"id":"v10-source","kind":"file","path":"/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs","expect":{"mode":"0444","size_bytes":91518,"sha256":"f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c"}},
+    {"id":"active-v11","kind":"file","path":"../../../src/nanda_wave/l2_field/v13_typed_peak.rs","expect":{"mode":"0664","size_bytes":124127,"sha256":"d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"}},
+    {"id":"new-fragment-absent","kind":"absent","path":"../../../scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc","expect":{}},
+    {"id":"new-controller-absent","kind":"absent","path":"../../../scripts/lay-v10-e1-remaining-cost-d1.py","expect":{}},
+    {"id":"new-local-result-absent","kind":"absent","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25","expect":{}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id":"create-d1-test-fragment","kind":"local_source_create"},
+      {"id":"create-d1-controller","kind":"local_source_create"},
+      {"id":"create-disjoint-remote-state","kind":"remote_state_create"},
+      {"id":"one-guarded-remote-build","kind":"remote_cargo_build"},
+      {"id":"run-new-executable-parity","kind":"remote_diagnostic_execution"},
+      {"id":"run-three-component-routes","kind":"remote_loaded_component_execution"},
+      {"id":"run-six-process-pmu-routes","kind":"remote_process_scoped_pmu_execution"},
+      {"id":"publish-immutable-d1-decision","kind":"remote_and_local_evidence_write"},
+      {"id":"record-d1-result","kind":"documentation_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "production_v10_source_or_prefix_edit",
+      "active_v11_source_edit",
+      "v10_sidecar_or_input_mutation",
+      "e1_executable_or_marker_reuse",
+      "foreign_process_stop_reaffinity_repriority_or_policy_change",
+      "host_governor_smt_turbo_or_thermal_tuning",
+      "third_loaded_e0_v10_replication",
+      "clean_c1_marker_consumption",
+      "more_than_one_build_or_any_retry",
+      "adaptive_rerun_event_substitution_or_threshold_change",
+      "full_b_execution_or_promotion",
+      "executor_optimization_or_v12_implementation_admission",
+      "runtime_integration_or_deployment",
+      "installed_lay_mutation_or_restart",
+      "runtime_authority_change"
+    ]
+  },
+  "source_checks": [
+    {
+      "id":"pinned-e1-fragment",
+      "path":"../../../scripts/lay_v10_exact_fused_executor_e1_test_module.rs.inc",
+      "sha256":"1726a22ad7bf4d9212761a9ffd61660ee46f94e3148af6d61b864d554b1d410d",
+      "forbidden_effect_patterns":[
+        {"effect":"foreign_process_control","regex":"(?i)(pkill|killall|systemctl).*(nando|btop|k1)"},
+        {"effect":"host_tuning","regex":"(?i)(scaling_governor|energy_performance_preference|intel_pstate).*(write|echo|set)"},
+        {"effect":"production_v12_candidate","regex":"ExactFusedExecutorV12|V12Executor"}
+      ]
+    },
+    {
+      "id":"pinned-e1-controller",
+      "path":"../../../scripts/lay-v10-exact-fused-executor-e1.py",
+      "sha256":"2c5a6cd6bb5ed25c39d8369b5406c0df09455a16fd9e3dc7e76b8731a9f2b3f8",
+      "forbidden_effect_patterns":[
+        {"effect":"foreign_process_control","regex":"(?i)(pkill|killall|systemctl).*(nando|btop|k1)"},
+        {"effect":"host_tuning","regex":"(?i)(scaling_governor|energy_performance_preference|intel_pstate).*(write|echo|set)"},
+        {"effect":"clean_marker_use","regex":"consume_marker\\([^)]*C1"},
+        {"effect":"adaptive_retry","regex":"(?i)retry_permitted[\"']?\\s*[:=]\\s*true"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state":"D1_PAPER_READY_IMPLEMENTATION_ABSENT",
+    "steps":[
+      {"id":"implement-test-only-d1","from":"D1_PAPER_READY_IMPLEMENTATION_ABSENT","to":"D1_IMPLEMENTED_UNRUN","mutates":true,"failure_state":"D1_IMPLEMENTATION_REJECTED","cleanup":"remove only partial new D1 fragment and controller; preserve predecessor evidence","preserves":["e1-result","v10-source","active-v11","installed-runtime"],"test_id":"implementation-fault"},
+      {"id":"self-check-d1","from":"D1_IMPLEMENTED_UNRUN","to":"D1_VERIFIED_UNRUN","mutates":false,"test_id":"source-boundary"},
+      {"id":"create-one-shot-state","from":"D1_VERIFIED_UNRUN","to":"D1_STATE_READY","mutates":true,"failure_state":"D1_STATE_CREATION_TERMINAL","cleanup":"retain disjoint partial D1 state; consume no predecessor marker","preserves":["e1-result","v10-source","active-v11","installed-runtime"],"test_id":"state-fault"},
+      {"id":"build-once","from":"D1_STATE_READY","to":"D1_BUILD_SEALED","mutates":true,"failure_state":"D1_BUILD_TERMINAL","cleanup":"retain consumed build marker, logs and partial workspace identity; no retry","preserves":["e1-result","v10-source","active-v11","installed-runtime"],"test_id":"build-fault"},
+      {"id":"run-parity","from":"D1_BUILD_SEALED","to":"D1_PARITY_PASS","mutates":true,"failure_state":"D1_PARITY_TERMINAL","cleanup":"retain consumed parity marker and raw mismatch evidence; block all diagnostics","preserves":["e1-result","v10-source","active-v11","installed-runtime"],"test_id":"parity-fault"},
+      {"id":"run-component-campaign","from":"D1_PARITY_PASS","to":"D1_COMPONENTS_OBSERVED","mutates":true,"failure_state":"D1_COMPONENT_TERMINAL","cleanup":"retain consumed route markers, completed samples and first terminal failure; no retry","preserves":["e1-result","v10-source","active-v11","installed-runtime"],"test_id":"component-fault"},
+      {"id":"run-pmu-campaign","from":"D1_COMPONENTS_OBSERVED","to":"D1_PMU_OBSERVED","mutates":true,"failure_state":"D1_PMU_TERMINAL_OR_CAPABILITY_GAP","cleanup":"retain every consumed group marker and raw perf output; no substitution or retry","preserves":["e1-result","v10-source","active-v11","installed-runtime"],"test_id":"pmu-fault"},
+      {"id":"publish-decision","from":"D1_PMU_OBSERVED","to":"D1_DECISION_PUBLISHED","mutates":true,"failure_state":"D1_PUBLICATION_FAILED_REMOTE_RETAINED","cleanup":"retain sealed remote result and remove incomplete local stage only","preserves":["e1-result","v10-source","active-v11","installed-runtime"],"test_id":"publication-fault"}
+    ],
+    "terminal_states":["D1_DECISION_PUBLISHED","D1_IMPLEMENTATION_REJECTED","D1_STATE_CREATION_TERMINAL","D1_BUILD_TERMINAL","D1_PARITY_TERMINAL","D1_COMPONENT_TERMINAL","D1_PMU_TERMINAL_OR_CAPABILITY_GAP","D1_PUBLICATION_FAILED_REMOTE_RETAINED"]
+  },
+  "preserved_artifacts": [
+    {"id":"e1-result","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_2026-08-25/SHA256SUMS","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"e1-manifest"},
+    {"id":"v10-source","path":"/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"v10-source"},
+    {"id":"active-v11","path":"../../../src/nanda_wave/l2_field/v13_typed_peak.rs","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"active-v11"},
+    {"id":"installed-runtime","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_REMOTE_PREFLIGHT_AUDIT_V1_2026-08-25.json","policy":"immutable_observation","rollback_policy":"no_runtime_mutation_permitted","baseline_check_id":"d1-remote-audit"}
+  ],
+  "identity_contracts": [
+    {"id":"production-prefix","producer":"exact recovered V10 bytes 1 through 39047","consumer":"assembled D1 test-only source","comparison":"exact bytes and SHA ce9ea2d29060","test_id":"source-boundary"},
+    {"id":"e1-d1-semantics","producer":"sealed E1 exact outputs and work contract","consumer":"D1 copied uninstrumented and instrumented executor outputs","comparison":"382 semantic work rank reverse stress and certificate parity","test_id":"full-parity"},
+    {"id":"component-boundaries","producer":"paper-frozen six component boundaries","consumer":"D1 thread CPU and wall observer","comparison":"source marker and accounting parity","test_id":"component-boundary"},
+    {"id":"mapping-contract","producer":"fixed i and reversed 19-i worker mapping","consumer":"component and PMU routes","comparison":"exact affinity and zero migration observations","test_id":"mapping-parity"},
+    {"id":"pmu-window","producer":"ready enable done disable paper protocol","consumer":"six D1 process-scoped PMU routes","comparison":"handshake markers and inherited hybrid PMU coverage","test_id":"pmu-window"},
+    {"id":"local-remote-source","producer":"local D1 contract route preflight controller and fragment","consumer":"remote build provenance","comparison":"SHA-256 and mode identity before build marker consumption","test_id":"remote-source-parity"},
+    {"id":"single-elf","producer":"one sealed D1 build","consumer":"parity three component and six PMU routes","comparison":"same ELF SHA-256 Build ID and production prefix","test_id":"elf-parity"},
+    {"id":"sealed-inputs","producer":"B0a package sidecar V7 and B0b schedule","consumer":"every D1 executable route","comparison":"exact SHA-256 before every route","test_id":"asset-parity"}
+  ],
+  "runtime_comparisons": [
+    {"id":"installed-runtime-stability","source":"installed Lay and daemon snapshots before D1 and after publication","comparison":"exact_stable_projection","reason":"test-only D1 may not mutate installed runtime","stable_fields":["lay_version","active_v11_sha256","ibus_daemon_pid","lay_daemon_pid","lay_ibus_engine_pid"],"expected_to_change_fields":[],"observed_not_compared_fields":["process_cpu_time","host_load","temperature","foreign_process_set"],"test_id":"runtime-stability"},
+    {"id":"loaded-host-noninterference","source":"remote snapshots and D1 provenance","comparison":"exact_stable_projection","reason":"foreign workload is observed but not controlled","stable_fields":["hostname","machine_id_sha256","foreign_process_control","host_tuning","installed_lay_changed"],"expected_to_change_fields":["loadavg","psi","temperatures","process_cpu_time"],"observed_not_compared_fields":["foreign_process_pid_set","foreign_cpu_percent","scheduler_placement"],"test_id":"foreign-noninterference"}
+  ],
+  "invariants": [
+    {"id":"source-preserving","statement":"production bytes 1 through 39047 remain exact and all D1 code is test-only","test_id":"source-boundary"},
+    {"id":"parity-before-observation","statement":"any semantic mismatch blocks every component and PMU route","test_id":"state-sequence"},
+    {"id":"observer-separated","statement":"structural trace and receipt serialization remain outside component measured loops","test_id":"component-boundary"},
+    {"id":"pmu-uninstrumented","statement":"process-scoped PMU routes execute exact uninstrumented E1 only inside the enabled window","test_id":"pmu-window"},
+    {"id":"mapping-frozen","statement":"fixed and reversed mappings use all twenty CPUs and differ only by worker-to-CPU assignment","test_id":"mapping-parity"},
+    {"id":"one-shot","statement":"build parity component and PMU markers are consumed before execution and never retried","test_id":"marker-fault"},
+    {"id":"foreign-owned","statement":"Nando btop K1 and host policy are not controlled or treated as readiness blockers","test_id":"foreign-noninterference"},
+    {"id":"claim-boundary","statement":"D1 cannot admit V12 formal B integration deployment or runtime authority","test_id":"claim-boundary"}
+  ],
+  "tests": [
+    {"id":"implementation-fault","kind":"fault_injection","expected":"partial new local D1 files are removable without predecessor mutation"},
+    {"id":"source-boundary","kind":"parity","expected":"39047 production bytes and SHA remain exact; D1 fragment is test-only"},
+    {"id":"state-fault","kind":"fault_injection","expected":"partial disjoint state remains terminal with predecessor markers unchanged"},
+    {"id":"build-fault","kind":"fault_injection","expected":"build marker remains consumed and no retry or executable substitution is possible"},
+    {"id":"parity-fault","kind":"fault_injection","expected":"parity mismatch is retained and all diagnostic markers remain unavailable"},
+    {"id":"component-fault","kind":"fault_injection","expected":"completed component routes and consumed marker survive first failure with no retry"},
+    {"id":"pmu-fault","kind":"fault_injection","expected":"failed PMU group retains raw output and consumed marker without substitution"},
+    {"id":"publication-fault","kind":"fault_injection","expected":"sealed remote result survives while incomplete local stage is absent"},
+    {"id":"full-parity","kind":"parity","expected":"382 records and reverse schedule retain exact E0/E1 semantics work ranks certificates and zero false certificates"},
+    {"id":"component-boundary","kind":"integration","expected":"six phase clocks and outer clocks produce fixed primitive samples while structural trace stays unmeasured"},
+    {"id":"mapping-parity","kind":"parity","expected":"fixed worker i uses CPU i; reversed worker i uses CPU 19-i; all affinities exact"},
+    {"id":"pmu-window","kind":"integration","expected":"ready-enable-done-disable excludes setup warmup teardown and serialization and counts descendants"},
+    {"id":"remote-source-parity","kind":"parity","expected":"uploaded paper source and controller identities match local pinned bytes"},
+    {"id":"elf-parity","kind":"parity","expected":"all eleven executable routes consume one sealed ELF SHA and Build ID"},
+    {"id":"asset-parity","kind":"parity","expected":"package sidecar V7 and schedule identities match before every route"},
+    {"id":"runtime-stability","kind":"parity","expected":"installed Lay version active V11 and daemon PIDs remain stable"},
+    {"id":"foreign-noninterference","kind":"parity","expected":"controller records no foreign process control or host tuning and does not veto load"},
+    {"id":"state-sequence","kind":"integration","expected":"parity precedes components and components precede all PMU routes"},
+    {"id":"marker-fault","kind":"fault_injection","expected":"second consumption of every one-shot marker fails before subject execution"},
+    {"id":"claim-boundary","kind":"integration","expected":"decision leaves full B V12 integration deployment and runtime authority false"}
+  ]
+}

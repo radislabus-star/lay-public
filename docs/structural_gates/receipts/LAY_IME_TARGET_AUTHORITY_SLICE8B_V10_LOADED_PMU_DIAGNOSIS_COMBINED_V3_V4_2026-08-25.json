@@ -1,0 +1,85 @@
+{
+  "schema": "lay.v10.loaded-pmu-combined-diagnosis.v1",
+  "verdict": "LOADED_PMU_DIAGNOSIS_OBSERVED_WITH_L1_MISS_GAP",
+  "subject": {
+    "elf_sha256": "f7bcee37d5dffd583577d66c982c2a28072889b8aac2ccbed22612aa6d4feb09",
+    "elf_build_id": "9829fb05f34bd353877fb6d71f1f8523e084af55",
+    "requests": 382,
+    "expanded_states_total": 8059788,
+    "expanded_states_average": 21098.921465968586,
+    "expanded_states_max": 35590,
+    "terminals_total": 17600,
+    "scratch_max_bytes": 6656,
+    "b5_b6_structural_work_identical": true
+  },
+  "sources": {
+    "v3_remote_result_sha256": "fb625d92f27fc783b6d88358fb119b087fb7bca35d7bbb99ad665864f6afcc67",
+    "v4_remote_result_sha256": "28f65ecd7cd596f7515edb635ca5fc749020d398148fa1a656374a7e5d40b016",
+    "v4_local_index_sha256": "5ecfb64c64dabf4473dd3271679afd53e28ac3eec6fa6a746dcae67403763f1b",
+    "v4_remote_verification_sha256": "342f4cdcd1745a662cef57a1316691903fa8d1b661b3c81fee776976f3c2cb93",
+    "v4_remote_final_manifest_sha256": "9a8fcb0867a869f5561d0bf4e0bf07da6b37a84b434b510d38fe86c02811adae",
+    "v4_remote_state_manifest_sha256": "091980c0b2527c916b192d0e1953f6fa943835acc6bee0a7153cb4655f36c771",
+    "v4_controller_sha256": "2531326a23b65b03c0105fb7243a27841961bae194018655b4f311efcb05526f"
+  },
+  "g0": {
+    "b5": {"instructions_per_request": 42378604.08638743, "cycles_per_request": 10307715.70157068, "ipc": 4.111347781927068, "task_clock_ms_per_request": 2.718744138743456},
+    "b6": {"instructions_per_request": 42388812.24250459, "cycles_per_request": 14178114.9039857, "ipc": 2.9897354147262836, "task_clock_ms_per_request": 4.691073743455497},
+    "delta_percent": {"instructions": 0.024087995197641376, "cycles": 37.54856376010886, "ipc": -27.28089246381057, "task_clock": 72.54561312355084},
+    "b5_instructions_per_expanded_state": 2008.567317279313,
+    "b5_cycles_per_expanded_state": 488.54230384223507,
+    "b6_cycles_per_expanded_state": 671.9829222955415
+  },
+  "g1": {
+    "b5_branch_miss_rate": 0.006812448266441873,
+    "b6_branch_miss_rate": 0.006977689031675672,
+    "branches_delta_percent": 0.025676718428435663,
+    "branch_misses_delta_percent": 2.4518704622253917,
+    "b5_generic_cache_miss_rate": 0.016830658886532453,
+    "b6_generic_cache_miss_rate": 0.009352440754353807
+  },
+  "g2_common": {
+    "b5_L1_dcache_loads_per_request": 6676723.214659686,
+    "b6_L1_dcache_loads_per_request": 6679126.205052331,
+    "L1_dcache_loads_delta_percent": 0.03599056476339957,
+    "b5_LLC_loads_per_request": 4625.4031413612565,
+    "b6_LLC_loads_per_request": 4155.12889179783,
+    "b5_LLC_misses_per_request": 71.90837696335079,
+    "b6_LLC_misses_per_request": 18.917471566840874,
+    "LLC_misses_delta_percent": -73.69225622143793,
+    "L1_dcache_load_miss_comparison": "UNAVAILABLE_EVENT_NOT_SUPPORTED_ON_CPU_ATOM"
+  },
+  "g3": {
+    "b5_dTLB_loads_per_request": 6676996.285340314,
+    "b6_dTLB_loads_per_request": 6678973.987134984,
+    "dTLB_loads_delta_percent": 0.029619632992949896,
+    "b5_dTLB_load_misses_per_request": 8.918848167539267,
+    "b6_dTLB_load_misses_per_request": 244.37478495474443,
+    "dTLB_miss_ratio": 27.399814456328844,
+    "extra_dTLB_misses_per_request": 235.45593678720516,
+    "extra_cycles_per_request": 3870399.2024150193,
+    "cycles_per_extra_dTLB_miss_needed_to_explain_all_extra_cycles": 16437.891756846708
+  },
+  "measured_conclusions": [
+    "B5 and B6 execute the same structural states and effectively the same instruction and branch counts",
+    "B6 consumes 37.55 percent more cycles at 27.28 percent lower IPC",
+    "common L1 load and generic branch work do not increase materially",
+    "LLC loads and misses do not increase in the common-event comparison",
+    "dTLB misses increase 27.4 times but only by 235.46 misses per request; attributing all extra cycles to them would require 16437.9 cycles per extra miss"
+  ],
+  "not_proven": [
+    "clean-host behavior",
+    "causality assigned to Nando or any other foreign process",
+    "causality assigned to cache scheduler heterogeneous cores or executor arithmetic alone",
+    "L1-dcache-load-miss comparison across P and E cores",
+    "per-edge or per-transition cost because edges examined are not recorded",
+    "formal B",
+    "V12 admission",
+    "runtime integration authority"
+  ],
+  "next_required_denominator": "edges examined and transition calls on the exact frozen trace",
+  "remote_integrity": {"v4_final_manifest_entries": 44, "v4_state_manifest_entries": 6, "writable_objects": 0},
+  "thermal_throttle_drift": false,
+  "formal_b_pass": false,
+  "v12_admitted": false,
+  "runtime_authority_changed": false
+}

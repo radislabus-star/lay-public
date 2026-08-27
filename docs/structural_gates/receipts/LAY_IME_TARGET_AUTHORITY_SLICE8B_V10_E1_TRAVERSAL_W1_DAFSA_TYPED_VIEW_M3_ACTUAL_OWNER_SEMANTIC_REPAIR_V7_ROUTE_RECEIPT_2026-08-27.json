@@ -1,0 +1,757 @@
+{
+  "verdict": "PASS",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "m3-actual-owner-semantic-repair-v7",
+  "domain": "general",
+  "complexity_score": 36,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.1667,
+      "c2": 0.1667,
+      "c3": 0.1667,
+      "c4": 0.1667,
+      "c5": 0.1667,
+      "c6": 0.1667
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 12,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.4393,
+      "c2": 0.4089,
+      "c3": 0.4025,
+      "c4": 0.3865,
+      "c5": 0.3977,
+      "c6": 0.4057
+    },
+    "source_self_score": 0.4068,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "authority-veto": "authority-veto",
+      "baseline": "baseline",
+      "normalization": "normalization",
+      "parity": "parity",
+      "replacement": "replacement",
+      "retention": "retention"
+    },
+    "scores": {
+      "authority-veto": 1.0,
+      "baseline": 1.0,
+      "normalization": 1.0,
+      "parity": 1.0,
+      "replacement": 1.0,
+      "retention": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "authority-veto": 1,
+      "baseline": 1,
+      "normalization": 1,
+      "parity": 1,
+      "replacement": 1,
+      "retention": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.4068,
+      "norm": 78.1025,
+      "triads": 6
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "authority-veto": "authority-veto",
+      "baseline": "baseline",
+      "normalization": "normalization",
+      "parity": "parity",
+      "replacement": "replacement",
+      "retention": "retention"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "authority-veto": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "baseline": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "normalization": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "replacement": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "retention": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "authority-veto": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "baseline": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "normalization": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "replacement": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "retention": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "authority-veto": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "authority-veto",
+        "exact_source_groups": [
+          "authority-veto"
+        ]
+      },
+      "baseline": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "baseline",
+        "exact_source_groups": [
+          "baseline"
+        ]
+      },
+      "normalization": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "normalization",
+        "exact_source_groups": [
+          "normalization"
+        ]
+      },
+      "parity": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "parity",
+        "exact_source_groups": [
+          "parity"
+        ]
+      },
+      "replacement": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "replacement",
+        "exact_source_groups": [
+          "replacement"
+        ]
+      },
+      "retention": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "retention",
+        "exact_source_groups": [
+          "retention"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "authority-veto": {
+        "authority-veto": 1.0,
+        "baseline": 0.0059,
+        "normalization": 0.0117,
+        "parity": -0.043,
+        "replacement": 0.0039,
+        "retention": -0.0352
+      },
+      "baseline": {
+        "authority-veto": 0.0059,
+        "baseline": 1.0,
+        "normalization": 0.0293,
+        "parity": 0.0137,
+        "replacement": -0.0449,
+        "retention": -0.0332
+      },
+      "normalization": {
+        "authority-veto": 0.0117,
+        "baseline": 0.0293,
+        "normalization": 1.0,
+        "parity": 0.0078,
+        "replacement": -0.0078,
+        "retention": 0.0313
+      },
+      "parity": {
+        "authority-veto": -0.043,
+        "baseline": 0.0137,
+        "normalization": 0.0078,
+        "parity": 1.0,
+        "replacement": 0.0039,
+        "retention": 0.0078
+      },
+      "replacement": {
+        "authority-veto": 0.0039,
+        "baseline": -0.0449,
+        "normalization": -0.0078,
+        "parity": 0.0039,
+        "replacement": 1.0,
+        "retention": 0.0273
+      },
+      "retention": {
+        "authority-veto": -0.0352,
+        "baseline": -0.0332,
+        "normalization": 0.0313,
+        "parity": 0.0078,
+        "replacement": 0.0273,
+        "retention": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "authority-veto": {
+          "gravity": 1.0,
+          "owner": "authority-veto",
+          "owners": {
+            "authority-veto": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "baseline": {
+          "gravity": 1.0,
+          "owner": "baseline",
+          "owners": {
+            "baseline": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "normalization": {
+          "gravity": 1.0,
+          "owner": "normalization",
+          "owners": {
+            "normalization": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "parity": {
+          "gravity": 1.0,
+          "owner": "zero complete fixed mismatches",
+          "owners": {
+            "zero complete fixed mismatches": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "replacement": {
+          "gravity": 1.0,
+          "owner": "replacement",
+          "owners": {
+            "replacement": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "retention": {
+          "gravity": 1.0,
+          "owner": "complete exact material shadow",
+          "owners": {
+            "complete exact material shadow": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "authority-veto": {
+          "gravity": 1.0,
+          "owner": "authority-veto",
+          "owners": {
+            "authority-veto": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "baseline": {
+          "gravity": 1.0,
+          "owner": "baseline",
+          "owners": {
+            "baseline": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "normalization": {
+          "gravity": 1.0,
+          "owner": "normalization",
+          "owners": {
+            "normalization": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "parity": {
+          "gravity": 1.0,
+          "owner": "zero complete fixed mismatches",
+          "owners": {
+            "zero complete fixed mismatches": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "replacement": {
+          "gravity": 1.0,
+          "owner": "replacement",
+          "owners": {
+            "replacement": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "retention": {
+          "gravity": 1.0,
+          "owner": "complete exact material shadow",
+          "owners": {
+            "complete exact material shadow": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "authority-veto": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "origin/source/gate veto",
+            "repair-v7.md:67-71"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "authority-veto"
+          ],
+          "scopes": [
+            "authority-veto"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "baseline": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "empty-lane parity test",
+            "repair-v7.md:73-84"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "baseline"
+          ],
+          "scopes": [
+            "baseline"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "normalization": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "exact normalized comparison",
+            "repair-v7.md:31-45"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "normalization"
+          ],
+          "scopes": [
+            "normalization"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "parity": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "764-request receipt",
+            "repair-v7.md:86-104"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "zero complete fixed mismatches"
+          ],
+          "scopes": [
+            "parity"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "replacement": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "repair-v7.md:47-65",
+            "structured class projection"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "replacement"
+          ],
+          "scopes": [
+            "replacement"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "retention": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate/certificate audit rows",
+            "repair-v7.md:40-45"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "complete exact material shadow"
+          ],
+          "scopes": [
+            "retention"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "authority-veto": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "baseline": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "normalization": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "replacement": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "retention": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "authority-veto": {
+          "authority-veto": 1.0,
+          "baseline": 0.0059,
+          "normalization": 0.0117,
+          "parity": -0.043,
+          "replacement": 0.0039,
+          "retention": -0.0352
+        },
+        "baseline": {
+          "authority-veto": 0.0059,
+          "baseline": 1.0,
+          "normalization": 0.0293,
+          "parity": 0.0137,
+          "replacement": -0.0449,
+          "retention": -0.0332
+        },
+        "normalization": {
+          "authority-veto": 0.0117,
+          "baseline": 0.0293,
+          "normalization": 1.0,
+          "parity": 0.0078,
+          "replacement": -0.0078,
+          "retention": 0.0313
+        },
+        "parity": {
+          "authority-veto": -0.043,
+          "baseline": 0.0137,
+          "normalization": 0.0078,
+          "parity": 1.0,
+          "replacement": 0.0039,
+          "retention": 0.0078
+        },
+        "replacement": {
+          "authority-veto": 0.0039,
+          "baseline": -0.0449,
+          "normalization": -0.0078,
+          "parity": 0.0039,
+          "replacement": 1.0,
+          "retention": 0.0273
+        },
+        "retention": {
+          "authority-veto": -0.0352,
+          "baseline": -0.0332,
+          "normalization": 0.0313,
+          "parity": 0.0078,
+          "replacement": 0.0273,
+          "retention": 1.0
+        }
+      },
+      "source": {
+        "authority-veto": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "baseline": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "normalization": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "replacement": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "retention": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "authority-veto": 1,
+      "baseline": 1,
+      "normalization": 1,
+      "parity": 1,
+      "replacement": 1,
+      "retention": 1
+    },
+    "stable_groups": [
+      "authority-veto",
+      "baseline",
+      "normalization",
+      "parity",
+      "replacement",
+      "retention"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [],
+  "agent_decision": {
+    "action": "SAFE_TO_EDIT",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Proceed only within the checked route boundary.",
+    "repair_count": 0,
+    "repair_queue": [],
+    "safe_to_edit": true
+  },
+  "explanation": [
+    "Candidate structure is coherent with source triads.",
+    "Structural coherence only: trusted proof was not established and authority is false."
+  ],
+  "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+  "trace_path": "/tmp/nanda-structural-gate/m3-actual-owner-semantic-repair-v7.trace.json"
+}

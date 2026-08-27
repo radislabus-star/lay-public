@@ -95,11 +95,11 @@ fn physical_double_shift_has_one_daemon_to_ime_event_bridge() {
         "the physical p-r-p-r sequence must enter the single IME dispatch adapter"
     );
     assert!(
-        dispatch.contains("Some(run_ime_manual_toggle())")
+        dispatch.contains("run_ime_manual_toggle()")
             && controller.contains("ime_bridge::manual_toggle()")
-            && daemon_bridge.contains("call_ime_noarg(\"ManualToggleV2\")")
-            && ime_bridge.contains("#[zbus(name = \"ManualToggleV2\")]"),
-        "the daemon trigger must reach the focused IME through one ManualToggleV2 call"
+            && daemon_bridge.contains("call_ime_noarg(\"ManualToggleV3\")")
+            && ime_bridge.contains("async fn manual_toggle_v3"),
+        "the daemon trigger must reach the focused IME through one ManualToggleV3 call"
     );
 }
 
@@ -247,7 +247,8 @@ fn input_gate_has_no_shadow_pipeline_or_duplicate_trace_types() {
     let gate = read("src/input_gate.rs");
     assert!(
         gate.contains("fn decide_space_autocorrect_observed")
-            && gate.contains("resolve_text_correction_observed(CorrectionRequest")
+            && gate.contains("correction_request_from_input_gate(req)")
+            && gate.contains("resolve_text_correction_observed(correction_request)")
             && gate.contains("type InputGateCandidateScoreTrace = CorrectionCandidateScoreTrace")
             && gate.contains("type InputGateScoreboard = CorrectionScoreboard"),
         "InputGate must reuse the canonical observed correction resolution and traces"

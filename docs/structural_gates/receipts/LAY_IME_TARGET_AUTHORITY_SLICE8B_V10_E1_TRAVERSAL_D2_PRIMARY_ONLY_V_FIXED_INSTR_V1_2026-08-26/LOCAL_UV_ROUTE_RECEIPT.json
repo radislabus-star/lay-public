@@ -1,0 +1,43 @@
+{
+  "cargo_invocations": 0,
+  "d2_subject_executions": 1,
+  "dispatch": {
+    "all_violations": {
+      "capability": [],
+      "denominator": [],
+      "perturbation": [],
+      "provenance": [],
+      "thermal": []
+    },
+    "reason": "all frozen route predicates passed",
+    "selected_cause": null,
+    "selected_rank": null,
+    "verdict": "V_FIXED_PASS"
+  },
+  "kind": "V",
+  "marker_consumed": true,
+  "next_action_admitted": "V-REVERSED-INSTR only",
+  "perf_record": 0,
+  "perf_stat": 1,
+  "pmu_events_opened": 1,
+  "remote_manifest_entries": 17,
+  "remote_receipt_sha256": "56c862759c95de6682571aed3d68098dab084319817fba5af3853042e0396bae",
+  "retry_permitted": false,
+  "route": "V-FIXED-INSTR",
+  "runtime_after": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "runtime_authority_changed": false,
+  "runtime_before": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "schema": "lay.v10.e1-traversal-d2-primary-only-local-uv-route.v1",
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+  "u_single_salvage_sha256": "9617502776537ca4181bd9bf195e1fd5b8fbd2679f1dfd00737f128cb88bfe0b",
+  "verdict": "V_FIXED_PASS"
+}

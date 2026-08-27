@@ -81,6 +81,7 @@ pub(super) fn decode_input_gate_decision(
     decide_input_gate(InputGateRequest {
         trigger,
         text_tail,
+        lexical_authority_frame: None,
         auto_replace: true,
         typing_assist: true,
         auto_switch_layout: allow_layout_auto,

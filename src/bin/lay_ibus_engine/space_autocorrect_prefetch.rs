@@ -434,11 +434,13 @@ fn prepare_inline_exact(
     }
     let boundary_text = work.identity.boundary_text()?;
     let frame = work.identity.exact_layout_frame();
+    let lexical_authority_frame = work.identity.lexical_authority_frame();
     prepare_exact_layout_active_composition_autocorrect_observed(
         ActiveCompositionAutocorrectRequest {
             text: &boundary_text,
             committed_tail: &work.identity.committed_tail,
             config: &work.config,
+            lexical_authority_frame: Some(&lexical_authority_frame),
             active_layout_is_ru: Some(work.identity.active_layout_is_ru),
         },
         &frame,
@@ -522,10 +524,12 @@ fn evaluate_full(
             ActiveCompositionAutocorrectTelemetry::default(),
         );
     };
+    let lexical_authority_frame = desired.work.identity.lexical_authority_frame();
     let request = ActiveCompositionAutocorrectRequest {
         text: &boundary_text,
         committed_tail: &desired.work.identity.committed_tail,
         config: &desired.work.config,
+        lexical_authority_frame: Some(&lexical_authority_frame),
         active_layout_is_ru: Some(desired.work.identity.active_layout_is_ru),
     };
     let observed = match desired.exact_certificate.as_ref() {

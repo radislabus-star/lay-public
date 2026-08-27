@@ -1,0 +1,33 @@
+{
+  "cargo_invocations": 0,
+  "map_audit_receipt_sha256": "8d2e52574adca52d5a090067cdf071afba922363ccee8fc9eb4a4158cb92cba7",
+  "next_action_admitted": "U-SINGLE only",
+  "parity_marker_consumed": true,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remaining_available_markers": 8,
+  "remote_manifest_entries": 11,
+  "remote_receipt_sha256": "d2519797c6b21976dc6246830e187391a344acb9ec63a7b5a7816161cf306f74",
+  "runtime_after": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "runtime_authority_changed": false,
+  "runtime_before": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "schema": "lay.v10.e1-traversal-d2-primary-only-local-parity.v1",
+  "semantic_mismatch_count": 0,
+  "subject_receipt_sha256": "fbc651637522a3619bb12f35af7645cb5b02bda0fabf35b24a8fc8097b730530",
+  "t_routes_executed": 0,
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "total_consumed_markers": 3,
+  "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+  "u_routes_executed": 0,
+  "v_routes_executed": 0,
+  "verdict": "D2_PARITY_PASS"
+}

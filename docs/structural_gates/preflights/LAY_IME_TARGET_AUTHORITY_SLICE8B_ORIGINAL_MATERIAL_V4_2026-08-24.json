@@ -1,0 +1,387 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "id": "authority-paper",
+      "kind": "file",
+      "path": "../../ime-canonical-target-authority-paper-2026-08-17.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 195857,
+        "sha256": "10bb01bb0d4fcfbd3cf3134fdced5f08c15afc544af4222b744f368f9c7d953b"
+      }
+    },
+    {
+      "id": "slice8-paper",
+      "kind": "file",
+      "path": "../../ime-target-authority-slice8-lexical-readout-2026-08-23.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 8694,
+        "sha256": "96fa6a4420abbd23cf53ac57d2eca5885b0b728dc5d267abab40ec72c2dd8315"
+      }
+    },
+    {
+      "id": "slice8a-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8a-frame-carrier-receipt.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 3963,
+        "sha256": "a22ab1cc73c964fcc9777f46c8f71726f2820d3b4eba5daaaba40b8eddf649f3"
+      }
+    },
+    {
+      "id": "material-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 58161,
+        "sha256": "605ce8061ee01e8012ac92f9fa470cd2cdebcc498e54c0bc4a008b4200b343cf"
+      }
+    },
+    {
+      "id": "live-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 59772,
+        "sha256": "e1f66048d9175a14e0d7dc35c9fa8826da9ca6204768403e9af52604f1749be5"
+      }
+    },
+    {
+      "id": "cohort-compare-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/cohort_compare.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 13920,
+        "sha256": "e738d7df86d1d074257f49231661e36f5287ed6c37a9e1e58d7876a0ee09101b"
+      }
+    },
+    {
+      "id": "proof-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 213552,
+        "sha256": "37e29ea5ce7f69e0f1776d515022beab5bded7e2a68442f01bdacc196ffb8cdd"
+      }
+    },
+    {
+      "id": "bridge-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 111474,
+        "sha256": "8e83dab229657e8304dbd757f83a976e7ad5d30bb3e640cbb56ea4ba30d44dd6"
+      }
+    },
+    {
+      "id": "runtime-loader-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/mod.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 52292,
+        "sha256": "9216497ee581dd3406f7b96928bb8b9cca7b6b29479732311c77607b0b544025"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "original-root-material",
+      "producer": "exact grounded L1.1 identity root for the observed surface",
+      "consumer": "PreparedOriginalMaterialV1 under the prepared material lease",
+      "comparison": "the observed surface is absent from replacement targets while its exact root changes the material integrity digest",
+      "test_id": "original-root-integrity"
+    },
+    {
+      "id": "production-proof-token",
+      "producer": "canonical production lexical token extraction",
+      "consumer": "fixed live cohort proof frame",
+      "comparison": "source window left context observed token caret selection and preedit use the same extracted lexical core",
+      "test_id": "punctuation-frame-parity"
+    },
+    {
+      "id": "warm-runtime-timer",
+      "producer": "installed canonical L2 and Productive V90 preload",
+      "consumer": "queue-inclusive live cohort timer",
+      "comparison": "preload completes before proof workers and its elapsed time is reported outside cohort latency",
+      "test_id": "preload-before-timing"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "original-not-replacement",
+      "statement": "the original observable state never consumes replacement top-k capacity or enters a replacement conflict cohort",
+      "test_id": "original-outside-replacement-set"
+    },
+    {
+      "id": "l11-root-not-hidden",
+      "statement": "moving the original outside replacement targets must preserve and integrity-bind exact grounded L1.1 evidence",
+      "test_id": "original-root-integrity"
+    },
+    {
+      "id": "replacement-retention",
+      "statement": "every non-original canonical field replacement and every grounded non-original L1.1 target remains in bounded material",
+      "test_id": "fixed-retention-proof"
+    },
+    {
+      "id": "strict-frame",
+      "statement": "punctuation is normalized only by the production lexical-token extractor and frame equality is not weakened",
+      "test_id": "punctuation-frame-parity"
+    },
+    {
+      "id": "no-cold-load-in-timer",
+      "statement": "fixed live cohort latency excludes startup package admission but includes all per-request work and queue wait",
+      "test_id": "preload-before-timing"
+    },
+    {
+      "id": "observation-only",
+      "statement": "Slice 8B changes no live decision certificate admission verifier mutation package process or installed runtime",
+      "test_id": "legacy-authority-parity"
+    },
+    {
+      "id": "systemic-only",
+      "statement": "no literal failing surface class-specific branch frontier increase or fallback route is introduced",
+      "test_id": "systemic-source-scan"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "slice8a-proof",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8a-frame-carrier-receipt.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain accepted typed frame carrier evidence",
+      "baseline_check_id": "slice8a-receipt"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [
+    {
+      "id": "slice8b-stable-projection",
+      "source": "one prepared Productive field before and after original separation",
+      "comparison": "exact_stable_projection",
+      "reason": "original preservation and replacement candidacy are distinct contracts",
+      "baseline": "context-shaped canonical field and legacy L2FieldAuthority",
+      "candidate": "replacement-only material plus separately integrity-bound original",
+      "stable_fields": [
+        "non_original_replacement_surfaces",
+        "replacement_witness_roots",
+        "legacy_authority",
+        "live_candidate_bytes",
+        "runtime_authority_changed"
+      ],
+      "expected_to_change_fields": [
+        "material_target_count",
+        "prepared_original_integrity_digest",
+        "candidate_retention_denominator",
+        "cold_preload_measurement"
+      ],
+      "observed_not_compared_fields": [
+        "cache_generation",
+        "thread_schedule",
+        "trace_sequence"
+      ],
+      "test_id": "legacy-authority-parity"
+    }
+  ],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "source_checks": [
+    {
+      "id": "runtime-owners-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "sha256": "e1f66048d9175a14e0d7dc35c9fa8826da9ca6204768403e9af52604f1749be5",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_case_runtime_branch",
+          "regex": "(?:кристаллизатор|punctuation_suffix|suffix_truncation)"
+        },
+        {
+          "effect": "raise_global_target_limit",
+          "regex": "MAX_TARGETS_PER_FIELD\\s*[:=].*(?:75|96|128|256)"
+        },
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?:systemctl|lay-runtime-control|install-release)"
+        },
+        {
+          "effect": "restart_lay_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}lay-daemon"
+        },
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}ibus-daemon"
+        },
+        {
+          "effect": "rewrite_any_package",
+          "regex": "(?:File::create|OpenOptions::new).{0,300}(?:p2m|p2r|V9|V13|V90)"
+        },
+        {
+          "effect": "new_fallback_route",
+          "regex": "(?:fallback|legacy).{0,100}(?:authority|winner|apply)"
+        },
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?:write|create|generate)_synthetic_fixture"
+        }
+      ]
+    },
+    {
+      "id": "material-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "sha256": "605ce8061ee01e8012ac92f9fa470cd2cdebcc498e54c0bc4a008b4200b343cf",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "synthetic_frame_defaults",
+          "regex": "ExactInputFrameV1::new\\(\\s*1\\s*,\\s*0"
+        },
+        {
+          "effect": "weaken_incomplete_authority",
+          "regex": "(?:Overflow|Failed|UpstreamIncomplete).{0,100}(?:Winner|L2Certified)"
+        },
+        {
+          "effect": "package_rebuild",
+          "regex": "(?:compile|reinduce|rebuild).{0,100}(?:V9|V13|V90|package)"
+        },
+        {
+          "effect": "weaken_verifier",
+          "regex": "(?:SafetyGate|verifier).{0,120}(?:bypass|disable|skip|weaken)"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "record-slice8b-diagnostic",
+        "kind": "documentation_edit"
+      },
+      {
+        "id": "separate-original-material",
+        "kind": "source_edit"
+      },
+      {
+        "id": "reuse-production-token-frame",
+        "kind": "source_edit"
+      },
+      {
+        "id": "preload-before-proof-timer",
+        "kind": "source_edit"
+      },
+      {
+        "id": "run-remote-fixed-proofs",
+        "kind": "remote_test"
+      }
+    ],
+    "forbidden": [
+      "runtime_deployment",
+      "restart_lay_daemon",
+      "restart_global_ibus_daemon",
+      "rewrite_any_package",
+      "package_rebuild",
+      "raise_global_target_limit",
+      "literal_case_runtime_branch",
+      "synthetic_frame_defaults",
+      "new_fallback_route",
+      "weaken_incomplete_authority",
+      "weaken_verifier",
+      "generated_traffic",
+      "synthetic_fixture"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "SLICE8B_DIAGNOSTIC_FAIL_RUNTIME_UNCHANGED",
+    "steps": [
+      {
+        "id": "repair-original-material-boundary",
+        "from": "SLICE8B_DIAGNOSTIC_FAIL_RUNTIME_UNCHANGED",
+        "to": "SLICE8B_ORIGINAL_SEPARATED_AUTHORITY_UNCHANGED",
+        "mutates": true,
+        "failure_state": "SLICE8B_REPAIR_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain failed source diff and exact diagnostic; do not hide original loss or expand top-k",
+        "preserves": [
+          "slice8a-proof"
+        ],
+        "test_id": "original-outside-replacement-set"
+      },
+      {
+        "id": "repair-proof-frame-and-preload",
+        "from": "SLICE8B_ORIGINAL_SEPARATED_AUTHORITY_UNCHANGED",
+        "to": "SLICE8B_DIAGNOSTIC_READY_FOR_REMOTE_PROOF",
+        "mutates": true,
+        "failure_state": "SLICE8B_REPAIR_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain strict frame mismatch and cold-load measurements; do not weaken equality or latency gates",
+        "preserves": [
+          "slice8a-proof"
+        ],
+        "test_id": "punctuation-frame-parity"
+      },
+      {
+        "id": "run-remote-slice8b-proof",
+        "from": "SLICE8B_DIAGNOSTIC_READY_FOR_REMOTE_PROOF",
+        "to": "SLICE8B_PROVED_AUTHORITY_UNCHANGED",
+        "mutates": false,
+        "failure_state": "SLICE8B_REMOTE_PROOF_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain complete failed denominator and stop before Slice 8C",
+        "preserves": [
+          "slice8a-proof"
+        ],
+        "test_id": "fixed-retention-proof"
+      }
+    ],
+    "terminal_states": [
+      "SLICE8B_PROVED_AUTHORITY_UNCHANGED",
+      "SLICE8B_REPAIR_REJECTED_RUNTIME_UNCHANGED",
+      "SLICE8B_REMOTE_PROOF_FAILED_RUNTIME_UNCHANGED"
+    ]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_ORIGINAL_MATERIAL_V4_2026-08-24",
+  "tests": [
+    {
+      "id": "original-outside-replacement-set",
+      "kind": "parity",
+      "expected": "an exact observed surface is represented only by PreparedOriginalMaterialV1 and consumes zero replacement target slots"
+    },
+    {
+      "id": "original-root-integrity",
+      "kind": "parity",
+      "expected": "changing an exact original L1.1 root changes material integrity while replacement targets stay byte-identical"
+    },
+    {
+      "id": "punctuation-frame-parity",
+      "kind": "parity",
+      "expected": "production and proof extract the same lexical core and strict frame equality passes without punctuation special cases"
+    },
+    {
+      "id": "preload-before-timing",
+      "kind": "integration",
+      "expected": "canonical L2 and Productive V90 admission complete before timed workers and preload latency is reported separately"
+    },
+    {
+      "id": "legacy-authority-parity",
+      "kind": "parity",
+      "expected": "legacy candidate and decision projection is unchanged and runtime_authority_changed remains false"
+    },
+    {
+      "id": "fixed-retention-proof",
+      "kind": "integration",
+      "expected": "remote 13x1 then fixed 13x100 report READY for every case with candidate retention failures zero grounded L1.1 losses zero and legacy parity failures zero"
+    },
+    {
+      "id": "systemic-source-scan",
+      "kind": "integration",
+      "expected": "runtime source contains no failing literal class-specific branch limit increase package rewrite deployment or fallback route"
+    }
+  ]
+}

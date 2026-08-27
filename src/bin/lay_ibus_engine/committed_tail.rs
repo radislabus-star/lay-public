@@ -678,6 +678,7 @@ mod tests {
             text: "прохоил ",
             committed_tail: "прохоил",
             config: &cfg,
+            lexical_authority_frame: None,
             active_layout_is_ru: None,
         })
         .expect("shared decision");

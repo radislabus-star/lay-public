@@ -1,0 +1,63 @@
+{
+  "schema": "lay.v10.hardware-b0-b2-implementation-repair.v1",
+  "task_id": "slice8b-v10-hardware-b0-b2-v3-20260824",
+  "recorded_at": "2026-08-25T00:08:09+03:00",
+  "preflight": {
+    "manifest_path": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V7_2026-08-25.json",
+    "manifest_sha256": "71c9a5b1de02d14ac175c0f4a32b5bfdbc9037097147aab10f0cddaba7dde1ab",
+    "receipt_path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_PREFLIGHT_V7_2026-08-25.json",
+    "receipt_sha256": "e67d8fc1af6ba63680a5185c4a269baf1dc0b7f752baa4759a1a94d0c2a0044f",
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true,
+    "blockers": 0
+  },
+  "implementation": {
+    "controller_path": "scripts/lay-v10-hardware-b0-b2.py",
+    "controller_size_bytes": 109604,
+    "controller_sha256": "95b3c6e70499f7ec5b4a0c7407baec831a116b2d96a0fe5f2bbce4f2e2363b75",
+    "scope": "exact-file-byte SHA-256 for every B0-B2 /etc/machine-id owner",
+    "normalized_runtime_owners": 0,
+    "exact_file_runtime_owners": 4,
+    "negative_control_only_strip_sites": 1,
+    "local_self_check": "PASS",
+    "focused_checks": 15,
+    "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+    "remote_actions_during_self_check": 0,
+    "perf_invocations_during_self_check": 0
+  },
+  "read_only_remote_parity": {
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "machine_id_exact_file_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+    "known_stripped_byte_sha256_rejected": "ab7e08a8686d34233ac14d8d07a3ed5671ba14f0d2c08b6e3bba9eb2825ab876",
+    "requested_output_parent": "/home/e/.local/share/lay/provenance",
+    "requested_output_parent_exists": false,
+    "nearest_existing_parent": "/home/e/.local/share/lay",
+    "nearest_existing_parent_device": 66306,
+    "nearest_existing_parent_inode": 23366571,
+    "v13_size_bytes": 140556462,
+    "v13_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "result": "PASS"
+  },
+  "post_probe_audit": {
+    "provenance_root_exists": false,
+    "state_root_exists": false,
+    "stage_count": 0,
+    "matching_route_processes_excluding_audit": 0,
+    "remote_writes": 0,
+    "build_marker_created": false,
+    "freezer_marker_created": false,
+    "cargo_build_check_test": 0,
+    "perf_executable_invocations": 0,
+    "pmu_measurements": 0,
+    "v10_or_proxy_execution": 0
+  },
+  "decision": {
+    "state": "B0_B2_TOOLS_MACHINE_ID_REPAIRED_UNRUN",
+    "b0a_started": false,
+    "next_permitted_transition": "B0a",
+    "diagnostic_build_status": "NOT_STARTED",
+    "freezer_b0b_b1_b2_status": "NOT_STARTED",
+    "b3_parity_b5_b6_v12_admitted": false,
+    "runtime_authority_changed": false
+  }
+}

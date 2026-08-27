@@ -1,0 +1,342 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_V1_2026-08-25",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "c1-contract-current",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRECT_LATENCY_CONTRACT_V1_2026-08-25.md",
+      "expect": {"mode": "0664", "size_bytes": 15531, "sha256": "1b9c8b2af590c721524b11fffeb54b92e37f5e571457605cb5c27dabc66f7752"}
+    },
+    {
+      "id": "c1-order-current",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_ORDER_CORRECTION_V1_2026-08-25.md",
+      "expect": {"mode": "0664", "size_bytes": 6675, "sha256": "02ce34cddff4dc599a9c2bc0daca84e87794f6f6e4838628617bb431a17ef0ff"}
+    },
+    {
+      "id": "c1-route-packet",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_ROUTE_PACKET_V1_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 13335, "sha256": "5cdbd86166d780ffd6e3d92eb522008a56e9298e1079c0d26fd111799b8bc05f"}
+    },
+    {
+      "id": "c1-structural-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_ROUTE_V1_2026-08-25/HIERARCHICAL_RECEIPT.json",
+      "expect": {"mode": "0664", "size_bytes": 26573, "sha256": "d85d413d81e14b93f3de77b7e598bb766fb3fdd69519a1e225e5a3e2f7f69925"}
+    },
+    {
+      "id": "clean-v2-supersession-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_SUPERSESSION_V1_2026-08-25.json",
+      "expect": {"mode": "0444", "size_bytes": 4791, "sha256": "c6a82710d7bf4cafda33bcec21efe784605219c62d1a5fde252ff5c004351ffa"}
+    },
+    {
+      "id": "c1-remote-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_REMOTE_AUDIT_V1_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 1929, "sha256": "871b09e020296e2dc2444dda6a53555be2636fdce3200c667b0e3891a4e54208"}
+    },
+    {
+      "id": "recovered-v10-source",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "expect": {"mode": "0444", "size_bytes": 91518, "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c"}
+    },
+    {
+      "id": "recovered-cargo-toml",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/Cargo.toml",
+      "expect": {"mode": "0444", "size_bytes": 2399, "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b"}
+    },
+    {
+      "id": "recovered-cargo-lock",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/Cargo.lock",
+      "expect": {"mode": "0444", "size_bytes": 70770, "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"}
+    },
+    {
+      "id": "cargo-guard",
+      "kind": "file",
+      "path": "../../../scripts/cargo-guard.sh",
+      "expect": {"mode": "0775", "size_bytes": 2534, "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"}
+    },
+    {
+      "id": "prior-hardware-fragment",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_hardware_test_module.rs.inc",
+      "expect": {"mode": "0664", "size_bytes": 30104, "sha256": "178ec12a3029fe04ae02b060de2e58f83c6481f05fbba2443ad233e9e9d94757"}
+    },
+    {
+      "id": "prior-hardware-controller",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-hardware-b0-b2.py",
+      "expect": {"mode": "0755", "size_bytes": 109604, "sha256": "95b3c6e70499f7ec5b4a0c7407baec831a116b2d96a0fe5f2bbce4f2e2363b75"}
+    },
+    {
+      "id": "prior-b0b-index",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V7_2026-08-25/B0B_PASS_B1_NOT_STARTED_RECEIPT.json",
+      "expect": {"mode": "0664", "size_bytes": 1706, "sha256": "2a95e144481f579473a91a85c1becfa5c9f183cfe80df63c307b1c5fbff0fc22"}
+    },
+    {
+      "id": "active-v11-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {"mode": "0664", "size_bytes": 124127, "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"}
+    },
+    {
+      "id": "c1-controller-before-implementation",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-c1-direct-latency.py",
+      "expect": {}
+    },
+    {
+      "id": "c1-test-fragment-before-implementation",
+      "kind": "absent",
+      "path": "../../../scripts/lay_v10_c1_test_module.rs.inc",
+      "expect": {}
+    },
+    {
+      "id": "c1-local-final-before-run",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRECT_LATENCY_V1_2026-08-25",
+      "expect": {}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "implement-c1-controller", "kind": "local_source_edit"},
+      {"id": "implement-c1-test-fragment", "kind": "local_test_only_source_edit"},
+      {"id": "controller-self-check", "kind": "local_temporary_test"},
+      {"id": "remote-input-and-host-preflight", "kind": "remote_read_only_observation"},
+      {"id": "initialize-c1-state-and-markers", "kind": "remote_fail_closed_state_write"},
+      {"id": "one-guarded-source-preserving-build", "kind": "remote_cargo_build"},
+      {"id": "one-separate-c1-parity-process", "kind": "remote_diagnostic_execution"},
+      {"id": "ten-fixed-latency-processes", "kind": "remote_diagnostic_execution"},
+      {"id": "publish-remote-c1-evidence", "kind": "remote_evidence_write"},
+      {"id": "publish-local-c1-index", "kind": "local_evidence_write"},
+      {"id": "record-c1-result", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "production_source_edit",
+      "target_aware_query_or_selection",
+      "query_reorder",
+      "adaptive_repetition_or_retry",
+      "more_than_one_build",
+      "build_retry",
+      "parity_retry",
+      "latency_process_retry_or_replacement",
+      "perf_or_pmu",
+      "external_timing_as_authority",
+      "json_sha_full_row_or_target_lookup_in_measured_loop",
+      "dynamic_sample_buffer_growth",
+      "shared_sample_lock",
+      "host_tuning",
+      "foreign_process_or_service_control",
+      "runtime_deployment_or_restart",
+      "installed_lay_mutation",
+      "prior_elf_or_evidence_mutation",
+      "package_sidecar_v7_or_schedule_mutation",
+      "latency_before_parity_pass",
+      "latency_without_clean_admission",
+      "threshold_or_conjunct_change_after_samples",
+      "full_b_matrix_execution",
+      "v12_action"
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "preserve-recovered-v10", "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "recovered-v10-source"},
+    {"id": "preserve-recovered-cargo-toml", "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/Cargo.toml", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "recovered-cargo-toml"},
+    {"id": "preserve-recovered-cargo-lock", "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/Cargo.lock", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "recovered-cargo-lock"},
+    {"id": "preserve-cargo-guard", "path": "../../../scripts/cargo-guard.sh", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "cargo-guard"},
+    {"id": "preserve-prior-fragment", "path": "../../../scripts/lay_v10_hardware_test_module.rs.inc", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "prior-hardware-fragment"},
+    {"id": "preserve-prior-controller", "path": "../../../scripts/lay-v10-hardware-b0-b2.py", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "prior-hardware-controller"},
+    {"id": "preserve-b0b-index", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V7_2026-08-25/B0B_PASS_B1_NOT_STARTED_RECEIPT.json", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "prior-b0b-index"},
+    {"id": "preserve-clean-supersession", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_SUPERSESSION_V1_2026-08-25.json", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "clean-v2-supersession-receipt"},
+    {"id": "preserve-active-v11", "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "active-v11-source"},
+    {"id": "preserve-c1-structural-receipt", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_ROUTE_V1_2026-08-25/HIERARCHICAL_RECEIPT.json", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "c1-structural-receipt"},
+    {"id": "preserve-c1-remote-audit", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_REMOTE_AUDIT_V1_2026-08-25.json", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "c1-remote-audit"}
+  ],
+  "state_machine": {
+    "initial_state": "CLEAN_V2_SUPERSEDED_C1_ABSENT",
+    "steps": [
+      {
+        "id": "implement-controller-and-test-fragment",
+        "from": "CLEAN_V2_SUPERSEDED_C1_ABSENT",
+        "to": "C1_TOOLS_IMPLEMENTED_UNRUN",
+        "mutates": true,
+        "failure_state": "C1_IMPLEMENTATION_REJECTED",
+        "cleanup": "remove only incomplete new C1 files and retain every prior artifact",
+        "preserves": ["preserve-recovered-v10", "preserve-recovered-cargo-toml", "preserve-recovered-cargo-lock", "preserve-cargo-guard", "preserve-prior-fragment", "preserve-prior-controller", "preserve-b0b-index", "preserve-clean-supersession", "preserve-active-v11", "preserve-c1-structural-receipt", "preserve-c1-remote-audit"],
+        "test_id": "implementation-fault"
+      },
+      {"id": "self-check-c1-tools", "from": "C1_TOOLS_IMPLEMENTED_UNRUN", "to": "C1_TOOLS_SELF_CHECKED_UNRUN", "mutates": false},
+      {"id": "remote-read-only-preflight", "from": "C1_TOOLS_SELF_CHECKED_UNRUN", "to": "C1_REMOTE_PRECONDITIONS_ADMITTED", "mutates": false},
+      {
+        "id": "initialize-c1-state-and-markers",
+        "from": "C1_REMOTE_PRECONDITIONS_ADMITTED",
+        "to": "C1_PREPARED_BUILD_AVAILABLE",
+        "mutates": true,
+        "failure_state": "C1_PREPARATION_PARTIAL_FAIL_CLOSED",
+        "cleanup": "retain any created C1 state path and markers; never recreate an execution right; recovery requires a new preflight",
+        "preserves": ["preserve-recovered-v10", "preserve-recovered-cargo-toml", "preserve-recovered-cargo-lock", "preserve-cargo-guard", "preserve-prior-fragment", "preserve-prior-controller", "preserve-b0b-index", "preserve-clean-supersession", "preserve-active-v11", "preserve-c1-structural-receipt", "preserve-c1-remote-audit"],
+        "test_id": "state-marker-fault-matrix"
+      },
+      {
+        "id": "consume-build-and-build-once",
+        "from": "C1_PREPARED_BUILD_AVAILABLE",
+        "to": "C1_EXECUTABLE_SEALED_BUILD_CONSUMED",
+        "mutates": true,
+        "failure_state": "C1_BUILD_FAILED_CONSUMED_NO_RETRY",
+        "cleanup": "terminate only the owned build process group, retain the consumed marker and publish sealed failure evidence; never rebuild under this preflight",
+        "preserves": ["preserve-recovered-v10", "preserve-recovered-cargo-toml", "preserve-recovered-cargo-lock", "preserve-cargo-guard", "preserve-prior-fragment", "preserve-prior-controller", "preserve-b0b-index", "preserve-clean-supersession", "preserve-active-v11", "preserve-c1-structural-receipt", "preserve-c1-remote-audit"],
+        "test_id": "build-fault"
+      },
+      {
+        "id": "consume-and-run-c1-parity-once",
+        "from": "C1_EXECUTABLE_SEALED_BUILD_CONSUMED",
+        "to": "C1_PARITY_PASS_LATENCY_AVAILABLE",
+        "mutates": true,
+        "failure_state": "C1_PARITY_FAILED_CONSUMED_LATENCY_BLOCKED",
+        "cleanup": "terminate only the parity child, retain consumed parity marker and sealed evidence; leave every latency marker unexecuted and unusable",
+        "preserves": ["preserve-recovered-v10", "preserve-recovered-cargo-toml", "preserve-recovered-cargo-lock", "preserve-cargo-guard", "preserve-prior-fragment", "preserve-prior-controller", "preserve-b0b-index", "preserve-clean-supersession", "preserve-active-v11", "preserve-c1-structural-receipt", "preserve-c1-remote-audit"],
+        "test_id": "parity-fault"
+      },
+      {
+        "id": "run-fixed-s-t-process-matrix",
+        "from": "C1_PARITY_PASS_LATENCY_AVAILABLE",
+        "to": "C1_RAW_MATRIX_COMPLETE",
+        "mutates": true,
+        "failure_state": "C1_MATRIX_TERMINAL_NO_REPLACEMENT",
+        "cleanup": "terminate only the active C1 child, retain all consumed markers and partial samples, publish BLOCKED_ENVIRONMENT, BLOCKED_PROVENANCE or C1_FAIL as contracted, and admit no replacement process",
+        "preserves": ["preserve-recovered-v10", "preserve-recovered-cargo-toml", "preserve-recovered-cargo-lock", "preserve-cargo-guard", "preserve-prior-fragment", "preserve-prior-controller", "preserve-b0b-index", "preserve-clean-supersession", "preserve-active-v11", "preserve-c1-structural-receipt", "preserve-c1-remote-audit"],
+        "test_id": "process-order-marker-fault-matrix"
+      },
+      {
+        "id": "aggregate-and-decide",
+        "from": "C1_RAW_MATRIX_COMPLETE",
+        "to": "C1_VERDICT_STAGED",
+        "mutates": true,
+        "failure_state": "C1_AGGREGATION_FAILED_RAW_EVIDENCE_RETAINED",
+        "cleanup": "retain immutable raw primitive samples and environment evidence; no process rerun; aggregation recovery requires a new preflight",
+        "preserves": ["preserve-recovered-v10", "preserve-recovered-cargo-toml", "preserve-recovered-cargo-lock", "preserve-cargo-guard", "preserve-prior-fragment", "preserve-prior-controller", "preserve-b0b-index", "preserve-clean-supersession", "preserve-active-v11", "preserve-c1-structural-receipt", "preserve-c1-remote-audit"],
+        "test_id": "aggregation-fault"
+      },
+      {
+        "id": "seal-and-atomically-publish-remote-result",
+        "from": "C1_VERDICT_STAGED",
+        "to": "C1_REMOTE_RESULT_IMMUTABLE",
+        "mutates": true,
+        "failure_state": "C1_REMOTE_PUBLICATION_FAILED_STATE_RETAINED",
+        "cleanup": "retain state, consumed markers and staging bytes; never mutate a published final path; recovery requires a new preflight",
+        "preserves": ["preserve-recovered-v10", "preserve-recovered-cargo-toml", "preserve-recovered-cargo-lock", "preserve-cargo-guard", "preserve-prior-fragment", "preserve-prior-controller", "preserve-b0b-index", "preserve-clean-supersession", "preserve-active-v11", "preserve-c1-structural-receipt", "preserve-c1-remote-audit"],
+        "test_id": "remote-publication-fault"
+      },
+      {
+        "id": "publish-local-index",
+        "from": "C1_REMOTE_RESULT_IMMUTABLE",
+        "to": "C1_RESULT_INDEXED",
+        "mutates": true,
+        "failure_state": "C1_REMOTE_COMPLETE_LOCAL_INDEX_PENDING",
+        "cleanup": "retain the remote immutable result and remove only unpublished local temporary bytes; indexing recovery requires a new preflight",
+        "preserves": ["preserve-recovered-v10", "preserve-recovered-cargo-toml", "preserve-recovered-cargo-lock", "preserve-cargo-guard", "preserve-prior-fragment", "preserve-prior-controller", "preserve-b0b-index", "preserve-clean-supersession", "preserve-active-v11", "preserve-c1-structural-receipt", "preserve-c1-remote-audit"],
+        "test_id": "local-index-fault"
+      },
+      {
+        "id": "update-owning-documents",
+        "from": "C1_RESULT_INDEXED",
+        "to": "C1_DECISION_COMPLETE",
+        "mutates": true,
+        "failure_state": "C1_RESULT_COMPLETE_DOCUMENTATION_PENDING",
+        "cleanup": "retain remote and local immutable evidence; update documentation without changing the C1 result",
+        "preserves": ["preserve-recovered-v10", "preserve-recovered-cargo-toml", "preserve-recovered-cargo-lock", "preserve-cargo-guard", "preserve-prior-fragment", "preserve-prior-controller", "preserve-b0b-index", "preserve-clean-supersession", "preserve-active-v11", "preserve-c1-structural-receipt", "preserve-c1-remote-audit"],
+        "test_id": "documentation-fault"
+      }
+    ],
+    "terminal_states": [
+      "C1_DECISION_COMPLETE",
+      "C1_IMPLEMENTATION_REJECTED",
+      "C1_PREPARATION_PARTIAL_FAIL_CLOSED",
+      "C1_BUILD_FAILED_CONSUMED_NO_RETRY",
+      "C1_PARITY_FAILED_CONSUMED_LATENCY_BLOCKED",
+      "C1_MATRIX_TERMINAL_NO_REPLACEMENT",
+      "C1_AGGREGATION_FAILED_RAW_EVIDENCE_RETAINED",
+      "C1_REMOTE_PUBLICATION_FAILED_STATE_RETAINED",
+      "C1_REMOTE_COMPLETE_LOCAL_INDEX_PENDING",
+      "C1_RESULT_COMPLETE_DOCUMENTATION_PENDING"
+    ]
+  },
+  "invariants": [
+    {"id": "production-prefix-byte-identical", "statement": "the C1 source preserves recovered V10 lines 1 through 1148 as exactly 39047 bytes with SHA-256 ce9ea2d29060 and adds code only inside the existing test module", "test_id": "source-boundary-parity"},
+    {"id": "one-build", "statement": "the C1 build marker is consumed before exactly one guarded offline release Cargo process and cannot be recreated", "test_id": "build-one-shot"},
+    {"id": "parity-before-latency", "statement": "one separate unmeasured C1-PARITY process must pass exact 382-case semantics before any S or T process marker can be consumed", "test_id": "parity-gates-latency"},
+    {"id": "production-timing-authority-only", "statement": "only SearchResult search_elapsed_us and total_elapsed_us enter PASS; outer call-wall remains diagnostic", "test_id": "timing-authority-static"},
+    {"id": "fixed-process-order", "statement": "the only latency order is S1 T1 T2 S2 S3 T3 T4 S4 S5 T5 and no failed or blocked process is replaced", "test_id": "process-order-marker-fault-matrix"},
+    {"id": "fixed-denominators", "statement": "S is five times 100 times 382 and T is five times 250 times 382 with exact per-run and per-worker capacities", "test_id": "sample-count-capacity"},
+    {"id": "twenty-worker-barriers", "statement": "T creates twenty persistent pinned workers once and uses START and END barriers for warmup and every measured round", "test_id": "t-worker-barrier-contract"},
+    {"id": "measured-loop-is-primitive", "statement": "the measured loop records only fixed-width primitive fields into preallocated thread-local storage then black-boxes and drops the result", "test_id": "measured-loop-static-veto"},
+    {"id": "nearest-rank-exact", "statement": "all percentiles use ceil(n*p/100)-1 over integer microseconds with inclusive comparisons", "test_id": "nearest-rank-matrix"},
+    {"id": "clean-admission-fail-closed", "statement": "three quiet samples pass before every process; policy drift, migration, competing load or thermal violation blocks the entire result without process replacement", "test_id": "environment-admission-matrix"},
+    {"id": "claim-boundary", "statement": "C1 can decide only V10-derived steady-state product latency and cannot install V10, run full B, admit V12, or claim IBus-to-edit latency", "test_id": "claim-boundary"}
+  ],
+  "identity_contracts": [
+    {"id": "reviewed-contract-prefix", "producer": "structurally reviewed 14667-byte C1 contract", "consumer": "current append-only C1 contract and implementation controller", "comparison": "first 14667 bytes SHA-256 1a35eeb0f5bb1e83e6785750a3a3857805bc62c93bc25d88d450874ae9f3f3d6", "test_id": "reviewed-contract-prefix-parity"},
+    {"id": "production-source-prefix", "producer": "sealed recovered V10 source", "consumer": "built C1 source and executable provenance", "comparison": "exact first 1148 lines, 39047 bytes and SHA-256 ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26", "test_id": "source-boundary-parity"},
+    {"id": "frozen-query-schedule", "producer": "sealed B0b 382-entry target-free schedule", "consumer": "C1 parity, S and T entrypoints", "comparison": "SHA-256 2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78 plus exact ordinals and damaged-surface identities", "test_id": "schedule-parity"},
+    {"id": "production-result-sample", "producer": "exact search_typed_peaks SearchResult", "consumer": "fixed-width C1 sample record", "comparison": "query ordinal, completeness bit, search_elapsed_us and total_elapsed_us copied exactly before black_box and drop", "test_id": "timing-field-parity"},
+    {"id": "rust-sample-python-aggregation", "producer": "C1 raw fixed-width sample files and run receipts", "consumer": "controller percentile and verdict aggregator", "comparison": "exact schema version, record width, count, route/run/worker identities, SHA-256 and independent nearest-rank fixture", "test_id": "sample-parser-parity"},
+    {"id": "remote-result-local-index", "producer": "sealed remote C1 final tree", "consumer": "local immutable C1 index and owning documents", "comparison": "exact final SHA256SUMS, verdict, thresholds, metrics, executable identity and environment verdict", "test_id": "remote-local-index-parity"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "installed-runtime-noninterference",
+      "source": "local installed Lay, active V11 and live IBus/Lay processes before and after C1",
+      "comparison": "exact_stable_projection",
+      "reason": "C1 is a remote test-only route and cannot alter installed runtime authority",
+      "stable_fields": ["lay_version", "active_v11_sha256", "installed_binary_identities", "ibus_daemon_pid_starttime_argv", "lay_daemon_pid_starttime_argv", "lay_ibus_engine_pid_starttime_argv"],
+      "expected_to_change_fields": ["observation_timestamp"],
+      "observed_not_compared_fields": ["cpu_time", "rss", "scheduler_state"],
+      "test_id": "runtime-noninterference"
+    }
+  ],
+  "tests": [
+    {"id": "implementation-fault", "kind": "fault_injection", "expected": "incomplete new C1 files can be removed while every prior artifact remains exact"},
+    {"id": "source-boundary-parity", "kind": "parity", "expected": "assembled C1 source preserves the exact 39047-byte production prefix and adds only test-module bytes"},
+    {"id": "reviewed-contract-prefix-parity", "kind": "parity", "expected": "the current contract starts with the exact structurally reviewed 14667-byte prefix"},
+    {"id": "controller-self-check", "kind": "fault_injection", "expected": "local temporary state, marker, parser, percentile, publication and every preregistered failure path pass without SSH, Cargo or subject execution"},
+    {"id": "state-marker-fault-matrix", "kind": "fault_injection", "expected": "every fault after C1 state creation retains state and never recreates a build, parity or process right"},
+    {"id": "build-fault", "kind": "fault_injection", "expected": "build failure consumes the one build marker, terminates only its process group, seals failure evidence and forbids retry"},
+    {"id": "build-one-shot", "kind": "integration", "expected": "one offline locked release lib-test build uses CARGO_INCREMENTAL=0 through the pinned cargo guard and a second build is rejected"},
+    {"id": "built-source-provenance", "kind": "parity", "expected": "sealed executable provenance binds recovered source, production prefix, test fragment, Cargo files, toolchain, command, ELF SHA, size and Build ID"},
+    {"id": "parity-fault", "kind": "fault_injection", "expected": "parity failure consumes parity, publishes evidence and leaves latency blocked with all latency subjects unexecuted"},
+    {"id": "parity-gates-latency", "kind": "integration", "expected": "exact 382-case C1-PARITY passes before the first latency marker can be consumed"},
+    {"id": "schedule-parity", "kind": "parity", "expected": "parity, S and T consume the exact target-free 382-entry schedule without reorder or generated cases"},
+    {"id": "timing-authority-static", "kind": "unit", "expected": "acceptance reads only result.search_elapsed_us and result.total_elapsed_us; call-wall fields are diagnostic"},
+    {"id": "timing-field-parity", "kind": "parity", "expected": "fixed-width samples exactly copy query identity, production timing fields and completeness before black_box and drop"},
+    {"id": "measured-loop-static-veto", "kind": "unit", "expected": "measured S and T loop regions contain no JSON, SHA, full-row, target lookup, allocation growth, shared lock, PMU or verdict code"},
+    {"id": "sample-count-capacity", "kind": "unit", "expected": "S capacity is 38200 per run and 191000 pooled; T is 95500 per run, 477500 pooled, 5000 per worker 0 through 18 and 500 for worker 19"},
+    {"id": "t-worker-barrier-contract", "kind": "unit", "expected": "twenty persistent pinned workers execute one warmup and 250 measured rounds with both START and END barriers"},
+    {"id": "process-order-marker-fault-matrix", "kind": "fault_injection", "expected": "only S1 T1 T2 S2 S3 T3 T4 S4 S5 T5 can execute and every consumed or blocked route is terminal without replacement"},
+    {"id": "environment-admission-matrix", "kind": "fault_injection", "expected": "three exact pre-process samples and post-process stable projection reject all threshold, policy, affinity, migration, process and thermal faults"},
+    {"id": "nearest-rank-matrix", "kind": "unit", "expected": "nearest-rank fixtures cover pooled, 38200, 95500, 5000 and 500 denominators and inclusive threshold boundaries"},
+    {"id": "sample-parser-parity", "kind": "parity", "expected": "Rust sample writer and Python parser agree on exact width, endianness, flags, counts, identities and fixture SHA"},
+    {"id": "aggregation-fault", "kind": "fault_injection", "expected": "aggregation failure preserves raw samples and cannot trigger a rerun or add thresholds"},
+    {"id": "acceptance-conjunct-matrix", "kind": "unit", "expected": "all frozen pooled, per-run and fairness thresholds are inclusive hard conjuncts while query and T-search metrics remain diagnostics"},
+    {"id": "remote-publication-fault", "kind": "fault_injection", "expected": "final evidence is fully sealed and verified before one atomic rename with zero post-rename mutations"},
+    {"id": "local-index-fault", "kind": "fault_injection", "expected": "local indexing failure leaves remote final authoritative and immutable"},
+    {"id": "remote-local-index-parity", "kind": "parity", "expected": "local index exactly binds remote final manifest, verdict, metrics, executable and environment evidence"},
+    {"id": "runtime-noninterference", "kind": "parity", "expected": "installed Lay, active V11 and live runtime stable projection remain exact"},
+    {"id": "clean-supersession-preserved", "kind": "parity", "expected": "Clean V2 tombstone remains sealed and its final result remains absent throughout C1"},
+    {"id": "forbidden-effect-static-scan", "kind": "unit", "expected": "new code has no production edit, PMU, host tuning, process stop, runtime mutation, old evidence mutation, adaptive route or V12 action"},
+    {"id": "claim-boundary", "kind": "unit", "expected": "C1 reports only V10-derived steady-state product latency and grants no install, full B, V12 or runtime integration authority"},
+    {"id": "documentation-fault", "kind": "fault_injection", "expected": "documentation failure cannot alter immutable C1 evidence or its verdict"},
+    {"id": "graphify-refresh", "kind": "integration", "expected": "graphify update completes after the owning documents record the C1 terminal result"}
+  ]
+}

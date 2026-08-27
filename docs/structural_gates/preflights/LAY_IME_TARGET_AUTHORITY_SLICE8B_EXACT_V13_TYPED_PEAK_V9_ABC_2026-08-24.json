@@ -1,0 +1,394 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "id": "v9-paper-contract",
+      "kind": "file",
+      "path": "../../ime-target-authority-slice8-lexical-readout-2026-08-23.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 48479,
+        "sha256": "ace9935219f057e248ea7aee1ad89ee85584fb981b17887bea99b6e8fcb3f050"
+      }
+    },
+    {
+      "id": "v9-route-contract",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_EXACT_V13_TYPED_PEAK_V9_ROUTE_2026-08-24.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 6000,
+        "sha256": "cfe01d3944c3453eabf4c71781ec58e7612fb074652a199a9ac95b6d0c9ac503"
+      }
+    },
+    {
+      "id": "v9-route-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v9-exact-v13-typed-peak-route.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 9009,
+        "sha256": "4bb33c02f991abebab427652d8f55f9404634dd68294022ac2b9120431ef7257"
+      }
+    },
+    {
+      "id": "v8-negative-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v8-target-blind-contour-lemma-audit.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 4848,
+        "sha256": "980be4ba16acbd12f67f81c9914d444bb84b28bf45d79c952f9121f479b071d1"
+      }
+    },
+    {
+      "id": "v7-fixed-denominator",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-fixed-13x100.json",
+      "expect": {
+        "mode": "0600",
+        "size_bytes": 1606189,
+        "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"
+      }
+    },
+    {
+      "id": "l1-typed-traversal-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 85658,
+        "sha256": "c05bae08ba1ed839b54bc4c6ff8cd561dc54535492960c2bc010691ec0297edb"
+      }
+    },
+    {
+      "id": "l1-forward-decoder-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/lexical_grokking/forward_decoder_index.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 19792,
+        "sha256": "a2bf1f313d6c924e46bc5b3c358e6c9e7ae4d1db83413482be7598fa1ea0a553"
+      }
+    },
+    {
+      "id": "v13-runtime-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/runtime.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 142756,
+        "sha256": "cb94bd3ffaf61b31f7cce8d2051ae9087cf8aba26487c037ba6fbeaaa57f0966"
+      }
+    },
+    {
+      "id": "v13-storage-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/runtime_storage.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 7160,
+        "sha256": "2c1f23cbf88f51ef3018a19db0146675f8abb24ed00f16d0c710d9347965b32c"
+      }
+    },
+    {
+      "id": "l2-module-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/mod.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 52450,
+        "sha256": "c9ff569db9c8b617cb889ecb2efb9e1e77433942099e96881fc7cb16a541fba8"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "v13-sidecar-binding",
+      "producer": "immutable V13 bytes named by the V7 receipt",
+      "consumer": "proof-only DAFSA sidecar header and loader",
+      "comparison": "exact byte length SHA-256 form count binding count and normalization semantics",
+      "test_id": "v13-index-identity"
+    },
+    {
+      "id": "terminal-rank-form-ref",
+      "producer": "strictly ordered V13 surface sequence",
+      "consumer": "DAFSA path terminal lexicographic rank",
+      "comparison": "all 1,875,032 terminal ranks equal canonical form_ref and decode to identical UTF-8",
+      "test_id": "v13-terminal-roundtrip"
+    },
+    {
+      "id": "typed-semantics-parity",
+      "producer": "existing Phase 7D typed traversal terminal and certificate bytes",
+      "consumer": "shared typed-edit core plus unchanged L1 adapter",
+      "comparison": "exhaustive tiny oracle phase matrices schedule permutations and focused L1 outputs are byte-identical",
+      "test_id": "l1-shared-core-parity"
+    },
+    {
+      "id": "target-noninterference",
+      "producer": "V9 search receiving damaged_surface V13 and sidecar only",
+      "consumer": "frozen lattice certificate work and latency record before target labels",
+      "comparison": "changing or removing target_surface cannot change search bytes work or timing path",
+      "test_id": "v9-target-noninterference"
+    },
+    {
+      "id": "form-binding-identity",
+      "producer": "DAFSA terminal form_ref",
+      "consumer": "all canonical V13 morphology bindings for that form_ref",
+      "comparison": "exact form_ref namespace with no surface rewrite minimum-lemma collapse or fuzzy remap",
+      "test_id": "v13-binding-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "proof-only-no-authority",
+      "statement": "V9-A/B/C emits Born proof material only and cannot edit bridge runtime packages daemon IBus installed Lay or text",
+      "test_id": "runtime-noninterference"
+    },
+    {
+      "id": "one-search-owner",
+      "statement": "one exact_peak_search owns V13 typed discovery with no compound lemma-wave or legacy fallback verdict",
+      "test_id": "single-owner-source-scan"
+    },
+    {
+      "id": "path-evidence-preserved",
+      "statement": "path_context_ref prevents suffix-merged DAFSA states from losing or aliasing repeated-fragment evidence",
+      "test_id": "merged-parent-fault"
+    },
+    {
+      "id": "exhaustive-certificate-only",
+      "statement": "the first prototype certifies only an empty frontier and every budget deadline or scratch hit is Unresolved without automatic authority",
+      "test_id": "frontier-truncation-fault"
+    },
+    {
+      "id": "resource-gates-conjunctive",
+      "statement": "sidecar loader PSS scratch single-client and 20-client latency all pass independently or V9 is rejected",
+      "test_id": "v9-resource-screen"
+    },
+    {
+      "id": "fixed-denominator-conserved",
+      "statement": "the same 382 V8 NoField attempt identities and class partitions are measured once without a full 13x100 rerun",
+      "test_id": "v9-denominator-conservation"
+    },
+    {
+      "id": "no-systemic-shortcut",
+      "statement": "no literal word class target suffix top-k expansion fallback winner safety weakening or target-conditioned budget enters runtime or proof search",
+      "test_id": "systemic-source-scan"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "v7-denominator",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-fixed-13x100.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain the complete fixed denominator and target labels exactly",
+      "baseline_check_id": "v7-fixed-denominator"
+    },
+    {
+      "id": "v8-negative-evidence",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v8-target-blind-contour-lemma-audit.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain the rejected compound discovery measurement exactly",
+      "baseline_check_id": "v8-negative-audit"
+    },
+    {
+      "id": "v13-runtime",
+      "path": "../../../src/nanda_wave/l2_field/runtime.rs",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "do not edit canonical V13 runtime behavior in V9-A/B/C",
+      "baseline_check_id": "v13-runtime-owner"
+    },
+    {
+      "id": "v13-storage",
+      "path": "../../../src/nanda_wave/l2_field/runtime_storage.rs",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "do not edit the existing V13 storage backend in V9-A/B/C",
+      "baseline_check_id": "v13-storage-owner"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [
+    {
+      "id": "phase7d-before-after",
+      "source": "pinned typed_edit_traversal and forward decoder semantics",
+      "comparison": "exact_stable_projection",
+      "reason": "shared-core extraction may change ownership but not L1 terminal or certificate behavior",
+      "baseline": "current Phase 7D traversal",
+      "candidate": "shared core through the L1 adapter",
+      "stable_fields": [
+        "terminal_ids",
+        "certificate_classes",
+        "states_generated",
+        "states_deduplicated",
+        "states_expanded",
+        "queue_peak",
+        "decoder_edges_examined",
+        "terminal_events"
+      ],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": ["source module ownership"],
+      "test_id": "l1-shared-core-parity"
+    },
+    {
+      "id": "v13-surface-dafsa",
+      "source": "all canonical V13 decoded surfaces and bindings",
+      "comparison": "exact_stable_projection",
+      "reason": "the sidecar is only an address index over immutable identities",
+      "baseline": "V13 form_ref order and binding sets",
+      "candidate": "DAFSA language terminal ranks and resolved bindings",
+      "stable_fields": ["surface", "form_ref", "lemma_id", "feature_mask"],
+      "expected_to_change_fields": ["dafsa_state", "lexicographic_rank_prefix"],
+      "observed_not_compared_fields": ["productive_score", "l3_score", "authority"],
+      "test_id": "v13-terminal-roundtrip"
+    }
+  ],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "source_checks": [
+    {
+      "id": "typed-traversal-pinned",
+      "path": "../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "c05bae08ba1ed839b54bc4c6ff8cd561dc54535492960c2bc010691ec0297edb",
+      "forbidden_effect_patterns": [
+        {"effect": "literal_case_branch", "regex": "(?:damage_class|case\\.class|target_surface).{0,120}(?:if|match)"},
+        {"effect": "queue_truncation", "regex": "(?:truncate|take)\\([^\\n]{0,80}(?:state|queue|frontier)"},
+        {"effect": "fallback_authority", "regex": "(?:fallback_winner|fallback_authority|legacy_fallback)"},
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|lay-runtime-control|install-release)"},
+        {"effect": "weaken_verifier", "regex": "(?:SafetyGate|verifier).{0,120}(?:bypass|disable|skip|weaken)"},
+        {"effect": "full_13x100_proof", "regex": "(?:13x100|heldout_per_class.{0,40}100)"},
+        {"effect": "generated_traffic", "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"},
+        {"effect": "l11_package_rebuild", "regex": "(?:compile|rebuild|crystallize).{0,100}(?:L1\\.1|V9|l11).{0,40}package"},
+        {"effect": "production_bridge_edit", "regex": "(?:canonical_text_readout|prepare_context_neutral_productive_material).{0,160}exact_peak"},
+        {"effect": "restart_global_ibus_daemon", "regex": "(?:restart|stop|kill|pkill).{0,80}ibus-daemon"},
+        {"effect": "restart_lay_daemon", "regex": "(?:restart|stop|kill|pkill).{0,80}lay-daemon"},
+        {"effect": "restart_lay_ibus_engine", "regex": "(?:restart|stop|kill|pkill).{0,80}lay-ibus-engine"},
+        {"effect": "synthetic_fixture", "regex": "(?:write|create|generate)_synthetic_fixture"},
+        {"effect": "synthetic_fixed_denominator", "regex": "(?:replace|generate|rewrite).{0,100}(?:fixed_denominator|NoField|382)"},
+        {"effect": "target_conditioned_search", "regex": "(?:search|traverse|deadline|budget).{0,160}target_surface"},
+        {"effect": "v13_package_rebuild", "regex": "(?:compile|rebuild|reinduce).{0,100}(?:V13|canonical_l2).{0,40}package"},
+        {"effect": "v90_package_rebuild", "regex": "(?:compile|rebuild|reinduce).{0,100}(?:V90|productive).{0,40}package"}
+      ]
+    },
+    {
+      "id": "v13-runtime-pinned",
+      "path": "../../../src/nanda_wave/l2_field/runtime.rs",
+      "sha256": "cb94bd3ffaf61b31f7cce8d2051ae9087cf8aba26487c037ba6fbeaaa57f0966",
+      "forbidden_effect_patterns": [
+        {"effect": "v13_runtime_edit", "regex": "(?:V13TypedPeak|v13_typed_peak|exact_peak_search)"},
+        {"effect": "runtime_authority_flip", "regex": "(?:runtime_authority_changed|promotion_eligible)\\s*[:=]\\s*true"}
+      ]
+    },
+    {
+      "id": "v13-storage-pinned",
+      "path": "../../../src/nanda_wave/l2_field/runtime_storage.rs",
+      "sha256": "2c1f23cbf88f51ef3018a19db0146675f8abb24ed00f16d0c710d9347965b32c",
+      "forbidden_effect_patterns": [
+        {"effect": "v13_storage_edit", "regex": "(?:V13TypedPeak|v13_typed_peak|exact_peak_search)"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "extract-shared-typed-core", "kind": "source_edit"},
+      {"id": "add-proof-only-v13-dafsa", "kind": "source_edit"},
+      {"id": "write-proof-sidecar", "kind": "proof_artifact_write"},
+      {"id": "run-focused-local-checks", "kind": "local_test"},
+      {"id": "run-one-remote-v9-abc", "kind": "remote_test"},
+      {"id": "capture-v9-receipts", "kind": "proof_artifact_write"},
+      {"id": "update-owning-architecture", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "runtime_deployment",
+      "restart_lay_daemon",
+      "restart_lay_ibus_engine",
+      "restart_global_ibus_daemon",
+      "production_bridge_edit",
+      "v13_runtime_edit",
+      "v13_storage_edit",
+      "v13_package_rebuild",
+      "v90_package_rebuild",
+      "l11_package_rebuild",
+      "full_13x100_proof",
+      "runtime_authority_flip",
+      "fallback_authority",
+      "target_conditioned_search",
+      "literal_case_branch",
+      "queue_truncation",
+      "weaken_verifier",
+      "generated_traffic",
+      "synthetic_fixture",
+      "synthetic_fixed_denominator"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "V9_PAPER_ROUTE_PASS_RUNTIME_UNCHANGED",
+    "steps": [
+      {
+        "id": "extract-shared-core",
+        "from": "V9_PAPER_ROUTE_PASS_RUNTIME_UNCHANGED",
+        "to": "V9_SHARED_CORE_READY_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "V9_SHARED_CORE_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain the failed diff and focused evidence; do not reset the dirty tree or touch installed runtime",
+        "preserves": ["v7-denominator", "v8-negative-evidence", "v13-runtime", "v13-storage"],
+        "test_id": "shared-core-fault"
+      },
+      {
+        "id": "build-and-validate-dafsa",
+        "from": "V9_SHARED_CORE_READY_RUNTIME_UNCHANGED",
+        "to": "V9_A_INDEX_IDENTITY_PASS_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "V9_A_INDEX_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain the rejected proof sidecar and receipt outside installed model directories; do not raise package or RSS budgets",
+        "preserves": ["v7-denominator", "v8-negative-evidence", "v13-runtime", "v13-storage"],
+        "test_id": "v13-index-build-fault"
+      },
+      {
+        "id": "run-independent-oracle",
+        "from": "V9_A_INDEX_IDENTITY_PASS_RUNTIME_UNCHANGED",
+        "to": "V9_B_SEMANTIC_ORACLE_PASS_RUNTIME_UNCHANGED",
+        "mutates": false,
+        "failure_state": "V9_B_SEMANTIC_ORACLE_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain complete mismatch diagnostics and return to paper analysis without the conserved denominator",
+        "preserves": ["v7-denominator", "v8-negative-evidence", "v13-runtime", "v13-storage"],
+        "test_id": "v9-tiny-oracle"
+      },
+      {
+        "id": "run-conserved-v8-audit",
+        "from": "V9_B_SEMANTIC_ORACLE_PASS_RUNTIME_UNCHANGED",
+        "to": "V9_ABC_PROOF_COMPLETE_RUNTIME_UNCHANGED",
+        "mutates": false,
+        "failure_state": "V9_C_COVERAGE_OR_RESOURCE_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain the complete V9 receipt and first shared failure mechanism; do not run 13x100 integrate bridge or deploy",
+        "preserves": ["v7-denominator", "v8-negative-evidence", "v13-runtime", "v13-storage"],
+        "test_id": "v9-target-blind-audit"
+      }
+    ],
+    "terminal_states": [
+      "V9_ABC_PROOF_COMPLETE_RUNTIME_UNCHANGED",
+      "V9_SHARED_CORE_REJECTED_RUNTIME_UNCHANGED",
+      "V9_A_INDEX_REJECTED_RUNTIME_UNCHANGED",
+      "V9_B_SEMANTIC_ORACLE_REJECTED_RUNTIME_UNCHANGED",
+      "V9_C_COVERAGE_OR_RESOURCE_REJECTED_RUNTIME_UNCHANGED"
+    ]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_EXACT_V13_TYPED_PEAK_V9_ABC_2026-08-24",
+  "tests": [
+    {"id": "shared-core-fault", "kind": "fault_injection", "expected": "a compile or parity failure leaves V13 V90 L1.1 installed runtime and proof denominators untouched"},
+    {"id": "l1-shared-core-parity", "kind": "parity", "expected": "all existing exhaustive Phase 7A-D tiny-oracle schedule and certificate tests remain byte-identical through the L1 adapter"},
+    {"id": "v13-index-build-fault", "kind": "fault_injection", "expected": "an interrupted corrupt oversized or identity-mismatched sidecar build is rejected outside installed model directories"},
+    {"id": "v13-index-identity", "kind": "parity", "expected": "the proof sidecar binds exact V13 bytes and validates deterministic topology language count checksum and resource projection"},
+    {"id": "v13-terminal-roundtrip", "kind": "parity", "expected": "all 1,875,032 V13 surfaces accept at terminal rank equal to form_ref with no extra accepted surface"},
+    {"id": "v13-binding-parity", "kind": "parity", "expected": "every terminal form_ref resolves the unchanged complete V13 binding set"},
+    {"id": "merged-parent-fault", "kind": "fault_injection", "expected": "suffix-state sharing without matching path context cannot merge or emit a repeated-fragment certificate"},
+    {"id": "frontier-truncation-fault", "kind": "fault_injection", "expected": "forced state edge terminal time or scratch exhaustion returns Unresolved and no certified lattice"},
+    {"id": "v9-tiny-oracle", "kind": "parity", "expected": "DAFSA terminal sets and typed certificates match an independent exhaustive oracle for every operator family and traversal schedule"},
+    {"id": "v9-denominator-conservation", "kind": "parity", "expected": "382 unique V8 attempt identities remain exactly partitioned by availability and damage class"},
+    {"id": "v9-target-noninterference", "kind": "parity", "expected": "removing or changing target labels cannot alter search lattice certificate work counters or execution path"},
+    {"id": "v9-target-blind-audit", "kind": "integration", "expected": "target labels are read only after frozen search output and all 382 records report form and lemma retention completeness work and release latency"},
+    {"id": "v9-resource-screen", "kind": "integration", "expected": "sidecar <=32 MiB owned loader <=4 MiB aggregate two-process PSS delta <=40 MiB scratch <=512 KiB search p99 <=3 ms and material p99 <=5 ms"},
+    {"id": "single-owner-source-scan", "kind": "integration", "expected": "proof query has one exact search owner and no compound lemma-wave or legacy fallback verdict"},
+    {"id": "systemic-source-scan", "kind": "integration", "expected": "no target word class literal suffix top-k growth queue truncation fallback or verifier weakening is introduced"},
+    {"id": "runtime-noninterference", "kind": "parity", "expected": "bridge V13 runtime and storage installed binaries packages daemon and IBus remain unchanged"}
+  ]
+}

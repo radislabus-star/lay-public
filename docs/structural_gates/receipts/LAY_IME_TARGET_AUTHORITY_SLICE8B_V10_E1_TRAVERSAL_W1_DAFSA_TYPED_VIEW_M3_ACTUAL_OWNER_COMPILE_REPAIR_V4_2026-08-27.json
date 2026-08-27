@@ -1,0 +1,27 @@
+{
+  "schema": "nanda.compile-repair-execution-admission-receipt.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_COMPILE_REPAIR_V4_2026-08-27",
+  "manifest": {
+    "mode": "0444",
+    "size_bytes": 3185,
+    "sha256": "7b5ac007e3f30e59bf46d1e4a78200b2fbac79e40bcbfb3db28d6b9e7fed5aee"
+  },
+  "checks": {
+    "v3_failure_immutable": "PASS",
+    "scientific_proof_not_started_under_v3": "PASS",
+    "single_import_repair_exact": "PASS",
+    "all_other_staged_sources_unchanged": "PASS",
+    "protected_sources_unchanged": "PASS",
+    "fixed_inputs_unchanged": "PASS",
+    "rustfmt": "PASS",
+    "git_diff_check": "PASS",
+    "new_owner_receipt_absent": "PASS"
+  },
+  "historical_cargo_invocations": 1,
+  "historical_scientific_owner_requests": 0,
+  "new_cargo_invocations_admitted": 1,
+  "retry_under_v4_permitted": false,
+  "blockers": [],
+  "safe_to_execute": true,
+  "verdict": "READY_TO_EXECUTE_ONE_COMPILE_REPAIRED_OWNER_PROOF"
+}

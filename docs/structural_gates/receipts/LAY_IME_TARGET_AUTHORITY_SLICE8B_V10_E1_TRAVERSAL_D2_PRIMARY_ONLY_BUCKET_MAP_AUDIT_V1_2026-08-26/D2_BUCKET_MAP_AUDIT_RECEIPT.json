@@ -1,0 +1,109 @@
+{
+  "auditor": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_AUDIT_V1_2026-08-26.stage-3071271-1787698653034299250/auditor.py",
+    "sha256": "bd3b27c5ef364f31b9d5545400452c951a8c2de7789155604faedb3591fb86ed",
+    "size_bytes": 34966
+  },
+  "cargo_invocations": 0,
+  "d2_subject_executed": false,
+  "elf": {
+    "build_id": "eb951f1a7526a9f1cb365040c10989aa5d3fc50f",
+    "elf": {
+      "mode": "0555",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf",
+      "sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178",
+      "size_bytes": 317706232
+    },
+    "elf_type": "ET_DYN",
+    "text": {
+      "end_exclusive": 20139063,
+      "offset": 4154048,
+      "sha256": "f57eba60bc4b1cadbeb2dfc524af59a7ab011a2e64afb0e1a0fe610755129d94",
+      "size_bytes": 15980919,
+      "start": 4158144
+    }
+  },
+  "elf_executed": false,
+  "live_remote_projection_stable": true,
+  "map": {
+    "addr2line_sha256": "8b9b4767557a3ea019bbaebb280d1a56ab2180f34ad1e05aed9c2affb4c8a9e6",
+    "address_list_sha256": "fca1804a3d0af34ae462938f970fd181706846da6e42dbb725c5ef1775581c58",
+    "ambiguous_bytes": 139,
+    "bucket_bytes": {
+      "DAFSA_DECODE_MEMORY": 1043,
+      "OUTSIDE_TRAVERSAL": 15976046,
+      "RANK": 89,
+      "STACK_CONTROL": 1523,
+      "TERMINAL": 128,
+      "TRANSITION": 1951,
+      "UNATTRIBUTED": 139
+    },
+    "bucket_range_counts": {
+      "DAFSA_DECODE_MEMORY": 10,
+      "OUTSIDE_TRAVERSAL": 4,
+      "RANK": 3,
+      "STACK_CONTROL": 15,
+      "TERMINAL": 4,
+      "TRANSITION": 7,
+      "UNATTRIBUTED": 3
+    },
+    "covered_bytes": 15980919,
+    "gap_bytes": 0,
+    "instruction_count": 1064,
+    "machine_byte_hash_mismatches": 0,
+    "map": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json",
+      "sha256": "2b93aedf11101a8bc5fc7ed4ffaa056b50476d96cdd2eabf9d185f59ee60f846",
+      "size_bytes": 390324
+    },
+    "mechanism_classification_exact": true,
+    "overlap_count": 0,
+    "range_count": 46,
+    "source_frame_ownership_exact": true,
+    "sub_bucket_bytes": {
+      "DAFSA_DECODE_MEMORY/EDGE_DECODE": 435,
+      "DAFSA_DECODE_MEMORY/EDGE_RANGE_CONTROL": 136,
+      "DAFSA_DECODE_MEMORY/STATE_DECODE": 449,
+      "DAFSA_DECODE_MEMORY/SYMBOL_DECODE": 23,
+      "OUTSIDE_TRAVERSAL/OUTSIDE_TRAVERSAL": 15976046,
+      "RANK/EDGE_RANK_ADD": 89,
+      "STACK_CONTROL/BUDGET_DEADLINE": 616,
+      "STACK_CONTROL/PRUNE_AND_LOOP": 190,
+      "STACK_CONTROL/SCRATCH_BOOKKEEPING": 310,
+      "STACK_CONTROL/STACK_POP": 28,
+      "STACK_CONTROL/STACK_PUSH": 379,
+      "TERMINAL/FORM_REF_COLLECTION": 41,
+      "TERMINAL/TERMINAL_DISTANCE": 63,
+      "TERMINAL/TERMINAL_PREDICATE": 24,
+      "TRANSITION/ALPHABET_ID": 259,
+      "TRANSITION/EQUALITY_WINDOW": 159,
+      "TRANSITION/FUSED_SCALAR_U64_ADVANCE": 1533,
+      "UNATTRIBUTED/UNATTRIBUTED": 139
+    }
+  },
+  "map_marker_consumed": true,
+  "marker_mutations": 0,
+  "next_action_admitted": "separate parity controller may verify this receipt and consume parity.available",
+  "parity_executed": false,
+  "parity_marker_available": true,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "producer_local_receipt_sha256": "21d79d9c5b3b0f4b9e60ce23bab07a689ae7c768c37b01aaf7ce94b95a7c33cc",
+  "producer_remote_receipt_sha256": "8197087fff1853b7e4c167e92ae4900eb57821c298b918bfba7dee4c477f3430",
+  "remaining_available_markers": 9,
+  "remote_writes": 0,
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.e1-traversal-d2-primary-only-bucket-map-audit.v1",
+  "stage_path_metadata_affects_map_identity": false,
+  "stage_path_metadata_in_producer_receipt": true,
+  "t_routes_executed": 0,
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "total_consumed_markers": 2,
+  "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+  "u_routes_executed": 0,
+  "v_routes_executed": 0,
+  "verdict": "D2_BUCKET_MAP_AUDITED"
+}

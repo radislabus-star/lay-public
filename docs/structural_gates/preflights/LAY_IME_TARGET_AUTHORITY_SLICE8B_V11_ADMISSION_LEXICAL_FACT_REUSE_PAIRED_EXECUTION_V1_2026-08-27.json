@@ -1,0 +1,311 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "slice8b-v11-admission-lexical-fact-reuse-paired-v1-20260827",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "v11-implementation-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_IMPLEMENTATION_V1_2026-08-27/IMPLEMENTATION_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 4722,
+        "sha256": "e3e05ffbf1d25d8d2b0d2b6095e268769737c11867fd71b688db5c1d63b6a9f9"
+      }
+    },
+    {
+      "id": "v11-implementation-manifest",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_IMPLEMENTATION_V1_2026-08-27/SHA256SUMS",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 2606,
+        "sha256": "fd763337bea717b5f2e4d5e472b267d8a05d0c6e40fc2024144a798cb781618e"
+      }
+    },
+    {
+      "id": "v11-decision",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_DECISION_V1_2026-08-27.md",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 7781,
+        "sha256": "d2cac2d9cf09cc85a25e5b29cb1a8f8ab11b90a31eeb33190f26808df1118f8f"
+      }
+    },
+    {
+      "id": "v8-build-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R1_BUILD_AUDIT_V1_2026-08-27/BUILD_AUDIT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 241788,
+        "sha256": "d7d5e7110171e5c6546016ff0c9374c323804014ef8cfa7a690ad7d1d11c8340"
+      }
+    },
+    {
+      "id": "v8-terminal",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R3_TERMINAL_AUDIT_V1_2026-08-27/TERMINAL_AUDIT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 32242,
+        "sha256": "2115a4ce7c8a79fffde043b87c5aa462014873a0365df3a6e82892f395f6aedc"
+      }
+    },
+    {
+      "id": "v11-source",
+      "kind": "file",
+      "path": "../../../src/typing_transition/proposal_admission.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 119643,
+        "sha256": "e8a6a182753084659e00ccd5e20238d585d859437824609a987ea03ce6edca72"
+      }
+    },
+    {
+      "id": "cargo-toml",
+      "kind": "file",
+      "path": "../../../Cargo.toml",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2399,
+        "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b"
+      }
+    },
+    {
+      "id": "cargo-lock",
+      "kind": "file",
+      "path": "../../../Cargo.lock",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 70770,
+        "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"
+      }
+    },
+    {
+      "id": "cargo-guard",
+      "kind": "file",
+      "path": "../../../scripts/cargo-guard.sh",
+      "expect": {
+        "mode": "0775",
+        "size_bytes": 2534,
+        "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "write-controller", "kind": "local_controller_source_edit"},
+      {"id": "bootstrap", "kind": "new_remote_isolated_namespace"},
+      {"id": "markers", "kind": "three_remote_one_shot_markers"},
+      {"id": "build", "kind": "one_remote_cargo_build"},
+      {"id": "b0", "kind": "one_uncached_subject"},
+      {"id": "b1", "kind": "one_reuse_subject"},
+      {"id": "terminal", "kind": "local_immutable_evidence_copy"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "perf_or_pmu",
+      "second_build",
+      "route_retry",
+      "source_edit_after_build",
+      "different_elf_between_b0_and_b1",
+      "predicate_or_reason_change",
+      "runtime_install_restart_or_deployment"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "v11-local-evidence",
+      "path": "V11 implementation receipt tree",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v11-implementation-receipt"
+    },
+    {
+      "id": "v8-predecessor-evidence",
+      "path": "V8 build and terminal receipts",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v8-build-audit"
+    },
+    {
+      "id": "v11-source",
+      "path": "src/typing_transition/proposal_admission.rs",
+      "policy": "immutable_during_execution",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify after build admission",
+      "baseline_check_id": "v11-source"
+    },
+    {
+      "id": "cargo-inputs",
+      "path": "Cargo.toml Cargo.lock scripts/cargo-guard.sh",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "cargo-toml"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "steps": [
+      {
+        "id": "write-and-self-check-controller",
+        "from": "PREFLIGHT_READY",
+        "to": "CONTROLLER_STATIC_PASS",
+        "mutates": true,
+        "failure_state": "BLOCKED_CONTROLLER",
+        "cleanup": "retain source and diagnostics; create no remote namespace",
+        "preserves": ["v11-local-evidence", "v8-predecessor-evidence", "v11-source", "cargo-inputs"],
+        "test_id": "controller-fault"
+      },
+      {
+        "id": "bootstrap-and-create-markers",
+        "from": "CONTROLLER_STATIC_PASS",
+        "to": "ALL_MARKERS_AVAILABLE",
+        "mutates": true,
+        "failure_state": "BLOCKED_BOOTSTRAP",
+        "cleanup": "retain incomplete bootstrap evidence; no build or subject is admitted",
+        "preserves": ["v11-local-evidence", "v8-predecessor-evidence", "v11-source", "cargo-inputs"],
+        "test_id": "bootstrap-fault"
+      },
+      {
+        "id": "build-once",
+        "from": "ALL_MARKERS_AVAILABLE",
+        "to": "BUILD_CREATED",
+        "mutates": true,
+        "failure_state": "BLOCKED_BUILD",
+        "cleanup": "build marker remains consumed and all Cargo evidence is retained; no second build",
+        "preserves": ["v11-local-evidence", "v8-predecessor-evidence", "v11-source", "cargo-inputs"],
+        "test_id": "build-fault"
+      },
+      {
+        "id": "run-b0-once",
+        "from": "BUILD_CREATED",
+        "to": "B0_CREATED",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "B0 marker remains consumed and complete raw evidence is retained; no B0 retry",
+        "preserves": ["v11-local-evidence", "v8-predecessor-evidence", "v11-source", "cargo-inputs"],
+        "test_id": "b0-fault"
+      },
+      {
+        "id": "run-b1-once",
+        "from": "B0_CREATED",
+        "to": "B1_CREATED",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "B1 marker remains consumed and complete raw evidence is retained; no B1 retry",
+        "preserves": ["v11-local-evidence", "v8-predecessor-evidence", "v11-source", "cargo-inputs"],
+        "test_id": "b1-fault"
+      },
+      {
+        "id": "publish-terminal-comparison",
+        "from": "B1_CREATED",
+        "to": "PAIRED_COMPARISON_COMPLETE",
+        "mutates": true,
+        "failure_state": "BLOCKED_SEMANTIC",
+        "cleanup": "retain both observations and publish exact mismatch fields; no subject retry",
+        "preserves": ["v11-local-evidence", "v8-predecessor-evidence", "v11-source", "cargo-inputs"],
+        "test_id": "terminal-fault"
+      }
+    ],
+    "terminal_states": [
+      "PAIRED_COMPARISON_COMPLETE",
+      "BLOCKED_CONTROLLER",
+      "BLOCKED_BOOTSTRAP",
+      "BLOCKED_BUILD",
+      "BLOCKED_PROVENANCE",
+      "BLOCKED_SEMANTIC"
+    ]
+  },
+  "identity_contracts": [
+    {
+      "id": "source-upload",
+      "producer": "local V11 proposal_admission.rs",
+      "consumer": "remote isolated build source",
+      "comparison": "exact size and SHA-256",
+      "test_id": "source-parity"
+    },
+    {
+      "id": "same-elf",
+      "producer": "single fresh BUILD ELF",
+      "consumer": "B0 and B1 argv",
+      "comparison": "same exact ELF SHA-256 and Build ID",
+      "test_id": "elf-parity"
+    },
+    {
+      "id": "paired-route",
+      "producer": "B0 UNCACHED subject receipt",
+      "consumer": "B1 REUSE subject receipt",
+      "comparison": "same cases warmup measured rounds schedule inputs CPU and semantic identity fields",
+      "test_id": "paired-parity"
+    },
+    {
+      "id": "semantic-baseline",
+      "producer": "each paired subject",
+      "consumer": "frozen M3 exact proof",
+      "comparison": "zero candidate certificate lattice emission gate and unresolved mismatches",
+      "test_id": "semantic-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "target-host",
+      "before": "pre-bootstrap target projection",
+      "after": "pre-B0 and pre-B1 target projections",
+      "stable_fields": ["hostname", "machine_id_sha256", "kernel", "cpu_topology", "toolchain", "input_sha256"],
+      "expected_to_change_fields": ["experiment_namespace", "markers", "build_elf", "subject_evidence"],
+      "observed_not_compared_fields": ["load_average", "free_memory", "process_ids", "wall_clock"],
+      "test_id": "host-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "closed-route-set",
+      "statement": "the only mutating routes are BOOTSTRAP BUILD B0 B1 and TERMINAL publication",
+      "test_id": "route-static"
+    },
+    {
+      "id": "one-shot-order",
+      "statement": "each marker is atomically consumed before its action and order is BUILD then B0 then B1",
+      "test_id": "marker-fault"
+    },
+    {
+      "id": "same-build-pair",
+      "statement": "B0 and B1 execute one byte-identical ELF with only the explicit fact-reuse mode changed",
+      "test_id": "elf-parity"
+    },
+    {
+      "id": "quantitative-performance",
+      "statement": "legacy latency gates are reported but a small performance miss is not a terminal verdict",
+      "test_id": "terminal-fault"
+    },
+    {
+      "id": "no-runtime-authority",
+      "statement": "no install restart deployment daemon IBus perf or PMU route exists",
+      "test_id": "route-static"
+    }
+  ],
+  "tests": [
+    {"id": "controller-fault", "kind": "fault_injection", "expected": "controller failure creates no remote namespace"},
+    {"id": "bootstrap-fault", "kind": "fault_injection", "expected": "partial bootstrap admits neither build nor subject"},
+    {"id": "build-fault", "kind": "fault_injection", "expected": "build marker remains consumed and no retry is admitted"},
+    {"id": "b0-fault", "kind": "fault_injection", "expected": "B0 marker remains consumed and raw evidence is retained"},
+    {"id": "b1-fault", "kind": "fault_injection", "expected": "B1 marker remains consumed and raw evidence is retained"},
+    {"id": "terminal-fault", "kind": "fault_injection", "expected": "incomplete or semantic-mismatched observations cannot publish positive comparison"},
+    {"id": "source-parity", "kind": "parity", "expected": "local and remote proposal source size and SHA-256 are exact"},
+    {"id": "elf-parity", "kind": "parity", "expected": "one ELF identity appears in both subject wrappers"},
+    {"id": "paired-parity", "kind": "parity", "expected": "B0 and B1 scientific envelopes are identical except mode"},
+    {"id": "semantic-parity", "kind": "parity", "expected": "both subjects have zero semantic mismatch counters"},
+    {"id": "host-parity", "kind": "parity", "expected": "stable target fields match before both subjects"},
+    {"id": "route-static", "kind": "static", "expected": "closed action registry contains no forbidden route"},
+    {"id": "marker-fault", "kind": "fault_injection", "expected": "rename-before-action and no marker recreation are enforced"}
+  ]
+}

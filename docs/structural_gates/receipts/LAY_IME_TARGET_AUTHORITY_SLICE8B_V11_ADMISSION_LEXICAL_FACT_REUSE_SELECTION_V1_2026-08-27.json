@@ -1,0 +1,40 @@
+{
+  "schema": "lay.v11-admission-lexical-fact-reuse-selection.v1",
+  "date": "2026-08-27",
+  "verdict": "V11_LEXICAL_FACT_REUSE_SELECTED_FOR_INTEGRATION",
+  "evidence": {
+    "paired_r1_local_receipt_sha256": "f751af00202ea26f01141b9a60a9cedb6a4ad9b8b858f6784fb83b3c42510bbe",
+    "paired_r1_terminal_sha256": "01d073e30c5751892afac2f06ef97c800ed26d7aab2eeec094427453c3bad11a",
+    "elf_sha256": "dbd5feb315e9537b0797cb98d6f38dd66fdc6ee3e562bf9db479ed2c9f34b51a",
+    "semantic_exact": true,
+    "subject_executions": 2,
+    "cargo_invocations_in_r1": 0
+  },
+  "measurements_us": {
+    "pooled_search_p99": {
+      "uncached": 3123,
+      "reuse": 3110,
+      "delta_percent": -0.4162664105027218
+    },
+    "pooled_final_materialize_p99": {
+      "uncached": 5947,
+      "reuse": 2546,
+      "delta_percent": -57.18849840255591
+    },
+    "pooled_total_material_p99": {
+      "uncached": 7986,
+      "reuse": 5354,
+      "delta_percent": -32.957675932882545
+    }
+  },
+  "interpretation": {
+    "selected_mechanism": "reuse immutable lexical facts only within one candidate_admission call",
+    "search_effect": "negligible",
+    "materialization_effect": "large observed improvement",
+    "legacy_absolute_latency_targets": "reported quantitatively; a small miss does not create another repair namespace",
+    "semantic_or_authority_regression": "remains a hard blocker"
+  },
+  "admitted_next_action": "promote bounded call-local reuse into the real admission path and continue typed-view owner integration",
+  "runtime_authority_changed": false,
+  "production_authority_admitted": false
+}

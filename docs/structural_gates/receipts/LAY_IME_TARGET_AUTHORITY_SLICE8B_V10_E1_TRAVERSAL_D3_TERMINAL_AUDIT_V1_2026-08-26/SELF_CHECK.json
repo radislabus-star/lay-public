@@ -1,0 +1,81 @@
+{
+  "marker_mutations": 0,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "remote_projection_mutations": 0,
+  "remote_writes": 0,
+  "schema": "lay.v10.e1-traversal-d3-terminal-audit-self-check.v1",
+  "static_contract": {
+    "bootstrap_parent_mode_from_source": "0700",
+    "correction_verdict": "BLOCKED_PROVENANCE",
+    "effective_bootstrap_admission": "INVALID",
+    "historical_bootstrap_audit_verdict": "D3_BOOTSTRAP_AUDIT_PASS_EXECUTION_ADMITTED",
+    "identities": {
+      "bootstrap_audit": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_BOOTSTRAP_AUDIT_V1_2026-08-26/D3_BOOTSTRAP_AUDIT_RECEIPT.json",
+        "sha256": "0c5a34b1809dbbfa8b3744b65d86f3dfa1d0c1bfb00a623a0bbe5089669b7bb1",
+        "size_bytes": 6059
+      },
+      "bootstrap_auditor": {
+        "mode": "0755",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d3-bootstrap-audit.py",
+        "sha256": "59f963d6327f00baf561113e8ff98b781b2eae22d83c68cbfa0e2d2c56610db6",
+        "size_bytes": 29206
+      },
+      "correction": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_BOOTSTRAP_EXECUTION_ADMISSION_CORRECTION_V2_2026-08-26.md",
+        "sha256": "b963c0059fe6efaca746fad2ad9dc4784c7a6d4b9ea524c9faa18c6858197519",
+        "size_bytes": 3275
+      },
+      "d2_terminal": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_TERMINAL_AUDIT_V1_2026-08-26/T_SINGLE_TERMINAL_AUDIT_RECEIPT.json",
+        "sha256": "75dc2703e279524a76c49a455b6081634d1c67274106da45f0d7d610af95e608",
+        "size_bytes": 14907
+      },
+      "local_controller": {
+        "mode": "0755",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d3-estimator-recovery.py",
+        "sha256": "8f48f4ac95a288d3c58cf60946a7e176f5b527d7a11c51d22680efd89c22acb2",
+        "size_bytes": 31456
+      },
+      "paper": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_TASK_CLOCK_ESTIMATOR_RECOVERY_V1_2026-08-26.md",
+        "sha256": "ebe80974392a05527bea67944f381cfd2f74fb0be1c5b2ba3bf4a5aba22be11a",
+        "size_bytes": 9473
+      },
+      "preflight": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_ESTIMATOR_RECOVERY_IMPLEMENTATION_V2_2026-08-26.json",
+        "sha256": "f9fba59409fe56ae742738d66bbae886b24a165dc34e258529e3f6de6710456e",
+        "size_bytes": 27120
+      },
+      "preflight_receipt": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_ESTIMATOR_RECOVERY_IMPLEMENTATION_V2_PREFLIGHT_2026-08-26.json",
+        "sha256": "09a66ecabebd95e1a8b76e459686bc41a0146f7bedbabf18dbc562096e24868d",
+        "size_bytes": 11073
+      },
+      "remote_controller": {
+        "mode": "0755",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d3-estimator-recovery-remote.py",
+        "sha256": "3540c797130f537330c18b3739baddacfac5eba1f8fdaa201e3af1f30e3a6e85",
+        "size_bytes": 64491
+      },
+      "terminal_auditor": {
+        "mode": "0755",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d3-terminal-audit.py",
+        "sha256": "0dae95cf35ea55e8c56e0d2f99916d0413518782edbe7c22d05642aee314b5d8",
+        "size_bytes": 28722
+      }
+    },
+    "subject_account": "e"
+  },
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826",
+  "transaction_id": "e88555465ee51b7caed891217e8941ceb0b412ed82981d7c88cde71c3eb452e1",
+  "verdict": "D3_TERMINAL_AUDITOR_VERIFIED_UNRUN"
+}

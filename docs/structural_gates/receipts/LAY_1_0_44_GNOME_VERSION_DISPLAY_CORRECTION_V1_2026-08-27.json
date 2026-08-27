@@ -1,0 +1,31 @@
+{
+  "schema": "lay.gnome-version-display-correction.v1",
+  "created_utc": "2026-08-27T13:26:09Z",
+  "verdict": "GNOME_EXTENSION_1_0_44_LOADED",
+  "cause": "The release installer updated binaries and the V13 sidecar but did not update the separately installed GNOME extension, whose UI still declared 1.0.43.",
+  "runtime_binaries_before_correction": "1.0.44",
+  "runtime_binaries_after_correction": "1.0.44",
+  "verified_extension_baseline": "/home/ubu/projects/lay-double-shift-1.0.40/extension/lay@radislabus-star.github.io",
+  "source_and_installed_sha256": {
+    "metadata.json": "b5d7aa79cc5a6a3c07ade2f39338391fc18034196ee843961cf3bc7577093b48",
+    "settings_view.js": "b82784d04e56999d6c1731b3b10bd1d185386224fc27f9b0d0165cd02a0958ef",
+    "tray_support.js": "01b14e069bd704de16d5fa4923c1327a8dc5e8369d819737f4b18c1987623811"
+  },
+  "source_version": "1.0.44",
+  "installed_metadata_version": "1.0.44",
+  "loaded_dbus_version": "1.0.44",
+  "gnome_extension_info_cached_version": "1.0.43",
+  "gnome_extension_info_note": "GNOME Shell retains registration metadata for the current shell session; the reloaded extension code and its user-visible D-Bus version are 1.0.44.",
+  "tray_ui_contract": {
+    "passed": 17,
+    "failed": 0,
+    "log_sha256": "468f389583e0b22ea2e0aa3f12f8d484cc35721a560b24d10f7ec2792062eb17"
+  },
+  "runtime_state": {
+    "lay_daemon_pid": 3381101,
+    "lay_ibus_engine_pid": 3381140,
+    "ibus_daemon_pid": 4594,
+    "runtime_authority_changed": false
+  },
+  "rollback": "/home/ubu/.local/lib/lay/rollback/gnome-extension-1.0.43-before-1.0.44-20260827T132415Z"
+}

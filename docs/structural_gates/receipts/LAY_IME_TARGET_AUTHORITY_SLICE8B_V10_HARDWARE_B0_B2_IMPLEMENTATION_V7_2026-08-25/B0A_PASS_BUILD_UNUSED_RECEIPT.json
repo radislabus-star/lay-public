@@ -1,0 +1,42 @@
+{
+  "schema": "lay.v10.hardware-b0a-local-index.v1",
+  "task_id": "slice8b-v10-hardware-b0-b2-v3-20260824",
+  "recorded_at": "2026-08-25T00:11:34+03:00",
+  "state": "B0A_PASS_BUILD_UNUSED",
+  "remote_receipt": {
+    "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/INPUT_CLOSURE.json",
+    "schema": "lay.v10.hardware-input-closure.v2",
+    "size_bytes": 366665,
+    "sha256": "48176ec6faae86f43ddda8404542367be5b6c9d6813762dedb829b4946593eb3"
+  },
+  "publication": {
+    "root_mode": "0555",
+    "writable_objects": 0,
+    "source_dependency_rows": 509,
+    "unique_source_destinations": 508,
+    "machine_id_exact_file_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+    "nearest_existing_parent_device": 66306,
+    "diagnostic_build_status": "NOT_BUILT",
+    "query_schedule_status": "NOT_CREATED"
+  },
+  "markers": {
+    "build.available": true,
+    "freezer.available": true,
+    "build.consumed-before-exec": false,
+    "freezer.consumed-before-exec": false
+  },
+  "execution": {
+    "cargo_build_check_test": 0,
+    "freezer_runs": 0,
+    "perf_executable_invocations": 0,
+    "pmu_measurements": 0,
+    "v10_or_proxy_runs": 0,
+    "later_gates_admitted": false
+  },
+  "decision": {
+    "next_permitted_transition": "one guarded remote diagnostic build",
+    "build_retry_if_failure": false,
+    "b3_parity_b5_b6_v12_admitted": false,
+    "runtime_authority_changed": false
+  }
+}

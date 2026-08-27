@@ -1,0 +1,58 @@
+{
+  "correction_scope": "single worker ID 255 is the frozen D1 sentinel, not semantic mismatch",
+  "cpu_per_edge_delta_percent": 0.3674526002160794,
+  "d1_samples": {
+    "errors": 0,
+    "mode": "0444",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-SINGLE/subject/component-samples.bin",
+    "record_width_bytes": 118,
+    "records": 7640,
+    "sha256": "b520bcd979449e60f6a03ce477375e98e774a1999eff02d22840a0e8b07832b9",
+    "size_bytes": 901520,
+    "traversal_thread_cpu_ns": 13058196342,
+    "unresolved": 0,
+    "worker_ids": [
+      255
+    ]
+  },
+  "d2_samples": {
+    "errors": 0,
+    "mode": "0444",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_U_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/subject/component-samples.bin",
+    "record_width_bytes": 118,
+    "records": 7640,
+    "sha256": "acbb10629e9a259d6d81bc8dad78caf55e102589293556559e04f930c1f18735",
+    "size_bytes": 901520,
+    "traversal_thread_cpu_ns": 13106179024,
+    "unresolved": 0,
+    "worker_ids": [
+      255
+    ]
+  },
+  "effective_route_state": "U_SINGLE_PASS",
+  "historical_execution_verdict": "BLOCKED_SEMANTIC",
+  "historical_marker_consumed": true,
+  "historical_receipt_sha256": "46d52ac863e25da861f803096a6918a47a1f4b7138c0167c1f4724ad7b26dac8",
+  "historical_state_unchanged": true,
+  "new_subject_execution": false,
+  "next_action_admitted": "U-FIXED only through a controller that pins this exact receipt",
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_projection_unchanged": true,
+  "remote_writes": 0,
+  "retry_permitted": false,
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.e1-traversal-d2-u-single-sealed-evidence-salvage.v1",
+  "semantic_errors_unresolved": "0/0",
+  "structure": {
+    "mode": "0444",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_U_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/subject/structure.json",
+    "sha256": "90d24adee563be803c390b41b18b41624b999db37b34c26650cb362f03d06712",
+    "size_bytes": 172206
+  },
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "thermal_throttle_drift": {},
+  "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+  "verdict": "U_SINGLE_RECOVERED_FROM_SEALED_EVIDENCE"
+}

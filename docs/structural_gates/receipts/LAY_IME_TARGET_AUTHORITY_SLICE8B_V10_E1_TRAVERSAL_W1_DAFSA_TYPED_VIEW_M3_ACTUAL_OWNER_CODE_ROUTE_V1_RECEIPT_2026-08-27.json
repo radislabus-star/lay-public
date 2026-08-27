@@ -1,0 +1,508 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_CODE_ROUTE_V1_2026-08-27.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 11,
+  "edge_count": 22,
+  "routes": [
+    {
+      "id": "fixed-forward-generation-execution",
+      "event": "fixed-forward",
+      "kind": "execution",
+      "entry": "test-entry",
+      "via": [],
+      "terminal": "canonical-exact-generation",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-entry",
+          "fixed-proof-runner",
+          "canonical-exact-generation"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "canonical-exact-generation"
+        ],
+        "orchestrator": [
+          "fixed-proof-runner"
+        ],
+        "interface": [
+          "test-entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test-entry",
+          "to": "canonical-exact-generation",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test-entry",
+              "fixed-proof-runner",
+              "canonical-exact-generation"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fixed-forward-oracle-execution",
+      "event": "fixed-forward",
+      "kind": "execution",
+      "entry": "test-entry",
+      "via": [],
+      "terminal": "phase7d-oracle",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-entry",
+          "fixed-proof-runner",
+          "phase7d-oracle"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "fixed-proof-runner"
+        ],
+        "producer": [
+          "phase7d-oracle"
+        ],
+        "interface": [
+          "test-entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test-entry",
+          "to": "phase7d-oracle",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test-entry",
+              "fixed-proof-runner",
+              "phase7d-oracle"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fixed-forward-search-execution",
+      "event": "fixed-forward",
+      "kind": "execution",
+      "entry": "test-entry",
+      "via": [],
+      "terminal": "typed-exact-search",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-entry",
+          "fixed-proof-runner",
+          "typed-exact-search"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "fixed-proof-runner"
+        ],
+        "interface": [
+          "test-entry"
+        ],
+        "producer": [
+          "typed-exact-search"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test-entry",
+          "to": "typed-exact-search",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test-entry",
+              "fixed-proof-runner",
+              "typed-exact-search"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fixed-reversed-generation-execution",
+      "event": "fixed-reversed",
+      "kind": "execution",
+      "entry": "test-entry",
+      "via": [],
+      "terminal": "canonical-exact-generation",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-entry",
+          "fixed-proof-runner",
+          "canonical-exact-generation"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "canonical-exact-generation"
+        ],
+        "orchestrator": [
+          "fixed-proof-runner"
+        ],
+        "interface": [
+          "test-entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test-entry",
+          "to": "canonical-exact-generation",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test-entry",
+              "fixed-proof-runner",
+              "canonical-exact-generation"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fixed-reversed-oracle-execution",
+      "event": "fixed-reversed",
+      "kind": "execution",
+      "entry": "test-entry",
+      "via": [],
+      "terminal": "phase7d-oracle",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-entry",
+          "fixed-proof-runner",
+          "phase7d-oracle"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "fixed-proof-runner"
+        ],
+        "producer": [
+          "phase7d-oracle"
+        ],
+        "interface": [
+          "test-entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test-entry",
+          "to": "phase7d-oracle",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test-entry",
+              "fixed-proof-runner",
+              "phase7d-oracle"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fixed-reversed-search-execution",
+      "event": "fixed-reversed",
+      "kind": "execution",
+      "entry": "test-entry",
+      "via": [],
+      "terminal": "typed-exact-search",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-entry",
+          "fixed-proof-runner",
+          "typed-exact-search"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "fixed-proof-runner"
+        ],
+        "interface": [
+          "test-entry"
+        ],
+        "producer": [
+          "typed-exact-search"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test-entry",
+          "to": "typed-exact-search",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test-entry",
+              "fixed-proof-runner",
+              "typed-exact-search"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "owner-materialization-execution",
+      "event": "owner-materialization",
+      "kind": "execution",
+      "entry": "test-entry",
+      "via": [],
+      "terminal": "prepared-token-field",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-entry",
+          "fixed-proof-runner",
+          "productive-prepare",
+          "prepared-token-field"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "fixed-proof-runner",
+          "productive-prepare"
+        ],
+        "evidence_owner": [
+          "prepared-token-field"
+        ],
+        "interface": [
+          "test-entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test-entry",
+          "to": "prepared-token-field",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test-entry",
+              "fixed-proof-runner",
+              "productive-prepare",
+              "prepared-token-field"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "owner-materialization-authority",
+      "event": "owner-materialization",
+      "kind": "authority",
+      "entry": "exact-peak-adapter",
+      "via": [],
+      "terminal": "composite-lattice",
+      "path_count": 1,
+      "paths": [
+        [
+          "exact-peak-adapter",
+          "prepared-token-field",
+          "composite-lattice"
+        ]
+      ],
+      "role_owners": {
+        "candidate_rank_owner": [
+          "composite-lattice"
+        ],
+        "producer": [
+          "exact-peak-adapter"
+        ],
+        "evidence_owner": [
+          "prepared-token-field"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "exact-peak-adapter",
+          "to": "composite-lattice",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "exact-peak-adapter",
+              "prepared-token-field",
+              "composite-lattice"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "owner-parity-observation",
+      "event": "parity-observation",
+      "kind": "observation",
+      "entry": "canonical-exact-generation",
+      "via": [],
+      "terminal": "owner-parity-observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "canonical-exact-generation",
+          "owner-parity-observer"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "canonical-exact-generation"
+        ],
+        "observer": [
+          "owner-parity-observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "owner-parity-decision",
+      "event": "parity-decision",
+      "kind": "proof",
+      "entry": "owner-parity-observer",
+      "via": [],
+      "terminal": "owner-parity-proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "owner-parity-observer",
+          "owner-parity-proof"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "owner-parity-observer"
+        ],
+        "proof_owner": [
+          "owner-parity-proof"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "owner-materialization": {
+      "mutation_owner": [],
+      "display_rank_owner": [],
+      "authorization_owner": [],
+      "candidate_rank_owner": [
+        "composite-lattice"
+      ],
+      "render_owner": [],
+      "evidence_owner": [
+        "prepared-token-field"
+      ]
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "authority_stage_reversal",
+      "message": "logical authority flow moves backward; control calls must use calls/delegates",
+      "edge": "generation-search-forward",
+      "source": "canonical-exact-generation",
+      "target": "typed-exact-search",
+      "source_role": "evidence_owner",
+      "target_role": "producer"
+    },
+    {
+      "code": "producer_relation_role_mismatch",
+      "message": "produces_for must originate at a producer",
+      "edge": "generation-search-forward",
+      "source": "canonical-exact-generation",
+      "source_role": "evidence_owner"
+    },
+    {
+      "code": "authority_stage_reversal",
+      "message": "logical authority flow moves backward; control calls must use calls/delegates",
+      "edge": "generation-search-reversed",
+      "source": "canonical-exact-generation",
+      "target": "typed-exact-search",
+      "source_role": "evidence_owner",
+      "target_role": "producer"
+    },
+    {
+      "code": "producer_relation_role_mismatch",
+      "message": "produces_for must originate at a producer",
+      "edge": "generation-search-reversed",
+      "source": "canonical-exact-generation",
+      "source_role": "evidence_owner"
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

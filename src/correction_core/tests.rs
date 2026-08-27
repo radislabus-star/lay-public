@@ -12,6 +12,7 @@ mod tests {
     ) -> CorrectionRequest<'a> {
         CorrectionRequest {
             text,
+            lexical_authority_frame: None,
             auto_replace: true,
             typing_assist: true,
             auto_switch_layout: true,
@@ -283,6 +284,7 @@ mod tests {
         let pipeline = default_typing_assist_pipeline();
         let active = resolve_text_correction(CorrectionRequest {
             text: "звгрузи ",
+            lexical_authority_frame: None,
             auto_replace: true,
             typing_assist: true,
             auto_switch_layout: true,
@@ -299,6 +301,7 @@ mod tests {
 
         let disabled = resolve_text_correction(CorrectionRequest {
             text: "звгрузи ",
+            lexical_authority_frame: None,
             auto_replace: true,
             typing_assist: true,
             auto_switch_layout: true,
@@ -816,6 +819,7 @@ mod tests {
         );
         let resolution = resolve_text_correction(CorrectionRequest {
             text: "HF<JNF NTCN CFV ",
+            lexical_authority_frame: None,
             auto_replace: true,
             typing_assist: true,
             auto_switch_layout: true,
@@ -2394,6 +2398,7 @@ mod tests {
         let pipeline = default_typing_assist_pipeline();
         let decision = decide_text_correction(CorrectionRequest {
             text: "lfdfq ",
+            lexical_authority_frame: None,
             auto_replace: false,
             typing_assist: false,
             auto_switch_layout: false,

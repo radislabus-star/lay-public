@@ -1,0 +1,94 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "immutable_v13", "role": "producer"},
+    {"id": "v10_dafsa_compiler", "role": "orchestrator"},
+    {"id": "v10_rank_delta_sidecar", "role": "producer"},
+    {"id": "observed_token", "role": "interface"},
+    {"id": "typed_token_frame", "role": "producer"},
+    {"id": "phase7d_lane_oracle", "role": "producer"},
+    {"id": "banded_exact_peak_search", "role": "orchestrator"},
+    {"id": "banded_born_lattice", "role": "producer"},
+    {"id": "full_row_proof_oracle", "role": "observer"},
+    {"id": "full_row_proof_lattice", "role": "observer"},
+    {"id": "target_labels", "role": "observer"},
+    {"id": "v10_parity_audit", "role": "observer"},
+    {"id": "fixed_v10_proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "build-v13-compiler", "from": "immutable_v13", "relation": "calls", "to": "v10_dafsa_compiler", "events": ["sidecar_build"]},
+    {"id": "build-compiler-sidecar", "from": "v10_dafsa_compiler", "relation": "delegates", "to": "v10_rank_delta_sidecar", "events": ["sidecar_build"]},
+
+    {"id": "query-token-frame", "from": "observed_token", "relation": "calls", "to": "typed_token_frame", "events": ["proof_query", "proof_parity"]},
+    {"id": "query-frame-search", "from": "typed_token_frame", "relation": "calls", "to": "banded_exact_peak_search", "events": ["proof_query", "proof_parity"]},
+    {"id": "query-search-lanes", "from": "banded_exact_peak_search", "relation": "calls", "to": "phase7d_lane_oracle", "events": ["proof_query", "proof_parity"]},
+    {"id": "query-search-sidecar", "from": "banded_exact_peak_search", "relation": "calls", "to": "v10_rank_delta_sidecar", "events": ["proof_query", "proof_parity"]},
+    {"id": "query-search-lattice", "from": "banded_exact_peak_search", "relation": "delegates", "to": "banded_born_lattice", "events": ["proof_query", "proof_parity"]},
+
+    {"id": "parity-token-full-row", "from": "observed_token", "relation": "calls", "to": "full_row_proof_oracle", "events": ["proof_parity"]},
+    {"id": "parity-full-row-lattice", "from": "full_row_proof_oracle", "relation": "delegates", "to": "full_row_proof_lattice", "events": ["proof_parity"]},
+    {"id": "observe-banded", "from": "banded_born_lattice", "relation": "observes", "to": "v10_parity_audit", "events": ["proof_observation"]},
+    {"id": "observe-full-row", "from": "full_row_proof_lattice", "relation": "observes", "to": "v10_parity_audit", "events": ["proof_observation"]},
+    {"id": "observe-target-labels", "from": "target_labels", "relation": "observes", "to": "v10_parity_audit", "events": ["proof_observation"]},
+    {"id": "prove-v10", "from": "v10_parity_audit", "relation": "proves", "to": "fixed_v10_proof", "events": ["proof_observation"]}
+  ],
+  "routes": [
+    {
+      "id": "v10-sidecar-build",
+      "event": "sidecar_build",
+      "kind": "execution",
+      "entry": "immutable_v13",
+      "terminal": "v10_rank_delta_sidecar",
+      "required_roles": ["producer", "orchestrator"],
+      "path_cardinality": [
+        {"from": "immutable_v13", "to": "v10_rank_delta_sidecar", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "v10-proof-query",
+      "event": "proof_query",
+      "kind": "execution",
+      "entry": "observed_token",
+      "terminal": "banded_born_lattice",
+      "required_roles": ["interface", "producer", "orchestrator"],
+      "path_cardinality": [
+        {"from": "observed_token", "to": "banded_born_lattice", "min": 1, "max": 1},
+        {"from": "target_labels", "to": "banded_exact_peak_search", "min": 0, "max": 0}
+      ]
+    },
+    {
+      "id": "v10-banded-parity-execution",
+      "event": "proof_parity",
+      "kind": "execution",
+      "entry": "observed_token",
+      "terminal": "banded_born_lattice",
+      "required_roles": ["interface", "producer", "orchestrator"],
+      "path_cardinality": [
+        {"from": "observed_token", "to": "banded_born_lattice", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "v10-full-row-oracle-execution",
+      "event": "proof_parity",
+      "kind": "execution",
+      "entry": "observed_token",
+      "terminal": "full_row_proof_lattice",
+      "required_roles": ["interface", "observer"],
+      "path_cardinality": [
+        {"from": "observed_token", "to": "full_row_proof_lattice", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "v10-proof-observation",
+      "event": "proof_observation",
+      "kind": "proof",
+      "entry": "v10_parity_audit",
+      "terminal": "fixed_v10_proof",
+      "required_roles": ["observer", "proof_owner"],
+      "path_cardinality": [
+        {"from": "v10_parity_audit", "to": "fixed_v10_proof", "min": 1, "max": 1}
+      ]
+    }
+  ]
+}

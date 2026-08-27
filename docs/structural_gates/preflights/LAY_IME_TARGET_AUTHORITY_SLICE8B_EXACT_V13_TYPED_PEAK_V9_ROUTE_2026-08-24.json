@@ -1,0 +1,107 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "immutable_v13", "role": "producer"},
+    {"id": "dafsa_compiler", "role": "orchestrator"},
+    {"id": "v13_dafsa_sidecar", "role": "producer"},
+    {"id": "observed_token", "role": "interface"},
+    {"id": "typed_token_frame", "role": "producer"},
+    {"id": "typed_edit_automaton", "role": "producer"},
+    {"id": "exact_peak_search", "role": "orchestrator"},
+    {"id": "path_context_arena", "role": "evidence_owner"},
+    {"id": "v13_form_bindings", "role": "producer"},
+    {"id": "born_lattice", "role": "producer"},
+    {"id": "productive_v90", "role": "producer"},
+    {"id": "common_l3", "role": "evidence_owner"},
+    {"id": "decision_core", "role": "candidate_rank_owner"},
+    {"id": "verifier", "role": "authorization_owner"},
+    {"id": "text_output", "role": "mutation_owner"},
+    {"id": "target_labels", "role": "observer"},
+    {"id": "v9_audit", "role": "observer"},
+    {"id": "fixed_proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "build-v13-compiler", "from": "immutable_v13", "relation": "calls", "to": "dafsa_compiler", "events": ["sidecar_build"]},
+    {"id": "build-compiler-sidecar", "from": "dafsa_compiler", "relation": "delegates", "to": "v13_dafsa_sidecar", "events": ["sidecar_build"]},
+
+    {"id": "query-token-frame", "from": "observed_token", "relation": "calls", "to": "typed_token_frame", "events": ["proof_query", "runtime_query"]},
+    {"id": "query-frame-automaton", "from": "typed_token_frame", "relation": "calls", "to": "typed_edit_automaton", "events": ["proof_query", "runtime_query"]},
+    {"id": "query-frame-search", "from": "typed_token_frame", "relation": "calls", "to": "exact_peak_search", "events": ["proof_query", "runtime_query"]},
+    {"id": "query-search-automaton", "from": "exact_peak_search", "relation": "calls", "to": "typed_edit_automaton", "events": ["proof_query", "runtime_query"]},
+    {"id": "query-search-sidecar", "from": "exact_peak_search", "relation": "calls", "to": "v13_dafsa_sidecar", "events": ["proof_query", "runtime_query"]},
+    {"id": "query-search-path", "from": "exact_peak_search", "relation": "calls", "to": "path_context_arena", "events": ["proof_query", "runtime_query"]},
+    {"id": "query-search-bindings", "from": "exact_peak_search", "relation": "calls", "to": "v13_form_bindings", "events": ["proof_query", "runtime_query"]},
+    {"id": "query-search-lattice", "from": "exact_peak_search", "relation": "delegates", "to": "born_lattice", "events": ["proof_query", "runtime_query"]},
+
+    {"id": "authority-lattice-v90", "from": "born_lattice", "relation": "passes_to", "to": "productive_v90", "events": ["runtime_query"]},
+    {"id": "authority-v90-l3", "from": "productive_v90", "relation": "passes_to", "to": "common_l3", "events": ["runtime_query"]},
+    {"id": "authority-l3-decision", "from": "common_l3", "relation": "passes_to", "to": "decision_core", "events": ["runtime_query"]},
+    {"id": "authority-decision-verifier", "from": "decision_core", "relation": "passes_to", "to": "verifier", "events": ["runtime_query"]},
+    {"id": "authority-verifier-output", "from": "verifier", "relation": "authorizes", "to": "text_output", "events": ["runtime_query"]},
+
+    {"id": "observe-lattice", "from": "born_lattice", "relation": "observes", "to": "v9_audit", "events": ["proof_observation"]},
+    {"id": "observe-labels", "from": "target_labels", "relation": "observes", "to": "v9_audit", "events": ["proof_observation"]},
+    {"id": "prove-audit", "from": "v9_audit", "relation": "proves", "to": "fixed_proof", "events": ["proof_observation"]}
+  ],
+  "routes": [
+    {
+      "id": "sidecar-build-execution",
+      "event": "sidecar_build",
+      "kind": "execution",
+      "entry": "immutable_v13",
+      "terminal": "v13_dafsa_sidecar",
+      "required_roles": ["producer", "orchestrator"],
+      "path_cardinality": [
+        {"from": "immutable_v13", "to": "dafsa_compiler", "min": 1, "max": 1},
+        {"from": "dafsa_compiler", "to": "v13_dafsa_sidecar", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "proof-query-execution",
+      "event": "proof_query",
+      "kind": "execution",
+      "entry": "observed_token",
+      "terminal": "born_lattice",
+      "required_roles": ["interface", "producer", "orchestrator"],
+      "path_cardinality": [
+        {"from": "observed_token", "to": "typed_token_frame", "min": 1, "max": 1},
+        {"from": "typed_token_frame", "to": "exact_peak_search", "min": 1, "max": 1},
+        {"from": "exact_peak_search", "to": "v13_dafsa_sidecar", "min": 1, "max": 1},
+        {"from": "exact_peak_search", "to": "path_context_arena", "min": 1, "max": 1},
+        {"from": "exact_peak_search", "to": "v13_form_bindings", "min": 1, "max": 1},
+        {"from": "exact_peak_search", "to": "born_lattice", "min": 1, "max": 1},
+        {"from": "target_labels", "to": "exact_peak_search", "min": 0, "max": 0}
+      ]
+    },
+    {
+      "id": "runtime-query-execution",
+      "event": "runtime_query",
+      "kind": "execution",
+      "entry": "observed_token",
+      "terminal": "born_lattice",
+      "required_roles": ["interface", "producer", "orchestrator"],
+      "path_cardinality": [
+        {"from": "observed_token", "to": "typed_token_frame", "min": 1, "max": 1},
+        {"from": "typed_token_frame", "to": "exact_peak_search", "min": 1, "max": 1},
+        {"from": "exact_peak_search", "to": "born_lattice", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "runtime-authority",
+      "event": "runtime_query",
+      "kind": "authority",
+      "entry": "born_lattice",
+      "terminal": "text_output",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "proof-observation",
+      "event": "proof_observation",
+      "kind": "proof",
+      "entry": "v9_audit",
+      "terminal": "fixed_proof",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

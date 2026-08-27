@@ -1,0 +1,82 @@
+{
+  "claim_boundary": {
+    "actual_owner_paper_only_if_pass": true,
+    "end_to_end_latency_proven": false,
+    "m3_machine_gain_transferred": false,
+    "production_generation_owner_proven": false
+  },
+  "installed_lay_changed": false,
+  "network_or_remote_used": false,
+  "perf_or_pmu_used": false,
+  "production_source_changed": false,
+  "proof": {
+    "exact_result_mismatches": 0,
+    "fixed_cases": 382,
+    "generic_result_mismatches": 0,
+    "rank_prefix_mismatches": 0,
+    "schedules": [
+      {
+        "byte_examined_edges": 25145756,
+        "byte_expanded_states": 8059788,
+        "queries": 382,
+        "schedule": "FORWARD",
+        "terminal_distance_checks": 8059788,
+        "transition_checks": 25145756,
+        "typed_examined_edges": 25145756,
+        "typed_expanded_states": 8059788
+      },
+      {
+        "byte_examined_edges": 25145756,
+        "byte_expanded_states": 8059788,
+        "queries": 382,
+        "schedule": "REVERSED",
+        "terminal_distance_checks": 8059788,
+        "transition_checks": 25145756,
+        "typed_examined_edges": 25145756,
+        "typed_expanded_states": 8059788
+      }
+    ],
+    "terminal_rank_mismatches": 0,
+    "total_mismatches": 0,
+    "transition_check_mismatches": 0,
+    "work_mismatches": 0
+  },
+  "runtime_authority_changed": false,
+  "schema": "lay.m3-test-source-integration.v1",
+  "source": {
+    "historical_v10_sidecar_bytes": 3689884,
+    "historical_v10_sidecar_path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+    "historical_v10_sidecar_sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd",
+    "package_bytes": 140556462,
+    "package_path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+    "package_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "v7_bytes": 1606189,
+    "v7_path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+    "v7_sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"
+  },
+  "typed_materialization": {
+    "count": 1,
+    "edge_record_bytes": 12,
+    "edges_checked": 226341,
+    "identity_match": true,
+    "payload_bytes": 3689628,
+    "root_state": 81127,
+    "state_record_bytes": 12,
+    "states_checked": 81128,
+    "symbol_digest_match": true
+  },
+  "v11_reconstruction": {
+    "bytes": 2460144,
+    "count": 1,
+    "encoded_record_bytes": {
+      "edge": 8,
+      "state": 8,
+      "symbol": 4
+    },
+    "in_memory_only": true,
+    "magic": "LAYV13D3",
+    "sha256": "5ebffb813ba0ca1e0080ec01756a2dafc51346297558d37cdd135abfde6acfaa",
+    "sidecar_file_written": false
+  },
+  "verdict": "M3_TEST_SOURCE_INTEGRATION_PASS"
+}

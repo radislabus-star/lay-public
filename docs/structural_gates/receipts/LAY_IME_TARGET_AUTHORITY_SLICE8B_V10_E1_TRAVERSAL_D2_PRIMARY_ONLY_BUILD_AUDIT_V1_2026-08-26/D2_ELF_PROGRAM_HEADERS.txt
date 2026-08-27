@@ -1,0 +1,35 @@
+
+Elf file type is DYN (Position-Independent Executable file)
+Entry point 0x3f72c0
+There are 12 program headers, starting at offset 64
+
+Program Headers:
+  Type           Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   Flg Align
+  PHDR           0x000040 0x0000000000000040 0x0000000000000040 0x0002a0 0x0002a0 R   0x8
+  INTERP         0x0002e0 0x00000000000002e0 0x00000000000002e0 0x00001c 0x00001c R   0x1
+      [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]
+  LOAD           0x000000 0x0000000000000000 0x0000000000000000 0x3f62b8 0x3f62b8 R   0x1000
+  LOAD           0x3f62c0 0x00000000003f72c0 0x00000000003f72c0 0xf3dab0 0xf3dab0 R E 0x1000
+  LOAD           0x1333d70 0x0000000001335d70 0x0000000001335d70 0x089f48 0x08a290 RW  0x1000
+  LOAD           0x13bdcb8 0x00000000013c0cb8 0x00000000013c0cb8 0x001a90 0x001c24 RW  0x1000
+  TLS            0x1333d70 0x0000000001335d70 0x0000000001335d70 0x000029 0x000188 R   0x8
+  DYNAMIC        0x13bd1b8 0x00000000013bf1b8 0x00000000013bf1b8 0x0001d0 0x0001d0 RW  0x8
+  GNU_RELRO      0x1333d70 0x0000000001335d70 0x0000000001335d70 0x089f48 0x08a290 R   0x1
+  GNU_EH_FRAME   0x2e92c8 0x00000000002e92c8 0x00000000002e92c8 0x01ab84 0x01ab84 R   0x4
+  GNU_STACK      0x000000 0x0000000000000000 0x0000000000000000 0x000000 0x000000 RW  0
+  NOTE           0x0002fc 0x00000000000002fc 0x00000000000002fc 0x000044 0x000044 R   0x4
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+   01     .interp 
+   02     .interp .note.ABI-tag .note.gnu.build-id .dynsym .gnu.version .gnu.version_r .gnu.hash .dynstr .rela.dyn .rela.plt .gcc_except_table .rodata .debug_gdb_scripts .eh_frame_hdr .eh_frame 
+   03     .text .init .fini .plt 
+   04     .tdata .fini_array .init_array .data.rel.ro .dynamic .got .got.plt .relro_padding 
+   05     .tm_clone_table .data .bss 
+   06     .tdata .tbss 
+   07     .dynamic 
+   08     .tdata .fini_array .init_array .data.rel.ro .dynamic .got .got.plt .relro_padding 
+   09     .eh_frame_hdr 
+   10     
+   11     .note.ABI-tag .note.gnu.build-id 

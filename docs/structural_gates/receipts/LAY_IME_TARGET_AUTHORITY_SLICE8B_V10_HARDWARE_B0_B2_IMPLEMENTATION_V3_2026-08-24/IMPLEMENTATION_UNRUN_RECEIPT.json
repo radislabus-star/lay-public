@@ -1,0 +1,75 @@
+{
+  "schema": "lay.v10.hardware-b0-b2-implementation-unrun.v1",
+  "task_id": "slice8b-v10-hardware-b0-b2-v3-20260824",
+  "state": "B0_B2_TOOLS_IMPLEMENTED_UNRUN",
+  "verdict": "PASS_WITHIN_STATIC_IMPLEMENTATION_SCOPE",
+  "preflight": {
+    "manifest": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V3_2026-08-24.json",
+    "manifest_sha256": "5e4a2d0e9c8813cbaa93fae4c87f84111d5bd6d0db3a0db1a2e1c2d6c33272e5",
+    "receipt": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_PREFLIGHT_V3_2026-08-24.json",
+    "receipt_sha256": "6cc894dcd366306a1bef5eed8843c2d2ffa97cf43b5277128bd5d55613727ccf",
+    "verdict": "READY_TO_IMPLEMENT"
+  },
+  "implementation": {
+    "controller": {
+      "path": "scripts/lay-v10-hardware-b0-b2.py",
+      "mode": "0755",
+      "size_bytes": 100711,
+      "sha256": "ec34a8f2b4c22a5421a88fc67a7cb2fa0214d4072f577e9340321c48b6ff12f0"
+    },
+    "test_module_fragment": {
+      "path": "scripts/lay_v10_hardware_test_module.rs.inc",
+      "mode": "0664",
+      "size_bytes": 30104,
+      "sha256": "178ec12a3029fe04ae02b060de2e58f83c6481f05fbba2443ad233e9e9d94757"
+    },
+    "assembled_v10_derived_source": {
+      "size_bytes": 121622,
+      "sha256": "e0fef5dfd40dbf926fcc1eb612212770a7e5b76ba0e36a87e5149ec61e8e103b",
+      "production_prefix_bytes": 39047,
+      "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+      "production_prefix_byte_equal": true
+    }
+  },
+  "checks": {
+    "controller_python_ast": "PASS",
+    "controller_self_check": "PASS",
+    "focused_checks": 10,
+    "rustfmt_parse_without_cargo": "PASS",
+    "git_diff_check": "PASS",
+    "production_prefix": "PASS",
+    "atomic_publication_fault": "PASS",
+    "one_use_marker_fault": "PASS",
+    "schedule_shape_and_target_key_rejection": "PASS",
+    "hybrid_perf_parser_and_missing_atom_fault": "PASS",
+    "pre_b1_perf_static_boundary": "PASS"
+  },
+  "source_closure_observation": {
+    "dependency_path_records": 509,
+    "unique_normalized_destinations": 508,
+    "identical_alias_records": 1,
+    "conflicting_alias_records": 0,
+    "full_build_time_source_closure": "WATCH"
+  },
+  "executed": {
+    "remote_actions": 0,
+    "cargo_build_check_test": 0,
+    "rustc_compilations": 0,
+    "schedule_freezer": 0,
+    "perf_executable_invocations": 0,
+    "pmu_events": 0,
+    "historical_v10_or_proxy_runs": 0
+  },
+  "not_tested": [
+    "Rust name and type resolution by Cargo",
+    "B0a remote immutable closure",
+    "one guarded diagnostic build",
+    "schedule-freezer execution and B0b publication",
+    "B1 environment admission",
+    "B2 benign PMU capability"
+  ],
+  "next_permitted_transition": "B0a immutable input closure",
+  "later_gates_admitted": false,
+  "runtime_authority_changed": false,
+  "installed_lay_changed": false
+}

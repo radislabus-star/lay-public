@@ -1,0 +1,224 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "test-entry", "role": "interface"},
+    {"id": "integration-runner", "role": "orchestrator"},
+    {"id": "v11-sidecar-reconstructor", "role": "producer"},
+    {"id": "byte-validator", "role": "producer"},
+    {"id": "typed-materializer", "role": "producer"},
+    {"id": "byte-oracle", "role": "evidence_owner"},
+    {"id": "typed-executor", "role": "producer"},
+    {"id": "integration-observer", "role": "observer"},
+    {"id": "integration-proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {
+      "id": "entry-runner-fixture",
+      "from": "test-entry",
+      "relation": "calls",
+      "to": "integration-runner",
+      "events": ["fixture-parity", "fixture-materialization"]
+    },
+    {
+      "id": "entry-runner-fixed",
+      "from": "test-entry",
+      "relation": "calls",
+      "to": "integration-runner",
+      "events": ["fixed-parity", "fixed-materialization"]
+    },
+    {
+      "id": "runner-validator-fixture",
+      "from": "integration-runner",
+      "relation": "calls",
+      "to": "byte-validator",
+      "events": ["fixture-materialization"]
+    },
+    {
+      "id": "validator-materializer-fixture",
+      "from": "byte-validator",
+      "relation": "calls",
+      "to": "typed-materializer",
+      "events": ["fixture-materialization"]
+    },
+    {
+      "id": "runner-reconstructor-fixed",
+      "from": "integration-runner",
+      "relation": "calls",
+      "to": "v11-sidecar-reconstructor",
+      "events": ["fixed-materialization"]
+    },
+    {
+      "id": "reconstructor-validator-fixed",
+      "from": "v11-sidecar-reconstructor",
+      "relation": "calls",
+      "to": "byte-validator",
+      "events": ["fixed-materialization"]
+    },
+    {
+      "id": "validator-materializer-fixed",
+      "from": "byte-validator",
+      "relation": "calls",
+      "to": "typed-materializer",
+      "events": ["fixed-materialization"]
+    },
+    {
+      "id": "runner-byte-oracle-fixture",
+      "from": "integration-runner",
+      "relation": "calls",
+      "to": "byte-oracle",
+      "events": ["fixture-parity"]
+    },
+    {
+      "id": "runner-typed-fixture",
+      "from": "integration-runner",
+      "relation": "calls",
+      "to": "typed-executor",
+      "events": ["fixture-parity"]
+    },
+    {
+      "id": "runner-byte-oracle-fixed",
+      "from": "integration-runner",
+      "relation": "calls",
+      "to": "byte-oracle",
+      "events": ["fixed-parity"]
+    },
+    {
+      "id": "runner-typed-fixed",
+      "from": "integration-runner",
+      "relation": "calls",
+      "to": "typed-executor",
+      "events": ["fixed-parity"]
+    },
+    {
+      "id": "byte-observer-fixture",
+      "from": "byte-oracle",
+      "relation": "observes",
+      "to": "integration-observer",
+      "events": ["fixture-parity"]
+    },
+    {
+      "id": "typed-observer-fixture",
+      "from": "typed-executor",
+      "relation": "observes",
+      "to": "integration-observer",
+      "events": ["fixture-parity"]
+    },
+    {
+      "id": "byte-observer-fixed",
+      "from": "byte-oracle",
+      "relation": "observes",
+      "to": "integration-observer",
+      "events": ["fixed-parity"]
+    },
+    {
+      "id": "typed-observer-fixed",
+      "from": "typed-executor",
+      "relation": "observes",
+      "to": "integration-observer",
+      "events": ["fixed-parity"]
+    },
+    {
+      "id": "materializer-lifetime",
+      "from": "typed-materializer",
+      "relation": "observes",
+      "to": "integration-observer",
+      "events": ["lifetime-evidence"]
+    },
+    {
+      "id": "observer-proof",
+      "from": "integration-observer",
+      "relation": "proves",
+      "to": "integration-proof",
+      "events": ["integration-decision"]
+    }
+  ],
+  "routes": [
+    {
+      "id": "fixture-materialization-execution",
+      "event": "fixture-materialization",
+      "kind": "execution",
+      "entry": "test-entry",
+      "terminal": "typed-materializer",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "test-entry", "to": "typed-materializer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "fixed-materialization-execution",
+      "event": "fixed-materialization",
+      "kind": "execution",
+      "entry": "test-entry",
+      "terminal": "typed-materializer",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "test-entry", "to": "typed-materializer", "min": 1, "max": 1}]
+    },
+    {
+      "id": "fixture-byte-execution",
+      "event": "fixture-parity",
+      "kind": "execution",
+      "entry": "test-entry",
+      "terminal": "byte-oracle",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "test-entry", "to": "byte-oracle", "min": 1, "max": 1}]
+    },
+    {
+      "id": "fixture-typed-execution",
+      "event": "fixture-parity",
+      "kind": "execution",
+      "entry": "test-entry",
+      "terminal": "typed-executor",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "test-entry", "to": "typed-executor", "min": 1, "max": 1}]
+    },
+    {
+      "id": "fixed-byte-execution",
+      "event": "fixed-parity",
+      "kind": "execution",
+      "entry": "test-entry",
+      "terminal": "byte-oracle",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "test-entry", "to": "byte-oracle", "min": 1, "max": 1}]
+    },
+    {
+      "id": "fixed-typed-execution",
+      "event": "fixed-parity",
+      "kind": "execution",
+      "entry": "test-entry",
+      "terminal": "typed-executor",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "test-entry", "to": "typed-executor", "min": 1, "max": 1}]
+    },
+    {
+      "id": "fixture-parity-observation",
+      "event": "fixture-parity",
+      "kind": "observation",
+      "entry": "byte-oracle",
+      "terminal": "integration-observer",
+      "required_roles": ["evidence_owner", "observer"]
+    },
+    {
+      "id": "fixed-parity-observation",
+      "event": "fixed-parity",
+      "kind": "observation",
+      "entry": "byte-oracle",
+      "terminal": "integration-observer",
+      "required_roles": ["evidence_owner", "observer"]
+    },
+    {
+      "id": "lifetime-observation",
+      "event": "lifetime-evidence",
+      "kind": "observation",
+      "entry": "typed-materializer",
+      "terminal": "integration-observer",
+      "required_roles": ["producer", "observer"]
+    },
+    {
+      "id": "integration-decision-proof",
+      "event": "integration-decision",
+      "kind": "proof",
+      "entry": "integration-observer",
+      "terminal": "integration-proof",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

@@ -1,0 +1,596 @@
+{
+  "canonical_l2_package": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+  "canonical_l2_package_bytes": 140556462,
+  "canonical_l2_package_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+  "elapsed_us": 1700519,
+  "exact": {
+    "all_seen_digest": [
+      13722061826644561294,
+      10929635138622271141
+    ],
+    "candidate_count": 56,
+    "candidates": [
+      {
+        "form_ref": 60352,
+        "normalized_surface": "баял"
+      },
+      {
+        "form_ref": 117819,
+        "normalized_surface": "ваял"
+      },
+      {
+        "form_ref": 133360,
+        "normalized_surface": "веял"
+      },
+      {
+        "form_ref": 133479,
+        "normalized_surface": "вжал"
+      },
+      {
+        "form_ref": 143832,
+        "normalized_surface": "взял"
+      },
+      {
+        "form_ref": 156818,
+        "normalized_surface": "вмял"
+      },
+      {
+        "form_ref": 159895,
+        "normalized_surface": "внял"
+      },
+      {
+        "form_ref": 380520,
+        "normalized_surface": "ежил"
+      },
+      {
+        "form_ref": 380587,
+        "normalized_surface": "ежят"
+      },
+      {
+        "form_ref": 488417,
+        "normalized_surface": "зиял"
+      },
+      {
+        "form_ref": 576026,
+        "normalized_surface": "клял"
+      },
+      {
+        "form_ref": 635711,
+        "normalized_surface": "лаял"
+      },
+      {
+        "form_ref": 886236,
+        "normalized_surface": "ожил"
+      },
+      {
+        "form_ref": 1005975,
+        "normalized_surface": "паял"
+      },
+      {
+        "form_ref": 1362203,
+        "normalized_surface": "прял"
+      },
+      {
+        "form_ref": 1469698,
+        "normalized_surface": "реял"
+      },
+      {
+        "form_ref": 1469877,
+        "normalized_surface": "ржал"
+      },
+      {
+        "form_ref": 1496241,
+        "normalized_surface": "саял"
+      },
+      {
+        "form_ref": 1526571,
+        "normalized_surface": "сеял"
+      },
+      {
+        "form_ref": 1526717,
+        "normalized_surface": "сжал"
+      },
+      {
+        "form_ref": 1527353,
+        "normalized_surface": "сжил"
+      },
+      {
+        "form_ref": 1535238,
+        "normalized_surface": "сиял"
+      },
+      {
+        "form_ref": 1566106,
+        "normalized_surface": "смял"
+      },
+      {
+        "form_ref": 1569101,
+        "normalized_surface": "снял"
+      },
+      {
+        "form_ref": 1644868,
+        "normalized_surface": "табл"
+      },
+      {
+        "form_ref": 1645900,
+        "normalized_surface": "таил"
+      },
+      {
+        "form_ref": 1650727,
+        "normalized_surface": "таяв"
+      },
+      {
+        "form_ref": 1650742,
+        "normalized_surface": "таял"
+      },
+      {
+        "form_ref": 1650764,
+        "normalized_surface": "таят"
+      },
+      {
+        "form_ref": 1662134,
+        "normalized_surface": "техл"
+      },
+      {
+        "form_ref": 1665165,
+        "normalized_surface": "титл"
+      },
+      {
+        "form_ref": 1666025,
+        "normalized_surface": "ткал"
+      },
+      {
+        "form_ref": 1666310,
+        "normalized_surface": "тлел"
+      },
+      {
+        "form_ref": 1666447,
+        "normalized_surface": "тлил"
+      },
+      {
+        "form_ref": 1666474,
+        "normalized_surface": "тлям"
+      },
+      {
+        "form_ref": 1666476,
+        "normalized_surface": "тлят"
+      },
+      {
+        "form_ref": 1666477,
+        "normalized_surface": "тлях"
+      },
+      {
+        "form_ref": 1674740,
+        "normalized_surface": "тоям"
+      },
+      {
+        "form_ref": 1674742,
+        "normalized_surface": "тоях"
+      },
+      {
+        "form_ref": 1676163,
+        "normalized_surface": "трал"
+      },
+      {
+        "form_ref": 1691430,
+        "normalized_surface": "тряс"
+      },
+      {
+        "form_ref": 1698472,
+        "normalized_surface": "тухл"
+      },
+      {
+        "form_ref": 1699075,
+        "normalized_surface": "туям"
+      },
+      {
+        "form_ref": 1699077,
+        "normalized_surface": "туях"
+      },
+      {
+        "form_ref": 1699770,
+        "normalized_surface": "тырл"
+      },
+      {
+        "form_ref": 1701416,
+        "normalized_surface": "тягл"
+      },
+      {
+        "form_ref": 1702224,
+        "normalized_surface": "тяжёл"
+      },
+      {
+        "form_ref": 1709571,
+        "normalized_surface": "увял"
+      },
+      {
+        "form_ref": 1718325,
+        "normalized_surface": "ужал"
+      },
+      {
+        "form_ref": 1732336,
+        "normalized_surface": "умял"
+      },
+      {
+        "form_ref": 1734496,
+        "normalized_surface": "унял"
+      },
+      {
+        "form_ref": 1786201,
+        "normalized_surface": "хаял"
+      },
+      {
+        "form_ref": 1812134,
+        "normalized_surface": "чаял"
+      },
+      {
+        "form_ref": 1826508,
+        "normalized_surface": "чуял"
+      },
+      {
+        "form_ref": 1874635,
+        "normalized_surface": "ёжил"
+      },
+      {
+        "form_ref": 1874678,
+        "normalized_surface": "ёжят"
+      }
+    ],
+    "certificate_count": 56,
+    "certificates": [
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 60352,
+        "normalized_surface": "баял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 117819,
+        "normalized_surface": "ваял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 133360,
+        "normalized_surface": "веял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 133479,
+        "normalized_surface": "вжал"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 143832,
+        "normalized_surface": "взял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 156818,
+        "normalized_surface": "вмял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 159895,
+        "normalized_surface": "внял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 380520,
+        "normalized_surface": "ежил"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":3}",
+        "class": "substitution",
+        "form_ref": 380587,
+        "normalized_surface": "ежят"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 488417,
+        "normalized_surface": "зиял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 576026,
+        "normalized_surface": "клял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 635711,
+        "normalized_surface": "лаял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 886236,
+        "normalized_surface": "ожил"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1005975,
+        "normalized_surface": "паял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1362203,
+        "normalized_surface": "прял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1469698,
+        "normalized_surface": "реял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1469877,
+        "normalized_surface": "ржал"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1496241,
+        "normalized_surface": "саял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1526571,
+        "normalized_surface": "сеял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1526717,
+        "normalized_surface": "сжал"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1527353,
+        "normalized_surface": "сжил"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1535238,
+        "normalized_surface": "сиял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1566106,
+        "normalized_surface": "смял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1569101,
+        "normalized_surface": "снял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1644868,
+        "normalized_surface": "табл"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1645900,
+        "normalized_surface": "таил"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":3}",
+        "class": "substitution",
+        "form_ref": 1650727,
+        "normalized_surface": "таяв"
+      },
+      {
+        "canonical_key": "{\"kind\":\"single_substitution\",\"position\":1}",
+        "class": "substitution",
+        "form_ref": 1650742,
+        "normalized_surface": "таял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":3}",
+        "class": "substitution",
+        "form_ref": 1650764,
+        "normalized_surface": "таят"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1662134,
+        "normalized_surface": "техл"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1665165,
+        "normalized_surface": "титл"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1666025,
+        "normalized_surface": "ткал"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1666310,
+        "normalized_surface": "тлел"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1666447,
+        "normalized_surface": "тлил"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":3}",
+        "class": "substitution",
+        "form_ref": 1666474,
+        "normalized_surface": "тлям"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":3}",
+        "class": "substitution",
+        "form_ref": 1666476,
+        "normalized_surface": "тлят"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":3}",
+        "class": "substitution",
+        "form_ref": 1666477,
+        "normalized_surface": "тлях"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":3}",
+        "class": "substitution",
+        "form_ref": 1674740,
+        "normalized_surface": "тоям"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":3}",
+        "class": "substitution",
+        "form_ref": 1674742,
+        "normalized_surface": "тоях"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1676163,
+        "normalized_surface": "трал"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":3}",
+        "class": "substitution",
+        "form_ref": 1691430,
+        "normalized_surface": "тряс"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1698472,
+        "normalized_surface": "тухл"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":3}",
+        "class": "substitution",
+        "form_ref": 1699075,
+        "normalized_surface": "туям"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":3}",
+        "class": "substitution",
+        "form_ref": 1699077,
+        "normalized_surface": "туях"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1699770,
+        "normalized_surface": "тырл"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":1,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1701416,
+        "normalized_surface": "тягл"
+      },
+      {
+        "canonical_key": "{\"kind\":\"omission_transposition\",\"omitted_target\":3,\"transposed_target\":1}",
+        "class": "omission_transposition",
+        "form_ref": 1702224,
+        "normalized_surface": "тяжёл"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1709571,
+        "normalized_surface": "увял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1718325,
+        "normalized_surface": "ужал"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1732336,
+        "normalized_surface": "умял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1734496,
+        "normalized_surface": "унял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1786201,
+        "normalized_surface": "хаял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1812134,
+        "normalized_surface": "чаял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":1}",
+        "class": "substitution",
+        "form_ref": 1826508,
+        "normalized_surface": "чуял"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":2}",
+        "class": "substitution",
+        "form_ref": 1874635,
+        "normalized_surface": "ёжил"
+      },
+      {
+        "canonical_key": "{\"kind\":\"double_substitution\",\"first\":0,\"second\":3}",
+        "class": "substitution",
+        "form_ref": 1874678,
+        "normalized_surface": "ёжят"
+      }
+    ],
+    "incompleteness_reason": null,
+    "logical_match_count": 56,
+    "status": "complete",
+    "work": {
+      "generated_logical_targets": 56,
+      "grounding_lookups": 56,
+      "operator_steps": 56,
+      "posting_visits": 0,
+      "relation_replays": 0
+    }
+  },
+  "kind": "canonical_l2_v13_exact_sidecar_query",
+  "observed": "тжял",
+  "runtime_authority_changed": false,
+  "sidecar": "/tmp/lay-1.0.44-stage.DjKPs5G9/LAY-L2-RU-FULL-v13.dafsa",
+  "sidecar_bytes": 2460144,
+  "sidecar_sha256": "a277b3c8b7d441de55fdc3c77abf483c2061653e9068b3bcce57629c742de9d7",
+  "typed_payload_bytes": 3689628,
+  "verdict": "PASS_read_only_exact_query"
+}

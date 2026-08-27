@@ -1,0 +1,464 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_IMPLEMENTATION_V2_2026-08-27",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "m3-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_V1_2026-08-27.md",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 10767,
+        "sha256": "55ab0bb2bcda695bde3653fabad74243edb6230f4e4072264a5a33a807ba04be"
+      }
+    },
+    {
+      "id": "m3-route-a-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_V1_ROUTE_A_RECEIPT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 15601,
+        "sha256": "7add9d3dd5645ecc9bf1ba9c37f3b8a07835c160296869e19a0387f798137ee5"
+      }
+    },
+    {
+      "id": "m3-route-b-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_V1_ROUTE_B_RECEIPT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 13141,
+        "sha256": "f30a6bf5d7af71f95bf6fee7888b8e2f797ed4b6e175317a6eb2c6e255e9f3bb"
+      }
+    },
+    {
+      "id": "m3-route-c-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_V1_ROUTE_C_RECEIPT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 10967,
+        "sha256": "46e2d136b622b519d4567b5f439a9cf5d733e7527d23769d867240d790c87f43"
+      }
+    },
+    {
+      "id": "m3-all-routes-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_V1_ALL_ROUTES_RECEIPT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 7429,
+        "sha256": "72b7789d5c7175a2ae8d26c5bb1bea0b9af31ff0c29f30af73c7d89575c174db"
+      }
+    },
+    {
+      "id": "m2r1-terminal-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_TERMINAL_AUDIT_V1_2026-08-27/M2R1_TERMINAL_AUDIT_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 16896,
+        "sha256": "98660957aeb31eb17b332868212cbb3ca295f35b979b511ed093fe807e0ea469"
+      }
+    },
+    {
+      "id": "d7-terminal-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_2026-08-26/D7_TERMINAL_AUDIT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 11633,
+        "sha256": "db8f8fbb2ab0bbf6ba45ca9b4d2ce7c394c3de826d82961ce938adea79024f3e"
+      }
+    },
+    {
+      "id": "a2-physical-model",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_2026-08-25/PHYSICAL_MODEL.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 1455,
+        "sha256": "4b507c2d836c3ae1933492a90fe8b4b262f22b24b2abf1513ef7d947b5189570"
+      }
+    },
+    {
+      "id": "w1-decomposition-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_V1_2026-08-26/W1_MACHINE_COST_DECOMPOSITION_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 2119,
+        "sha256": "12e806f11d921047b1437568af6aa77defaa66aba17f86560e87f0167d8d9194"
+      }
+    },
+    {
+      "id": "v10-recovered-source",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 91518,
+        "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c"
+      }
+    },
+    {
+      "id": "v13-sidecar",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 3689884,
+        "sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd"
+      }
+    },
+    {
+      "id": "donor-local-controller",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py",
+      "expect": {
+        "mode": "0555",
+        "size_bytes": 67252,
+        "sha256": "d3540936c19e45230a70c805b77cf6dab024636457ea0577281a59be2e128106"
+      }
+    },
+    {
+      "id": "donor-remote-controller",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-remote.py",
+      "expect": {
+        "mode": "0555",
+        "size_bytes": 40141,
+        "sha256": "26bfbbf2a9626b36bad549d6827d7442d1d1b5db7ced0f65da41c099a793de09"
+      }
+    },
+    {
+      "id": "donor-bootstrap-auditor",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-bootstrap-audit.py",
+      "expect": {
+        "mode": "0555",
+        "size_bytes": 11675,
+        "sha256": "c0a7221eeeef460db174682dafad16a7765a970a5623e3641c0657de4bfce84a"
+      }
+    },
+    {
+      "id": "donor-build-auditor",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-build-audit.py",
+      "expect": {
+        "mode": "0555",
+        "size_bytes": 18936,
+        "sha256": "0f943646c0e13c6fe53c406aa542882d68ab9dbe447dc3c660719110ccae6762"
+      }
+    },
+    {
+      "id": "donor-terminal-auditor",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-terminal-audit.py",
+      "expect": {
+        "mode": "0555",
+        "size_bytes": 33322,
+        "sha256": "37b6d27eaa719ebe6347a97303602fc30b4d4ec7078a0bf49b3ce424037e23fe"
+      }
+    },
+    {
+      "id": "donor-rust-fragment",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_e1_traversal_w1_fused_minimum_m2r1_test_module.rs.inc",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 156122,
+        "sha256": "a6ea388d5d76f8223511fd4822cff2df9fd0c3394fc200f4fc52db956522ce5b"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "create-m3-source-set",
+        "kind": "local_source_edit"
+      },
+      {
+        "id": "run-m3-static-and-fault-checks",
+        "kind": "local_read_only_process_with_disposable_state"
+      },
+      {
+        "id": "run-disposable-compile-proof",
+        "kind": "one_local_cargo_guard_no_run_build_outside_scientific_namespace"
+      },
+      {
+        "id": "publish-m3-implementation-receipt",
+        "kind": "local_evidence_write"
+      },
+      {
+        "id": "later-independent-live-admission",
+        "kind": "separate_future_transaction"
+      },
+      {
+        "id": "later-one-shot-m3-execution",
+        "kind": "separate_future_transaction"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "network_or_remote_access_during_implementation_and_self_check",
+      "remote_namespace_or_marker_mutation_during_implementation",
+      "perf_or_pmu_or_scientific_subject_execution_during_implementation",
+      "unscoped_or_second_disposable_cargo_invocation",
+      "unsafe_rust",
+      "sidecar_format_or_input_mutation",
+      "minimum_frontier_rank_terminal_or_candidate_semantic_change",
+      "m2_or_m2r1_source_state_marker_or_receipt_modification",
+      "live_src_edit",
+      "production_build_install_restart_deployment_or_runtime_authority_change"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "steps": [
+      {
+        "id": "create-m3-source-set",
+        "from": "PREFLIGHT_READY",
+        "to": "M3_SOURCES_CREATED_UNVERIFIED",
+        "mutates": true,
+        "failure_state": "BLOCKED_BEFORE_CODE",
+        "cleanup": "retain incomplete M3-only files as non-authoritative evidence; all predecessors remain unchanged",
+        "preserves": [
+          "m2r1-terminal-evidence",
+          "v10-source-evidence",
+          "v13-sidecar-evidence",
+          "donor-source-set"
+        ],
+        "test_id": "source-creation-fault"
+      },
+      {
+        "id": "run-static-and-fault-checks",
+        "from": "M3_SOURCES_CREATED_UNVERIFIED",
+        "to": "M3_STATIC_SELF_CHECK_PASS",
+        "mutates": false,
+        "failure_state": "BLOCKED_BEFORE_CODE",
+        "cleanup": "publish no execution admission and retain check output",
+        "preserves": [
+          "m2r1-terminal-evidence",
+          "v10-source-evidence",
+          "v13-sidecar-evidence",
+          "donor-source-set"
+        ],
+        "test_id": "static-self-check"
+      },
+      {
+        "id": "run-disposable-compile-proof",
+        "from": "M3_STATIC_SELF_CHECK_PASS",
+        "to": "M3_DISPOSABLE_COMPILE_PASS",
+        "mutates": true,
+        "failure_state": "BLOCKED_BEFORE_CODE",
+        "cleanup": "retain compile logs and source identity; delete disposable target only after evidence seal; never create scientific markers",
+        "preserves": [
+          "m2r1-terminal-evidence",
+          "v10-source-evidence",
+          "v13-sidecar-evidence",
+          "donor-source-set"
+        ],
+        "test_id": "compile-proof-fault"
+      },
+      {
+        "id": "seal-implementation-receipt",
+        "from": "M3_DISPOSABLE_COMPILE_PASS",
+        "to": "M3_CONTROLLER_VERIFIED_UNRUN",
+        "mutates": true,
+        "failure_state": "BLOCKED_BEFORE_CODE",
+        "cleanup": "atomic stage removal before rename; no partial final receipt",
+        "preserves": [
+          "m2r1-terminal-evidence",
+          "v10-source-evidence",
+          "v13-sidecar-evidence",
+          "donor-source-set"
+        ],
+        "test_id": "receipt-publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "M3_CONTROLLER_VERIFIED_UNRUN",
+      "BLOCKED_BEFORE_CODE"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "m2r1-terminal-evidence",
+      "path": "M2R1 terminal receipt and evidence tree",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "m2r1-terminal-receipt"
+    },
+    {
+      "id": "v10-source-evidence",
+      "path": "recovered V10 source",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v10-recovered-source"
+    },
+    {
+      "id": "v13-sidecar-evidence",
+      "path": "sealed V13 sidecar",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v13-sidecar"
+    },
+    {
+      "id": "donor-source-set",
+      "path": "sealed M2R1 controllers auditors and Rust fragment",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "donor-local-controller"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "m3-namespace-parity",
+      "producer": "sealed M3 local controller",
+      "consumer": "remote controller auditors markers states and receipts",
+      "comparison": "task_id and transaction_id exact across every producer and consumer",
+      "test_id": "namespace-parity"
+    },
+    {
+      "id": "m3-source-parity",
+      "producer": "sealed local source set",
+      "consumer": "future remote bootstrap copies",
+      "comparison": "SHA-256 byte identity after upload and evidence mirroring",
+      "test_id": "source-parity"
+    },
+    {
+      "id": "m3-route-contract-parity",
+      "producer": "M3 route and marker registries",
+      "consumer": "M3 terminal auditor",
+      "comparison": "exact six routes events denominators thresholds and failure dispatch",
+      "test_id": "route-contract-parity"
+    },
+    {
+      "id": "m3-semantic-parity",
+      "producer": "byte-view baseline B",
+      "consumer": "typed-view candidate T",
+      "comparison": "every decoded record output rank order structural counter and certificate exact",
+      "test_id": "typed-byte-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "predecessors-immutable",
+      "statement": "M3 never writes M2R1 V10 source or the sealed sidecar",
+      "test_id": "predecessor-preservation"
+    },
+    {
+      "id": "typed-view-only",
+      "statement": "the candidate delta only materializes and reads field-equal typed state and edge arrays",
+      "test_id": "candidate-scope"
+    },
+    {
+      "id": "safe-rust-only",
+      "statement": "M3 source contains no unsafe block or unchecked indexing",
+      "test_id": "safe-rust"
+    },
+    {
+      "id": "exact-work-preserved",
+      "statement": "B and T have equal expanded examined surviving pruned rank terminal and output identities",
+      "test_id": "typed-byte-parity"
+    },
+    {
+      "id": "compile-before-markers",
+      "statement": "exact M3 assembly has a sealed disposable compile PASS before any live admission or marker",
+      "test_id": "compile-proof"
+    },
+    {
+      "id": "one-shot-fail-closed",
+      "statement": "every future external action is journaled and every marker is consumed before execution with no retry",
+      "test_id": "failure-injection"
+    },
+    {
+      "id": "terminal-only-decision",
+      "statement": "only the terminal auditor may interpret all four completed physical routes",
+      "test_id": "terminal-state-model"
+    }
+  ],
+  "tests": [
+    {
+      "id": "source-creation-fault",
+      "kind": "fault_injection",
+      "expected": "partial M3-only files cannot alter any immutable predecessor"
+    },
+    {
+      "id": "static-self-check",
+      "kind": "parity",
+      "expected": "all Python sources compile and the closed command graph equals six paper routes"
+    },
+    {
+      "id": "compile-proof",
+      "kind": "parity",
+      "expected": "one cargo-guard no-run build of exact assembly exits zero with no scientific namespace or marker"
+    },
+    {
+      "id": "compile-proof-fault",
+      "kind": "fault_injection",
+      "expected": "compile interruption retains source and logs, creates no marker, and cannot publish implementation PASS"
+    },
+    {
+      "id": "receipt-publication-fault",
+      "kind": "fault_injection",
+      "expected": "partial receipt never reaches final path and successful receipt is immutable"
+    },
+    {
+      "id": "predecessor-preservation",
+      "kind": "parity",
+      "expected": "M2R1 V10 and sidecar hashes and modes remain exact before and after implementation checks"
+    },
+    {
+      "id": "candidate-scope",
+      "kind": "model",
+      "expected": "no minimum DP frontier rank terminal sidecar-format or candidate-output change is reachable"
+    },
+    {
+      "id": "safe-rust",
+      "kind": "parity",
+      "expected": "no unsafe block get_unchecked or unchecked slice construction exists"
+    },
+    {
+      "id": "typed-byte-parity",
+      "kind": "parity",
+      "expected": "all 81128 states 226341 edges and full 382-query forward/reverse semantic and structural outputs match"
+    },
+    {
+      "id": "failure-injection",
+      "kind": "fault_injection",
+      "expected": "all 15 future external actions have durable intent before action and terminal no-retry dispatch"
+    },
+    {
+      "id": "namespace-parity",
+      "kind": "parity",
+      "expected": "new task and transaction IDs agree across all producers consumers and marker values"
+    },
+    {
+      "id": "source-parity",
+      "kind": "parity",
+      "expected": "uploaded controller auditor and fragment bytes match local sealed SHA-256"
+    },
+    {
+      "id": "route-contract-parity",
+      "kind": "parity",
+      "expected": "route marker event denominator threshold and dispatch tables equal the M3 paper"
+    },
+    {
+      "id": "terminal-state-model",
+      "kind": "model",
+      "expected": "intermediate routes cannot publish mechanism verdict and terminal projections are exhaustive"
+    }
+  ]
+}

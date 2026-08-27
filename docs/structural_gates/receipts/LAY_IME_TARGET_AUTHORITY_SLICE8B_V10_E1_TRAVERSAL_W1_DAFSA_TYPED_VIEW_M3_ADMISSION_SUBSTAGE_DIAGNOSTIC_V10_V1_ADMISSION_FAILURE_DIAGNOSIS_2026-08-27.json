@@ -1,0 +1,52 @@
+{
+  "schema": "lay.v10-v1-admission-failure-diagnosis.v1",
+  "task_id": "slice8b-v10-e1-traversal-w1-dafsa-typed-view-m3-admission-substage-v10-20260827",
+  "transaction_id": "8058be994305226e9af3fbdee2e6b29bd9111ffbf8203ef20db9feeb1ca56a22",
+  "verdict": "V10_V1_ADMISSION_DEFECT_CONFIRMED",
+  "failure_class": "BLOCKED_PROVENANCE",
+  "defect": "root-context rustup shims were queried without the controlled build environment",
+  "v1_controller_implementation_sha256": "3b750bd1ec66d67c6d7e1dbe306b0c04a02b7ab9a839ec07bad0d7397b8652a8",
+  "v1_local_controller_sha256": "19378ce158c979f64ce8d6c1d0be34fc8a6083d6aa13036baa7f3d3afe554873",
+  "v1_remote_controller_sha256": "8a1a500398448f8f901fb008be9c90041845a04b31c6b9b8abd4e463c2360192",
+  "v1_auditor_sha256": "37c8f5c878ed57db32385f179e446bf5e81cf8e120452ed32dbf4fa6442d7bbe",
+  "v1_journal_sha256sums_sha256": "099d3c8334b11c98c3e7f0893a11d1347648aed1746cfcc1e466a166d818f12b",
+  "v1_journal_manifest_pass": true,
+  "v1_external_intents": 1,
+  "v1_external_completions": 0,
+  "root_context_observation": {
+    "cargo_returncode": 1,
+    "cargo_stdout": "",
+    "cargo_stderr_contains": "rustup could not choose a version of cargo to run, because one wasn't specified explicitly, and no default is configured",
+    "rustc_returncode": 1,
+    "rustc_stdout": "",
+    "rustc_stderr_contains": "rustup could not choose a version of rustc to run, because one wasn't specified explicitly, and no default is configured"
+  },
+  "controlled_context_observation": {
+    "cargo_returncode": 0,
+    "cargo_stdout": "cargo 1.97.1 (c980f4866 2026-06-30)",
+    "rustc_returncode": 0,
+    "rustc_release": "1.97.1",
+    "rustc_commit_hash": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+    "llvm_version": "22.1.6"
+  },
+  "remote_projection_after_failure": {
+    "v10_parent_present": false,
+    "v10_state_present": false,
+    "v10_cache_present": false,
+    "admission_probe_present": false,
+    "conflicting_processes": 0
+  },
+  "scientific_effects": {
+    "remote_namespace_created": false,
+    "markers_created": 0,
+    "markers_consumed": 0,
+    "cargo_invocations": 0,
+    "rustc_compilations": 0,
+    "subject_executions": 0,
+    "perf_record_invocations": 0,
+    "perf_stat_invocations": 0,
+    "runtime_authority_changed": false
+  },
+  "retry_v1_permitted": false,
+  "fresh_namespace_required": true
+}

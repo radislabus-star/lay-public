@@ -1,0 +1,72 @@
+
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000926520 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::edge>:
+  926520:	53                   	push   %rbx
+  926521:	48 89 fb             	mov    %rdi,%rbx
+  926524:	8b 46 5c             	mov    0x5c(%rsi),%eax
+  926527:	48 39 c2             	cmp    %rax,%rdx
+  92652a:	0f 83 82 00 00 00    	jae    9265b2 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::edge+0x92>
+  926530:	8b 46 58             	mov    0x58(%rsi),%eax
+  926533:	48 01 c2             	add    %rax,%rdx
+  926536:	48 c1 e2 02          	shl    $0x2,%rdx
+  92653a:	48 8b 06             	mov    (%rsi),%rax
+  92653d:	48 8b 70 20          	mov    0x20(%rax),%rsi
+  926541:	48 8d 0c 52          	lea    (%rdx,%rdx,2),%rcx
+  926545:	48 81 c1 04 01 00 00 	add    $0x104,%rcx
+  92654c:	48 39 f1             	cmp    %rsi,%rcx
+  92654f:	77 20                	ja     926571 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::edge+0x51>
+  926551:	48 8d 0c 52          	lea    (%rdx,%rdx,2),%rcx
+  926555:	48 8d 91 08 01 00 00 	lea    0x108(%rcx),%rdx
+  92655c:	48 39 f2             	cmp    %rsi,%rdx
+  92655f:	77 10                	ja     926571 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::edge+0x51>
+  926561:	48 8d 91 0c 01 00 00 	lea    0x10c(%rcx),%rdx
+  926568:	48 39 f2             	cmp    %rsi,%rdx
+  92656b:	0f 86 89 00 00 00    	jbe    9265fa <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::edge+0xda>
+  926571:	bf 17 00 00 00       	mov    $0x17,%edi
+  926576:	ff 15 34 8e a9 00    	call   *0xa98e34(%rip)        # 13bf3b0 <malloc@GLIBC_2.2.5>
+  92657c:	48 85 c0             	test   %rax,%rax
+  92657f:	0f 84 af 00 00 00    	je     926634 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::edge+0x114>
+  926585:	0f 10 05 85 b5 82 ff 	movups -0x7d4a7b(%rip),%xmm0        # 151b11 <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x6b2c1>
+  92658c:	0f 11 00             	movups %xmm0,(%rax)
+  92658f:	48 b9 41 46 53 41 20 75 33 32 	movabs $0x3233752041534641,%rcx
+  926599:	48 89 48 0f          	mov    %rcx,0xf(%rax)
+  92659d:	48 c7 03 17 00 00 00 	movq   $0x17,(%rbx)
+  9265a4:	48 89 43 08          	mov    %rax,0x8(%rbx)
+  9265a8:	48 c7 43 10 17 00 00 00 	movq   $0x17,0x10(%rbx)
+  9265b0:	5b                   	pop    %rbx
+  9265b1:	c3                   	ret
+  9265b2:	bf 28 00 00 00       	mov    $0x28,%edi
+  9265b7:	ff 15 f3 8d a9 00    	call   *0xa98df3(%rip)        # 13bf3b0 <malloc@GLIBC_2.2.5>
+  9265bd:	48 85 c0             	test   %rax,%rax
+  9265c0:	74 63                	je     926625 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::edge+0x105>
+  9265c2:	0f 10 05 f3 5d 85 ff 	movups -0x7aa20d(%rip),%xmm0        # 17c3bc <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x95b6c>
+  9265c9:	0f 11 40 10          	movups %xmm0,0x10(%rax)
+  9265cd:	0f 10 05 d8 5d 85 ff 	movups -0x7aa228(%rip),%xmm0        # 17c3ac <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x95b5c>
+  9265d4:	0f 11 00             	movups %xmm0,(%rax)
+  9265d7:	48 b9 6f 66 20 72 61 6e 67 65 	movabs $0x65676e617220666f,%rcx
+  9265e1:	48 89 48 20          	mov    %rcx,0x20(%rax)
+  9265e5:	48 c7 03 28 00 00 00 	movq   $0x28,(%rbx)
+  9265ec:	48 89 43 08          	mov    %rax,0x8(%rbx)
+  9265f0:	48 c7 43 10 28 00 00 00 	movq   $0x28,0x10(%rbx)
+  9265f8:	5b                   	pop    %rbx
+  9265f9:	c3                   	ret
+  9265fa:	48 8b 40 18          	mov    0x18(%rax),%rax
+  9265fe:	8b 94 08 00 01 00 00 	mov    0x100(%rax,%rcx,1),%edx
+  926605:	8b b4 08 04 01 00 00 	mov    0x104(%rax,%rcx,1),%esi
+  92660c:	8b 84 08 08 01 00 00 	mov    0x108(%rax,%rcx,1),%eax
+  926613:	89 53 08             	mov    %edx,0x8(%rbx)
+  926616:	89 73 0c             	mov    %esi,0xc(%rbx)
+  926619:	89 43 10             	mov    %eax,0x10(%rbx)
+  92661c:	48 c7 03 ff ff ff ff 	movq   $0xffffffffffffffff,(%rbx)
+  926623:	5b                   	pop    %rbx
+  926624:	c3                   	ret
+  926625:	bf 01 00 00 00       	mov    $0x1,%edi
+  92662a:	be 28 00 00 00       	mov    $0x28,%esi
+  92662f:	e8 b7 04 77 00       	call   1096aeb <alloc::raw_vec::handle_error>
+  926634:	bf 01 00 00 00       	mov    $0x1,%edi
+  926639:	be 17 00 00 00       	mov    $0x17,%esi
+  92663e:	e8 a8 04 77 00       	call   1096aeb <alloc::raw_vec::handle_error>

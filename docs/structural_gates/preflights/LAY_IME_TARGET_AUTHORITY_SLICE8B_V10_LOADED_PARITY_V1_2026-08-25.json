@@ -1,0 +1,307 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_LOADED_PARITY_V1_2026-08-25",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "sealed-proxy-test-source",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_hardware_test_module.rs.inc",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 30104,
+        "sha256": "178ec12a3029fe04ae02b060de2e58f83c6481f05fbba2443ad233e9e9d94757"
+      }
+    },
+    {
+      "id": "loaded-base-controller",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-hardware-dirty.py",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 33012,
+        "sha256": "f0aa4b55a803ef204d1d898cec70eb282757009a71ef5d9310417b2ac17a45e8"
+      }
+    },
+    {
+      "id": "dirty-speed-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_DIRTY_SPEED_V1_2026-08-25/REMOTE_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 177315,
+        "sha256": "9255310624b55d370db55800f88eb6a04172d555235aecc6587d0ac15826af48"
+      }
+    },
+    {
+      "id": "clean-preparation-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_PREPARED_V2_2026-08-25.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 9165,
+        "sha256": "9889209d5a62ebda7e8b5509bac05a8fb4a7c9dd64e67a4a76ce607629ca7ea9"
+      }
+    },
+    {
+      "id": "active-v11-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 124127,
+        "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"
+      }
+    },
+    {
+      "id": "loaded-parity-runner-before-implementation",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-hardware-loaded-parity.py",
+      "expect": {}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "implement-loaded-parity-runner",
+        "kind": "local_source_edit"
+      },
+      {
+        "id": "run-one-loaded-parity",
+        "kind": "remote_diagnostic_execution"
+      },
+      {
+        "id": "publish-loaded-parity-evidence",
+        "kind": "remote_and_local_evidence_write"
+      },
+      {
+        "id": "record-loaded-parity-result",
+        "kind": "documentation_edit"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "cargo_build_check_test",
+      "perf_or_pmu",
+      "host_tuning",
+      "foreign_process_or_service_stop",
+      "runtime_deployment_or_restart",
+      "installed_lay_mutation",
+      "formal_b_promotion",
+      "v12_action",
+      "adaptive_retry",
+      "speed_measurement_repetition"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "sealed-parity-source-veto-scan",
+      "path": "../../../scripts/lay_v10_hardware_test_module.rs.inc",
+      "sha256": "178ec12a3029fe04ae02b060de2e58f83c6481f05fbba2443ad233e9e9d94757",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?:synthetic_fixture|generate_fixture|fixture_writer)"
+        },
+        {
+          "effect": "cargo_build_check_test",
+          "regex": "(?:/usr/bin/cargo|cargo\\s+(?:build|check|test))"
+        },
+        {
+          "effect": "perf_or_pmu",
+          "regex": "(?:/usr/bin/perf|perf_event_open|_rdtsc|rdpmc)"
+        },
+        {
+          "effect": "host_tuning",
+          "regex": "(?:cpupower|sysctl\\s+-w|/sys/.{0,80}(?:write|chmod))"
+        },
+        {
+          "effect": "foreign_process_or_service_stop",
+          "regex": "(?:systemctl\\s+(?:stop|kill)|pkill|killall)"
+        },
+        {
+          "effect": "runtime_deployment_or_restart",
+          "regex": "(?:gnome-extensions|lay-runtime-control|ibus-daemon.{0,60}restart|install-release)"
+        },
+        {
+          "effect": "installed_lay_mutation",
+          "regex": "(?:\\.local/(?:bin|lib)/lay).{0,100}(?:write|remove|rename|install)"
+        },
+        {
+          "effect": "formal_b_promotion",
+          "regex": "(?:authority_ready|formal_b_pass)\\s*[:=]\\s*(?:True|true)"
+        },
+        {
+          "effect": "v12_action",
+          "regex": "(?:ExactFusedBandTransition|\\bV12\\b)"
+        },
+        {
+          "effect": "adaptive_retry",
+          "regex": "(?:retry_measurement|adaptive_repeat|increase_repetitions)"
+        },
+        {
+          "effect": "speed_measurement_repetition",
+          "regex": "--exact.{0,120}v10_hardware_b[56]_proxy"
+        }
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "preserve-proxy-source",
+      "path": "../../../scripts/lay_v10_hardware_test_module.rs.inc",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "sealed-proxy-test-source"
+    },
+    {
+      "id": "preserve-base-controller",
+      "path": "../../../scripts/lay-v10-hardware-dirty.py",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "loaded-base-controller"
+    },
+    {
+      "id": "preserve-dirty-speed",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_DIRTY_SPEED_V1_2026-08-25/REMOTE_RECEIPT.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "dirty-speed-receipt"
+    },
+    {
+      "id": "preserve-clean-preparation",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_PREPARED_V2_2026-08-25.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "clean-preparation-receipt"
+    },
+    {
+      "id": "preserve-active-v11",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "active-v11-source"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "LOADED_PARITY_ABSENT",
+    "steps": [
+      {
+        "id": "implement-loaded-parity-runner",
+        "from": "LOADED_PARITY_ABSENT",
+        "to": "LOADED_PARITY_RUNNER_UNRUN",
+        "mutates": true,
+        "failure_state": "LOADED_PARITY_IMPLEMENTATION_REJECTED",
+        "cleanup": "remove only an incomplete new runner and preserve sealed inputs and prior evidence",
+        "preserves": [
+          "preserve-proxy-source",
+          "preserve-base-controller",
+          "preserve-dirty-speed",
+          "preserve-clean-preparation",
+          "preserve-active-v11"
+        ],
+        "test_id": "runner-fault"
+      },
+      {
+        "id": "self-check-loaded-parity-runner",
+        "from": "LOADED_PARITY_RUNNER_UNRUN",
+        "to": "LOADED_PARITY_READY_UNRUN",
+        "mutates": false
+      },
+      {
+        "id": "execute-loaded-parity-once",
+        "from": "LOADED_PARITY_READY_UNRUN",
+        "to": "LOADED_PARITY_OBSERVED_NO_FORMAL_PROMOTION",
+        "mutates": true,
+        "failure_state": "LOADED_PARITY_FAILED_NO_RETRY",
+        "cleanup": "terminate only the controller-owned parity child, retain consumed marker and publish failure evidence",
+        "preserves": [
+          "preserve-proxy-source",
+          "preserve-base-controller",
+          "preserve-dirty-speed",
+          "preserve-clean-preparation",
+          "preserve-active-v11"
+        ],
+        "test_id": "parity-fault"
+      }
+    ],
+    "terminal_states": [
+      "LOADED_PARITY_OBSERVED_NO_FORMAL_PROMOTION",
+      "LOADED_PARITY_IMPLEMENTATION_REJECTED",
+      "LOADED_PARITY_FAILED_NO_RETRY"
+    ]
+  },
+  "invariants": [
+    {
+      "id": "one-loaded-parity-run",
+      "statement": "one create-new marker permits only the semantic parity entrypoint and no B5/B6 repetition",
+      "test_id": "one-shot-marker"
+    },
+    {
+      "id": "parity-denominator",
+      "statement": "the parity entrypoint checks all 382 fixed cases against production and full-row oracle",
+      "test_id": "parity-output"
+    },
+    {
+      "id": "loaded-claim-boundary",
+      "statement": "loaded parity proves scoped semantics only and cannot promote formal B, latency or V12",
+      "test_id": "claim-boundary"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "sealed-parity-input-identity",
+      "producer": "sealed ELF and B0b schedule identities verified by dirty V1",
+      "consumer": "loaded parity wrapper and sealed parity entrypoint",
+      "comparison": "exact SHA-256, Build ID, schedule and 382-case denominator",
+      "test_id": "sealed-input-parity"
+    },
+    {
+      "id": "parity-output-identity",
+      "producer": "sealed semantic parity entrypoint",
+      "consumer": "loaded parity wrapper receipt validator",
+      "comparison": "schema, PASS verdict and exact invariant counters",
+      "test_id": "parity-output"
+    }
+  ],
+  "runtime_comparisons": [],
+  "tests": [
+    {
+      "id": "runner-fault",
+      "kind": "fault_injection",
+      "expected": "failed implementation leaves no remote marker, child or output"
+    },
+    {
+      "id": "parity-fault",
+      "kind": "fault_injection",
+      "expected": "failed parity terminates only its own child and publishes immutable failure evidence without retry"
+    },
+    {
+      "id": "one-shot-marker",
+      "kind": "integration",
+      "expected": "marker is created once before parity and a second execution is rejected"
+    },
+    {
+      "id": "parity-output",
+      "kind": "parity",
+      "expected": "382 records pass with zero terminal, peak, completeness, work and full-row mismatches, 382 target form and lemma retention, zero false certificates, max states 35590 and scratch 6656"
+    },
+    {
+      "id": "claim-boundary",
+      "kind": "integration",
+      "expected": "receipt keeps formal_b_pass=false, latency_measured=false and v12_admitted=false"
+    },
+    {
+      "id": "sealed-input-parity",
+      "kind": "parity",
+      "expected": "loaded wrapper verifies the exact sealed ELF, package, sidecar, V7 and schedule before execution"
+    }
+  ]
+}

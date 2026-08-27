@@ -1,0 +1,276 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_EXACT_V13_TYPED_PEAK_V10_ROUTE_2026-08-24.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 13,
+  "edge_count": 13,
+  "routes": [
+    {
+      "id": "v10-sidecar-build",
+      "event": "sidecar_build",
+      "kind": "execution",
+      "entry": "immutable_v13",
+      "via": [],
+      "terminal": "v10_rank_delta_sidecar",
+      "path_count": 1,
+      "paths": [
+        [
+          "immutable_v13",
+          "v10_dafsa_compiler",
+          "v10_rank_delta_sidecar"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "immutable_v13",
+          "v10_rank_delta_sidecar"
+        ],
+        "orchestrator": [
+          "v10_dafsa_compiler"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "immutable_v13",
+          "to": "v10_rank_delta_sidecar",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "immutable_v13",
+              "v10_dafsa_compiler",
+              "v10_rank_delta_sidecar"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v10-proof-query",
+      "event": "proof_query",
+      "kind": "execution",
+      "entry": "observed_token",
+      "via": [],
+      "terminal": "banded_born_lattice",
+      "path_count": 1,
+      "paths": [
+        [
+          "observed_token",
+          "typed_token_frame",
+          "banded_exact_peak_search",
+          "banded_born_lattice"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "banded_born_lattice",
+          "typed_token_frame"
+        ],
+        "orchestrator": [
+          "banded_exact_peak_search"
+        ],
+        "interface": [
+          "observed_token"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "observed_token",
+          "to": "banded_born_lattice",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "observed_token",
+              "typed_token_frame",
+              "banded_exact_peak_search",
+              "banded_born_lattice"
+            ]
+          ]
+        },
+        {
+          "from": "target_labels",
+          "to": "banded_exact_peak_search",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 0,
+          "max": 0,
+          "paths": []
+        }
+      ]
+    },
+    {
+      "id": "v10-banded-parity-execution",
+      "event": "proof_parity",
+      "kind": "execution",
+      "entry": "observed_token",
+      "via": [],
+      "terminal": "banded_born_lattice",
+      "path_count": 1,
+      "paths": [
+        [
+          "observed_token",
+          "typed_token_frame",
+          "banded_exact_peak_search",
+          "banded_born_lattice"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "banded_born_lattice",
+          "typed_token_frame"
+        ],
+        "orchestrator": [
+          "banded_exact_peak_search"
+        ],
+        "interface": [
+          "observed_token"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "observed_token",
+          "to": "banded_born_lattice",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "observed_token",
+              "typed_token_frame",
+              "banded_exact_peak_search",
+              "banded_born_lattice"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v10-full-row-oracle-execution",
+      "event": "proof_parity",
+      "kind": "execution",
+      "entry": "observed_token",
+      "via": [],
+      "terminal": "full_row_proof_lattice",
+      "path_count": 1,
+      "paths": [
+        [
+          "observed_token",
+          "full_row_proof_oracle",
+          "full_row_proof_lattice"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "full_row_proof_lattice",
+          "full_row_proof_oracle"
+        ],
+        "interface": [
+          "observed_token"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "observed_token",
+          "to": "full_row_proof_lattice",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "observed_token",
+              "full_row_proof_oracle",
+              "full_row_proof_lattice"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v10-proof-observation",
+      "event": "proof_observation",
+      "kind": "proof",
+      "entry": "v10_parity_audit",
+      "via": [],
+      "terminal": "fixed_v10_proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "v10_parity_audit",
+          "fixed_v10_proof"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "fixed_v10_proof"
+        ],
+        "observer": [
+          "v10_parity_audit"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "v10_parity_audit",
+          "to": "fixed_v10_proof",
+          "via": [],
+          "graph": "proof",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "v10_parity_audit",
+              "fixed_v10_proof"
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {},
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

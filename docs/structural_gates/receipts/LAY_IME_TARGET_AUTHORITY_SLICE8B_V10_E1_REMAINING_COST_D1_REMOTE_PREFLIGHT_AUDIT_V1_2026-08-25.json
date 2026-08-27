@@ -1,0 +1,30 @@
+{
+  "schema": "lay.v10.e1-remaining-cost-d1-remote-preflight-audit.v1",
+  "observed_at": "2026-08-25",
+  "remote": {
+    "host": "e-MEGA-MINI-M1-13th",
+    "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+    "d1_parent": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-remaining-cost-d1-20260825",
+    "d1_parent_exists": false,
+    "d1_state": "/home/e/.local/state/lay/slice8b-v10-e1-remaining-cost-d1-20260825",
+    "d1_state_exists": false,
+    "sealed_e1_elf_exists": true,
+    "sealed_e1_elf_sha256": "727ba875094d3e7121330514cefee7661ecbf8dcda076a7f10631aaa2f8cd618"
+  },
+  "installed_runtime": {
+    "lay_version": "1.0.43",
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+    "ibus_daemon_pid": 2076194,
+    "lay_daemon_pid": 3410795,
+    "lay_ibus_engine_pid": 3410820
+  },
+  "execution": {
+    "cargo_build_check_test": 0,
+    "rustc_compilation": 0,
+    "perf_measurement": 0,
+    "d1_subject_execution": 0
+  },
+  "verdict": "PASS_READ_ONLY",
+  "authority_ready": false,
+  "runtime_authority_changed": false
+}

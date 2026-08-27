@@ -1,0 +1,43 @@
+{
+  "cpu_pressure": "some avg10=4.94 avg60=4.80 avg300=4.14 total=157375714891\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+  "io_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=36144425161\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=34044050801",
+  "loadavg": "1.87 2.16 2.18 2/530 2387169",
+  "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=18950246018\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=17850107451",
+  "temperatures_millicelsius": {
+    "/sys/class/thermal/thermal_zone0/temp": 27800,
+    "/sys/class/thermal/thermal_zone1/temp": 58000,
+    "/sys/class/thermal/thermal_zone2/temp": 38000
+  },
+  "top_processes": [
+    " 150005 nando-operator- 92.3   6",
+    " 298492 nando-transitio 29.0  13",
+    "3481471 btop             4.1   8",
+    "1816591 nando-transitio  4.0  13",
+    "3481420 sshd             0.2  10",
+    "     17 rcu_preempt      0.1  17",
+    "3772003 systemd-journal  0.1   8",
+    "      1 systemd          0.0  12",
+    "      2 kthreadd         0.0  16",
+    "      3 pool_workqueue_  0.0   0",
+    "      4 kworker/R-rcu_g  0.0   0",
+    "      5 kworker/R-rcu_p  0.0   0",
+    "      6 kworker/R-slub_  0.0   0",
+    "      7 kworker/R-netns  0.0   0",
+    "      9 kworker/0:0H-ev  0.0   0",
+    "     12 kworker/R-mm_pe  0.0   0",
+    "     13 rcu_tasks_kthre  0.0   0",
+    "     14 rcu_tasks_rude_  0.0   0",
+    "     15 rcu_tasks_trace  0.0   0",
+    "     16 ksoftirqd/0      0.0   0",
+    "     18 migration/0      0.0   0",
+    "     19 idle_inject/0    0.0   0",
+    "     20 cpuhp/0          0.0   0",
+    "     21 cpuhp/2          0.0   2",
+    "     22 idle_inject/2    0.0   2",
+    "     23 migration/2      0.0   2",
+    "     24 ksoftirqd/2      0.0   2",
+    "     26 kworker/2:0H-ev  0.0   2",
+    "     27 cpuhp/4          0.0   4",
+    "     28 idle_inject/4    0.0   4"
+  ]
+}

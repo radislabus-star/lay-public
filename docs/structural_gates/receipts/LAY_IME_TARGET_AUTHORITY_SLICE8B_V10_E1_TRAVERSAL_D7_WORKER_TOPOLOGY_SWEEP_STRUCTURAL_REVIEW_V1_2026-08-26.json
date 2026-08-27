@@ -1,0 +1,34 @@
+{
+  "authority_ready": false,
+  "paper": {
+    "mode": "0444",
+    "sha256": "090c39efec9916c1a9bea050c6385a17c00b95532e08592730b3b83ede591a23",
+    "size_bytes": 8540
+  },
+  "routes": {
+    "measurement": {
+      "agent_safe_to_edit": true,
+      "mode": "0444",
+      "sha256": "ddedf2e46eeabc63815dc32c94e945600a4af55cf8ddfba84c8ddc3cf4a8a305",
+      "size_bytes": 3160,
+      "verdict": "PASS"
+    },
+    "state": {
+      "agent_safe_to_edit": true,
+      "mode": "0444",
+      "sha256": "76c47a99eb680bfdfb058707adc76b5ad570794ad54aa41a52a1e801c8d98f98",
+      "size_bytes": 2708,
+      "verdict": "PASS"
+    },
+    "boundary": {
+      "agent_safe_to_edit": true,
+      "mode": "0444",
+      "sha256": "8956ceac7db518769fb0a0fb9e2459510e8f56f1235f97ad539049af0691707c",
+      "size_bytes": 2818,
+      "verdict": "PASS"
+    }
+  },
+  "schema": "lay.v10.e1-traversal-d7-worker-topology-structural-review.v1",
+  "task_id": "slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826",
+  "verdict": "STRUCTURALLY_ACCEPTED_WITH_SPLIT"
+}

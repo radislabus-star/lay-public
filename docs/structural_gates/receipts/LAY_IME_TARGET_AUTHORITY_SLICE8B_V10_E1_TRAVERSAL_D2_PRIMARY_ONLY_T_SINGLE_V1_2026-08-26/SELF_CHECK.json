@@ -1,0 +1,124 @@
+{
+  "admission": {
+    "controller": {
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-t-sampling.py",
+      "sha256": "9634d03afe0280fe78a240b3c67145e80d9977679c2c3cb7f2086de7645f5014",
+      "size_bytes": 25725
+    },
+    "elf": {
+      "mode": "0555",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf",
+      "sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178",
+      "size_bytes": 317706232
+    },
+    "map": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json",
+      "sha256": "2b93aedf11101a8bc5fc7ed4ffaa056b50476d96cdd2eabf9d185f59ee60f846",
+      "size_bytes": 390324
+    },
+    "preflight": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_IMPLEMENTATION_V4_2026-08-25.json",
+      "sha256": "e9d6328b9f610ede73ae2e8d3c819b9728ac0fc5e4c263e9fe25a61978f80f5a",
+      "size_bytes": 98316
+    },
+    "preflight_receipt": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_IMPLEMENTATION_V4_PREFLIGHT_2026-08-25.json",
+      "sha256": "740c008d59fb4689826537e46a35da554bde863358d2c18382f315395ee835e0",
+      "size_bytes": 14171
+    },
+    "remote_controller": {
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-t-sampling-remote.py",
+      "sha256": "428452cd2937deb644299d8d1ad0280d649eeaf7da6b3b05452a07f26b11146b",
+      "size_bytes": 53227
+    },
+    "u_single_salvage": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_U_SINGLE_SALVAGE_V1_2026-08-26/U_SINGLE_SALVAGE_RECEIPT.json",
+      "sha256": "9617502776537ca4181bd9bf195e1fd5b8fbd2679f1dfd00737f128cb88bfe0b",
+      "size_bytes": 2531
+    },
+    "uv_receipts": {
+      "U-FIXED": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_U_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/D2_UV_ROUTE_RECEIPT.json",
+        "sha256": "0ef07db4b8a07efb2ed09c3c47d6b0a9ef88e4529dd436d5d375cecf62339b59",
+        "size_bytes": 44948
+      },
+      "U-REVERSED": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_U_REVERSED_V1_2026-08-26/REMOTE_EVIDENCE/D2_UV_ROUTE_RECEIPT.json",
+        "sha256": "080917d52f3e36abffb6eab47b9e56c4a1e771b4da21caaf6fa3e2cfe686a0fb",
+        "size_bytes": 44982
+      },
+      "V-FIXED-INSTR": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_FIXED_INSTR_V1_2026-08-26/REMOTE_EVIDENCE/D2_UV_ROUTE_RECEIPT.json",
+        "sha256": "56c862759c95de6682571aed3d68098dab084319817fba5af3853042e0396bae",
+        "size_bytes": 50090
+      },
+      "V-REVERSED-INSTR": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_REVERSED_INSTR_V1_2026-08-26/REMOTE_EVIDENCE/D2_UV_ROUTE_RECEIPT.json",
+        "sha256": "5d75a502ad9e509dc6810b5494067f602d5ace1237e73f4d7913d5b9b1fc9de2",
+        "size_bytes": 50181
+      }
+    }
+  },
+  "cargo_invocations": 0,
+  "command_graph": {
+    "cargo_routes": [],
+    "dispatch": [
+      "provenance",
+      "thermal",
+      "capability",
+      "bucket_map",
+      "perturbation",
+      "sample_coverage"
+    ],
+    "external_actions": [
+      "self-check",
+      "run-once"
+    ],
+    "perf_readers_per_route": [
+      "evlist",
+      "samples",
+      "raw-records",
+      "buildids"
+    ],
+    "perf_record_reachable_only_from": [
+      "T-SINGLE",
+      "T-FIXED",
+      "T-REVERSED"
+    ],
+    "perf_stat_routes": [],
+    "pid_attach": false,
+    "remote_actions": [
+      "probe-before",
+      "run-once",
+      "probe-after"
+    ],
+    "route_registry": [
+      "T-SINGLE",
+      "T-FIXED",
+      "T-REVERSED"
+    ],
+    "sigint_lifecycle": false
+  },
+  "marker_mutations": 0,
+  "perf_readers": 0,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_probe_sha256": "d1fa2a0ff6fd2d8193abb6cf0087429203bdcc8897d5d2685200fc606169f5a1",
+  "route": "T-SINGLE",
+  "schema": "lay.v10.e1-traversal-d2-primary-only-t-self-check.v1",
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+  "verdict": "D2_T_CONTROLLER_VERIFIED_ROUTE_UNRUN"
+}

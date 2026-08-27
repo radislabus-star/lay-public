@@ -1,0 +1,43 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id":"test_entry","role":"interface"},
+    {"id":"parity_runner","role":"orchestrator"},
+    {"id":"e0_authority","role":"evidence_owner"},
+    {"id":"e1_executor","role":"producer"},
+    {"id":"parity_observer","role":"observer"},
+    {"id":"component_runner","role":"orchestrator"},
+    {"id":"component_observer","role":"observer"},
+    {"id":"pmu_runner","role":"orchestrator"},
+    {"id":"pmu_observer","role":"observer"},
+    {"id":"decision_proof","role":"proof_owner"}
+  ],
+  "edges": [
+    {"id":"exec-parity-entry-runner","from":"test_entry","relation":"calls","to":"parity_runner","events":["parity"]},
+    {"id":"exec-parity-runner-e1","from":"parity_runner","relation":"calls","to":"e1_executor","events":["parity"]},
+    {"id":"authority-e0-parity","from":"e0_authority","relation":"passes_to","to":"parity_observer","events":["parity"]},
+    {"id":"observe-e1-parity","from":"e1_executor","relation":"observes","to":"parity_observer","events":["parity"]},
+    {"id":"proof-parity-decision","from":"parity_observer","relation":"proves","to":"decision_proof","events":["parity_decision"]},
+    {"id":"exec-component-entry-runner","from":"test_entry","relation":"calls","to":"component_runner","events":["component_single","component_fixed","component_reversed"]},
+    {"id":"exec-component-runner-e1","from":"component_runner","relation":"calls","to":"e1_executor","events":["component_single","component_fixed","component_reversed"]},
+    {"id":"observe-component-e1","from":"e1_executor","relation":"observes","to":"component_observer","events":["component_single","component_fixed","component_reversed"]},
+    {"id":"proof-component-decision","from":"component_observer","relation":"proves","to":"decision_proof","events":["component_decision"]},
+    {"id":"exec-pmu-entry-runner","from":"test_entry","relation":"calls","to":"pmu_runner","events":["pmu_fixed","pmu_reversed"]},
+    {"id":"exec-pmu-runner-e1","from":"pmu_runner","relation":"calls","to":"e1_executor","events":["pmu_fixed","pmu_reversed"]},
+    {"id":"observe-pmu-e1","from":"e1_executor","relation":"observes","to":"pmu_observer","events":["pmu_fixed","pmu_reversed"]},
+    {"id":"proof-pmu-decision","from":"pmu_observer","relation":"proves","to":"decision_proof","events":["pmu_decision"]}
+  ],
+  "routes": [
+    {"id":"parity-execution","event":"parity","kind":"execution","entry":"test_entry","terminal":"e1_executor","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"test_entry","to":"e1_executor","min":1,"max":1}]},
+    {"id":"parity-authority","event":"parity","kind":"authority","entry":"e0_authority","terminal":"parity_observer","required_roles":["evidence_owner","observer"]},
+    {"id":"parity-proof","event":"parity_decision","kind":"proof","entry":"parity_observer","terminal":"decision_proof","required_roles":["observer","proof_owner"]},
+    {"id":"component-single-execution","event":"component_single","kind":"execution","entry":"test_entry","terminal":"e1_executor","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"test_entry","to":"e1_executor","min":1,"max":1}]},
+    {"id":"component-fixed-execution","event":"component_fixed","kind":"execution","entry":"test_entry","terminal":"e1_executor","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"test_entry","to":"e1_executor","min":1,"max":1}]},
+    {"id":"component-reversed-execution","event":"component_reversed","kind":"execution","entry":"test_entry","terminal":"e1_executor","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"test_entry","to":"e1_executor","min":1,"max":1}]},
+    {"id":"component-observation","event":"component_decision","kind":"proof","entry":"component_observer","terminal":"decision_proof","required_roles":["observer","proof_owner"]},
+    {"id":"pmu-fixed-execution","event":"pmu_fixed","kind":"execution","entry":"test_entry","terminal":"e1_executor","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"test_entry","to":"e1_executor","min":1,"max":1}]},
+    {"id":"pmu-reversed-execution","event":"pmu_reversed","kind":"execution","entry":"test_entry","terminal":"e1_executor","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"test_entry","to":"e1_executor","min":1,"max":1}]},
+    {"id":"pmu-proof","event":"pmu_decision","kind":"proof","entry":"pmu_observer","terminal":"decision_proof","required_roles":["observer","proof_owner"]}
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_RUN_2026-08-25",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id": "run-contract", "kind": "file", "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_RUN_CORRECTION_2026-08-25.md", "expect": {"mode": "0664", "size_bytes": 1693, "sha256": "fd2278841f5c3d65fd08410816660503967b22634b6aa6a3b64c41e3e63df038"}},
+    {"id": "run-route", "kind": "file", "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_RUN_ROUTE.md", "expect": {"mode": "0664", "size_bytes": 3096, "sha256": "f930455bfb75a9a893043a1b93d83e50c03654df7189156389f2ff9c3ad0170e"}},
+    {"id": "run-route-receipt", "kind": "file", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_RUN_ROUTE_RECEIPT_2026-08-25.json", "expect": {"mode": "0664", "size_bytes": 19220, "sha256": "27641d35a9b08f21cb5ef618a0d22378bb0bcab8f3b8154bd11053805e395407"}},
+    {"id": "build-admission", "kind": "file", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_BUILD_ADMISSION_2026-08-25.json", "expect": {"mode": "0444", "size_bytes": 1865, "sha256": "93815b1ee303389361dccabb549a2b2fbc5aec7bc08425edbe87ccf4258e20fe"}},
+    {"id": "a2-controller", "kind": "file", "path": "../../../scripts/lay-v10-structural-work.py", "expect": {"mode": "0755", "size_bytes": 41486, "sha256": "734a1a54bd36d7459f4c7eace3f19dffb4ee4cad04492342f5de2f93e3e8b22a"}},
+    {"id": "sealed-fragment", "kind": "file", "path": "../../../scripts/lay_v10_structural_work_test_module.rs.inc", "expect": {"mode": "0664", "size_bytes": 37108, "sha256": "dcf1a9e067519ac265d9846fad2bbd0b13eda896c8008d6bfdb74094f998eb25"}},
+    {"id": "active-v11", "kind": "file", "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs", "expect": {"mode": "0664", "size_bytes": 124127, "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"}},
+    {"id": "a2-result", "kind": "absent", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_2026-08-25", "expect": {}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "patch-loader-run-owner", "kind": "local_source_edit"},
+      {"id": "transfer-temporary-run-controller", "kind": "remote_temporary_file"},
+      {"id": "execute-one-structural-run", "kind": "remote_diagnostic_execution"},
+      {"id": "publish-a2-result", "kind": "remote_and_local_evidence_write"},
+      {"id": "record-a2-result", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "cargo_or_rustc_build",
+      "elf_mutation_or_copy",
+      "loader_substitution_or_fallback",
+      "generated_traffic",
+      "synthetic_fixture",
+      "perf_or_pmu",
+      "latency_measurement_or_acceptance",
+      "foreign_process_control",
+      "host_tuning_or_policy_change",
+      "installed_lay_mutation_or_restart",
+      "v12_action",
+      "adaptive_retry_or_second_run",
+      "runtime_authority_change"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "a2-controller-veto-scan",
+      "path": "../../../scripts/lay-v10-structural-work.py",
+      "sha256": "734a1a54bd36d7459f4c7eace3f19dffb4ee4cad04492342f5de2f93e3e8b22a",
+      "forbidden_effect_patterns": [
+        {"effect": "cargo_or_rustc_build", "regex": "(?:remote_run|local_run)[\\s\\S]{0,12000}(?:cargo-guard|cargo\\s+(?:build|test)|rustc\\s)"},
+        {"effect": "elf_mutation_or_copy", "regex": "(?:remote_run|local_run)[\\s\\S]{0,12000}(?:chmod\\([^)]*diagnostic-test-elf|copyfile\\([^)]*diagnostic-test-elf)"},
+        {"effect": "loader_substitution_or_fallback", "regex": "(?:fallback_loader|loader_candidates|adaptive_loader)"},
+        {"effect": "generated_traffic", "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"},
+        {"effect": "synthetic_fixture", "regex": "(?:generate_fixture|fixture_writer|synthetic_fixture)"},
+        {"effect": "perf_or_pmu", "regex": "(?:subprocess[^\\n]{0,200}(?:/usr/bin/perf|\\\"perf\\\")|perf_event_open)"},
+        {"effect": "latency_measurement_or_acceptance", "regex": "(?:result\\.(?:search_elapsed_us|total_elapsed_us)|C1_[ST][0-9]|latency_gate|p99[^\\n]{0,80}(?:3000|5000))"},
+        {"effect": "foreign_process_control", "regex": "(?:run|ssh)\\([^\\n]{0,240}(?:pkill|killall|systemctl[^\\n]*(?:stop|kill))"},
+        {"effect": "host_tuning_or_policy_change", "regex": "(?:run|ssh)\\([^\\n]{0,240}(?:cpupower|sysctl|scaling_governor|energy_performance_preference)"},
+        {"effect": "installed_lay_mutation_or_restart", "regex": "(?:run|ssh)\\([^\\n]{0,240}(?:systemctl[^\\n]*restart[^\\n]*lay|lay-runtime-control)"},
+        {"effect": "v12_action", "regex": "(?:v12_admitted[^\\n]{0,40}True|ExactFusedBandTransition)"},
+        {"effect": "adaptive_retry_or_second_run", "regex": "(?:retry_permitted[^\\n]{0,40}True|adaptive_repeat|second_run)"},
+        {"effect": "runtime_authority_change", "regex": "runtime_authority_changed[^\\n]{0,40}True"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "A2_BUILD_SEALED_RUN_AVAILABLE",
+    "steps": [
+      {"id": "patch-run-owner", "from": "A2_BUILD_SEALED_RUN_AVAILABLE", "to": "A2_LOADER_CONTROLLER_UNRUN", "mutates": true, "failure_state": "RUN_CONTROLLER_REJECTED_MARKER_AVAILABLE", "cleanup": "restore exact pre-correction controller and create no remote temporary file", "preserves": ["preserve-build-admission", "preserve-fragment", "preserve-v11"], "test_id": "controller-fault"},
+      {"id": "self-check-run-owner", "from": "A2_LOADER_CONTROLLER_UNRUN", "to": "A2_LOADER_CONTROLLER_VERIFIED", "mutates": false},
+      {"id": "execute-run-once", "from": "A2_LOADER_CONTROLLER_VERIFIED", "to": "A2_STRUCTURAL_PARITY_PASS", "mutates": true, "failure_state": "A2_RUN_TERMINAL", "cleanup": "retain consumed marker and raw result; terminate only owned subject; no retry", "preserves": ["preserve-build-admission", "preserve-fragment", "preserve-v11"], "test_id": "run-fault"},
+      {"id": "publish-result", "from": "A2_STRUCTURAL_PARITY_PASS", "to": "STRUCTURAL_WORK_OBSERVED_NO_PROMOTION", "mutates": true, "failure_state": "PUBLICATION_FAILED_REMOTE_RETAINED", "cleanup": "retain sealed remote result and remove incomplete local stage", "preserves": ["preserve-build-admission", "preserve-fragment", "preserve-v11"], "test_id": "publication-fault"}
+    ],
+    "terminal_states": ["STRUCTURAL_WORK_OBSERVED_NO_PROMOTION", "RUN_CONTROLLER_REJECTED_MARKER_AVAILABLE", "A2_RUN_TERMINAL", "PUBLICATION_FAILED_REMOTE_RETAINED"]
+  },
+  "preserved_artifacts": [
+    {"id": "preserve-build-admission", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_BUILD_ADMISSION_2026-08-25.json", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "build-admission"},
+    {"id": "preserve-controller", "path": "../../../scripts/lay-v10-structural-work.py", "policy": "replace_only_after_ready", "rollback_policy": "restore_exact_baseline", "baseline_check_id": "a2-controller"},
+    {"id": "preserve-fragment", "path": "../../../scripts/lay_v10_structural_work_test_module.rs.inc", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "sealed-fragment"},
+    {"id": "preserve-v11", "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "active-v11"}
+  ],
+  "identity_contracts": [
+    {"id": "loader-identity", "producer": "remote system loader", "consumer": "corrected run owner", "comparison": "exact path SHA-256 size and executable mode", "test_id": "loader-parity"},
+    {"id": "elf-identity", "producer": "sealed A2 build", "consumer": "loader subject", "comparison": "exact SHA-256 size Build ID and read-only mode", "test_id": "elf-parity"},
+    {"id": "controller-identity", "producer": "local corrected controller", "consumer": "temporary remote run owner", "comparison": "exact SHA-256 before run and run provenance", "test_id": "controller-parity"},
+    {"id": "subject-parity", "producer": "exact production V10 search", "consumer": "sealed A2 observer", "comparison": "382 semantic structural and certificate checks", "test_id": "observer-parity"}
+  ],
+  "runtime_comparisons": [
+    {"id": "runtime-stability", "source": "installed Lay and daemon snapshot before and after corrected run", "comparison": "exact_stable_projection", "reason": "remote diagnostic cannot change installed runtime", "stable_fields": ["lay_version", "active_v11_sha256", "ibus_daemon_pid", "lay_daemon_pid", "lay_ibus_engine_pid"], "expected_to_change_fields": [], "observed_not_compared_fields": ["process_cpu_time", "host_load", "temperature"], "test_id": "runtime-stability"}
+  ],
+  "invariants": [
+    {"id": "no-build", "statement": "run correction cannot invoke Cargo rustc or create another ELF", "test_id": "no-build"},
+    {"id": "loader-exact", "statement": "one pinned loader executes the exact read-only sealed ELF without fallback", "test_id": "loader-parity"},
+    {"id": "marker-first", "statement": "run marker is consumed after identity checks and before exact structural test execution", "test_id": "run-fault"},
+    {"id": "loaded-not-blocker", "statement": "foreign load remains running and does not block structural acceptance", "test_id": "noninterference"},
+    {"id": "claim-boundary", "statement": "result cannot admit latency formal B V12 integration or deployment", "test_id": "claim-boundary"}
+  ],
+  "tests": [
+    {"id": "controller-fault", "kind": "fault_injection", "expected": "invalid loader correction restores controller and leaves run marker available"},
+    {"id": "run-fault", "kind": "fault_injection", "expected": "failure after marker retains evidence and cannot retry"},
+    {"id": "publication-fault", "kind": "fault_injection", "expected": "remote sealed result remains and no partial local final appears"},
+    {"id": "no-build", "kind": "unit", "expected": "corrected run path contains no Cargo rustc build or ELF copy mutation"},
+    {"id": "loader-parity", "kind": "parity", "expected": "loader path SHA size and mode match admission receipt before marker"},
+    {"id": "elf-parity", "kind": "parity", "expected": "ELF SHA size Build ID and mode match sealed build before and after run"},
+    {"id": "controller-parity", "kind": "parity", "expected": "temporary remote controller SHA equals local corrected controller and is recorded"},
+    {"id": "observer-parity", "kind": "parity", "expected": "382 records pass exact production parity and structural identities"},
+    {"id": "noninterference", "kind": "parity", "expected": "no foreign process control reprioritization affinity or host tuning"},
+    {"id": "runtime-stability", "kind": "parity", "expected": "installed runtime stable projection is unchanged"},
+    {"id": "claim-boundary", "kind": "integration", "expected": "latency false formal B false V12 false runtime authority unchanged"}
+  ]
+}

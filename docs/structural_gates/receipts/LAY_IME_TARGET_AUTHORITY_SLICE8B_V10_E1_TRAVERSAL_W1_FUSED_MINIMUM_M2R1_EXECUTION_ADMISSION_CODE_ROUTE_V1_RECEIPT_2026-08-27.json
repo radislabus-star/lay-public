@@ -1,0 +1,336 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_EXECUTION_ADMISSION_CODE_ROUTE_V1_2026-08-27.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 13,
+  "edge_count": 10,
+  "routes": [
+    {
+      "id": "live-preflight-execution",
+      "event": "live-preflight",
+      "kind": "execution",
+      "entry": "producer-cli",
+      "via": [],
+      "terminal": "live-evidence-producer",
+      "path_count": 1,
+      "paths": [
+        [
+          "producer-cli",
+          "producer-orchestrator",
+          "live-evidence-producer"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "live-evidence-producer"
+        ],
+        "interface": [
+          "producer-cli"
+        ],
+        "orchestrator": [
+          "producer-orchestrator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "producer-cli",
+          "to": "live-evidence-producer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "producer-cli",
+              "producer-orchestrator",
+              "live-evidence-producer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live-state-observation",
+      "event": "live-state",
+      "kind": "observation",
+      "entry": "producer-orchestrator",
+      "via": [],
+      "terminal": "producer-live-observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "producer-orchestrator",
+          "producer-live-observer"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "producer-live-observer"
+        ],
+        "orchestrator": [
+          "producer-orchestrator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "uid-probe-mutation",
+      "event": "uid-probe",
+      "kind": "authority",
+      "entry": "uid-probe-authority",
+      "via": [],
+      "terminal": "uid-probe-owner",
+      "path_count": 1,
+      "paths": [
+        [
+          "uid-probe-authority",
+          "uid-probe-owner"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "uid-probe-authority"
+        ],
+        "mutation_owner": [
+          "uid-probe-owner"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "uid-probe-authority",
+          "to": "uid-probe-owner",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "uid-probe-authority",
+              "uid-probe-owner"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admission-audit-execution",
+      "event": "admission-audit",
+      "kind": "execution",
+      "entry": "auditor-cli",
+      "via": [],
+      "terminal": "admission-publisher",
+      "path_count": 1,
+      "paths": [
+        [
+          "auditor-cli",
+          "auditor-orchestrator",
+          "admission-publisher"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "admission-publisher"
+        ],
+        "interface": [
+          "auditor-cli"
+        ],
+        "orchestrator": [
+          "auditor-orchestrator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "auditor-cli",
+          "to": "admission-publisher",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "auditor-cli",
+              "auditor-orchestrator",
+              "admission-publisher"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "audit-live-observation",
+      "event": "audit-live-state",
+      "kind": "observation",
+      "entry": "auditor-orchestrator",
+      "via": [],
+      "terminal": "auditor-live-observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "auditor-orchestrator",
+          "auditor-live-observer"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "auditor-live-observer"
+        ],
+        "orchestrator": [
+          "auditor-orchestrator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "admission-proof",
+      "event": "admission-proof",
+      "kind": "proof",
+      "entry": "auditor-live-observer",
+      "via": [],
+      "terminal": "admission-proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "auditor-live-observer",
+          "admission-proof"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "admission-proof"
+        ],
+        "observer": [
+          "auditor-live-observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "admission-publication",
+      "event": "admission-publication",
+      "kind": "authority",
+      "entry": "admission-authority",
+      "via": [],
+      "terminal": "admission-publisher",
+      "path_count": 1,
+      "paths": [
+        [
+          "admission-authority",
+          "admission-publisher"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "admission-authority"
+        ],
+        "mutation_owner": [
+          "admission-publisher"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "admission-authority",
+          "to": "admission-publisher",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "admission-authority",
+              "admission-publisher"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "audit-evidence-proof-route",
+      "event": "audit-evidence",
+      "kind": "proof",
+      "entry": "auditor-orchestrator",
+      "via": [],
+      "terminal": "audit-evidence-proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "auditor-orchestrator",
+          "audit-evidence-proof"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "audit-evidence-proof"
+        ],
+        "orchestrator": [
+          "auditor-orchestrator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "uid-probe": {
+      "authorization_owner": [
+        "uid-probe-authority"
+      ],
+      "evidence_owner": [],
+      "mutation_owner": [
+        "uid-probe-owner"
+      ],
+      "candidate_rank_owner": [],
+      "display_rank_owner": [],
+      "render_owner": []
+    },
+    "admission-publication": {
+      "authorization_owner": [
+        "admission-authority"
+      ],
+      "evidence_owner": [],
+      "mutation_owner": [
+        "admission-publisher"
+      ],
+      "candidate_rank_owner": [],
+      "display_rank_owner": [],
+      "render_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 23,
+    "verified": 23,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": true,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

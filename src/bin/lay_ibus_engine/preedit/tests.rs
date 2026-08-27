@@ -312,6 +312,45 @@ fn space_authority_rejects_complete_frame_identity_faults() {
 }
 
 #[test]
+fn layout_switch_away_and_back_keeps_the_old_frame_stale() {
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut engine = LayIbusEngine::new(
+        "/engine/layout-generation".to_string(),
+        shared,
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            ..LayConfig::default()
+        },
+    );
+    assert!(engine.bind_focus_path());
+    for ch in "слово".chars() {
+        engine.push_tail_char(ch);
+    }
+    let old_frame = engine
+        .capture_input_frame_identity()
+        .expect("initial exact frame");
+    let old_generation = old_frame
+        .lexical_coordinates
+        .as_ref()
+        .expect("initial lexical coordinates")
+        .layout_generation();
+    let original_layout = engine.layout_is_ru;
+
+    engine.set_layout_is_ru(!original_layout);
+    engine.set_layout_is_ru(original_layout);
+
+    assert_eq!(engine.layout_is_ru, original_layout);
+    assert_ne!(engine.layout_generation, old_generation);
+    assert!(!engine.input_frame_authority_matches(&old_frame));
+    let current_frame = engine
+        .capture_input_frame_identity()
+        .expect("refreshed exact frame");
+    assert!(engine.input_frame_identity_matches(&current_frame));
+}
+
+#[test]
 fn manual_continuation_rebuilds_without_the_declined_full_target() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(

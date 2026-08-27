@@ -13,6 +13,9 @@ use super::candidate_state::{
     derive_candidate_validity_shadow, derive_original_preservation_shadow,
     TargetNamespaceSettlementV1, WitnessFrameAssessmentV1,
 };
+use super::cohort_compare::{
+    CohortCompareStatusV1, CohortFirstDivergenceV1, LexicalVerdictObservationV1,
+};
 use super::conflict_cohort::derive_conflict_cohort_shadow;
 use super::contour_birth::{
     enumerate_typed_contour_births, enumerate_typed_contour_births_with_l11,
@@ -34,6 +37,7 @@ use super::packaged_runtime::{
     RecoveryIdentityAnchorRefV1, SharedHypothesisReplayAuditV1,
 };
 use super::types::CanonicalL2BindingIdentityV1;
+use crate::nanda_wave::l2_field::runtime::{L2FieldAuthority, L2FieldAvailability};
 use crate::nanda_wave::lexical_grokking::{split_damages, DamageExample, ExactL11SurfaceIndexV1};
 use crate::typing_transition::target_evidence::{
     CandidateStateV1, CohortVerdictV1, EnumerationStateV1,
@@ -349,6 +353,9 @@ struct ProofShardV1 {
     enumeration_work_errors: Vec<String>,
     material_frame_cases: Vec<MaterialFrameCaseV1>,
     material_frame_errors: Vec<String>,
+    live_cohort_compare_cases: Vec<LiveCohortCompareCaseV1>,
+    live_cohort_no_field_cases: Vec<LiveCohortNoFieldCaseV1>,
+    live_cohort_compare_errors: Vec<LiveCohortCompareErrorV1>,
     slow_calls: BTreeMap<(ProofCohortV1, &'static str), Vec<ProductiveSlowCallV1>>,
 }
 
@@ -374,6 +381,12 @@ impl ProofShardV1 {
         self.material_frame_cases.extend(other.material_frame_cases);
         self.material_frame_errors
             .extend(other.material_frame_errors);
+        self.live_cohort_compare_cases
+            .extend(other.live_cohort_compare_cases);
+        self.live_cohort_no_field_cases
+            .extend(other.live_cohort_no_field_cases);
+        self.live_cohort_compare_errors
+            .extend(other.live_cohort_compare_errors);
         for (key, calls) in other.slow_calls {
             for call in calls {
                 record_slow_call(self.slow_calls.entry(key).or_default(), call);
@@ -2389,10 +2402,13 @@ fn prove_productive_paradigm_field_v1_inner(
         .map_err(io::Error::other)?;
     let contour_birth_enabled = std::env::var_os("LAY_PRODUCTIVE_CONTOUR_BIRTH_PROOF").is_some();
     let boundary_birth_enabled = std::env::var_os("LAY_PRODUCTIVE_BOUNDARY_PROOF").is_some();
-    let exact_l11 = (contour_birth_enabled || boundary_birth_enabled)
-        .then(|| ExactL11SurfaceIndexV1::load(l1_package_path))
-        .transpose()
-        .map_err(io::Error::other)?;
+    let live_cohort_compare_enabled =
+        std::env::var_os("LAY_PRODUCTIVE_LIVE_COHORT_COMPARE_PROOF").is_some();
+    let exact_l11 =
+        (contour_birth_enabled || boundary_birth_enabled || live_cohort_compare_enabled)
+            .then(|| ExactL11SurfaceIndexV1::load(l1_package_path))
+            .transpose()
+            .map_err(io::Error::other)?;
     let axis_schema = load_axis_schema(axis_schema_path).map_err(io::Error::other)?;
     let load_started = Instant::now();
     let runtime = if semantic_proof_authority {
@@ -2429,6 +2445,17 @@ fn prove_productive_paradigm_field_v1_inner(
     let (cases, scanned_proof_events, sampled_by_cohort) =
         sample_cases(&runtime, &spool_path, heldout_per_class)?;
     let sampling_us = sampling_started.elapsed().as_micros() as u64;
+    let live_cohort_preload_us = if live_cohort_compare_enabled {
+        let started = Instant::now();
+        super::super::preload_installed_l2_field().map_err(|error| {
+            io::Error::other(format!(
+                "live cohort proof could not preload canonical L2 and Productive V90: {error}"
+            ))
+        })?;
+        started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64
+    } else {
+        0
+    };
     let workers = requested_workers
         .min(
             std::thread::available_parallelism()
@@ -2524,6 +2551,14 @@ fn prove_productive_paradigm_field_v1_inner(
         std::mem::take(&mut proof.material_frame_errors),
         EXPECTED_DAMAGE_CLASSES.saturating_mul(heldout_per_class),
         material_frame_enabled,
+    );
+    let live_cohort_compare_shadow = summarize_live_cohort_compare_shadow(
+        std::mem::take(&mut proof.live_cohort_compare_cases),
+        std::mem::take(&mut proof.live_cohort_no_field_cases),
+        std::mem::take(&mut proof.live_cohort_compare_errors),
+        EXPECTED_DAMAGE_CLASSES.saturating_mul(heldout_per_class),
+        live_cohort_compare_enabled,
+        live_cohort_preload_us,
     );
     let contour_birth_shadow = summarize_slice5_contour_birth_shadow(
         &canonical_l2,
@@ -2805,6 +2840,13 @@ fn prove_productive_paradigm_field_v1_inner(
         .as_object_mut()
         .expect("productive proof report is an object")
         .insert("material_frame_shadow".to_string(), material_frame_shadow);
+    report
+        .as_object_mut()
+        .expect("productive proof report is an object")
+        .insert(
+            "live_cohort_compare_shadow".to_string(),
+            live_cohort_compare_shadow,
+        );
     report
         .as_object_mut()
         .expect("productive proof report is an object")
@@ -3216,6 +3258,29 @@ fn evaluate_cases(
                         Err(_) => {}
                     }
                 }
+                if case.cohort == ProofCohortV1::LemmaHeldout
+                    && std::env::var_os("LAY_PRODUCTIVE_LIVE_COHORT_COMPARE_PROOF").is_some()
+                {
+                    match result.live_cohort_compare {
+                        Some(Ok(LiveCohortProofOutcomeV1::ProducedField(case))) => {
+                            shard.live_cohort_compare_cases.push(case);
+                        }
+                        Some(Ok(LiveCohortProofOutcomeV1::NoField(case))) => {
+                            shard.live_cohort_no_field_cases.push(case);
+                        }
+                        Some(Err(error)) => shard
+                            .live_cohort_compare_errors
+                            .push(LiveCohortCompareErrorV1::new(case, error)),
+                        None => {
+                            shard
+                                .live_cohort_compare_errors
+                                .push(LiveCohortCompareErrorV1::new(
+                                    case,
+                                    "live cohort proof produced no typed outcome".to_string(),
+                                ))
+                        }
+                    }
+                }
                 if let Some(telemetry) = result.stage_telemetry {
                     shard.stage_telemetry.record(telemetry);
                     record_slow_call(
@@ -3292,6 +3357,13 @@ fn evaluate_cases(
                 }
             }
             Err(error) => {
+                if case.cohort == ProofCohortV1::LemmaHeldout
+                    && std::env::var_os("LAY_PRODUCTIVE_LIVE_COHORT_COMPARE_PROOF").is_some()
+                {
+                    shard
+                        .live_cohort_compare_errors
+                        .push(LiveCohortCompareErrorV1::new(case, error.clone()));
+                }
                 if error == TARGET_PROBE_PARITY_ERROR {
                     shard.probe_parity_comparisons += 1;
                     shard.probe_parity_failures += 1;
@@ -3309,6 +3381,728 @@ fn evaluate_cases(
         }
     }
     shard
+}
+
+#[derive(Clone, Debug)]
+enum LiveCohortProofOutcomeV1 {
+    ProducedField(LiveCohortCompareCaseV1),
+    NoField(LiveCohortNoFieldCaseV1),
+}
+
+#[derive(Clone, Debug)]
+struct LiveCohortNoFieldCaseV1 {
+    class: &'static str,
+    proof_identity: [u8; 32],
+    damaged_surface: String,
+    target_surface: String,
+    availability: &'static str,
+    field_producer_count: u64,
+    cache_disposition: &'static str,
+    l11_us: u64,
+    productive_v90_us: u64,
+    bridge_total_us: u64,
+    latency_us: u64,
+    target_exact_l11: bool,
+    target_exact_v13: bool,
+    productive_hypothesis_covered: bool,
+    productive_exact_born: bool,
+    provenance_complete: bool,
+}
+
+impl LiveCohortNoFieldCaseV1 {
+    fn bind_target_provenance(
+        &mut self,
+        exact_l11: &ExactL11SurfaceIndexV1,
+        canonical_l2: &super::super::runtime::StandaloneL2Field,
+        productive_hypothesis_covered: bool,
+        productive_exact_born: bool,
+    ) -> Result<(), String> {
+        if self.provenance_complete {
+            return Err("NoField target provenance was bound twice".to_string());
+        }
+        self.target_exact_l11 = exact_l11
+            .terminal_for_surface(&self.target_surface)
+            .is_some();
+        self.target_exact_v13 = canonical_l2
+            .form_ref_for_surface(&self.target_surface)
+            .is_some();
+        self.productive_hypothesis_covered = productive_hypothesis_covered;
+        self.productive_exact_born = productive_exact_born;
+        self.provenance_complete = true;
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Serialize)]
+struct LiveCohortCompareErrorV1 {
+    class: &'static str,
+    proof_identity: [u8; 32],
+    damaged_surface: String,
+    target_surface: String,
+    error: String,
+}
+
+impl LiveCohortCompareErrorV1 {
+    fn new(case: &ProofCaseV1, error: String) -> Self {
+        Self {
+            class: case.class,
+            proof_identity: case.event.proof_identity,
+            damaged_surface: case.damaged_surface.clone(),
+            target_surface: case.event.observed_surface.clone(),
+            error,
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+struct LiveCohortCompareCaseV1 {
+    class: &'static str,
+    proof_identity: [u8; 32],
+    damaged_surface: String,
+    target_surface: String,
+    status: &'static str,
+    material_scope: &'static str,
+    legacy_kind: &'static str,
+    cohort_kind: &'static str,
+    first_divergence: Option<&'static str>,
+    field_candidate_count: usize,
+    material_target_count: usize,
+    retained_field_candidate_count: usize,
+    grounded_l11_loss_count: usize,
+    unretained_field_candidate_surfaces: Vec<String>,
+    lost_grounded_l11_surfaces: Vec<String>,
+    complete_for_authority: bool,
+    legacy_decision_parity_exact: bool,
+    field_producer_count: u64,
+    cache_disposition: &'static str,
+    l11_us: u64,
+    productive_v90_us: u64,
+    bridge_total_us: u64,
+    latency_us: u64,
+}
+
+fn evaluate_live_cohort_compare_case(
+    case: &ProofCaseV1,
+) -> Result<LiveCohortProofOutcomeV1, String> {
+    let context_prefix = proof_live_context_prefix(case);
+    let original = format!("{context_prefix}{}", case.damaged_surface);
+    let Some((lexical_context, observed_token)) =
+        super::super::bridge::canonical_input_lexical_parts(&original)
+    else {
+        let started = Instant::now();
+        let observed =
+            super::super::bridge::canonical_text_readout_observed_with_frame(&original, None);
+        let latency_us = started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
+        if observed.cohort_compare.is_some() {
+            return Err("unsupported production input unexpectedly produced a cohort".to_string());
+        }
+        return live_no_field_outcome(
+            case,
+            observed.readout.availability,
+            &observed.readout.authority,
+            observed.telemetry.field_producer_count,
+            observed.telemetry.cache_disposition.as_str(),
+            observed.telemetry.l11_us,
+            observed.telemetry.productive_v90_us,
+            observed.telemetry.total_us,
+            latency_us,
+        );
+    };
+    let frame = proof_lexical_authority_frame(case, &original, lexical_context, observed_token)?;
+    let started = Instant::now();
+    let observed =
+        super::super::bridge::canonical_text_readout_observed_with_frame(&original, Some(&frame));
+    let latency_us = started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64;
+    let Some(compare) = observed.cohort_compare.as_ref() else {
+        return live_no_field_outcome(
+            case,
+            observed.readout.availability,
+            &observed.readout.authority,
+            observed.telemetry.field_producer_count,
+            observed.telemetry.cache_disposition.as_str(),
+            observed.telemetry.l11_us,
+            observed.telemetry.productive_v90_us,
+            observed.telemetry.total_us,
+            latency_us,
+        );
+    };
+    Ok(LiveCohortProofOutcomeV1::ProducedField(
+        LiveCohortCompareCaseV1 {
+            class: case.class,
+            proof_identity: case.event.proof_identity,
+            damaged_surface: case.damaged_surface.clone(),
+            target_surface: case.event.observed_surface.clone(),
+            status: cohort_compare_status_name(compare.status),
+            material_scope: material_scope_name(compare.material_scope),
+            legacy_kind: lexical_observation_kind(&compare.legacy),
+            cohort_kind: lexical_observation_kind(&compare.cohort),
+            first_divergence: compare.first_divergence.map(cohort_divergence_name),
+            field_candidate_count: compare.field_candidate_count,
+            material_target_count: compare.material_target_count,
+            retained_field_candidate_count: compare.retained_field_candidate_count,
+            grounded_l11_loss_count: compare.grounded_l11_loss_count,
+            unretained_field_candidate_surfaces: compare
+                .unretained_field_candidate_surfaces
+                .clone(),
+            lost_grounded_l11_surfaces: compare.lost_grounded_l11_surfaces.clone(),
+            complete_for_authority: compare.complete_for_authority,
+            legacy_decision_parity_exact: legacy_observation_matches_authority(
+                &compare.legacy,
+                &observed.readout.authority,
+            ),
+            field_producer_count: observed.telemetry.field_producer_count,
+            cache_disposition: observed.telemetry.cache_disposition.as_str(),
+            l11_us: observed.telemetry.l11_us,
+            productive_v90_us: observed.telemetry.productive_v90_us,
+            bridge_total_us: observed.telemetry.total_us,
+            latency_us,
+        },
+    ))
+}
+
+#[allow(clippy::too_many_arguments)]
+fn live_no_field_outcome(
+    case: &ProofCaseV1,
+    availability: L2FieldAvailability,
+    authority: &L2FieldAuthority,
+    field_producer_count: u64,
+    cache_disposition: &'static str,
+    l11_us: u64,
+    productive_v90_us: u64,
+    bridge_total_us: u64,
+    latency_us: u64,
+) -> Result<LiveCohortProofOutcomeV1, String> {
+    if !matches!(
+        availability,
+        L2FieldAvailability::UnsupportedInput | L2FieldAvailability::EmptyL11Lattice
+    ) {
+        return Err(format!(
+            "live cohort comparator missing for {}::{}",
+            case.class,
+            l2_field_availability_name(availability)
+        ));
+    }
+    if !matches!(
+        authority,
+        L2FieldAuthority::Abstain | L2FieldAuthority::Unavailable
+    ) || field_producer_count != 0
+    {
+        return Err(format!(
+            "no-field observation carried authority or a producer for {}::{}",
+            case.class,
+            l2_field_availability_name(availability)
+        ));
+    }
+    Ok(LiveCohortProofOutcomeV1::NoField(LiveCohortNoFieldCaseV1 {
+        class: case.class,
+        proof_identity: case.event.proof_identity,
+        damaged_surface: case.damaged_surface.clone(),
+        target_surface: case.event.observed_surface.clone(),
+        availability: l2_field_availability_name(availability),
+        field_producer_count,
+        cache_disposition,
+        l11_us,
+        productive_v90_us,
+        bridge_total_us,
+        latency_us,
+        target_exact_l11: false,
+        target_exact_v13: false,
+        productive_hypothesis_covered: false,
+        productive_exact_born: false,
+        provenance_complete: false,
+    }))
+}
+
+fn proof_live_context_prefix(case: &ProofCaseV1) -> String {
+    let joined = case
+        .event
+        .scene
+        .left_tokens
+        .iter()
+        .flatten()
+        .map(|token| token.normalized_surface.as_str())
+        .collect::<Vec<_>>()
+        .join(" ");
+    if joined.is_empty() {
+        joined
+    } else {
+        format!("{joined} ")
+    }
+}
+
+fn proof_lexical_authority_frame(
+    case: &ProofCaseV1,
+    committed_tail: &str,
+    context_prefix: &str,
+    observed_token: &str,
+) -> Result<crate::lexical_authority_frame::LexicalAuthorityFrameV1, String> {
+    let scalar_count = u32::try_from(observed_token.chars().count())
+        .map_err(|_| "proof token exceeds u32 scalar width".to_string())?;
+    let first = u64::from_le_bytes(
+        case.event.proof_identity[..8]
+            .try_into()
+            .expect("fixed proof identity prefix"),
+    )
+    .max(1);
+    let second = u64::from_le_bytes(
+        case.event.proof_identity[8..16]
+            .try_into()
+            .expect("fixed proof identity suffix"),
+    )
+    .max(1);
+    let config = crate::config::LayConfig::default();
+    let coordinates = crate::lexical_authority_frame::LexicalAuthorityCoordinatesV1::new(
+        first,
+        [first, second],
+        second,
+        observed_token.to_string(),
+        context_prefix.to_string(),
+        scalar_count,
+        (scalar_count, scalar_count),
+        observed_token.to_string(),
+        scalar_count,
+        1,
+        1,
+    )
+    .ok_or_else(|| "fixed proof could not construct exact lexical coordinates".to_string())?;
+    Ok(
+        crate::lexical_authority_frame::LexicalAuthorityFrameV1::from_exact_parts(
+            "productive-fixed-live-proof".to_string(),
+            Some(format!("{:016x}", first)),
+            first,
+            committed_tail.to_string(),
+            context_prefix.to_string(),
+            observed_token.to_string(),
+            true,
+            true,
+            crate::exact_layout_authority::FactoryEngineProfile::Ru,
+            None,
+            first,
+            second,
+            crate::lexical_authority_frame::LexicalAuthorityConfigIdentityV1::from_config(&config),
+        )
+        .with_coordinates(Some(coordinates)),
+    )
+}
+
+const fn cohort_compare_status_name(status: CohortCompareStatusV1) -> &'static str {
+    match status {
+        CohortCompareStatusV1::MissingFrame => "MISSING_FRAME",
+        CohortCompareStatusV1::MissingCoordinates => "MISSING_COORDINATES",
+        CohortCompareStatusV1::FrameMismatch => "FRAME_MISMATCH",
+        CohortCompareStatusV1::LeaseUnavailable => "LEASE_UNAVAILABLE",
+        CohortCompareStatusV1::SettlementFailed => "SETTLEMENT_FAILED",
+        CohortCompareStatusV1::Ready => "READY",
+    }
+}
+
+const fn l2_field_availability_name(availability: L2FieldAvailability) -> &'static str {
+    match availability {
+        L2FieldAvailability::Ready => "READY",
+        L2FieldAvailability::UnsupportedInput => "UNSUPPORTED_INPUT",
+        L2FieldAvailability::EmptyL11Lattice => "EMPTY_L11_LATTICE",
+        L2FieldAvailability::L11ServiceUnavailable => "L11_SERVICE_UNAVAILABLE",
+        L2FieldAvailability::CanonicalPackageUnavailable => "CANONICAL_PACKAGE_UNAVAILABLE",
+        L2FieldAvailability::ProductivePackageUnavailable => "PRODUCTIVE_PACKAGE_UNAVAILABLE",
+        L2FieldAvailability::ProductiveReadoutError => "PRODUCTIVE_READOUT_ERROR",
+    }
+}
+
+const fn material_scope_name(scope: super::live::PreparedFieldMaterialScopeV1) -> &'static str {
+    match scope {
+        super::live::PreparedFieldMaterialScopeV1::ContextNeutral => "CONTEXT_NEUTRAL",
+        super::live::PreparedFieldMaterialScopeV1::ContextShapedObservation => {
+            "CONTEXT_SHAPED_OBSERVATION"
+        }
+    }
+}
+
+const fn cohort_divergence_name(divergence: CohortFirstDivergenceV1) -> &'static str {
+    match divergence {
+        CohortFirstDivergenceV1::CandidateRetention => "CANDIDATE_RETENTION",
+        CohortFirstDivergenceV1::VerdictKind => "VERDICT_KIND",
+        CohortFirstDivergenceV1::WinnerSurface => "WINNER_SURFACE",
+    }
+}
+
+const fn lexical_observation_kind(observation: &LexicalVerdictObservationV1) -> &'static str {
+    match observation {
+        LexicalVerdictObservationV1::Winner(_) => "WINNER",
+        LexicalVerdictObservationV1::Tied(_) => "TIED",
+        LexicalVerdictObservationV1::Abstain => "ABSTAIN",
+        LexicalVerdictObservationV1::Unavailable => "UNAVAILABLE",
+    }
+}
+
+fn legacy_observation_matches_authority(
+    observation: &LexicalVerdictObservationV1,
+    authority: &L2FieldAuthority,
+) -> bool {
+    match (observation, authority) {
+        (
+            LexicalVerdictObservationV1::Winner(left),
+            L2FieldAuthority::Winner { surface: right },
+        ) => left == right,
+        (LexicalVerdictObservationV1::Tied(left), L2FieldAuthority::Tied { surfaces: right }) => {
+            left == right
+        }
+        (LexicalVerdictObservationV1::Abstain, L2FieldAuthority::Abstain)
+        | (LexicalVerdictObservationV1::Unavailable, L2FieldAuthority::Unavailable) => true,
+        _ => false,
+    }
+}
+
+fn summarize_live_cohort_compare_shadow(
+    mut cases: Vec<LiveCohortCompareCaseV1>,
+    mut no_field_cases: Vec<LiveCohortNoFieldCaseV1>,
+    mut errors: Vec<LiveCohortCompareErrorV1>,
+    expected_cases: usize,
+    enabled: bool,
+    preload_us: u64,
+) -> serde_json::Value {
+    if !enabled {
+        return serde_json::json!({
+            "schema": "lay.live-cohort-compare-shadow.v3",
+            "enabled": false,
+            "verdict": "NOT_RUN",
+            "runtime_authority_changed": false,
+        });
+    }
+    cases.sort_unstable_by(|left, right| {
+        left.class
+            .cmp(right.class)
+            .then_with(|| left.proof_identity.cmp(&right.proof_identity))
+    });
+    no_field_cases.sort_unstable_by(|left, right| {
+        left.class
+            .cmp(right.class)
+            .then_with(|| left.proof_identity.cmp(&right.proof_identity))
+    });
+    errors.sort_unstable_by(|left, right| {
+        left.class
+            .cmp(right.class)
+            .then_with(|| left.proof_identity.cmp(&right.proof_identity))
+    });
+    let mut status_counts = BTreeMap::<&'static str, usize>::new();
+    let mut material_scope_counts = BTreeMap::<&'static str, usize>::new();
+    let mut legacy_verdict_counts = BTreeMap::<&'static str, usize>::new();
+    let mut cohort_verdict_counts = BTreeMap::<&'static str, usize>::new();
+    let mut divergence_counts = BTreeMap::<&'static str, usize>::new();
+    let mut cache_dispositions = BTreeMap::<&'static str, usize>::new();
+    let mut no_field_availability_counts = BTreeMap::<&'static str, usize>::new();
+    let mut no_field_class_counts = BTreeMap::<&'static str, usize>::new();
+    let mut no_field_provenance_buckets = BTreeMap::<String, usize>::new();
+    let mut no_field_provenance_by_class = BTreeMap::<&'static str, BTreeMap<String, usize>>::new();
+    let mut no_field_provenance_by_availability =
+        BTreeMap::<&'static str, BTreeMap<String, usize>>::new();
+    let mut no_field_target_exact_l11 = 0_usize;
+    let mut no_field_target_exact_v13 = 0_usize;
+    let mut no_field_productive_hypothesis_covered = 0_usize;
+    let mut no_field_productive_exact_born = 0_usize;
+    let mut no_field_incomplete_provenance = 0_usize;
+    let mut latency_us = Vec::with_capacity(cases.len());
+    let mut no_field_latency_us = Vec::with_capacity(no_field_cases.len());
+    for case in &cases {
+        *status_counts.entry(case.status).or_default() += 1;
+        *material_scope_counts
+            .entry(case.material_scope)
+            .or_default() += 1;
+        *legacy_verdict_counts.entry(case.legacy_kind).or_default() += 1;
+        *cohort_verdict_counts.entry(case.cohort_kind).or_default() += 1;
+        *divergence_counts
+            .entry(case.first_divergence.unwrap_or("NONE"))
+            .or_default() += 1;
+        *cache_dispositions
+            .entry(case.cache_disposition)
+            .or_default() += 1;
+        latency_us.push(case.latency_us);
+    }
+    for case in &no_field_cases {
+        *no_field_availability_counts
+            .entry(case.availability)
+            .or_default() += 1;
+        *no_field_class_counts.entry(case.class).or_default() += 1;
+        no_field_target_exact_l11 += usize::from(case.target_exact_l11);
+        no_field_target_exact_v13 += usize::from(case.target_exact_v13);
+        no_field_productive_hypothesis_covered += usize::from(case.productive_hypothesis_covered);
+        no_field_productive_exact_born += usize::from(case.productive_exact_born);
+        no_field_incomplete_provenance += usize::from(!case.provenance_complete);
+        let provenance_key = format!(
+            "l11_exact={};v13_exact={};v90_hypothesis={};v90_exact_born={}",
+            case.target_exact_l11,
+            case.target_exact_v13,
+            case.productive_hypothesis_covered,
+            case.productive_exact_born,
+        );
+        *no_field_provenance_buckets
+            .entry(provenance_key.clone())
+            .or_default() += 1;
+        *no_field_provenance_by_class
+            .entry(case.class)
+            .or_default()
+            .entry(provenance_key.clone())
+            .or_default() += 1;
+        *no_field_provenance_by_availability
+            .entry(case.availability)
+            .or_default()
+            .entry(provenance_key)
+            .or_default() += 1;
+        no_field_latency_us.push(case.latency_us);
+    }
+    latency_us.sort_unstable();
+    no_field_latency_us.sort_unstable();
+    let candidate_retention_failures = cases
+        .iter()
+        .filter(|case| case.retained_field_candidate_count != case.field_candidate_count)
+        .count();
+    let grounded_l11_losses = cases
+        .iter()
+        .map(|case| case.grounded_l11_loss_count)
+        .sum::<usize>();
+    let legacy_decision_parity_failures = cases
+        .iter()
+        .filter(|case| !case.legacy_decision_parity_exact)
+        .count();
+    let context_shaped_cases = cases
+        .iter()
+        .filter(|case| case.material_scope == "CONTEXT_SHAPED_OBSERVATION")
+        .count();
+    let complete_for_authority = cases
+        .iter()
+        .filter(|case| case.complete_for_authority)
+        .count();
+    let ready = status_counts.get("READY").copied().unwrap_or_default();
+    let field_producer_count = cases
+        .iter()
+        .map(|case| case.field_producer_count)
+        .sum::<u64>();
+    let no_field_unexpected_producers = no_field_cases
+        .iter()
+        .map(|case| case.field_producer_count)
+        .sum::<u64>();
+    let attempted_cases = cases
+        .len()
+        .saturating_add(no_field_cases.len())
+        .saturating_add(errors.len());
+    let mut attempt_identities = BTreeSet::<(&'static str, [u8; 32])>::new();
+    attempt_identities.extend(cases.iter().map(|case| (case.class, case.proof_identity)));
+    attempt_identities.extend(
+        no_field_cases
+            .iter()
+            .map(|case| (case.class, case.proof_identity)),
+    );
+    attempt_identities.extend(errors.iter().map(|case| (case.class, case.proof_identity)));
+    let unique_attempt_identities = attempt_identities.len();
+    let duplicate_attempt_identities = attempted_cases.saturating_sub(unique_attempt_identities);
+    let attempt_denominator_conserved = attempted_cases == expected_cases
+        && unique_attempt_identities == expected_cases
+        && duplicate_attempt_identities == 0;
+    let produced_field_identity_parity = field_producer_count == cases.len() as u64;
+    let scoped_pass = attempt_denominator_conserved
+        && errors.is_empty()
+        && !cases.is_empty()
+        && ready == cases.len()
+        && produced_field_identity_parity
+        && no_field_unexpected_producers == 0
+        && no_field_incomplete_provenance == 0
+        && candidate_retention_failures == 0
+        && grounded_l11_losses == 0
+        && legacy_decision_parity_failures == 0
+        && context_shaped_cases == cases.len()
+        && complete_for_authority == 0;
+    let production_field_coverage_complete = scoped_pass && no_field_cases.is_empty();
+    let overall_pass = scoped_pass && production_field_coverage_complete;
+    let slowest = cases.iter().max_by_key(|case| case.latency_us).map(|case| {
+        serde_json::json!({
+            "class": case.class,
+            "proof_identity": case.proof_identity,
+            "latency_us": case.latency_us,
+            "field_candidates": case.field_candidate_count,
+            "material_targets": case.material_target_count,
+            "l11_us": case.l11_us,
+            "productive_v90_us": case.productive_v90_us,
+            "bridge_total_us": case.bridge_total_us,
+        })
+    });
+    let failure_cases = cases
+        .iter()
+        .filter(|case| {
+            case.status != "READY"
+                || !case.unretained_field_candidate_surfaces.is_empty()
+                || !case.lost_grounded_l11_surfaces.is_empty()
+                || !case.legacy_decision_parity_exact
+        })
+        .map(|case| {
+            serde_json::json!({
+                "class": case.class,
+                "proof_identity": case.proof_identity,
+                "damaged_surface": case.damaged_surface,
+                "target_surface": case.target_surface,
+                "status": case.status,
+                "field_candidate_count": case.field_candidate_count,
+                "material_target_count": case.material_target_count,
+                "retained_field_candidate_count": case.retained_field_candidate_count,
+                "unretained_field_candidate_surfaces": case.unretained_field_candidate_surfaces,
+                "lost_grounded_l11_surfaces": case.lost_grounded_l11_surfaces,
+                "l11_us": case.l11_us,
+                "productive_v90_us": case.productive_v90_us,
+                "bridge_total_us": case.bridge_total_us,
+                "wall_us": case.latency_us,
+            })
+        })
+        .collect::<Vec<_>>();
+    let no_field_samples = no_field_cases
+        .iter()
+        .take(16)
+        .map(|case| {
+            serde_json::json!({
+                "class": case.class,
+                "proof_identity": case.proof_identity,
+                "damaged_surface": case.damaged_surface,
+                "target_surface": case.target_surface,
+                "availability": case.availability,
+                "cache_disposition": case.cache_disposition,
+                "l11_us": case.l11_us,
+                "productive_v90_us": case.productive_v90_us,
+                "bridge_total_us": case.bridge_total_us,
+                "wall_us": case.latency_us,
+                "target_provenance": {
+                    "l11_exact_support": case.target_exact_l11,
+                    "v13_exact_support": case.target_exact_v13,
+                    "productive_hypothesis_covered": case.productive_hypothesis_covered,
+                    "productive_exact_born": case.productive_exact_born,
+                    "complete": case.provenance_complete,
+                },
+            })
+        })
+        .collect::<Vec<_>>();
+    let no_field_records = no_field_cases
+        .iter()
+        .map(|case| {
+            serde_json::json!({
+                "class": case.class,
+                "proof_identity": case.proof_identity,
+                "damaged_surface": case.damaged_surface,
+                "target_surface": case.target_surface,
+                "availability": case.availability,
+                "target_provenance": {
+                    "l11_exact_support": case.target_exact_l11,
+                    "v13_exact_support": case.target_exact_v13,
+                    "productive_hypothesis_covered": case.productive_hypothesis_covered,
+                    "productive_exact_born": case.productive_exact_born,
+                    "complete": case.provenance_complete,
+                },
+            })
+        })
+        .collect::<Vec<_>>();
+    let verdict = if scoped_pass {
+        if production_field_coverage_complete {
+            "PASS_SLICE8B_PRODUCED_FIELD_COMPARATOR_COVERAGE_COMPLETE"
+        } else {
+            "PASS_SLICE8B_PRODUCED_FIELD_COMPARATOR_UPSTREAM_COVERAGE_OPEN"
+        }
+    } else {
+        "FAIL_SLICE8B_PRODUCED_FIELD_COMPARATOR"
+    };
+    let production_field_coverage_verdict = if production_field_coverage_complete {
+        "PASS_COMPLETE"
+    } else {
+        "FAIL_UPSTREAM_NO_FIELD"
+    };
+    let mut summary = serde_json::Map::new();
+    for section in [
+        serde_json::json!({
+            "schema": "lay.live-cohort-compare-shadow.v3",
+            "enabled": true,
+            "verdict": verdict,
+            "pass": scoped_pass,
+            "scoped_comparator_pass": scoped_pass,
+            "overall_pass": overall_pass,
+            "promotion_eligible": false,
+            "expected_cases": expected_cases,
+            "attempted_cases": attempted_cases,
+            "unique_attempt_identities": unique_attempt_identities,
+            "duplicate_attempt_identities": duplicate_attempt_identities,
+            "attempt_denominator_conserved": attempt_denominator_conserved,
+            "cases": cases.len(),
+            "produced_field_cases": cases.len(),
+            "no_field_cases": no_field_cases.len(),
+            "error_cases": errors.len(),
+            "errors": errors,
+        }),
+        serde_json::json!({
+            "status_counts": status_counts,
+            "material_scope_counts": material_scope_counts,
+            "legacy_verdict_counts": legacy_verdict_counts,
+            "cohort_verdict_counts": cohort_verdict_counts,
+            "first_divergence_counts": divergence_counts,
+            "cache_dispositions": cache_dispositions,
+            "field_producer_count": field_producer_count,
+            "produced_field_identity_parity": produced_field_identity_parity,
+            "no_field_unexpected_producers": no_field_unexpected_producers,
+            "production_field_coverage_complete": production_field_coverage_complete,
+            "production_field_coverage_verdict": production_field_coverage_verdict,
+            "no_field_availability_counts": no_field_availability_counts,
+            "no_field_class_counts": no_field_class_counts,
+            "no_field_samples": no_field_samples,
+            "no_field_provenance": {
+                "records": no_field_records.len(),
+                "incomplete_records": no_field_incomplete_provenance,
+                "target_exact_l11": no_field_target_exact_l11,
+                "target_absent_l11": no_field_cases.len().saturating_sub(no_field_target_exact_l11),
+                "target_exact_v13": no_field_target_exact_v13,
+                "target_absent_v13": no_field_cases.len().saturating_sub(no_field_target_exact_v13),
+                "productive_hypothesis_covered": no_field_productive_hypothesis_covered,
+                "productive_hypothesis_absent": no_field_cases.len().saturating_sub(no_field_productive_hypothesis_covered),
+                "productive_exact_born": no_field_productive_exact_born,
+                "productive_exact_not_born": no_field_cases.len().saturating_sub(no_field_productive_exact_born),
+                "joint_buckets": no_field_provenance_buckets,
+                "by_damage_class": no_field_provenance_by_class,
+                "by_availability": no_field_provenance_by_availability,
+            },
+            "no_field_records": no_field_records,
+        }),
+        serde_json::json!({
+            "candidate_retention_failures": candidate_retention_failures,
+            "grounded_l11_losses": grounded_l11_losses,
+            "legacy_decision_parity_failures": legacy_decision_parity_failures,
+            "context_shaped_cases": context_shaped_cases,
+            "complete_for_authority": complete_for_authority,
+            "failure_cases": failure_cases,
+            "preload": {
+                "status": "READY_BEFORE_TIMED_WORKERS",
+                "elapsed_us": preload_us,
+                "scope": "canonical L2 and Productive V90 package admission outside queue-inclusive request latency",
+            },
+            "latency": {
+                "scope": "queue-inclusive produced-field bridge call with L1.1 service, cache and comparator",
+                "p50_us": percentile(&latency_us, 50),
+                "p95_us": percentile(&latency_us, 95),
+                "p99_us": percentile(&latency_us, 99),
+                "maximum_us": latency_us.last().copied().unwrap_or_default(),
+                "slowest": slowest,
+            },
+            "no_field_latency": {
+                "scope": "queue-inclusive production bridge call that returned no canonical field",
+                "p50_us": percentile(&no_field_latency_us, 50),
+                "p95_us": percentile(&no_field_latency_us, 95),
+                "p99_us": percentile(&no_field_latency_us, 99),
+                "maximum_us": no_field_latency_us.last().copied().unwrap_or_default(),
+            },
+            "runtime_authority_changed": false,
+        }),
+    ] {
+        let serde_json::Value::Object(section) = section else {
+            unreachable!("live cohort summary section must be a JSON object");
+        };
+        for (key, value) in section {
+            assert!(
+                summary.insert(key.clone(), value).is_none(),
+                "duplicate live cohort summary key: {key}"
+            );
+        }
+    }
+    serde_json::Value::Object(summary)
 }
 
 struct CaseResultV1 {
@@ -3342,6 +4136,7 @@ struct CaseResultV1 {
     candidate_surfaces: Vec<String>,
     candidate_diagnostics: Vec<serde_json::Value>,
     material_frame: Option<Result<MaterialFrameCaseV1, String>>,
+    live_cohort_compare: Option<Result<LiveCohortProofOutcomeV1, String>>,
 }
 
 fn case_targets_and_frozen_entry<'a>(
@@ -3465,6 +4260,9 @@ fn evaluate_case(
             material_package_tuple,
         )
     });
+    let mut live_cohort_compare = (case.cohort == ProofCohortV1::LemmaHeldout
+        && std::env::var_os("LAY_PRODUCTIVE_LIVE_COHORT_COMPARE_PROOF").is_some())
+    .then(|| evaluate_live_cohort_compare_case(case));
     let mut scene = case.event.scene.clone();
     scene.current_token = case.damaged_surface.clone();
     scene.current_normalized_scalars = case.damaged_surface.chars().map(u32::from).collect();
@@ -3573,6 +4371,17 @@ fn evaluate_case(
         .any(|candidate| candidate_is_target(candidate, &targets));
     if target_probe.exact_post_surface_basin_bound != target_exact_born {
         return Err("productive target probe disagrees with final basin birth".to_string());
+    }
+    if let Some(Ok(LiveCohortProofOutcomeV1::NoField(no_field))) = live_cohort_compare.as_mut() {
+        let exact_l11 = exact_l11.as_ref().ok_or_else(|| {
+            "live cohort NoField provenance requires the exact L1.1 surface index".to_string()
+        })?;
+        no_field.bind_target_provenance(
+            exact_l11,
+            canonical_l2,
+            hypothesis_covered,
+            target_exact_born,
+        )?;
     }
     let target_top16 = readout
         .candidates
@@ -3688,6 +4497,7 @@ fn evaluate_case(
             })
             .collect(),
         material_frame,
+        live_cohort_compare,
     })
 }
 
@@ -4758,5 +5568,134 @@ mod frozen_proof_generation_tests {
         assert_eq!(summary["aggregate_exact"], false);
         assert_eq!(summary["complete"], false);
         assert_eq!(summary["verdict"], "INCOMPLETE_NOT_A_BUDGET");
+    }
+
+    fn produced_field_case(id: u8) -> LiveCohortCompareCaseV1 {
+        LiveCohortCompareCaseV1 {
+            class: "measurement_fixture",
+            proof_identity: [id; 32],
+            damaged_surface: "source".to_string(),
+            target_surface: "target".to_string(),
+            status: "READY",
+            material_scope: "CONTEXT_SHAPED_OBSERVATION",
+            legacy_kind: "ABSTAIN",
+            cohort_kind: "ABSTAIN",
+            first_divergence: None,
+            field_candidate_count: 1,
+            material_target_count: 1,
+            retained_field_candidate_count: 1,
+            grounded_l11_loss_count: 0,
+            unretained_field_candidate_surfaces: Vec::new(),
+            lost_grounded_l11_surfaces: Vec::new(),
+            complete_for_authority: false,
+            legacy_decision_parity_exact: true,
+            field_producer_count: 1,
+            cache_disposition: "produced",
+            l11_us: 1,
+            productive_v90_us: 1,
+            bridge_total_us: 2,
+            latency_us: 3,
+        }
+    }
+
+    fn no_field_case(id: u8) -> LiveCohortNoFieldCaseV1 {
+        LiveCohortNoFieldCaseV1 {
+            class: "measurement_fixture",
+            proof_identity: [id; 32],
+            damaged_surface: "source".to_string(),
+            target_surface: "target".to_string(),
+            availability: "EMPTY_L11_LATTICE",
+            field_producer_count: 0,
+            cache_disposition: "not_requested",
+            l11_us: 1,
+            productive_v90_us: 0,
+            bridge_total_us: 1,
+            latency_us: 2,
+            target_exact_l11: false,
+            target_exact_v13: true,
+            productive_hypothesis_covered: true,
+            productive_exact_born: true,
+            provenance_complete: true,
+        }
+    }
+
+    #[test]
+    fn live_cohort_summary_conserves_attempts_without_hiding_no_field_coverage() {
+        let mut no_field = no_field_case(1);
+        no_field.class = "second_measurement_fixture";
+        let summary = summarize_live_cohort_compare_shadow(
+            vec![produced_field_case(1)],
+            vec![no_field],
+            Vec::new(),
+            2,
+            true,
+            7,
+        );
+
+        assert_eq!(summary["attempted_cases"], 2);
+        assert_eq!(summary["unique_attempt_identities"], 2);
+        assert_eq!(summary["attempt_denominator_conserved"], true);
+        assert_eq!(summary["produced_field_cases"], 1);
+        assert_eq!(summary["no_field_cases"], 1);
+        assert_eq!(summary["status_counts"]["READY"], 1);
+        assert_eq!(summary["no_field_provenance"]["records"], 1);
+        assert_eq!(summary["no_field_provenance"]["incomplete_records"], 0);
+        assert_eq!(summary["no_field_provenance"]["target_absent_l11"], 1);
+        assert_eq!(summary["no_field_provenance"]["target_exact_v13"], 1);
+        assert_eq!(summary["no_field_records"].as_array().unwrap().len(), 1);
+        assert_eq!(summary["scoped_comparator_pass"], true);
+        assert_eq!(summary["overall_pass"], false);
+        assert_eq!(summary["promotion_eligible"], false);
+    }
+
+    #[test]
+    fn live_cohort_summary_rejects_duplicate_or_error_outcomes() {
+        let duplicate = summarize_live_cohort_compare_shadow(
+            vec![produced_field_case(1)],
+            vec![no_field_case(1)],
+            Vec::new(),
+            2,
+            true,
+            7,
+        );
+        assert_eq!(duplicate["attempt_denominator_conserved"], false);
+        assert_eq!(duplicate["scoped_comparator_pass"], false);
+
+        let error = summarize_live_cohort_compare_shadow(
+            vec![produced_field_case(1)],
+            Vec::new(),
+            vec![LiveCohortCompareErrorV1 {
+                class: "measurement_fixture",
+                proof_identity: [2; 32],
+                damaged_surface: "source".to_string(),
+                target_surface: "target".to_string(),
+                error: "transient source unavailable".to_string(),
+            }],
+            2,
+            true,
+            7,
+        );
+        assert_eq!(error["attempt_denominator_conserved"], true);
+        assert_eq!(error["error_cases"], 1);
+        assert_eq!(error["scoped_comparator_pass"], false);
+    }
+
+    #[test]
+    fn live_cohort_summary_rejects_incomplete_no_field_provenance() {
+        let mut no_field = no_field_case(2);
+        no_field.provenance_complete = false;
+        let summary = summarize_live_cohort_compare_shadow(
+            vec![produced_field_case(1)],
+            vec![no_field],
+            Vec::new(),
+            2,
+            true,
+            7,
+        );
+
+        assert_eq!(summary["attempt_denominator_conserved"], true);
+        assert_eq!(summary["no_field_provenance"]["incomplete_records"], 1);
+        assert_eq!(summary["scoped_comparator_pass"], false);
+        assert_eq!(summary["promotion_eligible"], false);
     }
 }

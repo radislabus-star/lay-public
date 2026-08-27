@@ -1,0 +1,40 @@
+{
+  "schema": "lay.v10.hardware-b0b-local-index.v1",
+  "task_id": "slice8b-v10-hardware-b0-b2-v3-20260824",
+  "recorded_at": "2026-08-25T00:23:34+03:00",
+  "state": "B0B_PASS_SCHEDULE_SEALED",
+  "remote_receipt": {
+    "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/SCHEDULE_CLOSURE.json",
+    "size_bytes": 1142,
+    "sha256": "e162c301cb3fa0c557a66689275c558ea9bcba57480d0eccdbb0cfd4003a9b0f"
+  },
+  "publication": {
+    "root_mode": "0555",
+    "writable_objects": 0,
+    "schedule_sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78",
+    "entries": 382,
+    "unique_composite_identities": 382,
+    "target_fields_present": false
+  },
+  "bindings": {
+    "b0a_closure_sha256": "48176ec6faae86f43ddda8404542367be5b6c9d6813762dedb829b4946593eb3",
+    "v7_sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+    "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+    "diagnostic_executable_sha256": "f7bcee37d5dffd583577d66c982c2a28072889b8aac2ccbed22612aa6d4feb09",
+    "diagnostic_executable_build_id": "9829fb05f34bd353877fb6d71f1f8523e084af55",
+    "phase7d_semantics_sha256": "d983d16169c7526d56e9f78299524ab80d3d4f3e67ff19770f07a7ae6e61045d"
+  },
+  "execution": {
+    "code_executed_by_b0b": false,
+    "build_executed_by_b0b": false,
+    "perf_executable_invocations": 0,
+    "pmu_measurements": 0,
+    "b1_started": false,
+    "later_gates_admitted": false
+  },
+  "decision": {
+    "next_permitted_transition": "B1 environment observation and admission",
+    "b3_parity_b5_b6_v12_admitted": false,
+    "runtime_authority_changed": false
+  }
+}

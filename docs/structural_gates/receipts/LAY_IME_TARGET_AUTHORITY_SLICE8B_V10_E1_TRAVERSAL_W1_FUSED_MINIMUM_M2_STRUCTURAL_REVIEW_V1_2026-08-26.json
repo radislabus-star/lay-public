@@ -1,0 +1,76 @@
+{
+  "all_routes_pass": true,
+  "authority_ready": false,
+  "code_admitted": false,
+  "initial_repairs": [
+    {
+      "final_status": "REPAIRED",
+      "initial_verdict": "VETO",
+      "reason": "build, parity, measurement and decision owners shared one worksheet group",
+      "repair": "split exact groups by decision owner",
+      "route": "experiment"
+    },
+    {
+      "final_status": "REPAIRED",
+      "initial_verdict": "VETO",
+      "reason": "production, positive, rejection, failure and claim owners shared one worksheet group",
+      "repair": "split exact groups by authority owner",
+      "route": "boundary"
+    }
+  ],
+  "next_action_admitted": "implementation preflight only; no source, Cargo, perf, subject, marker, remote or runtime action",
+  "paper": {
+    "mode": "0444",
+    "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_V1_2026-08-26.md",
+    "sha256": "1947f11e4662a8fb37b25bc851a6813f2ebe6ff45d2a8d653b552012dbe7db82",
+    "size_bytes": 11640
+  },
+  "routes": [
+    {
+      "authority_ready": false,
+      "complexity_score": 27,
+      "conflicts": 0,
+      "evidence_gaps": 0,
+      "id": "evidence",
+      "mode": "0444",
+      "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_V1_ROUTE_A_EVIDENCE.md",
+      "sha256": "ae8c73aabebaf3a88b21b790f27ef43362f24849e94e8b8db1b8e89f0361d371",
+      "size_bytes": 2643,
+      "stable_triads": 5,
+      "verdict": "PASS",
+      "weak_triads": 0
+    },
+    {
+      "authority_ready": false,
+      "complexity_score": 28,
+      "conflicts": 0,
+      "evidence_gaps": 0,
+      "id": "experiment",
+      "mode": "0444",
+      "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_V1_ROUTE_B_EXPERIMENT.md",
+      "sha256": "af528843d0035939862727326c79fd1858dd972e1ba25938fd10b15e3f7c924d",
+      "size_bytes": 2642,
+      "stable_triads": 5,
+      "verdict": "PASS",
+      "weak_triads": 0
+    },
+    {
+      "authority_ready": false,
+      "complexity_score": 28,
+      "conflicts": 0,
+      "evidence_gaps": 0,
+      "id": "boundary",
+      "mode": "0444",
+      "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_V1_ROUTE_C_BOUNDARY.md",
+      "sha256": "f56174c40e02f5bd3614be618667da384975c82fb73ec5514e1c1f2efd94ef28",
+      "size_bytes": 2749,
+      "stable_triads": 5,
+      "verdict": "PASS",
+      "weak_triads": 0
+    }
+  ],
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.e1-traversal-w1-fused-minimum-m2-structural-review.v1",
+  "task_id": "slice8b-v10-e1-traversal-w1-fused-minimum-m2-v1-20260826",
+  "verdict": "STRUCTURALLY_ACCEPTED_WITH_SPLIT"
+}

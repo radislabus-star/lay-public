@@ -1,0 +1,31 @@
+{
+  "schema": "lay.v10.hardware-b0a-attempt-blocked.v1",
+  "task_id": "slice8b-v10-hardware-b0-b2-v3-20260824",
+  "attempt": 1,
+  "observed_at": "2026-08-24T23:27:36+03:00",
+  "verdict": "B0A_FAILED_BUILD_UNUSED",
+  "failure": {
+    "owner": "local B0a dispatcher",
+    "operation": "read-only remote identity probe",
+    "class": "SSH_REMOTE_ARGV_QUOTING_DEFECT",
+    "detail": "ssh joined a multiline python -c argument into the remote shell command without argument quoting; remote Python returned Argument expected for the -c option",
+    "remote_python_started": false,
+    "remote_probe_completed": false
+  },
+  "post_failure_audit": {
+    "remote_provenance_root_exists": false,
+    "remote_state_root_exists": false,
+    "remote_staging_paths": 0,
+    "build_marker_created": false,
+    "build_marker_consumed": false,
+    "freezer_marker_created": false,
+    "cargo_or_rustc_processes": 0,
+    "perf_processes": 0,
+    "diagnostic_executable_processes": 0,
+    "remote_filesystem_writes_by_b0a": 0
+  },
+  "next_action": "paper correction and independently named implementation preflight before changing or rerunning the controller",
+  "later_gates_admitted": false,
+  "runtime_authority_changed": false,
+  "installed_lay_changed": false
+}

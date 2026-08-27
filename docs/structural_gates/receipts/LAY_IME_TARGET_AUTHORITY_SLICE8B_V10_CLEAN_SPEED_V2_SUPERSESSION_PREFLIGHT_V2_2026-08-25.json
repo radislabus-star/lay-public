@@ -1,0 +1,175 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "clean-v2-controller",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-hardware-clean.py",
+      "sha256": "10167af258b0412582b17667deb41f14594b5ec12dd88f3aba12094d707383a5",
+      "size_bytes": 19253
+    },
+    {
+      "exists": true,
+      "id": "clean-v2-preflight-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_2026-08-25.json",
+      "sha256": "181047ea6b448767a6ff1f66afc1c04e6d9b14062deb395c687d3f5fb2b7632a",
+      "size_bytes": 11474
+    },
+    {
+      "exists": true,
+      "id": "clean-v2-preflight-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_PREFLIGHT_V2_2026-08-25.json",
+      "sha256": "c69302a79844a6d8a60f26bfcd95135c9ab153ac19af91dcc5ac98494a6227a1",
+      "size_bytes": 4371
+    },
+    {
+      "exists": true,
+      "id": "clean-v2-prepared-receipt",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_PREPARED_V2_2026-08-25.json",
+      "sha256": "9889209d5a62ebda7e8b5509bac05a8fb4a7c9dd64e67a4a76ce607629ca7ea9",
+      "size_bytes": 9165
+    },
+    {
+      "exists": true,
+      "id": "c1-order-correction",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_ORDER_CORRECTION_V1_2026-08-25.md",
+      "sha256": "6cfa8c1156bde7cede5320f6924d3eb5c0e179907c08e82e2121885d7517f406",
+      "size_bytes": 4375
+    },
+    {
+      "exists": true,
+      "id": "c1-direct-latency-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRECT_LATENCY_CONTRACT_V1_2026-08-25.md",
+      "sha256": "1a35eeb0f5bb1e83e6785750a3a3857805bc62c93bc25d88d450874ae9f3f3d6",
+      "size_bytes": 14667
+    },
+    {
+      "exists": true,
+      "id": "c1-structural-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_ROUTE_V1_2026-08-25/HIERARCHICAL_RECEIPT.json",
+      "sha256": "d85d413d81e14b93f3de77b7e598bb766fb3fdd69519a1e225e5a3e2f7f69925",
+      "size_bytes": 26573
+    },
+    {
+      "exists": true,
+      "id": "remote-absence-audit",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_SUPERSESSION_REMOTE_AUDIT_V1_2026-08-25.json",
+      "sha256": "2d196b500cdd26acb25514e2fa90b0b7159566d22a3613c7e9b5fee652a2997d",
+      "size_bytes": 733
+    },
+    {
+      "exists": true,
+      "id": "supersession-v1-blocked-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_SUPERSESSION_V1_2026-08-25.json",
+      "sha256": "5b6e599e03c59d027bbbde5410ddf9d193bef85bae44b18e6962e6c091c12db9",
+      "size_bytes": 21104
+    },
+    {
+      "exists": true,
+      "id": "supersession-v1-blocked-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_SUPERSESSION_PREFLIGHT_V1_2026-08-25.json",
+      "sha256": "75528407945c41abc21f49a9523245cd90d90514718e73776e148ea2d541ac5c",
+      "size_bytes": 7131
+    },
+    {
+      "exists": true,
+      "id": "active-v11-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+      "size_bytes": 124127
+    },
+    {
+      "exists": false,
+      "id": "supersession-controller-before-implementation",
+      "kind": "absent",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-c1-supersede-clean-v2.py"
+    },
+    {
+      "exists": false,
+      "id": "supersession-local-receipt-before-publication",
+      "kind": "absent",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_SUPERSESSION_V1_2026-08-25.json"
+    },
+    {
+      "exists": false,
+      "id": "c1-implementation-preflight-before-supersession",
+      "kind": "absent",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_V1_2026-08-25.json"
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 14,
+    "forbidden_side_effect_kinds": [
+      "adaptive_retry",
+      "b_matrix_execution",
+      "c1_build",
+      "c1_latency_execution",
+      "c1_parity_execution",
+      "cargo_build_check_test",
+      "clean_v2_controller_mutation",
+      "clean_v2_final_result_creation",
+      "clean_v2_subject_execution",
+      "foreign_process_or_service_control",
+      "generated_traffic",
+      "host_tuning",
+      "installed_lay_mutation",
+      "old_evidence_deletion_or_mutation",
+      "perf_or_pmu",
+      "remote_provenance_output_creation",
+      "runtime_deployment_or_restart",
+      "rustc_compilation",
+      "supersession_state_removal_or_rollback",
+      "synthetic_fixture",
+      "v12_action"
+    ],
+    "identity_contracts": 3,
+    "invariants": 6,
+    "planned_side_effect_kinds": [
+      "documentation_edit",
+      "local_evidence_write",
+      "local_source_edit",
+      "local_temporary_test",
+      "remote_evidence_write",
+      "remote_fail_closed_state_write",
+      "remote_read_only_observation"
+    ],
+    "preserved_artifacts": 9,
+    "runtime_comparisons": 0,
+    "source_checks": 0,
+    "tests": 21
+  },
+  "manifest_sha256": "446600b19ae00f302f262194f756cf1e368c7e07867f02a7be6433b23d371c26",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [],
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_SUPERSESSION_V1_2026-08-25",
+  "verdict": "READY_TO_IMPLEMENT"
+}

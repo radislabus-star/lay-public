@@ -201,6 +201,7 @@ fn resolve_with_route(
 ) -> CorrectionResolution {
     resolve_text_correction(CorrectionRequest {
         text,
+        lexical_authority_frame: None,
         auto_replace: true,
         typing_assist: true,
         auto_switch_layout: true,

@@ -1,0 +1,67 @@
+{
+  "assembled_source": {
+    "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+    "sha256": "b2b44ed1b42e79dcdb9b7dcfb2753eec547fa7d1e26b5fb63772a706f786ccd5",
+    "size_bytes": 247640
+  },
+  "cargo": {
+    "argv": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--offline",
+      "--locked",
+      "--release",
+      "--lib",
+      "--no-run",
+      "nanda_wave::l2_field::v13_typed_peak::tests::v10_m2_fused_minimum_physical"
+    ],
+    "exit_code": 0,
+    "invocations": 1,
+    "version": "cargo 1.97.1 (c980f4866 2026-06-30)"
+  },
+  "disposable_elf": {
+    "executed": false,
+    "promotable_to_scientific_route": false,
+    "retained": false,
+    "sha256_before_cleanup": "fd8ec347e5cca929c5ef2facddbfd816ba65b407340360833a930c7761a63f04",
+    "size_bytes_before_cleanup": 20866960
+  },
+  "disposable_tree_present_after_cleanup": false,
+  "fragment": {
+    "d1_prefix_sha256": "bbd8b8d318810eec721812f21efbeb5f231dacba774cb5ade854e2201c6c7665",
+    "old_m2_sha256": "b0a775420edf9e9d6e7f0b59f9ad840e4822cd0fdd0adc2429ea22a3e9e3a175",
+    "sha256": "a6ea388d5d76f8223511fd4822cff2df9fd0c3394fc200f4fc52db956522ce5b",
+    "size_bytes": 156122
+  },
+  "input_closure": {
+    "cargo_guard_sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe",
+    "cargo_lock_sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1",
+    "cargo_toml_sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b",
+    "source_closure": "read-only copy of sealed remote surviving-source-closure"
+  },
+  "markers_consumed": 0,
+  "markers_created": 0,
+  "old_m2": {
+    "cargo_log_sha256": "60d80d86a68aa671ff419f1b9e242527b87b93981e029a7b27aeccd5c4a53c7b",
+    "terminal_receipt_sha256": "21c2098f7c457c4939d6aef2b36e13ed895f7e8f77e040d8b99950f5db2cf85c",
+    "verdict": "BLOCKED_BUILD"
+  },
+  "perf_record_invocations": 0,
+  "perf_stat_invocations": 0,
+  "pmu_events": 0,
+  "remote_m2r1_namespace_created": false,
+  "runtime_authority_changed": false,
+  "rustc": {
+    "commit_hash": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+    "host": "x86_64-unknown-linux-gnu",
+    "llvm": "22.1.6",
+    "release": "1.97.1"
+  },
+  "schema": "lay.v10.e1-traversal-w1-fused-minimum-m2r1-local-compile-proof.v1",
+  "scientific_evidence": false,
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-w1-fused-minimum-m2r1-v1-20260827",
+  "transaction_id": "2dae728a39aecd422995828674d12e311ab6362ebab4013c4f2520b3f6933c5f",
+  "v10_source_sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c",
+  "verdict": "M2R1_LOCAL_COMPILE_PROOF_PASS"
+}

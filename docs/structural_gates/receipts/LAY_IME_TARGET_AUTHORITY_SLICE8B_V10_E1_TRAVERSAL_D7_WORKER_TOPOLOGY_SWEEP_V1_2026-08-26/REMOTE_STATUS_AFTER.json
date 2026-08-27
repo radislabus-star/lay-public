@@ -1,0 +1,267 @@
+{
+  "active_d7_processes": [],
+  "build_exists": true,
+  "build_failure_exists": false,
+  "build_failure_manifest_files_verified": null,
+  "build_manifest_files_verified": 17,
+  "decision_sha256": "90790c275adbaa08b8c95c32ddd8b9217b0bdf760f52c846fbcf8b1f6477a35a",
+  "decision_verdict": "D7_WORKER_TOPOLOGY_SWEEP_CREATED_UNAUDITED",
+  "host": {
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441"
+  },
+  "inventory": {
+    "available": [],
+    "consumed": [
+      "build.consumed-before-exec",
+      "parity.consumed-before-exec",
+      "w1.consumed-before-exec",
+      "w12.consumed-before-exec",
+      "w14.consumed-before-exec",
+      "w20.consumed-before-exec",
+      "w6.consumed-before-exec"
+    ]
+  },
+  "marker_rows": {
+    "W1": {
+      "mode": "0400",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/markers/w1.consumed-before-exec",
+      "payload_exact": true,
+      "sha256": "f97536385b7a4d3670584b6129776f33d54b4957aa8779400b2c3c3f9a24eb47",
+      "size_bytes": 242
+    },
+    "W12": {
+      "mode": "0400",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/markers/w12.consumed-before-exec",
+      "payload_exact": true,
+      "sha256": "7a5dea250b26f5d48d928b2453024ef03f2b01329edd2384a7356c3d8f817ebb",
+      "size_bytes": 243
+    },
+    "W14": {
+      "mode": "0400",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/markers/w14.consumed-before-exec",
+      "payload_exact": true,
+      "sha256": "b98f80062168e6c1e24d7fcd597944847ea7c49759c64273321c80441a4a10d6",
+      "size_bytes": 243
+    },
+    "W20": {
+      "mode": "0400",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/markers/w20.consumed-before-exec",
+      "payload_exact": true,
+      "sha256": "d4c11758c906c51b6d4eba176306aa16c060d4aaeffa57ab7b19100a8fb89582",
+      "size_bytes": 243
+    },
+    "W6": {
+      "mode": "0400",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/markers/w6.consumed-before-exec",
+      "payload_exact": true,
+      "sha256": "0e199a378e12f8e11f3dd8427134e44bd98d673256b9c7f20a0aa0f40821f770",
+      "size_bytes": 242
+    },
+    "build": {
+      "mode": "0400",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/markers/build.consumed-before-exec",
+      "payload_exact": true,
+      "sha256": "9fe40a4938ab7b37c12831309aca66304d707433633c19e7bb3dc9940db9836d",
+      "size_bytes": 245
+    },
+    "parity": {
+      "mode": "0400",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/markers/parity.consumed-before-exec",
+      "payload_exact": true,
+      "sha256": "0a43e9d69aa0ac015ce3c05d05913654f7208cbdb3c4a444b01db935702c8963",
+      "size_bytes": 246
+    }
+  },
+  "parent_exists": true,
+  "remote_writes": 0,
+  "result_exists": true,
+  "result_manifest_files_verified": 62,
+  "route_lock": {
+    "mode": "0400",
+    "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/route.lock",
+    "sha256": "e1396a17c4fb27f33b83bb0e649abb2de96c2c9c9f36bd00ea2714e31788b198",
+    "size_bytes": 3
+  },
+  "runtime": {
+    "global_ibus_pid": null,
+    "installed_lay_hashes": {},
+    "managed_lay_process_ids": []
+  },
+  "schema": "lay.v10.e1-traversal-d7-remote-status.v1",
+  "state_exists": true,
+  "state_files": [
+    {
+      "mode": "0444",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/STATE-00-ALL_MARKERS_AVAILABLE.json",
+      "sha256": "a98221aea1f60a38ab906fa7ccb0d83e6ea072b5980a5f3726da6fac04d4e888",
+      "size_bytes": 561
+    },
+    {
+      "mode": "0444",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/STATE-01-BUILD_CREATED.json",
+      "sha256": "3a3ba91c36b81709456a4cea9bfe0858e29a208891b55a91622e69f17815754b",
+      "size_bytes": 640
+    },
+    {
+      "mode": "0444",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/STATE-02-PARITY_PASS.json",
+      "sha256": "06b1b0ee412381551bf80aa2b9f22381862924c47bce8a561ff79932da429d41",
+      "size_bytes": 647
+    },
+    {
+      "mode": "0444",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/STATE-03-W1_PASS.json",
+      "sha256": "7fdd126a275814c6f9f8765ad934286afd3686aebf5ec7a6a5b3d8b0e5cd572e",
+      "size_bytes": 653
+    },
+    {
+      "mode": "0444",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/STATE-04-W6_PASS.json",
+      "sha256": "1e91a536eba1cc43c92ce18fb05df9325e2cfb83c9fd75493349f56d92fbc0d5",
+      "size_bytes": 664
+    },
+    {
+      "mode": "0444",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/STATE-05-W12_PASS.json",
+      "sha256": "9cd5a7559e038bfb22160a50480bc307502b20463e0264ca0b51a10766d609bd",
+      "size_bytes": 676
+    },
+    {
+      "mode": "0444",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/STATE-06-W14_PASS.json",
+      "sha256": "89ef20b45e37fbe50164d4fec73579270ab3de57e0ecc79f22af5e0714c95e06",
+      "size_bytes": 687
+    },
+    {
+      "mode": "0444",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826/STATE-07-W20_PASS.json",
+      "sha256": "8632e3ca998e520d580f4e7de9f0eae9b9740bb91893a03b412cc7f82221cd1f",
+      "size_bytes": 694
+    }
+  ],
+  "task_id": "slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826",
+  "topology": {
+    "cpu_atom": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "cpu_core": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "online": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "thread_siblings": {
+      "0": [
+        0,
+        1
+      ],
+      "1": [
+        0,
+        1
+      ],
+      "10": [
+        10,
+        11
+      ],
+      "11": [
+        10,
+        11
+      ],
+      "12": [
+        12
+      ],
+      "13": [
+        13
+      ],
+      "14": [
+        14
+      ],
+      "15": [
+        15
+      ],
+      "16": [
+        16
+      ],
+      "17": [
+        17
+      ],
+      "18": [
+        18
+      ],
+      "19": [
+        19
+      ],
+      "2": [
+        2,
+        3
+      ],
+      "3": [
+        2,
+        3
+      ],
+      "4": [
+        4,
+        5
+      ],
+      "5": [
+        4,
+        5
+      ],
+      "6": [
+        6,
+        7
+      ],
+      "7": [
+        6,
+        7
+      ],
+      "8": [
+        8,
+        9
+      ],
+      "9": [
+        8,
+        9
+      ]
+    }
+  },
+  "transaction_id": "d0982f48bba3090a155713c32a73bbc71f7ef79a0f5fa1eccbea4423563102e0"
+}

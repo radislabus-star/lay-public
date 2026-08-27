@@ -1,0 +1,979 @@
+{
+  "verdict": "PASS",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "m3-final-materialization-diagnostic-v9-route-v2",
+  "domain": "general",
+  "complexity_score": 48,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.125,
+      "c2": 0.125,
+      "c3": 0.125,
+      "c4": 0.125,
+      "c5": 0.125,
+      "c6": 0.125,
+      "c7": 0.125,
+      "c8": 0.125
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 16,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.3707,
+      "c2": 0.3497,
+      "c3": 0.3511,
+      "c4": 0.3665,
+      "c5": 0.3343,
+      "c6": 0.3609,
+      "c7": 0.3497,
+      "c8": 0.3092
+    },
+    "source_self_score": 0.349,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "boundary": "boundary",
+      "evidence": "evidence",
+      "execution": "execution",
+      "history": "history",
+      "identity": "identity",
+      "semantics": "semantics",
+      "state": "state",
+      "terminal": "terminal"
+    },
+    "scores": {
+      "boundary": 1.0,
+      "evidence": 1.0,
+      "execution": 1.0,
+      "history": 1.0,
+      "identity": 1.0,
+      "semantics": 1.0,
+      "state": 1.0,
+      "terminal": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "boundary": 1,
+      "evidence": 1,
+      "execution": 1,
+      "history": 1,
+      "identity": 1,
+      "semantics": 1,
+      "state": 1,
+      "terminal": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.349,
+      "norm": 89.3532,
+      "triads": 8
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "boundary": "boundary",
+      "evidence": "evidence",
+      "execution": "execution",
+      "history": "history",
+      "identity": "identity",
+      "semantics": "semantics",
+      "state": "state",
+      "terminal": "terminal"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "evidence": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "history": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "identity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "semantics": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "state": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "evidence": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "history": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "identity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "semantics": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "state": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "boundary",
+        "exact_source_groups": [
+          "boundary"
+        ]
+      },
+      "evidence": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "evidence",
+        "exact_source_groups": [
+          "evidence"
+        ]
+      },
+      "execution": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "execution",
+        "exact_source_groups": [
+          "execution"
+        ]
+      },
+      "history": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "history",
+        "exact_source_groups": [
+          "history"
+        ]
+      },
+      "identity": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "identity",
+        "exact_source_groups": [
+          "identity"
+        ]
+      },
+      "semantics": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "semantics",
+        "exact_source_groups": [
+          "semantics"
+        ]
+      },
+      "state": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "state",
+        "exact_source_groups": [
+          "state"
+        ]
+      },
+      "terminal": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "terminal",
+        "exact_source_groups": [
+          "terminal"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "boundary": {
+        "boundary": 1.0,
+        "evidence": -0.0684,
+        "execution": -0.0371,
+        "history": 0.0195,
+        "identity": 0.0469,
+        "semantics": -0.0332,
+        "state": -0.0078,
+        "terminal": -0.0566
+      },
+      "evidence": {
+        "boundary": -0.0684,
+        "evidence": 1.0,
+        "execution": 0.0469,
+        "history": 0.0059,
+        "identity": 0.0332,
+        "semantics": 0.0039,
+        "state": -0.0098,
+        "terminal": 0.0117
+      },
+      "execution": {
+        "boundary": -0.0371,
+        "evidence": 0.0469,
+        "execution": 1.0,
+        "history": -0.0293,
+        "identity": 0.0293,
+        "semantics": -0.0156,
+        "state": 0.002,
+        "terminal": -0.0156
+      },
+      "history": {
+        "boundary": 0.0195,
+        "evidence": 0.0059,
+        "execution": -0.0293,
+        "history": 1.0,
+        "identity": -0.0078,
+        "semantics": -0.0332,
+        "state": 0.0234,
+        "terminal": 0.0566
+      },
+      "identity": {
+        "boundary": 0.0469,
+        "evidence": 0.0332,
+        "execution": 0.0293,
+        "history": -0.0078,
+        "identity": 1.0,
+        "semantics": 0.0098,
+        "state": -0.0664,
+        "terminal": -0.0684
+      },
+      "semantics": {
+        "boundary": -0.0332,
+        "evidence": 0.0039,
+        "execution": -0.0156,
+        "history": -0.0332,
+        "identity": 0.0098,
+        "semantics": 1.0,
+        "state": 0.0098,
+        "terminal": -0.0078
+      },
+      "state": {
+        "boundary": -0.0078,
+        "evidence": -0.0098,
+        "execution": 0.002,
+        "history": 0.0234,
+        "identity": -0.0664,
+        "semantics": 0.0098,
+        "state": 1.0,
+        "terminal": 0.0566
+      },
+      "terminal": {
+        "boundary": -0.0566,
+        "evidence": 0.0117,
+        "execution": -0.0156,
+        "history": 0.0566,
+        "identity": -0.0684,
+        "semantics": -0.0078,
+        "state": 0.0566,
+        "terminal": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "boundary": {
+          "gravity": 1.0,
+          "owner": "boundary",
+          "owners": {
+            "boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "evidence": {
+          "gravity": 1.0,
+          "owner": "evidence",
+          "owners": {
+            "evidence": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "execution": {
+          "gravity": 1.0,
+          "owner": "execution",
+          "owners": {
+            "execution": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "history": {
+          "gravity": 1.0,
+          "owner": "history",
+          "owners": {
+            "history": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "identity": {
+          "gravity": 1.0,
+          "owner": "identity",
+          "owners": {
+            "identity": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "semantics": {
+          "gravity": 1.0,
+          "owner": "v9 subject validator",
+          "owners": {
+            "v9 subject validator": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "state": {
+          "gravity": 1.0,
+          "owner": "state",
+          "owners": {
+            "state": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "terminal": {
+          "gravity": 1.0,
+          "owner": "terminal",
+          "owners": {
+            "terminal": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "boundary": {
+          "gravity": 1.0,
+          "owner": "boundary",
+          "owners": {
+            "boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "evidence": {
+          "gravity": 1.0,
+          "owner": "evidence",
+          "owners": {
+            "evidence": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "execution": {
+          "gravity": 1.0,
+          "owner": "execution",
+          "owners": {
+            "execution": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "history": {
+          "gravity": 1.0,
+          "owner": "history",
+          "owners": {
+            "history": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "identity": {
+          "gravity": 1.0,
+          "owner": "identity",
+          "owners": {
+            "identity": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "semantics": {
+          "gravity": 1.0,
+          "owner": "v9 subject validator",
+          "owners": {
+            "v9 subject validator": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "state": {
+          "gravity": 1.0,
+          "owner": "state",
+          "owners": {
+            "state": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "terminal": {
+          "gravity": 1.0,
+          "owner": "terminal",
+          "owners": {
+            "terminal": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "diagnostic-v9.md:249-272",
+            "explicit forbidden command graph"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "boundary"
+          ],
+          "scopes": [
+            "boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "evidence": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "anchored parser cardinality and ordinal tests",
+            "diagnostic-v9.md:128-172"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "evidence"
+          ],
+          "scopes": [
+            "evidence"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "execution": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "diagnostic-v9.md:101-126",
+            "reachable argv and environment registry"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "execution"
+          ],
+          "scopes": [
+            "execution"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "history": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "diagnostic-v9.md:36-54",
+            "exact terminal receipt and consumed marker checks"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "history"
+          ],
+          "scopes": [
+            "history"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "identity": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "diagnostic-v9.md:56-99",
+            "sha size mode build id and host checks"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "identity"
+          ],
+          "scopes": [
+            "identity"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "semantics": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "diagnostic-v9.md:174-192",
+            "receipt exit-pair and claim-boundary checks"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "v9 subject validator"
+          ],
+          "scopes": [
+            "semantics"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "state": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "diagnostic-v9.md:194-221",
+            "uid probe atomic rename and response-retention tests"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "state"
+          ],
+          "scopes": [
+            "state"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "terminal": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "diagnostic-v9.md:223-247",
+            "frozen priority table and complete predicates"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "terminal"
+          ],
+          "scopes": [
+            "terminal"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "evidence": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "history": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "identity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "semantics": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "state": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "boundary": {
+          "boundary": 1.0,
+          "evidence": -0.0684,
+          "execution": -0.0371,
+          "history": 0.0195,
+          "identity": 0.0469,
+          "semantics": -0.0332,
+          "state": -0.0078,
+          "terminal": -0.0566
+        },
+        "evidence": {
+          "boundary": -0.0684,
+          "evidence": 1.0,
+          "execution": 0.0469,
+          "history": 0.0059,
+          "identity": 0.0332,
+          "semantics": 0.0039,
+          "state": -0.0098,
+          "terminal": 0.0117
+        },
+        "execution": {
+          "boundary": -0.0371,
+          "evidence": 0.0469,
+          "execution": 1.0,
+          "history": -0.0293,
+          "identity": 0.0293,
+          "semantics": -0.0156,
+          "state": 0.002,
+          "terminal": -0.0156
+        },
+        "history": {
+          "boundary": 0.0195,
+          "evidence": 0.0059,
+          "execution": -0.0293,
+          "history": 1.0,
+          "identity": -0.0078,
+          "semantics": -0.0332,
+          "state": 0.0234,
+          "terminal": 0.0566
+        },
+        "identity": {
+          "boundary": 0.0469,
+          "evidence": 0.0332,
+          "execution": 0.0293,
+          "history": -0.0078,
+          "identity": 1.0,
+          "semantics": 0.0098,
+          "state": -0.0664,
+          "terminal": -0.0684
+        },
+        "semantics": {
+          "boundary": -0.0332,
+          "evidence": 0.0039,
+          "execution": -0.0156,
+          "history": -0.0332,
+          "identity": 0.0098,
+          "semantics": 1.0,
+          "state": 0.0098,
+          "terminal": -0.0078
+        },
+        "state": {
+          "boundary": -0.0078,
+          "evidence": -0.0098,
+          "execution": 0.002,
+          "history": 0.0234,
+          "identity": -0.0664,
+          "semantics": 0.0098,
+          "state": 1.0,
+          "terminal": 0.0566
+        },
+        "terminal": {
+          "boundary": -0.0566,
+          "evidence": 0.0117,
+          "execution": -0.0156,
+          "history": 0.0566,
+          "identity": -0.0684,
+          "semantics": -0.0078,
+          "state": 0.0566,
+          "terminal": 1.0
+        }
+      },
+      "source": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "evidence": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "history": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "identity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "semantics": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "state": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "boundary": 1,
+      "evidence": 1,
+      "execution": 1,
+      "history": 1,
+      "identity": 1,
+      "semantics": 1,
+      "state": 1,
+      "terminal": 1
+    },
+    "stable_groups": [
+      "boundary",
+      "evidence",
+      "execution",
+      "history",
+      "identity",
+      "semantics",
+      "state",
+      "terminal"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [],
+  "agent_decision": {
+    "action": "SAFE_TO_EDIT",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Proceed only within the checked route boundary.",
+    "repair_count": 0,
+    "repair_queue": [],
+    "safe_to_edit": true
+  },
+  "explanation": [
+    "Candidate structure is coherent with source triads.",
+    "Structural coherence only: trusted proof was not established and authority is false."
+  ],
+  "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+  "trace_path": "/tmp/nanda-structural-gate/m3-final-materialization-diagnostic-v9-route-v2.trace.json"
+}

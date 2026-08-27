@@ -388,6 +388,7 @@ fn restore_word(
     let completed = format!("{word} ");
     let resolution = correction_core::resolve_text_correction(correction_core::CorrectionRequest {
         text: &completed,
+        lexical_authority_frame: None,
         auto_replace: true,
         typing_assist: true,
         auto_switch_layout: true,
@@ -412,6 +413,7 @@ fn resolve_with_route(
 ) -> correction_core::CorrectionResolution {
     correction_core::resolve_text_correction(correction_core::CorrectionRequest {
         text,
+        lexical_authority_frame: None,
         auto_replace: true,
         typing_assist: true,
         auto_switch_layout: true,
@@ -535,6 +537,7 @@ fn print_nanda_explanation(
     }
     let resolution = correction_core::resolve_text_correction(correction_core::CorrectionRequest {
         text,
+        lexical_authority_frame: None,
         auto_replace: cfg.auto_replace,
         typing_assist: cfg.typing_assist,
         auto_switch_layout: cfg.auto_switch_layout,
@@ -571,6 +574,7 @@ fn print_correction_core_explanation(
 ) {
     let resolution = correction_core::resolve_text_correction(correction_core::CorrectionRequest {
         text,
+        lexical_authority_frame: None,
         auto_replace: cfg.auto_replace,
         typing_assist: cfg.typing_assist,
         auto_switch_layout: cfg.auto_switch_layout,

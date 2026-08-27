@@ -1,0 +1,53 @@
+{
+  "schema": "lay.v10.exact-fused-executor-e1.remote-preflight-audit.v1",
+  "recorded_at": "2026-08-25T14:23:55+03:00",
+  "host": {
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441"
+  },
+  "toolchain": {
+    "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)",
+    "rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
+    "rustc_commit": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+    "host": "x86_64-unknown-linux-gnu",
+    "llvm": "22.1.6",
+    "cargo_incremental": "0",
+    "cargo_net_offline": "true",
+    "rustflags": ""
+  },
+  "guard": {
+    "local_source": "scripts/cargo-guard.sh",
+    "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe",
+    "bytes": 2534,
+    "mode": "0755",
+    "required_remote_build_route": true
+  },
+  "new_namespaces": {
+    "remote_parent": "/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-executor-e1-20260825",
+    "remote_parent_state": "ABSENT",
+    "remote_state": "/home/e/.local/state/lay/slice8b-v10-exact-fused-executor-e1-20260825",
+    "remote_state_state": "ABSENT"
+  },
+  "sealed_inputs": {
+    "v13_package_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "sidecar_sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd",
+    "v7_sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+    "schedule_sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78"
+  },
+  "predecessor": {
+    "m1_verdict": "M1_PASS",
+    "m1_decision_sha256": "f75bdc6995bcdc8553b267ae43e511321bb34fe9d4d9acb14a610104356573a1",
+    "m1_manifest_sha256": "775ed5125eb541b54f2e8f9a911c688258d13089ff8bbb629938395f1dbe2f94",
+    "m1_runtime_authority_changed": false
+  },
+  "executed": {
+    "cargo_build_check_test": false,
+    "rustc_compilation": false,
+    "e1_subject": false,
+    "perf_or_pmu": false,
+    "loaded_latency": false
+  },
+  "loaded_host_is_build_blocker": false,
+  "runtime_authority_changed": false,
+  "verdict": "REMOTE_INPUTS_READY_UNRUN"
+}

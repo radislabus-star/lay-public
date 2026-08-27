@@ -1,0 +1,107 @@
+{
+  "schema": "lay.v10.c1-readiness.v1",
+  "task_id": "slice8b-v10-c1-direct-latency-v1-20260825",
+  "observed_at_start": "2026-08-25T00:12:49.038336+00:00",
+  "observed_at_end": "2026-08-25T00:12:50.085076+00:00",
+  "verdict": "READINESS_BLOCKED_ENVIRONMENT",
+  "c1_acceptance_verdict": "NOT_MEASURED",
+  "environment_failures": [
+    "busy_processes",
+    "cpu_psi",
+    "io_psi"
+  ],
+  "thresholds": {
+    "busy_process_cpu_percent": 1.0,
+    "cpu_psi_some_avg10": 2.0,
+    "io_psi_full_avg10": 0.1,
+    "memory_psi_full_avg10": 0.1,
+    "procs_running": 2,
+    "temperature_c": 90.0
+  },
+  "observations": {
+    "cpu_psi_some_avg10": [5.68, 5.68, 5.56],
+    "io_psi_full_avg10": [0.0, 0.0, 1.63],
+    "memory_psi_full_avg10": [0.0, 0.0, 0.0],
+    "procs_running": [2, 2, 2],
+    "maximum_temperature_c": [65.0, 64.0, 64.0],
+    "busy_processes": [
+      {
+        "pid": 150005,
+        "comm": "nando-operator-",
+        "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+        "cpu_percent": [107.88036627578235, 103.84597274328131, 103.84285379125633]
+      },
+      {
+        "pid": 3772003,
+        "comm": "systemd-journal",
+        "cmdline": "/lib/systemd/systemd-journald",
+        "cpu_percent": [3.995569121136845]
+      },
+      {
+        "pid": 3481471,
+        "comm": "btop",
+        "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+        "cpu_percent": [7.98791182853188]
+      }
+    ],
+    "stable_host_projection_changed": false,
+    "thermal_throttle_counters_changed": false,
+    "overheating_observed": false
+  },
+  "c1_state_after_readiness": {
+    "final_exists": false,
+    "work_exists": true,
+    "state_exists": true,
+    "build_marker": "consumed-before-exec",
+    "parity_marker": "consumed-before-exec",
+    "latency_markers": {
+      "S1": "available",
+      "T1": "available",
+      "T2": "available",
+      "S2": "available",
+      "S3": "available",
+      "T3": "available",
+      "T4": "available",
+      "S4": "available",
+      "S5": "available",
+      "T5": "available"
+    }
+  },
+  "sealed_executable": {
+    "sha256": "ead184029a2923cfd24c5d02e91e91f9d69fb01c7daa0fb21ba69f267234c93c",
+    "build_id": "665458be5064a689951c6f074276ab0bb4d2beb4",
+    "size_bytes": 20531304
+  },
+  "semantic_prerequisite": {
+    "verdict": "PASS",
+    "records": 382,
+    "terminal_mismatches": 0,
+    "peak_mismatches": 0,
+    "completeness_mismatches": 0,
+    "work_mismatches": 0,
+    "false_certificates": 0,
+    "maximum_product_states": 35590,
+    "maximum_scratch_bytes": 6656
+  },
+  "execution_effects": {
+    "clean_admission_executed": true,
+    "latency_subject_executed": false,
+    "latency_marker_consumed": false,
+    "perf_invoked": false,
+    "pmu_event_opened": false,
+    "host_tuned": false,
+    "foreign_process_stopped": false,
+    "runtime_authority_changed": false,
+    "installed_lay_changed": false,
+    "remote_writes_by_readiness": false
+  },
+  "next_permitted_action": "repeat read-only readiness only after an externally authorized quiet-host window; run the fixed S/T matrix only on READY_FOR_S1",
+  "not_admitted": [
+    "dirty C1 acceptance",
+    "threshold relaxation",
+    "process control",
+    "full B PMU matrix",
+    "V12",
+    "runtime integration"
+  ]
+}

@@ -4,7 +4,7 @@ use crate::nanda_wave::lexical_grokking::restoration::{
     AbstainReason, RestorationCandidate, RestorationReadout,
 };
 use crate::typing_transition::target_evidence::{
-    stable_bytes_ref, EnumerationCompletenessV1, IncompletenessReasonV1,
+    stable_bytes_ref, EnumerationCompletenessV1, IncompletenessReasonV1, MAX_TARGETS_PER_FIELD,
 };
 
 use super::calibrate::ProductiveCalibratedVerdictV1;
@@ -48,6 +48,7 @@ pub(super) struct CompositeSurfaceGroupV1 {
     pub(super) productive_identities: Vec<ProductiveCandidateIdentityV1>,
     pub(super) grounded_protection: bool,
     pub(super) contour_grounding: bool,
+    pub(super) exact_peak_birth: bool,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -224,10 +225,97 @@ impl CompositeL2LatticeV1 {
                 productive_identities: Vec::new(),
                 grounded_protection: false,
                 contour_grounding: true,
+                exact_peak_birth: false,
             });
         }
         self.surface_groups
             .sort_by(|left, right| left.normalized_surface.cmp(&right.normalized_surface));
+        Ok(())
+    }
+
+    pub(super) fn merge_exact_peak_surfaces(
+        &mut self,
+        surfaces: impl IntoIterator<Item = String>,
+    ) -> Result<(), String> {
+        let normalized = surfaces
+            .into_iter()
+            .map(|surface| super::super::compositional::normalize_surface(&surface))
+            .filter(|surface| !surface.is_empty())
+            .collect::<BTreeSet<_>>();
+        for surface in normalized {
+            if let Some(group) = self
+                .surface_groups
+                .iter_mut()
+                .find(|group| group.normalized_surface == surface)
+            {
+                group.exact_peak_birth = true;
+                continue;
+            }
+            self.surface_groups.push(CompositeSurfaceGroupV1 {
+                normalized_surface: surface,
+                grounded_terminal_ids: Vec::new(),
+                productive_identities: Vec::new(),
+                grounded_protection: false,
+                contour_grounding: false,
+                exact_peak_birth: true,
+            });
+        }
+        self.surface_groups
+            .sort_by(|left, right| left.normalized_surface.cmp(&right.normalized_surface));
+        self.retain_ranked_productive_capacity()?;
+        Ok(())
+    }
+
+    fn retain_ranked_productive_capacity(&mut self) -> Result<(), String> {
+        let excess = self
+            .surface_groups
+            .len()
+            .saturating_sub(MAX_TARGETS_PER_FIELD);
+        if excess == 0 {
+            return Ok(());
+        }
+
+        let mut productive_rank = BTreeMap::<String, usize>::new();
+        for (rank, candidate) in self.productive_candidates.iter().enumerate() {
+            let surface =
+                super::super::compositional::normalize_surface(&candidate.normalized_surface);
+            productive_rank.entry(surface).or_insert(rank);
+        }
+        let mut removable = self
+            .surface_groups
+            .iter()
+            .filter(|group| {
+                group.grounded_terminal_ids.is_empty()
+                    && !group.grounded_protection
+                    && !group.contour_grounding
+                    && !group.exact_peak_birth
+                    && !group.productive_identities.is_empty()
+            })
+            .map(|group| {
+                (
+                    group.normalized_surface.clone(),
+                    productive_rank
+                        .get(&group.normalized_surface)
+                        .copied()
+                        .unwrap_or(usize::MAX),
+                )
+            })
+            .collect::<Vec<_>>();
+        if removable.len() < excess {
+            return Err(
+                "exact, grounded, and contour surfaces exceed common 74-target capacity"
+                    .to_string(),
+            );
+        }
+        removable.sort_by(|left, right| right.1.cmp(&left.1).then_with(|| right.0.cmp(&left.0)));
+        let removed = removable
+            .into_iter()
+            .take(excess)
+            .map(|(surface, _)| surface)
+            .collect::<BTreeSet<_>>();
+        self.surface_groups
+            .retain(|group| !removed.contains(&group.normalized_surface));
+        self.productive_overflow = true;
         Ok(())
     }
 }
@@ -290,6 +378,7 @@ fn surface_groups(
                 productive_identities: Vec::new(),
                 grounded_protection: false,
                 contour_grounding: false,
+                exact_peak_birth: false,
             });
         group
             .grounded_terminal_ids
@@ -307,6 +396,7 @@ fn surface_groups(
                 productive_identities: Vec::new(),
                 grounded_protection: false,
                 contour_grounding: false,
+                exact_peak_birth: false,
             });
         group
             .productive_identities
@@ -533,5 +623,61 @@ mod tests {
             crate::typing_transition::target_evidence::EnumerationStateV1::Failed
         );
         assert_eq!(failed.reason(), IncompletenessReasonV1::IntegrityFailure);
+    }
+
+    #[test]
+    fn exact_capacity_preserves_mandatory_surfaces_and_drops_productive_tail() {
+        let grounded = (1..=13).map(grounded).collect::<Vec<_>>();
+        let l11 = RestorationReadout::Tied {
+            geometry_distance: 1,
+            candidates: grounded,
+        };
+        let productive = (1..=32)
+            .map(|index| productive(index, format!("productive-{index:02}")))
+            .collect::<Vec<_>>();
+        let mut lattice = CompositeL2LatticeV1::assemble(
+            &l11,
+            |terminal_id| Some(format!("grounded-{terminal_id:02}")),
+            productive_readout(productive),
+            None,
+        )
+        .expect("composite lattice");
+        lattice
+            .merge_contour_surfaces((1..=3).map(|index| format!("contour-{index:02}")))
+            .expect("contours");
+        lattice
+            .merge_exact_peak_surfaces((1..=56).map(|index| format!("exact-{index:02}")))
+            .expect("bounded exact merge");
+
+        assert_eq!(lattice.surface_groups.len(), MAX_TARGETS_PER_FIELD);
+        assert!(lattice.productive_overflow);
+        for index in 1..=13 {
+            assert!(lattice
+                .surface_groups
+                .iter()
+                .any(|group| group.normalized_surface == format!("grounded-{index:02}")));
+        }
+        for index in 1..=56 {
+            assert!(lattice.surface_groups.iter().any(|group| {
+                group.normalized_surface == format!("exact-{index:02}") && group.exact_peak_birth
+            }));
+        }
+        for index in 1..=3 {
+            assert!(lattice.surface_groups.iter().any(|group| {
+                group.normalized_surface == format!("contour-{index:02}") && group.contour_grounding
+            }));
+        }
+        assert!(lattice
+            .surface_groups
+            .iter()
+            .any(|group| group.normalized_surface == "productive-01"));
+        assert!(lattice
+            .surface_groups
+            .iter()
+            .any(|group| group.normalized_surface == "productive-02"));
+        assert!(!lattice
+            .surface_groups
+            .iter()
+            .any(|group| group.normalized_surface == "productive-03"));
     }
 }

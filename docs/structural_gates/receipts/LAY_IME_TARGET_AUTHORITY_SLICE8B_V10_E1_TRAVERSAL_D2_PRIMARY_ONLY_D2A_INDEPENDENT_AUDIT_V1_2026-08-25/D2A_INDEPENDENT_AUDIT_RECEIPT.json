@@ -1,0 +1,51 @@
+{
+  "auditor": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_INDEPENDENT_AUDIT_V1_2026-08-25.stage-2837763/auditor.py",
+    "sha256": "f596ff43b216a5b2a8d20d1bc04d3fbbfb38b548676a441490a1e61059c8a028",
+    "size_bytes": 31584
+  },
+  "authoritative_d2a_receipt": {
+    "mode": "0444",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25/D2A_RECEIPT.json",
+    "sha256": "998ca180a976384acb215b9e72a8d956fd830fdf6a1c0641b59eea10cbb00e0f",
+    "size_bytes": 21910
+  },
+  "bucket_map_created": false,
+  "build_admitted": false,
+  "build_executed": false,
+  "build_marker_state": "unknown",
+  "cargo_invocations": 0,
+  "checks": [],
+  "checks_passed": 0,
+  "d2_elf_created": false,
+  "d2_subject": 0,
+  "error": "command failed (1): ssh -o BatchMode=yes -o ConnectTimeout=10 e@192.168.3.94 'python3 -c '\"'\"'PARENT=pathlib.Path(\"/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825\")\nD2A=pathlib.Path(\"/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/d2a-v1\")\nFAILURE=pathlib.Path(\"/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/d2a-failure-v1\")\nSTATE=pathlib.Path(\"/home/e/.local/state/lay/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825\")\n\nimport hashlib,json,os,pathlib,stat\n\ndef need(value,message):\n    if not value:\n        raise RuntimeError(message)\n\ndef sha(path):\n    digest=hashlib.sha256()\n    with path.open('\"'\"'\"'\"'\"'\"'\"'\"'rb'\"'\"'\"'\"'\"'\"'\"'\"') as source:\n        for block in iter(lambda:source.read(1024*1024),b'\"'\"'\"'\"'\"'\"'\"'\"''\"'\"'\"'\"'\"'\"'\"'\"'):\n            digest.update(block)\n    return digest.hexdigest()\n\ndef row(path):\n    need(path.is_file(),f'\"'\"'\"'\"'\"'\"'\"'\"'missing file: {path}'\"'\"'\"'\"'\"'\"'\"'\"')\n    return {'\"'\"'\"'\"'\"'\"'\"'\"'path'\"'\"'\"'\"'\"'\"'\"'\"':str(path),'\"'\"'\"'\"'\"'\"'\"'\"'mode'\"'\"'\"'\"'\"'\"'\"'\"':f'\"'\"'\"'\"'\"'\"'\"'\"'{stat.S_IMODE(path.stat().st_mode):04o}'\"'\"'\"'\"'\"'\"'\"'\"',\n            '\"'\"'\"'\"'\"'\"'\"'\"'size_bytes'\"'\"'\"'\"'\"'\"'\"'\"':path.stat().st_size,'\"'\"'\"'\"'\"'\"'\"'\"'sha256'\"'\"'\"'\"'\"'\"'\"'\"':sha(path)}\n\ndef manifest(root):\n    path=root/'\"'\"'\"'\"'\"'\"'\"'\"'SHA256SUMS'\"'\"'\"'\"'\"'\"'\"'\"'\n    need(path.is_file(),f'\"'\"'\"'\"'\"'\"'\"'\"'missing manifest: {path}'\"'\"'\"'\"'\"'\"'\"'\"')\n    listed={}\n    for line in path.read_text().splitlines():\n        digest,relative=line.split('\"'\"'\"'\"'\"'\"'\"'\"'  '\"'\"'\"'\"'\"'\"'\"'\"',1)\n        need(relative not in listed,f'\"'\"'\"'\"'\"'\"'\"'\"'duplicate: {relative}'\"'\"'\"'\"'\"'\"'\"'\"')\n        member=root/relative\n        need(member.is_file(),f'\"'\"'\"'\"'\"'\"'\"'\"'missing: {member}'\"'\"'\"'\"'\"'\"'\"'\"')\n        need(sha(member)==digest,f'\"'\"'\"'\"'\"'\"'\"'\"'hash mismatch: {member}'\"'\"'\"'\"'\"'\"'\"'\"')\n        listed[relative]=digest\n    actual={str(path.relative_to(root)) for path in root.rglob('\"'\"'\"'\"'\"'\"'\"'\"'*'\"'\"'\"'\"'\"'\"'\"'\"')\n            if path.is_file() and path != root/'\"'\"'\"'\"'\"'\"'\"'\"'SHA256SUMS'\"'\"'\"'\"'\"'\"'\"'\"'}\n    need(set(listed)==actual,'\"'\"'\"'\"'\"'\"'\"'\"'manifest membership mismatch'\"'\"'\"'\"'\"'\"'\"'\"')\n    return {'\"'\"'\"'\"'\"'\"'\"'\"'manifest'\"'\"'\"'\"'\"'\"'\"'\"':row(path),'\"'\"'\"'\"'\"'\"'\"'\"'entries'\"'\"'\"'\"'\"'\"'\"'\"':len(listed),'\"'\"'\"'\"'\"'\"'\"'\"'membership_exact'\"'\"'\"'\"'\"'\"'\"'\"':True,\n            '\"'\"'\"'\"'\"'\"'\"'\"'all_sha256_match'\"'\"'\"'\"'\"'\"'\"'\"':True}\n\nmachine=pathlib.Path('\"'\"'\"'\"'\"'\"'\"'\"'/etc/machine-id'\"'\"'\"'\"'\"'\"'\"'\"')\nneed(PARENT.is_dir(),'\"'\"'\"'\"'\"'\"'\"'\"'D2-A parent missing'\"'\"'\"'\"'\"'\"'\"'\"')\nneed(D2A.is_dir(),'\"'\"'\"'\"'\"'\"'\"'\"'D2-A tree missing'\"'\"'\"'\"'\"'\"'\"'\"')\nneed(not FAILURE.exists(),'\"'\"'\"'\"'\"'\"'\"'\"'D2-A failure tree exists'\"'\"'\"'\"'\"'\"'\"'\"')\nneed(STATE.is_dir(),'\"'\"'\"'\"'\"'\"'\"'\"'D2-A state missing'\"'\"'\"'\"'\"'\"'\"'\"')\nmarkers=STATE/'\"'\"'\"'\"'\"'\"'\"'\"'markers'\"'\"'\"'\"'\"'\"'\"'\"'\nneed(markers.is_dir(),'\"'\"'\"'\"'\"'\"'\"'\"'marker directory missing'\"'\"'\"'\"'\"'\"'\"'\"')\nmarker_names=sorted(path.name for path in markers.iterdir())\nmarker_rows=[]\nfor name in marker_names:\n    path=markers/name\n    identity=row(path)\n    identity['\"'\"'\"'\"'\"'\"'\"'\"'value'\"'\"'\"'\"'\"'\"'\"'\"']=json.loads(path.read_text())\n    marker_rows.append(identity)\nwritable=[]\nfor path in [D2A,*D2A.rglob('\"'\"'\"'\"'\"'\"'\"'\"'*'\"'\"'\"'\"'\"'\"'\"'\"')]:\n    if path.stat().st_mode & 0o222:\n        writable.append(str(path.relative_to(D2A) or '\"'\"'\"'\"'\"'\"'\"'\"'.'\"'\"'\"'\"'\"'\"'\"'\"'))\nelf_files=[]\nfor path in PARENT.rglob('\"'\"'\"'\"'\"'\"'\"'\"'*'\"'\"'\"'\"'\"'\"'\"'\"'):\n    if path.is_file():\n        with path.open('\"'\"'\"'\"'\"'\"'\"'\"'rb'\"'\"'\"'\"'\"'\"'\"'\"') as source:\n            if source.read(4)==b'\"'\"'\"'\"'\"'\"'\"'\"'\\x7fELF'\"'\"'\"'\"'\"'\"'\"'\"':\n                elf_files.append(str(path))\nresult={\n    '\"'\"'\"'\"'\"'\"'\"'\"'hostname'\"'\"'\"'\"'\"'\"'\"'\"':os.uname().nodename,\n    '\"'\"'\"'\"'\"'\"'\"'\"'machine_id_exact_file_sha256'\"'\"'\"'\"'\"'\"'\"'\"':sha(machine),\n    '\"'\"'\"'\"'\"'\"'\"'\"'parent_entries'\"'\"'\"'\"'\"'\"'\"'\"':sorted(path.name for path in PARENT.iterdir()),\n    '\"'\"'\"'\"'\"'\"'\"'\"'d2a_present'\"'\"'\"'\"'\"'\"'\"'\"':D2A.is_dir(),\n    '\"'\"'\"'\"'\"'\"'\"'\"'failure_present'\"'\"'\"'\"'\"'\"'\"'\"':FAILURE.exists(),\n    '\"'\"'\"'\"'\"'\"'\"'\"'state_present'\"'\"'\"'\"'\"'\"'\"'\"':STATE.is_dir(),\n    '\"'\"'\"'\"'\"'\"'\"'\"'d2a_manifest'\"'\"'\"'\"'\"'\"'\"'\"':manifest(D2A),\n    '\"'\"'\"'\"'\"'\"'\"'\"'d2a_receipt'\"'\"'\"'\"'\"'\"'\"'\"':row(D2A/'\"'\"'\"'\"'\"'\"'\"'\"'D2A_RECEIPT.json'\"'\"'\"'\"'\"'\"'\"'\"'),\n    '\"'\"'\"'\"'\"'\"'\"'\"'d2a_receipt_value'\"'\"'\"'\"'\"'\"'\"'\"':json.loads((D2A/'\"'\"'\"'\"'\"'\"'\"'\"'D2A_RECEIPT.json'\"'\"'\"'\"'\"'\"'\"'\"').read_text()),\n    '\"'\"'\"'\"'\"'\"'\"'\"'zero_execution_ledger'\"'\"'\"'\"'\"'\"'\"'\"':row(D2A/'\"'\"'\"'\"'\"'\"'\"'\"'ZERO_EXECUTION_LEDGER.json'\"'\"'\"'\"'\"'\"'\"'\"'),\n    '\"'\"'\"'\"'\"'\"'\"'\"'zero_execution_value'\"'\"'\"'\"'\"'\"'\"'\"':json.loads((D2A/'\"'\"'\"'\"'\"'\"'\"'\"'ZERO_EXECUTION_LEDGER.json'\"'\"'\"'\"'\"'\"'\"'\"').read_text()),\n    '\"'\"'\"'\"'\"'\"'\"'\"'state_entries'\"'\"'\"'\"'\"'\"'\"'\"':sorted(path.name for path in STATE.iterdir()),\n    '\"'\"'\"'\"'\"'\"'\"'\"'state'\"'\"'\"'\"'\"'\"'\"'\"':row(STATE/'\"'\"'\"'\"'\"'\"'\"'\"'STATE.json'\"'\"'\"'\"'\"'\"'\"'\"'),\n    '\"'\"'\"'\"'\"'\"'\"'\"'state_value'\"'\"'\"'\"'\"'\"'\"'\"':json.loads((STATE/'\"'\"'\"'\"'\"'\"'\"'\"'STATE.json'\"'\"'\"'\"'\"'\"'\"'\"').read_text()),\n    '\"'\"'\"'\"'\"'\"'\"'\"'route_lock'\"'\"'\"'\"'\"'\"'\"'\"':row(STATE/'\"'\"'\"'\"'\"'\"'\"'\"'route.lock'\"'\"'\"'\"'\"'\"'\"'\"'),\n    '\"'\"'\"'\"'\"'\"'\"'\"'route_lock_value'\"'\"'\"'\"'\"'\"'\"'\"':json.loads((STATE/'\"'\"'\"'\"'\"'\"'\"'\"'route.lock'\"'\"'\"'\"'\"'\"'\"'\"').read_text()),\n    '\"'\"'\"'\"'\"'\"'\"'\"'marker_names'\"'\"'\"'\"'\"'\"'\"'\"':marker_names,\n    '\"'\"'\"'\"'\"'\"'\"'\"'markers'\"'\"'\"'\"'\"'\"'\"'\"':marker_rows,\n    '\"'\"'\"'\"'\"'\"'\"'\"'consumed_names'\"'\"'\"'\"'\"'\"'\"'\"':sorted(path.name for path in markers.glob('\"'\"'\"'\"'\"'\"'\"'\"'*.consumed*'\"'\"'\"'\"'\"'\"'\"'\"')),\n    '\"'\"'\"'\"'\"'\"'\"'\"'d2a_writable_paths'\"'\"'\"'\"'\"'\"'\"'\"':writable,\n    '\"'\"'\"'\"'\"'\"'\"'\"'elf_files_under_task_parent'\"'\"'\"'\"'\"'\"'\"'\"':elf_files,\n}\nprint(json.dumps(result,sort_keys=True,separators=('\"'\"'\"'\"'\"'\"'\"'\"','\"'\"'\"'\"'\"'\"'\"'\"','\"'\"'\"'\"'\"'\"'\"'\"':'\"'\"'\"'\"'\"'\"'\"'\"')))\n'\"'\"''\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nNameError: name 'pathlib' is not defined\n",
+  "live_projection_repeated": false,
+  "live_projection_stable": false,
+  "marker_mutations": 0,
+  "markers_consumed": 0,
+  "markers_created": 11,
+  "markers_expected": 11,
+  "next_action_admitted": "none",
+  "parity_executed": false,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "producer_controller": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-primary-only.py",
+    "sha256": "9329a32b9e4e9edf5d83ddf624e8c9ce6a456494057f4ea3ef5aff6f382d6ec0",
+    "size_bytes": 64492
+  },
+  "remote_writes": 0,
+  "runtime_authority_changed": false,
+  "rustc_compilations": 0,
+  "schema": "lay.v10.e1-traversal-d2a-independent-audit.v1",
+  "stop_before_build": true,
+  "t_routes_executed": 0,
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "u_routes_executed": 0,
+  "v_routes_executed": 0,
+  "verdict": "BLOCKED_PROVENANCE"
+}

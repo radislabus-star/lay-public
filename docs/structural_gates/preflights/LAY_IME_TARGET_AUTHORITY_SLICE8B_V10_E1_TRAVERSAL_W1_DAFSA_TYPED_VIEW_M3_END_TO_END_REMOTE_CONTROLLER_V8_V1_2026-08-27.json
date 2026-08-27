@@ -1,0 +1,510 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_REMOTE_CONTROLLER_V8_V1_2026-08-27",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "v8-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8_2026-08-27.md",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 9362,
+        "sha256": "c5f1655ce4ab91f068f0b50aff1fe5a2a01206d64786b1e23dc4396e10b840a7"
+      }
+    },
+    {
+      "id": "v8-source-preflight",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_IMPLEMENTATION_V8_V2_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 16071,
+        "sha256": "5c092ab60903be64d9a89f9d76f4e325539ea25e8fcb7ae04bd967d825f49361"
+      }
+    },
+    {
+      "id": "v8-source-preflight-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_IMPLEMENTATION_V8_V2_PREFLIGHT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 9777,
+        "sha256": "2b8eda4c0facaf1bde60adb4a99c7ed262d168dffa1ab326e01d3facc23db81b"
+      }
+    },
+    {
+      "id": "v8-implementation-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_IMPLEMENTATION_V8_2026-08-27/IMPLEMENTATION_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 5477,
+        "sha256": "cf4b38d81cc7f9ea9125855194635fafde9c76c9d022f7185635e8bb6c2f29e5"
+      }
+    },
+    {
+      "id": "v8-test-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 253080,
+        "sha256": "28f87a76fc1996989e980cab51f0443bd95e656fcae3a2ff61f581db9c3a7ee2"
+      }
+    },
+    {
+      "id": "typed-exact-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak/typed_exact.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 26203,
+        "sha256": "325bdd386b13de77bd030ef1af0fecb12be8bdd2bdd3c841d10257647a4ceaf4"
+      }
+    },
+    {
+      "id": "l2-module-protected",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/mod.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 52483,
+        "sha256": "c76c28debdac8e43d360a5a82811ea86e3e6f03b98e4f81cb6678e07953e0953"
+      }
+    },
+    {
+      "id": "bridge-protected",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 111807,
+        "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad"
+      }
+    },
+    {
+      "id": "cache-protected",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 23664,
+        "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07"
+      }
+    },
+    {
+      "id": "runtime-protected",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/runtime.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 142756,
+        "sha256": "cb94bd3ffaf61b31f7cce8d2051ae9087cf8aba26487c037ba6fbeaaa57f0966"
+      }
+    },
+    {
+      "id": "live-owner-protected",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 70181,
+        "sha256": "87180990b6883641483a46886074e5350f35e351454d734f0c3c9da723d758bd"
+      }
+    },
+    {
+      "id": "material-frame-protected",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 74452,
+        "sha256": "2efdceca380534930ff9e42a4f504a798363a9e86497ec71ee52104246e4ec55"
+      }
+    },
+    {
+      "id": "cargo-toml",
+      "kind": "file",
+      "path": "../../../Cargo.toml",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2399,
+        "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b"
+      }
+    },
+    {
+      "id": "cargo-lock",
+      "kind": "file",
+      "path": "../../../Cargo.lock",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 70770,
+        "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"
+      }
+    },
+    {
+      "id": "cargo-guard",
+      "kind": "file",
+      "path": "../../../scripts/cargo-guard.sh",
+      "expect": {
+        "mode": "0775",
+        "size_bytes": 2534,
+        "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"
+      }
+    },
+    {
+      "id": "v13-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 140556462,
+        "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"
+      }
+    },
+    {
+      "id": "v7-fixed-proof",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+      "expect": {
+        "mode": "0400",
+        "size_bytes": 1606189,
+        "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"
+      }
+    },
+    {
+      "id": "productive-v90",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 17309944,
+        "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44"
+      }
+    },
+    {
+      "id": "productive-v90-recovery",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 2123112,
+        "sha256": "de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e"
+      }
+    },
+    {
+      "id": "l11-v9",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 77962328,
+        "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "write-remote-controller",
+        "kind": "local_script_edit"
+      },
+      {
+        "id": "write-independent-auditor",
+        "kind": "local_script_edit"
+      },
+      {
+        "id": "write-local-controller",
+        "kind": "local_script_edit"
+      },
+      {
+        "id": "run-static-self-checks",
+        "kind": "local_static_and_fault_injection_test"
+      },
+      {
+        "id": "publish-controller-implementation-receipt",
+        "kind": "local_evidence_write"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "network_or_remote_write_during_controller_implementation",
+      "remote_namespace_or_marker_creation",
+      "cargo_or_rustc_execution",
+      "scientific_test_or_test_elf_execution",
+      "perf_or_pmu_execution",
+      "production_bridge_cache_reload_or_runtime_edit",
+      "installed_package_receipt_or_runtime_authority_edit",
+      "daemon_ibus_install_restart_or_deployment",
+      "latency_rss_reload_or_production_pass_claim"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "steps": [
+      {
+        "id": "write-remote-controller",
+        "from": "PREFLIGHT_READY",
+        "to": "REMOTE_CONTROLLER_WRITTEN",
+        "mutates": true,
+        "failure_state": "BLOCKED_CONTROLLER_SOURCE",
+        "cleanup": "retain exact partial controller bytes and create no remote state",
+        "preserves": [
+          "v8-scientific-source",
+          "protected-runtime",
+          "fixed-inputs"
+        ],
+        "test_id": "remote-controller-write-fault"
+      },
+      {
+        "id": "write-independent-auditor",
+        "from": "REMOTE_CONTROLLER_WRITTEN",
+        "to": "INDEPENDENT_AUDITOR_WRITTEN",
+        "mutates": true,
+        "failure_state": "BLOCKED_CONTROLLER_SOURCE",
+        "cleanup": "retain exact partial auditor bytes and create no remote state",
+        "preserves": [
+          "v8-scientific-source",
+          "protected-runtime",
+          "fixed-inputs"
+        ],
+        "test_id": "independent-auditor-write-fault"
+      },
+      {
+        "id": "write-local-controller",
+        "from": "INDEPENDENT_AUDITOR_WRITTEN",
+        "to": "CONTROLLER_GRAPH_WRITTEN",
+        "mutates": true,
+        "failure_state": "BLOCKED_CONTROLLER_SOURCE",
+        "cleanup": "retain exact partial local controller bytes and create no remote state",
+        "preserves": [
+          "v8-scientific-source",
+          "protected-runtime",
+          "fixed-inputs"
+        ],
+        "test_id": "local-controller-write-fault"
+      },
+      {
+        "id": "run-static-self-checks",
+        "from": "CONTROLLER_GRAPH_WRITTEN",
+        "to": "CONTROLLER_STATIC_PASS",
+        "mutates": false,
+        "failure_state": "BLOCKED_CONTROLLER_STATIC",
+        "cleanup": "retain diagnostics; do not publish implementation PASS or contact remote host",
+        "preserves": [
+          "v8-scientific-source",
+          "protected-runtime",
+          "fixed-inputs"
+        ],
+        "test_id": "controller-static-fault"
+      },
+      {
+        "id": "publish-controller-implementation-receipt",
+        "from": "CONTROLLER_STATIC_PASS",
+        "to": "M3_V8_REMOTE_CONTROLLERS_VERIFIED_UNRUN",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "remove incomplete receipt stage and retain controller plus static evidence",
+        "preserves": [
+          "v8-scientific-source",
+          "protected-runtime",
+          "fixed-inputs"
+        ],
+        "test_id": "controller-receipt-publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "M3_V8_REMOTE_CONTROLLERS_VERIFIED_UNRUN",
+      "BLOCKED_CONTROLLER_SOURCE",
+      "BLOCKED_CONTROLLER_STATIC",
+      "BLOCKED_PROVENANCE"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "v8-scientific-source",
+      "path": "src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "policy": "immutable_during_controller_implementation",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v8-test-source"
+    },
+    {
+      "id": "protected-runtime",
+      "path": "src/nanda_wave/l2_field production modules",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "l2-module-protected"
+    },
+    {
+      "id": "fixed-inputs",
+      "path": "V13 V7 Productive V90 recovery and L1.1 V9 inputs",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v13-package"
+    },
+    {
+      "id": "v8-implementation-evidence",
+      "path": "V8 paper preflight source and implementation receipts",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v8-implementation-receipt"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "implementation-to-remote-controller",
+      "producer": "sealed V8 implementation receipt and source identity",
+      "consumer": "remote controller bootstrap and build closure",
+      "comparison": "receipt SHA source SHA Cargo inputs and fixed scientific inputs exact",
+      "test_id": "controller-graph-parity"
+    },
+    {
+      "id": "local-to-remote-controller",
+      "producer": "local remote-controller source bytes",
+      "consumer": "uploaded isolated remote-controller bytes",
+      "comparison": "SHA-256 and size exact before every remote action",
+      "test_id": "remote-controller-byte-parity"
+    },
+    {
+      "id": "route-to-marker",
+      "producer": "exact BUILD and E2E route registry",
+      "consumer": "build.available and e2e.available one-shot markers",
+      "comparison": "exact route transaction controller and marker identities with atomic rename before execution",
+      "test_id": "marker-schema-parity"
+    },
+    {
+      "id": "build-to-elf",
+      "producer": "one frozen remote Cargo no-run invocation",
+      "consumer": "sealed release test ELF",
+      "comparison": "source Cargo argv environment exit candidate ELF identity and build marker state exact",
+      "test_id": "build-command-parity"
+    },
+    {
+      "id": "elf-to-e2e",
+      "producer": "independently audited sealed test ELF",
+      "consumer": "one direct exact ignored V8 scientific test invocation",
+      "comparison": "same ELF SHA no Cargo and exact environment/input identities",
+      "test_id": "direct-elf-parity"
+    },
+    {
+      "id": "producer-to-independent-auditor",
+      "producer": "remote controller state observations and immutable evidence",
+      "consumer": "independent local auditor",
+      "comparison": "auditor recomputes bytes modes state marker and runtime boundary without importing producer verdict",
+      "test_id": "auditor-independent-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "closed-action-graph",
+      "statement": "remote controller action set is exactly self-check status bootstrap create-markers build-once and e2e-once",
+      "test_id": "controller-graph-parity"
+    },
+    {
+      "id": "two-marker-ledger",
+      "statement": "exactly build.available and e2e.available exist after audited bootstrap and each is consumed once before its irreversible route",
+      "test_id": "marker-schema-parity"
+    },
+    {
+      "id": "one-build",
+      "statement": "build route reaches exactly one guarded Cargo no-run invocation after atomic marker consumption",
+      "test_id": "build-command-parity"
+    },
+    {
+      "id": "direct-e2e",
+      "statement": "scientific route executes the independently audited sealed ELF directly and cannot reach Cargo perf PMU daemon or install actions",
+      "test_id": "direct-elf-parity"
+    },
+    {
+      "id": "fail-closed-journal",
+      "statement": "every external action has durable intent and an incomplete response makes affected observations UNKNOWN",
+      "test_id": "journal-crash-fault"
+    },
+    {
+      "id": "independent-audits",
+      "statement": "bootstrap build quiet-host and terminal decisions are recomputed independently of producer verdict fields",
+      "test_id": "auditor-independent-parity"
+    },
+    {
+      "id": "runtime-unchanged",
+      "statement": "installed package receipt daemon IBus and production authority remain unchanged across V8",
+      "test_id": "protected-source-parity"
+    }
+  ],
+  "tests": [
+    {
+      "id": "remote-controller-write-fault",
+      "kind": "fault_injection",
+      "expected": "partial remote-controller source creates no remote state and no PASS"
+    },
+    {
+      "id": "independent-auditor-write-fault",
+      "kind": "fault_injection",
+      "expected": "partial auditor source creates no remote state and no PASS"
+    },
+    {
+      "id": "local-controller-write-fault",
+      "kind": "fault_injection",
+      "expected": "partial local-controller source creates no remote state and no PASS"
+    },
+    {
+      "id": "controller-static-fault",
+      "kind": "fault_injection",
+      "expected": "syntax registry or static closure failure publishes no controller PASS and performs no remote write"
+    },
+    {
+      "id": "controller-receipt-publication-fault",
+      "kind": "fault_injection",
+      "expected": "incomplete controller implementation receipt is not published"
+    },
+    {
+      "id": "controller-graph-parity",
+      "kind": "parity",
+      "expected": "internal registry equals exact six-action graph and route registry equals BUILD and E2E"
+    },
+    {
+      "id": "remote-controller-byte-parity",
+      "kind": "parity",
+      "expected": "local and future remote controller bytes have exact SHA-256 and size"
+    },
+    {
+      "id": "marker-schema-parity",
+      "kind": "parity",
+      "expected": "two canonical markers bind transaction route and controller identity and use atomic available-to-consumed rename"
+    },
+    {
+      "id": "build-command-parity",
+      "kind": "parity",
+      "expected": "only BUILD can reach one exact cargo-guard test offline locked release lib no-run m3_v8 command"
+    },
+    {
+      "id": "direct-elf-parity",
+      "kind": "parity",
+      "expected": "only E2E can reach one exact direct ELF test with no Cargo perf PMU install or daemon action"
+    },
+    {
+      "id": "auditor-independent-parity",
+      "kind": "parity",
+      "expected": "auditor modes independently validate admission bootstrap build quiet and terminal projections"
+    },
+    {
+      "id": "journal-crash-fault",
+      "kind": "fault_injection",
+      "expected": "lost external response leaves durable intent and UNKNOWN facts without retry authority"
+    },
+    {
+      "id": "protected-source-parity",
+      "kind": "parity",
+      "expected": "V8 scientific source protected runtime Cargo inputs and installed authority remain exact"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "nodes": [
+    {"id":"test_entry","role":"interface","evidence":{"path":"scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc","line":2616,"contains":"fn d1_subject(test: &str)"}},
+    {"id":"parity_runner","role":"orchestrator","evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":497,"contains":"def run_parity("}},
+    {"id":"e0_authority","role":"evidence_owner","evidence":{"path":"scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc","line":1411,"contains":"let e0 = search_typed_peaks("}},
+    {"id":"e1_executor","role":"producer","evidence":{"path":"scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc","line":898,"contains":"fn d1_search<const TRACE: bool>("}},
+    {"id":"parity_observer","role":"observer","evidence":{"path":"scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc","line":1439,"contains":"usize::from(e0.retrieved_form_refs != e1.result.retrieved_form_refs)"}},
+    {"id":"component_runner","role":"orchestrator","evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":855,"contains":"def run_component("}},
+    {"id":"component_observer","role":"observer","evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":770,"contains":"def component_statistics("}},
+    {"id":"pmu_runner","role":"orchestrator","evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":904,"contains":"def run_d1_pmu("}},
+    {"id":"pmu_observer","role":"observer","evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":363,"contains":"def parse_perf("}},
+    {"id":"decision_proof","role":"proof_owner","evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":1076,"contains":"def terminal_decision("}}
+  ],
+  "edges": [
+    {"id":"exec-parity-entry-runner","from":"test_entry","relation":"calls","to":"parity_runner","events":["parity"],"evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":1116,"contains":"parity = run_parity(base, stage)"}},
+    {"id":"exec-parity-runner-e1","from":"parity_runner","relation":"calls","to":"e1_executor","events":["parity"],"evidence":{"path":"scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc","line":1417,"contains":"let e1 = d1_search::<true>("}},
+    {"id":"observe-e0-parity","from":"e0_authority","relation":"observes","to":"parity_observer","events":["parity"],"evidence":{"path":"scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc","line":1439,"contains":"e0.retrieved_form_refs != e1.result.retrieved_form_refs"}},
+    {"id":"observe-e1-parity","from":"e1_executor","relation":"observes","to":"parity_observer","events":["parity"],"evidence":{"path":"scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc","line":1440,"contains":"e0.peaks != e1.result.peaks"}},
+    {"id":"proof-parity-decision","from":"parity_observer","relation":"proves","to":"decision_proof","events":["parity_decision"],"evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":1118,"contains":"terminal_decision(base, stage, provenance, parity"}},
+    {"id":"exec-component-entry-runner","from":"test_entry","relation":"calls","to":"component_runner","events":["component_single","component_fixed","component_reversed"],"evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":1123,"contains":"components[route] = run_component(base, stage, route)"}},
+    {"id":"exec-component-runner-e1","from":"component_runner","relation":"calls","to":"e1_executor","events":["component_single","component_fixed","component_reversed"],"evidence":{"path":"scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc","line":1930,"contains":"d1_enumerate_lane_prepared::<false>("}},
+    {"id":"observe-component-e1","from":"e1_executor","relation":"observes","to":"component_observer","events":["component_single","component_fixed","component_reversed"],"evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":884,"contains":"statistics = component_statistics(samples, structures, route)"}},
+    {"id":"proof-component-decision","from":"component_observer","relation":"proves","to":"decision_proof","events":["component_decision"],"evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":1135,"contains":"comparison = aggregate_d1(components, pmu)"}},
+    {"id":"exec-pmu-entry-runner","from":"test_entry","relation":"calls","to":"pmu_runner","events":["pmu_fixed","pmu_reversed"],"evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":1130,"contains":"pmu[route] = run_d1_pmu(base, stage, route)"}},
+    {"id":"exec-pmu-runner-e1","from":"pmu_runner","relation":"calls","to":"e1_executor","events":["pmu_fixed","pmu_reversed"],"evidence":{"path":"scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc","line":2622,"contains":"D1_TWENTY_PMU_TEST => d1_run_twenty_pmu()"}},
+    {"id":"observe-pmu-e1","from":"e1_executor","relation":"observes","to":"pmu_observer","events":["pmu_fixed","pmu_reversed"],"evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":958,"contains":"parsed = parse_perf(stderr, events)"}},
+    {"id":"proof-pmu-decision","from":"pmu_observer","relation":"proves","to":"decision_proof","events":["pmu_decision"],"evidence":{"path":"scripts/lay-v10-e1-remaining-cost-d1.py","line":1135,"contains":"comparison = aggregate_d1(components, pmu)"}}
+  ],
+  "routes": [
+    {"id":"parity-execution","event":"parity","kind":"execution","entry":"test_entry","terminal":"e1_executor","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"test_entry","to":"e1_executor","min":1,"max":1}]},
+    {"id":"parity-e0-observation","event":"parity","kind":"observation","entry":"e0_authority","terminal":"parity_observer","required_roles":["evidence_owner","observer"]},
+    {"id":"parity-proof","event":"parity_decision","kind":"proof","entry":"parity_observer","terminal":"decision_proof","required_roles":["observer","proof_owner"]},
+    {"id":"component-single-execution","event":"component_single","kind":"execution","entry":"test_entry","terminal":"e1_executor","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"test_entry","to":"e1_executor","min":1,"max":1}]},
+    {"id":"component-fixed-execution","event":"component_fixed","kind":"execution","entry":"test_entry","terminal":"e1_executor","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"test_entry","to":"e1_executor","min":1,"max":1}]},
+    {"id":"component-reversed-execution","event":"component_reversed","kind":"execution","entry":"test_entry","terminal":"e1_executor","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"test_entry","to":"e1_executor","min":1,"max":1}]},
+    {"id":"component-observation","event":"component_decision","kind":"proof","entry":"component_observer","terminal":"decision_proof","required_roles":["observer","proof_owner"]},
+    {"id":"pmu-fixed-execution","event":"pmu_fixed","kind":"execution","entry":"test_entry","terminal":"e1_executor","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"test_entry","to":"e1_executor","min":1,"max":1}]},
+    {"id":"pmu-reversed-execution","event":"pmu_reversed","kind":"execution","entry":"test_entry","terminal":"e1_executor","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"test_entry","to":"e1_executor","min":1,"max":1}]},
+    {"id":"pmu-proof","event":"pmu_decision","kind":"proof","entry":"pmu_observer","terminal":"decision_proof","required_roles":["observer","proof_owner"]}
+  ]
+}

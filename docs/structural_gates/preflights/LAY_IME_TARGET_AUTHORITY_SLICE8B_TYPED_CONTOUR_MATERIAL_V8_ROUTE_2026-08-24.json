@@ -1,0 +1,89 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "canonical_token", "role": "interface"},
+    {"id": "field_orchestrator", "role": "orchestrator"},
+    {"id": "l11_material", "role": "producer"},
+    {"id": "v13_fast_material", "role": "producer"},
+    {"id": "v13_compound_material", "role": "producer"},
+    {"id": "typed_material_owner", "role": "producer"},
+    {"id": "productive_v90", "role": "producer"},
+    {"id": "common_l3", "role": "evidence_owner"},
+    {"id": "decision_core", "role": "candidate_rank_owner"},
+    {"id": "verifier", "role": "authorization_owner"},
+    {"id": "text_output", "role": "mutation_owner"},
+    {"id": "cohort_observer", "role": "observer"},
+    {"id": "fixed_proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "exec-token-orchestrator-seeded", "from": "canonical_token", "relation": "calls", "to": "field_orchestrator", "events": ["seeded_token"]},
+    {"id": "exec-orchestrator-l11-seeded", "from": "field_orchestrator", "relation": "calls", "to": "l11_material", "events": ["seeded_token"]},
+    {"id": "exec-orchestrator-v13-fast-seeded", "from": "field_orchestrator", "relation": "calls", "to": "v13_fast_material", "events": ["seeded_token"]},
+    {"id": "exec-token-orchestrator-unseeded", "from": "canonical_token", "relation": "calls", "to": "field_orchestrator", "events": ["unseeded_token"]},
+    {"id": "exec-orchestrator-l11-unseeded", "from": "field_orchestrator", "relation": "calls", "to": "l11_material", "events": ["unseeded_token"]},
+    {"id": "exec-orchestrator-v13-fast-unseeded", "from": "field_orchestrator", "relation": "calls", "to": "v13_fast_material", "events": ["unseeded_token"]},
+    {"id": "exec-orchestrator-v13-compound-unseeded", "from": "field_orchestrator", "relation": "calls", "to": "v13_compound_material", "events": ["unseeded_token"]},
+    {"id": "exec-orchestrator-material-seeded", "from": "field_orchestrator", "relation": "delegates", "to": "typed_material_owner", "events": ["seeded_token"]},
+    {"id": "exec-orchestrator-material-unseeded", "from": "field_orchestrator", "relation": "delegates", "to": "typed_material_owner", "events": ["unseeded_token"]},
+    {"id": "authority-material-productive", "from": "typed_material_owner", "relation": "passes_to", "to": "productive_v90", "events": ["seeded_token", "unseeded_token"]},
+    {"id": "authority-productive-l3", "from": "productive_v90", "relation": "passes_to", "to": "common_l3", "events": ["seeded_token", "unseeded_token"]},
+    {"id": "authority-l3-decision", "from": "common_l3", "relation": "passes_to", "to": "decision_core", "events": ["seeded_token", "unseeded_token"]},
+    {"id": "authority-decision-verifier", "from": "decision_core", "relation": "passes_to", "to": "verifier", "events": ["seeded_token", "unseeded_token"]},
+    {"id": "authority-verifier-output", "from": "verifier", "relation": "authorizes", "to": "text_output", "events": ["seeded_token", "unseeded_token"]},
+    {"id": "observe-material", "from": "typed_material_owner", "relation": "observes", "to": "cohort_observer", "events": ["proof_observation"]},
+    {"id": "prove-observation", "from": "cohort_observer", "relation": "proves", "to": "fixed_proof", "events": ["proof_observation"]}
+  ],
+  "routes": [
+    {
+      "id": "seeded-execution",
+      "event": "seeded_token",
+      "kind": "execution",
+      "entry": "canonical_token",
+      "terminal": "typed_material_owner",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [
+        {"from": "canonical_token", "to": "field_orchestrator", "min": 1, "max": 1},
+        {"from": "field_orchestrator", "to": "v13_compound_material", "min": 0, "max": 0},
+        {"from": "field_orchestrator", "to": "typed_material_owner", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "unseeded-execution",
+      "event": "unseeded_token",
+      "kind": "execution",
+      "entry": "canonical_token",
+      "terminal": "typed_material_owner",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [
+        {"from": "canonical_token", "to": "field_orchestrator", "min": 1, "max": 1},
+        {"from": "field_orchestrator", "to": "v13_compound_material", "min": 1, "max": 1},
+        {"from": "field_orchestrator", "to": "typed_material_owner", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "seeded-authority",
+      "event": "seeded_token",
+      "kind": "authority",
+      "entry": "typed_material_owner",
+      "terminal": "text_output",
+      "required_roles": ["evidence_owner", "producer", "candidate_rank_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "unseeded-authority",
+      "event": "unseeded_token",
+      "kind": "authority",
+      "entry": "typed_material_owner",
+      "terminal": "text_output",
+      "required_roles": ["evidence_owner", "producer", "candidate_rank_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "proof-observation",
+      "event": "proof_observation",
+      "kind": "proof",
+      "entry": "cohort_observer",
+      "terminal": "fixed_proof",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

@@ -33,6 +33,7 @@ fn decide_space_deterministic(text_tail: &str) -> lay::input_gate::InputGateDeci
     decide_input_gate(InputGateRequest {
         trigger: InputGateTrigger::Space,
         text_tail,
+        lexical_authority_frame: None,
         auto_replace: true,
         typing_assist: true,
         auto_switch_layout: true,

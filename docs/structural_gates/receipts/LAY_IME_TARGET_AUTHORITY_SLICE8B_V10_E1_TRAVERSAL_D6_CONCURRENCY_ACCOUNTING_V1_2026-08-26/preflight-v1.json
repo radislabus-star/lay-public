@@ -1,0 +1,258 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "expect": {"mode": "0444", "sha256": "c23f1ffd52b08683a43984ed91f28cb3daf28f98d86e72967b67a27ba2a8567d", "size_bytes": 7605},
+      "id": "d6-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_V1_2026-08-26.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "5973d1eaf75f6e29ec8c87abca70890f0986e154f81e90b5852babe9a0729e5c", "size_bytes": 2997},
+      "id": "d6-evidence-route",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_V1_ROUTE_A_EVIDENCE.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "4bf3d7778c2c8a0669ea5b3427a88170c24e63dff965ee2d41e29cd2dee2e382", "size_bytes": 3054},
+      "id": "d6-boundary-route",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_V1_ROUTE_B_BOUNDARY.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "8e41540abeb8cd008f40793352f7d9e3037949b48196ec07d73f6dc6caee1c15", "size_bytes": 1290},
+      "id": "d6-structural-review",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_STRUCTURAL_REVIEW_V1_2026-08-26.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "c6e6f0674f773fd397a1fcc0b383fb1e7d1693a768b06e1c6fd21bb7291dcd83", "size_bytes": 7021},
+      "id": "d1-root-manifest",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/SHA256SUMS"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "b520bcd979449e60f6a03ce477375e98e774a1999eff02d22840a0e8b07832b9", "size_bytes": 901520},
+      "id": "c-single-samples",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-SINGLE/subject/component-samples.bin"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "cbd7e0b3a0e303a3a4cf40ef05c19af8c1cd2f6589691bfdda46405b88f09329", "size_bytes": 901520},
+      "id": "c-fixed-samples",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-FIXED/subject/component-samples.bin"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "516786df8948c691f3d113fb67fe66d865dfdcdae6dca795211c8e31061e13eb", "size_bytes": 901520},
+      "id": "c-reversed-samples",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-REVERSED/subject/component-samples.bin"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "90d24adee563be803c390b41b18b41624b999db37b34c26650cb362f03d06712", "size_bytes": 172206},
+      "id": "c-single-structure",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-SINGLE/subject/structure.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "90d24adee563be803c390b41b18b41624b999db37b34c26650cb362f03d06712", "size_bytes": 172206},
+      "id": "c-fixed-structure",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-FIXED/subject/structure.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "90d24adee563be803c390b41b18b41624b999db37b34c26650cb362f03d06712", "size_bytes": 172206},
+      "id": "c-reversed-structure",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/C-REVERSED/subject/structure.json"
+    },
+    {
+      "expect": {"mode": "0664", "sha256": "ea9a19cace1eab5418f783dfb6c18a4de2adb7281356afffd12bb2b28cdacbd1", "size_bytes": 4621},
+      "id": "loaded-pmu-combined",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_LOADED_PMU_DIAGNOSIS_COMBINED_V3_V4_2026-08-25.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "f748a7c448f7f142a342efa2b916a8995969044567a3aaa9a7de3aff6ba8645b", "size_bytes": 3685},
+      "id": "d4-terminal",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26/D4_TERMINAL_AUDIT_RECEIPT.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "d44ade85316f6f6f6eeb0917d3cdea168fc083e1a52b6c3b5e88fdf2df80ae20", "size_bytes": 2115},
+      "id": "d5-forensic",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_AUDIT_V1_2026-08-26/D5_T4_FORENSIC_AUDIT_RECEIPT.json"
+    },
+    {
+      "expect": {},
+      "id": "d6-auditor-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-e1-traversal-d6-concurrency-accounting.py"
+    },
+    {
+      "expect": {},
+      "id": "d6-result-absent",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_V1_2026-08-26"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "comparison": "exact mode size SHA-256 and complete D1 root manifest",
+      "consumer": "D6 component parser",
+      "id": "component-input-identity",
+      "producer": "sealed D1 component evidence",
+      "test_id": "input-parity"
+    },
+    {
+      "comparison": "same worker query chunk under CPU w and CPU 19-w",
+      "consumer": "paired core-class result",
+      "id": "mapping-identity",
+      "producer": "fixed and reversed subject mappings",
+      "test_id": "mapping-parity"
+    },
+    {
+      "comparison": "exact instructions IPC and effective-frequency factor product",
+      "consumer": "predicted C-FIXED traversal rate",
+      "id": "pmu-accounting-identity",
+      "producer": "sealed B5 B6 PMU decision",
+      "test_id": "formula-parity"
+    },
+    {
+      "comparison": "exact sealed output inventory and SHA256SUMS",
+      "consumer": "future worker-count sweep paper",
+      "id": "receipt-identity",
+      "producer": "D6 offline auditor",
+      "test_id": "receipt-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "offline-only",
+      "statement": "auditor has no subprocess network perf PMU Cargo rustc subject or marker route",
+      "test_id": "command-graph"
+    },
+    {
+      "id": "component-denominator-exact",
+      "statement": "all routes contain 7640 records and 502915120 measured edges with zero errors",
+      "test_id": "component-parity"
+    },
+    {
+      "id": "aggregate-not-microcause",
+      "statement": "IPC and frequency accounting does not claim SMT power cache or scheduling causality",
+      "test_id": "claim-boundary"
+    },
+    {
+      "id": "diagnostic-not-production",
+      "statement": "twenty-worker test envelope is not promoted to production internal concurrency",
+      "test_id": "production-boundary"
+    },
+    {
+      "id": "no-optimization-authority",
+      "statement": "D6 admits only a separate worker-count sweep contract",
+      "test_id": "authority-boundary"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "baseline_check_id": "d1-root-manifest",
+      "cursor_policy": "exact_bytes",
+      "id": "d1-evidence-tree",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/SHA256SUMS",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    },
+    {
+      "baseline_check_id": "loaded-pmu-combined",
+      "cursor_policy": "exact_bytes",
+      "id": "pmu-evidence",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_LOADED_PMU_DIAGNOSIS_COMBINED_V3_V4_2026-08-25.json",
+      "policy": "immutable_input",
+      "rollback_policy": "never_modify"
+    },
+    {
+      "baseline_check_id": "d4-terminal",
+      "cursor_policy": "exact_bytes",
+      "id": "d4-history",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26/D4_TERMINAL_AUDIT_RECEIPT.json",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    },
+    {
+      "baseline_check_id": "d5-forensic",
+      "cursor_policy": "exact_bytes",
+      "id": "d5-history",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_AUDIT_V1_2026-08-26/D5_T4_FORENSIC_AUDIT_RECEIPT.json",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    }
+  ],
+  "reuses_existing_implementation": false,
+  "runtime_comparisons": [],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "side_effects": {
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "synthetic_fixture_as_evidence",
+      "network_or_remote_access",
+      "marker_or_remote_state_mutation",
+      "perf_reader_record_or_stat",
+      "pmu_event_or_subject_execution",
+      "cargo_or_rustc",
+      "new_or_modified_elf_or_bucket_map",
+      "d5_retry_or_historical_relabel",
+      "production_code_edit_build_install_restart_deployment_or_runtime_change",
+      "microarchitectural_cause_claim_without_worker_count_intervention"
+    ],
+    "planned": [
+      {"id": "create-d6-auditor", "kind": "local_source_create"},
+      {"id": "read-sealed-accounting-inputs", "kind": "filesystem_read"},
+      {"id": "publish-d6-accounting-receipt", "kind": "local_evidence_write"},
+      {"id": "record-d6-result", "kind": "documentation_edit"}
+    ]
+  },
+  "state_machine": {
+    "initial_state": "D6_PREFLIGHT_READY",
+    "steps": [
+      {
+        "cleanup": "remove only partial new auditor source; preserve every sealed input and create no result",
+        "failure_state": "BLOCKED_ACCOUNTING_PROVENANCE",
+        "from": "D6_PREFLIGHT_READY",
+        "id": "implement-standalone-accounting-auditor",
+        "mutates": true,
+        "preserves": ["d1-evidence-tree", "pmu-evidence", "d4-history", "d5-history"],
+        "test_id": "implementation-fault",
+        "to": "D6_AUDITOR_VERIFIED_UNRUN"
+      },
+      {
+        "cleanup": "remove owned stage only; retain no partial result and preserve every input",
+        "failure_state": "BLOCKED_ACCOUNTING_PROVENANCE",
+        "from": "D6_AUDITOR_VERIFIED_UNRUN",
+        "id": "audit-and-publish-once",
+        "mutates": true,
+        "preserves": ["d1-evidence-tree", "pmu-evidence", "d4-history", "d5-history"],
+        "test_id": "publication-fault",
+        "to": "D6_CONCURRENCY_ACCOUNTING_COMPLETE"
+      }
+    ],
+    "terminal_states": ["D6_CONCURRENCY_ACCOUNTING_COMPLETE", "BLOCKED_ACCOUNTING_PROVENANCE"]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_IMPLEMENTATION_V1_2026-08-26",
+  "tests": [
+    {"expected": "no external command or network-capable route", "id": "command-graph", "kind": "parity"},
+    {"expected": "partial source grants no receipt and changes no sealed input", "id": "implementation-fault", "kind": "fault_injection"},
+    {"expected": "atomic result or no result with all sealed inputs unchanged", "id": "publication-fault", "kind": "fault_injection"},
+    {"expected": "all pinned modes sizes hashes and D1 manifest match", "id": "input-parity", "kind": "parity"},
+    {"expected": "7640 records zero errors exact phases and denominator per route", "id": "component-parity", "kind": "parity"},
+    {"expected": "fixed reversed worker and query identities are paired exactly", "id": "mapping-parity", "kind": "parity"},
+    {"expected": "factor product predicts 44.80148646392056 ns per edge", "id": "formula-parity", "kind": "parity"},
+    {"expected": "aggregate accounting retains all unisolated cause labels", "id": "claim-boundary", "kind": "parity"},
+    {"expected": "diagnostic twenty-worker source is not a production concurrency claim", "id": "production-boundary", "kind": "parity"},
+    {"expected": "only a separate worker-count sweep paper is admitted", "id": "authority-boundary", "kind": "parity"},
+    {"expected": "sealed result inventory exactly matches SHA256SUMS", "id": "receipt-parity", "kind": "parity"}
+  ]
+}

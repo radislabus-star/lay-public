@@ -43,6 +43,7 @@ pub(super) fn apply_manual_correction_output(
         input_isolated,
         text_observation,
         output_route,
+        delegated_tail_lease,
     } = ctx;
     let mut common = ManualOutputCommon {
         buf,
@@ -59,6 +60,7 @@ pub(super) fn apply_manual_correction_output(
         input_isolated,
         text_observation,
         output_route,
+        delegated_tail_lease,
     };
 
     let mut virtual_kbd = virtual_kbd;

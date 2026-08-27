@@ -1,0 +1,291 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_V3_2026-08-25",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "c1-contract-current",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRECT_LATENCY_CONTRACT_V1_2026-08-25.md",
+      "expect": {"mode": "0664", "size_bytes": 15531, "sha256": "1b9c8b2af590c721524b11fffeb54b92e37f5e571457605cb5c27dabc66f7752"}
+    },
+    {
+      "id": "c1-order-current",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_ORDER_CORRECTION_V1_2026-08-25.md",
+      "expect": {"mode": "0664", "size_bytes": 6675, "sha256": "02ce34cddff4dc599a9c2bc0daca84e87794f6f6e4838628617bb431a17ef0ff"}
+    },
+    {
+      "id": "clean-v2-supersession-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_SUPERSESSION_V1_2026-08-25.json",
+      "expect": {"mode": "0444", "size_bytes": 4791, "sha256": "c6a82710d7bf4cafda33bcec21efe784605219c62d1a5fde252ff5c004351ffa"}
+    },
+    {
+      "id": "recovered-v10-source",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "expect": {"mode": "0444", "size_bytes": 91518, "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c"}
+    },
+    {
+      "id": "active-v11-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {"mode": "0664", "size_bytes": 124127, "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"}
+    },
+    {
+      "id": "ready-preflight-v1-manifest",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_V1_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 27839, "sha256": "266d32497080123c8c244073bddfe9fdd2e374091aebb6fd85a88c57ac8f62bc"}
+    },
+    {
+      "id": "ready-preflight-v1-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_PREFLIGHT_V1_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 8137, "sha256": "02e4e4bfd4c1c83717df434af5f90feb02bf5599f958cf143c3e84f011315c7c"}
+    },
+    {
+      "id": "ready-preflight-v2-manifest",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_V2_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 36741, "sha256": "aef270f6a2a285ded7bd6740e054e593b29df936e252fa8e9e350203fa8844dc"}
+    },
+    {
+      "id": "ready-preflight-v2-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_PREFLIGHT_V2_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 9943, "sha256": "375a09a9226f7ebe0754151822ac558afd7e53a0abe8fbfc202cb8c211de88ae"}
+    },
+    {
+      "id": "remote-audit-v3",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_REMOTE_AUDIT_V3_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 2695, "sha256": "194888b8503376ff6df95d1ba7db84429a0408d701e574ad5747659a6300be38"}
+    },
+    {
+      "id": "controller-before-parity-reader-repair",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-c1-direct-latency.py",
+      "expect": {"mode": "0755", "size_bytes": 61695, "sha256": "4c09ac00e3c67f3cdb9b52a9930618e6d438dfa1c887e5fd48b346e73033e5bf"}
+    },
+    {
+      "id": "c1-test-fragment-built-and-sealed",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_c1_test_module.rs.inc",
+      "expect": {"mode": "0664", "size_bytes": 31455, "sha256": "2b12d6aff6c9b91efa4ff83781fd016a94164f42ef5d2e6db0222f424510de9a"}
+    },
+    {
+      "id": "c1-local-final-before-latency",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRECT_LATENCY_V1_2026-08-25",
+      "expect": {}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "repair-parity-status-reader-and-v3-pins", "kind": "local_source_edit"},
+      {"id": "controller-self-check", "kind": "local_temporary_test"},
+      {"id": "clean-host-readiness", "kind": "remote_read_only_observation"},
+      {"id": "ten-fixed-latency-processes", "kind": "remote_diagnostic_execution"},
+      {"id": "publish-remote-c1-evidence", "kind": "remote_evidence_write"},
+      {"id": "publish-local-c1-index", "kind": "local_evidence_write"},
+      {"id": "record-c1-result", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "production_source_edit",
+      "target_aware_query_or_selection",
+      "query_reorder",
+      "adaptive_repetition_or_retry",
+      "more_than_one_build",
+      "build_retry",
+      "parity_retry",
+      "latency_process_retry_or_replacement",
+      "perf_or_pmu",
+      "external_timing_as_authority",
+      "json_sha_full_row_or_target_lookup_in_measured_loop",
+      "dynamic_sample_buffer_growth",
+      "shared_sample_lock",
+      "host_tuning",
+      "foreign_process_or_service_control",
+      "runtime_deployment_or_restart",
+      "installed_lay_mutation",
+      "prior_elf_or_evidence_mutation",
+      "package_sidecar_v7_or_schedule_mutation",
+      "latency_before_parity_pass",
+      "latency_without_clean_admission",
+      "threshold_or_conjunct_change_after_samples",
+      "full_b_matrix_execution",
+      "v12_action"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "controller-pinned-before-parity-reader-repair",
+      "path": "../../../scripts/lay-v10-c1-direct-latency.py",
+      "sha256": "4c09ac00e3c67f3cdb9b52a9930618e6d438dfa1c887e5fd48b346e73033e5bf",
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "(?:requests\\.|urllib\\.request|socket\\.create_connection|TcpStream|UdpSocket|curl\\b|wget\\b)"},
+        {"effect": "synthetic_fixture", "regex": "(?:synthetic_fixture|generate_fixture|fixture_writer)"},
+        {"effect": "perf_or_pmu", "regex": "(?:/usr/bin/perf|perf_event_open|rdpmc|_rdtsc)"},
+        {"effect": "host_tuning", "regex": "(?:cpupower|sysctl\\s+-w|tee\\s+/sys/)"},
+        {"effect": "foreign_process_or_service_control", "regex": "(?:systemctl|pkill|killall)"},
+        {"effect": "runtime_deployment_or_restart", "regex": "(?:install-release|lay-runtime-control|gnome-extensions)"},
+        {"effect": "installed_lay_mutation", "regex": "(?:\\.local/(?:bin|lib)/lay).{0,160}(?:write|unlink|rename|replace|copy|chmod|install)"},
+        {"effect": "prior_elf_or_evidence_mutation", "regex": "(?:mutate_prior_evidence|overwrite_prior|historical.*(?:unlink|rename|replace|write))"},
+        {"effect": "package_sidecar_v7_or_schedule_mutation", "regex": "(?:PACKAGE|SIDECAR|V7|SCHEDULE)\\.(?:write|unlink|rename|replace|chmod)"},
+        {"effect": "query_reorder", "regex": "(?:query_reorder|reorder_queries|random\\.shuffle|schedule\\.sort)"},
+        {"effect": "adaptive_repetition_or_retry", "regex": "(?:adaptive_(?:repetition|retry)|retry_after_(?:build|parity|latency))"},
+        {"effect": "more_than_one_build", "regex": "(?:second_build|build_again|more_than_one_build)"},
+        {"effect": "build_retry", "regex": "(?:build_retry|retry_build|rebuild_after_failure)"},
+        {"effect": "parity_retry", "regex": "(?:parity_retry|retry_parity|parity_again)"},
+        {"effect": "latency_process_retry_or_replacement", "regex": "(?:replace_failed_process|retry_latency_process|latency_process_retry)"},
+        {"effect": "latency_before_parity_pass", "regex": "(?:latency_before_parity|run_latency_without_parity|skip_parity)"},
+        {"effect": "latency_without_clean_admission", "regex": "(?:latency_without_clean_admission|skip_clean_admission|ignore_environment_block)"},
+        {"effect": "threshold_or_conjunct_change_after_samples", "regex": "(?:change_threshold_after|threshold_from_samples|relax_failed_conjunct)"},
+        {"effect": "external_timing_as_authority", "regex": "(?:external_timing_as_authority|call_wall_authority|outer_elapsed_authority)"},
+        {"effect": "dynamic_sample_buffer_growth", "regex": "(?:dynamic_sample_buffer_growth|grow_sample_buffer|sample_buffer\\.(?:append|extend))"},
+        {"effect": "shared_sample_lock", "regex": "(?:shared_sample_lock|samples?.{0,80}(?:threading\\.Lock|Mutex))"},
+        {"effect": "target_aware_query_or_selection", "regex": "(?:target_aware_query|select_target_case|filter_by_target_surface)"},
+        {"effect": "full_b_matrix_execution", "regex": "(?:full_b_matrix|remote_b[356]|run_b[356])"},
+        {"effect": "v12_action", "regex": "(?:ExactFusedBandTransition|\\bV12\\b)"}
+      ]
+    },
+    {
+      "id": "built-test-fragment-pinned-and-not-editable-by-v3",
+      "path": "../../../scripts/lay_v10_c1_test_module.rs.inc",
+      "sha256": "2b12d6aff6c9b91efa4ff83781fd016a94164f42ef5d2e6db0222f424510de9a",
+      "forbidden_effect_patterns": [
+        {"effect": "production_source_edit", "regex": "(?:include!|include_str!|include_bytes!)"},
+        {"effect": "json_sha_full_row_or_target_lookup_in_measured_loop", "regex": "fn c1_sample\\((?:(?!fn c1_warmup)[\\s\\S]){0,2400}(?:serde_json|Sha256|full_row|target_surface|Vec::with_capacity)"}
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {"id": "preserve-contract", "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRECT_LATENCY_CONTRACT_V1_2026-08-25.md", "policy": "immutable_until_terminal_documentation", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "c1-contract-current"},
+    {"id": "preserve-order", "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_ORDER_CORRECTION_V1_2026-08-25.md", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "c1-order-current"},
+    {"id": "preserve-clean-supersession", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_SUPERSESSION_V1_2026-08-25.json", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "clean-v2-supersession-receipt"},
+    {"id": "preserve-recovered-v10", "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "recovered-v10-source"},
+    {"id": "preserve-active-v11", "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "active-v11-source"},
+    {"id": "preserve-v1-manifest", "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_V1_2026-08-25.json", "policy": "immutable", "rollback_policy": "never_overwrite_or_reclassify", "baseline_check_id": "ready-preflight-v1-manifest"},
+    {"id": "preserve-v1-receipt", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_PREFLIGHT_V1_2026-08-25.json", "policy": "immutable", "rollback_policy": "never_overwrite_or_reclassify", "baseline_check_id": "ready-preflight-v1-receipt"},
+    {"id": "preserve-v2-manifest", "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_V2_2026-08-25.json", "policy": "immutable", "rollback_policy": "never_overwrite_or_reclassify", "baseline_check_id": "ready-preflight-v2-manifest"},
+    {"id": "preserve-v2-receipt", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_PREFLIGHT_V2_2026-08-25.json", "policy": "immutable", "rollback_policy": "never_overwrite_or_reclassify", "baseline_check_id": "ready-preflight-v2-receipt"},
+    {"id": "preserve-remote-audit-v3", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_REMOTE_AUDIT_V3_2026-08-25.json", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "remote-audit-v3"},
+    {"id": "preserve-built-fragment", "path": "../../../scripts/lay_v10_c1_test_module.rs.inc", "policy": "immutable_under_v3", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "c1-test-fragment-built-and-sealed"}
+  ],
+  "state_machine": {
+    "initial_state": "C1_PARITY_PASS_LATENCY_AVAILABLE_STATUS_READER_BUG",
+    "steps": [
+      {
+        "id": "repair-parity-status-reader-and-v3-pins",
+        "from": "C1_PARITY_PASS_LATENCY_AVAILABLE_STATUS_READER_BUG",
+        "to": "C1_PARITY_STATUS_READER_REPAIRED_LATENCY_AVAILABLE",
+        "mutates": true,
+        "failure_state": "C1_STATUS_READER_REPAIR_REJECTED",
+        "cleanup": "the local patch is atomic; retain the pinned controller, V1/V2 evidence, sealed remote build/parity and all ten available latency markers",
+        "preserves": ["preserve-contract", "preserve-order", "preserve-clean-supersession", "preserve-recovered-v10", "preserve-active-v11", "preserve-v1-manifest", "preserve-v1-receipt", "preserve-v2-manifest", "preserve-v2-receipt", "preserve-remote-audit-v3", "preserve-built-fragment"],
+        "test_id": "status-reader-repair-fault"
+      },
+      {"id": "self-check-c1-tools", "from": "C1_PARITY_STATUS_READER_REPAIRED_LATENCY_AVAILABLE", "to": "C1_TOOLS_SELF_CHECKED_LATENCY_AVAILABLE", "mutates": false},
+      {"id": "clean-host-readiness", "from": "C1_TOOLS_SELF_CHECKED_LATENCY_AVAILABLE", "to": "C1_READY_FOR_S1", "mutates": false},
+      {
+        "id": "run-fixed-s-t-process-matrix",
+        "from": "C1_READY_FOR_S1",
+        "to": "C1_RAW_MATRIX_COMPLETE",
+        "mutates": true,
+        "failure_state": "C1_MATRIX_TERMINAL_NO_REPLACEMENT",
+        "cleanup": "terminate only the active C1 child, retain consumed markers and partial samples, and never replace a blocked or failed process",
+        "preserves": ["preserve-contract", "preserve-order", "preserve-clean-supersession", "preserve-recovered-v10", "preserve-active-v11", "preserve-v1-manifest", "preserve-v1-receipt", "preserve-v2-manifest", "preserve-v2-receipt", "preserve-remote-audit-v3", "preserve-built-fragment"],
+        "test_id": "process-order-marker-fault-matrix"
+      },
+      {
+        "id": "aggregate-and-publish-remote-result",
+        "from": "C1_RAW_MATRIX_COMPLETE",
+        "to": "C1_REMOTE_RESULT_IMMUTABLE",
+        "mutates": true,
+        "failure_state": "C1_REMOTE_PUBLICATION_FAILED_RAW_RETAINED",
+        "cleanup": "retain raw evidence and state; never mutate a published final path and never rerun a process",
+        "preserves": ["preserve-contract", "preserve-order", "preserve-clean-supersession", "preserve-recovered-v10", "preserve-active-v11", "preserve-v1-manifest", "preserve-v1-receipt", "preserve-v2-manifest", "preserve-v2-receipt", "preserve-remote-audit-v3", "preserve-built-fragment"],
+        "test_id": "remote-publication-fault"
+      },
+      {
+        "id": "publish-local-index",
+        "from": "C1_REMOTE_RESULT_IMMUTABLE",
+        "to": "C1_RESULT_INDEXED",
+        "mutates": true,
+        "failure_state": "C1_REMOTE_COMPLETE_LOCAL_INDEX_PENDING",
+        "cleanup": "retain remote immutable result; remove only unpublished local stage and do not rerun C1",
+        "preserves": ["preserve-contract", "preserve-order", "preserve-clean-supersession", "preserve-recovered-v10", "preserve-active-v11", "preserve-v1-manifest", "preserve-v1-receipt", "preserve-v2-manifest", "preserve-v2-receipt", "preserve-remote-audit-v3", "preserve-built-fragment"],
+        "test_id": "local-index-fault"
+      },
+      {
+        "id": "update-owning-documents",
+        "from": "C1_RESULT_INDEXED",
+        "to": "C1_DECISION_COMPLETE",
+        "mutates": true,
+        "failure_state": "C1_RESULT_COMPLETE_DOCUMENTATION_PENDING",
+        "cleanup": "retain remote and local immutable evidence; documentation cannot change the C1 verdict",
+        "preserves": ["preserve-order", "preserve-clean-supersession", "preserve-recovered-v10", "preserve-active-v11", "preserve-v1-manifest", "preserve-v1-receipt", "preserve-v2-manifest", "preserve-v2-receipt", "preserve-remote-audit-v3", "preserve-built-fragment"],
+        "test_id": "documentation-fault"
+      }
+    ],
+    "terminal_states": [
+      "C1_DECISION_COMPLETE",
+      "C1_STATUS_READER_REPAIR_REJECTED",
+      "C1_MATRIX_TERMINAL_NO_REPLACEMENT",
+      "C1_REMOTE_PUBLICATION_FAILED_RAW_RETAINED",
+      "C1_REMOTE_COMPLETE_LOCAL_INDEX_PENDING",
+      "C1_RESULT_COMPLETE_DOCUMENTATION_PENDING"
+    ]
+  },
+  "invariants": [
+    {"id": "v3-repair-scope-only", "statement": "V3 changes only the parity status-reader path and V3 preflight pins; it cannot rebuild, rerun parity, edit the Rust fragment or touch production bytes", "test_id": "status-reader-repair-fault"},
+    {"id": "sealed-parity-is-reused-not-rerun", "statement": "the exact sealed parity subject receipt b54897c20b8a at parity-v1/subject/SUBJECT_RECEIPT.json is the sole semantic prerequisite and its consumed marker is never recreated", "test_id": "sealed-parity-reader-parity"},
+    {"id": "all-latency-rights-remain-unconsumed", "statement": "S1 T1 T2 S2 S3 T3 T4 S4 S5 T5 remain available before clean admission and no route is replaced after consumption", "test_id": "latency-marker-provenance"},
+    {"id": "production-timing-authority-only", "statement": "only SearchResult search_elapsed_us and total_elapsed_us enter PASS; outer call-wall remains diagnostic", "test_id": "timing-authority-static"},
+    {"id": "fixed-process-order", "statement": "the only latency order is S1 T1 T2 S2 S3 T3 T4 S4 S5 T5 and no failed or blocked process is replaced", "test_id": "process-order-marker-fault-matrix"},
+    {"id": "clean-admission-fail-closed", "statement": "three quiet samples pass before every process; a readiness failure consumes no S or T marker and admits no latency execution", "test_id": "environment-admission-matrix"},
+    {"id": "claim-boundary", "statement": "C1 can decide only V10-derived steady-state product latency and cannot install V10, run full B, admit V12, or claim IBus-to-edit latency", "test_id": "claim-boundary"}
+  ],
+  "identity_contracts": [
+    {"id": "sealed-parity-producer-consumer", "producer": "remote_parity atomic publication at parity-v1/subject/SUBJECT_RECEIPT.json", "consumer": "remote_status_value and remote-ready parity gate", "comparison": "exact path, mode 0444, size 563, SHA-256 b54897c20b8ac41e14ba96ae891fe609c1e9d45fcafe2ad2ecad8b8fcdb22c4d and verdict PASS", "test_id": "sealed-parity-reader-parity"},
+    {"id": "v2-to-v3-controller-provenance", "producer": "V2 accepted controller SHA-256 4c09ac00e3c6 after its permitted repair", "consumer": "V3 one-path reader repair", "comparison": "reverse exactly the V3 manifest path, receipt path, three pin values and one subject/ path insertion to recover SHA-256 4c09ac00e3c67f3cdb9b52a9930618e6d438dfa1c887e5fd48b346e73033e5bf", "test_id": "v2-to-v3-controller-parity"},
+    {"id": "production-result-sample", "producer": "exact search_typed_peaks SearchResult", "consumer": "fixed-width C1 sample record", "comparison": "query ordinal, completeness bit, search_elapsed_us and total_elapsed_us copied exactly", "test_id": "timing-field-parity"},
+    {"id": "remote-result-local-index", "producer": "sealed remote C1 final tree", "consumer": "local immutable C1 index and owning documents", "comparison": "exact final SHA256SUMS, verdict, thresholds, metrics, executable identity and environment verdict", "test_id": "remote-local-index-parity"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "installed-runtime-noninterference",
+      "source": "local installed Lay, active V11 and live IBus/Lay processes before and after C1",
+      "comparison": "exact_stable_projection",
+      "reason": "C1 is a remote test-only route and cannot alter installed runtime authority",
+      "stable_fields": ["lay_version", "active_v11_sha256", "installed_binary_identities", "ibus_daemon_pid_starttime_argv", "lay_daemon_pid_starttime_argv", "lay_ibus_engine_pid_starttime_argv"],
+      "expected_to_change_fields": ["observation_timestamp"],
+      "observed_not_compared_fields": ["cpu_time", "rss", "scheduler_state"],
+      "test_id": "runtime-noninterference"
+    }
+  ],
+  "tests": [
+    {"id": "status-reader-repair-fault", "kind": "fault_injection", "expected": "the atomic local repair changes only one subject/ path and V3 preflight pins; failure retains V2 controller, sealed build/parity and all ten available latency markers"},
+    {"id": "v2-to-v3-controller-parity", "kind": "parity", "expected": "reversing the one reader-path insertion and V3 preflight bindings recovers the exact V2 controller SHA-256 4c09ac00e3c67f3cdb9b52a9930618e6d438dfa1c887e5fd48b346e73033e5bf"},
+    {"id": "sealed-parity-reader-parity", "kind": "parity", "expected": "remote status reads the exact sealed parity-v1/subject/SUBJECT_RECEIPT.json and reports PASS without executing or mutating the subject"},
+    {"id": "latency-marker-provenance", "kind": "parity", "expected": "read-only status shows build and parity consumed and all ten latency markers available before readiness"},
+    {"id": "controller-self-check", "kind": "fault_injection", "expected": "local temporary parser, percentile and publication checks pass without SSH, Cargo, subject or perf execution"},
+    {"id": "timing-authority-static", "kind": "unit", "expected": "acceptance reads only result.search_elapsed_us and result.total_elapsed_us; call-wall fields remain diagnostic"},
+    {"id": "timing-field-parity", "kind": "parity", "expected": "fixed-width samples copy query identity, production search_elapsed_us, production total_elapsed_us and completeness exactly"},
+    {"id": "environment-admission-matrix", "kind": "fault_injection", "expected": "three exact pre-process samples reject pressure, process, thermal, policy, affinity or migration faults before marker consumption"},
+    {"id": "process-order-marker-fault-matrix", "kind": "fault_injection", "expected": "only S1 T1 T2 S2 S3 T3 T4 S4 S5 T5 execute and every consumed or blocked route is terminal without replacement"},
+    {"id": "remote-publication-fault", "kind": "fault_injection", "expected": "final evidence is sealed and verified before one atomic rename with zero post-rename mutations"},
+    {"id": "local-index-fault", "kind": "fault_injection", "expected": "local indexing failure leaves remote final authoritative and immutable"},
+    {"id": "remote-local-index-parity", "kind": "parity", "expected": "local index exactly binds remote final manifest, verdict, metrics, executable and environment evidence"},
+    {"id": "runtime-noninterference", "kind": "parity", "expected": "installed Lay, active V11 and live runtime stable projection remain exact"},
+    {"id": "claim-boundary", "kind": "unit", "expected": "C1 grants no install, full B, V12 or runtime integration authority"},
+    {"id": "documentation-fault", "kind": "fault_injection", "expected": "documentation failure cannot alter immutable C1 evidence or verdict"},
+    {"id": "graphify-refresh", "kind": "integration", "expected": "graphify update completes after owning documents record the terminal result"}
+  ]
+}

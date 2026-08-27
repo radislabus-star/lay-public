@@ -1,0 +1,11 @@
+{
+  "schema": "lay.v10.e1-traversal-d5-live-before.v1",
+  "task_id": "slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826",
+  "transaction_id": "3ee46e2c915677e1b2d3cd6bcc9709e0232252dbc120745b097d736537779036",
+  "hostname": "e-MEGA-MINI-M1-13th",
+  "d5_parent_exists": false,
+  "d5_state_exists": false,
+  "perf_event_max_sample_rate": "8000",
+  "remote_writes": 0,
+  "captured_read_only": true
+}

@@ -1,0 +1,384 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_IMPLEMENTATION_V1_2026-08-25",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "e1-contract",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_CONTRACT_2026-08-25.md",
+      "expect": {"mode": "0664", "size_bytes": 9382, "sha256": "43d315d17d0d9ffbb9e2f25c7420d9f08ced73a8bb726cfbbd2df002564f9e8e"}
+    },
+    {
+      "id": "e1-route-v5",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_ROUTE_V5.md",
+      "expect": {"mode": "0664", "size_bytes": 4458, "sha256": "c64ded73d5401ec09fffda5c148b24d9cf54ea759767464b97e9c32ab9e9fc28"}
+    },
+    {
+      "id": "e1-route-v5-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_ROUTE_V5_RECEIPT_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 23106, "sha256": "1349782ffd6866575fbc961bfdf8aa458fdb35e627cb2f6d8c51daee45018370"}
+    },
+    {
+      "id": "e1-code-route-v2",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_CODE_ROUTE_V2_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 6725, "sha256": "77fdad91a410f563d3b68acba3760136202f49e1381bbe8ba9e9ce0eafe0a168"}
+    },
+    {
+      "id": "e1-code-route-v2-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_CODE_ROUTE_V2_RECEIPT_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 10958, "sha256": "9c2303ba94cd0ea10da7ca537e5e520522174a4482be47d3cd8e25846ba29430"}
+    },
+    {
+      "id": "remote-preflight-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_REMOTE_PREFLIGHT_AUDIT_V1_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 2085, "sha256": "cba265f35dc479a0faeb1211b8d7e24181f4c44f6ebd62944659c71ffaee9e8d"}
+    },
+    {
+      "id": "m1-decision",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_2026-08-25/M1_DECISION.json",
+      "expect": {"mode": "0444", "size_bytes": 26628, "sha256": "f75bdc6995bcdc8553b267ae43e511321bb34fe9d4d9acb14a610104356573a1"}
+    },
+    {
+      "id": "m1-manifest",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_2026-08-25/SHA256SUMS",
+      "expect": {"mode": "0444", "size_bytes": 2659, "sha256": "775ed5125eb541b54f2e8f9a911c688258d13089ff8bbb629938395f1dbe2f94"}
+    },
+    {
+      "id": "m1-fragment",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_fused_band_transition_m1_test_module.rs.inc",
+      "expect": {"mode": "0664", "size_bytes": 33866, "sha256": "bdef992d1f9bec095b3f683b384f1e7d23323823625cf3547dc44480511f0d76"}
+    },
+    {
+      "id": "c1-fragment",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_c1_test_module.rs.inc",
+      "expect": {"mode": "0664", "size_bytes": 31455, "sha256": "2b12d6aff6c9b91efa4ff83781fd016a94164f42ef5d2e6db0222f424510de9a"}
+    },
+    {
+      "id": "c1-controller",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-c1-direct-latency.py",
+      "expect": {"mode": "0755", "size_bytes": 61711, "sha256": "e6e3db8529b4bd5d64d11b903b3b2ef67e808dd202d5de0b7287fc644a151718"}
+    },
+    {
+      "id": "cargo-guard",
+      "kind": "file",
+      "path": "../../../scripts/cargo-guard.sh",
+      "expect": {"mode": "0775", "size_bytes": 2534, "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"}
+    },
+    {
+      "id": "v10-source",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "expect": {"mode": "0444", "size_bytes": 91518, "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c"}
+    },
+    {
+      "id": "active-v11",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {"mode": "0664", "size_bytes": 124127, "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"}
+    },
+    {
+      "id": "new-fragment-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay_v10_exact_fused_executor_e1_test_module.rs.inc",
+      "expect": {}
+    },
+    {
+      "id": "new-controller-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-exact-fused-executor-e1.py",
+      "expect": {}
+    },
+    {
+      "id": "new-local-result-absent",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_2026-08-25",
+      "expect": {}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "create-e1-test-fragment", "kind": "local_source_create"},
+      {"id": "create-e1-controller", "kind": "local_source_create"},
+      {"id": "create-remote-one-shot-state", "kind": "remote_state_create"},
+      {"id": "one-guarded-remote-build", "kind": "remote_cargo_build"},
+      {"id": "run-full-semantic-parity", "kind": "remote_diagnostic_execution"},
+      {"id": "run-e0-and-e1-pmu", "kind": "remote_process_scoped_pmu_execution"},
+      {"id": "run-e1-loaded-latency", "kind": "remote_loaded_latency_execution"},
+      {"id": "publish-immutable-decision", "kind": "remote_and_local_evidence_write"},
+      {"id": "record-e1-result", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "production_v10_source_or_prefix_edit",
+      "active_v11_source_edit",
+      "v10_sidecar_or_input_mutation",
+      "target_aware_condition_or_selection",
+      "packed_dafsa_or_dla_redesign",
+      "second_dp_state_or_swar_candidate",
+      "foreign_process_control_reaffinity_or_repriority",
+      "host_policy_or_governor_tuning",
+      "third_loaded_e0_v10_latency_run",
+      "clean_c1_marker_consumption",
+      "more_than_one_build_or_any_retry",
+      "adaptive_rerun_or_threshold_change",
+      "full_b_execution_or_promotion",
+      "v12_implementation_or_admission",
+      "runtime_integration_or_deployment",
+      "installed_lay_mutation_or_restart",
+      "runtime_authority_change"
+    ]
+  },
+  "source_checks": [],
+  "state_machine": {
+    "initial_state": "E1_PAPER_READY_IMPLEMENTATION_ABSENT",
+    "steps": [
+      {
+        "id": "implement-test-only-e1",
+        "from": "E1_PAPER_READY_IMPLEMENTATION_ABSENT",
+        "to": "E1_IMPLEMENTED_UNRUN",
+        "mutates": true,
+        "failure_state": "E1_IMPLEMENTATION_REJECTED",
+        "cleanup": "remove only partial new E1 fragment and controller; preserve all predecessor evidence and source bytes",
+        "preserves": ["m1-result", "v10-source", "active-v11", "installed-runtime"],
+        "test_id": "implementation-fault"
+      },
+      {
+        "id": "self-check-e1",
+        "from": "E1_IMPLEMENTED_UNRUN",
+        "to": "E1_VERIFIED_UNRUN",
+        "mutates": false,
+        "test_id": "source-boundary"
+      },
+      {
+        "id": "create-one-shot-state",
+        "from": "E1_VERIFIED_UNRUN",
+        "to": "E1_STATE_READY",
+        "mutates": true,
+        "failure_state": "E1_STATE_CREATION_TERMINAL",
+        "cleanup": "retain disjoint partial E1 state and consume no predecessor marker",
+        "preserves": ["m1-result", "v10-source", "active-v11", "installed-runtime"],
+        "test_id": "state-fault"
+      },
+      {
+        "id": "build-once",
+        "from": "E1_STATE_READY",
+        "to": "E1_BUILD_SEALED",
+        "mutates": true,
+        "failure_state": "E1_BUILD_TERMINAL",
+        "cleanup": "retain consumed build marker, build logs and partial workspace identity; no retry",
+        "preserves": ["m1-result", "v10-source", "active-v11", "installed-runtime"],
+        "test_id": "build-fault"
+      },
+      {
+        "id": "run-parity",
+        "from": "E1_BUILD_SEALED",
+        "to": "E1_PARITY_PASS",
+        "mutates": true,
+        "failure_state": "E1_PARITY_TERMINAL",
+        "cleanup": "retain consumed parity marker and raw mismatch evidence; block PMU and latency",
+        "preserves": ["m1-result", "v10-source", "active-v11", "installed-runtime"],
+        "test_id": "parity-fault"
+      },
+      {
+        "id": "run-e0-pmu",
+        "from": "E1_PARITY_PASS",
+        "to": "E1_E0_PMU_OBSERVED",
+        "mutates": true,
+        "failure_state": "E1_E0_PMU_TERMINAL",
+        "cleanup": "retain consumed E0 PMU marker and raw perf evidence; no event substitution or retry",
+        "preserves": ["m1-result", "v10-source", "active-v11", "installed-runtime"],
+        "test_id": "pmu-fault"
+      },
+      {
+        "id": "run-e1-pmu",
+        "from": "E1_E0_PMU_OBSERVED",
+        "to": "E1_E1_PMU_OBSERVED",
+        "mutates": true,
+        "failure_state": "E1_E1_PMU_TERMINAL",
+        "cleanup": "retain consumed E1 PMU marker and raw perf evidence; no event substitution or retry",
+        "preserves": ["m1-result", "v10-source", "active-v11", "installed-runtime"],
+        "test_id": "pmu-fault"
+      },
+      {
+        "id": "run-e1-loaded-latency",
+        "from": "E1_E1_PMU_OBSERVED",
+        "to": "E1_LATENCY_OBSERVED",
+        "mutates": true,
+        "failure_state": "E1_LATENCY_TERMINAL_OR_BLOCKED_THERMAL",
+        "cleanup": "retain consumed latency marker, every completed process and the first terminal error or throttle snapshot; no retry",
+        "preserves": ["m1-result", "v10-source", "active-v11", "installed-runtime"],
+        "test_id": "latency-fault"
+      },
+      {
+        "id": "publish-decision",
+        "from": "E1_LATENCY_OBSERVED",
+        "to": "E1_DECISION_PUBLISHED",
+        "mutates": true,
+        "failure_state": "E1_PUBLICATION_FAILED_REMOTE_RETAINED",
+        "cleanup": "retain sealed remote result and remove incomplete local stage only",
+        "preserves": ["m1-result", "v10-source", "active-v11", "installed-runtime"],
+        "test_id": "publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "E1_DECISION_PUBLISHED",
+      "E1_IMPLEMENTATION_REJECTED",
+      "E1_STATE_CREATION_TERMINAL",
+      "E1_BUILD_TERMINAL",
+      "E1_PARITY_TERMINAL",
+      "E1_E0_PMU_TERMINAL",
+      "E1_E1_PMU_TERMINAL",
+      "E1_LATENCY_TERMINAL_OR_BLOCKED_THERMAL",
+      "E1_PUBLICATION_FAILED_REMOTE_RETAINED"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "m1-result",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_2026-08-25/SHA256SUMS",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "m1-manifest"
+    },
+    {
+      "id": "v10-source",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "v10-source"
+    },
+    {
+      "id": "active-v11",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "active-v11"
+    },
+    {
+      "id": "installed-runtime",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_REMOTE_PREFLIGHT_AUDIT_V1_2026-08-25.json",
+      "policy": "immutable_observation",
+      "rollback_policy": "no_runtime_mutation_permitted",
+      "baseline_check_id": "remote-preflight-audit"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "production-prefix",
+      "producer": "exact recovered V10 bytes 1 through 39047",
+      "consumer": "assembled E1 test-only source",
+      "comparison": "exact byte equality and SHA ce9ea2d29060",
+      "test_id": "source-boundary"
+    },
+    {
+      "id": "m1-u1-to-e1",
+      "producer": "M1 U1 exact packed transition output",
+      "consumer": "E1 packed transition in full traversal",
+      "comparison": "all cells metadata minimum terminal distance and prune decision",
+      "test_id": "transition-parity"
+    },
+    {
+      "id": "e0-e1-semantics",
+      "producer": "E0 exact search result and work receipt",
+      "consumer": "E1 candidate result and work receipt",
+      "comparison": "terminal peak completeness rank work certificate and budget parity",
+      "test_id": "full-parity"
+    },
+    {
+      "id": "c1-latency-denominator",
+      "producer": "frozen C1 schedule process order rounds shards barriers percentile and timer boundaries",
+      "consumer": "E1 loaded candidate latency campaign",
+      "comparison": "exact denominator and nearest-rank parity with E1-only function substitution",
+      "test_id": "latency-denominator"
+    },
+    {
+      "id": "local-remote-source",
+      "producer": "local E1 fragment controller contract and guard bytes",
+      "consumer": "remote build provenance",
+      "comparison": "SHA-256 and mode identity before build marker consumption",
+      "test_id": "remote-source-parity"
+    },
+    {
+      "id": "single-elf",
+      "producer": "one sealed E1 build",
+      "consumer": "parity E0 PMU E1 PMU and E1 latency routes",
+      "comparison": "same ELF SHA-256 Build ID and production prefix",
+      "test_id": "elf-parity"
+    },
+    {
+      "id": "sealed-inputs",
+      "producer": "B0a package sidecar V7 and B0b schedule",
+      "consumer": "every E1 executable route",
+      "comparison": "exact SHA-256 identities from remote preflight audit",
+      "test_id": "asset-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "installed-runtime-stability",
+      "source": "local installed Lay and daemon snapshots before implementation build and after final publication",
+      "comparison": "exact_stable_projection",
+      "reason": "test-only E1 may not mutate installed runtime",
+      "stable_fields": ["lay_version", "active_v11_sha256", "ibus_daemon_pid", "lay_daemon_pid", "lay_ibus_engine_pid"],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": ["process_cpu_time", "host_load", "temperature", "foreign_process_set"],
+      "test_id": "runtime-stability"
+    },
+    {
+      "id": "remote-loaded-host-noninterference",
+      "source": "remote environment snapshots and controller provenance",
+      "comparison": "declared_noninterference_projection",
+      "reason": "loaded workload is observed but not controlled",
+      "stable_fields": ["hostname", "machine_id_sha256", "foreign_process_control", "host_tuning", "installed_lay_changed"],
+      "expected_to_change_fields": ["loadavg", "psi", "temperatures", "process_cpu_time"],
+      "observed_not_compared_fields": ["foreign_process_pid_set", "foreign_cpu_percent", "scheduler_placement"],
+      "test_id": "foreign-noninterference"
+    }
+  ],
+  "invariants": [
+    {"id": "source-preserving", "statement": "production bytes 1 through 39047 remain exact and all E1 code is test-only", "test_id": "source-boundary"},
+    {"id": "e0-sole-authority", "statement": "E0 alone defines language rank work and certificate parity", "test_id": "full-parity"},
+    {"id": "equality-exact", "statement": "dense alphabet masks produce every V10 equality window including the 64-bit boundary", "test_id": "transition-parity"},
+    {"id": "full-cost-counted", "statement": "E1 PMU includes mask preparation lookup packed stack traversal merge and certificates", "test_id": "pmu-window"},
+    {"id": "latency-not-hidden", "statement": "E1 latency runs after measured instruction miss but never after semantic mismatch", "test_id": "state-sequence"},
+    {"id": "one-shot", "statement": "build parity E0 PMU E1 PMU and latency markers are consumed before execution and never retried", "test_id": "marker-fault"},
+    {"id": "foreign-owned", "statement": "Nando btop K1 and host policy are not controlled", "test_id": "foreign-noninterference"},
+    {"id": "claim-boundary", "statement": "E1 cannot claim latency PASS without every conjunct or admit V12 runtime integration deployment or authority", "test_id": "claim-boundary"}
+  ],
+  "tests": [
+    {"id": "implementation-fault", "kind": "fault_injection", "expected": "partial new local E1 files are removable without predecessor mutation"},
+    {"id": "source-boundary", "kind": "parity", "expected": "39047 production bytes and SHA remain exact; fragment is test-only"},
+    {"id": "state-fault", "kind": "fault_injection", "expected": "partial disjoint state is retained terminal with predecessor markers unchanged"},
+    {"id": "build-fault", "kind": "fault_injection", "expected": "build marker remains consumed and no retry or executable substitution is possible"},
+    {"id": "parity-fault", "kind": "fault_injection", "expected": "parity mismatch evidence is retained and all later markers remain unavailable"},
+    {"id": "pmu-fault", "kind": "fault_injection", "expected": "failed PMU route retains consumed marker and raw evidence without event substitution"},
+    {"id": "latency-fault", "kind": "fault_injection", "expected": "failed or throttled latency campaign retains all completed processes and cannot retry"},
+    {"id": "publication-fault", "kind": "fault_injection", "expected": "sealed remote result survives while incomplete local stage is absent"},
+    {"id": "transition-parity", "kind": "parity", "expected": "M1 stress and full traversal transition outputs match exactly including position 64"},
+    {"id": "full-parity", "kind": "parity", "expected": "382 records and reverse schedule have exact outputs work ranks certificates and zero false certificates"},
+    {"id": "latency-denominator", "kind": "parity", "expected": "C1 process order rounds shards barriers nearest-rank and timer boundaries are exact"},
+    {"id": "remote-source-parity", "kind": "parity", "expected": "local and uploaded source contract guard and controller identities match"},
+    {"id": "elf-parity", "kind": "parity", "expected": "all routes consume one sealed ELF SHA and Build ID"},
+    {"id": "asset-parity", "kind": "parity", "expected": "package sidecar V7 and schedule SHA-256 match before every route"},
+    {"id": "runtime-stability", "kind": "parity", "expected": "installed Lay version active V11 and daemon PIDs remain stable"},
+    {"id": "foreign-noninterference", "kind": "parity", "expected": "controller records no foreign process control or host tuning"},
+    {"id": "pmu-window", "kind": "integration", "expected": "GO-controlled process PMU counts complete E0 and E1 request work only"},
+    {"id": "state-sequence", "kind": "integration", "expected": "semantic mismatch blocks later routes while measured efficiency miss still reaches E1 latency"},
+    {"id": "marker-fault", "kind": "fault_injection", "expected": "second consumption of every one-shot marker fails before subject execution"},
+    {"id": "claim-boundary", "kind": "integration", "expected": "decision contains fixed conjuncts and leaves full B V12 integration deployment and authority false"}
+  ]
+}

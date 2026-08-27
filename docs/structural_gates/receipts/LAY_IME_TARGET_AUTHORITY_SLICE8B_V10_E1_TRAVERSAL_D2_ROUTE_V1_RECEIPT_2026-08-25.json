@@ -1,0 +1,1322 @@
+{
+  "verdict": "VETO",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-e1-traversal-d2-route-v1",
+  "domain": "code",
+  "complexity_score": 70,
+  "mandatory_gate": true,
+  "limits": [
+    "routes target limit exceeded: 10>8"
+  ],
+  "stable_triads": [
+    "c3",
+    "c4",
+    "c5",
+    "c7",
+    "c9",
+    "c11"
+  ],
+  "weak_triads": [
+    "c1",
+    "c10",
+    "c12",
+    "c2",
+    "c6",
+    "c8"
+  ],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10",
+      "c11",
+      "c12"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.0833,
+      "c10": 0.0833,
+      "c11": 0.0833,
+      "c12": 0.0833,
+      "c2": 0.0833,
+      "c3": 0.0833,
+      "c4": 0.0833,
+      "c5": 0.0833,
+      "c6": 0.0833,
+      "c7": 0.0833,
+      "c8": 0.0833,
+      "c9": 0.0833
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 24,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "s9",
+      "s10",
+      "s11",
+      "s12",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10",
+      "c11",
+      "c12"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.2777,
+      "c10": 0.2732,
+      "c11": 0.314,
+      "c12": 0.263,
+      "c2": 0.2539,
+      "c3": 0.3231,
+      "c4": 0.2902,
+      "c5": 0.3106,
+      "c6": 0.2471,
+      "c7": 0.3083,
+      "c8": 0.2721,
+      "c9": 0.3129
+    },
+    "source_self_score": 0.2872,
+    "stable": [
+      "c3",
+      "c4",
+      "c5",
+      "c7",
+      "c9",
+      "c11"
+    ],
+    "weak": [
+      "c1",
+      "c2",
+      "c6",
+      "c8",
+      "c10",
+      "c12"
+    ],
+    "weak_details": {
+      "c1": {
+        "nearest_source": "s1",
+        "nearest_source_score": 1.0,
+        "score": 0.2777,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c10": {
+        "nearest_source": "s10",
+        "nearest_source_score": 1.0,
+        "score": 0.2732,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c12": {
+        "nearest_source": "s12",
+        "nearest_source_score": 1.0,
+        "score": 0.263,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c2": {
+        "nearest_source": "s2",
+        "nearest_source_score": 1.0,
+        "score": 0.2539,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c6": {
+        "nearest_source": "s6",
+        "nearest_source_score": 1.0,
+        "score": 0.2471,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c8": {
+        "nearest_source": "s8",
+        "nearest_source_score": 1.0,
+        "score": 0.2721,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      }
+    }
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "d2-attribution": "d2-attribution",
+      "d2-build": "d2-build",
+      "d2-control": "d2-control",
+      "d2-decision": "d2-decision",
+      "d2-map": "d2-map",
+      "d2-parity": "d2-parity",
+      "d2-primary": "d2-primary",
+      "d2-secondary": "d2-secondary",
+      "d2-static": "d2-static",
+      "d2-validity": "d2-validity"
+    },
+    "scores": {
+      "d2-attribution": 1.0,
+      "d2-build": 1.0,
+      "d2-control": 1.0,
+      "d2-decision": 1.0,
+      "d2-map": 1.0,
+      "d2-parity": 1.0,
+      "d2-primary": 1.0,
+      "d2-secondary": 1.0,
+      "d2-static": 1.0,
+      "d2-validity": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "d2-attribution": 1,
+      "d2-build": 1,
+      "d2-control": 1,
+      "d2-decision": 1,
+      "d2-map": 2,
+      "d2-parity": 1,
+      "d2-primary": 1,
+      "d2-secondary": 1,
+      "d2-static": 2,
+      "d2-validity": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.2872,
+      "norm": 110.2724,
+      "triads": 12
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "d2-attribution": "d2-attribution",
+      "d2-build": "d2-build",
+      "d2-control": "d2-control",
+      "d2-decision": "d2-decision",
+      "d2-map": "d2-map",
+      "d2-parity": "d2-parity",
+      "d2-primary": "d2-primary",
+      "d2-secondary": "d2-secondary",
+      "d2-static": "d2-static",
+      "d2-validity": "d2-validity"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "d2-attribution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-build": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-control": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-map": {
+          "norm": 45.8694,
+          "self_coherence": 0.7167,
+          "triads": 2
+        },
+        "d2-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-primary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-secondary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-static": {
+          "norm": 44.4972,
+          "self_coherence": 0.6953,
+          "triads": 2
+        },
+        "d2-validity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "d2-attribution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-build": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-control": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-map": {
+          "norm": 45.8694,
+          "self_coherence": 0.7167,
+          "triads": 2
+        },
+        "d2-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-primary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-secondary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "d2-static": {
+          "norm": 44.4972,
+          "self_coherence": 0.6953,
+          "triads": 2
+        },
+        "d2-validity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "d2-attribution": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "d2-attribution",
+        "exact_source_groups": [
+          "d2-attribution"
+        ]
+      },
+      "d2-build": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "d2-build",
+        "exact_source_groups": [
+          "d2-build"
+        ]
+      },
+      "d2-control": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "d2-control",
+        "exact_source_groups": [
+          "d2-control"
+        ]
+      },
+      "d2-decision": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "d2-decision",
+        "exact_source_groups": [
+          "d2-decision"
+        ]
+      },
+      "d2-map": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "d2-map",
+        "exact_source_groups": [
+          "d2-map"
+        ]
+      },
+      "d2-parity": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "d2-parity",
+        "exact_source_groups": [
+          "d2-parity"
+        ]
+      },
+      "d2-primary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "d2-primary",
+        "exact_source_groups": [
+          "d2-primary"
+        ]
+      },
+      "d2-secondary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "d2-secondary",
+        "exact_source_groups": [
+          "d2-secondary"
+        ]
+      },
+      "d2-static": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "d2-static",
+        "exact_source_groups": [
+          "d2-static"
+        ]
+      },
+      "d2-validity": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "d2-validity",
+        "exact_source_groups": [
+          "d2-validity"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "d2-attribution": {
+        "d2-attribution": 1.0,
+        "d2-build": 0.0156,
+        "d2-control": -0.0645,
+        "d2-decision": -0.0293,
+        "d2-map": -0.0082,
+        "d2-parity": 0.0195,
+        "d2-primary": -0.0332,
+        "d2-secondary": 0.0332,
+        "d2-static": -0.0155,
+        "d2-validity": 0.0332
+      },
+      "d2-build": {
+        "d2-attribution": 0.0156,
+        "d2-build": 1.0,
+        "d2-control": 0.0176,
+        "d2-decision": 0.0059,
+        "d2-map": 0.0136,
+        "d2-parity": -0.0039,
+        "d2-primary": -0.0059,
+        "d2-secondary": 0.0332,
+        "d2-static": 0.0155,
+        "d2-validity": 0.0098
+      },
+      "d2-control": {
+        "d2-attribution": -0.0645,
+        "d2-build": 0.0176,
+        "d2-control": 1.0,
+        "d2-decision": -0.0195,
+        "d2-map": 0.0736,
+        "d2-parity": -0.0098,
+        "d2-primary": 0.0156,
+        "d2-secondary": -0.0156,
+        "d2-static": -0.0042,
+        "d2-validity": 0.0391
+      },
+      "d2-decision": {
+        "d2-attribution": -0.0293,
+        "d2-build": 0.0059,
+        "d2-control": -0.0195,
+        "d2-decision": 1.0,
+        "d2-map": 0.0027,
+        "d2-parity": -0.0605,
+        "d2-primary": -0.0117,
+        "d2-secondary": 0.0391,
+        "d2-static": -0.0126,
+        "d2-validity": -0.0039
+      },
+      "d2-map": {
+        "d2-attribution": -0.0082,
+        "d2-build": 0.0136,
+        "d2-control": 0.0736,
+        "d2-decision": 0.0027,
+        "d2-map": 1.0,
+        "d2-parity": -0.03,
+        "d2-primary": 0.0027,
+        "d2-secondary": -0.0627,
+        "d2-static": 0.0059,
+        "d2-validity": 0.0109
+      },
+      "d2-parity": {
+        "d2-attribution": 0.0195,
+        "d2-build": -0.0039,
+        "d2-control": -0.0098,
+        "d2-decision": -0.0605,
+        "d2-map": -0.03,
+        "d2-parity": 1.0,
+        "d2-primary": -0.0332,
+        "d2-secondary": 0.0176,
+        "d2-static": -0.0014,
+        "d2-validity": -0.0332
+      },
+      "d2-primary": {
+        "d2-attribution": -0.0332,
+        "d2-build": -0.0059,
+        "d2-control": 0.0156,
+        "d2-decision": -0.0117,
+        "d2-map": 0.0027,
+        "d2-parity": -0.0332,
+        "d2-primary": 1.0,
+        "d2-secondary": -0.0039,
+        "d2-static": -0.0042,
+        "d2-validity": 0.0117
+      },
+      "d2-secondary": {
+        "d2-attribution": 0.0332,
+        "d2-build": 0.0332,
+        "d2-control": -0.0156,
+        "d2-decision": 0.0391,
+        "d2-map": -0.0627,
+        "d2-parity": 0.0176,
+        "d2-primary": -0.0039,
+        "d2-secondary": 1.0,
+        "d2-static": -0.0098,
+        "d2-validity": 0.0781
+      },
+      "d2-static": {
+        "d2-attribution": -0.0155,
+        "d2-build": 0.0155,
+        "d2-control": -0.0042,
+        "d2-decision": -0.0126,
+        "d2-map": 0.0059,
+        "d2-parity": -0.0014,
+        "d2-primary": -0.0042,
+        "d2-secondary": -0.0098,
+        "d2-static": 1.0,
+        "d2-validity": -0.0492
+      },
+      "d2-validity": {
+        "d2-attribution": 0.0332,
+        "d2-build": 0.0098,
+        "d2-control": 0.0391,
+        "d2-decision": -0.0039,
+        "d2-map": 0.0109,
+        "d2-parity": -0.0332,
+        "d2-primary": 0.0117,
+        "d2-secondary": 0.0781,
+        "d2-static": -0.0492,
+        "d2-validity": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [
+        {
+          "center": "bucket map owner",
+          "group": "d2-map",
+          "kind": "owner_conflict",
+          "owners": [
+            "bucket map owner",
+            "machine closure owner"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        }
+      ],
+      "group_centers": {
+        "d2-attribution": {
+          "gravity": 1.0,
+          "owner": "attribution owner",
+          "owners": {
+            "attribution owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "d2-build": {
+          "gravity": 1.0,
+          "owner": "symbolized build owner",
+          "owners": {
+            "symbolized build owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "d2-control": {
+          "gravity": 1.0,
+          "owner": "unsampled control owner",
+          "owners": {
+            "unsampled control owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "d2-decision": {
+          "gravity": 1.0,
+          "owner": "d2 decision owner",
+          "owners": {
+            "d2 decision owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "d2-map": {
+          "gravity": 0.5,
+          "owner": "bucket map owner",
+          "owners": {
+            "bucket map owner": 2,
+            "machine closure owner": 2
+          },
+          "support": 2,
+          "total": 4
+        },
+        "d2-parity": {
+          "gravity": 1.0,
+          "owner": "d2-parity",
+          "owners": {
+            "d2-parity": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "d2-primary": {
+          "gravity": 1.0,
+          "owner": "d2-primary",
+          "owners": {
+            "d2-primary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "d2-secondary": {
+          "gravity": 1.0,
+          "owner": "d2-secondary",
+          "owners": {
+            "d2-secondary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "d2-static": {
+          "gravity": 1.0,
+          "owner": "d2-static",
+          "owners": {
+            "d2-static": 4
+          },
+          "support": 4,
+          "total": 4
+        },
+        "d2-validity": {
+          "gravity": 1.0,
+          "owner": "d2-validity",
+          "owners": {
+            "d2-validity": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "attribution": {
+          "gravity": 1.0,
+          "owner": "attribution owner",
+          "owners": {
+            "attribution owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "build": {
+          "gravity": 1.0,
+          "owner": "symbolized build owner",
+          "owners": {
+            "symbolized build owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "control": {
+          "gravity": 1.0,
+          "owner": "unsampled control owner",
+          "owners": {
+            "unsampled control owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "decision": {
+          "gravity": 1.0,
+          "owner": "d2 decision owner",
+          "owners": {
+            "d2 decision owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "map": {
+          "gravity": 0.5,
+          "owner": "bucket map owner",
+          "owners": {
+            "bucket map owner": 2,
+            "machine closure owner": 2
+          },
+          "support": 2,
+          "total": 4
+        },
+        "parity": {
+          "gravity": 1.0,
+          "owner": "d2-parity",
+          "owners": {
+            "d2-parity": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "primary": {
+          "gravity": 1.0,
+          "owner": "d2-primary",
+          "owners": {
+            "d2-primary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "secondary": {
+          "gravity": 1.0,
+          "owner": "d2-secondary",
+          "owners": {
+            "d2-secondary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "static": {
+          "gravity": 1.0,
+          "owner": "d2-static",
+          "owners": {
+            "d2-static": 4
+          },
+          "support": 4,
+          "total": 4
+        },
+        "validity": {
+          "gravity": 1.0,
+          "owner": "d2-validity",
+          "owners": {
+            "d2-validity": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-map"
+      }
+    ],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "attribution": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-f attribution"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "attribution owner"
+          ],
+          "scopes": [
+            "attribution"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "build": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-b one symbolized build"
+          ],
+          "layers": [
+            "ui"
+          ],
+          "outputs": [],
+          "owners": [
+            "symbolized build owner"
+          ],
+          "scopes": [
+            "build"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "control": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-d validity gates"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "unsampled control owner"
+          ],
+          "scopes": [
+            "control"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "decision": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2 decision"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "d2 decision owner"
+          ],
+          "scopes": [
+            "decision"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "map": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-c frozen buckets",
+            "d2-c pre-measurement machine closure"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "bucket map owner",
+            "machine closure owner"
+          ],
+          "scopes": [
+            "map"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "parity": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-d semantic control"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "d2-parity"
+          ],
+          "scopes": [
+            "parity"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "primary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-e task-clock route"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "d2-primary"
+          ],
+          "scopes": [
+            "primary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "secondary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-e instruction route"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "d2-secondary"
+          ],
+          "scopes": [
+            "secondary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "static": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2 corrected static closure"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "d2-static"
+          ],
+          "scopes": [
+            "static"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "validity": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "d2-e validity gates"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "d2-validity"
+          ],
+          "scopes": [
+            "validity"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "attribution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "build": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "control": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "map": {
+          "norm": 45.8694,
+          "self_coherence": 0.7167,
+          "triads": 2
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "primary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "secondary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "static": {
+          "norm": 44.4972,
+          "self_coherence": 0.6953,
+          "triads": 2
+        },
+        "validity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "attribution": {
+          "attribution": 1.0,
+          "build": 0.0156,
+          "control": -0.0645,
+          "decision": -0.0293,
+          "map": -0.0082,
+          "parity": 0.0195,
+          "primary": -0.0332,
+          "secondary": 0.0332,
+          "static": -0.0155,
+          "validity": 0.0332
+        },
+        "build": {
+          "attribution": 0.0156,
+          "build": 1.0,
+          "control": 0.0176,
+          "decision": 0.0059,
+          "map": 0.0136,
+          "parity": -0.0039,
+          "primary": -0.0059,
+          "secondary": 0.0332,
+          "static": 0.0155,
+          "validity": 0.0098
+        },
+        "control": {
+          "attribution": -0.0645,
+          "build": 0.0176,
+          "control": 1.0,
+          "decision": -0.0195,
+          "map": 0.0736,
+          "parity": -0.0098,
+          "primary": 0.0156,
+          "secondary": -0.0156,
+          "static": -0.0042,
+          "validity": 0.0391
+        },
+        "decision": {
+          "attribution": -0.0293,
+          "build": 0.0059,
+          "control": -0.0195,
+          "decision": 1.0,
+          "map": 0.0027,
+          "parity": -0.0605,
+          "primary": -0.0117,
+          "secondary": 0.0391,
+          "static": -0.0126,
+          "validity": -0.0039
+        },
+        "map": {
+          "attribution": -0.0082,
+          "build": 0.0136,
+          "control": 0.0736,
+          "decision": 0.0027,
+          "map": 1.0,
+          "parity": -0.03,
+          "primary": 0.0027,
+          "secondary": -0.0627,
+          "static": 0.0059,
+          "validity": 0.0109
+        },
+        "parity": {
+          "attribution": 0.0195,
+          "build": -0.0039,
+          "control": -0.0098,
+          "decision": -0.0605,
+          "map": -0.03,
+          "parity": 1.0,
+          "primary": -0.0332,
+          "secondary": 0.0176,
+          "static": -0.0014,
+          "validity": -0.0332
+        },
+        "primary": {
+          "attribution": -0.0332,
+          "build": -0.0059,
+          "control": 0.0156,
+          "decision": -0.0117,
+          "map": 0.0027,
+          "parity": -0.0332,
+          "primary": 1.0,
+          "secondary": -0.0039,
+          "static": -0.0042,
+          "validity": 0.0117
+        },
+        "secondary": {
+          "attribution": 0.0332,
+          "build": 0.0332,
+          "control": -0.0156,
+          "decision": 0.0391,
+          "map": -0.0627,
+          "parity": 0.0176,
+          "primary": -0.0039,
+          "secondary": 1.0,
+          "static": -0.0098,
+          "validity": 0.0781
+        },
+        "static": {
+          "attribution": -0.0155,
+          "build": 0.0155,
+          "control": -0.0042,
+          "decision": -0.0126,
+          "map": 0.0059,
+          "parity": -0.0014,
+          "primary": -0.0042,
+          "secondary": -0.0098,
+          "static": 1.0,
+          "validity": -0.0492
+        },
+        "validity": {
+          "attribution": 0.0332,
+          "build": 0.0098,
+          "control": 0.0391,
+          "decision": -0.0039,
+          "map": 0.0109,
+          "parity": -0.0332,
+          "primary": 0.0117,
+          "secondary": 0.0781,
+          "static": -0.0492,
+          "validity": 1.0
+        }
+      },
+      "source": {
+        "attribution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "build": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "control": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "map": {
+          "norm": 45.8694,
+          "self_coherence": 0.7167,
+          "triads": 2
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "primary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "secondary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "static": {
+          "norm": 44.4972,
+          "self_coherence": 0.6953,
+          "triads": 2
+        },
+        "validity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "d2-attribution": 1,
+      "d2-build": 1,
+      "d2-control": 1,
+      "d2-decision": 1,
+      "d2-map": 2,
+      "d2-parity": 1,
+      "d2-primary": 1,
+      "d2-secondary": 1,
+      "d2-static": 2,
+      "d2-validity": 1
+    },
+    "stable_groups": [
+      "d2-attribution",
+      "d2-build",
+      "d2-control",
+      "d2-decision",
+      "d2-map",
+      "d2-parity",
+      "d2-primary",
+      "d2-secondary",
+      "d2-static",
+      "d2-validity"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 1,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 1,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [
+    {
+      "kind": "evidence_conflict",
+      "priority": "high",
+      "reason": "one evidence span is bound to incompatible role fillers",
+      "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+      "target": "D2 Corrected Static Closure"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "d2-map"
+    }
+  ],
+  "agent_decision": {
+    "action": "REPAIR_REQUIRED",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Apply the repair_queue before editing or accepting this route.",
+    "repair_count": 2,
+    "repair_queue": [
+      {
+        "kind": "evidence_conflict",
+        "priority": "high",
+        "reason": "one evidence span is bound to incompatible role fillers",
+        "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+        "target": "D2 Corrected Static Closure"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "d2-map"
+      }
+    ],
+    "safe_to_edit": false
+  },
+  "explanation": [
+    "At least one candidate triad has weak composite-mode support.",
+    "Task exceeds target or hard limits and should be split."
+  ],
+  "repair_prompt": "Repair the candidate answer using only one coherent structural route.\nNANDA verdict: VETO.\nPrimary repair_queue:\n- [high] evidence_conflict: Resolve the source conflict and bind each triad to its exact supporting span.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\nRecheck or remove weak candidate triads:\n- c1: score=0.2777, nearest_source=s1, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c10: score=0.2732, nearest_source=s10, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c12: score=0.263, nearest_source=s12, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c2: score=0.2539, nearest_source=s2, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c6: score=0.2471, nearest_source=s6, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c8: score=0.2721, nearest_source=s8, why=candidate triad does not resonate with the composite source memory above the stability threshold\nSplit the task before retrying:\n- routes target limit exceeded: 10>8",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-e1-traversal-d2-route-v1.trace.json"
+}

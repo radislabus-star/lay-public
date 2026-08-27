@@ -1,0 +1,641 @@
+{
+  "asset_identities": {
+    "package": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+      "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+      "size_bytes": 140556462
+    },
+    "schedule": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+      "sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78",
+      "size_bytes": 174941
+    },
+    "sidecar": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+      "sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd",
+      "size_bytes": 3689884
+    },
+    "v7": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+      "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+      "size_bytes": 1606189
+    }
+  },
+  "claim_boundary": {
+    "formal_b_pass": false,
+    "full_executor_admitted": false,
+    "latency_pass": false,
+    "latency_prediction": false,
+    "runtime_authority_changed": false,
+    "v12_admitted": false
+  },
+  "comparison": {
+    "g0_instructions_per_transition": 596.3619752772595,
+    "g0_to_g1_percent": 15.699974308262142,
+    "g0_to_u1_percent": 19.91475809645441,
+    "g1_instructions_per_transition": 502.7332983744851,
+    "g1_to_u1_percent": 4.99974199723803,
+    "projected_instruction_delta_per_query": 7817831.651832459,
+    "projected_saving_gate": 0.15,
+    "projected_whole_query_instruction_saving": 0.18447591232349367,
+    "u1_instructions_per_transition": 477.597930521556
+  },
+  "environment_after": {
+    "cpu_pressure": "some avg10=3.17 avg60=3.39 avg300=4.09 total=157538108983\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+    "io_pressure": "some avg10=0.38 avg60=6.30 avg300=3.44 total=36162440251\nfull avg10=0.37 avg60=6.22 avg300=3.39 total=34061576740",
+    "loadavg": "2.33 1.92 2.21 2/527 2484064",
+    "memory_pressure": "some avg10=0.07 avg60=0.15 avg300=0.04 total=18950506421\nfull avg10=0.07 avg60=0.15 avg300=0.04 total=17850363597",
+    "temperatures_millicelsius": {
+      "/sys/class/thermal/thermal_zone0/temp": 27800,
+      "/sys/class/thermal/thermal_zone1/temp": 69000,
+      "/sys/class/thermal/thermal_zone2/temp": 39000
+    },
+    "top_processes": [
+      "2455112 nando-operator- 91.4   4",
+      "2455118 nando-transitio 36.5   8",
+      "3481471 btop             4.1  13",
+      "1816591 nando-transitio  4.0  13",
+      "2483490 python3          2.2   6",
+      "3481420 sshd             0.2  10",
+      "     17 rcu_preempt      0.1  12",
+      "3772003 systemd-journal  0.1  14",
+      "      1 systemd          0.0  10",
+      "      2 kthreadd         0.0   1",
+      "      3 pool_workqueue_  0.0   0",
+      "      4 kworker/R-rcu_g  0.0   0",
+      "      5 kworker/R-rcu_p  0.0   0",
+      "      6 kworker/R-slub_  0.0   0",
+      "      7 kworker/R-netns  0.0   0",
+      "      9 kworker/0:0H-ev  0.0   0",
+      "     12 kworker/R-mm_pe  0.0   0",
+      "     13 rcu_tasks_kthre  0.0   0",
+      "     14 rcu_tasks_rude_  0.0   0",
+      "     15 rcu_tasks_trace  0.0   0",
+      "     16 ksoftirqd/0      0.0   0",
+      "     18 migration/0      0.0   0",
+      "     19 idle_inject/0    0.0   0",
+      "     20 cpuhp/0          0.0   0",
+      "     21 cpuhp/2          0.0   2",
+      "     22 idle_inject/2    0.0   2",
+      "     23 migration/2      0.0   2",
+      "     24 ksoftirqd/2      0.0   2",
+      "     26 kworker/2:0H-ev  0.0   2",
+      "     27 cpuhp/4          0.0   4"
+    ]
+  },
+  "environment_before": {
+    "cpu_pressure": "some avg10=3.07 avg60=3.55 avg300=4.17 total=157537359445\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+    "io_pressure": "some avg10=3.51 avg60=9.10 avg300=3.71 total=36162415196\nfull avg10=3.43 avg60=8.98 avg300=3.66 total=34061551994",
+    "loadavg": "2.26 1.88 2.20 3/526 2483494",
+    "memory_pressure": "some avg10=0.65 avg60=0.22 avg300=0.05 total=18950505470\nfull avg10=0.65 avg60=0.22 avg300=0.05 total=17850362645",
+    "temperatures_millicelsius": {
+      "/sys/class/thermal/thermal_zone0/temp": 27800,
+      "/sys/class/thermal/thermal_zone1/temp": 66000,
+      "/sys/class/thermal/thermal_zone2/temp": 39000
+    },
+    "top_processes": [
+      "2455112 nando-operator- 91.3   4",
+      "2455118 nando-transitio 36.5   8",
+      "3481471 btop             4.1  14",
+      "1816591 nando-transitio  4.0  14",
+      "3481420 sshd             0.2  12",
+      "     17 rcu_preempt      0.1   0",
+      "3772003 systemd-journal  0.1  13",
+      "      1 systemd          0.0  14",
+      "      2 kthreadd         0.0   1",
+      "      3 pool_workqueue_  0.0   0",
+      "      4 kworker/R-rcu_g  0.0   0",
+      "      5 kworker/R-rcu_p  0.0   0",
+      "      6 kworker/R-slub_  0.0   0",
+      "      7 kworker/R-netns  0.0   0",
+      "      9 kworker/0:0H-ev  0.0   0",
+      "     12 kworker/R-mm_pe  0.0   0",
+      "     13 rcu_tasks_kthre  0.0   0",
+      "     14 rcu_tasks_rude_  0.0   0",
+      "     15 rcu_tasks_trace  0.0   0",
+      "     16 ksoftirqd/0      0.0   0",
+      "     18 migration/0      0.0   0",
+      "     19 idle_inject/0    0.0   0",
+      "     20 cpuhp/0          0.0   0",
+      "     21 cpuhp/2          0.0   2",
+      "     22 idle_inject/2    0.0   2",
+      "     23 migration/2      0.0   2",
+      "     24 ksoftirqd/2      0.0   2",
+      "     26 kworker/2:0H-ev  0.0   2",
+      "     27 cpuhp/4          0.0   4",
+      "     28 idle_inject/4    0.0   4"
+    ]
+  },
+  "loaded_host_is_blocker": false,
+  "parity": {
+    "marker": "/home/e/.local/state/lay/slice8b-v10-exact-fused-band-transition-m1-20260825-run-v2/markers/parity.consumed-before-exec",
+    "perf_invoked": false,
+    "runtime_authority_changed": false,
+    "schema": "lay.v10.exact-fused-band-transition-m1-parity-wrapper.v1",
+    "subject_sha256": "3ba8d69f83202a0b2cb97a682dadbd52e854f4e85507232c917eb354c789e843",
+    "trace_sha256": "6b3b5014b990c934073f1dda2972e845a6f7704c6d724c2b1e778d66ecc7cc7f",
+    "transitions": 25145756,
+    "verdict": "PASS"
+  },
+  "physical": {
+    "G0": {
+      "checksum": 9622660188088114541,
+      "command": [
+        "/usr/bin/sudo",
+        "-n",
+        "/usr/bin/perf",
+        "stat",
+        "--json-output",
+        "--no-big-num",
+        "--delay=-1",
+        "--control=fifo:/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/result-v2.stage-2483490-1787656040721839819/g0/perf-control.fifo,/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/result-v2.stage-2483490-1787656040721839819/g0/perf-ack.fifo",
+        "--event",
+        "instructions,cycles,branches,branch-misses",
+        "--",
+        "/usr/bin/sudo",
+        "-n",
+        "-u",
+        "e",
+        "/usr/bin/env",
+        "HOME=/home/e",
+        "LANG=C.UTF-8",
+        "LAY_V10_M1_CONTROL_DIR=/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/result-v2.stage-2483490-1787656040721839819/g0/control",
+        "LAY_V10_M1_MODE=G0",
+        "LAY_V10_M1_OUTPUT=/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/result-v2.stage-2483490-1787656040721839819/g0/SUBJECT_RESULT.json",
+        "LAY_V10_M1_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+        "LAY_V10_M1_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+        "LAY_V10_M1_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+        "LAY_V10_M1_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+        "LC_ALL=C.UTF-8",
+        "PATH=/home/e/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "TZ=Europe/Tallinn",
+        "/usr/bin/taskset",
+        "-c",
+        "0",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/build-v1/diagnostic-test-elf",
+        "--exact",
+        "nanda_wave::l2_field::v13_typed_peak::tests::v10_exact_fused_band_transition_m1",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "counters": {
+        "branch-misses": {
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/branch-misses/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "row": {
+            "counter-value": "926337.000000",
+            "event": "cpu_core/branch-misses/",
+            "event-runtime": 784714227,
+            "metric-unit": "of all branches",
+            "metric-value": "0.053468",
+            "pcnt-running": 100.0,
+            "unit": ""
+          },
+          "value": 926337.0
+        },
+        "branches": {
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/branches/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "row": {
+            "counter-value": "1732495598.000000",
+            "event": "cpu_core/branches/",
+            "event-runtime": 784714227,
+            "metric-unit": "(null)",
+            "metric-value": "0.000000",
+            "pcnt-running": 100.0,
+            "unit": ""
+          },
+          "value": 1732495598.0
+        },
+        "cycles": {
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/cycles/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "row": {
+            "counter-value": "2971413133.000000",
+            "event": "cpu_core/cycles/",
+            "event-runtime": 784714227,
+            "metric-unit": "GHz",
+            "metric-value": "0.000000",
+            "pcnt-running": 100.0,
+            "unit": ""
+          },
+          "value": 2971413133.0
+        },
+        "instructions": {
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/instructions/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "row": {
+            "counter-value": "14995972718.000000",
+            "event": "cpu_core/instructions/",
+            "event-runtime": 784714227,
+            "metric-unit": "insn per cycle",
+            "metric-value": "5.046748",
+            "pcnt-running": 100.0,
+            "unit": ""
+          },
+          "value": 14995972718.0
+        }
+      },
+      "derived": {
+        "branch_miss_rate": 0.0005346836096261181,
+        "branches_per_transition": 68.89813127909139,
+        "controller_wall_ns_diagnostic": 785450030,
+        "cycles_per_transition": 118.16757996856408,
+        "instructions_per_transition": 596.3619752772595,
+        "subject_wall_ns_diagnostic": 784635159
+      },
+      "disable_ack": "ack\n\u0000",
+      "enable_ack": "ack\n\u0000",
+      "environment_intentionally_loaded": true,
+      "formal_b_pass": false,
+      "marker": "/home/e/.local/state/lay/slice8b-v10-exact-fused-band-transition-m1-20260825-run-v2/markers/g0.consumed-before-exec",
+      "mode": "G0",
+      "pmu_event_opened": true,
+      "raw_perf_sha256": "ff124a12f78bb5a10876567409fcdd9c69b0d4894809d8309693fd681df1e518",
+      "runtime_authority_changed": false,
+      "schema": "lay.v10.exact-fused-band-transition-m1-physical-wrapper.v1",
+      "subject_sha256": "2f99e89d8617497f0aa0a061e51d41eb72231d6310e2f2c4ddbba32aa2793146",
+      "trace_event_bytes": 32,
+      "trace_sha256": "6b3b5014b990c934073f1dda2972e845a6f7704c6d724c2b1e778d66ecc7cc7f",
+      "transitions": 25145756,
+      "v12_admitted": false,
+      "verdict": "PHYSICAL_REPLAY_OBSERVED"
+    },
+    "G1": {
+      "checksum": 9622660188088114541,
+      "command": [
+        "/usr/bin/sudo",
+        "-n",
+        "/usr/bin/perf",
+        "stat",
+        "--json-output",
+        "--no-big-num",
+        "--delay=-1",
+        "--control=fifo:/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/result-v2.stage-2483490-1787656040721839819/g1/perf-control.fifo,/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/result-v2.stage-2483490-1787656040721839819/g1/perf-ack.fifo",
+        "--event",
+        "instructions,cycles,branches,branch-misses",
+        "--",
+        "/usr/bin/sudo",
+        "-n",
+        "-u",
+        "e",
+        "/usr/bin/env",
+        "HOME=/home/e",
+        "LANG=C.UTF-8",
+        "LAY_V10_M1_CONTROL_DIR=/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/result-v2.stage-2483490-1787656040721839819/g1/control",
+        "LAY_V10_M1_MODE=G1",
+        "LAY_V10_M1_OUTPUT=/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/result-v2.stage-2483490-1787656040721839819/g1/SUBJECT_RESULT.json",
+        "LAY_V10_M1_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+        "LAY_V10_M1_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+        "LAY_V10_M1_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+        "LAY_V10_M1_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+        "LC_ALL=C.UTF-8",
+        "PATH=/home/e/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "TZ=Europe/Tallinn",
+        "/usr/bin/taskset",
+        "-c",
+        "0",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/build-v1/diagnostic-test-elf",
+        "--exact",
+        "nanda_wave::l2_field::v13_typed_peak::tests::v10_exact_fused_band_transition_m1",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "counters": {
+        "branch-misses": {
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/branch-misses/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "row": {
+            "counter-value": "940625.000000",
+            "event": "cpu_core/branch-misses/",
+            "event-runtime": 588465008,
+            "metric-unit": "of all branches",
+            "metric-value": "0.071597",
+            "pcnt-running": 100.0,
+            "unit": ""
+          },
+          "value": 940625.0
+        },
+        "branches": {
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/branches/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "row": {
+            "counter-value": "1313771610.000000",
+            "event": "cpu_core/branches/",
+            "event-runtime": 588465008,
+            "metric-unit": "(null)",
+            "metric-value": "0.000000",
+            "pcnt-running": 100.0,
+            "unit": ""
+          },
+          "value": 1313771610.0
+        },
+        "cycles": {
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/cycles/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "row": {
+            "counter-value": "2230854867.000000",
+            "event": "cpu_core/cycles/",
+            "event-runtime": 588465008,
+            "metric-unit": "GHz",
+            "metric-value": "0.000000",
+            "pcnt-running": 100.0,
+            "unit": ""
+          },
+          "value": 2230854867.0
+        },
+        "instructions": {
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/instructions/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "row": {
+            "counter-value": "12641608854.000000",
+            "event": "cpu_core/instructions/",
+            "event-runtime": 588465008,
+            "metric-unit": "insn per cycle",
+            "metric-value": "5.666711",
+            "pcnt-running": 100.0,
+            "unit": ""
+          },
+          "value": 12641608854.0
+        }
+      },
+      "derived": {
+        "branch_miss_rate": 0.0007159729992947556,
+        "branches_per_transition": 52.2462561873264,
+        "controller_wall_ns_diagnostic": 587606665,
+        "cycles_per_transition": 88.71695354874198,
+        "instructions_per_transition": 502.7332983744851,
+        "subject_wall_ns_diagnostic": 588387919
+      },
+      "disable_ack": "ack\n\u0000",
+      "enable_ack": "ack\n\u0000",
+      "environment_intentionally_loaded": true,
+      "formal_b_pass": false,
+      "marker": "/home/e/.local/state/lay/slice8b-v10-exact-fused-band-transition-m1-20260825-run-v2/markers/g1.consumed-before-exec",
+      "mode": "G1",
+      "pmu_event_opened": true,
+      "raw_perf_sha256": "b6e28c4489ff0192d3fcccbcd4a1e3be026122b74ebe5a740b3ee5ff06e33906",
+      "runtime_authority_changed": false,
+      "schema": "lay.v10.exact-fused-band-transition-m1-physical-wrapper.v1",
+      "subject_sha256": "6ecafc8b036e6fcbf3fdbd3406e7eb08b283321973a5d74550d134bf17db3c23",
+      "trace_event_bytes": 32,
+      "trace_sha256": "6b3b5014b990c934073f1dda2972e845a6f7704c6d724c2b1e778d66ecc7cc7f",
+      "transitions": 25145756,
+      "v12_admitted": false,
+      "verdict": "PHYSICAL_REPLAY_OBSERVED"
+    },
+    "U1": {
+      "checksum": 846385925518335817,
+      "command": [
+        "/usr/bin/sudo",
+        "-n",
+        "/usr/bin/perf",
+        "stat",
+        "--json-output",
+        "--no-big-num",
+        "--delay=-1",
+        "--control=fifo:/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/result-v2.stage-2483490-1787656040721839819/u1/perf-control.fifo,/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/result-v2.stage-2483490-1787656040721839819/u1/perf-ack.fifo",
+        "--event",
+        "instructions,cycles,branches,branch-misses",
+        "--",
+        "/usr/bin/sudo",
+        "-n",
+        "-u",
+        "e",
+        "/usr/bin/env",
+        "HOME=/home/e",
+        "LANG=C.UTF-8",
+        "LAY_V10_M1_CONTROL_DIR=/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/result-v2.stage-2483490-1787656040721839819/u1/control",
+        "LAY_V10_M1_MODE=U1",
+        "LAY_V10_M1_OUTPUT=/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/result-v2.stage-2483490-1787656040721839819/u1/SUBJECT_RESULT.json",
+        "LAY_V10_M1_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+        "LAY_V10_M1_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+        "LAY_V10_M1_V13_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+        "LAY_V10_M1_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+        "LC_ALL=C.UTF-8",
+        "PATH=/home/e/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "TZ=Europe/Tallinn",
+        "/usr/bin/taskset",
+        "-c",
+        "0",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "/home/e/.local/share/lay/provenance/slice8b-v10-exact-fused-band-transition-m1-20260825/build-v1/diagnostic-test-elf",
+        "--exact",
+        "nanda_wave::l2_field::v13_typed_peak::tests::v10_exact_fused_band_transition_m1",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "counters": {
+        "branch-misses": {
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/branch-misses/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "row": {
+            "counter-value": "956856.000000",
+            "event": "cpu_core/branch-misses/",
+            "event-runtime": 556549484,
+            "metric-unit": "of all branches",
+            "metric-value": "0.107466",
+            "pcnt-running": 100.0,
+            "unit": ""
+          },
+          "value": 956856.0
+        },
+        "branches": {
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/branches/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "row": {
+            "counter-value": "890377085.000000",
+            "event": "cpu_core/branches/",
+            "event-runtime": 556549484,
+            "metric-unit": "(null)",
+            "metric-value": "0.000000",
+            "pcnt-running": 100.0,
+            "unit": ""
+          },
+          "value": 890377085.0
+        },
+        "cycles": {
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/cycles/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "row": {
+            "counter-value": "2110174223.000000",
+            "event": "cpu_core/cycles/",
+            "event-runtime": 556549484,
+            "metric-unit": "GHz",
+            "metric-value": "0.000000",
+            "pcnt-running": 100.0,
+            "unit": ""
+          },
+          "value": 2110174223.0
+        },
+        "instructions": {
+          "inactive_rows": [
+            {
+              "counter-value": "<not counted>",
+              "event": "cpu_atom/instructions/",
+              "event-runtime": 0,
+              "metric-unit": "",
+              "metric-value": "0.000000",
+              "pcnt-running": 0.0,
+              "unit": ""
+            }
+          ],
+          "row": {
+            "counter-value": "12009561027.000000",
+            "event": "cpu_core/instructions/",
+            "event-runtime": 556549484,
+            "metric-unit": "insn per cycle",
+            "metric-value": "5.691265",
+            "pcnt-running": 100.0,
+            "unit": ""
+          },
+          "value": 12009561027.0
+        }
+      },
+      "derived": {
+        "branch_miss_rate": 0.0010746637757417128,
+        "branches_per_transition": 35.408642516057185,
+        "controller_wall_ns_diagnostic": 558212617,
+        "cycles_per_transition": 83.91770853896777,
+        "instructions_per_transition": 477.597930521556,
+        "subject_wall_ns_diagnostic": 556481243
+      },
+      "disable_ack": "ack\n\u0000",
+      "enable_ack": "ack\n\u0000",
+      "environment_intentionally_loaded": true,
+      "formal_b_pass": false,
+      "marker": "/home/e/.local/state/lay/slice8b-v10-exact-fused-band-transition-m1-20260825-run-v2/markers/u1.consumed-before-exec",
+      "mode": "U1",
+      "pmu_event_opened": true,
+      "raw_perf_sha256": "ab1f30c0088cfe601cb39baef40867d21f8e04983177c0db08ac0fdd7c729ec6",
+      "runtime_authority_changed": false,
+      "schema": "lay.v10.exact-fused-band-transition-m1-physical-wrapper.v1",
+      "subject_sha256": "636072c54d936777da9a67a4f86f311d30bed7e5564f8a6fc79967b644fe35a4",
+      "trace_event_bytes": 32,
+      "trace_sha256": "6b3b5014b990c934073f1dda2972e845a6f7704c6d724c2b1e778d66ecc7cc7f",
+      "transitions": 25145756,
+      "v12_admitted": false,
+      "verdict": "PHYSICAL_REPLAY_OBSERVED"
+    }
+  },
+  "production_prefix_bytes": 39047,
+  "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+  "s1_swar_candidate": "OMITTED",
+  "schema": "lay.v10.exact-fused-band-transition-m1-decision.v2",
+  "subject": {
+    "build_id": "31949c25f1fdb513d064b4953aea1ebc5d8828d9",
+    "sha256": "a8fb59fb3745d5b60bf455957b0c1da200a6419b2f65ceee02a4558bf03c1e89",
+    "size_bytes": 20510360,
+    "test_entrypoint": "nanda_wave::l2_field::v13_typed_peak::tests::v10_exact_fused_band_transition_m1"
+  },
+  "task_id": "slice8b-v10-exact-fused-band-transition-m1-20260825-run-v2",
+  "verdict": "M1_PASS"
+}

@@ -83,6 +83,8 @@ pub(crate) struct CanonicalFieldTelemetry {
 pub(crate) struct ObservedCanonicalL2FieldReadout {
     pub(crate) readout: CanonicalL2FieldReadout,
     pub(crate) telemetry: CanonicalFieldTelemetry,
+    pub(in crate::nanda_wave::l2_field) cohort_compare:
+        Option<super::productive_v1::LexicalCohortCompareV1>,
 }
 
 impl CanonicalL2FieldReadout {

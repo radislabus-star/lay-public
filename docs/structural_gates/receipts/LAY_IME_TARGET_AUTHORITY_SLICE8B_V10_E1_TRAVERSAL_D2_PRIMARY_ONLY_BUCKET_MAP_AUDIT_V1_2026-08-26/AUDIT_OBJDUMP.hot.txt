@@ -1,0 +1,931 @@
+
+/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000778320 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>>:
+  778320:	55                   	push   %rbp
+  778321:	41 57                	push   %r15
+  778323:	41 56                	push   %r14
+  778325:	41 55                	push   %r13
+  778327:	41 54                	push   %r12
+  778329:	53                   	push   %rbx
+  77832a:	48 81 ec c8 01 00 00 	sub    $0x1c8,%rsp
+  778331:	48 89 b4 24 10 01 00 00 	mov    %rsi,0x110(%rsp)
+  778339:	48 89 54 24 70       	mov    %rdx,0x70(%rsp)
+  77833e:	48 83 fa 60          	cmp    $0x60,%rdx
+  778342:	76 35                	jbe    778379 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x59>
+  778344:	48 c7 07 00 00 00 00 	movq   $0x0,(%rdi)
+  77834b:	48 c7 47 08 04 00 00 00 	movq   $0x4,0x8(%rdi)
+  778353:	66 0f ef c0          	pxor   %xmm0,%xmm0
+  778357:	f3 0f 7f 47 10       	movdqu %xmm0,0x10(%rdi)
+  77835c:	48 c7 47 20 00 00 00 00 	movq   $0x0,0x20(%rdi)
+  778364:	48 8d 05 b4 63 99 ff 	lea    -0x669c4c(%rip),%rax        # 10e71f <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x27ecf>
+  77836b:	48 89 47 28          	mov    %rax,0x28(%rdi)
+  77836f:	48 c7 47 30 13 00 00 00 	movq   $0x13,0x30(%rdi)
+  778377:	eb 38                	jmp    7783b1 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x91>
+  778379:	80 f9 03             	cmp    $0x3,%cl
+  77837c:	76 5c                	jbe    7783da <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xba>
+  77837e:	48 c7 07 00 00 00 00 	movq   $0x0,(%rdi)
+  778385:	48 c7 47 08 04 00 00 00 	movq   $0x4,0x8(%rdi)
+  77838d:	66 0f ef c0          	pxor   %xmm0,%xmm0
+  778391:	f3 0f 7f 47 10       	movdqu %xmm0,0x10(%rdi)
+  778396:	48 c7 47 20 00 00 00 00 	movq   $0x0,0x20(%rdi)
+  77839e:	48 8d 05 68 63 99 ff 	lea    -0x669c98(%rip),%rax        # 10e70d <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x27ebd>
+  7783a5:	48 89 47 28          	mov    %rax,0x28(%rdi)
+  7783a9:	48 c7 47 30 12 00 00 00 	movq   $0x12,0x30(%rdi)
+  7783b1:	f3 0f 7f 47 38       	movdqu %xmm0,0x38(%rdi)
+  7783b6:	f3 0f 7f 47 48       	movdqu %xmm0,0x48(%rdi)
+  7783bb:	f3 0f 7f 47 58       	movdqu %xmm0,0x58(%rdi)
+  7783c0:	48 c7 47 68 00 00 00 00 	movq   $0x0,0x68(%rdi)
+  7783c8:	48 81 c4 c8 01 00 00 	add    $0x1c8,%rsp
+  7783cf:	5b                   	pop    %rbx
+  7783d0:	41 5c                	pop    %r12
+  7783d2:	41 5d                	pop    %r13
+  7783d4:	41 5e                	pop    %r14
+  7783d6:	41 5f                	pop    %r15
+  7783d8:	5d                   	pop    %rbp
+  7783d9:	c3                   	ret
+  7783da:	4d 89 c5             	mov    %r8,%r13
+  7783dd:	49 89 ce             	mov    %rcx,%r14
+  7783e0:	48 89 7c 24 30       	mov    %rdi,0x30(%rsp)
+  7783e5:	4c 89 cb             	mov    %r9,%rbx
+  7783e8:	b8 10 00 00 00       	mov    $0x10,%eax
+  7783ed:	48 89 44 24 38       	mov    %rax,0x38(%rsp)
+  7783f2:	bf 10 00 00 00       	mov    $0x10,%edi
+  7783f7:	ff 15 b3 6f c4 00    	call   *0xc46fb3(%rip)        # 13bf3b0 <malloc@GLIBC_2.2.5>
+  7783fd:	48 85 c0             	test   %rax,%rax
+  778400:	0f 84 d5 0d 00 00    	je     7791db <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xebb>
+  778406:	41 8d 7e 01          	lea    0x1(%r14),%edi
+  77840a:	4c 89 b4 24 b8 00 00 00 	mov    %r14,0xb8(%rsp)
+  778412:	41 0f b6 f6          	movzbl %r14b,%esi
+  778416:	48 8b 4c 24 70       	mov    0x70(%rsp),%rcx
+  77841b:	48 39 ce             	cmp    %rcx,%rsi
+  77841e:	48 89 b4 24 68 01 00 00 	mov    %rsi,0x168(%rsp)
+  778426:	48 0f 42 ce          	cmovb  %rsi,%rcx
+  77842a:	8d 14 fd 00 00 00 00 	lea    0x0(,%rdi,8),%edx
+  778431:	48 85 c9             	test   %rcx,%rcx
+  778434:	0f b6 d2             	movzbl %dl,%edx
+  778437:	be 08 00 00 00       	mov    $0x8,%esi
+  77843c:	48 0f 44 f2          	cmove  %rdx,%rsi
+  778440:	4c 8b 9c 24 10 01 00 00 	mov    0x110(%rsp),%r11
+  778448:	41 8b 53 60          	mov    0x60(%r11),%edx
+  77844c:	48 89 7c 24 68       	mov    %rdi,0x68(%rsp)
+  778451:	40 0f b6 ef          	movzbl %dil,%ebp
+  778455:	41 89 e8             	mov    %ebp,%r8d
+  778458:	41 c1 e0 06          	shl    $0x6,%r8d
+  77845c:	48 83 f9 02          	cmp    $0x2,%rcx
+  778460:	bf 80 00 00 00       	mov    $0x80,%edi
+  778465:	49 0f 42 f8          	cmovb  %r8,%rdi
+  778469:	41 89 e8             	mov    %ebp,%r8d
+  77846c:	41 c1 e0 09          	shl    $0x9,%r8d
+  778470:	48 83 f9 03          	cmp    $0x3,%rcx
+  778474:	41 b9 00 06 00 00    	mov    $0x600,%r9d
+  77847a:	4d 0f 42 c8          	cmovb  %r8,%r9
+  77847e:	41 89 e8             	mov    %ebp,%r8d
+  778481:	41 c1 e0 0c          	shl    $0xc,%r8d
+  778485:	41 89 ea             	mov    %ebp,%r10d
+  778488:	41 c1 e2 0f          	shl    $0xf,%r10d
+  77848c:	4d 09 c2             	or     %r8,%r10
+  77848f:	41 89 e8             	mov    %ebp,%r8d
+  778492:	41 c1 e0 12          	shl    $0x12,%r8d
+  778496:	4d 09 d0             	or     %r10,%r8
+  778499:	48 c1 e1 25          	shl    $0x25,%rcx
+  77849d:	48 09 f7             	or     %rsi,%rdi
+  7784a0:	4c 09 cf             	or     %r9,%rdi
+  7784a3:	48 09 cf             	or     %rcx,%rdi
+  7784a6:	48 b9 00 00 00 00 20 00 00 00 	movabs $0x2000000000,%rcx
+  7784b0:	48 01 f9             	add    %rdi,%rcx
+  7784b3:	4c 09 c1             	or     %r8,%rcx
+  7784b6:	48 89 08             	mov    %rcx,(%rax)
+  7784b9:	89 50 08             	mov    %edx,0x8(%rax)
+  7784bc:	c7 40 0c 00 00 00 00 	movl   $0x0,0xc(%rax)
+  7784c3:	48 c7 84 24 90 00 00 00 01 00 00 00 	movq   $0x1,0x90(%rsp)
+  7784cf:	48 89 84 24 98 00 00 00 	mov    %rax,0x98(%rsp)
+  7784d7:	48 c7 84 24 a0 00 00 00 01 00 00 00 	movq   $0x1,0xa0(%rsp)
+  7784e3:	48 c7 44 24 50 00 00 00 00 	movq   $0x0,0x50(%rsp)
+  7784ec:	48 c7 44 24 58 04 00 00 00 	movq   $0x4,0x58(%rsp)
+  7784f5:	48 c7 44 24 60 00 00 00 00 	movq   $0x0,0x60(%rsp)
+  7784fe:	48 8b 03             	mov    (%rbx),%rax
+  778501:	48 89 84 24 98 01 00 00 	mov    %rax,0x198(%rsp)
+  778509:	48 8b 43 08          	mov    0x8(%rbx),%rax
+  77850d:	48 89 84 24 58 01 00 00 	mov    %rax,0x158(%rsp)
+  778515:	48 8b 43 18          	mov    0x18(%rbx),%rax
+  778519:	48 89 84 24 78 01 00 00 	mov    %rax,0x178(%rsp)
+  778521:	8b 43 20             	mov    0x20(%rbx),%eax
+  778524:	89 84 24 88 00 00 00 	mov    %eax,0x88(%rsp)
+  77852b:	49 8b 03             	mov    (%r11),%rax
+  77852e:	48 89 84 24 88 01 00 00 	mov    %rax,0x188(%rsp)
+  778536:	41 8b 43 58          	mov    0x58(%r11),%eax
+  77853a:	89 84 24 28 01 00 00 	mov    %eax,0x128(%rsp)
+  778541:	41 8b 43 5c          	mov    0x5c(%r11),%eax
+  778545:	48 89 84 24 80 01 00 00 	mov    %rax,0x180(%rsp)
+  77854d:	48 8b 43 10          	mov    0x10(%rbx),%rax
+  778551:	48 89 84 24 70 01 00 00 	mov    %rax,0x170(%rsp)
+  778559:	b8 01 00 00 00       	mov    $0x1,%eax
+  77855e:	48 89 44 24 40       	mov    %rax,0x40(%rsp)
+  778563:	31 db                	xor    %ebx,%ebx
+  778565:	31 c9                	xor    %ecx,%ecx
+  778567:	4c 89 ac 24 b0 01 00 00 	mov    %r13,0x1b0(%rsp)
+  77856f:	89 ac 24 8c 00 00 00 	mov    %ebp,0x8c(%rsp)
+  778576:	eb 46                	jmp    7785be <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x29e>
+  778578:	48 8b 84 24 90 00 00 00 	mov    0x90(%rsp),%rax
+  778580:	48 89 44 24 40       	mov    %rax,0x40(%rsp)
+  778585:	48 8b 44 24 40       	mov    0x40(%rsp),%rax
+  77858a:	48 c1 e0 04          	shl    $0x4,%rax
+  77858e:	48 8b 5c 24 50       	mov    0x50(%rsp),%rbx
+  778593:	48 8d 04 98          	lea    (%rax,%rbx,4),%rax
+  778597:	48 8b 4c 24 38       	mov    0x38(%rsp),%rcx
+  77859c:	48 39 c8             	cmp    %rcx,%rax
+  77859f:	48 0f 47 c8          	cmova  %rax,%rcx
+  7785a3:	48 89 4c 24 38       	mov    %rcx,0x38(%rsp)
+  7785a8:	48 3b 8c 24 70 01 00 00 	cmp    0x170(%rsp),%rcx
+  7785b0:	48 8b 8c 24 a8 00 00 00 	mov    0xa8(%rsp),%rcx
+  7785b8:	0f 87 a2 0b 00 00    	ja     779160 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xe40>
+  7785be:	48 8b 84 24 a0 00 00 00 	mov    0xa0(%rsp),%rax
+  7785c6:	48 85 c0             	test   %rax,%rax
+  7785c9:	0f 84 2a 0a 00 00    	je     778ff9 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xcd9>
+  7785cf:	48 ff c8             	dec    %rax
+  7785d2:	48 89 84 24 a0 00 00 00 	mov    %rax,0xa0(%rsp)
+  7785da:	48 ff c1             	inc    %rcx
+  7785dd:	48 89 8c 24 a8 00 00 00 	mov    %rcx,0xa8(%rsp)
+  7785e5:	48 3b 8c 24 98 01 00 00 	cmp    0x198(%rsp),%rcx
+  7785ed:	0f 87 62 0a 00 00    	ja     779055 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xd35>
+  7785f3:	48 8b 8c 24 98 00 00 00 	mov    0x98(%rsp),%rcx
+  7785fb:	48 c1 e0 04          	shl    $0x4,%rax
+  7785ff:	4c 8b 34 01          	mov    (%rcx,%rax,1),%r14
+  778603:	8b 6c 01 08          	mov    0x8(%rcx,%rax,1),%ebp
+  778607:	8b 44 01 0c          	mov    0xc(%rcx,%rax,1),%eax
+  77860b:	89 44 24 4c          	mov    %eax,0x4c(%rsp)
+  77860f:	83 bc 24 88 00 00 00 ff 	cmpl   $0xffffffff,0x88(%rsp)
+  778617:	0f 84 92 00 00 00    	je     7786af <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x38f>
+  77861d:	bf 01 00 00 00       	mov    $0x1,%edi
+  778622:	e8 e9 81 a0 00       	call   1180810 <<std::sys::pal::unix::time::Timespec>::now>
+  778627:	48 89 84 24 c0 00 00 00 	mov    %rax,0xc0(%rsp)
+  77862f:	89 94 24 c8 00 00 00 	mov    %edx,0xc8(%rsp)
+  778636:	48 8b 84 24 00 02 00 00 	mov    0x200(%rsp),%rax
+  77863e:	48 89 84 24 40 01 00 00 	mov    %rax,0x140(%rsp)
+  778646:	8b 84 24 08 02 00 00 	mov    0x208(%rsp),%eax
+  77864d:	89 84 24 48 01 00 00 	mov    %eax,0x148(%rsp)
+  778654:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+  778659:	48 8d b4 24 c0 00 00 00 	lea    0xc0(%rsp),%rsi
+  778661:	48 8d 94 24 40 01 00 00 	lea    0x140(%rsp),%rdx
+  778669:	e8 d2 80 a0 00       	call   1180740 <<std::sys::pal::unix::time::Timespec>::sub_timespec>
+  77866e:	0f b6 44 24 10       	movzbl 0x10(%rsp),%eax
+  778673:	84 c0                	test   %al,%al
+  778675:	75 16                	jne    77868d <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x36d>
+  778677:	48 8b 4c 24 18       	mov    0x18(%rsp),%rcx
+  77867c:	48 3b 8c 24 78 01 00 00 	cmp    0x178(%rsp),%rcx
+  778684:	74 13                	je     778699 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x379>
+  778686:	76 27                	jbe    7786af <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x38f>
+  778688:	e9 93 0a 00 00       	jmp    779120 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xe00>
+  77868d:	31 c9                	xor    %ecx,%ecx
+  77868f:	48 3b 8c 24 78 01 00 00 	cmp    0x178(%rsp),%rcx
+  778697:	75 ed                	jne    778686 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x366>
+  778699:	8b 8c 24 88 00 00 00 	mov    0x88(%rsp),%ecx
+  7786a0:	39 4c 24 20          	cmp    %ecx,0x20(%rsp)
+  7786a4:	0f 96 c1             	setbe  %cl
+  7786a7:	08 c8                	or     %cl,%al
+  7786a9:	0f 84 71 0a 00 00    	je     779120 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xe00>
+  7786af:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+  7786b4:	48 8b b4 24 88 01 00 00 	mov    0x188(%rsp),%rsi
+  7786bc:	8b 94 24 28 01 00 00 	mov    0x128(%rsp),%edx
+  7786c3:	89 e9                	mov    %ebp,%ecx
+  7786c5:	e8 e6 df 1a 00       	call   9266b0 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::state>
+  7786ca:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
+  7786cf:	8b 6c 24 18          	mov    0x18(%rsp),%ebp
+  7786d3:	48 83 f8 ff          	cmp    $0xffffffffffffffff,%rax
+  7786d7:	0f 85 bd 09 00 00    	jne    77909a <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xd7a>
+  7786dd:	48 89 ac 24 80 00 00 00 	mov    %rbp,0x80(%rsp)
+  7786e5:	44 0f b7 7c 24 20    	movzwl 0x20(%rsp),%r15d
+  7786eb:	0f b7 44 24 22       	movzwl 0x22(%rsp),%eax
+  7786f0:	a8 01                	test   $0x1,%al
+  7786f2:	4d 89 f3             	mov    %r14,%r11
+  7786f5:	0f 85 35 08 00 00    	jne    778f30 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xc10>
+  7786fb:	48 8b 84 24 80 00 00 00 	mov    0x80(%rsp),%rax
+  778703:	4c 01 f8             	add    %r15,%rax
+  778706:	48 89 84 24 c0 01 00 00 	mov    %rax,0x1c0(%rsp)
+  77870e:	48 3b 84 24 80 01 00 00 	cmp    0x180(%rsp),%rax
+  778716:	0f 87 a6 09 00 00    	ja     7790c2 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xda2>
+  77871c:	4d 85 ff             	test   %r15,%r15
+  77871f:	0f 84 60 fe ff ff    	je     778585 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x265>
+  778725:	44 89 da             	mov    %r11d,%edx
+  778728:	c1 ea 15             	shr    $0x15,%edx
+  77872b:	8d 42 01             	lea    0x1(%rdx),%eax
+  77872e:	44 0f b6 c8          	movzbl %al,%r9d
+  778732:	2a 84 24 b8 00 00 00 	sub    0xb8(%rsp),%al
+  778739:	0f b6 c0             	movzbl %al,%eax
+  77873c:	b9 00 00 00 00       	mov    $0x0,%ecx
+  778741:	0f 42 c1             	cmovb  %ecx,%eax
+  778744:	44 0f b6 f8          	movzbl %al,%r15d
+  778748:	48 8b 84 24 68 01 00 00 	mov    0x168(%rsp),%rax
+  778750:	4d 8d 34 01          	lea    (%r9,%rax,1),%r14
+  778754:	48 8b 44 24 70       	mov    0x70(%rsp),%rax
+  778759:	4c 39 f0             	cmp    %r14,%rax
+  77875c:	4c 0f 42 f0          	cmovb  %rax,%r14
+  778760:	4c 89 74 24 40       	mov    %r14,0x40(%rsp)
+  778765:	4d 29 fe             	sub    %r15,%r14
+  778768:	41 8d 4e 01          	lea    0x1(%r14),%ecx
+  77876c:	80 e1 0f             	and    $0xf,%cl
+  77876f:	bd ff ff ff ff       	mov    $0xffffffff,%ebp
+  778774:	d3 e5                	shl    %cl,%ebp
+  778776:	48 89 94 24 b8 01 00 00 	mov    %rdx,0x1b8(%rsp)
+  77877e:	89 d1                	mov    %edx,%ecx
+  778780:	fe c1                	inc    %cl
+  778782:	88 4c 24 0f          	mov    %cl,0xf(%rsp)
+  778786:	0f 84 5e 0a 00 00    	je     7791ea <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xeca>
+  77878c:	b9 41 00 00 00       	mov    $0x41,%ecx
+  778791:	4c 29 f9             	sub    %r15,%rcx
+  778794:	48 89 8c 24 90 01 00 00 	mov    %rcx,0x190(%rsp)
+  77879c:	4c 89 b4 24 38 01 00 00 	mov    %r14,0x138(%rsp)
+  7787a4:	49 8d 4e 01          	lea    0x1(%r14),%rcx
+  7787a8:	48 89 8c 24 50 01 00 00 	mov    %rcx,0x150(%rsp)
+  7787b0:	48 c1 e1 25          	shl    $0x25,%rcx
+  7787b4:	48 89 8c 24 08 01 00 00 	mov    %rcx,0x108(%rsp)
+  7787bc:	4c 89 f9             	mov    %r15,%rcx
+  7787bf:	48 c1 e1 1d          	shl    $0x1d,%rcx
+  7787c3:	48 89 8c 24 f0 00 00 00 	mov    %rcx,0xf0(%rsp)
+  7787cb:	49 8d 4f 06          	lea    0x6(%r15),%rcx
+  7787cf:	48 89 8c 24 f8 00 00 00 	mov    %rcx,0xf8(%rsp)
+  7787d7:	4d 89 dc             	mov    %r11,%r12
+  7787da:	49 c1 ec 1d          	shr    $0x1d,%r12
+  7787de:	89 c8                	mov    %ecx,%eax
+  7787e0:	44 29 e0             	sub    %r12d,%eax
+  7787e3:	8d 0c 40             	lea    (%rax,%rax,2),%ecx
+  7787e6:	4c 89 d8             	mov    %r11,%rax
+  7787e9:	48 d3 e8             	shr    %cl,%rax
+  7787ec:	41 c1 e1 15          	shl    $0x15,%r9d
+  7787f0:	24 07                	and    $0x7,%al
+  7787f2:	48 89 84 24 00 01 00 00 	mov    %rax,0x100(%rsp)
+  7787fa:	49 8d 47 05          	lea    0x5(%r15),%rax
+  7787fe:	48 89 84 24 e8 00 00 00 	mov    %rax,0xe8(%rsp)
+  778806:	44 29 e0             	sub    %r12d,%eax
+  778809:	8d 0c 40             	lea    (%rax,%rax,2),%ecx
+  77880c:	4d 89 de             	mov    %r11,%r14
+  77880f:	49 d3 ee             	shr    %cl,%r14
+  778812:	49 8d 4f 04          	lea    0x4(%r15),%rcx
+  778816:	48 89 8c 24 e0 00 00 00 	mov    %rcx,0xe0(%rsp)
+  77881e:	44 29 e1             	sub    %r12d,%ecx
+  778821:	49 8d 77 03          	lea    0x3(%r15),%rsi
+  778825:	48 89 b4 24 d8 00 00 00 	mov    %rsi,0xd8(%rsp)
+  77882d:	44 29 e6             	sub    %r12d,%esi
+  778830:	4d 8d 57 02          	lea    0x2(%r15),%r10
+  778834:	4c 89 94 24 b0 00 00 00 	mov    %r10,0xb0(%rsp)
+  77883c:	45 29 e2             	sub    %r12d,%r10d
+  77883f:	4d 8d 47 01          	lea    0x1(%r15),%r8
+  778843:	4c 89 84 24 d0 00 00 00 	mov    %r8,0xd0(%rsp)
+  77884b:	45 29 e0             	sub    %r12d,%r8d
+  77884e:	49 8d 7f ff          	lea    -0x1(%r15),%rdi
+  778852:	89 fa                	mov    %edi,%edx
+  778854:	44 29 e2             	sub    %r12d,%edx
+  778857:	44 89 f8             	mov    %r15d,%eax
+  77885a:	44 29 e0             	sub    %r12d,%eax
+  77885d:	45 0f b6 e4          	movzbl %r12b,%r12d
+  778861:	8d 0c 49             	lea    (%rcx,%rcx,2),%ecx
+  778864:	4c 89 db             	mov    %r11,%rbx
+  778867:	48 d3 eb             	shr    %cl,%rbx
+  77886a:	4d 89 dd             	mov    %r11,%r13
+  77886d:	49 c1 ed 25          	shr    $0x25,%r13
+  778871:	41 83 e5 07          	and    $0x7,%r13d
+  778875:	8d 0c 76             	lea    (%rsi,%rsi,2),%ecx
+  778878:	4c 89 7c 24 78       	mov    %r15,0x78(%rsp)
+  77887d:	4d 89 df             	mov    %r11,%r15
+  778880:	49 d3 ef             	shr    %cl,%r15
+  778883:	4d 01 e5             	add    %r12,%r13
+  778886:	41 80 e6 07          	and    $0x7,%r14b
+  77888a:	43 8d 0c 52          	lea    (%r10,%r10,2),%ecx
+  77888e:	4c 89 de             	mov    %r11,%rsi
+  778891:	48 d3 ee             	shr    %cl,%rsi
+  778894:	80 e3 07             	and    $0x7,%bl
+  778897:	41 80 e7 07          	and    $0x7,%r15b
+  77889b:	43 8d 0c 40          	lea    (%r8,%r8,2),%ecx
+  77889f:	4d 89 da             	mov    %r11,%r10
+  7788a2:	49 d3 ea             	shr    %cl,%r10
+  7788a5:	40 80 e6 07          	and    $0x7,%sil
+  7788a9:	8d 0c 52             	lea    (%rdx,%rdx,2),%ecx
+  7788ac:	4c 89 da             	mov    %r11,%rdx
+  7788af:	48 d3 ea             	shr    %cl,%rdx
+  7788b2:	8d 0c 40             	lea    (%rax,%rax,2),%ecx
+  7788b5:	49 d3 eb             	shr    %cl,%r11
+  7788b8:	41 80 e2 07          	and    $0x7,%r10b
+  7788bc:	80 e2 07             	and    $0x7,%dl
+  7788bf:	41 80 e3 07          	and    $0x7,%r11b
+  7788c3:	4c 3b 6c 24 78       	cmp    0x78(%rsp),%r13
+  7788c8:	41 0f b6 c3          	movzbl %r11b,%eax
+  7788cc:	8b 8c 24 8c 00 00 00 	mov    0x8c(%rsp),%ecx
+  7788d3:	0f 46 c1             	cmovbe %ecx,%eax
+  7788d6:	4c 3b 64 24 78       	cmp    0x78(%rsp),%r12
+  7788db:	0f 47 c1             	cmova  %ecx,%eax
+  7788de:	40 f6 d5             	not    %bpl
+  7788e1:	48 89 84 24 a0 01 00 00 	mov    %rax,0x1a0(%rsp)
+  7788e9:	ff c0                	inc    %eax
+  7788eb:	0f b6 c0             	movzbl %al,%eax
+  7788ee:	38 c1                	cmp    %al,%cl
+  7788f0:	0f 42 c1             	cmovb  %ecx,%eax
+  7788f3:	89 84 24 30 01 00 00 	mov    %eax,0x130(%rsp)
+  7788fa:	4c 39 ef             	cmp    %r13,%rdi
+  7788fd:	0f b6 c2             	movzbl %dl,%eax
+  778900:	0f 43 c1             	cmovae %ecx,%eax
+  778903:	48 89 bc 24 a8 01 00 00 	mov    %rdi,0x1a8(%rsp)
+  77890b:	4c 39 e7             	cmp    %r12,%rdi
+  77890e:	0f 42 c1             	cmovb  %ecx,%eax
+  778911:	89 84 24 2c 01 00 00 	mov    %eax,0x12c(%rsp)
+  778918:	89 ac 24 34 01 00 00 	mov    %ebp,0x134(%rsp)
+  77891f:	89 e8                	mov    %ebp,%eax
+  778921:	24 7e                	and    $0x7e,%al
+  778923:	88 44 24 0e          	mov    %al,0xe(%rsp)
+  778927:	48 8b 84 24 d0 00 00 00 	mov    0xd0(%rsp),%rax
+  77892f:	4c 39 e8             	cmp    %r13,%rax
+  778932:	41 0f b6 d2          	movzbl %r10b,%edx
+  778936:	0f 43 d1             	cmovae %ecx,%edx
+  778939:	4c 39 e0             	cmp    %r12,%rax
+  77893c:	0f 42 d1             	cmovb  %ecx,%edx
+  77893f:	48 8b bc 24 b0 00 00 00 	mov    0xb0(%rsp),%rdi
+  778947:	4c 39 ef             	cmp    %r13,%rdi
+  77894a:	40 0f b6 c6          	movzbl %sil,%eax
+  77894e:	0f 43 c1             	cmovae %ecx,%eax
+  778951:	4c 39 e7             	cmp    %r12,%rdi
+  778954:	0f 42 c1             	cmovb  %ecx,%eax
+  778957:	89 84 24 b0 00 00 00 	mov    %eax,0xb0(%rsp)
+  77895e:	48 8b b4 24 d8 00 00 00 	mov    0xd8(%rsp),%rsi
+  778966:	4c 39 ee             	cmp    %r13,%rsi
+  778969:	41 0f b6 c7          	movzbl %r15b,%eax
+  77896d:	0f 43 c1             	cmovae %ecx,%eax
+  778970:	4c 39 e6             	cmp    %r12,%rsi
+  778973:	0f 42 c1             	cmovb  %ecx,%eax
+  778976:	89 84 24 d0 00 00 00 	mov    %eax,0xd0(%rsp)
+  77897d:	48 8b b4 24 e0 00 00 00 	mov    0xe0(%rsp),%rsi
+  778985:	4c 39 ee             	cmp    %r13,%rsi
+  778988:	0f b6 c3             	movzbl %bl,%eax
+  77898b:	0f 43 c1             	cmovae %ecx,%eax
+  77898e:	4c 39 e6             	cmp    %r12,%rsi
+  778991:	0f 42 c1             	cmovb  %ecx,%eax
+  778994:	89 84 24 24 01 00 00 	mov    %eax,0x124(%rsp)
+  77899b:	48 8b b4 24 e8 00 00 00 	mov    0xe8(%rsp),%rsi
+  7789a3:	4c 39 ee             	cmp    %r13,%rsi
+  7789a6:	41 0f b6 c6          	movzbl %r14b,%eax
+  7789aa:	0f 43 c1             	cmovae %ecx,%eax
+  7789ad:	4c 39 e6             	cmp    %r12,%rsi
+  7789b0:	0f 42 c1             	cmovb  %ecx,%eax
+  7789b3:	89 84 24 20 01 00 00 	mov    %eax,0x120(%rsp)
+  7789ba:	48 8b ac 24 f8 00 00 00 	mov    0xf8(%rsp),%rbp
+  7789c2:	4c 39 ed             	cmp    %r13,%rbp
+  7789c5:	0f b6 84 24 00 01 00 00 	movzbl 0x100(%rsp),%eax
+  7789cd:	0f 43 c1             	cmovae %ecx,%eax
+  7789d0:	4c 39 e5             	cmp    %r12,%rbp
+  7789d3:	0f 42 c1             	cmovb  %ecx,%eax
+  7789d6:	89 84 24 1c 01 00 00 	mov    %eax,0x11c(%rsp)
+  7789dd:	4c 03 8c 24 08 01 00 00 	add    0x108(%rsp),%r9
+  7789e5:	48 8b 44 24 78       	mov    0x78(%rsp),%rax
+  7789ea:	48 83 c0 bf          	add    $0xffffffffffffffbf,%rax
+  7789ee:	48 89 84 24 60 01 00 00 	mov    %rax,0x160(%rsp)
+  7789f6:	4c 03 8c 24 f0 00 00 00 	add    0xf0(%rsp),%r9
+  7789fe:	4c 89 8c 24 e0 00 00 00 	mov    %r9,0xe0(%rsp)
+  778a06:	48 89 94 24 d8 00 00 00 	mov    %rdx,0xd8(%rsp)
+  778a0e:	8d 42 01             	lea    0x1(%rdx),%eax
+  778a11:	0f b6 c0             	movzbl %al,%eax
+  778a14:	38 c1                	cmp    %al,%cl
+  778a16:	0f 42 c1             	cmovb  %ecx,%eax
+  778a19:	89 84 24 e8 00 00 00 	mov    %eax,0xe8(%rsp)
+  778a20:	48 8b 94 24 80 00 00 00 	mov    0x80(%rsp),%rdx
+  778a28:	e9 95 00 00 00       	jmp    778ac2 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x7a2>
+  778a2d:	0f 1f 00             	nopl   (%rax)
+  778a30:	4c 0b a4 24 e0 00 00 00 	or     0xe0(%rsp),%r12
+  778a38:	41 0f b6 c5          	movzbl %r13b,%eax
+  778a3c:	c1 e0 03             	shl    $0x3,%eax
+  778a3f:	40 0f b6 cd          	movzbl %bpl,%ecx
+  778a43:	c1 e1 06             	shl    $0x6,%ecx
+  778a46:	09 c1                	or     %eax,%ecx
+  778a48:	41 0f b6 c6          	movzbl %r14b,%eax
+  778a4c:	c1 e0 09             	shl    $0x9,%eax
+  778a4f:	0f b6 94 24 f8 00 00 00 	movzbl 0xf8(%rsp),%edx
+  778a57:	c1 e2 0c             	shl    $0xc,%edx
+  778a5a:	0f b6 b4 24 08 01 00 00 	movzbl 0x108(%rsp),%esi
+  778a62:	c1 e6 0f             	shl    $0xf,%esi
+  778a65:	09 c6                	or     %eax,%esi
+  778a67:	09 ce                	or     %ecx,%esi
+  778a69:	09 d6                	or     %edx,%esi
+  778a6b:	0f b6 84 24 f0 00 00 00 	movzbl 0xf0(%rsp),%eax
+  778a73:	c1 e0 12             	shl    $0x12,%eax
+  778a76:	4c 09 e0             	or     %r12,%rax
+  778a79:	48 09 c6             	or     %rax,%rsi
+  778a7c:	48 8b 84 24 98 00 00 00 	mov    0x98(%rsp),%rax
+  778a84:	4c 89 f9             	mov    %r15,%rcx
+  778a87:	48 c1 e1 04          	shl    $0x4,%rcx
+  778a8b:	48 89 34 08          	mov    %rsi,(%rax,%rcx,1)
+  778a8f:	8b 94 24 00 01 00 00 	mov    0x100(%rsp),%edx
+  778a96:	89 54 08 08          	mov    %edx,0x8(%rax,%rcx,1)
+  778a9a:	89 5c 08 0c          	mov    %ebx,0xc(%rax,%rcx,1)
+  778a9e:	49 ff c7             	inc    %r15
+  778aa1:	4c 89 bc 24 a0 00 00 00 	mov    %r15,0xa0(%rsp)
+  778aa9:	48 8b 94 24 80 00 00 00 	mov    0x80(%rsp),%rdx
+  778ab1:	48 ff c2             	inc    %rdx
+  778ab4:	48 3b 94 24 c0 01 00 00 	cmp    0x1c0(%rsp),%rdx
+  778abc:	0f 83 b6 fa ff ff    	jae    778578 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x258>
+  778ac2:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+  778ac7:	48 8b b4 24 10 01 00 00 	mov    0x110(%rsp),%rsi
+  778acf:	48 89 94 24 80 00 00 00 	mov    %rdx,0x80(%rsp)
+  778ad7:	e8 44 da 1a 00       	call   926520 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::edge>
+  778adc:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
+  778ae1:	48 83 f8 ff          	cmp    $0xffffffffffffffff,%rax
+  778ae5:	0f 85 24 07 00 00    	jne    77920f <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xeef>
+  778aeb:	8b 44 24 18          	mov    0x18(%rsp),%eax
+  778aef:	44 8b 54 24 1c       	mov    0x1c(%rsp),%r10d
+  778af4:	8b 5c 24 20          	mov    0x20(%rsp),%ebx
+  778af8:	89 84 24 c0 00 00 00 	mov    %eax,0xc0(%rsp)
+  778aff:	44 89 94 24 c4 00 00 00 	mov    %r10d,0xc4(%rsp)
+  778b07:	89 9c 24 c8 00 00 00 	mov    %ebx,0xc8(%rsp)
+  778b0e:	03 5c 24 4c          	add    0x4c(%rsp),%ebx
+  778b12:	0f 82 e7 07 00 00    	jb     7792ff <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xfdf>
+  778b18:	83 f8 2d             	cmp    $0x2d,%eax
+  778b1b:	74 33                	je     778b50 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x830>
+  778b1d:	3d 51 04 00 00       	cmp    $0x451,%eax
+  778b22:	4c 8b 44 24 78       	mov    0x78(%rsp),%r8
+  778b27:	4c 8b b4 24 38 01 00 00 	mov    0x138(%rsp),%r14
+  778b2f:	75 3f                	jne    778b70 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x850>
+  778b31:	b8 21 00 00 00       	mov    $0x21,%eax
+  778b36:	4c 39 44 24 40       	cmp    %r8,0x40(%rsp)
+  778b3b:	0f 82 68 ff ff ff    	jb     778aa9 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x789>
+  778b41:	eb 4c                	jmp    778b8f <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x86f>
+  778b43:	66 66 66 66 2e 0f 1f 84 00 00 00 00 00 	data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+  778b50:	31 c0                	xor    %eax,%eax
+  778b52:	4c 8b 44 24 78       	mov    0x78(%rsp),%r8
+  778b57:	4c 8b b4 24 38 01 00 00 	mov    0x138(%rsp),%r14
+  778b5f:	4c 39 44 24 40       	cmp    %r8,0x40(%rsp)
+  778b64:	0f 82 3f ff ff ff    	jb     778aa9 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x789>
+  778b6a:	eb 23                	jmp    778b8f <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x86f>
+  778b6c:	0f 1f 40 00          	nopl   0x0(%rax)
+  778b70:	8d 88 d0 fb ff ff    	lea    -0x430(%rax),%ecx
+  778b76:	83 f9 20             	cmp    $0x20,%ecx
+  778b79:	0f 83 f2 06 00 00    	jae    779271 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xf51>
+  778b7f:	05 d1 fb ff ff       	add    $0xfffffbd1,%eax
+  778b84:	4c 39 44 24 40       	cmp    %r8,0x40(%rsp)
+  778b89:	0f 82 1a ff ff ff    	jb     778aa9 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x789>
+  778b8f:	48 c1 e0 04          	shl    $0x4,%rax
+  778b93:	48 8b 8c 24 b0 01 00 00 	mov    0x1b0(%rsp),%rcx
+  778b9b:	48 8b 14 01          	mov    (%rcx,%rax,1),%rdx
+  778b9f:	48 8b b4 24 b8 01 00 00 	mov    0x1b8(%rsp),%rsi
+  778ba7:	40 38 b4 24 b8 00 00 00 	cmp    %sil,0xb8(%rsp)
+  778baf:	76 1f                	jbe    778bd0 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x8b0>
+  778bb1:	00 d2                	add    %dl,%dl
+  778bb3:	22 54 24 0e          	and    0xe(%rsp),%dl
+  778bb7:	0f b6 44 24 0f       	movzbl 0xf(%rsp),%eax
+  778bbc:	44 8b 8c 24 b0 00 00 00 	mov    0xb0(%rsp),%r9d
+  778bc4:	e9 82 00 00 00       	jmp    778c4b <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x92b>
+  778bc9:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+  778bd0:	48 8b 44 01 08       	mov    0x8(%rcx,%rax,1),%rax
+  778bd5:	48 8b b4 24 a8 01 00 00 	mov    0x1a8(%rsp),%rsi
+  778bdd:	83 fe 40             	cmp    $0x40,%esi
+  778be0:	44 8b 8c 24 b0 00 00 00 	mov    0xb0(%rsp),%r9d
+  778be8:	73 22                	jae    778c0c <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x8ec>
+  778bea:	89 f1                	mov    %esi,%ecx
+  778bec:	48 d3 ea             	shr    %cl,%rdx
+  778bef:	48 8b 8c 24 90 01 00 00 	mov    0x190(%rsp),%rcx
+  778bf7:	48 d3 e0             	shl    %cl,%rax
+  778bfa:	48 85 f6             	test   %rsi,%rsi
+  778bfd:	b9 00 00 00 00       	mov    $0x0,%ecx
+  778c02:	0f 44 c1             	cmove  %ecx,%eax
+  778c05:	09 c2                	or     %eax,%edx
+  778c07:	80 e2 7f             	and    $0x7f,%dl
+  778c0a:	eb 1b                	jmp    778c27 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x907>
+  778c0c:	81 fe 80 00 00 00    	cmp    $0x80,%esi
+  778c12:	73 11                	jae    778c25 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x905>
+  778c14:	48 8b 8c 24 60 01 00 00 	mov    0x160(%rsp),%rcx
+  778c1c:	48 d3 e8             	shr    %cl,%rax
+  778c1f:	24 7f                	and    $0x7f,%al
+  778c21:	89 c2                	mov    %eax,%edx
+  778c23:	eb 02                	jmp    778c27 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x907>
+  778c25:	31 d2                	xor    %edx,%edx
+  778c27:	22 94 24 34 01 00 00 	and    0x134(%rsp),%dl
+  778c2e:	89 d0                	mov    %edx,%eax
+  778c30:	f6 d0                	not    %al
+  778c32:	24 01                	and    $0x1,%al
+  778c34:	02 84 24 2c 01 00 00 	add    0x12c(%rsp),%al
+  778c3b:	0f b6 c0             	movzbl %al,%eax
+  778c3e:	0f b6 8c 24 30 01 00 00 	movzbl 0x130(%rsp),%ecx
+  778c46:	38 c1                	cmp    %al,%cl
+  778c48:	0f 42 c1             	cmovb  %ecx,%eax
+  778c4b:	48 8b 4c 24 68       	mov    0x68(%rsp),%rcx
+  778c50:	41 89 cc             	mov    %ecx,%r12d
+  778c53:	89 cd                	mov    %ecx,%ebp
+  778c55:	41 89 cd             	mov    %ecx,%r13d
+  778c58:	41 89 cb             	mov    %ecx,%r11d
+  778c5b:	41 89 cf             	mov    %ecx,%r15d
+  778c5e:	89 ce                	mov    %ecx,%esi
+  778c60:	4c 39 44 24 40       	cmp    %r8,0x40(%rsp)
+  778c65:	0f 84 ac 00 00 00    	je     778d17 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x9f7>
+  778c6b:	89 c1                	mov    %eax,%ecx
+  778c6d:	fe c1                	inc    %cl
+  778c6f:	44 0f b6 e9          	movzbl %cl,%r13d
+  778c73:	b9 ff 00 00 00       	mov    $0xff,%ecx
+  778c78:	44 0f 44 e9          	cmove  %ecx,%r13d
+  778c7c:	89 d1                	mov    %edx,%ecx
+  778c7e:	80 e1 02             	and    $0x2,%cl
+  778c81:	80 f9 01             	cmp    $0x1,%cl
+  778c84:	48 8b 8c 24 a0 01 00 00 	mov    0x1a0(%rsp),%rcx
+  778c8c:	80 d1 00             	adc    $0x0,%cl
+  778c8f:	0f b6 c9             	movzbl %cl,%ecx
+  778c92:	41 38 cd             	cmp    %cl,%r13b
+  778c95:	44 0f 43 e9          	cmovae %ecx,%r13d
+  778c99:	0f b6 8c 24 e8 00 00 00 	movzbl 0xe8(%rsp),%ecx
+  778ca1:	44 38 e9             	cmp    %r13b,%cl
+  778ca4:	44 0f 42 e9          	cmovb  %ecx,%r13d
+  778ca8:	49 83 fe 02          	cmp    $0x2,%r14
+  778cac:	72 57                	jb     778d05 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x9e5>
+  778cae:	89 d1                	mov    %edx,%ecx
+  778cb0:	80 e1 04             	and    $0x4,%cl
+  778cb3:	80 f9 01             	cmp    $0x1,%cl
+  778cb6:	48 8b 8c 24 d8 00 00 00 	mov    0xd8(%rsp),%rcx
+  778cbe:	80 d1 00             	adc    $0x0,%cl
+  778cc1:	44 0f b6 d9          	movzbl %cl,%r11d
+  778cc5:	8b bc 24 8c 00 00 00 	mov    0x8c(%rsp),%edi
+  778ccc:	44 38 df             	cmp    %r11b,%dil
+  778ccf:	44 0f 42 df          	cmovb  %edi,%r11d
+  778cd3:	41 0f b6 cd          	movzbl %r13b,%ecx
+  778cd7:	41 0f b6 f1          	movzbl %r9b,%esi
+  778cdb:	40 38 f1             	cmp    %sil,%cl
+  778cde:	0f 42 f1             	cmovb  %ecx,%esi
+  778ce1:	40 fe c6             	inc    %sil
+  778ce4:	40 0f b6 ce          	movzbl %sil,%ecx
+  778ce8:	41 38 cb             	cmp    %cl,%r11b
+  778ceb:	44 0f 43 d9          	cmovae %ecx,%r11d
+  778cef:	49 83 fe 02          	cmp    $0x2,%r14
+  778cf3:	0f 85 10 01 00 00    	jne    778e09 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xae9>
+  778cf9:	48 8b 4c 24 68       	mov    0x68(%rsp),%rcx
+  778cfe:	41 89 cc             	mov    %ecx,%r12d
+  778d01:	89 cd                	mov    %ecx,%ebp
+  778d03:	eb 0d                	jmp    778d12 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x9f2>
+  778d05:	48 8b 4c 24 68       	mov    0x68(%rsp),%rcx
+  778d0a:	41 89 cc             	mov    %ecx,%r12d
+  778d0d:	89 cd                	mov    %ecx,%ebp
+  778d0f:	41 89 cb             	mov    %ecx,%r11d
+  778d12:	41 89 cf             	mov    %ecx,%r15d
+  778d15:	89 ce                	mov    %ecx,%esi
+  778d17:	88 44 24 10          	mov    %al,0x10(%rsp)
+  778d1b:	44 88 6c 24 11       	mov    %r13b,0x11(%rsp)
+  778d20:	44 88 5c 24 12       	mov    %r11b,0x12(%rsp)
+  778d25:	40 88 6c 24 13       	mov    %bpl,0x13(%rsp)
+  778d2a:	44 88 7c 24 14       	mov    %r15b,0x14(%rsp)
+  778d2f:	44 88 64 24 15       	mov    %r12b,0x15(%rsp)
+  778d34:	40 88 74 24 16       	mov    %sil,0x16(%rsp)
+  778d39:	49 83 fe 06          	cmp    $0x6,%r14
+  778d3d:	0f 87 78 04 00 00    	ja     7791bb <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xe9b>
+  778d43:	44 89 a4 24 08 01 00 00 	mov    %r12d,0x108(%rsp)
+  778d4b:	44 0f b6 e0          	movzbl %al,%r12d
+  778d4f:	4c 39 44 24 40       	cmp    %r8,0x40(%rsp)
+  778d54:	74 61                	je     778db7 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xa97>
+  778d56:	49 83 fe 04          	cmp    $0x4,%r14
+  778d5a:	73 04                	jae    778d60 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xa40>
+  778d5c:	31 c9                	xor    %ecx,%ecx
+  778d5e:	eb 3d                	jmp    778d9d <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xa7d>
+  778d60:	66 41 0f 6e c4       	movd   %r12d,%xmm0
+  778d65:	66 0f 60 c0          	punpcklbw %xmm0,%xmm0
+  778d69:	f2 0f 70 c0 00       	pshuflw $0x0,%xmm0,%xmm0
+  778d6e:	66 0f 6e 4c 24 11    	movd   0x11(%rsp),%xmm1
+  778d74:	66 0f da c8          	pminub %xmm0,%xmm1
+  778d78:	66 0f 6f c1          	movdqa %xmm1,%xmm0
+  778d7c:	66 0f 72 d0 10       	psrld  $0x10,%xmm0
+  778d81:	66 0f da c1          	pminub %xmm1,%xmm0
+  778d85:	66 0f 6f c8          	movdqa %xmm0,%xmm1
+  778d89:	66 0f 71 d1 08       	psrlw  $0x8,%xmm1
+  778d8e:	66 0f da c8          	pminub %xmm0,%xmm1
+  778d92:	66 0f 7e c8          	movd   %xmm1,%eax
+  778d96:	b9 04 00 00 00       	mov    $0x4,%ecx
+  778d9b:	74 1a                	je     778db7 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xa97>
+  778d9d:	89 c2                	mov    %eax,%edx
+  778d9f:	90                   	nop
+  778da0:	0f b6 44 0c 11       	movzbl 0x11(%rsp,%rcx,1),%eax
+  778da5:	0f b6 d2             	movzbl %dl,%edx
+  778da8:	38 c2                	cmp    %al,%dl
+  778daa:	0f 42 c2             	cmovb  %edx,%eax
+  778dad:	48 ff c1             	inc    %rcx
+  778db0:	89 c2                	mov    %eax,%edx
+  778db2:	49 39 ce             	cmp    %rcx,%r14
+  778db5:	75 e9                	jne    778da0 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xa80>
+  778db7:	3a 84 24 b8 00 00 00 	cmp    0xb8(%rsp),%al
+  778dbe:	0f 87 e5 fc ff ff    	ja     778aa9 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x789>
+  778dc4:	89 b4 24 f0 00 00 00 	mov    %esi,0xf0(%rsp)
+  778dcb:	44 89 bc 24 f8 00 00 00 	mov    %r15d,0xf8(%rsp)
+  778dd3:	41 89 ee             	mov    %ebp,%r14d
+  778dd6:	44 89 dd             	mov    %r11d,%ebp
+  778dd9:	44 89 94 24 00 01 00 00 	mov    %r10d,0x100(%rsp)
+  778de1:	4c 8b bc 24 a0 00 00 00 	mov    0xa0(%rsp),%r15
+  778de9:	4c 3b bc 24 90 00 00 00 	cmp    0x90(%rsp),%r15
+  778df1:	0f 85 39 fc ff ff    	jne    778a30 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x710>
+  778df7:	48 8d bc 24 90 00 00 00 	lea    0x90(%rsp),%rdi
+  778dff:	e8 cc 7b 1c 00       	call   9409d0 <<alloc::raw_vec::RawVec<alloc::sync::Arc<[lay::nanda_wave::lexical_grokking::model::WaveCoupling]>>>::grow_one>
+  778e04:	e9 27 fc ff ff       	jmp    778a30 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x710>
+  778e09:	89 d1                	mov    %edx,%ecx
+  778e0b:	80 e1 08             	and    $0x8,%cl
+  778e0e:	80 f9 01             	cmp    $0x1,%cl
+  778e11:	44 89 c9             	mov    %r9d,%ecx
+  778e14:	80 d1 00             	adc    $0x0,%cl
+  778e17:	0f b6 e9             	movzbl %cl,%ebp
+  778e1a:	40 38 ef             	cmp    %bpl,%dil
+  778e1d:	0f 42 ef             	cmovb  %edi,%ebp
+  778e20:	41 0f b6 cb          	movzbl %r11b,%ecx
+  778e24:	44 8b 8c 24 d0 00 00 00 	mov    0xd0(%rsp),%r9d
+  778e2c:	41 0f b6 f1          	movzbl %r9b,%esi
+  778e30:	40 38 f1             	cmp    %sil,%cl
+  778e33:	0f 42 f1             	cmovb  %ecx,%esi
+  778e36:	40 fe c6             	inc    %sil
+  778e39:	40 0f b6 ce          	movzbl %sil,%ecx
+  778e3d:	40 38 cd             	cmp    %cl,%bpl
+  778e40:	0f 43 e9             	cmovae %ecx,%ebp
+  778e43:	49 83 fe 04          	cmp    $0x4,%r14
+  778e47:	72 50                	jb     778e99 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xb79>
+  778e49:	89 d1                	mov    %edx,%ecx
+  778e4b:	80 e1 10             	and    $0x10,%cl
+  778e4e:	80 f9 01             	cmp    $0x1,%cl
+  778e51:	44 89 c9             	mov    %r9d,%ecx
+  778e54:	80 d1 00             	adc    $0x0,%cl
+  778e57:	44 0f b6 f9          	movzbl %cl,%r15d
+  778e5b:	44 38 ff             	cmp    %r15b,%dil
+  778e5e:	44 0f 42 ff          	cmovb  %edi,%r15d
+  778e62:	40 0f b6 cd          	movzbl %bpl,%ecx
+  778e66:	44 8b 8c 24 24 01 00 00 	mov    0x124(%rsp),%r9d
+  778e6e:	41 0f b6 f1          	movzbl %r9b,%esi
+  778e72:	40 38 f1             	cmp    %sil,%cl
+  778e75:	0f 42 f1             	cmovb  %ecx,%esi
+  778e78:	40 fe c6             	inc    %sil
+  778e7b:	40 0f b6 ce          	movzbl %sil,%ecx
+  778e7f:	41 38 cf             	cmp    %cl,%r15b
+  778e82:	44 0f 43 f9          	cmovae %ecx,%r15d
+  778e86:	49 83 fe 04          	cmp    $0x4,%r14
+  778e8a:	75 1a                	jne    778ea6 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xb86>
+  778e8c:	48 8b 4c 24 68       	mov    0x68(%rsp),%rcx
+  778e91:	41 89 cc             	mov    %ecx,%r12d
+  778e94:	e9 7c fe ff ff       	jmp    778d15 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x9f5>
+  778e99:	48 8b 4c 24 68       	mov    0x68(%rsp),%rcx
+  778e9e:	41 89 cc             	mov    %ecx,%r12d
+  778ea1:	e9 6c fe ff ff       	jmp    778d12 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x9f2>
+  778ea6:	89 d1                	mov    %edx,%ecx
+  778ea8:	80 e1 20             	and    $0x20,%cl
+  778eab:	80 f9 01             	cmp    $0x1,%cl
+  778eae:	44 89 c9             	mov    %r9d,%ecx
+  778eb1:	80 d1 00             	adc    $0x0,%cl
+  778eb4:	44 0f b6 e1          	movzbl %cl,%r12d
+  778eb8:	44 38 e7             	cmp    %r12b,%dil
+  778ebb:	44 0f 42 e7          	cmovb  %edi,%r12d
+  778ebf:	41 0f b6 cf          	movzbl %r15b,%ecx
+  778ec3:	44 8b 8c 24 20 01 00 00 	mov    0x120(%rsp),%r9d
+  778ecb:	41 0f b6 f1          	movzbl %r9b,%esi
+  778ecf:	40 38 f1             	cmp    %sil,%cl
+  778ed2:	0f 42 f1             	cmovb  %ecx,%esi
+  778ed5:	40 fe c6             	inc    %sil
+  778ed8:	40 0f b6 ce          	movzbl %sil,%ecx
+  778edc:	41 38 cc             	cmp    %cl,%r12b
+  778edf:	44 0f 43 e1          	cmovae %ecx,%r12d
+  778ee3:	49 83 fe 06          	cmp    $0x6,%r14
+  778ee7:	72 33                	jb     778f1c <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xbfc>
+  778ee9:	c0 ea 06             	shr    $0x6,%dl
+  778eec:	80 f2 01             	xor    $0x1,%dl
+  778eef:	44 00 ca             	add    %r9b,%dl
+  778ef2:	0f b6 f2             	movzbl %dl,%esi
+  778ef5:	40 38 f7             	cmp    %sil,%dil
+  778ef8:	0f 42 f7             	cmovb  %edi,%esi
+  778efb:	41 0f b6 cc          	movzbl %r12b,%ecx
+  778eff:	0f b6 94 24 1c 01 00 00 	movzbl 0x11c(%rsp),%edx
+  778f07:	38 d1                	cmp    %dl,%cl
+  778f09:	0f 42 d1             	cmovb  %ecx,%edx
+  778f0c:	fe c2                	inc    %dl
+  778f0e:	0f b6 ca             	movzbl %dl,%ecx
+  778f11:	40 38 ce             	cmp    %cl,%sil
+  778f14:	0f 43 f1             	cmovae %ecx,%esi
+  778f17:	e9 fb fd ff ff       	jmp    778d17 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x9f7>
+  778f1c:	48 8b 4c 24 68       	mov    0x68(%rsp),%rcx
+  778f21:	e9 ef fd ff ff       	jmp    778d15 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x9f5>
+  778f26:	66 2e 0f 1f 84 00 00 00 00 00 	cs nopw 0x0(%rax,%rax,1)
+  778f30:	4c 89 d8             	mov    %r11,%rax
+  778f33:	48 c1 e8 1d          	shr    $0x1d,%rax
+  778f37:	0f b6 c8             	movzbl %al,%ecx
+  778f3a:	48 39 4c 24 70       	cmp    %rcx,0x70(%rsp)
+  778f3f:	0f 82 b6 f7 ff ff    	jb     7786fb <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x3db>
+  778f45:	4c 89 da             	mov    %r11,%rdx
+  778f48:	48 c1 ea 25          	shr    $0x25,%rdx
+  778f4c:	83 e2 07             	and    $0x7,%edx
+  778f4f:	48 01 d1             	add    %rdx,%rcx
+  778f52:	48 39 4c 24 70       	cmp    %rcx,0x70(%rsp)
+  778f57:	0f 83 9e f7 ff ff    	jae    7786fb <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x3db>
+  778f5d:	48 8b 4c 24 70       	mov    0x70(%rsp),%rcx
+  778f62:	29 c1                	sub    %eax,%ecx
+  778f64:	8d 0c 49             	lea    (%rcx,%rcx,2),%ecx
+  778f67:	4c 89 d8             	mov    %r11,%rax
+  778f6a:	48 d3 e8             	shr    %cl,%rax
+  778f6d:	24 07                	and    $0x7,%al
+  778f6f:	3a 84 24 b8 00 00 00 	cmp    0xb8(%rsp),%al
+  778f76:	0f 87 7f f7 ff ff    	ja     7786fb <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x3db>
+  778f7c:	4c 8b 64 24 60       	mov    0x60(%rsp),%r12
+  778f81:	49 39 dc             	cmp    %rbx,%r12
+  778f84:	75 0a                	jne    778f90 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xc70>
+  778f86:	48 8d 7c 24 50       	lea    0x50(%rsp),%rdi
+  778f8b:	e8 e0 aa a9 00       	call   1213a70 <<alloc::raw_vec::RawVec<u32>>::grow_one>
+  778f90:	48 8b 44 24 58       	mov    0x58(%rsp),%rax
+  778f95:	8b 4c 24 4c          	mov    0x4c(%rsp),%ecx
+  778f99:	42 89 0c a0          	mov    %ecx,(%rax,%r12,4)
+  778f9d:	49 ff c4             	inc    %r12
+  778fa0:	4c 89 64 24 60       	mov    %r12,0x60(%rsp)
+  778fa5:	4c 3b a4 24 58 01 00 00 	cmp    0x158(%rsp),%r12
+  778fad:	4d 89 f3             	mov    %r14,%r11
+  778fb0:	0f 86 45 f7 ff ff    	jbe    7786fb <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x3db>
+  778fb6:	48 8b 44 24 60       	mov    0x60(%rsp),%rax
+  778fbb:	48 8b 4c 24 30       	mov    0x30(%rsp),%rcx
+  778fc0:	48 89 41 10          	mov    %rax,0x10(%rcx)
+  778fc4:	0f 10 44 24 50       	movups 0x50(%rsp),%xmm0
+  778fc9:	0f 11 01             	movups %xmm0,(%rcx)
+  778fcc:	48 8b 84 24 a8 00 00 00 	mov    0xa8(%rsp),%rax
+  778fd4:	48 89 41 18          	mov    %rax,0x18(%rcx)
+  778fd8:	48 8b 44 24 38       	mov    0x38(%rsp),%rax
+  778fdd:	48 89 41 20          	mov    %rax,0x20(%rcx)
+  778fe1:	48 8d 05 f5 56 99 ff 	lea    -0x66a90b(%rip),%rax        # 10e6dd <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x27e8d>
+  778fe8:	48 89 41 28          	mov    %rax,0x28(%rcx)
+  778fec:	48 c7 41 30 0f 00 00 00 	movq   $0xf,0x30(%rcx)
+  778ff4:	e9 a2 01 00 00       	jmp    77919b <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xe7b>
+  778ff9:	48 8b 44 24 60       	mov    0x60(%rsp),%rax
+  778ffe:	48 89 ca             	mov    %rcx,%rdx
+  779001:	48 8b 4c 24 30       	mov    0x30(%rsp),%rcx
+  779006:	48 89 41 10          	mov    %rax,0x10(%rcx)
+  77900a:	f3 0f 6f 44 24 50    	movdqu 0x50(%rsp),%xmm0
+  779010:	f3 0f 7f 01          	movdqu %xmm0,(%rcx)
+  779014:	48 89 51 18          	mov    %rdx,0x18(%rcx)
+  779018:	48 8b 44 24 38       	mov    0x38(%rsp),%rax
+  77901d:	48 89 41 20          	mov    %rax,0x20(%rcx)
+  779021:	48 c7 41 28 00 00 00 00 	movq   $0x0,0x28(%rcx)
+  779029:	66 0f ef c0          	pxor   %xmm0,%xmm0
+  77902d:	f3 0f 7f 41 38       	movdqu %xmm0,0x38(%rcx)
+  779032:	f3 0f 7f 41 48       	movdqu %xmm0,0x48(%rcx)
+  779037:	f3 0f 7f 41 58       	movdqu %xmm0,0x58(%rcx)
+  77903c:	48 c7 41 68 00 00 00 00 	movq   $0x0,0x68(%rcx)
+  779044:	48 83 7c 24 40 00    	cmpq   $0x0,0x40(%rsp)
+  77904a:	0f 85 9c 02 00 00    	jne    7792ec <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xfcc>
+  779050:	e9 73 f3 ff ff       	jmp    7783c8 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xa8>
+  779055:	48 8b 44 24 60       	mov    0x60(%rsp),%rax
+  77905a:	48 8b 4c 24 30       	mov    0x30(%rsp),%rcx
+  77905f:	48 89 41 10          	mov    %rax,0x10(%rcx)
+  779063:	f3 0f 6f 44 24 50    	movdqu 0x50(%rsp),%xmm0
+  779069:	f3 0f 7f 01          	movdqu %xmm0,(%rcx)
+  77906d:	48 8b 84 24 a8 00 00 00 	mov    0xa8(%rsp),%rax
+  779075:	48 89 41 18          	mov    %rax,0x18(%rcx)
+  779079:	48 8b 44 24 38       	mov    0x38(%rsp),%rax
+  77907e:	48 89 41 20          	mov    %rax,0x20(%rcx)
+  779082:	48 8d 05 70 56 99 ff 	lea    -0x66a990(%rip),%rax        # 10e6f9 <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x27ea9>
+  779089:	48 89 41 28          	mov    %rax,0x28(%rcx)
+  77908d:	48 c7 41 30 14 00 00 00 	movq   $0x14,0x30(%rcx)
+  779095:	e9 01 01 00 00       	jmp    77919b <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xe7b>
+  77909a:	48 8b 4c 24 1c       	mov    0x1c(%rsp),%rcx
+  77909f:	8b 54 24 24          	mov    0x24(%rsp),%edx
+  7790a3:	48 8b 74 24 30       	mov    0x30(%rsp),%rsi
+  7790a8:	48 89 46 08          	mov    %rax,0x8(%rsi)
+  7790ac:	89 6e 10             	mov    %ebp,0x10(%rsi)
+  7790af:	48 89 4e 14          	mov    %rcx,0x14(%rsi)
+  7790b3:	89 56 1c             	mov    %edx,0x1c(%rsi)
+  7790b6:	48 c7 06 ff ff ff ff 	movq   $0xffffffffffffffff,(%rsi)
+  7790bd:	e9 08 02 00 00       	jmp    7792ca <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xfaa>
+  7790c2:	bf 25 00 00 00       	mov    $0x25,%edi
+  7790c7:	ff 15 e3 62 c4 00    	call   *0xc462e3(%rip)        # 13bf3b0 <malloc@GLIBC_2.2.5>
+  7790cd:	48 85 c0             	test   %rax,%rax
+  7790d0:	0f 84 5d 02 00 00    	je     779333 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x1013>
+  7790d6:	0f 10 05 08 8a 9d ff 	movups -0x6275f8(%rip),%xmm0        # 151ae5 <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x6b295>
+  7790dd:	0f 11 40 10          	movups %xmm0,0x10(%rax)
+  7790e1:	f3 0f 6f 05 ec 89 9d ff 	movdqu -0x627614(%rip),%xmm0        # 151ad5 <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x6b285>
+  7790e9:	f3 0f 7f 00          	movdqu %xmm0,(%rax)
+  7790ed:	48 b9 66 20 62 6f 75 6e 64 73 	movabs $0x73646e756f622066,%rcx
+  7790f7:	48 89 48 1d          	mov    %rcx,0x1d(%rax)
+  7790fb:	48 8b 4c 24 30       	mov    0x30(%rsp),%rcx
+  779100:	48 c7 41 08 25 00 00 00 	movq   $0x25,0x8(%rcx)
+  779108:	48 89 41 10          	mov    %rax,0x10(%rcx)
+  77910c:	48 c7 41 18 25 00 00 00 	movq   $0x25,0x18(%rcx)
+  779114:	48 c7 01 ff ff ff ff 	movq   $0xffffffffffffffff,(%rcx)
+  77911b:	e9 aa 01 00 00       	jmp    7792ca <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xfaa>
+  779120:	48 8b 44 24 60       	mov    0x60(%rsp),%rax
+  779125:	48 8b 4c 24 30       	mov    0x30(%rsp),%rcx
+  77912a:	48 89 41 10          	mov    %rax,0x10(%rcx)
+  77912e:	0f 10 44 24 50       	movups 0x50(%rsp),%xmm0
+  779133:	0f 11 01             	movups %xmm0,(%rcx)
+  779136:	48 8b 84 24 a8 00 00 00 	mov    0xa8(%rsp),%rax
+  77913e:	48 89 41 18          	mov    %rax,0x18(%rcx)
+  779142:	48 8b 44 24 38       	mov    0x38(%rsp),%rax
+  779147:	48 89 41 20          	mov    %rax,0x20(%rcx)
+  77914b:	48 8d 05 9a 55 99 ff 	lea    -0x66aa66(%rip),%rax        # 10e6ec <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x27e9c>
+  779152:	48 89 41 28          	mov    %rax,0x28(%rcx)
+  779156:	48 c7 41 30 0d 00 00 00 	movq   $0xd,0x30(%rcx)
+  77915e:	eb 3b                	jmp    77919b <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xe7b>
+  779160:	48 8b 44 24 60       	mov    0x60(%rsp),%rax
+  779165:	48 89 ca             	mov    %rcx,%rdx
+  779168:	48 8b 4c 24 30       	mov    0x30(%rsp),%rcx
+  77916d:	48 89 41 10          	mov    %rax,0x10(%rcx)
+  779171:	f3 0f 6f 44 24 50    	movdqu 0x50(%rsp),%xmm0
+  779177:	f3 0f 7f 01          	movdqu %xmm0,(%rcx)
+  77917b:	48 89 51 18          	mov    %rdx,0x18(%rcx)
+  77917f:	48 8b 44 24 38       	mov    0x38(%rsp),%rax
+  779184:	48 89 41 20          	mov    %rax,0x20(%rcx)
+  779188:	48 8d 05 40 55 99 ff 	lea    -0x66aac0(%rip),%rax        # 10e6cf <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x27e7f>
+  77918f:	48 89 41 28          	mov    %rax,0x28(%rcx)
+  779193:	48 c7 41 30 0e 00 00 00 	movq   $0xe,0x30(%rcx)
+  77919b:	66 0f ef c0          	pxor   %xmm0,%xmm0
+  77919f:	f3 0f 7f 41 38       	movdqu %xmm0,0x38(%rcx)
+  7791a4:	f3 0f 7f 41 48       	movdqu %xmm0,0x48(%rcx)
+  7791a9:	f3 0f 7f 41 58       	movdqu %xmm0,0x58(%rcx)
+  7791ae:	48 c7 41 68 00 00 00 00 	movq   $0x0,0x68(%rcx)
+  7791b6:	e9 22 01 00 00       	jmp    7792dd <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xfbd>
+  7791bb:	48 8d 0d 8e 55 c2 00 	lea    0xc2558e(%rip),%rcx        # 139e750 <__frame_dummy_init_array_entry+0x689a0>
+  7791c2:	ba 07 00 00 00       	mov    $0x7,%edx
+  7791c7:	31 ff                	xor    %edi,%edi
+  7791c9:	48 8b b4 24 50 01 00 00 	mov    0x150(%rsp),%rsi
+  7791d1:	e8 3a 1d 92 00       	call   109af10 <core::slice::index::slice_index_fail>
+  7791d6:	e9 81 01 00 00       	jmp    77935c <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x103c>
+  7791db:	bf 08 00 00 00       	mov    $0x8,%edi
+  7791e0:	be 10 00 00 00       	mov    $0x10,%esi
+  7791e5:	e8 08 da 91 00       	call   1096bf2 <alloc::alloc::handle_alloc_error>
+  7791ea:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+  7791ef:	48 8b b4 24 10 01 00 00 	mov    0x110(%rsp),%rsi
+  7791f7:	48 8b 94 24 80 00 00 00 	mov    0x80(%rsp),%rdx
+  7791ff:	e8 1c d3 1a 00       	call   926520 <<lay::nanda_wave::l2_field::v13_typed_peak::V13DafsaView>::edge>
+  779204:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
+  779209:	48 83 f8 ff          	cmp    $0xffffffffffffffff,%rax
+  77920d:	74 1a                	je     779229 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xf09>
+  77920f:	0f 10 44 24 18       	movups 0x18(%rsp),%xmm0
+  779214:	48 8b 4c 24 30       	mov    0x30(%rsp),%rcx
+  779219:	48 89 41 08          	mov    %rax,0x8(%rcx)
+  77921d:	48 89 c8             	mov    %rcx,%rax
+  779220:	0f 11 41 10          	movups %xmm0,0x10(%rcx)
+  779224:	e9 9a 00 00 00       	jmp    7792c3 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xfa3>
+  779229:	8b 44 24 18          	mov    0x18(%rsp),%eax
+  77922d:	8b 4c 24 20          	mov    0x20(%rsp),%ecx
+  779231:	48 8b 54 24 18       	mov    0x18(%rsp),%rdx
+  779236:	48 89 94 24 c0 00 00 00 	mov    %rdx,0xc0(%rsp)
+  77923e:	89 8c 24 c8 00 00 00 	mov    %ecx,0xc8(%rsp)
+  779245:	01 4c 24 4c          	add    %ecx,0x4c(%rsp)
+  779249:	0f 82 b0 00 00 00    	jb     7792ff <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xfdf>
+  77924f:	83 f8 2d             	cmp    $0x2d,%eax
+  779252:	0f 84 ec 00 00 00    	je     779344 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x1024>
+  779258:	3d 51 04 00 00       	cmp    $0x451,%eax
+  77925d:	0f 84 e1 00 00 00    	je     779344 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x1024>
+  779263:	05 d0 fb ff ff       	add    $0xfffffbd0,%eax
+  779268:	83 f8 1f             	cmp    $0x1f,%eax
+  77926b:	0f 86 d3 00 00 00    	jbe    779344 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x1024>
+  779271:	48 8d 84 24 c0 00 00 00 	lea    0xc0(%rsp),%rax
+  779279:	48 89 84 24 40 01 00 00 	mov    %rax,0x140(%rsp)
+  779281:	48 8d 05 78 f9 92 00 	lea    0x92f978(%rip),%rax        # 10a8c00 <<u32 as core::fmt::UpperHex>::fmt>
+  779288:	48 89 84 24 48 01 00 00 	mov    %rax,0x148(%rsp)
+  779290:	48 8d 35 a0 82 99 ff 	lea    -0x667d60(%rip),%rsi        # 111537 <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x2ace7>
+  779297:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+  77929c:	48 8d 94 24 40 01 00 00 	lea    0x140(%rsp),%rdx
+  7792a4:	e8 97 f3 91 00       	call   1098640 <alloc::fmt::format::format_inner>
+  7792a9:	48 8b 44 24 20       	mov    0x20(%rsp),%rax
+  7792ae:	0f 28 44 24 10       	movaps 0x10(%rsp),%xmm0
+  7792b3:	48 8b 4c 24 30       	mov    0x30(%rsp),%rcx
+  7792b8:	0f 11 41 08          	movups %xmm0,0x8(%rcx)
+  7792bc:	48 89 41 18          	mov    %rax,0x18(%rcx)
+  7792c0:	48 89 c8             	mov    %rcx,%rax
+  7792c3:	48 c7 00 ff ff ff ff 	movq   $0xffffffffffffffff,(%rax)
+  7792ca:	48 83 7c 24 50 00    	cmpq   $0x0,0x50(%rsp)
+  7792d0:	74 0b                	je     7792dd <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xfbd>
+  7792d2:	48 8b 7c 24 58       	mov    0x58(%rsp),%rdi
+  7792d7:	ff 15 eb 60 c4 00    	call   *0xc460eb(%rip)        # 13bf3c8 <free@GLIBC_2.2.5>
+  7792dd:	48 83 bc 24 90 00 00 00 00 	cmpq   $0x0,0x90(%rsp)
+  7792e6:	0f 84 dc f0 ff ff    	je     7783c8 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xa8>
+  7792ec:	48 8b bc 24 98 00 00 00 	mov    0x98(%rsp),%rdi
+  7792f4:	ff 15 ce 60 c4 00    	call   *0xc460ce(%rip)        # 13bf3c8 <free@GLIBC_2.2.5>
+  7792fa:	e9 c9 f0 ff ff       	jmp    7783c8 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xa8>
+  7792ff:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+  779304:	e8 17 45 09 00       	call   80d820 <lay::nanda_wave::l2_field::v13_typed_peak::enumerate_lane::<lay::nanda_wave::l2_field::v13_typed_peak::FullLevenshteinRow>::{closure#2}>
+  779309:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
+  77930e:	8b 4c 24 18          	mov    0x18(%rsp),%ecx
+  779312:	8b 54 24 24          	mov    0x24(%rsp),%edx
+  779316:	48 8b 74 24 30       	mov    0x30(%rsp),%rsi
+  77931b:	89 56 1c             	mov    %edx,0x1c(%rsi)
+  77931e:	48 8b 54 24 1c       	mov    0x1c(%rsp),%rdx
+  779323:	48 89 56 14          	mov    %rdx,0x14(%rsi)
+  779327:	48 89 46 08          	mov    %rax,0x8(%rsi)
+  77932b:	48 89 f0             	mov    %rsi,%rax
+  77932e:	89 4e 10             	mov    %ecx,0x10(%rsi)
+  779331:	eb 90                	jmp    7792c3 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0xfa3>
+  779333:	bf 01 00 00 00       	mov    $0x1,%edi
+  779338:	be 25 00 00 00       	mov    $0x25,%esi
+  77933d:	e8 a9 d7 91 00       	call   1096aeb <alloc::raw_vec::handle_error>
+  779342:	eb 18                	jmp    77935c <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x103c>
+  779344:	48 8d 3d bc 6f ac ff 	lea    -0x539044(%rip),%rdi        # 240307 <serde_json::ser::Formatter::write_char_escape::HEX_DIGITS+0x159ab7>
+  77934b:	48 8d 15 a6 54 c2 00 	lea    0xc254a6(%rip),%rdx        # 139e7f8 <__frame_dummy_init_array_entry+0x68a48>
+  779352:	be 13 00 00 00       	mov    $0x13,%esi
+  779357:	e8 14 4c 92 00       	call   109df70 <core::option::expect_failed>
+  77935c:	0f 0b                	ud2
+  77935e:	eb 04                	jmp    779364 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x1044>
+  779360:	eb 02                	jmp    779364 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x1044>
+  779362:	eb 00                	jmp    779364 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x1044>
+  779364:	48 89 c3             	mov    %rax,%rbx
+  779367:	48 83 7c 24 50 00    	cmpq   $0x0,0x50(%rsp)
+  77936d:	75 13                	jne    779382 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x1062>
+  77936f:	48 83 bc 24 90 00 00 00 00 	cmpq   $0x0,0x90(%rsp)
+  779378:	75 1e                	jne    779398 <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x1078>
+  77937a:	48 89 df             	mov    %rbx,%rdi
+  77937d:	e8 4e b9 bb 00       	call   1334cd0 <_Unwind_Resume@plt>
+  779382:	48 8b 7c 24 58       	mov    0x58(%rsp),%rdi
+  779387:	ff 15 3b 60 c4 00    	call   *0xc4603b(%rip)        # 13bf3c8 <free@GLIBC_2.2.5>
+  77938d:	48 83 bc 24 90 00 00 00 00 	cmpq   $0x0,0x90(%rsp)
+  779396:	74 e2                	je     77937a <lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>+0x105a>
+  779398:	48 8b bc 24 98 00 00 00 	mov    0x98(%rsp),%rdi
+  7793a0:	ff 15 22 60 c4 00    	call   *0xc46022(%rip)        # 13bf3c8 <free@GLIBC_2.2.5>
+  7793a6:	48 89 df             	mov    %rbx,%rdi
+  7793a9:	e8 22 b9 bb 00       	call   1334cd0 <_Unwind_Resume@plt>

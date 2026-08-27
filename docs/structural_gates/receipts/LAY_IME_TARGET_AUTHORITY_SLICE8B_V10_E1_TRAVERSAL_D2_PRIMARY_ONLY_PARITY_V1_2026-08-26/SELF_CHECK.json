@@ -1,0 +1,60 @@
+{
+  "admission": {
+    "controller": {
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-parity.py",
+      "sha256": "b629fe96d7cbecb3b17a7666c9d11522ee0e9ed0e1e38e1bbfc69229fdd2451c",
+      "size_bytes": 17251
+    },
+    "d1_parity_reference": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/parity/subject/SUBJECT_RECEIPT.json",
+      "sha256": "fbc651637522a3619bb12f35af7645cb5b02bda0fabf35b24a8fc8097b730530",
+      "size_bytes": 1905
+    },
+    "map_audit": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_AUDIT_V1_2026-08-26/D2_BUCKET_MAP_AUDIT_RECEIPT.json",
+      "sha256": "8d2e52574adca52d5a090067cdf071afba922363ccee8fc9eb4a4158cb92cba7",
+      "size_bytes": 4363
+    },
+    "remote_controller": {
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-parity-remote.py",
+      "sha256": "286e3f8a76e3161dcffabf55c8b68948c54e1372ea772505399db24ca81ad979",
+      "size_bytes": 20135
+    }
+  },
+  "cargo_invocations": 0,
+  "command_graph": {
+    "cargo_routes": [],
+    "external_actions": [
+      "self-check",
+      "parity-once"
+    ],
+    "marker_mutation_routes": [
+      "parity-once"
+    ],
+    "perf_routes": [],
+    "pmu_routes": [],
+    "remote_actions": [
+      "probe-before",
+      "parity-once",
+      "probe-after"
+    ],
+    "subject_routes": [
+      "PARITY"
+    ],
+    "subject_test": "nanda_wave::l2_field::v13_typed_peak::tests::v10_d1_semantic_parity"
+  },
+  "marker_mutations": 0,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_probe_sha256": "e845ec6d5a6f91709d9047b69ab139bd60f679d69e1afabafb089ece2c21d419",
+  "schema": "lay.v10.e1-traversal-d2-primary-only-parity-self-check.v1",
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+  "verdict": "D2_PARITY_CONTROLLER_VERIFIED_UNRUN"
+}

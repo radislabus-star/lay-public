@@ -92,6 +92,14 @@ fn main() -> io::Result<()> {
         );
         return Ok(());
     }
+    if args.iter().any(|arg| arg == "--exact-v13-status") {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&lay::nanda_wave::exact_v13_status())
+                .map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
     if args.iter().any(|arg| arg == "--productive-l2-v1-status") {
         println!(
             "{}",
@@ -302,6 +310,28 @@ fn main() -> io::Result<()> {
             &output,
             arg_u32(&args, "--minimum-profile-support").unwrap_or(2),
         )?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(l2_package) = arg_path(&args, "--compile-v13-exact-sidecar") {
+        let output = arg_path(&args, "--out")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--out is required"))?;
+        let report = lay::nanda_wave::compile_exact_v13_sidecar(&l2_package, &output)?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(io::Error::other)?
+        );
+        return Ok(());
+    }
+    if let Some(l2_package) = arg_path(&args, "--query-v13-exact-sidecar") {
+        let sidecar = arg_path(&args, "--sidecar")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--sidecar is required"))?;
+        let text = arg_string(&args, "--text")
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "--text is required"))?;
+        let report = lay::nanda_wave::query_exact_v13_sidecar(&l2_package, &sidecar, &text)?;
         println!(
             "{}",
             serde_json::to_string_pretty(&report).map_err(io::Error::other)?
@@ -1702,6 +1732,7 @@ fn print_usage() {
          \nRun with no arguments only to compile the legacy default training package.\n\
          Common safe inspection commands:\n\
            --canonical-l2-status\n\
+           --exact-v13-status\n\
            --productive-l2-v1-status\n\
            --reload-productive-l2-v1\n\
            --compact-canonical-l2 REFERENCE.bin --out COMPACT.bin\n\
@@ -1709,6 +1740,8 @@ fn print_usage() {
            --prove-compositional-l2 L2.bin --memory L1.bin [--heldout-per-class N] [--workers N] [--lemma-limit N] [--form-limit N] [--atom-relation-limit N] [--receipt PATH]\n\
            --prove-contextual-compositional-l2 L2.bin --memory L1.bin --morphology-corpus CORPUS.tsv [--heldout-per-class N] [--workers N] [--lemma-limit N] [--active-lemma-limit N] [--feature-limit N] [--form-limit N] [--atom-relation-limit N] [--receipt PATH]\n\
            --compile-productive-l2 L2.bin --morphology-corpus CORPUS.tsv --out SIDECAR.bin [--minimum-profile-support N]\n\
+           --compile-v13-exact-sidecar L2.bin --out SIDECAR.dafsa\n\
+           --query-v13-exact-sidecar L2.bin --sidecar SIDECAR.dafsa --text TEXT\n\
            --audit-productive-anchor-recovery-v1 WORK_DIR --axis-schema SCHEMA.json --scratch-dir DIR [--receipt PATH]\n\
            --compile-productive-paradigm-v1 L2.bin --memory L1.bin --morphology-corpus CORPUS.tsv --axis-schema SCHEMA.json --work-dir DIR --out PACKAGE.bin --expected-corpus-sha256 HEX --expected-corpus-bytes N [--workers N] [--receipt PATH]\n\
 	           --resume-productive-paradigm-v1 L2.bin --memory L1.bin --morphology-corpus CORPUS.tsv --axis-schema SCHEMA.json --work-dir COMPLETED_DIR --out PACKAGE.bin --expected-corpus-sha256 HEX --expected-corpus-bytes N [--shared-support-recovery] [--workers N] [--receipt PATH]\n\

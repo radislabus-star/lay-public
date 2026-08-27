@@ -1,0 +1,979 @@
+{
+  "verdict": "PASS",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "w1-dafsa-typed-view-m3-admission-lexical-fact-reuse-v11-implementation-consequence-v1",
+  "domain": "general",
+  "complexity_score": 47,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.1304,
+      "c2": 0.1304,
+      "c3": 0.1304,
+      "c4": 0.1304,
+      "c5": 0.1304,
+      "c6": 0.1304,
+      "c7": 0.1304,
+      "c8": 0.1304
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 16,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.3425,
+      "c2": 0.3788,
+      "c3": 0.383,
+      "c4": 0.3467,
+      "c5": 0.3299,
+      "c6": 0.3551,
+      "c7": 0.3592,
+      "c8": 0.3048
+    },
+    "source_self_score": 0.35,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "edit-boundary": "edit-boundary",
+      "execution-boundary": "execution-boundary",
+      "lazy-order": "lazy-order",
+      "lifetime": "lifetime",
+      "owner-boundary": "owner-boundary",
+      "production-boundary": "production-boundary",
+      "semantic-parity": "semantic-parity",
+      "successor-boundary": "successor-boundary"
+    },
+    "scores": {
+      "edit-boundary": 1.0,
+      "execution-boundary": 1.0,
+      "lazy-order": 1.0,
+      "lifetime": 1.0,
+      "owner-boundary": 1.0,
+      "production-boundary": 1.0,
+      "semantic-parity": 1.0,
+      "successor-boundary": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "edit-boundary": 1,
+      "execution-boundary": 1,
+      "lazy-order": 1,
+      "lifetime": 1,
+      "owner-boundary": 1,
+      "production-boundary": 1,
+      "semantic-parity": 1,
+      "successor-boundary": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.35,
+      "norm": 89.5991,
+      "triads": 8
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "edit-boundary": "edit-boundary",
+      "execution-boundary": "execution-boundary",
+      "lazy-order": "lazy-order",
+      "lifetime": "lifetime",
+      "owner-boundary": "owner-boundary",
+      "production-boundary": "production-boundary",
+      "semantic-parity": "semantic-parity",
+      "successor-boundary": "successor-boundary"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "edit-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "lazy-order": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "lifetime": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "owner-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "production-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "semantic-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "successor-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "edit-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "lazy-order": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "lifetime": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "owner-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "production-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "semantic-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "successor-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "edit-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "edit-boundary",
+        "exact_source_groups": [
+          "edit-boundary"
+        ]
+      },
+      "execution-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "execution-boundary",
+        "exact_source_groups": [
+          "execution-boundary"
+        ]
+      },
+      "lazy-order": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "lazy-order",
+        "exact_source_groups": [
+          "lazy-order"
+        ]
+      },
+      "lifetime": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "lifetime",
+        "exact_source_groups": [
+          "lifetime"
+        ]
+      },
+      "owner-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "owner-boundary",
+        "exact_source_groups": [
+          "owner-boundary"
+        ]
+      },
+      "production-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "production-boundary",
+        "exact_source_groups": [
+          "production-boundary"
+        ]
+      },
+      "semantic-parity": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "semantic-parity",
+        "exact_source_groups": [
+          "semantic-parity"
+        ]
+      },
+      "successor-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "successor-boundary",
+        "exact_source_groups": [
+          "successor-boundary"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "edit-boundary": {
+        "edit-boundary": 1.0,
+        "execution-boundary": -0.0078,
+        "lazy-order": -0.002,
+        "lifetime": 0.0293,
+        "owner-boundary": -0.0313,
+        "production-boundary": -0.0078,
+        "semantic-parity": 0.0059,
+        "successor-boundary": -0.0273
+      },
+      "execution-boundary": {
+        "edit-boundary": -0.0078,
+        "execution-boundary": 1.0,
+        "lazy-order": 0.002,
+        "lifetime": 0.0645,
+        "owner-boundary": -0.0195,
+        "production-boundary": 0.0234,
+        "semantic-parity": -0.0254,
+        "successor-boundary": -0.0313
+      },
+      "lazy-order": {
+        "edit-boundary": -0.002,
+        "execution-boundary": 0.002,
+        "lazy-order": 1.0,
+        "lifetime": -0.0234,
+        "owner-boundary": 0.0254,
+        "production-boundary": 0.0137,
+        "semantic-parity": 0.0547,
+        "successor-boundary": 0.002
+      },
+      "lifetime": {
+        "edit-boundary": 0.0293,
+        "execution-boundary": 0.0645,
+        "lazy-order": -0.0234,
+        "lifetime": 1.0,
+        "owner-boundary": 0.0371,
+        "production-boundary": -0.0137,
+        "semantic-parity": -0.0039,
+        "successor-boundary": -0.0293
+      },
+      "owner-boundary": {
+        "edit-boundary": -0.0313,
+        "execution-boundary": -0.0195,
+        "lazy-order": 0.0254,
+        "lifetime": 0.0371,
+        "owner-boundary": 1.0,
+        "production-boundary": 0.0039,
+        "semantic-parity": -0.0293,
+        "successor-boundary": -0.0625
+      },
+      "production-boundary": {
+        "edit-boundary": -0.0078,
+        "execution-boundary": 0.0234,
+        "lazy-order": 0.0137,
+        "lifetime": -0.0137,
+        "owner-boundary": 0.0039,
+        "production-boundary": 1.0,
+        "semantic-parity": -0.0293,
+        "successor-boundary": 0.0039
+      },
+      "semantic-parity": {
+        "edit-boundary": 0.0059,
+        "execution-boundary": -0.0254,
+        "lazy-order": 0.0547,
+        "lifetime": -0.0039,
+        "owner-boundary": -0.0293,
+        "production-boundary": -0.0293,
+        "semantic-parity": 1.0,
+        "successor-boundary": -0.002
+      },
+      "successor-boundary": {
+        "edit-boundary": -0.0273,
+        "execution-boundary": -0.0313,
+        "lazy-order": 0.002,
+        "lifetime": -0.0293,
+        "owner-boundary": -0.0625,
+        "production-boundary": 0.0039,
+        "semantic-parity": -0.002,
+        "successor-boundary": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "edit-boundary": {
+          "gravity": 1.0,
+          "owner": "proposal_admission",
+          "owners": {
+            "proposal_admission": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "execution-boundary": {
+          "gravity": 1.0,
+          "owner": "execution-boundary",
+          "owners": {
+            "execution-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "lazy-order": {
+          "gravity": 1.0,
+          "owner": "lazy-order",
+          "owners": {
+            "lazy-order": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "lifetime": {
+          "gravity": 1.0,
+          "owner": "lexical fact owner",
+          "owners": {
+            "lexical fact owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "owner-boundary": {
+          "gravity": 1.0,
+          "owner": "existing predicates",
+          "owners": {
+            "existing predicates": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "production-boundary": {
+          "gravity": 1.0,
+          "owner": "production-boundary",
+          "owners": {
+            "production-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "semantic-parity": {
+          "gravity": 1.0,
+          "owner": "semantic-parity",
+          "owners": {
+            "semantic-parity": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "successor-boundary": {
+          "gravity": 1.0,
+          "owner": "successor-boundary",
+          "owners": {
+            "successor-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "edit-boundary": {
+          "gravity": 1.0,
+          "owner": "proposal_admission",
+          "owners": {
+            "proposal_admission": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "execution-boundary": {
+          "gravity": 1.0,
+          "owner": "execution-boundary",
+          "owners": {
+            "execution-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "lazy-order": {
+          "gravity": 1.0,
+          "owner": "lazy-order",
+          "owners": {
+            "lazy-order": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "lifetime": {
+          "gravity": 1.0,
+          "owner": "lexical fact owner",
+          "owners": {
+            "lexical fact owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "owner-boundary": {
+          "gravity": 1.0,
+          "owner": "existing predicates",
+          "owners": {
+            "existing predicates": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "production-boundary": {
+          "gravity": 1.0,
+          "owner": "production-boundary",
+          "owners": {
+            "production-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "semantic-parity": {
+          "gravity": 1.0,
+          "owner": "semantic-parity",
+          "owners": {
+            "semantic-parity": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "successor-boundary": {
+          "gravity": 1.0,
+          "owner": "successor-boundary",
+          "owners": {
+            "successor-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "edit-boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate preserves the one-file boundary",
+            "consequence contract freezes one source surface"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "proposal_admission"
+          ],
+          "scopes": [
+            "edit-boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "execution-boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate has local-only side effects",
+            "local compile and unit proof only"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "execution-boundary"
+          ],
+          "scopes": [
+            "execution-boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "lazy-order": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate retains short-circuit timing order",
+            "no later predicate is evaluated early"
+          ],
+          "layers": [
+            "test"
+          ],
+          "outputs": [],
+          "owners": [
+            "lazy-order"
+          ],
+          "scopes": [
+            "lazy-order"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "lifetime": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate contains no persistent cache",
+            "no static thread-local result or cross-request cache"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "lexical fact owner"
+          ],
+          "scopes": [
+            "lifetime"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "owner-boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate changes fact production only",
+            "no branch predicate or short-circuit reorder is admitted"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "existing predicates"
+          ],
+          "scopes": [
+            "owner-boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "production-boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate keeps experiment code test-only",
+            "cfg boundary removes environment override and counters"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "production-boundary"
+          ],
+          "scopes": [
+            "production-boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "semantic-parity": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate requires both authority policies and full fixtures",
+            "complete fixture matrix under both authority policies"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "semantic-parity"
+          ],
+          "scopes": [
+            "semantic-parity"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "successor-boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "b0 and b1 remain unrun",
+            "candidate stops before b0 and b1"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "successor-boundary"
+          ],
+          "scopes": [
+            "successor-boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "edit-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "lazy-order": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "lifetime": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "owner-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "production-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "semantic-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "successor-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "edit-boundary": {
+          "edit-boundary": 1.0,
+          "execution-boundary": -0.0078,
+          "lazy-order": -0.002,
+          "lifetime": 0.0293,
+          "owner-boundary": -0.0313,
+          "production-boundary": -0.0078,
+          "semantic-parity": 0.0059,
+          "successor-boundary": -0.0273
+        },
+        "execution-boundary": {
+          "edit-boundary": -0.0078,
+          "execution-boundary": 1.0,
+          "lazy-order": 0.002,
+          "lifetime": 0.0645,
+          "owner-boundary": -0.0195,
+          "production-boundary": 0.0234,
+          "semantic-parity": -0.0254,
+          "successor-boundary": -0.0313
+        },
+        "lazy-order": {
+          "edit-boundary": -0.002,
+          "execution-boundary": 0.002,
+          "lazy-order": 1.0,
+          "lifetime": -0.0234,
+          "owner-boundary": 0.0254,
+          "production-boundary": 0.0137,
+          "semantic-parity": 0.0547,
+          "successor-boundary": 0.002
+        },
+        "lifetime": {
+          "edit-boundary": 0.0293,
+          "execution-boundary": 0.0645,
+          "lazy-order": -0.0234,
+          "lifetime": 1.0,
+          "owner-boundary": 0.0371,
+          "production-boundary": -0.0137,
+          "semantic-parity": -0.0039,
+          "successor-boundary": -0.0293
+        },
+        "owner-boundary": {
+          "edit-boundary": -0.0313,
+          "execution-boundary": -0.0195,
+          "lazy-order": 0.0254,
+          "lifetime": 0.0371,
+          "owner-boundary": 1.0,
+          "production-boundary": 0.0039,
+          "semantic-parity": -0.0293,
+          "successor-boundary": -0.0625
+        },
+        "production-boundary": {
+          "edit-boundary": -0.0078,
+          "execution-boundary": 0.0234,
+          "lazy-order": 0.0137,
+          "lifetime": -0.0137,
+          "owner-boundary": 0.0039,
+          "production-boundary": 1.0,
+          "semantic-parity": -0.0293,
+          "successor-boundary": 0.0039
+        },
+        "semantic-parity": {
+          "edit-boundary": 0.0059,
+          "execution-boundary": -0.0254,
+          "lazy-order": 0.0547,
+          "lifetime": -0.0039,
+          "owner-boundary": -0.0293,
+          "production-boundary": -0.0293,
+          "semantic-parity": 1.0,
+          "successor-boundary": -0.002
+        },
+        "successor-boundary": {
+          "edit-boundary": -0.0273,
+          "execution-boundary": -0.0313,
+          "lazy-order": 0.002,
+          "lifetime": -0.0293,
+          "owner-boundary": -0.0625,
+          "production-boundary": 0.0039,
+          "semantic-parity": -0.002,
+          "successor-boundary": 1.0
+        }
+      },
+      "source": {
+        "edit-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "lazy-order": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "lifetime": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "owner-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "production-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "semantic-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "successor-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "edit-boundary": 1,
+      "execution-boundary": 1,
+      "lazy-order": 1,
+      "lifetime": 1,
+      "owner-boundary": 1,
+      "production-boundary": 1,
+      "semantic-parity": 1,
+      "successor-boundary": 1
+    },
+    "stable_groups": [
+      "edit-boundary",
+      "execution-boundary",
+      "lazy-order",
+      "lifetime",
+      "owner-boundary",
+      "production-boundary",
+      "semantic-parity",
+      "successor-boundary"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [],
+  "agent_decision": {
+    "action": "SAFE_TO_EDIT",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Proceed only within the checked route boundary.",
+    "repair_count": 0,
+    "repair_queue": [],
+    "safe_to_edit": true
+  },
+  "explanation": [
+    "Candidate structure is coherent with source triads.",
+    "Structural coherence only: trusted proof was not established and authority is false."
+  ],
+  "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+  "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-admission-lexical-fact-reuse-v11-implementation-consequence-v1.trace.json"
+}

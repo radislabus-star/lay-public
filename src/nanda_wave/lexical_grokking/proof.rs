@@ -3036,14 +3036,14 @@ fn scale_sample_hash(word: &str, example: &DamageExample) -> u64 {
 }
 
 #[cfg(any(test, feature = "lexical-compiler"))]
-pub(super) struct FixedHeldoutCase {
-    pub(super) class: &'static str,
-    pub(super) terminal_id: u32,
-    pub(super) surface: String,
+pub(in crate::nanda_wave) struct FixedHeldoutCase {
+    pub(in crate::nanda_wave) class: &'static str,
+    pub(in crate::nanda_wave) terminal_id: u32,
+    pub(in crate::nanda_wave) surface: String,
 }
 
 #[cfg(any(test, feature = "lexical-compiler"))]
-pub(super) fn prepare_fixed_heldout_cases(
+pub(in crate::nanda_wave) fn prepare_fixed_heldout_cases(
     words: &[String],
     heldout_per_class: usize,
     terminal_offset: usize,

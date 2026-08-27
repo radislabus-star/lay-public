@@ -1,0 +1,41 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "nodes": [
+    {"id":"producer-cli","role":"interface","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-live-preflight.py","line":781,"contains":"def main()"}},
+    {"id":"producer-orchestrator","role":"orchestrator","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-live-preflight.py","line":675,"contains":"def produce()"}},
+    {"id":"producer-live-observer","role":"observer","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-live-preflight.py","line":428,"contains":"def remote_snapshot()"}},
+    {"id":"uid-probe-authority","role":"authorization_owner","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-live-preflight.py","line":675,"contains":"def produce()"}},
+    {"id":"uid-probe-owner","role":"mutation_owner","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-live-preflight.py","line":456,"contains":"def uid_probe()"}},
+    {"id":"live-evidence-producer","role":"producer","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-live-preflight.py","line":231,"contains":"def publish_tree"}},
+    {"id":"auditor-cli","role":"interface","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py","line":514,"contains":"def main()"}},
+    {"id":"auditor-orchestrator","role":"orchestrator","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py","line":397,"contains":"def audit()"}},
+    {"id":"auditor-live-observer","role":"observer","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py","line":283,"contains":"def remote_snapshot()"}},
+    {"id":"admission-proof","role":"proof_owner","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py","line":323,"contains":"def verify_live_result"}},
+    {"id":"admission-authority","role":"authorization_owner","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py","line":397,"contains":"def audit()"}},
+    {"id":"admission-publisher","role":"mutation_owner","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py","line":163,"contains":"def atomic_publish_file"}},
+    {"id":"audit-evidence-proof","role":"proof_owner","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py","line":188,"contains":"def publish_tree"}}
+  ],
+  "edges": [
+    {"id":"producer-entry","from":"producer-cli","relation":"calls","to":"producer-orchestrator","events":["live-preflight"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-live-preflight.py","line":789,"contains":"value = produce()"}},
+    {"id":"producer-observation","from":"producer-orchestrator","relation":"observes","to":"producer-live-observer","events":["live-preflight","live-state"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-live-preflight.py","line":680,"contains":"snapshot_one = remote_snapshot()"}},
+    {"id":"producer-publish","from":"producer-orchestrator","relation":"delegates","to":"live-evidence-producer","events":["live-preflight"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-live-preflight.py","line":753,"contains":"publish_tree(stage, RESULT)"}},
+    {"id":"uid-capability","from":"uid-probe-authority","relation":"authorizes","to":"uid-probe-owner","events":["uid-probe"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-live-preflight.py","line":690,"contains":"proof = uid_probe()"}},
+    {"id":"auditor-entry","from":"auditor-cli","relation":"calls","to":"auditor-orchestrator","events":["admission-audit"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py","line":520,"contains":"value = audit()"}},
+    {"id":"auditor-observation","from":"auditor-orchestrator","relation":"observes","to":"auditor-live-observer","events":["admission-audit","audit-live-state"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py","line":404,"contains":"snapshot = remote_snapshot()"}},
+    {"id":"auditor-publish","from":"auditor-orchestrator","relation":"delegates","to":"admission-publisher","events":["admission-audit"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py","line":483,"contains":"atomic_publish_file(EXECUTION_ADMISSION"}},
+    {"id":"audit-proof","from":"auditor-live-observer","relation":"proves","to":"admission-proof","events":["admission-proof"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py","line":405,"contains":"validate_snapshot(snapshot)"}},
+    {"id":"authority-publication","from":"admission-authority","relation":"authorizes","to":"admission-publisher","events":["admission-publication"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py","line":483,"contains":"atomic_publish_file(EXECUTION_ADMISSION"}},
+    {"id":"audit-proof-publication","from":"auditor-orchestrator","relation":"proves","to":"audit-evidence-proof","events":["audit-evidence"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py","line":445,"contains":"publish_tree(stage, AUDIT_RESULT)"}}
+  ],
+  "routes": [
+    {"id":"live-preflight-execution","event":"live-preflight","kind":"execution","entry":"producer-cli","terminal":"live-evidence-producer","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"producer-cli","to":"live-evidence-producer","min":1,"max":1}]},
+    {"id":"live-state-observation","event":"live-state","kind":"observation","entry":"producer-orchestrator","terminal":"producer-live-observer","required_roles":["orchestrator","observer"]},
+    {"id":"uid-probe-mutation","event":"uid-probe","kind":"authority","entry":"uid-probe-authority","terminal":"uid-probe-owner","required_roles":["authorization_owner","mutation_owner"],"path_cardinality":[{"from":"uid-probe-authority","to":"uid-probe-owner","min":1,"max":1}]},
+    {"id":"admission-audit-execution","event":"admission-audit","kind":"execution","entry":"auditor-cli","terminal":"admission-publisher","required_roles":["interface","orchestrator","mutation_owner"],"path_cardinality":[{"from":"auditor-cli","to":"admission-publisher","min":1,"max":1}]},
+    {"id":"audit-live-observation","event":"audit-live-state","kind":"observation","entry":"auditor-orchestrator","terminal":"auditor-live-observer","required_roles":["orchestrator","observer"]},
+    {"id":"admission-proof","event":"admission-proof","kind":"proof","entry":"auditor-live-observer","terminal":"admission-proof","required_roles":["observer","proof_owner"]},
+    {"id":"admission-publication","event":"admission-publication","kind":"authority","entry":"admission-authority","terminal":"admission-publisher","required_roles":["authorization_owner","mutation_owner"],"path_cardinality":[{"from":"admission-authority","to":"admission-publisher","min":1,"max":1}]},
+    {"id":"audit-evidence-proof-route","event":"audit-evidence","kind":"proof","entry":"auditor-orchestrator","terminal":"audit-evidence-proof","required_roles":["orchestrator","proof_owner"]}
+  ]
+}

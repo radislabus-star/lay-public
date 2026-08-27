@@ -113,6 +113,8 @@ pub type InputGateScoreboard = CorrectionScoreboard;
 pub struct InputGateRequest<'a> {
     pub trigger: InputGateTrigger,
     pub text_tail: &'a str,
+    pub lexical_authority_frame:
+        Option<&'a crate::lexical_authority_frame::LexicalAuthorityFrameV1>,
     pub auto_replace: bool,
     pub typing_assist: bool,
     pub auto_switch_layout: bool,
@@ -232,18 +234,8 @@ fn decide_space_autocorrect_observed_internal(
     req: InputGateRequest<'_>,
     evidence: SpaceCorrectionEvidence<'_>,
 ) -> ObservedInputGateDecision {
-    let correction_request = CorrectionRequest {
-        text: req.text_tail,
-        auto_replace: req.auto_replace,
-        typing_assist: req.typing_assist,
-        auto_switch_layout: req.auto_switch_layout,
-        correction_safety: req.correction_safety,
-        typing_assist_pipeline: req.typing_assist_pipeline,
-        nanda_autocorrect: req.nanda_autocorrect,
-        nanda_candidate_route: req.nanda_candidate_route,
-        nanda_wave_options: req.nanda_wave_options,
-        mode: req.correction_mode,
-    };
+    let trigger = req.trigger;
+    let correction_request = correction_request_from_input_gate(req);
     let observed = match evidence {
         SpaceCorrectionEvidence::FullField(None) => {
             crate::correction_core::resolve_text_correction_observed(correction_request)
@@ -266,13 +258,29 @@ fn decide_space_autocorrect_observed_internal(
 
     ObservedInputGateDecision {
         decision: InputGateDecision {
-            trigger: req.trigger,
+            trigger,
             stage: InputGateStage::WordBoundary,
             trace: Some(word_boundary_trace(&resolution, action.outcome())),
             action,
             correction: Some(resolution),
         },
         telemetry: observed.telemetry,
+    }
+}
+
+fn correction_request_from_input_gate(req: InputGateRequest<'_>) -> CorrectionRequest<'_> {
+    CorrectionRequest {
+        text: req.text_tail,
+        lexical_authority_frame: req.lexical_authority_frame,
+        auto_replace: req.auto_replace,
+        typing_assist: req.typing_assist,
+        auto_switch_layout: req.auto_switch_layout,
+        correction_safety: req.correction_safety,
+        typing_assist_pipeline: req.typing_assist_pipeline,
+        nanda_autocorrect: req.nanda_autocorrect,
+        nanda_candidate_route: req.nanda_candidate_route,
+        nanda_wave_options: req.nanda_wave_options,
+        mode: req.correction_mode,
     }
 }
 
@@ -284,6 +292,7 @@ pub(crate) fn warm_up_word_boundary() {
         let _ = decide_input_gate(InputGateRequest {
             trigger: InputGateTrigger::Space,
             text_tail,
+            lexical_authority_frame: None,
             auto_replace: true,
             typing_assist: true,
             auto_switch_layout: true,
@@ -416,6 +425,7 @@ mod tests {
         InputGateRequest {
             trigger,
             text_tail,
+            lexical_authority_frame: None,
             auto_replace: true,
             typing_assist: true,
             auto_switch_layout: true,
@@ -437,6 +447,63 @@ mod tests {
             typing_assist_pipeline: pipeline,
             ..request(trigger, text_tail)
         }
+    }
+
+    #[test]
+    fn correction_boundary_preserves_frame_presence_and_identity() {
+        let config = crate::config::LayConfig::default();
+        let frame = crate::lexical_authority_frame::LexicalAuthorityFrameV1::from_exact_parts(
+            "/engine/frame".to_string(),
+            Some("focus/frame".to_string()),
+            17,
+            "контекст слово".to_string(),
+            "контекст ".to_string(),
+            "слово".to_string(),
+            true,
+            true,
+            crate::exact_layout_authority::FactoryEngineProfile::Ru,
+            None,
+            23,
+            29,
+            crate::lexical_authority_frame::LexicalAuthorityConfigIdentityV1::from_config(&config),
+        );
+        let mut framed = request(InputGateTrigger::Space, "контекст слово ");
+        framed.lexical_authority_frame = Some(&frame);
+
+        let correction = correction_request_from_input_gate(framed);
+        assert!(std::ptr::eq(
+            correction.lexical_authority_frame.expect("exact frame"),
+            &frame
+        ));
+        assert!(correction_request_from_input_gate(request(
+            InputGateTrigger::Space,
+            "контекст слово "
+        ))
+        .lexical_authority_frame
+        .is_none());
+
+        let mut baseline_request = request(InputGateTrigger::Space, "lfdfq ");
+        baseline_request.nanda_autocorrect = false;
+        baseline_request.correction_mode = CorrectionMode::DeterministicOnly;
+        let baseline = decide_input_gate(baseline_request);
+        let mut framed_request = request(InputGateTrigger::Space, "lfdfq ");
+        framed_request.lexical_authority_frame = Some(&frame);
+        framed_request.nanda_autocorrect = false;
+        framed_request.correction_mode = CorrectionMode::DeterministicOnly;
+        let framed = decide_input_gate(framed_request);
+        assert_eq!(framed.trigger, baseline.trigger);
+        assert_eq!(framed.stage, baseline.stage);
+        assert_eq!(framed.action, baseline.action);
+        assert_eq!(
+            framed
+                .correction
+                .as_ref()
+                .and_then(|resolution| resolution.decision.as_ref()),
+            baseline
+                .correction
+                .as_ref()
+                .and_then(|resolution| resolution.decision.as_ref())
+        );
     }
 
     #[test]
@@ -476,6 +543,7 @@ mod tests {
         let decision = decide_input_gate(InputGateRequest {
             trigger: InputGateTrigger::Space,
             text_tail: "lfdfq ",
+            lexical_authority_frame: None,
             auto_replace: true,
             typing_assist: true,
             auto_switch_layout: true,
@@ -561,6 +629,7 @@ mod tests {
         let decision = decide_input_gate(InputGateRequest {
             trigger: InputGateTrigger::Space,
             text_tail: "lfdfq ",
+            lexical_authority_frame: None,
             auto_replace: false,
             typing_assist: false,
             auto_switch_layout: false,

@@ -1,0 +1,1231 @@
+{
+  "verdict": "VETO",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-exact-fused-band-transition-m1",
+  "domain": "code",
+  "complexity_score": 71,
+  "mandatory_gate": true,
+  "limits": [
+    "routes target limit exceeded: 9>8"
+  ],
+  "stable_triads": [
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8",
+    "c9",
+    "c10"
+  ],
+  "weak_triads": [
+    "c1",
+    "c11",
+    "c12",
+    "c2",
+    "c3"
+  ],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10",
+      "c11",
+      "c12"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.0857,
+      "c10": 0.0857,
+      "c11": 0.0857,
+      "c12": 0.0857,
+      "c2": 0.0857,
+      "c3": 0.0857,
+      "c4": 0.0857,
+      "c5": 0.0857,
+      "c6": 0.0857,
+      "c7": 0.0857,
+      "c8": 0.0857,
+      "c9": 0.0857
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 24,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "s9",
+      "s10",
+      "s11",
+      "s12",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10",
+      "c11",
+      "c12"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.255,
+      "c10": 0.2948,
+      "c11": 0.2701,
+      "c12": 0.269,
+      "c2": 0.2776,
+      "c3": 0.2625,
+      "c4": 0.3583,
+      "c5": 0.3303,
+      "c6": 0.3013,
+      "c7": 0.3432,
+      "c8": 0.2927,
+      "c9": 0.3755
+    },
+    "source_self_score": 0.3025,
+    "stable": [
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10"
+    ],
+    "weak": [
+      "c1",
+      "c2",
+      "c3",
+      "c11",
+      "c12"
+    ],
+    "weak_details": {
+      "c1": {
+        "nearest_source": "s1",
+        "nearest_source_score": 1.0,
+        "score": 0.255,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c11": {
+        "nearest_source": "s11",
+        "nearest_source_score": 1.0,
+        "score": 0.2701,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c12": {
+        "nearest_source": "s12",
+        "nearest_source_score": 1.0,
+        "score": 0.269,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c2": {
+        "nearest_source": "s2",
+        "nearest_source_score": 1.0,
+        "score": 0.2776,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c3": {
+        "nearest_source": "s3",
+        "nearest_source_score": 1.0,
+        "score": 0.2625,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      }
+    }
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "m1-boundary": "m1-boundary",
+      "m1-decision": "m1-decision",
+      "m1-environment": "m1-environment",
+      "m1-equality": "m1-equality",
+      "m1-fused": "m1-fused",
+      "m1-parity": "m1-parity",
+      "m1-physical": "m1-physical",
+      "m1-swar": "m1-swar",
+      "m1-trace": "m1-trace"
+    },
+    "scores": {
+      "m1-boundary": 1.0,
+      "m1-decision": 1.0,
+      "m1-environment": 1.0,
+      "m1-equality": 1.0,
+      "m1-fused": 1.0,
+      "m1-parity": 1.0,
+      "m1-physical": 1.0,
+      "m1-swar": 1.0,
+      "m1-trace": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "m1-boundary": 2,
+      "m1-decision": 1,
+      "m1-environment": 2,
+      "m1-equality": 1,
+      "m1-fused": 2,
+      "m1-parity": 1,
+      "m1-physical": 1,
+      "m1-swar": 1,
+      "m1-trace": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.3025,
+      "norm": 116.1723,
+      "triads": 12
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "m1-boundary": "m1-boundary",
+      "m1-decision": "m1-decision",
+      "m1-environment": "m1-environment",
+      "m1-equality": "m1-equality",
+      "m1-fused": "m1-fused",
+      "m1-parity": "m1-parity",
+      "m1-physical": "m1-physical",
+      "m1-swar": "m1-swar",
+      "m1-trace": "m1-trace"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "m1-boundary": {
+          "norm": 45.299,
+          "self_coherence": 0.7078,
+          "triads": 2
+        },
+        "m1-decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m1-environment": {
+          "norm": 46.6047,
+          "self_coherence": 0.7282,
+          "triads": 2
+        },
+        "m1-equality": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m1-fused": {
+          "norm": 45.8694,
+          "self_coherence": 0.7167,
+          "triads": 2
+        },
+        "m1-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m1-physical": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m1-swar": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m1-trace": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "m1-boundary": {
+          "norm": 45.299,
+          "self_coherence": 0.7078,
+          "triads": 2
+        },
+        "m1-decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m1-environment": {
+          "norm": 46.6047,
+          "self_coherence": 0.7282,
+          "triads": 2
+        },
+        "m1-equality": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m1-fused": {
+          "norm": 45.8694,
+          "self_coherence": 0.7167,
+          "triads": 2
+        },
+        "m1-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m1-physical": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m1-swar": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m1-trace": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "m1-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "m1-boundary",
+        "exact_source_groups": [
+          "m1-boundary"
+        ]
+      },
+      "m1-decision": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "m1-decision",
+        "exact_source_groups": [
+          "m1-decision"
+        ]
+      },
+      "m1-environment": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "m1-environment",
+        "exact_source_groups": [
+          "m1-environment"
+        ]
+      },
+      "m1-equality": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "m1-equality",
+        "exact_source_groups": [
+          "m1-equality"
+        ]
+      },
+      "m1-fused": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "m1-fused",
+        "exact_source_groups": [
+          "m1-fused"
+        ]
+      },
+      "m1-parity": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "m1-parity",
+        "exact_source_groups": [
+          "m1-parity"
+        ]
+      },
+      "m1-physical": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "m1-physical",
+        "exact_source_groups": [
+          "m1-physical"
+        ]
+      },
+      "m1-swar": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "m1-swar",
+        "exact_source_groups": [
+          "m1-swar"
+        ]
+      },
+      "m1-trace": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "m1-trace",
+        "exact_source_groups": [
+          "m1-trace"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "m1-boundary": {
+        "m1-boundary": 1.0,
+        "m1-decision": -0.0373,
+        "m1-environment": 0.0246,
+        "m1-equality": -0.0069,
+        "m1-fused": -0.0135,
+        "m1-parity": 0.0014,
+        "m1-physical": 0.0566,
+        "m1-swar": 0.0235,
+        "m1-trace": -0.0869
+      },
+      "m1-decision": {
+        "m1-boundary": -0.0373,
+        "m1-decision": 1.0,
+        "m1-environment": -0.0121,
+        "m1-equality": 0.0215,
+        "m1-fused": 0.0491,
+        "m1-parity": -0.0273,
+        "m1-physical": 0.041,
+        "m1-swar": 0.0098,
+        "m1-trace": 0.0176
+      },
+      "m1-environment": {
+        "m1-boundary": 0.0246,
+        "m1-decision": -0.0121,
+        "m1-environment": 1.0,
+        "m1-equality": -0.0013,
+        "m1-fused": 0.0168,
+        "m1-parity": 0.0094,
+        "m1-physical": 0.0308,
+        "m1-swar": 0.122,
+        "m1-trace": 0.0067
+      },
+      "m1-equality": {
+        "m1-boundary": -0.0069,
+        "m1-decision": 0.0215,
+        "m1-environment": -0.0013,
+        "m1-equality": 1.0,
+        "m1-fused": -0.0245,
+        "m1-parity": 0.0254,
+        "m1-physical": -0.0117,
+        "m1-swar": -0.0195,
+        "m1-trace": 0.0391
+      },
+      "m1-fused": {
+        "m1-boundary": -0.0135,
+        "m1-decision": 0.0491,
+        "m1-environment": 0.0168,
+        "m1-equality": -0.0245,
+        "m1-fused": 1.0,
+        "m1-parity": 0.0082,
+        "m1-physical": 0.0545,
+        "m1-swar": 0.0245,
+        "m1-trace": 0.0218
+      },
+      "m1-parity": {
+        "m1-boundary": 0.0014,
+        "m1-decision": -0.0273,
+        "m1-environment": 0.0094,
+        "m1-equality": 0.0254,
+        "m1-fused": 0.0082,
+        "m1-parity": 1.0,
+        "m1-physical": 0.0527,
+        "m1-swar": 0.0059,
+        "m1-trace": 0.0098
+      },
+      "m1-physical": {
+        "m1-boundary": 0.0566,
+        "m1-decision": 0.041,
+        "m1-environment": 0.0308,
+        "m1-equality": -0.0117,
+        "m1-fused": 0.0545,
+        "m1-parity": 0.0527,
+        "m1-physical": 1.0,
+        "m1-swar": -0.0117,
+        "m1-trace": -0.0273
+      },
+      "m1-swar": {
+        "m1-boundary": 0.0235,
+        "m1-decision": 0.0098,
+        "m1-environment": 0.122,
+        "m1-equality": -0.0195,
+        "m1-fused": 0.0245,
+        "m1-parity": 0.0059,
+        "m1-physical": -0.0117,
+        "m1-swar": 1.0,
+        "m1-trace": -0.0313
+      },
+      "m1-trace": {
+        "m1-boundary": -0.0869,
+        "m1-decision": 0.0176,
+        "m1-environment": 0.0067,
+        "m1-equality": 0.0391,
+        "m1-fused": 0.0218,
+        "m1-parity": 0.0098,
+        "m1-physical": -0.0273,
+        "m1-swar": -0.0313,
+        "m1-trace": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [
+        {
+          "center": "foreign-process owner",
+          "group": "m1-environment",
+          "kind": "owner_conflict",
+          "owners": [
+            "foreign-process owner",
+            "m1-environment"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        }
+      ],
+      "group_centers": {
+        "m1-boundary": {
+          "gravity": 1.0,
+          "owner": "m1-boundary",
+          "owners": {
+            "m1-boundary": 4
+          },
+          "support": 4,
+          "total": 4
+        },
+        "m1-decision": {
+          "gravity": 1.0,
+          "owner": "m1-decision",
+          "owners": {
+            "m1-decision": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "m1-environment": {
+          "gravity": 0.5,
+          "owner": "foreign-process owner",
+          "owners": {
+            "foreign-process owner": 2,
+            "m1-environment": 2
+          },
+          "support": 2,
+          "total": 4
+        },
+        "m1-equality": {
+          "gravity": 1.0,
+          "owner": "m1-equality",
+          "owners": {
+            "m1-equality": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "m1-fused": {
+          "gravity": 1.0,
+          "owner": "m1-fused",
+          "owners": {
+            "m1-fused": 4
+          },
+          "support": 4,
+          "total": 4
+        },
+        "m1-parity": {
+          "gravity": 1.0,
+          "owner": "parity owner",
+          "owners": {
+            "parity owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "m1-physical": {
+          "gravity": 1.0,
+          "owner": "physical owner",
+          "owners": {
+            "physical owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "m1-swar": {
+          "gravity": 1.0,
+          "owner": "m1-swar",
+          "owners": {
+            "m1-swar": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "m1-trace": {
+          "gravity": 1.0,
+          "owner": "m1-trace",
+          "owners": {
+            "m1-trace": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "boundary": {
+          "gravity": 1.0,
+          "owner": "m1-boundary",
+          "owners": {
+            "m1-boundary": 4
+          },
+          "support": 4,
+          "total": 4
+        },
+        "decision": {
+          "gravity": 1.0,
+          "owner": "m1-decision",
+          "owners": {
+            "m1-decision": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "diagnostic": {
+          "gravity": 1.0,
+          "owner": "m1-environment",
+          "owners": {
+            "m1-environment": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "environment": {
+          "gravity": 1.0,
+          "owner": "foreign-process owner",
+          "owners": {
+            "foreign-process owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "equality": {
+          "gravity": 1.0,
+          "owner": "m1-equality",
+          "owners": {
+            "m1-equality": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "fused": {
+          "gravity": 1.0,
+          "owner": "m1-fused",
+          "owners": {
+            "m1-fused": 4
+          },
+          "support": 4,
+          "total": 4
+        },
+        "parity": {
+          "gravity": 0.5,
+          "owner": "m1-trace",
+          "owners": {
+            "m1-trace": 2,
+            "parity owner": 2
+          },
+          "support": 2,
+          "total": 4
+        },
+        "pmu": {
+          "gravity": 1.0,
+          "owner": "physical owner",
+          "owners": {
+            "physical owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "swar": {
+          "gravity": 1.0,
+          "owner": "m1-swar",
+          "owners": {
+            "m1-swar": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "m1-environment"
+      }
+    ],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "m1 claim boundary",
+            "m1 verdict boundary"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "m1-boundary"
+          ],
+          "scopes": [
+            "boundary"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "decision": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "m1 authority metrics"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "m1-decision"
+          ],
+          "scopes": [
+            "decision"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "diagnostic": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "m1 authority metrics"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "m1-environment"
+          ],
+          "scopes": [
+            "diagnostic"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "environment": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "m1 forbidden effects"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "foreign-process owner"
+          ],
+          "scopes": [
+            "environment"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "equality": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "m1 variant table"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "m1-equality"
+          ],
+          "scopes": [
+            "equality"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "fused": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "m1 transition contract"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "m1-fused"
+          ],
+          "scopes": [
+            "fused"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "parity": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "m1 contract one-trace phase",
+            "m1 parity phase"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "m1-trace",
+            "parity owner"
+          ],
+          "scopes": [
+            "parity"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "pmu": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "m1 physical phase"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "physical owner"
+          ],
+          "scopes": [
+            "pmu"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "swar": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "m1 variant table"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "m1-swar"
+          ],
+          "scopes": [
+            "swar"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "boundary": {
+          "norm": 45.299,
+          "self_coherence": 0.7078,
+          "triads": 2
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "diagnostic": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "equality": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "fused": {
+          "norm": 45.8694,
+          "self_coherence": 0.7167,
+          "triads": 2
+        },
+        "parity": {
+          "norm": 45.4753,
+          "self_coherence": 0.7106,
+          "triads": 2
+        },
+        "pmu": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "swar": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "boundary": {
+          "boundary": 1.0,
+          "decision": -0.0373,
+          "diagnostic": 0.0483,
+          "environment": -0.0124,
+          "equality": -0.0069,
+          "fused": -0.0135,
+          "parity": -0.0602,
+          "pmu": 0.0566,
+          "swar": 0.0235
+        },
+        "decision": {
+          "boundary": -0.0373,
+          "decision": 1.0,
+          "diagnostic": 0.0234,
+          "environment": -0.041,
+          "equality": 0.0215,
+          "fused": 0.0491,
+          "parity": -0.0069,
+          "pmu": 0.041,
+          "swar": 0.0098
+        },
+        "diagnostic": {
+          "boundary": 0.0483,
+          "decision": 0.0234,
+          "diagnostic": 1.0,
+          "environment": 0.0605,
+          "equality": -0.0215,
+          "fused": 0.0545,
+          "parity": 0.0151,
+          "pmu": 0.0605,
+          "swar": 0.0723
+        },
+        "environment": {
+          "boundary": -0.0124,
+          "decision": -0.041,
+          "diagnostic": 0.0605,
+          "environment": 1.0,
+          "equality": 0.0195,
+          "fused": -0.03,
+          "parity": 0.0014,
+          "pmu": -0.0156,
+          "swar": 0.1055
+        },
+        "equality": {
+          "boundary": -0.0069,
+          "decision": 0.0215,
+          "diagnostic": -0.0215,
+          "environment": 0.0195,
+          "equality": 1.0,
+          "fused": -0.0245,
+          "parity": 0.0454,
+          "pmu": -0.0117,
+          "swar": -0.0195
+        },
+        "fused": {
+          "boundary": -0.0135,
+          "decision": 0.0491,
+          "diagnostic": 0.0545,
+          "environment": -0.03,
+          "equality": -0.0245,
+          "fused": 1.0,
+          "parity": 0.0211,
+          "pmu": 0.0545,
+          "swar": 0.0245
+        },
+        "parity": {
+          "boundary": -0.0602,
+          "decision": -0.0069,
+          "diagnostic": 0.0151,
+          "environment": 0.0014,
+          "equality": 0.0454,
+          "fused": 0.0211,
+          "parity": 1.0,
+          "pmu": 0.0179,
+          "swar": -0.0179
+        },
+        "pmu": {
+          "boundary": 0.0566,
+          "decision": 0.041,
+          "diagnostic": 0.0605,
+          "environment": -0.0156,
+          "equality": -0.0117,
+          "fused": 0.0545,
+          "parity": 0.0179,
+          "pmu": 1.0,
+          "swar": -0.0117
+        },
+        "swar": {
+          "boundary": 0.0235,
+          "decision": 0.0098,
+          "diagnostic": 0.0723,
+          "environment": 0.1055,
+          "equality": -0.0195,
+          "fused": 0.0245,
+          "parity": -0.0179,
+          "pmu": -0.0117,
+          "swar": 1.0
+        }
+      },
+      "source": {
+        "boundary": {
+          "norm": 45.299,
+          "self_coherence": 0.7078,
+          "triads": 2
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "diagnostic": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "equality": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "fused": {
+          "norm": 45.8694,
+          "self_coherence": 0.7167,
+          "triads": 2
+        },
+        "parity": {
+          "norm": 45.4753,
+          "self_coherence": 0.7106,
+          "triads": 2
+        },
+        "pmu": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "swar": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "m1-boundary": 2,
+      "m1-decision": 1,
+      "m1-environment": 2,
+      "m1-equality": 1,
+      "m1-fused": 2,
+      "m1-parity": 1,
+      "m1-physical": 1,
+      "m1-swar": 1,
+      "m1-trace": 1
+    },
+    "stable_groups": [
+      "m1-boundary",
+      "m1-decision",
+      "m1-environment",
+      "m1-equality",
+      "m1-fused",
+      "m1-parity",
+      "m1-physical",
+      "m1-swar",
+      "m1-trace"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 1,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 1,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [
+    {
+      "kind": "evidence_conflict",
+      "priority": "high",
+      "reason": "one evidence span is bound to incompatible role fillers",
+      "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+      "target": "M1 authority metrics"
+    },
+    {
+      "kind": "evidence_conflict",
+      "priority": "high",
+      "reason": "one evidence span is bound to incompatible role fillers",
+      "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+      "target": "M1 transition contract"
+    },
+    {
+      "kind": "evidence_conflict",
+      "priority": "high",
+      "reason": "one evidence span is bound to incompatible role fillers",
+      "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+      "target": "M1 variant table"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "m1-environment"
+    }
+  ],
+  "agent_decision": {
+    "action": "REPAIR_REQUIRED",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Apply the repair_queue before editing or accepting this route.",
+    "repair_count": 4,
+    "repair_queue": [
+      {
+        "kind": "evidence_conflict",
+        "priority": "high",
+        "reason": "one evidence span is bound to incompatible role fillers",
+        "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+        "target": "M1 authority metrics"
+      },
+      {
+        "kind": "evidence_conflict",
+        "priority": "high",
+        "reason": "one evidence span is bound to incompatible role fillers",
+        "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+        "target": "M1 transition contract"
+      },
+      {
+        "kind": "evidence_conflict",
+        "priority": "high",
+        "reason": "one evidence span is bound to incompatible role fillers",
+        "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+        "target": "M1 variant table"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "m1-environment"
+      }
+    ],
+    "safe_to_edit": false
+  },
+  "explanation": [
+    "At least one candidate triad has weak composite-mode support.",
+    "Task exceeds target or hard limits and should be split."
+  ],
+  "repair_prompt": "Repair the candidate answer using only one coherent structural route.\nNANDA verdict: VETO.\nPrimary repair_queue:\n- [high] evidence_conflict: Resolve the source conflict and bind each triad to its exact supporting span.\n- [high] evidence_conflict: Resolve the source conflict and bind each triad to its exact supporting span.\n- [high] evidence_conflict: Resolve the source conflict and bind each triad to its exact supporting span.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\nRecheck or remove weak candidate triads:\n- c1: score=0.255, nearest_source=s1, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c11: score=0.2701, nearest_source=s11, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c12: score=0.269, nearest_source=s12, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c2: score=0.2776, nearest_source=s2, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c3: score=0.2625, nearest_source=s3, why=candidate triad does not resonate with the composite source memory above the stability threshold\nSplit the task before retrying:\n- routes target limit exceeded: 9>8",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-exact-fused-band-transition-m1.trace.json"
+}

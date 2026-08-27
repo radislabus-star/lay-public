@@ -18,10 +18,11 @@ mod proof;
 mod runtime;
 mod runtime_storage;
 mod teacher;
+mod v13_typed_peak;
 
 pub(crate) use bridge::{
     canonical_ime_candidates_observed, canonical_text_candidates, canonical_text_readout_observed,
-    cold_probe_surfaces,
+    canonical_text_readout_observed_with_frame, cold_probe_surfaces,
 };
 pub(crate) use runtime::CanonicalFieldTelemetry;
 pub(crate) use runtime::L2FieldAuthority;
@@ -39,6 +40,7 @@ const DEFAULT_L2_MODEL_DIR_SUFFIX: &str = ".local/share/lay/nanda_wave/l2";
 const DEFAULT_L2_PACKAGE_NAME: &str = "LAY-L2-RU-FULL-v13.bin";
 const DEFAULT_PRODUCTIVE_L2_PACKAGE_NAME: &str = "LAY-L2-RU-PRODUCTIVE-v1.bin";
 const DEFAULT_PRODUCTIVE_L2_V1_PACKAGE_NAME: &str = "LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m";
+const DEFAULT_EXACT_V13_SIDECAR_NAME: &str = "LAY-L2-RU-FULL-v13.dafsa";
 
 fn productive_sidecar_state() -> &'static std::sync::RwLock<
     Option<std::sync::Arc<productive_format::CompactProductiveMorphologyView>>,
@@ -136,6 +138,63 @@ pub fn discover_installed_productive_l2_v1_package() -> std::io::Result<Option<s
     }
     let path = default_l2_model_dir().join(DEFAULT_PRODUCTIVE_L2_V1_PACKAGE_NAME);
     Ok(path.is_file().then_some(path))
+}
+
+pub fn discover_installed_exact_v13_sidecar() -> std::io::Result<Option<std::path::PathBuf>> {
+    if let Some(explicit) = std::env::var_os("LAY_L2_V13_DAFSA") {
+        let path = std::path::PathBuf::from(explicit);
+        if path.is_file() {
+            return Ok(Some(path));
+        }
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            format!(
+                "LAY_L2_V13_DAFSA points to a missing sidecar: {}",
+                path.display()
+            ),
+        ));
+    }
+    let path = default_l2_model_dir().join(DEFAULT_EXACT_V13_SIDECAR_NAME);
+    Ok(path.is_file().then_some(path))
+}
+
+type ExactV13LoadResult =
+    Result<Option<std::sync::Arc<v13_typed_peak::ExactV13Generation>>, String>;
+
+fn exact_v13_state() -> &'static std::sync::OnceLock<ExactV13LoadResult> {
+    static STATE: std::sync::OnceLock<ExactV13LoadResult> = std::sync::OnceLock::new();
+    &STATE
+}
+
+fn installed_exact_v13(canonical_index: &runtime::StandaloneL2Field) -> ExactV13LoadResult {
+    exact_v13_state()
+        .get_or_init(|| load_exact_v13(canonical_index))
+        .clone()
+}
+
+fn load_exact_v13(canonical_index: &runtime::StandaloneL2Field) -> ExactV13LoadResult {
+    let Some(sidecar_path) =
+        discover_installed_exact_v13_sidecar().map_err(|error| error.to_string())?
+    else {
+        return Ok(None);
+    };
+    let canonical_path = discover_installed_l2_package()
+        .map_err(|error| error.to_string())?
+        .ok_or_else(|| "canonical L2 package is not installed".to_string())?;
+    let canonical_bytes = std::fs::metadata(&canonical_path)
+        .map_err(|error| format!("{}: {error}", canonical_path.display()))?
+        .len();
+    let canonical_sha256 = sha256_file(&canonical_path)?;
+    let (forms, _, _, bindings, _, _) = canonical_index.package_counts();
+    v13_typed_peak::ExactV13Generation::load(
+        &sidecar_path,
+        canonical_sha256,
+        canonical_bytes,
+        forms,
+        bindings,
+    )
+    .map(std::sync::Arc::new)
+    .map(Some)
 }
 
 fn installed_productive_l2_v1(
@@ -391,8 +450,14 @@ pub(crate) fn warm_up_installed_l2_field() {
     // Loading and indexing the standalone package can take hundreds of
     // milliseconds. Keep that first touch on the existing background IME
     // warmup thread instead of charging it to the user's first Space.
-    let _ = installed_l2_field();
-    let _ = installed_productive_l2_v1();
+    let _ = preload_installed_l2_field();
+}
+
+pub(in crate::nanda_wave::l2_field) fn preload_installed_l2_field() -> Result<(), String> {
+    let canonical_index = installed_l2_field().map_err(str::to_string)?;
+    installed_productive_l2_v1()?;
+    let _ = installed_exact_v13(canonical_index);
+    Ok(())
 }
 
 pub fn canonical_l2_status() -> serde_json::Value {
@@ -437,6 +502,62 @@ pub fn canonical_l2_status() -> serde_json::Value {
             "message": error,
         }),
     }
+}
+
+pub fn exact_v13_status() -> serde_json::Value {
+    let sidecar = discover_installed_exact_v13_sidecar()
+        .ok()
+        .flatten()
+        .map(|path| path.display().to_string());
+    let canonical_index = match installed_l2_field() {
+        Ok(field) => field,
+        Err(error) => {
+            return serde_json::json!({
+                "status": "unavailable",
+                "sidecar": sidecar,
+                "message": error,
+                "runtime_authority_changed": false,
+            });
+        }
+    };
+    match installed_exact_v13(canonical_index) {
+        Ok(Some(generation)) => serde_json::json!({
+            "status": "ready_immutable_owner",
+            "sidecar": sidecar,
+            "sidecar_bytes": generation.sidecar_bytes(),
+            "sidecar_sha256": hex_sha256(generation.sidecar_sha256()),
+            "typed_payload_bytes": generation.typed_payload_bytes(),
+            "lifetime": "process",
+            "reload": "process_restart_required",
+            "runtime_authority_changed": false,
+        }),
+        Ok(None) => serde_json::json!({
+            "status": "not_installed",
+            "sidecar": sidecar,
+            "runtime_authority_changed": false,
+        }),
+        Err(error) => serde_json::json!({
+            "status": "unavailable",
+            "sidecar": sidecar,
+            "message": error,
+            "runtime_authority_changed": false,
+        }),
+    }
+}
+
+pub fn compile_exact_v13_sidecar(
+    canonical_l2_package: &std::path::Path,
+    output: &std::path::Path,
+) -> std::io::Result<serde_json::Value> {
+    v13_typed_peak::compile_exact_sidecar_file(canonical_l2_package, output)
+}
+
+pub fn query_exact_v13_sidecar(
+    canonical_l2_package: &std::path::Path,
+    sidecar: &std::path::Path,
+    observed: &str,
+) -> std::io::Result<serde_json::Value> {
+    v13_typed_peak::query_exact_sidecar_file(canonical_l2_package, sidecar, observed)
 }
 
 pub fn compile_productive_l2_sidecar(

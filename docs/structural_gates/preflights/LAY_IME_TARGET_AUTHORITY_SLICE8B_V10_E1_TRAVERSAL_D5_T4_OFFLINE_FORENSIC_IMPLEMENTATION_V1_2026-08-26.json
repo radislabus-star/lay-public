@@ -1,0 +1,271 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "expect": {"mode": "0444", "sha256": "5624f6337c8df385e317f5a08b7886d3aa30768c10920bb34fa94639a2063856", "size_bytes": 5313},
+      "id": "forensic-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_INTERPRETATION_V1_2026-08-26.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "56b8fe7cac35e16e9a7060caff5dfdda5b2a3df3c0c61ec4b0aa86051d0f374a", "size_bytes": 4783},
+      "id": "aggregate-route-watch",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_INTERPRETATION_V1_ROUTE.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "6d51177a5c69128c52c59a876dcb5d0c0db072bed62aa53ba5802e7bba7e81e0", "size_bytes": 2719},
+      "id": "evidence-scope-route",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_INTERPRETATION_V1_ROUTE_A_EVIDENCE_SCOPE.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "d8d6da4c41f9b610b4c8d9421a52ce5a9a9ae76241933596d966353b5e2094ac", "size_bytes": 2712},
+      "id": "diagnostic-authority-route",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_INTERPRETATION_V1_ROUTE_B_DIAGNOSTIC_AUTHORITY.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "318a8c8327373f7067ec793a00c4ad8f153aaf0255aa8e30f15aec4a1a0545c4", "size_bytes": 1134},
+      "id": "structural-review",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_STRUCTURAL_REVIEW_V1_2026-08-26.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "b37e24bd87d063063d83dd30f084d7fda81fc9bdd4f1759a1643b2e6809c741a", "size_bytes": 2964},
+      "id": "d5-terminal-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_TERMINAL_AUDIT_V1_2026-08-26/D5_TERMINAL_AUDIT_RECEIPT.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "229b901d65516d7eb6041668d2974409a721e601a6acb03d52d66929895903e4", "size_bytes": 45133},
+      "id": "u4-fixed-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_U4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/D5_ROUTE_RECEIPT.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "d337dcddcd74e95e8009e520347f6e3cf6c1319c46bf7e896862200af8f5cbbf", "size_bytes": 68243},
+      "id": "t4-fixed-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/D5_ROUTE_RECEIPT.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "55501b090feb7d525d5942e732795006c3bc9e626386bf381b7174364ab3fe44", "size_bytes": 61044},
+      "id": "t4-observation",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/OBSERVATION.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "e50f8c8f002ea6ea7433c4375239ba101eb54bd3a6b4bde44156e43210ac21a0", "size_bytes": 30432151},
+      "id": "rendered-samples",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/samples.stdout"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "bdfd0b7bf9786ad20586606156df78a810c72d0c4fca128b30c9215d461cb89a", "size_bytes": 151281354},
+      "id": "raw-records",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/raw-records.stdout"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "02c140c235641ed177139e8fd5b37eb4cdcc5fc952443326d944c2c7322d62b6", "size_bytes": 7126578},
+      "id": "sealed-perf-data",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/perf.data"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "341fdfb60d4874f2a0ec0b7458561bdba22706286aa2be6492733ff1d4a5119f", "size_bytes": 1737},
+      "id": "t4-subject-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/subject/SUBJECT_RECEIPT.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "2b93aedf11101a8bc5fc7ed4ffaa056b50476d96cdd2eabf9d185f59ee60f846", "size_bytes": 390324},
+      "id": "d2-bucket-map",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json"
+    },
+    {
+      "expect": {},
+      "id": "forensic-auditor-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-e1-traversal-d5-t4-offline-forensic-audit.py"
+    },
+    {
+      "expect": {},
+      "id": "forensic-result-absent",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_AUDIT_V1_2026-08-26"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "comparison": "exact SHA-256 mode size and complete SHA256SUMS membership",
+      "consumer": "standalone forensic parser",
+      "id": "sealed-input-identity",
+      "producer": "D2 and D5 immutable evidence trees",
+      "test_id": "input-parity"
+    },
+    {
+      "comparison": "rendered sample count equals PERF_RECORD_SAMPLE count",
+      "consumer": "diagnostic attribution",
+      "id": "sample-stream-parity",
+      "producer": "sealed samples and raw records",
+      "test_id": "sample-parity"
+    },
+    {
+      "comparison": "exact mapping offset unique load bias and normalized virtual range",
+      "consumer": "bucket join",
+      "id": "machine-map-identity",
+      "producer": "sealed MMAP2 and D2 bucket map",
+      "test_id": "map-parity"
+    },
+    {
+      "comparison": "exact local result inventory and SHA256SUMS",
+      "consumer": "future D6 paper",
+      "id": "receipt-identity",
+      "producer": "forensic auditor",
+      "test_id": "receipt-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "zero-external-command-graph",
+      "statement": "auditor has no subprocess network perf Cargo rustc or subject route",
+      "test_id": "command-graph"
+    },
+    {
+      "id": "history-remains-terminal",
+      "statement": "D5 remains BLOCKED_PROVENANCE claim invalid no optimization and no retry",
+      "test_id": "history-parity"
+    },
+    {
+      "id": "worker-identity-cpu-independent",
+      "statement": "worker TIDs come only from the unique FORK COMM EXIT graph",
+      "test_id": "lifecycle-parity"
+    },
+    {
+      "id": "cpu-scopes-separated",
+      "statement": "all worker samples exact D2 samples and traversal samples have separate CPU projections",
+      "test_id": "scope-parity"
+    },
+    {
+      "id": "throttle-pairs-exact",
+      "statement": "every throttle is paired with one later unthrottle on the same CPU",
+      "test_id": "throttle-parity"
+    },
+    {
+      "id": "diagnostic-only",
+      "statement": "attribution and period projections cannot supersede D5 or grant execution optimization or runtime authority",
+      "test_id": "claim-boundary"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "baseline_check_id": "d5-terminal-receipt",
+      "cursor_policy": "exact_bytes",
+      "id": "d5-terminal-history",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_TERMINAL_AUDIT_V1_2026-08-26/D5_TERMINAL_AUDIT_RECEIPT.json",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    },
+    {
+      "baseline_check_id": "rendered-samples",
+      "cursor_policy": "exact_bytes",
+      "id": "rendered-sample-stream",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/samples.stdout",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    },
+    {
+      "baseline_check_id": "raw-records",
+      "cursor_policy": "exact_bytes",
+      "id": "raw-record-stream",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/raw-records.stdout",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    },
+    {
+      "baseline_check_id": "sealed-perf-data",
+      "cursor_policy": "exact_bytes",
+      "id": "sealed-perf-data-bytes",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/perf.data",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    },
+    {
+      "baseline_check_id": "d2-bucket-map",
+      "cursor_policy": "exact_bytes",
+      "id": "sealed-bucket-map",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    }
+  ],
+  "reuses_existing_implementation": false,
+  "runtime_comparisons": [],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "side_effects": {
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture_as_evidence",
+      "network_or_remote_access",
+      "marker_or_state_mutation",
+      "perf_reader_record_or_stat",
+      "pmu_event_or_subject_execution",
+      "cargo_or_rustc",
+      "new_or_modified_elf_or_bucket_map",
+      "timestamp_filter_or_warmup_subtraction",
+      "d5_verdict_retry_or_claim_relabel",
+      "optimization_build_integration_install_restart_deployment_or_runtime_change"
+    ],
+    "planned": [
+      {"id": "create-forensic-auditor", "kind": "local_source_create"},
+      {"id": "read-sealed-evidence", "kind": "filesystem_read"},
+      {"id": "publish-forensic-receipt", "kind": "local_evidence_write"},
+      {"id": "record-forensic-result", "kind": "documentation_edit"}
+    ]
+  },
+  "state_machine": {
+    "initial_state": "FORENSIC_PREFLIGHT_READY",
+    "steps": [
+      {
+        "cleanup": "remove only partial new auditor source; preserve every sealed input and create no result",
+        "failure_state": "BLOCKED_FORENSIC_PROVENANCE",
+        "from": "FORENSIC_PREFLIGHT_READY",
+        "id": "implement-standalone-auditor",
+        "mutates": true,
+        "preserves": ["d5-terminal-history", "rendered-sample-stream", "raw-record-stream", "sealed-perf-data-bytes", "sealed-bucket-map"],
+        "test_id": "implementation-fault",
+        "to": "FORENSIC_AUDITOR_VERIFIED_UNRUN"
+      },
+      {
+        "cleanup": "remove owned stage only; retain no partial authoritative result and preserve all inputs",
+        "failure_state": "BLOCKED_FORENSIC_PROVENANCE",
+        "from": "FORENSIC_AUDITOR_VERIFIED_UNRUN",
+        "id": "read-interpret-and-publish-once",
+        "mutates": true,
+        "preserves": ["d5-terminal-history", "rendered-sample-stream", "raw-record-stream", "sealed-perf-data-bytes", "sealed-bucket-map"],
+        "test_id": "publication-fault",
+        "to": "D5_T4_FORENSIC_DIAGNOSTIC_COMPLETE"
+      }
+    ],
+    "terminal_states": ["D5_T4_FORENSIC_DIAGNOSTIC_COMPLETE", "BLOCKED_FORENSIC_PROVENANCE"]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_IMPLEMENTATION_V1_2026-08-26",
+  "tests": [
+    {"expected": "no external command or network-capable route", "id": "command-graph", "kind": "parity"},
+    {"expected": "partial source or stage grants no receipt and changes no sealed input", "id": "implementation-fault", "kind": "fault_injection"},
+    {"expected": "atomic result or no result with all sealed inputs unchanged", "id": "publication-fault", "kind": "fault_injection"},
+    {"expected": "all pinned modes sizes hashes and owning manifests match", "id": "input-parity", "kind": "parity"},
+    {"expected": "D5 terminal fields remain exact", "id": "history-parity", "kind": "parity"},
+    {"expected": "unique one-parent twenty-worker terminal lifecycle graph", "id": "lifecycle-parity", "kind": "parity"},
+    {"expected": "raw and rendered sample counts are equal", "id": "sample-parity", "kind": "parity"},
+    {"expected": "all-sample exact-D2 and traversal CPU projections are separately reported", "id": "scope-parity", "kind": "parity"},
+    {"expected": "unique load bias exact map and zero range join ambiguity", "id": "map-parity", "kind": "parity"},
+    {"expected": "all throttle pairs are same-CPU ordered and complete", "id": "throttle-parity", "kind": "parity"},
+    {"expected": "receipt remains diagnostic-only and D5 remains terminal", "id": "claim-boundary", "kind": "parity"},
+    {"expected": "sealed result inventory exactly matches SHA256SUMS", "id": "receipt-parity", "kind": "parity"}
+  ]
+}

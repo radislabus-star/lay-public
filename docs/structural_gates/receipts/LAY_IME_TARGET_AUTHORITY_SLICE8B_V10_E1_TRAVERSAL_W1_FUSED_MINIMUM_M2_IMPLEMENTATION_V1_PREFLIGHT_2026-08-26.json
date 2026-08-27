@@ -1,0 +1,222 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "m2-paper",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_V1_2026-08-26.md",
+      "sha256": "1947f11e4662a8fb37b25bc851a6813f2ebe6ff45d2a8d653b552012dbe7db82",
+      "size_bytes": 11640
+    },
+    {
+      "exists": true,
+      "id": "m2-evidence-route",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_V1_ROUTE_A_EVIDENCE.md",
+      "sha256": "ae8c73aabebaf3a88b21b790f27ef43362f24849e94e8b8db1b8e89f0361d371",
+      "size_bytes": 2643
+    },
+    {
+      "exists": true,
+      "id": "m2-experiment-route",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_V1_ROUTE_B_EXPERIMENT.md",
+      "sha256": "af528843d0035939862727326c79fd1858dd972e1ba25938fd10b15e3f7c924d",
+      "size_bytes": 2642
+    },
+    {
+      "exists": true,
+      "id": "m2-boundary-route",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_V1_ROUTE_C_BOUNDARY.md",
+      "sha256": "f56174c40e02f5bd3614be618667da384975c82fb73ec5514e1c1f2efd94ef28",
+      "size_bytes": 2749
+    },
+    {
+      "exists": true,
+      "id": "m2-structural-review",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_STRUCTURAL_REVIEW_V1_2026-08-26.json",
+      "sha256": "ec3b24e7edeaffbeb0da38aecabdbd9252a15f6b12a4e0f826351ff90c1814cc",
+      "size_bytes": 2743
+    },
+    {
+      "exists": true,
+      "id": "w1-decomposition-receipt",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_V1_2026-08-26/W1_MACHINE_COST_DECOMPOSITION_RECEIPT.json",
+      "sha256": "12e806f11d921047b1437568af6aa77defaa66aba17f86560e87f0167d8d9194",
+      "size_bytes": 2119
+    },
+    {
+      "exists": true,
+      "id": "w1-decomposition-manifest",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_V1_2026-08-26/SHA256SUMS",
+      "sha256": "7038f33c4c3a5f042607ac1cd1d5997648e3b8d158b7cf04acf4cab862da7c1b",
+      "size_bytes": 1218
+    },
+    {
+      "exists": true,
+      "id": "d7-terminal",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_2026-08-26/D7_TERMINAL_AUDIT.json",
+      "sha256": "db8f8fbb2ab0bbf6ba45ca9b4d2ce7c394c3de826d82961ce938adea79024f3e",
+      "size_bytes": 11633
+    },
+    {
+      "exists": true,
+      "id": "d7-controller",
+      "kind": "file",
+      "mode": "0555",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-e1-traversal-d7-worker-topology.py",
+      "sha256": "b7cfc353e1ff823446cb2c3e5f9ffcd3deca133b0371d268eb40df2609e65258",
+      "size_bytes": 104454
+    },
+    {
+      "exists": true,
+      "id": "d7-terminal-auditor",
+      "kind": "file",
+      "mode": "0555",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-e1-traversal-d7-terminal-audit.py",
+      "sha256": "27604a1aef85c93228c5f4f3fc3aba4bbd892754036ef4d12769e2a94129f6e1",
+      "size_bytes": 32710
+    },
+    {
+      "exists": true,
+      "id": "d7-fragment",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay_v10_e1_traversal_d7_worker_topology_test_module.rs.inc",
+      "sha256": "8c9ff3aaf43942aff6090b1350cef1828e24ea5664d312bde2ebdf29be6687ce",
+      "size_bytes": 123880
+    },
+    {
+      "exists": true,
+      "id": "m1-decision",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_2026-08-25/M1_DECISION.json",
+      "sha256": "f75bdc6995bcdc8553b267ae43e511321bb34fe9d4d9acb14a610104356573a1",
+      "size_bytes": 26628
+    },
+    {
+      "exists": true,
+      "id": "m1-fragment",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay_v10_fused_band_transition_m1_test_module.rs.inc",
+      "sha256": "bdef992d1f9bec095b3f683b384f1e7d23323823625cf3547dc44480511f0d76",
+      "size_bytes": 33866
+    },
+    {
+      "exists": true,
+      "id": "d1-fragment",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc",
+      "sha256": "bbd8b8d318810eec721812f21efbeb5f231dacba774cb5ade854e2201c6c7665",
+      "size_bytes": 113204
+    },
+    {
+      "exists": true,
+      "id": "v10-recovered-source",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c",
+      "size_bytes": 91518
+    },
+    {
+      "exists": false,
+      "id": "m2-controller-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2.py"
+    },
+    {
+      "exists": false,
+      "id": "m2-remote-controller-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-remote.py"
+    },
+    {
+      "exists": false,
+      "id": "m2-bootstrap-auditor-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-bootstrap-audit.py"
+    },
+    {
+      "exists": false,
+      "id": "m2-build-auditor-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-build-audit.py"
+    },
+    {
+      "exists": false,
+      "id": "m2-terminal-auditor-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2-terminal-audit.py"
+    },
+    {
+      "exists": false,
+      "id": "m2-fragment-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay_v10_e1_traversal_w1_fused_minimum_m2_test_module.rs.inc"
+    },
+    {
+      "exists": false,
+      "id": "m2-self-check-receipt-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_SELF_CHECK_V1_2026-08-26.json"
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 22,
+    "forbidden_side_effect_kinds": [
+      "cargo_or_rustc",
+      "diagnostic_elf_or_build_artifact",
+      "generated_traffic",
+      "live_src_edit",
+      "marker_creation_consumption_recreation_or_retirement",
+      "network_or_remote_access",
+      "perf_record_or_stat_or_reader",
+      "pmu_event_or_subject_or_elf_execution",
+      "production_code_edit_build_install_restart_deployment_or_runtime_change",
+      "remote_namespace_or_state_read_or_write",
+      "synthetic_fixture",
+      "synthetic_fixture_as_evidence"
+    ],
+    "identity_contracts": 5,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "local_evidence_write",
+      "local_read_only_process",
+      "local_source_create"
+    ],
+    "preserved_artifacts": 4,
+    "runtime_comparisons": 0,
+    "source_checks": 0,
+    "tests": 10
+  },
+  "manifest_sha256": "b71b762aa7870e35317b5446465aa9dc157a99b8e0a9eb6fcc2dfcf7496061e1",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [],
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_IMPLEMENTATION_V1_2026-08-26",
+  "verdict": "READY_TO_IMPLEMENT"
+}

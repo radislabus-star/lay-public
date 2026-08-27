@@ -1,0 +1,249 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_EXECUTION_ADMISSION_V1_IMPLEMENTATION_V1_2026-08-27",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "admission-contract",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_EXECUTION_ADMISSION_V1_CONTRACT_2026-08-27.md",
+      "expect": {"mode": "0444", "size_bytes": 4949, "sha256": "16b9f543c5e0f14156621c38488b6f5440ed2256189bebd7fb8a0b807ec1aab5"}
+    },
+    {
+      "id": "admission-route",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_EXECUTION_ADMISSION_V1_ROUTE_2026-08-27.md",
+      "expect": {"mode": "0444", "size_bytes": 4842, "sha256": "57a243c90605580ead96d8bca1bb777cfd6fdf57273087bdba13f82a612e0259"}
+    },
+    {
+      "id": "admission-structural-review",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_EXECUTION_ADMISSION_V1_STRUCTURAL_REVIEW_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 27739, "sha256": "dd1ddf46144d1ceb15071af0915f66618253d381cad01a73bbff13abb38b71ac"}
+    },
+    {
+      "id": "m2r1-controller",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py",
+      "expect": {"mode": "0555", "size_bytes": 67252, "sha256": "d3540936c19e45230a70c805b77cf6dab024636457ea0577281a59be2e128106"}
+    },
+    {
+      "id": "m2r1-remote-controller",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-remote.py",
+      "expect": {"mode": "0555", "size_bytes": 40141, "sha256": "26bfbbf2a9626b36bad549d6827d7442d1d1b5db7ced0f65da41c099a793de09"}
+    },
+    {
+      "id": "m2r1-bootstrap-auditor",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-bootstrap-audit.py",
+      "expect": {"mode": "0555", "size_bytes": 11675, "sha256": "c0a7221eeeef460db174682dafad16a7765a970a5623e3641c0657de4bfce84a"}
+    },
+    {
+      "id": "m2r1-build-auditor",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-build-audit.py",
+      "expect": {"mode": "0555", "size_bytes": 18936, "sha256": "0f943646c0e13c6fe53c406aa542882d68ab9dbe447dc3c660719110ccae6762"}
+    },
+    {
+      "id": "m2r1-terminal-auditor",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-terminal-audit.py",
+      "expect": {"mode": "0555", "size_bytes": 33322, "sha256": "37b6d27eaa719ebe6347a97303602fc30b4d4ec7078a0bf49b3ce424037e23fe"}
+    },
+    {
+      "id": "m2r1-fragment",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_e1_traversal_w1_fused_minimum_m2r1_test_module.rs.inc",
+      "expect": {"mode": "0444", "size_bytes": 156122, "sha256": "a6ea388d5d76f8223511fd4822cff2df9fd0c3394fc200f4fc52db956522ce5b"}
+    },
+    {
+      "id": "m2r1-implementation-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_IMPLEMENTATION_SELF_CHECK_V1_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 23760, "sha256": "b888f1d10f4e846bcb1d08afaab3d5f49dbad0deacd4a0916037ae7526d509f4"}
+    },
+    {
+      "id": "m2r1-code-route",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_CODE_ROUTE_V1_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 8889, "sha256": "4268d960359e1e6d7cfa00985cafe8a5ea8906be2077dcc824cfe354e76c3948"}
+    },
+    {
+      "id": "m2r1-code-route-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_CODE_ROUTE_V1_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 9684, "sha256": "339475c9310865b2d2cd799919f918ee37fb06ba7905ebe3f9249638b85a3623"}
+    },
+    {"id": "live-producer-source-absent", "kind": "absent", "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-live-preflight.py", "expect": {}},
+    {"id": "admission-auditor-source-absent", "kind": "absent", "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-admission-audit.py", "expect": {}},
+    {"id": "admission-implementation-receipt-absent", "kind": "absent", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_EXECUTION_ADMISSION_V1_IMPLEMENTATION_SELF_CHECK_V1_2026-08-27.json", "expect": {}},
+    {"id": "live-result-absent", "kind": "absent", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_LIVE_PREFLIGHT_V1_2026-08-27", "expect": {}},
+    {"id": "admission-audit-result-absent", "kind": "absent", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_EXECUTION_ADMISSION_AUDIT_V1_2026-08-27", "expect": {}},
+    {"id": "execution-admission-absent", "kind": "absent", "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_EXECUTION_ADMISSION_V1_2026-08-27.json", "expect": {}},
+    {"id": "execution-journal-absent", "kind": "absent", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_EXECUTION_JOURNAL_V1_2026-08-27", "expect": {}},
+    {"id": "bootstrap-audit-absent", "kind": "absent", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_BOOTSTRAP_AUDIT_V1_2026-08-27", "expect": {}},
+    {"id": "build-audit-absent", "kind": "absent", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_BUILD_AUDIT_V1_2026-08-27", "expect": {}},
+    {"id": "terminal-audit-absent", "kind": "absent", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_TERMINAL_AUDIT_V1_2026-08-27", "expect": {}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "create-admission-source-set", "kind": "local_source_edit"},
+      {"id": "publish-admission-implementation-receipt", "kind": "local_immutable_evidence_write"},
+      {"id": "remote-live-snapshots", "kind": "ssh_read_only_observation"},
+      {"id": "disposable-uid-proof", "kind": "remote_probe_create_write_fsync_rename_read_unlink_rmdir"},
+      {"id": "publish-live-evidence", "kind": "local_immutable_evidence_write"},
+      {"id": "publish-execution-admission", "kind": "local_atomic_authorization_write"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "synthetic_fixture_as_scientific_evidence",
+      "m2_or_m2r1_remote_parent_state_cache_or_marker_creation",
+      "marker_consumption_recreation_or_retirement",
+      "cargo_build_test_or_rustc_compilation",
+      "perf_record_stat_reader_or_open_perf_event",
+      "pmu_subject_or_diagnostic_elf_execution",
+      "production_source_edit_build_install_restart_deployment_or_runtime_change",
+      "modification_of_sealed_m2r1_sources_receipts_or_contracts",
+      "admission_publication_by_live_preflight_producer",
+      "m2r1_controller_run_in_admission_transaction"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "M2R1_CONTROLLER_VERIFIED_UNRUN",
+    "steps": [
+      {
+        "id": "implement-admission-source-set",
+        "from": "M2R1_CONTROLLER_VERIFIED_UNRUN",
+        "to": "M2R1_ADMISSION_CONTROLLER_VERIFIED_UNRUN",
+        "failure_state": "BLOCKED_ADMISSION_IMPLEMENTATION_PROVENANCE",
+        "mutates": true,
+        "cleanup": "retain diagnostics and publish no implementation receipt unless all checks pass",
+        "preserves": ["m2r1-source-set", "m2r1-scientific-state", "production-runtime"],
+        "test_id": "implementation-publication-fault"
+      },
+      {
+        "id": "produce-live-preflight-evidence",
+        "from": "M2R1_ADMISSION_CONTROLLER_VERIFIED_UNRUN",
+        "to": "M2R1_LIVE_PREFLIGHT_PASS_UNADMITTED",
+        "failure_state": "BLOCKED_PROVENANCE",
+        "mutates": true,
+        "cleanup": "remove only the producer-owned disposable UID probe and leave admission absent",
+        "preserves": ["m2r1-source-set", "m2r1-scientific-state", "production-runtime"],
+        "test_id": "producer-fault-closure"
+      },
+      {
+        "id": "audit-and-publish-admission",
+        "from": "M2R1_LIVE_PREFLIGHT_PASS_UNADMITTED",
+        "to": "M2R1_EXECUTION_ADMITTED",
+        "failure_state": "BLOCKED_PROVENANCE",
+        "mutates": true,
+        "cleanup": "retain immutable observations and atomically leave fixed admission absent on failure",
+        "preserves": ["m2r1-source-set", "m2r1-scientific-state", "production-runtime"],
+        "test_id": "admission-publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "M2R1_ADMISSION_CONTROLLER_VERIFIED_UNRUN",
+      "M2R1_EXECUTION_ADMITTED",
+      "BLOCKED_ADMISSION_IMPLEMENTATION_PROVENANCE",
+      "BLOCKED_PROVENANCE"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "m2r1-source-set",
+      "path": "../../../scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py",
+      "baseline_check_id": "m2r1-controller",
+      "policy": "immutable",
+      "cursor_policy": "exact_bytes",
+      "rollback_policy": "never_modify"
+    },
+    {
+      "id": "m2r1-scientific-state",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_EXECUTION_JOURNAL_V1_2026-08-27",
+      "baseline_check_id": "execution-journal-absent",
+      "policy": "absent_until_separate_controller_run",
+      "cursor_policy": "no_records",
+      "rollback_policy": "never_create_in_admission"
+    },
+    {
+      "id": "production-runtime",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2R1_IMPLEMENTATION_SELF_CHECK_V1_2026-08-27.json",
+      "baseline_check_id": "m2r1-implementation-receipt",
+      "policy": "exact_runtime_projection",
+      "cursor_policy": "runtime_before_equals_runtime_after",
+      "rollback_policy": "never_modify"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "producer-auditor-identity",
+      "producer": "sealed live producer source and receipt",
+      "consumer": "independent admission auditor",
+      "comparison": "exact source SHA receipt SHA task and transaction",
+      "test_id": "producer-auditor-parity"
+    },
+    {
+      "id": "admission-controller-identity",
+      "producer": "independent execution admission",
+      "consumer": "sealed M2R1 verify_execution_admission",
+      "comparison": "exact seven SHA fields task transaction verdict and safe_to_execute",
+      "test_id": "admission-controller-parity"
+    },
+    {
+      "id": "remote-input-identity",
+      "producer": "frozen remote input closure",
+      "consumer": "producer and auditor snapshots",
+      "comparison": "exact path size mode and SHA-256 for seven inputs",
+      "test_id": "remote-input-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "remote-live-state",
+      "source": "three live snapshots",
+      "comparison": "exact_stable_projection",
+      "reason": "M2R1 requires the pinned idle host and absent namespace",
+      "stable_fields": ["host", "machine-id", "kernel", "CPU topology", "toolchain", "inputs", "namespace absence", "zero conflicts", "zero perf descriptors"],
+      "expected_to_change_fields": ["monotonic timestamp", "observer process IDs"],
+      "observed_not_compared_fields": ["load average", "unrelated idle process IDs", "wall clock"],
+      "test_id": "remote-live-parity"
+    },
+    {
+      "id": "local-runtime-state",
+      "source": "M2R1 implementation receipt and before/after snapshots",
+      "comparison": "exact_stable_projection",
+      "reason": "research admission cannot change installed Lay authority",
+      "stable_fields": ["installed runtime targets and SHA-256"],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": ["process CPU time", "wall clock"],
+      "test_id": "runtime-parity"
+    }
+  ],
+  "invariants": [
+    {"id": "producer-unadmitted", "statement": "producer has no fixed admission publication path", "test_id": "producer-boundary"},
+    {"id": "auditor-single-owner", "statement": "only auditor atomically publishes admission", "test_id": "auditor-owner"},
+    {"id": "dirty-host-veto", "statement": "any process or perf descriptor conflict leaves admission absent", "test_id": "conflict-veto"},
+    {"id": "uid-proof-clean", "statement": "UID e completes exact operations and leaves no probe", "test_id": "uid-proof-faults"},
+    {"id": "scientific-zero", "statement": "admission has zero Cargo perf PMU subject namespace marker effects", "test_id": "scientific-zero-parity"}
+  ],
+  "tests": [
+    {"id": "implementation-publication-fault", "kind": "fault_injection", "expected": "no partial implementation receipt or altered M2R1 source"},
+    {"id": "producer-fault-closure", "kind": "fault_injection", "expected": "probe cleaned and admission absent"},
+    {"id": "admission-publication-fault", "kind": "fault_injection", "expected": "exclusive publication cannot overwrite or leave partial admission"},
+    {"id": "producer-auditor-parity", "kind": "parity", "expected": "producer source and receipt SHA exact"},
+    {"id": "admission-controller-parity", "kind": "parity", "expected": "all controller-consumed admission fields exact"},
+    {"id": "remote-input-parity", "kind": "parity", "expected": "seven remote inputs exact in every snapshot"},
+    {"id": "remote-live-parity", "kind": "parity", "expected": "all stable live fields exact and conflicts zero"},
+    {"id": "runtime-parity", "kind": "parity", "expected": "installed runtime projection unchanged"},
+    {"id": "producer-boundary", "kind": "parity", "expected": "producer admission publisher count zero"},
+    {"id": "auditor-owner", "kind": "parity", "expected": "auditor admission publisher count one"},
+    {"id": "conflict-veto", "kind": "fault_injection", "expected": "each injected conflict vetoes admission"},
+    {"id": "uid-proof-faults", "kind": "fault_injection", "expected": "each incomplete UID operation blocks"},
+    {"id": "scientific-zero-parity", "kind": "parity", "expected": "Cargo rustc perf PMU subject markers all zero"}
+  ]
+}

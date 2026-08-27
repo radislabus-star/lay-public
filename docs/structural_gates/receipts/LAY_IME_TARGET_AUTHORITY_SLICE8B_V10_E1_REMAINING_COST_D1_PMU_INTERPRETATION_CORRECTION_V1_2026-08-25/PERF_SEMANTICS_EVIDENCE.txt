@@ -1,0 +1,33 @@
+Evidence captured locally on 2026-08-25 without opening a PMU event.
+
+perf version: perf version 7.0.12
+/usr/bin/perf SHA-256: 1f802612195b1a139f6aeb48b46ce95234bafe3d88dd9da035bee09f5091dd73
+/usr/share/man/man1/perf-stat.1.gz SHA-256: 79ff8585e99cf7f1fca78634f481877cbf37e1a2c9066e14c04b77511566ae8b
+package owner: linux-perf
+
+Installed perf-stat manual, Intel Hybrid Support:
+
+  perf-stat reports the scaled counts for hybrid event and with a percentage
+  displayed. The percentage is the event's running time/enabling time.
+
+Installed perf-stat manual, JSON Format:
+
+  counter-value : counter value
+  event-runtime : run time of the event
+  pcnt-running  : percentage of time the event was running
+
+Interpretation used by this correction:
+
+  actual hybrid contribution =
+      sum(scaled counter value per PMU * PMU event-runtime / total hybrid event-runtime)
+
+The D1 rows contain one counted cpu_atom row and one counted cpu_core row for
+every requested event. Their reported running percentages sum to 99.0 percent
+for every event. Runtime-derived PMU shares agree with the displayed running
+percentages within 0.974 percentage points. The event-runtime shares are used
+instead of the rounded display percentages, matching the existing accepted
+hybrid-runtime-weighted parser in scripts/lay-v10-hardware-loaded-profile.py.
+
+No D1 executable, perf stat, PMU event, Cargo command, or runtime subject was
+executed to produce this correction. Only sealed D1 perf.raw bytes and local
+installed documentation were read.

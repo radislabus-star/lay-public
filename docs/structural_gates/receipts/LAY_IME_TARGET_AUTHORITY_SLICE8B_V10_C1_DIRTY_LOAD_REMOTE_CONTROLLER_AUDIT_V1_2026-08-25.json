@@ -1,0 +1,53 @@
+{
+  "schema": "lay.v10.c1-dirty-load-remote-controller-audit.v1",
+  "task_id": "slice8b-v10-c1-dirty-direct-latency-v1-20260825",
+  "observed_at": "2026-08-25T05:03:47+03:00",
+  "verdict": "PASS_WITH_EXACT_REMOTE_IDENTITY_CORRECTION_REQUIRED",
+  "audit_trigger": "read-only remote audit rejected an incorrect local-controller SHA assumption before dirty state creation",
+  "remote_controller": {
+    "path": "/home/e/.local/share/lay/provenance/.slice8b-v10-c1-direct-latency-v1-20260825.work/inputs/lay-v10-c1-direct-latency.py",
+    "mode": "0555",
+    "size_bytes": 61695,
+    "sha256": "4c09ac00e3c67f3cdb9b52a9930618e6d438dfa1c887e5fd48b346e73033e5bf"
+  },
+  "current_local_controller": {
+    "path": "scripts/lay-v10-c1-direct-latency.py",
+    "mode": "0755",
+    "size_bytes": 61711,
+    "sha256": "e6e3db8529b4bd5d64d11b903b3b2ef67e808dd202d5de0b7287fc644a151718"
+  },
+  "differences": [
+    "local preflight V2 pins were superseded by V3 pins",
+    "remote_status_value parity receipt path was repaired locally after the sealed controller copy was created"
+  ],
+  "reused_utility_function_parity": {
+    "verdict": "PASS",
+    "method": "Python AST source-segment SHA-256 comparison",
+    "functions": {
+      "nearest_rank": "0aceddd88183a32aaa5582b0d320ab8b57c3fa9894764789ebd80652b3b631ba",
+      "parse_samples": "b494d8ea1d48506a24c97fb3cea7d3c2aae1c20422d8ccf9798a0c77718ba889",
+      "all_processes": "9f8ebadb81a41cd450e6e0121587798cf392d878a112b71d152c08dae7cc10e1",
+      "throttle_counters": "ff1e33a1a2acaf38f786851cd4659e8177a3176af563aa2634be48881d184e83",
+      "stable_host_projection": "d1264e5c0b72edc2b857bcdea9ef7a27db9a14429a4fe3e253f2a4bab1d341a2",
+      "remote_input_identities": "9c9d133a4d81b2895cd7bae0caae326d26c3c54606dd2f164e8bcd9dcd4cdec8",
+      "elf_build_id": "9716428d82cacacfa0430073de20fa77e5d893db98cfec578be1868e8a43c062",
+      "subject_environment": "57de30a9e95c161e98846da29145b48f85d734831ca2e5a9dc8646850c100dce",
+      "execute_subject": "321bf25883b2d0d52d8b63def925d5ed053fead73c0ac6f4ce245d3ec83c53f1",
+      "validate_subject_route": "56fcea41dff1fb7ed2b7732a7fe722fc52f3e3243686b17537621fdf48cb780b",
+      "route_percentiles": "622019ebeeaeaad109cc1629608ff54139f980e2f5801972a472795c372adeb4"
+    }
+  },
+  "remote_effects": {
+    "remote_writes": 0,
+    "subject_executions": 0,
+    "dirty_state_created": false,
+    "dirty_final_created": false,
+    "clean_markers_consumed": 0,
+    "cargo_invocations": 0,
+    "parity_reruns": 0,
+    "perf_invocations": 0,
+    "pmu_events": 0
+  },
+  "decision": "pin the exact sealed remote controller SHA separately from the current local controller SHA in a new implementation preflight",
+  "runtime_authority_changed": false
+}

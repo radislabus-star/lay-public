@@ -1,0 +1,36 @@
+{
+  "base_controller_sha256": "f0aa4b55a803ef204d1d898cec70eb282757009a71ef5d9310417b2ac17a45e8",
+  "controller_sha256": "2531326a23b65b03c0105fb7243a27841961bae194018655b4f311efcb05526f",
+  "formal_b_pass": false,
+  "local_runtime_after": {
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+    "expected_process_presence": [
+      "2076194 /usr/bin/ibus-daemon --panel disable",
+      "3410795 /home/ubu/.local/bin/lay-daemon",
+      "3410820 /home/ubu/.local/bin/lay-ibus-engine --ibus --managed"
+    ],
+    "lay_version": "lay 1.0.43"
+  },
+  "local_runtime_before": {
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+    "expected_process_presence": [
+      "2076194 /usr/bin/ibus-daemon --panel disable",
+      "3410795 /home/ubu/.local/bin/lay-daemon",
+      "3410820 /home/ubu/.local/bin/lay-ibus-engine --ibus --managed"
+    ],
+    "lay_version": "lay 1.0.43"
+  },
+  "preflight_manifest_sha256": "3d21c997d10ea39adf1c8e5ca52fd4176afe8b71e15a6b1b9fd17e85418b8398",
+  "recorded_at": "2026-08-25T09:28:20.355475+00:00",
+  "remote_result_sha256": "28f65ecd7cd596f7515edb635ca5fc749020d398148fa1a656374a7e5d40b016",
+  "remote_verification": {
+    "final_manifest_entries": 44,
+    "state_manifest_entries": 6,
+    "verdict": "PASS",
+    "writable_objects": 0
+  },
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.loaded-pmu-local-index.v4",
+  "task_id": "slice8b-v10-loaded-pmu-diagnosis-v4-20260825",
+  "v12_admitted": false
+}

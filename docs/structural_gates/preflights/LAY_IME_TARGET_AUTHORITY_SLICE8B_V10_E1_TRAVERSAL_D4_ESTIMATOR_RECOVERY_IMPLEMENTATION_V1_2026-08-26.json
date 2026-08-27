@@ -1,0 +1,184 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_ESTIMATOR_RECOVERY_IMPLEMENTATION_V1_2026-08-26",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "d4-paper-v1",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TASK_CLOCK_ESTIMATOR_RECOVERY_V1_2026-08-26.md",
+      "expect": {"mode": "0444", "size_bytes": 9567, "sha256": "50b5cde0514d356375464f8155905201c395112c88a8d5022c70913b5da4d7b3"}
+    },
+    {
+      "id": "d4-structural-review-v1",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_ROUTE_V1_2026-08-26/STRUCTURAL_REVIEW.json",
+      "expect": {"mode": "0444", "size_bytes": 1761, "sha256": "f51b9ac15c91398630fccb92f3d6db408ddc4b7992c5fa5ad6f1eb50453b0fe2"}
+    },
+    {
+      "id": "d3-correction-v2",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_BOOTSTRAP_EXECUTION_ADMISSION_CORRECTION_V2_2026-08-26.md",
+      "expect": {"mode": "0444", "size_bytes": 3275, "sha256": "b963c0059fe6efaca746fad2ad9dc4784c7a6d4b9ea524c9faa18c6858197519"}
+    },
+    {
+      "id": "d3-terminal-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_TERMINAL_AUDIT_V1_2026-08-26/D3_TERMINAL_AUDIT_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 3706, "sha256": "7f4c0fd9466cced361c21858ea2017910adc7b92db7c1edfe02f3be09d5c4299"}
+    },
+    {
+      "id": "d2-terminal-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_TERMINAL_AUDIT_V1_2026-08-26/T_SINGLE_TERMINAL_AUDIT_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 14907, "sha256": "75dc2703e279524a76c49a455b6081634d1c67274106da45f0d7d610af95e608"}
+    },
+    {
+      "id": "d2-build-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_AUDIT_V1_2026-08-26/D2_BUILD_AUDIT_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 6263, "sha256": "4e19e2e806e2b3f04f8c0286a63f64631e7cf6ff143d9a90da4036654bc8339c"}
+    },
+    {
+      "id": "d2-bucket-map-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_AUDIT_V1_2026-08-26/D2_BUCKET_MAP_AUDIT_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 4363, "sha256": "8d2e52574adca52d5a090067cdf071afba922363ccee8fc9eb4a4158cb92cba7"}
+    },
+    {
+      "id": "d2-parity-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_PARITY_V1_2026-08-26/REMOTE_EVIDENCE/D2_PARITY_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 2199, "sha256": "d2519797c6b21976dc6246830e187391a344acb9ec63a7b5a7816161cf306f74"}
+    },
+    {
+      "id": "sealed-d2-elf",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf",
+      "expect": {"mode": "0555", "size_bytes": 317706232, "sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178"}
+    },
+    {
+      "id": "sealed-d2-map",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json",
+      "expect": {"mode": "0444", "size_bytes": 390324, "sha256": "2b93aedf11101a8bc5fc7ed4ffaa056b50476d96cdd2eabf9d185f59ee60f846"}
+    },
+    {"id": "d4-local-controller-absent", "kind": "absent", "path": "../../../scripts/lay-v10-e1-traversal-d4-estimator-recovery.py", "expect": {}},
+    {"id": "d4-remote-controller-absent", "kind": "absent", "path": "../../../scripts/lay-v10-e1-traversal-d4-estimator-recovery-remote.py", "expect": {}},
+    {"id": "d4-bootstrap-auditor-absent", "kind": "absent", "path": "../../../scripts/lay-v10-e1-traversal-d4-bootstrap-audit.py", "expect": {}},
+    {"id": "d4-marker-auditor-absent", "kind": "absent", "path": "../../../scripts/lay-v10-e1-traversal-d4-marker-audit.py", "expect": {}},
+    {"id": "d4-terminal-auditor-absent", "kind": "absent", "path": "../../../scripts/lay-v10-e1-traversal-d4-terminal-audit.py", "expect": {}},
+    {"id": "d4-bootstrap-result-absent", "kind": "absent", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_BOOTSTRAP_V1_2026-08-26", "expect": {}},
+    {"id": "d4-u3-result-absent", "kind": "absent", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_U3_SINGLE_V1_2026-08-26", "expect": {}},
+    {"id": "d4-t3-result-absent", "kind": "absent", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_T3_SINGLE_V1_2026-08-26", "expect": {}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "create-d4-controllers", "kind": "local_source_create"},
+      {"id": "create-d4-markerless-namespace", "kind": "remote_state_create"},
+      {"id": "run-uid-e-capability-proof", "kind": "remote_disposable_io"},
+      {"id": "copy-and-audit-bootstrap-as-e", "kind": "local_evidence_write"},
+      {"id": "create-two-markers-after-audit", "kind": "remote_state_create"},
+      {"id": "audit-two-markers", "kind": "local_evidence_write"},
+      {"id": "run-u3-single-once", "kind": "remote_subject_execution"},
+      {"id": "run-t3-single-once", "kind": "remote_task_clock_sampling"},
+      {"id": "read-t3-perf-data", "kind": "remote_perf_data_read"},
+      {"id": "publish-terminal-evidence", "kind": "remote_and_local_evidence_write"},
+      {"id": "record-d4-result", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "cargo_or_rustc",
+      "new_or_modified_elf_or_bucket_map",
+      "d2_or_d3_state_marker_receipt_mutation",
+      "d2_t_single_or_d3_u2_retry",
+      "d3_t2_marker_reuse",
+      "scientific_marker_before_uid_scp_audit_pass",
+      "marker_recreation_or_route_retry",
+      "fixed_or_reversed_route",
+      "precise_instruction_or_substitute_event",
+      "perf_stat",
+      "perf_record_outside_t3_single",
+      "event_other_than_task_clock_user_period_200000",
+      "pid_attach_sigint_or_adaptive_sampling",
+      "timestamp_filter_warmup_subtraction_or_common_denominator",
+      "sample_rate_sysctl_or_host_policy_tuning",
+      "old_bucket_values_as_scientific_evidence",
+      "optimization_runtime_integration_install_restart_or_deployment"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "D4_PREFLIGHT_READY",
+    "steps": [
+      {"id": "implement-d4-controllers", "from": "D4_PREFLIGHT_READY", "to": "D4_CONTROLLER_VERIFIED_UNRUN", "mutates": true, "failure_state": "BLOCKED_BEFORE_MARKERS", "cleanup": "remove only partial new local controller files; preserve D2 and D3; create no remote D4 state", "preserves": ["d2-terminal-history", "d3-terminal-history", "d2-elf", "d2-map", "d4-paper"], "test_id": "controller-fault"},
+      {"id": "bootstrap-markerless-namespace-and-uid-proof", "from": "D4_CONTROLLER_VERIFIED_UNRUN", "to": "D4_UID_PROOF_CREATED_UNAUDITED", "mutates": true, "failure_state": "BLOCKED_BEFORE_MARKERS", "cleanup": "retain complete or partial disjoint D4 bootstrap evidence; create no scientific marker", "preserves": ["d2-terminal-history", "d3-terminal-history", "d2-elf", "d2-map", "d4-paper"], "test_id": "bootstrap-fault"},
+      {"id": "independent-live-scp-audit", "from": "D4_UID_PROOF_CREATED_UNAUDITED", "to": "D4_UID_ACCESS_AUDIT_PASS", "mutates": true, "failure_state": "BLOCKED_BEFORE_MARKERS", "cleanup": "retain immutable local audit evidence; make no remote write and create no marker", "preserves": ["d2-terminal-history", "d3-terminal-history", "d2-elf", "d2-map", "d4-paper"], "test_id": "bootstrap-audit-fault"},
+      {"id": "create-two-markers-once", "from": "D4_UID_ACCESS_AUDIT_PASS", "to": "D4_MARKERS_CREATED_UNAUDITED", "mutates": true, "failure_state": "BLOCKED_PROVENANCE", "cleanup": "retain partial or complete marker publication; never repeat marker creation", "preserves": ["d2-terminal-history", "d3-terminal-history", "d2-elf", "d2-map", "d4-paper"], "test_id": "marker-create-fault"},
+      {"id": "independent-marker-audit", "from": "D4_MARKERS_CREATED_UNAUDITED", "to": "D4_MARKERS_AUDITED_AVAILABLE", "mutates": true, "failure_state": "BLOCKED_PROVENANCE", "cleanup": "retain immutable local audit evidence; make no remote write and consume no marker", "preserves": ["d2-terminal-history", "d3-terminal-history", "d2-elf", "d2-map", "d4-paper"], "test_id": "marker-audit-fault"},
+      {"id": "consume-and-run-u3-single", "from": "D4_MARKERS_AUDITED_AVAILABLE", "to": "U3_SINGLE_OBSERVED", "mutates": true, "failure_state": "BLOCKED_PROVENANCE", "cleanup": "retain consumed U3 marker and complete evidence; never recreate or rerun; retire T3 on failure", "preserves": ["d2-terminal-history", "d3-terminal-history", "d2-elf", "d2-map", "d4-paper"], "test_id": "u3-route-fault"},
+      {"id": "dispatch-u3-pass", "from": "U3_SINGLE_OBSERVED", "to": "U3_SINGLE_PASS", "mutates": false, "guard": "complete dispatch schema and no U3 violation", "test_id": "u3-dispatch"},
+      {"id": "dispatch-u3-blocked-provenance", "from": "U3_SINGLE_OBSERVED", "to": "BLOCKED_PROVENANCE", "mutates": false, "guard": "provenance or incomplete unknown ambiguous dispatch", "priority_rank": 0, "test_id": "u3-dispatch"},
+      {"id": "dispatch-u3-blocked-thermal", "from": "U3_SINGLE_OBSERVED", "to": "BLOCKED_THERMAL", "mutates": false, "guard": "thermal and no higher priority violation", "priority_rank": 1, "test_id": "u3-dispatch"},
+      {"id": "dispatch-u3-blocked-semantic", "from": "U3_SINGLE_OBSERVED", "to": "BLOCKED_SEMANTIC", "mutates": false, "guard": "semantic and no higher priority violation", "priority_rank": 2, "test_id": "u3-dispatch"},
+      {"id": "consume-and-run-t3-single", "from": "U3_SINGLE_PASS", "to": "T3_SINGLE_OBSERVED", "mutates": true, "failure_state": "BLOCKED_PROVENANCE", "cleanup": "retain consumed T3 marker perf data readers and subject evidence; never recreate or rerun", "preserves": ["d2-terminal-history", "d3-terminal-history", "d2-elf", "d2-map", "d4-paper"], "test_id": "t3-route-fault"},
+      {"id": "dispatch-t3-terminal", "from": "T3_SINGLE_OBSERVED", "to": "D4_SINGLE_TERMINAL", "mutates": false, "failure_state": "BLOCKED_PROVENANCE", "cleanup": "select exactly one PASS or priority BLOCKED verdict from the complete observation", "test_id": "t3-dispatch"},
+      {"id": "publish-terminal-audit-and-journal", "from": "D4_SINGLE_TERMINAL", "to": "D4_TERMINAL_PUBLISHED", "mutates": true, "failure_state": "BLOCKED_PROVENANCE", "cleanup": "retain all sealed route evidence and publish no optimization claim", "preserves": ["d2-terminal-history", "d3-terminal-history", "d2-elf", "d2-map", "d4-paper"], "test_id": "terminal-audit-fault"}
+    ],
+    "terminal_states": ["D4_TERMINAL_PUBLISHED", "BLOCKED_BEFORE_MARKERS", "BLOCKED_PROVENANCE", "BLOCKED_THERMAL", "BLOCKED_SEMANTIC", "BLOCKED_CAPABILITY", "BLOCKED_BUCKET_MAP", "BLOCKED_PERTURBATION", "BLOCKED_SAMPLE_COVERAGE"]
+  },
+  "preserved_artifacts": [
+    {"id": "d2-terminal-history", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_TERMINAL_AUDIT_V1_2026-08-26/T_SINGLE_TERMINAL_AUDIT_RECEIPT.json", "policy": "immutable", "cursor_policy": "exact_bytes", "rollback_policy": "never_modify", "baseline_check_id": "d2-terminal-audit"},
+    {"id": "d3-terminal-history", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_TERMINAL_AUDIT_V1_2026-08-26/D3_TERMINAL_AUDIT_RECEIPT.json", "policy": "immutable", "cursor_policy": "exact_bytes", "rollback_policy": "never_modify", "baseline_check_id": "d3-terminal-audit"},
+    {"id": "d2-elf", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf", "policy": "immutable", "cursor_policy": "exact_bytes", "rollback_policy": "never_modify", "baseline_check_id": "sealed-d2-elf"},
+    {"id": "d2-map", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json", "policy": "immutable", "cursor_policy": "exact_bytes", "rollback_policy": "never_modify", "baseline_check_id": "sealed-d2-map"},
+    {"id": "d4-paper", "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TASK_CLOCK_ESTIMATOR_RECOVERY_V1_2026-08-26.md", "policy": "immutable", "cursor_policy": "exact_bytes", "rollback_policy": "never_modify", "baseline_check_id": "d4-paper-v1"}
+  ],
+  "identity_contracts": [
+    {"id": "controller-payload-parity", "producer": "local D4 controller payload", "consumer": "remote D4 controller", "comparison": "exact controller and predecessor SHA-256 before every action", "test_id": "controller-parity"},
+    {"id": "uid-proof-parity", "producer": "UID e one-shot helper in exact future path", "consumer": "independent local bootstrap auditor", "comparison": "exact fixed bytes manifest UID ancestry and real scp copy", "test_id": "uid-scp-parity"},
+    {"id": "marker-identity", "producer": "post-audit marker serializer", "consumer": "independent marker auditor and route gates", "comparison": "exact task transaction audit route mode size and SHA-256", "test_id": "marker-parity"},
+    {"id": "u3-denominator-identity", "producer": "component-samples parser over twenty measured rounds", "consumer": "T3 perturbation evaluator", "comparison": "U3 CPU ns divided by 502915120", "test_id": "denominator-parity"},
+    {"id": "t3-denominator-identity", "producer": "CPU0 accepted traversal samples at period 200000", "consumer": "T3 perturbation evaluator", "comparison": "T3 sample CPU ns divided by 528060876", "test_id": "denominator-parity"},
+    {"id": "machine-map-identity", "producer": "sealed D2 ELF Build ID and virtual IP", "consumer": "sealed D2 bucket map join", "comparison": "exact Build ID unique load bias and machine bytes", "test_id": "machine-map-parity"}
+  ],
+  "runtime_comparisons": [
+    {"id": "installed-runtime-stability", "source": "installed Lay launcher before bootstrap and after terminal D4 audit", "comparison": "exact_stable_projection", "reason": "D4 is research-only", "stable_fields": ["resolved launcher path", "resolved launcher SHA-256"], "expected_to_change_fields": [], "observed_not_compared_fields": ["unrelated process IDs"], "test_id": "runtime-parity"},
+    {"id": "target-host-stability", "source": "D2 host closure and D4 per-route snapshots", "comparison": "exact_stable_projection", "reason": "D4 belongs only to the pinned host without tuning", "stable_fields": ["hostname", "machine-id SHA-256", "kernel", "online CPUs", "hybrid PMU CPU sets", "perf SHA-256", "taskset SHA-256", "perf_event_max_sample_rate=8000"], "expected_to_change_fields": ["thermal counters only if zero delta"], "observed_not_compared_fields": ["wall clock", "unrelated process list"], "test_id": "event-identity"}
+  ],
+  "invariants": [
+    {"id": "exact-two-route-registry", "statement": "route registry keys equal U3-SINGLE and T3-SINGLE", "test_id": "route-graph-parity"},
+    {"id": "no-markers-before-access-audit", "statement": "U3 and T3 markers do not exist until exact UID and scp audit PASS", "test_id": "uid-scp-parity"},
+    {"id": "u3-before-t3", "statement": "T3 marker cannot be consumed before exact sealed U3_SINGLE_PASS", "test_id": "marker-parity"},
+    {"id": "separate-denominators", "statement": "U3 uses twenty rounds and T3 uses twenty-one rounds", "test_id": "denominator-parity"},
+    {"id": "cpu-domain-preregistered", "statement": "accepted T3 samples require exact D2 identity CPU0 and sealed traversal range", "test_id": "machine-map-parity"},
+    {"id": "fixed-period-below-host-ceiling", "statement": "T3 uses period 200000 and sample-rate remains 8000 without tuning", "test_id": "event-identity"},
+    {"id": "one-shot-marker-authority", "statement": "marker creation and each route effect occur once and are never recreated", "test_id": "marker-fault"},
+    {"id": "history-untouched", "statement": "D2 and D3 state markers and receipts remain byte and name identical", "test_id": "history-parity"},
+    {"id": "no-runtime-authority", "statement": "D4 changes no installed runtime and grants no optimization authority", "test_id": "runtime-parity"}
+  ],
+  "tests": [
+    {"id": "controller-fault", "kind": "fault_injection", "expected": "no remote D4 state and no predecessor mutation"},
+    {"id": "controller-parity", "kind": "parity", "expected": "local and remote controller bytes match transmitted SHA-256"},
+    {"id": "route-graph-parity", "kind": "parity", "expected": "exact two scientific routes and no forbidden executable argv"},
+    {"id": "bootstrap-fault", "kind": "fault_injection", "expected": "partial D4 evidence retained no marker created and terminal before markers"},
+    {"id": "bootstrap-audit-fault", "kind": "fault_injection", "expected": "BLOCKED_BEFORE_MARKERS with no remote writes"},
+    {"id": "uid-scp-parity", "kind": "integration", "expected": "UID e traverses reads writes fsyncs renames reopens unlinks and auditor scp copy is byte-identical before markers"},
+    {"id": "marker-create-fault", "kind": "fault_injection", "expected": "partial or complete markers retained and creation never repeated"},
+    {"id": "marker-audit-fault", "kind": "fault_injection", "expected": "BLOCKED_PROVENANCE with no remote writes or consumed marker"},
+    {"id": "marker-parity", "kind": "parity", "expected": "two exact 0400 markers with task transaction audit route mode size and SHA"},
+    {"id": "marker-fault", "kind": "fault_injection", "expected": "consumed marker remains consumed and route is never rerun"},
+    {"id": "u3-route-fault", "kind": "fault_injection", "expected": "complete evidence or terminal BLOCKED_PROVENANCE with U3 consumed"},
+    {"id": "u3-dispatch", "kind": "fault_injection", "expected": "provenance then thermal then semantic priority"},
+    {"id": "t3-route-fault", "kind": "fault_injection", "expected": "complete evidence or terminal BLOCKED_PROVENANCE with T3 consumed"},
+    {"id": "t3-dispatch", "kind": "fault_injection", "expected": "provenance thermal capability bucket_map perturbation sample_coverage priority"},
+    {"id": "denominator-parity", "kind": "parity", "expected": "U3 denominator 502915120 and T3 denominator 528060876 edges"},
+    {"id": "event-identity", "kind": "integration", "expected": "task-clock user period 200000 freq0 exclude-kernel precise0 inherit1 and sample-rate 8000 stable"},
+    {"id": "machine-map-parity", "kind": "parity", "expected": "exact Build ID unique PIE normalization and zero machine-byte mismatches"},
+    {"id": "history-parity", "kind": "parity", "expected": "D2 and D3 state and markers unchanged before and after D4"},
+    {"id": "runtime-parity", "kind": "integration", "expected": "installed runtime stable and no integration"},
+    {"id": "terminal-audit-fault", "kind": "fault_injection", "expected": "route evidence remains sealed and no optimization authority is published"}
+  ]
+}

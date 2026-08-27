@@ -1,0 +1,1105 @@
+{
+  "verdict": "PASS",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "w1-fused-minimum-m2r1-build-closure-repair-v1",
+  "domain": "general",
+  "complexity_score": 55,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8",
+    "c9",
+    "c10"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.1071,
+      "c10": 0.1071,
+      "c2": 0.1071,
+      "c3": 0.1071,
+      "c4": 0.1071,
+      "c5": 0.1071,
+      "c6": 0.1071,
+      "c7": 0.1071,
+      "c8": 0.1071,
+      "c9": 0.1071
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 20,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "s9",
+      "s10",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.311,
+      "c10": 0.3023,
+      "c2": 0.2973,
+      "c3": 0.2874,
+      "c4": 0.3668,
+      "c5": 0.2911,
+      "c6": 0.306,
+      "c7": 0.3358,
+      "c8": 0.3445,
+      "c9": 0.3047
+    },
+    "source_self_score": 0.3147,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "byte-boundary": "byte-boundary",
+      "compile-closure": "compile-closure",
+      "defect-localization": "defect-localization",
+      "fresh-namespace": "fresh-namespace",
+      "m2-marker-authority": "m2-marker-authority",
+      "m2-terminal": "m2-terminal",
+      "no-promotion": "no-promotion",
+      "scientific-boundary": "scientific-boundary",
+      "source-change": "source-change",
+      "terminal-only": "terminal-only"
+    },
+    "scores": {
+      "byte-boundary": 1.0,
+      "compile-closure": 1.0,
+      "defect-localization": 1.0,
+      "fresh-namespace": 1.0,
+      "m2-marker-authority": 1.0,
+      "m2-terminal": 1.0,
+      "no-promotion": 1.0,
+      "scientific-boundary": 1.0,
+      "source-change": 1.0,
+      "terminal-only": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "byte-boundary": 1,
+      "compile-closure": 1,
+      "defect-localization": 1,
+      "fresh-namespace": 1,
+      "m2-marker-authority": 1,
+      "m2-terminal": 1,
+      "no-promotion": 1,
+      "scientific-boundary": 1,
+      "source-change": 1,
+      "terminal-only": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.3147,
+      "norm": 100.6976,
+      "triads": 10
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "byte-boundary": "byte-boundary",
+      "compile-closure": "compile-closure",
+      "defect-localization": "defect-localization",
+      "fresh-namespace": "fresh-namespace",
+      "m2-marker-authority": "m2-marker-authority",
+      "m2-terminal": "m2-terminal",
+      "no-promotion": "no-promotion",
+      "scientific-boundary": "scientific-boundary",
+      "source-change": "source-change",
+      "terminal-only": "terminal-only"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "byte-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "compile-closure": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "defect-localization": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "fresh-namespace": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m2-marker-authority": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m2-terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "no-promotion": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "scientific-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "source-change": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal-only": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "byte-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "compile-closure": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "defect-localization": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "fresh-namespace": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m2-marker-authority": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "m2-terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "no-promotion": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "scientific-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "source-change": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal-only": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "byte-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "byte-boundary",
+        "exact_source_groups": [
+          "byte-boundary"
+        ]
+      },
+      "compile-closure": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "compile-closure",
+        "exact_source_groups": [
+          "compile-closure"
+        ]
+      },
+      "defect-localization": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "defect-localization",
+        "exact_source_groups": [
+          "defect-localization"
+        ]
+      },
+      "fresh-namespace": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "fresh-namespace",
+        "exact_source_groups": [
+          "fresh-namespace"
+        ]
+      },
+      "m2-marker-authority": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "m2-marker-authority",
+        "exact_source_groups": [
+          "m2-marker-authority"
+        ]
+      },
+      "m2-terminal": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "m2-terminal",
+        "exact_source_groups": [
+          "m2-terminal"
+        ]
+      },
+      "no-promotion": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "no-promotion",
+        "exact_source_groups": [
+          "no-promotion"
+        ]
+      },
+      "scientific-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "scientific-boundary",
+        "exact_source_groups": [
+          "scientific-boundary"
+        ]
+      },
+      "source-change": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "source-change",
+        "exact_source_groups": [
+          "source-change"
+        ]
+      },
+      "terminal-only": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "terminal-only",
+        "exact_source_groups": [
+          "terminal-only"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "byte-boundary": {
+        "byte-boundary": 1.0,
+        "compile-closure": -0.0059,
+        "defect-localization": -0.0586,
+        "fresh-namespace": -0.0332,
+        "m2-marker-authority": 0.0273,
+        "m2-terminal": 0.0254,
+        "no-promotion": -0.0508,
+        "scientific-boundary": 0.0098,
+        "source-change": 0.0039,
+        "terminal-only": -0.002
+      },
+      "compile-closure": {
+        "byte-boundary": -0.0059,
+        "compile-closure": 1.0,
+        "defect-localization": 0.0098,
+        "fresh-namespace": 0.0234,
+        "m2-marker-authority": -0.0371,
+        "m2-terminal": 0.0,
+        "no-promotion": -0.0488,
+        "scientific-boundary": 0.0234,
+        "source-change": 0.0371,
+        "terminal-only": -0.0391
+      },
+      "defect-localization": {
+        "byte-boundary": -0.0586,
+        "compile-closure": 0.0098,
+        "defect-localization": 1.0,
+        "fresh-namespace": -0.0176,
+        "m2-marker-authority": 0.0078,
+        "m2-terminal": -0.041,
+        "no-promotion": -0.0391,
+        "scientific-boundary": 0.0527,
+        "source-change": -0.0313,
+        "terminal-only": 0.0215
+      },
+      "fresh-namespace": {
+        "byte-boundary": -0.0332,
+        "compile-closure": 0.0234,
+        "defect-localization": -0.0176,
+        "fresh-namespace": 1.0,
+        "m2-marker-authority": -0.041,
+        "m2-terminal": -0.0039,
+        "no-promotion": 0.0762,
+        "scientific-boundary": -0.0391,
+        "source-change": 0.0645,
+        "terminal-only": 0.0273
+      },
+      "m2-marker-authority": {
+        "byte-boundary": 0.0273,
+        "compile-closure": -0.0371,
+        "defect-localization": 0.0078,
+        "fresh-namespace": -0.041,
+        "m2-marker-authority": 1.0,
+        "m2-terminal": -0.0449,
+        "no-promotion": 0.0195,
+        "scientific-boundary": -0.002,
+        "source-change": 0.0,
+        "terminal-only": 0.0059
+      },
+      "m2-terminal": {
+        "byte-boundary": 0.0254,
+        "compile-closure": 0.0,
+        "defect-localization": -0.041,
+        "fresh-namespace": -0.0039,
+        "m2-marker-authority": -0.0449,
+        "m2-terminal": 1.0,
+        "no-promotion": 0.002,
+        "scientific-boundary": 0.0156,
+        "source-change": 0.0293,
+        "terminal-only": -0.0039
+      },
+      "no-promotion": {
+        "byte-boundary": -0.0508,
+        "compile-closure": -0.0488,
+        "defect-localization": -0.0391,
+        "fresh-namespace": 0.0762,
+        "m2-marker-authority": 0.0195,
+        "m2-terminal": 0.002,
+        "no-promotion": 1.0,
+        "scientific-boundary": -0.0098,
+        "source-change": 0.0195,
+        "terminal-only": -0.0176
+      },
+      "scientific-boundary": {
+        "byte-boundary": 0.0098,
+        "compile-closure": 0.0234,
+        "defect-localization": 0.0527,
+        "fresh-namespace": -0.0391,
+        "m2-marker-authority": -0.002,
+        "m2-terminal": 0.0156,
+        "no-promotion": -0.0098,
+        "scientific-boundary": 1.0,
+        "source-change": 0.0488,
+        "terminal-only": -0.0156
+      },
+      "source-change": {
+        "byte-boundary": 0.0039,
+        "compile-closure": 0.0371,
+        "defect-localization": -0.0313,
+        "fresh-namespace": 0.0645,
+        "m2-marker-authority": 0.0,
+        "m2-terminal": 0.0293,
+        "no-promotion": 0.0195,
+        "scientific-boundary": 0.0488,
+        "source-change": 1.0,
+        "terminal-only": -0.0176
+      },
+      "terminal-only": {
+        "byte-boundary": -0.002,
+        "compile-closure": -0.0391,
+        "defect-localization": 0.0215,
+        "fresh-namespace": 0.0273,
+        "m2-marker-authority": 0.0059,
+        "m2-terminal": -0.0039,
+        "no-promotion": -0.0176,
+        "scientific-boundary": -0.0156,
+        "source-change": -0.0176,
+        "terminal-only": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "byte-boundary": {
+          "gravity": 1.0,
+          "owner": "m2r1 source repair",
+          "owners": {
+            "m2r1 source repair": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "compile-closure": {
+          "gravity": 1.0,
+          "owner": "disposable compile proof",
+          "owners": {
+            "disposable compile proof": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "defect-localization": {
+          "gravity": 1.0,
+          "owner": "build defect",
+          "owners": {
+            "build defect": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "fresh-namespace": {
+          "gravity": 1.0,
+          "owner": "m2r1 namespace",
+          "owners": {
+            "m2r1 namespace": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "m2-marker-authority": {
+          "gravity": 1.0,
+          "owner": "original m2 marker tree",
+          "owners": {
+            "original m2 marker tree": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "m2-terminal": {
+          "gravity": 1.0,
+          "owner": "m2-terminal",
+          "owners": {
+            "m2-terminal": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "no-promotion": {
+          "gravity": 1.0,
+          "owner": "m2r1 result",
+          "owners": {
+            "m2r1 result": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "scientific-boundary": {
+          "gravity": 1.0,
+          "owner": "m2r1 experiment",
+          "owners": {
+            "m2r1 experiment": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "source-change": {
+          "gravity": 1.0,
+          "owner": "m2r1 source repair",
+          "owners": {
+            "m2r1 source repair": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "terminal-only": {
+          "gravity": 1.0,
+          "owner": "m2r1 terminal audit",
+          "owners": {
+            "m2r1 terminal audit": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "boundary": {
+          "gravity": 1.0,
+          "owner": "m2r1 result",
+          "owners": {
+            "m2r1 result": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "decision": {
+          "gravity": 1.0,
+          "owner": "m2r1 terminal audit",
+          "owners": {
+            "m2r1 terminal audit": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "execution": {
+          "gravity": 1.0,
+          "owner": "m2r1 namespace",
+          "owners": {
+            "m2r1 namespace": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "history-marker": {
+          "gravity": 1.0,
+          "owner": "original m2 marker tree",
+          "owners": {
+            "original m2 marker tree": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "history-terminal": {
+          "gravity": 1.0,
+          "owner": "m2-terminal",
+          "owners": {
+            "m2-terminal": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "pre-marker": {
+          "gravity": 1.0,
+          "owner": "disposable compile proof",
+          "owners": {
+            "disposable compile proof": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "preservation": {
+          "gravity": 0.5,
+          "owner": "m2r1 experiment",
+          "owners": {
+            "m2r1 experiment": 2,
+            "m2r1 source repair": 2
+          },
+          "support": 2,
+          "total": 4
+        },
+        "repair": {
+          "gravity": 0.5,
+          "owner": "build defect",
+          "owners": {
+            "build defect": 2,
+            "m2r1 source repair": 2
+          },
+          "support": 2,
+          "total": 4
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "explicit no-promotion boundary",
+            "repair contract forbids runtime edits install restart and deployment"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "m2r1 result"
+          ],
+          "scopes": [
+            "boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "decision": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "intermediate values are not interpreted",
+            "terminal-only interpretation rule"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "m2r1 terminal audit"
+          ],
+          "scopes": [
+            "decision"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "execution": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "distinct task and transaction identities",
+            "new task and transaction ids do not reuse original m2 state"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "m2r1 namespace"
+          ],
+          "scopes": [
+            "execution"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "history-marker": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "build consumed and retry false",
+            "one-shot terminal contract"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "original m2 marker tree"
+          ],
+          "scopes": [
+            "history-marker"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "history-terminal": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "immutable receipt and exact compiler diagnostic",
+            "sealed terminal receipt and cargo log show exit 101 before parity or subjects"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "m2-terminal"
+          ],
+          "scopes": [
+            "history-terminal"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "pre-marker": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "exact repaired assembly compiled with exit zero outside scientific namespace",
+            "local source-closure build passed without markers"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "disposable compile proof"
+          ],
+          "scopes": [
+            "pre-marker"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "preservation": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "candidate code route order events denominators and gates are unchanged",
+            "measured exact hashes",
+            "no scientific field changes",
+            "pinned prefix hashes remain exact"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "m2r1 experiment",
+            "m2r1 source repair"
+          ],
+          "scopes": [
+            "preservation"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "repair": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "compiler diagnostic and source location agree",
+            "explicit value projection compiles",
+            "repaired fragment maps form_ref and certificate_keys explicitly",
+            "rustc e0277 names vec v13typedpeak in m2_result_signature"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "build defect",
+            "m2r1 source repair"
+          ],
+          "scopes": [
+            "repair"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "history-marker": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "history-terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pre-marker": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "preservation": {
+          "norm": 45.4753,
+          "self_coherence": 0.7106,
+          "triads": 2
+        },
+        "repair": {
+          "norm": 44.5421,
+          "self_coherence": 0.696,
+          "triads": 2
+        }
+      },
+      "interference_matrix": {
+        "boundary": {
+          "boundary": 1.0,
+          "decision": -0.0176,
+          "execution": 0.0762,
+          "history-marker": 0.0195,
+          "history-terminal": 0.002,
+          "pre-marker": -0.0488,
+          "preservation": -0.0426,
+          "repair": -0.014
+        },
+        "decision": {
+          "boundary": -0.0176,
+          "decision": 1.0,
+          "execution": 0.0273,
+          "history-marker": 0.0059,
+          "history-terminal": -0.0039,
+          "pre-marker": -0.0391,
+          "preservation": -0.0124,
+          "repair": 0.0028
+        },
+        "execution": {
+          "boundary": 0.0762,
+          "decision": 0.0273,
+          "execution": 1.0,
+          "history-marker": -0.041,
+          "history-terminal": -0.0039,
+          "pre-marker": 0.0234,
+          "preservation": -0.0509,
+          "repair": 0.0337
+        },
+        "history-marker": {
+          "boundary": 0.0195,
+          "decision": 0.0059,
+          "execution": -0.041,
+          "history-marker": 1.0,
+          "history-terminal": -0.0449,
+          "pre-marker": -0.0371,
+          "preservation": 0.0179,
+          "repair": 0.0056
+        },
+        "history-terminal": {
+          "boundary": 0.002,
+          "decision": -0.0039,
+          "execution": -0.0039,
+          "history-marker": -0.0449,
+          "history-terminal": 1.0,
+          "pre-marker": 0.0,
+          "preservation": 0.0289,
+          "repair": -0.0084
+        },
+        "pre-marker": {
+          "boundary": -0.0488,
+          "decision": -0.0391,
+          "execution": 0.0234,
+          "history-marker": -0.0371,
+          "history-terminal": 0.0,
+          "pre-marker": 1.0,
+          "preservation": 0.0124,
+          "repair": 0.0337
+        },
+        "preservation": {
+          "boundary": -0.0426,
+          "decision": -0.0124,
+          "execution": -0.0509,
+          "history-marker": 0.0179,
+          "history-terminal": 0.0289,
+          "pre-marker": 0.0124,
+          "preservation": 1.0,
+          "repair": 0.0237
+        },
+        "repair": {
+          "boundary": -0.014,
+          "decision": 0.0028,
+          "execution": 0.0337,
+          "history-marker": 0.0056,
+          "history-terminal": -0.0084,
+          "pre-marker": 0.0337,
+          "preservation": 0.0237,
+          "repair": 1.0
+        }
+      },
+      "source": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "history-marker": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "history-terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pre-marker": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "preservation": {
+          "norm": 45.4753,
+          "self_coherence": 0.7106,
+          "triads": 2
+        },
+        "repair": {
+          "norm": 44.5421,
+          "self_coherence": 0.696,
+          "triads": 2
+        }
+      }
+    },
+    "source_group_sizes": {
+      "byte-boundary": 1,
+      "compile-closure": 1,
+      "defect-localization": 1,
+      "fresh-namespace": 1,
+      "m2-marker-authority": 1,
+      "m2-terminal": 1,
+      "no-promotion": 1,
+      "scientific-boundary": 1,
+      "source-change": 1,
+      "terminal-only": 1
+    },
+    "stable_groups": [
+      "byte-boundary",
+      "compile-closure",
+      "defect-localization",
+      "fresh-namespace",
+      "m2-marker-authority",
+      "m2-terminal",
+      "no-promotion",
+      "scientific-boundary",
+      "source-change",
+      "terminal-only"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [],
+  "agent_decision": {
+    "action": "SAFE_TO_EDIT",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Proceed only within the checked route boundary.",
+    "repair_count": 0,
+    "repair_queue": [],
+    "safe_to_edit": true
+  },
+  "explanation": [
+    "Candidate structure is coherent with source triads.",
+    "Structural coherence only: trusted proof was not established and authority is false."
+  ],
+  "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+  "trace_path": "/tmp/nanda-structural-gate/w1-fused-minimum-m2r1-build-closure-repair-v1.trace.json"
+}

@@ -1,0 +1,123 @@
+{
+  "schema": "lay.v13-exact-typed-owner-release-receipt.v1",
+  "created_utc": "2026-08-27T13:10:05Z",
+  "verdict": "V13_EXACT_TYPED_OWNER_DEPLOYED_1_0_44",
+  "release": {
+    "version": "1.0.44",
+    "base_commit": "e4b54475d3117c2d3cb7974883175dba7ee61df9",
+    "source_worktree_dirty": true,
+    "cargo_build_exit": 0,
+    "profile": "release",
+    "binaries_built": 10,
+    "binaries_installed": 10,
+    "binary_sha256": {
+      "lay": "7c36a31064cdba282dbb2e3987ae38eca01988934af89d11a9591acb347be2c3",
+      "lay-daemon": "7e515b4badcd4fed36c4b0ef6cc6c1e994d1c7bcc439a6d015481b5d2d8fef35",
+      "lay-nanda-wave-eval": "94f4d519b60f83b37791842cfc8a883b525721f9e5940beaf775231425dc3387",
+      "lay-nanda-wave-train": "39b0f4d3245d637d87e525f837ad9847eff97263eeb971ec12613272d532974c",
+      "lay-test-input": "8906443fa34c684c0e346eb01bf3090784441ebca6bc4cba99519d1d5884f5de",
+      "lay-ngram-corpus": "d8b7bc1aa6be7a577b1f18fdf2855325475ad87588c9d7287d307e3f7e9c6f7f",
+      "lay-ibus-engine": "b008b1c0126567a3b2f2e0d50eb6477905f9a5ae0260b63ac65aa781da971c89",
+      "lay-memory-report": "66a596a1c5e43649135fdde7118a2c42920e0567cd575fff0ed7bc949e0faa11",
+      "lay-l1.1-restore": "1edaeaa77a6fbc159b076b0f873db050520a9878a33de3f65464649bff530c71",
+      "lay-l1.1-serve": "f79d6988f6b0b81cc580b1b6671f7010d23fbd27765adb87a0f37d544e5ee9dd"
+    }
+  },
+  "source_identity": {
+    "Cargo.toml": "80c36547509214625cda3cfc3b048c4b069c159f731d32a995babefc3fdc5ef7",
+    "Cargo.lock": "9f22ef9e11b88874acdd275d8fba5381ed9fc415509cf581113397896e01d875",
+    "README.md": "bd66684efcc2698a33053cfcedb59ba18230c06563845dce73e7b6b13ea0e243",
+    "scripts/install-release-binaries.sh": "3427ae85155f073cfaacf37b09eb901defb57ee8912977ad31b786d928b35c82",
+    "scripts/test-install-release-binaries.sh": "f0062da71a3c3e89740b3afc45a127c60fce0aae8d1ec650d3807f9733e143ff",
+    "src/nanda_wave/l2_field/productive_v1/composite.rs": "7d9b51d51e0d3e2aa5a3968d94ebc8fe45fbb783fa06e8d5b3d356ec24c522d3",
+    "src/nanda_wave/l2_field/productive_v1/live.rs": "30e6eb3e086a934deafe3e00ea07f1186a283b9adf5c110eb73ecce1df021d3d",
+    "src/nanda_wave/l2_field/productive_v1/material_frame.rs": "f66626555c1f55efda34551722701e9945319dc36e8c2ae49743cbac9be865f9"
+  },
+  "exact_sidecar": {
+    "canonical_package_bytes": 140556462,
+    "canonical_package_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "sidecar_path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.dafsa",
+    "sidecar_bytes": 2460144,
+    "sidecar_sha256": "a277b3c8b7d441de55fdc3c77abf483c2061653e9068b3bcce57629c742de9d7",
+    "typed_payload_bytes": 3689628,
+    "lifetime": "process",
+    "reload": "process_restart_required",
+    "status": "ready_immutable_owner"
+  },
+  "semantic_checks": {
+    "productive_v1": "153 passed; 0 failed; 1 ignored",
+    "v13_generation": "12 passed; 0 failed; 7 ignored",
+    "field_cache": "5 passed; 0 failed",
+    "input_gate": "7 passed; 0 failed",
+    "typing_transition_authority_contract": "21 passed; 0 failed",
+    "text_mutation_monopoly_contract": "16 passed; 0 failed",
+    "correction_gate_metrics": "1 passed; 0 failed",
+    "input_gate_operator_contract": "2 passed; 0 failed",
+    "installer_regression": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "historical_correction_core_baseline": {
+    "installed_1_0_43": "80 passed; 31 failed; 1 ignored",
+    "release_1_0_44_source": "80 passed; 31 failed; 1 ignored",
+    "new_failures": 0,
+    "fixed_failures": 0,
+    "interpretation": "The 31 failures are inherited baseline debt, not V13 regressions."
+  },
+  "installed_exact_route": {
+    "observed": "\u0442\u0436\u044f\u043b",
+    "exact_candidate_count": 56,
+    "exact_certificate_count": 56,
+    "material_target_count": 74,
+    "retained_target": "\u0442\u044f\u0436\u0451\u043b",
+    "retained_source_id": "ProductiveL2V90TypedExact",
+    "gate_action": "SuggestOnly",
+    "gate_reason": "productive_v90_lattice_requires_common_l3",
+    "grounded_l11_loss": 0,
+    "complete_for_authority": false
+  },
+  "runtime_smoke": {
+    "cases_passed": 2,
+    "cases_failed": 0,
+    "cases": [
+      {
+        "name": "ime_raw_ghjdthrf_alt_enter",
+        "expected": "\u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0430",
+        "observed": "\u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0430"
+      },
+      {
+        "name": "ime_known_inflection_preserved_enter",
+        "expected": "\u0432 \u043a\u043e\u0434\u0435",
+        "observed": "\u0432 \u043a\u043e\u0434\u0435"
+      }
+    ]
+  },
+  "runtime_state": {
+    "lay_daemon_before": 3095,
+    "lay_daemon_after": 3381101,
+    "lay_ibus_engine_before": 5043,
+    "lay_ibus_engine_after": 3381140,
+    "ibus_daemon_before": 4594,
+    "ibus_daemon_after": 4594,
+    "daemon_active": true,
+    "ime_processes": 1,
+    "gnome_layout": "lay-ime-ru",
+    "ibus_engine": "lay-ime-ru",
+    "runtime_authority_changed": true
+  },
+  "authority_scope": {
+    "exact_candidate_retention": "PASS",
+    "grounded_candidate_retention": "PASS",
+    "independent_exact_auto_apply": false,
+    "production_policy_changed": false
+  },
+  "rollback": {
+    "path": "/home/ubu/.local/lib/lay/rollback/1.0.43-before-1.0.44-20260827T130554Z",
+    "manifest_sha256": "4fa04adb3b8d44a956c3b1cc5f222941d7eac4c34a6d1ed4bdb87452f6764b04"
+  },
+  "raw_evidence_manifest_sha256": "59f8de2f2c9c3638a841ade00d93c7342dfce531cbf8f4307c29dc477f9e5f3a",
+  "not_claimed": [
+    "The 31 inherited correction_core failures are not fixed by this release.",
+    "SuggestOnly exact candidates are not independent final correction authority.",
+    "The two-case live smoke is not an exhaustive desktop-input quality proof."
+  ]
+}

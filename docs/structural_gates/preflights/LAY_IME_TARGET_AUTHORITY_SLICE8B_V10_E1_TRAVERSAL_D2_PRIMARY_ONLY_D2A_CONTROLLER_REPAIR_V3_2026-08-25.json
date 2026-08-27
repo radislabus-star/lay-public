@@ -1,0 +1,324 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_CONTROLLER_REPAIR_V3_2026-08-25",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "effective-v4-manifest",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_IMPLEMENTATION_V4_2026-08-25.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 98316,
+        "sha256": "e9d6328b9f610ede73ae2e8d3c819b9728ac0fc5e4c263e9fe25a61978f80f5a"
+      }
+    },
+    {
+      "id": "effective-v4-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_IMPLEMENTATION_V4_PREFLIGHT_2026-08-25.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 14171,
+        "sha256": "740c008d59fb4689826537e46a35da554bde863358d2c18382f315395ee835e0"
+      }
+    },
+    {
+      "id": "v1-failure",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_FAILURE_V1_2026-08-25/D2A_FAILURE.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 406,
+        "sha256": "5d8d1db51238adf63f0d01757b4bddca587679200091d09388919b35091d2891"
+      }
+    },
+    {
+      "id": "v1-failure-manifest",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_FAILURE_V1_2026-08-25/SHA256SUMS",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 3591,
+        "sha256": "a0b5243c6d12383fa35c8b86819cf212b9c8b87f0b3e15c4df76e2fdf9a03473"
+      }
+    },
+    {
+      "id": "v1-controller-sealed",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_FAILURE_V1_2026-08-25/inputs/controller.py",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 58525,
+        "sha256": "b22f895901501fee31b92d706d7b2b3e0e0977e20fe5339d2be098bbcbe206b7"
+      }
+    },
+    {
+      "id": "controller-v1-active-before-repair",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-e1-traversal-d2-primary-only.py",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 58525,
+        "sha256": "b22f895901501fee31b92d706d7b2b3e0e0977e20fe5339d2be098bbcbe206b7"
+      }
+    },
+    {
+      "id": "sealed-full-rustc-identity",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A1_BUILD_FAILURE_V1_2026-08-25/PREBUILD_PROVENANCE.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 1161,
+        "sha256": "015d64d2cfb383d6239f0eb85b7ae589cfea32ab67364515b41ec5e9e2feaee9"
+      }
+    },
+    {
+      "id": "v2-local-result-absent",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25",
+      "expect": {}
+    },
+    {
+      "id": "blocked-repair-v2-manifest",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_CONTROLLER_REPAIR_V2_2026-08-25.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 10138,
+        "sha256": "8db33aec2a6e768842190c875cec41e8f79374c25ed0dc5b5ddfe7f73b903e72"
+      }
+    },
+    {
+      "id": "blocked-repair-v2-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_CONTROLLER_REPAIR_V2_PREFLIGHT_2026-08-25.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 4712,
+        "sha256": "3d72521ec269ce8d0c0cfbe17ca7bfdad21c77859c85e65b7dcdaa536be28d47"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "repair-controller-source",
+        "kind": "local_source_edit"
+      },
+      {
+        "id": "publish-repair-preflight",
+        "kind": "documentation_edit"
+      },
+      {
+        "id": "create-disjoint-v2-d2a-state",
+        "kind": "remote_state_create"
+      },
+      {
+        "id": "publish-v2-d2a-evidence",
+        "kind": "remote_and_local_evidence_write"
+      }
+    ],
+    "forbidden": [
+      "cargo_build_check_test_or_rustc_compilation",
+      "perf_record_or_stat",
+      "pmu_event_open",
+      "d2_elf_or_subject_execution",
+      "bucket_map_generation",
+      "parity_or_u_v_t_execution",
+      "route_marker_consumption",
+      "v1_failure_or_state_mutation",
+      "installed_lay_mutation_or_restart",
+      "foreign_process_control_reaffinity_or_repriority",
+      "host_policy_tuning",
+      "clean_c1_or_full_b",
+      "optimization_or_v12_implementation",
+      "generated_traffic",
+      "synthetic_fixture",
+      "runtime_authority_change"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "V1_D2A_FAILURE_SEALED_V2_ABSENT",
+    "steps": [
+      {
+        "id": "repair-v2-controller",
+        "from": "V1_D2A_FAILURE_SEALED_V2_ABSENT",
+        "to": "V2_IMPLEMENTED_UNRUN",
+        "mutates": true,
+        "failure_state": "V2_IMPLEMENTATION_REJECTED",
+        "cleanup": "retain sealed V1 failure and remove only incomplete V2 source edits",
+        "preserves": [
+          "preserve-v1-failure",
+          "preserve-v1-controller",
+          "preserve-v4"
+        ],
+        "test_id": "implementation-fault"
+      },
+      {
+        "id": "self-check-v2",
+        "from": "V2_IMPLEMENTED_UNRUN",
+        "to": "V2_CONTROLLER_VERIFIED_UNRUN",
+        "mutates": false
+      },
+      {
+        "id": "run-v2-d2a",
+        "from": "V2_CONTROLLER_VERIFIED_UNRUN",
+        "to": "V2_D2A_CLOSED_ALL_MARKERS_AVAILABLE",
+        "mutates": true,
+        "failure_state": "V2_D2A_FAILURE_TERMINAL",
+        "cleanup": "retain complete V2 failure evidence, keep every marker unconsumed, and do not retry",
+        "preserves": [
+          "preserve-v1-failure",
+          "preserve-v1-controller",
+          "preserve-v4"
+        ],
+        "test_id": "d2a-fault"
+      }
+    ],
+    "terminal_states": [
+      "V2_D2A_CLOSED_ALL_MARKERS_AVAILABLE",
+      "V2_IMPLEMENTATION_REJECTED",
+      "V2_D2A_FAILURE_TERMINAL"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "preserve-v1-failure",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_FAILURE_V1_2026-08-25/SHA256SUMS",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "v1-failure-manifest"
+    },
+    {
+      "id": "preserve-v1-controller",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_FAILURE_V1_2026-08-25/inputs/controller.py",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "v1-controller-sealed"
+    },
+    {
+      "id": "preserve-v4",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_IMPLEMENTATION_V4_2026-08-25.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "effective-v4-manifest"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "runtime-stability",
+      "source": "installed Lay and daemon snapshots before and after V2 D2-A",
+      "comparison": "exact_stable_projection",
+      "reason": "D2-A must not change runtime authority",
+      "stable_fields": [
+        "lay_version",
+        "active_v11_sha256",
+        "ibus_daemon_pid",
+        "lay_daemon_pid",
+        "lay_ibus_engine_pid"
+      ],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": [
+        "host_load",
+        "temperature",
+        "foreign_process_set"
+      ],
+      "test_id": "runtime-stability"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "v1-failure-preservation",
+      "producer": "sealed remote V1 D2-A failure evidence",
+      "consumer": "local V2 admission and post-V2 audit",
+      "comparison": "exact SHA256SUMS and controller SHA-256",
+      "test_id": "v1-preservation"
+    },
+    {
+      "id": "rustc-full-hash",
+      "producer": "rustc -Vv commit-hash field",
+      "consumer": "V2 host_toolchain_closure",
+      "comparison": "exact full 40-hex commit hash 8bab26f4f68e0e26f0bb7960be334d5b520ea452; display text remains 8bab26f4f",
+      "test_id": "rustc-hash-parity"
+    },
+    {
+      "id": "v4-route-contract",
+      "producer": "effective V4 manifest and receipt",
+      "consumer": "V2 controller route registry and D2-A closure",
+      "comparison": "exact manifest and receipt SHA-256 with unchanged 11-route graph",
+      "test_id": "v4-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "v1-terminal",
+      "statement": "V1 remains immutable and cannot be retried or reinterpreted as PASS",
+      "test_id": "v1-preservation"
+    },
+    {
+      "id": "exact-repair",
+      "statement": "V2 compares the full rustc commit hash and uses a disjoint task state and result namespace",
+      "test_id": "source-diff"
+    },
+    {
+      "id": "zero-execution",
+      "statement": "V2 stops after D2-A with zero Cargo compilation perf PMU D2 subject map parity U V T and marker consumption",
+      "test_id": "zero-execution"
+    },
+    {
+      "id": "claim-boundary",
+      "statement": "V2 D2-A PASS admits only independent D2-A audit and not BUILD",
+      "test_id": "claim-boundary"
+    }
+  ],
+  "tests": [
+    {
+      "id": "implementation-fault",
+      "kind": "fault_injection",
+      "expected": "sealed V1 evidence survives and incomplete V2 source is rejected"
+    },
+    {
+      "id": "d2a-fault",
+      "kind": "fault_injection",
+      "expected": "V2 failure is terminal with no marker consumption and no retry"
+    },
+    {
+      "id": "v1-preservation",
+      "kind": "parity",
+      "expected": "V1 SHA256SUMS and controller remain byte-identical"
+    },
+    {
+      "id": "rustc-hash-parity",
+      "kind": "parity",
+      "expected": "full rustc -Vv commit hash is checked while the short display identity remains unchanged"
+    },
+    {
+      "id": "v4-parity",
+      "kind": "parity",
+      "expected": "V4 manifest receipt route registry source assembly and dispatch remain exact"
+    },
+    {
+      "id": "source-diff",
+      "kind": "parity",
+      "expected": "V2 changes only admission pinning full rustc hash and disjoint V2 task result and state names"
+    },
+    {
+      "id": "zero-execution",
+      "kind": "parity",
+      "expected": "D2-A ledger reports zero Cargo compilation perf PMU D2 subject map parity U V T and consumed markers"
+    },
+    {
+      "id": "runtime-stability",
+      "kind": "parity",
+      "expected": "installed Lay version active V11 SHA and three runtime PID sets remain exact"
+    },
+    {
+      "id": "claim-boundary",
+      "kind": "parity",
+      "expected": "controller denies every execution action after D2-A in this revision"
+    }
+  ]
+}

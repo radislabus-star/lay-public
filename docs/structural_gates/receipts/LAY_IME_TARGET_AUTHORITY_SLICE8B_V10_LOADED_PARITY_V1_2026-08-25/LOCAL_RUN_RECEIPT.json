@@ -1,0 +1,23 @@
+{
+  "controller_sha256": "7f74fa9e02215b6e7b9cb023a97cdb4ba09d9b2a4225db03c9bd4b36b96c8166",
+  "formal_b_pass": false,
+  "installed_lay_changed": false,
+  "local_runtime_after": {
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+    "lay_processes": [],
+    "lay_version_stderr": "",
+    "lay_version_stdout": "lay 1.0.43"
+  },
+  "local_runtime_before": {
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+    "lay_processes": [],
+    "lay_version_stderr": "",
+    "lay_version_stdout": "lay 1.0.43"
+  },
+  "preflight_manifest_sha256": "1dcf302b1ba72cce7a8293d8581bcc993491f03cad6dd11c3ce6fcca22b2f247",
+  "recorded_at": "2026-08-24T22:28:28.245598+00:00",
+  "remote_receipt_sha256": "3d7d15b15c57c4aa1d4e7a358a2daa022ba2a4bf005f9c3dbde608befee797ad",
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.loaded-semantic-parity-local-index.v1",
+  "task_id": "slice8b-v10-loaded-parity-v1-20260825"
+}

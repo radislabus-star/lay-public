@@ -1,0 +1,88 @@
+{
+  "cargo_invocations": 0,
+  "copied_remote_evidence": {
+    "archive_sha256": "add522b1fdcf0faca128b70c4fd1f9ab9ce8a9e7f82b5c40cc8d02ae833ef3b8",
+    "archive_size_bytes": 286720,
+    "manifest": {
+      "entries": 13,
+      "manifest": {
+        "mode": "0600",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_TERMINAL_AUDIT_V1_2026-08-26.stage-3319118-1787709172718441648/REMOTE_U2_EVIDENCE/SHA256SUMS",
+        "sha256": "76469bd56d932f27cfc10610c8829f4864d74450d17f95f5cc9fb55699ec071d",
+        "size_bytes": 1160
+      },
+      "membership_exact": true
+    }
+  },
+  "correction": {
+    "mode": "0444",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_BOOTSTRAP_EXECUTION_ADMISSION_CORRECTION_V2_2026-08-26.md",
+    "sha256": "b963c0059fe6efaca746fad2ad9dc4784c7a6d4b9ea524c9faa18c6858197519",
+    "size_bytes": 3275
+  },
+  "d2_marker_mutations": 0,
+  "historical_bootstrap_audit": {
+    "effective_execution_admission": "INVALID",
+    "receipt_modified": false,
+    "receipt_sha256": "0c5a34b1809dbbfa8b3744b65d86f3dfa1d0c1bfb00a623a0bbe5089669b7bb1",
+    "verdict": "D3_BOOTSTRAP_AUDIT_PASS_EXECUTION_ADMITTED"
+  },
+  "next_action_admitted": "none within D3; any future measurement requires a new paper namespace",
+  "optimization_authority": false,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "reason": "root-owned D3 parent mode 0700 prevented subject user e from publishing required U2 evidence",
+  "remote_projection_sha256": "248db1a8291dcb50953f1a5a996dc58e2844dfb63456cb97e1ac2c7bbf81c6f7",
+  "remote_projection_stable": true,
+  "retry_permitted": false,
+  "runtime_after": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "runtime_authority_changed": false,
+  "runtime_before": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "rustc_compilations": 0,
+  "schema": "lay.v10.e1-traversal-d3-terminal-audit.v1",
+  "selected_cause": "provenance",
+  "selected_rank": 0,
+  "t2": {
+    "marker": "t2-single.available",
+    "perf_record": 0,
+    "pmu_events_opened": 0,
+    "status": "RETIRED_UNCONSUMED_BY_TERMINAL_D3",
+    "subject_executions": 0
+  },
+  "task_id": "slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826",
+  "terminal_projection": {
+    "d2_markers_unchanged": 11,
+    "perf_record": 0,
+    "perf_stat": 0,
+    "pmu_events_opened": 0,
+    "selected_cause": "provenance",
+    "t2_marker_retired_unconsumed": true,
+    "t2_subject_executions": 0,
+    "u2_marker_consumed": true,
+    "u2_subject_executions": 1,
+    "verdict": "BLOCKED_PROVENANCE"
+  },
+  "terminal_scope": "D3 single-worker estimator recovery",
+  "transaction_id": "e88555465ee51b7caed891217e8941ceb0b412ed82981d7c88cde71c3eb452e1",
+  "u2": {
+    "marker_consumed_before_effect": true,
+    "observation_sha256": "a85d128fed922a0317206ff7d716c59ea6e6e876320453a37af4430996ea74c9",
+    "process_exit": 101,
+    "receipt_sha256": "7c74a689079b8c40442c8065ce73a5deb69d990daf3a6404b43461808744888e",
+    "remote_manifest_entries": 13,
+    "remote_manifest_sha256": "76469bd56d932f27cfc10610c8829f4864d74450d17f95f5cc9fb55699ec071d",
+    "retry_permitted": false,
+    "stderr_sha256": "42929422fb0590c9083660e3558ec3643cde54dcf13b2bb485e0ac142934a964",
+    "subject_executions": 1
+  },
+  "verdict": "BLOCKED_PROVENANCE"
+}

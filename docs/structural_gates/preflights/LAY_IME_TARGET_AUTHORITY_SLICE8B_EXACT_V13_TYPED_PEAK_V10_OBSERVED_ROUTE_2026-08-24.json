@@ -1,0 +1,94 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "nodes": [
+    {"id": "immutable_v13", "role": "producer", "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 365, "contains": "fn compile_sidecar(package: &RuntimeL2Package"}},
+    {"id": "v10_dafsa_compiler", "role": "orchestrator", "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 371, "contains": "let mut builder = MinimalDafsaBuilder::new();"}},
+    {"id": "v10_rank_delta_sidecar", "role": "producer", "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 401, "contains": "fn encode_sidecar"}},
+    {"id": "observed_token", "role": "interface", "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 833, "contains": "observed: &str"}},
+    {"id": "typed_token_frame", "role": "producer", "evidence": {"path": "src/nanda_wave/lexical_grokking/typed_edit_traversal.rs", "line": 266, "contains": "fn new(raw: &str)"}},
+    {"id": "phase7d_lane_oracle", "role": "producer", "evidence": {"path": "src/nanda_wave/lexical_grokking/typed_edit_traversal.rs", "line": 270, "contains": "fn retrieval_lanes"}},
+    {"id": "banded_exact_peak_search", "role": "orchestrator", "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 830, "contains": "fn search_typed_peaks("}},
+    {"id": "banded_born_lattice", "role": "producer", "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 680, "contains": "struct SearchResult"}},
+    {"id": "full_row_proof_oracle", "role": "observer", "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 863, "contains": "fn search_typed_peaks_full_row("}},
+    {"id": "full_row_proof_lattice", "role": "observer", "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 793, "contains": "struct FullLevenshteinRow"}},
+    {"id": "target_labels", "role": "observer", "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 1167, "contains": "struct ProofCase"}},
+    {"id": "v10_parity_audit", "role": "observer", "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 1977, "contains": "fn run_gate_c("}},
+    {"id": "fixed_v10_proof", "role": "proof_owner", "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 1514, "contains": "fn v10_full_v13_abc_proof()"}}
+  ],
+  "edges": [
+    {"id": "build-v13-compiler", "from": "immutable_v13", "relation": "calls", "to": "v10_dafsa_compiler", "events": ["sidecar_build"], "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 372, "contains": "for form_ref in 0..package.form_count()"}},
+    {"id": "build-compiler-sidecar", "from": "v10_dafsa_compiler", "relation": "delegates", "to": "v10_rank_delta_sidecar", "events": ["sidecar_build"], "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 378, "contains": "encode_sidecar(builder.finish()?, identity)"}},
+
+    {"id": "query-token-frame", "from": "observed_token", "relation": "calls", "to": "typed_token_frame", "events": ["proof_query", "proof_parity"], "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 888, "contains": "Phase7dCertificateOracle::new(observed)?"}},
+    {"id": "query-frame-search", "from": "typed_token_frame", "relation": "calls", "to": "banded_exact_peak_search", "events": ["proof_query", "proof_parity"], "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 836, "contains": "search_typed_peaks_with_kernel("}},
+    {"id": "query-search-lanes", "from": "banded_exact_peak_search", "relation": "calls", "to": "phase7d_lane_oracle", "events": ["proof_query", "proof_parity"], "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 889, "contains": "let lanes = oracle.retrieval_lanes();"}},
+    {"id": "query-search-sidecar", "from": "banded_exact_peak_search", "relation": "calls", "to": "v10_rank_delta_sidecar", "events": ["proof_query", "proof_parity"], "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 895, "contains": "enumerate_lane::<BandedLevenshteinRow>("}},
+    {"id": "query-search-lattice", "from": "banded_exact_peak_search", "relation": "delegates", "to": "banded_born_lattice", "events": ["proof_query", "proof_parity"], "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 929, "contains": "let retrieved_form_refs = terminal_refs.clone();"}},
+
+    {"id": "parity-token-full-row", "from": "observed_token", "relation": "calls", "to": "full_row_proof_oracle", "events": ["proof_parity"], "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 2008, "contains": "let full_row = search_typed_peaks_full_row("}},
+    {"id": "parity-full-row-lattice", "from": "full_row_proof_oracle", "relation": "delegates", "to": "full_row_proof_lattice", "events": ["proof_parity"], "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 869, "contains": "search_typed_peaks_with_kernel("}},
+    {"id": "observe-banded", "from": "banded_born_lattice", "relation": "observes", "to": "v10_parity_audit", "events": ["proof_observation"], "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 2014, "contains": "full_row_terminal_mismatches"}},
+    {"id": "observe-full-row", "from": "full_row_proof_lattice", "relation": "observes", "to": "v10_parity_audit", "events": ["proof_observation"], "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 2016, "contains": "full_row_certificate_mismatches"}},
+    {"id": "observe-target-labels", "from": "target_labels", "relation": "observes", "to": "v10_parity_audit", "events": ["proof_observation"], "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 2033, "contains": "let target_ref = package"}},
+    {"id": "prove-v10", "from": "v10_parity_audit", "relation": "proves", "to": "fixed_v10_proof", "events": ["proof_observation"], "evidence": {"path": "src/nanda_wave/l2_field/v13_typed_peak.rs", "line": 1644, "contains": "let verdict = if gate_a_pass"}}
+  ],
+  "routes": [
+    {
+      "id": "v10-sidecar-build",
+      "event": "sidecar_build",
+      "kind": "execution",
+      "entry": "immutable_v13",
+      "terminal": "v10_rank_delta_sidecar",
+      "required_roles": ["producer", "orchestrator"],
+      "path_cardinality": [
+        {"from": "immutable_v13", "to": "v10_rank_delta_sidecar", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "v10-proof-query",
+      "event": "proof_query",
+      "kind": "execution",
+      "entry": "observed_token",
+      "terminal": "banded_born_lattice",
+      "required_roles": ["interface", "producer", "orchestrator"],
+      "path_cardinality": [
+        {"from": "observed_token", "to": "banded_born_lattice", "min": 1, "max": 1},
+        {"from": "target_labels", "to": "banded_exact_peak_search", "min": 0, "max": 0}
+      ]
+    },
+    {
+      "id": "v10-banded-parity-execution",
+      "event": "proof_parity",
+      "kind": "execution",
+      "entry": "observed_token",
+      "terminal": "banded_born_lattice",
+      "required_roles": ["interface", "producer", "orchestrator"],
+      "path_cardinality": [
+        {"from": "observed_token", "to": "banded_born_lattice", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "v10-full-row-oracle-execution",
+      "event": "proof_parity",
+      "kind": "execution",
+      "entry": "observed_token",
+      "terminal": "full_row_proof_lattice",
+      "required_roles": ["interface", "observer"],
+      "path_cardinality": [
+        {"from": "observed_token", "to": "full_row_proof_lattice", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "v10-proof-observation",
+      "event": "proof_observation",
+      "kind": "proof",
+      "entry": "v10_parity_audit",
+      "terminal": "fixed_v10_proof",
+      "required_roles": ["observer", "proof_owner"],
+      "path_cardinality": [
+        {"from": "v10_parity_audit", "to": "fixed_v10_proof", "min": 1, "max": 1}
+      ]
+    }
+  ]
+}

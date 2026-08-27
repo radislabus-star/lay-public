@@ -1,0 +1,740 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "id": "v11-paper-contract",
+      "kind": "file",
+      "path": "../../ime-target-authority-slice8-lexical-readout-2026-08-23.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 71425,
+        "sha256": "ea32c1250ef9fc090fefa74241974510398459abc94c630e01853b0faf7f4c32"
+      }
+    },
+    {
+      "id": "v11-route-contract",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_PACKED_DAFSA_DLA_V11_ROUTE_2026-08-24.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 7155,
+        "sha256": "4062178fff31671d2e5fd140df856ef065054f8ae7ef28df1324b0b437b72158"
+      }
+    },
+    {
+      "id": "v11-route-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v11-packed-dafsa-dla-route.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 9364,
+        "sha256": "1a921b8ca1fd57870d181b8c71013ce8c875caba225659faa4343eec331bacd3"
+      }
+    },
+    {
+      "id": "v10-measured-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v10-exact-v13-typed-peak-abc.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 5826,
+        "sha256": "08cccb3c9c63a24e9dc691958fde319de2a94b762fcb9f703ac342fcb72174e1"
+      }
+    },
+    {
+      "id": "v9-measured-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v9-exact-v13-typed-peak-abc.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 5327,
+        "sha256": "956a329e29811b5fea8b7afce1912d2d2b5040516cbcf3160d926b969bbc3a04"
+      }
+    },
+    {
+      "id": "v7-fixed-denominator",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-fixed-13x100.json",
+      "expect": {
+        "mode": "0600",
+        "size_bytes": 1606189,
+        "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"
+      }
+    },
+    {
+      "id": "v10-search-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 91518,
+        "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c"
+      }
+    },
+    {
+      "id": "phase7d-semantics-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 88634,
+        "sha256": "d983d16169c7526d56e9f78299524ab80d3d4f3e67ff19770f07a7ae6e61045d"
+      }
+    },
+    {
+      "id": "v13-runtime-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/runtime.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 142756,
+        "sha256": "cb94bd3ffaf61b31f7cce8d2051ae9087cf8aba26487c037ba6fbeaaa57f0966"
+      }
+    },
+    {
+      "id": "v13-storage-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/runtime_storage.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 7160,
+        "sha256": "2c1f23cbf88f51ef3018a19db0146675f8abb24ed00f16d0c710d9347965b32c"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "v10-v11-search-identity",
+      "producer": "V10 exact radius-three banded traversal over the immutable DAFSA language",
+      "consumer": "V11 packed DAFSA x query-local deterministic Levenshtein automaton intersection",
+      "comparison": "exact terminal form_ref sets completeness expanded product-state counts and Phase 7D certificate bytes for every generated and fixed proof query",
+      "test_id": "v10-v11-output-parity"
+    },
+    {
+      "id": "logical-packed-topology-identity",
+      "producer": "V10 logical DAFSA states edges terminal flags suffix counts targets and rank deltas",
+      "consumer": "V11 packed sidecar loader and exact form rank traversal",
+      "comparison": "all 1875032 surfaces roundtrip to the same form_ref and every decoded topology field equals the compiler value",
+      "test_id": "logical-packed-roundtrip"
+    },
+    {
+      "id": "unicode-symbol-reference-identity",
+      "producer": "strictly increasing compiler table of Unicode scalar values",
+      "consumer": "V11 packed edge symbol_ref and query equality classes",
+      "comparison": "every symbol_ref decodes to the original scalar and loader recomputes order bounds and symbol digest",
+      "test_id": "symbol-table-parity"
+    },
+    {
+      "id": "dla-transition-identity",
+      "producer": "the existing V10 BandedLevenshteinRow transition and terminal semantics",
+      "consumer": "each query-local DLA state class transition DEAD decision and terminal acceptance",
+      "comparison": "exact clipped band state transition minimum and terminal distance for every reachable generated and fixed-query state and class",
+      "test_id": "dla-transition-parity"
+    },
+    {
+      "id": "v13-sidecar-binding",
+      "producer": "immutable V13 package identity conserved by measured V10",
+      "consumer": "V11 packed sidecar header language rank and binding namespace",
+      "comparison": "exact V13 SHA-256 byte length form count binding count normalization version Phase 7D semantics digest and terminal language count",
+      "test_id": "v13-v11-index-identity"
+    },
+    {
+      "id": "fixed-attempt-identity",
+      "producer": "V7 no-field record pair damage_class and proof_identity",
+      "consumer": "V11 conserved proof accounting",
+      "comparison": "exact 382 composite identities without collapsing equal proof_identity values across classes",
+      "test_id": "composite-denominator-parity"
+    },
+    {
+      "id": "target-noninterference",
+      "producer": "V11 DLA build and packed intersection over damaged_surface immutable V13 and sidecar only",
+      "consumer": "frozen lattice transition work completeness and latency record before target labels",
+      "comparison": "removing or changing target_surface cannot change DLA classes transitions traversal output work completeness or route",
+      "test_id": "v11-target-noninterference"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "packing-is-lossless-not-truncating",
+      "statement": "every field is range checked before packing and independently decoded and recomputed by the loader; any width or section overflow fails without bytes",
+      "test_id": "packed-width-overflow-fault"
+    },
+    {
+      "id": "dla-is-exact-not-approximate",
+      "statement": "a DLA transition is the existing V10 band recurrence evaluated once for one exact query equality class and DEAD is emitted only when the exact band minimum exceeds radius",
+      "test_id": "dla-transition-parity"
+    },
+    {
+      "id": "equality-classes-preserve-unicode-semantics",
+      "statement": "two edge symbols share a DLA class only when their equality vector against the normalized query is identical; all absent symbols share OTHER",
+      "test_id": "dla-class-equivalence"
+    },
+    {
+      "id": "path-rank-is-never-merged",
+      "statement": "DLA states may be shared but DAFSA state and path-dependent rank_prefix remain in every traversal node",
+      "test_id": "merged-parent-rank-parity"
+    },
+    {
+      "id": "old-kernels-are-proof-only",
+      "statement": "V10 banded and full-row implementations remain parity oracles and cannot be selected as fallback by the V11 query route",
+      "test_id": "single-v11-owner-scan"
+    },
+    {
+      "id": "resource-failure-is-unresolved",
+      "statement": "DLA state transition query-symbol product-state terminal scratch or elapsed budget exhaustion returns Unresolved with no certified peaks and no fallback",
+      "test_id": "dla-budget-fault"
+    },
+    {
+      "id": "resource-gates-are-conjunctive",
+      "statement": "coverage false certificates sidecar loader PSS scratch single-client and twenty-client latency must all pass independently",
+      "test_id": "v11-resource-screen"
+    },
+    {
+      "id": "no-systemic-shortcut",
+      "statement": "no target class word suffix coefficient candidate cut timeout increase queue drop architecture-specific kernel global cache fallback or verifier weakening enters V11",
+      "test_id": "systemic-source-scan"
+    },
+    {
+      "id": "proof-only-runtime-unchanged",
+      "statement": "V11 A B C cannot edit Productive V90 runtime packages daemon IBus installed Lay or user text",
+      "test_id": "runtime-noninterference"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "v10-measured-result",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v10-exact-v13-typed-peak-abc.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain the single measured V10 result and do not rerun or rewrite it",
+      "baseline_check_id": "v10-measured-receipt"
+    },
+    {
+      "id": "v9-measured-result",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v9-exact-v13-typed-peak-abc.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain V9 as the prior measured baseline and do not rerun or rewrite it",
+      "baseline_check_id": "v9-measured-receipt"
+    },
+    {
+      "id": "v7-denominator",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-fixed-13x100.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain all fixed records and target labels exactly",
+      "baseline_check_id": "v7-fixed-denominator"
+    },
+    {
+      "id": "v13-runtime",
+      "path": "../../../src/nanda_wave/l2_field/runtime.rs",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "do not edit canonical V13 runtime behavior in V11 A B C",
+      "baseline_check_id": "v13-runtime-owner"
+    },
+    {
+      "id": "v13-storage",
+      "path": "../../../src/nanda_wave/l2_field/runtime_storage.rs",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "do not edit canonical V13 storage in V11 A B C",
+      "baseline_check_id": "v13-storage-owner"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [
+    {
+      "id": "v10-band-v11-dla",
+      "source": "the same observed token Phase 7D lanes and immutable V13 language",
+      "comparison": "exact_stable_projection",
+      "reason": "V11 memoizes exact V10 transitions and cannot change lexical discovery",
+      "baseline": "V10 banded retrieval",
+      "candidate": "V11 DLA intersection",
+      "stable_fields": [
+        "form_refs",
+        "certificate_keys",
+        "completeness",
+        "expanded_product_states"
+      ],
+      "expected_to_change_fields": [
+        "dla_states",
+        "dla_transitions",
+        "dla_build_elapsed_us",
+        "intersection_elapsed_us",
+        "search_elapsed_us",
+        "maximum_scratch_bytes"
+      ],
+      "observed_not_compared_fields": [
+        "scheduler noise",
+        "wall clock order",
+        "heap addresses"
+      ],
+      "test_id": "v10-v11-output-parity"
+    },
+    {
+      "id": "v10-v11-sidecar-language",
+      "source": "the same logical minimal DAFSA compiled from immutable V13 surfaces",
+      "comparison": "exact_stable_projection",
+      "reason": "packing changes record widths and symbol addressing but cannot alter language or ranks",
+      "baseline": "V10 12-byte state and edge sidecar",
+      "candidate": "V11 8-byte state and edge sidecar with Unicode symbol table",
+      "stable_fields": [
+        "surface",
+        "form_ref",
+        "terminal_count",
+        "state_count",
+        "edge_count",
+        "package_identity",
+        "suffix_count",
+        "rank_delta"
+      ],
+      "expected_to_change_fields": [
+        "format_version",
+        "state_width",
+        "edge_width",
+        "symbol_table",
+        "payload_sha256",
+        "sidecar_bytes"
+      ],
+      "observed_not_compared_fields": [
+        "mmap address",
+        "filesystem inode"
+      ],
+      "test_id": "logical-packed-roundtrip"
+    },
+    {
+      "id": "v10-row-v11-transition-table",
+      "source": "every reachable generated and fixed-query band state crossed with every query equality class",
+      "comparison": "exact_stable_projection",
+      "reason": "the DLA table must be an exact cache of the existing recurrence",
+      "baseline": "V10 BandedLevenshteinRow advance minimum and terminal_distance",
+      "candidate": "V11 DLA transition next-state DEAD and terminal acceptance",
+      "stable_fields": [
+        "band_cells",
+        "depth",
+        "minimum",
+        "terminal_distance",
+        "dead"
+      ],
+      "expected_to_change_fields": [
+        "state_id",
+        "transition_table_offset"
+      ],
+      "observed_not_compared_fields": [
+        "construction order after canonical state id assignment"
+      ],
+      "test_id": "dla-transition-parity"
+    }
+  ],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "side_effects": {
+    "planned": [
+      {
+        "id": "edit-v11-proof-search",
+        "kind": "source_edit"
+      },
+      {
+        "id": "run-focused-local-tests",
+        "kind": "local_test"
+      },
+      {
+        "id": "capture-v11-observed-route",
+        "kind": "proof_artifact_write"
+      },
+      {
+        "id": "transfer-only-changed-files",
+        "kind": "remote_file_write"
+      },
+      {
+        "id": "write-v11-proof-sidecar",
+        "kind": "proof_artifact_write"
+      },
+      {
+        "id": "run-one-remote-v11-abc",
+        "kind": "remote_test"
+      },
+      {
+        "id": "capture-v11-proof-receipt",
+        "kind": "proof_artifact_write"
+      },
+      {
+        "id": "update-owning-architecture",
+        "kind": "documentation_edit"
+      },
+      {
+        "id": "update-graphify",
+        "kind": "generated_graph_update"
+      }
+    ],
+    "forbidden": [
+      "runtime_deployment",
+      "restart_lay_daemon",
+      "restart_lay_ibus_engine",
+      "restart_global_ibus_daemon",
+      "production_bridge_edit",
+      "v13_runtime_edit",
+      "v13_storage_edit",
+      "v13_package_rebuild",
+      "v90_package_rebuild",
+      "l11_package_rebuild",
+      "rerun_v9_proof",
+      "rerun_v10_proof",
+      "full_13x100_proof",
+      "runtime_authority_flip",
+      "fallback_authority",
+      "target_conditioned_search",
+      "literal_case_branch",
+      "queue_truncation",
+      "latency_budget_increase",
+      "weaken_verifier",
+      "architecture_specific_kernel",
+      "global_dla_cache",
+      "unsafe_packed_decode",
+      "generated_traffic",
+      "synthetic_fixture",
+      "synthetic_fixed_denominator"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "v10-search-pinned",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "literal_case_branch",
+          "regex": "(?:case\\.class|target_surface).{0,120}(?:if|match)"
+        },
+        {
+          "effect": "queue_truncation",
+          "regex": "(?:truncate|take)\\([^\\n]{0,80}(?:state|queue|frontier)"
+        },
+        {
+          "effect": "fallback_authority",
+          "regex": "(?:fallback_winner|fallback_authority|legacy_fallback)"
+        },
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?:systemctl|lay-runtime-control|install-release)"
+        },
+        {
+          "effect": "weaken_verifier",
+          "regex": "(?:SafetyGate|verifier).{0,120}(?:bypass|disable|skip|weaken)"
+        },
+        {
+          "effect": "full_13x100_proof",
+          "regex": "(?:cargo|Command|prove).{0,120}(?:13x100|heldout_per_class.{0,40}100)"
+        },
+        {
+          "effect": "rerun_v9_proof",
+          "regex": "(?:v9_full_v13_abc_proof|LAY_V9_RECEIPT).{0,120}(?:Command|run|invoke)"
+        },
+        {
+          "effect": "rerun_v10_proof",
+          "regex": "(?:v10_exact_v13_typed_peak_abc_proof|LAY_V10_RECEIPT).{0,120}(?:Command|run|invoke)"
+        },
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "target_conditioned_search",
+          "regex": "(?:search|traverse|deadline|budget|automaton).{0,160}target_surface"
+        },
+        {
+          "effect": "latency_budget_increase",
+          "regex": "(?:search_p99|total_p99).{0,80}(?:[4-9][0-9]{3,}|[1-9][0-9]{4,})"
+        },
+        {
+          "effect": "l11_package_rebuild",
+          "regex": "(?:compile|rebuild|crystallize).{0,100}(?:L1\\.1|l11).{0,40}package"
+        },
+        {
+          "effect": "production_bridge_edit",
+          "regex": "(?:canonical_text_readout|prepare_context_neutral_productive_material).{0,160}(?:typed_peak|banded|DLA)"
+        },
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}ibus-daemon"
+        },
+        {
+          "effect": "restart_lay_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}lay-daemon"
+        },
+        {
+          "effect": "restart_lay_ibus_engine",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}lay-ibus-engine"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?:write|create|generate)_synthetic_fixture"
+        },
+        {
+          "effect": "synthetic_fixed_denominator",
+          "regex": "(?:replace|generate|rewrite).{0,100}(?:fixed_denominator|NoField|382)"
+        },
+        {
+          "effect": "v13_package_rebuild",
+          "regex": "(?:compile|rebuild|reinduce).{0,100}(?:V13|canonical_l2).{0,40}package"
+        },
+        {
+          "effect": "v90_package_rebuild",
+          "regex": "(?:compile|rebuild|reinduce).{0,100}(?:V90|productive).{0,40}package"
+        },
+        {
+          "effect": "architecture_specific_kernel",
+          "regex": "(?:std::arch|is_x86_feature_detected|simd|avx|sse)"
+        },
+        {
+          "effect": "global_dla_cache",
+          "regex": "(?:static|OnceLock|LazyLock|Mutex|RwLock).{0,120}(?:Dla|LevenshteinAutomaton)"
+        },
+        {
+          "effect": "unsafe_packed_decode",
+          "regex": "unsafe\\s*\\{"
+        }
+      ]
+    },
+    {
+      "id": "v13-runtime-pinned",
+      "path": "../../../src/nanda_wave/l2_field/runtime.rs",
+      "sha256": "cb94bd3ffaf61b31f7cce8d2051ae9087cf8aba26487c037ba6fbeaaa57f0966",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "v13_runtime_edit",
+          "regex": "(?:V13TypedPeak|v13_typed_peak|packed_dafsa|LevenshteinAutomaton)"
+        },
+        {
+          "effect": "runtime_authority_flip",
+          "regex": "(?:runtime_authority_changed|promotion_eligible)\\s*[:=]\\s*true"
+        }
+      ]
+    },
+    {
+      "id": "v13-storage-pinned",
+      "path": "../../../src/nanda_wave/l2_field/runtime_storage.rs",
+      "sha256": "2c1f23cbf88f51ef3018a19db0146675f8abb24ed00f16d0c710d9347965b32c",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "v13_storage_edit",
+          "regex": "(?:V13TypedPeak|v13_typed_peak|packed_dafsa|LevenshteinAutomaton)"
+        }
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state": "V10_MEASURED_FAIL_V11_ROUTE_PASS_RUNTIME_UNCHANGED",
+    "steps": [
+      {
+        "id": "implement-v11-packed-dla",
+        "from": "V10_MEASURED_FAIL_V11_ROUTE_PASS_RUNTIME_UNCHANGED",
+        "to": "V11_CODE_READY_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "V11_CODE_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain the failed diff and diagnostics; do not reset the dirty tree or touch installed runtime",
+        "preserves": [
+          "v10-measured-result",
+          "v9-measured-result",
+          "v7-denominator",
+          "v13-runtime",
+          "v13-storage"
+        ],
+        "test_id": "v11-source-edit-fault"
+      },
+      {
+        "id": "prove-local-v10-v11-parity",
+        "from": "V11_CODE_READY_RUNTIME_UNCHANGED",
+        "to": "V11_LOCAL_PARITY_PASS_RUNTIME_UNCHANGED",
+        "mutates": false,
+        "failure_state": "V11_LOCAL_PARITY_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain complete mismatch evidence and repair the common packing or DLA mechanism before any remote proof",
+        "preserves": [
+          "v10-measured-result",
+          "v9-measured-result",
+          "v7-denominator",
+          "v13-runtime",
+          "v13-storage"
+        ],
+        "test_id": "v10-v11-output-parity"
+      },
+      {
+        "id": "capture-post-edit-observed-route",
+        "from": "V11_LOCAL_PARITY_PASS_RUNTIME_UNCHANGED",
+        "to": "V11_OBSERVED_ROUTE_PASS_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "V11_OBSERVED_ROUTE_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain the failed observed-source receipt and repair source evidence; do not transfer or run the remote proof",
+        "preserves": [
+          "v10-measured-result",
+          "v9-measured-result",
+          "v7-denominator",
+          "v13-runtime",
+          "v13-storage"
+        ],
+        "test_id": "v11-observed-route-fault"
+      },
+      {
+        "id": "run-one-v11-abc-proof",
+        "from": "V11_OBSERVED_ROUTE_PASS_RUNTIME_UNCHANGED",
+        "to": "V11_ABC_PROOF_COMPLETE_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "V11_ABC_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain the partial or failed V11 sidecar receipt and first shared failure mechanism; do not rerun V9 or V10 integrate Productive V90 or deploy",
+        "preserves": [
+          "v10-measured-result",
+          "v9-measured-result",
+          "v7-denominator",
+          "v13-runtime",
+          "v13-storage"
+        ],
+        "test_id": "v11-remote-proof-fault"
+      },
+      {
+        "id": "record-v11-result",
+        "from": "V11_ABC_PROOF_COMPLETE_RUNTIME_UNCHANGED",
+        "to": "V11_RESULT_RECORDED_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "V11_RESULT_RECORDING_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain the proof receipt as source evidence and complete architecture and graph recording without rerunning proof",
+        "preserves": [
+          "v10-measured-result",
+          "v9-measured-result",
+          "v7-denominator",
+          "v13-runtime",
+          "v13-storage"
+        ],
+        "test_id": "v11-result-recording-fault"
+      },
+      {
+        "id": "record-v11-rejection",
+        "from": "V11_ABC_REJECTED_RUNTIME_UNCHANGED",
+        "to": "V11_REJECTION_RECORDED_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "V11_REJECTION_RECORDING_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain rejection evidence and complete architecture and graph recording without rerunning proof",
+        "preserves": [
+          "v10-measured-result",
+          "v9-measured-result",
+          "v7-denominator",
+          "v13-runtime",
+          "v13-storage"
+        ],
+        "test_id": "v11-result-recording-fault"
+      }
+    ],
+    "terminal_states": [
+      "V11_RESULT_RECORDED_RUNTIME_UNCHANGED",
+      "V11_REJECTION_RECORDED_RUNTIME_UNCHANGED",
+      "V11_CODE_REJECTED_RUNTIME_UNCHANGED",
+      "V11_LOCAL_PARITY_REJECTED_RUNTIME_UNCHANGED",
+      "V11_OBSERVED_ROUTE_REJECTED_RUNTIME_UNCHANGED",
+      "V11_RESULT_RECORDING_FAILED_RUNTIME_UNCHANGED",
+      "V11_REJECTION_RECORDING_FAILED_RUNTIME_UNCHANGED"
+    ]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_PACKED_DAFSA_DLA_V11_ABC_2026-08-24",
+  "tests": [
+    {
+      "id": "v11-source-edit-fault",
+      "kind": "fault_injection",
+      "expected": "a compile or parity failure leaves V10 V9 V13 V90 L1.1 installed runtime and fixed proof bytes untouched"
+    },
+    {
+      "id": "v10-v11-output-parity",
+      "kind": "parity",
+      "expected": "V10 banded V11 DLA and full-row terminal form_refs completeness expanded product states and certificate bytes are exact on generated matrices and fixed cases"
+    },
+    {
+      "id": "logical-packed-roundtrip",
+      "kind": "parity",
+      "expected": "all V13 surfaces resolve to their original form_ref and every packed state edge terminal suffix count target and rank delta decodes exactly"
+    },
+    {
+      "id": "packed-width-overflow-fault",
+      "kind": "fault_injection",
+      "expected": "every out-of-range packed field section length or arithmetic overflow rejects compilation or loading without truncated bytes"
+    },
+    {
+      "id": "symbol-table-parity",
+      "kind": "parity",
+      "expected": "all edge symbols roundtrip through one strictly increasing Unicode scalar table and the digest and edge order recompute exactly"
+    },
+    {
+      "id": "symbol-table-corruption-fault",
+      "kind": "fault_injection",
+      "expected": "valid-checksum duplicate unsorted out-of-range or changed symbol references are rejected by loader validation"
+    },
+    {
+      "id": "dla-transition-parity",
+      "kind": "parity",
+      "expected": "each reachable DLA state and equality-class transition exactly matches V10 band cells minimum terminal distance and DEAD decision"
+    },
+    {
+      "id": "dla-class-equivalence",
+      "kind": "parity",
+      "expected": "symbols share a class exactly when their equality vector against the normalized query is identical including OTHER"
+    },
+    {
+      "id": "merged-parent-rank-parity",
+      "kind": "parity",
+      "expected": "shared DAFSA suffix and DLA states never merge path rank prefixes and all terminal ranks remain form_ref"
+    },
+    {
+      "id": "dla-budget-fault",
+      "kind": "fault_injection",
+      "expected": "forced DLA state transition product terminal scratch wall or query-symbol exhaustion returns Unresolved and emits no certified lattice or fallback"
+    },
+    {
+      "id": "v13-v11-index-identity",
+      "kind": "parity",
+      "expected": "V11 binds the same immutable V13 package language states edges forms bindings normalization and typed semantics under a versioned packed sidecar"
+    },
+    {
+      "id": "composite-denominator-parity",
+      "kind": "parity",
+      "expected": "the conserved denominator is exactly 382 unique damage_class plus proof_identity pairs"
+    },
+    {
+      "id": "v11-target-noninterference",
+      "kind": "parity",
+      "expected": "target labels cannot alter DLA classes transitions search lattice work completeness latency path or certificate bytes"
+    },
+    {
+      "id": "v11-observed-route-fault",
+      "kind": "fault_injection",
+      "expected": "missing or stale source evidence blocks remote proof and leaves installed runtime and fixed artifacts unchanged"
+    },
+    {
+      "id": "v11-remote-proof-fault",
+      "kind": "fault_injection",
+      "expected": "an interrupted changed-file transfer sidecar build proof or receipt write retains V10 V9 V7 bytes and leaves installed runtime unchanged"
+    },
+    {
+      "id": "v11-target-blind-audit",
+      "kind": "integration",
+      "expected": "one V11 A B C run retains all 382 target forms and lemmas with zero false certificates and zero unresolved"
+    },
+    {
+      "id": "v11-resource-screen",
+      "kind": "integration",
+      "expected": "sidecar <=32 MiB loader <=4 MiB two-process PSS delta <=40 MiB scratch <=512 KiB search p99 <=3 ms total p99 <=5 ms and twenty-client total p99 <=5 ms with DLA build and intersection reported separately"
+    },
+    {
+      "id": "single-v11-owner-scan",
+      "kind": "integration",
+      "expected": "the optimized route has one packed DAFSA x DLA producer while V10 banded and full-row code are reachable only from tests or proof comparison"
+    },
+    {
+      "id": "systemic-source-scan",
+      "kind": "integration",
+      "expected": "no target word class literal coefficient candidate cut timeout increase queue drop fallback global cache architecture-specific kernel unsafe decode or verifier weakening is introduced"
+    },
+    {
+      "id": "runtime-noninterference",
+      "kind": "parity",
+      "expected": "Productive V90 bridge runtime storage installed binaries packages daemon and IBus remain byte and process unchanged"
+    },
+    {
+      "id": "v11-result-recording-fault",
+      "kind": "fault_injection",
+      "expected": "a documentation or graph update failure retains the unique proof receipt and does not authorize rerun deployment or authority change"
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "v11-implementation-receipt",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_IMPLEMENTATION_V1_2026-08-27/IMPLEMENTATION_RECEIPT.json",
+      "sha256": "e3e05ffbf1d25d8d2b0d2b6095e268769737c11867fd71b688db5c1d63b6a9f9",
+      "size_bytes": 4722
+    },
+    {
+      "exists": true,
+      "id": "v11-implementation-manifest",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_IMPLEMENTATION_V1_2026-08-27/SHA256SUMS",
+      "sha256": "fd763337bea717b5f2e4d5e472b267d8a05d0c6e40fc2024144a798cb781618e",
+      "size_bytes": 2606
+    },
+    {
+      "exists": true,
+      "id": "v11-decision",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_DECISION_V1_2026-08-27.md",
+      "sha256": "d2cac2d9cf09cc85a25e5b29cb1a8f8ab11b90a31eeb33190f26808df1118f8f",
+      "size_bytes": 7781
+    },
+    {
+      "exists": true,
+      "id": "v8-build-audit",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R1_BUILD_AUDIT_V1_2026-08-27/BUILD_AUDIT.json",
+      "sha256": "d7d5e7110171e5c6546016ff0c9374c323804014ef8cfa7a690ad7d1d11c8340",
+      "size_bytes": 241788
+    },
+    {
+      "exists": true,
+      "id": "v8-terminal",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R3_TERMINAL_AUDIT_V1_2026-08-27/TERMINAL_AUDIT.json",
+      "sha256": "2115a4ce7c8a79fffde043b87c5aa462014873a0365df3a6e82892f395f6aedc",
+      "size_bytes": 32242
+    },
+    {
+      "exists": true,
+      "id": "v11-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/typing_transition/proposal_admission.rs",
+      "sha256": "e8a6a182753084659e00ccd5e20238d585d859437824609a987ea03ce6edca72",
+      "size_bytes": 119643
+    },
+    {
+      "exists": true,
+      "id": "cargo-toml",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../Cargo.toml",
+      "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b",
+      "size_bytes": 2399
+    },
+    {
+      "exists": true,
+      "id": "cargo-lock",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../Cargo.lock",
+      "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1",
+      "size_bytes": 70770
+    },
+    {
+      "exists": true,
+      "id": "cargo-guard",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/cargo-guard.sh",
+      "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe",
+      "size_bytes": 2534
+    }
+  ],
+  "blockers": [
+    {
+      "code": "test_contract_incomplete",
+      "field": "tests[11]",
+      "message": "valid kind and non-empty expected result are required"
+    },
+    {
+      "code": "runtime_comparison_incomplete",
+      "field": "runtime_comparisons[0]",
+      "message": "source, comparison, reason, and test_id are required"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 9,
+    "forbidden_side_effect_kinds": [
+      "different_elf_between_b0_and_b1",
+      "generated_traffic",
+      "perf_or_pmu",
+      "predicate_or_reason_change",
+      "route_retry",
+      "runtime_install_restart_or_deployment",
+      "second_build",
+      "source_edit_after_build",
+      "synthetic_fixture"
+    ],
+    "identity_contracts": 4,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "local_controller_source_edit",
+      "local_immutable_evidence_copy",
+      "new_remote_isolated_namespace",
+      "one_remote_cargo_build",
+      "one_reuse_subject",
+      "one_uncached_subject",
+      "three_remote_one_shot_markers"
+    ],
+    "preserved_artifacts": 4,
+    "runtime_comparisons": 1,
+    "source_checks": 0,
+    "tests": 13
+  },
+  "manifest_sha256": "2b8db62bdf9987353d4ad70a892ed1900ec46ec978e4a127bec2fb881be79913",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [],
+  "task_id": "slice8b-v11-admission-lexical-fact-reuse-paired-v1-20260827",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

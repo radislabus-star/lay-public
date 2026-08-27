@@ -1,0 +1,14 @@
+{
+  "ibus_daemon_pids": [
+    2076194
+  ],
+  "launcher": "/home/ubu/.local/bin/lay",
+  "lay_daemon_pids": [
+    3410795
+  ],
+  "lay_ibus_engine_pids": [
+    3410820
+  ],
+  "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+  "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+}

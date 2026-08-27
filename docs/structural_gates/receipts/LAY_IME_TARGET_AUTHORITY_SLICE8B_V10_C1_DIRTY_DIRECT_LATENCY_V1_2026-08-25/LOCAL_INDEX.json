@@ -1,0 +1,110 @@
+{
+  "clean_c1_verdict": "NOT_MEASURED_BLOCKED_ENVIRONMENT",
+  "controller_sha256": "ef7c8f87c66665bd9319992023268cbda2e5bba8d3583cf5dd1d3ff37a34e628",
+  "installed_lay_changed": false,
+  "preflight_manifest_sha256": "62a00d09a5e507bad20bd2e02d464a70a5f87343ad96bb575a535844f7274e7c",
+  "preflight_receipt_sha256": "746d659762f0b82592e297f84b7e81269799c51d829ac98e395d6766578a94d1",
+  "recorded_at": "2026-08-25T02:18:47.724846+00:00",
+  "remote_result_sha256": "9c74bf3f74f794ddd7e5c46df56f88e1443f6e320afb425dd015d20adecb207e",
+  "remote_verification": {
+    "clean_state": {
+      "clean_final_exists": false,
+      "marker_directory_mode": "0700",
+      "markers": {
+        "S1.available": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S1.available",
+          "sha256": "f028d63160b0aeefd7ca4e1ada8a197c709b10716fd3c93beda6b7b9882cd243",
+          "size_bytes": 74
+        },
+        "S2.available": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S2.available",
+          "sha256": "397a8c55872a5c8042d6df257219b110461e299d036fc6c89ea49cce7e8c1ac0",
+          "size_bytes": 74
+        },
+        "S3.available": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S3.available",
+          "sha256": "708271bf41a591fd1b498a6ded57e323f61b1ef8d970981ea37a374c3f5271c8",
+          "size_bytes": 74
+        },
+        "S4.available": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S4.available",
+          "sha256": "ca8af16cb93ffd3f45540c69d1293c4c8c14a15bfb6fe3df3ee15b649ac0753b",
+          "size_bytes": 74
+        },
+        "S5.available": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/S5.available",
+          "sha256": "7a92b4bad71d71fc4cdb01f20b4eebe09e98bc3a7b140d7ae26ac90040501f55",
+          "size_bytes": 74
+        },
+        "T1.available": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T1.available",
+          "sha256": "758e441f84344a8ff6c62417ae4c95be68d64bb0cdb7320e9eaac1d02cecb378",
+          "size_bytes": 74
+        },
+        "T2.available": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T2.available",
+          "sha256": "8a7bc8f4c9efc60f9bebe02511d8081bcfbd48c2c6675c6cf7ef5cbdcad15032",
+          "size_bytes": 74
+        },
+        "T3.available": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T3.available",
+          "sha256": "693783d090caf1d88bf8b511af1a8bb7e2499d50cebb136422fbde0621158426",
+          "size_bytes": 74
+        },
+        "T4.available": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T4.available",
+          "sha256": "36f18a57c12eb9f3432bd5c880ba58d058db51fa6052ed8a19d69e944c374774",
+          "size_bytes": 74
+        },
+        "T5.available": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/T5.available",
+          "sha256": "6507a188c42204a6503d3db8e14a9dd99a8613cc4a4fd3aa8dd04d13935592e2",
+          "size_bytes": 74
+        },
+        "build.consumed-before-exec": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/build.consumed-before-exec",
+          "sha256": "bbac14eee57fa62c991b25f4a1e6431e5ed4e4bc3f4d72421953e8129938296e",
+          "size_bytes": 77
+        },
+        "parity.consumed-before-exec": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825/markers/parity.consumed-before-exec",
+          "sha256": "5aa62de54dc764afe69d649043b1248b1b7d4b7b403956469b23bfad47ae67c6",
+          "size_bytes": 78
+        }
+      },
+      "state_mode": "0700",
+      "state_path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825"
+    },
+    "remote_manifest_entries": 52,
+    "state_manifest_entries": 11,
+    "verdict": "PASS",
+    "writable_objects": 0
+  },
+  "runtime_after": {
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+    "lay_processes": [],
+    "lay_version_stderr": "",
+    "lay_version_stdout": "lay 1.0.43"
+  },
+  "runtime_authority_changed": false,
+  "runtime_before": {
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+    "lay_processes": [],
+    "lay_version_stderr": "",
+    "lay_version_stdout": "lay 1.0.43"
+  },
+  "schema": "lay.v10.c1-dirty-direct-local-index.v1",
+  "task_id": "slice8b-v10-c1-dirty-direct-latency-v1-20260825"
+}

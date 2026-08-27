@@ -1,0 +1,18 @@
+{
+  "all_passed": true,
+  "cases": [
+    {
+      "expected": "проверка",
+      "got": "проверка",
+      "name": "ime_raw_ghjdthrf_alt_enter",
+      "ok": true
+    },
+    {
+      "expected": "в коде",
+      "got": "в коде",
+      "name": "ime_known_inflection_preserved_enter",
+      "ok": true
+    }
+  ],
+  "schema": "lay.runtime-smoke-receipt.v1"
+}

@@ -8,6 +8,7 @@ fn correction_gate_metrics_are_status_only() {
     let _ = decide_input_gate(InputGateRequest {
         trigger: InputGateTrigger::Space,
         text_tail: "lfdfq ",
+        lexical_authority_frame: None,
         auto_replace: true,
         typing_assist: true,
         auto_switch_layout: true,

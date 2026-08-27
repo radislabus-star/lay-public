@@ -30,7 +30,10 @@ impl L2CandidateSource {
                 let candidates =
                     if req.nanda_candidate_route == CandidateReadoutRoute::CanonicalL2Field {
                         let observed =
-                            crate::nanda_wave::l2_field::canonical_text_readout_observed(req.text);
+                            crate::nanda_wave::l2_field::canonical_text_readout_observed_with_frame(
+                                req.text,
+                                req.lexical_authority_frame,
+                            );
                         *canonical_telemetry = observed.telemetry;
                         lattice.set_l2_field_authority(observed.readout.authority);
                         observed.readout.candidates
@@ -813,6 +816,7 @@ mod candidate_sources_tests {
     fn request<'a>(text: &'a str, pipeline: &'a [TypingAssistRuleConfig]) -> CorrectionRequest<'a> {
         CorrectionRequest {
             text,
+            lexical_authority_frame: None,
             auto_replace: true,
             typing_assist: true,
             auto_switch_layout: true,

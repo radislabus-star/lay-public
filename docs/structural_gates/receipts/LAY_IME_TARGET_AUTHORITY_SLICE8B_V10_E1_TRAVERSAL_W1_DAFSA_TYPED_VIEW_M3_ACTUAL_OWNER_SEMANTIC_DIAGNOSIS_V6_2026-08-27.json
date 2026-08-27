@@ -1,0 +1,28 @@
+{
+  "schema": "nanda.semantic-diagnosis-execution-admission-receipt.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_SEMANTIC_DIAGNOSIS_V6_2026-08-27",
+  "manifest": {
+    "mode": "0444",
+    "size_bytes": 4339,
+    "sha256": "4206ff615883dbcaa4d0c21c16a08d020a92fef85d56aeb0c93a7e57154bd445"
+  },
+  "checks": {
+    "v5_terminal_immutable": "PASS",
+    "v5_retry_forbidden": "PASS",
+    "v6_route_pass": "PASS",
+    "v6_route_repairs_zero": "PASS",
+    "diagnostic_source_exact": "PASS",
+    "owner_sources_unchanged": "PASS",
+    "protected_sources_unchanged": "PASS",
+    "fixed_inputs_unchanged": "PASS",
+    "rustfmt": "PASS",
+    "git_diff_check": "PASS",
+    "diagnosis_receipt_absent": "PASS"
+  },
+  "historical_cargo_invocations": 3,
+  "new_cargo_invocations_admitted": 1,
+  "retry_under_v6_permitted": false,
+  "blockers": [],
+  "safe_to_execute": true,
+  "verdict": "READY_TO_EXECUTE_ONE_SEMANTIC_DIAGNOSIS"
+}

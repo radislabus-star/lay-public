@@ -508,27 +508,64 @@ impl LayIbusEngine {
             })?;
         let context_prefix = context_prefix.to_string();
         let observed_token = observed_token.to_string();
-        Some(InputFrameIdentity::new_authoritative(
+        let source_scalar_count = u32::try_from(observed_token.chars().count()).ok()?;
+        let identity = InputFrameIdentity::new_authoritative(
             self.path.clone(),
             self.focus_receipt.clone(),
             self.tail_epoch,
             committed_tail,
-            context_prefix,
-            observed_token,
+            context_prefix.clone(),
+            observed_token.clone(),
             self.live_completion_input_is_active(),
             self.layout_is_ru,
             self.factory_engine_profile,
             self.output_capability_fingerprint(),
             &self.config,
-        ))
+        );
+        let (caret_scalar, preedit, preedit_cursor_scalar) = if self.buffer.is_empty() {
+            (source_scalar_count, String::new(), 0)
+        } else {
+            if self.buffer.as_bytes() != observed_token.as_bytes() {
+                return Some(identity);
+            }
+            let cursor =
+                u32::try_from(self.composition_cursor.min(self.buffer.chars().count())).ok()?;
+            (cursor, self.buffer.clone(), cursor)
+        };
+        let coordinates = lay::lexical_authority_frame::LexicalAuthorityCoordinatesV1::new(
+            self.runtime_owner_lease_identity,
+            [self.runtime_owner_lease_identity, self.tail_epoch.max(1)],
+            self.focus_serial,
+            observed_token.clone(),
+            context_prefix.clone(),
+            caret_scalar,
+            (caret_scalar, caret_scalar),
+            preedit,
+            preedit_cursor_scalar,
+            self.layout_generation,
+            identity.config.identity_fingerprint(),
+        );
+        Some(identity.with_lexical_coordinates(coordinates))
     }
 
     pub(super) fn input_frame_authority_matches(&self, expected: &InputFrameIdentity) -> bool {
         self.path == expected.path
             && self.focus_receipt == expected.focus_receipt
+            && self.focus_serial == expected.lexical_coordinates.as_ref().map_or(
+                self.focus_serial,
+                lay::lexical_authority_frame::LexicalAuthorityCoordinatesV1::focus_serial,
+            )
+            && self.runtime_owner_lease_identity
+                == expected.lexical_coordinates.as_ref().map_or(
+                    self.runtime_owner_lease_identity,
+                    lay::lexical_authority_frame::LexicalAuthorityCoordinatesV1::runtime_owner_lease_identity,
+                )
             && self.tail_epoch == expected.tail_epoch
             && self.tail_buffer == expected.committed_tail
             && self.layout_is_ru == expected.active_layout_is_ru
+            && expected.lexical_coordinates.as_ref().is_none_or(|coordinates| {
+                coordinates.layout_generation() == self.layout_generation
+            })
             && self.factory_engine_profile == expected.factory_engine_profile
             && self.output_capability_fingerprint() == expected.output_capability_fingerprint
             && expected.config_matches(&self.config)

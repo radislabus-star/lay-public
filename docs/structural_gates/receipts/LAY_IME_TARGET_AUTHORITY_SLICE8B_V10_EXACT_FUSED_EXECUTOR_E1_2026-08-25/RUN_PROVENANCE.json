@@ -1,0 +1,31 @@
+{
+  "adaptive_rerun": false,
+  "clean_c1_marker_consumed": false,
+  "controller_sha256": "2c5a6cd6bb5ed25c39d8369b5406c0df09455a16fd9e3dc7e76b8731a9f2b3f8",
+  "foreign_process_control": false,
+  "fragment_sha256": "1726a22ad7bf4d9212761a9ffd61660ee46f94e3148af6d61b864d554b1d410d",
+  "full_b_executed": false,
+  "host_tuning": false,
+  "installed_lay_changed": false,
+  "markers_consumed": [
+    "S1.consumed-before-exec",
+    "S2.consumed-before-exec",
+    "S3.consumed-before-exec",
+    "S4.consumed-before-exec",
+    "S5.consumed-before-exec",
+    "T1.consumed-before-exec",
+    "T2.consumed-before-exec",
+    "T3.consumed-before-exec",
+    "T4.consumed-before-exec",
+    "T5.consumed-before-exec",
+    "build.consumed-before-exec",
+    "e0.consumed-before-exec",
+    "e1.consumed-before-exec",
+    "parity.consumed-before-exec"
+  ],
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.exact-fused-executor-e1-run-provenance.v1",
+  "task_id": "slice8b-v10-exact-fused-executor-e1-20260825",
+  "third_loaded_e0_v10_run": false,
+  "v12_admitted": false
+}

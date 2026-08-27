@@ -1,0 +1,172 @@
+{
+  "auditor": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_AUDIT_V1_2026-08-26.stage-2922820-1787692218289651331/auditor.py",
+    "sha256": "b0fe23eb6ad13128bdbc10060db6632ed820221ac86eefa70b32f6073c2390d9",
+    "size_bytes": 32462
+  },
+  "bucket_map_created": false,
+  "bucket_map_marker_available": true,
+  "build_marker_consumed": true,
+  "build_receipt_sha256": "a49a05bdf95ddbcc5cad78ef2376e861498a4311828d06abec83404f66b50953",
+  "build_state_before_after": "D2_BUILD_CREATED_UNAUDITED",
+  "cargo_build_invocations": 0,
+  "cargo_version_queries": 3,
+  "d1_comparison": {
+    "causal_explanation": "NOT_ESTABLISHED",
+    "d1_build_id": "9bdc0fb00420fd6358341d1a198927859cff89b8",
+    "d1_elf": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-remaining-cost-d1-20260825/build-v1/diagnostic-test-elf",
+      "sha256": "550f0d80ee49b114ac621b2f5099323480fd45847956a6807393511a8027d8fd",
+      "size_bytes": 20681800
+    },
+    "d1_text": {
+      "address": 4172288,
+      "offset": 4168192,
+      "sha256": "7336c3897a87172bf5175574d329196b84d43d499bc1f9e9274ecbd40889993b",
+      "size_bytes": 15938743
+    },
+    "d2_text": {
+      "address": 4158144,
+      "end_address_exclusive": 20139063,
+      "offset": 4154048,
+      "sha256": "f57eba60bc4b1cadbeb2dfc524af59a7ab011a2e64afb0e1a0fe610755129d94",
+      "size_bytes": 15980919
+    },
+    "difference_is_not_an_automatic_build_rejection": true,
+    "physical_admissibility_owner": "future U/V perturbation gates",
+    "text_byte_identical": false,
+    "text_size_delta_bytes": 42176,
+    "text_size_delta_percent": 0.26461308774474873
+  },
+  "d1_decision_sha256": "80530f9f5787f846ce2cf222c1b60e3ae42887ce95a11ac153ec7271cce98baf",
+  "d2": {
+    "build_id": "eb951f1a7526a9f1cb365040c10989aa5d3fc50f",
+    "dwarf_sections_present": [
+      ".debug_abbrev",
+      ".debug_info",
+      ".debug_line",
+      ".debug_loc",
+      ".debug_ranges"
+    ],
+    "elf": {
+      "mode": "0555",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf",
+      "sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178",
+      "size_bytes": 317706232
+    },
+    "elf_type": "ET_DYN",
+    "executable_pt_load": {
+      "align": 4096,
+      "filesz": 15981232,
+      "flags": "RE",
+      "memsz": 15981232,
+      "offset": 4154048,
+      "paddr": 4158144,
+      "vaddr": 4158144
+    },
+    "executable_pt_load_end_exclusive": 20139376,
+    "hot_symbol": {
+      "end_exclusive": 7836590,
+      "inline_frames_resolved": true,
+      "name": "lay::nanda_wave::l2_field::v13_typed_peak::tests::d1_enumerate_lane_prepared::<false>",
+      "size_bytes": 4238,
+      "source_anchor": "src/nanda_wave/l2_field/v13_typed_peak.rs:3105",
+      "source_line_resolved": true,
+      "start": 7832352
+    },
+    "pie": true,
+    "pt_load": [
+      {
+        "align": 4096,
+        "filesz": 4154040,
+        "flags": "R",
+        "memsz": 4154040,
+        "offset": 0,
+        "paddr": 0,
+        "vaddr": 0
+      },
+      {
+        "align": 4096,
+        "filesz": 15981232,
+        "flags": "RE",
+        "memsz": 15981232,
+        "offset": 4154048,
+        "paddr": 4158144,
+        "vaddr": 4158144
+      },
+      {
+        "align": 4096,
+        "filesz": 565064,
+        "flags": "RW",
+        "memsz": 565904,
+        "offset": 20135280,
+        "paddr": 20143472,
+        "vaddr": 20143472
+      },
+      {
+        "align": 4096,
+        "filesz": 6800,
+        "flags": "RW",
+        "memsz": 7204,
+        "offset": 20700344,
+        "paddr": 20712632,
+        "vaddr": 20712632
+      }
+    ],
+    "remaining_executable_slack_bytes": 313,
+    "strtab_present": true,
+    "symtab_present": true,
+    "text": {
+      "address": 4158144,
+      "end_address_exclusive": 20139063,
+      "offset": 4154048,
+      "sha256": "f57eba60bc4b1cadbeb2dfc524af59a7ab011a2e64afb0e1a0fe610755129d94",
+      "size_bytes": 15980919
+    },
+    "text_inside_executable_pt_load": true
+  },
+  "elf_executed": false,
+  "live_remote_projection_stable": true,
+  "local_build_receipt_sha256": "5bed316600b1e04b7973d78697f5133f22fc3264f7027ddeafba4ad3360df240",
+  "marker_mutations": 0,
+  "next_action_admitted": "separate bucket-map controller may verify this receipt and consume bucket-map.available",
+  "other_available_markers": 9,
+  "other_consumed_markers": 0,
+  "parity_executed": false,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_writes": 0,
+  "runtime_authority_changed": false,
+  "rustc_compilations": 0,
+  "rustc_version_queries": 3,
+  "schema": "lay.v10.e1-traversal-d2-primary-only-build-audit.v1",
+  "source_provenance": {
+    "assembled_source": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/assembled_d2_source.rs",
+      "sha256": "6cd9edece91ac2e0c0e6dda7658e104dcf8953f1c16b1acff6108ea44ada0181",
+      "size_bytes": 204722
+    },
+    "build_environment_exact": true,
+    "cargo_argv_exact": true,
+    "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+    "production_prefix_size_bytes": 39047,
+    "toolchain_exact": true,
+    "workspace_source": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/source/src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "sha256": "6cd9edece91ac2e0c0e6dda7658e104dcf8953f1c16b1acff6108ea44ada0181",
+      "size_bytes": 204722
+    }
+  },
+  "stop_before_bucket_map": true,
+  "t_routes_executed": 0,
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+  "u_routes_executed": 0,
+  "v_routes_executed": 0,
+  "verdict": "D2_BUILD_AUDITED"
+}

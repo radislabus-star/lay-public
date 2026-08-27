@@ -1,0 +1,74 @@
+{
+  "schema": "lay.v10.c1-implementation-remote-audit.v3",
+  "task_id": "slice8b-v10-c1-direct-latency-v1-20260825",
+  "observed_at": "2026-08-25T00:07:40Z",
+  "remote": "e@192.168.3.94",
+  "hostname": "e-MEGA-MINI-M1-13th",
+  "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+  "current_state": {
+    "final_exists": false,
+    "work_exists": true,
+    "state_exists": true,
+    "build_marker": "consumed-before-exec",
+    "parity_marker": "consumed-before-exec",
+    "latency_markers": {
+      "S1": "available",
+      "T1": "available",
+      "T2": "available",
+      "S2": "available",
+      "S3": "available",
+      "T3": "available",
+      "T4": "available",
+      "S4": "available",
+      "S5": "available",
+      "T5": "available"
+    }
+  },
+  "sealed_build": {
+    "elf_mode": "0555",
+    "elf_size_bytes": 20531304,
+    "elf_sha256": "ead184029a2923cfd24c5d02e91e91f9d69fb01c7daa0fb21ba69f267234c93c",
+    "build_id": "665458be5064a689951c6f074276ab0bb4d2beb4",
+    "provenance_mode": "0444",
+    "provenance_size_bytes": 2116,
+    "provenance_sha256": "256f5baedb06fe2e93d7226be08e02ea7024c4b1a3ac215173903477dffcc6ab"
+  },
+  "sealed_parity": {
+    "manifest_verified": true,
+    "manifest_mode": "0444",
+    "manifest_size_bytes": 336,
+    "manifest_sha256": "7ce656e28738abf84164be7dd14f2fafd5391f297450ba34e640c60641d346fd",
+    "wrapper_mode": "0444",
+    "wrapper_size_bytes": 423,
+    "wrapper_sha256": "299a32f697dc8437dae83d45ec5d6aae92029a8c1beb8515d169641aeeb9ea9c",
+    "subject_relative_path": "parity-v1/subject/SUBJECT_RECEIPT.json",
+    "subject_mode": "0444",
+    "subject_size_bytes": 563,
+    "subject_sha256": "b54897c20b8ac41e14ba96ae891fe609c1e9d45fcafe2ad2ecad8b8fcdb22c4d",
+    "verdict": "PASS",
+    "records": 382,
+    "terminal_mismatches": 0,
+    "peak_mismatches": 0,
+    "completeness_mismatches": 0,
+    "work_mismatches": 0,
+    "false_certificates": 0,
+    "runtime_authority_changed": false
+  },
+  "ready_attempt_v1": {
+    "verdict": "STOPPED_BEFORE_ENVIRONMENT_ADMISSION",
+    "reason": "remote_status_value looked for parity-v1/SUBJECT_RECEIPT.json while the sealed producer publishes parity-v1/subject/SUBJECT_RECEIPT.json",
+    "clean_admission_executed": false,
+    "latency_subject_executed": false,
+    "latency_marker_consumed": false,
+    "perf_invoked": false,
+    "pmu_event_opened": false,
+    "remote_writes": false
+  },
+  "permitted_repair_candidate": {
+    "controller_change": "read parity receipt from parity-v1/subject/SUBJECT_RECEIPT.json",
+    "rebuild": false,
+    "parity_rerun": false,
+    "latency_rerun_or_replacement": false
+  },
+  "claim": "READ_ONLY_STATUS_READER_PATH_CORRECTION"
+}

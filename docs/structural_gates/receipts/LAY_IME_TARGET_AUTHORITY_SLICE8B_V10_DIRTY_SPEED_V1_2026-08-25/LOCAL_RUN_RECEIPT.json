@@ -1,0 +1,26 @@
+{
+  "controller_sha256": "f0aa4b55a803ef204d1d898cec70eb282757009a71ef5d9310417b2ac17a45e8",
+  "formal_b_pass": false,
+  "installed_lay_changed": false,
+  "local_runtime_after": {
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+    "lay_processes": [],
+    "lay_version_stderr": "",
+    "lay_version_stdout": "lay 1.0.43"
+  },
+  "local_runtime_before": {
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+    "lay_processes": [],
+    "lay_version_stderr": "",
+    "lay_version_stdout": "lay 1.0.43"
+  },
+  "preflight_manifest_sha256": "7af194e7ce8b3c790095178d332b2ec80aa38983eb3dc86d90f4332959aca58d",
+  "recorded_at": "2026-08-24T21:53:05.352477+00:00",
+  "remote_receipt_path": "/home/e/.local/share/lay/provenance/slice8b-v10-dirty-speed-v1-20260825/DIRTY_SPEED_RECEIPT.json",
+  "remote_receipt_sha256": "9255310624b55d370db55800f88eb6a04172d555235aecc6587d0ac15826af48",
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.dirty-speed-local-index.v1",
+  "ssh_stderr": "",
+  "ssh_stdout": "{\"error\": null, \"remote_receipt\": \"/home/e/.local/share/lay/provenance/slice8b-v10-dirty-speed-v1-20260825/DIRTY_SPEED_RECEIPT.json\", \"verdict\": \"DIRTY_DIAGNOSTIC_OBSERVED\"}\n",
+  "task_id": "slice8b-v10-dirty-speed-v1-20260825"
+}

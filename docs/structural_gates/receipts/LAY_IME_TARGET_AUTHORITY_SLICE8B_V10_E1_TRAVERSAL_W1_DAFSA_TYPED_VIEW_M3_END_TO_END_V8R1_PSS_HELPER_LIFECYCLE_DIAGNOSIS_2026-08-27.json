@@ -1,0 +1,60 @@
+{
+  "schema": "lay.m3-v8r1-pss-helper-lifecycle-diagnosis.v1",
+  "task_id": "slice8b-v10-e1-traversal-w1-dafsa-typed-view-m3-e2e-v8r1-20260827",
+  "transaction_id": "7d6455e678c244be3c31dc52c2b64d55f34d0a91338afa1219acf06ff327ffb9",
+  "verdict": "V8R1_LOADER_CURRENT_EXE_DEFECT_CONFIRMED",
+  "terminal_verdict": "BLOCKED_PROVENANCE",
+  "terminal_audit_sha256": "04d0e17158a63a49088e8c8ff9dc25df67e50ac6a97b770ea3fcf1a73d67ec91",
+  "execution_journal_sha256sums_sha256": "c6c9d648bdbc02ee8f10639099fc4add6141488600f771188e2b6f69445d91a4",
+  "build_audit_sha256": "d7d5e7110171e5c6546016ff0c9374c323804014ef8cfa7a690ad7d1d11c8340",
+  "build_audit_verdict": "M3_V8R1_BUILD_AUDIT_PASS_E2E_ADMITTED",
+  "elf": {
+    "sha256": "0af3cc6679396650245e924976d8a3bb432dfa6a1086b1c46bcfa7497307afea",
+    "size_bytes": 320613368,
+    "build_id": "c6ddac7181428a303cbc51be61dd3bb115677562",
+    "mode_in_sealed_build_evidence": "0444",
+    "source_sha256": "28f87a76fc1996989e980cab51f0443bd95e656fcae3a2ff61f581db9c3a7ee2"
+  },
+  "observed_failure": {
+    "parent_subject_executions": 1,
+    "parent_exit_code": 101,
+    "scientific_receipt_verdict": "BLOCKED_PROVENANCE",
+    "scientific_observation_complete": false,
+    "error": "PSS helper exited with exit status: 1"
+  },
+  "causal_chain": [
+    "the outer controller invoked the mode-0444 ET_DYN test ELF through ld-linux",
+    "the Rust PSS helper producer resolved std::env::current_exe()",
+    "Linux reports ld-linux as /proc/self/exe for loader-mediated execution",
+    "the producer spawned that loader path with test-harness flags but without an ELF argument",
+    "the two helper processes therefore could not execute the helper test and exited nonzero"
+  ],
+  "remote_loader_probe": {
+    "command_class": "read-only non-scientific /usr/bin/readlink probe",
+    "loader_mediated_proc_self_exe": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+    "direct_proc_self_exe": "/usr/bin/readlink",
+    "remote_writes": 0,
+    "scientific_subjects": 0
+  },
+  "scientific_interpretation": {
+    "semantic_result": "UNKNOWN",
+    "capacity_result": "UNKNOWN",
+    "reload_identity_result": "UNKNOWN",
+    "rss_result": "UNKNOWN",
+    "latency_result": "UNKNOWN",
+    "environment_result": "UNKNOWN",
+    "v8r1_retry_permitted": false
+  },
+  "salvage_boundary": {
+    "new_build_required": false,
+    "source_edit_required": false,
+    "exact_audited_elf_reusable": true,
+    "required_change": "copy exact ELF bytes to a fresh mode-0555 path and execute that path directly",
+    "fresh_namespace_required": true,
+    "fresh_e2e_marker_required": true,
+    "cargo_invocations_admitted": 0,
+    "rustc_compilations_admitted": 0
+  },
+  "runtime_authority_changed": false,
+  "production_authority_admitted": false
+}

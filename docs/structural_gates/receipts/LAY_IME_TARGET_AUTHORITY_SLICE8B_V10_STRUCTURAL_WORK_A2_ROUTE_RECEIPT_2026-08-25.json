@@ -1,0 +1,751 @@
+{
+  "verdict": "PASS",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-structural-work-a2",
+  "domain": "code",
+  "complexity_score": 36,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.1667,
+      "c2": 0.1667,
+      "c3": 0.1667,
+      "c4": 0.1667,
+      "c5": 0.1667,
+      "c6": 0.1667
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 12,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.4489,
+      "c2": 0.4348,
+      "c3": 0.4348,
+      "c4": 0.4019,
+      "c5": 0.3847,
+      "c6": 0.3878
+    },
+    "source_self_score": 0.4155,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "structural-a2-boundary": "structural-a2-boundary",
+      "structural-a2-build": "structural-a2-build",
+      "structural-a2-correction": "structural-a2-correction",
+      "structural-a2-environment": "structural-a2-environment",
+      "structural-a2-failure": "structural-a2-failure",
+      "structural-a2-observer": "structural-a2-observer"
+    },
+    "scores": {
+      "structural-a2-boundary": 1.0,
+      "structural-a2-build": 1.0,
+      "structural-a2-correction": 1.0,
+      "structural-a2-environment": 1.0,
+      "structural-a2-failure": 1.0,
+      "structural-a2-observer": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "structural-a2-boundary": 1,
+      "structural-a2-build": 1,
+      "structural-a2-correction": 1,
+      "structural-a2-environment": 1,
+      "structural-a2-failure": 1,
+      "structural-a2-observer": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.4155,
+      "norm": 79.7747,
+      "triads": 6
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "structural-a2-boundary": "structural-a2-boundary",
+      "structural-a2-build": "structural-a2-build",
+      "structural-a2-correction": "structural-a2-correction",
+      "structural-a2-environment": "structural-a2-environment",
+      "structural-a2-failure": "structural-a2-failure",
+      "structural-a2-observer": "structural-a2-observer"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "structural-a2-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "structural-a2-build": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "structural-a2-correction": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "structural-a2-environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "structural-a2-failure": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "structural-a2-observer": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "structural-a2-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "structural-a2-build": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "structural-a2-correction": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "structural-a2-environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "structural-a2-failure": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "structural-a2-observer": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "structural-a2-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "structural-a2-boundary",
+        "exact_source_groups": [
+          "structural-a2-boundary"
+        ]
+      },
+      "structural-a2-build": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "structural-a2-build",
+        "exact_source_groups": [
+          "structural-a2-build"
+        ]
+      },
+      "structural-a2-correction": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "structural-a2-correction",
+        "exact_source_groups": [
+          "structural-a2-correction"
+        ]
+      },
+      "structural-a2-environment": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "structural-a2-environment",
+        "exact_source_groups": [
+          "structural-a2-environment"
+        ]
+      },
+      "structural-a2-failure": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "structural-a2-failure",
+        "exact_source_groups": [
+          "structural-a2-failure"
+        ]
+      },
+      "structural-a2-observer": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "structural-a2-observer",
+        "exact_source_groups": [
+          "structural-a2-observer"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "structural-a2-boundary": {
+        "structural-a2-boundary": 1.0,
+        "structural-a2-build": 0.0078,
+        "structural-a2-correction": 0.0098,
+        "structural-a2-environment": -0.0508,
+        "structural-a2-failure": 0.0137,
+        "structural-a2-observer": -0.0137
+      },
+      "structural-a2-build": {
+        "structural-a2-boundary": 0.0078,
+        "structural-a2-build": 1.0,
+        "structural-a2-correction": 0.0215,
+        "structural-a2-environment": -0.0117,
+        "structural-a2-failure": 0.0918,
+        "structural-a2-observer": -0.0254
+      },
+      "structural-a2-correction": {
+        "structural-a2-boundary": 0.0098,
+        "structural-a2-build": 0.0215,
+        "structural-a2-correction": 1.0,
+        "structural-a2-environment": 0.0098,
+        "structural-a2-failure": 0.0391,
+        "structural-a2-observer": 0.0039
+      },
+      "structural-a2-environment": {
+        "structural-a2-boundary": -0.0508,
+        "structural-a2-build": -0.0117,
+        "structural-a2-correction": 0.0098,
+        "structural-a2-environment": 1.0,
+        "structural-a2-failure": -0.0254,
+        "structural-a2-observer": 0.0371
+      },
+      "structural-a2-failure": {
+        "structural-a2-boundary": 0.0137,
+        "structural-a2-build": 0.0918,
+        "structural-a2-correction": 0.0391,
+        "structural-a2-environment": -0.0254,
+        "structural-a2-failure": 1.0,
+        "structural-a2-observer": 0.0
+      },
+      "structural-a2-observer": {
+        "structural-a2-boundary": -0.0137,
+        "structural-a2-build": -0.0254,
+        "structural-a2-correction": 0.0039,
+        "structural-a2-environment": 0.0371,
+        "structural-a2-failure": 0.0,
+        "structural-a2-observer": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "structural-a2-boundary": {
+          "gravity": 1.0,
+          "owner": "structural-a2-boundary",
+          "owners": {
+            "structural-a2-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "structural-a2-build": {
+          "gravity": 1.0,
+          "owner": "a2 build owner",
+          "owners": {
+            "a2 build owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "structural-a2-correction": {
+          "gravity": 1.0,
+          "owner": "a2 source owner",
+          "owners": {
+            "a2 source owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "structural-a2-environment": {
+          "gravity": 1.0,
+          "owner": "environment owner",
+          "owners": {
+            "environment owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "structural-a2-failure": {
+          "gravity": 1.0,
+          "owner": "structural-a2-failure",
+          "owners": {
+            "structural-a2-failure": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "structural-a2-observer": {
+          "gravity": 1.0,
+          "owner": "a2 observer owner",
+          "owners": {
+            "a2 observer owner": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "boundary": {
+          "gravity": 1.0,
+          "owner": "structural-a2-boundary",
+          "owners": {
+            "structural-a2-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "build": {
+          "gravity": 1.0,
+          "owner": "a2 build owner",
+          "owners": {
+            "a2 build owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "correction": {
+          "gravity": 1.0,
+          "owner": "a2 source owner",
+          "owners": {
+            "a2 source owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "environment": {
+          "gravity": 1.0,
+          "owner": "environment owner",
+          "owners": {
+            "environment owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "failure": {
+          "gravity": 1.0,
+          "owner": "structural-a2-failure",
+          "owners": {
+            "structural-a2-failure": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "observer": {
+          "gravity": 1.0,
+          "owner": "a2 observer owner",
+          "owners": {
+            "a2 observer owner": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "unchanged claim boundary"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "structural-a2-boundary"
+          ],
+          "scopes": [
+            "boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "build": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "new a2 build marker"
+          ],
+          "layers": [
+            "ui"
+          ],
+          "outputs": [],
+          "owners": [
+            "a2 build owner"
+          ],
+          "scopes": [
+            "build"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "correction": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "a2 correction contract"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "a2 source owner"
+          ],
+          "scopes": [
+            "correction"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "environment": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "user loaded-host decision"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "environment owner"
+          ],
+          "scopes": [
+            "environment"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "failure": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "immutable cargo log and failure receipt"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "structural-a2-failure"
+          ],
+          "scopes": [
+            "failure"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "observer": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "source comparison gate"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "a2 observer owner"
+          ],
+          "scopes": [
+            "observer"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "build": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "correction": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "failure": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "observer": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "boundary": {
+          "boundary": 1.0,
+          "build": 0.0078,
+          "correction": 0.0098,
+          "environment": -0.0508,
+          "failure": 0.0137,
+          "observer": -0.0137
+        },
+        "build": {
+          "boundary": 0.0078,
+          "build": 1.0,
+          "correction": 0.0215,
+          "environment": -0.0117,
+          "failure": 0.0918,
+          "observer": -0.0254
+        },
+        "correction": {
+          "boundary": 0.0098,
+          "build": 0.0215,
+          "correction": 1.0,
+          "environment": 0.0098,
+          "failure": 0.0391,
+          "observer": 0.0039
+        },
+        "environment": {
+          "boundary": -0.0508,
+          "build": -0.0117,
+          "correction": 0.0098,
+          "environment": 1.0,
+          "failure": -0.0254,
+          "observer": 0.0371
+        },
+        "failure": {
+          "boundary": 0.0137,
+          "build": 0.0918,
+          "correction": 0.0391,
+          "environment": -0.0254,
+          "failure": 1.0,
+          "observer": 0.0
+        },
+        "observer": {
+          "boundary": -0.0137,
+          "build": -0.0254,
+          "correction": 0.0039,
+          "environment": 0.0371,
+          "failure": 0.0,
+          "observer": 1.0
+        }
+      },
+      "source": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "build": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "correction": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "failure": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "observer": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "structural-a2-boundary": 1,
+      "structural-a2-build": 1,
+      "structural-a2-correction": 1,
+      "structural-a2-environment": 1,
+      "structural-a2-failure": 1,
+      "structural-a2-observer": 1
+    },
+    "stable_groups": [
+      "structural-a2-boundary",
+      "structural-a2-build",
+      "structural-a2-correction",
+      "structural-a2-environment",
+      "structural-a2-failure",
+      "structural-a2-observer"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [],
+  "agent_decision": {
+    "action": "SAFE_TO_EDIT",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Proceed only within the checked route boundary.",
+    "repair_count": 0,
+    "repair_queue": [],
+    "safe_to_edit": true
+  },
+  "explanation": [
+    "Candidate structure is coherent with source triads.",
+    "Structural coherence only: trusted proof was not established and authority is false."
+  ],
+  "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-structural-work-a2.trace.json"
+}

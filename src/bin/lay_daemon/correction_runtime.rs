@@ -11,8 +11,8 @@ use std::time::Instant;
 
 use super::auto_undo_runtime::handle_pending_auto_undo;
 use super::{
-    active_auto_switch_layout, log, log_manual_trigger_cross_check, read_current_layout_is_ru,
-    ExecutingGuard,
+    active_auto_switch_layout, capture_ime_delegated_tail_lease, log,
+    log_manual_trigger_cross_check, read_current_layout_is_ru, ExecutingGuard,
 };
 
 #[path = "correction_runtime/force_layout.rs"]
@@ -90,10 +90,28 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
     let mixed_layouts = layout_decision.mixed_layouts;
 
     let mapped_orig = map_original_events(&events);
+    let delegated_tail_lease = if output_route == ManualCorrectionOutputRoute::DaemonUinput {
+        if !input_isolated {
+            log("⚠ delegated manual replay blocked: physical input is not isolated");
+            return None;
+        }
+        match capture_ime_delegated_tail_lease(&mapped_orig, n_backspaces) {
+            Ok(lease) => Some(lease),
+            Err(error) => {
+                log(&format!(
+                    "⚠ delegated manual replay blocked before mutation: {error}"
+                ));
+                return None;
+            }
+        }
+    } else {
+        None
+    };
     let empty_pipeline: &[TypingAssistRuleConfig] = &[];
     let input_gate = decide_input_gate(InputGateRequest {
         trigger: InputGateTrigger::DoubleShift,
         text_tail: &mapped_orig,
+        lexical_authority_frame: None,
         auto_replace: false,
         typing_assist: false,
         auto_switch_layout: active_auto_switch_layout(),
@@ -147,6 +165,7 @@ pub(super) fn handle_double_shift(req: ManualCorrectionRequest<'_, '_>) -> Optio
             input_isolated,
             text_observation,
             output_route,
+            delegated_tail_lease,
         },
         input_gate,
     )

@@ -1,0 +1,49 @@
+{
+  "schema": "lay.v10.c1-implementation-remote-audit.v1",
+  "task_id": "slice8b-v10-c1-direct-latency-v1-20260825",
+  "observed_at": "2026-08-24T23:31:49Z",
+  "remote": "e@192.168.3.94",
+  "hostname": "e-MEGA-MINI-M1-13th",
+  "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+  "c1_paths": {
+    "final": {
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-c1-direct-latency-v1-20260825",
+      "exists": false
+    },
+    "state": {
+      "path": "/home/e/.local/state/lay/slice8b-v10-c1-direct-latency-v1-20260825",
+      "exists": false
+    }
+  },
+  "clean_v2_supersession": {
+    "state_path": "/home/e/.local/state/lay/slice8b-v10-clean-speed-v2-20260825",
+    "state_mode": "0555",
+    "files": 2,
+    "writable_objects": 0,
+    "tombstone_mode": "0444",
+    "tombstone_sha256": "76c7bc00053e642fc83b089e2bcfd088d1788f99d5e38bbe7aa6ccdd55e9f35d",
+    "sha256sums_mode": "0444",
+    "sha256sums_sha256": "407ad04a066f916077a816f88ef03fc8dca1e8bbfbdb6061abb675134d2023bd",
+    "sha256sums_verified": true,
+    "clean_final_exists": false,
+    "status": "SUPERSEDED_UNRUN_BY_C1"
+  },
+  "sealed_inputs": {
+    "prior_diagnostic_elf_sha256": "f7bcee37d5dffd583577d66c982c2a28072889b8aac2ccbed22612aa6d4feb09",
+    "schedule_sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78",
+    "v13_package_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"
+  },
+  "toolchain": {
+    "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)",
+    "rustc_release": "1.97.1",
+    "rustc_commit": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+    "rustc_host": "x86_64-unknown-linux-gnu"
+  },
+  "home_available_bytes": 283757207552,
+  "remote_writes_by_audit": false,
+  "cargo_build_check_test": false,
+  "subject_executed": false,
+  "perf_invoked": false,
+  "pmu_event_opened": false,
+  "claim": "READ_ONLY_POINT_IN_TIME_IMPLEMENTATION_PREFLIGHT_INPUT"
+}

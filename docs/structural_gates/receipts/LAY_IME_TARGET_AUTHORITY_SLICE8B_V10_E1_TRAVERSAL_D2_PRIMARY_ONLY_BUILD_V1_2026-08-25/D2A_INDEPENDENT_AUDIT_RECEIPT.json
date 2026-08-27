@@ -1,0 +1,442 @@
+{
+  "auditor": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_INDEPENDENT_AUDIT_V2_2026-08-25.stage-2842119/auditor.py",
+    "sha256": "28199196ad542d77063962b128d8d82db92a9864ae951e151d0da2f70d361c68",
+    "size_bytes": 33335
+  },
+  "authoritative_d2a_receipt": {
+    "mode": "0444",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25/D2A_RECEIPT.json",
+    "sha256": "998ca180a976384acb215b9e72a8d956fd830fdf6a1c0641b59eea10cbb00e0f",
+    "size_bytes": 21910
+  },
+  "bucket_map_created": false,
+  "build_admitted": true,
+  "build_executed": false,
+  "build_marker_state": "available",
+  "cargo_invocations": 0,
+  "checks": [
+    {
+      "detail": {
+        "mode": "0755",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-primary-only.py",
+        "sha256": "9329a32b9e4e9edf5d83ddf624e8c9ce6a456494057f4ea3ef5aff6f382d6ec0",
+        "size_bytes": 64492
+      },
+      "id": "L01-controller-identity",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25/D2A_RECEIPT.json",
+        "sha256": "998ca180a976384acb215b9e72a8d956fd830fdf6a1c0641b59eea10cbb00e0f",
+        "size_bytes": 21910
+      },
+      "id": "L02-authoritative-receipt-identity",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25/LOCAL_D2A_RECEIPT.json",
+        "sha256": "e5277fdd7472325d6589bcfabc782d9b824fc1fe20beee2cb1ed4419e2b412bc",
+        "size_bytes": 1801
+      },
+      "id": "L03-local-receipt-identity",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "all_sha256_match": true,
+        "entries": 40,
+        "manifest": {
+          "mode": "0444",
+          "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25/SHA256SUMS",
+          "sha256": "0376930d31a9865b49e39966c4d5c050a1a738b70b27e01bb9db6f0239ebfe86",
+          "size_bytes": 4841
+        },
+        "membership_exact": true
+      },
+      "id": "L04-local-sha256sums",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "writable_paths": []
+      },
+      "id": "L05-local-evidence-immutable",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "all_sha256_match": true,
+        "entries": 37,
+        "manifest": {
+          "mode": "0444",
+          "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25/REMOTE_EVIDENCE/SHA256SUMS",
+          "sha256": "8d9581f8b4bce2b8cd99683c3b718ef3ea338bf97ab01f3ab14186bda09319c7",
+          "size_bytes": 3984
+        },
+        "membership_exact": true
+      },
+      "id": "L06-copied-remote-sha256sums",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "sha256": "998ca180a976384acb215b9e72a8d956fd830fdf6a1c0641b59eea10cbb00e0f"
+      },
+      "id": "L07-receipt-copy-byte-parity",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "controller_state": "PRIMARY_ONLY_CONTROLLER_VERIFIED_UNRUN",
+        "verdict": "D2A_CLOSED_ALL_MARKERS_AVAILABLE"
+      },
+      "id": "L08-verdict-and-controller-state",
+      "verdict": "PASS"
+    },
+    {
+      "detail": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+      "id": "L09-transaction-identity",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "consumed": 0,
+        "created": 11,
+        "expected": 11
+      },
+      "id": "L10-marker-ledger",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "bucket-map.available": "BUCKET-MAP",
+        "build.available": "BUILD",
+        "parity.available": "PARITY",
+        "t-fixed.available": "T-FIXED",
+        "t-reversed.available": "T-REVERSED",
+        "t-single.available": "T-SINGLE",
+        "u-fixed.available": "U-FIXED",
+        "u-reversed.available": "U-REVERSED",
+        "u-single.available": "U-SINGLE",
+        "v-fixed-instr.available": "V-FIXED-INSTR",
+        "v-reversed-instr.available": "V-REVERSED-INSTR"
+      },
+      "id": "L11-marker-name-route-set",
+      "verdict": "PASS"
+    },
+    {
+      "detail": [
+        "0400"
+      ],
+      "id": "L12-marker-receipt-modes",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25/REMOTE_EVIDENCE/inputs/assembled_d2_source.rs",
+        "sha256": "6cd9edece91ac2e0c0e6dda7658e104dcf8953f1c16b1acff6108ea44ada0181",
+        "size_bytes": 204722
+      },
+      "id": "L13-assembled-source",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+        "size_bytes": 39047
+      },
+      "id": "L14-production-prefix",
+      "verdict": "PASS"
+    },
+    {
+      "detail": false,
+      "id": "L15-source-not-compiled",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "cargo_invocations": 0,
+        "d2_subject": 0,
+        "perf_record": 0,
+        "perf_stat": 0,
+        "pmu_events_opened": 0,
+        "rustc_compilations": 0,
+        "t_routes_executed": 0,
+        "u_routes_executed": 0,
+        "v_routes_executed": 0
+      },
+      "id": "L16-zero-execution-counters",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "bucket_map_created": false,
+        "d2_elf_created": false,
+        "foreign_process_control": false,
+        "host_tuning": false,
+        "installed_lay_changed": false,
+        "parity_executed": false,
+        "runtime_authority_changed": false
+      },
+      "id": "L17-zero-execution-booleans",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "bucket_map_created": false,
+        "cargo_invocations": 0,
+        "d2_subject": 0,
+        "markers_consumed": 0,
+        "perf_record": 0,
+        "perf_stat": 0,
+        "pmu_events_opened": 0,
+        "runtime_authority_changed": false,
+        "rustc_compilations": 0
+      },
+      "id": "L18-zero-ledger-parity",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "runtime_after": {
+          "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+          "ibus_daemon_pid": [
+            2076194
+          ],
+          "lay_daemon_pid": [
+            3410795
+          ],
+          "lay_ibus_engine_pid": [
+            3410820
+          ],
+          "lay_version": "lay 1.0.43"
+        },
+        "runtime_before": {
+          "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+          "ibus_daemon_pid": [
+            2076194
+          ],
+          "lay_daemon_pid": [
+            3410795
+          ],
+          "lay_ibus_engine_pid": [
+            3410820
+          ],
+          "lay_version": "lay 1.0.43"
+        },
+        "runtime_stable": true
+      },
+      "id": "L19-runtime-stability",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25/REMOTE_EVIDENCE/inputs/controller.py",
+        "sha256": "9329a32b9e4e9edf5d83ddf624e8c9ce6a456494057f4ea3ef5aff6f382d6ec0",
+        "size_bytes": 64492
+      },
+      "id": "L20-sealed-controller-copy",
+      "verdict": "PASS"
+    },
+    {
+      "detail": "independent D2-A audit only; build remains unexecuted",
+      "id": "L21-next-action-boundary",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "hostname": "e-MEGA-MINI-M1-13th",
+        "machine": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441"
+      },
+      "id": "R01-host-identity",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "d2a": true,
+        "failure": false,
+        "parent_entries": [
+          "d2a-v1"
+        ],
+        "state": true
+      },
+      "id": "R02-tree-projection",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "all_sha256_match": true,
+        "entries": 37,
+        "manifest": {
+          "mode": "0444",
+          "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/d2a-v1/SHA256SUMS",
+          "sha256": "8d9581f8b4bce2b8cd99683c3b718ef3ea338bf97ab01f3ab14186bda09319c7",
+          "size_bytes": 3984
+        },
+        "membership_exact": true
+      },
+      "id": "R03-live-remote-sha256sums",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/d2a-v1/D2A_RECEIPT.json",
+        "sha256": "998ca180a976384acb215b9e72a8d956fd830fdf6a1c0641b59eea10cbb00e0f",
+        "size_bytes": 21910
+      },
+      "id": "R04-live-receipt-identity",
+      "verdict": "PASS"
+    },
+    {
+      "detail": [],
+      "id": "R05-live-evidence-immutable",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "entries": [
+          "STATE.json",
+          "markers",
+          "route.lock"
+        ],
+        "state": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/STATE.json",
+          "sha256": "fb7de0be1dbb7a99c2ddcb2bd1dbc7f469d4fc975b6a564546fd6994c196075a",
+          "size_bytes": 3707
+        }
+      },
+      "id": "R06-state-identity",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "markers_consumed": 0,
+        "markers_created": 11,
+        "markers_expected": 11,
+        "retry_permitted": false,
+        "state": "D2A_CLOSED_ALL_MARKERS_AVAILABLE",
+        "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+        "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7"
+      },
+      "id": "R07-state-ledger",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "identity": {
+          "mode": "0400",
+          "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/route.lock",
+          "sha256": "ddfafcaec3c8068ea0b853cb8a34cf0b40408fbbdc137a6dae3932b5396c3c5d",
+          "size_bytes": 249
+        },
+        "value": {
+          "schema": "lay.v10.e1-traversal-d2-primary-only-route-lock.v1",
+          "state": "unlocked",
+          "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+          "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7"
+        }
+      },
+      "id": "R08-route-lock",
+      "verdict": "PASS"
+    },
+    {
+      "detail": [
+        "bucket-map.available",
+        "build.available",
+        "parity.available",
+        "t-fixed.available",
+        "t-reversed.available",
+        "t-single.available",
+        "u-fixed.available",
+        "u-reversed.available",
+        "u-single.available",
+        "v-fixed-instr.available",
+        "v-reversed-instr.available"
+      ],
+      "id": "R09-live-marker-name-set",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "all_exact": true,
+        "markers_checked": 11
+      },
+      "id": "R10-live-marker-identities-and-values",
+      "verdict": "PASS"
+    },
+    {
+      "detail": [],
+      "id": "R11-no-consumed-marker",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "bucket_map_created": false,
+        "cargo_invocations": 0,
+        "d2_subject": 0,
+        "markers_consumed": 0,
+        "perf_record": 0,
+        "perf_stat": 0,
+        "pmu_events_opened": 0,
+        "runtime_authority_changed": false,
+        "rustc_compilations": 0
+      },
+      "id": "R12-live-zero-execution-ledger",
+      "verdict": "PASS"
+    },
+    {
+      "detail": [],
+      "id": "R13-no-d2-elf-under-task-parent",
+      "verdict": "PASS"
+    },
+    {
+      "detail": {
+        "after_sha256": "0a4766cc6b5c50eca91b7235c4156982d6e1289ffee2179588a74798cea63cf9",
+        "before_sha256": "0a4766cc6b5c50eca91b7235c4156982d6e1289ffee2179588a74798cea63cf9"
+      },
+      "id": "R14-live-projection-stable",
+      "verdict": "PASS"
+    }
+  ],
+  "checks_passed": 35,
+  "d2_elf_created": false,
+  "d2_subject": 0,
+  "error": null,
+  "live_projection_repeated": true,
+  "live_projection_stable": true,
+  "marker_mutations": 0,
+  "markers_consumed": 0,
+  "markers_created": 11,
+  "markers_expected": 11,
+  "next_action_admitted": "separate post-D2A controller may verify and consume build.available before one Cargo build",
+  "parity_executed": false,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "producer_controller": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-primary-only.py",
+    "sha256": "9329a32b9e4e9edf5d83ddf624e8c9ce6a456494057f4ea3ef5aff6f382d6ec0",
+    "size_bytes": 64492
+  },
+  "remote_writes": 0,
+  "runtime_authority_changed": false,
+  "rustc_compilations": 0,
+  "schema": "lay.v10.e1-traversal-d2a-independent-audit.v2",
+  "stop_before_build": true,
+  "t_routes_executed": 0,
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "u_routes_executed": 0,
+  "v_routes_executed": 0,
+  "verdict": "D2A_AUDIT_PASS_BUILD_ADMISSION"
+}

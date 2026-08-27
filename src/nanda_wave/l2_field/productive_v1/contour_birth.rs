@@ -10,7 +10,7 @@ use sha2::{Digest, Sha256};
 use crate::nanda_wave::lexical_grokking::ExactL11SurfaceIndexV1;
 use crate::typing_transition::target_evidence::{
     stable_bytes_ref, EnumerationWorkCountersV1, GroundingNamespaceV1, IncompletenessReasonV1,
-    TargetRelationV1,
+    TargetRelationV1, VerdictMembershipV1,
 };
 
 use super::super::runtime::StandaloneL2Field;
@@ -47,6 +47,8 @@ pub(super) struct TypedContourBirthV1 {
     pub(super) relation: TargetRelationV1,
     pub(super) operator_ref: u32,
     pub(super) derivation_ref: u32,
+    pub(super) verdict_membership: VerdictMembershipV1,
+    pub(super) support_milli: u16,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -248,6 +250,8 @@ impl EnumerationStateV1 {
                 relation,
                 operator_ref,
                 derivation_ref,
+                verdict_membership: VerdictMembershipV1::Born,
+                support_milli: 0,
             };
             self.births
                 .entry((
@@ -273,6 +277,8 @@ impl EnumerationStateV1 {
             hasher.update([birth.relation as u8]);
             hasher.update(birth.operator_ref.to_le_bytes());
             hasher.update(birth.derivation_ref.to_le_bytes());
+            hasher.update([birth.verdict_membership as u8]);
+            hasher.update(birth.support_milli.to_le_bytes());
         }
         TypedContourBirthEnumerationV1 {
             births,
@@ -539,9 +545,13 @@ fn digest128(bytes: [u8; 32]) -> [u64; 2] {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::BTreeSet;
+    use std::collections::{BTreeMap, BTreeSet};
+    use std::path::Path;
+    use std::time::Instant;
 
     use super::*;
+    use serde::{Deserialize, Serialize};
+    use sha2::{Digest, Sha256};
 
     #[derive(Default)]
     struct FakeLexicon {
@@ -626,5 +636,300 @@ mod tests {
             Some(IncompletenessReasonV1::WorkBudgetExceeded)
         );
         assert!(!result.work_within_budget());
+    }
+
+    #[derive(Deserialize)]
+    struct V7AuditReceipt {
+        packages: V7AuditPackages,
+        live_cohort_compare_shadow: V7LiveCohort,
+    }
+
+    #[derive(Deserialize)]
+    struct V7AuditPackages {
+        canonical_l2: String,
+    }
+
+    #[derive(Deserialize)]
+    struct V7LiveCohort {
+        schema: String,
+        no_field_cases: usize,
+        no_field_records: Vec<V7NoFieldRecord>,
+    }
+
+    #[derive(Deserialize)]
+    struct V7NoFieldRecord {
+        availability: String,
+        class: String,
+        damaged_surface: String,
+        proof_identity: [u8; 32],
+        target_surface: String,
+    }
+
+    struct TargetBlindDiscovery {
+        births: TypedContourBirthEnumerationV1,
+        born_lemmas: BTreeSet<u32>,
+        enumeration_us: u64,
+        discovery_us: u64,
+    }
+
+    fn target_blind_discovery(
+        damaged_surface: &str,
+        canonical: &StandaloneL2Field,
+    ) -> TargetBlindDiscovery {
+        let discovery_started = Instant::now();
+        let enumeration_started = Instant::now();
+        let births = enumerate_typed_contour_births(damaged_surface, canonical);
+        let enumeration_us = elapsed_us(enumeration_started);
+        let born_lemmas = births
+            .births
+            .iter()
+            .filter(|birth| birth.grounding_namespace == GroundingNamespaceV1::CanonicalForm)
+            .flat_map(|birth| {
+                canonical
+                    .imported_binding_identities_for_form(birth.grounding_ref)
+                    .into_iter()
+                    .map(|(lemma_id, _)| lemma_id)
+            })
+            .collect::<BTreeSet<_>>();
+        let discovery_us = elapsed_us(discovery_started);
+        TargetBlindDiscovery {
+            births,
+            born_lemmas,
+            enumeration_us,
+            discovery_us,
+        }
+    }
+
+    fn elapsed_us(started: Instant) -> u64 {
+        started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64
+    }
+
+    #[derive(Default, Serialize)]
+    struct DiscoveryBucket {
+        records: usize,
+        exact_target: usize,
+        same_lemma_proxy_only: usize,
+        no_same_lemma: usize,
+        target_form_missing: usize,
+        target_lemma_missing: usize,
+        overflow: usize,
+        births_total: u64,
+        births_maximum: usize,
+        grounding_lookups_total: u64,
+        grounding_lookups_maximum: u64,
+        operator_steps_total: u64,
+        operator_steps_maximum: u64,
+    }
+
+    impl DiscoveryBucket {
+        fn record(
+            &mut self,
+            discovery: &TargetBlindDiscovery,
+            exact_target: bool,
+            same_lemma: bool,
+            target_form_missing: bool,
+            target_lemma_missing: bool,
+        ) {
+            self.records += 1;
+            if exact_target {
+                self.exact_target += 1;
+            } else if same_lemma {
+                self.same_lemma_proxy_only += 1;
+            } else {
+                self.no_same_lemma += 1;
+            }
+            self.target_form_missing += usize::from(target_form_missing);
+            self.target_lemma_missing += usize::from(target_lemma_missing);
+            self.overflow += usize::from(discovery.births.overflow_reason.is_some());
+            self.births_total = self
+                .births_total
+                .saturating_add(discovery.births.births.len() as u64);
+            self.births_maximum = self.births_maximum.max(discovery.births.births.len());
+            self.grounding_lookups_total = self
+                .grounding_lookups_total
+                .saturating_add(discovery.births.work.grounding_lookups);
+            self.grounding_lookups_maximum = self
+                .grounding_lookups_maximum
+                .max(discovery.births.work.grounding_lookups);
+            self.operator_steps_total = self
+                .operator_steps_total
+                .saturating_add(discovery.births.work.operator_steps);
+            self.operator_steps_maximum = self
+                .operator_steps_maximum
+                .max(discovery.births.work.operator_steps);
+        }
+
+        fn partition_conserved(&self) -> bool {
+            self.exact_target
+                .saturating_add(self.same_lemma_proxy_only)
+                .saturating_add(self.no_same_lemma)
+                == self.records
+        }
+    }
+
+    fn percentile(values: &mut [u64], percent: usize) -> u64 {
+        if values.is_empty() {
+            return 0;
+        }
+        values.sort_unstable();
+        let nearest_rank = values
+            .len()
+            .saturating_mul(percent)
+            .saturating_add(99)
+            .checked_div(100)
+            .unwrap_or(1)
+            .clamp(1, values.len());
+        values[nearest_rank - 1]
+    }
+
+    #[test]
+    #[ignore = "proof-only audit over the saved Slice 8B V7 NoField denominator"]
+    fn slice8b_v8_target_blind_contour_lemma_audit() {
+        let receipt_path = std::env::var("LAY_SLICE8B_V7_RECEIPT")
+            .expect("LAY_SLICE8B_V7_RECEIPT must name the saved V7 receipt");
+        let receipt_bytes = std::fs::read(&receipt_path).expect("read V7 receipt");
+        let receipt_sha256 = Sha256::digest(&receipt_bytes)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        let receipt: V7AuditReceipt =
+            serde_json::from_slice(&receipt_bytes).expect("decode V7 receipt");
+        assert_eq!(
+            receipt.live_cohort_compare_shadow.schema,
+            "lay.live-cohort-compare-shadow.v3"
+        );
+        assert_eq!(
+            receipt.live_cohort_compare_shadow.no_field_records.len(),
+            receipt.live_cohort_compare_shadow.no_field_cases
+        );
+
+        let canonical_path =
+            std::env::var("LAY_SLICE8B_V13_PACKAGE").unwrap_or(receipt.packages.canonical_l2);
+        let canonical = StandaloneL2Field::load(Path::new(&canonical_path))
+            .expect("load canonical V13 package");
+        let mut attempts = BTreeSet::new();
+        let mut global = DiscoveryBucket::default();
+        let mut by_availability = BTreeMap::<String, DiscoveryBucket>::new();
+        let mut by_damage_class = BTreeMap::<String, DiscoveryBucket>::new();
+        let mut enumeration_latency_us = Vec::new();
+        let mut discovery_latency_us = Vec::new();
+
+        for record in receipt.live_cohort_compare_shadow.no_field_records {
+            assert!(attempts.insert((record.class.clone(), record.proof_identity)));
+
+            // Target bytes are intentionally unavailable to this function.
+            let discovery = target_blind_discovery(&record.damaged_surface, &canonical);
+            enumeration_latency_us.push(discovery.enumeration_us);
+            discovery_latency_us.push(discovery.discovery_us);
+
+            // Labels enter only after the complete birth set and work record exist.
+            let target_form_ref = canonical.form_ref_for_surface(&record.target_surface);
+            let target_lemmas = target_form_ref
+                .map(|form_ref| {
+                    canonical
+                        .imported_binding_identities_for_form(form_ref)
+                        .into_iter()
+                        .map(|(lemma_id, _)| lemma_id)
+                        .collect::<BTreeSet<_>>()
+                })
+                .unwrap_or_default();
+            let exact_target = discovery
+                .births
+                .births
+                .iter()
+                .any(|birth| birth.normalized_surface == record.target_surface);
+            let same_lemma = !target_lemmas.is_disjoint(&discovery.born_lemmas);
+            let target_form_missing = target_form_ref.is_none();
+            let target_lemma_missing = target_lemmas.is_empty();
+
+            global.record(
+                &discovery,
+                exact_target,
+                same_lemma,
+                target_form_missing,
+                target_lemma_missing,
+            );
+            by_availability
+                .entry(record.availability)
+                .or_default()
+                .record(
+                    &discovery,
+                    exact_target,
+                    same_lemma,
+                    target_form_missing,
+                    target_lemma_missing,
+                );
+            by_damage_class.entry(record.class).or_default().record(
+                &discovery,
+                exact_target,
+                same_lemma,
+                target_form_missing,
+                target_lemma_missing,
+            );
+        }
+
+        assert_eq!(attempts.len(), global.records);
+        assert!(global.partition_conserved());
+        assert!(by_availability
+            .values()
+            .all(|bucket| bucket.partition_conserved()));
+        assert!(by_damage_class
+            .values()
+            .all(|bucket| bucket.partition_conserved()));
+        assert_eq!(global.target_form_missing, 0);
+        let source_no_field_cases = receipt.live_cohort_compare_shadow.no_field_cases;
+        assert_eq!(global.records, source_no_field_cases);
+
+        let report = serde_json::json!({
+            "schema": "lay.slice8b-v8-target-blind-contour-lemma-audit.v1",
+            "source": {
+                "v7_receipt": receipt_path,
+                "v7_receipt_sha256": receipt_sha256,
+                "v13_package": canonical_path,
+                "v7_live_cohort_schema": "lay.live-cohort-compare-shadow.v3",
+            },
+            "measured": {
+                "no_field_records": global.records,
+                "unique_attempt_identities": attempts.len(),
+                "global": &global,
+                "by_availability": &by_availability,
+                "by_damage_class": &by_damage_class,
+                "latency_us": {
+                    "scope": "closed target-blind V13 contour enumeration; no queue, Productive V90, L3 or IPC",
+                    "enumeration": {
+                        "p50": percentile(&mut enumeration_latency_us.clone(), 50),
+                        "p95": percentile(&mut enumeration_latency_us.clone(), 95),
+                        "p99": percentile(&mut enumeration_latency_us.clone(), 99),
+                        "maximum": enumeration_latency_us.iter().copied().max().unwrap_or(0),
+                    },
+                    "enumeration_plus_form_to_lemma_mapping": {
+                        "p50": percentile(&mut discovery_latency_us.clone(), 50),
+                        "p95": percentile(&mut discovery_latency_us.clone(), 95),
+                        "p99": percentile(&mut discovery_latency_us.clone(), 99),
+                        "maximum": discovery_latency_us.iter().copied().max().unwrap_or(0),
+                    },
+                },
+            },
+            "conservation": {
+                "records_equal_source_no_field": global.records == source_no_field_cases,
+                "unique_attempts_equal_records": attempts.len() == global.records,
+                "global_discovery_partition": global.partition_conserved(),
+                "availability_partitions": by_availability.values().all(|bucket| bucket.partition_conserved()),
+                "damage_class_partitions": by_damage_class.values().all(|bucket| bucket.partition_conserved()),
+                "target_form_missing": global.target_form_missing,
+            },
+            "claim_boundary": {
+                "target_is_generation_input": false,
+                "runtime_authority_changed": false,
+                "promotion_eligible": false,
+                "product_latency_proven": false,
+                "productive_readout_proven": false,
+            },
+            "verdict": "PASS_TARGET_BLIND_DISCOVERY_MEASUREMENT_ONLY",
+        });
+        println!(
+            "LAY_SLICE8B_V8_AUDIT_JSON={}",
+            serde_json::to_string(&report).expect("serialize V8 audit")
+        );
     }
 }

@@ -1,0 +1,137 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "effective-v4-manifest",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_IMPLEMENTATION_V4_2026-08-25.json",
+      "sha256": "e9d6328b9f610ede73ae2e8d3c819b9728ac0fc5e4c263e9fe25a61978f80f5a",
+      "size_bytes": 98316
+    },
+    {
+      "exists": true,
+      "id": "effective-v4-receipt",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_IMPLEMENTATION_V4_PREFLIGHT_2026-08-25.json",
+      "sha256": "740c008d59fb4689826537e46a35da554bde863358d2c18382f315395ee835e0",
+      "size_bytes": 14171
+    },
+    {
+      "exists": true,
+      "id": "v1-failure",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_FAILURE_V1_2026-08-25/D2A_FAILURE.json",
+      "sha256": "5d8d1db51238adf63f0d01757b4bddca587679200091d09388919b35091d2891",
+      "size_bytes": 406
+    },
+    {
+      "exists": true,
+      "id": "v1-failure-manifest",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_FAILURE_V1_2026-08-25/SHA256SUMS",
+      "sha256": "a0b5243c6d12383fa35c8b86819cf212b9c8b87f0b3e15c4df76e2fdf9a03473",
+      "size_bytes": 3591
+    },
+    {
+      "exists": true,
+      "id": "v1-controller-sealed",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_FAILURE_V1_2026-08-25/inputs/controller.py",
+      "sha256": "b22f895901501fee31b92d706d7b2b3e0e0977e20fe5339d2be098bbcbe206b7",
+      "size_bytes": 58525
+    },
+    {
+      "exists": true,
+      "id": "controller-v1-active-before-repair",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-e1-traversal-d2-primary-only.py",
+      "sha256": "b22f895901501fee31b92d706d7b2b3e0e0977e20fe5339d2be098bbcbe206b7",
+      "size_bytes": 58525
+    },
+    {
+      "exists": true,
+      "id": "sealed-full-rustc-identity",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A1_BUILD_FAILURE_V1_2026-08-25/PREBUILD_PROVENANCE.json",
+      "sha256": "015d64d2cfb383d6239f0eb85b7ae589cfea32ab67364515b41ec5e9e2feaee9",
+      "size_bytes": 1161
+    },
+    {
+      "exists": false,
+      "id": "v2-local-result-absent",
+      "kind": "absent",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25"
+    },
+    {
+      "exists": true,
+      "id": "blocked-repair-v2-manifest",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_CONTROLLER_REPAIR_V2_2026-08-25.json",
+      "sha256": "8db33aec2a6e768842190c875cec41e8f79374c25ed0dc5b5ddfe7f73b903e72",
+      "size_bytes": 10138
+    },
+    {
+      "exists": true,
+      "id": "blocked-repair-v2-receipt",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_CONTROLLER_REPAIR_V2_PREFLIGHT_2026-08-25.json",
+      "sha256": "3d72521ec269ce8d0c0cfbe17ca7bfdad21c77859c85e65b7dcdaa536be28d47",
+      "size_bytes": 4712
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 10,
+    "forbidden_side_effect_kinds": [
+      "bucket_map_generation",
+      "cargo_build_check_test_or_rustc_compilation",
+      "clean_c1_or_full_b",
+      "d2_elf_or_subject_execution",
+      "foreign_process_control_reaffinity_or_repriority",
+      "generated_traffic",
+      "host_policy_tuning",
+      "installed_lay_mutation_or_restart",
+      "optimization_or_v12_implementation",
+      "parity_or_u_v_t_execution",
+      "perf_record_or_stat",
+      "pmu_event_open",
+      "route_marker_consumption",
+      "runtime_authority_change",
+      "synthetic_fixture",
+      "v1_failure_or_state_mutation"
+    ],
+    "identity_contracts": 3,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "documentation_edit",
+      "local_source_edit",
+      "remote_and_local_evidence_write",
+      "remote_state_create"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 1,
+    "source_checks": 0,
+    "tests": 9
+  },
+  "manifest_sha256": "6c75bc82ef20b4eed95039bde5f849ea3dd4e6fc1d159e2f6c8130664f6fe899",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [],
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_D2A_CONTROLLER_REPAIR_V3_2026-08-25",
+  "verdict": "READY_TO_IMPLEMENT"
+}

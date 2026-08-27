@@ -1,0 +1,504 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_CODE_ROUTE_V2_2026-08-25.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 12,
+  "edge_count": 18,
+  "routes": [
+    {
+      "id": "parity-e0-execution",
+      "event": "parity",
+      "kind": "execution",
+      "entry": "test_entry",
+      "via": [],
+      "terminal": "e0_executor",
+      "path_count": 1,
+      "paths": [
+        [
+          "test_entry",
+          "parity_runner",
+          "e0_executor"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "e0_executor"
+        ],
+        "orchestrator": [
+          "parity_runner"
+        ],
+        "interface": [
+          "test_entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test_entry",
+          "to": "e0_executor",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test_entry",
+              "parity_runner",
+              "e0_executor"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "parity-e1-execution",
+      "event": "parity",
+      "kind": "execution",
+      "entry": "test_entry",
+      "via": [],
+      "terminal": "e1_executor",
+      "path_count": 1,
+      "paths": [
+        [
+          "test_entry",
+          "parity_runner",
+          "e1_executor"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "e1_executor"
+        ],
+        "orchestrator": [
+          "parity_runner"
+        ],
+        "interface": [
+          "test_entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test_entry",
+          "to": "e1_executor",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test_entry",
+              "parity_runner",
+              "e1_executor"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e0-semantic-authority",
+      "event": "parity",
+      "kind": "authority",
+      "entry": "e0_executor",
+      "via": [],
+      "terminal": "e0_semantic_evidence",
+      "path_count": 1,
+      "paths": [
+        [
+          "e0_executor",
+          "e0_semantic_evidence"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "e0_executor"
+        ],
+        "evidence_owner": [
+          "e0_semantic_evidence"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "parity-e0-observation",
+      "event": "parity",
+      "kind": "observation",
+      "entry": "e0_semantic_evidence",
+      "via": [],
+      "terminal": "parity_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "e0_semantic_evidence",
+          "parity_observer"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "e0_semantic_evidence"
+        ],
+        "observer": [
+          "parity_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "parity-e1-observation",
+      "event": "parity",
+      "kind": "observation",
+      "entry": "e1_executor",
+      "via": [],
+      "terminal": "parity_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "e1_executor",
+          "parity_observer"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "e1_executor"
+        ],
+        "observer": [
+          "parity_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "parity-decision-proof",
+      "event": "parity_decision",
+      "kind": "proof",
+      "entry": "parity_observer",
+      "via": [],
+      "terminal": "decision_proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "parity_observer",
+          "decision_proof"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "decision_proof"
+        ],
+        "observer": [
+          "parity_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "e0-pmu-execution",
+      "event": "e0_pmu",
+      "kind": "execution",
+      "entry": "test_entry",
+      "via": [],
+      "terminal": "e0_executor",
+      "path_count": 1,
+      "paths": [
+        [
+          "test_entry",
+          "e0_pmu_runner",
+          "e0_executor"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "e0_executor"
+        ],
+        "orchestrator": [
+          "e0_pmu_runner"
+        ],
+        "interface": [
+          "test_entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test_entry",
+          "to": "e0_executor",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test_entry",
+              "e0_pmu_runner",
+              "e0_executor"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e0-pmu-observation",
+      "event": "e0_pmu",
+      "kind": "observation",
+      "entry": "e0_executor",
+      "via": [],
+      "terminal": "pmu_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "e0_executor",
+          "pmu_observer"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "e0_executor"
+        ],
+        "observer": [
+          "pmu_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "e1-pmu-execution",
+      "event": "e1_pmu",
+      "kind": "execution",
+      "entry": "test_entry",
+      "via": [],
+      "terminal": "e1_executor",
+      "path_count": 1,
+      "paths": [
+        [
+          "test_entry",
+          "e1_pmu_runner",
+          "e1_executor"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "e1_executor"
+        ],
+        "orchestrator": [
+          "e1_pmu_runner"
+        ],
+        "interface": [
+          "test_entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test_entry",
+          "to": "e1_executor",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test_entry",
+              "e1_pmu_runner",
+              "e1_executor"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e1-pmu-observation",
+      "event": "e1_pmu",
+      "kind": "observation",
+      "entry": "e1_executor",
+      "via": [],
+      "terminal": "pmu_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "e1_executor",
+          "pmu_observer"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "e1_executor"
+        ],
+        "observer": [
+          "pmu_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "physical-decision-proof",
+      "event": "physical_decision",
+      "kind": "proof",
+      "entry": "pmu_observer",
+      "via": [],
+      "terminal": "decision_proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "pmu_observer",
+          "decision_proof"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "decision_proof"
+        ],
+        "observer": [
+          "pmu_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "e1-latency-execution",
+      "event": "e1_latency",
+      "kind": "execution",
+      "entry": "test_entry",
+      "via": [],
+      "terminal": "e1_executor",
+      "path_count": 1,
+      "paths": [
+        [
+          "test_entry",
+          "latency_runner",
+          "e1_executor"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "e1_executor"
+        ],
+        "orchestrator": [
+          "latency_runner"
+        ],
+        "interface": [
+          "test_entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test_entry",
+          "to": "e1_executor",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test_entry",
+              "latency_runner",
+              "e1_executor"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e1-latency-observation",
+      "event": "e1_latency",
+      "kind": "observation",
+      "entry": "e1_executor",
+      "via": [],
+      "terminal": "latency_observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "e1_executor",
+          "latency_observer"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "e1_executor"
+        ],
+        "observer": [
+          "latency_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "latency-decision-proof",
+      "event": "latency_decision",
+      "kind": "proof",
+      "entry": "latency_observer",
+      "via": [],
+      "terminal": "decision_proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "latency_observer",
+          "decision_proof"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "decision_proof"
+        ],
+        "observer": [
+          "latency_observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "parity": {
+      "mutation_owner": [],
+      "display_rank_owner": [],
+      "evidence_owner": [
+        "e0_semantic_evidence"
+      ],
+      "candidate_rank_owner": [],
+      "render_owner": [],
+      "authorization_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

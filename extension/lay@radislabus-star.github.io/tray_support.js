@@ -4,8 +4,8 @@ import GLib from 'gi://GLib';
 export const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
-export const APP_VERSION = '1.0.39';
-export const APP_RELEASE_DATE = '2026-08-23';
+export const APP_VERSION = '1.0.44';
+export const APP_RELEASE_DATE = '2026-08-27';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
 export const APP_ICON_NAME = 'input-keyboard-symbolic';
 export const PANEL_ICON_SIZE = 14;
@@ -53,6 +53,8 @@ const DEFAULTS = {
     force_layout_hotkeys: false,
     force_ru_key: 'single-rctrl',
     force_en_key: 'single-ralt',
+    tap_max_ms: 200,
+    shift_window_ms: 250,
     auto_replace: false,
     typing_assist: false,
     correction_safety: 'normal',
@@ -80,6 +82,13 @@ export function normalizeChoice(value, options, fallback) {
     return allowed.includes(value) ? value : fallback;
 }
 
+function normalizeBoundedInteger(value, fallback, minimum, maximum) {
+    const number = Number(value);
+    if (!Number.isFinite(number))
+        return fallback;
+    return Math.min(maximum, Math.max(minimum, Math.round(number)));
+}
+
 export function normalizeConfig(input) {
     const cfg = {...DEFAULTS, ...(input ?? {})};
     const legacyTextBackend = cfg.text_backend === 'auto' ? 'ime' : cfg.text_backend;
@@ -87,6 +96,9 @@ export function normalizeConfig(input) {
     cfg.layout_backend = normalizeChoice(cfg.layout_backend, LAYOUT_BACKEND_OPTIONS, DEFAULTS.layout_backend);
     cfg.trigger = normalizeChoice(cfg.trigger, TRIGGER_OPTIONS, DEFAULTS.trigger);
     cfg.correction_safety = normalizeChoice(cfg.correction_safety, SAFETY_OPTIONS, DEFAULTS.correction_safety);
+    cfg.tap_max_ms = normalizeBoundedInteger(cfg.tap_max_ms, DEFAULTS.tap_max_ms, 100, 800);
+    cfg.shift_window_ms = normalizeBoundedInteger(
+        cfg.shift_window_ms, DEFAULTS.shift_window_ms, 150, 1000);
 
     cfg.force_ru_key = normalizeChoice(cfg.force_ru_key, FORCE_KEY_OPTIONS, DEFAULTS.force_ru_key);
     cfg.force_en_key = normalizeChoice(cfg.force_en_key, FORCE_KEY_OPTIONS, DEFAULTS.force_en_key);

@@ -1,0 +1,27 @@
+{
+  "schema": "lay.m3-actual-owner-build-blocked.v1",
+  "execution_admission_manifest_sha256": "880ea03491ce883c2315a7d759670495637c9dcc0faa4f252030859b1acd14e3",
+  "execution_admission_receipt_sha256": "c82777fb53efd22d7ab70b150616ca5d816b70770d7dd3e7e970fb91091e4f60",
+  "cargo_invocations": 1,
+  "cargo_exit_status": 101,
+  "scientific_owner_proof_started": false,
+  "owner_receipt_created": false,
+  "compiler_errors": [
+    {
+      "code": "E0425",
+      "count": 2,
+      "cause": "live.rs test scope lost the existing prepare_context_neutral_productive_material_with_contours import while the function and both test call sites remained unchanged"
+    }
+  ],
+  "cargo_log": {
+    "path": "CARGO.log",
+    "size_bytes": 3982,
+    "sha256": "aa3a6e45bbffbde3e99a063e3d8367a2e51ac2e6f4f696adc85dcf3db828babd"
+  },
+  "network_or_remote_used": false,
+  "perf_or_pmu_used": false,
+  "installed_lay_changed": false,
+  "runtime_authority_changed": false,
+  "retry_under_v3_permitted": false,
+  "verdict": "BLOCKED_BUILD"
+}

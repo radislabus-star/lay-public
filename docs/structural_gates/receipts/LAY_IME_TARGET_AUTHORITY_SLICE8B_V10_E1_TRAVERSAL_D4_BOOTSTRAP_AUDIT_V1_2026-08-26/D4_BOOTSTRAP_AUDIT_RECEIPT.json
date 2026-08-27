@@ -1,0 +1,63 @@
+{
+  "bootstrap_auditor_sha256": "b976971e9e179810c534216a2af81de83deaddea07aee77574379f1ea543abb7",
+  "bootstrap_receipt_sha256": "2ccf30c82a4c8972c95cbb88111adfb3dfbd3edab2fe9bedd05f1242846027af",
+  "cargo_invocations": 0,
+  "live_projection": {
+    "markers_consumed": 0,
+    "markers_created": 0,
+    "parent_mode": "0755",
+    "subject_uid": 1000,
+    "uid_operations": [
+      "traverse",
+      "stat",
+      "read",
+      "create",
+      "write",
+      "fsync-file",
+      "rename",
+      "fsync-directory",
+      "reopen",
+      "read-exact",
+      "unlink",
+      "fsync-directory"
+    ]
+  },
+  "live_projection_sha256": "61d29c998436091f4c4af3e9b50bdded534565883353184e1f14a8619126bda6",
+  "live_projection_stable": true,
+  "local_controller_sha256": "2fa0ed312ece2f93e76b62a20bd7b2757f79ef9ecef06c29c184538fb7cfe504",
+  "markers_consumed": 0,
+  "markers_created": 0,
+  "markers_expected": 2,
+  "next_action_admitted": "one D4 marker creation action only",
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_controller_sha256": "f6b5010b1f4c38bedcbc0ec0cb466e177af78be4df802eb8b0ff02bdcd461f72",
+  "remote_writes": 0,
+  "retry_permitted": false,
+  "runtime_authority_changed": false,
+  "rustc_compilations": 0,
+  "schema": "lay.v10.e1-traversal-d4-bootstrap-audit.v1",
+  "scp_as_e_pass": true,
+  "scp_manifest": {
+    "entries": 10,
+    "members": [
+      "D4_BOOTSTRAP_RECEIPT.json",
+      "inputs/d2-terminal-receipt.json",
+      "inputs/d3-terminal-receipt.json",
+      "inputs/local-controller.py",
+      "inputs/paper.md",
+      "inputs/preflight-v2-receipt.json",
+      "inputs/preflight-v2.json",
+      "inputs/remote-controller.py",
+      "subject/UID_PROBE.json",
+      "subject/UID_PROBE_BYTES.bin"
+    ],
+    "sha256": "cc5eb2534a7029fd6f4ddaf27d55d7453af26bc1556303fb0e402402345b3826"
+  },
+  "scp_receipt_byte_identical": true,
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-d4-estimator-recovery-v1-20260826",
+  "transaction_id": "2d3002b7cf615459a4250d7e44eb2094863dc422f908080b7afa59551ba4ee26",
+  "verdict": "D4_UID_ACCESS_AUDIT_PASS_MARKER_CREATION"
+}

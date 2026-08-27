@@ -3,6 +3,7 @@ mod anchor_recovery_reduce;
 mod boundary_birth;
 mod calibrate;
 mod candidate_state;
+mod cohort_compare;
 mod compiler;
 mod composite;
 mod conflict_cohort;
@@ -32,10 +33,22 @@ mod transition_reduce;
 mod trie;
 mod types;
 
+pub(in crate::nanda_wave::l2_field) use cohort_compare::{
+    compare_shared_canonical_cohort, LexicalCohortCompareV1,
+};
 pub(in crate::nanda_wave::l2_field) use live::{
     canonical_live_scene_bytes, materialize_live_productive_v1_field,
-    prepare_live_productive_v1_field, CanonicalContourRelation, CanonicalContourSeed,
-    CanonicalFormGrounding, CanonicalSurfaceGrounding, PreparedCanonicalTokenField,
+    prepare_live_productive_v1_field_with_exact_peaks, CanonicalContourRelation,
+    CanonicalContourSeed, CanonicalFormGrounding, CanonicalSurfaceGrounding,
+    PreparedCanonicalTokenField,
+};
+#[cfg(test)]
+pub(in crate::nanda_wave::l2_field) use live::{
+    prepare_live_productive_v1_field, PreparedFieldMaterialScopeV1,
+    PRODUCTIVE_V90_TYPED_EXACT_SOURCE_ID,
+};
+pub(in crate::nanda_wave::l2_field) use material_frame::{
+    ExactPeakBirthEnumerationV1, ExactPeakCandidateInputV1,
 };
 pub(super) use orchestrator::{
     audit_productive_anchor_recovery_v1, compile_productive_paradigm_field_v1,

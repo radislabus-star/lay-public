@@ -1,0 +1,353 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_V3_2026-08-25",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "repair-contract",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_CAPABILITY_SHUTDOWN_REPAIR_V2_2026-08-25.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 6952,
+        "sha256": "e0499e8c435169a66e0e30bfe46b0953b6635010745cdf45302bddfe2a3b6521"
+      }
+    },
+    {
+      "id": "repair-route-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_CAPABILITY_SHUTDOWN_REPAIR_V2_ROUTE_RECEIPT_2026-08-25.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 19548,
+        "sha256": "adaf25cb931c7b86f8d0416b4c0d4e0c61179fabf04789a6617601b36c3e810e"
+      }
+    },
+    {
+      "id": "v1-manifest",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/SHA256SUMS",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 789,
+        "sha256": "06c86e7aa849d467c8985ef3b0910090e3d1d8666b576d50d4bc82dc0ab03a55"
+      }
+    },
+    {
+      "id": "v1-remote-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/PROBE_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 3566,
+        "sha256": "1c41c796458b862813601c8853788675b25b0d221b3447e16237f5f87ed6a8dc"
+      }
+    },
+    {
+      "id": "v1-effective-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_CAPABILITY_PROBE_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 4537,
+        "sha256": "cf8b06fb55f220d6051fcc8c1f193389481698cf0f64f31dc5109bae2e850dc5"
+      }
+    },
+    {
+      "id": "p0-static-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P0_STATIC_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 7003,
+        "sha256": "9b6aff3d74d36e7f5868fff596eb17326e819bf45496bbe4f3cf50870a7f71e0"
+      }
+    },
+    {
+      "id": "tcap-perf-data",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/T-CAP/perf.data",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 277698,
+        "sha256": "43e67a0b370c14adab60cd229d925f168f7fbaa94930ed2805876d1b01039a99"
+      }
+    },
+    {
+      "id": "tcap-maps-before",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/T-CAP/maps-before.txt",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 3770,
+        "sha256": "efee21f8e02424cdd40800356c492fa8730be99b6bbffe3d36d415433ca7df95"
+      }
+    },
+    {
+      "id": "tcap-maps-during",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/T-CAP/maps-during.txt",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 3770,
+        "sha256": "efee21f8e02424cdd40800356c492fa8730be99b6bbffe3d36d415433ca7df95"
+      }
+    },
+    {
+      "id": "tcap-record-command",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/T-CAP/record-command.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 317,
+        "sha256": "d2aa8bec8fcdcb0bf0fbc702c08592d0e14bd0285a93569b03d36bf9f5f423b3"
+      }
+    },
+    {
+      "id": "v1-controller",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/inputs/controller.py",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 36724,
+        "sha256": "4b025b93e80cbba66b2ea44a9b0845de883053b5586f9fc4e892a20fdb4f2626"
+      }
+    },
+    {
+      "id": "salvage-controller-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-e1-traversal-d2-tcap-salvage-v2.py",
+      "expect": {}
+    },
+    {
+      "id": "salvage-result-absent",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_V2_2026-08-25",
+      "expect": {}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "create-offline-salvage-controller", "kind": "local_source_create"},
+      {"id": "create-one-shot-remote-reader-state", "kind": "remote_state_create"},
+      {"id": "run-four-readers-over-sealed-perf-data", "kind": "remote_perf_data_read"},
+      {"id": "publish-immutable-salvage-evidence", "kind": "remote_and_local_evidence_write"},
+      {"id": "record-salvage-result", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "perf_record_stat_or_event_open",
+      "yes_or_any_subject_execution",
+      "d2_controller_fragment_elf_build_or_execution",
+      "cargo_build_check_test_or_rustc_compilation",
+      "v10_v13_package_sidecar_schedule_or_search_execution",
+      "sealed_v1_evidence_mutation",
+      "event_period_selector_or_reader_substitution",
+      "foreign_process_stop_reaffinity_repriority_or_policy_change",
+      "host_governor_smt_turbo_thermal_or_perf_sysctl_tuning",
+      "d2_bucket_map_or_attribution_publication",
+      "full_b_v12_runtime_integration_or_deployment",
+      "installed_lay_mutation_or_process_restart",
+      "runtime_authority_change"
+    ]
+  },
+  "invariants": [
+    {
+      "id": "salvage-is-offline-only",
+      "statement": "the controller can execute only evlist script script-D and buildid-list over the exact sealed T-CAP perf.data and cannot record or execute a subject",
+      "test_id": "salvage-command-boundary"
+    },
+    {
+      "id": "v1-is-immutable",
+      "statement": "all V1 receipt manifest perf data maps command and controller bytes remain exact and read-only",
+      "test_id": "v1-byte-parity"
+    },
+    {
+      "id": "salvage-is-one-transaction",
+      "statement": "the reader marker is consumed before the first perf reader and any failure is retained without record or subject retry",
+      "test_id": "salvage-marker-fault"
+    },
+    {
+      "id": "tcap-pass-is-complete",
+      "statement": "T_CAP_RECOVERED requires exact event period CPU samples lost throttle Build-ID maps and ET_DYN normalization evidence",
+      "test_id": "salvage-capability-validation"
+    },
+    {
+      "id": "salvage-does-not-admit-d2",
+      "statement": "T-CAP recovery can only feed the precise-only preflight and cannot admit D2 build measurement full B V12 or runtime integration",
+      "test_id": "later-gate-absence"
+    },
+    {
+      "id": "runtime-authority-is-unchanged",
+      "statement": "installed Lay V11 bytes and daemon PIDs remain unchanged",
+      "test_id": "runtime-noninterference"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "V1_BLOCKED_TERMINAL_TCAP_READER_ABSENT",
+    "steps": [
+      {
+        "id": "create-salvage-controller",
+        "from": "V1_BLOCKED_TERMINAL_TCAP_READER_ABSENT",
+        "to": "TCAP_SALVAGE_CONTROLLER_UNRUN",
+        "mutates": true,
+        "failure_state": "TCAP_SALVAGE_CONTROLLER_REJECTED",
+        "cleanup": "remove only a partial new controller and preserve all V1 evidence",
+        "preserves": ["v1-manifest", "v1-receipt", "v1-perf-data", "v1-maps", "installed-runtime"],
+        "test_id": "salvage-controller-creation-fault"
+      },
+      {
+        "id": "self-check-salvage-controller",
+        "from": "TCAP_SALVAGE_CONTROLLER_UNRUN",
+        "to": "TCAP_SALVAGE_CONTROLLER_VERIFIED_UNRUN",
+        "mutates": false,
+        "test_id": "salvage-static-parity"
+      },
+      {
+        "id": "create-remote-reader-state",
+        "from": "TCAP_SALVAGE_CONTROLLER_VERIFIED_UNRUN",
+        "to": "TCAP_SALVAGE_READER_READY",
+        "mutates": true,
+        "failure_state": "TCAP_SALVAGE_STATE_TERMINAL",
+        "cleanup": "retain failed state or remove only unpublished empty staging; never mutate V1",
+        "preserves": ["v1-manifest", "v1-receipt", "v1-perf-data", "v1-maps", "installed-runtime"],
+        "test_id": "salvage-remote-state-fault"
+      },
+      {
+        "id": "consume-marker-and-run-readers",
+        "from": "TCAP_SALVAGE_READER_READY",
+        "to": "TCAP_SALVAGE_OBSERVED",
+        "mutates": true,
+        "failure_state": "BLOCKED_TCAP_EVIDENCE_RETAINED",
+        "cleanup": "retain consumed marker outputs and first failure; no record subject or event",
+        "preserves": ["v1-manifest", "v1-receipt", "v1-perf-data", "v1-maps", "installed-runtime"],
+        "test_id": "salvage-reader-fault"
+      },
+      {
+        "id": "publish-salvage-receipt",
+        "from": "TCAP_SALVAGE_OBSERVED",
+        "to": "TCAP_SALVAGE_RECEIPT_PUBLISHED",
+        "mutates": true,
+        "failure_state": "TCAP_SALVAGE_PUBLICATION_FAILED_REMOTE_RETAINED",
+        "cleanup": "retain sealed remote evidence and remove only incomplete local staging",
+        "preserves": ["v1-manifest", "v1-receipt", "v1-perf-data", "v1-maps", "installed-runtime"],
+        "test_id": "salvage-publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "TCAP_SALVAGE_RECEIPT_PUBLISHED",
+      "TCAP_SALVAGE_CONTROLLER_REJECTED",
+      "TCAP_SALVAGE_STATE_TERMINAL",
+      "BLOCKED_TCAP_EVIDENCE_RETAINED",
+      "TCAP_SALVAGE_PUBLICATION_FAILED_REMOTE_RETAINED"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "v1-manifest",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/SHA256SUMS",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "v1-manifest"
+    },
+    {
+      "id": "v1-receipt",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/PROBE_RECEIPT.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "v1-remote-receipt"
+    },
+    {
+      "id": "v1-perf-data",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/T-CAP/perf.data",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "tcap-perf-data"
+    },
+    {
+      "id": "v1-maps",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/T-CAP/maps-during.txt",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "tcap-maps-during"
+    },
+    {
+      "id": "installed-runtime",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P0_STATIC_RECEIPT.json",
+      "policy": "immutable_observation",
+      "rollback_policy": "no_runtime_mutation_permitted",
+      "baseline_check_id": "p0-static-receipt"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "sealed-perf-input",
+      "producer": "immutable V1 T-CAP perf.data and maps",
+      "consumer": "four offline perf readers and normalization validator",
+      "comparison": "exact SHA-256 sizes modes event identity and maps identity",
+      "test_id": "v1-byte-parity"
+    },
+    {
+      "id": "tcap-event-identity",
+      "producer": "frozen task-clock type config period privilege and CPU contract",
+      "consumer": "evlist sample rows and raw records",
+      "comparison": "exact type config period freq exclude-kernel event label and CPU",
+      "test_id": "salvage-capability-validation"
+    },
+    {
+      "id": "tcap-pie-normalization",
+      "producer": "yes Build ID ELF PT_LOAD and sealed live maps",
+      "consumer": "sampled yes runtime IPs",
+      "comparison": "exact Build ID plus unique normalized executable ELF virtual IP",
+      "test_id": "salvage-pie-normalization"
+    },
+    {
+      "id": "local-remote-salvage-controller",
+      "producer": "locally reviewed offline-only controller",
+      "consumer": "remote reader controller",
+      "comparison": "exact controller SHA-256 and source scan before marker consumption",
+      "test_id": "salvage-static-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "salvage-host-stability",
+      "source": "target host before and after offline readers",
+      "comparison": "exact_stable_projection",
+      "reason": "reader interpretation is bound to the pinned kernel perf and immutable input",
+      "stable_fields": ["hostname", "machine_id", "kernel", "perf_sha256", "v1_input_sha256"],
+      "expected_to_change_fields": ["wall_clock", "load_average", "pressure", "temperature"],
+      "observed_not_compared_fields": ["foreign_process_pid_set", "filesystem_cache_residency"],
+      "test_id": "salvage-host-parity"
+    },
+    {
+      "id": "installed-runtime-stability",
+      "source": "installed Lay projection before and after salvage",
+      "comparison": "exact_stable_projection",
+      "reason": "offline remote readers cannot mutate installed Lay authority",
+      "stable_fields": ["lay_version", "active_v11_sha256", "ibus_daemon_pid", "lay_daemon_pid", "lay_ibus_engine_pid", "runtime_authority_changed"],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": ["process_cpu_time", "host_load", "temperature"],
+      "test_id": "runtime-noninterference"
+    }
+  ],
+  "source_checks": [],
+  "tests": [
+    {"id": "salvage-controller-creation-fault", "kind": "fault_injection", "expected": "a partial controller is rejected before remote state or perf reader execution"},
+    {"id": "salvage-command-boundary", "kind": "integration", "expected": "source contains only four exact perf reader commands and no record stat subject Cargo rustc or D2 route"},
+    {"id": "salvage-static-parity", "kind": "parity", "expected": "controller pins repair V1 perf maps yes perf binary host and destination identities before marker consumption"},
+    {"id": "salvage-remote-state-fault", "kind": "fault_injection", "expected": "collision identity or permission failure opens no event and cannot mutate V1"},
+    {"id": "salvage-marker-fault", "kind": "fault_injection", "expected": "reader marker is consumed before the first reader and retained after any failure"},
+    {"id": "salvage-reader-fault", "kind": "fault_injection", "expected": "any reader or parser failure retains outputs and publishes no recovery PASS"},
+    {"id": "v1-byte-parity", "kind": "parity", "expected": "all sealed V1 identities and 9-entry manifest remain exact before and after salvage"},
+    {"id": "salvage-capability-validation", "kind": "parity", "expected": "event period CPU samples lost throttle privilege Build-ID and normalization checks all pass before T_CAP_RECOVERED"},
+    {"id": "salvage-pie-normalization", "kind": "parity", "expected": "every sampled yes IP normalizes uniquely from sealed maps and ELF PT_LOAD with exact Build ID"},
+    {"id": "salvage-host-parity", "kind": "parity", "expected": "host kernel perf and input identities remain exact across readers"},
+    {"id": "salvage-publication-fault", "kind": "fault_injection", "expected": "incomplete evidence never exposes a PASS receipt and sealed remote output is retained"},
+    {"id": "runtime-noninterference", "kind": "parity", "expected": "Lay 1.0.43 V11 SHA and daemon PIDs remain unchanged"},
+    {"id": "later-gate-absence", "kind": "integration", "expected": "zero record stat event subject D2 build full B V12 integration or deployment action occurs"}
+  ]
+}

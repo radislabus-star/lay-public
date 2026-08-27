@@ -1,0 +1,118 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_RUN_CORRECTION_V2_2026-08-25",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id":"correction-contract","kind":"file","path":"../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_RUN_CORRECTION_V2_2026-08-25.md","expect":{"mode":"0664","size_bytes":2450,"sha256":"2f3965883a9a28b45d9255d85492ad841245d95fa4d0af63b5544f65f3c3e2be"}},
+    {"id":"correction-route","kind":"file","path":"../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_RUN_CORRECTION_V2_ROUTE.md","expect":{"mode":"0664","size_bytes":3536,"sha256":"64dcef2961a7d1518ffac59d0d599339ce30f21bf72a4be5dc5d610611d41594"}},
+    {"id":"correction-route-receipt","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_RUN_CORRECTION_V2_ROUTE_RECEIPT_2026-08-25.json","expect":{"mode":"0664","size_bytes":21249,"sha256":"f5c13d7bdc898595b074346f5d5d05233f4a80094c28daa7280d6b20f1582bc3"}},
+    {"id":"v1-failure-manifest","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_RUN_FAILURE_V1_2026-08-25/SHA256SUMS","expect":{"mode":"0444","size_bytes":340,"sha256":"9e34abc512307db4730aba857701b73fd7727b03ccc0ca052e58ef0318a2391c"}},
+    {"id":"sealed-build-audit","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_REMOTE_BUILD_AUDIT_V1_2026-08-25.json","expect":{"mode":"0444","size_bytes":1328,"sha256":"6c5a2f41fffb8fc0505e629354bef0a6f8905ddc76c056352c68e0e912774427"}},
+    {"id":"controller-v1","kind":"file","path":"../../../scripts/lay-v10-fused-band-transition-m1.py","expect":{"mode":"0755","size_bytes":35361,"sha256":"3132a8f29f25ffef44d9e2fce724e88f56f3798515b6c57de350b1d659028237"}},
+    {"id":"fragment","kind":"file","path":"../../../scripts/lay_v10_fused_band_transition_m1_test_module.rs.inc","expect":{"mode":"0664","size_bytes":33866,"sha256":"bdef992d1f9bec095b3f683b384f1e7d23323823625cf3547dc44480511f0d76"}},
+    {"id":"m1-contract","kind":"file","path":"../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_CONTRACT_2026-08-25.md","expect":{"mode":"0664","size_bytes":5478,"sha256":"891a5ee2aa11840d8692d1ab110738bdd50d7bdca2b4873e92ab2ce125d2298b"}},
+    {"id":"decision","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_PMU_DECISION_2026-08-25.json","expect":{"mode":"0444","size_bytes":5014,"sha256":"98f7f606e3a21448e92137091f75c53c1cb210049895f0c9a18f7745da3afd09"}},
+    {"id":"active-v11","kind":"file","path":"../../../src/nanda_wave/l2_field/v13_typed_peak.rs","expect":{"mode":"0664","size_bytes":124127,"sha256":"d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"}},
+    {"id":"v2-local-result","kind":"absent","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_2026-08-25","expect":{}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id":"correct-controller-paths-and-namespaces","kind":"local_source_edit"},
+      {"id":"create-disjoint-v2-state","kind":"remote_state_create"},
+      {"id":"run-v2-parity","kind":"remote_diagnostic_execution"},
+      {"id":"run-v2-g0-g1-u1","kind":"remote_process_scoped_pmu_execution"},
+      {"id":"publish-v2-result","kind":"remote_and_local_evidence_write"},
+      {"id":"record-v2-result","kind":"documentation_edit"}
+    ],
+    "forbidden": [
+      "cargo_build_check_test_or_rustc",
+      "new_or_replaced_executable",
+      "rust_fragment_or_production_source_edit",
+      "v1_state_marker_or_failure_mutation",
+      "generated_traffic",
+      "synthetic_fixture",
+      "third_loaded_c1_run",
+      "clean_c1_marker_consumption",
+      "full_b_measurement_or_promotion",
+      "s1_swar_candidate",
+      "foreign_process_control_reaffinity_or_repriority",
+      "host_policy_tuning",
+      "adaptive_rerun_or_threshold_change",
+      "installed_lay_mutation_or_restart",
+      "v12_implementation_or_admission",
+      "runtime_authority_change"
+    ]
+  },
+  "source_checks": [
+    {
+      "id":"controller-v1-veto-scan",
+      "path":"../../../scripts/lay-v10-fused-band-transition-m1.py",
+      "sha256":"3132a8f29f25ffef44d9e2fce724e88f56f3798515b6c57de350b1d659028237",
+      "forbidden_effect_patterns":[
+        {"effect":"generated_traffic","regex":"(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"},
+        {"effect":"synthetic_fixture","regex":"(?:generate_fixture|fixture_writer|synthetic_fixture)"},
+        {"effect":"third_loaded_c1_run","regex":"LAY_V10_C1_[ST][1-5]"},
+        {"effect":"foreign_process_control_reaffinity_or_repriority","regex":"(?:pkill|killall|systemctl[^\\n]*(?:stop|kill)|renice|taskset[^\\n]*(?:Nando|btop|K1))"},
+        {"effect":"host_policy_tuning","regex":"(?:scaling_governor|energy_performance_preference|cpupower|sysctl\\s+-w)"},
+        {"effect":"installed_lay_mutation_or_restart","regex":"(?:systemctl[^\\n]*restart[^\\n]*lay|lay-runtime-control)"},
+        {"effect":"v12_implementation_or_admission","regex":"v12_admitted[^\\n]{0,40}True"},
+        {"effect":"runtime_authority_change","regex":"runtime_authority_changed[^\\n]{0,40}True"}
+      ]
+    }
+  ],
+  "state_machine": {
+    "initial_state":"V1_RUN_FAILURE_SEALED_V2_ABSENT",
+    "steps":[
+      {"id":"apply-v2-controller-correction","from":"V1_RUN_FAILURE_SEALED_V2_ABSENT","to":"V2_IMPLEMENTED_UNRUN","mutates":true,"failure_state":"V2_IMPLEMENTATION_REJECTED","cleanup":"restore exact V1 controller bytes while preserving all V1 remote and local evidence","preserves":["preserve-v1-failure","preserve-build","preserve-fragment","preserve-v11"],"test_id":"implementation-fault"},
+      {"id":"self-check-v2","from":"V2_IMPLEMENTED_UNRUN","to":"V2_VERIFIED_UNRUN","mutates":false},
+      {"id":"create-v2-state","from":"V2_VERIFIED_UNRUN","to":"V2_STATE_READY","mutates":true,"failure_state":"V2_STATE_CREATION_TERMINAL","cleanup":"retain disjoint partial V2 state and preserve V1 state without retry","preserves":["preserve-v1-failure","preserve-build","preserve-fragment","preserve-v11"],"test_id":"state-fault"},
+      {"id":"run-v2-parity","from":"V2_STATE_READY","to":"V2_PARITY_PASS","mutates":true,"failure_state":"V2_PARITY_TERMINAL","cleanup":"retain consumed V2 parity marker and raw evidence with no retry","preserves":["preserve-v1-failure","preserve-build","preserve-fragment","preserve-v11"],"test_id":"parity-fault"},
+      {"id":"run-v2-g0","from":"V2_PARITY_PASS","to":"V2_G0_OBSERVED","mutates":true,"failure_state":"V2_G0_TERMINAL","cleanup":"retain consumed V2 G0 marker and raw evidence with no retry","preserves":["preserve-build","preserve-fragment","preserve-v11"],"test_id":"physical-fault"},
+      {"id":"run-v2-g1","from":"V2_G0_OBSERVED","to":"V2_G1_OBSERVED","mutates":true,"failure_state":"V2_G1_TERMINAL","cleanup":"retain consumed V2 G1 marker and raw evidence with no retry","preserves":["preserve-build","preserve-fragment","preserve-v11"],"test_id":"physical-fault"},
+      {"id":"run-v2-u1","from":"V2_G1_OBSERVED","to":"V2_U1_OBSERVED","mutates":true,"failure_state":"V2_U1_TERMINAL","cleanup":"retain consumed V2 U1 marker and raw evidence with no retry","preserves":["preserve-build","preserve-fragment","preserve-v11"],"test_id":"physical-fault"},
+      {"id":"publish-v2","from":"V2_U1_OBSERVED","to":"V2_DECISION_PUBLISHED","mutates":true,"failure_state":"V2_PUBLICATION_FAILED_REMOTE_RETAINED","cleanup":"retain sealed remote V2 evidence and remove incomplete local stage","preserves":["preserve-v1-failure","preserve-build","preserve-fragment","preserve-v11"],"test_id":"publication-fault"}
+    ],
+    "terminal_states":["V2_DECISION_PUBLISHED","V2_IMPLEMENTATION_REJECTED","V2_STATE_CREATION_TERMINAL","V2_PARITY_TERMINAL","V2_G0_TERMINAL","V2_G1_TERMINAL","V2_U1_TERMINAL","V2_PUBLICATION_FAILED_REMOTE_RETAINED"]
+  },
+  "preserved_artifacts": [
+    {"id":"preserve-v1-failure","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_RUN_FAILURE_V1_2026-08-25/SHA256SUMS","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"v1-failure-manifest"},
+    {"id":"preserve-build","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_REMOTE_BUILD_AUDIT_V1_2026-08-25.json","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"sealed-build-audit"},
+    {"id":"preserve-controller-v1","path":"../../../scripts/lay-v10-fused-band-transition-m1.py","policy":"replace_only_after_ready","rollback_policy":"restore_exact_baseline","baseline_check_id":"controller-v1"},
+    {"id":"preserve-fragment","path":"../../../scripts/lay_v10_fused_band_transition_m1_test_module.rs.inc","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"fragment"},
+    {"id":"preserve-v11","path":"../../../src/nanda_wave/l2_field/v13_typed_peak.rs","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"active-v11"}
+  ],
+  "identity_contracts": [
+    {"id":"sealed-elf","producer":"M1 build-v1 audit","consumer":"V2 parity and physical owner","comparison":"exact SHA a8fb59fb and Build ID 31949c25 with no rebuild","test_id":"elf-parity"},
+    {"id":"asset-paths","producer":"sealed B0a artifact names","consumer":"V2 subject environment","comparison":"exact sidecar and V7 paths and existing bytes","test_id":"asset-parity"},
+    {"id":"trace-identity","producer":"V2 parity G0 trace","consumer":"V2 G1 and U1","comparison":"exact transition count and ordered digest","test_id":"trace-parity"},
+    {"id":"v1-preservation","producer":"V1 failure and marker state","consumer":"post-V2 audit","comparison":"exact V1 manifest and marker names","test_id":"v1-preservation"}
+  ],
+  "runtime_comparisons": [
+    {"id":"runtime-stability","source":"installed Lay and daemon snapshots before and after V2","comparison":"exact_stable_projection","reason":"run-only V2 must not change runtime","stable_fields":["lay_version","active_v11_sha256","ibus_daemon_pid","lay_daemon_pid","lay_ibus_engine_pid"],"expected_to_change_fields":[],"observed_not_compared_fields":["process_cpu_time","host_load","temperature","foreign_process_set"],"test_id":"runtime-stability"}
+  ],
+  "invariants": [
+    {"id":"no-build","statement":"V2 performs no Cargo rustc or executable creation","test_id":"no-build"},
+    {"id":"controller-only","statement":"only controller paths namespaces and labels change","test_id":"source-diff"},
+    {"id":"v1-immutable","statement":"V1 state markers build and failure evidence remain unchanged","test_id":"v1-preservation"},
+    {"id":"one-shot-v2","statement":"V2 uses fresh consumed-before-exec parity G0 G1 U1 markers","test_id":"marker-fault"},
+    {"id":"claim-boundary","statement":"V2 cannot admit S1 full B V12 runtime integration deployment or latency PASS","test_id":"claim-boundary"}
+  ],
+  "tests": [
+    {"id":"implementation-fault","kind":"fault_injection","expected":"invalid controller diff restores exact V1 controller and creates no V2 state"},
+    {"id":"source-diff","kind":"parity","expected":"controller changes only asset paths V2 namespaces labels and build-route removal"},
+    {"id":"no-build","kind":"parity","expected":"V2 controller exposes no executable build action and no Cargo or rustc executes"},
+    {"id":"state-fault","kind":"fault_injection","expected":"partial disjoint V2 state is retained and V1 state remains unchanged"},
+    {"id":"elf-parity","kind":"parity","expected":"V2 uses exact sealed ELF SHA and Build ID"},
+    {"id":"asset-parity","kind":"parity","expected":"actual sealed sidecar and V7 files exist and match expected identities before V2 marker consumption"},
+    {"id":"parity-fault","kind":"fault_injection","expected":"V2 parity failure retains consumed V2 marker and blocks physical routes"},
+    {"id":"physical-fault","kind":"fault_injection","expected":"failed V2 physical route retains consumed marker and raw evidence with no retry"},
+    {"id":"trace-parity","kind":"parity","expected":"V2 parity G0 G1 U1 share transition count and trace digest"},
+    {"id":"v1-preservation","kind":"parity","expected":"V1 failure manifest and all V1 marker names remain exact"},
+    {"id":"marker-fault","kind":"fault_injection","expected":"second V2 marker consumption fails before subject execution"},
+    {"id":"runtime-stability","kind":"parity","expected":"installed runtime stable projection remains unchanged"},
+    {"id":"claim-boundary","kind":"integration","expected":"S1 third C1 clean C1 full B V12 and runtime authority remain untouched"},
+    {"id":"publication-fault","kind":"fault_injection","expected":"incomplete local result is absent while sealed remote V2 evidence is retained"}
+  ]
+}

@@ -1,0 +1,719 @@
+{
+  "all_iterations": {
+    "max_us": 3819185,
+    "mean_us": 3819185,
+    "min_us": 3819185,
+    "p50_us": 3819185,
+    "p95_us": 3819185,
+    "p99_us": 3819185,
+    "samples": 1
+  },
+  "authority": {
+    "kind": "tied",
+    "surfaces": [
+      "баял",
+      "ваял",
+      "веял",
+      "вжал",
+      "взял",
+      "вмял",
+      "внял",
+      "джил",
+      "ежил",
+      "ежят",
+      "зиял",
+      "клял",
+      "лаял",
+      "ожил",
+      "паял",
+      "прял",
+      "реял",
+      "ржал",
+      "саял",
+      "сеял",
+      "сжал",
+      "сжил",
+      "сиял",
+      "смял",
+      "снял",
+      "табл",
+      "таил",
+      "талл",
+      "тая",
+      "таяв",
+      "таял",
+      "таяла",
+      "таяли",
+      "таяло",
+      "таят",
+      "таять",
+      "техл",
+      "тзал",
+      "тисл",
+      "титл",
+      "ткал",
+      "тлел",
+      "тлил",
+      "тля",
+      "тлям",
+      "тлят",
+      "тлях",
+      "тоям",
+      "тоях",
+      "трал",
+      "тряс",
+      "тряси",
+      "трясла",
+      "трясли",
+      "трясло",
+      "тряся",
+      "тулл",
+      "тухл",
+      "туя",
+      "туям",
+      "туях",
+      "тырл",
+      "тягл",
+      "тяжел",
+      "тяжёл",
+      "увял",
+      "ужал",
+      "умял",
+      "унял",
+      "хаял",
+      "чаял",
+      "чуял",
+      "ёжил",
+      "ёжят"
+    ]
+  },
+  "availability": "Ready",
+  "candidates": [
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "баял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "ваял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "веял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "вжал",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "взял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "вмял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "внял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "джил",
+      "source_id": "ProductiveL2V90Grounded"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "ежил",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "ежят",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "зиял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "клял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "лаял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "ожил",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "паял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "прял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "реял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "ржал",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "саял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "сеял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "сжал",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "сжил",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "сиял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "смял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "снял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "origin": "L2Surface",
+      "replacement": "табл",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "таил",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "талл",
+      "source_id": "ProductiveL2V90Grounded"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "тая",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "origin": "L2Surface",
+      "replacement": "таяв",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "letter-substitution",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "таял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "таяла",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "таяли",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "таяло",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "таят",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "таять",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "техл",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "тзал",
+      "source_id": "ProductiveL2V90Grounded"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "тисл",
+      "source_id": "ProductiveL2V90Grounded"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "origin": "L2Surface",
+      "replacement": "титл",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "ткал",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "тлел",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "тлил",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "тля",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "origin": "L2Surface",
+      "replacement": "тлям",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "тлят",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "origin": "L2Surface",
+      "replacement": "тлях",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "тоям",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "тоях",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "origin": "L2Surface",
+      "replacement": "трал",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "origin": "L2Surface",
+      "replacement": "тряс",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "тряси",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "трясла",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "трясли",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "трясло",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "тряся",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "тулл",
+      "source_id": "ProductiveL2V90Grounded"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "тухл",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "туя",
+      "source_id": "ProductiveL2V90Surface"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "origin": "L2Surface",
+      "replacement": "туям",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "origin": "L2Surface",
+      "replacement": "туях",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "origin": "L2Surface",
+      "replacement": "тырл",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "origin": "L2Surface",
+      "replacement": "тягл",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "тяжел",
+      "source_id": "ProductiveL2V90Grounded"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "productive_v90_lattice_requires_common_l3",
+      "origin": "L2Surface",
+      "replacement": "тяжёл",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "grammar-agreement",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "short_same_length_multi_edit_drift",
+      "origin": "L2Surface",
+      "replacement": "увял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "ужал",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "умял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "унял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "хаял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "чаял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "чуял",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "ёжил",
+      "source_id": "ProductiveL2V90TypedExact"
+    },
+    {
+      "error_class": "composite-typo",
+      "gate_action": "SuggestOnly",
+      "gate_reason": "unexplained_signal_loss",
+      "origin": "L2Surface",
+      "replacement": "ёжят",
+      "source_id": "ProductiveL2V90TypedExact"
+    }
+  ],
+  "cold_us": 3819185,
+  "field_cache": {
+    "generation": 2,
+    "in_flight_entries": 0,
+    "invalidations": 1,
+    "producer_computations": 1,
+    "ready_entries": 1,
+    "ready_hits": 0,
+    "saturated_requests": 0,
+    "superseded_publications": 0,
+    "transient_failures": 0,
+    "waiter_joins": 0
+  },
+  "hot": {
+    "max_us": null,
+    "mean_us": null,
+    "min_us": null,
+    "p50_us": null,
+    "p95_us": null,
+    "p99_us": null,
+    "samples": 0
+  },
+  "kind": "productive_v90_live_owner_query",
+  "materializer_symbol": "materialize_live_productive_v1_field",
+  "outer_readout_cache_bypassed": true,
+  "owner_symbol": "prepare_live_productive_v1_field",
+  "peak_rss_kib": 341420,
+  "producer_calls": 1,
+  "producer_symbol": "canonical_owned_text_candidates",
+  "repeat": 1,
+  "resident_rss_kib": 341420,
+  "runtime_authority_changed": false,
+  "status": "ready",
+  "text": "тжял"
+}

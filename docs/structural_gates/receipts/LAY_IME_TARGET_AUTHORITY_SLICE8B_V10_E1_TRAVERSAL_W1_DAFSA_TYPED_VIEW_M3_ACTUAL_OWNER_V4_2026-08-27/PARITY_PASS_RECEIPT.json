@@ -1,0 +1,71 @@
+{
+  "schema": "lay.m3-actual-owner-parity-pass.v1",
+  "execution_admission": {
+    "manifest_sha256": "639e2ba15660bbdccb2b098e3419f7045aaf0fe328a6d0e0283fba1eba5307a1",
+    "receipt_sha256": "0236395f870d984b4141b4163fd48966b391783d2d1d3dba7400781cb9f9fd4d"
+  },
+  "cargo": {
+    "invocations": 1,
+    "exit_status": 0,
+    "compile_completed": true,
+    "test_started": true,
+    "test_elapsed_seconds": 13.34,
+    "log": {
+      "path": "CARGO.log",
+      "mode": "0444",
+      "size_bytes": 39801,
+      "sha256": "ef42ac8547bccd32b737d7a2317141b086d91363a147fa4bbf9fc4058670b7af"
+    }
+  },
+  "observation": {
+    "receipt": {
+      "path": "OWNER_RECEIPT.json",
+      "mode": "0444",
+      "size_bytes": 5333,
+      "sha256": "aa2cfc21f7f97d8502a459aeb311722836ee62c4e4724e4ce104fbadd19ad829"
+    },
+    "receipt_verdict": "M3_ACTUAL_OWNER_PARITY_PASS",
+    "identity_projection": "PASS",
+    "historical_projection_full_sha256": "5ebffb813ba0ca1e0080ec01756a2dafc51346297558d37cdd135abfde6acfaa",
+    "current_full_sha256": "f2abc8cb8016319a9a074a47310bdb0cbf21859ea6930f93f154187499dc8dcc",
+    "payload_sha256": "23b347c2026667eb1aab5224392834749d142c5e2f35ae2320f33e3ee0de5a23",
+    "owner_request_denominator": 764,
+    "owner_requests_completed": 764,
+    "candidate_mismatches": 0,
+    "certificate_mismatches": 0,
+    "structured_certificate_mismatches": 0,
+    "schedule_mismatches": 0,
+    "completeness_mismatches": 0,
+    "owner_identity_mismatches": 0,
+    "adapter_errors": 0,
+    "certificate_ref_collisions": 0,
+    "capacity_failures": 0,
+    "empty_lane_mismatches": 0,
+    "lattice_marker_mismatches": 0,
+    "emitted_surface_mismatches": 0,
+    "gate_mismatches": 0
+  },
+  "classification": {
+    "sidecar_identity_proven": true,
+    "candidate_and_certificate_retention_proven": true,
+    "owner_lattice_parity_proven": true,
+    "owner_emission_parity_proven": true,
+    "owner_gate_parity_proven": true,
+    "end_to_end_latency_tested": false,
+    "rss_tested": false,
+    "reload_identity_tested": false,
+    "machine_gain_transferred": false,
+    "production_authority_admitted": false
+  },
+  "side_effects": {
+    "network_or_remote_used": false,
+    "perf_or_pmu_used": false,
+    "sidecar_file_written": false,
+    "installed_lay_changed": false,
+    "production_activation_admitted": false,
+    "runtime_authority_changed": false
+  },
+  "retry_under_v7_permitted": false,
+  "next_action": "separate end-to-end single-request latency RSS reload-generation consequence and implementation preflight",
+  "verdict": "M3_ACTUAL_OWNER_PARITY_PASS"
+}

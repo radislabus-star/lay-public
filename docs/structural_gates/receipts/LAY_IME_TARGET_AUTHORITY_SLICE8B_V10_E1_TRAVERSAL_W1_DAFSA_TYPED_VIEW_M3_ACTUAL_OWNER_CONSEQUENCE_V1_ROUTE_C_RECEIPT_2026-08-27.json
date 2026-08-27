@@ -1,0 +1,711 @@
+{
+  "verdict": "VETO",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "m3-actual-owner-consequence-v1-route-c",
+  "domain": "general",
+  "complexity_score": 36,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.1875,
+      "c2": 0.1875,
+      "c3": 0.1875,
+      "c4": 0.1875,
+      "c5": 0.1875,
+      "c6": 0.1875
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 12,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.4058,
+      "c2": 0.4187,
+      "c3": 0.3978,
+      "c4": 0.4331,
+      "c5": 0.3561,
+      "c6": 0.4235
+    },
+    "source_self_score": 0.4058,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "authority": "authority",
+      "claim": "claim",
+      "claim-veto": "claim-veto",
+      "execution": "execution",
+      "preservation": "preservation"
+    },
+    "scores": {
+      "authority": 1.0,
+      "claim": 1.0,
+      "claim-veto": 1.0,
+      "execution": 1.0,
+      "preservation": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "authority": 2,
+      "claim": 1,
+      "claim-veto": 1,
+      "execution": 1,
+      "preservation": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.4058,
+      "norm": 77.923,
+      "triads": 6
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "authority": "authority",
+      "claim": "claim",
+      "claim-veto": "claim-veto",
+      "execution": "execution",
+      "preservation": "preservation"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "authority": {
+          "norm": 45.7821,
+          "self_coherence": 0.7153,
+          "triads": 2
+        },
+        "claim": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "claim-veto": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "preservation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "authority": {
+          "norm": 45.7821,
+          "self_coherence": 0.7153,
+          "triads": 2
+        },
+        "claim": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "claim-veto": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "preservation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "authority": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "authority",
+        "exact_source_groups": [
+          "authority"
+        ]
+      },
+      "claim": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "claim",
+        "exact_source_groups": [
+          "claim"
+        ]
+      },
+      "claim-veto": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "claim-veto",
+        "exact_source_groups": [
+          "claim-veto"
+        ]
+      },
+      "execution": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "execution",
+        "exact_source_groups": [
+          "execution"
+        ]
+      },
+      "preservation": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "preservation",
+        "exact_source_groups": [
+          "preservation"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "authority": {
+        "authority": 1.0,
+        "claim": -0.0573,
+        "claim-veto": -0.0082,
+        "execution": -0.03,
+        "preservation": 0.0683
+      },
+      "claim": {
+        "authority": -0.0573,
+        "claim": 1.0,
+        "claim-veto": -0.0332,
+        "execution": 0.0195,
+        "preservation": -0.0371
+      },
+      "claim-veto": {
+        "authority": -0.0082,
+        "claim": -0.0332,
+        "claim-veto": 1.0,
+        "execution": 0.0371,
+        "preservation": 0.0391
+      },
+      "execution": {
+        "authority": -0.03,
+        "claim": 0.0195,
+        "claim-veto": 0.0371,
+        "execution": 1.0,
+        "preservation": -0.0449
+      },
+      "preservation": {
+        "authority": 0.0683,
+        "claim": -0.0371,
+        "claim-veto": 0.0391,
+        "execution": -0.0449,
+        "preservation": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [
+        {
+          "center": "decisioncore and verifier",
+          "group": "authority",
+          "kind": "owner_conflict",
+          "owners": [
+            "decisioncore and verifier",
+            "productive v90"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        }
+      ],
+      "group_centers": {
+        "authority": {
+          "gravity": 0.5,
+          "owner": "decisioncore and verifier",
+          "owners": {
+            "decisioncore and verifier": 2,
+            "productive v90": 2
+          },
+          "support": 2,
+          "total": 4
+        },
+        "claim": {
+          "gravity": 1.0,
+          "owner": "claim",
+          "owners": {
+            "claim": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "claim-veto": {
+          "gravity": 1.0,
+          "owner": "claim-veto",
+          "owners": {
+            "claim-veto": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "execution": {
+          "gravity": 1.0,
+          "owner": "execution",
+          "owners": {
+            "execution": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "preservation": {
+          "gravity": 1.0,
+          "owner": "preservation",
+          "owners": {
+            "preservation": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "authority": {
+          "gravity": 0.5,
+          "owner": "decisioncore and verifier",
+          "owners": {
+            "decisioncore and verifier": 2,
+            "productive v90": 2
+          },
+          "support": 2,
+          "total": 4
+        },
+        "claim": {
+          "gravity": 1.0,
+          "owner": "claim",
+          "owners": {
+            "claim": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "claim-veto": {
+          "gravity": 1.0,
+          "owner": "claim-veto",
+          "owners": {
+            "claim-veto": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "execution": {
+          "gravity": 1.0,
+          "owner": "execution",
+          "owners": {
+            "execution": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "preservation": {
+          "gravity": 1.0,
+          "owner": "preservation",
+          "owners": {
+            "preservation": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "authority"
+      }
+    ],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "authority": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "consequence authority section",
+            "selected proof boundary"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "decisioncore and verifier",
+            "productive v90"
+          ],
+          "scopes": [
+            "authority"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "claim": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "consequence next tree",
+            "selected next action"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "claim"
+          ],
+          "scopes": [
+            "claim"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "claim-veto": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "consequence claim boundary",
+            "explicit claim veto"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "claim-veto"
+          ],
+          "scopes": [
+            "claim-veto"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "execution": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "consequence admitted scope",
+            "selected execution scope"
+          ],
+          "layers": [
+            "runtime"
+          ],
+          "outputs": [],
+          "owners": [
+            "execution"
+          ],
+          "scopes": [
+            "execution"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "preservation": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "consequence edit boundary",
+            "explicit source veto"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "preservation"
+          ],
+          "scopes": [
+            "preservation"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "authority": {
+          "norm": 45.7821,
+          "self_coherence": 0.7153,
+          "triads": 2
+        },
+        "claim": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "claim-veto": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "preservation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "authority": {
+          "authority": 1.0,
+          "claim": -0.0573,
+          "claim-veto": -0.0082,
+          "execution": -0.03,
+          "preservation": 0.0683
+        },
+        "claim": {
+          "authority": -0.0573,
+          "claim": 1.0,
+          "claim-veto": -0.0332,
+          "execution": 0.0195,
+          "preservation": -0.0371
+        },
+        "claim-veto": {
+          "authority": -0.0082,
+          "claim": -0.0332,
+          "claim-veto": 1.0,
+          "execution": 0.0371,
+          "preservation": 0.0391
+        },
+        "execution": {
+          "authority": -0.03,
+          "claim": 0.0195,
+          "claim-veto": 0.0371,
+          "execution": 1.0,
+          "preservation": -0.0449
+        },
+        "preservation": {
+          "authority": 0.0683,
+          "claim": -0.0371,
+          "claim-veto": 0.0391,
+          "execution": -0.0449,
+          "preservation": 1.0
+        }
+      },
+      "source": {
+        "authority": {
+          "norm": 45.7821,
+          "self_coherence": 0.7153,
+          "triads": 2
+        },
+        "claim": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "claim-veto": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "execution": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "preservation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "authority": 2,
+      "claim": 1,
+      "claim-veto": 1,
+      "execution": 1,
+      "preservation": 1
+    },
+    "stable_groups": [
+      "authority",
+      "claim",
+      "claim-veto",
+      "execution",
+      "preservation"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 1,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 1,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [
+    {
+      "kind": "evidence_conflict",
+      "priority": "high",
+      "reason": "one evidence span is bound to incompatible role fillers",
+      "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+      "target": "consequence authority section"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "authority"
+    }
+  ],
+  "agent_decision": {
+    "action": "REPAIR_REQUIRED",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Apply the repair_queue before editing or accepting this route.",
+    "repair_count": 2,
+    "repair_queue": [
+      {
+        "kind": "evidence_conflict",
+        "priority": "high",
+        "reason": "one evidence span is bound to incompatible role fillers",
+        "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+        "target": "consequence authority section"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "authority"
+      }
+    ],
+    "safe_to_edit": false
+  },
+  "explanation": [
+    "No decisive structural signal was found."
+  ],
+  "repair_prompt": "Repair the candidate answer using only one coherent structural route.\nNANDA verdict: VETO.\nPrimary repair_queue:\n- [high] evidence_conflict: Resolve the source conflict and bind each triad to its exact supporting span.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.",
+  "trace_path": "/tmp/nanda-structural-gate/m3-actual-owner-consequence-v1-route-c.trace.json"
+}

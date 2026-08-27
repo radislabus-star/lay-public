@@ -1,0 +1,2028 @@
+{
+  "verdict": "VETO",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-b-hardware-contract-v2",
+  "domain": "code",
+  "complexity_score": 100,
+  "mandatory_gate": true,
+  "limits": [
+    "entities target limit exceeded: 54>32",
+    "roles target limit exceeded: 41>24"
+  ],
+  "stable_triads": [
+    "s1",
+    "s2",
+    "s3",
+    "s4",
+    "s5",
+    "s6",
+    "s7",
+    "s8",
+    "s9",
+    "s10",
+    "s11",
+    "s12",
+    "s13",
+    "s14",
+    "s15",
+    "s16"
+  ],
+  "weak_triads": [
+    "c1",
+    "c10",
+    "c11",
+    "c12",
+    "c13",
+    "c14",
+    "c15",
+    "c16",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8",
+    "c9"
+  ],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.0,
+      "c10": 0.0,
+      "c11": 0.0217,
+      "c12": 0.0,
+      "c13": 0.0,
+      "c14": 0.0,
+      "c15": 0.0,
+      "c16": 0.0,
+      "c2": 0.0,
+      "c3": 0.0,
+      "c4": 0.0,
+      "c5": 0.0,
+      "c6": 0.0,
+      "c7": 0.0,
+      "c8": 0.0,
+      "c9": 0.0217
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 32,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "s9",
+      "s10",
+      "s11",
+      "s12",
+      "s13",
+      "s14",
+      "s15",
+      "s16",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10",
+      "c11",
+      "c12",
+      "c13",
+      "c14",
+      "c15",
+      "c16"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": -0.1073,
+      "c10": -0.0251,
+      "c11": 0.0039,
+      "c12": -0.0126,
+      "c13": -0.0386,
+      "c14": -0.0386,
+      "c15": -0.0184,
+      "c16": -0.0135,
+      "c2": -0.0512,
+      "c3": -0.029,
+      "c4": -0.0058,
+      "c5": -0.028,
+      "c6": 0.0058,
+      "c7": -0.0174,
+      "c8": 0.028,
+      "c9": 0.0242
+    },
+    "source_self_score": 0.2527,
+    "stable": [],
+    "weak": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10",
+      "c11",
+      "c12",
+      "c13",
+      "c14",
+      "c15",
+      "c16"
+    ],
+    "weak_details": {
+      "c1": {
+        "nearest_source": "s3",
+        "nearest_source_score": 0.0449,
+        "score": -0.1073,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c10": {
+        "nearest_source": "s13",
+        "nearest_source_score": 0.0332,
+        "score": -0.0251,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c11": {
+        "nearest_source": "s9",
+        "nearest_source_score": 0.0527,
+        "score": 0.0039,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c12": {
+        "nearest_source": "s2",
+        "nearest_source_score": 0.0527,
+        "score": -0.0126,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c13": {
+        "nearest_source": "s4",
+        "nearest_source_score": 0.0273,
+        "score": -0.0386,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c14": {
+        "nearest_source": "s3",
+        "nearest_source_score": 0.0586,
+        "score": -0.0386,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c15": {
+        "nearest_source": "s12",
+        "nearest_source_score": 0.0391,
+        "score": -0.0184,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c16": {
+        "nearest_source": "s1",
+        "nearest_source_score": 0.0605,
+        "score": -0.0135,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c2": {
+        "nearest_source": "s13",
+        "nearest_source_score": 0.0449,
+        "score": -0.0512,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c3": {
+        "nearest_source": "s3",
+        "nearest_source_score": 0.0391,
+        "score": -0.029,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c4": {
+        "nearest_source": "s15",
+        "nearest_source_score": 0.0371,
+        "score": -0.0058,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c5": {
+        "nearest_source": "s12",
+        "nearest_source_score": 0.041,
+        "score": -0.028,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c6": {
+        "nearest_source": "s1",
+        "nearest_source_score": 0.0547,
+        "score": 0.0058,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c7": {
+        "nearest_source": "s15",
+        "nearest_source_score": 0.0527,
+        "score": -0.0174,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c8": {
+        "nearest_source": "s7",
+        "nearest_source_score": 0.0645,
+        "score": 0.028,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c9": {
+        "nearest_source": "s14",
+        "nearest_source_score": 0.0605,
+        "score": 0.0242,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      }
+    }
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "admission": "environment-pmu",
+      "denominator-boundary": "historical-envelope",
+      "diagnostic-proxy": "twenty-client",
+      "environment-pmu": "denominator-boundary",
+      "historical-envelope": "historical-envelope",
+      "one-client": "denominator-boundary",
+      "twenty-client": "historical-envelope"
+    },
+    "scores": {
+      "admission": 0.0287,
+      "denominator-boundary": 0.012,
+      "diagnostic-proxy": 0.0119,
+      "environment-pmu": 0.0255,
+      "historical-envelope": -0.0052,
+      "one-client": 0.0629,
+      "twenty-client": 0.0342
+    },
+    "weak": [
+      "admission",
+      "denominator-boundary",
+      "diagnostic-proxy",
+      "environment-pmu",
+      "historical-envelope",
+      "one-client",
+      "twenty-client"
+    ]
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "admission": 2,
+      "denominator-boundary": 2,
+      "diagnostic-proxy": 3,
+      "environment-pmu": 2,
+      "historical-envelope": 3,
+      "one-client": 2,
+      "twenty-client": 2
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.2447,
+      "norm": 125.2996,
+      "triads": 16
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "admission": "environment-pmu",
+      "denominator-boundary": "historical-envelope",
+      "diagnostic-proxy": "twenty-client",
+      "environment-pmu": "denominator-boundary",
+      "historical-envelope": "historical-envelope",
+      "one-client": "denominator-boundary",
+      "twenty-client": "historical-envelope"
+    },
+    "foreign_pull": [
+      {
+        "candidate_group": "historical-envelope",
+        "candidate_triad": "c2",
+        "dominant_source_group": "historical-envelope",
+        "exact_source_groups": [],
+        "object": "per-search per-edge one-client and twenty-client phase claims",
+        "relation": "excludes",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "subject": "B3 historical observer",
+        "triad_best_score": 0.0166,
+        "triad_best_source_group": "denominator-boundary"
+      },
+      {
+        "candidate_group": "historical-envelope",
+        "candidate_triad": "c3",
+        "dominant_source_group": "historical-envelope",
+        "exact_source_groups": [],
+        "object": "historical exact ELF phase attribution IMPOSSIBLE",
+        "relation": "assigns_status",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "subject": "B4 feasibility gate",
+        "triad_best_score": 0.0304,
+        "triad_best_source_group": "diagnostic-proxy"
+      },
+      {
+        "candidate_group": "diagnostic-proxy",
+        "candidate_triad": "c4",
+        "dominant_source_group": "twenty-client",
+        "exact_source_groups": [],
+        "object": "exact 39047-byte V10 production region before cfg test",
+        "relation": "preserves",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "subject": "diagnostic proxy",
+        "triad_best_score": 0.0176,
+        "triad_best_source_group": "admission"
+      },
+      {
+        "candidate_group": "diagnostic-proxy",
+        "candidate_triad": "c6",
+        "dominant_source_group": "twenty-client",
+        "exact_source_groups": [],
+        "object": "exact production and full-row parity for all 382 cases",
+        "relation": "requires_before_hardware",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "subject": "diagnostic proxy",
+        "triad_best_score": 0.0517,
+        "triad_best_source_group": "diagnostic-proxy"
+      },
+      {
+        "candidate_group": "environment-pmu",
+        "candidate_triad": "c7",
+        "dominant_source_group": "denominator-boundary",
+        "exact_source_groups": [],
+        "object": "topology governor affinity load and thermal state",
+        "relation": "captures_and_freezes",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "subject": "B1 environment gate",
+        "triad_best_score": 0.0309,
+        "triad_best_source_group": "one-client"
+      },
+      {
+        "candidate_group": "environment-pmu",
+        "candidate_triad": "c8",
+        "dominant_source_group": "denominator-boundary",
+        "exact_source_groups": [],
+        "object": "exact non-multiplexed perf groups on P and E core types",
+        "relation": "validates",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "subject": "B2 PMU gate",
+        "triad_best_score": 0.0628,
+        "triad_best_source_group": "environment-pmu"
+      },
+      {
+        "candidate_group": "twenty-client",
+        "candidate_triad": "c11",
+        "dominant_source_group": "historical-envelope",
+        "exact_source_groups": [],
+        "object": "382 cases across 20 ceil-div chunks",
+        "relation": "preserves",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "subject": "B6 twenty-client proxy schedule",
+        "triad_best_score": 0.0617,
+        "triad_best_source_group": "one-client"
+      },
+      {
+        "candidate_group": "twenty-client",
+        "candidate_triad": "c12",
+        "dominant_source_group": "historical-envelope",
+        "exact_source_groups": [],
+        "object": "contiguous chunks to numerically ordered singleton CPU affinities",
+        "relation": "binds",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "subject": "B6 twenty-client proxy schedule",
+        "triad_best_score": 0.0416,
+        "triad_best_source_group": "denominator-boundary"
+      },
+      {
+        "candidate_group": "denominator-boundary",
+        "candidate_triad": "c13",
+        "dominant_source_group": "historical-envelope",
+        "exact_source_groups": [],
+        "object": "historical envelope proxy counters structural work and pristine latency",
+        "relation": "keeps_separate",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "subject": "B7 metric reducer",
+        "triad_best_score": 0.0247,
+        "triad_best_source_group": "diagnostic-proxy"
+      },
+      {
+        "candidate_group": "admission",
+        "candidate_triad": "c16",
+        "dominant_source_group": "environment-pmu",
+        "exact_source_groups": [],
+        "object": "predictive-model paper contract",
+        "relation": "permits_only",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "subject": "B_COMPLETE_WITH_DIAGNOSTIC_PROXY",
+        "triad_best_score": 0.025,
+        "triad_best_source_group": "denominator-boundary"
+      }
+    ],
+    "group_centroids": {
+      "candidate": {
+        "admission": {
+          "norm": 45.6946,
+          "self_coherence": 0.714,
+          "triads": 2
+        },
+        "denominator-boundary": {
+          "norm": 45.1221,
+          "self_coherence": 0.705,
+          "triads": 2
+        },
+        "diagnostic-proxy": {
+          "norm": 55.2811,
+          "self_coherence": 0.5758,
+          "triads": 3
+        },
+        "environment-pmu": {
+          "norm": 45.299,
+          "self_coherence": 0.7078,
+          "triads": 2
+        },
+        "historical-envelope": {
+          "norm": 55.7853,
+          "self_coherence": 0.5811,
+          "triads": 3
+        },
+        "one-client": {
+          "norm": 45.1664,
+          "self_coherence": 0.7057,
+          "triads": 2
+        },
+        "twenty-client": {
+          "norm": 44.2719,
+          "self_coherence": 0.6917,
+          "triads": 2
+        }
+      },
+      "source": {
+        "admission": {
+          "norm": 46.0869,
+          "self_coherence": 0.7201,
+          "triads": 2
+        },
+        "denominator-boundary": {
+          "norm": 45.0777,
+          "self_coherence": 0.7043,
+          "triads": 2
+        },
+        "diagnostic-proxy": {
+          "norm": 55.5698,
+          "self_coherence": 0.5789,
+          "triads": 3
+        },
+        "environment-pmu": {
+          "norm": 45.7821,
+          "self_coherence": 0.7153,
+          "triads": 2
+        },
+        "historical-envelope": {
+          "norm": 55.4977,
+          "self_coherence": 0.5781,
+          "triads": 3
+        },
+        "one-client": {
+          "norm": 44.5421,
+          "self_coherence": 0.696,
+          "triads": 2
+        },
+        "twenty-client": {
+          "norm": 45.5631,
+          "self_coherence": 0.7119,
+          "triads": 2
+        }
+      }
+    },
+    "group_links": {
+      "admission": {
+        "dominant_score": 0.0287,
+        "dominant_source_group": "environment-pmu",
+        "exact_source_groups": []
+      },
+      "denominator-boundary": {
+        "dominant_score": 0.012,
+        "dominant_source_group": "historical-envelope",
+        "exact_source_groups": []
+      },
+      "diagnostic-proxy": {
+        "dominant_score": 0.0119,
+        "dominant_source_group": "twenty-client",
+        "exact_source_groups": []
+      },
+      "environment-pmu": {
+        "dominant_score": 0.0255,
+        "dominant_source_group": "denominator-boundary",
+        "exact_source_groups": []
+      },
+      "historical-envelope": {
+        "dominant_score": -0.0052,
+        "dominant_source_group": "historical-envelope",
+        "exact_source_groups": []
+      },
+      "one-client": {
+        "dominant_score": 0.0629,
+        "dominant_source_group": "denominator-boundary",
+        "exact_source_groups": []
+      },
+      "twenty-client": {
+        "dominant_score": 0.0342,
+        "dominant_source_group": "historical-envelope",
+        "exact_source_groups": []
+      }
+    },
+    "interference_matrix": {
+      "admission": {
+        "admission": -0.0247,
+        "denominator-boundary": 0.0117,
+        "diagnostic-proxy": -0.0504,
+        "environment-pmu": 0.0287,
+        "historical-envelope": 0.0095,
+        "one-client": -0.0177,
+        "twenty-client": -0.0115
+      },
+      "denominator-boundary": {
+        "admission": -0.0269,
+        "denominator-boundary": -0.0511,
+        "diagnostic-proxy": -0.004,
+        "environment-pmu": -0.0503,
+        "historical-envelope": 0.012,
+        "one-client": -0.0398,
+        "twenty-client": 0.0019
+      },
+      "diagnostic-proxy": {
+        "admission": -0.0024,
+        "denominator-boundary": 0.0016,
+        "diagnostic-proxy": 0.0046,
+        "environment-pmu": -0.03,
+        "historical-envelope": -0.0046,
+        "one-client": -0.0276,
+        "twenty-client": 0.0119
+      },
+      "environment-pmu": {
+        "admission": -0.0172,
+        "denominator-boundary": 0.0255,
+        "diagnostic-proxy": 0.0072,
+        "environment-pmu": 0.0174,
+        "historical-envelope": -0.0056,
+        "one-client": -0.0099,
+        "twenty-client": 0.0039
+      },
+      "historical-envelope": {
+        "admission": -0.0537,
+        "denominator-boundary": -0.027,
+        "diagnostic-proxy": -0.031,
+        "environment-pmu": -0.0642,
+        "historical-envelope": -0.0052,
+        "one-client": -0.0837,
+        "twenty-client": -0.0338
+      },
+      "one-client": {
+        "admission": -0.0461,
+        "denominator-boundary": 0.0629,
+        "diagnostic-proxy": 0.0303,
+        "environment-pmu": 0.0019,
+        "historical-envelope": 0.0016,
+        "one-client": -0.0219,
+        "twenty-client": -0.0369
+      },
+      "twenty-client": {
+        "admission": 0.0137,
+        "denominator-boundary": 0.0261,
+        "diagnostic-proxy": -0.0049,
+        "environment-pmu": -0.0375,
+        "historical-envelope": 0.0342,
+        "one-client": -0.0284,
+        "twenty-client": -0.0278
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [
+        {
+          "center": "b contract",
+          "group": "admission",
+          "kind": "owner_conflict",
+          "owners": [
+            "b contract",
+            "p0 correction",
+            "user"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        },
+        {
+          "center": "b contract",
+          "group": "denominator-boundary",
+          "kind": "owner_conflict",
+          "owners": [
+            "b contract",
+            "owning architecture",
+            "p0 correction"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        },
+        {
+          "center": "b contract",
+          "group": "diagnostic-proxy",
+          "kind": "owner_conflict",
+          "owners": [
+            "b contract",
+            "exact v10 module",
+            "exact v10 test module"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        },
+        {
+          "center": "b contract",
+          "group": "environment-pmu",
+          "kind": "owner_conflict",
+          "owners": [
+            "b contract",
+            "user"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        },
+        {
+          "center": "b contract",
+          "group": "historical-envelope",
+          "kind": "owner_conflict",
+          "owners": [
+            "b contract",
+            "historical elf"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        },
+        {
+          "center": "b contract",
+          "group": "one-client",
+          "kind": "owner_conflict",
+          "owners": [
+            "b contract",
+            "run_gate_c"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        },
+        {
+          "center": "b contract",
+          "group": "twenty-client",
+          "kind": "owner_conflict",
+          "owners": [
+            "b contract",
+            "run_twenty_client_gate"
+          ],
+          "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+          "risk": "helper or candidate group is attracted to more than one decision owner"
+        }
+      ],
+      "group_centers": {
+        "admission": {
+          "gravity": 0.5,
+          "owner": "b contract",
+          "owners": {
+            "b contract": 2,
+            "p0 correction": 1,
+            "user": 1
+          },
+          "support": 2,
+          "total": 4
+        },
+        "denominator-boundary": {
+          "gravity": 0.5,
+          "owner": "b contract",
+          "owners": {
+            "b contract": 2,
+            "owning architecture": 1,
+            "p0 correction": 1
+          },
+          "support": 2,
+          "total": 4
+        },
+        "diagnostic-proxy": {
+          "gravity": 0.5,
+          "owner": "b contract",
+          "owners": {
+            "b contract": 3,
+            "exact v10 module": 2,
+            "exact v10 test module": 1
+          },
+          "support": 3,
+          "total": 6
+        },
+        "environment-pmu": {
+          "gravity": 0.5,
+          "owner": "b contract",
+          "owners": {
+            "b contract": 2,
+            "user": 2
+          },
+          "support": 2,
+          "total": 4
+        },
+        "historical-envelope": {
+          "gravity": 0.5,
+          "owner": "b contract",
+          "owners": {
+            "b contract": 3,
+            "historical elf": 3
+          },
+          "support": 3,
+          "total": 6
+        },
+        "one-client": {
+          "gravity": 0.5,
+          "owner": "b contract",
+          "owners": {
+            "b contract": 2,
+            "run_gate_c": 2
+          },
+          "support": 2,
+          "total": 4
+        },
+        "twenty-client": {
+          "gravity": 0.5,
+          "owner": "b contract",
+          "owners": {
+            "b contract": 2,
+            "run_twenty_client_gate": 2
+          },
+          "support": 2,
+          "total": 4
+        }
+      },
+      "route_centers": {
+        "admission": {
+          "gravity": 0.5,
+          "owner": "b contract",
+          "owners": {
+            "b contract": 2,
+            "p0 correction": 1,
+            "user": 1
+          },
+          "support": 2,
+          "total": 4
+        },
+        "claim-boundary": {
+          "gravity": 1.0,
+          "owner": "b contract",
+          "owners": {
+            "b contract": 4
+          },
+          "support": 4,
+          "total": 4
+        },
+        "contract": {
+          "gravity": 1.0,
+          "owner": "user",
+          "owners": {
+            "user": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "execution": {
+          "gravity": 0.3636,
+          "owner": "b contract",
+          "owners": {
+            "b contract": 4,
+            "exact v10 module": 1,
+            "historical elf": 2,
+            "run_gate_c": 2,
+            "run_twenty_client_gate": 2
+          },
+          "support": 4,
+          "total": 11
+        },
+        "observation": {
+          "gravity": 0.75,
+          "owner": "b contract",
+          "owners": {
+            "b contract": 3,
+            "historical elf": 1
+          },
+          "support": 3,
+          "total": 4
+        },
+        "proof": {
+          "gravity": 0.5,
+          "owner": "b contract",
+          "owners": {
+            "b contract": 2,
+            "exact v10 test module": 1,
+            "owning architecture": 1
+          },
+          "support": 2,
+          "total": 4
+        },
+        "provenance": {
+          "gravity": 0.3333,
+          "owner": "b contract",
+          "owners": {
+            "b contract": 1,
+            "exact v10 module": 1,
+            "p0 correction": 1
+          },
+          "support": 1,
+          "total": 3
+        }
+      }
+    },
+    "repair_queue": [
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "admission"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "denominator-boundary"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "diagnostic-proxy"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "environment-pmu"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "historical-envelope"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "one-client"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "twenty-client"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "denominator-boundary",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c2"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "diagnostic-proxy",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c3"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "admission",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c4"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "diagnostic-proxy",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c6"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "one-client",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c7"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "environment-pmu",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c8"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "one-client",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c11"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "denominator-boundary",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c12"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "diagnostic-proxy",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c13"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "denominator-boundary",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c16"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "admission"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "denominator-boundary"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "diagnostic-proxy"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "environment-pmu"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "historical-envelope"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "one-client"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "twenty-client"
+      }
+    ],
+    "repair_tasks": [
+      {
+        "candidate_group": "admission",
+        "dominant_source_group": "environment-pmu",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0287,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "denominator-boundary",
+        "dominant_source_group": "historical-envelope",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.012,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "diagnostic-proxy",
+        "dominant_source_group": "twenty-client",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0119,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "environment-pmu",
+        "dominant_source_group": "denominator-boundary",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0255,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "historical-envelope",
+        "dominant_source_group": "historical-envelope",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": -0.0052,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "one-client",
+        "dominant_source_group": "denominator-boundary",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0629,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      },
+      {
+        "candidate_group": "twenty-client",
+        "dominant_source_group": "historical-envelope",
+        "reason": "candidate group has low interference coherence with every source group",
+        "score": 0.0342,
+        "suggested_fix": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes."
+      }
+    ],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "admission": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [
+            "admission sequence",
+            "correction.json",
+            "paper stage",
+            "paper task"
+          ],
+          "evidence_paths": [
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:43",
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:487",
+            "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f-correction-v1/correction.json",
+            "user_request:2026-08-24"
+          ],
+          "layers": [
+            "contract"
+          ],
+          "outputs": [
+            "closed p0 status",
+            "no execution",
+            "no implementation authority"
+          ],
+          "owners": [
+            "b contract",
+            "p0 correction",
+            "user"
+          ],
+          "scopes": [
+            "current stage",
+            "future stage"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "claim-boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 4,
+          "entrypoints": [
+            "b3",
+            "b4",
+            "b5",
+            "b7 audit"
+          ],
+          "evidence_paths": [
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:262",
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:268",
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:343",
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:447"
+          ],
+          "layers": [
+            "contract"
+          ],
+          "outputs": [
+            "b_complete_with_diagnostic_proxy",
+            "impossible",
+            "no phase metrics",
+            "phase-selected proxy window"
+          ],
+          "owners": [
+            "b contract"
+          ],
+          "scopes": [
+            "evidence boundary",
+            "exact binary limit",
+            "one-client proxy limit"
+          ],
+          "source_triads": 0,
+          "triads": 4
+        },
+        "contract": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 0,
+          "entrypoints": [
+            "b1",
+            "b2"
+          ],
+          "evidence_paths": [
+            "user_request:2026-08-24"
+          ],
+          "layers": [
+            "environment",
+            "pmu"
+          ],
+          "outputs": [
+            "capability receipt",
+            "environment receipt"
+          ],
+          "owners": [
+            "user"
+          ],
+          "scopes": [
+            "b paper design"
+          ],
+          "source_triads": 2,
+          "triads": 2
+        },
+        "execution": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 4,
+          "entrypoints": [
+            "b5",
+            "b6",
+            "case loop",
+            "proxy phase controller",
+            "run_v10_full_proof",
+            "scoped workers",
+            "search_typed_peaks",
+            "v10_full_v13_abc_proof"
+          ],
+          "evidence_paths": [
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:299",
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:312",
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:349",
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:355",
+            "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs:1514",
+            "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs:1552",
+            "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs:2000",
+            "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs:2006",
+            "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs:2136",
+            "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs:2141",
+            "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs:830"
+          ],
+          "layers": [
+            "contract",
+            "executable",
+            "executor",
+            "schedule"
+          ],
+          "outputs": [
+            "19 chunks of 20 and one of 2",
+            "20 chunks",
+            "combined receipt",
+            "contaminated phase",
+            "executor-core observations",
+            "executor-core output",
+            "mixed hardware work",
+            "per-worker observations",
+            "searchresult",
+            "sequential outcomes"
+          ],
+          "owners": [
+            "b contract",
+            "exact v10 module",
+            "historical elf",
+            "run_gate_c",
+            "run_twenty_client_gate"
+          ],
+          "scopes": [
+            "exact binary route",
+            "executor semantics",
+            "one-client proxy schedule",
+            "one-client source limit",
+            "one-client source schedule",
+            "proxy execution",
+            "twenty-client proxy schedule",
+            "twenty-client source schedule"
+          ],
+          "source_triads": 7,
+          "triads": 11
+        },
+        "observation": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 3,
+          "entrypoints": [
+            "b1",
+            "b2 benign probe",
+            "b3",
+            "direct inspection"
+          ],
+          "evidence_paths": [
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:119",
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:188",
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:236",
+            "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/lay-8b3af2179d6f9249"
+          ],
+          "layers": [
+            "contract",
+            "executable"
+          ],
+          "outputs": [
+            "capability receipt",
+            "environment receipt",
+            "no phase selector",
+            "whole-process envelope"
+          ],
+          "owners": [
+            "b contract",
+            "historical elf"
+          ],
+          "scopes": [
+            "aggregate only",
+            "b evidence",
+            "exact binary limit"
+          ],
+          "source_triads": 1,
+          "triads": 4
+        },
+        "proof": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [
+            "b7",
+            "p0 frozen measurement contract",
+            "proxy parity route",
+            "run_gate_c"
+          ],
+          "evidence_paths": [
+            "../ime-target-authority-slice8-lexical-readout-2026-08-23.md:1899",
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:305",
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:403",
+            "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs:2000"
+          ],
+          "layers": [
+            "contract",
+            "proof"
+          ],
+          "outputs": [
+            "parity receipt",
+            "scoped metrics",
+            "separate receipts",
+            "zero mismatch fields"
+          ],
+          "owners": [
+            "b contract",
+            "exact v10 test module",
+            "owning architecture"
+          ],
+          "scopes": [
+            "evidence boundary",
+            "future evidence",
+            "proxy semantics",
+            "semantic parity"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "provenance": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [
+            "b4 proxy preflight",
+            "cfg test",
+            "source closure"
+          ],
+          "evidence_paths": [
+            "../ime-target-authority-slice8-lexical-readout-2026-08-23.md:1830",
+            "../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md:288",
+            "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs:1149"
+          ],
+          "layers": [
+            "claim boundary",
+            "contract",
+            "source"
+          ],
+          "outputs": [
+            "39047-byte production prefix",
+            "no historical rebuild claim",
+            "prefix sha ce9ea2d2"
+          ],
+          "owners": [
+            "b contract",
+            "exact v10 module",
+            "p0 correction"
+          ],
+          "scopes": [
+            "historical rebuild",
+            "proxy identity",
+            "source boundary"
+          ],
+          "source_triads": 2,
+          "triads": 3
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "admission": {
+          "norm": 45.6946,
+          "self_coherence": 0.714,
+          "triads": 2
+        },
+        "claim-boundary": {
+          "norm": 63.498,
+          "self_coherence": 0.4961,
+          "triads": 4
+        },
+        "execution": {
+          "norm": 61.9355,
+          "self_coherence": 0.4839,
+          "triads": 4
+        },
+        "observation": {
+          "norm": 53.6656,
+          "self_coherence": 0.559,
+          "triads": 3
+        },
+        "proof": {
+          "norm": 46.1303,
+          "self_coherence": 0.7208,
+          "triads": 2
+        },
+        "provenance": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "admission": {
+          "admission": -0.0247,
+          "contract": 0.0287,
+          "execution": -0.0236,
+          "observation": -0.0274,
+          "proof": 0.0,
+          "provenance": -0.0038
+        },
+        "claim-boundary": {
+          "admission": -0.0601,
+          "contract": -0.0715,
+          "execution": -0.0642,
+          "observation": 0.0551,
+          "proof": 0.0237,
+          "provenance": -0.0149
+        },
+        "execution": {
+          "admission": 0.0042,
+          "contract": -0.0409,
+          "execution": -0.0049,
+          "observation": 0.0212,
+          "proof": 0.0071,
+          "provenance": 0.0055
+        },
+        "observation": {
+          "admission": -0.0283,
+          "contract": -0.0049,
+          "execution": -0.0664,
+          "observation": 0.0163,
+          "proof": -0.0387,
+          "provenance": 0.0208
+        },
+        "proof": {
+          "admission": -0.0452,
+          "contract": -0.0303,
+          "execution": -0.0152,
+          "observation": -0.0135,
+          "proof": 0.0038,
+          "provenance": 0.0446
+        },
+        "provenance": {
+          "admission": 0.0176,
+          "contract": 0.0137,
+          "execution": -0.0044,
+          "observation": -0.0039,
+          "proof": -0.0097,
+          "provenance": -0.0268
+        }
+      },
+      "source": {
+        "admission": {
+          "norm": 46.0869,
+          "self_coherence": 0.7201,
+          "triads": 2
+        },
+        "contract": {
+          "norm": 45.7821,
+          "self_coherence": 0.7153,
+          "triads": 2
+        },
+        "execution": {
+          "norm": 85.3229,
+          "self_coherence": 0.3809,
+          "triads": 7
+        },
+        "observation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proof": {
+          "norm": 45.2106,
+          "self_coherence": 0.7064,
+          "triads": 2
+        },
+        "provenance": {
+          "norm": 46.6476,
+          "self_coherence": 0.7289,
+          "triads": 2
+        }
+      }
+    },
+    "source_group_sizes": {
+      "admission": 2,
+      "denominator-boundary": 2,
+      "diagnostic-proxy": 3,
+      "environment-pmu": 2,
+      "historical-envelope": 3,
+      "one-client": 2,
+      "twenty-client": 2
+    },
+    "stable_groups": [],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 17,
+      "foreign_pull_energy": 10,
+      "owner_conflict": 7,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [
+    {
+      "kind": "route_splice",
+      "priority": "high",
+      "reason": "candidate triad is pulled toward a foreign source route",
+      "repair": "Move the triad to its source-owned route or split the candidate group.",
+      "target": "historical-envelope"
+    },
+    {
+      "kind": "route_splice",
+      "priority": "high",
+      "reason": "candidate triad is pulled toward a foreign source route",
+      "repair": "Move the triad to its source-owned route or split the candidate group.",
+      "target": "diagnostic-proxy"
+    },
+    {
+      "kind": "route_splice",
+      "priority": "high",
+      "reason": "candidate triad is pulled toward a foreign source route",
+      "repair": "Move the triad to its source-owned route or split the candidate group.",
+      "target": "environment-pmu"
+    },
+    {
+      "kind": "route_splice",
+      "priority": "high",
+      "reason": "candidate triad is pulled toward a foreign source route",
+      "repair": "Move the triad to its source-owned route or split the candidate group.",
+      "target": "twenty-client"
+    },
+    {
+      "kind": "route_splice",
+      "priority": "high",
+      "reason": "candidate triad is pulled toward a foreign source route",
+      "repair": "Move the triad to its source-owned route or split the candidate group.",
+      "target": "denominator-boundary"
+    },
+    {
+      "kind": "route_splice",
+      "priority": "high",
+      "reason": "candidate triad is pulled toward a foreign source route",
+      "repair": "Move the triad to its source-owned route or split the candidate group.",
+      "target": "admission"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "admission"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "denominator-boundary"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "diagnostic-proxy"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "environment-pmu"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "historical-envelope"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "one-client"
+    },
+    {
+      "kind": "coherence_repair",
+      "priority": "medium",
+      "reason": "candidate group has low interference coherence with every source group",
+      "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+      "target": "twenty-client"
+    },
+    {
+      "kind": "foreign_pull_repair",
+      "owner_should_review": "denominator-boundary",
+      "priority": "high",
+      "reason": "candidate triad pulls toward a foreign source route",
+      "repair": "Move this triad to the matching route or split the candidate group.",
+      "target": "c2"
+    },
+    {
+      "kind": "foreign_pull_repair",
+      "owner_should_review": "diagnostic-proxy",
+      "priority": "high",
+      "reason": "candidate triad pulls toward a foreign source route",
+      "repair": "Move this triad to the matching route or split the candidate group.",
+      "target": "c3"
+    },
+    {
+      "kind": "foreign_pull_repair",
+      "owner_should_review": "admission",
+      "priority": "high",
+      "reason": "candidate triad pulls toward a foreign source route",
+      "repair": "Move this triad to the matching route or split the candidate group.",
+      "target": "c4"
+    },
+    {
+      "kind": "foreign_pull_repair",
+      "owner_should_review": "diagnostic-proxy",
+      "priority": "high",
+      "reason": "candidate triad pulls toward a foreign source route",
+      "repair": "Move this triad to the matching route or split the candidate group.",
+      "target": "c6"
+    },
+    {
+      "kind": "foreign_pull_repair",
+      "owner_should_review": "one-client",
+      "priority": "high",
+      "reason": "candidate triad pulls toward a foreign source route",
+      "repair": "Move this triad to the matching route or split the candidate group.",
+      "target": "c7"
+    },
+    {
+      "kind": "foreign_pull_repair",
+      "owner_should_review": "environment-pmu",
+      "priority": "high",
+      "reason": "candidate triad pulls toward a foreign source route",
+      "repair": "Move this triad to the matching route or split the candidate group.",
+      "target": "c8"
+    },
+    {
+      "kind": "foreign_pull_repair",
+      "owner_should_review": "one-client",
+      "priority": "high",
+      "reason": "candidate triad pulls toward a foreign source route",
+      "repair": "Move this triad to the matching route or split the candidate group.",
+      "target": "c11"
+    },
+    {
+      "kind": "foreign_pull_repair",
+      "owner_should_review": "denominator-boundary",
+      "priority": "high",
+      "reason": "candidate triad pulls toward a foreign source route",
+      "repair": "Move this triad to the matching route or split the candidate group.",
+      "target": "c12"
+    },
+    {
+      "kind": "foreign_pull_repair",
+      "owner_should_review": "diagnostic-proxy",
+      "priority": "high",
+      "reason": "candidate triad pulls toward a foreign source route",
+      "repair": "Move this triad to the matching route or split the candidate group.",
+      "target": "c13"
+    },
+    {
+      "kind": "foreign_pull_repair",
+      "owner_should_review": "denominator-boundary",
+      "priority": "high",
+      "reason": "candidate triad pulls toward a foreign source route",
+      "repair": "Move this triad to the matching route or split the candidate group.",
+      "target": "c16"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "admission"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "denominator-boundary"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "diagnostic-proxy"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "environment-pmu"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "historical-envelope"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "one-client"
+    },
+    {
+      "kind": "owner_conflict",
+      "priority": "high",
+      "reason": "helper or candidate group is attracted to more than one decision owner",
+      "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+      "target": "twenty-client"
+    }
+  ],
+  "agent_decision": {
+    "action": "REPAIR_REQUIRED",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Apply the repair_queue before editing or accepting this route.",
+    "repair_count": 30,
+    "repair_queue": [
+      {
+        "kind": "route_splice",
+        "priority": "high",
+        "reason": "candidate triad is pulled toward a foreign source route",
+        "repair": "Move the triad to its source-owned route or split the candidate group.",
+        "target": "historical-envelope"
+      },
+      {
+        "kind": "route_splice",
+        "priority": "high",
+        "reason": "candidate triad is pulled toward a foreign source route",
+        "repair": "Move the triad to its source-owned route or split the candidate group.",
+        "target": "diagnostic-proxy"
+      },
+      {
+        "kind": "route_splice",
+        "priority": "high",
+        "reason": "candidate triad is pulled toward a foreign source route",
+        "repair": "Move the triad to its source-owned route or split the candidate group.",
+        "target": "environment-pmu"
+      },
+      {
+        "kind": "route_splice",
+        "priority": "high",
+        "reason": "candidate triad is pulled toward a foreign source route",
+        "repair": "Move the triad to its source-owned route or split the candidate group.",
+        "target": "twenty-client"
+      },
+      {
+        "kind": "route_splice",
+        "priority": "high",
+        "reason": "candidate triad is pulled toward a foreign source route",
+        "repair": "Move the triad to its source-owned route or split the candidate group.",
+        "target": "denominator-boundary"
+      },
+      {
+        "kind": "route_splice",
+        "priority": "high",
+        "reason": "candidate triad is pulled toward a foreign source route",
+        "repair": "Move the triad to its source-owned route or split the candidate group.",
+        "target": "admission"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "admission"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "denominator-boundary"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "diagnostic-proxy"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "environment-pmu"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "historical-envelope"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "one-client"
+      },
+      {
+        "kind": "coherence_repair",
+        "priority": "medium",
+        "reason": "candidate group has low interference coherence with every source group",
+        "repair": "Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.",
+        "target": "twenty-client"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "denominator-boundary",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c2"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "diagnostic-proxy",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c3"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "admission",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c4"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "diagnostic-proxy",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c6"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "one-client",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c7"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "environment-pmu",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c8"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "one-client",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c11"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "denominator-boundary",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c12"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "diagnostic-proxy",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c13"
+      },
+      {
+        "kind": "foreign_pull_repair",
+        "owner_should_review": "denominator-boundary",
+        "priority": "high",
+        "reason": "candidate triad pulls toward a foreign source route",
+        "repair": "Move this triad to the matching route or split the candidate group.",
+        "target": "c16"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "admission"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "denominator-boundary"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "diagnostic-proxy"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "environment-pmu"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "historical-envelope"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "one-client"
+      },
+      {
+        "kind": "owner_conflict",
+        "priority": "high",
+        "reason": "helper or candidate group is attracted to more than one decision owner",
+        "repair": "Split the group by owner or move decision logic behind one public entrypoint.",
+        "target": "twenty-client"
+      }
+    ],
+    "safe_to_edit": false
+  },
+  "explanation": [
+    "At least one candidate group has weak route coherence.",
+    "Route splice suspected: at least one candidate triad pulls toward a different source group.",
+    "At least one candidate triad has weak composite-mode support.",
+    "Task exceeds target or hard limits and should be split."
+  ],
+  "repair_prompt": "Repair the candidate answer using only one coherent structural route.\nNANDA verdict: VETO.\nPrimary repair_queue:\n- [high] route_splice: Move the triad to its source-owned route or split the candidate group.\n- [high] route_splice: Move the triad to its source-owned route or split the candidate group.\n- [high] route_splice: Move the triad to its source-owned route or split the candidate group.\n- [high] route_splice: Move the triad to its source-owned route or split the candidate group.\n- [high] route_splice: Move the triad to its source-owned route or split the candidate group.\n- [high] route_splice: Move the triad to its source-owned route or split the candidate group.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [medium] coherence_repair: Check whether this candidate route is missing triads, using wrong roles, or mixing unrelated routes.\n- [high] foreign_pull_repair: Move this triad to the matching route or split the candidate group.\n- [high] foreign_pull_repair: Move this triad to the matching route or split the candidate group.\n- [high] foreign_pull_repair: Move this triad to the matching route or split the candidate group.\n- [high] foreign_pull_repair: Move this triad to the matching route or split the candidate group.\n- [high] foreign_pull_repair: Move this triad to the matching route or split the candidate group.\n- [high] foreign_pull_repair: Move this triad to the matching route or split the candidate group.\n- [high] foreign_pull_repair: Move this triad to the matching route or split the candidate group.\n- [high] foreign_pull_repair: Move this triad to the matching route or split the candidate group.\n- [high] foreign_pull_repair: Move this triad to the matching route or split the candidate group.\n- [high] foreign_pull_repair: Move this triad to the matching route or split the candidate group.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\n- [high] owner_conflict: Split the group by owner or move decision logic behind one public entrypoint.\nDo not splice triads from different source groups into one candidate group.\n- candidate group admission best matches environment-pmu only weakly: 0.0287\n- candidate group denominator-boundary best matches historical-envelope only weakly: 0.012\n- candidate group diagnostic-proxy best matches twenty-client only weakly: 0.0119\n- candidate group environment-pmu best matches denominator-boundary only weakly: 0.0255\n- candidate group historical-envelope best matches historical-envelope only weakly: -0.0052\n- candidate group one-client best matches denominator-boundary only weakly: 0.0629\n- candidate group twenty-client best matches historical-envelope only weakly: 0.0342\nRoute splice suspected from foreign_pull:\n- c2 in historical-envelope pulls from historical-envelope toward denominator-boundary; repair: Move this triad to the matching route or split the candidate group.\n- c3 in historical-envelope pulls from historical-envelope toward diagnostic-proxy; repair: Move this triad to the matching route or split the candidate group.\n- c4 in diagnostic-proxy pulls from twenty-client toward admission; repair: Move this triad to the matching route or split the candidate group.\n- c6 in diagnostic-proxy pulls from twenty-client toward diagnostic-proxy; repair: Move this triad to the matching route or split the candidate group.\n- c7 in environment-pmu pulls from denominator-boundary toward one-client; repair: Move this triad to the matching route or split the candidate group.\n- c8 in environment-pmu pulls from denominator-boundary toward environment-pmu; repair: Move this triad to the matching route or split the candidate group.\n- c11 in twenty-client pulls from historical-envelope toward one-client; repair: Move this triad to the matching route or split the candidate group.\n- c12 in twenty-client pulls from historical-envelope toward denominator-boundary; repair: Move this triad to the matching route or split the candidate group.\n- c13 in denominator-boundary pulls from historical-envelope toward diagnostic-proxy; repair: Move this triad to the matching route or split the candidate group.\n- c16 in admission pulls from environment-pmu toward denominator-boundary; repair: Move this triad to the matching route or split the candidate group.\nRecheck or remove weak candidate triads:\n- c1: score=-0.1073, nearest_source=s3, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c10: score=-0.0251, nearest_source=s13, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c11: score=0.0039, nearest_source=s9, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c12: score=-0.0126, nearest_source=s2, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c13: score=-0.0386, nearest_source=s4, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c14: score=-0.0386, nearest_source=s3, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c15: score=-0.0184, nearest_source=s12, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c16: score=-0.0135, nearest_source=s1, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c2: score=-0.0512, nearest_source=s13, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c3: score=-0.029, nearest_source=s3, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c4: score=-0.0058, nearest_source=s15, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c5: score=-0.028, nearest_source=s12, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c6: score=0.0058, nearest_source=s1, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c7: score=-0.0174, nearest_source=s15, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c8: score=0.028, nearest_source=s7, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c9: score=0.0242, nearest_source=s14, why=candidate triad does not resonate with the composite source memory above the stability threshold\nSplit the task before retrying:\n- entities target limit exceeded: 54>32\n- roles target limit exceeded: 41>24",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-b-hardware-contract-v2.trace.json"
+}

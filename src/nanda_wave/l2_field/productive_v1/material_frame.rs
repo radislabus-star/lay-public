@@ -7,6 +7,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use sha2::{Digest, Sha256};
 
+use crate::nanda_wave::lexical_grokking::{Phase7dCertificateClass, Phase7dCertificateEvidence};
 use crate::text_case::apply_word_case;
 use crate::typing_transition::target_evidence::{
     stable_bytes_ref, BoundedTargetSetV1, EnumerationCompletenessV1, EnumerationWorkBudgetV1,
@@ -19,6 +20,7 @@ use crate::typing_transition::target_evidence::{
     PreparedTargetMaterialV1, PreparedTargetV1, ReplacementSpanV1, SeparatorProfileIdV1,
     TargetEvidenceSetV1, TargetRelationV1, TargetWitnessV1, VerdictMembershipV1,
     MAX_LEASE_CONSUMERS_PER_FIELD, MAX_PINNED_PREPARED_FIELDS, MAX_TARGETS_PER_FIELD,
+    MAX_TARGET_WITNESSES_PER_TARGET,
 };
 
 use super::boundary_birth::{
@@ -32,6 +34,7 @@ use super::packaged_runtime::{
 
 const MAX_CONTOUR_TARGETS_PER_FIELD: usize = 8;
 const MAX_BOUNDARY_TARGETS_PER_FIELD: usize = 2;
+const EXACT_PEAK_OPERATOR_BASE: u32 = 0x5631_0000;
 
 pub(super) const FROZEN_V90_ENUMERATION_WORK_BUDGET: EnumerationWorkBudgetV1 =
     EnumerationWorkBudgetV1 {
@@ -70,6 +73,259 @@ pub(super) struct ExactPackageTupleV1 {
     pub(super) l11_sha256: [u8; 32],
     pub(super) canonical_l2_sha256: [u8; 32],
     pub(super) productive_sha256: [u8; 32],
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(u8)]
+enum ExactPeakCertificateClassV1 {
+    Identity = 1,
+    PunctuationSuffix = 2,
+    PrefixTruncation = 3,
+    SuffixTruncation = 4,
+    MissingLetter = 5,
+    ExtraLetter = 6,
+    Substitution = 7,
+    KeyboardLayout = 8,
+    AdjacentTransposition = 9,
+    NonAdjacentTransposition = 10,
+    RepeatedFragment = 11,
+    SparseMultiOmission = 12,
+    OmissionTransposition = 13,
+}
+
+impl ExactPeakCertificateClassV1 {
+    const fn label(self) -> &'static str {
+        match self {
+            Self::Identity => "identity",
+            Self::PunctuationSuffix => "punctuation_suffix",
+            Self::PrefixTruncation => "prefix_truncation",
+            Self::SuffixTruncation => "suffix_truncation",
+            Self::MissingLetter => "missing_letter",
+            Self::ExtraLetter => "extra_letter",
+            Self::Substitution => "substitution",
+            Self::KeyboardLayout => "keyboard_layout",
+            Self::AdjacentTransposition => "adjacent_transposition",
+            Self::NonAdjacentTransposition => "non_adjacent_transposition",
+            Self::RepeatedFragment => "repeated_fragment",
+            Self::SparseMultiOmission => "sparse_multi_omission",
+            Self::OmissionTransposition => "omission_transposition",
+        }
+    }
+
+    const fn relation(self) -> TargetRelationV1 {
+        match self {
+            Self::Identity | Self::PunctuationSuffix => TargetRelationV1::L11Restoration,
+            Self::PrefixTruncation | Self::SuffixTruncation | Self::MissingLetter => {
+                TargetRelationV1::MissingLetter
+            }
+            Self::ExtraLetter => TargetRelationV1::ExtraLetter,
+            Self::Substitution => TargetRelationV1::Substitution,
+            Self::KeyboardLayout => TargetRelationV1::ExactLayout,
+            Self::AdjacentTransposition => TargetRelationV1::AdjacentTransposition,
+            Self::NonAdjacentTransposition => TargetRelationV1::NonAdjacentTransposition,
+            Self::RepeatedFragment => TargetRelationV1::RepeatedFragment,
+            Self::SparseMultiOmission | Self::OmissionTransposition => {
+                TargetRelationV1::SparseOmission
+            }
+        }
+    }
+
+    const fn operator_ref(self) -> u32 {
+        EXACT_PEAK_OPERATOR_BASE | self as u32
+    }
+}
+
+impl From<Phase7dCertificateClass> for ExactPeakCertificateClassV1 {
+    fn from(value: Phase7dCertificateClass) -> Self {
+        match value {
+            Phase7dCertificateClass::Identity => Self::Identity,
+            Phase7dCertificateClass::PunctuationSuffix => Self::PunctuationSuffix,
+            Phase7dCertificateClass::PrefixTruncation => Self::PrefixTruncation,
+            Phase7dCertificateClass::SuffixTruncation => Self::SuffixTruncation,
+            Phase7dCertificateClass::MissingLetter => Self::MissingLetter,
+            Phase7dCertificateClass::ExtraLetter => Self::ExtraLetter,
+            Phase7dCertificateClass::Substitution => Self::Substitution,
+            Phase7dCertificateClass::KeyboardLayout => Self::KeyboardLayout,
+            Phase7dCertificateClass::AdjacentTransposition => Self::AdjacentTransposition,
+            Phase7dCertificateClass::NonAdjacentTransposition => Self::NonAdjacentTransposition,
+            Phase7dCertificateClass::RepeatedFragment => Self::RepeatedFragment,
+            Phase7dCertificateClass::SparseMultiOmission => Self::SparseMultiOmission,
+            Phase7dCertificateClass::OmissionTransposition => Self::OmissionTransposition,
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(in crate::nanda_wave::l2_field) struct ExactPeakCandidateInputV1 {
+    pub(in crate::nanda_wave::l2_field) form_ref: u32,
+    pub(in crate::nanda_wave::l2_field) normalized_surface: String,
+    pub(in crate::nanda_wave::l2_field) certificates: Vec<Phase7dCertificateEvidence>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct ExactPeakBirthV1 {
+    form_ref: u32,
+    normalized_surface: String,
+    class: ExactPeakCertificateClassV1,
+    canonical_key: String,
+    derivation_ref: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(in crate::nanda_wave::l2_field) struct ExactPeakBirthEnumerationV1 {
+    births: Vec<ExactPeakBirthV1>,
+    work: EnumerationWorkCountersV1,
+    logical_match_count: usize,
+    all_seen_digest: [u64; 2],
+    overflow_reason: Option<IncompletenessReasonV1>,
+}
+
+impl ExactPeakBirthEnumerationV1 {
+    pub(in crate::nanda_wave::l2_field) fn complete_empty() -> Self {
+        Self {
+            births: Vec::new(),
+            work: EnumerationWorkCountersV1::default(),
+            logical_match_count: 0,
+            all_seen_digest: digest128(Sha256::digest(b"lay-exact-peak-birth-v1\0").into()),
+            overflow_reason: None,
+        }
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn incomplete(reason: IncompletenessReasonV1) -> Self {
+        debug_assert!(reason != IncompletenessReasonV1::None);
+        Self {
+            births: Vec::new(),
+            work: EnumerationWorkCountersV1::default(),
+            logical_match_count: 0,
+            all_seen_digest: digest128(
+                Sha256::digest(b"lay-exact-peak-birth-v1\0incomplete").into(),
+            ),
+            overflow_reason: Some(reason),
+        }
+    }
+
+    pub(super) fn is_empty(&self) -> bool {
+        self.births.is_empty()
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn capacity_exceeded(&self) -> bool {
+        self.overflow_reason == Some(IncompletenessReasonV1::StorageCapacity)
+    }
+
+    pub(super) fn normalized_surfaces(&self) -> impl Iterator<Item = &str> {
+        self.births
+            .iter()
+            .map(|birth| birth.normalized_surface.as_str())
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn diagnostic_json(&self) -> serde_json::Value {
+        let candidates = self
+            .births
+            .iter()
+            .map(|birth| (birth.form_ref, birth.normalized_surface.as_str()))
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .map(|(form_ref, normalized_surface)| {
+                serde_json::json!({
+                    "form_ref": form_ref,
+                    "normalized_surface": normalized_surface,
+                })
+            })
+            .collect::<Vec<_>>();
+        let certificates = self
+            .births
+            .iter()
+            .map(|birth| {
+                serde_json::json!({
+                    "form_ref": birth.form_ref,
+                    "normalized_surface": birth.normalized_surface,
+                    "class": birth.class.label(),
+                    "canonical_key": birth.canonical_key,
+                })
+            })
+            .collect::<Vec<_>>();
+        serde_json::json!({
+            "status": if self.overflow_reason.is_none() { "complete" } else { "incomplete" },
+            "incompleteness_reason": self.overflow_reason.map(|reason| format!("{reason:?}")),
+            "candidate_count": candidates.len(),
+            "certificate_count": certificates.len(),
+            "logical_match_count": self.logical_match_count,
+            "all_seen_digest": self.all_seen_digest,
+            "work": {
+                "posting_visits": self.work.posting_visits,
+                "relation_replays": self.work.relation_replays,
+                "grounding_lookups": self.work.grounding_lookups,
+                "generated_logical_targets": self.work.generated_logical_targets,
+                "operator_steps": self.work.operator_steps,
+            },
+            "candidates": candidates,
+            "certificates": certificates,
+        })
+    }
+
+    pub(in crate::nanda_wave::l2_field) fn from_candidates(
+        candidates: Vec<ExactPeakCandidateInputV1>,
+    ) -> Result<Self, String> {
+        let mut form_surfaces = BTreeMap::<u32, String>::new();
+        let mut certificate_refs = BTreeMap::<u32, String>::new();
+        let mut births = BTreeSet::<ExactPeakBirthV1>::new();
+        for candidate in candidates {
+            let normalized_surface =
+                super::super::compositional::normalize_surface(&candidate.normalized_surface);
+            if normalized_surface.is_empty() || candidate.certificates.is_empty() {
+                return Err("exact peak candidate has an empty surface or certificate set".into());
+            }
+            if form_surfaces
+                .insert(candidate.form_ref, normalized_surface.clone())
+                .is_some_and(|retained| retained != normalized_surface)
+            {
+                return Err("exact peak form_ref maps to multiple normalized surfaces".into());
+            }
+            for certificate in candidate.certificates {
+                if certificate.canonical_key.is_empty() {
+                    return Err("exact peak certificate has an empty canonical key".into());
+                }
+                let derivation_ref = stable_bytes_ref(certificate.canonical_key.as_bytes());
+                if certificate_refs
+                    .insert(derivation_ref, certificate.canonical_key.clone())
+                    .is_some_and(|retained| retained != certificate.canonical_key)
+                {
+                    return Err("exact peak canonical certificate reference collision".into());
+                }
+                births.insert(ExactPeakBirthV1 {
+                    form_ref: candidate.form_ref,
+                    normalized_surface: normalized_surface.clone(),
+                    class: certificate.class.into(),
+                    canonical_key: certificate.canonical_key,
+                    derivation_ref,
+                });
+            }
+        }
+        let births = births.into_iter().collect::<Vec<_>>();
+        let mut roots_by_surface = BTreeMap::<&str, usize>::new();
+        for birth in &births {
+            *roots_by_surface
+                .entry(birth.normalized_surface.as_str())
+                .or_default() += 1;
+        }
+        let logical_match_count = roots_by_surface.len();
+        let capacity_exceeded = logical_match_count > MAX_TARGETS_PER_FIELD
+            || roots_by_surface
+                .values()
+                .any(|count| *count > MAX_TARGET_WITNESSES_PER_TARGET);
+        Ok(Self {
+            work: EnumerationWorkCountersV1 {
+                grounding_lookups: u64::try_from(form_surfaces.len()).unwrap_or(u64::MAX),
+                generated_logical_targets: u64::try_from(logical_match_count).unwrap_or(u64::MAX),
+                operator_steps: u64::try_from(births.len()).unwrap_or(u64::MAX),
+                ..EnumerationWorkCountersV1::default()
+            },
+            all_seen_digest: exact_peak_set_digest(&births),
+            overflow_reason: capacity_exceeded.then_some(IncompletenessReasonV1::StorageCapacity),
+            births,
+            logical_match_count,
+        })
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -118,11 +374,13 @@ struct ExactMaterialTargetV1 {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(super) struct PreparedTargetMaterialShadowV1 {
+pub(in crate::nanda_wave::l2_field) struct PreparedTargetMaterialShadowV1 {
     compact: PreparedTargetMaterialV1,
     exact_observed: String,
     package_tuple: ExactPackageTupleV1,
+    exact_original: Option<ExactMaterialTargetV1>,
     exact_targets: Vec<ExactMaterialTargetV1>,
+    exact_peak_births: Vec<ExactPeakBirthV1>,
     boundary_groundings: Vec<CompositeBoundaryGroundingV1>,
     work: EnumerationWorkCountersV1,
 }
@@ -135,6 +393,12 @@ impl PreparedTargetMaterialShadowV1 {
     pub(super) fn exact_target_surfaces(&self) -> impl Iterator<Item = &str> {
         self.exact_targets
             .iter()
+            .map(|target| target.normalized_scalars.as_str())
+    }
+
+    pub(super) fn exact_target_surface(&self, target_ref: usize) -> Option<&str> {
+        self.exact_targets
+            .get(target_ref)
             .map(|target| target.normalized_scalars.as_str())
     }
 
@@ -154,8 +418,52 @@ impl PreparedTargetMaterialShadowV1 {
         &self.exact_observed
     }
 
+    pub(super) fn original_has_grounded_l11_evidence(&self) -> bool {
+        self.exact_original.as_ref().is_some_and(|original| {
+            original.witness_roots.iter().any(|root| {
+                root.grounding_namespace == GroundingNamespaceV1::L11Terminal
+                    && is_grounded_membership(root.verdict_membership)
+            })
+        })
+    }
+
     pub(super) fn boundary_groundings(&self) -> &[CompositeBoundaryGroundingV1] {
         &self.boundary_groundings
+    }
+
+    #[cfg(test)]
+    pub(in crate::nanda_wave::l2_field) fn exact_peak_candidate_rows(&self) -> Vec<(u32, String)> {
+        self.exact_peak_births
+            .iter()
+            .map(|birth| (birth.form_ref, birth.normalized_surface.clone()))
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect()
+    }
+
+    #[cfg(test)]
+    pub(in crate::nanda_wave::l2_field) fn exact_peak_certificate_rows(
+        &self,
+    ) -> Vec<(u32, String, u8, String)> {
+        self.exact_peak_births
+            .iter()
+            .map(|birth| {
+                (
+                    birth.form_ref,
+                    birth.normalized_surface.clone(),
+                    birth.class as u8,
+                    birth.canonical_key.clone(),
+                )
+            })
+            .collect()
+    }
+
+    pub(super) fn exact_peak_layout_surfaces(&self) -> BTreeSet<String> {
+        self.exact_peak_births
+            .iter()
+            .filter(|birth| birth.class == ExactPeakCertificateClassV1::KeyboardLayout)
+            .map(|birth| birth.normalized_surface.clone())
+            .collect()
     }
 }
 
@@ -247,6 +555,23 @@ pub(super) fn prepare_context_neutral_productive_material_with_contours(
     )
 }
 
+pub(super) fn prepare_context_neutral_productive_material_with_contours_and_exact_peaks(
+    observed: &str,
+    package_tuple: ExactPackageTupleV1,
+    enumeration: ContextNeutralProductiveEnumerationV1,
+    contour_births: TypedContourBirthEnumerationV1,
+    exact_peaks: ExactPeakBirthEnumerationV1,
+) -> Result<PreparedTargetMaterialShadowV1, String> {
+    prepare_context_neutral_productive_material_all(
+        observed,
+        package_tuple,
+        enumeration,
+        contour_births,
+        TypedBoundaryBirthEnumerationV1::complete_empty(),
+        exact_peaks,
+    )
+}
+
 pub(super) fn prepare_context_neutral_productive_material_with_contours_and_boundaries(
     observed: &str,
     package_tuple: ExactPackageTupleV1,
@@ -254,46 +579,110 @@ pub(super) fn prepare_context_neutral_productive_material_with_contours_and_boun
     contour_births: TypedContourBirthEnumerationV1,
     boundary_births: TypedBoundaryBirthEnumerationV1,
 ) -> Result<PreparedTargetMaterialShadowV1, String> {
+    prepare_context_neutral_productive_material_all(
+        observed,
+        package_tuple,
+        enumeration,
+        contour_births,
+        boundary_births,
+        ExactPeakBirthEnumerationV1::complete_empty(),
+    )
+}
+
+fn prepare_context_neutral_productive_material_all(
+    observed: &str,
+    package_tuple: ExactPackageTupleV1,
+    enumeration: ContextNeutralProductiveEnumerationV1,
+    contour_births: TypedContourBirthEnumerationV1,
+    boundary_births: TypedBoundaryBirthEnumerationV1,
+    exact_peaks: ExactPeakBirthEnumerationV1,
+) -> Result<PreparedTargetMaterialShadowV1, String> {
     let mut targets = BTreeMap::<Vec<u8>, MaterialTargetAccumulatorV1>::new();
+    let mut productive_surface_rank = BTreeMap::<Vec<u8>, usize>::new();
+    for (rank, candidate) in enumeration.readout.candidates.iter().enumerate() {
+        let normalized =
+            super::super::compositional::normalize_surface(&candidate.normalized_surface);
+        productive_surface_rank
+            .entry(normalized.into_bytes())
+            .or_insert(rank);
+    }
     for candidate in &enumeration.readout.candidates {
         insert_productive_candidate(&mut targets, candidate);
     }
-    let productive_logical_count = targets.len();
-    let productive_surfaces = targets.keys().cloned().collect::<BTreeSet<_>>();
+    let productive_observed_present = targets.contains_key(observed.as_bytes());
+    let productive_logical_count = targets
+        .len()
+        .saturating_sub(usize::from(productive_observed_present));
+    let mut productive_surfaces = targets.keys().cloned().collect::<BTreeSet<_>>();
+    productive_surfaces.remove(observed.as_bytes());
+    for birth in &exact_peaks.births {
+        insert_exact_peak_birth(&mut targets, birth);
+    }
+    let mut exact_peak_surfaces = exact_peaks
+        .births
+        .iter()
+        .map(|birth| birth.normalized_surface.as_bytes().to_vec())
+        .collect::<BTreeSet<_>>();
+    exact_peak_surfaces.remove(observed.as_bytes());
     for birth in &contour_births.births {
         insert_contour_birth(&mut targets, birth);
     }
-    let contour_surfaces = contour_births
+    let mut contour_surfaces = contour_births
         .births
         .iter()
         .map(|birth| birth.normalized_surface.as_bytes().to_vec())
         .collect::<BTreeSet<_>>();
+    contour_surfaces.remove(observed.as_bytes());
     for birth in &boundary_births.births {
         insert_boundary_birth(&mut targets, birth);
     }
-    let boundary_surfaces = boundary_births
+    let mut boundary_surfaces = boundary_births
         .births
         .iter()
         .map(|birth| birth.normalized_surface.as_bytes().to_vec())
         .collect::<BTreeSet<_>>();
+    boundary_surfaces.remove(observed.as_bytes());
+    let exact_original = targets
+        .remove(observed.as_bytes())
+        .map(MaterialTargetAccumulatorV1::finish);
     let logical_count = targets.len();
     let mut all_exact_targets = targets
         .into_values()
         .map(MaterialTargetAccumulatorV1::finish)
         .collect::<Vec<_>>();
     sort_exact_targets(&mut all_exact_targets);
-    let all_seen_digest = combined_target_set_digest(
+    let base_all_seen_digest = combined_target_set_digest(
         &all_exact_targets,
         contour_births.all_seen_digest,
         boundary_births.all_seen_digest,
     );
+    let all_seen_digest = if exact_peaks.is_empty() {
+        base_all_seen_digest
+    } else {
+        combined_target_set_digest_with_exact_peaks(
+            base_all_seen_digest,
+            exact_peaks.all_seen_digest,
+        )
+    };
 
-    let mut exact_targets = Vec::new();
+    let mut mandatory_targets = Vec::new();
+    let mut optional_productive_targets = Vec::new();
     let mut contour_only_targets = Vec::new();
     let mut boundary_only_targets = Vec::new();
     for target in all_exact_targets {
-        if productive_surfaces.contains(&target.canonical_bytes) {
-            exact_targets.push(target);
+        let grounded_l11_target = target.witness_roots.iter().any(|root| {
+            root.grounding_namespace == GroundingNamespaceV1::L11Terminal
+                && matches!(
+                    root.verdict_membership,
+                    VerdictMembershipV1::Grounded
+                        | VerdictMembershipV1::L11Winner
+                        | VerdictMembershipV1::L11Tied
+                )
+        });
+        if exact_peak_surfaces.contains(&target.canonical_bytes) || grounded_l11_target {
+            mandatory_targets.push(target);
+        } else if productive_surfaces.contains(&target.canonical_bytes) {
+            optional_productive_targets.push(target);
         } else if boundary_surfaces.contains(&target.canonical_bytes) {
             boundary_only_targets.push(target);
         } else if contour_surfaces.contains(&target.canonical_bytes) {
@@ -302,20 +691,43 @@ pub(super) fn prepare_context_neutral_productive_material_with_contours_and_boun
     }
     let contour_logical_count = contour_only_targets.len();
     let boundary_logical_count = boundary_only_targets.len();
-    let retained_contours = retain_contour_targets(contour_only_targets);
+    let mut retained_contours = retain_contour_targets(contour_only_targets);
     sort_exact_targets(&mut boundary_only_targets);
     boundary_only_targets.truncate(MAX_BOUNDARY_TARGETS_PER_FIELD);
-    let reserved_count = retained_contours
-        .len()
-        .saturating_add(boundary_only_targets.len());
-    sort_exact_targets(&mut exact_targets);
-    exact_targets.truncate(MAX_TARGETS_PER_FIELD.saturating_sub(reserved_count));
-    exact_targets.extend(retained_contours);
+    sort_exact_targets(&mut mandatory_targets);
+    if mandatory_targets.len() > MAX_TARGETS_PER_FIELD {
+        return Err("exact and grounded material exceeds common 74-target capacity".to_string());
+    }
+
+    let mut exact_targets = mandatory_targets;
+    let mut remaining = MAX_TARGETS_PER_FIELD.saturating_sub(exact_targets.len());
+    boundary_only_targets.truncate(remaining);
+    remaining = remaining.saturating_sub(boundary_only_targets.len());
+    retained_contours.truncate(remaining);
+    remaining = remaining.saturating_sub(retained_contours.len());
+    optional_productive_targets.sort_by(|left, right| {
+        productive_surface_rank
+            .get(&left.canonical_bytes)
+            .copied()
+            .unwrap_or(usize::MAX)
+            .cmp(
+                &productive_surface_rank
+                    .get(&right.canonical_bytes)
+                    .copied()
+                    .unwrap_or(usize::MAX),
+            )
+            .then_with(|| left.canonical_bytes.cmp(&right.canonical_bytes))
+            .then_with(|| left.normalized_scalars.cmp(&right.normalized_scalars))
+    });
+    optional_productive_targets.truncate(remaining);
     exact_targets.extend(boundary_only_targets);
+    exact_targets.extend(retained_contours);
+    exact_targets.extend(optional_productive_targets);
     sort_exact_targets(&mut exact_targets);
     let storage_overflow = contour_logical_count > MAX_CONTOUR_TARGETS_PER_FIELD
         || boundary_logical_count > MAX_BOUNDARY_TARGETS_PER_FIELD
-        || logical_count > MAX_TARGETS_PER_FIELD;
+        || logical_count > MAX_TARGETS_PER_FIELD
+        || exact_peaks.capacity_exceeded();
     exact_targets.truncate(MAX_TARGETS_PER_FIELD);
 
     let mut bounded = BoundedTargetSetV1::default();
@@ -324,32 +736,53 @@ pub(super) fn prepare_context_neutral_productive_material_with_contours_and_boun
             .push(target.compact)
             .map_err(|_| "material target capacity disagrees with deterministic truncation")?;
     }
-    let completeness = if enumeration.readout.integrity_error.is_some() {
+    let completeness = if enumeration.readout.integrity_error.is_some()
+        || exact_peaks.overflow_reason == Some(IncompletenessReasonV1::IntegrityFailure)
+    {
         EnumerationCompletenessV1::failed(IncompletenessReasonV1::IntegrityFailure)
     } else if enumeration.work_budget_exceeded
         || contour_births.overflow_reason.is_some()
         || boundary_births.overflow_reason.is_some()
+        || matches!(
+            exact_peaks.overflow_reason,
+            Some(IncompletenessReasonV1::WorkBudgetExceeded)
+                | Some(IncompletenessReasonV1::UpstreamIncomplete)
+        )
     {
+        let reason = exact_peaks
+            .overflow_reason
+            .filter(|reason| {
+                matches!(
+                    reason,
+                    IncompletenessReasonV1::WorkBudgetExceeded
+                        | IncompletenessReasonV1::UpstreamIncomplete
+                )
+            })
+            .unwrap_or(IncompletenessReasonV1::WorkBudgetExceeded);
         EnumerationCompletenessV1::overflow(
             bounded.len(),
             logical_count
                 .max(contour_births.logical_match_count)
                 .max(boundary_births.logical_match_count)
                 .max(bounded.len().saturating_add(1)),
-            IncompletenessReasonV1::WorkBudgetExceeded,
+            reason,
             all_seen_digest,
         )
     } else if storage_overflow {
         EnumerationCompletenessV1::overflow(
             bounded.len(),
-            logical_count,
+            logical_count.max(exact_peaks.logical_match_count),
             IncompletenessReasonV1::StorageCapacity,
             all_seen_digest,
         )
-    } else if enumeration.readout.logical_surface_basin_count as usize > productive_logical_count {
+    } else if (enumeration.readout.logical_surface_basin_count as usize)
+        .saturating_sub(usize::from(productive_observed_present))
+        > productive_logical_count
+    {
         EnumerationCompletenessV1::overflow(
             bounded.len(),
-            enumeration.readout.logical_surface_basin_count as usize,
+            (enumeration.readout.logical_surface_basin_count as usize)
+                .saturating_sub(usize::from(productive_observed_present)),
             IncompletenessReasonV1::UpstreamIncomplete,
             all_seen_digest,
         )
@@ -369,12 +802,13 @@ pub(super) fn prepare_context_neutral_productive_material_with_contours_and_boun
         package_generation,
         exact_package_digest_prefix,
     };
-    let original = prepared_original_material(observed, &exact_targets, completeness);
-    let evidence_tables = evidence_table_identities(&exact_targets);
+    let original = prepared_original_material(observed, exact_original.as_ref(), completeness);
+    let evidence_tables = evidence_table_identities(exact_original.as_ref(), &exact_targets);
     let aggregate_work = enumeration
         .aggregate_work
         .checked_add(contour_births.work)
         .and_then(|work| work.checked_add(boundary_births.work))
+        .and_then(|work| work.checked_add(exact_peaks.work))
         .ok_or_else(|| "material aggregate work counter overflow".to_string())?;
     let retained_boundary_roots = exact_targets
         .iter()
@@ -396,6 +830,7 @@ pub(super) fn prepare_context_neutral_productive_material_with_contours_and_boun
         observed,
         package_tuple,
         original,
+        exact_original.as_ref(),
         &exact_targets,
         &boundary_groundings,
         completeness,
@@ -414,7 +849,9 @@ pub(super) fn prepare_context_neutral_productive_material_with_contours_and_boun
         },
         exact_observed: observed.to_string(),
         package_tuple,
+        exact_original,
         exact_targets,
+        exact_peak_births: exact_peaks.births,
         boundary_groundings,
         work: aggregate_work,
     })
@@ -475,19 +912,15 @@ fn retain_contour_targets(targets: Vec<ExactMaterialTargetV1>) -> Vec<ExactMater
 
 fn prepared_original_material(
     observed: &str,
-    targets: &[ExactMaterialTargetV1],
+    original: Option<&ExactMaterialTargetV1>,
     completeness: EnumerationCompletenessV1,
 ) -> PreparedOriginalMaterialV1 {
-    let exact_grounded = targets.iter().any(|target| {
+    let exact_grounded = original.is_some_and(|target| {
         target.canonical_bytes.as_slice() == observed.as_bytes()
-            && target.witness_roots.iter().any(|root| {
-                matches!(
-                    root.verdict_membership,
-                    VerdictMembershipV1::Grounded
-                        | VerdictMembershipV1::L11Winner
-                        | VerdictMembershipV1::L11Tied
-                )
-            })
+            && target
+                .witness_roots
+                .iter()
+                .any(|root| is_grounded_membership(root.verdict_membership))
     });
     let lexical_status = if completeness.state()
         != crate::typing_transition::target_evidence::EnumerationStateV1::Complete
@@ -522,6 +955,15 @@ fn prepared_original_material(
         punctuation_status,
         reserved: 0,
     }
+}
+
+const fn is_grounded_membership(membership: VerdictMembershipV1) -> bool {
+    matches!(
+        membership,
+        VerdictMembershipV1::Grounded
+            | VerdictMembershipV1::L11Winner
+            | VerdictMembershipV1::L11Tied
+    )
 }
 
 fn insert_productive_candidate(
@@ -563,6 +1005,33 @@ fn insert_productive_candidate(
     }
 }
 
+fn insert_exact_peak_birth(
+    targets: &mut BTreeMap<Vec<u8>, MaterialTargetAccumulatorV1>,
+    birth: &ExactPeakBirthV1,
+) {
+    let canonical_bytes = birth.normalized_surface.as_bytes().to_vec();
+    let target =
+        targets
+            .entry(canonical_bytes.clone())
+            .or_insert_with(|| MaterialTargetAccumulatorV1 {
+                normalized_scalars: birth.normalized_surface.clone(),
+                canonical_bytes,
+                roots: BTreeMap::new(),
+            });
+    target.observe(
+        ExactWitnessRootV1 {
+            relation: birth.class.relation(),
+            grounding_namespace: GroundingNamespaceV1::CanonicalForm,
+            verdict_membership: VerdictMembershipV1::Born,
+            operator_ref: birth.class.operator_ref(),
+            grounding_ref: birth.form_ref,
+            derivation_ref: birth.derivation_ref,
+        },
+        0,
+        0,
+    );
+}
+
 fn insert_contour_birth(
     targets: &mut BTreeMap<Vec<u8>, MaterialTargetAccumulatorV1>,
     birth: &TypedContourBirthV1,
@@ -580,12 +1049,12 @@ fn insert_contour_birth(
         ExactWitnessRootV1 {
             relation: birth.relation,
             grounding_namespace: birth.grounding_namespace,
-            verdict_membership: VerdictMembershipV1::Born,
+            verdict_membership: birth.verdict_membership,
             operator_ref: birth.operator_ref,
             grounding_ref: birth.grounding_ref,
             derivation_ref: birth.derivation_ref,
         },
-        0,
+        birth.support_milli,
         0,
     );
 }
@@ -646,11 +1115,40 @@ fn combined_target_set_digest(
     digest128(hasher.finalize().into())
 }
 
-fn evidence_table_identities(targets: &[ExactMaterialTargetV1]) -> PreparedEvidenceTablesV1 {
+fn exact_peak_set_digest(births: &[ExactPeakBirthV1]) -> [u64; 2] {
+    let mut hasher = Sha256::new();
+    hasher.update(b"lay-exact-peak-birth-v1\0");
+    for birth in births {
+        hasher.update(birth.form_ref.to_le_bytes());
+        hash_len_bytes(&mut hasher, birth.normalized_surface.as_bytes());
+        hasher.update([birth.class as u8]);
+        hash_len_bytes(&mut hasher, birth.canonical_key.as_bytes());
+        hasher.update(birth.derivation_ref.to_le_bytes());
+    }
+    digest128(hasher.finalize().into())
+}
+
+fn combined_target_set_digest_with_exact_peaks(
+    base_digest: [u64; 2],
+    exact_peak_digest: [u64; 2],
+) -> [u64; 2] {
+    let mut hasher = Sha256::new();
+    hasher.update(b"lay-context-neutral-target-set-with-exact-peaks-v1\0");
+    hasher.update(base_digest[0].to_le_bytes());
+    hasher.update(base_digest[1].to_le_bytes());
+    hasher.update(exact_peak_digest[0].to_le_bytes());
+    hasher.update(exact_peak_digest[1].to_le_bytes());
+    digest128(hasher.finalize().into())
+}
+
+fn evidence_table_identities(
+    original: Option<&ExactMaterialTargetV1>,
+    targets: &[ExactMaterialTargetV1],
+) -> PreparedEvidenceTablesV1 {
     let mut relations = Sha256::new();
     let mut groundings = Sha256::new();
     let mut derivations = Sha256::new();
-    for target in targets {
+    for target in original.into_iter().chain(targets) {
         for root in &target.witness_roots {
             relations.update([root.relation as u8]);
             groundings.update([root.grounding_namespace as u8]);
@@ -670,6 +1168,7 @@ fn material_integrity_digest(
     observed: &str,
     package_tuple: ExactPackageTupleV1,
     original: PreparedOriginalMaterialV1,
+    exact_original: Option<&ExactMaterialTargetV1>,
     targets: &[ExactMaterialTargetV1],
     boundary_groundings: &[CompositeBoundaryGroundingV1],
     completeness: EnumerationCompletenessV1,
@@ -689,6 +1188,13 @@ fn material_integrity_digest(
         original.script_token_status as u8,
         original.punctuation_status as u8,
     ]);
+    hasher.update([u8::from(exact_original.is_some())]);
+    if let Some(exact_original) = exact_original {
+        hash_len_bytes(&mut hasher, &exact_original.canonical_bytes);
+        for root in &exact_original.witness_roots {
+            hasher.update(root.canonical_bytes());
+        }
+    }
     for target in targets {
         hash_len_bytes(&mut hasher, &target.canonical_bytes);
         for root in &target.witness_roots {
@@ -1135,6 +1641,8 @@ mod tests {
             relation,
             operator_ref: identity.wrapping_add(100),
             derivation_ref: identity.wrapping_add(200),
+            verdict_membership: VerdictMembershipV1::Born,
+            support_milli: 0,
         }
     }
 
@@ -1191,6 +1699,18 @@ mod tests {
         }
     }
 
+    fn exact_peak_enumeration(surface: &str, form_ref: u32) -> ExactPeakBirthEnumerationV1 {
+        ExactPeakBirthEnumerationV1::from_candidates(vec![ExactPeakCandidateInputV1 {
+            form_ref,
+            normalized_surface: surface.to_string(),
+            certificates: vec![Phase7dCertificateEvidence {
+                class: Phase7dCertificateClass::MissingLetter,
+                canonical_key: format!("missing-letter:{surface}"),
+            }],
+        }])
+        .expect("valid exact peak")
+    }
+
     fn material() -> PreparedTargetMaterialShadowV1 {
         prepare_context_neutral_productive_material(
             "слово",
@@ -1237,6 +1757,133 @@ mod tests {
     }
 
     #[test]
+    fn exact_peak_birth_enters_complete_material_with_certificate_identity() {
+        let material = prepare_context_neutral_productive_material_with_contours_and_exact_peaks(
+            "source",
+            package_tuple(),
+            enumeration(Vec::new()),
+            TypedContourBirthEnumerationV1::complete_empty(),
+            exact_peak_enumeration("target", 41),
+        )
+        .unwrap();
+
+        assert_eq!(
+            material.exact_peak_candidate_rows(),
+            vec![(41, "target".to_string())]
+        );
+        assert_eq!(
+            material.exact_peak_certificate_rows(),
+            vec![(
+                41,
+                "target".to_string(),
+                ExactPeakCertificateClassV1::MissingLetter as u8,
+                "missing-letter:target".to_string(),
+            )]
+        );
+        assert_eq!(
+            material.exact_target_surfaces().collect::<Vec<_>>(),
+            vec!["target"]
+        );
+        assert_eq!(
+            material.completeness().state(),
+            EnumerationStateV1::Complete
+        );
+    }
+
+    #[test]
+    fn material_capacity_retains_exact_and_grounded_before_productive_tail() {
+        let productive = (1..=32)
+            .map(|id| candidate(&format!("productive-{id:02}"), id))
+            .collect::<Vec<_>>();
+        let grounded = (1..=13)
+            .map(|id| {
+                let mut birth = contour_birth(
+                    &format!("grounded-{id:02}"),
+                    TargetRelationV1::L11Restoration,
+                    id,
+                );
+                birth.verdict_membership = VerdictMembershipV1::L11Tied;
+                birth.support_milli = 1_000;
+                birth
+            })
+            .collect::<Vec<_>>();
+        let exact_peaks = ExactPeakBirthEnumerationV1::from_candidates(
+            (1..=56)
+                .map(|id| ExactPeakCandidateInputV1 {
+                    form_ref: 1_000 + id,
+                    normalized_surface: format!("exact-{id:02}"),
+                    certificates: vec![Phase7dCertificateEvidence {
+                        class: Phase7dCertificateClass::MissingLetter,
+                        canonical_key: format!("missing-letter:exact-{id:02}"),
+                    }],
+                })
+                .collect(),
+        )
+        .expect("exact peaks");
+        let material = prepare_context_neutral_productive_material_with_contours_and_exact_peaks(
+            "source",
+            package_tuple(),
+            enumeration(productive),
+            contour_enumeration(grounded),
+            exact_peaks,
+        )
+        .expect("bounded mandatory-first material");
+        let retained = material.exact_target_surfaces().collect::<BTreeSet<_>>();
+
+        assert_eq!(retained.len(), MAX_TARGETS_PER_FIELD);
+        for id in 1..=13 {
+            assert!(retained.contains(format!("grounded-{id:02}").as_str()));
+        }
+        for id in 1..=56 {
+            assert!(retained.contains(format!("exact-{id:02}").as_str()));
+        }
+        for id in 1..=5 {
+            assert!(retained.contains(format!("productive-{id:02}").as_str()));
+        }
+        assert!(!retained.contains("productive-06"));
+        assert_eq!(
+            material.completeness().state(),
+            EnumerationStateV1::Overflow
+        );
+        assert_eq!(
+            material.completeness().reason(),
+            IncompletenessReasonV1::StorageCapacity
+        );
+    }
+
+    #[test]
+    fn incomplete_exact_route_preserves_grounded_l11_target() {
+        let mut grounded = contour_birth("grounded", TargetRelationV1::L11Restoration, 71);
+        grounded.verdict_membership = VerdictMembershipV1::L11Winner;
+        grounded.support_milli = 1_000;
+        let material = prepare_context_neutral_productive_material_with_contours_and_exact_peaks(
+            "source",
+            package_tuple(),
+            enumeration(Vec::new()),
+            contour_enumeration(vec![grounded]),
+            ExactPeakBirthEnumerationV1::incomplete(IncompletenessReasonV1::WorkBudgetExceeded),
+        )
+        .unwrap();
+
+        assert_eq!(
+            material.exact_target_surfaces().collect::<Vec<_>>(),
+            vec!["grounded"]
+        );
+        assert_eq!(
+            material.completeness().state(),
+            EnumerationStateV1::Overflow
+        );
+        assert_eq!(
+            material.completeness().reason(),
+            IncompletenessReasonV1::WorkBudgetExceeded
+        );
+        assert!(material.exact_targets[0]
+            .witness_roots
+            .iter()
+            .any(|root| root.verdict_membership == VerdictMembershipV1::L11Winner));
+    }
+
+    #[test]
     fn storage_overflow_retains_the_same_seventy_four_target_prefix() {
         let candidates = (1..=75)
             .map(|id| candidate(&format!("surface-{id:03}"), id))
@@ -1257,6 +1904,49 @@ mod tests {
             IncompletenessReasonV1::StorageCapacity
         );
         assert_eq!(material.exact_target_surfaces().last(), Some("surface-074"));
+    }
+
+    #[test]
+    fn exact_original_root_is_integrity_bound_outside_replacement_capacity() {
+        let replacements = || {
+            (1..=MAX_TARGETS_PER_FIELD as u32)
+                .map(|id| candidate(&format!("replacement-{id:03}"), id))
+                .collect::<Vec<_>>()
+        };
+        let original_birth = |grounding_ref| {
+            let mut birth =
+                contour_birth("source", TargetRelationV1::L11Restoration, grounding_ref);
+            birth.verdict_membership = VerdictMembershipV1::L11Winner;
+            birth.support_milli = 1_000;
+            birth
+        };
+        let left = prepare_context_neutral_productive_material_with_contours(
+            "source",
+            package_tuple(),
+            enumeration(replacements()),
+            contour_enumeration(vec![original_birth(901)]),
+        )
+        .unwrap();
+        let right = prepare_context_neutral_productive_material_with_contours(
+            "source",
+            package_tuple(),
+            enumeration(replacements()),
+            contour_enumeration(vec![original_birth(902)]),
+        )
+        .unwrap();
+
+        assert_eq!(left.completeness().state(), EnumerationStateV1::Complete);
+        assert_eq!(left.compact.targets.len(), MAX_TARGETS_PER_FIELD);
+        assert!(!left
+            .exact_target_surfaces()
+            .any(|surface| surface == "source"));
+        assert_eq!(
+            left.compact.original.lexical_status,
+            PreparedOriginalLexicalStatusV1::Clean
+        );
+        assert!(left.original_has_grounded_l11_evidence());
+        assert_eq!(left.compact.targets, right.compact.targets);
+        assert_ne!(left.exact_digest(), right.exact_digest());
     }
 
     #[test]

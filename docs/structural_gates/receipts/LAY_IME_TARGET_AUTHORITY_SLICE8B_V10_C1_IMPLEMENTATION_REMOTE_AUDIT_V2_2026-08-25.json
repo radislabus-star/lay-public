@@ -1,0 +1,36 @@
+{
+  "schema": "lay.v10.c1-implementation-remote-audit.v2",
+  "task_id": "slice8b-v10-c1-direct-latency-v1-20260825",
+  "observed_at": "2026-08-24T23:49:45Z",
+  "remote": "e@192.168.3.94",
+  "hostname": "e-MEGA-MINI-M1-13th",
+  "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+  "c1_paths": {
+    "final_exists": false,
+    "work_exists": false,
+    "state_exists": false
+  },
+  "prepare_v1_attempt": {
+    "verdict": "STOPPED_BEFORE_FIRST_REMOTE_MUTATION",
+    "reason": "controller expected remote V7 mode 0400 but sealed B0a copy is mode 0444",
+    "subject_executed": false,
+    "cargo_invoked": false,
+    "remote_writes": false
+  },
+  "remote_input_identities": {
+    "v10_source": {"mode": "0444", "size_bytes": 91518, "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c"},
+    "cargo_toml": {"mode": "0444", "size_bytes": 2399, "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b"},
+    "cargo_lock": {"mode": "0444", "size_bytes": 70770, "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"},
+    "v7": {"mode": "0444", "size_bytes": 1606189, "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"},
+    "sidecar": {"mode": "0444", "size_bytes": 3689884, "sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd"},
+    "package": {"mode": "0444", "size_bytes": 140556462, "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"},
+    "schedule": {"mode": "0444", "size_bytes": 174941, "sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78"},
+    "cargo_guard": {"mode": "0555", "size_bytes": 2534, "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"}
+  },
+  "claim": "READ_ONLY_REMOTE_MODE_CORRECTION",
+  "remote_writes_by_audit": false,
+  "cargo_invoked": false,
+  "subject_executed": false,
+  "perf_invoked": false,
+  "pmu_event_opened": false
+}

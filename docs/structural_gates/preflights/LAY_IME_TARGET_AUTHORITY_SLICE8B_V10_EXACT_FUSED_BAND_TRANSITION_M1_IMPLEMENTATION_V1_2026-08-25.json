@@ -1,0 +1,264 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_IMPLEMENTATION_V1_2026-08-25",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "m1-contract",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_CONTRACT_2026-08-25.md",
+      "expect": {"mode": "0664", "size_bytes": 5478, "sha256": "891a5ee2aa11840d8692d1ab110738bdd50d7bdca2b4873e92ab2ce125d2298b"}
+    },
+    {
+      "id": "m1-route-v6",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_ROUTE_V6.md",
+      "expect": {"mode": "0664", "size_bytes": 4673, "sha256": "76ab8038d118fd250af965922266a888b2ff7fd3cc6c5b359f6df5df561a8b70"}
+    },
+    {
+      "id": "m1-route-v6-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_ROUTE_V6_RECEIPT_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 24571, "sha256": "757463bffd63dcca470818bfdf5d30d60d621d4390fe7dc7948723dcb61a7806"}
+    },
+    {
+      "id": "decision-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_PMU_DECISION_2026-08-25.json",
+      "expect": {"mode": "0444", "size_bytes": 5014, "sha256": "98f7f606e3a21448e92137091f75c53c1cb210049895f0c9a18f7745da3afd09"}
+    },
+    {
+      "id": "v10-source",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "expect": {"mode": "0444", "size_bytes": 91518, "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c"}
+    },
+    {
+      "id": "active-v11",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {"mode": "0664", "size_bytes": 124127, "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"}
+    },
+    {
+      "id": "a2-subject",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_2026-08-25/SUBJECT_RESULT.json",
+      "expect": {"mode": "0444", "size_bytes": 772105, "sha256": "ab1b4786743691380fa6aed7a4e468f0719dc365b47561f667d9e8d0d3fe8347"}
+    },
+    {
+      "id": "a2-physical-model",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_2026-08-25/PHYSICAL_MODEL.json",
+      "expect": {"mode": "0444", "size_bytes": 1455, "sha256": "4b507c2d836c3ae1933492a90fe8b4b262f22b24b2abf1513ef7d947b5189570"}
+    },
+    {
+      "id": "pmu-model",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_LOADED_PMU_DIAGNOSIS_COMBINED_V3_V4_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 4621, "sha256": "ea9a19cace1eab5418f783dfb6c18a4de2adb7281356afffd12bb2b28cdacbd1"}
+    },
+    {
+      "id": "loaded-latency-comparison",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRTY_DIRECT_LATENCY_V1_V2_COMPARISON_2026-08-25.json",
+      "expect": {"mode": "0444", "size_bytes": 4003, "sha256": "01b9c10c72e9c0a19572c543197f20ce073dd71ad8406cd336e757bf6cd8868c"}
+    },
+    {
+      "id": "a2-fragment-donor",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_structural_work_test_module.rs.inc",
+      "expect": {"mode": "0664", "size_bytes": 37108, "sha256": "dcf1a9e067519ac265d9846fad2bbd0b13eda896c8008d6bfdb74094f998eb25"}
+    },
+    {
+      "id": "a2-controller-donor",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-structural-work.py",
+      "expect": {"mode": "0755", "size_bytes": 42658, "sha256": "9d027e5c0b82b683773b4a9a140859ce95662f54bed39f4a8d04077550faa190"}
+    },
+    {
+      "id": "cargo-guard",
+      "kind": "file",
+      "path": "../../../scripts/cargo-guard.sh",
+      "expect": {"mode": "0775", "size_bytes": 2534, "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"}
+    },
+    {"id": "m1-fragment-absent", "kind": "absent", "path": "../../../scripts/lay_v10_fused_band_transition_m1_test_module.rs.inc", "expect": {}},
+    {"id": "m1-controller-absent", "kind": "absent", "path": "../../../scripts/lay-v10-fused-band-transition-m1.py", "expect": {}},
+    {"id": "m1-result-absent", "kind": "absent", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_2026-08-25", "expect": {}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "create-m1-test-fragment", "kind": "local_source_create"},
+      {"id": "create-m1-controller", "kind": "local_source_create"},
+      {"id": "build-one-m1-elf", "kind": "remote_guarded_cargo_build"},
+      {"id": "run-one-m1-parity", "kind": "remote_diagnostic_execution"},
+      {"id": "run-fixed-g0-g1-u1-replays", "kind": "remote_process_scoped_pmu_execution"},
+      {"id": "publish-m1-evidence", "kind": "remote_and_local_evidence_write"},
+      {"id": "record-m1-result", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "third_loaded_c1_run",
+      "clean_c1_marker_consumption",
+      "full_b_measurement_or_promotion",
+      "production_v10_edit",
+      "active_v11_edit",
+      "installed_lay_mutation_or_restart",
+      "foreign_process_control_reaffinity_or_repriority",
+      "host_policy_tuning",
+      "adaptive_rerun_or_post_result_threshold_change",
+      "s1_swar_candidate",
+      "v12_implementation_or_admission",
+      "runtime_authority_change"
+    ]
+  },
+  "source_checks": [],
+  "state_machine": {
+    "initial_state": "M1_PAPER_PASS_IMPLEMENTATION_ABSENT",
+    "steps": [
+      {
+        "id": "create-m1-tools",
+        "from": "M1_PAPER_PASS_IMPLEMENTATION_ABSENT",
+        "to": "M1_IMPLEMENTED_UNRUN",
+        "mutates": true,
+        "failure_state": "M1_IMPLEMENTATION_REJECTED",
+        "cleanup": "remove only partial new M1 files and preserve all frozen inputs",
+        "preserves": ["preserve-contract", "preserve-decision", "preserve-v10", "preserve-v11", "preserve-a2", "preserve-pmu", "preserve-loaded-latency", "preserve-donors"],
+        "test_id": "implementation-fault"
+      },
+      {
+        "id": "self-check-m1",
+        "from": "M1_IMPLEMENTED_UNRUN",
+        "to": "M1_VERIFIED_UNRUN",
+        "mutates": false
+      },
+      {
+        "id": "build-m1-once",
+        "from": "M1_VERIFIED_UNRUN",
+        "to": "M1_EXECUTABLE_SEALED",
+        "mutates": true,
+        "failure_state": "M1_BUILD_TERMINAL",
+        "cleanup": "retain consumed build marker and cargo evidence with no retry",
+        "preserves": ["preserve-v10", "preserve-v11", "preserve-a2", "preserve-runtime"],
+        "test_id": "build-fault"
+      },
+      {
+        "id": "run-m1-parity-once",
+        "from": "M1_EXECUTABLE_SEALED",
+        "to": "M1_PARITY_PASS",
+        "mutates": true,
+        "failure_state": "M1_PARITY_TERMINAL",
+        "cleanup": "retain consumed parity marker and raw mismatch evidence with no retry",
+        "preserves": ["preserve-v10", "preserve-v11", "preserve-a2", "preserve-runtime"],
+        "test_id": "parity-fault"
+      },
+      {
+        "id": "measure-g0-once",
+        "from": "M1_PARITY_PASS",
+        "to": "M1_G0_OBSERVED",
+        "mutates": true,
+        "failure_state": "M1_G0_TERMINAL",
+        "cleanup": "retain consumed G0 marker and raw PMU evidence with no retry",
+        "preserves": ["preserve-v10", "preserve-v11", "preserve-runtime"],
+        "test_id": "physical-fault"
+      },
+      {
+        "id": "measure-g1-once",
+        "from": "M1_G0_OBSERVED",
+        "to": "M1_G1_OBSERVED",
+        "mutates": true,
+        "failure_state": "M1_G1_TERMINAL",
+        "cleanup": "retain consumed G1 marker and raw PMU evidence with no retry",
+        "preserves": ["preserve-v10", "preserve-v11", "preserve-runtime"],
+        "test_id": "physical-fault"
+      },
+      {
+        "id": "measure-u1-once",
+        "from": "M1_G1_OBSERVED",
+        "to": "M1_U1_OBSERVED",
+        "mutates": true,
+        "failure_state": "M1_U1_TERMINAL",
+        "cleanup": "retain consumed U1 marker and raw PMU evidence with no retry",
+        "preserves": ["preserve-v10", "preserve-v11", "preserve-runtime"],
+        "test_id": "physical-fault"
+      },
+      {
+        "id": "publish-m1",
+        "from": "M1_U1_OBSERVED",
+        "to": "M1_DECISION_PUBLISHED",
+        "mutates": true,
+        "failure_state": "M1_PUBLICATION_FAILED_REMOTE_RETAINED",
+        "cleanup": "retain sealed remote evidence and remove incomplete local stage",
+        "preserves": ["preserve-v10", "preserve-v11", "preserve-a2", "preserve-runtime"],
+        "test_id": "publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "M1_DECISION_PUBLISHED",
+      "M1_IMPLEMENTATION_REJECTED",
+      "M1_BUILD_TERMINAL",
+      "M1_PARITY_TERMINAL",
+      "M1_G0_TERMINAL",
+      "M1_G1_TERMINAL",
+      "M1_U1_TERMINAL",
+      "M1_PUBLICATION_FAILED_REMOTE_RETAINED"
+    ]
+  },
+  "preserved_artifacts": [
+    {"id": "preserve-contract", "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_CONTRACT_2026-08-25.md", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "m1-contract"},
+    {"id": "preserve-decision", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_PMU_DECISION_2026-08-25.json", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "decision-receipt"},
+    {"id": "preserve-v10", "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "v10-source"},
+    {"id": "preserve-v11", "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "active-v11"},
+    {"id": "preserve-a2", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_2026-08-25/SUBJECT_RESULT.json", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "a2-subject"},
+    {"id": "preserve-pmu", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_LOADED_PMU_DIAGNOSIS_COMBINED_V3_V4_2026-08-25.json", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "pmu-model"},
+    {"id": "preserve-loaded-latency", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRTY_DIRECT_LATENCY_V1_V2_COMPARISON_2026-08-25.json", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "loaded-latency-comparison"},
+    {"id": "preserve-donors", "path": "../../../scripts/lay_v10_structural_work_test_module.rs.inc", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "a2-fragment-donor"},
+    {"id": "preserve-runtime", "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "active-v11"}
+  ],
+  "identity_contracts": [
+    {"id": "production-prefix", "producer": "recovered V10 source", "consumer": "M1 diagnostic source", "comparison": "exact first 39047 bytes and SHA-256 ce9ea2d29060", "test_id": "prefix-parity"},
+    {"id": "trace-identity", "producer": "G0 authoritative trace builder", "consumer": "G0 G1 and U1 replay processes", "comparison": "exact ordered transition count and digest", "test_id": "trace-parity"},
+    {"id": "transition-parity", "producer": "G0 exact output", "consumer": "G1 and U1 exact outputs", "comparison": "cells metadata minimum terminal distance and survive decision", "test_id": "transition-parity"},
+    {"id": "semantic-parity", "producer": "exact production V10 search", "consumer": "M1 lockstep traversal", "comparison": "382 terminal peak completeness work scratch and certificate parity", "test_id": "semantic-parity"},
+    {"id": "packed-state", "producer": "BandedLevenshteinRow", "consumer": "one u64 M1 state", "comparison": "exact pack and unpack for reachable and stress states", "test_id": "packed-state-parity"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "runtime-stability",
+      "source": "installed Lay and daemon snapshots before and after M1",
+      "comparison": "exact_stable_projection",
+      "reason": "test-only M1 must not change runtime",
+      "stable_fields": ["lay_version", "active_v11_sha256", "ibus_daemon_pid", "lay_daemon_pid", "lay_ibus_engine_pid"],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": ["process_cpu_time", "host_load", "temperature", "foreign_process_set"],
+      "test_id": "runtime-stability"
+    }
+  ],
+  "invariants": [
+    {"id": "exact-one-trace", "statement": "G0 alone controls traversal and all physical variants replay one ordered trace digest", "test_id": "trace-parity"},
+    {"id": "exact-output", "statement": "G1 and U1 preserve every V10 transition output and semantic result", "test_id": "transition-parity"},
+    {"id": "s1-omitted", "statement": "no SWAR candidate is implemented or measured in M1 V1", "test_id": "source-boundary"},
+    {"id": "loaded-not-blocker", "statement": "foreign load remains running and cannot block instructions-per-transition comparison", "test_id": "noninterference"},
+    {"id": "fixed-verdict", "statement": "the 15 percent projected instruction-saving threshold is frozen before measurement", "test_id": "projection"},
+    {"id": "claim-boundary", "statement": "M1 cannot admit V12 full B runtime integration deployment or latency PASS", "test_id": "claim-boundary"}
+  ],
+  "tests": [
+    {"id": "implementation-fault", "kind": "fault_injection", "expected": "partial new M1 files are absent and frozen inputs remain exact"},
+    {"id": "prefix-parity", "kind": "parity", "expected": "M1 source preserves exact 39047-byte production prefix"},
+    {"id": "source-boundary", "kind": "static", "expected": "test-only additions contain G0 G1 U1 and no S1 production V10 or active V11 edit"},
+    {"id": "build-fault", "kind": "fault_injection", "expected": "build failure consumes marker retains cargo evidence and forbids retry"},
+    {"id": "parity-fault", "kind": "fault_injection", "expected": "parity failure consumes marker retains mismatch evidence and forbids physical runs"},
+    {"id": "transition-parity", "kind": "parity", "expected": "all exact trace transition outputs match G0"},
+    {"id": "packed-state-parity", "kind": "parity", "expected": "one-u64 state roundtrips all reachable and frozen stress states"},
+    {"id": "semantic-parity", "kind": "parity", "expected": "382 of 382 searches match exact production with zero false certificates"},
+    {"id": "trace-parity", "kind": "parity", "expected": "G0 G1 and U1 report one exact transition count and ordered digest"},
+    {"id": "physical-fault", "kind": "fault_injection", "expected": "failed variant retains consumed marker and raw evidence with no retry"},
+    {"id": "noninterference", "kind": "parity", "expected": "no foreign process control re-affinity repriority or host tuning occurs"},
+    {"id": "projection", "kind": "integration", "expected": "fixed formula reports projected whole-query instruction saving and binary M1 verdict"},
+    {"id": "runtime-stability", "kind": "parity", "expected": "installed runtime stable projection remains unchanged"},
+    {"id": "claim-boundary", "kind": "integration", "expected": "third C1 clean markers full B V12 and runtime authority remain untouched"},
+    {"id": "publication-fault", "kind": "fault_injection", "expected": "incomplete local result is absent while sealed remote evidence is retained"}
+  ]
+}

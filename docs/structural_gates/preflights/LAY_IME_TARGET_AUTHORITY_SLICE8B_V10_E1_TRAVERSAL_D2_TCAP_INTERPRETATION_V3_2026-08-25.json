@@ -1,0 +1,210 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_INTERPRETATION_V3_2026-08-25",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "correction-contract",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_INTERPRETATION_CORRECTION_V3_2026-08-25.md",
+      "expect": {"mode": "0664", "size_bytes": 4205, "sha256": "57c4e7fab83e36067fc383e4c30545c76a4eb7deec6bf3b2c0b5bf57cc4d1ac8"}
+    },
+    {
+      "id": "correction-route-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_INTERPRETATION_CORRECTION_V3_ROUTE_RECEIPT_2026-08-25.json",
+      "expect": {"mode": "0444", "size_bytes": 16104, "sha256": "62d8e2a2266492404b33c10a499581f283cdf683d4cc753d855f496f78c8e872"}
+    },
+    {
+      "id": "v2-local-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_V2_2026-08-25/T_CAP_RECOVERY_RECEIPT.json",
+      "expect": {"mode": "0400", "size_bytes": 6071, "sha256": "805fb3316b6a64b507e94b515e533ecbf18852d61d8b20d86cadfd5ea0039ef9"}
+    },
+    {
+      "id": "v2-remote-manifest",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_V2_2026-08-25/REMOTE_EVIDENCE/SHA256SUMS",
+      "expect": {"mode": "0444", "size_bytes": 1276, "sha256": "23cbcaeb9021b8693ccbcdbbe1df2efa2b6d6883dfa806656926bc29bd892764"}
+    },
+    {
+      "id": "v2-remote-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_V2_2026-08-25/REMOTE_EVIDENCE/T_CAP_RECOVERY_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 4319, "sha256": "7b2348e795b5392449871056983b129dd2cfcf02f0584b2bd7cda0eb046abfff"}
+    },
+    {
+      "id": "evlist-output",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_V2_2026-08-25/REMOTE_EVIDENCE/evlist.stdout",
+      "expect": {"mode": "0444", "size_bytes": 602, "sha256": "8c281ab1b257e02c31ad8b5d42da3127dc34bad85dbc31656f9bd8ecd6c84b43"}
+    },
+    {
+      "id": "samples-output",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_V2_2026-08-25/REMOTE_EVIDENCE/samples.stdout",
+      "expect": {"mode": "0444", "size_bytes": 326607, "sha256": "997d8c64b482509959b0f728e8c12df16a0e994aff1e6386d0cd3a42b28e7f4a"}
+    },
+    {
+      "id": "raw-output",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_V2_2026-08-25/REMOTE_EVIDENCE/raw-records.stdout",
+      "expect": {"mode": "0444", "size_bytes": 3368498, "sha256": "fef73b5591319fdf137fea05a8839fe1691f1ab4c8ddd4c7886e7fe9ebc647a5"}
+    },
+    {
+      "id": "buildids-output",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_V2_2026-08-25/REMOTE_EVIDENCE/buildids.stdout",
+      "expect": {"mode": "0444", "size_bytes": 17088, "sha256": "a2c4d26d06f0d008176a2774611cef6ee840b1ecda2f12198bb12db3db16e489"}
+    },
+    {
+      "id": "maps-before",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/T-CAP/maps-before.txt",
+      "expect": {"mode": "0444", "size_bytes": 3770, "sha256": "efee21f8e02424cdd40800356c492fa8730be99b6bbffe3d36d415433ca7df95"}
+    },
+    {
+      "id": "maps-during",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/T-CAP/maps-during.txt",
+      "expect": {"mode": "0444", "size_bytes": 3770, "sha256": "efee21f8e02424cdd40800356c492fa8730be99b6bbffe3d36d415433ca7df95"}
+    },
+    {
+      "id": "record-command",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/T-CAP/record-command.json",
+      "expect": {"mode": "0444", "size_bytes": 317, "sha256": "d2aa8bec8fcdcb0bf0fbc702c08592d0e14bd0285a93569b03d36bf9f5f423b3"}
+    },
+    {
+      "id": "p0-static-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P0_STATIC_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 7003, "sha256": "9b6aff3d74d36e7f5868fff596eb17326e819bf45496bbe4f3cf50870a7f71e0"}
+    },
+    {
+      "id": "controller-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-e1-traversal-d2-tcap-interpretation-v3.py",
+      "expect": {}
+    },
+    {
+      "id": "result-absent",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_INTERPRETATION_V3_2026-08-25",
+      "expect": {}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "create-interpretation-controller", "kind": "local_source_create"},
+      {"id": "copy-sha-pinned-remote-yes-bytes", "kind": "remote_artifact_read"},
+      {"id": "publish-immutable-derived-receipt", "kind": "local_evidence_write"},
+      {"id": "record-correction-result", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "perf_executable_reader_record_stat_or_event_open",
+      "yes_or_any_subject_execution",
+      "cargo_build_check_test_or_rustc_compilation",
+      "d2_controller_fragment_elf_build_or_execution",
+      "sealed_v1_or_v2_evidence_mutation",
+      "fallback_elf_or_path_suffix_identity",
+      "foreign_process_control_or_host_policy_tuning",
+      "full_b_v12_runtime_integration_or_deployment",
+      "installed_lay_mutation_or_process_restart",
+      "runtime_authority_change"
+    ]
+  },
+  "invariants": [
+    {"id": "no-perf-reinterpretation", "statement": "V3 parses only sealed text outputs and never invokes perf", "test_id": "interpretation-command-boundary"},
+    {"id": "history-preserved", "statement": "V1 and V2 receipts outputs and manifests remain exact and unchanged", "test_id": "sealed-output-parity"},
+    {"id": "zero-rule-is-scoped", "statement": "absent freq and precise_ip map to zero only for the exact fixed-count task-clock attr line", "test_id": "attr-zero-parity"},
+    {"id": "dso-wrapper-is-exact", "statement": "exactly one full outer parenthesis pair is stripped before full path identity comparison", "test_id": "dso-canonicalization-parity"},
+    {"id": "yes-elf-is-exact", "statement": "only remote yes bytes matching the pinned SHA and Build ID can supply PT_LOAD geometry", "test_id": "yes-elf-parity"},
+    {"id": "correction-does-not-admit-d2", "statement": "recovered T-CAP can feed only the precise-only preflight and cannot admit D2 or runtime work", "test_id": "later-gate-absence"}
+  ],
+  "state_machine": {
+    "initial_state": "V2_BLOCKED_TERMINAL_V3_CONTROLLER_ABSENT",
+    "steps": [
+      {
+        "id": "create-v3-controller",
+        "from": "V2_BLOCKED_TERMINAL_V3_CONTROLLER_ABSENT",
+        "to": "V3_CONTROLLER_UNRUN",
+        "mutates": true,
+        "failure_state": "V3_CONTROLLER_REJECTED",
+        "cleanup": "remove only partial new controller and preserve sealed evidence",
+        "preserves": ["v2-receipt", "v2-outputs", "v1-maps", "installed-runtime"],
+        "test_id": "controller-creation-fault"
+      },
+      {
+        "id": "self-check-v3-controller",
+        "from": "V3_CONTROLLER_UNRUN",
+        "to": "V3_CONTROLLER_VERIFIED_UNRUN",
+        "mutates": false,
+        "test_id": "controller-static-parity"
+      },
+      {
+        "id": "consume-marker-copy-yes-and-interpret",
+        "from": "V3_CONTROLLER_VERIFIED_UNRUN",
+        "to": "V3_INTERPRETATION_OBSERVED",
+        "mutates": true,
+        "failure_state": "V3_INTERPRETATION_BLOCKED_RETAINED",
+        "cleanup": "retain marker copied exact ELF partial result and first failure; never invoke perf or subject",
+        "preserves": ["v2-receipt", "v2-outputs", "v1-maps", "installed-runtime"],
+        "test_id": "interpretation-fault"
+      },
+      {
+        "id": "publish-v3-receipt",
+        "from": "V3_INTERPRETATION_OBSERVED",
+        "to": "V3_RECEIPT_PUBLISHED",
+        "mutates": true,
+        "failure_state": "V3_PUBLICATION_FAILED_STAGE_RETAINED",
+        "cleanup": "retain complete stage and remove only incomplete final path",
+        "preserves": ["v2-receipt", "v2-outputs", "v1-maps", "installed-runtime"],
+        "test_id": "publication-fault"
+      }
+    ],
+    "terminal_states": ["V3_RECEIPT_PUBLISHED", "V3_CONTROLLER_REJECTED", "V3_INTERPRETATION_BLOCKED_RETAINED", "V3_PUBLICATION_FAILED_STAGE_RETAINED"]
+  },
+  "preserved_artifacts": [
+    {"id": "v2-receipt", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_V2_2026-08-25/T_CAP_RECOVERY_RECEIPT.json", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "v2-local-receipt"},
+    {"id": "v2-outputs", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_SALVAGE_V2_2026-08-25/REMOTE_EVIDENCE/SHA256SUMS", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "v2-remote-manifest"},
+    {"id": "v1-maps", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_REMOTE_EVIDENCE/T-CAP/maps-during.txt", "policy": "immutable", "rollback_policy": "retain_exact_bytes", "baseline_check_id": "maps-during"},
+    {"id": "installed-runtime", "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P0_STATIC_RECEIPT.json", "policy": "immutable_observation", "rollback_policy": "no_runtime_mutation_permitted", "baseline_check_id": "p0-static-receipt"}
+  ],
+  "identity_contracts": [
+    {"id": "sealed-reader-output", "producer": "V2 immutable manifest and four reader outputs", "consumer": "V3 parser", "comparison": "exact SHA size mode and zero stderr", "test_id": "sealed-output-parity"},
+    {"id": "task-clock-attr", "producer": "exact record command and task-clock evlist line", "consumer": "V3 type config period freq privilege precision result", "comparison": "exact fixed-count scoped attr mapping", "test_id": "attr-zero-parity"},
+    {"id": "sample-dso-path", "producer": "sealed perf script DSO field", "consumer": "V3 full yes path identity", "comparison": "one exact outer pair then full path equality", "test_id": "dso-canonicalization-parity"},
+    {"id": "yes-elf-closure", "producer": "pinned remote yes SHA and Build ID", "consumer": "copied ELF PT_LOAD geometry", "comparison": "exact SHA Build ID ELF type and executable segment", "test_id": "yes-elf-parity"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "installed-runtime-stability",
+      "source": "installed Lay projection before and after V3",
+      "comparison": "exact_stable_projection",
+      "reason": "offline parsing and remote file read cannot mutate runtime authority",
+      "stable_fields": ["lay_version", "active_v11_sha256", "ibus_daemon_pid", "lay_daemon_pid", "lay_ibus_engine_pid", "runtime_authority_changed"],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": ["process_cpu_time", "host_load", "temperature"],
+      "test_id": "runtime-noninterference"
+    }
+  ],
+  "source_checks": [],
+  "tests": [
+    {"id": "controller-creation-fault", "kind": "fault_injection", "expected": "partial controller creates no result and mutates no sealed evidence"},
+    {"id": "interpretation-command-boundary", "kind": "integration", "expected": "controller contains no perf invocation subject execution Cargo rustc D2 or foreign control route"},
+    {"id": "controller-static-parity", "kind": "parity", "expected": "controller pins all correction preflight reader output map and remote yes identities"},
+    {"id": "sealed-output-parity", "kind": "parity", "expected": "all V1 and V2 sealed inputs remain exact before and after interpretation"},
+    {"id": "attr-zero-parity", "kind": "parity", "expected": "exact fixed-count task-clock line maps absent optional freq and precise fields to zero only"},
+    {"id": "dso-canonicalization-parity", "kind": "parity", "expected": "one outer DSO pair canonicalizes to exact full yes path and all other wrappers fail"},
+    {"id": "yes-elf-parity", "kind": "parity", "expected": "copied remote yes SHA Build ID ET_DYN and PT_LOAD geometry match pinned identity"},
+    {"id": "interpretation-fault", "kind": "fault_injection", "expected": "any identity parse normalization or conjunct failure retains blocked evidence without perf or subject"},
+    {"id": "publication-fault", "kind": "fault_injection", "expected": "incomplete output never exposes recovery PASS"},
+    {"id": "runtime-noninterference", "kind": "parity", "expected": "Lay version V11 SHA and daemon PIDs remain unchanged"},
+    {"id": "later-gate-absence", "kind": "integration", "expected": "zero precise record D2 build full B V12 integration or deployment action occurs"}
+  ]
+}

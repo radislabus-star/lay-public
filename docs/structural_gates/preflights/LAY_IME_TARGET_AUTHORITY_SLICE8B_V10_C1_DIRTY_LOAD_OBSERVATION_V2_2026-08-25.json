@@ -1,0 +1,597 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRTY_LOAD_OBSERVATION_V2_2026-08-25",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "clean-c1-controller",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-c1-direct-latency.py",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 61711,
+        "sha256": "e6e3db8529b4bd5d64d11b903b3b2ef67e808dd202d5de0b7287fc644a151718"
+      }
+    },
+    {
+      "id": "sealed-c1-test-source",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_c1_test_module.rs.inc",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 31455,
+        "sha256": "2b12d6aff6c9b91efa4ff83781fd016a94164f42ef5d2e6db0222f424510de9a"
+      }
+    },
+    {
+      "id": "clean-c1-contract",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRECT_LATENCY_CONTRACT_V1_2026-08-25.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 15531,
+        "sha256": "1b9c8b2af590c721524b11fffeb54b92e37f5e571457605cb5c27dabc66f7752"
+      }
+    },
+    {
+      "id": "clean-readiness-blocked-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_READINESS_BLOCKED_ENVIRONMENT_V1_2026-08-25.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 3247,
+        "sha256": "402d342ad3778f40e5603498b0d68e1c1268f5a6b4040eafe6d5cd74515bc9d1"
+      }
+    },
+    {
+      "id": "c1-v3-preflight-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_PREFLIGHT_V3_2026-08-25.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 7721,
+        "sha256": "82ab93160acf12e71b27a135aec1228bceb24bc708132af1ed5d1473b36f366a"
+      }
+    },
+    {
+      "id": "active-v11-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 124127,
+        "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"
+      }
+    },
+    {
+      "id": "owning-document-before-dirty-direct",
+      "kind": "file",
+      "path": "../../ime-target-authority-slice8-lexical-readout-2026-08-23.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 118667,
+        "sha256": "12cf5dbcdc25cd5a8e0e824c7fd2580de5bb35806501369713e7dcda4613328d"
+      }
+    },
+    {
+      "id": "dirty-direct-contract",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRTY_LOAD_OBSERVATION_CONTRACT_V1_2026-08-25.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 6016,
+        "sha256": "f9bd1e903424a1c6f254fe5f0cc980155f3310dbc79833ced4b3e90cf176f918"
+      }
+    },
+    {
+      "id": "dirty-direct-route-v2",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRTY_LOAD_ROUTE_PACKET_V2_2026-08-25.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 7080,
+        "sha256": "651a4f81e1291acc55230173a9a9ec5883899887ef8e7de7a808b1b3d72ab299"
+      }
+    },
+    {
+      "id": "dirty-direct-route-v2-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRTY_LOAD_ROUTE_V2_2026-08-25.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 27063,
+        "sha256": "bacd4f8b010d84a665ae005333b0cb44d7e5fdad454403beb342cc9bc167903a"
+      }
+    },
+    {
+      "id": "dirty-direct-controller-before-implementation",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-c1-dirty-direct-latency.py",
+      "expect": {}
+    },
+    {
+      "id": "dirty-direct-preflight-v1",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRTY_LOAD_OBSERVATION_V1_2026-08-25.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 16902,
+        "sha256": "075e58d13cacd52c66e27040d7d02d1aab82fa740847ee672d751ba6bfea476f"
+      }
+    },
+    {
+      "id": "dirty-direct-preflight-v1-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRTY_LOAD_OBSERVATION_PREFLIGHT_V1_2026-08-25.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 7537,
+        "sha256": "62173f4058fd594d14e5fc214ee1bfda5bb48154aff8b3ba3c09b37119af9747"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "implement-dirty-direct-controller",
+        "kind": "local_source_edit"
+      },
+      {
+        "id": "observe-current-background-load",
+        "kind": "remote_load_observation"
+      },
+      {
+        "id": "run-fixed-dirty-direct-matrix",
+        "kind": "remote_diagnostic_execution"
+      },
+      {
+        "id": "publish-dirty-direct-evidence",
+        "kind": "remote_and_local_evidence_write"
+      },
+      {
+        "id": "record-dirty-direct-result",
+        "kind": "documentation_edit"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "cargo_build_check_test",
+      "rustc_compilation",
+      "parity_rerun",
+      "perf_or_pmu",
+      "host_tuning",
+      "foreign_process_or_service_stop",
+      "foreign_process_affinity_or_priority_change",
+      "clean_c1_marker_consumption",
+      "clean_c1_final_publication",
+      "runtime_deployment_or_restart",
+      "installed_lay_mutation",
+      "formal_c1_pass_or_fail",
+      "formal_b_promotion",
+      "v12_action",
+      "retry_or_adaptive_repetition"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "sealed-c1-test-source-veto-scan",
+      "path": "../../../scripts/lay_v10_c1_test_module.rs.inc",
+      "sha256": "2b12d6aff6c9b91efa4ff83781fd016a94164f42ef5d2e6db0222f424510de9a",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?:synthetic_fixture|generate_fixture|fixture_writer)"
+        },
+        {
+          "effect": "cargo_build_check_test",
+          "regex": "(?:Command::new\\([^)]*\\\"cargo\\\"|cargo\\s+(?:build|check|test))"
+        },
+        {
+          "effect": "rustc_compilation",
+          "regex": "(?:Command::new\\([^)]*\\\"rustc\\\"|rustc\\s+--)"
+        },
+        {
+          "effect": "perf_or_pmu",
+          "regex": "(?:Command::new\\([^)]*\\\"perf\\\"|perf_event_open|_rdtsc|rdpmc)"
+        },
+        {
+          "effect": "host_tuning",
+          "regex": "(?:cpupower|sysctl\\s+-w|scaling_governor|energy_performance_preference)"
+        },
+        {
+          "effect": "foreign_process_or_service_stop",
+          "regex": "(?:systemctl\\s+(?:stop|kill)|pkill|killall)"
+        },
+        {
+          "effect": "runtime_deployment_or_restart",
+          "regex": "(?:gnome-extensions|lay-runtime-control|ibus-daemon|install-release)"
+        },
+        {
+          "effect": "installed_lay_mutation",
+          "regex": "(?:\\.local/(?:bin|lib)/lay).{0,100}(?:write|remove|rename|install)"
+        },
+        {
+          "effect": "formal_b_promotion",
+          "regex": "(?:authority_ready|formal_b_pass)\\s*[:=]\\s*true"
+        },
+        {
+          "effect": "v12_action",
+          "regex": "(?:ExactFusedBandTransition|\\bV12\\b)"
+        },
+        {
+          "effect": "retry_or_adaptive_repetition",
+          "regex": "(?:retry_after|adaptive_repeat|increase_repetitions)"
+        },
+        {
+          "effect": "clean_c1_final_publication",
+          "regex": "DIRTY_LOAD.{0,200}C1_RESULT"
+        },
+        {
+          "effect": "clean_c1_marker_consumption",
+          "regex": "DIRTY_LOAD.{0,200}consumed-before-exec"
+        },
+        {
+          "effect": "foreign_process_affinity_or_priority_change",
+          "regex": "(?:setpriority|sched_setaffinity.{0,120}foreign)"
+        },
+        {
+          "effect": "formal_c1_pass_or_fail",
+          "regex": "DIRTY_LOAD.{0,200}C1_(?:PASS|FAIL)"
+        },
+        {
+          "effect": "parity_rerun",
+          "regex": "DIRTY_LOAD.{0,200}v10_c1_semantic_parity"
+        }
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "preserve-clean-controller",
+      "path": "../../../scripts/lay-v10-c1-direct-latency.py",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "clean-c1-controller"
+    },
+    {
+      "id": "preserve-c1-test-source",
+      "path": "../../../scripts/lay_v10_c1_test_module.rs.inc",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "sealed-c1-test-source"
+    },
+    {
+      "id": "preserve-clean-contract",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRECT_LATENCY_CONTRACT_V1_2026-08-25.md",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "clean-c1-contract"
+    },
+    {
+      "id": "preserve-readiness-receipt",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_READINESS_BLOCKED_ENVIRONMENT_V1_2026-08-25.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "clean-readiness-blocked-receipt"
+    },
+    {
+      "id": "preserve-v3-preflight",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_PREFLIGHT_V3_2026-08-25.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "c1-v3-preflight-receipt"
+    },
+    {
+      "id": "preserve-active-v11",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "active-v11-source"
+    },
+    {
+      "id": "preserve-dirty-contract",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRTY_LOAD_OBSERVATION_CONTRACT_V1_2026-08-25.md",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "dirty-direct-contract"
+    },
+    {
+      "id": "preserve-route-review",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRTY_LOAD_ROUTE_V2_2026-08-25.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "dirty-direct-route-v2-receipt"
+    },
+    {
+      "id": "preserve-preflight-v1",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRTY_LOAD_OBSERVATION_V1_2026-08-25.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "dirty-direct-preflight-v1"
+    },
+    {
+      "id": "preserve-preflight-v1-receipt",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRTY_LOAD_OBSERVATION_PREFLIGHT_V1_2026-08-25.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "dirty-direct-preflight-v1-receipt"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "C1_PARITY_PASS_CLEAN_LATENCY_UNRUN_DIRTY_DIRECT_UNRUN",
+    "steps": [
+      {
+        "id": "implement-controller",
+        "from": "C1_PARITY_PASS_CLEAN_LATENCY_UNRUN_DIRTY_DIRECT_UNRUN",
+        "to": "DIRTY_DIRECT_CONTROLLER_IMPLEMENTED_UNRUN",
+        "mutates": true,
+        "failure_state": "DIRTY_DIRECT_CONTROLLER_REJECTED_NO_REMOTE_EXECUTION",
+        "cleanup": "remove only an incomplete new controller and retain all existing C1 artifacts",
+        "preserves": [
+          "preserve-clean-controller",
+          "preserve-c1-test-source",
+          "preserve-clean-contract",
+          "preserve-readiness-receipt",
+          "preserve-v3-preflight",
+          "preserve-active-v11",
+          "preserve-dirty-contract",
+          "preserve-route-review"
+        ],
+        "test_id": "controller-fault"
+      },
+      {
+        "id": "self-check-controller",
+        "from": "DIRTY_DIRECT_CONTROLLER_IMPLEMENTED_UNRUN",
+        "to": "DIRTY_DIRECT_CONTROLLER_VERIFIED_UNRUN",
+        "mutates": false
+      },
+      {
+        "id": "initialize-dirty-state",
+        "from": "DIRTY_DIRECT_CONTROLLER_VERIFIED_UNRUN",
+        "to": "DIRTY_DIRECT_STATE_READY_CLEAN_MARKERS_PRESERVED",
+        "mutates": true,
+        "failure_state": "DIRTY_DIRECT_STATE_INIT_FAILED_NO_SUBJECT",
+        "cleanup": "retain incomplete dirty-only state for audit and execute no subject",
+        "preserves": [
+          "preserve-clean-controller",
+          "preserve-c1-test-source",
+          "preserve-clean-contract",
+          "preserve-readiness-receipt",
+          "preserve-v3-preflight",
+          "preserve-active-v11",
+          "preserve-dirty-contract",
+          "preserve-route-review"
+        ],
+        "test_id": "state-init-fault"
+      },
+      {
+        "id": "execute-fixed-dirty-matrix",
+        "from": "DIRTY_DIRECT_STATE_READY_CLEAN_MARKERS_PRESERVED",
+        "to": "DIRTY_DIRECT_MATRIX_RECORDED",
+        "mutates": true,
+        "failure_state": "DIRTY_DIRECT_MATRIX_TERMINAL_PARTIAL_RETAINED_NO_RETRY",
+        "cleanup": "terminate only the controller-owned failed subject, retain consumed dirty marker and all completed dirty routes, and do not retry",
+        "preserves": [
+          "preserve-clean-controller",
+          "preserve-c1-test-source",
+          "preserve-clean-contract",
+          "preserve-readiness-receipt",
+          "preserve-v3-preflight",
+          "preserve-active-v11",
+          "preserve-dirty-contract",
+          "preserve-route-review"
+        ],
+        "test_id": "matrix-fault"
+      },
+      {
+        "id": "publish-remote-result",
+        "from": "DIRTY_DIRECT_MATRIX_RECORDED",
+        "to": "DIRTY_LOAD_OBSERVATION_REMOTE_IMMUTABLE",
+        "mutates": true,
+        "failure_state": "DIRTY_DIRECT_REMOTE_PUBLICATION_FAILED_STAGE_RETAINED",
+        "cleanup": "retain the dirty-only stage and expose no partial final path",
+        "preserves": [
+          "preserve-clean-controller",
+          "preserve-c1-test-source",
+          "preserve-clean-contract",
+          "preserve-readiness-receipt",
+          "preserve-v3-preflight",
+          "preserve-active-v11",
+          "preserve-dirty-contract",
+          "preserve-route-review"
+        ],
+        "test_id": "remote-publication-fault"
+      },
+      {
+        "id": "publish-local-index",
+        "from": "DIRTY_LOAD_OBSERVATION_REMOTE_IMMUTABLE",
+        "to": "DIRTY_LOAD_OBSERVATION_INDEXED_NO_PROMOTION",
+        "mutates": true,
+        "failure_state": "DIRTY_DIRECT_LOCAL_INDEX_FAILED_REMOTE_RETAINED",
+        "cleanup": "retain immutable remote evidence and remove only an incomplete local stage",
+        "preserves": [
+          "preserve-clean-controller",
+          "preserve-c1-test-source",
+          "preserve-clean-contract",
+          "preserve-readiness-receipt",
+          "preserve-v3-preflight",
+          "preserve-active-v11",
+          "preserve-dirty-contract",
+          "preserve-route-review"
+        ],
+        "test_id": "local-publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "DIRTY_LOAD_OBSERVATION_INDEXED_NO_PROMOTION",
+      "DIRTY_DIRECT_CONTROLLER_REJECTED_NO_REMOTE_EXECUTION",
+      "DIRTY_DIRECT_STATE_INIT_FAILED_NO_SUBJECT",
+      "DIRTY_DIRECT_MATRIX_TERMINAL_PARTIAL_RETAINED_NO_RETRY",
+      "DIRTY_DIRECT_REMOTE_PUBLICATION_FAILED_STAGE_RETAINED",
+      "DIRTY_DIRECT_LOCAL_INDEX_FAILED_REMOTE_RETAINED"
+    ]
+  },
+  "invariants": [
+    {
+      "id": "clean-route-isolation",
+      "statement": "the clean C1 marker snapshot and absent clean final path are unchanged before and after dirty execution",
+      "test_id": "state-isolation"
+    },
+    {
+      "id": "sealed-subject-reuse",
+      "statement": "the exact sealed C1 ELF and completed parity are consumed without build or parity rerun",
+      "test_id": "sealed-subject-identity"
+    },
+    {
+      "id": "fixed-matrix-once",
+      "statement": "the ten dirty routes run once in frozen order with fixed sample denominators and no adaptive retry",
+      "test_id": "matrix-order"
+    },
+    {
+      "id": "loaded-environment-noninterference",
+      "statement": "background load is observed and never stopped or tuned",
+      "test_id": "environment-observation"
+    },
+    {
+      "id": "dirty-claim-boundary",
+      "statement": "the result is DIRTY_LOAD_OBSERVATION with thresholds_would_pass and cannot become C1 PASS or FAIL",
+      "test_id": "claim-boundary"
+    },
+    {
+      "id": "runtime-noninterference",
+      "statement": "installed Lay runtime processes version and active V11 bytes remain unchanged",
+      "test_id": "runtime-comparison"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "sealed-c1-executable",
+      "producer": "sealed C1 build-v1 executable provenance",
+      "consumer": "dirty direct controller pre-execution verifier",
+      "comparison": "exact SHA-256 size Build ID and mode",
+      "test_id": "sealed-subject-identity"
+    },
+    {
+      "id": "completed-c1-parity",
+      "producer": "sealed parity-v1 subject receipt",
+      "consumer": "dirty direct controller prerequisite verifier",
+      "comparison": "exact receipt path verdict records mismatch counts retention and false certificates",
+      "test_id": "parity-prerequisite"
+    },
+    {
+      "id": "clean-state-snapshot",
+      "producer": "clean C1 marker directory",
+      "consumer": "dirty direct before-after verifier",
+      "comparison": "exact marker names file identities and absent clean final",
+      "test_id": "state-isolation"
+    },
+    {
+      "id": "primitive-sample-binding",
+      "producer": "sealed C1 S and T entrypoints",
+      "consumer": "dirty direct sample parser and aggregator",
+      "comparison": "22-byte schema counts SHA flags affinity migrations barriers and run identity",
+      "test_id": "sample-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "installed-lay-stability",
+      "source": "local runtime snapshot before and after remote dirty execution",
+      "comparison": "exact equality of active V11 SHA Lay version output and ordered process records",
+      "reason": "dirty research observation cannot mutate the installed runtime",
+      "test_id": "runtime-comparison",
+      "stable_fields": [
+        "active_v11_sha256",
+        "lay_version_stdout",
+        "lay_version_stderr",
+        "lay_processes"
+      ],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": []
+    }
+  ],
+  "tests": [
+    {
+      "id": "controller-fault",
+      "kind": "fault_injection",
+      "expected": "failed implementation executes no remote subject and changes no existing C1 artifact"
+    },
+    {
+      "id": "state-isolation",
+      "kind": "parity",
+      "expected": "dirty state uses a new path and exact clean marker identities remain unchanged before and after"
+    },
+    {
+      "id": "matrix-fault",
+      "kind": "fault_injection",
+      "expected": "a failed route terminates only its subject and preserves consumed dirty marker plus prior routes without retry"
+    },
+    {
+      "id": "remote-publication-fault",
+      "kind": "fault_injection",
+      "expected": "remote final path is absent until a sealed complete stage is renamed once"
+    },
+    {
+      "id": "local-publication-fault",
+      "kind": "fault_injection",
+      "expected": "local failure retains immutable remote evidence and exposes no partial local final"
+    },
+    {
+      "id": "sealed-subject-identity",
+      "kind": "parity",
+      "expected": "ELF SHA size Build ID and mode exactly match the sealed C1 identity"
+    },
+    {
+      "id": "parity-prerequisite",
+      "kind": "parity",
+      "expected": "existing parity receipt reports 382 records zero mismatches 382 retention and zero false certificates without rerun"
+    },
+    {
+      "id": "sample-parity",
+      "kind": "parity",
+      "expected": "each subject receipt and samples.bin match fixed schema SHA counts capacities affinity migrations and barriers"
+    },
+    {
+      "id": "matrix-order",
+      "kind": "integration",
+      "expected": "S1 T1 T2 S2 S3 T3 T4 S4 S5 T5 execute once with 191000 S and 477500 T samples"
+    },
+    {
+      "id": "environment-observation",
+      "kind": "integration",
+      "expected": "PSI process CPU temperature throttle and policy snapshots are recorded while Nando btop and other load remain untouched"
+    },
+    {
+      "id": "threshold-aggregation",
+      "kind": "unit",
+      "expected": "nearest-rank pooled route worker fairness and query diagnostics reproduce frozen C1 calculations"
+    },
+    {
+      "id": "claim-boundary",
+      "kind": "integration",
+      "expected": "receipt says DIRTY_LOAD_OBSERVATION and thresholds_would_pass without C1 B V12 or runtime authority"
+    },
+    {
+      "id": "one-run-marker",
+      "kind": "integration",
+      "expected": "each dirty route marker is consumed before execution and a second invocation is rejected"
+    },
+    {
+      "id": "runtime-comparison",
+      "kind": "parity",
+      "expected": "local installed Lay version processes and active V11 bytes are identical before and after"
+    },
+    {
+      "id": "state-init-fault",
+      "kind": "fault_injection",
+      "expected": "a dirty-state initialization failure executes no subject and cannot mutate or consume a clean C1 marker"
+    }
+  ]
+}

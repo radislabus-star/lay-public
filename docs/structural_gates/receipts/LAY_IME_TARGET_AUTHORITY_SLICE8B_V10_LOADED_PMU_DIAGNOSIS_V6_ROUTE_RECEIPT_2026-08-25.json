@@ -1,0 +1,918 @@
+{
+  "verdict": "PASS",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-loaded-pmu-diagnosis-v3-route-v6",
+  "domain": "code",
+  "complexity_score": 46,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.1304,
+      "c2": 0.1304,
+      "c3": 0.1304,
+      "c4": 0.1304,
+      "c5": 0.1304,
+      "c6": 0.1304,
+      "c7": 0.1304,
+      "c8": 0.1304
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 16,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.3559,
+      "c2": 0.3425,
+      "c3": 0.3559,
+      "c4": 0.3358,
+      "c5": 0.3438,
+      "c6": 0.4004,
+      "c7": 0.3963,
+      "c8": 0.3721
+    },
+    "source_self_score": 0.3628,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "pmu-v3-b5": "pmu-v3-b5",
+      "pmu-v3-b6": "pmu-v3-b6",
+      "pmu-v3-boundary": "pmu-v3-boundary",
+      "pmu-v3-environment": "pmu-v3-environment",
+      "pmu-v3-parity": "pmu-v3-parity",
+      "pmu-v3-partition": "pmu-v3-partition",
+      "pmu-v3-provenance": "pmu-v3-provenance",
+      "pmu-v3-sequencing": "pmu-v3-sequencing"
+    },
+    "scores": {
+      "pmu-v3-b5": 1.0,
+      "pmu-v3-b6": 1.0,
+      "pmu-v3-boundary": 1.0,
+      "pmu-v3-environment": 1.0,
+      "pmu-v3-parity": 1.0,
+      "pmu-v3-partition": 1.0,
+      "pmu-v3-provenance": 1.0,
+      "pmu-v3-sequencing": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "pmu-v3-b5": 1,
+      "pmu-v3-b6": 1,
+      "pmu-v3-boundary": 1,
+      "pmu-v3-environment": 1,
+      "pmu-v3-parity": 1,
+      "pmu-v3-partition": 1,
+      "pmu-v3-provenance": 1,
+      "pmu-v3-sequencing": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.3628,
+      "norm": 92.887,
+      "triads": 8
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "pmu-v3-b5": "pmu-v3-b5",
+      "pmu-v3-b6": "pmu-v3-b6",
+      "pmu-v3-boundary": "pmu-v3-boundary",
+      "pmu-v3-environment": "pmu-v3-environment",
+      "pmu-v3-parity": "pmu-v3-parity",
+      "pmu-v3-partition": "pmu-v3-partition",
+      "pmu-v3-provenance": "pmu-v3-provenance",
+      "pmu-v3-sequencing": "pmu-v3-sequencing"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "pmu-v3-b5": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-b6": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-partition": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-provenance": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-sequencing": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "pmu-v3-b5": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-b6": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-partition": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-provenance": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu-v3-sequencing": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "pmu-v3-b5": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "pmu-v3-b5",
+        "exact_source_groups": [
+          "pmu-v3-b5"
+        ]
+      },
+      "pmu-v3-b6": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "pmu-v3-b6",
+        "exact_source_groups": [
+          "pmu-v3-b6"
+        ]
+      },
+      "pmu-v3-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "pmu-v3-boundary",
+        "exact_source_groups": [
+          "pmu-v3-boundary"
+        ]
+      },
+      "pmu-v3-environment": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "pmu-v3-environment",
+        "exact_source_groups": [
+          "pmu-v3-environment"
+        ]
+      },
+      "pmu-v3-parity": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "pmu-v3-parity",
+        "exact_source_groups": [
+          "pmu-v3-parity"
+        ]
+      },
+      "pmu-v3-partition": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "pmu-v3-partition",
+        "exact_source_groups": [
+          "pmu-v3-partition"
+        ]
+      },
+      "pmu-v3-provenance": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "pmu-v3-provenance",
+        "exact_source_groups": [
+          "pmu-v3-provenance"
+        ]
+      },
+      "pmu-v3-sequencing": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "pmu-v3-sequencing",
+        "exact_source_groups": [
+          "pmu-v3-sequencing"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "pmu-v3-b5": {
+        "pmu-v3-b5": 1.0,
+        "pmu-v3-b6": -0.0293,
+        "pmu-v3-boundary": -0.0488,
+        "pmu-v3-environment": 0.0117,
+        "pmu-v3-parity": 0.0,
+        "pmu-v3-partition": 0.0547,
+        "pmu-v3-provenance": 0.0234,
+        "pmu-v3-sequencing": -0.0371
+      },
+      "pmu-v3-b6": {
+        "pmu-v3-b5": -0.0293,
+        "pmu-v3-b6": 1.0,
+        "pmu-v3-boundary": 0.0508,
+        "pmu-v3-environment": -0.0059,
+        "pmu-v3-parity": 0.0527,
+        "pmu-v3-partition": -0.0371,
+        "pmu-v3-provenance": -0.0176,
+        "pmu-v3-sequencing": -0.0156
+      },
+      "pmu-v3-boundary": {
+        "pmu-v3-b5": -0.0488,
+        "pmu-v3-b6": 0.0508,
+        "pmu-v3-boundary": 1.0,
+        "pmu-v3-environment": 0.0176,
+        "pmu-v3-parity": 0.0762,
+        "pmu-v3-partition": -0.0684,
+        "pmu-v3-provenance": 0.0215,
+        "pmu-v3-sequencing": 0.0313
+      },
+      "pmu-v3-environment": {
+        "pmu-v3-b5": 0.0117,
+        "pmu-v3-b6": -0.0059,
+        "pmu-v3-boundary": 0.0176,
+        "pmu-v3-environment": 1.0,
+        "pmu-v3-parity": 0.0273,
+        "pmu-v3-partition": 0.0195,
+        "pmu-v3-provenance": 0.0234,
+        "pmu-v3-sequencing": 0.0566
+      },
+      "pmu-v3-parity": {
+        "pmu-v3-b5": 0.0,
+        "pmu-v3-b6": 0.0527,
+        "pmu-v3-boundary": 0.0762,
+        "pmu-v3-environment": 0.0273,
+        "pmu-v3-parity": 1.0,
+        "pmu-v3-partition": 0.0313,
+        "pmu-v3-provenance": 0.0078,
+        "pmu-v3-sequencing": -0.0332
+      },
+      "pmu-v3-partition": {
+        "pmu-v3-b5": 0.0547,
+        "pmu-v3-b6": -0.0371,
+        "pmu-v3-boundary": -0.0684,
+        "pmu-v3-environment": 0.0195,
+        "pmu-v3-parity": 0.0313,
+        "pmu-v3-partition": 1.0,
+        "pmu-v3-provenance": 0.0078,
+        "pmu-v3-sequencing": 0.0254
+      },
+      "pmu-v3-provenance": {
+        "pmu-v3-b5": 0.0234,
+        "pmu-v3-b6": -0.0176,
+        "pmu-v3-boundary": 0.0215,
+        "pmu-v3-environment": 0.0234,
+        "pmu-v3-parity": 0.0078,
+        "pmu-v3-partition": 0.0078,
+        "pmu-v3-provenance": 1.0,
+        "pmu-v3-sequencing": -0.0332
+      },
+      "pmu-v3-sequencing": {
+        "pmu-v3-b5": -0.0371,
+        "pmu-v3-b6": -0.0156,
+        "pmu-v3-boundary": 0.0313,
+        "pmu-v3-environment": 0.0566,
+        "pmu-v3-parity": -0.0332,
+        "pmu-v3-partition": 0.0254,
+        "pmu-v3-provenance": -0.0332,
+        "pmu-v3-sequencing": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "pmu-v3-b5": {
+          "gravity": 1.0,
+          "owner": "b5 validator",
+          "owners": {
+            "b5 validator": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "pmu-v3-b6": {
+          "gravity": 1.0,
+          "owner": "b6 validator",
+          "owners": {
+            "b6 validator": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "pmu-v3-boundary": {
+          "gravity": 1.0,
+          "owner": "pmu-v3-boundary",
+          "owners": {
+            "pmu-v3-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "pmu-v3-environment": {
+          "gravity": 1.0,
+          "owner": "environment owner",
+          "owners": {
+            "environment owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "pmu-v3-parity": {
+          "gravity": 1.0,
+          "owner": "parity owner",
+          "owners": {
+            "parity owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "pmu-v3-partition": {
+          "gravity": 1.0,
+          "owner": "partition validator",
+          "owners": {
+            "partition validator": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "pmu-v3-provenance": {
+          "gravity": 1.0,
+          "owner": "pmu-v3-provenance",
+          "owners": {
+            "pmu-v3-provenance": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "pmu-v3-sequencing": {
+          "gravity": 1.0,
+          "owner": "v3 task identity",
+          "owners": {
+            "v3 task identity": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "boundary": {
+          "gravity": 1.0,
+          "owner": "pmu-v3-boundary",
+          "owners": {
+            "pmu-v3-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "environment": {
+          "gravity": 1.0,
+          "owner": "environment owner",
+          "owners": {
+            "environment owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "measurement": {
+          "gravity": 0.5,
+          "owner": "b5 validator",
+          "owners": {
+            "b5 validator": 2,
+            "b6 validator": 2
+          },
+          "support": 2,
+          "total": 4
+        },
+        "parity": {
+          "gravity": 1.0,
+          "owner": "parity owner",
+          "owners": {
+            "parity owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "parsing": {
+          "gravity": 1.0,
+          "owner": "partition validator",
+          "owners": {
+            "partition validator": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "provenance": {
+          "gravity": 1.0,
+          "owner": "pmu-v3-provenance",
+          "owners": {
+            "pmu-v3-provenance": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "sequencing": {
+          "gravity": 1.0,
+          "owner": "v3 task identity",
+          "owners": {
+            "v3 task identity": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "explicit correction boundary"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "pmu-v3-boundary"
+          ],
+          "scopes": [
+            "boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "environment": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "loaded-host user decision"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "environment owner"
+          ],
+          "scopes": [
+            "environment"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "measurement": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "fixed cpu-0 affinity",
+            "fixed cpus 0 through 19"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "b5 validator",
+            "b6 validator"
+          ],
+          "scopes": [
+            "measurement"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "parity": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "same sealed elf prerequisite"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "parity owner"
+          ],
+          "scopes": [
+            "parity"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "parsing": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "fixed reconstruction equation"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "partition validator"
+          ],
+          "scopes": [
+            "parsing"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "provenance": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "sealed v2 failure receipt"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "pmu-v3-provenance"
+          ],
+          "scopes": [
+            "provenance"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "sequencing": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "v3 correction"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "v3 task identity"
+          ],
+          "scopes": [
+            "sequencing"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "measurement": {
+          "norm": 44.587,
+          "self_coherence": 0.6967,
+          "triads": 2
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parsing": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "provenance": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "sequencing": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "boundary": {
+          "boundary": 1.0,
+          "environment": 0.0176,
+          "measurement": 0.0014,
+          "parity": 0.0762,
+          "parsing": -0.0684,
+          "provenance": 0.0215,
+          "sequencing": 0.0313
+        },
+        "environment": {
+          "boundary": 0.0176,
+          "environment": 1.0,
+          "measurement": 0.0042,
+          "parity": 0.0273,
+          "parsing": 0.0195,
+          "provenance": 0.0234,
+          "sequencing": 0.0566
+        },
+        "measurement": {
+          "boundary": 0.0014,
+          "environment": 0.0042,
+          "measurement": 1.0,
+          "parity": 0.0378,
+          "parsing": 0.0126,
+          "provenance": 0.0042,
+          "sequencing": -0.0378
+        },
+        "parity": {
+          "boundary": 0.0762,
+          "environment": 0.0273,
+          "measurement": 0.0378,
+          "parity": 1.0,
+          "parsing": 0.0313,
+          "provenance": 0.0078,
+          "sequencing": -0.0332
+        },
+        "parsing": {
+          "boundary": -0.0684,
+          "environment": 0.0195,
+          "measurement": 0.0126,
+          "parity": 0.0313,
+          "parsing": 1.0,
+          "provenance": 0.0078,
+          "sequencing": 0.0254
+        },
+        "provenance": {
+          "boundary": 0.0215,
+          "environment": 0.0234,
+          "measurement": 0.0042,
+          "parity": 0.0078,
+          "parsing": 0.0078,
+          "provenance": 1.0,
+          "sequencing": -0.0332
+        },
+        "sequencing": {
+          "boundary": 0.0313,
+          "environment": 0.0566,
+          "measurement": -0.0378,
+          "parity": -0.0332,
+          "parsing": 0.0254,
+          "provenance": -0.0332,
+          "sequencing": 1.0
+        }
+      },
+      "source": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "measurement": {
+          "norm": 44.587,
+          "self_coherence": 0.6967,
+          "triads": 2
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parsing": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "provenance": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "sequencing": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "pmu-v3-b5": 1,
+      "pmu-v3-b6": 1,
+      "pmu-v3-boundary": 1,
+      "pmu-v3-environment": 1,
+      "pmu-v3-parity": 1,
+      "pmu-v3-partition": 1,
+      "pmu-v3-provenance": 1,
+      "pmu-v3-sequencing": 1
+    },
+    "stable_groups": [
+      "pmu-v3-b5",
+      "pmu-v3-b6",
+      "pmu-v3-boundary",
+      "pmu-v3-environment",
+      "pmu-v3-parity",
+      "pmu-v3-partition",
+      "pmu-v3-provenance",
+      "pmu-v3-sequencing"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [],
+  "agent_decision": {
+    "action": "SAFE_TO_EDIT",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Proceed only within the checked route boundary.",
+    "repair_count": 0,
+    "repair_queue": [],
+    "safe_to_edit": true
+  },
+  "explanation": [
+    "Candidate structure is coherent with source triads.",
+    "Structural coherence only: trusted proof was not established and authority is false."
+  ],
+  "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-loaded-pmu-diagnosis-v3-route-v6.trace.json"
+}

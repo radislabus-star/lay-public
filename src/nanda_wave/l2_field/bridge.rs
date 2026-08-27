@@ -35,8 +35,15 @@ pub(crate) fn canonical_text_readout(original: &str) -> CanonicalL2FieldReadout 
 }
 
 pub(crate) fn canonical_text_readout_observed(original: &str) -> ObservedCanonicalL2FieldReadout {
+    canonical_text_readout_observed_with_frame(original, None)
+}
+
+pub(crate) fn canonical_text_readout_observed_with_frame(
+    original: &str,
+    lexical_frame: Option<&crate::lexical_authority_frame::LexicalAuthorityFrameV1>,
+) -> ObservedCanonicalL2FieldReadout {
     let (mut observed, boundary_candidates) = rayon::join(
-        || canonical_owned_text_candidates_observed(original),
+        || canonical_owned_text_candidates_observed(original, lexical_frame),
         || boundary_text_candidates(original),
     );
     for candidate in boundary_candidates {
@@ -78,7 +85,7 @@ pub(crate) fn canonical_ime_candidates_observed(
     } else {
         format!("{context_prefix}{token}")
     };
-    let observed = canonical_owned_text_candidates_observed(&original);
+    let observed = canonical_owned_text_candidates_observed(&original, None);
     let telemetry = observed.telemetry;
     let readout = observed.readout;
     let availability = readout.availability;
@@ -237,7 +244,7 @@ pub(crate) fn cold_probe_surfaces(context_prefix: &str, damaged_surface: &str) -
 }
 
 fn canonical_owned_text_candidates(original: &str) -> CanonicalL2FieldReadout {
-    canonical_owned_text_candidates_observed(original).readout
+    canonical_owned_text_candidates_observed(original, None).readout
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -283,6 +290,10 @@ fn canonical_input_token(original: &str) -> Option<CanonicalInputToken<'_>> {
             surface,
             kind: CanonicalInputTokenKind::Cyrillic,
         })
+}
+
+pub(super) fn canonical_input_lexical_parts(original: &str) -> Option<(&str, &str)> {
+    canonical_input_token(original).map(|input| (input.context_prefix, input.surface))
 }
 
 fn admitted_contextual_short_layout_surface(context_prefix: &str, surface: &str) -> bool {
@@ -752,7 +763,10 @@ fn push_identity_text(bytes: &mut Vec<u8>, text: &str) {
     bytes.extend_from_slice(text.as_bytes());
 }
 
-fn canonical_owned_text_candidates_observed(original: &str) -> ObservedCanonicalL2FieldReadout {
+fn canonical_owned_text_candidates_observed(
+    original: &str,
+    lexical_frame: Option<&crate::lexical_authority_frame::LexicalAuthorityFrameV1>,
+) -> ObservedCanonicalL2FieldReadout {
     let started = std::time::Instant::now();
     let Some(input) = canonical_input_token(original) else {
         return observed_field_readout(
@@ -798,90 +812,132 @@ fn canonical_owned_text_candidates_observed(original: &str) -> ObservedCanonical
     let seed_duration = seed_started.elapsed();
     // Productive V90 consumes one typed contour field. Canonical inverse forms
     // ground that field but never become independent L1.1 authority.
-    let (readout, cache_disposition, field_generation) = match super::installed_l2_field() {
-        Err(_) => (
-            CanonicalL2FieldReadout::unavailable(L2FieldAvailability::CanonicalPackageUnavailable),
-            CanonicalFieldCacheDisposition::NotRequested,
-            0,
-        ),
-        Ok(canonical_index) => {
-            let form_groundings = canonical_form_groundings(canonical_index, &query_results);
-            let surface_groundings = canonical_surface_groundings(canonical_index, &query_results);
-            if contour_seeds.is_empty()
-                && form_groundings.is_empty()
-                && surface_groundings.is_empty()
-            {
-                (
-                    CanonicalL2FieldReadout::abstain(L2FieldAvailability::EmptyL11Lattice),
-                    CanonicalFieldCacheDisposition::NotRequested,
-                    0,
-                )
-            } else {
-                match super::installed_productive_l2_v1() {
+    let (readout, cache_disposition, field_generation, cohort_compare) =
+        match super::installed_l2_field() {
+            Err(_) => (
+                CanonicalL2FieldReadout::unavailable(
+                    L2FieldAvailability::CanonicalPackageUnavailable,
+                ),
+                CanonicalFieldCacheDisposition::NotRequested,
+                0,
+                None,
+            ),
+            Ok(canonical_index) => {
+                let form_groundings = canonical_form_groundings(canonical_index, &query_results);
+                let surface_groundings =
+                    canonical_surface_groundings(canonical_index, &query_results);
+                let exact_generation = match super::installed_exact_v13(canonical_index) {
+                    Ok(generation) => generation,
                     Err(error) => {
                         if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
-                            eprintln!("l2_field_trace productive_admission_error={error:?}");
+                            eprintln!("l2_field_trace exact_v13_admission_error={error:?}");
                         }
-                        (
-                            CanonicalL2FieldReadout::unavailable(
-                                L2FieldAvailability::ProductivePackageUnavailable,
-                            ),
-                            CanonicalFieldCacheDisposition::NotRequested,
-                            0,
-                        )
+                        None
                     }
-                    Ok(runtime) => {
-                        let contour_identity = canonical_contour_identity_bytes(
-                            &query_results,
-                            &contour_seeds,
-                            &form_groundings,
-                            &surface_groundings,
-                        );
-                        let key = super::cache::CanonicalTokenKey::new(
-                            super::productive_v1::canonical_live_scene_bytes(
-                                input.context_prefix,
-                                token,
-                                canonical_index,
-                            ),
-                            &contour_identity,
-                            &l11_seeds,
-                            runtime.l11_package_sha256(),
-                            runtime.canonical_l2_package_sha256(),
-                            runtime.package_sha256(),
-                        );
-                        match super::cache::get_or_prepare(key, || {
-                            super::productive_v1::prepare_live_productive_v1_field(
-                                input.context_prefix,
-                                token,
-                                canonical_index,
-                                &runtime,
+                };
+                if contour_seeds.is_empty()
+                    && form_groundings.is_empty()
+                    && surface_groundings.is_empty()
+                    && exact_generation.is_none()
+                {
+                    (
+                        CanonicalL2FieldReadout::abstain(L2FieldAvailability::EmptyL11Lattice),
+                        CanonicalFieldCacheDisposition::NotRequested,
+                        0,
+                        None,
+                    )
+                } else {
+                    match super::installed_productive_l2_v1() {
+                        Err(error) => {
+                            if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+                                eprintln!("l2_field_trace productive_admission_error={error:?}");
+                            }
+                            (
+                                CanonicalL2FieldReadout::unavailable(
+                                    L2FieldAvailability::ProductivePackageUnavailable,
+                                ),
+                                CanonicalFieldCacheDisposition::NotRequested,
+                                0,
+                                None,
+                            )
+                        }
+                        Ok(runtime) => {
+                            let contour_identity = canonical_contour_identity_bytes(
+                                &query_results,
                                 &contour_seeds,
                                 &form_groundings,
                                 &surface_groundings,
-                            )
-                        }) {
-                            Ok(prepared) => {
-                                let disposition = match prepared.disposition {
-                                    super::cache::FieldCacheDisposition::Produced => {
-                                        CanonicalFieldCacheDisposition::Produced
-                                    }
-                                    super::cache::FieldCacheDisposition::Waited => {
-                                        CanonicalFieldCacheDisposition::Waited
-                                    }
-                                    super::cache::FieldCacheDisposition::ReadyHit => {
-                                        CanonicalFieldCacheDisposition::ReadyHit
-                                    }
-                                };
-                                let readout = if !super::cache::generation_is_current(
-                                    prepared.generation,
-                                ) || prepared.field.productive_package_sha256()
-                                    != runtime.package_sha256()
-                                {
-                                    CanonicalL2FieldReadout::unavailable(
-                                        L2FieldAvailability::ProductiveReadoutError,
+                            );
+                            let key = super::cache::CanonicalTokenKey::new(
+                                super::productive_v1::canonical_live_scene_bytes(
+                                    input.context_prefix,
+                                    token,
+                                    canonical_index,
+                                ),
+                                &contour_identity,
+                                &l11_seeds,
+                                runtime.l11_package_sha256(),
+                                runtime.canonical_l2_package_sha256(),
+                                runtime.package_sha256(),
+                                exact_generation
+                                    .as_ref()
+                                    .map(|generation| generation.sidecar_sha256())
+                                    .unwrap_or([0; 32]),
+                            );
+                            match super::cache::get_or_prepare(key, || {
+                                let exact_peaks = exact_generation
+                                    .as_ref()
+                                    .map_or_else(
+                                        || {
+                                            Ok(super::productive_v1::ExactPeakBirthEnumerationV1::complete_empty())
+                                        },
+                                        |generation| {
+                                            generation.exact_peaks(canonical_index, token)
+                                        },
                                     )
-                                } else {
-                                    super::productive_v1::materialize_live_productive_v1_field(
+                                    .unwrap_or_else(|error| {
+                                        if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+                                            eprintln!(
+                                                "l2_field_trace exact_v13_query_error={error:?}"
+                                            );
+                                        }
+                                        super::productive_v1::ExactPeakBirthEnumerationV1::incomplete(
+                                            crate::typing_transition::target_evidence::IncompletenessReasonV1::IntegrityFailure,
+                                        )
+                                    });
+                                super::productive_v1::prepare_live_productive_v1_field_with_exact_peaks(
+                                    input.context_prefix,
+                                    token,
+                                    canonical_index,
+                                    &runtime,
+                                    &contour_seeds,
+                                    &form_groundings,
+                                    &surface_groundings,
+                                    exact_peaks,
+                                )
+                            }) {
+                                Ok(prepared) => {
+                                    let disposition = match prepared.disposition {
+                                        super::cache::FieldCacheDisposition::Produced => {
+                                            CanonicalFieldCacheDisposition::Produced
+                                        }
+                                        super::cache::FieldCacheDisposition::Waited => {
+                                            CanonicalFieldCacheDisposition::Waited
+                                        }
+                                        super::cache::FieldCacheDisposition::ReadyHit => {
+                                            CanonicalFieldCacheDisposition::ReadyHit
+                                        }
+                                    };
+                                    let current =
+                                        super::cache::generation_is_current(prepared.generation)
+                                            && prepared.field.productive_package_sha256()
+                                                == runtime.package_sha256();
+                                    let readout = if !current {
+                                        CanonicalL2FieldReadout::unavailable(
+                                            L2FieldAvailability::ProductiveReadoutError,
+                                        )
+                                    } else {
+                                        super::productive_v1::materialize_live_productive_v1_field(
                                         original,
                                         token,
                                         &prepared.field,
@@ -896,34 +952,43 @@ fn canonical_owned_text_candidates_observed(original: &str) -> ObservedCanonical
                                             L2FieldAvailability::ProductiveReadoutError,
                                         )
                                     })
-                                };
-                                (readout, disposition, prepared.generation)
-                            }
-                            Err(error) => {
-                                if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
-                                    eprintln!("l2_field_trace field_cache_error={error:?}");
+                                    };
+                                    let cohort_compare = current.then(|| {
+                                        super::productive_v1::compare_shared_canonical_cohort(
+                                            &prepared.field,
+                                            lexical_frame,
+                                            prepared.generation,
+                                        )
+                                    });
+                                    (readout, disposition, prepared.generation, cohort_compare)
                                 }
-                                (
-                                    CanonicalL2FieldReadout::unavailable(
-                                        L2FieldAvailability::ProductiveReadoutError,
-                                    ),
-                                    CanonicalFieldCacheDisposition::Failed,
-                                    0,
-                                )
+                                Err(error) => {
+                                    if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+                                        eprintln!("l2_field_trace field_cache_error={error:?}");
+                                    }
+                                    (
+                                        CanonicalL2FieldReadout::unavailable(
+                                            L2FieldAvailability::ProductiveReadoutError,
+                                        ),
+                                        CanonicalFieldCacheDisposition::Failed,
+                                        0,
+                                        None,
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-    };
-    let observed = observed_field_readout(
+        };
+    let mut observed = observed_field_readout(
         readout,
         started,
         elapsed_us(seed_duration),
         cache_disposition,
         field_generation,
     );
+    observed.cohort_compare = cohort_compare;
     if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
         eprintln!(
             "l2_field_trace owner=productive_v90 seeds_us={} productive_us={} total_us={} contours={} seeds={} candidates={} field_cache={:?} field_generation={}",
@@ -936,6 +1001,21 @@ fn canonical_owned_text_candidates_observed(original: &str) -> ObservedCanonical
             observed.telemetry.cache_disposition,
             observed.telemetry.field_generation,
         );
+        if let Some(compare) = &observed.cohort_compare {
+            eprintln!(
+                "l2_cohort_compare status={:?} material_scope={:?} legacy={:?} cohort={:?} field_candidates={} material_targets={} retained={} grounded_l11_loss={} complete_for_authority={} first_divergence={:?}",
+                compare.status,
+                compare.material_scope,
+                compare.legacy,
+                compare.cohort,
+                compare.field_candidate_count,
+                compare.material_target_count,
+                compare.retained_field_candidate_count,
+                compare.grounded_l11_loss_count,
+                compare.complete_for_authority,
+                compare.first_divergence,
+            );
+        }
     }
     observed
 }
@@ -958,6 +1038,7 @@ fn observed_field_readout(
             cache_disposition,
             field_generation,
         },
+        cohort_compare: None,
     }
 }
 
@@ -2462,6 +2543,10 @@ mod tests {
                 surface: "врмея",
                 kind: CanonicalInputTokenKind::Cyrillic,
             })
+        );
+        assert_eq!(
+            canonical_input_lexical_parts("проверь врмея, "),
+            Some(("проверь ", "врмея"))
         );
     }
 

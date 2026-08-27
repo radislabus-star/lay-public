@@ -1,0 +1,14 @@
+{
+  "type": "health",
+  "report": {
+    "status": "ready",
+    "message": null,
+    "socket": "/tmp/lay-slice8b-v6-l11.sock",
+    "package_path": "/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/phase8i.v9.bin",
+    "package_bytes": 77962328,
+    "terminal_count": 852582,
+    "manifest_generation": 0,
+    "requests_served": 60,
+    "uptime_ms": 60342
+  }
+}

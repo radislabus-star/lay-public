@@ -1,0 +1,167 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_V9_OFFLINE_TERMINAL_AUDIT_V2_IMPLEMENTATION_2026-08-27",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "correction-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_V9_TERMINAL_ENVIRONMENT_CORRECTION_V2_2026-08-27.md",
+      "expect": {"mode": "0444", "size_bytes": 5508, "sha256": "0af397c9969077cb6348cbba84f27837f19554d2cb06fda752fb7682cb249204"}
+    },
+    {
+      "id": "correction-route",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_V9_TERMINAL_ENVIRONMENT_CORRECTION_V2_ROUTE_2026-08-27.md",
+      "expect": {"mode": "0444", "size_bytes": 3950, "sha256": "f1cbd35c38eaecd6fc4940c116c0f8ced94484de0907a1a7ba0976cdbd08bbfc"}
+    },
+    {
+      "id": "correction-route-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_V9_TERMINAL_ENVIRONMENT_CORRECTION_V2_ROUTE_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 22377, "sha256": "a8d6e20966421dd4caa256d5491fd4d5f986484ba4f06b741cfd0cd6af01a299"}
+    },
+    {
+      "id": "v9-terminal-v1",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_DIAGNOSTIC_V9_TERMINAL_AUDIT_V1_2026-08-27/TERMINAL_AUDIT.json",
+      "expect": {"mode": "0444", "size_bytes": 37744, "sha256": "f68b213d6404ae1e82593be8e4663de528e32accc5f7e7b5fead1cf63292616e"}
+    },
+    {
+      "id": "v9-terminal-v1-manifest",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_DIAGNOSTIC_V9_TERMINAL_AUDIT_V1_2026-08-27/SHA256SUMS",
+      "expect": {"mode": "0444", "size_bytes": 983, "sha256": "c03ec661768262e3a3d366c67d606b3bc6ef5cf1575f4a02dad7107c00ccf62e"}
+    },
+    {
+      "id": "v9-journal-manifest",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_DIAGNOSTIC_V9_EXECUTION_JOURNAL_V1_2026-08-27/SHA256SUMS",
+      "expect": {"mode": "0444", "size_bytes": 2321, "sha256": "92c6f8cf8e293773dc7f72cbc2f8dfe1ff83d8493564b8079ef6d9307329e879"}
+    },
+    {
+      "id": "v9-wrapper",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_DIAGNOSTIC_V9_TERMINAL_AUDIT_V1_2026-08-27/REMOTE_TRACE/TRACE_WRAPPER.json",
+      "expect": {"mode": "0444", "size_bytes": 34721, "sha256": "574fc73e334132aa0ebd3eeb4b4d044ef73258bda7f5347e9f6c8cd50ffc4c89"}
+    },
+    {
+      "id": "v9-stderr",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_DIAGNOSTIC_V9_TERMINAL_AUDIT_V1_2026-08-27/REMOTE_TRACE/stderr.log",
+      "expect": {"mode": "0444", "size_bytes": 627258, "sha256": "2564fa7403a182ce15bb2213f9f8e183153d19076b928d3f3011187edffdfaf9"}
+    },
+    {
+      "id": "v9-trace-rows",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_DIAGNOSTIC_V9_TERMINAL_AUDIT_V1_2026-08-27/REMOTE_TRACE/TRACE_ROWS.json",
+      "expect": {"mode": "0444", "size_bytes": 436739, "sha256": "4d97d55d8b3f32aeca843cf1d44f4018dcfabd1686f6be9e3fd64a60ababcd2b"}
+    },
+    {
+      "id": "v9-trace-summary",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_DIAGNOSTIC_V9_TERMINAL_AUDIT_V1_2026-08-27/REMOTE_TRACE/TRACE_SUMMARY.json",
+      "expect": {"mode": "0444", "size_bytes": 3398, "sha256": "dc037e8899f85b5a7c9f01aeabf57f8b79c5cd18e8f306b5ddb552cd2a5ca027"}
+    },
+    {
+      "id": "v9-subject",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_DIAGNOSTIC_V9_TERMINAL_AUDIT_V1_2026-08-27/REMOTE_TRACE/subject/SUBJECT_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 10377, "sha256": "01ea35ea7ead276039dc67fa097a9be6cfe20d2d85a3dc24e33c1ee294e56eb1"}
+    },
+    {
+      "id": "v9-controller-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_FINAL_MATERIALIZATION_DIAGNOSTIC_V9_CONTROLLER_V1_2026-08-27/IMPLEMENTATION_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 14854, "sha256": "1dc5ec9ac79cf318af33dffbab1f7719f6df14c69a30e9f86bb3025a49b55dee"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "write-offline-auditor", "kind": "local_script_edit"},
+      {"id": "run-static-checks", "kind": "local_static_test"},
+      {"id": "publish-offline-terminal-receipt", "kind": "local_evidence_write"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "network_ssh_scp_or_remote_read_or_write",
+      "subject_or_elf_execution",
+      "marker_state_or_journal_mutation",
+      "cargo_rustc_perf_or_pmu_execution",
+      "source_runtime_daemon_ibus_install_restart_or_deployment",
+      "v9_v1_receipt_or_evidence_mutation",
+      "latency_pass_or_production_authority_claim"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "steps": [
+      {
+        "id": "write-offline-auditor",
+        "from": "PREFLIGHT_READY",
+        "to": "AUDITOR_WRITTEN",
+        "mutates": true,
+        "failure_state": "BLOCKED_AUDITOR_SOURCE",
+        "cleanup": "retain partial local bytes and publish no receipt",
+        "preserves": ["v9-terminal-v1", "v9-journal", "v9-raw-trace", "runtime"],
+        "test_id": "auditor-write-fault"
+      },
+      {
+        "id": "run-static-checks",
+        "from": "AUDITOR_WRITTEN",
+        "to": "AUDITOR_STATIC_PASS",
+        "mutates": false,
+        "failure_state": "BLOCKED_AUDITOR_STATIC",
+        "cleanup": "retain diagnostics and publish no terminal receipt",
+        "preserves": ["v9-terminal-v1", "v9-journal", "v9-raw-trace", "runtime"],
+        "test_id": "static-fault"
+      },
+      {
+        "id": "publish-offline-terminal-receipt",
+        "from": "AUDITOR_STATIC_PASS",
+        "to": "OFFLINE_TERMINAL",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "remove incomplete receipt stage and retain all source evidence",
+        "preserves": ["v9-terminal-v1", "v9-journal", "v9-raw-trace", "runtime"],
+        "test_id": "receipt-publication-fault"
+      }
+    ],
+    "terminal_states": ["OFFLINE_TERMINAL", "BLOCKED_AUDITOR_SOURCE", "BLOCKED_AUDITOR_STATIC", "BLOCKED_PROVENANCE"]
+  },
+  "preserved_artifacts": [
+    {"id": "v9-terminal-v1", "path": "V9 terminal audit V1 tree", "policy": "immutable", "cursor_policy": "whole_tree", "rollback_policy": "never modify", "baseline_check_id": "v9-terminal-v1"},
+    {"id": "v9-journal", "path": "V9 execution journal", "policy": "immutable", "cursor_policy": "whole_tree", "rollback_policy": "never modify", "baseline_check_id": "v9-journal-manifest"},
+    {"id": "v9-raw-trace", "path": "V9 retained stderr rows summary wrapper and subject", "policy": "read only", "cursor_policy": "whole_file", "rollback_policy": "never modify", "baseline_check_id": "v9-stderr"},
+    {"id": "runtime", "path": "installed Lay runtime and source", "policy": "no access or mutation", "cursor_policy": "stable_projection", "rollback_policy": "never modify", "baseline_check_id": "v9-controller-receipt"}
+  ],
+  "identity_contracts": [
+    {"id": "paper-to-route", "producer": "sealed correction V2", "consumer": "structural route", "comparison": "offline-only scope parser failure dispatch and claim boundary exact", "test_id": "paper-route-parity"},
+    {"id": "argv-to-environment", "producer": "retained command", "consumer": "corrected bounded environment parser", "comparison": "unique env and taskset sentinels contiguous assignments and exact wrapper map", "test_id": "environment-parser-parity"},
+    {"id": "stderr-to-summary", "producer": "retained stderr", "consumer": "independent offline estimator", "comparison": "1910 rows ordinal mapping pooled rounds tail and dominant stage exact", "test_id": "trace-recomputation-parity"},
+    {"id": "v1-to-v2", "producer": "immutable V1 receipt and raw tree", "consumer": "offline V2 terminal", "comparison": "all predicates except the documented parser defect preserved exact", "test_id": "v1-preservation-parity"}
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "offline-only", "statement": "auditor has no network remote subject marker build perf or runtime route", "test_id": "closed-command-graph"},
+    {"id": "v1-immutable", "statement": "V1 terminal and journal manifests pass before and after audit", "test_id": "v1-preservation-parity"},
+    {"id": "bounded-environment", "statement": "only tokens between env and taskset define environment", "test_id": "environment-parser-parity"},
+    {"id": "independent-trace", "statement": "stderr is reparsed and all retained derived artifacts are compared exactly", "test_id": "trace-recomputation-parity"},
+    {"id": "no-retry", "statement": "V9 subject marker and remote namespace are never accessed or changed", "test_id": "closed-command-graph"},
+    {"id": "claim-boundary", "statement": "corrected verdict grants only a separate mechanism decision paper", "test_id": "claim-boundary-parity"}
+  ],
+  "tests": [
+    {"id": "auditor-write-fault", "kind": "fault_injection", "expected": "partial source publishes no receipt"},
+    {"id": "static-fault", "kind": "fault_injection", "expected": "static failure publishes no terminal receipt"},
+    {"id": "receipt-publication-fault", "kind": "fault_injection", "expected": "exclusive staged publication prevents overwrite"},
+    {"id": "paper-route-parity", "kind": "parity", "expected": "correction and structural route preserve exact offline scope"},
+    {"id": "environment-parser-parity", "kind": "parity", "expected": "test-threads remains argv and exact wrapper environment matches"},
+    {"id": "trace-recomputation-parity", "kind": "parity", "expected": "independent parser equals retained rows summary and wrapper"},
+    {"id": "v1-preservation-parity", "kind": "parity", "expected": "terminal 10 of 10 and journal 24 of 24 manifests remain exact"},
+    {"id": "closed-command-graph", "kind": "parity", "expected": "no external process or network API is reachable"},
+    {"id": "claim-boundary-parity", "kind": "parity", "expected": "no latency source build deployment or production authority is granted"}
+  ]
+}

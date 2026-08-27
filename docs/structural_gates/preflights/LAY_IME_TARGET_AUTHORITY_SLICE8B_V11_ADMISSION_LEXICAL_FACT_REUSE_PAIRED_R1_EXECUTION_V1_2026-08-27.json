@@ -1,0 +1,210 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "slice8b-v11-admission-lexical-fact-reuse-paired-r1-v1-20260827",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "failed-route-interpretation",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V11_ADMISSION_LEXICAL_FACT_REUSE_PAIRED_EXECUTION_V1_FAILURE_2026-08-27/FAILURE_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 2686, "sha256": "b1f2fc1305169e25e5801594f87ec76e660e4e54df29d7d10c7a86e8b853a506"}
+    },
+    {
+      "id": "failed-route-manifest",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V11_ADMISSION_LEXICAL_FACT_REUSE_PAIRED_EXECUTION_V1_FAILURE_2026-08-27/SHA256SUMS",
+      "expect": {"mode": "0444", "size_bytes": 3047, "sha256": "8db792a515af3085122e3f53cc14c18e5e2a612686bbf5c3b25c99d2d5c25adc"}
+    },
+    {
+      "id": "failed-build-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V11_ADMISSION_LEXICAL_FACT_REUSE_PAIRED_EXECUTION_V1_FAILURE_2026-08-27/REMOTE_EVIDENCE/build-v1/BUILD_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 2103, "sha256": "4733bbe15515dff2af424dacb7caef8368bf2b1ef3dcd48fa849320c06ca56e5"}
+    },
+    {
+      "id": "failed-build-elf",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V11_ADMISSION_LEXICAL_FACT_REUSE_PAIRED_EXECUTION_V1_FAILURE_2026-08-27/REMOTE_EVIDENCE/build-v1/m3-v11-test-elf",
+      "expect": {"mode": "0444", "size_bytes": 321129832, "sha256": "dbd5feb315e9537b0797cb98d6f38dd66fdc6ee3e562bf9db479ed2c9f34b51a"}
+    },
+    {
+      "id": "v11-source",
+      "kind": "file",
+      "path": "../../../src/typing_transition/proposal_admission.rs",
+      "expect": {"mode": "0664", "size_bytes": 119643, "sha256": "e8a6a182753084659e00ccd5e20238d585d859437824609a987ea03ce6edca72"}
+    },
+    {
+      "id": "v11-ready-preflight",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V11_ADMISSION_LEXICAL_FACT_REUSE_PAIRED_EXECUTION_V3_PREFLIGHT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 6767, "sha256": "bcb47347eda5fc9f3667a4fb4cfbc795e108ad40b322432db6684206f5181eeb"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "controller", "kind": "local_repair_controller_source_edit"},
+      {"id": "bootstrap", "kind": "new_remote_repair_namespace"},
+      {"id": "projection", "kind": "one_0555_copy_of_exact_built_elf"},
+      {"id": "markers", "kind": "two_remote_one_shot_markers"},
+      {"id": "b0r", "kind": "one_uncached_subject"},
+      {"id": "b1r", "kind": "one_reuse_subject"},
+      {"id": "terminal", "kind": "local_immutable_evidence_copy"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "cargo_or_rustc",
+      "perf_or_pmu",
+      "new_elf_bytes",
+      "route_retry",
+      "predicate_or_reason_change",
+      "runtime_install_restart_or_deployment"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "failed-route",
+      "path": "failed V11 paired execution evidence",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "failed-route-interpretation"
+    },
+    {
+      "id": "built-elf",
+      "path": "single V11 built ELF bytes",
+      "policy": "immutable_bytes",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "copy only; never alter source evidence",
+      "baseline_check_id": "failed-build-elf"
+    },
+    {
+      "id": "v11-source",
+      "path": "src/typing_transition/proposal_admission.rs",
+      "policy": "immutable_during_repair_execution",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v11-source"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "R1_PREFLIGHT_READY",
+    "steps": [
+      {
+        "id": "write-controller",
+        "from": "R1_PREFLIGHT_READY",
+        "to": "R1_CONTROLLER_PASS",
+        "mutates": true,
+        "failure_state": "BLOCKED_CONTROLLER",
+        "cleanup": "retain source and diagnostics; no remote namespace",
+        "preserves": ["failed-route", "built-elf", "v11-source"],
+        "test_id": "controller-fault"
+      },
+      {
+        "id": "bootstrap-projection-and-markers",
+        "from": "R1_CONTROLLER_PASS",
+        "to": "R1_MARKERS_AVAILABLE",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "retain partial bootstrap; no subject admitted",
+        "preserves": ["failed-route", "built-elf", "v11-source"],
+        "test_id": "bootstrap-fault"
+      },
+      {
+        "id": "run-b0r",
+        "from": "R1_MARKERS_AVAILABLE",
+        "to": "B0R_CREATED",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "B0R marker remains consumed and raw evidence is retained",
+        "preserves": ["failed-route", "built-elf", "v11-source"],
+        "test_id": "b0r-fault"
+      },
+      {
+        "id": "run-b1r",
+        "from": "B0R_CREATED",
+        "to": "B1R_CREATED",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "B1R marker remains consumed and raw evidence is retained",
+        "preserves": ["failed-route", "built-elf", "v11-source"],
+        "test_id": "b1r-fault"
+      },
+      {
+        "id": "publish-comparison",
+        "from": "B1R_CREATED",
+        "to": "R1_PAIRED_COMPARISON_COMPLETE",
+        "mutates": true,
+        "failure_state": "BLOCKED_SEMANTIC",
+        "cleanup": "retain both observations and exact mismatch fields",
+        "preserves": ["failed-route", "built-elf", "v11-source"],
+        "test_id": "terminal-fault"
+      }
+    ],
+    "terminal_states": [
+      "R1_PAIRED_COMPARISON_COMPLETE",
+      "BLOCKED_CONTROLLER",
+      "BLOCKED_PROVENANCE",
+      "BLOCKED_SEMANTIC"
+    ]
+  },
+  "identity_contracts": [
+    {
+      "id": "elf-projection",
+      "producer": "failed-route sealed built ELF",
+      "consumer": "R1 executable projection",
+      "comparison": "exact size SHA-256 and Build ID; mode only changes to 0555",
+      "test_id": "elf-parity"
+    },
+    {
+      "id": "same-elf-pair",
+      "producer": "R1 executable projection",
+      "consumer": "B0R and B1R argv plus PSS helpers",
+      "comparison": "same exact executable path and bytes",
+      "test_id": "paired-parity"
+    },
+    {
+      "id": "semantic-baseline",
+      "producer": "each R1 subject",
+      "consumer": "frozen M3 exact proof",
+      "comparison": "zero candidate certificate lattice emission gate and unresolved mismatches",
+      "test_id": "semantic-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "target-host",
+      "source": "live read-only target projection before B0R and B1R",
+      "comparison": "exact_stable_projection",
+      "reason": "prevent host input or toolchain drift while ignoring volatile load and PIDs",
+      "before": "R1 bootstrap host projection",
+      "after": "pre-B0R and pre-B1R host projections",
+      "stable_fields": ["hostname", "machine_id_sha256", "kernel", "cpu_topology", "toolchain", "input_sha256"],
+      "expected_to_change_fields": ["repair_namespace", "markers", "subject_evidence"],
+      "observed_not_compared_fields": ["load_average", "free_memory", "process_ids", "wall_clock"],
+      "test_id": "host-parity"
+    }
+  ],
+  "invariants": [
+    {"id": "no-build", "statement": "R1 has no Cargo or rustc route", "test_id": "route-static"},
+    {"id": "executable-copy-only", "statement": "R1 changes only mode and path, never ELF bytes", "test_id": "elf-parity"},
+    {"id": "paired-order", "statement": "B0R then B1R consume fresh markers before execution", "test_id": "marker-fault"},
+    {"id": "quantitative-performance", "statement": "performance deltas are reported without a small-miss terminal verdict", "test_id": "terminal-fault"},
+    {"id": "no-runtime-authority", "statement": "no install restart deployment daemon IBus perf or PMU route exists", "test_id": "route-static"}
+  ],
+  "tests": [
+    {"id": "controller-fault", "kind": "fault_injection", "expected": "controller failure creates no remote namespace"},
+    {"id": "bootstrap-fault", "kind": "fault_injection", "expected": "partial projection cannot admit a subject"},
+    {"id": "b0r-fault", "kind": "fault_injection", "expected": "B0R marker remains consumed with raw evidence"},
+    {"id": "b1r-fault", "kind": "fault_injection", "expected": "B1R marker remains consumed with raw evidence"},
+    {"id": "terminal-fault", "kind": "fault_injection", "expected": "incomplete or semantic-mismatched observations cannot publish positive comparison"},
+    {"id": "elf-parity", "kind": "parity", "expected": "projection differs only by mode and path"},
+    {"id": "paired-parity", "kind": "parity", "expected": "B0R and B1R use one executable identity"},
+    {"id": "semantic-parity", "kind": "parity", "expected": "both subjects retain zero semantic mismatch counters"},
+    {"id": "host-parity", "kind": "parity", "expected": "stable host fields match before both subjects"},
+    {"id": "route-static", "kind": "unit", "expected": "closed route registry has no Cargo perf or runtime mutation"},
+    {"id": "marker-fault", "kind": "fault_injection", "expected": "rename-before-action and no marker recreation are enforced"}
+  ]
+}

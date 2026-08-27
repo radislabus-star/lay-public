@@ -12,7 +12,7 @@ use sha2::{Digest, Sha256};
 use super::productive_v1::PreparedCanonicalTokenField;
 use crate::nanda_wave::L11SeedSurface;
 
-const CANONICAL_FIELD_SCHEMA_VERSION: u16 = 2;
+const CANONICAL_FIELD_SCHEMA_VERSION: u16 = 3;
 const CANONICAL_FIELD_READY_LIMIT: usize = 128;
 const CANONICAL_FIELD_IN_FLIGHT_LIMIT: usize = 32;
 const CANONICAL_FIELD_WAITERS_PER_KEY_LIMIT: usize = 8;
@@ -25,6 +25,7 @@ pub(super) struct CanonicalTokenKey {
     l11_package_sha256: [u8; 32],
     canonical_l2_package_sha256: [u8; 32],
     productive_package_sha256: [u8; 32],
+    exact_v13_sidecar_sha256: [u8; 32],
     field_schema_version: u16,
 }
 
@@ -36,6 +37,7 @@ impl CanonicalTokenKey {
         l11_package_sha256: [u8; 32],
         canonical_l2_package_sha256: [u8; 32],
         productive_package_sha256: [u8; 32],
+        exact_v13_sidecar_sha256: [u8; 32],
     ) -> Self {
         Self {
             scene_bytes,
@@ -47,6 +49,7 @@ impl CanonicalTokenKey {
             l11_package_sha256,
             canonical_l2_package_sha256,
             productive_package_sha256,
+            exact_v13_sidecar_sha256,
             field_schema_version: CANONICAL_FIELD_SCHEMA_VERSION,
         }
     }
@@ -498,6 +501,7 @@ mod tests {
             l11_package_sha256: [1; 32],
             canonical_l2_package_sha256: [2; 32],
             productive_package_sha256: [3; 32],
+            exact_v13_sidecar_sha256: [4; 32],
             field_schema_version: CANONICAL_FIELD_SCHEMA_VERSION,
         }
     }
@@ -514,33 +518,100 @@ mod tests {
     #[test]
     fn canonical_key_covers_scene_seed_order_and_all_package_identities() {
         let seeds = vec![seed(1, "форма"), seed(2, "формы")];
-        let baseline =
-            CanonicalTokenKey::new(vec![9], b"contour-a", &seeds, [1; 32], [2; 32], [3; 32]);
+        let baseline = CanonicalTokenKey::new(
+            vec![9],
+            b"contour-a",
+            &seeds,
+            [1; 32],
+            [2; 32],
+            [3; 32],
+            [4; 32],
+        );
         let reversed = seeds.iter().cloned().rev().collect::<Vec<_>>();
 
         assert_ne!(
             baseline,
-            CanonicalTokenKey::new(vec![8], b"contour-a", &seeds, [1; 32], [2; 32], [3; 32])
+            CanonicalTokenKey::new(
+                vec![8],
+                b"contour-a",
+                &seeds,
+                [1; 32],
+                [2; 32],
+                [3; 32],
+                [4; 32]
+            )
         );
         assert_ne!(
             baseline,
-            CanonicalTokenKey::new(vec![9], b"contour-b", &seeds, [1; 32], [2; 32], [3; 32])
+            CanonicalTokenKey::new(
+                vec![9],
+                b"contour-b",
+                &seeds,
+                [1; 32],
+                [2; 32],
+                [3; 32],
+                [4; 32]
+            )
         );
         assert_ne!(
             baseline,
-            CanonicalTokenKey::new(vec![9], b"contour-a", &reversed, [1; 32], [2; 32], [3; 32])
+            CanonicalTokenKey::new(
+                vec![9],
+                b"contour-a",
+                &reversed,
+                [1; 32],
+                [2; 32],
+                [3; 32],
+                [4; 32]
+            )
         );
         assert_ne!(
             baseline,
-            CanonicalTokenKey::new(vec![9], b"contour-a", &seeds, [4; 32], [2; 32], [3; 32])
+            CanonicalTokenKey::new(
+                vec![9],
+                b"contour-a",
+                &seeds,
+                [4; 32],
+                [2; 32],
+                [3; 32],
+                [4; 32]
+            )
         );
         assert_ne!(
             baseline,
-            CanonicalTokenKey::new(vec![9], b"contour-a", &seeds, [1; 32], [4; 32], [3; 32])
+            CanonicalTokenKey::new(
+                vec![9],
+                b"contour-a",
+                &seeds,
+                [1; 32],
+                [4; 32],
+                [3; 32],
+                [4; 32]
+            )
         );
         assert_ne!(
             baseline,
-            CanonicalTokenKey::new(vec![9], b"contour-a", &seeds, [1; 32], [2; 32], [4; 32])
+            CanonicalTokenKey::new(
+                vec![9],
+                b"contour-a",
+                &seeds,
+                [1; 32],
+                [2; 32],
+                [4; 32],
+                [4; 32]
+            )
+        );
+        assert_ne!(
+            baseline,
+            CanonicalTokenKey::new(
+                vec![9],
+                b"contour-a",
+                &seeds,
+                [1; 32],
+                [2; 32],
+                [3; 32],
+                [5; 32]
+            )
         );
     }
 

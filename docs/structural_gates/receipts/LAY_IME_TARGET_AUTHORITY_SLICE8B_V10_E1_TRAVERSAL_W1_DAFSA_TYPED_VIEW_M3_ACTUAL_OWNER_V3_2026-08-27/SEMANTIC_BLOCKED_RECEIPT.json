@@ -1,0 +1,64 @@
+{
+  "schema": "lay.m3-actual-owner-semantic-blocked.v1",
+  "execution_admission": {
+    "manifest_sha256": "df09de9918c5cad87ba4169c4a8bbb2fc29a049b7104d8bb653f8c873a4154fb",
+    "receipt_sha256": "98f8b5a707a166e078b1205335a880d02c230694d435f0d28cb949a71e91032b"
+  },
+  "cargo": {
+    "invocations": 1,
+    "exit_status": 101,
+    "compile_completed": true,
+    "test_started": true,
+    "test_elapsed_seconds": 14.85,
+    "log": {
+      "path": "CARGO.log",
+      "size_bytes": 45169,
+      "sha256": "ac063ba20a1592e1970fa139b5ff3246d044446124ca24ef9def4634a2110df8"
+    }
+  },
+  "observation": {
+    "receipt": {
+      "path": "OWNER_RECEIPT.json",
+      "size_bytes": 4875,
+      "sha256": "711c8ea2f994e353c1316f04a7348cca464cff03e40bae5603ad4d8ab0e87eab"
+    },
+    "receipt_verdict": "BLOCKED_SEMANTIC",
+    "identity_projection": "PASS",
+    "historical_projection_full_sha256": "5ebffb813ba0ca1e0080ec01756a2dafc51346297558d37cdd135abfde6acfaa",
+    "current_full_sha256": "f2abc8cb8016319a9a074a47310bdb0cbf21859ea6930f93f154187499dc8dcc",
+    "payload_sha256": "23b347c2026667eb1aab5224392834749d142c5e2f35ae2320f33e3ee0de5a23",
+    "owner_request_denominator": 764,
+    "owner_requests_completed": 764,
+    "candidate_mismatches": 0,
+    "certificate_mismatches": 0,
+    "structured_certificate_mismatches": 0,
+    "schedule_mismatches": 0,
+    "completeness_mismatches": 0,
+    "owner_identity_mismatches": 0,
+    "adapter_errors": 0,
+    "certificate_ref_collisions": 0,
+    "capacity_failures": 0,
+    "lattice_mismatches": 146,
+    "gate_mismatches": 72
+  },
+  "classification": {
+    "sidecar_identity_proven": true,
+    "candidate_and_certificate_retention_proven": true,
+    "owner_lattice_parity_proven": false,
+    "owner_gate_parity_proven": false,
+    "end_to_end_latency_tested": false,
+    "rss_tested": false,
+    "reload_identity_tested": false
+  },
+  "side_effects": {
+    "network_or_remote_used": false,
+    "perf_or_pmu_used": false,
+    "sidecar_file_written": false,
+    "installed_lay_changed": false,
+    "production_activation_admitted": false,
+    "runtime_authority_changed": false
+  },
+  "retry_under_v5_permitted": false,
+  "next_action": "read-only owner-path diagnosis followed by a separate semantic correction or terminal design decision",
+  "verdict": "BLOCKED_SEMANTIC"
+}

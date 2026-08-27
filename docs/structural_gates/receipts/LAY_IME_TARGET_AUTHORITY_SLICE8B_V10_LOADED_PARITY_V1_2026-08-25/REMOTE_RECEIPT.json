@@ -1,0 +1,236 @@
+{
+  "background_process_cpu_deltas": [
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+      "comm": "nando-operator-",
+      "cpu_percent_during_window": 100.30381639288169,
+      "cpu_seconds_delta": 4.0200000000186265,
+      "pid": 150005
+    },
+    {
+      "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+      "comm": "btop",
+      "cpu_percent_during_window": 4.491215659369214,
+      "cpu_seconds_delta": 0.18000000000029104,
+      "pid": 3481471
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+      "comm": "nando-transitio",
+      "cpu_percent_during_window": 1.7465838675223864,
+      "cpu_seconds_delta": 0.06999999999970896,
+      "pid": 1816591
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+      "comm": "nando-transitio",
+      "cpu_percent_during_window": 0.24951198130804011,
+      "cpu_seconds_delta": 0.010000000009313226,
+      "pid": 298492
+    },
+    {
+      "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+      "comm": "nginx",
+      "cpu_percent_during_window": 0.0,
+      "cpu_seconds_delta": 0.0,
+      "pid": 682430
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+      "comm": "nando-gateway-c",
+      "cpu_percent_during_window": 0.0,
+      "cpu_seconds_delta": 0.0,
+      "pid": 3051880
+    }
+  ],
+  "cargo_invoked": false,
+  "claim": "LOADED_SEMANTIC_PARITY_ONLY",
+  "command": [
+    "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf",
+    "--exact",
+    "nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_semantic_parity",
+    "--ignored",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "completed_at": "2026-08-24T22:28:27.814372+00:00",
+  "environment_intentionally_loaded": true,
+  "foreign_process_stopped": false,
+  "formal_b_pass": false,
+  "host_policy_modified": false,
+  "inputs": {
+    "b0a_receipt": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/INPUT_CLOSURE.json",
+      "sha256": "48176ec6faae86f43ddda8404542367be5b6c9d6813762dedb829b4946593eb3",
+      "size_bytes": 366665
+    },
+    "b1_receipt": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b1-environment-v1/ENVIRONMENT_RECEIPT.json",
+      "sha256": "12c591b447f0025548e96272a4e8d5d4f23debc8458ae99fce61b2e751673925",
+      "size_bytes": 229467
+    },
+    "elf": {
+      "build_id": "9829fb05f34bd353877fb6d71f1f8523e084af55",
+      "mode": "0555",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf",
+      "sha256": "f7bcee37d5dffd583577d66c982c2a28072889b8aac2ccbed22612aa6d4feb09",
+      "size_bytes": 20542920
+    },
+    "package": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+      "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+      "size_bytes": 140556462
+    },
+    "schedule": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+      "sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78",
+      "size_bytes": 174941
+    },
+    "sidecar": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+      "sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd",
+      "size_bytes": 3689884
+    },
+    "v7": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+      "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+      "size_bytes": 1606189
+    }
+  },
+  "installed_lay_changed": false,
+  "latency_measured": false,
+  "load_after": {
+    "cpu_pressure": {
+      "full": {
+        "avg10": 0.0,
+        "avg300": 0.0,
+        "avg60": 0.0,
+        "total": 0.0
+      },
+      "some": {
+        "avg10": 4.32,
+        "avg300": 4.74,
+        "avg60": 4.72,
+        "total": 155358429532.0
+      }
+    },
+    "io_pressure": {
+      "full": {
+        "avg10": 0.0,
+        "avg300": 0.13,
+        "avg60": 0.08,
+        "total": 33976941409.0
+      },
+      "some": {
+        "avg10": 0.0,
+        "avg300": 0.13,
+        "avg60": 0.09,
+        "total": 36074791475.0
+      }
+    },
+    "maximum_temperature_c": 62.0,
+    "memory_pressure": {
+      "full": {
+        "avg10": 0.0,
+        "avg300": 0.0,
+        "avg60": 0.0,
+        "total": 17849447931.0
+      },
+      "some": {
+        "avg10": 0.0,
+        "avg300": 0.0,
+        "avg60": 0.0,
+        "total": 18949550614.0
+      }
+    },
+    "monotonic_ns": 2715585938959600,
+    "procs_running": 2
+  },
+  "load_before": {
+    "cpu_pressure": {
+      "full": {
+        "avg10": 0.0,
+        "avg300": 0.0,
+        "avg60": 0.0,
+        "total": 0.0
+      },
+      "some": {
+        "avg10": 4.9,
+        "avg300": 4.76,
+        "avg60": 4.81,
+        "total": 155358357674.0
+      }
+    },
+    "io_pressure": {
+      "full": {
+        "avg10": 0.0,
+        "avg300": 0.13,
+        "avg60": 0.09,
+        "total": 33976936539.0
+      },
+      "some": {
+        "avg10": 0.0,
+        "avg300": 0.13,
+        "avg60": 0.09,
+        "total": 36074786604.0
+      }
+    },
+    "maximum_temperature_c": 62.0,
+    "memory_pressure": {
+      "full": {
+        "avg10": 0.0,
+        "avg300": 0.0,
+        "avg60": 0.0,
+        "total": 17849447931.0
+      },
+      "some": {
+        "avg10": 0.0,
+        "avg300": 0.0,
+        "avg60": 0.0,
+        "total": 18949550614.0
+      }
+    },
+    "monotonic_ns": 2715581882384660,
+    "procs_running": 3
+  },
+  "parity": {
+    "completeness_mismatches": 0,
+    "false_certificates": 0,
+    "full_row_mismatches": 0,
+    "full_source_closure": "WATCH",
+    "historical_executable_identity_proven": false,
+    "installed_lay_changed": false,
+    "maximum_product_states": 35590,
+    "maximum_scratch_bytes": 6656,
+    "peak_mismatches": 0,
+    "records": 382,
+    "runtime_authority_changed": false,
+    "schedule_sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78",
+    "schema": "lay.v10.hardware-diagnostic-proxy-parity.v1",
+    "target_form_retained": 382,
+    "target_lemma_retained": 382,
+    "terminal_mismatches": 0,
+    "test": "nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_semantic_parity",
+    "verdict": "PASS",
+    "work_mismatches": 0
+  },
+  "parity_receipt_sha256": "24abcaf29ffd07a8082a662b3166eddd70867e2ef6b55e9edf510aec230ab227",
+  "perf_invoked": false,
+  "pmu_event_opened": false,
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.loaded-semantic-parity-wrapper.v1",
+  "speed_measurement_repeated": false,
+  "stable_host_unchanged": true,
+  "started_at": "2026-08-24T22:28:23.734482+00:00",
+  "task_id": "slice8b-v10-loaded-parity-v1-20260825",
+  "throttle_counters_unchanged": true,
+  "v12_admitted": false,
+  "verdict": "LOADED_PARITY_PASS_NO_FORMAL_PROMOTION",
+  "whole_process_wall_ms_context_only": 4007.823575
+}

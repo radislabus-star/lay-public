@@ -1,0 +1,116 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "slice8-paper-with-v5-failure",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../ime-target-authority-slice8-lexical-readout-2026-08-23.md",
+      "sha256": "15e6a4fd5909dcef353ce15a1488bbb080484cf0f41e17cf5b43795195a0dcee",
+      "size_bytes": 12834
+    },
+    {
+      "exists": true,
+      "id": "v5-smoke-receipt",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-smoke-13x1.json",
+      "sha256": "db904421965290ae1c87ceb15ebb003952d92b06f7c5029a44c2840b88b473b0",
+      "size_bytes": 118847
+    },
+    {
+      "exists": true,
+      "id": "v5-fixed-receipt",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-fixed-13x100.json",
+      "sha256": "8e2d72b3dfff0d1efca2438315e41340dfac417377029b702e3d56dcc96c3769",
+      "size_bytes": 1252535
+    },
+    {
+      "exists": true,
+      "id": "v5-ready-preflight",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/implementation-preflight-v5-original-material.json",
+      "sha256": "cab4e03b7f7ae8ad1978370d07651bb86e899e6995e4c85a16882e522599daa6",
+      "size_bytes": 5399
+    },
+    {
+      "exists": true,
+      "id": "proof-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "2080fa90c08758d2dc6404cdfb830a3ee475e0bb19a6b3df5a27fe6c781baa67",
+      "size_bytes": 214602
+    },
+    {
+      "exists": true,
+      "id": "production-bridge-owner",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad",
+      "size_bytes": 111807
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 6,
+    "forbidden_side_effect_kinds": [
+      "generated_traffic",
+      "literal_case_runtime_branch",
+      "new_fallback_route",
+      "package_rebuild",
+      "raise_global_target_limit",
+      "restart_global_ibus_daemon",
+      "restart_lay_daemon",
+      "rewrite_any_package",
+      "runtime_deployment",
+      "synthetic_fixture",
+      "weaken_incomplete_authority",
+      "weaken_verifier"
+    ],
+    "identity_contracts": 3,
+    "invariants": 7,
+    "planned_side_effect_kinds": [
+      "documentation_edit",
+      "remote_test",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 1,
+    "source_checks": 2,
+    "tests": 11
+  },
+  "manifest_sha256": "5dac0b75dd67dfacae977cb3cd56ef8a7f565e038c43f6bec775daec45d019ae",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "proof-owner-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "2080fa90c08758d2dc6404cdfb830a3ee475e0bb19a6b3df5a27fe6c781baa67",
+      "size_bytes": 214602
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "production-bridge-pinned",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad",
+      "size_bytes": 111807
+    }
+  ],
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_DENOMINATOR_SEPARATION_V6_2026-08-24",
+  "verdict": "READY_TO_IMPLEMENT"
+}

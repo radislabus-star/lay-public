@@ -1,0 +1,51 @@
+{
+  "schema": "lay.v10.hardware-diagnostic-build-local-index.v1",
+  "task_id": "slice8b-v10-hardware-b0-b2-v3-20260824",
+  "recorded_at": "2026-08-25T00:19:35+03:00",
+  "state": "DIAGNOSTIC_EXECUTABLE_SEALED_BUILD_CONSUMED",
+  "remote_receipt": {
+    "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/EXECUTABLE_PROVENANCE.json",
+    "size_bytes": 3114,
+    "sha256": "34fbe47454e60ca3ab235b97f8dbaaf108a98836faf1e771e65f92c91586cadd"
+  },
+  "publication": {
+    "root_mode": "0555",
+    "writable_objects": 0,
+    "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+    "final_source_sha256": "e0fef5dfd40dbf926fcc1eb612212770a7e5b76ba0e36a87e5149ec61e8e103b",
+    "full_source_closure": "WATCH"
+  },
+  "executable": {
+    "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf",
+    "size_bytes": 20542920,
+    "sha256": "f7bcee37d5dffd583577d66c982c2a28072889b8aac2ccbed22612aa6d4feb09",
+    "build_id": "9829fb05f34bd353877fb6d71f1f8523e084af55",
+    "executed": false
+  },
+  "build": {
+    "guarded_process_groups": 1,
+    "cargo_incremental": "0",
+    "cargo_net_offline": "true",
+    "build_marker_consumed_before_cargo": true,
+    "retry_permitted": false,
+    "observed_free_bytes_before_build": 288107495424
+  },
+  "markers": {
+    "build.consumed-before-exec": true,
+    "freezer.available": true,
+    "freezer.consumed-before-exec": false
+  },
+  "execution": {
+    "freezer_runs": 0,
+    "perf_executable_invocations": 0,
+    "pmu_measurements": 0,
+    "v10_or_proxy_subject_runs": 0,
+    "later_gates_admitted": false
+  },
+  "decision": {
+    "next_permitted_transition": "one unmeasured schedule freezer run",
+    "freezer_retry_if_failure": false,
+    "b3_parity_b5_b6_v12_admitted": false,
+    "runtime_authority_changed": false
+  }
+}

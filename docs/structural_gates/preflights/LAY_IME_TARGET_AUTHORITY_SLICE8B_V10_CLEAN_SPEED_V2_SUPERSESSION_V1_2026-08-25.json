@@ -1,0 +1,537 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_SUPERSESSION_V1_2026-08-25",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "clean-v2-controller",
+      "kind": "file",
+      "path": "../../../scripts/lay-v10-hardware-clean.py",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 19253,
+        "sha256": "10167af258b0412582b17667deb41f14594b5ec12dd88f3aba12094d707383a5"
+      }
+    },
+    {
+      "id": "clean-v2-preflight-manifest",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_2026-08-25.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 11474,
+        "sha256": "181047ea6b448767a6ff1f66afc1c04e6d9b14062deb395c687d3f5fb2b7632a"
+      }
+    },
+    {
+      "id": "clean-v2-preflight-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_PREFLIGHT_V2_2026-08-25.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 4371,
+        "sha256": "c69302a79844a6d8a60f26bfcd95135c9ab153ac19af91dcc5ac98494a6227a1"
+      }
+    },
+    {
+      "id": "clean-v2-prepared-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_PREPARED_V2_2026-08-25.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 9165,
+        "sha256": "9889209d5a62ebda7e8b5509bac05a8fb4a7c9dd64e67a4a76ce607629ca7ea9"
+      }
+    },
+    {
+      "id": "c1-order-correction",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_ORDER_CORRECTION_V1_2026-08-25.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 4375,
+        "sha256": "6cfa8c1156bde7cede5320f6924d3eb5c0e179907c08e82e2121885d7517f406"
+      }
+    },
+    {
+      "id": "c1-direct-latency-contract",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRECT_LATENCY_CONTRACT_V1_2026-08-25.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 14667,
+        "sha256": "1a35eeb0f5bb1e83e6785750a3a3857805bc62c93bc25d88d450874ae9f3f3d6"
+      }
+    },
+    {
+      "id": "c1-structural-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_ROUTE_V1_2026-08-25/HIERARCHICAL_RECEIPT.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 26573,
+        "sha256": "d85d413d81e14b93f3de77b7e598bb766fb3fdd69519a1e225e5a3e2f7f69925"
+      }
+    },
+    {
+      "id": "remote-absence-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_SUPERSESSION_REMOTE_AUDIT_V1_2026-08-25.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 733,
+        "sha256": "2d196b500cdd26acb25514e2fa90b0b7159566d22a3613c7e9b5fee652a2997d"
+      }
+    },
+    {
+      "id": "active-v11-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 124127,
+        "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"
+      }
+    },
+    {
+      "id": "supersession-controller-before-implementation",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-c1-supersede-clean-v2.py",
+      "expect": {}
+    },
+    {
+      "id": "supersession-local-receipt-before-publication",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_SUPERSESSION_V1_2026-08-25.json",
+      "expect": {}
+    },
+    {
+      "id": "c1-implementation-preflight-before-supersession",
+      "kind": "absent",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_V1_2026-08-25.json",
+      "expect": {}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "implement-supersession-controller",
+        "kind": "local_source_edit"
+      },
+      {
+        "id": "self-check-with-temporary-filesystem",
+        "kind": "local_temporary_test"
+      },
+      {
+        "id": "recheck-live-remote-preconditions",
+        "kind": "remote_read_only_observation"
+      },
+      {
+        "id": "create-clean-v2-state-path",
+        "kind": "remote_fail_closed_state_write"
+      },
+      {
+        "id": "publish-and-seal-remote-tombstone",
+        "kind": "remote_evidence_write"
+      },
+      {
+        "id": "publish-local-supersession-receipt",
+        "kind": "local_evidence_write"
+      },
+      {
+        "id": "record-supersession-result",
+        "kind": "documentation_edit"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "clean_v2_subject_execution",
+      "clean_v2_final_result_creation",
+      "cargo_build_check_test",
+      "rustc_compilation",
+      "perf_or_pmu",
+      "host_tuning",
+      "foreign_process_or_service_control",
+      "runtime_deployment_or_restart",
+      "installed_lay_mutation",
+      "old_evidence_deletion_or_mutation",
+      "clean_v2_controller_mutation",
+      "supersession_state_removal_or_rollback",
+      "remote_provenance_output_creation",
+      "c1_build",
+      "c1_parity_execution",
+      "c1_latency_execution",
+      "b_matrix_execution",
+      "v12_action",
+      "adaptive_retry"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "preserve-clean-v2-controller",
+      "path": "../../../scripts/lay-v10-hardware-clean.py",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "clean-v2-controller"
+    },
+    {
+      "id": "preserve-clean-v2-preflight-manifest",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_2026-08-25.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "clean-v2-preflight-manifest"
+    },
+    {
+      "id": "preserve-clean-v2-preflight-receipt",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_PREFLIGHT_V2_2026-08-25.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "clean-v2-preflight-receipt"
+    },
+    {
+      "id": "preserve-clean-v2-prepared-receipt",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_PREPARED_V2_2026-08-25.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "clean-v2-prepared-receipt"
+    },
+    {
+      "id": "preserve-c1-structural-receipt",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_ROUTE_V1_2026-08-25/HIERARCHICAL_RECEIPT.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "c1-structural-receipt"
+    },
+    {
+      "id": "preserve-remote-absence-audit",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_CLEAN_SPEED_V2_SUPERSESSION_REMOTE_AUDIT_V1_2026-08-25.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "remote-absence-audit"
+    },
+    {
+      "id": "preserve-active-v11",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "active-v11-source"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "CLEAN_V2_PREPARED_UNRUN_PHYSICALLY_RUNNABLE",
+    "steps": [
+      {
+        "id": "implement-supersession-controller",
+        "from": "CLEAN_V2_PREPARED_UNRUN_PHYSICALLY_RUNNABLE",
+        "to": "SUPERSESSION_CONTROLLER_IMPLEMENTED_UNRUN",
+        "mutates": true,
+        "failure_state": "SUPERSESSION_IMPLEMENTATION_REJECTED",
+        "cleanup": "remove only an incomplete new supersession controller and retain every pre-existing Clean V2 and C1 artifact",
+        "preserves": [
+          "preserve-clean-v2-controller",
+          "preserve-clean-v2-preflight-manifest",
+          "preserve-clean-v2-preflight-receipt",
+          "preserve-clean-v2-prepared-receipt",
+          "preserve-c1-structural-receipt",
+          "preserve-remote-absence-audit",
+          "preserve-active-v11"
+        ],
+        "test_id": "controller-implementation-fault"
+      },
+      {
+        "id": "self-check-supersession-controller",
+        "from": "SUPERSESSION_CONTROLLER_IMPLEMENTED_UNRUN",
+        "to": "SUPERSESSION_CONTROLLER_SELF_CHECKED_UNRUN",
+        "mutates": false
+      },
+      {
+        "id": "recheck-live-remote-preconditions",
+        "from": "SUPERSESSION_CONTROLLER_SELF_CHECKED_UNRUN",
+        "to": "SUPERSESSION_REMOTE_PRECONDITIONS_ADMITTED",
+        "mutates": false
+      },
+      {
+        "id": "create-remote-state-directory",
+        "from": "SUPERSESSION_REMOTE_PRECONDITIONS_ADMITTED",
+        "to": "CLEAN_V2_PHYSICALLY_BLOCKED",
+        "mutates": true,
+        "failure_state": "SUPERSESSION_CREATE_ATTEMPT_CLASSIFIED_NO_RETRY",
+        "cleanup": "perform read-only outcome classification; never remove the state path; absent means old route unchanged, present means SUPERSESSION_PARTIAL_FAIL_CLOSED, and an unobservable outcome remains unresolved with no retry",
+        "preserves": [
+          "preserve-clean-v2-controller",
+          "preserve-clean-v2-preflight-manifest",
+          "preserve-clean-v2-preflight-receipt",
+          "preserve-clean-v2-prepared-receipt",
+          "preserve-c1-structural-receipt",
+          "preserve-remote-absence-audit",
+          "preserve-active-v11"
+        ],
+        "test_id": "state-directory-first-mutation-fault"
+      },
+      {
+        "id": "publish-remote-superseded-unrun-record",
+        "from": "CLEAN_V2_PHYSICALLY_BLOCKED",
+        "to": "CLEAN_V2_TOMBSTONE_PUBLISHED",
+        "mutates": true,
+        "failure_state": "SUPERSESSION_PARTIAL_FAIL_CLOSED",
+        "cleanup": "retain the remote state directory and every partial byte; do not restore the old execution right; recovery requires a new preflight",
+        "preserves": [
+          "preserve-clean-v2-controller",
+          "preserve-clean-v2-preflight-manifest",
+          "preserve-clean-v2-preflight-receipt",
+          "preserve-clean-v2-prepared-receipt",
+          "preserve-c1-structural-receipt",
+          "preserve-remote-absence-audit",
+          "preserve-active-v11"
+        ],
+        "test_id": "tombstone-publication-fault"
+      },
+      {
+        "id": "publish-and-verify-remote-sha256sums",
+        "from": "CLEAN_V2_TOMBSTONE_PUBLISHED",
+        "to": "CLEAN_V2_TOMBSTONE_VERIFIED",
+        "mutates": true,
+        "failure_state": "SUPERSESSION_PARTIAL_FAIL_CLOSED",
+        "cleanup": "retain the remote state directory and tombstone; do not remove or replace evidence without a new preflight",
+        "preserves": [
+          "preserve-clean-v2-controller",
+          "preserve-clean-v2-preflight-manifest",
+          "preserve-clean-v2-preflight-receipt",
+          "preserve-clean-v2-prepared-receipt",
+          "preserve-c1-structural-receipt",
+          "preserve-remote-absence-audit",
+          "preserve-active-v11"
+        ],
+        "test_id": "manifest-publication-fault"
+      },
+      {
+        "id": "seal-remote-state-tree",
+        "from": "CLEAN_V2_TOMBSTONE_VERIFIED",
+        "to": "CLEAN_V2_SUPERSEDED_UNRUN_REMOTE_SEALED",
+        "mutates": true,
+        "failure_state": "SUPERSESSION_PARTIAL_FAIL_CLOSED",
+        "cleanup": "retain the state path and all published bytes; never make the old route runnable; recovery may only finish sealing under a new preflight",
+        "preserves": [
+          "preserve-clean-v2-controller",
+          "preserve-clean-v2-preflight-manifest",
+          "preserve-clean-v2-preflight-receipt",
+          "preserve-clean-v2-prepared-receipt",
+          "preserve-c1-structural-receipt",
+          "preserve-remote-absence-audit",
+          "preserve-active-v11"
+        ],
+        "test_id": "remote-seal-fault"
+      },
+      {
+        "id": "publish-local-immutable-receipt",
+        "from": "CLEAN_V2_SUPERSEDED_UNRUN_REMOTE_SEALED",
+        "to": "CLEAN_V2_SUPERSEDED_UNRUN_INDEXED",
+        "mutates": true,
+        "failure_state": "SUPERSESSION_REMOTE_COMPLETE_LOCAL_INDEX_PENDING",
+        "cleanup": "retain the sealed remote tombstone; remove only an unpublished local temporary file; local indexing requires a new preflight if publication did not complete",
+        "preserves": [
+          "preserve-clean-v2-controller",
+          "preserve-clean-v2-preflight-manifest",
+          "preserve-clean-v2-preflight-receipt",
+          "preserve-clean-v2-prepared-receipt",
+          "preserve-c1-structural-receipt",
+          "preserve-remote-absence-audit",
+          "preserve-active-v11"
+        ],
+        "test_id": "local-receipt-publication-fault"
+      },
+      {
+        "id": "update-owning-documents",
+        "from": "CLEAN_V2_SUPERSEDED_UNRUN_INDEXED",
+        "to": "CLEAN_V2_SUPERSEDED_UNRUN_BY_C1",
+        "mutates": true,
+        "failure_state": "SUPERSESSION_COMPLETE_DOCUMENTATION_PENDING",
+        "cleanup": "retain remote and local immutable evidence; repair documentation only under the same admitted byte scope or a new preflight",
+        "preserves": [
+          "preserve-clean-v2-controller",
+          "preserve-clean-v2-preflight-manifest",
+          "preserve-clean-v2-preflight-receipt",
+          "preserve-clean-v2-prepared-receipt",
+          "preserve-c1-structural-receipt",
+          "preserve-remote-absence-audit",
+          "preserve-active-v11"
+        ],
+        "test_id": "documentation-update-fault"
+      }
+    ],
+    "terminal_states": [
+      "CLEAN_V2_SUPERSEDED_UNRUN_BY_C1",
+      "SUPERSESSION_IMPLEMENTATION_REJECTED",
+      "SUPERSESSION_CREATE_ATTEMPT_CLASSIFIED_NO_RETRY",
+      "SUPERSESSION_PARTIAL_FAIL_CLOSED",
+      "SUPERSESSION_REMOTE_COMPLETE_LOCAL_INDEX_PENDING",
+      "SUPERSESSION_COMPLETE_DOCUMENTATION_PENDING"
+    ]
+  },
+  "invariants": [
+    {
+      "id": "state-existence-blocks-clean-v2",
+      "statement": "the exact Clean V2 controller rejects ready and run whenever its exact remote state path exists",
+      "test_id": "clean-v2-state-guard-parity"
+    },
+    {
+      "id": "mkdir-is-first-remote-mutation",
+      "statement": "all live identity and absence checks complete before the exact remote state directory is created and no other remote mutation precedes it",
+      "test_id": "remote-first-mutation-order"
+    },
+    {
+      "id": "no-rollback-after-mkdir",
+      "statement": "once the remote state path exists no success or failure path removes it or restores Clean V2 execution authority",
+      "test_id": "post-mkdir-failure-matrix"
+    },
+    {
+      "id": "unrun-claim-is-exact",
+      "statement": "the tombstone states subject executed false, measurement produced false, clean result published false, old route physically runnable false and status SUPERSEDED_UNRUN_BY_C1",
+      "test_id": "tombstone-schema"
+    },
+    {
+      "id": "no-final-result",
+      "statement": "the Clean V2 remote provenance result path remains absent before and after supersession",
+      "test_id": "remote-final-remains-absent"
+    },
+    {
+      "id": "scope-stops-before-c1",
+      "statement": "supersession grants no C1 build, parity, latency, B matrix, V12 or runtime authority",
+      "test_id": "claim-boundary"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "clean-v2-state-guard-binding",
+      "producer": "exact Clean V2 controller remote state-path guard",
+      "consumer": "supersession controller state-directory publication",
+      "comparison": "exact path string /home/e/.local/state/lay/slice8b-v10-clean-speed-v2-20260825 and exact controller SHA-256",
+      "test_id": "clean-v2-state-guard-parity"
+    },
+    {
+      "id": "remote-tombstone-local-receipt-binding",
+      "producer": "sealed remote SUPERSEDED_UNRUN.json and SHA256SUMS",
+      "consumer": "local immutable supersession receipt",
+      "comparison": "exact remote path, status fields, file mode, tree mode, file count and SHA-256",
+      "test_id": "local-remote-receipt-parity"
+    },
+    {
+      "id": "supersession-c1-order-binding",
+      "producer": "C1 order correction and structurally accepted route packet",
+      "consumer": "supersession controller and future C1 implementation preflight",
+      "comparison": "exact order-document SHA-256, structural-receipt SHA-256 and terminal status CLEAN_V2_SUPERSEDED_UNRUN_BY_C1",
+      "test_id": "c1-order-identity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "tests": [
+    {
+      "id": "controller-implementation-fault",
+      "kind": "fault_injection",
+      "expected": "an incomplete new local controller can be removed while all pre-existing Clean V2 and C1 bytes remain exact"
+    },
+    {
+      "id": "clean-v2-state-guard-parity",
+      "kind": "parity",
+      "expected": "the pinned Clean V2 controller and supersession controller use the same exact remote state path and state existence rejects Clean V2 execution"
+    },
+    {
+      "id": "remote-first-mutation-order",
+      "kind": "static_and_fault_injection",
+      "expected": "remote identity and absence checks are read-only and mkdir of the exact state path is the first remote mutation"
+    },
+    {
+      "id": "state-directory-first-mutation-fault",
+      "kind": "fault_injection",
+      "expected": "failure before mkdir leaves Clean V2 unchanged; any observed state path is retained and classified fail closed; no retry occurs"
+    },
+    {
+      "id": "tombstone-publication-fault",
+      "kind": "fault_injection",
+      "expected": "faults after mkdir retain the state path and terminate as SUPERSESSION_PARTIAL_FAIL_CLOSED"
+    },
+    {
+      "id": "manifest-publication-fault",
+      "kind": "fault_injection",
+      "expected": "manifest write or verification failure retains the state path and tombstone without restoring Clean V2"
+    },
+    {
+      "id": "remote-seal-fault",
+      "kind": "fault_injection",
+      "expected": "seal failure retains all remote state and requires a new preflight to complete"
+    },
+    {
+      "id": "local-receipt-publication-fault",
+      "kind": "fault_injection",
+      "expected": "local publication failure cannot mutate the sealed remote tombstone or old evidence"
+    },
+    {
+      "id": "documentation-update-fault",
+      "kind": "fault_injection",
+      "expected": "documentation failure leaves remote and local evidence intact and reports documentation pending"
+    },
+    {
+      "id": "post-mkdir-failure-matrix",
+      "kind": "fault_injection",
+      "expected": "every injected fault after state-path creation preserves path existence and never exposes a rollback operation"
+    },
+    {
+      "id": "tombstone-schema",
+      "kind": "schema",
+      "expected": "SUPERSEDED_UNRUN.json contains only preregistered identities and exact false status claims with rollback retain tombstone"
+    },
+    {
+      "id": "remote-final-remains-absent",
+      "kind": "integration",
+      "expected": "the remote Clean V2 final provenance path is absent before and after the one supersession run"
+    },
+    {
+      "id": "local-remote-receipt-parity",
+      "kind": "parity",
+      "expected": "the local receipt reproduces the verified remote tombstone identity, manifest identity, modes, file count and terminal state"
+    },
+    {
+      "id": "c1-order-identity",
+      "kind": "parity",
+      "expected": "the controller pins the exact C1 order and structural receipt identities and publishes only the admitted terminal status"
+    },
+    {
+      "id": "old-evidence-byte-parity",
+      "kind": "parity",
+      "expected": "controller, preflight, prepared receipt, structural receipt, remote audit and active V11 retain exact baseline bytes and modes"
+    },
+    {
+      "id": "forbidden-effect-static-scan",
+      "kind": "static",
+      "expected": "the new controller has no subject execution, Cargo, rustc, perf, PMU, process control, runtime mutation, state removal, C1 or V12 route"
+    },
+    {
+      "id": "controller-self-check",
+      "kind": "unit_and_fault_injection",
+      "expected": "temporary-filesystem transaction, schema, atomic file publication, sealing and every preregistered fault point pass without SSH"
+    },
+    {
+      "id": "remote-sealed-tree",
+      "kind": "integration",
+      "expected": "remote state is mode 0555, files are 0444, writable objects are zero and SHA256SUMS verifies all listed files"
+    },
+    {
+      "id": "single-run-only",
+      "kind": "integration",
+      "expected": "a second invocation is rejected by existing state without modifying any remote or local byte"
+    },
+    {
+      "id": "claim-boundary",
+      "kind": "claim_boundary",
+      "expected": "result reports Clean V2 superseded unrun, B matrix held, C1 implementation not started, V12 not admitted and runtime authority unchanged"
+    },
+    {
+      "id": "graphify-refresh",
+      "kind": "documentation",
+      "expected": "graphify update completes after owning documents record the immutable supersession receipt"
+    }
+  ]
+}

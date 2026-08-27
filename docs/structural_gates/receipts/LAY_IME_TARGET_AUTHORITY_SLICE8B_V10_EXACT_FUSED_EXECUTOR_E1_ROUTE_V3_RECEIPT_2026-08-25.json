@@ -1,0 +1,1104 @@
+{
+  "verdict": "WATCH",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-exact-fused-executor-e1-v3",
+  "domain": "code",
+  "complexity_score": 56,
+  "mandatory_gate": true,
+  "limits": [
+    "routes target limit exceeded: 9>8"
+  ],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8",
+    "c9"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.1111,
+      "c2": 0.1111,
+      "c3": 0.1111,
+      "c4": 0.1111,
+      "c5": 0.1111,
+      "c6": 0.1111,
+      "c7": 0.1111,
+      "c8": 0.1111,
+      "c9": 0.1111
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 18,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "s9",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.3565,
+      "c2": 0.3257,
+      "c3": 0.3359,
+      "c4": 0.343,
+      "c5": 0.3276,
+      "c6": 0.352,
+      "c7": 0.3763,
+      "c8": 0.2911,
+      "c9": 0.3385
+    },
+    "source_self_score": 0.3385,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "e1-baseline": "e1-baseline",
+      "e1-boundary": "e1-boundary",
+      "e1-candidate": "e1-candidate",
+      "e1-decision": "e1-decision",
+      "e1-environment": "e1-environment",
+      "e1-equality": "e1-equality",
+      "e1-latency": "e1-latency",
+      "e1-parity": "e1-parity",
+      "e1-physical": "e1-physical"
+    },
+    "scores": {
+      "e1-baseline": 1.0,
+      "e1-boundary": 1.0,
+      "e1-candidate": 1.0,
+      "e1-decision": 1.0,
+      "e1-environment": 1.0,
+      "e1-equality": 1.0,
+      "e1-latency": 1.0,
+      "e1-parity": 1.0,
+      "e1-physical": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "e1-baseline": 1,
+      "e1-boundary": 1,
+      "e1-candidate": 1,
+      "e1-decision": 1,
+      "e1-environment": 1,
+      "e1-equality": 1,
+      "e1-latency": 1,
+      "e1-parity": 1,
+      "e1-physical": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.3385,
+      "norm": 97.4885,
+      "triads": 9
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "e1-baseline": "e1-baseline",
+      "e1-boundary": "e1-boundary",
+      "e1-candidate": "e1-candidate",
+      "e1-decision": "e1-decision",
+      "e1-environment": "e1-environment",
+      "e1-equality": "e1-equality",
+      "e1-latency": "e1-latency",
+      "e1-parity": "e1-parity",
+      "e1-physical": "e1-physical"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "e1-baseline": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-candidate": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-equality": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-latency": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-physical": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "e1-baseline": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-candidate": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-equality": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-latency": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "e1-physical": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "e1-baseline": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "e1-baseline",
+        "exact_source_groups": [
+          "e1-baseline"
+        ]
+      },
+      "e1-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "e1-boundary",
+        "exact_source_groups": [
+          "e1-boundary"
+        ]
+      },
+      "e1-candidate": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "e1-candidate",
+        "exact_source_groups": [
+          "e1-candidate"
+        ]
+      },
+      "e1-decision": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "e1-decision",
+        "exact_source_groups": [
+          "e1-decision"
+        ]
+      },
+      "e1-environment": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "e1-environment",
+        "exact_source_groups": [
+          "e1-environment"
+        ]
+      },
+      "e1-equality": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "e1-equality",
+        "exact_source_groups": [
+          "e1-equality"
+        ]
+      },
+      "e1-latency": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "e1-latency",
+        "exact_source_groups": [
+          "e1-latency"
+        ]
+      },
+      "e1-parity": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "e1-parity",
+        "exact_source_groups": [
+          "e1-parity"
+        ]
+      },
+      "e1-physical": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "e1-physical",
+        "exact_source_groups": [
+          "e1-physical"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "e1-baseline": {
+        "e1-baseline": 1.0,
+        "e1-boundary": 0.0234,
+        "e1-candidate": 0.0078,
+        "e1-decision": -0.0313,
+        "e1-environment": 0.0293,
+        "e1-equality": 0.0,
+        "e1-latency": 0.0215,
+        "e1-parity": 0.0527,
+        "e1-physical": -0.0176
+      },
+      "e1-boundary": {
+        "e1-baseline": 0.0234,
+        "e1-boundary": 1.0,
+        "e1-candidate": -0.0039,
+        "e1-decision": -0.0117,
+        "e1-environment": 0.0176,
+        "e1-equality": -0.0391,
+        "e1-latency": 0.0254,
+        "e1-parity": 0.0098,
+        "e1-physical": 0.0098
+      },
+      "e1-candidate": {
+        "e1-baseline": 0.0078,
+        "e1-boundary": -0.0039,
+        "e1-candidate": 1.0,
+        "e1-decision": -0.0469,
+        "e1-environment": 0.0293,
+        "e1-equality": 0.0117,
+        "e1-latency": 0.0215,
+        "e1-parity": -0.0488,
+        "e1-physical": 0.0215
+      },
+      "e1-decision": {
+        "e1-baseline": -0.0313,
+        "e1-boundary": -0.0117,
+        "e1-candidate": -0.0469,
+        "e1-decision": 1.0,
+        "e1-environment": 0.0176,
+        "e1-equality": -0.0313,
+        "e1-latency": -0.0215,
+        "e1-parity": 0.0137,
+        "e1-physical": -0.002
+      },
+      "e1-environment": {
+        "e1-baseline": 0.0293,
+        "e1-boundary": 0.0176,
+        "e1-candidate": 0.0293,
+        "e1-decision": 0.0176,
+        "e1-environment": 1.0,
+        "e1-equality": 0.0215,
+        "e1-latency": 0.0313,
+        "e1-parity": -0.0273,
+        "e1-physical": 0.0273
+      },
+      "e1-equality": {
+        "e1-baseline": 0.0,
+        "e1-boundary": -0.0391,
+        "e1-candidate": 0.0117,
+        "e1-decision": -0.0313,
+        "e1-environment": 0.0215,
+        "e1-equality": 1.0,
+        "e1-latency": 0.0332,
+        "e1-parity": 0.0645,
+        "e1-physical": -0.0371
+      },
+      "e1-latency": {
+        "e1-baseline": 0.0215,
+        "e1-boundary": 0.0254,
+        "e1-candidate": 0.0215,
+        "e1-decision": -0.0215,
+        "e1-environment": 0.0313,
+        "e1-equality": 0.0332,
+        "e1-latency": 1.0,
+        "e1-parity": -0.0273,
+        "e1-physical": -0.0117
+      },
+      "e1-parity": {
+        "e1-baseline": 0.0527,
+        "e1-boundary": 0.0098,
+        "e1-candidate": -0.0488,
+        "e1-decision": 0.0137,
+        "e1-environment": -0.0273,
+        "e1-equality": 0.0645,
+        "e1-latency": -0.0273,
+        "e1-parity": 1.0,
+        "e1-physical": 0.0078
+      },
+      "e1-physical": {
+        "e1-baseline": -0.0176,
+        "e1-boundary": 0.0098,
+        "e1-candidate": 0.0215,
+        "e1-decision": -0.002,
+        "e1-environment": 0.0273,
+        "e1-equality": -0.0371,
+        "e1-latency": -0.0117,
+        "e1-parity": 0.0078,
+        "e1-physical": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "e1-baseline": {
+          "gravity": 1.0,
+          "owner": "e1-baseline",
+          "owners": {
+            "e1-baseline": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "e1-boundary": {
+          "gravity": 1.0,
+          "owner": "e1 scoped evidence",
+          "owners": {
+            "e1 scoped evidence": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "e1-candidate": {
+          "gravity": 1.0,
+          "owner": "e1-candidate",
+          "owners": {
+            "e1-candidate": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "e1-decision": {
+          "gravity": 1.0,
+          "owner": "e1 decision",
+          "owners": {
+            "e1 decision": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "e1-environment": {
+          "gravity": 1.0,
+          "owner": "foreign-process owner",
+          "owners": {
+            "foreign-process owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "e1-equality": {
+          "gravity": 1.0,
+          "owner": "e1-equality",
+          "owners": {
+            "e1-equality": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "e1-latency": {
+          "gravity": 1.0,
+          "owner": "e1-latency",
+          "owners": {
+            "e1-latency": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "e1-parity": {
+          "gravity": 1.0,
+          "owner": "e1-parity",
+          "owners": {
+            "e1-parity": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "e1-physical": {
+          "gravity": 1.0,
+          "owner": "e1-physical",
+          "owners": {
+            "e1-physical": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "baseline": {
+          "gravity": 1.0,
+          "owner": "e1-baseline",
+          "owners": {
+            "e1-baseline": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "boundary": {
+          "gravity": 1.0,
+          "owner": "e1 scoped evidence",
+          "owners": {
+            "e1 scoped evidence": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "candidate": {
+          "gravity": 1.0,
+          "owner": "e1-candidate",
+          "owners": {
+            "e1-candidate": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "decision": {
+          "gravity": 1.0,
+          "owner": "e1 decision",
+          "owners": {
+            "e1 decision": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "environment": {
+          "gravity": 1.0,
+          "owner": "foreign-process owner",
+          "owners": {
+            "foreign-process owner": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "equality": {
+          "gravity": 1.0,
+          "owner": "e1-equality",
+          "owners": {
+            "e1-equality": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "latency": {
+          "gravity": 1.0,
+          "owner": "e1-latency",
+          "owners": {
+            "e1-latency": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "parity": {
+          "gravity": 1.0,
+          "owner": "e1-parity",
+          "owners": {
+            "e1-parity": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "physical": {
+          "gravity": 1.0,
+          "owner": "e1-physical",
+          "owners": {
+            "e1-physical": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "baseline": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "e1 phase p"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "e1-baseline"
+          ],
+          "scopes": [
+            "baseline"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "e1 decision final paragraph"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "e1 scoped evidence"
+          ],
+          "scopes": [
+            "boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "candidate": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "e1 compared executors"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "e1-candidate"
+          ],
+          "scopes": [
+            "candidate"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "decision": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "e1 decision"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "e1 decision"
+          ],
+          "scopes": [
+            "decision"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "environment": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "e1 phase l environment"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "foreign-process owner"
+          ],
+          "scopes": [
+            "environment"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "equality": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "e1 exact equality contract"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "e1-equality"
+          ],
+          "scopes": [
+            "equality"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "latency": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "e1 phase l"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "e1-latency"
+          ],
+          "scopes": [
+            "latency"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "parity": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "e1 phase p"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "e1-parity"
+          ],
+          "scopes": [
+            "parity"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "physical": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "e1 phase i"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "e1-physical"
+          ],
+          "scopes": [
+            "physical"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "baseline": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "candidate": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "equality": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "latency": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "physical": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "baseline": {
+          "baseline": 1.0,
+          "boundary": 0.0234,
+          "candidate": 0.0078,
+          "decision": -0.0313,
+          "environment": 0.0293,
+          "equality": 0.0,
+          "latency": 0.0215,
+          "parity": 0.0527,
+          "physical": -0.0176
+        },
+        "boundary": {
+          "baseline": 0.0234,
+          "boundary": 1.0,
+          "candidate": -0.0039,
+          "decision": -0.0117,
+          "environment": 0.0176,
+          "equality": -0.0391,
+          "latency": 0.0254,
+          "parity": 0.0098,
+          "physical": 0.0098
+        },
+        "candidate": {
+          "baseline": 0.0078,
+          "boundary": -0.0039,
+          "candidate": 1.0,
+          "decision": -0.0469,
+          "environment": 0.0293,
+          "equality": 0.0117,
+          "latency": 0.0215,
+          "parity": -0.0488,
+          "physical": 0.0215
+        },
+        "decision": {
+          "baseline": -0.0313,
+          "boundary": -0.0117,
+          "candidate": -0.0469,
+          "decision": 1.0,
+          "environment": 0.0176,
+          "equality": -0.0313,
+          "latency": -0.0215,
+          "parity": 0.0137,
+          "physical": -0.002
+        },
+        "environment": {
+          "baseline": 0.0293,
+          "boundary": 0.0176,
+          "candidate": 0.0293,
+          "decision": 0.0176,
+          "environment": 1.0,
+          "equality": 0.0215,
+          "latency": 0.0313,
+          "parity": -0.0273,
+          "physical": 0.0273
+        },
+        "equality": {
+          "baseline": 0.0,
+          "boundary": -0.0391,
+          "candidate": 0.0117,
+          "decision": -0.0313,
+          "environment": 0.0215,
+          "equality": 1.0,
+          "latency": 0.0332,
+          "parity": 0.0645,
+          "physical": -0.0371
+        },
+        "latency": {
+          "baseline": 0.0215,
+          "boundary": 0.0254,
+          "candidate": 0.0215,
+          "decision": -0.0215,
+          "environment": 0.0313,
+          "equality": 0.0332,
+          "latency": 1.0,
+          "parity": -0.0273,
+          "physical": -0.0117
+        },
+        "parity": {
+          "baseline": 0.0527,
+          "boundary": 0.0098,
+          "candidate": -0.0488,
+          "decision": 0.0137,
+          "environment": -0.0273,
+          "equality": 0.0645,
+          "latency": -0.0273,
+          "parity": 1.0,
+          "physical": 0.0078
+        },
+        "physical": {
+          "baseline": -0.0176,
+          "boundary": 0.0098,
+          "candidate": 0.0215,
+          "decision": -0.002,
+          "environment": 0.0273,
+          "equality": -0.0371,
+          "latency": -0.0117,
+          "parity": 0.0078,
+          "physical": 1.0
+        }
+      },
+      "source": {
+        "baseline": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "candidate": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "decision": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "equality": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "latency": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "physical": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "e1-baseline": 1,
+      "e1-boundary": 1,
+      "e1-candidate": 1,
+      "e1-decision": 1,
+      "e1-environment": 1,
+      "e1-equality": 1,
+      "e1-latency": 1,
+      "e1-parity": 1,
+      "e1-physical": 1
+    },
+    "stable_groups": [
+      "e1-baseline",
+      "e1-boundary",
+      "e1-candidate",
+      "e1-decision",
+      "e1-environment",
+      "e1-equality",
+      "e1-latency",
+      "e1-parity",
+      "e1-physical"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [
+    {
+      "kind": "evidence_conflict",
+      "priority": "high",
+      "reason": "one evidence span is bound to incompatible role fillers",
+      "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+      "target": "E1 Phase P"
+    }
+  ],
+  "agent_decision": {
+    "action": "REVIEW_REQUIRED",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Review unresolved structure before editing.",
+    "repair_count": 1,
+    "repair_queue": [
+      {
+        "kind": "evidence_conflict",
+        "priority": "high",
+        "reason": "one evidence span is bound to incompatible role fillers",
+        "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+        "target": "E1 Phase P"
+      }
+    ],
+    "safe_to_edit": false
+  },
+  "explanation": [
+    "Task exceeds target or hard limits and should be split."
+  ],
+  "repair_prompt": "Repair the candidate answer using only one coherent structural route.\nNANDA verdict: WATCH.\nPrimary repair_queue:\n- [high] evidence_conflict: Resolve the source conflict and bind each triad to its exact supporting span.\nSplit the task before retrying:\n- routes target limit exceeded: 9>8",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-exact-fused-executor-e1-v3.trace.json"
+}

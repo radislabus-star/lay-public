@@ -1,0 +1,145 @@
+{
+  "schema": "nanda.execution-admission.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_EXECUTION_ADMISSION_V3_2026-08-27",
+  "repair_scope": "raw manifest identity only",
+  "supersedes_execution_authority_from": "M3_ACTUAL_OWNER_IMPLEMENTATION_V2",
+  "preserves_v2_as_immutable": true,
+  "v2_defect": {
+    "manifest_path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_IMPLEMENTATION_V2_2026-08-27.json",
+    "manifest_mode": "0444",
+    "manifest_size_bytes": 23695,
+    "manifest_actual_sha256": "f9d6e1cf0c93844447f43a17c81659aaeac9327c7228399ec9eac4fadbbdad91",
+    "receipt_path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_IMPLEMENTATION_V2_PREFLIGHT_2026-08-27.json",
+    "receipt_mode": "0444",
+    "receipt_size_bytes": 14962,
+    "receipt_actual_sha256": "09b90a61fd9c2140d8849af095799dc593de8bf6cb13f41af36eef8dcba1e2bd",
+    "receipt_embedded_manifest_sha256": "4c21ef479b382a1d2ef8ac0e52792788098eac830251534571454a0f00d7ce64",
+    "receipt_verdict": "READY_TO_IMPLEMENT",
+    "receipt_safe_to_implement": true,
+    "receipt_baseline_checks": 33,
+    "receipt_blockers": 0,
+    "interpretation": "V2 semantic checks remain evidence, but V2 receipt does not admit execution because its raw manifest identity is wrong"
+  },
+  "pre_execution_facts": {
+    "cargo_invocations": 0,
+    "rustc_compilations": 0,
+    "owner_receipt_exists": false,
+    "network_or_remote_used": false,
+    "perf_or_pmu_used": false,
+    "installed_lay_changed": false,
+    "runtime_authority_changed": false
+  },
+  "staged_sources": [
+    {
+      "path": "../../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "mode": "0664",
+      "size_bytes": 91835,
+      "sha256": "16b6cc0128099e99c5a77037feac5cf49efd2ed088f6ddb2ade433da92241e5b"
+    },
+    {
+      "path": "../../../src/nanda_wave/lexical_grokking/mod.rs",
+      "mode": "0664",
+      "size_bytes": 3885,
+      "sha256": "5a468ecb672d3c01cb327c6a270932ca1b5cad91457f0f869c8f219c4eb79511"
+    },
+    {
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "mode": "0664",
+      "size_bytes": 74150,
+      "sha256": "6acd10e90c21acf5e7372eecfd110980f55588ef6b18ee31c1d75a8d13b35bc7"
+    },
+    {
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/composite.rs",
+      "mode": "0664",
+      "size_bytes": 22416,
+      "sha256": "121c46e83d0e890188ba32a36cb603ccbe049d8412e478e469eb9ac13796d9f7"
+    },
+    {
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "mode": "0664",
+      "size_bytes": 68510,
+      "sha256": "594462fd545d84b58e7fd67795a7b90f08c112a767b5cfcdc80f3e311bc6ab7f"
+    },
+    {
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/mod.rs",
+      "mode": "0664",
+      "size_bytes": 2604,
+      "sha256": "277f53d188018ac2703a8fbdee74a7f3a304128e4124652c54cdf9ff687ca252"
+    },
+    {
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "mode": "0664",
+      "size_bytes": 176140,
+      "sha256": "154619792bca1b003147082903f2fc6f15e704c977e2466fd21d60cf25a84377"
+    }
+  ],
+  "protected_identities": {
+    "l2_field_mod_sha256": "c76c28debdac8e43d360a5a82811ea86e3e6f03b98e4f81cb6678e07953e0953",
+    "bridge_sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad",
+    "cache_sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07",
+    "typed_exact_sha256": "325bdd386b13de77bd030ef1af0fecb12be8bdd2bdd3c841d10257647a4ceaf4",
+    "cargo_toml_sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b",
+    "cargo_lock_sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1",
+    "cargo_guard_sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"
+  },
+  "fixed_inputs": {
+    "v13_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "v7_sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+    "productive_v90_sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44",
+    "l11_sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7"
+  },
+  "static_checks": {
+    "rustfmt_check": "PASS",
+    "git_diff_check": "PASS",
+    "protected_hashes": "PASS",
+    "cargo_or_rustc_processes": 0,
+    "exact_peak_lane": "dedicated",
+    "live_wrapper_exact_peak_lane": "empty",
+    "global_cache_or_reload_owner_added": false,
+    "capacity_raised": false
+  },
+  "execution": {
+    "environment": {
+      "LAY_M3_ACTUAL_OWNER_RECEIPT": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_V1_2026-08-27/OWNER_RECEIPT.json"
+    },
+    "argv": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--offline",
+      "--locked",
+      "--release",
+      "--lib",
+      "nanda_wave::l2_field::v13_typed_peak::tests::m3_actual_owner_fixed_proof",
+      "--",
+      "--ignored",
+      "--exact",
+      "--nocapture"
+    ],
+    "maximum_cargo_invocations": 1,
+    "retry_permitted": false
+  },
+  "state_machine": {
+    "initial": "STAGED_OWNER_SOURCES_STATIC_PASS",
+    "success": "M3_ACTUAL_OWNER_PARITY_PASS",
+    "failures": [
+      "BLOCKED_PROVENANCE",
+      "BLOCKED_BUILD",
+      "BLOCKED_SEMANTIC",
+      "BLOCKED_CAPACITY",
+      "BLOCKED_CERTIFICATE",
+      "BLOCKED_OWNER_IDENTITY"
+    ],
+    "next_if_success": "separate end-to-end latency RSS reload preflight",
+    "stop_before": "production activation"
+  },
+  "forbidden": [
+    "second Cargo invocation",
+    "network or remote access",
+    "bridge cache l2_field mod Cargo or typed_exact edit",
+    "capacity increase or top-k repair",
+    "install restart deployment or runtime authority change",
+    "end-to-end performance or production promotion claim"
+  ],
+  "verdict": "READY_TO_EXECUTE_ONE_FOCUSED_OWNER_PROOF",
+  "safe_to_execute": true
+}

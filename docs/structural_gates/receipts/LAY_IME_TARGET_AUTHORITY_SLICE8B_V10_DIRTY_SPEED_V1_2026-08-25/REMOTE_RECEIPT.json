@@ -1,0 +1,4999 @@
+{
+  "b1_state": "BLOCKED_ENVIRONMENT",
+  "b1_unchanged": true,
+  "b2_executed": false,
+  "b3_executed": false,
+  "background_after": [
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+      "comm": "nando-operator-",
+      "cpu_seconds": 842284.87,
+      "cpus_allowed_list": "0-19",
+      "pid": 150005,
+      "rss_bytes": 2011230208
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+      "comm": "nando-transitio",
+      "cpu_seconds": 266794.67,
+      "cpus_allowed_list": "0-19",
+      "pid": 298492,
+      "rss_bytes": 3723550720
+    },
+    {
+      "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+      "comm": "nginx",
+      "cpu_seconds": 1.35,
+      "cpus_allowed_list": "0-19",
+      "pid": 682430,
+      "rss_bytes": 2736128
+    },
+    {
+      "cmdline": "bash /opt/nando-wave/bin/nando-live-transition-gate --status-mode --project-root /opt/nando-wave",
+      "comm": "bash",
+      "cpu_seconds": 0.03,
+      "cpus_allowed_list": "0-19",
+      "pid": 1295576,
+      "rss_bytes": 4800512
+    },
+    {
+      "cmdline": "jq .miner.false_accepts // 0 /var/lib/nando-wave/transition/response-online-miner-report.json",
+      "comm": "jq",
+      "cpu_seconds": 0.03,
+      "cpus_allowed_list": "0-19",
+      "pid": 1295745,
+      "rss_bytes": 7647232
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+      "comm": "nando-transitio",
+      "cpu_seconds": 41951.2,
+      "cpus_allowed_list": "0-19",
+      "pid": 1816591,
+      "rss_bytes": 211345408
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+      "comm": "nando-gateway-c",
+      "cpu_seconds": 46.15,
+      "cpus_allowed_list": "0-19",
+      "pid": 3051880,
+      "rss_bytes": 4759552
+    },
+    {
+      "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+      "comm": "btop",
+      "cpu_seconds": 39249.34,
+      "cpus_allowed_list": "0-19",
+      "pid": 3481471,
+      "rss_bytes": 3940352
+    }
+  ],
+  "background_before": [
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+      "comm": "nando-operator-",
+      "cpu_seconds": 842279.61,
+      "cpus_allowed_list": "0-19",
+      "pid": 150005,
+      "rss_bytes": 2011230208
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+      "comm": "nando-transitio",
+      "cpu_seconds": 266794.66,
+      "cpus_allowed_list": "0-19",
+      "pid": 298492,
+      "rss_bytes": 3723550720
+    },
+    {
+      "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+      "comm": "nginx",
+      "cpu_seconds": 1.35,
+      "cpus_allowed_list": "0-19",
+      "pid": 682430,
+      "rss_bytes": 2736128
+    },
+    {
+      "cmdline": "bash /opt/nando-wave/bin/nando-live-transition-gate --status-mode --project-root /opt/nando-wave",
+      "comm": "bash",
+      "cpu_seconds": 0.01,
+      "cpus_allowed_list": "0-19",
+      "pid": 1295576,
+      "rss_bytes": 3719168
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+      "comm": "nando-transitio",
+      "cpu_seconds": 41951.13,
+      "cpus_allowed_list": "0-19",
+      "pid": 1816591,
+      "rss_bytes": 210808832
+    },
+    {
+      "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+      "comm": "nando-gateway-c",
+      "cpu_seconds": 46.15,
+      "cpus_allowed_list": "0-19",
+      "pid": 3051880,
+      "rss_bytes": 4759552
+    },
+    {
+      "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+      "comm": "btop",
+      "cpu_seconds": 39249.11,
+      "cpus_allowed_list": "0-19",
+      "pid": 3481471,
+      "rss_bytes": 3940352
+    }
+  ],
+  "cargo_invoked": false,
+  "claim": "DIRTY_DIAGNOSTIC_ONLY",
+  "completed_at": "2026-08-24T21:53:04.813974+00:00",
+  "environment_intentionally_dirty": true,
+  "foreign_process_stopped": false,
+  "formal_b_pass": false,
+  "host_policy_modified": false,
+  "inputs": {
+    "b0a_receipt": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/INPUT_CLOSURE.json",
+      "sha256": "48176ec6faae86f43ddda8404542367be5b6c9d6813762dedb829b4946593eb3",
+      "size_bytes": 366665
+    },
+    "b1_receipt": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b1-environment-v1/ENVIRONMENT_RECEIPT.json",
+      "sha256": "12c591b447f0025548e96272a4e8d5d4f23debc8458ae99fce61b2e751673925",
+      "size_bytes": 229467
+    },
+    "elf": {
+      "build_id": "9829fb05f34bd353877fb6d71f1f8523e084af55",
+      "mode": "0555",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf",
+      "sha256": "f7bcee37d5dffd583577d66c982c2a28072889b8aac2ccbed22612aa6d4feb09",
+      "size_bytes": 20542920
+    },
+    "package": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+      "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+      "size_bytes": 140556462
+    },
+    "schedule": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+      "sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78",
+      "size_bytes": 174941
+    },
+    "sidecar": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+      "sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd",
+      "size_bytes": 3689884
+    },
+    "v7": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+      "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+      "size_bytes": 1606189
+    }
+  },
+  "installed_lay_changed": false,
+  "perf_invoked": false,
+  "pmu_event_opened": false,
+  "proxy_semantic_parity_executed": false,
+  "quality": "UNKNOWN",
+  "routes": {
+    "B5": {
+      "background_process_cpu_deltas": [
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+          "comm": "nando-operator-",
+          "cpu_percent_during_window": 104.56855383176182,
+          "cpu_seconds_delta": 1.0799999999580905,
+          "pid": 150005
+        },
+        {
+          "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+          "comm": "btop",
+          "cpu_percent_during_window": 3.8729094014111896,
+          "cpu_seconds_delta": 0.040000000000873115,
+          "pid": 3481471
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+          "comm": "nando-transitio",
+          "cpu_percent_during_window": 1.9364547003533559,
+          "cpu_seconds_delta": 0.01999999999679858,
+          "pid": 1816591
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+          "comm": "nando-transitio",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 298492
+        },
+        {
+          "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+          "comm": "nginx",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 682430
+        },
+        {
+          "cmdline": "bash /opt/nando-wave/bin/nando-live-transition-gate --status-mode --project-root /opt/nando-wave",
+          "comm": "bash",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 1295576
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+          "comm": "nando-gateway-c",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 3051880
+        }
+      ],
+      "background_processes_after": [
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+          "comm": "nando-operator-",
+          "cpu_seconds": 842282.32,
+          "cpus_allowed_list": "0-19",
+          "pid": 150005,
+          "rss_bytes": 2011230208
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+          "comm": "nando-transitio",
+          "cpu_seconds": 266794.66,
+          "cpus_allowed_list": "0-19",
+          "pid": 298492,
+          "rss_bytes": 3723550720
+        },
+        {
+          "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+          "comm": "nginx",
+          "cpu_seconds": 1.35,
+          "cpus_allowed_list": "0-19",
+          "pid": 682430,
+          "rss_bytes": 2736128
+        },
+        {
+          "cmdline": "bash /opt/nando-wave/bin/nando-live-transition-gate --status-mode --project-root /opt/nando-wave",
+          "comm": "bash",
+          "cpu_seconds": 0.02,
+          "cpus_allowed_list": "0-19",
+          "pid": 1295576,
+          "rss_bytes": 4771840
+        },
+        {
+          "cmdline": "bash /opt/nando-wave/bin/nando-live-transition-gate --status-mode --project-root /opt/nando-wave",
+          "comm": "bash",
+          "cpu_seconds": 0.0,
+          "cpus_allowed_list": "0-19",
+          "pid": 1295664,
+          "rss_bytes": 3170304
+        },
+        {
+          "cmdline": "python3 - /var/lib/nando-wave/transition/response-authority-sidecar-generations-v2/af6f87cad4004698f960ae98ca1ea65f2571a245d096bf132b95b196257dad20/registry.json",
+          "comm": "python3",
+          "cpu_seconds": 0.01,
+          "cpus_allowed_list": "0-19",
+          "pid": 1295665,
+          "rss_bytes": 14336000
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+          "comm": "nando-transitio",
+          "cpu_seconds": 41951.17,
+          "cpus_allowed_list": "0-19",
+          "pid": 1816591,
+          "rss_bytes": 211345408
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+          "comm": "nando-gateway-c",
+          "cpu_seconds": 46.15,
+          "cpus_allowed_list": "0-19",
+          "pid": 3051880,
+          "rss_bytes": 4759552
+        },
+        {
+          "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+          "comm": "btop",
+          "cpu_seconds": 39249.22,
+          "cpus_allowed_list": "0-19",
+          "pid": 3481471,
+          "rss_bytes": 3940352
+        }
+      ],
+      "background_processes_before": [
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+          "comm": "nando-operator-",
+          "cpu_seconds": 842281.24,
+          "cpus_allowed_list": "0-19",
+          "pid": 150005,
+          "rss_bytes": 2011230208
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+          "comm": "nando-transitio",
+          "cpu_seconds": 266794.66,
+          "cpus_allowed_list": "0-19",
+          "pid": 298492,
+          "rss_bytes": 3723550720
+        },
+        {
+          "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+          "comm": "nginx",
+          "cpu_seconds": 1.35,
+          "cpus_allowed_list": "0-19",
+          "pid": 682430,
+          "rss_bytes": 2736128
+        },
+        {
+          "cmdline": "bash /opt/nando-wave/bin/nando-live-transition-gate --status-mode --project-root /opt/nando-wave",
+          "comm": "bash",
+          "cpu_seconds": 0.02,
+          "cpus_allowed_list": "0-19",
+          "pid": 1295576,
+          "rss_bytes": 4702208
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-admission-inspect",
+          "comm": "nando-transitio",
+          "cpu_seconds": 0.0,
+          "cpus_allowed_list": "0-19",
+          "pid": 1295639,
+          "rss_bytes": 14548992
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+          "comm": "nando-transitio",
+          "cpu_seconds": 41951.15,
+          "cpus_allowed_list": "0-19",
+          "pid": 1816591,
+          "rss_bytes": 210808832
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+          "comm": "nando-gateway-c",
+          "cpu_seconds": 46.15,
+          "cpus_allowed_list": "0-19",
+          "pid": 3051880,
+          "rss_bytes": 4759552
+        },
+        {
+          "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+          "comm": "btop",
+          "cpu_seconds": 39249.18,
+          "cpus_allowed_list": "0-19",
+          "pid": 3481471,
+          "rss_bytes": 3940352
+        }
+      ],
+      "command": [
+        "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf",
+        "--exact",
+        "nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b5_proxy",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "controller_done_observation_poll_upper_bound_ms": 0.5,
+      "controller_start_sync_poll_upper_bound_ms": 10.0,
+      "cpus": [
+        0
+      ],
+      "effective_wall_ms_per_request": 2.703704916230367,
+      "formal_b_pass": false,
+      "installed_lay_changed": false,
+      "marker": "/home/e/.local/state/lay/slice8b-v10-dirty-speed-v1-20260825/b5-consumed",
+      "measured_at": "2026-08-24T21:53:02.277530+00:00",
+      "per_query_latency_observed": false,
+      "per_query_p99_observed": false,
+      "pinned_subject_task_cpus": [
+        0
+      ],
+      "requests": 382,
+      "route": "B5",
+      "runtime_authority_changed": false,
+      "sample_summary": {
+        "cpu_psi_some_avg10": {
+          "maximum": 5.36,
+          "minimum": 3.89
+        },
+        "io_psi_full_avg10": {
+          "maximum": 0.54,
+          "minimum": 0.0
+        },
+        "maximum_temperature_c": {
+          "maximum": 69.0,
+          "minimum": 67.0
+        },
+        "memory_psi_full_avg10": {
+          "maximum": 0.0,
+          "minimum": 0.0
+        },
+        "procs_running": {
+          "maximum": 5.0,
+          "minimum": 2.0
+        },
+        "samples": 53
+      },
+      "samples": [
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248355221.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974301404.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36071994882.0
+            }
+          },
+          "maximum_temperature_c": 67.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459315507762,
+          "procs_running": 2
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248360038.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974303445.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36071996924.0
+            }
+          },
+          "maximum_temperature_c": 67.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459329203071,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248365755.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974304556.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36071998035.0
+            }
+          },
+          "maximum_temperature_c": 67.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459349036512,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248367971.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974305623.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36071999106.0
+            }
+          },
+          "maximum_temperature_c": 67.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459369064813,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248369978.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974306617.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072000104.0
+            }
+          },
+          "maximum_temperature_c": 67.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459388267899,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248375976.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974307644.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072001132.0
+            }
+          },
+          "maximum_temperature_c": 67.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459408940613,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248381854.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974308704.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072002219.0
+            }
+          },
+          "maximum_temperature_c": 67.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459429771060,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248388919.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974310717.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072004232.0
+            }
+          },
+          "maximum_temperature_c": 67.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459454870120,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248389388.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974313487.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072007002.0
+            }
+          },
+          "maximum_temperature_c": 67.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459476847996,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248392358.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974316009.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072009524.0
+            }
+          },
+          "maximum_temperature_c": 67.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459494958763,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248398118.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974318335.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072011850.0
+            }
+          },
+          "maximum_temperature_c": 67.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459516076966,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248404115.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974321160.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072014675.0
+            }
+          },
+          "maximum_temperature_c": 67.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459538372633,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248408940.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974324685.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072018200.0
+            }
+          },
+          "maximum_temperature_c": 67.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459559995492,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248408957.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974327324.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072020839.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459576403250,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248411856.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974329342.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072022922.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459596928581,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248418209.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974331911.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072025491.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459620084886,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248423636.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974334981.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072028561.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459640667759,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248427642.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974337944.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072031524.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459659928359,
+          "procs_running": 5
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248427677.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974340291.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072033936.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459679028440,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248433318.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974343287.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072036931.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459702670529,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248437971.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974346030.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072039704.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459720400895,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248443724.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974348790.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072042464.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459741741098,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248447729.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974351399.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072045073.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459760785129,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248448109.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974353836.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072047515.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459782463602,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248452625.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974356244.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072049934.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459800231745,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248458247.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974358475.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072052170.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459820717494,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248463840.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974360723.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072054419.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459841124036,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 3.89,
+              "avg300": 4.56,
+              "avg60": 4.37,
+              "total": 155248468031.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.01,
+              "avg60": 0.02,
+              "total": 33974363564.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.02,
+              "avg60": 0.02,
+              "total": 36072057271.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459863998513,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248468655.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974366652.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072060358.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459885192723,
+          "procs_running": 5
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248473798.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974369982.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072063689.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459905708141,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248479078.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974373416.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072067122.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459925944083,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248484179.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974376473.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072070179.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459945251177,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248486348.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974379636.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072073407.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459965593294,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248486482.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974382674.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072076479.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713459985265011,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248491230.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974385014.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072078818.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460003698569,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248496734.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974387317.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072081139.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460023349470,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248502905.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974389990.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072083812.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460045999493,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248505175.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974392525.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072086346.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460064286237,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248505573.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974394991.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072088819.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460085079929,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248510715.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974397221.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072091057.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460104804543,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248516299.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974399627.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072093467.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460125440089,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248522226.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974402517.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072096361.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460148289979,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248524428.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974405270.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072099123.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460166080375,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248525380.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974408486.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072102355.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460188743930,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248530686.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974411612.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072105495.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460209602654,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248536070.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974415024.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072108920.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460230262598,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248541217.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974418419.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072112324.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460249976523,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248542613.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974421593.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072115501.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460268988711,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248544743.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974422916.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072118022.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460289638902,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248549185.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974425307.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072120458.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460307103704,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248554987.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974427609.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072122783.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460328310503,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248560793.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974430790.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072125982.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460350077499,
+          "procs_running": 2
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 5.36,
+              "avg300": 4.61,
+              "avg60": 4.62,
+              "total": 155248562332.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.54,
+              "avg300": 0.03,
+              "avg60": 0.12,
+              "total": 33974434256.0
+            },
+            "some": {
+              "avg10": 0.54,
+              "avg300": 0.04,
+              "avg60": 0.12,
+              "total": 36072129452.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713460364031334,
+          "procs_running": 4
+        }
+      ],
+      "schema": "lay.v10.dirty-speed-route.v1",
+      "subject_proc_stat_cpu_delta": {
+        "cmdline": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b5_proxy --ignored --nocapture --test-threads=1",
+        "comm": "diagnostic-test",
+        "cpu_percent_during_window": 98.75918973382964,
+        "cpu_seconds_delta": 1.02,
+        "pid": 1295589
+      },
+      "subject_receipt_sha256": "4fc640d93a70e06b6a7ca6eb51b7043d6436b4c05e75cc654d33665bbb8351f1",
+      "task_affinities_at_ready": [
+        {
+          "comm": "diagnostic-test",
+          "cpus_allowed_list": "0-19",
+          "tid": 1295589
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "0",
+          "tid": 1295590
+        }
+      ],
+      "task_id": "slice8b-v10-dirty-speed-v1-20260825",
+      "throttle_counters_after": {
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_total_time_ms": 25
+      },
+      "throttle_counters_before": {
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_total_time_ms": 25
+      },
+      "throttle_counters_unchanged": true,
+      "throughput_requests_per_second": 369.8628478266953,
+      "verdict": "DIRTY_DIAGNOSTIC_OBSERVED",
+      "wall_window_ms": 1032.815278,
+      "wall_window_ns": 1032815278,
+      "workers": 1
+    },
+    "B6": {
+      "background_process_cpu_deltas": [
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+          "comm": "nando-operator-",
+          "cpu_percent_during_window": 462.49608393950973,
+          "cpu_seconds_delta": 0.8300000000745058,
+          "pid": 150005
+        },
+        {
+          "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+          "comm": "btop",
+          "cpu_percent_during_window": 22.288967899184993,
+          "cpu_seconds_delta": 0.040000000000873115,
+          "pid": 3481471
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+          "comm": "nando-transitio",
+          "cpu_percent_during_window": 5.572241971755493,
+          "cpu_seconds_delta": 0.00999999999476131,
+          "pid": 1816591
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+          "comm": "nando-transitio",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 298492
+        },
+        {
+          "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+          "comm": "nginx",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 682430
+        },
+        {
+          "cmdline": "bash /opt/nando-wave/bin/nando-live-transition-gate --status-mode --project-root /opt/nando-wave",
+          "comm": "bash",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 1295576
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+          "comm": "nando-gateway-c",
+          "cpu_percent_during_window": 0.0,
+          "cpu_seconds_delta": 0.0,
+          "pid": 3051880
+        }
+      ],
+      "background_processes_after": [
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+          "comm": "nando-operator-",
+          "cpu_seconds": 842284.81,
+          "cpus_allowed_list": "0-19",
+          "pid": 150005,
+          "rss_bytes": 2011230208
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+          "comm": "nando-transitio",
+          "cpu_seconds": 266794.67,
+          "cpus_allowed_list": "0-19",
+          "pid": 298492,
+          "rss_bytes": 3723550720
+        },
+        {
+          "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+          "comm": "nginx",
+          "cpu_seconds": 1.35,
+          "cpus_allowed_list": "0-19",
+          "pid": 682430,
+          "rss_bytes": 2736128
+        },
+        {
+          "cmdline": "bash /opt/nando-wave/bin/nando-live-transition-gate --status-mode --project-root /opt/nando-wave",
+          "comm": "bash",
+          "cpu_seconds": 0.03,
+          "cpus_allowed_list": "0-19",
+          "pid": 1295576,
+          "rss_bytes": 4800512
+        },
+        {
+          "cmdline": "jq .miner.false_accepts // 0 /var/lib/nando-wave/transition/response-online-miner-report.json",
+          "comm": "jq",
+          "cpu_seconds": 0.03,
+          "cpus_allowed_list": "0-19",
+          "pid": 1295745,
+          "rss_bytes": 7217152
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+          "comm": "nando-transitio",
+          "cpu_seconds": 41951.2,
+          "cpus_allowed_list": "0-19",
+          "pid": 1816591,
+          "rss_bytes": 211345408
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+          "comm": "nando-gateway-c",
+          "cpu_seconds": 46.15,
+          "cpus_allowed_list": "0-19",
+          "pid": 3051880,
+          "rss_bytes": 4759552
+        },
+        {
+          "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+          "comm": "btop",
+          "cpu_seconds": 39249.33,
+          "cpus_allowed_list": "0-19",
+          "pid": 3481471,
+          "rss_bytes": 3940352
+        }
+      ],
+      "background_processes_before": [
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+          "comm": "nando-operator-",
+          "cpu_seconds": 842283.98,
+          "cpus_allowed_list": "0-19",
+          "pid": 150005,
+          "rss_bytes": 2011230208
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving-k1-v8",
+          "comm": "nando-transitio",
+          "cpu_seconds": 266794.67,
+          "cpus_allowed_list": "0-19",
+          "pid": 298492,
+          "rss_bytes": 3723550720
+        },
+        {
+          "cmdline": "nginx: master process /usr/sbin/nginx -c /etc/nando-gateway/nginx.conf -g daemon off;",
+          "comm": "nginx",
+          "cpu_seconds": 1.35,
+          "cpus_allowed_list": "0-19",
+          "pid": 682430,
+          "rss_bytes": 2736128
+        },
+        {
+          "cmdline": "bash /opt/nando-wave/bin/nando-live-transition-gate --status-mode --project-root /opt/nando-wave",
+          "comm": "bash",
+          "cpu_seconds": 0.03,
+          "cpus_allowed_list": "0-19",
+          "pid": 1295576,
+          "rss_bytes": 4780032
+        },
+        {
+          "cmdline": "jq -r .schema // empty /var/lib/nando-wave/transition/economics-live.json",
+          "comm": "jq",
+          "cpu_seconds": 0.0,
+          "cpus_allowed_list": "0-19",
+          "pid": 1295711,
+          "rss_bytes": 3022848
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-transition-serving",
+          "comm": "nando-transitio",
+          "cpu_seconds": 41951.19,
+          "cpus_allowed_list": "0-19",
+          "pid": 1816591,
+          "rss_bytes": 211345408
+        },
+        {
+          "cmdline": "/opt/nando-wave/bin/nando-gateway-control",
+          "comm": "nando-gateway-c",
+          "cpu_seconds": 46.15,
+          "cpus_allowed_list": "0-19",
+          "pid": 3051880,
+          "rss_bytes": 4759552
+        },
+        {
+          "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+          "comm": "btop",
+          "cpu_seconds": 39249.29,
+          "cpus_allowed_list": "0-19",
+          "pid": 3481471,
+          "rss_bytes": 3940352
+        }
+      ],
+      "command": [
+        "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf",
+        "--exact",
+        "nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b6_proxy",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "controller_done_observation_poll_upper_bound_ms": 0.5,
+      "controller_start_sync_poll_upper_bound_ms": 10.0,
+      "cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "effective_wall_ms_per_request": 0.4697931387434555,
+      "formal_b_pass": false,
+      "installed_lay_changed": false,
+      "marker": "/home/e/.local/state/lay/slice8b-v10-dirty-speed-v1-20260825/b6-consumed",
+      "measured_at": "2026-08-24T21:53:04.784998+00:00",
+      "per_query_latency_observed": false,
+      "per_query_p99_observed": false,
+      "pinned_subject_task_cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "requests": 382,
+      "route": "B6",
+      "runtime_authority_changed": false,
+      "sample_summary": {
+        "cpu_psi_some_avg10": {
+          "maximum": 6.02,
+          "minimum": 6.02
+        },
+        "io_psi_full_avg10": {
+          "maximum": 0.98,
+          "minimum": 0.98
+        },
+        "maximum_temperature_c": {
+          "maximum": 69.0,
+          "minimum": 65.0
+        },
+        "memory_psi_full_avg10": {
+          "maximum": 0.0,
+          "minimum": 0.0
+        },
+        "procs_running": {
+          "maximum": 23.0,
+          "minimum": 2.0
+        },
+        "samples": 11
+      },
+      "samples": [
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 6.02,
+              "avg300": 4.64,
+              "avg60": 4.77,
+              "total": 155248670363.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.98,
+              "avg300": 0.05,
+              "avg60": 0.21,
+              "total": 33974436399.0
+            },
+            "some": {
+              "avg10": 0.98,
+              "avg300": 0.06,
+              "avg60": 0.22,
+              "total": 36072131605.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713462058216805,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 6.02,
+              "avg300": 4.64,
+              "avg60": 4.77,
+              "total": 155248672207.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.98,
+              "avg300": 0.05,
+              "avg60": 0.21,
+              "total": 33974436591.0
+            },
+            "some": {
+              "avg10": 0.98,
+              "avg300": 0.06,
+              "avg60": 0.22,
+              "total": 36072132146.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713462072728513,
+          "procs_running": 23
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 6.02,
+              "avg300": 4.64,
+              "avg60": 4.77,
+              "total": 155248674072.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.98,
+              "avg300": 0.05,
+              "avg60": 0.21,
+              "total": 33974436591.0
+            },
+            "some": {
+              "avg10": 0.98,
+              "avg300": 0.06,
+              "avg60": 0.22,
+              "total": 36072132528.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713462090269454,
+          "procs_running": 22
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 6.02,
+              "avg300": 4.64,
+              "avg60": 4.77,
+              "total": 155248676177.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.98,
+              "avg300": 0.05,
+              "avg60": 0.21,
+              "total": 33974436591.0
+            },
+            "some": {
+              "avg10": 0.98,
+              "avg300": 0.06,
+              "avg60": 0.22,
+              "total": 36072132909.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713462111276233,
+          "procs_running": 21
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 6.02,
+              "avg300": 4.64,
+              "avg60": 4.77,
+              "total": 155248678337.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.98,
+              "avg300": 0.05,
+              "avg60": 0.21,
+              "total": 33974436591.0
+            },
+            "some": {
+              "avg10": 0.98,
+              "avg300": 0.06,
+              "avg60": 0.22,
+              "total": 36072133288.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713462130963730,
+          "procs_running": 21
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 6.02,
+              "avg300": 4.64,
+              "avg60": 4.77,
+              "total": 155248680476.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.98,
+              "avg300": 0.05,
+              "avg60": 0.21,
+              "total": 33974436591.0
+            },
+            "some": {
+              "avg10": 0.98,
+              "avg300": 0.06,
+              "avg60": 0.22,
+              "total": 36072133691.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713462151929601,
+          "procs_running": 19
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 6.02,
+              "avg300": 4.64,
+              "avg60": 4.77,
+              "total": 155248683281.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.98,
+              "avg300": 0.05,
+              "avg60": 0.21,
+              "total": 33974437946.0
+            },
+            "some": {
+              "avg10": 0.98,
+              "avg300": 0.06,
+              "avg60": 0.22,
+              "total": 36072135060.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713462176503879,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 6.02,
+              "avg300": 4.64,
+              "avg60": 4.77,
+              "total": 155248688379.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.98,
+              "avg300": 0.05,
+              "avg60": 0.21,
+              "total": 33974440661.0
+            },
+            "some": {
+              "avg10": 0.98,
+              "avg300": 0.06,
+              "avg60": 0.22,
+              "total": 36072137802.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713462200739541,
+          "procs_running": 3
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 6.02,
+              "avg300": 4.64,
+              "avg60": 4.77,
+              "total": 155248693307.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.98,
+              "avg300": 0.05,
+              "avg60": 0.21,
+              "total": 33974444021.0
+            },
+            "some": {
+              "avg10": 0.98,
+              "avg300": 0.06,
+              "avg60": 0.22,
+              "total": 36072141215.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713462220682378,
+          "procs_running": 4
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 6.02,
+              "avg300": 4.64,
+              "avg60": 4.77,
+              "total": 155248697960.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.98,
+              "avg300": 0.05,
+              "avg60": 0.21,
+              "total": 33974446483.0
+            },
+            "some": {
+              "avg10": 0.98,
+              "avg300": 0.06,
+              "avg60": 0.22,
+              "total": 36072143735.0
+            }
+          },
+          "maximum_temperature_c": 69.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713462239130117,
+          "procs_running": 2
+        },
+        {
+          "cpu_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 0.0
+            },
+            "some": {
+              "avg10": 6.02,
+              "avg300": 4.64,
+              "avg60": 4.77,
+              "total": 155248731958.0
+            }
+          },
+          "io_pressure": {
+            "full": {
+              "avg10": 0.98,
+              "avg300": 0.05,
+              "avg60": 0.21,
+              "total": 33974635405.0
+            },
+            "some": {
+              "avg10": 0.98,
+              "avg300": 0.06,
+              "avg60": 0.22,
+              "total": 36072345387.0
+            }
+          },
+          "maximum_temperature_c": 65.0,
+          "memory_pressure": {
+            "full": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 17849419034.0
+            },
+            "some": {
+              "avg10": 0.0,
+              "avg300": 0.0,
+              "avg60": 0.0,
+              "total": 18949520822.0
+            }
+          },
+          "monotonic_ns": 2713462863443936,
+          "procs_running": 4
+        }
+      ],
+      "schema": "lay.v10.dirty-speed-route.v1",
+      "subject_proc_stat_cpu_delta": {
+        "cmdline": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf --exact nanda_wave::l2_field::v13_typed_peak::tests::v10_hardware_b6_proxy --ignored --nocapture --test-threads=1",
+        "comm": "diagnostic-test",
+        "cpu_percent_during_window": 1003.003555441431,
+        "cpu_seconds_delta": 1.7999999999999998,
+        "pid": 1295667
+      },
+      "subject_receipt_sha256": "2e589418dbd445160f7a1c5fda81a76f4a7cd837b81c320bcbb48ab3a22d9497",
+      "task_affinities_at_ready": [
+        {
+          "comm": "diagnostic-test",
+          "cpus_allowed_list": "0-19",
+          "tid": 1295667
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "0",
+          "tid": 1295668
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "1",
+          "tid": 1295713
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "2",
+          "tid": 1295714
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "3",
+          "tid": 1295715
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "4",
+          "tid": 1295716
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "5",
+          "tid": 1295717
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "6",
+          "tid": 1295718
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "7",
+          "tid": 1295719
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "8",
+          "tid": 1295720
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "9",
+          "tid": 1295721
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "10",
+          "tid": 1295722
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "11",
+          "tid": 1295723
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "12",
+          "tid": 1295724
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "13",
+          "tid": 1295725
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "14",
+          "tid": 1295726
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "15",
+          "tid": 1295727
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "16",
+          "tid": 1295728
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "17",
+          "tid": 1295729
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "18",
+          "tid": 1295730
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "cpus_allowed_list": "19",
+          "tid": 1295731
+        }
+      ],
+      "task_id": "slice8b-v10-dirty-speed-v1-20260825",
+      "throttle_counters_after": {
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_total_time_ms": 25
+      },
+      "throttle_counters_before": {
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_total_time_ms": 25
+      },
+      "throttle_counters_unchanged": true,
+      "throughput_requests_per_second": 2128.5964343257037,
+      "verdict": "DIRTY_DIAGNOSTIC_OBSERVED",
+      "wall_window_ms": 179.460979,
+      "wall_window_ns": 179460979,
+      "workers": 20
+    }
+  },
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.dirty-speed.v1",
+  "stable_host_after": {
+    "boot_id": "5e35be95-c789-4ce9-b74e-3d42c3b81a3a",
+    "frequency_policy": [
+      {
+        "affected_cpus": "0",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy0"
+      },
+      {
+        "affected_cpus": "1",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy1"
+      },
+      {
+        "affected_cpus": "10",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy10"
+      },
+      {
+        "affected_cpus": "11",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy11"
+      },
+      {
+        "affected_cpus": "12",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy12"
+      },
+      {
+        "affected_cpus": "13",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy13"
+      },
+      {
+        "affected_cpus": "14",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy14"
+      },
+      {
+        "affected_cpus": "15",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy15"
+      },
+      {
+        "affected_cpus": "16",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy16"
+      },
+      {
+        "affected_cpus": "17",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy17"
+      },
+      {
+        "affected_cpus": "18",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy18"
+      },
+      {
+        "affected_cpus": "19",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy19"
+      },
+      {
+        "affected_cpus": "2",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy2"
+      },
+      {
+        "affected_cpus": "3",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy3"
+      },
+      {
+        "affected_cpus": "4",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy4"
+      },
+      {
+        "affected_cpus": "5",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy5"
+      },
+      {
+        "affected_cpus": "6",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy6"
+      },
+      {
+        "affected_cpus": "7",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy7"
+      },
+      {
+        "affected_cpus": "8",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy8"
+      },
+      {
+        "affected_cpus": "9",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy9"
+      }
+    ],
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "kernel": "6.8.0-124-generic",
+    "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+    "online_cpus": "0-19",
+    "pstate": {
+      "max_perf_pct": "100",
+      "min_perf_pct": "8",
+      "no_turbo": "0",
+      "status": "active"
+    },
+    "smt_active": "1"
+  },
+  "stable_host_before": {
+    "boot_id": "5e35be95-c789-4ce9-b74e-3d42c3b81a3a",
+    "frequency_policy": [
+      {
+        "affected_cpus": "0",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy0"
+      },
+      {
+        "affected_cpus": "1",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy1"
+      },
+      {
+        "affected_cpus": "10",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy10"
+      },
+      {
+        "affected_cpus": "11",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy11"
+      },
+      {
+        "affected_cpus": "12",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy12"
+      },
+      {
+        "affected_cpus": "13",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy13"
+      },
+      {
+        "affected_cpus": "14",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy14"
+      },
+      {
+        "affected_cpus": "15",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy15"
+      },
+      {
+        "affected_cpus": "16",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy16"
+      },
+      {
+        "affected_cpus": "17",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy17"
+      },
+      {
+        "affected_cpus": "18",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy18"
+      },
+      {
+        "affected_cpus": "19",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "4100000",
+        "min": "400000",
+        "policy": "policy19"
+      },
+      {
+        "affected_cpus": "2",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy2"
+      },
+      {
+        "affected_cpus": "3",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy3"
+      },
+      {
+        "affected_cpus": "4",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy4"
+      },
+      {
+        "affected_cpus": "5",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy5"
+      },
+      {
+        "affected_cpus": "6",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy6"
+      },
+      {
+        "affected_cpus": "7",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5400000",
+        "min": "400000",
+        "policy": "policy7"
+      },
+      {
+        "affected_cpus": "8",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy8"
+      },
+      {
+        "affected_cpus": "9",
+        "driver": "intel_pstate",
+        "epp": "balance_performance",
+        "governor": "powersave",
+        "max": "5200000",
+        "min": "400000",
+        "policy": "policy9"
+      }
+    ],
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "kernel": "6.8.0-124-generic",
+    "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+    "online_cpus": "0-19",
+    "pstate": {
+      "max_perf_pct": "100",
+      "min_perf_pct": "8",
+      "no_turbo": "0",
+      "status": "active"
+    },
+    "smt_active": "1"
+  },
+  "stable_host_unchanged": true,
+  "started_at": "2026-08-24T21:52:59.110384+00:00",
+  "task_id": "slice8b-v10-dirty-speed-v1-20260825",
+  "throttle_counters_after": {
+    "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_total_time_ms": 25
+  },
+  "throttle_counters_before": {
+    "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_total_time_ms": 25,
+    "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_total_time_ms": 24,
+    "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_count": 0,
+    "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_max_time_ms": 0,
+    "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_total_time_ms": 0,
+    "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_count": 15,
+    "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_max_time_ms": 6,
+    "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_total_time_ms": 25
+  },
+  "throttle_counters_unchanged": true,
+  "user_product_decision_required": true,
+  "v12_admitted": false,
+  "verdict": "DIRTY_DIAGNOSTIC_OBSERVED"
+}

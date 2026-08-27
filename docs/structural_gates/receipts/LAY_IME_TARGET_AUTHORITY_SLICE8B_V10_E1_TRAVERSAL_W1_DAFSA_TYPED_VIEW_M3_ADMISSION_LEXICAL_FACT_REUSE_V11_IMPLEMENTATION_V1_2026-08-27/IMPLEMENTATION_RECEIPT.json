@@ -1,0 +1,116 @@
+{
+  "schema": "lay.m3-admission-lexical-fact-reuse-v11-implementation.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_IMPLEMENTATION_V1_2026-08-27",
+  "generated_at_utc": "2026-08-27T10:44:00Z",
+  "verdict": "V11_MECHANISM_IMPLEMENTED_UNRUN",
+  "preflight": {
+    "effective_version": "V2",
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true,
+    "reported_manifest_sha256": "228a5c57dbf080a1ee6e931bee04168a1060e4c41981616be46ccbc27ed185ab",
+    "manifest_file_sha256": "ddf16f2da7818c8dc02f445bf8959485215ac2a1f1a715766cd535a8ade10cc4",
+    "manifest_mode": "0444",
+    "receipt_file_sha256": "5a8d74bdf1feca972246237e68e20da5ebb6e9c7705210b925e13a7210e2ea7b",
+    "receipt_mode": "0444",
+    "superseded_v1_verdict": "BLOCKED_BEFORE_CODE",
+    "superseded_v1_manifest_sha256": "5c4c0f5c653de0058ffda62fcfb006f0613d5bc697e055556471b8b35a91edb6",
+    "superseded_v1_receipt_sha256": "9594d11a03eaf5d47e11dd36bc396a318a8576bd7cdca6b7283987acb28deca4"
+  },
+  "source": {
+    "path": "src/typing_transition/proposal_admission.rs",
+    "before_size_bytes": 88326,
+    "before_sha256": "6169e6d89a06c9ad3d7aefd467a8147f6d094b962faa25c739ad6d94a364b3dd",
+    "after_size_bytes": 119643,
+    "after_sha256": "e8a6a182753084659e00ccd5e20238d585d859437824609a987ea03ce6edca72",
+    "mode": "0664",
+    "only_v11_runtime_source_edited": true,
+    "production_behavior_selected": false
+  },
+  "implemented_contract": {
+    "selector": "LAY_PROPOSAL_ADMISSION_FACT_REUSE",
+    "selector_scope": "test-only",
+    "modes": [
+      "UNCACHED",
+      "REUSE"
+    ],
+    "non_test_build_contains_selector_or_cache": false,
+    "uncached_mode_calls_original_helpers": true,
+    "reuse_owner": "one candidate_admission call",
+    "cross_request_cache": false,
+    "global_result_cache": false,
+    "thread_local_result_cache": false,
+    "predicate_order_changed": false,
+    "action_or_reason_changed": false,
+    "consumer_count": 6,
+    "consumers": [
+      "known_current_word_gets_unproven_surface_drift",
+      "stable_known_form_grows_into_infinitive_overreach",
+      "protected_current_surface_rewrite_requires_context_authority",
+      "known_russian_word_rewritten_to_different_known_word",
+      "unproven_stable_surface_shape_drift",
+      "nanda_surface_candidate_outputs_unknown_word"
+    ]
+  },
+  "local_verification": {
+    "rustfmt_check": "PASS",
+    "non_test_library_check": "PASS",
+    "new_fact_tests": "2/2 PASS",
+    "proposal_reuse_tests": "7/7 PASS",
+    "focused_correction_tests": "16/16 PASS",
+    "focused_modes": {
+      "UNCACHED": "8/8 PASS",
+      "REUSE": "8/8 PASS"
+    },
+    "protected_predecessor_identities": "20/20 PASS",
+    "git_diff_check": "PASS",
+    "broad_correction_uncached": {
+      "passed": 80,
+      "failed": 31,
+      "ignored": 1,
+      "scope": "outside the focused V11 parity set",
+      "quality": "UNKNOWN",
+      "regression_attribution": "NOT_ESTABLISHED",
+      "terminal_for_v11_local_implementation": false
+    },
+    "toolchain": {
+      "cargo": "1.97.1 (c980f4866 2026-06-30)",
+      "rustc": "1.97.1 (8bab26f4f 2026-07-14)",
+      "llvm": "22.1.6",
+      "host": "x86_64-unknown-linux-gnu"
+    }
+  },
+  "evidence": {
+    "rustfmt_log_sha256": "3d3ce42c58055133230d5300fdfd38e35e46d44c188df1edc2dae1aefc6c4020",
+    "non_test_check_log_sha256": "5ea9b31ffa9914d73ec7b4323444a01da43ceb7b60425290268475a915804d46",
+    "fact_parity_log_sha256": "bd87bd953ced44aa84e58b233fe6f8fd88d1682a9207a835b472c60d3b3cc7e8",
+    "proposal_reuse_log_sha256": "310c18de9141a1a913685588e31ec29d73fd4cdfdbf7156b6e18fb12989a0a5d",
+    "broad_correction_log_sha256": "431cbb70379322fb055f304c5dc3367a4e159489f88b93db920f0cf9ac0f59a9",
+    "focused_matrix_sha256": "19cb600227fc0433fcefd08ee05ae845df9ad56761a36f4fbf11d4ea050b81b7",
+    "focused_log_count": 16
+  },
+  "side_effect_ledger": {
+    "local_verification_cargo_invocations": 20,
+    "remote_connections": 0,
+    "remote_writes": 0,
+    "remote_builds": 0,
+    "scientific_markers_created": 0,
+    "scientific_subjects": 0,
+    "perf_record_invocations": 0,
+    "perf_stat_invocations": 0,
+    "pmu_events": 0,
+    "installed_packages_changed": 0,
+    "runtime_processes_restarted": 0,
+    "runtime_authority_changed": false,
+    "paired_b0_b1_executed": false
+  },
+  "claim_boundary": {
+    "implementation_compiles": true,
+    "scoped_action_reason_parity": true,
+    "broad_correction_suite_green": false,
+    "latency_proven": false,
+    "rss_proven": false,
+    "target_host_environment_proven": false,
+    "production_authority_admitted": false,
+    "next_action_admitted": "independent paired B0/B1 execution preflight only"
+  }
+}

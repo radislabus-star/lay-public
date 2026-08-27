@@ -1,0 +1,422 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_FUSED_MINIMUM_M2_CODE_ROUTE_V3_2026-08-26.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 13,
+  "edge_count": 16,
+  "routes": [
+    {
+      "id": "build-execution",
+      "event": "build",
+      "kind": "execution",
+      "entry": "m2-cli",
+      "via": [],
+      "terminal": "build-producer",
+      "path_count": 1,
+      "paths": [
+        [
+          "m2-cli",
+          "local-orchestrator",
+          "remote-orchestrator",
+          "build-producer"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "build-producer"
+        ],
+        "orchestrator": [
+          "local-orchestrator",
+          "remote-orchestrator"
+        ],
+        "interface": [
+          "m2-cli"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "m2-cli",
+          "to": "build-producer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "m2-cli",
+              "local-orchestrator",
+              "remote-orchestrator",
+              "build-producer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "parity-execution",
+      "event": "parity",
+      "kind": "execution",
+      "entry": "m2-cli",
+      "via": [],
+      "terminal": "parity-producer",
+      "path_count": 1,
+      "paths": [
+        [
+          "m2-cli",
+          "local-orchestrator",
+          "remote-orchestrator",
+          "parity-producer"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "local-orchestrator",
+          "remote-orchestrator"
+        ],
+        "interface": [
+          "m2-cli"
+        ],
+        "producer": [
+          "parity-producer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "m2-cli",
+          "to": "parity-producer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "m2-cli",
+              "local-orchestrator",
+              "remote-orchestrator",
+              "parity-producer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "physical-execution",
+      "event": "physical",
+      "kind": "execution",
+      "entry": "m2-cli",
+      "via": [],
+      "terminal": "physical-producer",
+      "path_count": 1,
+      "paths": [
+        [
+          "m2-cli",
+          "local-orchestrator",
+          "remote-orchestrator",
+          "physical-producer"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "local-orchestrator",
+          "remote-orchestrator"
+        ],
+        "interface": [
+          "m2-cli"
+        ],
+        "producer": [
+          "physical-producer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "m2-cli",
+          "to": "physical-producer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "m2-cli",
+              "local-orchestrator",
+              "remote-orchestrator",
+              "physical-producer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "marker-authority",
+      "event": "route-mutation",
+      "kind": "authority",
+      "entry": "execution-admission",
+      "via": [],
+      "terminal": "marker-ledger",
+      "path_count": 1,
+      "paths": [
+        [
+          "execution-admission",
+          "marker-ledger"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "execution-admission"
+        ],
+        "mutation_owner": [
+          "marker-ledger"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "execution-admission",
+          "to": "marker-ledger",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "execution-admission",
+              "marker-ledger"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "external-action-observation",
+      "event": "external-action-intent",
+      "kind": "observation",
+      "entry": "local-orchestrator",
+      "via": [],
+      "terminal": "execution-journal",
+      "path_count": 1,
+      "paths": [
+        [
+          "local-orchestrator",
+          "execution-journal"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "execution-journal"
+        ],
+        "orchestrator": [
+          "local-orchestrator"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "local-orchestrator",
+          "to": "execution-journal",
+          "via": [],
+          "graph": "observation",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "local-orchestrator",
+              "execution-journal"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "controller-failure-proof",
+      "event": "controller-failure",
+      "kind": "proof",
+      "entry": "execution-journal",
+      "via": [],
+      "terminal": "controller-failure-proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "execution-journal",
+          "controller-failure-proof"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "controller-failure-proof"
+        ],
+        "observer": [
+          "execution-journal"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "execution-journal",
+          "to": "controller-failure-proof",
+          "via": [],
+          "graph": "proof",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "execution-journal",
+              "controller-failure-proof"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "build-observation",
+      "event": "build-evidence",
+      "kind": "observation",
+      "entry": "build-producer",
+      "via": [],
+      "terminal": "build-observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "build-producer",
+          "build-observer"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "build-observer"
+        ],
+        "producer": [
+          "build-producer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "route-observation-parity",
+      "event": "route-evidence",
+      "kind": "observation",
+      "entry": "parity-producer",
+      "via": [],
+      "terminal": "route-observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "parity-producer",
+          "route-observer"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "parity-producer"
+        ],
+        "observer": [
+          "route-observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "route-observation-physical",
+      "event": "route-evidence",
+      "kind": "observation",
+      "entry": "physical-producer",
+      "via": [],
+      "terminal": "route-observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-producer",
+          "route-observer"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "physical-producer"
+        ],
+        "observer": [
+          "route-observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "terminal-proof",
+      "event": "terminal-decision",
+      "kind": "proof",
+      "entry": "route-observer",
+      "via": [],
+      "terminal": "terminal-proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "route-observer",
+          "terminal-proof"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "route-observer"
+        ],
+        "proof_owner": [
+          "terminal-proof"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "route-mutation": {
+      "authorization_owner": [
+        "execution-admission"
+      ],
+      "candidate_rank_owner": [],
+      "evidence_owner": [],
+      "display_rank_owner": [],
+      "mutation_owner": [
+        "marker-ledger"
+      ],
+      "render_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 29,
+    "verified": 29,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": true,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

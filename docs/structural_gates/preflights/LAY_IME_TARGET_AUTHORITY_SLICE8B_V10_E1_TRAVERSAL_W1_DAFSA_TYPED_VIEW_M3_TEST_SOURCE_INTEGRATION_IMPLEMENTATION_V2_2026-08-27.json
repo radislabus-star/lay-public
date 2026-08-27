@@ -1,0 +1,317 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TEST_SOURCE_INTEGRATION_IMPLEMENTATION_V2_2026-08-27",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "implementation-preflight-v1",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TEST_SOURCE_INTEGRATION_IMPLEMENTATION_V1_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 15063,
+        "sha256": "b2e3a5d79bbb70b995c9c4a2597413a351a67e4f29afecdd748fa7518174f9b0"
+      }
+    },
+    {
+      "id": "implementation-preflight-v1-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TEST_SOURCE_INTEGRATION_IMPLEMENTATION_V1_PREFLIGHT_2026-08-27.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 9804,
+        "sha256": "2dab46c1a4d81f2afd9f127329ed32d08a59fdceef7738f7d1b56857d33938c1"
+      }
+    },
+    {
+      "id": "integration-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TEST_SOURCE_INTEGRATION_V1_2026-08-27.md",
+      "expect": {"mode": "0444", "size_bytes": 11415, "sha256": "9f653e10c00a5155b701d1124e577af2fe70d40f5a0a7a9c880a2df92d8adee6"}
+    },
+    {
+      "id": "m3-terminal",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TERMINAL_AUDIT_V1_2026-08-27/M3_TERMINAL_AUDIT_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 12548, "sha256": "a84355e42bad335d45b379c7e76d2b353bed6c23c30593e1c721be0c0058f324"}
+    },
+    {
+      "id": "source-lifetime-decision",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_SOURCE_LIFETIME_DECISION_V1_2026-08-27.md",
+      "expect": {"mode": "0444", "size_bytes": 6132, "sha256": "e7b0f66170776677c2b153254aa01a303fdf8538aec273678196dec723715b24"}
+    },
+    {
+      "id": "source-lifetime-structural-v2",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_SOURCE_LIFETIME_DECISION_V1_ROUTE_V2_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 22793, "sha256": "c3800bb5cef5ff9f35c21b904b9f64eb7a249917055ce94599cafe7f32dac51b"}
+    },
+    {
+      "id": "integration-route-a",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TEST_SOURCE_INTEGRATION_V1_ROUTE_A_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 16076, "sha256": "ef28f61f08eef5291e5508127230c59781165eb8052fcbf89c1b73768278af61"}
+    },
+    {
+      "id": "integration-route-b",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TEST_SOURCE_INTEGRATION_V1_ROUTE_B_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 15494, "sha256": "d77802d10d16637c9b1b9c46cbb77eb28373afe5c3e28c07e58b1280ed171684"}
+    },
+    {
+      "id": "integration-route-c",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TEST_SOURCE_INTEGRATION_V1_ROUTE_C_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 16412, "sha256": "f96c7819f47646594dee81db5039251ca9c32037e79a65a3e5db5bdc42c7851c"}
+    },
+    {
+      "id": "code-route-v2",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TEST_SOURCE_INTEGRATION_CODE_ROUTE_V2_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 6544, "sha256": "721ad9d20649d23a4a8da51fe92004967403b01b1de0fc7659a43690c4151022"}
+    },
+    {
+      "id": "code-route-v2-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TEST_SOURCE_INTEGRATION_CODE_ROUTE_V2_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 9667, "sha256": "e921b8843cbed70fc18447e548296ef48637e3bdaaff4cf1454e0083cefaf488"}
+    },
+    {
+      "id": "current-v13-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {"mode": "0664", "size_bytes": 124127, "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"}
+    },
+    {
+      "id": "l2-field-module-boundary",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/mod.rs",
+      "expect": {"mode": "0664", "size_bytes": 52483, "sha256": "c76c28debdac8e43d360a5a82811ea86e3e6f03b98e4f81cb6678e07953e0953"}
+    },
+    {
+      "id": "cargo-toml",
+      "kind": "file",
+      "path": "../../../Cargo.toml",
+      "expect": {"mode": "0664", "size_bytes": 2399, "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b"}
+    },
+    {
+      "id": "cargo-lock",
+      "kind": "file",
+      "path": "../../../Cargo.lock",
+      "expect": {"mode": "0664", "size_bytes": 70770, "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"}
+    },
+    {
+      "id": "cargo-guard",
+      "kind": "file",
+      "path": "../../../scripts/cargo-guard.sh",
+      "expect": {"mode": "0775", "size_bytes": 2534, "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"}
+    },
+    {
+      "id": "m3-fragment",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_e1_traversal_w1_dafsa_typed_view_m3_test_module.rs.inc",
+      "expect": {"mode": "0444", "size_bytes": 149110, "sha256": "5a2e164c47c88677b74baf44d500c939749c98deff3092a1621086cf6e800875"}
+    },
+    {
+      "id": "v13-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+      "expect": {"mode": "0644", "size_bytes": 140556462, "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"}
+    },
+    {
+      "id": "v13-sidecar",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+      "expect": {"mode": "0444", "size_bytes": 3689884, "sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd"}
+    },
+    {
+      "id": "v7-fixed-proof",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+      "expect": {"mode": "0400", "size_bytes": 1606189, "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "edit-current-v13-source", "kind": "local_test_source_edit"},
+      {"id": "create-typed-exact-submodule", "kind": "local_test_source_create"},
+      {"id": "format-admitted-source", "kind": "local_format_edit"},
+      {"id": "run-static-route-checks", "kind": "local_read_only_process"},
+      {"id": "run-one-focused-cargo-proof", "kind": "one_local_cargo_guard_test"},
+      {"id": "publish-integration-receipt", "kind": "local_evidence_write"},
+      {"id": "update-owning-architecture", "kind": "local_documentation_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "network_or_remote_access",
+      "production_source_edit",
+      "l2_field_mod_edit",
+      "daemon_bridge_cache_runtime_or_package_format_edit",
+      "global_static_once_lock_mutex_rwlock_or_cache",
+      "environment_file_clock_process_thread_affinity_perf_or_pmu_in_typed_exact_module",
+      "unsafe_or_unchecked_indexing_or_native_byte_reinterpretation",
+      "sidecar_package_or_v7_input_mutation",
+      "minimum_frontier_rank_terminal_candidate_or_certificate_semantic_change",
+      "m2_running_minimum_or_new_frontier_mechanism",
+      "second_or_unscoped_cargo_invocation",
+      "build_install_restart_deployment_or_runtime_authority_change"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "steps": [
+      {
+        "id": "edit-test-sources",
+        "from": "PREFLIGHT_READY",
+        "to": "TEST_SOURCES_EDITED_UNVERIFIED",
+        "mutates": true,
+        "failure_state": "BLOCKED_SOURCE_EDIT",
+        "cleanup": "retain exact partial diff as non-authoritative evidence; do not touch protected files",
+        "preserves": ["production-module-boundary", "cargo-inputs", "m3-evidence", "fixed-inputs"],
+        "test_id": "source-edit-fault"
+      },
+      {
+        "id": "format-test-sources",
+        "from": "TEST_SOURCES_EDITED_UNVERIFIED",
+        "to": "TEST_SOURCES_FORMATTED_UNVERIFIED",
+        "mutates": true,
+        "failure_state": "BLOCKED_SOURCE_EDIT",
+        "cleanup": "retain formatter output and exact diff; preserve all protected files",
+        "preserves": ["production-module-boundary", "cargo-inputs", "m3-evidence", "fixed-inputs"],
+        "test_id": "format-fault"
+      },
+      {
+        "id": "static-route-check",
+        "from": "TEST_SOURCES_FORMATTED_UNVERIFIED",
+        "to": "STATIC_ROUTE_PASS",
+        "mutates": false,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "publish no PASS and retain static diagnostics",
+        "preserves": ["production-module-boundary", "cargo-inputs", "m3-evidence", "fixed-inputs"],
+        "test_id": "source-route-static"
+      },
+      {
+        "id": "focused-local-proof",
+        "from": "STATIC_ROUTE_PASS",
+        "to": "LOCAL_PROOF_PASS",
+        "mutates": true,
+        "failure_state": "BLOCKED_PARITY",
+        "cleanup": "retain Cargo log target identity and any failed receipt; do not run Cargo again automatically",
+        "preserves": ["production-module-boundary", "cargo-inputs", "m3-evidence", "fixed-inputs"],
+        "test_id": "focused-cargo-fault"
+      },
+      {
+        "id": "publish-integration-receipt",
+        "from": "LOCAL_PROOF_PASS",
+        "to": "M3_TEST_SOURCE_INTEGRATION_PASS",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "remove incomplete stage before atomic publication and retain proof logs",
+        "preserves": ["production-module-boundary", "cargo-inputs", "m3-evidence", "fixed-inputs"],
+        "test_id": "receipt-publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "M3_TEST_SOURCE_INTEGRATION_PASS",
+      "BLOCKED_SOURCE_EDIT",
+      "BLOCKED_BUILD",
+      "BLOCKED_PARITY",
+      "BLOCKED_LIFETIME",
+      "BLOCKED_PROVENANCE"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "production-module-boundary",
+      "path": "src/nanda_wave/l2_field/mod.rs",
+      "policy": "immutable_during_integration",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "l2-field-module-boundary"
+    },
+    {
+      "id": "cargo-inputs",
+      "path": "Cargo.toml Cargo.lock and cargo-guard",
+      "policy": "immutable_during_integration",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "cargo-lock"
+    },
+    {
+      "id": "m3-evidence",
+      "path": "M3 terminal source decision contract fragment and route receipts",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "m3-terminal"
+    },
+    {
+      "id": "fixed-inputs",
+      "path": "V13 package sidecar and V7 fixed proof",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v13-package"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "validated-view-to-typed-view",
+      "producer": "validated V13DafsaView decoded fields identity root and digest",
+      "consumer": "TypedExactView records identity root and digest",
+      "comparison": "all fields and identities exact",
+      "test_id": "fixed-view-parity"
+    },
+    {
+      "id": "byte-oracle-to-typed-search",
+      "producer": "existing generic byte-view oracle",
+      "consumer": "new fused typed exact candidate",
+      "comparison": "form refs peaks certificate keys completeness ranks and work exact in both schedules",
+      "test_id": "fixed-search-parity"
+    },
+    {
+      "id": "fixed-artifact-identity",
+      "producer": "pinned package sidecar and V7 bytes",
+      "consumer": "integration proof loader",
+      "comparison": "size and SHA-256 exact before proof",
+      "test_id": "artifact-identity"
+    },
+    {
+      "id": "generation-lifetime",
+      "producer": "one validated byte-view proof generation",
+      "consumer": "one immutable typed view borrowed by all 382 forward and reverse searches",
+      "comparison": "materialization count one and payload 3689628 bytes",
+      "test_id": "lifetime-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "two-path-source-scope", "statement": "only current V13 test file and typed_exact submodule change", "test_id": "source-route-static"},
+    {"id": "production-boundary", "statement": "l2_field mod daemon bridge cache runtime package formats and installed runtime remain unchanged", "test_id": "production-hash-parity"},
+    {"id": "pure-typed-module", "statement": "typed_exact owns no forbidden side effect or unsafe route", "test_id": "forbidden-effects-static"},
+    {"id": "fixed-real-denominator", "statement": "scientific parity uses all exact 382 fixed cases forward and reverse", "test_id": "fixed-search-parity"},
+    {"id": "one-view-per-generation", "statement": "one materialization serves every fixed proof query", "test_id": "lifetime-parity"},
+    {"id": "semantic-exactness", "statement": "candidate language frontier ranks terminals certificates and work remain exact", "test_id": "fixed-search-parity"},
+    {"id": "no-performance-promotion", "statement": "integration PASS grants only an actual-owner consequence paper", "test_id": "claim-boundary-static"}
+  ],
+  "tests": [
+    {"id": "source-edit-fault", "kind": "fault_injection", "expected": "partial test-only diff cannot alter protected source or publish PASS"},
+    {"id": "format-fault", "kind": "fault_injection", "expected": "formatter failure retains exact diff and no PASS"},
+    {"id": "receipt-publication-fault", "kind": "fault_injection", "expected": "no partial final receipt and no production authority"},
+    {"id": "source-route-static", "kind": "unit", "expected": "exact two-path edit set and cfg-test reachability only"},
+    {"id": "production-hash-parity", "kind": "parity", "expected": "all protected production and Cargo input hashes unchanged"},
+    {"id": "forbidden-effects-static", "kind": "unit", "expected": "no forbidden import call global state unsafe or side-effect token"},
+    {"id": "artifact-identity", "kind": "parity", "expected": "package sidecar and V7 identities exact"},
+    {"id": "fixed-view-parity", "kind": "parity", "expected": "81128 states 226341 edges and all fields root identity digest exact"},
+    {"id": "transition-parity", "kind": "parity", "expected": "packed fused transition equals existing banded-row oracle over supported domain"},
+    {"id": "fixed-search-parity", "kind": "parity", "expected": "382 cases times forward and reverse have zero result rank certificate and work mismatch"},
+    {"id": "lifetime-parity", "kind": "parity", "expected": "one materialization and exact 3689628-byte payload for the proof generation"},
+    {"id": "claim-boundary-static", "kind": "unit", "expected": "receipt denies production edit install restart deployment and performance transfer claim"},
+    {"id": "focused-cargo-fault", "kind": "fault_injection", "expected": "non-zero or interrupted focused Cargo proof retains diagnostics and cannot publish PASS"},
+    {"id": "focused-cargo-proof", "kind": "integration", "expected": "one exact cargo-guard release lib test invocation exits zero and writes complete receipt"}
+  ]
+}

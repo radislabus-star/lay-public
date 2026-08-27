@@ -1,0 +1,49 @@
+{
+  "cargo_invocations": 0,
+  "d2_subject_executions": 1,
+  "dispatch": {
+    "all_violations": {
+      "bucket_map": [],
+      "capability": [],
+      "perturbation": [
+        "sampled-vs-U delta 18.434656047164% exceeds 5%"
+      ],
+      "provenance": [
+        "traversal sample CPU outside frozen mapping"
+      ],
+      "sample_coverage": [
+        "lost/throttle/unthrottle=0/15847/15847"
+      ],
+      "thermal": []
+    },
+    "reason": "traversal sample CPU outside frozen mapping",
+    "selected_cause": "provenance",
+    "selected_rank": 0,
+    "verdict": "BLOCKED_PROVENANCE"
+  },
+  "marker_consumed": true,
+  "next_action_admitted": "none; terminal blocked verdict",
+  "perf_readers": 4,
+  "perf_record": 1,
+  "perf_stat": 0,
+  "pmu_events_opened": 1,
+  "remote_manifest_entries": 25,
+  "remote_receipt_sha256": "afaeb7d3caffb1967dd76021e42b94664803cef5d0ed72ec574fb54526a8fa0d",
+  "retry_permitted": false,
+  "route": "T-SINGLE",
+  "runtime_after": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "runtime_authority_changed": false,
+  "runtime_before": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "schema": "lay.v10.e1-traversal-d2-primary-only-local-t-route.v1",
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+  "verdict": "BLOCKED_PROVENANCE"
+}

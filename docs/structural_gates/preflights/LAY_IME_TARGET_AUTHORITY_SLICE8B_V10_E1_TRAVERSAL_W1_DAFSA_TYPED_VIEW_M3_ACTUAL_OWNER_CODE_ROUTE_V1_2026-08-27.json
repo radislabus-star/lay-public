@@ -1,0 +1,131 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "test-entry", "role": "interface"},
+    {"id": "fixed-proof-runner", "role": "orchestrator"},
+    {"id": "canonical-exact-generation", "role": "evidence_owner"},
+    {"id": "phase7d-oracle", "role": "producer"},
+    {"id": "typed-exact-search", "role": "producer"},
+    {"id": "exact-peak-adapter", "role": "producer"},
+    {"id": "productive-prepare", "role": "orchestrator"},
+    {"id": "prepared-token-field", "role": "evidence_owner"},
+    {"id": "composite-lattice", "role": "candidate_rank_owner"},
+    {"id": "owner-parity-observer", "role": "observer"},
+    {"id": "owner-parity-proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "entry-runner-forward", "from": "test-entry", "relation": "calls", "to": "fixed-proof-runner", "events": ["fixed-forward"]},
+    {"id": "entry-runner-reversed", "from": "test-entry", "relation": "calls", "to": "fixed-proof-runner", "events": ["fixed-reversed"]},
+    {"id": "entry-runner-owner", "from": "test-entry", "relation": "calls", "to": "fixed-proof-runner", "events": ["owner-materialization"]},
+    {"id": "runner-generation-forward", "from": "fixed-proof-runner", "relation": "delegates", "to": "canonical-exact-generation", "events": ["fixed-forward"]},
+    {"id": "runner-generation-reversed", "from": "fixed-proof-runner", "relation": "delegates", "to": "canonical-exact-generation", "events": ["fixed-reversed"]},
+    {"id": "runner-oracle-forward", "from": "fixed-proof-runner", "relation": "calls", "to": "phase7d-oracle", "events": ["fixed-forward"]},
+    {"id": "runner-oracle-reversed", "from": "fixed-proof-runner", "relation": "calls", "to": "phase7d-oracle", "events": ["fixed-reversed"]},
+    {"id": "runner-search-forward", "from": "fixed-proof-runner", "relation": "calls", "to": "typed-exact-search", "events": ["fixed-forward"]},
+    {"id": "runner-search-reversed", "from": "fixed-proof-runner", "relation": "calls", "to": "typed-exact-search", "events": ["fixed-reversed"]},
+    {"id": "runner-adapter-owner", "from": "fixed-proof-runner", "relation": "calls", "to": "exact-peak-adapter", "events": ["owner-materialization"]},
+    {"id": "runner-prepare-owner", "from": "fixed-proof-runner", "relation": "calls", "to": "productive-prepare", "events": ["owner-materialization"]},
+    {"id": "prepare-field-owner", "from": "productive-prepare", "relation": "delegates", "to": "prepared-token-field", "events": ["owner-materialization"]},
+    {"id": "generation-search-forward", "from": "canonical-exact-generation", "relation": "produces_for", "to": "typed-exact-search", "events": ["fixed-forward"]},
+    {"id": "generation-search-reversed", "from": "canonical-exact-generation", "relation": "produces_for", "to": "typed-exact-search", "events": ["fixed-reversed"]},
+    {"id": "oracle-adapter-owner", "from": "phase7d-oracle", "relation": "produces_for", "to": "exact-peak-adapter", "events": ["owner-materialization"]},
+    {"id": "search-adapter-owner", "from": "typed-exact-search", "relation": "produces_for", "to": "exact-peak-adapter", "events": ["owner-materialization"]},
+    {"id": "adapter-field-owner", "from": "exact-peak-adapter", "relation": "produces_for", "to": "prepared-token-field", "events": ["owner-materialization"]},
+    {"id": "field-lattice-owner", "from": "prepared-token-field", "relation": "passes_to", "to": "composite-lattice", "events": ["owner-materialization"]},
+    {"id": "generation-observer", "from": "canonical-exact-generation", "relation": "observes", "to": "owner-parity-observer", "events": ["parity-observation"]},
+    {"id": "field-observer", "from": "prepared-token-field", "relation": "observes", "to": "owner-parity-observer", "events": ["parity-observation"]},
+    {"id": "lattice-observer", "from": "composite-lattice", "relation": "observes", "to": "owner-parity-observer", "events": ["parity-observation"]},
+    {"id": "observer-proof", "from": "owner-parity-observer", "relation": "proves", "to": "owner-parity-proof", "events": ["parity-decision"]}
+  ],
+  "routes": [
+    {
+      "id": "fixed-forward-generation-execution",
+      "event": "fixed-forward",
+      "kind": "execution",
+      "entry": "test-entry",
+      "terminal": "canonical-exact-generation",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "test-entry", "to": "canonical-exact-generation", "min": 1, "max": 1}]
+    },
+    {
+      "id": "fixed-forward-oracle-execution",
+      "event": "fixed-forward",
+      "kind": "execution",
+      "entry": "test-entry",
+      "terminal": "phase7d-oracle",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "test-entry", "to": "phase7d-oracle", "min": 1, "max": 1}]
+    },
+    {
+      "id": "fixed-forward-search-execution",
+      "event": "fixed-forward",
+      "kind": "execution",
+      "entry": "test-entry",
+      "terminal": "typed-exact-search",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "test-entry", "to": "typed-exact-search", "min": 1, "max": 1}]
+    },
+    {
+      "id": "fixed-reversed-generation-execution",
+      "event": "fixed-reversed",
+      "kind": "execution",
+      "entry": "test-entry",
+      "terminal": "canonical-exact-generation",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "test-entry", "to": "canonical-exact-generation", "min": 1, "max": 1}]
+    },
+    {
+      "id": "fixed-reversed-oracle-execution",
+      "event": "fixed-reversed",
+      "kind": "execution",
+      "entry": "test-entry",
+      "terminal": "phase7d-oracle",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "test-entry", "to": "phase7d-oracle", "min": 1, "max": 1}]
+    },
+    {
+      "id": "fixed-reversed-search-execution",
+      "event": "fixed-reversed",
+      "kind": "execution",
+      "entry": "test-entry",
+      "terminal": "typed-exact-search",
+      "required_roles": ["interface", "orchestrator", "producer"],
+      "path_cardinality": [{"from": "test-entry", "to": "typed-exact-search", "min": 1, "max": 1}]
+    },
+    {
+      "id": "owner-materialization-execution",
+      "event": "owner-materialization",
+      "kind": "execution",
+      "entry": "test-entry",
+      "terminal": "prepared-token-field",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "test-entry", "to": "prepared-token-field", "min": 1, "max": 1}]
+    },
+    {
+      "id": "owner-materialization-authority",
+      "event": "owner-materialization",
+      "kind": "authority",
+      "entry": "exact-peak-adapter",
+      "terminal": "composite-lattice",
+      "required_roles": ["producer", "evidence_owner", "candidate_rank_owner"],
+      "path_cardinality": [{"from": "exact-peak-adapter", "to": "composite-lattice", "min": 1, "max": 1}]
+    },
+    {
+      "id": "owner-parity-observation",
+      "event": "parity-observation",
+      "kind": "observation",
+      "entry": "canonical-exact-generation",
+      "terminal": "owner-parity-observer",
+      "required_roles": ["evidence_owner", "observer"]
+    },
+    {
+      "id": "owner-parity-decision",
+      "event": "parity-decision",
+      "kind": "proof",
+      "entry": "owner-parity-observer",
+      "terminal": "owner-parity-proof",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

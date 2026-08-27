@@ -1,0 +1,1865 @@
+{
+  "bootstrap_audit_sha256": "8d3be4ec3d7f44acf01bc9c10bff04b076eede4ac5869795b3502dee00d42049",
+  "cargo_invocations": 0,
+  "d2_marker_mutations": 0,
+  "d2_terminal_sha256": "75dc2703e279524a76c49a455b6081634d1c67274106da45f0d7d610af95e608",
+  "d3_terminal_sha256": "7f4c0fd9466cced361c21858ea2017910adc7b92db7c1edfe02f3be09d5c4299",
+  "d4_terminal_sha256": "f748a7c448f7f142a342efa2b916a8995969044567a3aaa9a7de3aff6ba8645b",
+  "dispatch": {
+    "all_violations": {
+      "bucket_map": [],
+      "capability": [],
+      "perturbation": [],
+      "provenance": [
+        "worker TID graph failed: D5Error: worker sample CPU sets are not singleton: {568865: {0}, 568866: {1}, 568867: {2}, 568868: {3}, 568869: {4}, 568870: {5}, 568871: {6}, 568872: {7}, 568873: {8}, 568874: {9}, 568875: {10}, 568876: {11}, 568877: {12}, 568878: {18, 13}, 568879: {14}, 568880: {15}, 568881: {16}, 568882: {17}, 568883: {18}, 568884: {19}}"
+      ],
+      "sample_coverage": [
+        "lost/throttle/unthrottle=0/29/29"
+      ],
+      "thermal": []
+    },
+    "reason": "worker TID graph failed: D5Error: worker sample CPU sets are not singleton: {568865: {0}, 568866: {1}, 568867: {2}, 568868: {3}, 568869: {4}, 568870: {5}, 568871: {6}, 568872: {7}, 568873: {8}, 568874: {9}, 568875: {10}, 568876: {11}, 568877: {12}, 568878: {18, 13}, 568879: {14}, 568880: {15}, 568881: {16}, 568882: {17}, 568883: {18}, 568884: {19}}",
+    "selected_cause": "provenance",
+    "selected_rank": 0,
+    "verdict": "BLOCKED_PROVENANCE"
+  },
+  "elf": {
+    "mode": "0555",
+    "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/build-v1/d2-test-elf",
+    "sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178",
+    "size_bytes": 317706232
+  },
+  "map": {
+    "mode": "0444",
+    "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/bucket-map-v1/D2_BUCKET_MAP.json",
+    "sha256": "2b93aedf11101a8bc5fc7ed4ffaa056b50476d96cdd2eabf9d185f59ee60f846",
+    "size_bytes": 390324
+  },
+  "marker": {
+    "after": {
+      "mode": "0400",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826/markers/t4-fixed.consumed-before-exec",
+      "sha256": "c3c3711e77121062613ec1fe252e0f44c8ad41744008dd41fc894e68ce5a3c02",
+      "size_bytes": 293
+    },
+    "before": {
+      "mode": "0400",
+      "path": "/home/e/.local/state/lay/slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826/markers/t4-fixed.available",
+      "sha256": "c3c3711e77121062613ec1fe252e0f44c8ad41744008dd41fc894e68ce5a3c02",
+      "size_bytes": 293
+    },
+    "consumed_before_effect": true
+  },
+  "marker_audit_sha256": "8bd945422cbc14dc8f91f440e3c1c0fd253208daea1acf825acc8cae141cd32f",
+  "next_action_admitted": "none; terminal D5 blocked verdict",
+  "observation": {
+    "attribution": {},
+    "cargo_invocations": 0,
+    "complete": false,
+    "event_validation": {
+      "config": 1,
+      "exclude_kernel": 1,
+      "freq": 0,
+      "inherit": 1,
+      "line": "task-clock:u: type: 1 (software), size: 136, config: 0x1 (PERF_COUNT_SW_TASK_CLOCK), { sample_period, sample_freq }: 200000, sample_type: IP|TID|TIME|ID|CPU, read_format: ID|LOST, disabled: 1, inherit: 1, exclude_kernel: 1, exclude_hv: 1, enable_on_exec: 1, sample_id_all: 1, exclude_guest: 1",
+      "precise_ip": 0,
+      "sample_period": 200000,
+      "type": 1
+    },
+    "host_after": {
+      "loadavg": "7.09 2.51 1.56 17/556 569150",
+      "maximum_temperature_c": 82.0,
+      "monotonic_ns": 2863452646955295,
+      "online_cpus": "0-19",
+      "perf_event_max_sample_rate": "8000",
+      "temperatures": [
+        {
+          "millidegrees_c": 27800,
+          "path": "/sys/class/thermal/thermal_zone0/temp"
+        },
+        {
+          "millidegrees_c": 82000,
+          "path": "/sys/class/thermal/thermal_zone1/temp"
+        },
+        {
+          "millidegrees_c": 38000,
+          "path": "/sys/class/thermal/thermal_zone2/temp"
+        },
+        {
+          "millidegrees_c": 27800,
+          "path": "/sys/class/hwmon/hwmon0/temp1_input"
+        },
+        {
+          "millidegrees_c": 40850,
+          "path": "/sys/class/hwmon/hwmon1/temp1_input"
+        },
+        {
+          "millidegrees_c": 40850,
+          "path": "/sys/class/hwmon/hwmon1/temp2_input"
+        },
+        {
+          "millidegrees_c": 33850,
+          "path": "/sys/class/hwmon/hwmon1/temp3_input"
+        },
+        {
+          "millidegrees_c": 82000,
+          "path": "/sys/class/hwmon/hwmon2/temp10_input"
+        },
+        {
+          "millidegrees_c": 78000,
+          "path": "/sys/class/hwmon/hwmon2/temp14_input"
+        },
+        {
+          "millidegrees_c": 78000,
+          "path": "/sys/class/hwmon/hwmon2/temp18_input"
+        },
+        {
+          "millidegrees_c": 82000,
+          "path": "/sys/class/hwmon/hwmon2/temp1_input"
+        },
+        {
+          "millidegrees_c": 77000,
+          "path": "/sys/class/hwmon/hwmon2/temp22_input"
+        },
+        {
+          "millidegrees_c": 75000,
+          "path": "/sys/class/hwmon/hwmon2/temp26_input"
+        },
+        {
+          "millidegrees_c": 75000,
+          "path": "/sys/class/hwmon/hwmon2/temp27_input"
+        },
+        {
+          "millidegrees_c": 75000,
+          "path": "/sys/class/hwmon/hwmon2/temp28_input"
+        },
+        {
+          "millidegrees_c": 75000,
+          "path": "/sys/class/hwmon/hwmon2/temp29_input"
+        },
+        {
+          "millidegrees_c": 81000,
+          "path": "/sys/class/hwmon/hwmon2/temp2_input"
+        },
+        {
+          "millidegrees_c": 75000,
+          "path": "/sys/class/hwmon/hwmon2/temp30_input"
+        },
+        {
+          "millidegrees_c": 75000,
+          "path": "/sys/class/hwmon/hwmon2/temp31_input"
+        },
+        {
+          "millidegrees_c": 75000,
+          "path": "/sys/class/hwmon/hwmon2/temp32_input"
+        },
+        {
+          "millidegrees_c": 75000,
+          "path": "/sys/class/hwmon/hwmon2/temp33_input"
+        },
+        {
+          "millidegrees_c": 75000,
+          "path": "/sys/class/hwmon/hwmon2/temp6_input"
+        },
+        {
+          "millidegrees_c": 39000,
+          "path": "/sys/class/hwmon/hwmon3/temp1_input"
+        }
+      ],
+      "throttle_counters": {
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_total_time_ms": 25
+      }
+    },
+    "host_after_record": {
+      "loadavg": "7.09 2.51 1.56 22/573 569042",
+      "maximum_temperature_c": 80.0,
+      "monotonic_ns": 2863448372135849,
+      "online_cpus": "0-19",
+      "perf_event_max_sample_rate": "8000",
+      "temperatures": [
+        {
+          "millidegrees_c": 27800,
+          "path": "/sys/class/thermal/thermal_zone0/temp"
+        },
+        {
+          "millidegrees_c": 80000,
+          "path": "/sys/class/thermal/thermal_zone1/temp"
+        },
+        {
+          "millidegrees_c": 38000,
+          "path": "/sys/class/thermal/thermal_zone2/temp"
+        },
+        {
+          "millidegrees_c": 27800,
+          "path": "/sys/class/hwmon/hwmon0/temp1_input"
+        },
+        {
+          "millidegrees_c": 38850,
+          "path": "/sys/class/hwmon/hwmon1/temp1_input"
+        },
+        {
+          "millidegrees_c": 38850,
+          "path": "/sys/class/hwmon/hwmon1/temp2_input"
+        },
+        {
+          "millidegrees_c": 33850,
+          "path": "/sys/class/hwmon/hwmon1/temp3_input"
+        },
+        {
+          "millidegrees_c": 80000,
+          "path": "/sys/class/hwmon/hwmon2/temp10_input"
+        },
+        {
+          "millidegrees_c": 77000,
+          "path": "/sys/class/hwmon/hwmon2/temp14_input"
+        },
+        {
+          "millidegrees_c": 78000,
+          "path": "/sys/class/hwmon/hwmon2/temp18_input"
+        },
+        {
+          "millidegrees_c": 80000,
+          "path": "/sys/class/hwmon/hwmon2/temp1_input"
+        },
+        {
+          "millidegrees_c": 78000,
+          "path": "/sys/class/hwmon/hwmon2/temp22_input"
+        },
+        {
+          "millidegrees_c": 74000,
+          "path": "/sys/class/hwmon/hwmon2/temp26_input"
+        },
+        {
+          "millidegrees_c": 74000,
+          "path": "/sys/class/hwmon/hwmon2/temp27_input"
+        },
+        {
+          "millidegrees_c": 74000,
+          "path": "/sys/class/hwmon/hwmon2/temp28_input"
+        },
+        {
+          "millidegrees_c": 74000,
+          "path": "/sys/class/hwmon/hwmon2/temp29_input"
+        },
+        {
+          "millidegrees_c": 77000,
+          "path": "/sys/class/hwmon/hwmon2/temp2_input"
+        },
+        {
+          "millidegrees_c": 74000,
+          "path": "/sys/class/hwmon/hwmon2/temp30_input"
+        },
+        {
+          "millidegrees_c": 74000,
+          "path": "/sys/class/hwmon/hwmon2/temp31_input"
+        },
+        {
+          "millidegrees_c": 74000,
+          "path": "/sys/class/hwmon/hwmon2/temp32_input"
+        },
+        {
+          "millidegrees_c": 74000,
+          "path": "/sys/class/hwmon/hwmon2/temp33_input"
+        },
+        {
+          "millidegrees_c": 74000,
+          "path": "/sys/class/hwmon/hwmon2/temp6_input"
+        },
+        {
+          "millidegrees_c": 38000,
+          "path": "/sys/class/hwmon/hwmon3/temp1_input"
+        }
+      ],
+      "throttle_counters": {
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_total_time_ms": 25
+      }
+    },
+    "host_before": {
+      "loadavg": "4.27 1.85 1.34 21/572 568776",
+      "maximum_temperature_c": 75.0,
+      "monotonic_ns": 2863440582143290,
+      "online_cpus": "0-19",
+      "perf_event_max_sample_rate": "8000",
+      "temperatures": [
+        {
+          "millidegrees_c": 27800,
+          "path": "/sys/class/thermal/thermal_zone0/temp"
+        },
+        {
+          "millidegrees_c": 75000,
+          "path": "/sys/class/thermal/thermal_zone1/temp"
+        },
+        {
+          "millidegrees_c": 38000,
+          "path": "/sys/class/thermal/thermal_zone2/temp"
+        },
+        {
+          "millidegrees_c": 27800,
+          "path": "/sys/class/hwmon/hwmon0/temp1_input"
+        },
+        {
+          "millidegrees_c": 39850,
+          "path": "/sys/class/hwmon/hwmon1/temp1_input"
+        },
+        {
+          "millidegrees_c": 39850,
+          "path": "/sys/class/hwmon/hwmon1/temp2_input"
+        },
+        {
+          "millidegrees_c": 33850,
+          "path": "/sys/class/hwmon/hwmon1/temp3_input"
+        },
+        {
+          "millidegrees_c": 75000,
+          "path": "/sys/class/hwmon/hwmon2/temp10_input"
+        },
+        {
+          "millidegrees_c": 72000,
+          "path": "/sys/class/hwmon/hwmon2/temp14_input"
+        },
+        {
+          "millidegrees_c": 74000,
+          "path": "/sys/class/hwmon/hwmon2/temp18_input"
+        },
+        {
+          "millidegrees_c": 75000,
+          "path": "/sys/class/hwmon/hwmon2/temp1_input"
+        },
+        {
+          "millidegrees_c": 72000,
+          "path": "/sys/class/hwmon/hwmon2/temp22_input"
+        },
+        {
+          "millidegrees_c": 70000,
+          "path": "/sys/class/hwmon/hwmon2/temp26_input"
+        },
+        {
+          "millidegrees_c": 70000,
+          "path": "/sys/class/hwmon/hwmon2/temp27_input"
+        },
+        {
+          "millidegrees_c": 70000,
+          "path": "/sys/class/hwmon/hwmon2/temp28_input"
+        },
+        {
+          "millidegrees_c": 70000,
+          "path": "/sys/class/hwmon/hwmon2/temp29_input"
+        },
+        {
+          "millidegrees_c": 73000,
+          "path": "/sys/class/hwmon/hwmon2/temp2_input"
+        },
+        {
+          "millidegrees_c": 68000,
+          "path": "/sys/class/hwmon/hwmon2/temp30_input"
+        },
+        {
+          "millidegrees_c": 67000,
+          "path": "/sys/class/hwmon/hwmon2/temp31_input"
+        },
+        {
+          "millidegrees_c": 67000,
+          "path": "/sys/class/hwmon/hwmon2/temp32_input"
+        },
+        {
+          "millidegrees_c": 67000,
+          "path": "/sys/class/hwmon/hwmon2/temp33_input"
+        },
+        {
+          "millidegrees_c": 70000,
+          "path": "/sys/class/hwmon/hwmon2/temp6_input"
+        },
+        {
+          "millidegrees_c": 38000,
+          "path": "/sys/class/hwmon/hwmon3/temp1_input"
+        }
+      ],
+      "throttle_counters": {
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu0/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu1/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu10/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu11/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu12/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu13/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu14/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu15/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu16/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu17/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu18/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu19/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu2/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu3/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu4/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu5/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu6/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/core_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu7/thermal_throttle/package_throttle_total_time_ms": 25,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu8/thermal_throttle/package_throttle_total_time_ms": 24,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_count": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_max_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/core_throttle_total_time_ms": 0,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_count": 15,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_max_time_ms": 6,
+        "/sys/devices/system/cpu/cpu9/thermal_throttle/package_throttle_total_time_ms": 25
+      }
+    },
+    "perf_data": {
+      "mode": "0600",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826/t4-fixed-v1.stage-568740-1787758362364871300/perf.data",
+      "sha256": "02c140c235641ed177139e8fd5b37eb4cdcc5fc952443326d944c2c7322d62b6",
+      "size_bytes": 7126578
+    },
+    "perf_reader_invocations": 4,
+    "perf_record_invocations": 1,
+    "perf_stat_invocations": 0,
+    "pmu_events_opened": 1,
+    "raw_records": {
+      "comms": [
+        {
+          "comm": "perf-exec",
+          "pid": 568809,
+          "tid": 568809
+        },
+        {
+          "comm": "sudo",
+          "pid": 568809,
+          "tid": 568809
+        },
+        {
+          "comm": "env",
+          "pid": 568814,
+          "tid": 568814
+        },
+        {
+          "comm": "taskset",
+          "pid": 568814,
+          "tid": 568814
+        },
+        {
+          "comm": "ld-linux-x86-64",
+          "pid": 568814,
+          "tid": 568814
+        },
+        {
+          "comm": "nanda_wave::l2_",
+          "pid": 568814,
+          "tid": 568815
+        }
+      ],
+      "exits": [
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568878
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568865
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568873
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568880
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568881
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568872
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568874
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568875
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568868
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568883
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568877
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568876
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568879
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568866
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568871
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568867
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568870
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568882
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568884
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568869
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568815
+        },
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568814
+        },
+        {
+          "parent_pid": 568778,
+          "parent_tid": 568778,
+          "pid": 568809,
+          "tid": 568809
+        }
+      ],
+      "forks": [
+        {
+          "parent_pid": 568809,
+          "parent_tid": 568809,
+          "pid": 568814,
+          "tid": 568814
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568814,
+          "pid": 568814,
+          "tid": 568815
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568865
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568866
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568867
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568868
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568869
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568870
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568871
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568872
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568873
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568874
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568875
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568876
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568877
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568878
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568879
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568880
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568881
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568882
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568883
+        },
+        {
+          "parent_pid": 568814,
+          "parent_tid": 568815,
+          "pid": 568814,
+          "tid": 568884
+        }
+      ],
+      "lost_records": 0,
+      "mappings": [
+        {
+          "length": 15982592,
+          "offset": 4153344,
+          "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/build-v1/d2-test-elf",
+          "permissions": "r-xp",
+          "pid": 568814,
+          "start": 133304202260480,
+          "tid": 568814
+        }
+      ],
+      "raw_sample_records": 146836,
+      "throttle_records": 29,
+      "unthrottle_records": 29
+    },
+    "reader_commands": {
+      "buildids": [
+        "/usr/bin/perf",
+        "buildid-list",
+        "-i",
+        "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826/t4-fixed-v1.stage-568740-1787758362364871300/perf.data"
+      ],
+      "evlist": [
+        "/usr/bin/perf",
+        "evlist",
+        "-v",
+        "-i",
+        "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826/t4-fixed-v1.stage-568740-1787758362364871300/perf.data"
+      ],
+      "raw-records": [
+        "/usr/bin/perf",
+        "script",
+        "-D",
+        "-i",
+        "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826/t4-fixed-v1.stage-568740-1787758362364871300/perf.data"
+      ],
+      "samples": [
+        "/usr/bin/perf",
+        "script",
+        "-i",
+        "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826/t4-fixed-v1.stage-568740-1787758362364871300/perf.data",
+        "-F",
+        "comm,pid,tid,cpu,time,event,ip,dso,period"
+      ]
+    },
+    "reader_status": {
+      "buildids": {
+        "returncode": 0,
+        "timed_out": false
+      },
+      "evlist": {
+        "returncode": 0,
+        "timed_out": false
+      },
+      "raw-records": {
+        "returncode": 0,
+        "timed_out": false
+      },
+      "samples": {
+        "returncode": 0,
+        "timed_out": false
+      }
+    },
+    "record_command": [
+      "/usr/bin/sudo",
+      "-n",
+      "/usr/bin/perf",
+      "record",
+      "--buildid-all",
+      "--sample-cpu",
+      "--timestamp",
+      "--event",
+      "task-clock:u",
+      "--count",
+      "200000",
+      "--output",
+      "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826/t4-fixed-v1.stage-568740-1787758362364871300/perf.data",
+      "--",
+      "/usr/bin/sudo",
+      "-n",
+      "-u",
+      "e",
+      "/usr/bin/env",
+      "HOME=/home/e",
+      "LANG=C.UTF-8",
+      "LAY_V10_D1_CPUS=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
+      "LAY_V10_D1_OUTPUT=/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826/t4-fixed-v1.stage-568740-1787758362364871300/subject",
+      "LAY_V10_D1_PACKAGE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+      "LAY_V10_D1_RUN_ID=T4-FIXED",
+      "LAY_V10_D1_SCHEDULE=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+      "LAY_V10_D1_SIDECAR=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+      "LAY_V10_D1_V7=/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+      "LC_ALL=C.UTF-8",
+      "PATH=/home/e/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      "TZ=Europe/Tallinn",
+      "/usr/bin/taskset",
+      "--cpu-list",
+      "0-19",
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/build-v1/d2-test-elf",
+      "--exact",
+      "nanda_wave::l2_field::v13_typed_peak::tests::v10_d1_component_twenty",
+      "--ignored",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "record_status": {
+      "returncode": 0,
+      "timed_out": false
+    },
+    "route": "T4-FIXED",
+    "sample_count": 146836,
+    "schema": "lay.v10.e1-traversal-d5-t4-observation.v1",
+    "subject": {
+      "checks": {
+        "cpus": true,
+        "end_barriers": true,
+        "mapping": true,
+        "ordinals": true,
+        "phase_order": true,
+        "queries": true,
+        "receipt_errors": true,
+        "receipt_samples": true,
+        "receipt_unresolved": true,
+        "record_count": true,
+        "round_ids": true,
+        "rounds": true,
+        "run_id": true,
+        "sample_errors": true,
+        "sample_unresolved": true,
+        "schema": true,
+        "start_barriers": true,
+        "structure_edges": true,
+        "structure_queries": true,
+        "structure_sha": true,
+        "test": true,
+        "warmup_bursts": true,
+        "worker_affinities": true,
+        "worker_ids": true,
+        "worker_migrations": true,
+        "workers": true
+      },
+      "component_samples": {
+        "mode": "0664",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826/t4-fixed-v1.stage-568740-1787758362364871300/subject/component-samples.bin",
+        "sha256": "73f56c9d1024f17dbae83be61c4f90edca4ed58b25142da861bb5d406acd7536",
+        "size_bytes": 901520
+      },
+      "cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "mapping": "FIXED",
+      "receipt": {
+        "cpus": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "end_barriers": 21,
+        "installed_lay_changed": false,
+        "mapping": "FIXED",
+        "queries": 382,
+        "rounds": 20,
+        "run_id": "T4-FIXED",
+        "runtime_authority_changed": false,
+        "samples": {
+          "errors": 0,
+          "phase_order": [
+            "oracle",
+            "lanes",
+            "eqmask",
+            "traversal",
+            "merge",
+            "certificate"
+          ],
+          "sample_bytes": 118,
+          "samples": 7640,
+          "schema": "lay.v10.e1-remaining-cost-d1-component-samples.v1",
+          "thread_cpu_clock": "CLOCK_THREAD_CPUTIME_ID",
+          "timing_units": "nanoseconds",
+          "unresolved": 0,
+          "wall_clock": "monotonic Instant"
+        },
+        "samples_sha256": "73f56c9d1024f17dbae83be61c4f90edca4ed58b25142da861bb5d406acd7536",
+        "schema": "lay.v10.e1-remaining-cost-d1-component-process.v1",
+        "start_barriers": 21,
+        "structural_trace_measured": false,
+        "test": "nanda_wave::l2_field::v13_typed_peak::tests::v10_d1_component_twenty",
+        "warmup_bursts": 1,
+        "worker_affinities": [
+          [
+            0
+          ],
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ],
+          [
+            5
+          ],
+          [
+            6
+          ],
+          [
+            7
+          ],
+          [
+            8
+          ],
+          [
+            9
+          ],
+          [
+            10
+          ],
+          [
+            11
+          ],
+          [
+            12
+          ],
+          [
+            13
+          ],
+          [
+            14
+          ],
+          [
+            15
+          ],
+          [
+            16
+          ],
+          [
+            17
+          ],
+          [
+            18
+          ],
+          [
+            19
+          ]
+        ],
+        "worker_migration_deltas": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "workers": 20
+      },
+      "receipt_identity": {
+        "mode": "0664",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826/t4-fixed-v1.stage-568740-1787758362364871300/subject/SUBJECT_RECEIPT.json",
+        "sha256": "341fdfb60d4874f2a0ec0b7458561bdba22706286aa2be6492733ff1d4a5119f",
+        "size_bytes": 1737
+      },
+      "sample_summary": {
+        "errors": 0,
+        "query_ordinals": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          229,
+          230,
+          231,
+          232,
+          233,
+          234,
+          235,
+          236,
+          237,
+          238,
+          239,
+          240,
+          241,
+          242,
+          243,
+          244,
+          245,
+          246,
+          247,
+          248,
+          249,
+          250,
+          251,
+          252,
+          253,
+          254,
+          255,
+          256,
+          257,
+          258,
+          259,
+          260,
+          261,
+          262,
+          263,
+          264,
+          265,
+          266,
+          267,
+          268,
+          269,
+          270,
+          271,
+          272,
+          273,
+          274,
+          275,
+          276,
+          277,
+          278,
+          279,
+          280,
+          281,
+          282,
+          283,
+          284,
+          285,
+          286,
+          287,
+          288,
+          289,
+          290,
+          291,
+          292,
+          293,
+          294,
+          295,
+          296,
+          297,
+          298,
+          299,
+          300,
+          301,
+          302,
+          303,
+          304,
+          305,
+          306,
+          307,
+          308,
+          309,
+          310,
+          311,
+          312,
+          313,
+          314,
+          315,
+          316,
+          317,
+          318,
+          319,
+          320,
+          321,
+          322,
+          323,
+          324,
+          325,
+          326,
+          327,
+          328,
+          329,
+          330,
+          331,
+          332,
+          333,
+          334,
+          335,
+          336,
+          337,
+          338,
+          339,
+          340,
+          341,
+          342,
+          343,
+          344,
+          345,
+          346,
+          347,
+          348,
+          349,
+          350,
+          351,
+          352,
+          353,
+          354,
+          355,
+          356,
+          357,
+          358,
+          359,
+          360,
+          361,
+          362,
+          363,
+          364,
+          365,
+          366,
+          367,
+          368,
+          369,
+          370,
+          371,
+          372,
+          373,
+          374,
+          375,
+          376,
+          377,
+          378,
+          379,
+          380,
+          381
+        ],
+        "records": 7640,
+        "rounds": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "sample_width_bytes": 118,
+        "traversal_thread_cpu_ns": 24727072438,
+        "unresolved": 0,
+        "workers": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ]
+      },
+      "structure": {
+        "mode": "0664",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826/t4-fixed-v1.stage-568740-1787758362364871300/subject/structure.json",
+        "sha256": "90d24adee563be803c390b41b18b41624b999db37b34c26650cb362f03d06712",
+        "size_bytes": 172206
+      },
+      "structure_summary": {
+        "exact_d1_structure": true,
+        "queries": 382,
+        "sha256": "90d24adee563be803c390b41b18b41624b999db37b34c26650cb362f03d06712",
+        "totals_per_round": {
+          "examined_edges": 25145756,
+          "expanded_states": 8059788,
+          "pruned_edges": 17086732,
+          "stack_pops": 8059788,
+          "stack_pushes": 8059788,
+          "surviving_edges": 8059024,
+          "terminal_hits_before_merge": 17600
+        }
+      },
+      "traversal_thread_cpu_ns": 24727072438,
+      "traversal_thread_cpu_per_edge_ns": 49.16748662875755,
+      "u4_denominator_edges": 502915120,
+      "u4_measured_rounds": 20,
+      "violations": []
+    },
+    "subject_executions": 1,
+    "thermal_throttle_drift": {},
+    "violations": {
+      "bucket_map": [],
+      "capability": [],
+      "perturbation": [],
+      "provenance": [
+        "worker TID graph failed: D5Error: worker sample CPU sets are not singleton: {568865: {0}, 568866: {1}, 568867: {2}, 568868: {3}, 568869: {4}, 568870: {5}, 568871: {6}, 568872: {7}, 568873: {8}, 568874: {9}, 568875: {10}, 568876: {11}, 568877: {12}, 568878: {18, 13}, 568879: {14}, 568880: {15}, 568881: {16}, 568882: {17}, 568883: {18}, 568884: {19}}"
+      ],
+      "sample_coverage": [
+        "lost/throttle/unthrottle=0/29/29"
+      ],
+      "thermal": []
+    },
+    "warmup_time_filter_or_subtraction": false
+  },
+  "paper_sha256": "cfe512a162d257ecf5b3c37c2dbb1c39ecacf831b70954f46912035d00169c87",
+  "perf_readers": 4,
+  "perf_record": 1,
+  "perf_stat": 0,
+  "pmu_events_opened": 1,
+  "preflight_receipt_sha256": "78cde27fbf1062122fb74e3c0f5028c29784e9d16417cad7ae0638864ef6455b",
+  "preflight_sha256": "4c51d24eaa8cdd1052f5220d453fc3ad5d8e5d0b43fda7c972d3b0c8063ef77a",
+  "retry_permitted": false,
+  "route": "T4-FIXED",
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.e1-traversal-d5-route-receipt.v1",
+  "subject_executions": 1,
+  "task_id": "slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826",
+  "transaction_id": "3ee46e2c915677e1b2d3cd6bcc9709e0232252dbc120745b097d736537779036",
+  "verdict": "BLOCKED_PROVENANCE"
+}

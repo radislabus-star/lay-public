@@ -1,0 +1,997 @@
+{
+  "verdict": "PASS",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "m3-v8r3-latency-failure-decision-v1-route-v4",
+  "domain": "general",
+  "complexity_score": 54,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "c7",
+    "c8",
+    "c9",
+    "c10"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.1071,
+      "c10": 0.1071,
+      "c2": 0.1071,
+      "c3": 0.1071,
+      "c4": 0.1071,
+      "c5": 0.1071,
+      "c6": 0.1071,
+      "c7": 0.1071,
+      "c8": 0.1071,
+      "c9": 0.1071
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 20,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "s9",
+      "s10",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.3271,
+      "c10": 0.3089,
+      "c2": 0.321,
+      "c3": 0.338,
+      "c4": 0.338,
+      "c5": 0.3198,
+      "c6": 0.2944,
+      "c7": 0.3222,
+      "c8": 0.3198,
+      "c9": 0.3355
+    },
+    "source_self_score": 0.3225,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "boundary": "boundary",
+      "claim": "claim",
+      "evidence": "evidence",
+      "history": "history",
+      "identity": "identity",
+      "interpretation": "interpretation",
+      "marker": "marker",
+      "terminal": "terminal"
+    },
+    "scores": {
+      "boundary": 1.0,
+      "claim": 1.0,
+      "evidence": 1.0,
+      "history": 1.0,
+      "identity": 1.0,
+      "interpretation": 1.0,
+      "marker": 1.0,
+      "terminal": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "boundary": 1,
+      "claim": 1,
+      "evidence": 1,
+      "history": 2,
+      "identity": 1,
+      "interpretation": 2,
+      "marker": 1,
+      "terminal": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.3225,
+      "norm": 103.1891,
+      "triads": 10
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "boundary": "boundary",
+      "claim": "claim",
+      "evidence": "evidence",
+      "history": "history",
+      "identity": "identity",
+      "interpretation": "interpretation",
+      "marker": "marker",
+      "terminal": "terminal"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "claim": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "evidence": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "history": {
+          "norm": 44.4522,
+          "self_coherence": 0.6946,
+          "triads": 2
+        },
+        "identity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "interpretation": {
+          "norm": 45.299,
+          "self_coherence": 0.7078,
+          "triads": 2
+        },
+        "marker": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "claim": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "evidence": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "history": {
+          "norm": 44.4522,
+          "self_coherence": 0.6946,
+          "triads": 2
+        },
+        "identity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "interpretation": {
+          "norm": 45.299,
+          "self_coherence": 0.7078,
+          "triads": 2
+        },
+        "marker": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "boundary",
+        "exact_source_groups": [
+          "boundary"
+        ]
+      },
+      "claim": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "claim",
+        "exact_source_groups": [
+          "claim"
+        ]
+      },
+      "evidence": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "evidence",
+        "exact_source_groups": [
+          "evidence"
+        ]
+      },
+      "history": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "history",
+        "exact_source_groups": [
+          "history"
+        ]
+      },
+      "identity": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "identity",
+        "exact_source_groups": [
+          "identity"
+        ]
+      },
+      "interpretation": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "interpretation",
+        "exact_source_groups": [
+          "interpretation"
+        ]
+      },
+      "marker": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "marker",
+        "exact_source_groups": [
+          "marker"
+        ]
+      },
+      "terminal": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "terminal",
+        "exact_source_groups": [
+          "terminal"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "boundary": {
+        "boundary": 1.0,
+        "claim": -0.0137,
+        "evidence": -0.0234,
+        "history": -0.0394,
+        "identity": 0.0156,
+        "interpretation": 0.0069,
+        "marker": 0.0234,
+        "terminal": 0.0391
+      },
+      "claim": {
+        "boundary": -0.0137,
+        "claim": 1.0,
+        "evidence": -0.0098,
+        "history": 0.0309,
+        "identity": 0.002,
+        "interpretation": 0.0069,
+        "marker": -0.0059,
+        "terminal": 0.0059
+      },
+      "evidence": {
+        "boundary": -0.0234,
+        "claim": -0.0098,
+        "evidence": 1.0,
+        "history": 0.0253,
+        "identity": 0.0703,
+        "interpretation": 0.0014,
+        "marker": -0.0078,
+        "terminal": -0.0273
+      },
+      "history": {
+        "boundary": -0.0394,
+        "claim": 0.0309,
+        "evidence": 0.0253,
+        "history": 1.0,
+        "identity": -0.0337,
+        "interpretation": 0.0755,
+        "marker": 0.0309,
+        "terminal": -0.0056
+      },
+      "identity": {
+        "boundary": 0.0156,
+        "claim": 0.002,
+        "evidence": 0.0703,
+        "history": -0.0337,
+        "identity": 1.0,
+        "interpretation": -0.0014,
+        "marker": -0.043,
+        "terminal": 0.0352
+      },
+      "interpretation": {
+        "boundary": 0.0069,
+        "claim": 0.0069,
+        "evidence": 0.0014,
+        "history": 0.0755,
+        "identity": -0.0014,
+        "interpretation": 1.0,
+        "marker": -0.0317,
+        "terminal": 0.0373
+      },
+      "marker": {
+        "boundary": 0.0234,
+        "claim": -0.0059,
+        "evidence": -0.0078,
+        "history": 0.0309,
+        "identity": -0.043,
+        "interpretation": -0.0317,
+        "marker": 1.0,
+        "terminal": -0.0156
+      },
+      "terminal": {
+        "boundary": 0.0391,
+        "claim": 0.0059,
+        "evidence": -0.0273,
+        "history": -0.0056,
+        "identity": 0.0352,
+        "interpretation": 0.0373,
+        "marker": -0.0156,
+        "terminal": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "boundary": {
+          "gravity": 1.0,
+          "owner": "boundary",
+          "owners": {
+            "boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "claim": {
+          "gravity": 1.0,
+          "owner": "claim",
+          "owners": {
+            "claim": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "evidence": {
+          "gravity": 1.0,
+          "owner": "evidence",
+          "owners": {
+            "evidence": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "history": {
+          "gravity": 1.0,
+          "owner": "history",
+          "owners": {
+            "history": 4
+          },
+          "support": 4,
+          "total": 4
+        },
+        "identity": {
+          "gravity": 1.0,
+          "owner": "identity",
+          "owners": {
+            "identity": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "interpretation": {
+          "gravity": 1.0,
+          "owner": "interpretation",
+          "owners": {
+            "interpretation": 4
+          },
+          "support": 4,
+          "total": 4
+        },
+        "marker": {
+          "gravity": 1.0,
+          "owner": "marker",
+          "owners": {
+            "marker": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "terminal": {
+          "gravity": 1.0,
+          "owner": "terminal",
+          "owners": {
+            "terminal": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "boundary": {
+          "gravity": 1.0,
+          "owner": "boundary",
+          "owners": {
+            "boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "claim": {
+          "gravity": 1.0,
+          "owner": "claim",
+          "owners": {
+            "claim": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "evidence": {
+          "gravity": 1.0,
+          "owner": "evidence",
+          "owners": {
+            "evidence": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "history": {
+          "gravity": 1.0,
+          "owner": "history",
+          "owners": {
+            "history": 4
+          },
+          "support": 4,
+          "total": 4
+        },
+        "identity": {
+          "gravity": 1.0,
+          "owner": "identity",
+          "owners": {
+            "identity": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "interpretation": {
+          "gravity": 1.0,
+          "owner": "interpretation",
+          "owners": {
+            "interpretation": 4
+          },
+          "support": 4,
+          "total": 4
+        },
+        "marker": {
+          "gravity": 1.0,
+          "owner": "marker",
+          "owners": {
+            "marker": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "terminal": {
+          "gravity": 1.0,
+          "owner": "terminal",
+          "owners": {
+            "terminal": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "boundary": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "explicit forbidden action graph",
+            "latency-decision-v1.md:182-202"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "boundary"
+          ],
+          "scopes": [
+            "boundary"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "claim": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "latency-decision-v1.md:147-168",
+            "trace schema and explicit claim boundary"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "claim"
+          ],
+          "scopes": [
+            "claim"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "evidence": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "fixed loop and schedule cardinality",
+            "latency-decision-v1.md:129-145"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "evidence"
+          ],
+          "scopes": [
+            "evidence"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "history": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "exact terminal receipt sha and consumed marker",
+            "latency-decision-v1.md:94",
+            "latency-decision-v1.md:94-96",
+            "terminal gate projection"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "history"
+          ],
+          "scopes": [
+            "history"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "identity": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "bootstrap identity contract",
+            "latency-decision-v1.md:110-112"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "identity"
+          ],
+          "scopes": [
+            "identity"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "interpretation": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "absent inner timing in v8r3 receipt",
+            "frozen outer timing distribution",
+            "latency-decision-v1.md:66-74",
+            "latency-decision-v1.md:74-90"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "interpretation"
+          ],
+          "scopes": [
+            "interpretation"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "marker": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "atomic marker rename contract",
+            "latency-decision-v1.md:120-122"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "marker"
+          ],
+          "scopes": [
+            "marker"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "terminal": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "frozen terminal table",
+            "latency-decision-v1.md:170-180"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "terminal"
+          ],
+          "scopes": [
+            "terminal"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "claim": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "evidence": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "history": {
+          "norm": 44.4522,
+          "self_coherence": 0.6946,
+          "triads": 2
+        },
+        "identity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "interpretation": {
+          "norm": 45.299,
+          "self_coherence": 0.7078,
+          "triads": 2
+        },
+        "marker": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "boundary": {
+          "boundary": 1.0,
+          "claim": -0.0137,
+          "evidence": -0.0234,
+          "history": -0.0394,
+          "identity": 0.0156,
+          "interpretation": 0.0069,
+          "marker": 0.0234,
+          "terminal": 0.0391
+        },
+        "claim": {
+          "boundary": -0.0137,
+          "claim": 1.0,
+          "evidence": -0.0098,
+          "history": 0.0309,
+          "identity": 0.002,
+          "interpretation": 0.0069,
+          "marker": -0.0059,
+          "terminal": 0.0059
+        },
+        "evidence": {
+          "boundary": -0.0234,
+          "claim": -0.0098,
+          "evidence": 1.0,
+          "history": 0.0253,
+          "identity": 0.0703,
+          "interpretation": 0.0014,
+          "marker": -0.0078,
+          "terminal": -0.0273
+        },
+        "history": {
+          "boundary": -0.0394,
+          "claim": 0.0309,
+          "evidence": 0.0253,
+          "history": 1.0,
+          "identity": -0.0337,
+          "interpretation": 0.0755,
+          "marker": 0.0309,
+          "terminal": -0.0056
+        },
+        "identity": {
+          "boundary": 0.0156,
+          "claim": 0.002,
+          "evidence": 0.0703,
+          "history": -0.0337,
+          "identity": 1.0,
+          "interpretation": -0.0014,
+          "marker": -0.043,
+          "terminal": 0.0352
+        },
+        "interpretation": {
+          "boundary": 0.0069,
+          "claim": 0.0069,
+          "evidence": 0.0014,
+          "history": 0.0755,
+          "identity": -0.0014,
+          "interpretation": 1.0,
+          "marker": -0.0317,
+          "terminal": 0.0373
+        },
+        "marker": {
+          "boundary": 0.0234,
+          "claim": -0.0059,
+          "evidence": -0.0078,
+          "history": 0.0309,
+          "identity": -0.043,
+          "interpretation": -0.0317,
+          "marker": 1.0,
+          "terminal": -0.0156
+        },
+        "terminal": {
+          "boundary": 0.0391,
+          "claim": 0.0059,
+          "evidence": -0.0273,
+          "history": -0.0056,
+          "identity": 0.0352,
+          "interpretation": 0.0373,
+          "marker": -0.0156,
+          "terminal": 1.0
+        }
+      },
+      "source": {
+        "boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "claim": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "evidence": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "history": {
+          "norm": 44.4522,
+          "self_coherence": 0.6946,
+          "triads": 2
+        },
+        "identity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "interpretation": {
+          "norm": 45.299,
+          "self_coherence": 0.7078,
+          "triads": 2
+        },
+        "marker": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "boundary": 1,
+      "claim": 1,
+      "evidence": 1,
+      "history": 2,
+      "identity": 1,
+      "interpretation": 2,
+      "marker": 1,
+      "terminal": 1
+    },
+    "stable_groups": [
+      "boundary",
+      "claim",
+      "evidence",
+      "history",
+      "identity",
+      "interpretation",
+      "marker",
+      "terminal"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [],
+  "agent_decision": {
+    "action": "SAFE_TO_EDIT",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Proceed only within the checked route boundary.",
+    "repair_count": 0,
+    "repair_queue": [],
+    "safe_to_edit": true
+  },
+  "explanation": [
+    "Candidate structure is coherent with source triads.",
+    "Structural coherence only: trusted proof was not established and authority is false."
+  ],
+  "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+  "trace_path": "/tmp/nanda-structural-gate/m3-v8r3-latency-failure-decision-v1-route-v4.trace.json"
+}

@@ -1,0 +1,1397 @@
+{
+  "verdict": "VETO",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "lay-v10-b-hardware-contract-v3",
+  "domain": "code",
+  "complexity_score": 68,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c3",
+    "c4",
+    "c6",
+    "c7",
+    "c9",
+    "c10",
+    "c11"
+  ],
+  "weak_triads": [
+    "c1",
+    "c12",
+    "c13",
+    "c14",
+    "c2",
+    "c5",
+    "c8"
+  ],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10",
+      "c11",
+      "c12",
+      "c13",
+      "c14"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.0811,
+      "c10": 0.0811,
+      "c11": 0.0811,
+      "c12": 0.0811,
+      "c13": 0.0811,
+      "c14": 0.0811,
+      "c2": 0.0811,
+      "c3": 0.0811,
+      "c4": 0.0811,
+      "c5": 0.0811,
+      "c6": 0.0811,
+      "c7": 0.0811,
+      "c8": 0.0811,
+      "c9": 0.0811
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 28,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "s6",
+      "s7",
+      "s8",
+      "s9",
+      "s10",
+      "s11",
+      "s12",
+      "s13",
+      "s14",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5",
+      "c6",
+      "c7",
+      "c8",
+      "c9",
+      "c10",
+      "c11",
+      "c12",
+      "c13",
+      "c14"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.2504,
+      "c10": 0.3022,
+      "c11": 0.2982,
+      "c12": 0.2584,
+      "c13": 0.2126,
+      "c14": 0.2713,
+      "c2": 0.2394,
+      "c3": 0.3261,
+      "c4": 0.2813,
+      "c5": 0.2733,
+      "c6": 0.2912,
+      "c7": 0.3171,
+      "c8": 0.2743,
+      "c9": 0.328
+    },
+    "source_self_score": 0.2803,
+    "stable": [
+      "c3",
+      "c4",
+      "c6",
+      "c7",
+      "c9",
+      "c10",
+      "c11"
+    ],
+    "weak": [
+      "c1",
+      "c2",
+      "c5",
+      "c8",
+      "c12",
+      "c13",
+      "c14"
+    ],
+    "weak_details": {
+      "c1": {
+        "nearest_source": "s1",
+        "nearest_source_score": 1.0,
+        "score": 0.2504,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c12": {
+        "nearest_source": "s12",
+        "nearest_source_score": 1.0,
+        "score": 0.2584,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c13": {
+        "nearest_source": "s13",
+        "nearest_source_score": 1.0,
+        "score": 0.2126,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c14": {
+        "nearest_source": "s14",
+        "nearest_source_score": 1.0,
+        "score": 0.2713,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c2": {
+        "nearest_source": "s2",
+        "nearest_source_score": 1.0,
+        "score": 0.2394,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c5": {
+        "nearest_source": "s5",
+        "nearest_source_score": 1.0,
+        "score": 0.2733,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      },
+      "c8": {
+        "nearest_source": "s8",
+        "nearest_source_score": 1.0,
+        "score": 0.2743,
+        "suggested_fix": "Check subject/object roles, relation name, group, route, and evidence for this candidate triad.",
+        "why_weak": "candidate triad does not resonate with the composite source memory above the stability threshold"
+      }
+    }
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "current-admission": "current-admission",
+      "denominator-boundary": "denominator-boundary",
+      "environment": "environment",
+      "historical-envelope": "historical-envelope",
+      "historical-envelope-observer": "historical-envelope-observer",
+      "one-client": "one-client",
+      "phase-boundary": "phase-boundary",
+      "pmu": "pmu",
+      "proxy-identity": "proxy-identity",
+      "proxy-parity": "proxy-parity",
+      "proxy-source": "proxy-source",
+      "side-effects": "side-effects",
+      "twenty-client": "twenty-client",
+      "v12-admission": "v12-admission"
+    },
+    "scores": {
+      "current-admission": 1.0,
+      "denominator-boundary": 1.0,
+      "environment": 1.0,
+      "historical-envelope": 1.0,
+      "historical-envelope-observer": 1.0,
+      "one-client": 1.0,
+      "phase-boundary": 1.0,
+      "pmu": 1.0,
+      "proxy-identity": 1.0,
+      "proxy-parity": 1.0,
+      "proxy-source": 1.0,
+      "side-effects": 1.0,
+      "twenty-client": 1.0,
+      "v12-admission": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "current-admission": 1,
+      "denominator-boundary": 1,
+      "environment": 1,
+      "historical-envelope": 1,
+      "historical-envelope-observer": 1,
+      "one-client": 1,
+      "phase-boundary": 1,
+      "pmu": 1,
+      "proxy-identity": 1,
+      "proxy-parity": 1,
+      "proxy-source": 1,
+      "side-effects": 1,
+      "twenty-client": 1,
+      "v12-admission": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.2803,
+      "norm": 125.5548,
+      "triads": 14
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "current-admission": "current-admission",
+      "denominator-boundary": "denominator-boundary",
+      "environment": "environment",
+      "historical-envelope": "historical-envelope",
+      "historical-envelope-observer": "historical-envelope-observer",
+      "one-client": "one-client",
+      "phase-boundary": "phase-boundary",
+      "pmu": "pmu",
+      "proxy-identity": "proxy-identity",
+      "proxy-parity": "proxy-parity",
+      "proxy-source": "proxy-source",
+      "side-effects": "side-effects",
+      "twenty-client": "twenty-client",
+      "v12-admission": "v12-admission"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "current-admission": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "denominator-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "historical-envelope": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "historical-envelope-observer": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "one-client": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "phase-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proxy-identity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proxy-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proxy-source": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "side-effects": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "twenty-client": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "v12-admission": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "current-admission": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "denominator-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "historical-envelope": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "historical-envelope-observer": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "one-client": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "phase-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "pmu": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proxy-identity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proxy-parity": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proxy-source": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "side-effects": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "twenty-client": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "v12-admission": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "current-admission": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "current-admission",
+        "exact_source_groups": [
+          "current-admission"
+        ]
+      },
+      "denominator-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "denominator-boundary",
+        "exact_source_groups": [
+          "denominator-boundary"
+        ]
+      },
+      "environment": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "environment",
+        "exact_source_groups": [
+          "environment"
+        ]
+      },
+      "historical-envelope": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "historical-envelope",
+        "exact_source_groups": [
+          "historical-envelope"
+        ]
+      },
+      "historical-envelope-observer": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "historical-envelope-observer",
+        "exact_source_groups": [
+          "historical-envelope-observer"
+        ]
+      },
+      "one-client": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "one-client",
+        "exact_source_groups": [
+          "one-client"
+        ]
+      },
+      "phase-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "phase-boundary",
+        "exact_source_groups": [
+          "phase-boundary"
+        ]
+      },
+      "pmu": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "pmu",
+        "exact_source_groups": [
+          "pmu"
+        ]
+      },
+      "proxy-identity": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "proxy-identity",
+        "exact_source_groups": [
+          "proxy-identity"
+        ]
+      },
+      "proxy-parity": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "proxy-parity",
+        "exact_source_groups": [
+          "proxy-parity"
+        ]
+      },
+      "proxy-source": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "proxy-source",
+        "exact_source_groups": [
+          "proxy-source"
+        ]
+      },
+      "side-effects": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "side-effects",
+        "exact_source_groups": [
+          "side-effects"
+        ]
+      },
+      "twenty-client": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "twenty-client",
+        "exact_source_groups": [
+          "twenty-client"
+        ]
+      },
+      "v12-admission": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "v12-admission",
+        "exact_source_groups": [
+          "v12-admission"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "current-admission": {
+        "current-admission": 1.0,
+        "denominator-boundary": 0.0098,
+        "environment": -0.0156,
+        "historical-envelope": 0.0449,
+        "historical-envelope-observer": -0.0137,
+        "one-client": -0.0293,
+        "phase-boundary": 0.0098,
+        "pmu": -0.0293,
+        "proxy-identity": 0.0098,
+        "proxy-parity": -0.0703,
+        "proxy-source": -0.0508,
+        "side-effects": -0.0547,
+        "twenty-client": 0.0488,
+        "v12-admission": -0.0254
+      },
+      "denominator-boundary": {
+        "current-admission": 0.0098,
+        "denominator-boundary": 1.0,
+        "environment": -0.0176,
+        "historical-envelope": -0.0391,
+        "historical-envelope-observer": 0.0469,
+        "one-client": 0.0703,
+        "phase-boundary": -0.0469,
+        "pmu": 0.0313,
+        "proxy-identity": 0.0742,
+        "proxy-parity": 0.0137,
+        "proxy-source": 0.0215,
+        "side-effects": 0.0059,
+        "twenty-client": 0.0078,
+        "v12-admission": -0.0078
+      },
+      "environment": {
+        "current-admission": -0.0156,
+        "denominator-boundary": -0.0176,
+        "environment": 1.0,
+        "historical-envelope": -0.0176,
+        "historical-envelope-observer": 0.0684,
+        "one-client": 0.0488,
+        "phase-boundary": -0.002,
+        "pmu": 0.0098,
+        "proxy-identity": 0.0566,
+        "proxy-parity": 0.0352,
+        "proxy-source": 0.0469,
+        "side-effects": -0.0117,
+        "twenty-client": 0.0605,
+        "v12-admission": -0.0176
+      },
+      "historical-envelope": {
+        "current-admission": 0.0449,
+        "denominator-boundary": -0.0391,
+        "environment": -0.0176,
+        "historical-envelope": 1.0,
+        "historical-envelope-observer": 0.0,
+        "one-client": -0.0078,
+        "phase-boundary": -0.0352,
+        "pmu": -0.0195,
+        "proxy-identity": 0.0,
+        "proxy-parity": -0.002,
+        "proxy-source": 0.0059,
+        "side-effects": -0.0098,
+        "twenty-client": 0.0547,
+        "v12-admission": 0.0078
+      },
+      "historical-envelope-observer": {
+        "current-admission": -0.0137,
+        "denominator-boundary": 0.0469,
+        "environment": 0.0684,
+        "historical-envelope": 0.0,
+        "historical-envelope-observer": 1.0,
+        "one-client": 0.0039,
+        "phase-boundary": -0.0234,
+        "pmu": 0.0586,
+        "proxy-identity": 0.0,
+        "proxy-parity": 0.0254,
+        "proxy-source": 0.0449,
+        "side-effects": 0.0176,
+        "twenty-client": 0.0313,
+        "v12-admission": 0.0195
+      },
+      "one-client": {
+        "current-admission": -0.0293,
+        "denominator-boundary": 0.0703,
+        "environment": 0.0488,
+        "historical-envelope": -0.0078,
+        "historical-envelope-observer": 0.0039,
+        "one-client": 1.0,
+        "phase-boundary": 0.0742,
+        "pmu": 0.0508,
+        "proxy-identity": -0.0078,
+        "proxy-parity": 0.0098,
+        "proxy-source": 0.0371,
+        "side-effects": 0.0254,
+        "twenty-client": -0.0156,
+        "v12-admission": 0.0273
+      },
+      "phase-boundary": {
+        "current-admission": 0.0098,
+        "denominator-boundary": -0.0469,
+        "environment": -0.002,
+        "historical-envelope": -0.0352,
+        "historical-envelope-observer": -0.0234,
+        "one-client": 0.0742,
+        "phase-boundary": 1.0,
+        "pmu": 0.0078,
+        "proxy-identity": 0.0078,
+        "proxy-parity": 0.0059,
+        "proxy-source": -0.0293,
+        "side-effects": 0.0254,
+        "twenty-client": -0.0195,
+        "v12-admission": -0.0352
+      },
+      "pmu": {
+        "current-admission": -0.0293,
+        "denominator-boundary": 0.0313,
+        "environment": 0.0098,
+        "historical-envelope": -0.0195,
+        "historical-envelope-observer": 0.0586,
+        "one-client": 0.0508,
+        "phase-boundary": 0.0078,
+        "pmu": 1.0,
+        "proxy-identity": -0.0508,
+        "proxy-parity": 0.0098,
+        "proxy-source": 0.0059,
+        "side-effects": 0.0098,
+        "twenty-client": -0.0117,
+        "v12-admission": 0.0039
+      },
+      "proxy-identity": {
+        "current-admission": 0.0098,
+        "denominator-boundary": 0.0742,
+        "environment": 0.0566,
+        "historical-envelope": 0.0,
+        "historical-envelope-observer": 0.0,
+        "one-client": -0.0078,
+        "phase-boundary": 0.0078,
+        "pmu": -0.0508,
+        "proxy-identity": 1.0,
+        "proxy-parity": 0.0176,
+        "proxy-source": -0.0645,
+        "side-effects": 0.0527,
+        "twenty-client": 0.0039,
+        "v12-admission": 0.0039
+      },
+      "proxy-parity": {
+        "current-admission": -0.0703,
+        "denominator-boundary": 0.0137,
+        "environment": 0.0352,
+        "historical-envelope": -0.002,
+        "historical-envelope-observer": 0.0254,
+        "one-client": 0.0098,
+        "phase-boundary": 0.0059,
+        "pmu": 0.0098,
+        "proxy-identity": 0.0176,
+        "proxy-parity": 1.0,
+        "proxy-source": 0.0742,
+        "side-effects": -0.0039,
+        "twenty-client": 0.0215,
+        "v12-admission": 0.0059
+      },
+      "proxy-source": {
+        "current-admission": -0.0508,
+        "denominator-boundary": 0.0215,
+        "environment": 0.0469,
+        "historical-envelope": 0.0059,
+        "historical-envelope-observer": 0.0449,
+        "one-client": 0.0371,
+        "phase-boundary": -0.0293,
+        "pmu": 0.0059,
+        "proxy-identity": -0.0645,
+        "proxy-parity": 0.0742,
+        "proxy-source": 1.0,
+        "side-effects": -0.0117,
+        "twenty-client": -0.0098,
+        "v12-admission": 0.002
+      },
+      "side-effects": {
+        "current-admission": -0.0547,
+        "denominator-boundary": 0.0059,
+        "environment": -0.0117,
+        "historical-envelope": -0.0098,
+        "historical-envelope-observer": 0.0176,
+        "one-client": 0.0254,
+        "phase-boundary": 0.0254,
+        "pmu": 0.0098,
+        "proxy-identity": 0.0527,
+        "proxy-parity": -0.0039,
+        "proxy-source": -0.0117,
+        "side-effects": 1.0,
+        "twenty-client": 0.002,
+        "v12-admission": 0.0176
+      },
+      "twenty-client": {
+        "current-admission": 0.0488,
+        "denominator-boundary": 0.0078,
+        "environment": 0.0605,
+        "historical-envelope": 0.0547,
+        "historical-envelope-observer": 0.0313,
+        "one-client": -0.0156,
+        "phase-boundary": -0.0195,
+        "pmu": -0.0117,
+        "proxy-identity": 0.0039,
+        "proxy-parity": 0.0215,
+        "proxy-source": -0.0098,
+        "side-effects": 0.002,
+        "twenty-client": 1.0,
+        "v12-admission": 0.0117
+      },
+      "v12-admission": {
+        "current-admission": -0.0254,
+        "denominator-boundary": -0.0078,
+        "environment": -0.0176,
+        "historical-envelope": 0.0078,
+        "historical-envelope-observer": 0.0195,
+        "one-client": 0.0273,
+        "phase-boundary": -0.0352,
+        "pmu": 0.0039,
+        "proxy-identity": 0.0039,
+        "proxy-parity": 0.0059,
+        "proxy-source": 0.002,
+        "side-effects": 0.0176,
+        "twenty-client": 0.0117,
+        "v12-admission": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "current-admission": {
+          "gravity": 1.0,
+          "owner": "current-admission",
+          "owners": {
+            "current-admission": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "denominator-boundary": {
+          "gravity": 1.0,
+          "owner": "denominator-boundary",
+          "owners": {
+            "denominator-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "environment": {
+          "gravity": 1.0,
+          "owner": "environment",
+          "owners": {
+            "environment": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "historical-envelope": {
+          "gravity": 1.0,
+          "owner": "historical-envelope",
+          "owners": {
+            "historical-envelope": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "historical-envelope-observer": {
+          "gravity": 1.0,
+          "owner": "historical-envelope-observer",
+          "owners": {
+            "historical-envelope-observer": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "one-client": {
+          "gravity": 1.0,
+          "owner": "one-client",
+          "owners": {
+            "one-client": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "phase-boundary": {
+          "gravity": 1.0,
+          "owner": "phase-boundary",
+          "owners": {
+            "phase-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "pmu": {
+          "gravity": 1.0,
+          "owner": "pmu",
+          "owners": {
+            "pmu": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "proxy-identity": {
+          "gravity": 1.0,
+          "owner": "proxy-identity",
+          "owners": {
+            "proxy-identity": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "proxy-parity": {
+          "gravity": 1.0,
+          "owner": "proxy-parity",
+          "owners": {
+            "proxy-parity": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "proxy-source": {
+          "gravity": 1.0,
+          "owner": "proxy-source",
+          "owners": {
+            "proxy-source": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "side-effects": {
+          "gravity": 1.0,
+          "owner": "b outputs",
+          "owners": {
+            "b outputs": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "twenty-client": {
+          "gravity": 1.0,
+          "owner": "twenty-client",
+          "owners": {
+            "twenty-client": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "v12-admission": {
+          "gravity": 1.0,
+          "owner": "v12-admission",
+          "owners": {
+            "v12-admission": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "admission": {
+          "gravity": 0.5,
+          "owner": "current-admission",
+          "owners": {
+            "current-admission": 2,
+            "v12-admission": 2
+          },
+          "support": 2,
+          "total": 4
+        },
+        "control": {
+          "gravity": 1.0,
+          "owner": "b outputs",
+          "owners": {
+            "b outputs": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "environment": {
+          "gravity": 1.0,
+          "owner": "environment",
+          "owners": {
+            "environment": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "historical": {
+          "gravity": 0.3333,
+          "owner": "historical-envelope",
+          "owners": {
+            "historical-envelope": 2,
+            "historical-envelope-observer": 2,
+            "phase-boundary": 2
+          },
+          "support": 2,
+          "total": 6
+        },
+        "pmu": {
+          "gravity": 1.0,
+          "owner": "pmu",
+          "owners": {
+            "pmu": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "proof": {
+          "gravity": 1.0,
+          "owner": "denominator-boundary",
+          "owners": {
+            "denominator-boundary": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "proxy": {
+          "gravity": 0.2,
+          "owner": "one-client",
+          "owners": {
+            "one-client": 2,
+            "proxy-identity": 2,
+            "proxy-parity": 2,
+            "proxy-source": 2,
+            "twenty-client": 2
+          },
+          "support": 2,
+          "total": 10
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "admission": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "b contract lines 43..45",
+            "b contract lines 474..490",
+            "explicit current user boundary",
+            "user boundary and p0 correction"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "current-admission",
+            "v12-admission"
+          ],
+          "scopes": [
+            "admission"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "control": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "b contract lines 47..117 and 492..518",
+            "p0 correction and isolated evidence requirement"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "b outputs"
+          ],
+          "scopes": [
+            "control"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "environment": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "b contract lines 119..186",
+            "user request 2026-08-24"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "environment"
+          ],
+          "scopes": [
+            "environment"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "historical": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 3,
+          "entrypoints": [],
+          "evidence_paths": [
+            "b contract lines 10..42",
+            "b contract lines 236..266",
+            "b contract lines 268..286",
+            "exact source lines 1514..1615",
+            "stripped single-entrypoint evidence",
+            "user requires exact route and proof boundary"
+          ],
+          "layers": [
+            "core",
+            "runtime"
+          ],
+          "outputs": [],
+          "owners": [
+            "historical-envelope",
+            "historical-envelope-observer",
+            "phase-boundary"
+          ],
+          "scopes": [
+            "historical"
+          ],
+          "source_triads": 3,
+          "triads": 6
+        },
+        "pmu": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "b contract lines 188..234",
+            "user request 2026-08-24"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "pmu"
+          ],
+          "scopes": [
+            "pmu"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "proof": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "b contract lines 403..470",
+            "p0 frozen measurement contract"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "denominator-boundary"
+          ],
+          "scopes": [
+            "proof"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "proxy": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 5,
+          "entrypoints": [],
+          "evidence_paths": [
+            "b contract lines 288..310",
+            "b contract lines 292..303",
+            "b contract lines 305..310",
+            "b contract lines 312..347",
+            "b contract lines 349..373",
+            "exact cfg test boundary and no instrumentation rule",
+            "exact source lines 2136..2173 plus user affinity requirement",
+            "p0 full source closure watch",
+            "requested one-client schedule plus fixed denominator",
+            "systemic proof requirement"
+          ],
+          "layers": [
+            "core",
+            "ui"
+          ],
+          "outputs": [],
+          "owners": [
+            "one-client",
+            "proxy-identity",
+            "proxy-parity",
+            "proxy-source",
+            "twenty-client"
+          ],
+          "scopes": [
+            "proxy"
+          ],
+          "source_triads": 5,
+          "triads": 10
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "admission": {
+          "norm": 44.6766,
+          "self_coherence": 0.6981,
+          "triads": 2
+        },
+        "control": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "historical": {
+          "norm": 54.3323,
+          "self_coherence": 0.566,
+          "triads": 3
+        },
+        "pmu": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proof": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proxy": {
+          "norm": 72.4983,
+          "self_coherence": 0.4531,
+          "triads": 5
+        }
+      },
+      "interference_matrix": {
+        "admission": {
+          "admission": 1.0,
+          "control": -0.0266,
+          "environment": -0.0238,
+          "historical": 0.014,
+          "pmu": -0.0182,
+          "proof": 0.0014,
+          "proxy": -0.013
+        },
+        "control": {
+          "admission": -0.0266,
+          "control": 1.0,
+          "environment": -0.0117,
+          "historical": 0.0196,
+          "pmu": 0.0098,
+          "proof": 0.0059,
+          "proxy": 0.0284
+        },
+        "environment": {
+          "admission": -0.0238,
+          "control": -0.0117,
+          "environment": 1.0,
+          "historical": 0.0288,
+          "pmu": 0.0098,
+          "proof": -0.0176,
+          "proxy": 0.1095
+        },
+        "historical": {
+          "admission": 0.014,
+          "control": 0.0196,
+          "environment": 0.0288,
+          "historical": 1.0,
+          "pmu": 0.0276,
+          "proof": -0.023,
+          "proxy": 0.0508
+        },
+        "pmu": {
+          "admission": -0.0182,
+          "control": 0.0098,
+          "environment": 0.0098,
+          "historical": 0.0276,
+          "pmu": 1.0,
+          "proof": 0.0313,
+          "proxy": 0.0017
+        },
+        "proof": {
+          "admission": 0.0014,
+          "control": 0.0059,
+          "environment": -0.0176,
+          "historical": -0.023,
+          "pmu": 0.0313,
+          "proof": 1.0,
+          "proxy": 0.0828
+        },
+        "proxy": {
+          "admission": -0.013,
+          "control": 0.0284,
+          "environment": 0.1095,
+          "historical": 0.0508,
+          "pmu": 0.0017,
+          "proof": 0.0828,
+          "proxy": 1.0
+        }
+      },
+      "source": {
+        "admission": {
+          "norm": 44.6766,
+          "self_coherence": 0.6981,
+          "triads": 2
+        },
+        "control": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "environment": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "historical": {
+          "norm": 54.3323,
+          "self_coherence": 0.566,
+          "triads": 3
+        },
+        "pmu": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proof": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "proxy": {
+          "norm": 72.4983,
+          "self_coherence": 0.4531,
+          "triads": 5
+        }
+      }
+    },
+    "source_group_sizes": {
+      "current-admission": 1,
+      "denominator-boundary": 1,
+      "environment": 1,
+      "historical-envelope": 1,
+      "historical-envelope-observer": 1,
+      "one-client": 1,
+      "phase-boundary": 1,
+      "pmu": 1,
+      "proxy-identity": 1,
+      "proxy-parity": 1,
+      "proxy-source": 1,
+      "side-effects": 1,
+      "twenty-client": 1,
+      "v12-admission": 1
+    },
+    "stable_groups": [
+      "current-admission",
+      "denominator-boundary",
+      "environment",
+      "historical-envelope",
+      "historical-envelope-observer",
+      "one-client",
+      "phase-boundary",
+      "pmu",
+      "proxy-identity",
+      "proxy-parity",
+      "proxy-source",
+      "side-effects",
+      "twenty-client",
+      "v12-admission"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [
+    {
+      "kind": "evidence_conflict",
+      "priority": "high",
+      "reason": "one evidence span is bound to incompatible role fillers",
+      "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+      "target": "user request 2026-08-24"
+    }
+  ],
+  "agent_decision": {
+    "action": "REPAIR_REQUIRED",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Apply the repair_queue before editing or accepting this route.",
+    "repair_count": 1,
+    "repair_queue": [
+      {
+        "kind": "evidence_conflict",
+        "priority": "high",
+        "reason": "one evidence span is bound to incompatible role fillers",
+        "repair": "Resolve the source conflict and bind each triad to its exact supporting span.",
+        "target": "user request 2026-08-24"
+      }
+    ],
+    "safe_to_edit": false
+  },
+  "explanation": [
+    "At least one candidate triad has weak composite-mode support."
+  ],
+  "repair_prompt": "Repair the candidate answer using only one coherent structural route.\nNANDA verdict: VETO.\nPrimary repair_queue:\n- [high] evidence_conflict: Resolve the source conflict and bind each triad to its exact supporting span.\nRecheck or remove weak candidate triads:\n- c1: score=0.2504, nearest_source=s1, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c12: score=0.2584, nearest_source=s12, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c13: score=0.2126, nearest_source=s13, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c14: score=0.2713, nearest_source=s14, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c2: score=0.2394, nearest_source=s2, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c5: score=0.2733, nearest_source=s5, why=candidate triad does not resonate with the composite source memory above the stability threshold\n- c8: score=0.2743, nearest_source=s8, why=candidate triad does not resonate with the composite source memory above the stability threshold",
+  "trace_path": "/tmp/nanda-structural-gate/lay-v10-b-hardware-contract-v3.trace.json"
+}

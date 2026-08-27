@@ -1,0 +1,21 @@
+{
+  "bindings": 3255785,
+  "canonical_l2_package": "/home/ubu/.local/share/lay/nanda_wave/l2/.LAY-L2-RU-FULL-v13.bin.tmp.3376680",
+  "canonical_l2_package_bytes": 140556462,
+  "canonical_l2_package_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+  "edges": 226341,
+  "elapsed_us": 2103496,
+  "forms": 1875032,
+  "kind": "canonical_l2_v13_exact_sidecar",
+  "output": "/home/ubu/.local/share/lay/nanda_wave/l2/.LAY-L2-RU-FULL-v13.dafsa.tmp.3376680",
+  "output_bytes": 2460144,
+  "output_sha256": "a277b3c8b7d441de55fdc3c77abf483c2061653e9068b3bcce57629c742de9d7",
+  "runtime_authority_changed": false,
+  "states": 81128,
+  "symbols": 34,
+  "typed_payload_bytes": 3689628,
+  "verdict": "PASS_exact_typed_roundtrip"
+}
+Installed 10 release binaries in /home/ubu/.local/lib/lay/bin
+Installed canonical L2 package in /home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin
+Installed exact V13 sidecar in /home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.dafsa

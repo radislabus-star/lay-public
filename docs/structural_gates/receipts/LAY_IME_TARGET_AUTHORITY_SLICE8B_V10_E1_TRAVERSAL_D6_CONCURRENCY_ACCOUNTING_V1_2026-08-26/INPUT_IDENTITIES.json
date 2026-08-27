@@ -1,0 +1,61 @@
+{
+  "d1_manifest": {
+    "entries": 72,
+    "manifest": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/SHA256SUMS",
+      "sha256": "c6e6f0674f773fd397a1fcc0b383fb1e7d1693a768b06e1c6fd21bb7291dcd83",
+      "size_bytes": 7021
+    }
+  },
+  "pinned": {
+    "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_V1_2026-08-26.md": {
+      "mode": "0444",
+      "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_V1_2026-08-26.md",
+      "sha256": "c23f1ffd52b08683a43984ed91f28cb3daf28f98d86e72967b67a27ba2a8567d",
+      "size_bytes": 7605
+    },
+    "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_IMPLEMENTATION_V1_2026-08-26.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_IMPLEMENTATION_V1_2026-08-26.json",
+      "sha256": "7d81562a555a14751470d2846e8bfced420ef521ca7b61acf765acdc7276118e",
+      "size_bytes": 12010
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/SHA256SUMS": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/SHA256SUMS",
+      "sha256": "c6e6f0674f773fd397a1fcc0b383fb1e7d1693a768b06e1c6fd21bb7291dcd83",
+      "size_bytes": 7021
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26/D4_TERMINAL_AUDIT_RECEIPT.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26/D4_TERMINAL_AUDIT_RECEIPT.json",
+      "sha256": "f748a7c448f7f142a342efa2b916a8995969044567a3aaa9a7de3aff6ba8645b",
+      "size_bytes": 3685
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_AUDIT_V1_2026-08-26/D5_T4_FORENSIC_AUDIT_RECEIPT.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D5_T4_OFFLINE_FORENSIC_AUDIT_V1_2026-08-26/D5_T4_FORENSIC_AUDIT_RECEIPT.json",
+      "sha256": "d44ade85316f6f6f6eeb0917d3cdea168fc083e1a52b6c3b5e88fdf2df80ae20",
+      "size_bytes": 2115
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_IMPLEMENTATION_V1_PREFLIGHT_2026-08-26.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_IMPLEMENTATION_V1_PREFLIGHT_2026-08-26.json",
+      "sha256": "1e5af9e3ee08db674e67ed2fac7599a897b4dd0b6f874af01641f8e216821377",
+      "size_bytes": 8015
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_STRUCTURAL_REVIEW_V1_2026-08-26.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_STRUCTURAL_REVIEW_V1_2026-08-26.json",
+      "sha256": "8e41540abeb8cd008f40793352f7d9e3037949b48196ec07d73f6dc6caee1c15",
+      "size_bytes": 1290
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_LOADED_PMU_DIAGNOSIS_COMBINED_V3_V4_2026-08-25.json": {
+      "mode": "0664",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_LOADED_PMU_DIAGNOSIS_COMBINED_V3_V4_2026-08-25.json",
+      "sha256": "ea9a19cace1eab5418f783dfb6c18a4de2adb7281356afffd12bb2b28cdacbd1",
+      "size_bytes": 4621
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "nodes": [
+    {"id":"m2-cli","role":"interface","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":1607,"contains":"def main()"}},
+    {"id":"execution-admission","role":"authorization_owner","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":1255,"contains":"def verify_execution_admission"}},
+    {"id":"local-orchestrator","role":"orchestrator","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":1410,"contains":"def execute_once"}},
+    {"id":"execution-journal","role":"observer","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":312,"contains":"def append_intent"}},
+    {"id":"controller-failure-proof","role":"proof_owner","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":465,"contains":"def publish_controller_failure"}},
+    {"id":"remote-orchestrator","role":"orchestrator","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-remote.py","line":887,"contains":"def main()"}},
+    {"id":"marker-ledger","role":"mutation_owner","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-remote.py","line":311,"contains":"def consume_marker"}},
+    {"id":"build-producer","role":"producer","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-remote.py","line":473,"contains":"def build_once"}},
+    {"id":"parity-producer","role":"producer","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-remote.py","line":654,"contains":"def parity_once"}},
+    {"id":"physical-producer","role":"producer","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-remote.py","line":739,"contains":"def run_physical"}},
+    {"id":"build-observer","role":"observer","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-build-audit.py","line":347,"contains":"def audit()"}},
+    {"id":"route-observer","role":"observer","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-terminal-audit.py","line":353,"contains":"def validate_route"}},
+    {"id":"terminal-proof","role":"proof_owner","evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-terminal-audit.py","line":430,"contains":"def decide"}}
+  ],
+  "edges": [
+    {"id":"cli-local-build","from":"m2-cli","relation":"calls","to":"local-orchestrator","events":["build"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":1617,"contains":"value = execute_once()"}},
+    {"id":"cli-local-parity","from":"m2-cli","relation":"calls","to":"local-orchestrator","events":["parity"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":1617,"contains":"value = execute_once()"}},
+    {"id":"cli-local-physical","from":"m2-cli","relation":"calls","to":"local-orchestrator","events":["physical"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":1617,"contains":"value = execute_once()"}},
+    {"id":"local-journal-observation","from":"local-orchestrator","relation":"observes","to":"execution-journal","events":["external-action-intent"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":359,"contains":"intent = append_intent(root, action_id)"}},
+    {"id":"journal-failure-proof","from":"execution-journal","relation":"proves","to":"controller-failure-proof","events":["controller-failure"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":1580,"contains":"return publish_controller_failure"}},
+    {"id":"local-remote-build","from":"local-orchestrator","relation":"delegates","to":"remote-orchestrator","events":["build"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":1471,"contains":"remote_call(\"build-once\""}},
+    {"id":"local-remote-parity","from":"local-orchestrator","relation":"delegates","to":"remote-orchestrator","events":["parity"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":1510,"contains":"\"parity-once\""}},
+    {"id":"local-remote-physical","from":"local-orchestrator","relation":"delegates","to":"remote-orchestrator","events":["physical"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":1527,"contains":"\"run-route\""}},
+    {"id":"remote-build","from":"remote-orchestrator","relation":"calls","to":"build-producer","events":["build"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-remote.py","line":907,"contains":"result = build_once"}},
+    {"id":"remote-parity","from":"remote-orchestrator","relation":"calls","to":"parity-producer","events":["parity"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-remote.py","line":910,"contains":"result = parity_once"}},
+    {"id":"remote-physical","from":"remote-orchestrator","relation":"calls","to":"physical-producer","events":["physical"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-remote.py","line":913,"contains":"result = run_physical"}},
+    {"id":"admission-marker","from":"execution-admission","relation":"authorizes","to":"marker-ledger","events":["route-mutation"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":1411,"contains":"admission = verify_execution_admission()"}},
+    {"id":"build-observation","from":"build-producer","relation":"observes","to":"build-observer","events":["build-evidence"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-v1.py","line":1486,"contains":"run_auditor(BUILD_AUDITOR)"}},
+    {"id":"parity-observation","from":"parity-producer","relation":"observes","to":"route-observer","events":["route-evidence"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-terminal-audit.py","line":591,"contains":"PARITY_WRAPPER.json"}},
+    {"id":"physical-observation","from":"physical-producer","relation":"observes","to":"route-observer","events":["route-evidence"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-terminal-audit.py","line":606,"contains":"validate_route(route_root, route)"}},
+    {"id":"route-proof","from":"route-observer","relation":"proves","to":"terminal-proof","events":["terminal-decision"],"evidence":{"path":"scripts/lay-v10-e1-traversal-w1-fused-minimum-m2r1-terminal-audit.py","line":626,"contains":"scientific = decide(routes)"}}
+  ],
+  "routes": [
+    {"id":"build-execution","event":"build","kind":"execution","entry":"m2-cli","terminal":"build-producer","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"m2-cli","to":"build-producer","min":1,"max":1}]},
+    {"id":"parity-execution","event":"parity","kind":"execution","entry":"m2-cli","terminal":"parity-producer","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"m2-cli","to":"parity-producer","min":1,"max":1}]},
+    {"id":"physical-execution","event":"physical","kind":"execution","entry":"m2-cli","terminal":"physical-producer","required_roles":["interface","orchestrator","producer"],"path_cardinality":[{"from":"m2-cli","to":"physical-producer","min":1,"max":1}]},
+    {"id":"marker-authority","event":"route-mutation","kind":"authority","entry":"execution-admission","terminal":"marker-ledger","required_roles":["authorization_owner","mutation_owner"],"path_cardinality":[{"from":"execution-admission","to":"marker-ledger","min":1,"max":1}]},
+    {"id":"external-action-observation","event":"external-action-intent","kind":"observation","entry":"local-orchestrator","terminal":"execution-journal","required_roles":["orchestrator","observer"],"path_cardinality":[{"from":"local-orchestrator","to":"execution-journal","min":1,"max":1}]},
+    {"id":"controller-failure-proof","event":"controller-failure","kind":"proof","entry":"execution-journal","terminal":"controller-failure-proof","required_roles":["observer","proof_owner"],"path_cardinality":[{"from":"execution-journal","to":"controller-failure-proof","min":1,"max":1}]},
+    {"id":"build-observation","event":"build-evidence","kind":"observation","entry":"build-producer","terminal":"build-observer","required_roles":["producer","observer"]},
+    {"id":"route-observation-parity","event":"route-evidence","kind":"observation","entry":"parity-producer","terminal":"route-observer","required_roles":["producer","observer"]},
+    {"id":"route-observation-physical","event":"route-evidence","kind":"observation","entry":"physical-producer","terminal":"route-observer","required_roles":["producer","observer"]},
+    {"id":"terminal-proof","event":"terminal-decision","kind":"proof","entry":"route-observer","terminal":"terminal-proof","required_roles":["observer","proof_owner"]}
+  ]
+}

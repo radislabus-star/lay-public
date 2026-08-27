@@ -428,6 +428,8 @@ pub(crate) struct ObservedCorrectionResolution {
 #[derive(Debug, Clone)]
 pub struct CorrectionRequest<'a> {
     pub text: &'a str,
+    pub lexical_authority_frame:
+        Option<&'a crate::lexical_authority_frame::LexicalAuthorityFrameV1>,
     pub auto_replace: bool,
     pub typing_assist: bool,
     pub auto_switch_layout: bool,
@@ -706,6 +708,7 @@ pub fn query_canonical_l2_context(text: &str) -> serde_json::Value {
     let started = Instant::now();
     let resolution = resolve_text_correction(CorrectionRequest {
         text,
+        lexical_authority_frame: None,
         auto_replace: true,
         typing_assist: true,
         auto_switch_layout: true,

@@ -1,0 +1,92 @@
+{
+  "schema": "nanda.semantic-diagnosis-execution-admission.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_SEMANTIC_DIAGNOSIS_V6_2026-08-27",
+  "predecessors": {
+    "v5_admission_manifest_sha256": "df09de9918c5cad87ba4169c4a8bbb2fc29a049b7104d8bb653f8c873a4154fb",
+    "v5_admission_receipt_sha256": "98f8b5a707a166e078b1205335a880d02c230694d435f0d28cb949a71e91032b",
+    "v5_owner_receipt_sha256": "711c8ea2f994e353c1316f04a7348cca464cff03e40bae5603ad4d8ab0e87eab",
+    "v5_terminal_receipt_sha256": "64204cb6caff92c1512843636d1e24d5e4926d7eb6a9aadd3d3aac2d0abfc98c",
+    "v5_verdict": "BLOCKED_SEMANTIC",
+    "v5_owner_requests": "764/764",
+    "v5_retry_permitted": false
+  },
+  "diagnosis_contract": {
+    "paper_sha256": "bf33e90bb2139aa6a7cd8e1618b005b1801da4eaf3001be4f2a4cf331e0d865b",
+    "route_sha256": "d6b4864dbdd0c9d6e6fde95adaf873aeaf053af55a1e65165caf402f0cdfbd40",
+    "route_receipt_sha256": "579086fbd5a25430528bfe435ac4a66ea23f7edf08fa0e53fe51887987db9c20",
+    "route_verdict": "PASS",
+    "route_repairs": 0,
+    "sealed_punctuation_prior_cases": 36,
+    "mismatch_sample_limit": 256,
+    "owner_behavior_change_admitted": false
+  },
+  "diagnostic_source": {
+    "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+    "mode": "0664",
+    "size_bytes": 188626,
+    "sha256": "385b56d819b057141fa6966dcdd695eaac215aea8867630e2468c7263f692072",
+    "change": "test-only stage/class/sample instrumentation and diagnostic wrapper"
+  },
+  "unchanged_owner_sources": {
+    "typed_edit_traversal_sha256": "16b6cc0128099e99c5a77037feac5cf49efd2ed088f6ddb2ade433da92241e5b",
+    "lexical_mod_sha256": "5a468ecb672d3c01cb327c6a270932ca1b5cad91457f0f869c8f219c4eb79511",
+    "material_frame_sha256": "6acd10e90c21acf5e7372eecfd110980f55588ef6b18ee31c1d75a8d13b35bc7",
+    "composite_sha256": "121c46e83d0e890188ba32a36cb603ccbe049d8412e478e469eb9ac13796d9f7",
+    "live_sha256": "eaa2ce25c49ef0b3f8e39b31f75a1107d44f2b91816458efca97b4d1bce07ea3",
+    "productive_mod_sha256": "277f53d188018ac2703a8fbdee74a7f3a304128e4124652c54cdf9ff687ca252"
+  },
+  "protected_identities": {
+    "l2_mod_sha256": "c76c28debdac8e43d360a5a82811ea86e3e6f03b98e4f81cb6678e07953e0953",
+    "bridge_sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad",
+    "cache_sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07",
+    "typed_exact_sha256": "325bdd386b13de77bd030ef1af0fecb12be8bdd2bdd3c841d10257647a4ceaf4",
+    "cargo_toml_sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b",
+    "cargo_lock_sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1",
+    "cargo_guard_sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"
+  },
+  "fixed_inputs": {
+    "v13_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "v7_sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+    "productive_v90_sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44",
+    "l11_embedded_sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7"
+  },
+  "static_checks": {
+    "rustfmt": "PASS",
+    "git_diff_check": "PASS",
+    "diagnosis_receipt_absent": "PASS",
+    "owner_sources_unchanged": "PASS",
+    "fixed_inputs_unchanged": "PASS"
+  },
+  "execution": {
+    "environment": {
+      "LAY_M3_ACTUAL_OWNER_DIAGNOSIS_RECEIPT": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_SEMANTIC_DIAGNOSIS_V1_2026-08-27/DIAGNOSIS_RECEIPT.json"
+    },
+    "argv": [
+      "scripts/cargo-guard.sh",
+      "test",
+      "--offline",
+      "--locked",
+      "--release",
+      "--lib",
+      "nanda_wave::l2_field::v13_typed_peak::tests::m3_actual_owner_semantic_diagnosis",
+      "--",
+      "--ignored",
+      "--exact",
+      "--nocapture"
+    ],
+    "historical_cargo_invocations": 3,
+    "new_cargo_invocations_admitted": 1,
+    "retry_under_v6_permitted": false
+  },
+  "forbidden": [
+    "owner source repair",
+    "network or remote",
+    "perf or PMU",
+    "sidecar publication",
+    "runtime mutation",
+    "production activation",
+    "V5 retry"
+  ],
+  "verdict": "READY_TO_EXECUTE_ONE_SEMANTIC_DIAGNOSIS",
+  "safe_to_execute": true
+}

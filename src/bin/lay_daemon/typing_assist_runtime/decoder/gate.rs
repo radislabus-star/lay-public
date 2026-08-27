@@ -15,6 +15,7 @@ fn decode_input_gate_tail(
     let decision = lay::input_gate::decide_input_gate(lay::input_gate::InputGateRequest {
         trigger: lay::input_gate::InputGateTrigger::Space,
         text_tail,
+        lexical_authority_frame: None,
         auto_replace: gate_config.auto_replace,
         typing_assist: gate_config.typing_assist,
         auto_switch_layout: gate_config.auto_switch_layout,

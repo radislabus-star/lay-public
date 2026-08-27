@@ -1,0 +1,82 @@
+{
+  "admission": {
+    "build_audit": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_AUDIT_V1_2026-08-26/D2_BUILD_AUDIT_RECEIPT.json",
+      "sha256": "4e19e2e806e2b3f04f8c0286a63f64631e7cf6ff143d9a90da4036654bc8339c",
+      "size_bytes": 6263
+    },
+    "controller": {
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-bucket-map.py",
+      "sha256": "edcd59a02fb06dedef5b05d8e5c73146c28b1bfea6a977baefa72f31e77ae66b",
+      "size_bytes": 32780
+    },
+    "local_d2_elf": {
+      "mode": "0555",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf",
+      "sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178",
+      "size_bytes": 317706232
+    },
+    "reader_correction_v3": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_BUCKET_MAP_READER_SCOPE_CORRECTION_V3_2026-08-26.md",
+      "sha256": "af1761fe71a976939cfaeac5248a1f9cd5f474e85654ca1b5563baf94dcb9214",
+      "size_bytes": 2984
+    },
+    "remote_controller": {
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-bucket-map-remote.py",
+      "sha256": "3a0d04b2345a974602b125e71930b0b6cd125740915522f7d7ae4e250d561dae",
+      "size_bytes": 45326
+    }
+  },
+  "cargo_invocations": 0,
+  "command_graph": {
+    "cargo_routes": [],
+    "external_actions": [
+      "self-check",
+      "bucket-map-once"
+    ],
+    "local_map_readers": [
+      "objdump",
+      "addr2line"
+    ],
+    "marker_mutation_routes": [
+      "bucket-map-once"
+    ],
+    "parity_routes": [],
+    "perf_routes": [],
+    "remote_actions": [
+      "probe",
+      "bucket-map-once"
+    ],
+    "remote_map_readers": [
+      "readelf",
+      "objdump",
+      "nm"
+    ],
+    "runtime_routes": [],
+    "subject_routes": []
+  },
+  "d2_subject": 0,
+  "local_addr2line": {
+    "address_list_sha256": "fca1804a3d0af34ae462938f970fd181706846da6e42dbb725c5ef1775581c58",
+    "elf_sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178",
+    "instruction_count": 1064,
+    "stdout_sha256": "8b9b4767557a3ea019bbaebb280d1a56ab2180f34ad1e05aed9c2affb4c8a9e6",
+    "stdout_size_bytes": 697799,
+    "tool_version": "GNU addr2line (GNU Binutils for Ubuntu) 2.46"
+  },
+  "map_created": false,
+  "marker_mutations": 0,
+  "parity_executed": false,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_probe_sha256": "baf22c65302ed9b0317455e25859619545e60d8f3794d067831478f8104264f4",
+  "schema": "lay.v10.e1-traversal-d2-primary-only-bucket-map-self-check.v1",
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+  "verdict": "D2_BUCKET_MAP_CONTROLLER_VERIFIED_UNRUN"
+}

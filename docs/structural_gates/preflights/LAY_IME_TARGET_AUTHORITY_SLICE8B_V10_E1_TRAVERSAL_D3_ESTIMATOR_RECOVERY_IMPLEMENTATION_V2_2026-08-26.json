@@ -1,0 +1,813 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_ESTIMATOR_RECOVERY_IMPLEMENTATION_V2_2026-08-26",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "scoped_positive_verdict": "READY_TO_IMPLEMENT_D3_SINGLE_ESTIMATOR_RECOVERY",
+  "baseline_checks": [
+    {
+      "id": "d3-paper-v1",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_TASK_CLOCK_ESTIMATOR_RECOVERY_V1_2026-08-26.md",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 9473,
+        "sha256": "ebe80974392a05527bea67944f381cfd2f74fb0be1c5b2ba3bf4a5aba22be11a"
+      }
+    },
+    {
+      "id": "d3-structural-review-v2",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_ROUTE_V2_2026-08-26/STRUCTURAL_REVIEW.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 1524,
+        "sha256": "c46980331e923639782ee725792d4979c9e07ef17ba30a651806783ba3ac3ccd"
+      }
+    },
+    {
+      "id": "d3-preflight-v1",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_ESTIMATOR_RECOVERY_IMPLEMENTATION_V1_2026-08-26.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 22663,
+        "sha256": "f641fc2f7f3e173038e70058fa6b7d19554c62ff40ece65d175fdfcab05a86ad"
+      }
+    },
+    {
+      "id": "d3-preflight-v1-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_ESTIMATOR_RECOVERY_IMPLEMENTATION_V1_PREFLIGHT_2026-08-26.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 11811,
+        "sha256": "b240c160cf1014fec2f572948262ab83c52148af999064827ee7d7df4fdaa46a"
+      }
+    },
+    {
+      "id": "d2-terminal-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_TERMINAL_AUDIT_V1_2026-08-26/T_SINGLE_TERMINAL_AUDIT_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 14907,
+        "sha256": "75dc2703e279524a76c49a455b6081634d1c67274106da45f0d7d610af95e608"
+      }
+    },
+    {
+      "id": "d2-estimator-correction",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_T_SINGLE_ESTIMATOR_SCOPE_CORRECTION_V1_2026-08-26.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 4497,
+        "sha256": "88c12093bb3cf76395b3f5c37d48991ebb90a3c34a6581d5801f3cd4fb2001f4"
+      }
+    },
+    {
+      "id": "d2-build-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_AUDIT_V1_2026-08-26/D2_BUILD_AUDIT_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 6263,
+        "sha256": "4e19e2e806e2b3f04f8c0286a63f64631e7cf6ff143d9a90da4036654bc8339c"
+      }
+    },
+    {
+      "id": "d2-bucket-map-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_AUDIT_V1_2026-08-26/D2_BUCKET_MAP_AUDIT_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 4363,
+        "sha256": "8d2e52574adca52d5a090067cdf071afba922363ccee8fc9eb4a4158cb92cba7"
+      }
+    },
+    {
+      "id": "d2-parity-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_PARITY_V1_2026-08-26/REMOTE_EVIDENCE/D2_PARITY_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 2199,
+        "sha256": "d2519797c6b21976dc6246830e187391a344acb9ec63a7b5a7816161cf306f74"
+      }
+    },
+    {
+      "id": "d2-u-single-salvage",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_U_SINGLE_SALVAGE_V1_2026-08-26/U_SINGLE_SALVAGE_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 2531,
+        "sha256": "9617502776537ca4181bd9bf195e1fd5b8fbd2679f1dfd00737f128cb88bfe0b"
+      }
+    },
+    {
+      "id": "d2-u-fixed",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_U_FIXED_V1_2026-08-26/REMOTE_EVIDENCE/D2_UV_ROUTE_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 44948,
+        "sha256": "0ef07db4b8a07efb2ed09c3c47d6b0a9ef88e4529dd436d5d375cecf62339b59"
+      }
+    },
+    {
+      "id": "d2-u-reversed",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_U_REVERSED_V1_2026-08-26/REMOTE_EVIDENCE/D2_UV_ROUTE_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 44982,
+        "sha256": "080917d52f3e36abffb6eab47b9e56c4a1e771b4da21caaf6fa3e2cfe686a0fb"
+      }
+    },
+    {
+      "id": "d2-v-fixed",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_FIXED_INSTR_V1_2026-08-26/REMOTE_EVIDENCE/D2_UV_ROUTE_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 50090,
+        "sha256": "56c862759c95de6682571aed3d68098dab084319817fba5af3853042e0396bae"
+      }
+    },
+    {
+      "id": "d2-v-reversed",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_REVERSED_INSTR_V1_2026-08-26/REMOTE_EVIDENCE/D2_UV_ROUTE_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 50181,
+        "sha256": "5d75a502ad9e509dc6810b5494067f602d5ace1237e73f4d7913d5b9b1fc9de2"
+      }
+    },
+    {
+      "id": "d2-p0-static",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P0_STATIC_RECEIPT.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 7003,
+        "sha256": "9b6aff3d74d36e7f5868fff596eb17326e819bf45496bbe4f3cf50870a7f71e0"
+      }
+    },
+    {
+      "id": "sealed-d2-elf",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf",
+      "expect": {
+        "mode": "0555",
+        "size_bytes": 317706232,
+        "sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178"
+      }
+    },
+    {
+      "id": "sealed-d2-map",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 390324,
+        "sha256": "2b93aedf11101a8bc5fc7ed4ffaa056b50476d96cdd2eabf9d185f59ee60f846"
+      }
+    },
+    {
+      "id": "d3-local-controller-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-e1-traversal-d3-estimator-recovery.py",
+      "expect": {}
+    },
+    {
+      "id": "d3-remote-controller-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-e1-traversal-d3-estimator-recovery-remote.py",
+      "expect": {}
+    },
+    {
+      "id": "d3-bootstrap-auditor-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-e1-traversal-d3-bootstrap-audit.py",
+      "expect": {}
+    },
+    {
+      "id": "d3-bootstrap-result-absent",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_BOOTSTRAP_V1_2026-08-26",
+      "expect": {}
+    },
+    {
+      "id": "d3-u2-result-absent",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_U2_SINGLE_V1_2026-08-26",
+      "expect": {}
+    },
+    {
+      "id": "d3-t2-result-absent",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_T2_SINGLE_V1_2026-08-26",
+      "expect": {}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "create-d3-controllers",
+        "kind": "local_source_create"
+      },
+      {
+        "id": "create-d3-two-marker-namespace",
+        "kind": "remote_state_create"
+      },
+      {
+        "id": "publish-bootstrap-audit",
+        "kind": "local_evidence_write"
+      },
+      {
+        "id": "run-u2-single-once",
+        "kind": "remote_subject_execution"
+      },
+      {
+        "id": "run-t2-single-once",
+        "kind": "remote_task_clock_sampling"
+      },
+      {
+        "id": "read-t2-perf-data",
+        "kind": "remote_perf_data_read"
+      },
+      {
+        "id": "publish-d3-receipts",
+        "kind": "remote_and_local_evidence_write"
+      },
+      {
+        "id": "record-d3-result",
+        "kind": "documentation_edit"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "cargo_or_rustc",
+      "new_or_modified_elf",
+      "new_or_modified_bucket_map",
+      "parity_or_old_u_v_route_execution",
+      "d2_marker_mutation_or_reuse",
+      "d2_t_single_retry",
+      "fixed_or_reversed_route",
+      "precise_instruction_or_substitute_event",
+      "perf_stat",
+      "perf_record_outside_t2_single",
+      "event_other_than_task_clock_user_period_200000",
+      "pid_attach_sigint_or_adaptive_sampling",
+      "timestamp_filter_or_warmup_subtraction",
+      "common_twenty_round_u2_t2_denominator",
+      "sample_rate_sysctl_or_host_policy_tuning",
+      "old_bucket_values_as_scientific_evidence",
+      "optimization_runtime_integration_install_restart_or_deployment"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "d2-terminal-history",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_TERMINAL_AUDIT_V1_2026-08-26/T_SINGLE_TERMINAL_AUDIT_RECEIPT.json",
+      "policy": "immutable",
+      "cursor_policy": "exact_bytes",
+      "rollback_policy": "never_modify",
+      "baseline_check_id": "d2-terminal-audit"
+    },
+    {
+      "id": "d2-elf",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf",
+      "policy": "immutable",
+      "cursor_policy": "exact_bytes",
+      "rollback_policy": "never_modify",
+      "baseline_check_id": "sealed-d2-elf"
+    },
+    {
+      "id": "d2-map",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json",
+      "policy": "immutable",
+      "cursor_policy": "exact_bytes",
+      "rollback_policy": "never_modify",
+      "baseline_check_id": "sealed-d2-map"
+    },
+    {
+      "id": "d3-paper",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D3_TASK_CLOCK_ESTIMATOR_RECOVERY_V1_2026-08-26.md",
+      "policy": "immutable",
+      "cursor_policy": "exact_bytes",
+      "rollback_policy": "never_modify",
+      "baseline_check_id": "d3-paper-v1"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "controller-payload-parity",
+      "producer": "local D3 controller and embedded payload",
+      "consumer": "remote D3 controller bootstrap",
+      "comparison": "exact SHA-256 before every remote action",
+      "test_id": "controller-parity"
+    },
+    {
+      "id": "marker-identity",
+      "producer": "D3 bootstrap marker serializer",
+      "consumer": "U2 and T2 route gates",
+      "comparison": "exact task transaction route mode size and SHA-256",
+      "test_id": "marker-parity"
+    },
+    {
+      "id": "u2-denominator-identity",
+      "producer": "component-samples parser over twenty measured rounds",
+      "consumer": "T2 perturbation evaluator",
+      "comparison": "U2 CPU ns divided by 20 times 25145756",
+      "test_id": "denominator-parity"
+    },
+    {
+      "id": "t2-denominator-identity",
+      "producer": "CPU0 accepted traversal samples at period 200000",
+      "consumer": "T2 perturbation evaluator",
+      "comparison": "T2 sample CPU ns divided by 21 times 25145756",
+      "test_id": "denominator-parity"
+    },
+    {
+      "id": "machine-map-identity",
+      "producer": "sealed D2 ELF Build ID and virtual IP",
+      "consumer": "sealed D2 bucket map join",
+      "comparison": "exact Build ID unique load bias and machine bytes",
+      "test_id": "machine-map-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "installed-runtime-stability",
+      "source": "installed Lay launcher projection before bootstrap and after terminal D3 audit",
+      "comparison": "exact_stable_projection",
+      "reason": "D3 is research-only and may not mutate installed runtime authority",
+      "stable_fields": [
+        "resolved launcher path",
+        "resolved launcher SHA-256"
+      ],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": [
+        "unrelated process IDs"
+      ],
+      "test_id": "runtime-parity"
+    },
+    {
+      "id": "target-host-stability",
+      "source": "D2 P0 host closure plus D3 per-route remote snapshots",
+      "comparison": "exact_stable_projection",
+      "reason": "D3 evidence belongs only to the pinned mini-PC without sample-rate or host-policy tuning",
+      "stable_fields": [
+        "hostname",
+        "machine-id SHA-256",
+        "kernel",
+        "online CPUs",
+        "hybrid PMU CPU sets",
+        "perf wrapper SHA-256",
+        "resolved perf SHA-256",
+        "taskset SHA-256",
+        "perf_event_max_sample_rate=8000"
+      ],
+      "expected_to_change_fields": [
+        "thermal counters only if zero delta"
+      ],
+      "observed_not_compared_fields": [
+        "wall clock",
+        "unrelated process list"
+      ],
+      "test_id": "event-identity"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "D3_PREFLIGHT_READY",
+    "steps": [
+      {
+        "id": "implement-d3-controllers",
+        "from": "D3_PREFLIGHT_READY",
+        "to": "D3_CONTROLLER_UNRUN",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "remove only partial new controller files; preserve D2 and create no remote D3 state",
+        "preserves": [
+          "d2-terminal-history",
+          "d2-elf",
+          "d2-map",
+          "d3-paper"
+        ],
+        "test_id": "controller-fault"
+      },
+      {
+        "id": "verify-d3-controller",
+        "from": "D3_CONTROLLER_UNRUN",
+        "to": "D3_CONTROLLER_VERIFIED_UNRUN",
+        "mutates": false,
+        "test_id": "route-graph-parity"
+      },
+      {
+        "id": "bootstrap-two-marker-namespace",
+        "from": "D3_CONTROLLER_VERIFIED_UNRUN",
+        "to": "D3_NAMESPACE_CREATED_UNAUDITED",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "retain complete or partial disjoint D3 bootstrap evidence; consume no route marker and never touch D2 markers",
+        "preserves": [
+          "d2-terminal-history",
+          "d2-elf",
+          "d2-map",
+          "d3-paper"
+        ],
+        "test_id": "bootstrap-fault"
+      },
+      {
+        "id": "audit-two-marker-namespace",
+        "from": "D3_NAMESPACE_CREATED_UNAUDITED",
+        "to": "D3_NAMESPACE_AUDITED_TWO_MARKERS_AVAILABLE",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "retain read-only audit evidence; make no remote writes and consume no marker",
+        "preserves": [
+          "d2-terminal-history",
+          "d2-elf",
+          "d2-map",
+          "d3-paper"
+        ],
+        "test_id": "bootstrap-audit-fault"
+      },
+      {
+        "id": "consume-and-run-u2-single",
+        "from": "D3_NAMESPACE_AUDITED_TWO_MARKERS_AVAILABLE",
+        "to": "U2_SINGLE_OBSERVED",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "retain consumed U2 marker and complete evidence; never recreate or rerun",
+        "preserves": [
+          "d2-terminal-history",
+          "d2-elf",
+          "d2-map",
+          "d3-paper"
+        ],
+        "test_id": "u2-route-fault"
+      },
+      {
+        "id": "dispatch-u2-pass",
+        "from": "U2_SINGLE_OBSERVED",
+        "to": "U2_SINGLE_PASS",
+        "mutates": false,
+        "guard": "complete dispatch schema and no U2 violation",
+        "test_id": "u2-dispatch"
+      },
+      {
+        "id": "dispatch-u2-blocked-provenance",
+        "from": "U2_SINGLE_OBSERVED",
+        "to": "BLOCKED_PROVENANCE",
+        "mutates": false,
+        "guard": "provenance violation or incomplete unknown or ambiguous dispatch",
+        "priority_rank": 0,
+        "test_id": "u2-dispatch"
+      },
+      {
+        "id": "dispatch-u2-blocked-thermal",
+        "from": "U2_SINGLE_OBSERVED",
+        "to": "BLOCKED_THERMAL",
+        "mutates": false,
+        "guard": "thermal violation and no higher-priority violation",
+        "priority_rank": 1,
+        "test_id": "u2-dispatch"
+      },
+      {
+        "id": "dispatch-u2-blocked-semantic",
+        "from": "U2_SINGLE_OBSERVED",
+        "to": "BLOCKED_SEMANTIC",
+        "mutates": false,
+        "guard": "semantic violation and no higher-priority violation",
+        "priority_rank": 2,
+        "test_id": "u2-dispatch"
+      },
+      {
+        "id": "consume-and-run-t2-single",
+        "from": "U2_SINGLE_PASS",
+        "to": "T2_SINGLE_OBSERVED",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "only U2_SINGLE_PASS admits this step; retain consumed T2 marker perf data readers and subject evidence; never recreate or rerun",
+        "preserves": [
+          "d2-terminal-history",
+          "d2-elf",
+          "d2-map",
+          "d3-paper"
+        ],
+        "test_id": "t2-route-fault"
+      },
+      {
+        "id": "dispatch-t2-pass",
+        "from": "T2_SINGLE_OBSERVED",
+        "to": "T2_SINGLE_VERDICT",
+        "effective_verdict": "D3_SINGLE_ESTIMATOR_PASS",
+        "mutates": false,
+        "guard": "complete dispatch schema and no T2 violation",
+        "test_id": "t2-dispatch"
+      },
+      {
+        "id": "dispatch-t2-blocked-provenance",
+        "from": "T2_SINGLE_OBSERVED",
+        "to": "T2_SINGLE_VERDICT",
+        "effective_verdict": "BLOCKED_PROVENANCE",
+        "mutates": false,
+        "guard": "provenance violation or incomplete unknown or ambiguous dispatch",
+        "priority_rank": 0,
+        "test_id": "t2-dispatch"
+      },
+      {
+        "id": "dispatch-t2-blocked-thermal",
+        "from": "T2_SINGLE_OBSERVED",
+        "to": "T2_SINGLE_VERDICT",
+        "effective_verdict": "BLOCKED_THERMAL",
+        "mutates": false,
+        "guard": "thermal violation and no higher-priority violation",
+        "priority_rank": 1,
+        "test_id": "t2-dispatch"
+      },
+      {
+        "id": "dispatch-t2-blocked-capability",
+        "from": "T2_SINGLE_OBSERVED",
+        "to": "T2_SINGLE_VERDICT",
+        "effective_verdict": "BLOCKED_CAPABILITY",
+        "mutates": false,
+        "guard": "capability violation and no higher-priority violation",
+        "priority_rank": 2,
+        "test_id": "t2-dispatch"
+      },
+      {
+        "id": "dispatch-t2-blocked-bucket-map",
+        "from": "T2_SINGLE_OBSERVED",
+        "to": "T2_SINGLE_VERDICT",
+        "effective_verdict": "BLOCKED_BUCKET_MAP",
+        "mutates": false,
+        "guard": "bucket-map violation and no higher-priority violation",
+        "priority_rank": 3,
+        "test_id": "t2-dispatch"
+      },
+      {
+        "id": "dispatch-t2-blocked-perturbation",
+        "from": "T2_SINGLE_OBSERVED",
+        "to": "T2_SINGLE_VERDICT",
+        "effective_verdict": "BLOCKED_PERTURBATION",
+        "mutates": false,
+        "guard": "T2 versus U2 delta above five percent and no higher-priority violation",
+        "priority_rank": 4,
+        "test_id": "t2-dispatch"
+      },
+      {
+        "id": "dispatch-t2-blocked-sample-coverage",
+        "from": "T2_SINGLE_OBSERVED",
+        "to": "T2_SINGLE_VERDICT",
+        "effective_verdict": "BLOCKED_SAMPLE_COVERAGE",
+        "mutates": false,
+        "guard": "lost throttle adaptive count or unattributed violation and no higher-priority violation",
+        "priority_rank": 5,
+        "test_id": "t2-dispatch"
+      },
+      {
+        "id": "publish-terminal-audit-and-journal",
+        "from": "T2_SINGLE_VERDICT",
+        "to": "D3_TERMINAL_PUBLISHED",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "retain all sealed route evidence and publish no optimization claim",
+        "preserves": [
+          "d2-terminal-history",
+          "d2-elf",
+          "d2-map",
+          "d3-paper"
+        ],
+        "test_id": "terminal-audit-fault"
+      }
+    ],
+    "terminal_states": [
+      "D3_TERMINAL_PUBLISHED",
+      "BLOCKED_PROVENANCE",
+      "BLOCKED_THERMAL",
+      "BLOCKED_SEMANTIC",
+      "BLOCKED_CAPABILITY",
+      "BLOCKED_BUCKET_MAP",
+      "BLOCKED_PERTURBATION",
+      "BLOCKED_SAMPLE_COVERAGE"
+    ]
+  },
+  "invariants": [
+    {
+      "id": "exact-two-route-registry",
+      "statement": "route registry keys equal U2-SINGLE and T2-SINGLE",
+      "test_id": "route-graph-parity"
+    },
+    {
+      "id": "u2-before-t2",
+      "statement": "T2 marker cannot be consumed before exact sealed U2_SINGLE_PASS",
+      "test_id": "marker-parity"
+    },
+    {
+      "id": "separate-denominators",
+      "statement": "U2 uses twenty rounds and T2 uses twenty-one rounds",
+      "test_id": "denominator-parity"
+    },
+    {
+      "id": "cpu-domain-preregistered",
+      "statement": "accepted T2 samples require exact D2 identity CPU0 and sealed traversal range",
+      "test_id": "machine-map-parity"
+    },
+    {
+      "id": "fixed-period-below-host-ceiling",
+      "statement": "T2 uses period 200000 and sample-rate remains 8000 without tuning",
+      "test_id": "event-identity"
+    },
+    {
+      "id": "one-shot-marker-authority",
+      "statement": "each route marker is atomically renamed before effect and never recreated",
+      "test_id": "marker-fault"
+    },
+    {
+      "id": "d2-history-untouched",
+      "statement": "old T markers and all D2 state remain byte and name identical",
+      "test_id": "d2-history-parity"
+    },
+    {
+      "id": "no-runtime-authority",
+      "statement": "D3 changes no installed runtime and grants no optimization authority",
+      "test_id": "runtime-parity"
+    }
+  ],
+  "tests": [
+    {
+      "id": "controller-fault",
+      "kind": "fault_injection",
+      "expected": "no remote D3 state and no D2 mutation"
+    },
+    {
+      "id": "controller-parity",
+      "kind": "parity",
+      "expected": "local and remote controller bytes match transmitted SHA-256"
+    },
+    {
+      "id": "route-graph-parity",
+      "kind": "parity",
+      "expected": "exact two routes and no forbidden executable argv"
+    },
+    {
+      "id": "bootstrap-fault",
+      "kind": "fault_injection",
+      "expected": "partial D3 evidence retained and no marker consumed"
+    },
+    {
+      "id": "bootstrap-audit-fault",
+      "kind": "fault_injection",
+      "expected": "BLOCKED_PROVENANCE with no remote writes"
+    },
+    {
+      "id": "marker-parity",
+      "kind": "parity",
+      "expected": "two exact 0400 markers with task transaction route mode size and SHA"
+    },
+    {
+      "id": "marker-fault",
+      "kind": "fault_injection",
+      "expected": "consumed marker remains consumed and route is never rerun"
+    },
+    {
+      "id": "u2-route-fault",
+      "kind": "fault_injection",
+      "expected": "complete evidence or terminal BLOCKED_PROVENANCE with U2 consumed"
+    },
+    {
+      "id": "u2-dispatch",
+      "kind": "fault_injection",
+      "expected": "provenance then thermal then semantic priority"
+    },
+    {
+      "id": "t2-route-fault",
+      "kind": "fault_injection",
+      "expected": "complete evidence or terminal BLOCKED_PROVENANCE with T2 consumed"
+    },
+    {
+      "id": "t2-dispatch",
+      "kind": "fault_injection",
+      "expected": "provenance thermal capability bucket_map perturbation sample_coverage priority"
+    },
+    {
+      "id": "denominator-parity",
+      "kind": "parity",
+      "expected": "U2 denominator 502915120 and T2 denominator 528060876 edges"
+    },
+    {
+      "id": "event-identity",
+      "kind": "integration",
+      "expected": "task-clock user period 200000 freq0 exclude-kernel precise0 inherit1 and sample-rate 8000 stable"
+    },
+    {
+      "id": "machine-map-parity",
+      "kind": "parity",
+      "expected": "exact Build ID unique PIE normalization and zero machine-byte mismatches"
+    },
+    {
+      "id": "d2-history-parity",
+      "kind": "parity",
+      "expected": "D2 state and eleven old markers unchanged before and after D3"
+    },
+    {
+      "id": "runtime-parity",
+      "kind": "integration",
+      "expected": "installed runtime stable and no integration"
+    },
+    {
+      "id": "terminal-audit-fault",
+      "kind": "fault_injection",
+      "expected": "route evidence remains sealed and no optimization authority is published"
+    }
+  ],
+  "execution_contract": {
+    "task_id": "slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826",
+    "transaction_id": "e88555465ee51b7caed891217e8941ceb0b412ed82981d7c88cde71c3eb452e1",
+    "routes": [
+      "U2-SINGLE",
+      "T2-SINGLE"
+    ],
+    "markers": {
+      "u2-single.available": {
+        "mode": "0400",
+        "size_bytes": 287,
+        "sha256": "a212d2edf720551b70f9245d62487fd7834f3796ebfe5d9759a3001fd28f9502"
+      },
+      "t2-single.available": {
+        "mode": "0400",
+        "size_bytes": 287,
+        "sha256": "19e3cffbac9de01ed6ddbffbb5c26bbd148e33d45017e568e7c2ab1af3453695"
+      }
+    },
+    "staging_cpu": 6,
+    "scientific_cpu": 0,
+    "event": "task-clock:u",
+    "period_ns": 200000,
+    "host_sample_rate": 8000,
+    "edges_per_round": 25145756,
+    "u2_rounds": 20,
+    "u2_edges": 502915120,
+    "t2_rounds": 21,
+    "t2_edges": 528060876,
+    "minimum_accepted_samples": 50000,
+    "maximum_unattributed_percent": 5.0,
+    "maximum_t2_vs_u2_delta_percent": 5.0,
+    "expected_samples": 68807.44,
+    "lower_boundary_samples": 65367.07,
+    "old_d2_markers": {
+      "t-fixed.available": "RETIRED_UNCONSUMED_BY_TERMINAL_D2",
+      "t-reversed.available": "RETIRED_UNCONSUMED_BY_TERMINAL_D2"
+    }
+  },
+  "failure_dispatch": {
+    "U2-SINGLE": [
+      [
+        "provenance",
+        "BLOCKED_PROVENANCE"
+      ],
+      [
+        "thermal",
+        "BLOCKED_THERMAL"
+      ],
+      [
+        "semantic",
+        "BLOCKED_SEMANTIC"
+      ]
+    ],
+    "T2-SINGLE": [
+      [
+        "provenance",
+        "BLOCKED_PROVENANCE"
+      ],
+      [
+        "thermal",
+        "BLOCKED_THERMAL"
+      ],
+      [
+        "capability",
+        "BLOCKED_CAPABILITY"
+      ],
+      [
+        "bucket_map",
+        "BLOCKED_BUCKET_MAP"
+      ],
+      [
+        "perturbation",
+        "BLOCKED_PERTURBATION"
+      ],
+      [
+        "sample_coverage",
+        "BLOCKED_SAMPLE_COVERAGE"
+      ]
+    ]
+  },
+  "claim_boundary": "READY_TO_IMPLEMENT permits only controller creation, bootstrap, independent bootstrap audit, U2-SINGLE, T2-SINGLE and terminal D3 publication. It does not establish attribution or admit multiworker execution, optimization, runtime integration or deployment."
+}

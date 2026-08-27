@@ -1,0 +1,144 @@
+{
+  "authoritative_remote_bootstrap_complete": true,
+  "bootstrap_auditor_sha256": "59f963d6327f00baf561113e8ff98b781b2eae22d83c68cbfa0e2d2c56610db6",
+  "bootstrap_receipt_sha256": "a7b921799751f38f745a2945ff8b7222428ff16c54e42c35e0e0d99019468529",
+  "cargo_invocations": 0,
+  "command_graph": {
+    "perf_record_routes": [
+      "T2-SINGLE"
+    ],
+    "perf_stat_routes": [],
+    "pid_attach": false,
+    "route_stage_mode": "0755",
+    "routes": [
+      "U2-SINGLE",
+      "T2-SINGLE"
+    ],
+    "signal_lifecycle": false,
+    "t2_edges": 528060876,
+    "u2_edges": 502915120
+  },
+  "d2_marker_mutations": 0,
+  "live_projection": {
+    "available": [
+      "t2-single.available",
+      "u2-single.available"
+    ],
+    "d2_markers": [
+      "bucket-map.consumed-before-exec",
+      "build.consumed-before-exec",
+      "parity.consumed-before-exec",
+      "t-fixed.available",
+      "t-reversed.available",
+      "t-single.consumed-before-exec",
+      "u-fixed.consumed-before-exec",
+      "u-reversed.consumed-before-exec",
+      "u-single.consumed-before-exec",
+      "v-fixed-instr.consumed-before-exec",
+      "v-reversed-instr.consumed-before-exec"
+    ],
+    "d2_terminal": {
+      "marker_consumed": true,
+      "receipt_sha256": "afaeb7d3caffb1967dd76021e42b94664803cef5d0ed72ec574fb54526a8fa0d",
+      "retry_permitted": false,
+      "route": "T-SINGLE",
+      "schema": "lay.v10.e1-traversal-d2-primary-only-t-route-state.v1",
+      "state": "BLOCKED_PROVENANCE",
+      "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+      "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7"
+    },
+    "markers_consumed": 0,
+    "markers_created": 2,
+    "markers_expected": 2,
+    "remote_bootstrap_inputs": {
+      "d2-terminal-receipt.json": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826/bootstrap-v1/inputs/d2-terminal-receipt.json",
+        "sha256": "75dc2703e279524a76c49a455b6081634d1c67274106da45f0d7d610af95e608",
+        "size_bytes": 14907
+      },
+      "local-controller.py": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826/bootstrap-v1/inputs/local-controller.py",
+        "sha256": "8f48f4ac95a288d3c58cf60946a7e176f5b527d7a11c51d22680efd89c22acb2",
+        "size_bytes": 31456
+      },
+      "paper.md": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826/bootstrap-v1/inputs/paper.md",
+        "sha256": "ebe80974392a05527bea67944f381cfd2f74fb0be1c5b2ba3bf4a5aba22be11a",
+        "size_bytes": 9473
+      },
+      "preflight-v2-receipt.json": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826/bootstrap-v1/inputs/preflight-v2-receipt.json",
+        "sha256": "09a66ecabebd95e1a8b76e459686bc41a0146f7bedbabf18dbc562096e24868d",
+        "size_bytes": 11073
+      },
+      "preflight-v2.json": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826/bootstrap-v1/inputs/preflight-v2.json",
+        "sha256": "f9fba59409fe56ae742738d66bbae886b24a165dc34e258529e3f6de6710456e",
+        "size_bytes": 27120
+      },
+      "remote-controller.py": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826/bootstrap-v1/inputs/remote-controller.py",
+        "sha256": "3540c797130f537330c18b3739baddacfac5eba1f8fdaa201e3af1f30e3a6e85",
+        "size_bytes": 64491
+      }
+    },
+    "remote_bootstrap_manifest": {
+      "entries": 7,
+      "manifest": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826/bootstrap-v1/SHA256SUMS",
+        "sha256": "955b8aede6e3a0db5ac5af8a2fcdae6145674eeb352f1e5b21efeffe4ac68fb6",
+        "size_bytes": 649
+      },
+      "membership_exact": true
+    },
+    "remote_bootstrap_receipt": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826/bootstrap-v1/D3_BOOTSTRAP_RECEIPT.json",
+      "sha256": "a7b921799751f38f745a2945ff8b7222428ff16c54e42c35e0e0d99019468529",
+      "size_bytes": 9000
+    }
+  },
+  "live_projection_sha256": "60c17174a1bb4921ad64d517417fdf515b1d3a340b36593a1a541aa110ae1d40",
+  "live_projection_stable": true,
+  "local_bootstrap_mirror_present": false,
+  "local_controller_sha256": "8f48f4ac95a288d3c58cf60946a7e176f5b527d7a11c51d22680efd89c22acb2",
+  "local_transport_defect": "scp as e cannot traverse authoritative root-owned D3 parent mode 0700",
+  "markers_available": [
+    "u2-single.available",
+    "t2-single.available"
+  ],
+  "markers_consumed": 0,
+  "markers_created": 2,
+  "markers_expected": 2,
+  "next_action_admitted": "U2-SINGLE only; T2-SINGLE remains gated by exact U2_SINGLE_PASS",
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_bootstrap_manifest": {
+    "entries": 7,
+    "manifest": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826/bootstrap-v1/SHA256SUMS",
+      "sha256": "955b8aede6e3a0db5ac5af8a2fcdae6145674eeb352f1e5b21efeffe4ac68fb6",
+      "size_bytes": 649
+    },
+    "membership_exact": true
+  },
+  "remote_controller_sha256": "3540c797130f537330c18b3739baddacfac5eba1f8fdaa201e3af1f30e3a6e85",
+  "remote_writes": 0,
+  "retry_permitted": false,
+  "runtime_authority_changed": false,
+  "rustc_compilations": 0,
+  "schema": "lay.v10.e1-traversal-d3-bootstrap-audit.v1",
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-d3-estimator-recovery-v1-20260826",
+  "transaction_id": "e88555465ee51b7caed891217e8941ceb0b412ed82981d7c88cde71c3eb452e1",
+  "verdict": "D3_BOOTSTRAP_AUDIT_PASS_EXECUTION_ADMITTED"
+}

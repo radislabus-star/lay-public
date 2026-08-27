@@ -1,0 +1,43 @@
+{
+  "cargo_invocations": 0,
+  "d2_subject_executions": 1,
+  "dispatch": {
+    "all_violations": {
+      "perturbation": [],
+      "provenance": [],
+      "semantic": [
+        "component worker coverage mismatch"
+      ],
+      "thermal": []
+    },
+    "reason": "component worker coverage mismatch",
+    "selected_cause": "semantic",
+    "selected_rank": 2,
+    "verdict": "BLOCKED_SEMANTIC"
+  },
+  "kind": "U",
+  "marker_consumed": true,
+  "next_action_admitted": "none; terminal blocked verdict",
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_manifest_entries": 14,
+  "remote_receipt_sha256": "46d52ac863e25da861f803096a6918a47a1f4b7138c0167c1f4724ad7b26dac8",
+  "retry_permitted": false,
+  "route": "U-SINGLE",
+  "runtime_after": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "runtime_authority_changed": false,
+  "runtime_before": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "schema": "lay.v10.e1-traversal-d2-primary-only-local-uv-route.v1",
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+  "verdict": "BLOCKED_SEMANTIC"
+}

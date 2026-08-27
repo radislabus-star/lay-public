@@ -1,0 +1,383 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "expect": {"mode": "0444", "sha256": "090c39efec9916c1a9bea050c6385a17c00b95532e08592730b3b83ede591a23", "size_bytes": 8540},
+      "id": "d7-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_2026-08-26.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "ddedf2e46eeabc63815dc32c94e945600a4af55cf8ddfba84c8ddc3cf4a8a305", "size_bytes": 3160},
+      "id": "d7-measurement-route",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_ROUTE_A_MEASUREMENT.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "76c47a99eb680bfdfb058707adc76b5ad570794ad54aa41a52a1e801c8d98f98", "size_bytes": 2708},
+      "id": "d7-state-route",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_ROUTE_B_STATE.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "8956ceac7db518769fb0a0fb9e2459510e8f56f1235f97ad539049af0691707c", "size_bytes": 2818},
+      "id": "d7-boundary-route",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_ROUTE_C_BOUNDARY.md"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "c94d5d927e27c6f0aeaa5be331b4894bbd6d41f3aaab16a1f8bfe0a7c233da3e", "size_bytes": 1040},
+      "id": "d7-structural-review",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_STRUCTURAL_REVIEW_V1_2026-08-26.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "cc1fc1c7e74258cd7fec7eed5a113bbaeb3a4bf8ee3b269825f4cd282f5755dc", "size_bytes": 1280},
+      "id": "d6-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_V1_2026-08-26/D6_CONCURRENCY_ACCOUNTING_RECEIPT.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "80530f9f5787f846ce2cf222c1b60e3ae42887ce95a11ac153ec7271cce98baf", "size_bytes": 5361257},
+      "id": "d1-decision",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/D1_DECISION.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "b334c047d29b21c27923fba9b38bbf17bb642cc72c9b112add1c38d8c9b0beab", "size_bytes": 202202},
+      "id": "e1-decision",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_2026-08-25/E1_DECISION.json"
+    },
+    {
+      "expect": {"mode": "0664", "sha256": "bbd8b8d318810eec721812f21efbeb5f231dacba774cb5ade854e2201c6c7665", "size_bytes": 113204},
+      "id": "d1-fragment",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c", "size_bytes": 91518},
+      "id": "recovered-v10",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "558e985a29ae2e740c97450a0a0bab2663daf767a8d3d85edbe2d62ee847836e", "size_bytes": 18059},
+      "id": "superseded-v1-preflight",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_IMPLEMENTATION_V1_2026-08-26.json"
+    },
+    {
+      "expect": {"mode": "0444", "sha256": "f1df8905b5d432ad51c4c9045ce29d011517a4a6da443fc4e0a46dcaf9d189f7", "size_bytes": 9922},
+      "id": "superseded-v1-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_IMPLEMENTATION_V1_PREFLIGHT_2026-08-26.json"
+    },
+    {
+      "expect": {},
+      "id": "d7-controller-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-e1-traversal-d7-worker-topology.py"
+    },
+    {
+      "expect": {},
+      "id": "d7-fragment-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay_v10_e1_traversal_d7_worker_topology_test_module.rs.inc"
+    },
+    {
+      "expect": {},
+      "id": "d7-result-absent",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_2026-08-26"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "comparison": "exact D1 fragment prefix plus sealed D7 suffix and byte-identical 39047-byte production prefix",
+      "consumer": "D7 diagnostic Cargo build",
+      "id": "source-assembly-identity",
+      "producer": "recovered V10 and D1 fragment",
+      "test_id": "source-assembly-parity"
+    },
+    {
+      "comparison": "exact route ID worker count CPU vector and ceil chunk table",
+      "consumer": "D7 subject validator",
+      "id": "route-registry-identity",
+      "producer": "D7 controller and Rust registry",
+      "test_id": "registry-parity"
+    },
+    {
+      "comparison": "exact 7640 records zero errors exact structures and 502915120 edges",
+      "consumer": "D7 topology comparison",
+      "id": "measurement-denominator-identity",
+      "producer": "each D7 worker route",
+      "test_id": "denominator-parity"
+    },
+    {
+      "comparison": "complete sealed inventory and SHA256SUMS with exact route-state links",
+      "consumer": "independent D7 terminal audit",
+      "id": "receipt-identity",
+      "producer": "D7 remote controller",
+      "test_id": "terminal-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "test-only-production-prefix",
+      "statement": "D7 changes only test bytes after the exact 39047-byte production prefix",
+      "test_id": "source-assembly-parity"
+    },
+    {
+      "id": "closed-route-graph",
+      "statement": "only build parity W1 W6 W12 W14 and W20 are executable",
+      "test_id": "command-graph"
+    },
+    {
+      "id": "one-shot-authority",
+      "statement": "every build or execution marker is consumed by atomic rename before its action and never recreated",
+      "test_id": "marker-fault-matrix"
+    },
+    {
+      "id": "exact-scientific-denominator",
+      "statement": "every worker route measures all 382 queries for 20 rounds and 502915120 edges",
+      "test_id": "denominator-parity"
+    },
+    {
+      "id": "loaded-host-preserved",
+      "statement": "D7 does not stop tune reprioritize or repin foreign processes",
+      "test_id": "foreign-process-veto"
+    },
+    {
+      "id": "diagnostic-not-production-policy",
+      "statement": "D7 frontiers do not mutate or authorize a production concurrency setting",
+      "test_id": "claim-boundary"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "baseline_check_id": "d6-receipt",
+      "cursor_policy": "exact_bytes",
+      "id": "d6-history",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_V1_2026-08-26/D6_CONCURRENCY_ACCOUNTING_RECEIPT.json",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    },
+    {
+      "baseline_check_id": "d1-decision",
+      "cursor_policy": "exact_bytes",
+      "id": "d1-history",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/D1_DECISION.json",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    },
+    {
+      "baseline_check_id": "e1-decision",
+      "cursor_policy": "exact_bytes",
+      "id": "e1-history",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_2026-08-25/E1_DECISION.json",
+      "policy": "immutable",
+      "rollback_policy": "never_modify"
+    },
+    {
+      "baseline_check_id": "recovered-v10",
+      "cursor_policy": "exact_bytes",
+      "id": "v10-source",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "policy": "immutable_input",
+      "rollback_policy": "never_modify"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [
+    {
+      "comparison": "exact_stable_projection",
+      "expected_to_change_fields": [],
+      "id": "installed-runtime-continuity",
+      "observed_not_compared_fields": ["loadavg", "pressure", "temperature", "foreign_process_cpu_percent"],
+      "reason": "the diagnostic build and routes must not change installed Lay or managed process identity",
+      "source": "local installed binary hashes and managed Lay process IDs before and after D7",
+      "stable_fields": ["installed_lay_hashes", "managed_lay_process_ids", "global_ibus_pid"],
+      "test_id": "runtime-continuity"
+    }
+  ],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "side_effects": {
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "synthetic_fixture_as_evidence",
+      "production_source_edit",
+      "installed_binary_or_package_write",
+      "service_install_restart_signal_or_deployment",
+      "foreign_process_stop_repriority_affinity_or_host_tuning",
+      "D5_retry_or_historical_marker_mutation",
+      "perf_record_sampling_or_precise_event",
+      "adaptive_route_event_worker_or_threshold_change",
+      "marker_recreation_or_route_retry",
+      "automatic_production_concurrency_policy",
+      "SWAR_decoder_rewrite_or_new_executor"
+    ],
+    "planned": [
+      {"id": "create-d7-controller-and-test-suffix", "kind": "local_source_create"},
+      {"id": "create-d7-remote-namespace-and-markers", "kind": "remote_state_create"},
+      {"id": "one-diagnostic-cargo-build", "kind": "remote_build"},
+      {"id": "one-semantic-parity-route", "kind": "remote_subject"},
+      {"id": "five-perf-stat-worker-routes", "kind": "remote_measurement"},
+      {"id": "seal-and-mirror-route-evidence", "kind": "evidence_write"},
+      {"id": "publish-independent-terminal-audit", "kind": "local_evidence_write"},
+      {"id": "record-d7-result", "kind": "documentation_edit"}
+    ]
+  },
+  "source_checks": [
+    {
+      "forbidden_effect_patterns": [
+        {"effect": "generated_traffic", "regex": "(?:curl|wget|https?://)"},
+        {"effect": "synthetic_fixture", "regex": "synthetic_fixture"},
+        {"effect": "synthetic_fixture_as_evidence", "regex": "synthetic_fixture_as_evidence"},
+        {"effect": "production_source_edit", "regex": "v13_typed_peak[.]rs.{0,120}(?:write|replace|rename)"},
+        {"effect": "installed_binary_or_package_write", "regex": "(?:install-release|[.]local/(?:bin|lib)/lay)"},
+        {"effect": "service_install_restart_signal_or_deployment", "regex": "(?:systemctl|pkill|killall|install-release)"},
+        {"effect": "foreign_process_stop_repriority_affinity_or_host_tuning", "regex": "(?:cpupower|scaling_governor|renice|taskset -pc)"},
+        {"effect": "D5_retry_or_historical_marker_mutation", "regex": "(?:T4-FIXED|D5.*retry|d5.*markers)"},
+        {"effect": "perf_record_sampling_or_precise_event", "regex": "(?:perf record|precise_ip|cpu_core/.+upp|cpu_atom/.+upp)"},
+        {"effect": "adaptive_route_event_worker_or_threshold_change", "regex": "adaptive_(?:route|event|worker|threshold)"},
+        {"effect": "marker_recreation_or_route_retry", "regex": "(?:recreate_marker|retry_permitted.*true)"},
+        {"effect": "automatic_production_concurrency_policy", "regex": "production_concurrency_policy"},
+        {"effect": "SWAR_decoder_rewrite_or_new_executor", "regex": "(?:SWAR|decoder_rewrite|V12Executor)"}
+      ],
+      "id": "reused-d1-test-fragment",
+      "path": "../../../scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc",
+      "sha256": "bbd8b8d318810eec721812f21efbeb5f231dacba774cb5ade854e2201c6c7665"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "D7_PREFLIGHT_READY",
+    "steps": [
+      {
+        "cleanup": "remove only partial new local sources; preserve all historical evidence and create no remote namespace",
+        "failure_state": "BLOCKED_PROVENANCE",
+        "from": "D7_PREFLIGHT_READY",
+        "id": "implement-and-self-check",
+        "mutates": true,
+        "preserves": ["d6-history", "d1-history", "e1-history", "v10-source"],
+        "test_id": "implementation-fault",
+        "to": "D7_CONTROLLER_VERIFIED_UNRUN"
+      },
+      {
+        "cleanup": "seal bootstrap failure without markers or remove empty owned namespace before publication; never touch historical trees",
+        "failure_state": "BLOCKED_PROVENANCE",
+        "from": "D7_CONTROLLER_VERIFIED_UNRUN",
+        "id": "bootstrap-and-create-seven-markers",
+        "mutates": true,
+        "preserves": ["d6-history", "d1-history", "e1-history", "v10-source"],
+        "test_id": "bootstrap-fault",
+        "to": "D7_ALL_MARKERS_AVAILABLE"
+      },
+      {
+        "cleanup": "retain consumed build marker logs workspace identity and sealed failure; never invoke Cargo again",
+        "failure_state": "BLOCKED_BUILD",
+        "from": "D7_ALL_MARKERS_AVAILABLE",
+        "id": "consume-and-build-once",
+        "mutates": true,
+        "preserves": ["d6-history", "d1-history", "e1-history", "v10-source"],
+        "test_id": "build-fault",
+        "to": "D7_BUILD_CREATED"
+      },
+      {
+        "cleanup": "retain consumed parity marker and sealed raw evidence; do not execute worker routes",
+        "failure_state": "BLOCKED_PARITY",
+        "from": "D7_BUILD_CREATED",
+        "id": "consume-and-run-parity",
+        "mutates": true,
+        "preserves": ["d6-history", "d1-history", "e1-history", "v10-source"],
+        "test_id": "parity-fault",
+        "to": "D7_PARITY_PASS"
+      },
+      {
+        "cleanup": "retain consumed W1 marker complete perf and subject evidence; stop without later routes",
+        "failure_state": "BLOCKED_MEASUREMENT",
+        "from": "D7_PARITY_PASS",
+        "id": "consume-and-run-W1",
+        "mutates": true,
+        "preserves": ["d6-history", "d1-history", "e1-history", "v10-source"],
+        "test_id": "W1-fault",
+        "to": "D7_W1_PASS"
+      },
+      {
+        "cleanup": "retain consumed W6 marker complete perf and subject evidence; stop without later routes",
+        "failure_state": "BLOCKED_MEASUREMENT",
+        "from": "D7_W1_PASS",
+        "id": "consume-and-run-W6",
+        "mutates": true,
+        "preserves": ["d6-history", "d1-history", "e1-history", "v10-source"],
+        "test_id": "W6-fault",
+        "to": "D7_W6_PASS"
+      },
+      {
+        "cleanup": "retain consumed W12 marker complete perf and subject evidence; stop without later routes",
+        "failure_state": "BLOCKED_MEASUREMENT",
+        "from": "D7_W6_PASS",
+        "id": "consume-and-run-W12",
+        "mutates": true,
+        "preserves": ["d6-history", "d1-history", "e1-history", "v10-source"],
+        "test_id": "W12-fault",
+        "to": "D7_W12_PASS"
+      },
+      {
+        "cleanup": "retain consumed W14 marker complete perf and subject evidence; stop without later routes",
+        "failure_state": "BLOCKED_MEASUREMENT",
+        "from": "D7_W12_PASS",
+        "id": "consume-and-run-W14",
+        "mutates": true,
+        "preserves": ["d6-history", "d1-history", "e1-history", "v10-source"],
+        "test_id": "W14-fault",
+        "to": "D7_W14_PASS"
+      },
+      {
+        "cleanup": "retain consumed W20 marker complete perf and subject evidence; stop before terminal publication",
+        "failure_state": "BLOCKED_MEASUREMENT",
+        "from": "D7_W14_PASS",
+        "id": "consume-and-run-W20",
+        "mutates": true,
+        "preserves": ["d6-history", "d1-history", "e1-history", "v10-source"],
+        "test_id": "W20-fault",
+        "to": "D7_W20_PASS"
+      },
+      {
+        "cleanup": "remove only partial local mirror or audit stage; retain complete remote evidence and all consumed markers",
+        "failure_state": "BLOCKED_PROVENANCE",
+        "from": "D7_W20_PASS",
+        "id": "independent-terminal-audit",
+        "mutates": true,
+        "preserves": ["d6-history", "d1-history", "e1-history", "v10-source"],
+        "test_id": "terminal-fault",
+        "to": "D7_WORKER_TOPOLOGY_SWEEP_COMPLETE"
+      }
+    ],
+    "terminal_states": ["D7_WORKER_TOPOLOGY_SWEEP_COMPLETE", "BLOCKED_PROVENANCE", "BLOCKED_BUILD", "BLOCKED_PARITY", "BLOCKED_CAPABILITY", "BLOCKED_MEASUREMENT", "BLOCKED_THERMAL"]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_IMPLEMENTATION_V2_2026-08-26",
+  "tests": [
+    {"expected": "partial local source grants no remote authority", "id": "implementation-fault", "kind": "fault_injection"},
+    {"expected": "remote namespace has either zero markers or seven exact immutable available markers", "id": "bootstrap-fault", "kind": "fault_injection"},
+    {"expected": "build marker remains consumed and no second Cargo invocation is possible", "id": "build-fault", "kind": "fault_injection"},
+    {"expected": "parity marker remains consumed and no W route is admitted after parity failure", "id": "parity-fault", "kind": "fault_injection"},
+    {"expected": "W1 marker remains consumed and all later markers remain unconsumed", "id": "W1-fault", "kind": "fault_injection"},
+    {"expected": "W6 marker remains consumed and all later markers remain unconsumed", "id": "W6-fault", "kind": "fault_injection"},
+    {"expected": "W12 marker remains consumed and all later markers remain unconsumed", "id": "W12-fault", "kind": "fault_injection"},
+    {"expected": "W14 marker remains consumed and W20 remains unconsumed", "id": "W14-fault", "kind": "fault_injection"},
+    {"expected": "W20 marker remains consumed with complete terminal evidence", "id": "W20-fault", "kind": "fault_injection"},
+    {"expected": "partial local audit does not mutate remote evidence", "id": "terminal-fault", "kind": "fault_injection"},
+    {"expected": "all seven marker renames are atomic one-shot transitions", "id": "marker-fault-matrix", "kind": "fault_injection"},
+    {"expected": "assembled source parses and exact production prefix is unchanged", "id": "source-assembly-parity", "kind": "parity"},
+    {"expected": "controller and Rust registries contain exactly W1 W6 W12 W14 W20", "id": "registry-parity", "kind": "parity"},
+    {"expected": "reachable commands contain one Cargo route one parity route and perf stat only for five W routes", "id": "command-graph", "kind": "parity"},
+    {"expected": "no foreign process control or host tuning command is reachable", "id": "foreign-process-veto", "kind": "parity"},
+    {"expected": "each route has 7640 records exact structure zero errors and 502915120 edges", "id": "denominator-parity", "kind": "parity"},
+    {"expected": "frontiers remain diagnostic and grant no production policy", "id": "claim-boundary", "kind": "parity"},
+    {"expected": "installed Lay hashes and managed process identities are unchanged", "id": "runtime-continuity", "kind": "parity"},
+    {"expected": "remote and local sealed inventories and route-state links match", "id": "terminal-parity", "kind": "parity"}
+  ]
+}

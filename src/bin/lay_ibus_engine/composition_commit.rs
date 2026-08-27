@@ -294,11 +294,15 @@ impl LayIbusEngine {
         &self,
         text: &str,
     ) -> Option<lay::ime_correction::ActiveCompositionAutocorrectDecision> {
+        let lexical_authority_frame = self
+            .capture_input_frame_identity()
+            .map(|identity| identity.lexical_authority_frame());
         lay::ime_correction::decide_active_composition_autocorrect(
             lay::ime_correction::ActiveCompositionAutocorrectRequest {
                 text,
                 committed_tail: &self.tail_buffer,
                 config: &self.config,
+                lexical_authority_frame: lexical_authority_frame.as_ref(),
                 active_layout_is_ru: Some(self.layout_is_ru),
             },
         )

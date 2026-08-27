@@ -1,0 +1,310 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_IMPLEMENTATION_V1_2026-08-25",
+  "scoped_positive_verdict": "READY_TO_IMPLEMENT_PRIMARY_ONLY_D2",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "admission_scope": {
+    "permits": [
+      "create one primary-only D2 controller",
+      "run controller self-checks without D2 execution",
+      "perform D2-A immutable closure"
+    ],
+    "does_not_permit": [
+      "Cargo or rustc before D2-A PASS and build-marker consumption",
+      "D2 subject or perf execution before its prerequisite markers and gates",
+      "instruction-IP sampling",
+      "optimization implementation",
+      "runtime integration or deployment"
+    ],
+    "engine_verdict_interpretation": "A nanda READY_TO_IMPLEMENT receipt means only READY_TO_IMPLEMENT_PRIMARY_ONLY_D2 for this task."
+  },
+  "baseline_checks": [
+    {"id":"d2-v4-contract","kind":"file","path":"../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_CONTRACT_2026-08-25.md","expect":{"mode":"0664","size_bytes":15177,"sha256":"2a34829ac0ccf36f092a55f3c26cbbd3a1d9083834a9174eac036120e964933d"}},
+    {"id":"d2-v4-structural-review","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_ROUTE_V4_2026-08-25/STRUCTURAL_REVIEW.json","expect":{"mode":"0444","size_bytes":5869,"sha256":"00438023ff26b3b5b0cc9b46dbb6687c1f9cde5687d2d222901b9d2cfdfc730e"}},
+    {"id":"d1-decision","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/D1_DECISION.json","expect":{"mode":"0444","size_bytes":5361257,"sha256":"80530f9f5787f846ce2cf222c1b60e3ae42887ce95a11ac153ec7271cce98baf"}},
+    {"id":"d1-pmu-correction-v2","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_PMU_INTERPRETATION_CORRECTION_V2_2026-08-25/CORRECTION.json","expect":{"mode":"0444","size_bytes":1932,"sha256":"004bc1f5d7cd493525cfb9287e79e8159f983b41a51a2374eaeb7931c72aad38"}},
+    {"id":"tcap-interpretation-v3","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_INTERPRETATION_V3_2026-08-25/T_CAP_INTERPRETATION_RECEIPT.json","expect":{"mode":"0444","size_bytes":8541,"sha256":"f1d572a364312cc6c311ddc49316379b8b63748672c138f5fda50ba615cae2cb"}},
+    {"id":"precise-capability-v3","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRECISE_CAPABILITY_V3_2026-08-25/PRECISE_CAPABILITY_RECEIPT.json","expect":{"mode":"0400","size_bytes":5581,"sha256":"c62ec8737cecf08e69b6b8d1ce2408e051f31086b58ff53e7b32961cad12e197"}},
+    {"id":"secondary-gap-correction-v5","kind":"file","path":"../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_SECONDARY_GAP_EXECUTION_CORRECTION_V5_2026-08-25.md","expect":{"mode":"0664","size_bytes":3956,"sha256":"c6fdde13d9a2719fd69098c35cfe34eccda1ee975111731941ed86a704332f78"}},
+    {"id":"secondary-gap-route-v6","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_SECONDARY_GAP_ROUTE_V6_RECEIPT_2026-08-25.json","expect":{"mode":"0444","size_bytes":21469,"sha256":"49be6e26558756188c697fa1ccf64378d855584c05418212913ed8c4457aa999"}},
+    {"id":"u-instruction-correction-v7","kind":"file","path":"../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_U_INSTRUCTION_VALIDITY_CORRECTION_V7_2026-08-25.md","expect":{"mode":"0664","size_bytes":8608,"sha256":"fe03dc42c47e3a0aac011bb24da0aeab40cf0e0c90d8bb6d6299e964b2f817af"}},
+    {"id":"u-instruction-route-v7","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_U_INSTRUCTION_VALIDITY_ROUTE_V7_RECEIPT_2026-08-25.json","expect":{"mode":"0444","size_bytes":24717,"sha256":"6acb942f97c78096ec9c0fc9cdaeab3bdf795c6ba1cf2ee1b84b5adafaaeb3bf"}},
+    {"id":"d2-p0-static-closure","kind":"file","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P0_STATIC_RECEIPT.json","expect":{"mode":"0444","size_bytes":7003,"sha256":"9b6aff3d74d36e7f5868fff596eb17326e819bf45496bbe4f3cf50870a7f71e0"}},
+    {"id":"v10-source","kind":"file","path":"/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs","expect":{"mode":"0444","size_bytes":91518,"sha256":"f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c"}},
+    {"id":"d1-fragment","kind":"file","path":"../../../scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc","expect":{"mode":"0664","size_bytes":113204,"sha256":"bbd8b8d318810eec721812f21efbeb5f231dacba774cb5ade854e2201c6c7665"}},
+    {"id":"d1-controller","kind":"file","path":"../../../scripts/lay-v10-e1-remaining-cost-d1.py","expect":{"mode":"0755","size_bytes":60400,"sha256":"09b217d43094e532c07e1d7710a31b8e50fbce36d51df470833d77e94c50116a"}},
+    {"id":"cargo-toml","kind":"file","path":"../../../Cargo.toml","expect":{"mode":"0664","size_bytes":2399,"sha256":"90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b"}},
+    {"id":"cargo-lock","kind":"file","path":"../../../Cargo.lock","expect":{"mode":"0664","size_bytes":70770,"sha256":"e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"}},
+    {"id":"cargo-guard","kind":"file","path":"../../../scripts/cargo-guard.sh","expect":{"mode":"0775","size_bytes":2534,"sha256":"a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"}},
+    {"id":"active-v11","kind":"file","path":"../../../src/nanda_wave/l2_field/v13_typed_peak.rs","expect":{"mode":"0664","size_bytes":124127,"sha256":"d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"}},
+    {"id":"primary-only-controller-absent","kind":"absent","path":"../../../scripts/lay-v10-e1-traversal-d2-primary-only.py","expect":{}},
+    {"id":"primary-only-result-absent","kind":"absent","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V1_2026-08-25","expect":{}}
+  ],
+  "exact_input_closure": {
+    "production_prefix":{"size_bytes":39047,"sha256":"ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26"},
+    "assembled_d1_source":{"size_bytes":204722,"sha256":"6cd9edece91ac2e0c0e6dda7658e104dcf8953f1c16b1acff6108ea44ada0181"},
+    "package":{"remote_mode":"0444","size_bytes":140556462,"sha256":"cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"},
+    "sidecar":{"remote_mode":"0444","size_bytes":3689884,"sha256":"a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd"},
+    "v7_denominator":{"remote_mode":"0444","size_bytes":1606189,"sha256":"33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"},
+    "schedule":{"remote_mode":"0444","size_bytes":174941,"sha256":"2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78"},
+    "target_host":{"hostname":"e-MEGA-MINI-M1-13th","machine_id_exact_file_sha256":"5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441","kernel":"6.8.0-124-generic","online_cpus":"0-19","cpu_core":"0-11 type=4","cpu_atom":"12-19 type=10"},
+    "toolchain":{"cargo":"cargo 1.97.1 (c980f4866 2026-06-30)","rustc":"rustc 1.97.1 (8bab26f4f 2026-07-14)","llvm":"22.1.6","host":"x86_64-unknown-linux-gnu","target_features":["fxsr","sse","sse2"],"rustflags":[]}
+  },
+  "execution_route_graph": {
+    "closed": true,
+    "route_ids":["BUILD","BUCKET-MAP","PARITY","U-SINGLE","U-FIXED","U-REVERSED","V-FIXED-INSTR","V-REVERSED-INSTR","T-SINGLE","T-FIXED","T-REVERSED"],
+    "build":{"command":["<workspace>/scripts/cargo-guard.sh","test","--offline","--locked","--release","--lib","--no-run","nanda_wave::l2_field::v13_typed_peak::tests"],"prerequisites":["D2-A PASS","build.available consumed"]},
+    "bucket_map":{"commands":[["/usr/bin/readelf","--file-header","--program-headers","--sections","--symbols","--notes","--debug-dump=decodedline","<D2-ELF>"],["/usr/bin/objdump","--disassemble","--line-numbers","--demangle","--wide","<D2-ELF>"],["/usr/bin/nm","--numeric-sort","--print-size","--demangle","<D2-ELF>"],["/usr/bin/addr2line","--exe=<D2-ELF>","--functions","--inlines","--demangle","--addresses","<sealed-address-list>"]],"prerequisites":["build audit PASS","bucket-map.available consumed"],"must_precede":"PARITY"},
+    "subjects": {
+      "PARITY":{"test":"nanda_wave::l2_field::v13_typed_peak::tests::v10_d1_semantic_parity"},
+      "U-SINGLE":{"test":"nanda_wave::l2_field::v13_typed_peak::tests::v10_d1_component_single","cpus":[0]},
+      "U-FIXED":{"test":"nanda_wave::l2_field::v13_typed_peak::tests::v10_d1_component_twenty","cpus":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]},
+      "U-REVERSED":{"test":"nanda_wave::l2_field::v13_typed_peak::tests::v10_d1_component_twenty","cpus":[19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0]},
+      "V-FIXED-INSTR":{"test":"nanda_wave::l2_field::v13_typed_peak::tests::v10_d1_twenty_pmu","cpus":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]},
+      "V-REVERSED-INSTR":{"test":"nanda_wave::l2_field::v13_typed_peak::tests::v10_d1_twenty_pmu","cpus":[19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0]},
+      "T-SINGLE":{"test":"nanda_wave::l2_field::v13_typed_peak::tests::v10_d1_component_single","cpus":[0]},
+      "T-FIXED":{"test":"nanda_wave::l2_field::v13_typed_peak::tests::v10_d1_component_twenty","cpus":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]},
+      "T-REVERSED":{"test":"nanda_wave::l2_field::v13_typed_peak::tests::v10_d1_component_twenty","cpus":[19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0]}
+    },
+    "subject_argv_suffix":["/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2","<D2-ELF>","--exact","<exact-test>","--ignored","--nocapture","--test-threads=1"],
+    "v_perf_stat_argv":["/usr/bin/sudo","-n","/usr/bin/perf","stat","--json-output","--no-big-num","--delay=-1","--control=fifo:<control>,<ack>","--event","instructions,cycles,branches,branch-misses","--","<exact-subject-command>"],
+    "t_perf_record_argv":["/usr/bin/sudo","-n","/usr/bin/perf","record","--buildid-all","--sample-cpu","--timestamp","--event","task-clock:u","--count","100000","--output","<route>/perf.data","--","<exact-subject-command>"],
+    "t_readers":[["/usr/bin/perf","evlist","-v","-i","<perf.data>"],["/usr/bin/perf","script","-i","<perf.data>","-F","comm,pid,tid,cpu,time,event,ip,dso,period"],["/usr/bin/perf","script","-D","-i","<perf.data>"],["/usr/bin/perf","buildid-list","-i","<perf.data>"]]
+  },
+  "marker_ledger": {
+    "initial_available":["build.available","bucket-map.available","parity.available","u-single.available","u-fixed.available","u-reversed.available","v-fixed-instr.available","v-reversed-instr.available","t-single.available","t-fixed.available","t-reversed.available"],
+    "consume_before_effect":true,
+    "failure_retains_consumed_marker_and_evidence":true,
+    "retry_permitted":false,
+    "t_consumption_gate":"PARITY PASS and U-SINGLE/U-FIXED/U-REVERSED PASS and V-FIXED-INSTR/V-REVERSED-INSTR PASS"
+  },
+  "build_contract": {
+    "count":1,
+    "source":"exact V10 source minus terminal brace plus exact D1 fragment plus terminal brace",
+    "source_sha256":"6cd9edece91ac2e0c0e6dda7658e104dcf8953f1c16b1acff6108ea44ada0181",
+    "environment":{"CARGO_BUILD_JOBS":"20","CARGO_INCREMENTAL":"0","CARGO_NET_OFFLINE":"true","CARGO_PROFILE_RELEASE_DEBUG":"2","CARGO_PROFILE_RELEASE_STRIP":"none","RUSTFLAGS":"","profile":"release","opt_level":3,"lto":true,"codegen_units":1,"panic":"abort"},
+    "only_intended_difference_from_d1":"retain symbols and full DWARF line tables",
+    "post_build_audit":["ELF SHA-256","Build ID","ELF type",".text SHA-256","PT_LOAD geometry","symbol table presence","DWARF line-table presence","toolchain identity","assembled source SHA-256"],
+    "text_difference_policy":"publish exact .text difference; do not fail solely on difference; U and V perturbation gates decide physical admissibility"
+  },
+  "bucket_map_contract": {
+    "publication":"D2_BUCKET_MAP.json sealed before PARITY and every other D2 subject",
+    "join_key":["D2 Build ID","normalized ELF virtual IP"],
+    "normalization":{"ET_EXEC":"normalized_ip = sampled_ip","ET_DYN":"load_bias = mapping_start - align_down(PT_LOAD.p_vaddr,page_size); normalized_ip = sampled_ip - load_bias","identity":"sample DSO Build ID must equal sealed D2 Build ID","forbidden":"pathname-base or minimum-sample-IP guessing"},
+    "buckets":["DAFSA_DECODE_MEMORY","TRANSITION","RANK","STACK_CONTROL","TERMINAL","OUTSIDE_TRAVERSAL","UNATTRIBUTED"],
+    "range_fields":["ELF SHA-256","Build ID","normalized start/end","source/inlined frame","bucket","reason","machine-byte SHA-256"],
+    "overlap_policy":"distinct bucket ranges may not overlap",
+    "ambiguity_policy":"UNATTRIBUTED, never post-sample manual reassignment"
+  },
+  "validity_contract": {
+    "u":{"routes":["U-SINGLE","U-FIXED","U-REVERSED"],"producer":"exact D1 component routes","hard_gates":{"errors_unresolved":"0/0","structural_mismatch":0,"traversal_thread_cpu_per_edge_delta_percent_max":5.0},"instruction_count_produced":false},
+    "v":{"routes":["V-FIXED-INSTR","V-REVERSED-INSTR"],"producer":"v10_d1_twenty_pmu -> d1_run_twenty_pmu -> d1_search::<false>, component_clocks_enabled=false","workers":20,"measured_rounds":20,"requests":7640,"event_group":["instructions","cycles","branches","branch-misses"],"fifo_protocol":["subject-ready","controller-enabled","subject-done","controller-disabled"],"hybrid_aggregation":"sum(scaled_count_i * event_runtime_i / sum(event_runtime)) over exactly cpu_atom and cpu_core","fixed_instructions_per_request_baseline":23934876.5598414,"reversed_instructions_per_request_baseline":23935583.225726895,"hard_delta_percent_max":1.0,"evidence_only_events":["cycles","branches","branch-misses"]}
+  },
+  "sampling_contract": {
+    "lifecycle":"whole-process perf command wrapping; perf starts before the D2 subject and exits after the child; --pid attach and controller SIGINT are forbidden",
+    "inheritance":"worker-thread inheritance is required; --no-inherit is forbidden and T evidence must contain worker-thread samples",
+    "event":{"name":"task-clock:u","period":100000,"freq":0,"exclude_kernel":1,"precise_ip":0},
+    "estimator":{"sample_stream":"one frozen 382-query warmup traversal round plus twenty measured rounds","cpu_per_edge_denominator":"existing primitive CPU samples from only the twenty measured component rounds","time_filter_or_warmup_subtraction":false,"reason":"byte-identical component route has no external measured-only enable handshake"},
+    "hard_gates":{"lost":0,"throttle_unthrottle":"0/0","adaptive_period":false,"dso_build_id":"exact D2","ip_normalization":"unique","machine_byte_mismatch":0,"traversal_samples_min":50000,"unattributed_traversal_percent_max":5.0,"sampled_traversal_cpu_per_edge_vs_paired_u_delta_percent_max":5.0},
+    "predicted_samples":{"single":130607,"fixed":225004,"authority":"preregistered D1 traversal user-CPU estimate; T-CAP wall sample rate is not a substitute"}
+  },
+  "failure_taxonomy": {
+    "BLOCKED_PROVENANCE":"identity, route graph, marker, evidence, executable or host/toolchain closure drift",
+    "BLOCKED_BUILD":"build failure, second build attempt, missing symbols or DWARF, or incomplete ELF audit",
+    "BLOCKED_BUCKET_MAP":"normalization ambiguity, overlap, missing range closure, Build-ID or machine-byte mismatch",
+    "BLOCKED_SEMANTIC":"parity, errors, unresolved, structural or exact-result mismatch",
+    "BLOCKED_DENOMINATOR":"wrong producer, route, request count, PMU rows or hybrid aggregation",
+    "BLOCKED_PERTURBATION":"U CPU, V instructions or T sampled-vs-U delta above its frozen threshold",
+    "BLOCKED_CAPABILITY":"exact G0 or task-clock event cannot produce valid evidence",
+    "BLOCKED_THERMAL":"thermal throttle-counter drift",
+    "BLOCKED_SAMPLE_COVERAGE":"lost/throttle/adaptive evidence, fewer than 50000 traversal samples, or more than 5 percent UNATTRIBUTED"
+  },
+  "claim_boundary": {
+    "maximum_result":"D2_ATTRIBUTION_WITH_SECONDARY_GAP",
+    "result_requires_stop":true,
+    "does_not_admit":["instruction-IP attribution","per-bucket instruction share","instruction-heavy claim","stall claim","I-CORE retry","I-ATOM","substitute precise event","SWAR","decoder or layout rewrite","rank or stack rewrite","full B","V12","runtime integration","deployment"]
+  },
+  "side_effects": {
+    "planned": [
+      {"id":"create-primary-only-controller","kind":"local_source_create"},
+      {"id":"create-d2a-closure-and-marker-tree","kind":"remote_state_create"},
+      {"id":"run-one-symbolized-build","kind":"remote_cargo_build"},
+      {"id":"publish-build-audit","kind":"remote_evidence_write"},
+      {"id":"generate-and-seal-bucket-map","kind":"remote_machine_map_write"},
+      {"id":"run-parity","kind":"remote_diagnostic_execution"},
+      {"id":"run-three-u-routes","kind":"remote_component_execution"},
+      {"id":"run-two-v-g0-routes","kind":"remote_process_scoped_pmu_execution"},
+      {"id":"run-three-t-routes","kind":"remote_task_clock_sampling"},
+      {"id":"read-three-t-perf-data-files","kind":"remote_perf_data_read"},
+      {"id":"publish-immutable-d2-attribution","kind":"remote_and_local_evidence_write"},
+      {"id":"record-d2-result","kind":"documentation_edit"},
+      {"id":"snapshot-installed-runtime","kind":"runtime_snapshot","comparison_id":"installed-runtime-stability"},
+      {"id":"snapshot-target-host","kind":"runtime_snapshot","comparison_id":"target-host-stability"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "d1_rust_or_production_prefix_mutation",
+      "hot_loop_instrumentation_or_semantic_change",
+      "executable_route_outside_closed_graph",
+      "precise_instruction_or_substitute_sampling",
+      "instruction_ip_or_bucket_claim",
+      "perf_stat_outside_v_routes",
+      "perf_record_outside_t_routes_or_wrong_event",
+      "pid_attach_or_sigint_t_lifecycle",
+      "adaptive_period_threshold_or_rerun",
+      "marker_reuse_or_execution_before_gate",
+      "cargo_before_d2a_or_more_than_one_build",
+      "bucket_map_after_subject_or_post_sample_reclassification",
+      "warmup_time_filter_or_subtraction",
+      "clean_c1_or_full_b_execution",
+      "swar_decoder_layout_rank_stack_or_v12_implementation",
+      "foreign_process_control_or_host_policy_tuning",
+      "installed_lay_mutation_or_restart",
+      "runtime_integration_deployment_or_authority_change"
+    ]
+  },
+  "source_checks": [
+    {
+      "id":"pinned-d1-fragment",
+      "path":"../../../scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc",
+      "sha256":"bbd8b8d318810eec721812f21efbeb5f231dacba774cb5ade854e2201c6c7665",
+      "forbidden_effect_patterns":[
+        {"effect":"generated_traffic","regex":"urllib\\.request|requests\\.(get|post)|/usr/bin/(curl|wget)"},
+        {"effect":"synthetic_fixture","regex":"D2_SYNTHETIC_FIXTURE|d2_write_synthetic_fixture"},
+        {"effect":"d1_rust_or_production_prefix_mutation","regex":"D2_MUTATE_D1_FRAGMENT|D2_EDIT_PRODUCTION_PREFIX"},
+        {"effect":"hot_loop_instrumentation_or_semantic_change","regex":"D2_(EDGE_COUNTER|HOT_LOOP_TIMER|TRANSITION_REPLACEMENT|LAYOUT_REWRITE|RANK_REWRITE|STACK_REWRITE|PRUNE_REWRITE)"},
+        {"effect":"precise_instruction_or_substitute_sampling","regex":"cpu_(core|atom)/event=0xc0/upp|D2_PRECISE_EVENT|D2_SUBSTITUTE_EVENT"},
+        {"effect":"instruction_ip_or_bucket_claim","regex":"D2_INSTRUCTION_IP_ATTRIBUTION|D2_INSTRUCTION_BUCKET_SHARE|D2_STALL_CLAIM"},
+        {"effect":"swar_decoder_layout_rank_stack_or_v12_implementation","regex":"D2_(SWAR|DECODER_REWRITE|LAYOUT_REWRITE|RANK_REWRITE|STACK_REWRITE|V12_IMPLEMENTATION)"}
+      ]
+    },
+    {
+      "id":"pinned-d1-controller",
+      "path":"../../../scripts/lay-v10-e1-remaining-cost-d1.py",
+      "sha256":"09b217d43094e532c07e1d7710a31b8e50fbce36d51df470833d77e94c50116a",
+      "forbidden_effect_patterns":[
+        {"effect":"executable_route_outside_closed_graph","regex":"D2_EXTRA_EXECUTABLE_ROUTE"},
+        {"effect":"perf_stat_outside_v_routes","regex":"D2_PERF_STAT_OUTSIDE_V_ROUTE"},
+        {"effect":"perf_record_outside_t_routes_or_wrong_event","regex":"/usr/bin/perf[^\\n]{0,160}record|task-clock:u"},
+        {"effect":"pid_attach_or_sigint_t_lifecycle","regex":"--pid|SIGINT|D2_T_PID_ATTACH"},
+        {"effect":"adaptive_period_threshold_or_rerun","regex":"adaptive_rerun[\\\"']?\\s*[:=]\\s*[Tt]rue|retry_permitted[\\\"']?\\s*[:=]\\s*[Tt]rue|D2_THRESHOLD_CHANGE"},
+        {"effect":"marker_reuse_or_execution_before_gate","regex":"D2_MARKER_REUSE|D2_EXECUTE_BEFORE_GATE"},
+        {"effect":"cargo_before_d2a_or_more_than_one_build","regex":"D2_CARGO_BEFORE_A|D2_SECOND_BUILD"},
+        {"effect":"bucket_map_after_subject_or_post_sample_reclassification","regex":"D2_MAP_AFTER_SUBJECT|D2_RECLASSIFY_AFTER_SAMPLE"},
+        {"effect":"warmup_time_filter_or_subtraction","regex":"D2_WARMUP_TIME_FILTER|D2_SUBTRACT_WARMUP"},
+        {"effect":"clean_c1_or_full_b_execution","regex":"clean_c1_marker_consumed[\\\"']?\\s*[:=]\\s*[Tt]rue|full_b_executed[\\\"']?\\s*[:=]\\s*[Tt]rue|consume_marker\\([^)]*C1"},
+        {"effect":"foreign_process_control_or_host_policy_tuning","regex":"(?i)((subprocess|ssh|run|check_output|Popen)[^\\n]{0,180}(pkill|killall|systemctl|renice|taskset)[^\\n]{0,120}(nando|btop|k1)|(scaling_governor|energy_performance_preference|intel_pstate|/sys/devices/system/cpu/smt)[^\\n]{0,120}(write|echo|set))"},
+        {"effect":"installed_lay_mutation_or_restart","regex":"(?i)(subprocess|ssh|run|check_output|Popen)[^\\n]{0,180}systemctl[^\\n]{0,120}(lay|ibus)|D2_INSTALL_LAY"},
+        {"effect":"runtime_integration_deployment_or_authority_change","regex":"production_integration_admitted[\\\"']?\\s*[:=]\\s*[Tt]rue|deployment_authority[\\\"']?\\s*[:=]\\s*[Tt]rue|runtime_authority_changed[\\\"']?\\s*[:=]\\s*[Tt]rue"}
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {"id":"paper-chain","path":"../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_U_INSTRUCTION_VALIDITY_CORRECTION_V7_2026-08-25.md","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"u-instruction-correction-v7"},
+    {"id":"d1-evidence","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/D1_DECISION.json","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"d1-decision"},
+    {"id":"d1-pmu-evidence","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_PMU_INTERPRETATION_CORRECTION_V2_2026-08-25/CORRECTION.json","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"d1-pmu-correction-v2"},
+    {"id":"tcap-evidence","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_TCAP_INTERPRETATION_V3_2026-08-25/T_CAP_INTERPRETATION_RECEIPT.json","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"tcap-interpretation-v3"},
+    {"id":"precise-evidence","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRECISE_CAPABILITY_V3_2026-08-25/PRECISE_CAPABILITY_RECEIPT.json","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"precise-capability-v3"},
+    {"id":"p0-input-closure","path":"../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P0_STATIC_RECEIPT.json","policy":"immutable_observation","rollback_policy":"retain_exact_bytes","baseline_check_id":"d2-p0-static-closure"},
+    {"id":"v10-source","path":"/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"v10-source"},
+    {"id":"d1-fragment","path":"../../../scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc","policy":"immutable","rollback_policy":"retain_exact_bytes","baseline_check_id":"d1-fragment"},
+    {"id":"active-v11","path":"../../../src/nanda_wave/l2_field/v13_typed_peak.rs","policy":"immutable","rollback_policy":"no_runtime_mutation_permitted","baseline_check_id":"active-v11"}
+  ],
+  "state_machine": {
+    "initial_state":"READY_TO_IMPLEMENT_PRIMARY_ONLY_D2",
+    "steps":[
+      {"id":"implement-primary-only-controller","from":"READY_TO_IMPLEMENT_PRIMARY_ONLY_D2","to":"PRIMARY_ONLY_CONTROLLER_UNRUN","mutates":true,"failure_state":"BLOCKED_PROVENANCE","cleanup":"remove only partial new controller; preserve every predecessor and create no remote D2 state","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"controller-fault"},
+      {"id":"verify-closed-command-graph","from":"PRIMARY_ONLY_CONTROLLER_UNRUN","to":"PRIMARY_ONLY_CONTROLLER_VERIFIED_UNRUN","mutates":false,"test_id":"route-graph-parity"},
+      {"id":"perform-d2a-closure","from":"PRIMARY_ONLY_CONTROLLER_VERIFIED_UNRUN","to":"D2A_CLOSED_ALL_MARKERS_AVAILABLE","mutates":true,"failure_state":"BLOCKED_PROVENANCE","cleanup":"retain partial disjoint D2-A evidence; consume no build or route marker; no Cargo","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"closure-fault"},
+      {"id":"consume-build-and-build-once","from":"D2A_CLOSED_ALL_MARKERS_AVAILABLE","to":"D2_BUILD_CREATED_UNAUDITED","mutates":true,"failure_state":"BLOCKED_BUILD","cleanup":"retain consumed build marker, workspace identity and logs; no second Cargo or substituted ELF","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"build-fault"},
+      {"id":"audit-symbolized-build","from":"D2_BUILD_CREATED_UNAUDITED","to":"D2_BUILD_AUDITED","mutates":true,"failure_state":"BLOCKED_BUILD","cleanup":"retain consumed build marker, ELF and complete failed audit; no rebuild","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"build-audit-fault"},
+      {"id":"consume-map-and-seal-bucket-map","from":"D2_BUILD_AUDITED","to":"D2_BUCKET_MAP_SEALED","mutates":true,"failure_state":"BLOCKED_BUCKET_MAP","cleanup":"retain consumed map marker, disassembly, DWARF evidence and failed map; no subject execution","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"map-fault"},
+      {"id":"consume-parity-and-run","from":"D2_BUCKET_MAP_SEALED","to":"D2_PARITY_PASS","mutates":true,"failure_state":"BLOCKED_SEMANTIC","cleanup":"retain consumed parity marker and all mismatch evidence; no U V or T execution","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"parity-fault"},
+      {"id":"consume-and-run-u-single","from":"D2_PARITY_PASS","to":"U_SINGLE_PASS","mutates":true,"failure_state":"BLOCKED_PERTURBATION","cleanup":"retain consumed U-SINGLE marker and semantic structural CPU evidence; stop without retry","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"u-route-fault"},
+      {"id":"consume-and-run-u-fixed","from":"U_SINGLE_PASS","to":"U_FIXED_PASS","mutates":true,"failure_state":"BLOCKED_PERTURBATION","cleanup":"retain consumed U-FIXED marker and evidence; stop without retry","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"u-route-fault"},
+      {"id":"consume-and-run-u-reversed","from":"U_FIXED_PASS","to":"ALL_U_PASS","mutates":true,"failure_state":"BLOCKED_PERTURBATION","cleanup":"retain consumed U-REVERSED marker and evidence; stop without retry","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"u-route-fault"},
+      {"id":"consume-and-run-v-fixed","from":"ALL_U_PASS","to":"V_FIXED_PASS","mutates":true,"failure_state":"BLOCKED_DENOMINATOR","cleanup":"retain consumed V-FIXED-INSTR marker, raw perf, FIFO and subject evidence; classify exact failure and stop","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"v-route-fault"},
+      {"id":"consume-and-run-v-reversed","from":"V_FIXED_PASS","to":"ALL_UV_VALIDITY_PASS","mutates":true,"failure_state":"BLOCKED_DENOMINATOR","cleanup":"retain consumed V-REVERSED-INSTR marker, raw perf, FIFO and subject evidence; classify exact failure and stop","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"v-route-fault"},
+      {"id":"consume-and-run-t-single","from":"ALL_UV_VALIDITY_PASS","to":"T_SINGLE_PASS","mutates":true,"failure_state":"BLOCKED_SAMPLE_COVERAGE","cleanup":"retain consumed T-SINGLE marker, perf.data, readers and exact failure; no attach or rerun","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"t-route-fault"},
+      {"id":"consume-and-run-t-fixed","from":"T_SINGLE_PASS","to":"T_FIXED_PASS","mutates":true,"failure_state":"BLOCKED_SAMPLE_COVERAGE","cleanup":"retain consumed T-FIXED marker, perf.data, readers and exact failure; no rerun","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"t-route-fault"},
+      {"id":"consume-and-run-t-reversed","from":"T_FIXED_PASS","to":"ALL_T_PASS","mutates":true,"failure_state":"BLOCKED_SAMPLE_COVERAGE","cleanup":"retain consumed T-REVERSED marker, perf.data, readers and exact failure; no rerun","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"t-route-fault"},
+      {"id":"publish-primary-only-attribution","from":"ALL_T_PASS","to":"D2_ATTRIBUTION_WITH_SECONDARY_GAP","mutates":true,"failure_state":"BLOCKED_PROVENANCE","cleanup":"retain sealed remote evidence and remove only incomplete local publication; no route rerun","preserves":["paper-chain","d1-evidence","d1-pmu-evidence","tcap-evidence","precise-evidence","p0-input-closure","v10-source","d1-fragment","active-v11"],"test_id":"publication-fault"}
+    ],
+    "terminal_states":["D2_ATTRIBUTION_WITH_SECONDARY_GAP","BLOCKED_PROVENANCE","BLOCKED_BUILD","BLOCKED_BUCKET_MAP","BLOCKED_SEMANTIC","BLOCKED_DENOMINATOR","BLOCKED_PERTURBATION","BLOCKED_CAPABILITY","BLOCKED_THERMAL","BLOCKED_SAMPLE_COVERAGE"]
+  },
+  "identity_contracts": [
+    {"id":"predecessor-chain","producer":"ten exact V4 through V7 predecessor files","consumer":"primary-only controller admission","comparison":"exact path mode size SHA verdict and scoped claim boundary","test_id":"predecessor-closure-parity"},
+    {"id":"remote-inputs-and-host","producer":"sealed P0 static package sidecar V7 schedule host toolchain and perf identities","consumer":"D2-A closure and every executable route","comparison":"exact SHA size mode host machine-id kernel PMUs toolchain release profile and target features","test_id":"input-closure-parity"},
+    {"id":"production-prefix","producer":"recovered V10 first 39047 bytes","consumer":"assembled D2 source","comparison":"39047 bytes and SHA ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26","test_id":"source-boundary"},
+    {"id":"assembled-source","producer":"V10 plus exact D1 fragment","consumer":"one D2 build workspace source","comparison":"204722 bytes and SHA 6cd9edece91ac2e0c0e6dda7658e104dcf8953f1c16b1acff6108ea44ada0181","test_id":"assembled-source-parity"},
+    {"id":"closed-command-graph","producer":"eleven route allowlist and frozen argv templates","consumer":"all reachable controller subprocess calls","comparison":"semantic command graph allows only BUILD BUCKET-MAP PARITY Ux3 Vx2 Tx3; predecessor text is not scanned as executable argv","test_id":"route-graph-parity"},
+    {"id":"marker-tree","producer":"eleven distinct available markers and gate edges","consumer":"controller marker consumption","comparison":"consume-before-effect, no retry, T consumption only after parity plus all U and V PASS","test_id":"marker-ledger-parity"},
+    {"id":"build-command","producer":"frozen cargo-guard argv environment and D1 source","consumer":"single remote build process","comparison":"offline locked release lib no-run, debug=2 strip=none incremental=0, exact toolchain and no second Cargo","test_id":"build-command-parity"},
+    {"id":"elf-audit","producer":"single symbolized D2 ELF","consumer":"map generator and every subject","comparison":"ELF SHA Build ID type .text SHA PT_LOAD symbols DWARF toolchain and assembled-source identity","test_id":"elf-audit-parity"},
+    {"id":"bucket-map-join","producer":"sealed ELF disassembly DWARF inlining and machine bytes","consumer":"D2_BUCKET_MAP and T sample IPs","comparison":"exact Build ID plus uniquely normalized ELF virtual IP and zero overlapping or mismatched ranges","test_id":"map-identity-parity"},
+    {"id":"semantic-parity","producer":"sealed D1 exact 382-query semantics and work","consumer":"new symbolized D2 ELF parity route","comparison":"382 records and zero terminal peak completeness work rank full-row or certificate mismatches","test_id":"parity-semantic"},
+    {"id":"u-route-identity","producer":"D1 component single and twenty tests","consumer":"U-SINGLE U-FIXED U-REVERSED","comparison":"exact tests mappings rounds structure and existing primitive CPU clocks; no instruction producer","test_id":"u-route-parity"},
+    {"id":"v-route-identity","producer":"sealed D1 G0 clock-free PMU route","consumer":"V-FIXED-INSTR and V-REVERSED-INSTR","comparison":"v10_d1_twenty_pmu component_clocks=false, 20 rounds 7640 requests, exact mappings event group and FIFO protocol","test_id":"v-route-parity"},
+    {"id":"v-hybrid-aggregation","producer":"D1 PMU correction V2 runtime-weighted formula","consumer":"V instruction validity values","comparison":"one cpu_atom plus one cpu_core row per event, runtime weights, fixed and reversed exact baselines and 1 percent gate","test_id":"hybrid-aggregation-parity"},
+    {"id":"t-whole-process-command","producer":"frozen task-clock whole-process wrapping argv","consumer":"T-SINGLE T-FIXED T-REVERSED perf.data","comparison":"perf starts before subject, inherits workers, no --pid no SIGINT, exact event period readers and subject","test_id":"t-command-parity"},
+    {"id":"t-event-and-samples","producer":"task-clock:u period 100000 user-only primary observer","consumer":"T evlist raw records samples and attribution","comparison":"freq=0 exclude_kernel=1 precise_ip=0 zero loss/throttle/adaptation exact D2 Build ID unique normalization and machine bytes","test_id":"t-event-parity"},
+    {"id":"sampling-estimator","producer":"one warmup plus twenty measured exact component rounds","consumer":"task-clock bucket shares and measured component CPU denominator","comparison":"all traversal IP samples retained; CPU per edge uses measured primitive samples only; no timestamp warmup subtraction","test_id":"warmup-estimator-parity"}
+  ],
+  "runtime_comparisons": [
+    {"id":"target-host-stability","source":"P0 target-host identity and per-route remote snapshots","comparison":"exact_stable_projection","reason":"D2 evidence belongs only to the pinned hybrid mini-PC without host or foreign-process control","stable_fields":["hostname","machine_id_exact_file_sha256","kernel","online_cpus","cpu_core_type_and_cpus","cpu_atom_type_and_cpus","perf_wrapper_sha256","resolved_perf_sha256","toolchain","target_features","foreign_process_control","host_tuning"],"expected_to_change_fields":["wall_clock","load_average","pressure","temperature","process_cpu_time"],"observed_not_compared_fields":["foreign_process_pid_set","foreign_cpu_percent","scheduler_placement","filesystem_cache_residency"],"test_id":"target-host-parity"},
+    {"id":"installed-runtime-stability","source":"installed Lay projection before D2-A and after final publication","comparison":"exact_stable_projection","reason":"test-only D2 may not mutate installed Lay or runtime authority","stable_fields":["lay_version","active_v11_sha256","ibus_daemon_pid","lay_daemon_pid","lay_ibus_engine_pid","runtime_authority_changed"],"expected_to_change_fields":[],"observed_not_compared_fields":["process_cpu_time","host_load","temperature","foreign_process_set"],"test_id":"runtime-stability"}
+  ],
+  "invariants": [
+    {"id":"scoped-admission","statement":"the only positive project verdict is READY_TO_IMPLEMENT_PRIMARY_ONLY_D2 and it permits controller creation plus D2-A but not Cargo","test_id":"scoped-admission-test"},
+    {"id":"d2a-before-cargo","statement":"build marker consumption and Cargo are impossible before complete D2-A PASS","test_id":"state-sequence"},
+    {"id":"closed-routes","statement":"the reachable executable graph contains exactly BUILD BUCKET-MAP PARITY Ux3 Vx2 Tx3 and no I clean-C1 full-B or substitute route","test_id":"route-graph-parity"},
+    {"id":"source-preserving","statement":"D2 production and test Rust bytes are byte-identical to the assembled D1 source with only build symbolization settings changed","test_id":"assembled-source-parity"},
+    {"id":"map-before-subject","statement":"D2_BUCKET_MAP is sealed before PARITY and every U V or T subject","test_id":"state-sequence"},
+    {"id":"one-shot-markers","statement":"every marker is consumed before effect and every failure retains consumption and evidence without retry","test_id":"marker-ledger-parity"},
+    {"id":"u-v-denominator-separation","statement":"U produces component CPU validity only and V produces clock-free aggregate instruction validity only","test_id":"denominator-separation"},
+    {"id":"t-after-validity","statement":"no T marker can be consumed before parity all U and both V hard gates pass","test_id":"state-sequence"},
+    {"id":"whole-process-sampling","statement":"T uses whole-process command wrapping with inheritance and no PID attach or controller SIGINT lifecycle","test_id":"t-command-parity"},
+    {"id":"warmup-estimator-frozen","statement":"T samples one warmup plus twenty measured rounds and never time-filters or subtracts warmup","test_id":"warmup-estimator-parity"},
+    {"id":"loaded-host-policy","statement":"Nando btop K1 load and PSI are observed conditions, not blockers or control targets; only thermal throttle drift blocks environment","test_id":"target-host-parity"},
+    {"id":"secondary-gap","statement":"no instruction-IP route claim or substitute event can be created and the result ceiling remains D2_ATTRIBUTION_WITH_SECONDARY_GAP","test_id":"secondary-gap-test"},
+    {"id":"optimization-not-admitted","statement":"even valid D2 attribution stops for a new paper decision and admits no SWAR decoder layout rank stack V12 integration or deployment","test_id":"claim-boundary-test"}
+  ],
+  "tests": [
+    {"id":"controller-fault","kind":"fault_injection","expected":"partial controller is removed with no remote state Cargo perf or predecessor mutation"},
+    {"id":"closure-fault","kind":"fault_injection","expected":"partial D2-A evidence is retained, no build marker is consumed and Cargo remains zero"},
+    {"id":"build-fault","kind":"fault_injection","expected":"build marker remains consumed with logs and no second build or ELF substitution"},
+    {"id":"build-audit-fault","kind":"fault_injection","expected":"failed ELF audit retains the only build and blocks map generation without rebuild"},
+    {"id":"map-fault","kind":"fault_injection","expected":"map marker remains consumed, ambiguous evidence is retained and no D2 subject executes"},
+    {"id":"parity-fault","kind":"fault_injection","expected":"parity marker and mismatch evidence remain while all U V and T markers are unconsumed"},
+    {"id":"u-route-fault","kind":"fault_injection","expected":"failed U route retains its consumed marker and exact semantic structural CPU evidence with no retry"},
+    {"id":"v-route-fault","kind":"fault_injection","expected":"failed V route retains marker raw G0 FIFO subject and classification evidence with no substitution or retry"},
+    {"id":"t-route-fault","kind":"fault_injection","expected":"failed T route retains marker perf.data all readers and classification evidence with no attach period change or retry"},
+    {"id":"publication-fault","kind":"fault_injection","expected":"sealed remote evidence survives while incomplete local publication is non-authoritative and no route reruns"},
+    {"id":"predecessor-closure-parity","kind":"parity","expected":"all ten V4 through V7 predecessor paths modes sizes SHA values verdicts and claim scopes are exact"},
+    {"id":"input-closure-parity","kind":"parity","expected":"package sidecar V7 schedule host toolchain release profile target features and perf identities match P0 before markers"},
+    {"id":"source-boundary","kind":"parity","expected":"first 39047 production bytes and SHA ce9ea2d29060 remain exact"},
+    {"id":"assembled-source-parity","kind":"parity","expected":"assembled source is exactly 204722 bytes SHA 6cd9edece91a and D1 fragment bytes are unchanged"},
+    {"id":"route-graph-parity","kind":"parity","expected":"semantic reachable-command analysis finds only eleven allowed routes and exact argv families; predecessor receipt text is non-executable"},
+    {"id":"marker-ledger-parity","kind":"parity","expected":"eleven markers exist once, consume before effect, reject second consumption and enforce parity U V before T"},
+    {"id":"build-command-parity","kind":"parity","expected":"single cargo-guard command environment toolchain source profile symbol and target contracts are exact"},
+    {"id":"elf-audit-parity","kind":"parity","expected":"ELF SHA Build ID type .text PT_LOAD symbols DWARF toolchain and assembled source are published and stable"},
+    {"id":"map-identity-parity","kind":"parity","expected":"sealed map joins exact Build ID plus normalized ELF IP with zero overlap ambiguity or machine-byte drift"},
+    {"id":"parity-semantic","kind":"parity","expected":"new ELF passes all 382 exact semantic work rank full-row and certificate comparisons with zero false certificates"},
+    {"id":"u-route-parity","kind":"parity","expected":"U routes use exact component tests rounds mappings structure and existing clocks and produce no instruction count"},
+    {"id":"v-route-parity","kind":"parity","expected":"V routes use exact clock-free PMU test, 20 rounds, 7640 requests, mappings, G0 argv and FIFO window"},
+    {"id":"hybrid-aggregation-parity","kind":"parity","expected":"V parser reproduces D1 V2 cpu_atom plus cpu_core event-runtime weighting and exact fixed/reversed baselines"},
+    {"id":"t-command-parity","kind":"parity","expected":"T uses exact whole-process task-clock argv, starts before subject, inherits workers, has no --pid SIGINT or wrong event and runs all readers"},
+    {"id":"t-event-parity","kind":"parity","expected":"each T evlist and sample stream has task-clock:u period 100000 freq 0 exclude-kernel 1 precise-ip 0 and exact D2 identity"},
+    {"id":"warmup-estimator-parity","kind":"parity","expected":"sample shares include warmup plus measured traversal while CPU per edge uses only existing measured primitive samples and no time filtering"},
+    {"id":"target-host-parity","kind":"parity","expected":"pinned mini-PC identity PMUs toolchain perf projection and no-control flags remain stable while ordinary load is observed only"},
+    {"id":"runtime-stability","kind":"parity","expected":"Lay version active V11 daemon PIDs and runtime authority remain unchanged"},
+    {"id":"scoped-admission-test","kind":"integration","expected":"standard preflight READY is interpreted only as READY_TO_IMPLEMENT_PRIMARY_ONLY_D2 and cannot invoke Cargo before D2-A"},
+    {"id":"state-sequence","kind":"integration","expected":"controller then D2-A then one build then map then parity then Ux3 then Vx2 then Tx3 then STOP is the only success path"},
+    {"id":"denominator-separation","kind":"integration","expected":"U clocked component and V clock-free PMU producers cannot be merged or substituted"},
+    {"id":"secondary-gap-test","kind":"integration","expected":"zero I routes precise events substitutes instruction-IP claims or I-ATOM marker consumption are reachable"},
+    {"id":"claim-boundary-test","kind":"integration","expected":"D2 result publishes CPU-time bucket evidence only and leaves optimization full B V12 integration deployment and runtime authority unadmitted"}
+  ]
+}

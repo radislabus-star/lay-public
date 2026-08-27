@@ -1,0 +1,45 @@
+{
+  "schema": "lay.slice8b-v6-v7-stable-projection.v1",
+  "baseline": {
+    "path": "slice8b-v6-fixed-13x100.json",
+    "sha256": "7e23c128bef1bef1ad79e82b3d43d9014041df0220bcfa8b57130b865a4b2870",
+    "schema": "lay.live-cohort-compare-shadow.v2"
+  },
+  "candidate": {
+    "path": "slice8b-v7-fixed-13x100.json",
+    "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+    "schema": "lay.live-cohort-compare-shadow.v3"
+  },
+  "measured": {
+    "baseline_attempted_cases": 1300,
+    "candidate_attempted_cases": 1300,
+    "baseline_produced_fields": 918,
+    "candidate_produced_fields": 918,
+    "baseline_no_field_cases": 382,
+    "candidate_no_field_cases": 382,
+    "baseline_error_cases": 0,
+    "candidate_error_cases": 0,
+    "baseline_empty_l11": 377,
+    "candidate_empty_l11": 377,
+    "baseline_unsupported_input": 5,
+    "candidate_unsupported_input": 5
+  },
+  "stable_projection": {
+    "attempt_denominator": true,
+    "produced_field_count": true,
+    "no_field_count": true,
+    "error_count": true,
+    "status_counts": true,
+    "no_field_availability_counts": true,
+    "material_scope_counts": true,
+    "field_producer_count": true,
+    "candidate_retention_failures": true,
+    "grounded_l11_losses": true,
+    "legacy_decision_parity_failures": true,
+    "verdict": true,
+    "runtime_authority_changed": true,
+    "promotion_eligible": true
+  },
+  "all_stable_projection_exact": true,
+  "verdict": "PASS_V6_V7_STABLE_PROJECTION"
+}

@@ -1,0 +1,336 @@
+{
+  "manifests": {
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_AUDIT_V1_2026-08-26": {
+      "entries": 9,
+      "manifest": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_AUDIT_V1_2026-08-26/SHA256SUMS",
+        "sha256": "97ce0e3a39a22f53c27b5ed3a5c9faade341fd4cf9543fe1822c1154ba914ce3",
+        "size_bytes": 787
+      },
+      "nested_manifests": [],
+      "root": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_AUDIT_V1_2026-08-26",
+      "unlisted_nested_manifests": []
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26": {
+      "entries": 32,
+      "manifest": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/SHA256SUMS",
+        "sha256": "48fce814340a62afdfbfbd62f382539d9e29fe385d0bf8cdcb7f16b0fe8a079d",
+        "size_bytes": 3197
+      },
+      "nested_manifests": [
+        {
+          "listed_by_parent": true,
+          "locally_replayed": false,
+          "manifest": {
+            "mode": "0444",
+            "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/SHA256SUMS",
+            "sha256": "911b142e9eeae85547765b92568c250a4682f570dd40ea5dd8e6a6d24b6d242d",
+            "size_bytes": 1944
+          },
+          "reason": "sealed remote metadata may describe a deliberately partial local projection"
+        }
+      ],
+      "root": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26",
+      "unlisted_nested_manifests": []
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25": {
+      "entries": 532,
+      "manifest": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/SHA256SUMS",
+        "sha256": "aead466e48392f22db9394fc601724b7d8e90930f515c993390c37ab4702f28b",
+        "size_bytes": 65533
+      },
+      "nested_manifests": [
+        {
+          "listed_by_parent": true,
+          "locally_replayed": false,
+          "manifest": {
+            "mode": "0444",
+            "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/SHA256SUMS",
+            "sha256": "c990d5264fed05a618d1eb37ed5bcbd88b74a083f8f46c89c31f128f02563e2f",
+            "size_bytes": 56425
+          },
+          "reason": "sealed remote metadata may describe a deliberately partial local projection"
+        }
+      ],
+      "root": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25",
+      "unlisted_nested_manifests": []
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_FIXED_INSTR_V1_2026-08-26": {
+      "entries": 28,
+      "manifest": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_FIXED_INSTR_V1_2026-08-26/SHA256SUMS",
+        "sha256": "19d6cc17f7bec1c0f0edcf12a41b9525e23e2d8065407144c7af850654aaefaa",
+        "size_bytes": 2777
+      },
+      "nested_manifests": [
+        {
+          "listed_by_parent": true,
+          "locally_replayed": false,
+          "manifest": {
+            "mode": "0444",
+            "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_FIXED_INSTR_V1_2026-08-26/REMOTE_EVIDENCE/SHA256SUMS",
+            "sha256": "f1b7b226853bd1fb09f28eb5d7b54858278ec38d46048a31e9f6ca0b9096bf94",
+            "size_bytes": 1533
+          },
+          "reason": "sealed remote metadata may describe a deliberately partial local projection"
+        }
+      ],
+      "root": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_FIXED_INSTR_V1_2026-08-26",
+      "unlisted_nested_manifests": []
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_REVERSED_INSTR_V1_2026-08-26": {
+      "entries": 28,
+      "manifest": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_REVERSED_INSTR_V1_2026-08-26/SHA256SUMS",
+        "sha256": "21154082b2f2b4ba9b010eeb29efb55a0a187484f126d4549a934907715f5637",
+        "size_bytes": 2777
+      },
+      "nested_manifests": [
+        {
+          "listed_by_parent": true,
+          "locally_replayed": false,
+          "manifest": {
+            "mode": "0444",
+            "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_REVERSED_INSTR_V1_2026-08-26/REMOTE_EVIDENCE/SHA256SUMS",
+            "sha256": "138d0afb9352d1ee95769b81555f01fb98c7529a4a0fcdbe8056cb441cb8edbe",
+            "size_bytes": 1533
+          },
+          "reason": "sealed remote metadata may describe a deliberately partial local projection"
+        }
+      ],
+      "root": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_REVERSED_INSTR_V1_2026-08-26",
+      "unlisted_nested_manifests": []
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_T3_SINGLE_V1_2026-08-26": {
+      "entries": 39,
+      "manifest": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_T3_SINGLE_V1_2026-08-26/SHA256SUMS",
+        "sha256": "51fb27081ebb78afb4485ac761bff5ef6d08d51aff651f436445fe60c8b7602b",
+        "size_bytes": 3859
+      },
+      "nested_manifests": [
+        {
+          "listed_by_parent": false,
+          "locally_replayed": false,
+          "manifest": {
+            "mode": "0444",
+            "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_T3_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/SHA256SUMS",
+            "sha256": "f6c61d645acb0e36ab620443016c72252bca856fb3539a635d185265090fb281",
+            "size_bytes": 2532
+          },
+          "reason": "sealed remote metadata may describe a deliberately partial local projection"
+        }
+      ],
+      "root": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_T3_SINGLE_V1_2026-08-26",
+      "unlisted_nested_manifests": [
+        "REMOTE_EVIDENCE/SHA256SUMS"
+      ]
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26": {
+      "entries": 7,
+      "manifest": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26/SHA256SUMS",
+        "sha256": "c16943e01905ebc38cc82c89e864a439ee3e98faf5c623092a006fece151d274",
+        "size_bytes": 620
+      },
+      "nested_manifests": [],
+      "root": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26",
+      "unlisted_nested_manifests": []
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_2026-08-26": {
+      "entries": 83,
+      "manifest": {
+        "mode": "0444",
+        "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_2026-08-26/SHA256SUMS",
+        "sha256": "18702c9ec0f5f2030bcaa8833f987b42579d357100f6936399267c2146e986d8",
+        "size_bytes": 8455
+      },
+      "nested_manifests": [
+        {
+          "listed_by_parent": true,
+          "locally_replayed": false,
+          "manifest": {
+            "mode": "0444",
+            "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_2026-08-26/REMOTE_BUILD_METADATA/SHA256SUMS",
+            "sha256": "21faeb65155d3eb5f1bb6f45ab219bd5d7b303ae5afadbbf2c6afc2ca5a0f9ec",
+            "size_bytes": 1503
+          },
+          "reason": "sealed remote metadata may describe a deliberately partial local projection"
+        },
+        {
+          "listed_by_parent": true,
+          "locally_replayed": false,
+          "manifest": {
+            "mode": "0444",
+            "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_2026-08-26/REMOTE_RESULT/SHA256SUMS",
+            "sha256": "3a25c58a3147c14dec419333541b8a8cf5302a502d578418df199b6d81dc18e8",
+            "size_bytes": 5648
+          },
+          "reason": "sealed remote metadata may describe a deliberately partial local projection"
+        }
+      ],
+      "root": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_2026-08-26",
+      "unlisted_nested_manifests": []
+    }
+  },
+  "map_identity": {
+    "mode": "0444",
+    "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json",
+    "sha256": "2b93aedf11101a8bc5fc7ed4ffaa056b50476d96cdd2eabf9d185f59ee60f846",
+    "size_bytes": 390324
+  },
+  "pinned": {
+    "/usr/bin/objdump": {
+      "mode": "0755",
+      "path": "/usr/bin/objdump",
+      "sha256": "44f07f8da860b15bd4dec909f229dec536595fb170a616fe3ab29c7b21c9736f",
+      "size_bytes": 415760
+    },
+    "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_V1_2026-08-26.md": {
+      "mode": "0444",
+      "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_V1_2026-08-26.md",
+      "sha256": "1470dabcabee76f1bac78bab592c0a7c670a2813fb9a190dd40bdbb216f99d2e",
+      "size_bytes": 8811
+    },
+    "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_V1_ROUTE_A_EVIDENCE.md": {
+      "mode": "0444",
+      "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_V1_ROUTE_A_EVIDENCE.md",
+      "sha256": "dde9f4a0a56e4ac9e7705cfb3cd8dc0aabad6f8784b7c3e4877a8cb9e5bb66fc",
+      "size_bytes": 2944
+    },
+    "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_V1_ROUTE_B_BOUNDARY.md": {
+      "mode": "0444",
+      "path": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_V1_ROUTE_B_BOUNDARY.md",
+      "sha256": "2cbfb34a4ac9f9272428c2e629c8b188f14f20a28a543f4c0c8136298e77c70b",
+      "size_bytes": 2804
+    },
+    "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_IMPLEMENTATION_V1_2026-08-26.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_IMPLEMENTATION_V1_2026-08-26.json",
+      "sha256": "0808cb28a4655a269b676b1ccfcb3c44625f13f94ff938e35f3f843ef37b0a43",
+      "size_bytes": 13004
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_AUDIT_V1_2026-08-26/D2_BUCKET_MAP_AUDIT_RECEIPT.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_AUDIT_V1_2026-08-26/D2_BUCKET_MAP_AUDIT_RECEIPT.json",
+      "sha256": "8d2e52574adca52d5a090067cdf071afba922363ccee8fc9eb4a4158cb92cba7",
+      "size_bytes": 4363
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26/REMOTE_EVIDENCE/D2_BUCKET_MAP.json",
+      "sha256": "2b93aedf11101a8bc5fc7ed4ffaa056b50476d96cdd2eabf9d185f59ee60f846",
+      "size_bytes": 390324
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/assembled_d2_source.rs": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/assembled_d2_source.rs",
+      "sha256": "6cd9edece91ac2e0c0e6dda7658e104dcf8953f1c16b1acff6108ea44ada0181",
+      "size_bytes": 204722
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf": {
+      "mode": "0555",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf",
+      "sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178",
+      "size_bytes": 317706232
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_FIXED_INSTR_V1_2026-08-26/REMOTE_EVIDENCE/D2_UV_ROUTE_RECEIPT.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_FIXED_INSTR_V1_2026-08-26/REMOTE_EVIDENCE/D2_UV_ROUTE_RECEIPT.json",
+      "sha256": "56c862759c95de6682571aed3d68098dab084319817fba5af3853042e0396bae",
+      "size_bytes": 50090
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_REVERSED_INSTR_V1_2026-08-26/REMOTE_EVIDENCE/D2_UV_ROUTE_RECEIPT.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V_REVERSED_INSTR_V1_2026-08-26/REMOTE_EVIDENCE/D2_UV_ROUTE_RECEIPT.json",
+      "sha256": "5d75a502ad9e509dc6810b5494067f602d5ace1237e73f4d7913d5b9b1fc9de2",
+      "size_bytes": 50181
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_T3_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/samples.stdout": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_T3_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/samples.stdout",
+      "sha256": "455cc9f2812dd37d79bbdb0abb4a3797f0a7fdfb137772610f3c290798be1233",
+      "size_bytes": 16442675
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26/D4_TERMINAL_AUDIT_RECEIPT.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26/D4_TERMINAL_AUDIT_RECEIPT.json",
+      "sha256": "f748a7c448f7f142a342efa2b916a8995969044567a3aaa9a7de3aff6ba8645b",
+      "size_bytes": 3685
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26/T3_SCIENTIFIC_RECEIPT.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26/T3_SCIENTIFIC_RECEIPT.json",
+      "sha256": "dd4e3b7bb49d368fe1461c36fda0968af629293e801500770ca9dc3715a96f09",
+      "size_bytes": 60563
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26/U3_SCIENTIFIC_RECEIPT.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D4_TERMINAL_AUDIT_V1_2026-08-26/U3_SCIENTIFIC_RECEIPT.json",
+      "sha256": "db2ba1b3d4e11ac2c4edb24e382f93d282b1b5d605fcbb1636f5e346030dc000",
+      "size_bytes": 42897
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_2026-08-26/D7_TERMINAL_AUDIT.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_2026-08-26/D7_TERMINAL_AUDIT.json",
+      "sha256": "db8f8fbb2ab0bbf6ba45ca9b4d2ce7c394c3de826d82961ce938adea79024f3e",
+      "size_bytes": 11633
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_IMPLEMENTATION_V1_PREFLIGHT_2026-08-26.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_IMPLEMENTATION_V1_PREFLIGHT_2026-08-26.json",
+      "sha256": "1510d2b7424860ecf908c2f4592ea1b50bcbf4d304d8c137a8b8b47bb88debe4",
+      "size_bytes": 8936
+    },
+    "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_STRUCTURAL_REVIEW_V1_2026-08-26.json": {
+      "mode": "0444",
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_MACHINE_COST_DECOMPOSITION_STRUCTURAL_REVIEW_V1_2026-08-26.json",
+      "sha256": "68818825574c8c180c43549040ff1ba9ded9a4e0a776eec722ea37c5fbbe6626",
+      "size_bytes": 1318
+    }
+  },
+  "predecessor_closure": {
+    "d2_and_d7_elf_distinct": true,
+    "d2_build_id": "eb951f1a7526a9f1cb365040c10989aa5d3fc50f",
+    "d2_elf_sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178",
+    "d2_map_audit_verdict": "D2_BUCKET_MAP_AUDITED",
+    "d2_v_fixed_instructions_per_edge": 363.6345951514673,
+    "d2_v_reversed_instructions_per_edge": 363.572772180778,
+    "d4_u3_ns_per_edge": 26.07466312804435,
+    "d4_verdict": "D4_SINGLE_ESTIMATOR_PASS",
+    "d7_build_id": "4d6280e7324975076be3edc4f40802c26910180a",
+    "d7_elf_sha256": "26316b349d8192c697facf1ed5929fcc7133fc8bde15bdde6eae53a438e0f138",
+    "d7_verdict": "D7_WORKER_TOPOLOGY_SWEEP_COMPLETE",
+    "d7_w1": {
+      "aggregate_edges_per_second": 36634417.72189651,
+      "branch_miss_rate": 0.015403839891042315,
+      "branches_per_edge": 39.130423577243015,
+      "cpus": [
+        0
+      ],
+      "cycles_per_edge": 103.44625074306774,
+      "delta_from_W1_ns_per_edge": 0.0,
+      "effective_frequency_ghz": 3.791036767260203,
+      "inflation_from_W1_percent": 0.0,
+      "instructions_per_edge": 361.20658023962375,
+      "ipc": 3.491731963652915,
+      "parallel_efficiency_from_W1": 1.0,
+      "route": "W1",
+      "task_clock_ns_per_edge": 27.28706079467247,
+      "throughput_scaling_from_W1": 1.0,
+      "traversal_ns_per_edge": 25.923669775527927,
+      "workers": 1
+    },
+    "preflight_verdict": "READY_TO_IMPLEMENT",
+    "structural_review_verdict": "STRUCTURALLY_ACCEPTED_WITH_SPLIT"
+  }
+}

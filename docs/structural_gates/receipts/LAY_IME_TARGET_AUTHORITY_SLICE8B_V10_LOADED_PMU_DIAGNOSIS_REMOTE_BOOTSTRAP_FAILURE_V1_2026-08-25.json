@@ -1,0 +1,19 @@
+{
+  "schema": "lay.v10.loaded-pmu-remote-bootstrap-failure.v1",
+  "task_id": "slice8b-v10-loaded-pmu-diagnosis-v1-20260825",
+  "observed_at": "2026-08-25T08:57:07Z",
+  "verdict": "CONTROLLER_REMOTE_BOOTSTRAP_SYNTAX_FAILED_NO_REMOTE_STATE",
+  "controller_sha256": "856674eefcf02c005d1e383ed417f4f153e07e83970fd3670a458167d1c5cea9",
+  "failure": "from __future__ imports must occur at the beginning of the file",
+  "cause": "remote wrapper prepended assignments before compiling the controller source as one module",
+  "remote_final_exists": false,
+  "remote_state_exists": false,
+  "parity_executed": false,
+  "perf_invoked": false,
+  "pmu_event_opened": false,
+  "diagnostic_subject_executed": false,
+  "markers_consumed": 0,
+  "measurement_rights_consumed": false,
+  "runtime_authority_changed": false,
+  "repair_scope": "compile the unchanged controller source in a namespace after wrapper assignments"
+}

@@ -1,0 +1,350 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "id": "slice8-v6-paper",
+      "kind": "file",
+      "path": "../../ime-target-authority-slice8-lexical-readout-2026-08-23.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 18660,
+        "sha256": "0b83fff2a8422f478b93cc062d2561be7c15048381b62f54c8194198dbc9f0cb"
+      }
+    },
+    {
+      "id": "v6-fixed-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-fixed-13x100.json",
+      "expect": {
+        "mode": "0600",
+        "size_bytes": 1236725,
+        "sha256": "7e23c128bef1bef1ad79e82b3d43d9014041df0220bcfa8b57130b865a4b2870"
+      }
+    },
+    {
+      "id": "proof-owner-v6",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 229630,
+        "sha256": "c1ff750d0d9d576aeb4611d615ef9f7c68aa8b964b405e614ccd5812d5b2c81b"
+      }
+    },
+    {
+      "id": "production-bridge-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 111807,
+        "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "fixed-attempt-provenance",
+      "producer": "each immutable lemma-heldout ProofCaseV1 keyed by damage_class and proof_identity",
+      "consumer": "one ProducedField NoField or Error outcome carrying the same target surface and provenance record",
+      "comparison": "the unchanged fixed attempt key is preserved one-to-one through outcome and provenance accounting",
+      "test_id": "attempt-provenance-conservation"
+    },
+    {
+      "id": "exact-surface-namespace",
+      "producer": "the normalized ProofCaseV1 target surface",
+      "consumer": "ExactL11SurfaceIndexV1 terminal lookup and StandaloneL2Field exact form lookup",
+      "comparison": "both exact indexes receive the same target bytes without transliteration fuzzy matching or target rewriting",
+      "test_id": "exact-surface-membership"
+    },
+    {
+      "id": "productive-capability-namespace",
+      "producer": "the existing target probe over the case valid target identities",
+      "consumer": "the NoField provenance record for that same attempt",
+      "comparison": "hypothesis coverage and exact Productive V90 birth are copied from the existing proof result and are not recomputed by a second route",
+      "test_id": "productive-capability-binding"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "complete-nofield-provenance",
+      "statement": "all NoField attempts are emitted and partitioned by exact L1.1 support exact V13 support Productive hypothesis coverage and Productive exact birth",
+      "test_id": "nofield-partition-conservation"
+    },
+    {
+      "id": "unsupported-separated",
+      "statement": "UnsupportedInput remains separate from EmptyL11Lattice and cannot be interpreted as an L1.1 coverage failure",
+      "test_id": "availability-partition"
+    },
+    {
+      "id": "measurement-not-repair",
+      "statement": "the revision changes proof telemetry only and cannot change candidate birth ordering limits field construction authority verifier package bytes or installed processes",
+      "test_id": "v6-v7-stable-projection"
+    },
+    {
+      "id": "no-oracle-runtime-input",
+      "statement": "target membership and target probe facts are emitted only after the existing proof evaluation and never become production bridge input",
+      "test_id": "oracle-noninterference"
+    },
+    {
+      "id": "promotion-remains-closed",
+      "statement": "promotion_eligible and runtime_authority_changed remain false regardless of provenance results",
+      "test_id": "promotion-closed"
+    },
+    {
+      "id": "systemic-only",
+      "statement": "no literal surface damage-class branch frontier increase fallback route package rebuild or gate weakening is introduced",
+      "test_id": "systemic-source-scan"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "v6-fixed-evidence",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-fixed-13x100.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain the V6 comparator and coverage failure exactly",
+      "baseline_check_id": "v6-fixed-receipt"
+    },
+    {
+      "id": "production-bridge",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "do not edit the production bridge in this measurement slice",
+      "baseline_check_id": "production-bridge-owner"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [
+    {
+      "id": "v6-v7-proof-projection",
+      "source": "the same fixed spool V9 V13 V90 packages production bridge and isolated L1.1 service",
+      "comparison": "exact_stable_projection",
+      "reason": "V7 adds target provenance telemetry without changing evaluation",
+      "baseline": "V6 fixed 13x100",
+      "candidate": "V7 fixed 13x100",
+      "stable_fields": [
+        "expected_cases",
+        "attempted_cases",
+        "unique_attempt_identities",
+        "produced_field_cases",
+        "no_field_cases",
+        "error_cases",
+        "status_counts",
+        "candidate_retention_failures",
+        "grounded_l11_losses",
+        "legacy_decision_parity_failures",
+        "no_field_availability_counts",
+        "no_field_class_counts",
+        "runtime_authority_changed",
+        "promotion_eligible"
+      ],
+      "expected_to_change_fields": [
+        "live_cohort_report_schema",
+        "no_field_provenance",
+        "no_field_records"
+      ],
+      "observed_not_compared_fields": [
+        "latency_percentiles",
+        "thread_schedule",
+        "cache_disposition",
+        "trace_sequence"
+      ],
+      "test_id": "v6-v7-stable-projection"
+    }
+  ],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "source_checks": [
+    {
+      "id": "proof-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/proof.rs",
+      "sha256": "c1ff750d0d9d576aeb4611d615ef9f7c68aa8b964b405e614ccd5812d5b2c81b",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "runtime_deployment",
+          "regex": "(?:systemctl|lay-runtime-control|install-release)"
+        },
+        {
+          "effect": "restart_lay_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}lay-daemon"
+        },
+        {
+          "effect": "restart_lay_ibus_engine",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}lay-ibus-engine"
+        },
+        {
+          "effect": "restart_global_ibus_daemon",
+          "regex": "(?:restart|stop|kill|pkill).{0,80}ibus-daemon"
+        },
+        {
+          "effect": "package_rebuild",
+          "regex": "(?:compile|reinduce|rebuild).{0,100}(?:V9|V13|V90|package)"
+        },
+        {
+          "effect": "literal_case_runtime_branch",
+          "regex": "(?:кристаллизатор|данорм|ЕленаПросит)"
+        },
+        {
+          "effect": "raise_global_limit",
+          "regex": "(?:MAX_TARGETS_PER_FIELD|L1_LATTICE_LIMIT)\\s*[:=].*(?:64|75|96|128|256)"
+        },
+        {
+          "effect": "new_fallback_route",
+          "regex": "(?:fallback_authority|fallback_winner|legacy_fallback)"
+        },
+        {
+          "effect": "weaken_verifier",
+          "regex": "(?:SafetyGate|verifier).{0,120}(?:bypass|disable|skip|weaken)"
+        },
+        {
+          "effect": "rewrite_any_package",
+          "regex": "(?:File::create|OpenOptions::new).{0,300}(?:p2m|p2r|V9|V13|V90)"
+        },
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?:write|create|generate)_synthetic_fixture"
+        }
+      ]
+    },
+    {
+      "id": "production-bridge-pinned",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "production_bridge_edit",
+          "regex": "(?i)(?:coverage_provenance|target_exact_l11|target_exact_v13).{0,120}(?:canonical_text_readout|bridge)"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "record-provenance-contract",
+        "kind": "documentation_edit"
+      },
+      {
+        "id": "add-proof-provenance-telemetry",
+        "kind": "source_edit"
+      },
+      {
+        "id": "run-v7-fixed-proofs",
+        "kind": "remote_test"
+      }
+    ],
+    "forbidden": [
+      "runtime_deployment",
+      "restart_lay_daemon",
+      "restart_lay_ibus_engine",
+      "restart_global_ibus_daemon",
+      "production_bridge_edit",
+      "rewrite_any_package",
+      "package_rebuild",
+      "raise_global_limit",
+      "literal_case_runtime_branch",
+      "new_fallback_route",
+      "weaken_verifier",
+      "generated_traffic",
+      "synthetic_fixture"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "SLICE8B_V6_COMPARATOR_PASS_COVERAGE_OPEN_RUNTIME_UNCHANGED",
+    "steps": [
+      {
+        "id": "implement-v7-proof-provenance",
+        "from": "SLICE8B_V6_COMPARATOR_PASS_COVERAGE_OPEN_RUNTIME_UNCHANGED",
+        "to": "SLICE8B_V7_READY_FOR_FIXED_MEASUREMENT_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "SLICE8B_V7_INSTRUMENTATION_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain V6 receipts and the failed source diff for diagnosis; do not edit bridge packages authority or installed runtime",
+        "preserves": [
+          "v6-fixed-evidence",
+          "production-bridge"
+        ],
+        "test_id": "instrumentation-fault"
+      },
+      {
+        "id": "run-v7-remote-fixed-proof",
+        "from": "SLICE8B_V7_READY_FOR_FIXED_MEASUREMENT_RUNTIME_UNCHANGED",
+        "to": "SLICE8B_V7_COVERAGE_PROVENANCE_MEASURED_RUNTIME_UNCHANGED",
+        "mutates": false,
+        "failure_state": "SLICE8B_V7_FIXED_MEASUREMENT_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain failed complete-denominator evidence and stop before selecting a coverage fix",
+        "preserves": [
+          "v6-fixed-evidence",
+          "production-bridge"
+        ],
+        "test_id": "fixed-provenance-proof"
+      }
+    ],
+    "terminal_states": [
+      "SLICE8B_V7_COVERAGE_PROVENANCE_MEASURED_RUNTIME_UNCHANGED",
+      "SLICE8B_V7_INSTRUMENTATION_REJECTED_RUNTIME_UNCHANGED",
+      "SLICE8B_V7_FIXED_MEASUREMENT_FAILED_RUNTIME_UNCHANGED"
+    ]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_COVERAGE_PROVENANCE_V7_V2_2026-08-24",
+  "tests": [
+    {
+      "id": "attempt-provenance-conservation",
+      "kind": "parity",
+      "expected": "all fixed attempt keys remain unique and each carries exactly one outcome and one provenance state"
+    },
+    {
+      "id": "exact-surface-membership",
+      "kind": "parity",
+      "expected": "L1.1 and V13 exact support are measured by their existing indexes over identical normalized target bytes"
+    },
+    {
+      "id": "productive-capability-binding",
+      "kind": "parity",
+      "expected": "V90 hypothesis coverage and exact birth in NoField records equal the existing per-case proof facts"
+    },
+    {
+      "id": "nofield-partition-conservation",
+      "kind": "integration",
+      "expected": "all NoField provenance buckets and complete records sum exactly to NoField count with no duplicate attempt key"
+    },
+    {
+      "id": "availability-partition",
+      "kind": "parity",
+      "expected": "UnsupportedInput and EmptyL11Lattice counts remain independently visible"
+    },
+    {
+      "id": "oracle-noninterference",
+      "kind": "integration",
+      "expected": "target provenance is only serialized into proof output and does not enter bridge field production or authority"
+    },
+    {
+      "id": "promotion-closed",
+      "kind": "parity",
+      "expected": "promotion_eligible and runtime_authority_changed remain false"
+    },
+    {
+      "id": "v6-v7-stable-projection",
+      "kind": "parity",
+      "expected": "V6 and V7 preserve all outcome and comparator counters while only provenance telemetry is added"
+    },
+    {
+      "id": "instrumentation-fault",
+      "kind": "fault_injection",
+      "expected": "missing duplicated or inconsistent provenance fails conservation and cannot be reported as measured"
+    },
+    {
+      "id": "fixed-provenance-proof",
+      "kind": "integration",
+      "expected": "remote 13x1 and fixed 13x100 preserve comparator results and emit complete provenance for every NoField attempt"
+    },
+    {
+      "id": "systemic-source-scan",
+      "kind": "integration",
+      "expected": "only proof telemetry tests and owning documentation change; bridge packages limits authority verifier and installed runtime remain unchanged"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "auditor": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d5-terminal-audit.py",
+    "sha256": "306eda70963e05f356c843d81b581d47268d4bee66e34824f17430908d4b297c",
+    "size_bytes": 37759
+  },
+  "controller_sha256": "6e5ea4a68d4541043ad95eda12b94e0e9efa0d21e3d4ba2c62a80565ddc626d0",
+  "pinned_routes": [
+    "U4-FIXED",
+    "T4-FIXED"
+  ],
+  "remote_controller_sha256": "767e2cfd907527f92bcea1db54b69a9763f29b04a8f76701940abc2336cd2714",
+  "remote_writes": 0,
+  "schema": "lay.v10.e1-traversal-d5-terminal-audit-self-check.v1",
+  "task_id": "slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826",
+  "transaction_id": "3ee46e2c915677e1b2d3cd6bcc9709e0232252dbc120745b097d736537779036",
+  "verdict": "D5_TERMINAL_AUDITOR_VERIFIED_UNRUN"
+}

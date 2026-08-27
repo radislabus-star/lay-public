@@ -1,0 +1,70 @@
+{
+  "addr2line_output_sha256": "8b9b4767557a3ea019bbaebb280d1a56ab2180f34ad1e05aed9c2affb4c8a9e6",
+  "address_list_sha256": "fca1804a3d0af34ae462938f970fd181706846da6e42dbb725c5ef1775581c58",
+  "bucket_map_marker_consumed": true,
+  "build_audit_receipt_sha256": "4e19e2e806e2b3f04f8c0286a63f64631e7cf6ff143d9a90da4036654bc8339c",
+  "cargo_invocations": 0,
+  "d2_subject_executed": false,
+  "gap_bytes": 0,
+  "local_controller": {
+    "mode": "0444",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26.stage-3063508-1787698274624098281/local-controller.py",
+    "sha256": "edcd59a02fb06dedef5b05d8e5c73146c28b1bfea6a977baefa72f31e77ae66b",
+    "size_bytes": 32780
+  },
+  "machine_byte_hash_mismatches": 0,
+  "map_sha256": "2b93aedf11101a8bc5fc7ed4ffaa056b50476d96cdd2eabf9d185f59ee60f846",
+  "next_action_admitted": "independent read-only bucket-map audit only",
+  "other_available_markers": 9,
+  "other_consumed_markers": 1,
+  "overlap_count": 0,
+  "parity_executed": false,
+  "parity_marker_consumed": false,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "range_count": 46,
+  "reader_correction_v3_sha256": "af1761fe71a976939cfaeac5248a1f9cd5f474e85654ca1b5563baf94dcb9214",
+  "remote_controller": {
+    "mode": "0444",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUCKET_MAP_V1_2026-08-26.stage-3063508-1787698274624098281/remote-controller.py",
+    "sha256": "3a0d04b2345a974602b125e71930b0b6cd125740915522f7d7ae4e250d561dae",
+    "size_bytes": 45326
+  },
+  "remote_manifest_entries": 22,
+  "remote_receipt_sha256": "8197087fff1853b7e4c167e92ae4900eb57821c298b918bfba7dee4c477f3430",
+  "runtime_after": {
+    "ibus_daemon_pids": [
+      2076194
+    ],
+    "launcher": "/home/ubu/.local/bin/lay",
+    "lay_daemon_pids": [
+      3410795
+    ],
+    "lay_ibus_engine_pids": [
+      3410820
+    ],
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "runtime_authority_changed": false,
+  "runtime_before": {
+    "ibus_daemon_pids": [
+      2076194
+    ],
+    "launcher": "/home/ubu/.local/bin/lay",
+    "lay_daemon_pids": [
+      3410795
+    ],
+    "lay_ibus_engine_pids": [
+      3410820
+    ],
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "schema": "lay.v10.e1-traversal-d2-primary-only-local-bucket-map.v1",
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v2-20260825",
+  "text_coverage_bytes": 15980919,
+  "transaction_id": "35dbe5c5eaec7dbb5b5b112313a3285dbe2ceaea0a910719ad379255ca5569e7",
+  "verdict": "D2_BUCKET_MAP_SEALED"
+}

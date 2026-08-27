@@ -1,0 +1,605 @@
+{
+  "verdict": "PASS",
+  "engine": "nanda-check sparse-triad-v6.2-rust",
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "wave_dim": 1024,
+  "task_id": "w1-fused-minimum-m2-failure-publication-correction-v3",
+  "domain": "general",
+  "complexity_score": 28,
+  "mandatory_gate": true,
+  "limits": [],
+  "stable_triads": [
+    "c1",
+    "c2",
+    "c3",
+    "c4",
+    "c5"
+  ],
+  "weak_triads": [],
+  "conflicts": [],
+  "evidence_gaps": [],
+  "canonicalization": {
+    "enabled": false,
+    "applied_count": 0,
+    "conflict_count": 0,
+    "watch_count": 0,
+    "applied": [],
+    "conflicts": [],
+    "warnings": []
+  },
+  "baseline_summary": {
+    "exact_matches": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5"
+    ],
+    "reversed_hits": [],
+    "token_overlap": {
+      "c1": 0.2,
+      "c2": 0.2,
+      "c3": 0.2,
+      "c4": 0.2,
+      "c5": 0.2
+    }
+  },
+  "trusted_proof": {
+    "mode": "STRUCTURAL_ONLY",
+    "verdict": "NOT_REQUESTED",
+    "authority_ready": false,
+    "reason_codes": [
+      "trusted_proof_not_requested"
+    ],
+    "manifest_file_sha256": "",
+    "trusted_manifest_root_sha256": "",
+    "source_triads_sha256": "",
+    "candidate_triads_sha256": "",
+    "candidate_answer_sha256": "",
+    "source_provenance_root_sha256": "",
+    "candidate_extraction_root_sha256": "",
+    "source_producer_root_sha256": "",
+    "candidate_producer_root_sha256": ""
+  },
+  "authority_ready": false,
+  "quality_contract": {
+    "schema": "",
+    "require_evidence_bindings": false,
+    "require_derived_claims": false
+  },
+  "evidence_binding": {
+    "schema": "nanda.evidence-binding.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "complete": false,
+    "checked": 0,
+    "total": 10,
+    "missing_triads": [
+      "s1",
+      "s2",
+      "s3",
+      "s4",
+      "s5",
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5"
+    ],
+    "issues": []
+  },
+  "derived_claims": {
+    "schema": "nanda.derived-claims.v1",
+    "required": false,
+    "verdict": "NOT_REQUESTED",
+    "total": 0,
+    "passed": 0,
+    "deferred": 0,
+    "coverage_complete": true,
+    "reason_codes": [],
+    "results": []
+  },
+  "quality_ready": false,
+  "wave_summary": {
+    "scores": {
+      "c1": 0.4544,
+      "c2": 0.4243,
+      "c3": 0.4084,
+      "c4": 0.4046,
+      "c5": 0.3887
+    },
+    "source_self_score": 0.4161,
+    "stable": [
+      "c1",
+      "c2",
+      "c3",
+      "c4",
+      "c5"
+    ],
+    "weak": [],
+    "weak_details": {}
+  },
+  "route_coherence": {
+    "best_source_group": {
+      "exception-receipt": "exception-receipt",
+      "failure-publication": "failure-publication",
+      "intent-before-action": "intent-before-action",
+      "scientific-boundary": "scientific-boundary",
+      "terminal-provenance": "terminal-provenance"
+    },
+    "scores": {
+      "exception-receipt": 1.0,
+      "failure-publication": 1.0,
+      "intent-before-action": 1.0,
+      "scientific-boundary": 1.0,
+      "terminal-provenance": 1.0
+    },
+    "weak": []
+  },
+  "structural_map": {
+    "candidate_group_sizes": {
+      "exception-receipt": 1,
+      "failure-publication": 1,
+      "intent-before-action": 1,
+      "scientific-boundary": 1,
+      "terminal-provenance": 1
+    },
+    "candidate_superposition": {
+      "avg_triad_coherence": 0.4161,
+      "norm": 66.5733,
+      "triads": 5
+    },
+    "core_version": "sparse-triad-v6.2-quality-gates",
+    "dominant_source_group": {
+      "exception-receipt": "exception-receipt",
+      "failure-publication": "failure-publication",
+      "intent-before-action": "intent-before-action",
+      "scientific-boundary": "scientific-boundary",
+      "terminal-provenance": "terminal-provenance"
+    },
+    "foreign_pull": [],
+    "group_centroids": {
+      "candidate": {
+        "exception-receipt": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "failure-publication": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "intent-before-action": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "scientific-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal-provenance": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "source": {
+        "exception-receipt": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "failure-publication": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "intent-before-action": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "scientific-boundary": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "terminal-provenance": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "group_links": {
+      "exception-receipt": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "exception-receipt",
+        "exact_source_groups": [
+          "exception-receipt"
+        ]
+      },
+      "failure-publication": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "failure-publication",
+        "exact_source_groups": [
+          "failure-publication"
+        ]
+      },
+      "intent-before-action": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "intent-before-action",
+        "exact_source_groups": [
+          "intent-before-action"
+        ]
+      },
+      "scientific-boundary": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "scientific-boundary",
+        "exact_source_groups": [
+          "scientific-boundary"
+        ]
+      },
+      "terminal-provenance": {
+        "dominant_score": 1.0,
+        "dominant_source_group": "terminal-provenance",
+        "exact_source_groups": [
+          "terminal-provenance"
+        ]
+      }
+    },
+    "interference_matrix": {
+      "exception-receipt": {
+        "exception-receipt": 1.0,
+        "failure-publication": -0.0098,
+        "intent-before-action": -0.0449,
+        "scientific-boundary": -0.0762,
+        "terminal-provenance": -0.0273
+      },
+      "failure-publication": {
+        "exception-receipt": -0.0098,
+        "failure-publication": 1.0,
+        "intent-before-action": -0.0117,
+        "scientific-boundary": 0.0,
+        "terminal-provenance": -0.0332
+      },
+      "intent-before-action": {
+        "exception-receipt": -0.0449,
+        "failure-publication": -0.0117,
+        "intent-before-action": 1.0,
+        "scientific-boundary": -0.043,
+        "terminal-provenance": -0.0176
+      },
+      "scientific-boundary": {
+        "exception-receipt": -0.0762,
+        "failure-publication": 0.0,
+        "intent-before-action": -0.043,
+        "scientific-boundary": 1.0,
+        "terminal-provenance": -0.0723
+      },
+      "terminal-provenance": {
+        "exception-receipt": -0.0273,
+        "failure-publication": -0.0332,
+        "intent-before-action": -0.0176,
+        "scientific-boundary": -0.0723,
+        "terminal-provenance": 1.0
+      }
+    },
+    "mixed_candidate_groups": [],
+    "negative_routes": {
+      "anti_modes": [
+        "adapter must not decide",
+        "UI must not be source of truth",
+        "test helper must not become runtime route",
+        "experiment must not affect stable path",
+        "one decision owner only"
+      ],
+      "hits": []
+    },
+    "owner_gravity": {
+      "conflicts": [],
+      "group_centers": {
+        "exception-receipt": {
+          "gravity": 1.0,
+          "owner": "v3 exception handler",
+          "owners": {
+            "v3 exception handler": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "failure-publication": {
+          "gravity": 1.0,
+          "owner": "v2 local controller",
+          "owners": {
+            "v2 local controller": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "intent-before-action": {
+          "gravity": 1.0,
+          "owner": "v3 execution journal",
+          "owners": {
+            "v3 execution journal": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "scientific-boundary": {
+          "gravity": 1.0,
+          "owner": "v3 repair",
+          "owners": {
+            "v3 repair": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "terminal-provenance": {
+          "gravity": 1.0,
+          "owner": "uncompleted intent",
+          "owners": {
+            "uncompleted intent": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      },
+      "route_centers": {
+        "evidence": {
+          "gravity": 1.0,
+          "owner": "v2 local controller",
+          "owners": {
+            "v2 local controller": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "failure": {
+          "gravity": 0.5,
+          "owner": "uncompleted intent",
+          "owners": {
+            "uncompleted intent": 2,
+            "v3 exception handler": 2
+          },
+          "support": 2,
+          "total": 4
+        },
+        "journal": {
+          "gravity": 1.0,
+          "owner": "v3 execution journal",
+          "owners": {
+            "v3 execution journal": 2
+          },
+          "support": 2,
+          "total": 2
+        },
+        "preservation": {
+          "gravity": 1.0,
+          "owner": "v3 repair",
+          "owners": {
+            "v3 repair": 2
+          },
+          "support": 2,
+          "total": 2
+        }
+      }
+    },
+    "repair_queue": [],
+    "repair_tasks": [],
+    "route_field": {
+      "read_as": "Route field coordinates describe causal ownership: route, layer, owner, entrypoint, output, evidence_path, and scope.",
+      "routes": {
+        "evidence": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "execute_once has try finally but no exception publication",
+            "observed source exception topology"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "v2 local controller"
+          ],
+          "scopes": [
+            "evidence"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "failure": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 2,
+          "entrypoints": [],
+          "evidence_paths": [
+            "correction fixes failure default as blocked_provenance and retry false",
+            "correction preserves exact known values and unknown fields",
+            "exact known or unknown projection fields",
+            "immutable default verdict and no-resume rule"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "uncompleted intent",
+            "v3 exception handler"
+          ],
+          "scopes": [
+            "failure"
+          ],
+          "source_triads": 2,
+          "triads": 4
+        },
+        "journal": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "correction requires fsynced immutable intent before ssh scp auditor or producer",
+            "preregistered intent sequence and fsync boundary"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "v3 execution journal"
+          ],
+          "scopes": [
+            "journal"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        },
+        "preservation": {
+          "avg_confidence": 1.0,
+          "candidate_triads": 1,
+          "entrypoints": [],
+          "evidence_paths": [
+            "correction changes only local exception publication and source identity",
+            "no scientific contract field changes"
+          ],
+          "layers": [
+            "core"
+          ],
+          "outputs": [],
+          "owners": [
+            "v3 repair"
+          ],
+          "scopes": [
+            "preservation"
+          ],
+          "source_triads": 1,
+          "triads": 2
+        }
+      }
+    },
+    "route_memory": {
+      "candidate": {
+        "evidence": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "failure": {
+          "norm": 44.6318,
+          "self_coherence": 0.6974,
+          "triads": 2
+        },
+        "journal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "preservation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      },
+      "interference_matrix": {
+        "evidence": {
+          "evidence": 1.0,
+          "failure": -0.0308,
+          "journal": -0.0117,
+          "preservation": 0.0
+        },
+        "failure": {
+          "evidence": -0.0308,
+          "failure": 1.0,
+          "journal": -0.0448,
+          "preservation": -0.1064
+        },
+        "journal": {
+          "evidence": -0.0117,
+          "failure": -0.0448,
+          "journal": 1.0,
+          "preservation": -0.043
+        },
+        "preservation": {
+          "evidence": 0.0,
+          "failure": -0.1064,
+          "journal": -0.043,
+          "preservation": 1.0
+        }
+      },
+      "source": {
+        "evidence": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "failure": {
+          "norm": 44.6318,
+          "self_coherence": 0.6974,
+          "triads": 2
+        },
+        "journal": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        },
+        "preservation": {
+          "norm": 32.0,
+          "self_coherence": 1.0,
+          "triads": 1
+        }
+      }
+    },
+    "source_group_sizes": {
+      "exception-receipt": 1,
+      "failure-publication": 1,
+      "intent-before-action": 1,
+      "scientific-boundary": 1,
+      "terminal-provenance": 1
+    },
+    "stable_groups": [
+      "exception-receipt",
+      "failure-publication",
+      "intent-before-action",
+      "scientific-boundary",
+      "terminal-provenance"
+    ],
+    "structural_energy": {
+      "adapter_leak_risk": 0,
+      "duplicate_decision_risk": 0,
+      "field_tension": 0,
+      "foreign_pull_energy": 0,
+      "owner_conflict": 0,
+      "route_coherence": 1.0,
+      "stale_experiment_risk": 0,
+      "ui_runtime_mismatch_risk": 0
+    },
+    "wave_dim": 1024
+  },
+  "codex_failure_field": {
+    "enabled": false,
+    "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+    "reason_codes": [],
+    "verdict": "NOT_ENABLED"
+  },
+  "repair_queue": [],
+  "agent_decision": {
+    "action": "SAFE_TO_EDIT",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "next": "Proceed only within the checked route boundary.",
+    "repair_count": 0,
+    "repair_queue": [],
+    "safe_to_edit": true
+  },
+  "explanation": [
+    "Candidate structure is coherent with source triads.",
+    "Structural coherence only: trusted proof was not established and authority is false."
+  ],
+  "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+  "trace_path": "/tmp/nanda-structural-gate/w1-fused-minimum-m2-failure-publication-correction-v3.trace.json"
+}

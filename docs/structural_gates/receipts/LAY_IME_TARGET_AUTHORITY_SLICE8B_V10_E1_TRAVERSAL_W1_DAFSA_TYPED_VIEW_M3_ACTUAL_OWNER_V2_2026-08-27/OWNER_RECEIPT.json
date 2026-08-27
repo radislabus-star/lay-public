@@ -1,0 +1,8 @@
+{
+  "error": "reconstructed V11 sidecar identity drift",
+  "installed_lay_changed": false,
+  "production_activation_admitted": false,
+  "runtime_authority_changed": false,
+  "schema": "lay.m3-actual-owner-parity.v1",
+  "verdict": "BLOCKED_PROVENANCE"
+}

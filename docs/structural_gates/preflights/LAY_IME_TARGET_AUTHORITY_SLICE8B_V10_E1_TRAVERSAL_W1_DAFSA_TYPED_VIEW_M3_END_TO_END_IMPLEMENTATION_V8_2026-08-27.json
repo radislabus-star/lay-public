@@ -1,0 +1,288 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_IMPLEMENTATION_V8_2026-08-27",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "v8-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8_2026-08-27.md",
+      "expect": {"mode": "0444", "size_bytes": 9362, "sha256": "c5f1655ce4ab91f068f0b50aff1fe5a2a01206d64786b1e23dc4396e10b840a7"}
+    },
+    {
+      "id": "v8-route-a",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8_ROUTE_A_OWNER_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 18375, "sha256": "409605d5650746c09e2889e03c84bb705645b7c9467345c36f02a4652223734b"}
+    },
+    {
+      "id": "v8-route-b",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8_ROUTE_B_MEASUREMENT_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 20240, "sha256": "a88a9263b34d48833c403f10101f258e3fa1fb58f2f82147e5bb9b8518c9b940"}
+    },
+    {
+      "id": "v8-route-c",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8_ROUTE_C_BOUNDARY_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 18238, "sha256": "b09c3235c390ae59be4d00a91beaca5f7892ca2fb4074ce8f371f289a3e6c2cb"}
+    },
+    {
+      "id": "v7-terminal",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_V4_2026-08-27/PARITY_PASS_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 2578, "sha256": "8a703dd385e7787816afa016e034284834540b53ed794d2544f638dcbd421e83"}
+    },
+    {
+      "id": "v13-test-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {"mode": "0664", "size_bytes": 188626, "sha256": "385b56d819b057141fa6966dcdd695eaac215aea8867630e2468c7263f692072"}
+    },
+    {
+      "id": "typed-exact-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak/typed_exact.rs",
+      "expect": {"mode": "0664", "size_bytes": 26203, "sha256": "325bdd386b13de77bd030ef1af0fecb12be8bdd2bdd3c841d10257647a4ceaf4"}
+    },
+    {
+      "id": "material-frame-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/material_frame.rs",
+      "expect": {"mode": "0664", "size_bytes": 74452, "sha256": "2efdceca380534930ff9e42a4f504a798363a9e86497ec71ee52104246e4ec55"}
+    },
+    {
+      "id": "live-owner-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "expect": {"mode": "0664", "size_bytes": 70181, "sha256": "87180990b6883641483a46886074e5350f35e351454d734f0c3c9da723d758bd"}
+    },
+    {
+      "id": "l2-module-protected",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/mod.rs",
+      "expect": {"mode": "0664", "size_bytes": 52483, "sha256": "c76c28debdac8e43d360a5a82811ea86e3e6f03b98e4f81cb6678e07953e0953"}
+    },
+    {
+      "id": "bridge-protected",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "expect": {"mode": "0664", "size_bytes": 111807, "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad"}
+    },
+    {
+      "id": "cache-protected",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/cache.rs",
+      "expect": {"mode": "0664", "size_bytes": 23664, "sha256": "9da969bfff12dba0217954647b1ba8e21302365770abaa82178953fcf63fec07"}
+    },
+    {
+      "id": "cargo-toml",
+      "kind": "file",
+      "path": "../../../Cargo.toml",
+      "expect": {"mode": "0664", "size_bytes": 2399, "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b"}
+    },
+    {
+      "id": "cargo-lock",
+      "kind": "file",
+      "path": "../../../Cargo.lock",
+      "expect": {"mode": "0664", "size_bytes": 70770, "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"}
+    },
+    {
+      "id": "cargo-guard",
+      "kind": "file",
+      "path": "../../../scripts/cargo-guard.sh",
+      "expect": {"mode": "0775", "size_bytes": 2534, "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"}
+    },
+    {
+      "id": "v13-package",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+      "expect": {"mode": "0644", "size_bytes": 140556462, "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"}
+    },
+    {
+      "id": "v7-fixed-proof",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+      "expect": {"mode": "0400", "size_bytes": 1606189, "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"}
+    },
+    {
+      "id": "productive-v90",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+      "expect": {"mode": "0644", "size_bytes": 17309944, "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44"}
+    },
+    {
+      "id": "productive-v90-recovery",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r",
+      "expect": {"mode": "0644", "size_bytes": 2123112, "sha256": "de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e"}
+    },
+    {
+      "id": "l11-v9",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "expect": {"mode": "0644", "size_bytes": 77962328, "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "edit-v13-test-owner", "kind": "local_test_source_edit"},
+      {"id": "format-v13-test-owner", "kind": "local_format_edit"},
+      {"id": "compile-v8-tests-no-run", "kind": "local_cargo_guard_compile_only"},
+      {"id": "run-generation-owner-unit-tests", "kind": "local_non_scientific_unit_test"},
+      {"id": "publish-implementation-receipt", "kind": "local_evidence_write"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "measured_v8_execution",
+      "network_or_remote_write",
+      "production_module_bridge_cache_or_reload_edit",
+      "typed_exact_material_frame_or_live_owner_edit",
+      "cargo_toml_lock_or_guard_edit",
+      "installed_package_or_receipt_edit",
+      "unsafe_or_unchecked_native_reinterpretation",
+      "runtime_activation_install_restart_or_deployment",
+      "latency_rss_or_production_pass_claim"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "steps": [
+      {
+        "id": "edit-v13-test-owner",
+        "from": "PREFLIGHT_READY",
+        "to": "V8_TEST_SOURCE_EDITED",
+        "mutates": true,
+        "failure_state": "BLOCKED_SOURCE_EDIT",
+        "cleanup": "retain exact partial diff without modifying protected runtime source",
+        "preserves": ["protected-runtime", "v7-evidence", "fixed-inputs"],
+        "test_id": "source-edit-fault"
+      },
+      {
+        "id": "format-and-static-check",
+        "from": "V8_TEST_SOURCE_EDITED",
+        "to": "V8_STATIC_PASS",
+        "mutates": true,
+        "failure_state": "BLOCKED_SOURCE_EDIT",
+        "cleanup": "retain diagnostics and publish no implementation PASS",
+        "preserves": ["protected-runtime", "v7-evidence", "fixed-inputs"],
+        "test_id": "format-static-fault"
+      },
+      {
+        "id": "compile-only-and-unit-tests",
+        "from": "V8_STATIC_PASS",
+        "to": "V8_LOCAL_IMPLEMENTATION_PASS",
+        "mutates": true,
+        "failure_state": "BLOCKED_BUILD",
+        "cleanup": "retain local compiler logs; no scientific receipt or remote action",
+        "preserves": ["protected-runtime", "v7-evidence", "fixed-inputs"],
+        "test_id": "local-compile-fault"
+      },
+      {
+        "id": "publish-implementation-receipt",
+        "from": "V8_LOCAL_IMPLEMENTATION_PASS",
+        "to": "M3_END_TO_END_V8_IMPLEMENTED_UNRUN",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "remove incomplete receipt stage and retain source/compiler evidence",
+        "preserves": ["protected-runtime", "v7-evidence", "fixed-inputs"],
+        "test_id": "receipt-publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "M3_END_TO_END_V8_IMPLEMENTED_UNRUN",
+      "BLOCKED_SOURCE_EDIT",
+      "BLOCKED_BUILD",
+      "BLOCKED_PROVENANCE"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "protected-runtime",
+      "path": "src/nanda_wave/l2_field/mod.rs bridge.rs cache.rs typed_exact.rs material_frame.rs live.rs Cargo inputs",
+      "policy": "immutable_during_v8_test_implementation",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "l2-module-protected"
+    },
+    {
+      "id": "v7-evidence",
+      "path": "V7 actual-owner terminal evidence",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v7-terminal"
+    },
+    {
+      "id": "fixed-inputs",
+      "path": "V13 V7 Productive V90 recovery and L1.1 V9 inputs",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v13-package"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "sidecar-to-generation",
+      "producer": "validated LAYV13D3 sidecar identity",
+      "consumer": "immutable typed generation",
+      "comparison": "package full payload semantics state edge root symbol and typed-byte identities exact",
+      "test_id": "generation-identity-parity"
+    },
+    {
+      "id": "generation-to-request",
+      "producer": "current generation Arc",
+      "consumer": "exact request borrow",
+      "comparison": "same Arc and generation identity with zero request materialization",
+      "test_id": "generation-borrow-parity"
+    },
+    {
+      "id": "reload-to-commit",
+      "producer": "current owner generation",
+      "consumer": "request result commit",
+      "comparison": "only current generation may commit and stale generation cancels",
+      "test_id": "stale-commit-parity"
+    },
+    {
+      "id": "request-to-v7-owner",
+      "producer": "typed exhaustive exact result and certificates",
+      "consumer": "PreparedCanonicalTokenField candidate lattice emission and gate",
+      "comparison": "V7 candidate certificate lattice emission and gate sets exact",
+      "test_id": "v7-owner-parity"
+    },
+    {
+      "id": "pss-helper-identity",
+      "producer": "sealed test ELF and temporary current sidecar",
+      "consumer": "two PSS helper processes",
+      "comparison": "same ELF sidecar generation and typed payload identities",
+      "test_id": "pss-helper-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "one-materialization-per-generation", "statement": "each published generation owns exactly one typed materialization", "test_id": "generation-identity-parity"},
+    {"id": "no-request-materialization", "statement": "request borrows the current Arc and never builds a typed view", "test_id": "generation-borrow-parity"},
+    {"id": "stale-fail-closed", "statement": "a stale result cannot commit after generation replacement", "test_id": "stale-commit-parity"},
+    {"id": "rollback-preserves-current", "statement": "failed next-generation construction does not alter the current owner", "test_id": "generation-rollback"},
+    {"id": "measurement-not-run-locally", "statement": "implementation checks do not execute the V8 measured proof", "test_id": "claim-boundary-static"},
+    {"id": "production-source-protected", "statement": "production bridge cache reload package and authority source remain unchanged", "test_id": "protected-source-parity"}
+  ],
+  "tests": [
+    {"id": "source-edit-fault", "kind": "fault_injection", "expected": "partial V13 test edit cannot touch protected runtime or publish PASS"},
+    {"id": "format-static-fault", "kind": "fault_injection", "expected": "format or static failure retains diagnostics and no implementation PASS"},
+    {"id": "local-compile-fault", "kind": "fault_injection", "expected": "compiler failure creates no scientific or remote authority"},
+    {"id": "receipt-publication-fault", "kind": "fault_injection", "expected": "incomplete implementation receipt is not published"},
+    {"id": "generation-identity-parity", "kind": "unit", "expected": "validated bytes and typed generation identities are exact with one materialization"},
+    {"id": "generation-borrow-parity", "kind": "unit", "expected": "concurrent readers borrow the same current Arc"},
+    {"id": "stale-commit-parity", "kind": "unit", "expected": "old generation commit is rejected after replacement"},
+    {"id": "generation-rollback", "kind": "fault_injection", "expected": "injected generation build failure preserves the current generation exactly"},
+    {"id": "v7-owner-parity", "kind": "integration", "expected": "future measured action requires zero V7 owner mismatches"},
+    {"id": "pss-helper-parity", "kind": "integration", "expected": "future helpers bind exact ELF sidecar and typed identities"},
+    {"id": "protected-source-parity", "kind": "parity", "expected": "all protected source Cargo and fixed input hashes remain exact"},
+    {"id": "claim-boundary-static", "kind": "unit", "expected": "implementation receipt says measured execution absent and production authority false"}
+  ]
+}

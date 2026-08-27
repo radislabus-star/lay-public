@@ -1,0 +1,117 @@
+{
+  "schema": "lay.v10.structural-pmu-decision.v1",
+  "task_id": "slice8b-v10-structural-pmu-decision-20260825",
+  "recorded_at": "2026-08-25T10:15:33Z",
+  "verdict": "GENERIC_EXECUTOR_COST_CONFIRMED_ADMIT_FUSED_TRANSITION_MICROPROOF",
+  "authority_ready": false,
+  "sources": {
+    "loaded_latency_comparison": {
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_DIRTY_DIRECT_LATENCY_V1_V2_COMPARISON_2026-08-25.json",
+      "sha256": "01b9c10c72e9c0a19572c543197f20ce073dd71ad8406cd336e757bf6cd8868c"
+    },
+    "loaded_pmu_combined": {
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_LOADED_PMU_DIAGNOSIS_COMBINED_V3_V4_2026-08-25.json",
+      "sha256": "ea9a19cace1eab5418f783dfb6c18a4de2adb7281356afffd12bb2b28cdacbd1"
+    },
+    "structural_subject": {
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_2026-08-25/SUBJECT_RESULT.json",
+      "sha256": "ab1b4786743691380fa6aed7a4e468f0719dc365b47561f667d9e8d0d3fe8347"
+    },
+    "physical_model": {
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_2026-08-25/PHYSICAL_MODEL.json",
+      "sha256": "4b507c2d836c3ae1933492a90fe8b4b262f22b24b2abf1513ef7d947b5189570"
+    },
+    "structural_run_provenance": {
+      "path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_2026-08-25/RUN_PROVENANCE.json",
+      "sha256": "fb700e29c80c8afac1c4740f9055ee5c5de19f6a90d39c84c3115d2af8f295ca"
+    }
+  },
+  "identity": {
+    "v10_source_sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c",
+    "production_prefix_bytes": 39047,
+    "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+    "active_v11_sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"
+  },
+  "semantic_parity": {
+    "records": 382,
+    "terminal_mismatches": 0,
+    "peak_mismatches": 0,
+    "completeness_mismatches": 0,
+    "expanded_state_mismatches": 0,
+    "scratch_mismatches": 0,
+    "false_certificates": 0,
+    "target_form_retained": 382,
+    "target_lemma_retained": 382,
+    "maximum_product_states": 35590,
+    "maximum_scratch_bytes": 6656
+  },
+  "loaded_latency_replication": {
+    "runs": 2,
+    "single_search_p99_us": [3940, 3938],
+    "single_total_p99_us": [4098, 4098],
+    "twenty_total_p99_us": [17349, 16336],
+    "maximum_run_worker_total_p99_us": [57917, 58618],
+    "threshold_miss_reproduced": true,
+    "third_loaded_run_admitted": false
+  },
+  "loaded_pmu_per_request": {
+    "b5_instructions": 42378604.08638743,
+    "b6_instructions": 42388812.24250459,
+    "b5_cycles": 10307715.70157068,
+    "b6_cycles": 14178114.9039857,
+    "b5_ipc": 4.111347781927068,
+    "b6_ipc": 2.9897354147262836
+  },
+  "deterministic_structural_totals": {
+    "requests": 382,
+    "expanded_states": 8059788,
+    "edges_examined": 25145756,
+    "transition_calls": 25145756,
+    "surviving_edges": 8059024,
+    "pruned_edges": 17086732,
+    "band_cells_evaluated": 173652383,
+    "minimum_cells_scanned": 173652383,
+    "query_symbol_comparisons": 171852017,
+    "certificate_calls": 17600
+  },
+  "deterministic_structural_per_request": {
+    "expanded_states": 21098.921465968586,
+    "edges_examined": 65826.58638743455,
+    "transition_calls": 65826.58638743455,
+    "band_cells_evaluated": 454587.390052356,
+    "minimum_cells_scanned": 454587.390052356,
+    "pruned_edges": 44729.66492146597,
+    "survival_rate": 0.32049241231800707,
+    "band_cells_per_transition": 6.905832658202839
+  },
+  "combined_derived_cost": {
+    "b5_instructions_per_examined_edge": 643.7916108388231,
+    "b5_instructions_per_band_cell": 93.22432828923517,
+    "b6_instructions_per_examined_edge": 643.9466873311247
+  },
+  "measured_decisions": {
+    "v10_generic_executor_cost": "CONFIRMED",
+    "background_load_blocks_structural_diagnosis": false,
+    "background_load_causes_deterministic_work_count": false,
+    "exact_fused_band_transition_microproof": "ADMIT_NEXT_PAPER_GATE",
+    "full_v12_executor_implementation": "NOT_ADMITTED",
+    "full_b": "NOT_ADMITTED",
+    "runtime_integration": "NOT_ADMITTED"
+  },
+  "engineering_basis": [
+    "the exact traversal examines 65826.6 edges per request and invokes one band transition per edge",
+    "the radius-3 path evaluates 6.906 of seven cells per transition on average",
+    "the generic path scans the produced band again in minimum for every transition",
+    "67.95 percent of fully computed transitions are immediately pruned",
+    "the loaded B5 executor retires 42.379 million instructions per request"
+  ],
+  "claim_boundary": {
+    "proves_zero_background_latency_effect": false,
+    "proves_fused_transition_reaches_latency_gate": false,
+    "proves_transition_is_the_only_cost": false,
+    "clean_c1_pass_or_fail": "NOT_MEASURED",
+    "formal_b_pass": false,
+    "v12_admitted": false,
+    "runtime_authority_changed": false
+  }
+}

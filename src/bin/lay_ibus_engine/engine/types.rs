@@ -4,7 +4,10 @@ use std::{
     hash::{Hash, Hasher},
 };
 
-use lay::config::{CorrectionSafety, LayConfig};
+use lay::config::LayConfig;
+use lay::lexical_authority_frame::{
+    LexicalAuthorityConfigIdentityV1, LexicalAuthorityCoordinatesV1, LexicalAuthorityFrameV1,
+};
 use lay::text_edit::{EditAction, SnapshotIdentity, TransitionOperator, VisibleTailSource};
 
 #[derive(Debug, Clone)]
@@ -31,63 +34,7 @@ pub(crate) enum DeferredLearningAction {
     },
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct TypingAssistRuleIdentity {
-    id: String,
-    enabled: bool,
-    priority: i32,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub(crate) struct InputConfigIdentity {
-    auto_replace: bool,
-    typing_assist: bool,
-    auto_switch_layout: bool,
-    nanda_autocorrect: bool,
-    correction_safety: CorrectionSafety,
-    typing_assist_pipeline: Vec<TypingAssistRuleIdentity>,
-    nanda_l2_weight_percent: u8,
-    nanda_l3_weight_percent: u8,
-    llmwave_shadow: bool,
-    llmwave_apply: bool,
-    nanda_l2_phase_shadow: bool,
-    nanda_l2_phase_apply: bool,
-    nanda_l3_phase_shadow: bool,
-    nanda_precognition: bool,
-    ime_bracket_candidates: bool,
-    text_backend: String,
-}
-
-impl InputConfigIdentity {
-    fn from_config(config: &LayConfig) -> Self {
-        Self {
-            auto_replace: config.auto_replace,
-            typing_assist: config.typing_assist,
-            auto_switch_layout: config.auto_switch_layout,
-            nanda_autocorrect: config.nanda_autocorrect,
-            correction_safety: config.active_correction_safety(),
-            typing_assist_pipeline: config
-                .typing_assist_pipeline
-                .iter()
-                .map(|rule| TypingAssistRuleIdentity {
-                    id: rule.id.clone(),
-                    enabled: rule.enabled,
-                    priority: rule.priority,
-                })
-                .collect(),
-            nanda_l2_weight_percent: config.nanda_l2_weight_percent.min(200),
-            nanda_l3_weight_percent: config.nanda_l3_weight_percent.min(200),
-            llmwave_shadow: config.llmwave_shadow,
-            llmwave_apply: config.llmwave_shadow && config.llmwave_apply,
-            nanda_l2_phase_shadow: config.nanda_l2_phase_shadow,
-            nanda_l2_phase_apply: config.nanda_l2_phase_shadow && config.nanda_l2_phase_apply,
-            nanda_l3_phase_shadow: config.nanda_l3_phase_shadow,
-            nanda_precognition: config.nanda_precognition,
-            ime_bracket_candidates: config.ime_bracket_candidates,
-            text_backend: config.text_backend.trim().to_ascii_lowercase(),
-        }
-    }
-}
+pub(crate) type InputConfigIdentity = LexicalAuthorityConfigIdentityV1;
 
 /// Exact identity of one printable-input frame shared by display readout and
 /// the prepared Space correction. Exact text remains present because a hash is
@@ -108,6 +55,7 @@ pub(crate) struct InputFrameIdentity {
     pub(crate) output_capability_fingerprint: u64,
     pub(crate) frame_fingerprint: u64,
     pub(crate) config: InputConfigIdentity,
+    pub(crate) lexical_coordinates: Option<LexicalAuthorityCoordinatesV1>,
 }
 
 impl InputFrameIdentity {
@@ -196,11 +144,39 @@ impl InputFrameIdentity {
             output_capability_fingerprint,
             frame_fingerprint,
             config,
+            lexical_coordinates: None,
         }
     }
 
+    pub(crate) fn with_lexical_coordinates(
+        mut self,
+        coordinates: Option<LexicalAuthorityCoordinatesV1>,
+    ) -> Self {
+        self.lexical_coordinates = coordinates;
+        self
+    }
+
     pub(crate) fn config_matches(&self, config: &LayConfig) -> bool {
-        self.config == InputConfigIdentity::from_config(config)
+        self.config.matches_config(config)
+    }
+
+    pub(crate) fn lexical_authority_frame(&self) -> LexicalAuthorityFrameV1 {
+        LexicalAuthorityFrameV1::from_exact_parts(
+            self.path.clone(),
+            self.focus_receipt.clone(),
+            self.tail_epoch,
+            self.committed_tail.clone(),
+            self.context_prefix.clone(),
+            self.observed_token.clone(),
+            self.active_composition,
+            self.active_layout_is_ru,
+            self.factory_engine_profile,
+            self.exact_authority_snapshot,
+            self.output_capability_fingerprint,
+            self.frame_fingerprint,
+            self.config.clone(),
+        )
+        .with_coordinates(self.lexical_coordinates.clone())
     }
 
     pub(crate) fn boundary_text(&self) -> Option<String> {
@@ -325,6 +301,35 @@ mod input_frame_identity_tests {
         let mut changed = expected.clone();
         changed.focus_receipt = Some("focus-b".to_string());
         assert_ne!(expected, changed);
+    }
+
+    #[test]
+    fn lexical_authority_frame_conversion_is_lossless() {
+        let expected = identity(&LayConfig::default());
+        let actual = expected.lexical_authority_frame();
+
+        assert_eq!(actual.path(), expected.path);
+        assert_eq!(actual.focus_receipt(), expected.focus_receipt.as_deref());
+        assert_eq!(actual.tail_epoch(), expected.tail_epoch);
+        assert_eq!(actual.committed_tail(), expected.committed_tail);
+        assert_eq!(actual.context_prefix(), expected.context_prefix);
+        assert_eq!(actual.observed_token(), expected.observed_token);
+        assert_eq!(actual.active_composition(), expected.active_composition);
+        assert_eq!(actual.active_layout_is_ru(), expected.active_layout_is_ru);
+        assert_eq!(
+            actual.factory_engine_profile(),
+            expected.factory_engine_profile
+        );
+        assert_eq!(
+            actual.exact_authority_snapshot(),
+            expected.exact_authority_snapshot
+        );
+        assert_eq!(
+            actual.output_capability_fingerprint(),
+            expected.output_capability_fingerprint
+        );
+        assert_eq!(actual.frame_fingerprint(), expected.frame_fingerprint);
+        assert_eq!(actual.config(), &expected.config);
     }
 }
 

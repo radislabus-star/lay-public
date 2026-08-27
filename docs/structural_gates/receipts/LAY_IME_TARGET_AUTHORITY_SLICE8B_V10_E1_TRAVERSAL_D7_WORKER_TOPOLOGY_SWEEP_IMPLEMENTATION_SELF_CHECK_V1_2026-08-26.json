@@ -1,0 +1,797 @@
+{
+  "assembled_source_sha256": "c9f6400304eed2d84717cbef84b17e5ba1817e08f8d9e68580b5d441d1f13803",
+  "cargo_invocations": 0,
+  "controller_mode": "0555",
+  "controller_sha256": "b7cfc353e1ff823446cb2c3e5f9ffcd3deca133b0371d268eb40df2609e65258",
+  "fragment_mode": "0444",
+  "fragment_sha256": "8c9ff3aaf43942aff6090b1350cef1828e24ea5664d312bde2ebdf29be6687ce",
+  "markers_consumed": 0,
+  "markers_created": 0,
+  "next_action_admitted": "one D7 run through this exact controller; no retry",
+  "perf_record_invocations": 0,
+  "perf_stat_invocations": 0,
+  "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+  "remote_pre_marker_probe": {
+    "b0a_manifest": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/SHA256SUMS",
+      "sha256": "920374efc2e75a021d53235aafea2a74dc7258546219bcae9c6a2bf53e194916",
+      "size_bytes": 72288
+    },
+    "b0a_receipt": {
+      "mode": "0444",
+      "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/INPUT_CLOSURE.json",
+      "sha256": "48176ec6faae86f43ddda8404542367be5b6c9d6813762dedb829b4946593eb3",
+      "size_bytes": 366665
+    },
+    "bootstrap": {
+      "controller.py": {
+        "mode": "0555",
+        "path": "/tmp/lay-d7.P3xNJr/controller.py",
+        "sha256": "b7cfc353e1ff823446cb2c3e5f9ffcd3deca133b0371d268eb40df2609e65258",
+        "size_bytes": 104454
+      },
+      "d1-decision.json": {
+        "mode": "0444",
+        "path": "/tmp/lay-d7.P3xNJr/d1-decision.json",
+        "sha256": "80530f9f5787f846ce2cf222c1b60e3ae42887ce95a11ac153ec7271cce98baf",
+        "size_bytes": 5361257
+      },
+      "d6-receipt.json": {
+        "mode": "0444",
+        "path": "/tmp/lay-d7.P3xNJr/d6-receipt.json",
+        "sha256": "cc1fc1c7e74258cd7fec7eed5a113bbaeb3a4bf8ee3b269825f4cd282f5755dc",
+        "size_bytes": 1280
+      },
+      "e1-decision.json": {
+        "mode": "0444",
+        "path": "/tmp/lay-d7.P3xNJr/e1-decision.json",
+        "sha256": "b334c047d29b21c27923fba9b38bbf17bb642cc72c9b112add1c38d8c9b0beab",
+        "size_bytes": 202202
+      },
+      "fragment.inc": {
+        "mode": "0444",
+        "path": "/tmp/lay-d7.P3xNJr/fragment.inc",
+        "sha256": "8c9ff3aaf43942aff6090b1350cef1828e24ea5664d312bde2ebdf29be6687ce",
+        "size_bytes": 123880
+      },
+      "paper.md": {
+        "mode": "0444",
+        "path": "/tmp/lay-d7.P3xNJr/paper.md",
+        "sha256": "090c39efec9916c1a9bea050c6385a17c00b95532e08592730b3b83ede591a23",
+        "size_bytes": 8540
+      },
+      "preflight-v2-receipt.json": {
+        "mode": "0444",
+        "path": "/tmp/lay-d7.P3xNJr/preflight-v2-receipt.json",
+        "sha256": "bb92b6d1059090b0da024cca686202c19386b85b97fc2563adcca84107400c20",
+        "size_bytes": 7774
+      },
+      "preflight-v2.json": {
+        "mode": "0444",
+        "path": "/tmp/lay-d7.P3xNJr/preflight-v2.json",
+        "sha256": "c35e144ed81bd244bbf7d2233f0f8da86fb6fd4aedd1f6d5e25608b9bd0cc700",
+        "size_bytes": 19001
+      },
+      "structural-review.json": {
+        "mode": "0444",
+        "path": "/tmp/lay-d7.P3xNJr/structural-review.json",
+        "sha256": "c94d5d927e27c6f0aeaa5be331b4894bbd6d41f3aaab16a1f8bfe0a7c233da3e",
+        "size_bytes": 1040
+      },
+      "v13_typed_peak.v10.rs": {
+        "mode": "0444",
+        "path": "/tmp/lay-d7.P3xNJr/v13_typed_peak.v10.rs",
+        "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c",
+        "size_bytes": 91518
+      }
+    },
+    "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)",
+    "cargo_invocations": 0,
+    "disk_free_bytes": 241326370816,
+    "host": {
+      "hostname": "e-MEGA-MINI-M1-13th",
+      "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441"
+    },
+    "inputs": {
+      "cargo_guard": {
+        "mode": "0555",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/controller/cargo-guard.sh",
+        "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe",
+        "size_bytes": 2534
+      },
+      "cargo_lock": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/Cargo.lock",
+        "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1",
+        "size_bytes": 70770
+      },
+      "cargo_toml": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/Cargo.toml",
+        "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b",
+        "size_bytes": 2399
+      },
+      "loader": {
+        "mode": "0755",
+        "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "sha256": "8d06f393f4a93bcf9b81145a259524d66a95522a646bf8d7e05b6ffdf2e63dcc",
+        "size_bytes": 240936
+      },
+      "package": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+        "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+        "size_bytes": 140556462
+      },
+      "schedule": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+        "sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78",
+        "size_bytes": 174941
+      },
+      "sidecar": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+        "sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd",
+        "size_bytes": 3689884
+      },
+      "v7": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+        "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+        "size_bytes": 1606189
+      }
+    },
+    "markers_consumed": 0,
+    "markers_created": 0,
+    "perf_stat_invocations": 0,
+    "remote_writes": 0,
+    "rustc_vv": "rustc 1.97.1 (8bab26f4f 2026-07-14)\nbinary: rustc\ncommit-hash: 8bab26f4f68e0e26f0bb7960be334d5b520ea452\ncommit-date: 2026-07-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.97.1\nLLVM version: 22.1.6",
+    "schema": "lay.v10.e1-traversal-d7-pre-marker-probe.v1",
+    "subject_executions": 0,
+    "task_id": "slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826",
+    "topology": {
+      "cpu_atom": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "cpu_core": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "online": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "thread_siblings": {
+        "0": [
+          0,
+          1
+        ],
+        "1": [
+          0,
+          1
+        ],
+        "10": [
+          10,
+          11
+        ],
+        "11": [
+          10,
+          11
+        ],
+        "12": [
+          12
+        ],
+        "13": [
+          13
+        ],
+        "14": [
+          14
+        ],
+        "15": [
+          15
+        ],
+        "16": [
+          16
+        ],
+        "17": [
+          17
+        ],
+        "18": [
+          18
+        ],
+        "19": [
+          19
+        ],
+        "2": [
+          2,
+          3
+        ],
+        "3": [
+          2,
+          3
+        ],
+        "4": [
+          4,
+          5
+        ],
+        "5": [
+          4,
+          5
+        ],
+        "6": [
+          6,
+          7
+        ],
+        "7": [
+          6,
+          7
+        ],
+        "8": [
+          8,
+          9
+        ],
+        "9": [
+          8,
+          9
+        ]
+      }
+    },
+    "transaction_id": "d0982f48bba3090a155713c32a73bbc71f7ef79a0f5fa1eccbea4423563102e0",
+    "verdict": "D7_PRE_MARKER_PROBE_PASS"
+  },
+  "remote_status": {
+    "active_d7_processes": [],
+    "build_exists": false,
+    "build_failure_exists": false,
+    "build_failure_manifest_files_verified": null,
+    "build_manifest_files_verified": null,
+    "decision_sha256": null,
+    "decision_verdict": null,
+    "host": {
+      "hostname": "e-MEGA-MINI-M1-13th",
+      "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441"
+    },
+    "inventory": {
+      "available": [],
+      "consumed": []
+    },
+    "marker_rows": {},
+    "parent_exists": false,
+    "remote_writes": 0,
+    "result_exists": false,
+    "result_manifest_files_verified": null,
+    "route_lock": null,
+    "runtime": {
+      "global_ibus_pid": null,
+      "installed_lay_hashes": {},
+      "managed_lay_process_ids": []
+    },
+    "schema": "lay.v10.e1-traversal-d7-remote-status.v1",
+    "state_exists": false,
+    "state_files": [],
+    "task_id": "slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826",
+    "topology": {
+      "cpu_atom": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "cpu_core": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "online": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "thread_siblings": {
+        "0": [
+          0,
+          1
+        ],
+        "1": [
+          0,
+          1
+        ],
+        "10": [
+          10,
+          11
+        ],
+        "11": [
+          10,
+          11
+        ],
+        "12": [
+          12
+        ],
+        "13": [
+          13
+        ],
+        "14": [
+          14
+        ],
+        "15": [
+          15
+        ],
+        "16": [
+          16
+        ],
+        "17": [
+          17
+        ],
+        "18": [
+          18
+        ],
+        "19": [
+          19
+        ],
+        "2": [
+          2,
+          3
+        ],
+        "3": [
+          2,
+          3
+        ],
+        "4": [
+          4,
+          5
+        ],
+        "5": [
+          4,
+          5
+        ],
+        "6": [
+          6,
+          7
+        ],
+        "7": [
+          6,
+          7
+        ],
+        "8": [
+          8,
+          9
+        ],
+        "9": [
+          8,
+          9
+        ]
+      }
+    },
+    "transaction_id": "d0982f48bba3090a155713c32a73bbc71f7ef79a0f5fa1eccbea4423563102e0"
+  },
+  "runtime_after": {
+    "global_ibus_pid": null,
+    "installed_lay_hashes": {
+      "lay": {
+        "sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383",
+        "target": "/home/ubu/.local/lib/lay/bin/lay"
+      },
+      "lay-daemon": {
+        "sha256": "d795f4c64f2498fc8bcea8c36e54c43ff841b10d98ec0a6b69b71be53370e34a",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-daemon"
+      },
+      "lay-host-vm-guard": {
+        "sha256": "a952c8e455462a9be39224b6170d7072fb9793eb3cd75fbe642f0f2e72a596e9",
+        "target": "/home/ubu/projects/lay/scripts/lay-host-vm-guard.sh"
+      },
+      "lay-ibus-engine": {
+        "sha256": "522660358022d0633873a58b06d8d8c47822b8d2a8748f499d75f0f8dc98d06a",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine"
+      },
+      "lay-kde-tray": {
+        "sha256": "2ea1e2043336970679a00b24ee51426cba31ed2dfc141d6d2e64ce46fb6f3ac0",
+        "target": "/home/ubu/projects/lay/scripts/lay-kde-tray.py"
+      },
+      "lay-l1.1-restore": {
+        "sha256": "e637791608f54891d68141d943badbbed2c69ce5b17e0fdd0e82aaf1c7d99dae",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-l1.1-restore"
+      },
+      "lay-l1.1-serve": {
+        "sha256": "1d3d21476da5b8a2d658d67d312d617872f1124f92d61a6b36e5619297525767",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-l1.1-serve"
+      },
+      "lay-memory-report": {
+        "sha256": "3921860fd10da8d841c50133a35dbb31e40ceba405a120ba0b71f10049e1954b",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-memory-report"
+      },
+      "lay-nanda-dataset": {
+        "sha256": "a7d28d8a32cfb4b2d9e209616f1da559c03a76f2726b4e80281d1a357cc73d9e",
+        "target": "/home/ubu/.local/bin/lay-nanda-dataset"
+      },
+      "lay-nanda-wave-eval": {
+        "sha256": "d4fce87cc03b590abbe0069421e07771ec76f6a70645186e1880c24bb987d960",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-nanda-wave-eval"
+      },
+      "lay-nanda-wave-train": {
+        "sha256": "717783c2b39f79cdcb8a073766d2c8d9829241a81141049cf745b50e49e6308f",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-nanda-wave-train"
+      },
+      "lay-ngram-corpus": {
+        "sha256": "3cd7aec3b93ebb29aa438a3b34df95c0f63a0612f0be929305a811648915b9f5",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-ngram-corpus"
+      },
+      "lay-runtime-control": {
+        "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+        "target": "/home/ubu/projects/lay/scripts/lay-runtime-control.sh"
+      },
+      "lay-test-input": {
+        "sha256": "2d6080adc2cb0d74a408687f6b0c86264e652b5db3a0a3da05d420e539e68f2a",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-test-input"
+      }
+    },
+    "managed_lay_process_ids": []
+  },
+  "runtime_authority_changed": false,
+  "runtime_before": {
+    "global_ibus_pid": null,
+    "installed_lay_hashes": {
+      "lay": {
+        "sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383",
+        "target": "/home/ubu/.local/lib/lay/bin/lay"
+      },
+      "lay-daemon": {
+        "sha256": "d795f4c64f2498fc8bcea8c36e54c43ff841b10d98ec0a6b69b71be53370e34a",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-daemon"
+      },
+      "lay-host-vm-guard": {
+        "sha256": "a952c8e455462a9be39224b6170d7072fb9793eb3cd75fbe642f0f2e72a596e9",
+        "target": "/home/ubu/projects/lay/scripts/lay-host-vm-guard.sh"
+      },
+      "lay-ibus-engine": {
+        "sha256": "522660358022d0633873a58b06d8d8c47822b8d2a8748f499d75f0f8dc98d06a",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine"
+      },
+      "lay-kde-tray": {
+        "sha256": "2ea1e2043336970679a00b24ee51426cba31ed2dfc141d6d2e64ce46fb6f3ac0",
+        "target": "/home/ubu/projects/lay/scripts/lay-kde-tray.py"
+      },
+      "lay-l1.1-restore": {
+        "sha256": "e637791608f54891d68141d943badbbed2c69ce5b17e0fdd0e82aaf1c7d99dae",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-l1.1-restore"
+      },
+      "lay-l1.1-serve": {
+        "sha256": "1d3d21476da5b8a2d658d67d312d617872f1124f92d61a6b36e5619297525767",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-l1.1-serve"
+      },
+      "lay-memory-report": {
+        "sha256": "3921860fd10da8d841c50133a35dbb31e40ceba405a120ba0b71f10049e1954b",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-memory-report"
+      },
+      "lay-nanda-dataset": {
+        "sha256": "a7d28d8a32cfb4b2d9e209616f1da559c03a76f2726b4e80281d1a357cc73d9e",
+        "target": "/home/ubu/.local/bin/lay-nanda-dataset"
+      },
+      "lay-nanda-wave-eval": {
+        "sha256": "d4fce87cc03b590abbe0069421e07771ec76f6a70645186e1880c24bb987d960",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-nanda-wave-eval"
+      },
+      "lay-nanda-wave-train": {
+        "sha256": "717783c2b39f79cdcb8a073766d2c8d9829241a81141049cf745b50e49e6308f",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-nanda-wave-train"
+      },
+      "lay-ngram-corpus": {
+        "sha256": "3cd7aec3b93ebb29aa438a3b34df95c0f63a0612f0be929305a811648915b9f5",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-ngram-corpus"
+      },
+      "lay-runtime-control": {
+        "sha256": "746d077115277775acb275e077b57823ace9e416d2575eaf0bc53d3327d64e6d",
+        "target": "/home/ubu/projects/lay/scripts/lay-runtime-control.sh"
+      },
+      "lay-test-input": {
+        "sha256": "2d6080adc2cb0d74a408687f6b0c86264e652b5db3a0a3da05d420e539e68f2a",
+        "target": "/home/ubu/.local/lib/lay/bin/lay-test-input"
+      }
+    },
+    "managed_lay_process_ids": []
+  },
+  "schema": "lay.v10.e1-traversal-d7-implementation-self-check.v1",
+  "self_check": {
+    "admission_files": {
+      "d1_decision": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/D1_DECISION.json",
+        "sha256": "80530f9f5787f846ce2cf222c1b60e3ae42887ce95a11ac153ec7271cce98baf",
+        "size_bytes": 5361257
+      },
+      "d6_receipt": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D6_CONCURRENCY_ACCOUNTING_V1_2026-08-26/D6_CONCURRENCY_ACCOUNTING_RECEIPT.json",
+        "sha256": "cc1fc1c7e74258cd7fec7eed5a113bbaeb3a4bf8ee3b269825f4cd282f5755dc",
+        "size_bytes": 1280
+      },
+      "e1_decision": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_EXECUTOR_E1_2026-08-25/E1_DECISION.json",
+        "sha256": "b334c047d29b21c27923fba9b38bbf17bb642cc72c9b112add1c38d8c9b0beab",
+        "size_bytes": 202202
+      },
+      "fragment": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay_v10_e1_traversal_d7_worker_topology_test_module.rs.inc",
+        "sha256": "8c9ff3aaf43942aff6090b1350cef1828e24ea5664d312bde2ebdf29be6687ce",
+        "size_bytes": 123880
+      },
+      "paper": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_V1_2026-08-26.md",
+        "sha256": "090c39efec9916c1a9bea050c6385a17c00b95532e08592730b3b83ede591a23",
+        "size_bytes": 8540
+      },
+      "preflight": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_IMPLEMENTATION_V2_2026-08-26.json",
+        "sha256": "c35e144ed81bd244bbf7d2233f0f8da86fb6fd4aedd1f6d5e25608b9bd0cc700",
+        "size_bytes": 19001
+      },
+      "preflight_receipt": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_IMPLEMENTATION_V2_PREFLIGHT_2026-08-26.json",
+        "sha256": "bb92b6d1059090b0da024cca686202c19386b85b97fc2563adcca84107400c20",
+        "size_bytes": 7774
+      },
+      "structural_review": {
+        "mode": "0444",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D7_WORKER_TOPOLOGY_SWEEP_STRUCTURAL_REVIEW_V1_2026-08-26.json",
+        "sha256": "c94d5d927e27c6f0aeaa5be331b4894bbd6d41f3aaab16a1f8bfe0a7c233da3e",
+        "size_bytes": 1040
+      },
+      "terminal_auditor": {
+        "mode": "0555",
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d7-terminal-audit.py",
+        "sha256": "27604a1aef85c93228c5f4f3fc3aba4bbd892754036ef4d12769e2a94129f6e1",
+        "size_bytes": 32710
+      },
+      "v10_source": {
+        "mode": "0444",
+        "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+        "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c",
+        "size_bytes": 91518
+      }
+    },
+    "assembled_source_sha256": "c9f6400304eed2d84717cbef84b17e5ba1817e08f8d9e68580b5d441d1f13803",
+    "cargo_invocations": 0,
+    "command_graph": {
+      "BUILD": {
+        "external": [
+          "cargo-guard"
+        ],
+        "function": "remote_build_once"
+      },
+      "PARITY": {
+        "external": [
+          "diagnostic-test-elf"
+        ],
+        "function": "run_parity_route"
+      },
+      "TERMINAL-AUDIT": {
+        "external": [
+          "terminal-auditor.py"
+        ],
+        "function": "run_independent_terminal_audit"
+      },
+      "W1": {
+        "external": [
+          "perf stat",
+          "diagnostic-test-elf"
+        ],
+        "function": "run_worker_route"
+      },
+      "W12": {
+        "external": [
+          "perf stat",
+          "diagnostic-test-elf"
+        ],
+        "function": "run_worker_route"
+      },
+      "W14": {
+        "external": [
+          "perf stat",
+          "diagnostic-test-elf"
+        ],
+        "function": "run_worker_route"
+      },
+      "W20": {
+        "external": [
+          "perf stat",
+          "diagnostic-test-elf"
+        ],
+        "function": "run_worker_route"
+      },
+      "W6": {
+        "external": [
+          "perf stat",
+          "diagnostic-test-elf"
+        ],
+        "function": "run_worker_route"
+      }
+    },
+    "controller_sha256": "b7cfc353e1ff823446cb2c3e5f9ffcd3deca133b0371d268eb40df2609e65258",
+    "fragment_sha256": "8c9ff3aaf43942aff6090b1350cef1828e24ea5664d312bde2ebdf29be6687ce",
+    "marker_identities": {
+      "W1": {
+        "mode": "0400",
+        "sha256": "f97536385b7a4d3670584b6129776f33d54b4957aa8779400b2c3c3f9a24eb47",
+        "size_bytes": 242
+      },
+      "W12": {
+        "mode": "0400",
+        "sha256": "7a5dea250b26f5d48d928b2453024ef03f2b01329edd2384a7356c3d8f817ebb",
+        "size_bytes": 243
+      },
+      "W14": {
+        "mode": "0400",
+        "sha256": "b98f80062168e6c1e24d7fcd597944847ea7c49759c64273321c80441a4a10d6",
+        "size_bytes": 243
+      },
+      "W20": {
+        "mode": "0400",
+        "sha256": "d4c11758c906c51b6d4eba176306aa16c060d4aaeffa57ab7b19100a8fb89582",
+        "size_bytes": 243
+      },
+      "W6": {
+        "mode": "0400",
+        "sha256": "0e199a378e12f8e11f3dd8427134e44bd98d673256b9c7f20a0aa0f40821f770",
+        "size_bytes": 242
+      },
+      "build": {
+        "mode": "0400",
+        "sha256": "9fe40a4938ab7b37c12831309aca66304d707433633c19e7bb3dc9940db9836d",
+        "size_bytes": 245
+      },
+      "parity": {
+        "mode": "0400",
+        "sha256": "0a43e9d69aa0ac015ce3c05d05913654f7208cbdb3c4a444b01db935702c8963",
+        "size_bytes": 246
+      }
+    },
+    "perf_stat_invocations": 0,
+    "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+    "routes": {
+      "W1": [
+        0
+      ],
+      "W12": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "W14": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "W20": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "W6": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10
+      ]
+    },
+    "runtime_authority_changed": false,
+    "subject_executions": 0,
+    "terminal_auditor_sha256": "27604a1aef85c93228c5f4f3fc3aba4bbd892754036ef4d12769e2a94129f6e1",
+    "verdict": "D7_CONTROLLER_VERIFIED_UNRUN"
+  },
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-d7-worker-topology-sweep-v1-20260826",
+  "terminal_auditor_mode": "0555",
+  "terminal_auditor_sha256": "27604a1aef85c93228c5f4f3fc3aba4bbd892754036ef4d12769e2a94129f6e1",
+  "transaction_id": "d0982f48bba3090a155713c32a73bbc71f7ef79a0f5fa1eccbea4423563102e0",
+  "verdict": "D7_IMPLEMENTATION_VERIFIED_UNRUN"
+}

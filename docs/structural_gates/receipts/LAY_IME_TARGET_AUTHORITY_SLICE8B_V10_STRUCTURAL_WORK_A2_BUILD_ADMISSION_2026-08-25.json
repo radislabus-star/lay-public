@@ -1,0 +1,47 @@
+{
+  "schema": "lay.v10.structural-work-a2-build-admission.v1",
+  "verdict": "BUILD_PASS_RUN_UNCONSUMED_LOADER_ROUTE_REQUIRED",
+  "remote_build": "/home/e/.local/share/lay/provenance/slice8b-v10-structural-work-a2-20260825/build-v1",
+  "executable": {
+    "sha256": "e6c0aa156c1c22fd8eeb8fcf56826e765d6462c0b2464f7d43b244da2f46ce24",
+    "build_id": "0f6f7732d7d13c76b000176a491dbcf7cf7ea717",
+    "size_bytes": 24559256,
+    "mode": "0444"
+  },
+  "build_evidence": {
+    "executable_provenance_sha256": "f97c7ee3bec5c62ca047a962d4d13dd97d7cf811b12b6141a0504352d65bab26",
+    "sha256sums_sha256": "a5bdb321b07c8e61e5e6f24b8e94d87cdb96f2c3a1c85e0c836a760d07407c85",
+    "controller_sha256": "734a1a54bd36d7459f4c7eace3f19dffb4ee4cad04492342f5de2f93e3e8b22a",
+    "fragment_sha256": "dcf1a9e067519ac265d9846fad2bbd0b13eda896c8008d6bfdb74094f998eb25",
+    "cargo_log_sha256": "d139884550b39618af1cb5965d873da9b0a87763ae046d6362d595ca8273d81f",
+    "manifest_pass": true,
+    "files": 14,
+    "writable_objects": 0
+  },
+  "loader": {
+    "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+    "sha256": "8d06f393f4a93bcf9b81145a259524d66a95522a646bf8d7e05b6ffdf2e63dcc",
+    "size_bytes": 240936,
+    "mode": "0755"
+  },
+  "pre_run_probe_audit": {
+    "command_shape": "ld-linux diagnostic-test-elf --list",
+    "elf_loader_invoked": true,
+    "rust_test_harness_invoked": true,
+    "exact_ignored_structural_test_executed": false,
+    "structural_enumeration_executed": false,
+    "required_asset_environment_present": false,
+    "subject_result_created": false,
+    "run_marker_consumed": false,
+    "perf_invoked": false,
+    "pmu_event_opened": false,
+    "latency_observed": false
+  },
+  "markers": [
+    "build.consumed-before-exec",
+    "run.available"
+  ],
+  "runtime_authority_changed": false,
+  "installed_lay_changed": false,
+  "v12_admitted": false
+}

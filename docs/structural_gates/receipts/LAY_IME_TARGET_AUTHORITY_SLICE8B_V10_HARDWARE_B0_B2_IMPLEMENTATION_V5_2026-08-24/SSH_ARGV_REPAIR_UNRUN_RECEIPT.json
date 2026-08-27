@@ -1,0 +1,53 @@
+{
+  "schema": "lay.v10.hardware-ssh-argv-repair-unrun.v1",
+  "task_id": "slice8b-v10-hardware-b0-b2-v3-20260824",
+  "state": "B0_B2_TOOLS_REPAIRED_UNRUN",
+  "verdict": "PASS_WITHIN_SSH_TRANSPORT_REPAIR_SCOPE",
+  "preflight_history": {
+    "v4_verdict": "BLOCKED_BEFORE_CODE",
+    "v4_manifest_sha256": "82a39fdcf91348abc6d182b050299faccd5b62ebb9c40f9946aaf92e4747c56c",
+    "v4_receipt_sha256": "cc7fb6cf852eec937e3c326ccec5bc675535804c62e95bb7d65d1c9650527cbb",
+    "v5_verdict": "READY_TO_IMPLEMENT",
+    "v5_manifest_sha256": "b533c84750a34e0bd482fcb16c48617c812b2ef1ff365344a9f0d2cb8ad6df6f",
+    "v5_receipt_sha256": "8faaaac542a006d460aca369f61198408740ac810bc2177ed8e4fe338520d7e2"
+  },
+  "controller_before": {
+    "size_bytes": 100711,
+    "sha256": "ec34a8f2b4c22a5421a88fc67a7cb2fa0214d4072f577e9340321c48b6ff12f0"
+  },
+  "controller_after": {
+    "path": "scripts/lay-v10-hardware-b0-b2.py",
+    "mode": "0755",
+    "size_bytes": 102113,
+    "sha256": "8f1ba64d087664278a1a6e9627c51eced4d580116847b7a94f23d5113f03a9d3"
+  },
+  "repair": {
+    "transport": "Sequence[str] -> shlex.join -> one OpenSSH remote command argument",
+    "nul_rejected": true,
+    "empty_argv_rejected": true,
+    "shell_true_used": false,
+    "raw_remote_argv_join_used": false,
+    "active_preflight_changed_from_v3_to_v5": true
+  },
+  "checks": {
+    "python_ast": "PASS",
+    "controller_self_check": "PASS",
+    "focused_checks": 12,
+    "ssh_multiline_argv_round_trip": "PASS",
+    "raw_join_negative_control": "PASS",
+    "empty_and_nul_faults": "PASS",
+    "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+    "final_v10_derived_source_sha256": "e0fef5dfd40dbf926fcc1eb612212770a7e5b76ba0e36a87e5149ec61e8e103b"
+  },
+  "executed_after_repair": {
+    "remote_actions": 0,
+    "cargo_build_check_test": 0,
+    "perf_executable_invocations": 0,
+    "pmu_events": 0,
+    "v10_or_proxy_runs": 0
+  },
+  "next_permitted_transition": "B0a immutable input closure retry under V5",
+  "later_gates_admitted": false,
+  "runtime_authority_changed": false,
+  "installed_lay_changed": false
+}

@@ -1,0 +1,1170 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V3_2026-08-24",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "reviewed-b-contract",
+      "kind": "file",
+      "path": "../../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 34188,
+        "sha256": "dc73085f23346bf96002ff4aadd0817c6c6dcffd3bf7529f01058ca394551be8"
+      }
+    },
+    {
+      "id": "reviewed-structural-contract-v5",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_CONTRACT_V5_2026-08-24.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 8107,
+        "sha256": "2e0028659d51dad7a2f708f9a8fd71a0c62f9939dcaadc2977ac8cdf36a55845"
+      }
+    },
+    {
+      "id": "reviewed-sequence-skeleton-v3",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_ROUTE_SKELETON_V3_2026-08-24.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 4158,
+        "sha256": "6efb025591460b6c07ef78a74d3bf08be86f86227b997140e19da14343608721"
+      }
+    },
+    {
+      "id": "correction-v2-global-pass",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_SEQUENCING_CORRECTION_V2_2026-08-24/global-route-skeleton-v3-receipt.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 11381,
+        "sha256": "87d2e89974dd5742a1327d0ff673385ff82ab9c1a476d5f92ac13cec78667e67"
+      }
+    },
+    {
+      "id": "correction-v1-merged-owner-veto",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_SEQUENCING_CORRECTION_V1_2026-08-24/route-schedule-freezer-receipt.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 8461,
+        "sha256": "9742f8faa2b8facb4e577259439793f9592d61e772aa67dbd9a2f10b536e466d"
+      }
+    },
+    {
+      "id": "p0-provenance",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/manifests/PROVENANCE.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 2880,
+        "sha256": "af26f90714460529c5778fb415a3c0aa7eb83ef1f51fdc97230417ac8f5c9faf"
+      }
+    },
+    {
+      "id": "p0-sha-manifest",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/manifests/SHA256SUMS",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 1838,
+        "sha256": "194ff726f8ce57936fe4148e886c20491c6763ee70dc30b0c80e7c2ad705194e"
+      }
+    },
+    {
+      "id": "p0-correction",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f-correction-v1/CORRECTION.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 2459,
+        "sha256": "74f66275a6e1f00b4dedea16ea2b62ab1ad2f4fffa6fada012bca19cc7a1ac90"
+      }
+    },
+    {
+      "id": "p0-correction-sha-manifest",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f-correction-v1/SHA256SUMS",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 1071,
+        "sha256": "7dd66ed4931d610c4603fecdb267784d6d9012f77da26b65c7f5303664d0bc5d"
+      }
+    },
+    {
+      "id": "historical-v10-source",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 91518,
+        "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c"
+      }
+    },
+    {
+      "id": "archived-cargo-toml",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/Cargo.toml",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 2399,
+        "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b"
+      }
+    },
+    {
+      "id": "archived-cargo-lock",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/Cargo.lock",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 70770,
+        "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"
+      }
+    },
+    {
+      "id": "historical-v10-elf",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/lay-8b3af2179d6f9249",
+      "expect": {
+        "mode": "0555",
+        "size_bytes": 20457336,
+        "sha256": "1e83ef76df68cd2f0238d1334eb4049f9063608292e72e5454a09f21a4afacc1"
+      }
+    },
+    {
+      "id": "historical-v10-sidecar",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 3689884,
+        "sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd"
+      }
+    },
+    {
+      "id": "fixed-v7-denominator",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+      "expect": {
+        "mode": "0400",
+        "size_bytes": 1606189,
+        "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"
+      }
+    },
+    {
+      "id": "historical-v10-result",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/slice8b-v10-exact-v13-typed-peak-abc.json",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 5826,
+        "sha256": "08cccb3c9c63a24e9dc691958fde319de2a94b762fcb9f703ac342fcb72174e1"
+      }
+    },
+    {
+      "id": "cargo-guard",
+      "kind": "file",
+      "path": "../../../scripts/cargo-guard.sh",
+      "expect": {
+        "mode": "0775",
+        "size_bytes": 2534,
+        "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"
+      }
+    },
+    {
+      "id": "active-v11-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 124127,
+        "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"
+      }
+    },
+    {
+      "id": "owning-architecture-before-b0-b2",
+      "kind": "file",
+      "path": "../../ime-target-authority-slice8-lexical-readout-2026-08-23.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 98974,
+        "sha256": "82f7057cdefce100b62d21f05148ef2c318e61f82ae508e78a2f0f5950662055"
+      }
+    },
+    {
+      "id": "blocked-preflight-v1-manifest",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V1_2026-08-24.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 37791,
+        "sha256": "c04ee81fd2e5c65faf48e18e533cdff3f8cb35fe3cb19b4116c4595c4115e515"
+      }
+    },
+    {
+      "id": "blocked-preflight-v1-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_PREFLIGHT_V1_2026-08-24.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 12922,
+        "sha256": "740bd6732a13d72e6aa07829eb841b18e873ec236ca1fbc3b863bc093a628b43"
+      }
+    },
+    {
+      "id": "superseded-preflight-v2-manifest",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V2_2026-08-24.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 42982,
+        "sha256": "b8ddd53c72a4a37580211b97a7afbf5689118c8f16e8c908568fa7c662d2a908"
+      }
+    },
+    {
+      "id": "superseded-preflight-v2-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_PREFLIGHT_V2_2026-08-24.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 10762,
+        "sha256": "8fba0865d3825cdf4e7ecd372db32d7d494ddf54ca0b0a50b9f56a27454eff21"
+      }
+    },
+    {
+      "id": "perf-audit-correction-v3",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_PERF_AUDIT_CORRECTION_V3_2026-08-24/PERF_AUDIT_CORRECTION_V3.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 1532,
+        "sha256": "511a5671d5acd37346546d95ecf411945338b3c1184817a843f950a0ec665bcc"
+      }
+    },
+    {
+      "id": "perf-audit-correction-v3-original-worksheet",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_PERF_AUDIT_CORRECTION_V3_2026-08-24.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 3722,
+        "sha256": "85aa3ba29f4ace024c98f21c3ebaa5e6ff0a3d77a930527de93f6e7cf066eeeb"
+      }
+    },
+    {
+      "id": "perf-audit-correction-v3-global-skeleton",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_ROUTE_SKELETON_V4_2026-08-24.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2868,
+        "sha256": "e6c5ea44b3a4bb9ace01489eb03118be5034ffb90242b83bd13efcdc26d31711"
+      }
+    },
+    {
+      "id": "perf-audit-correction-v3-repair-worksheet",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_PERF_AUDIT_CORRECTION_V3_ROUTE_REPAIR_V1_2026-08-24.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 4068,
+        "sha256": "5bc1d4dd098d1c733055bc960b06b78b66b9c19c4c450c103655842773b03a7d"
+      }
+    },
+    {
+      "id": "perf-audit-correction-v3-owner-conflict-veto",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_PERF_AUDIT_CORRECTION_V3_2026-08-24/route-perf-audit-correction-v3-receipt-v2-veto.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 11536,
+        "sha256": "ce9dd3d223082e9234811b25512f0f0fd7b79617cd3982dca79f12bffc209233"
+      }
+    },
+    {
+      "id": "perf-audit-correction-v3-repair-pass",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_PERF_AUDIT_CORRECTION_V3_2026-08-24/route-perf-audit-correction-v3-repair-v1-receipt.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 12491,
+        "sha256": "050491207cc762fa5fe2e2fc39aec4ca7d67b1dafad1c7cc672c71b2d7e879b1"
+      }
+    },
+    {
+      "id": "perf-audit-correction-v3-global-pass",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_PERF_AUDIT_CORRECTION_V3_2026-08-24/global-route-skeleton-v4-receipt-v2.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 9634,
+        "sha256": "d7bcb638f41793cd76422b0a985803bab51f2b458f3341370215f04a83664995"
+      }
+    },
+    {
+      "id": "perf-audit-correction-v3-local-zero-byte-attempt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_PERF_AUDIT_CORRECTION_V3_2026-08-24/route-perf-audit-correction-v3-receipt.failed-attempt-zero-byte",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "perf-audit-correction-v3-global-zero-byte-attempt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_PERF_AUDIT_CORRECTION_V3_2026-08-24/global-route-skeleton-v4-receipt.failed-attempt-zero-byte",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "source_checks": [
+    {
+      "id": "historical-source-pinned-before-test-only-patch",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "runtime_deployment_or_restart",
+          "regex": "(?:systemctl|gnome-extensions|lay-runtime-control|ibus-daemon)"
+        },
+        {
+          "effect": "freezer_under_perf_or_pmu",
+          "regex": "(?:perf_event_open|rdpmc|_rdtsc|Command::new\\(\\s*\"perf\")"
+        },
+        {
+          "effect": "package_rebuild_or_install",
+          "regex": "(?:\\.local/bin/lay|\\.local/lib/lay|install-release)"
+        },
+        {
+          "effect": "v12_implementation_push_or_deployment",
+          "regex": "(?:ExactFusedBandTransition|V12)"
+        }
+      ]
+    },
+    {
+      "id": "cargo-guard-pinned-before-remote-copy",
+      "path": "../../../scripts/cargo-guard.sh",
+      "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:ssh|scp|rsync|curl|wget|https?://)"
+        },
+        {
+          "effect": "perf_system_wide_or_subject_measurement",
+          "regex": "(?:perf|perf_event_open)"
+        },
+        {
+          "effect": "perf_invocation_before_accepted_b1",
+          "regex": "(?:\\bperf\\b|perf_event_open)"
+        },
+        {
+          "effect": "runtime_deployment_or_restart",
+          "regex": "(?:systemctl|lay-runtime-control|ibus-daemon)"
+        },
+        {
+          "effect": "authority_flip",
+          "regex": "(?:runtime_authority_changed|authority_ready)\\s*[:=]\\s*true"
+        },
+        {
+          "effect": "b3_historical_measurement",
+          "regex": "(?:B3|historical_v10_measurement)"
+        },
+        {
+          "effect": "event_substitution_or_multiplexing",
+          "regex": "(?:event_substitut|multiplex|time_running|time_enabled)"
+        },
+        {
+          "effect": "historical_v10_or_v13_search_execution",
+          "regex": "(?:v10_full_v13_abc_proof|LAY_V10_SIDECAR|LAY_V13_PACKAGE|historical_v10)"
+        },
+        {
+          "effect": "host_policy_or_topology_tuning",
+          "regex": "(?:cpupower|scaling_governor|energy_performance_preference|no_turbo|intel_pstate|min_perf_pct|max_perf_pct|irqbalance)"
+        },
+        {
+          "effect": "latency_gate_relaxation",
+          "regex": "(?:latency_gate_relax|relax_latency|increase_latency_budget)"
+        },
+        {
+          "effect": "local_heavy_build_or_proof",
+          "regex": "(?:/home/ubu/projects/.*/target|local_heavy_build|cargo\\s+(?:build|test|check).*/home/ubu)"
+        },
+        {
+          "effect": "mutate_installed_v13",
+          "regex": "(?:LAY-L2-RU-FULL-v13\\.bin).{0,120}(?:cp|mv|rm|chmod|install|write)"
+        },
+        {
+          "effect": "mutate_p0_or_correction",
+          "regex": "(?:slice8b-v10-f6178f).{0,120}(?:cp|mv|rm|chmod|install|write)"
+        },
+        {
+          "effect": "production_prefix_or_hot_loop_edit",
+          "regex": "(?:production_prefix_edit|hot_loop_hook|perf_event_open|rdpmc|_rdtsc)"
+        },
+        {
+          "effect": "proxy_measurement_b5_b6",
+          "regex": "(?:B5|B6|proxy_measurement)"
+        },
+        {
+          "effect": "proxy_semantic_parity_execution",
+          "regex": "(?:proxy_semantic_parity|semantic_parity_execution)"
+        },
+        {
+          "effect": "quality_denominator_change",
+          "regex": "(?:quality_denominator_change|replace_denominator)"
+        },
+        {
+          "effect": "retry_after_build_or_freezer_failure",
+          "regex": "(?:retry_after|build_retry|freezer_retry|cargo_retry)"
+        },
+        {
+          "effect": "schedule_target_leak",
+          "regex": "(?:target_surface|target_lemma|target_form|target_derived)"
+        },
+        {
+          "effect": "second_or_adaptive_diagnostic_build",
+          "regex": "(?:second_build|adaptive_build|build_variant|build_again)"
+        },
+        {
+          "effect": "synthetic_fixture",
+          "regex": "(?:synthetic_fixture|generate_fixture|fixture_writer)"
+        }
+      ]
+    },
+    {
+      "id": "active-v11-remains-outside-proxy-build",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "generated_traffic",
+          "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"
+        },
+        {
+          "effect": "runtime_deployment_or_restart",
+          "regex": "(?:systemctl|gnome-extensions|lay-runtime-control|ibus-daemon)"
+        },
+        {
+          "effect": "freezer_under_perf_or_pmu",
+          "regex": "(?:perf_event_open|rdpmc|_rdtsc|Command::new\\(\\s*\"perf\")"
+        }
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "implement-b0-b2-controller-and-test-only-patch",
+        "kind": "source_edit"
+      },
+      {
+        "id": "stage-and-publish-b0a-input-closure",
+        "kind": "remote_filesystem_write_and_rename"
+      },
+      {
+        "id": "run-one-guarded-diagnostic-build",
+        "kind": "remote_release_build"
+      },
+      {
+        "id": "seal-diagnostic-executable-provenance",
+        "kind": "remote_evidence_write_and_rename"
+      },
+      {
+        "id": "run-one-unmeasured-schedule-freezer",
+        "kind": "remote_diagnostic_execution"
+      },
+      {
+        "id": "validate-and-publish-b0b-schedule",
+        "kind": "remote_filesystem_write_and_rename"
+      },
+      {
+        "id": "capture-b1-environment",
+        "kind": "remote_observation_and_evidence_write"
+      },
+      {
+        "id": "run-benign-b2-capability-probes",
+        "kind": "remote_pmu_capability_probe"
+      },
+      {
+        "id": "record-b0-b2-result",
+        "kind": "documentation_edit"
+      }
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "mutate_p0_or_correction",
+      "mutate_installed_v13",
+      "local_heavy_build_or_proof",
+      "second_or_adaptive_diagnostic_build",
+      "retry_after_build_or_freezer_failure",
+      "production_prefix_or_hot_loop_edit",
+      "schedule_target_leak",
+      "freezer_under_perf_or_pmu",
+      "historical_v10_or_v13_search_execution",
+      "b3_historical_measurement",
+      "proxy_semantic_parity_execution",
+      "proxy_measurement_b5_b6",
+      "perf_system_wide_or_subject_measurement",
+      "perf_invocation_before_accepted_b1",
+      "event_substitution_or_multiplexing",
+      "host_policy_or_topology_tuning",
+      "runtime_deployment_or_restart",
+      "package_rebuild_or_install",
+      "authority_flip",
+      "quality_denominator_change",
+      "latency_gate_relaxation",
+      "v12_implementation_push_or_deployment"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "p0-provenance-file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/manifests/PROVENANCE.json",
+      "baseline_check_id": "p0-provenance",
+      "policy": "read_only_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_replace"
+    },
+    {
+      "id": "p0-manifest-file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/manifests/SHA256SUMS",
+      "baseline_check_id": "p0-sha-manifest",
+      "policy": "read_only_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_replace"
+    },
+    {
+      "id": "p0-correction-file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f-correction-v1/CORRECTION.json",
+      "baseline_check_id": "p0-correction",
+      "policy": "read_only_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_replace"
+    },
+    {
+      "id": "historical-v10-source-file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "baseline_check_id": "historical-v10-source",
+      "policy": "read_only_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_replace"
+    },
+    {
+      "id": "historical-v10-elf-file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/lay-8b3af2179d6f9249",
+      "baseline_check_id": "historical-v10-elf",
+      "policy": "read_only_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_replace"
+    },
+    {
+      "id": "historical-sidecar-file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+      "baseline_check_id": "historical-v10-sidecar",
+      "policy": "read_only_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_replace"
+    },
+    {
+      "id": "fixed-v7-file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+      "baseline_check_id": "fixed-v7-denominator",
+      "policy": "read_only_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_replace"
+    },
+    {
+      "id": "historical-result-file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/slice8b-v10-exact-v13-typed-peak-abc.json",
+      "baseline_check_id": "historical-v10-result",
+      "policy": "read_only_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_replace"
+    },
+    {
+      "id": "active-v11-file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "baseline_check_id": "active-v11-source",
+      "policy": "read_only_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_modify_for_b"
+    },
+    {
+      "id": "reviewed-contract-file",
+      "path": "../../ime-target-authority-slice8b-v10-hardware-characterization-contract-2026-08-24.md",
+      "baseline_check_id": "reviewed-b-contract",
+      "policy": "reviewed_input_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "new_contract_revision_required_for_change"
+    },
+    {
+      "id": "correction-v1-veto-file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_SEQUENCING_CORRECTION_V1_2026-08-24/route-schedule-freezer-receipt.json",
+      "baseline_check_id": "correction-v1-merged-owner-veto",
+      "policy": "historical_negative_evidence_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_reclassify_or_replace"
+    },
+    {
+      "id": "blocked-v1-manifest-file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V1_2026-08-24.json",
+      "baseline_check_id": "blocked-preflight-v1-manifest",
+      "policy": "failed_revision_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_overwrite"
+    },
+    {
+      "id": "blocked-v1-receipt-file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_PREFLIGHT_V1_2026-08-24.json",
+      "baseline_check_id": "blocked-preflight-v1-receipt",
+      "policy": "negative_evidence_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_reclassify_or_replace"
+    },
+    {
+      "id": "superseded-v2-manifest-file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V2_2026-08-24.json",
+      "baseline_check_id": "superseded-preflight-v2-manifest",
+      "policy": "superseded_revision_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_overwrite"
+    },
+    {
+      "id": "superseded-v2-receipt-file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_PREFLIGHT_V2_2026-08-24.json",
+      "baseline_check_id": "superseded-preflight-v2-receipt",
+      "policy": "superseded_admission_evidence_exact_bytes",
+      "cursor_policy": "not_applicable",
+      "rollback_policy": "never_reclassify_or_replace"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "b0a-frozen-input-identity",
+      "producer": "P0 and correction-v1 sealed files plus remote V13 package /home/e/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin",
+      "consumer": "lay.v10.hardware-input-closure.v2",
+      "comparison": "all local manifest checks pass; remote package is mode 0644, 140556462 bytes and SHA-256 cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b before a read-only B-specific copy is atomically published",
+      "test_id": "b0a-input-closure-parity"
+    },
+    {
+      "id": "remote-build-host-identity",
+      "producer": "host e-MEGA-MINI-M1-13th with machine-id digest 5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+      "consumer": "B0a, diagnostic build, freezer, B0b, B1 and B2",
+      "comparison": "hostname and machine-id digest match before any remote mutation; cargo 1.97.1 c980f4866, rustc 1.97.1 8bab26f4, LLVM 22.1.6 and x86_64 host match before the one-build marker is consumed",
+      "test_id": "remote-host-toolchain-parity"
+    },
+    {
+      "id": "cargo-guard-local-to-remote",
+      "producer": "local scripts/cargo-guard.sh mode 0775 SHA-256 a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe",
+      "consumer": "sealed isolated remote diagnostic build tree",
+      "comparison": "mode and SHA-256 exact; 12884901888-byte target budget; build command executed once through this guard with CARGO_INCREMENTAL=0",
+      "test_id": "remote-cargo-guard-parity"
+    },
+    {
+      "id": "diagnostic-production-prefix",
+      "producer": "historical V10 source lines 1 through 1148, exactly 39047 bytes, SHA-256 ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+      "consumer": "one V10-derived diagnostic executor proxy source",
+      "comparison": "byte identity for the complete production prefix; all additions occur after line 1148 inside cfg(test); no hot-loop counter, hook, feature or branch",
+      "test_id": "production-prefix-and-test-module-parity"
+    },
+    {
+      "id": "one-build-executable-identity",
+      "producer": "one guarded remote diagnostic build after accepted B0a",
+      "consumer": "schedule-freezer and B0b executable binding",
+      "comparison": "one-build marker, source inventory, patch SHA-256, final source SHA-256, executable SHA-256 and Build ID are sealed once; no replacement executable or second variant is accepted",
+      "test_id": "one-build-marker-and-executable-parity"
+    },
+    {
+      "id": "freezer-semantic-donor-identity",
+      "producer": "exact recovered parse_v7_cases, Phase7dCertificateOracle::new and retrieval_lanes over V7 SHA-256 33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+      "consumer": "staged lay.v10.hardware-query-schedule.v1 payload",
+      "comparison": "382 ordered ordinals and composite identities with damaged-surface and retrieval-lane digests, B5 ordinal and fixed B6 partition; no target_surface or target-derived field",
+      "test_id": "freezer-schedule-parity-and-target-absence"
+    },
+    {
+      "id": "b0b-schedule-binding",
+      "producer": "one staged freezer payload and freezer receipt",
+      "consumer": "immutable B0b schedule closure",
+      "comparison": "B0a closure SHA, V7 SHA, production-prefix SHA and one executable SHA/Build ID match; schedule contains exactly 382 ordered unique entries and is published by one final rename with zero post-rename mutations",
+      "test_id": "b0b-publication-and-identity-parity"
+    },
+    {
+      "id": "b2-benign-workload-identity",
+      "producer": "remote /usr/bin/yes mode 0755, 31112 bytes, SHA-256 ee431b97fb62f59ee94fa698dbc98971001bbb1cbd9c5e32ce4ab4c5530924d8 with output redirected to /dev/null",
+      "consumer": "one selected P-core capability probe and one fixed 20-CPU capability probe",
+      "comparison": "workload path, bytes, mode and SHA-256 are rechecked before use; taskset SHA-256 63e52c4b99a688ccd7bab6edbc6df2af1acad124eb852adcb4d20043d28eb2d3 and perf wrapper SHA-256 2d0953085bf720a25efbe24f853e97d27b1f12f18a398255ff82cbafde254dad are recorded; no V10, V13, proxy or quality fixture executes",
+      "test_id": "b2-benign-workload-parity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "owner-sequence-is-linear",
+      "statement": "B0a cannot build or execute; build cannot run freezer or publish schedule; freezer cannot build or publish; B0b cannot build or execute; B1 starts only after B0b and B2 only after B1",
+      "test_id": "owner-capability-separation"
+    },
+    {
+      "id": "one-build-and-one-freezer",
+      "statement": "The production one-build and one-freezer markers are created before execution and remain consumed after success or failure; a defect requires paper analysis and a new preflight revision",
+      "test_id": "one-build-marker-and-executable-parity"
+    },
+    {
+      "id": "proxy-is-not-historical-v10",
+      "statement": "Full build-time source closure remains WATCH and no new executable or PMU result is called historical V10",
+      "test_id": "full-source-closure-watch-label"
+    },
+    {
+      "id": "production-search-is-byte-immutable",
+      "statement": "The exact 39047-byte production prefix remains byte-identical and no diagnostic hook enters the production search or hot loop",
+      "test_id": "production-prefix-and-test-module-parity"
+    },
+    {
+      "id": "freezer-is-unmeasured-and-target-blind",
+      "statement": "The freezer executes without perf, PMU, search enumeration or latency observation and publishes no target or target-derived schedule field",
+      "test_id": "freezer-schedule-parity-and-target-absence"
+    },
+    {
+      "id": "publications-are-final-byte-atomic",
+      "statement": "B0a, executable provenance and B0b are fully populated, hashed, validated and read-only before one same-filesystem final rename with zero final-path mutation",
+      "test_id": "atomic-publication-faults"
+    },
+    {
+      "id": "b1-is-observation-only",
+      "statement": "B1 records topology, policy, pressure, thermal and process state but never tunes governor, EPP, turbo, P-state, SMT, affinity, IRQ or online CPUs",
+      "test_id": "b1-environment-blocking-fault"
+    },
+    {
+      "id": "b2-is-capability-only",
+      "statement": "B2 uses only the fixed benign workload, command-task scoped counters and the preregistered groups; it performs no V10, proxy, search, quality or latency measurement",
+      "test_id": "b2-benign-capability-boundary"
+    },
+    {
+      "id": "b2-fails-on-counter-degradation",
+      "statement": "Unsupported, uncounted, scaled, multiplexed, substituted or incomplete hybrid-PMU events and time_running not equal to time_enabled terminate as BLOCKED_PMU",
+      "test_id": "b2-pmu-capability-fault"
+    },
+    {
+      "id": "runtime-and-authority-unchanged",
+      "statement": "Installed Lay, packages, daemon, IBus, extension and runtime authority are not changed locally or remotely",
+      "test_id": "runtime-noninterference"
+    },
+    {
+      "id": "b0-b2-does-not-admit-later-gates",
+      "statement": "A successful B2 receipt admits neither B3, proxy parity, B5, B6, predictive modeling, V12, push nor deployment",
+      "test_id": "later-gate-absence"
+    },
+    {
+      "id": "evidence-and-paper-stay-together",
+      "statement": "Every B0 through B2 result records measured facts, untested scope, receipt path and unchanged runtime authority in the owning architecture document",
+      "test_id": "owning-document-result"
+    },
+    {
+      "id": "failed-preflight-revision-is-preserved",
+      "statement": "V1 manifest and BLOCKED_BEFORE_CODE receipt plus V2 manifest and READY_TO_IMPLEMENT receipt remain byte-identical; V2 execution authority is superseded only by the corrected audit baseline and independently named V3 preflight",
+      "test_id": "preflight-revision-provenance"
+    },
+    {
+      "id": "pre-b1-perf-ledger-is-closed",
+      "statement": "The frozen pre-B2 audit contains exactly two perf executable invocations and zero PMU measurements; controller implementation, B0a, diagnostic build, freezer, B0b and B1 may not invoke perf, and only an accepted B1 transition may admit the benign B2 launcher",
+      "test_id": "pre-b1-perf-invocation-boundary"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "installed-lay-stable-projection",
+      "source": "installed local Lay and authority-bearing package projection before any B0 implementation action",
+      "comparison": "exact_stable_projection",
+      "reason": "B0 through B2 are remote research preparation and capability work with no product authority",
+      "baseline": "Lay 1.0.43, active V11 source SHA-256 d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b and current installed package identities",
+      "candidate": "same installed bytes, package identities, authority configuration and process executable paths after every terminal state",
+      "stable_fields": [
+        "installed_version",
+        "installed_binary_sha256",
+        "installed_package_sha256",
+        "runtime_authority_configuration",
+        "process_executable_paths"
+      ],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": [
+        "process_ids",
+        "process_uptime",
+        "log_offsets",
+        "desktop_session_activity"
+      ],
+      "test_id": "runtime-noninterference"
+    },
+    {
+      "id": "b1-to-b2-environment-projection",
+      "source": "accepted B1 environment snapshot on e-MEGA-MINI-M1-13th",
+      "comparison": "exact_stable_projection",
+      "reason": "B2 capability evidence is meaningful only under the frozen host identity, topology and policy",
+      "baseline": "first accepted B1 topology and policy snapshot",
+      "candidate": "pre-probe and post-probe B2 snapshots",
+      "stable_fields": [
+        "hostname_and_machine_id_digest",
+        "boot_id",
+        "kernel_and_microcode",
+        "online_cpu_set",
+        "cpu_core_thread_type_mapping",
+        "smt_and_numa_topology",
+        "cache_topology",
+        "governor_epp_turbo_and_pstate_policy"
+      ],
+      "expected_to_change_fields": [
+        "wall_clock",
+        "temperature",
+        "load_average",
+        "pressure_samples",
+        "interrupt_counters"
+      ],
+      "observed_not_compared_fields": [
+        "unrelated_process_ids",
+        "filesystem_cache_residency"
+      ],
+      "test_id": "b1-b2-environment-parity"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PERF_AUDIT_CORRECTION_V3_REVIEWED_NO_EXECUTION_RIGHT",
+    "steps": [
+      {
+        "id": "implement-b0-b2-route",
+        "from": "PERF_AUDIT_CORRECTION_V3_REVIEWED_NO_EXECUTION_RIGHT",
+        "to": "B0_B2_TOOLS_IMPLEMENTED_UNRUN",
+        "mutates": true,
+        "failure_state": "IMPLEMENTATION_REJECTED_NO_REMOTE_EXECUTION",
+        "cleanup": "retain the failed source diff and preflight-bound test evidence; do not create a remote output root, execute Cargo or invoke perf",
+        "preserves": [
+          "p0-provenance-file",
+          "p0-manifest-file",
+          "p0-correction-file",
+          "historical-v10-source-file",
+          "historical-v10-elf-file",
+          "historical-sidecar-file",
+          "fixed-v7-file",
+          "historical-result-file",
+          "active-v11-file",
+          "reviewed-contract-file",
+          "correction-v1-veto-file",
+          "blocked-v1-manifest-file",
+          "blocked-v1-receipt-file",
+          "superseded-v2-manifest-file",
+          "superseded-v2-receipt-file"
+        ],
+        "test_id": "implementation-route-fault"
+      },
+      {
+        "id": "publish-b0a-input-closure",
+        "from": "B0_B2_TOOLS_IMPLEMENTED_UNRUN",
+        "to": "B0A_PASS_BUILD_UNUSED",
+        "mutates": true,
+        "failure_state": "B0A_FAILED_BUILD_UNUSED",
+        "cleanup": "retain mismatch evidence, remove only unpublished B0a staging, leave the build marker unused and stop before Cargo",
+        "preserves": [
+          "p0-provenance-file",
+          "p0-manifest-file",
+          "p0-correction-file",
+          "historical-v10-source-file",
+          "historical-v10-elf-file",
+          "historical-sidecar-file",
+          "fixed-v7-file",
+          "historical-result-file",
+          "active-v11-file",
+          "reviewed-contract-file",
+          "correction-v1-veto-file",
+          "blocked-v1-manifest-file",
+          "blocked-v1-receipt-file",
+          "superseded-v2-manifest-file",
+          "superseded-v2-receipt-file"
+        ],
+        "test_id": "b0a-publication-fault"
+      },
+      {
+        "id": "consume-one-build-and-seal-executable",
+        "from": "B0A_PASS_BUILD_UNUSED",
+        "to": "DIAGNOSTIC_EXECUTABLE_SEALED_BUILD_CONSUMED",
+        "mutates": true,
+        "failure_state": "DIAGNOSTIC_BUILD_FAILED_NO_RETRY",
+        "cleanup": "preserve the consumed one-build marker, complete Cargo log and failed staging identity; never rerun or replace the executable under this preflight",
+        "preserves": [
+          "p0-provenance-file",
+          "p0-manifest-file",
+          "p0-correction-file",
+          "historical-v10-source-file",
+          "historical-v10-elf-file",
+          "historical-sidecar-file",
+          "fixed-v7-file",
+          "historical-result-file",
+          "active-v11-file",
+          "reviewed-contract-file",
+          "correction-v1-veto-file",
+          "blocked-v1-manifest-file",
+          "blocked-v1-receipt-file",
+          "superseded-v2-manifest-file",
+          "superseded-v2-receipt-file"
+        ],
+        "test_id": "diagnostic-build-fault"
+      },
+      {
+        "id": "consume-one-unmeasured-freezer",
+        "from": "DIAGNOSTIC_EXECUTABLE_SEALED_BUILD_CONSUMED",
+        "to": "FREEZER_OUTPUT_STAGED_EXECUTABLE_UNCHANGED",
+        "mutates": true,
+        "failure_state": "FREEZER_FAILED_NO_RETRY_OR_REBUILD",
+        "cleanup": "preserve the consumed freezer marker, sealed executable, stdout stderr and staged mismatch; do not rebuild or rerun under this preflight",
+        "preserves": [
+          "p0-provenance-file",
+          "p0-manifest-file",
+          "p0-correction-file",
+          "historical-v10-source-file",
+          "historical-v10-elf-file",
+          "historical-sidecar-file",
+          "fixed-v7-file",
+          "historical-result-file",
+          "active-v11-file",
+          "reviewed-contract-file",
+          "correction-v1-veto-file",
+          "blocked-v1-manifest-file",
+          "blocked-v1-receipt-file",
+          "superseded-v2-manifest-file",
+          "superseded-v2-receipt-file"
+        ],
+        "test_id": "schedule-freezer-fault"
+      },
+      {
+        "id": "validate-and-publish-b0b",
+        "from": "FREEZER_OUTPUT_STAGED_EXECUTABLE_UNCHANGED",
+        "to": "B0B_PASS_SCHEDULE_SEALED",
+        "mutates": true,
+        "failure_state": "B0B_FAILED_NO_RETRY_OR_REBUILD",
+        "cleanup": "retain B0b validation evidence, remove only unpublished B0b staging and stop without executing build or freezer again",
+        "preserves": [
+          "p0-provenance-file",
+          "p0-manifest-file",
+          "p0-correction-file",
+          "historical-v10-source-file",
+          "historical-v10-elf-file",
+          "historical-sidecar-file",
+          "fixed-v7-file",
+          "historical-result-file",
+          "active-v11-file",
+          "reviewed-contract-file",
+          "correction-v1-veto-file",
+          "blocked-v1-manifest-file",
+          "blocked-v1-receipt-file",
+          "superseded-v2-manifest-file",
+          "superseded-v2-receipt-file"
+        ],
+        "test_id": "b0b-publication-fault"
+      },
+      {
+        "id": "capture-and-freeze-b1",
+        "from": "B0B_PASS_SCHEDULE_SEALED",
+        "to": "B1_PASS_ENVIRONMENT_FROZEN",
+        "mutates": true,
+        "failure_state": "BLOCKED_ENVIRONMENT",
+        "cleanup": "publish the blocking observation receipt, make no host policy change and stop before perf; waiting is bounded to 120 seconds",
+        "preserves": [
+          "p0-provenance-file",
+          "p0-manifest-file",
+          "p0-correction-file",
+          "historical-v10-source-file",
+          "historical-v10-elf-file",
+          "historical-sidecar-file",
+          "fixed-v7-file",
+          "historical-result-file",
+          "active-v11-file",
+          "reviewed-contract-file",
+          "correction-v1-veto-file",
+          "blocked-v1-manifest-file",
+          "blocked-v1-receipt-file",
+          "superseded-v2-manifest-file",
+          "superseded-v2-receipt-file"
+        ],
+        "test_id": "b1-environment-blocking-fault"
+      },
+      {
+        "id": "run-benign-b2-capability",
+        "from": "B1_PASS_ENVIRONMENT_FROZEN",
+        "to": "B0_B2_CAPABILITY_READY_LATER_GATES_NOT_ADMITTED",
+        "mutates": true,
+        "failure_state": "BLOCKED_PMU",
+        "cleanup": "publish the raw benign capability output and blocking receipt, stop all admitted benign subjects and do not run B3, proxy parity, B5 or B6",
+        "preserves": [
+          "p0-provenance-file",
+          "p0-manifest-file",
+          "p0-correction-file",
+          "historical-v10-source-file",
+          "historical-v10-elf-file",
+          "historical-sidecar-file",
+          "fixed-v7-file",
+          "historical-result-file",
+          "active-v11-file",
+          "reviewed-contract-file",
+          "correction-v1-veto-file",
+          "blocked-v1-manifest-file",
+          "blocked-v1-receipt-file",
+          "superseded-v2-manifest-file",
+          "superseded-v2-receipt-file"
+        ],
+        "test_id": "b2-pmu-capability-fault"
+      }
+    ],
+    "terminal_states": [
+      "B0_B2_CAPABILITY_READY_LATER_GATES_NOT_ADMITTED",
+      "IMPLEMENTATION_REJECTED_NO_REMOTE_EXECUTION",
+      "B0A_FAILED_BUILD_UNUSED",
+      "DIAGNOSTIC_BUILD_FAILED_NO_RETRY",
+      "FREEZER_FAILED_NO_RETRY_OR_REBUILD",
+      "B0B_FAILED_NO_RETRY_OR_REBUILD",
+      "BLOCKED_ENVIRONMENT",
+      "BLOCKED_PMU"
+    ]
+  },
+  "tests": [
+    {
+      "id": "implementation-route-fault",
+      "kind": "fault_injection",
+      "expected": "a missing owner binding, undeclared write path or forbidden route leaves no remote output root and cannot invoke Cargo, perf or a subject"
+    },
+    {
+      "id": "b0a-input-closure-parity",
+      "kind": "parity",
+      "expected": "all P0 and correction manifests verify; every copied input records source and destination path, mode, bytes and SHA-256; remote V13 is copied to a read-only B-specific closure and active installed paths remain unchanged"
+    },
+    {
+      "id": "b0a-publication-fault",
+      "kind": "fault_injection",
+      "expected": "missing input, wrong byte, mode, Build ID, host, output collision or package SHA leaves no B0a final path, removes only unpublished staging and leaves the one-build marker unused"
+    },
+    {
+      "id": "remote-host-toolchain-parity",
+      "kind": "parity",
+      "expected": "hostname and machine-id digest match; Cargo, rustc, LLVM, x86_64 target, release profile, empty RUSTFLAGS and default features match before build admission"
+    },
+    {
+      "id": "remote-cargo-guard-parity",
+      "kind": "parity",
+      "expected": "the staged guard is mode 0775 and SHA-256 a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe; status passes and free space exceeds the 12 GiB target budget plus isolated artifact headroom before consuming the build marker"
+    },
+    {
+      "id": "production-prefix-and-test-module-parity",
+      "kind": "parity",
+      "expected": "lines 1 through 1148 are exactly 39047 bytes with SHA-256 ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26 and all additions are cfg(test)-only with no production hook"
+    },
+    {
+      "id": "diagnostic-build-fault",
+      "kind": "fault_injection",
+      "expected": "pre-Cargo fault injection over copies of real sealed inputs proves the one-build marker remains consumed and no final executable appears; any real Cargo or identity failure retains logs and forbids retry under V1"
+    },
+    {
+      "id": "one-build-marker-and-executable-parity",
+      "kind": "parity",
+      "expected": "exactly one cargo-guard process group produces one executable identity containing freezer, parity, B5 and B6 test-only entrypoints; source inventory, patch, final source, ELF SHA-256 and Build ID are sealed before publication"
+    },
+    {
+      "id": "schedule-freezer-fault",
+      "kind": "fault_injection",
+      "expected": "a pre-exec or staged-output fault leaves no B0b schedule, preserves the consumed freezer marker and executable identity, and forbids freezer retry or rebuild under V1"
+    },
+    {
+      "id": "freezer-schedule-parity-and-target-absence",
+      "kind": "parity",
+      "expected": "one unmeasured run emits 382 ordered unique composite identities and exact retrieval-lane digests with fixed B5 and B6 assignments; schema and recursive key scan find no target surface or target-derived value"
+    },
+    {
+      "id": "b0b-publication-fault",
+      "kind": "fault_injection",
+      "expected": "wrong count, duplicate identity, digest mismatch, target leak, wrong executable identity or destination collision leaves no B0b final path and cannot rerun build or freezer"
+    },
+    {
+      "id": "b0b-publication-and-identity-parity",
+      "kind": "parity",
+      "expected": "B0b independently validates all bindings, creates hashes and read-only modes in staging, then performs one final same-filesystem rename with zero post-rename mutation"
+    },
+    {
+      "id": "atomic-publication-faults",
+      "kind": "fault_injection",
+      "expected": "faults before each B0a, executable-provenance or B0b final rename never expose a partial final tree; a successful rename is the last mutating operation"
+    },
+    {
+      "id": "owner-capability-separation",
+      "kind": "integration",
+      "expected": "static command allowlists and receipts prove four separate B0 owners and the exact B0a to build to freezer to B0b to B1 to B2 sequence"
+    },
+    {
+      "id": "full-source-closure-watch-label",
+      "kind": "parity",
+      "expected": "every executable and receipt says V10-derived diagnostic executor proxy and SURVIVING_REMOTE_BYTES_NOT_BUILD_TIME_SNAPSHOT; no claim upgrades full historical source closure above WATCH"
+    },
+    {
+      "id": "b1-environment-blocking-fault",
+      "kind": "fault_injection",
+      "expected": "host identity mismatch, pressure, temperature, throttle, process conflict, policy drift or timeout produces BLOCKED_ENVIRONMENT without tuning the host or invoking perf"
+    },
+    {
+      "id": "b1-b2-environment-parity",
+      "kind": "parity",
+      "expected": "frozen topology, boot, kernel, microcode, SMT, NUMA, cache, governor, EPP, turbo and P-state fields match before and after both benign probes"
+    },
+    {
+      "id": "b2-benign-workload-parity",
+      "kind": "parity",
+      "expected": "the exact remote yes, taskset and perf bytes are recorded and one selected P-core plus all 20 mapped CPUs execute only the benign yes workload with output to /dev/null"
+    },
+    {
+      "id": "b2-pmu-capability-fault",
+      "kind": "fault_injection",
+      "expected": "unsupported, uncounted, scaled, multiplexed, substituted, missing hybrid coverage, wrong privilege, inheritance/control failure or time_running mismatch produces BLOCKED_PMU and no later subject run"
+    },
+    {
+      "id": "b2-benign-capability-boundary",
+      "kind": "integration",
+      "expected": "B2 records exact perf and PMU identities, selectors, privilege, inheritance, control and per-thread support for G0 through G3 without loading V13 or executing historical V10, the proxy, search enumeration or latency measurement"
+    },
+    {
+      "id": "runtime-noninterference",
+      "kind": "parity",
+      "expected": "installed Lay bytes, packages, authority configuration and executable paths remain unchanged; no daemon, IBus or extension restart and no package rebuild or install occurs"
+    },
+    {
+      "id": "later-gate-absence",
+      "kind": "integration",
+      "expected": "process audit and receipts show zero B3, proxy parity, B5, B6, predictive-model, V12, push or deployment action; the successful terminal says later gates not admitted"
+    },
+    {
+      "id": "forbidden-route-source-scan",
+      "kind": "integration",
+      "expected": "new controller, patch and scripts contain no undeclared output, adaptive build, retry, target schedule field, production hook, system-wide perf, event substitution, host tuning, deployment, authority or V12 route"
+    },
+    {
+      "id": "owning-document-result",
+      "kind": "integration",
+      "expected": "the owning architecture records each executed B0 through B2 step, measured facts, failures, untested scope, exact receipt paths, full source closure WATCH and runtime_authority_changed=false"
+    },
+    {
+      "id": "preflight-revision-provenance",
+      "kind": "parity",
+      "expected": "V1 manifest/receipt remain SHA-256 c04ee81fd2e5c65faf48e18e533cdff3f8cb35fe3cb19b4116c4595c4115e515 and 740bd6732a13d72e6aa07829eb841b18e873ec236ca1fbc3b863bc093a628b43; V2 manifest/receipt remain SHA-256 b8ddd53c72a4a37580211b97a7afbf5689118c8f16e8c908568fa7c662d2a908 and 8fba0865d3825cdf4e7ecd372db32d7d494ddf54ca0b0a50b9f56a27454eff21"
+    },
+    {
+      "id": "pre-b1-perf-invocation-boundary",
+      "kind": "integration",
+      "expected": "the correction V3 ledger is exactly two perf executable invocations and zero PMU measurements; implementation and every B0 through B1 route expose no perf execution edge, and only accepted B1 can transition to the fixed benign B2 perf launcher"
+    }
+  ]
+}

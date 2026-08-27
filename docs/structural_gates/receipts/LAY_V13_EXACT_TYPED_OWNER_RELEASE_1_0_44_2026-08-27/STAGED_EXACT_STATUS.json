@@ -1,0 +1,10 @@
+{
+  "lifetime": "process",
+  "reload": "process_restart_required",
+  "runtime_authority_changed": false,
+  "sidecar": "/tmp/lay-1.0.44-stage.DjKPs5G9/LAY-L2-RU-FULL-v13.dafsa",
+  "sidecar_bytes": 2460144,
+  "sidecar_sha256": "a277b3c8b7d441de55fdc3c77abf483c2061653e9068b3bcce57629c742de9d7",
+  "status": "ready_immutable_owner",
+  "typed_payload_bytes": 3689628
+}

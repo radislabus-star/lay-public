@@ -1,0 +1,48 @@
+{
+  "assembled_source": {
+    "mode": "0444",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25/REMOTE_EVIDENCE/inputs/assembled_d2_source.rs",
+    "sha256": "6cd9edece91ac2e0c0e6dda7658e104dcf8953f1c16b1acff6108ea44ada0181",
+    "size_bytes": 204722
+  },
+  "authoritative_receipt": {
+    "mode": "0444",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25/D2A_RECEIPT.json",
+    "sha256": "998ca180a976384acb215b9e72a8d956fd830fdf6a1c0641b59eea10cbb00e0f",
+    "size_bytes": 21910
+  },
+  "controller": {
+    "mode": "0755",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-e1-traversal-d2-primary-only.py",
+    "sha256": "9329a32b9e4e9edf5d83ddf624e8c9ce6a456494057f4ea3ef5aff6f382d6ec0",
+    "size_bytes": 64492
+  },
+  "copied_remote_manifest": {
+    "all_sha256_match": true,
+    "entries": 37,
+    "manifest": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25/REMOTE_EVIDENCE/SHA256SUMS",
+      "sha256": "8d9581f8b4bce2b8cd99683c3b718ef3ea338bf97ab01f3ab14186bda09319c7",
+      "size_bytes": 3984
+    },
+    "membership_exact": true
+  },
+  "local_manifest": {
+    "all_sha256_match": true,
+    "entries": 40,
+    "manifest": {
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25/SHA256SUMS",
+      "sha256": "0376930d31a9865b49e39966c4d5c050a1a738b70b27e01bb9db6f0239ebfe86",
+      "size_bytes": 4841
+    },
+    "membership_exact": true
+  },
+  "local_receipt": {
+    "mode": "0444",
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_V2_2026-08-25/LOCAL_D2A_RECEIPT.json",
+    "sha256": "e5277fdd7472325d6589bcfabc782d9b824fc1fe20beee2cb1ed4419e2b412bc",
+    "size_bytes": 1801
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "cargo_invocations": 0,
+  "d2_subject": 0,
+  "error": "rustc commit-hash drift",
+  "markers_consumed": 0,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "retry_permitted": false,
+  "runtime_authority_changed": false,
+  "rustc_compilations": 0,
+  "schema": "lay.v10.e1-traversal-d2-primary-only-d2a-failure.v1",
+  "state_published": false,
+  "task_id": "slice8b-v10-e1-traversal-d2-primary-only-v1-20260825"
+}

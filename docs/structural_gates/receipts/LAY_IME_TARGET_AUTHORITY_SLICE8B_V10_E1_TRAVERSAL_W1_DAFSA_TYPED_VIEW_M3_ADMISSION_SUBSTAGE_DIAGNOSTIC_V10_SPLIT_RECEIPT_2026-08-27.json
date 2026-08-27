@@ -1,0 +1,641 @@
+{
+  "branches": [
+    {
+      "candidate_triads": 1,
+      "canonicalization": {
+        "applied": [],
+        "applied_count": 0,
+        "conflict_count": 0,
+        "conflicts": [],
+        "enabled": false,
+        "warnings": [],
+        "watch_count": 0
+      },
+      "conflicts": [],
+      "evidence_binding": {
+        "checked": 0,
+        "complete": false,
+        "issues": [],
+        "missing_triads": [
+          "s3",
+          "c3"
+        ],
+        "required": false,
+        "schema": "nanda.evidence-binding.v1",
+        "total": 2,
+        "verdict": "NOT_REQUESTED"
+      },
+      "evidence_gaps": [],
+      "foreign_pull": [],
+      "key": "authority-boundary",
+      "limits": [],
+      "quality_ready": false,
+      "receipt": {
+        "branch_key": "authority-boundary",
+        "candidate_triads": 1,
+        "candidate_triads_sha256": "91789033d1798ea73cd197bf82dab709a5357abda9cc6d5876bf941fcc644c5a",
+        "core_version": "sparse-triad-v6.2-quality-gates",
+        "engine": "nanda-check sparse-triad-v6.2-rust",
+        "evidence_binding_verdict": "NOT_REQUESTED",
+        "packet_sha256": "2c97316fd9bdd7e354544a63588fc13d8702021c9ea20a42333f887e0cb0c441",
+        "quality_ready": false,
+        "receipt_sha256": "8d3ab6b9d3461f82c3965a0159ec628bb0b518e70b85e70d3ef596c055ea9a67",
+        "schema": "nanda.route-verdict-receipt.v1",
+        "source_triads": 1,
+        "source_triads_sha256": "5ead07322633e95bcfdf7f6e5c15ad32fb46cc51e21d0a4ed1d771d91dbd5ebc",
+        "task_id": "w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:authority-boundary",
+        "verdict": "PASS"
+      },
+      "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+      "source_triads": 1,
+      "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:authority-boundary.trace.json",
+      "verdict": "PASS",
+      "weak_triads": []
+    },
+    {
+      "candidate_triads": 1,
+      "canonicalization": {
+        "applied": [],
+        "applied_count": 0,
+        "conflict_count": 0,
+        "conflicts": [],
+        "enabled": false,
+        "warnings": [],
+        "watch_count": 0
+      },
+      "conflicts": [],
+      "evidence_binding": {
+        "checked": 0,
+        "complete": false,
+        "issues": [],
+        "missing_triads": [
+          "s5",
+          "c5"
+        ],
+        "required": false,
+        "schema": "nanda.evidence-binding.v1",
+        "total": 2,
+        "verdict": "NOT_REQUESTED"
+      },
+      "evidence_gaps": [],
+      "foreign_pull": [],
+      "key": "build-lifecycle",
+      "limits": [],
+      "quality_ready": false,
+      "receipt": {
+        "branch_key": "build-lifecycle",
+        "candidate_triads": 1,
+        "candidate_triads_sha256": "c40a5369b80f23f423f1a540097cf5e7962fb38d48a66d4d8a203ec793cb2dc7",
+        "core_version": "sparse-triad-v6.2-quality-gates",
+        "engine": "nanda-check sparse-triad-v6.2-rust",
+        "evidence_binding_verdict": "NOT_REQUESTED",
+        "packet_sha256": "a8fe4f174f1fc3bad93fe6e85146af16d31fb7f349fabf80d3b528d8bf215ff5",
+        "quality_ready": false,
+        "receipt_sha256": "a2a70f78efe628b40ab25dd42b4b2658b1fb18e486ea78cea26e0ea67e6c2563",
+        "schema": "nanda.route-verdict-receipt.v1",
+        "source_triads": 1,
+        "source_triads_sha256": "10bc4341ea367d5d354da370997e74476236bddebe75521b57a63d7a8aefc697",
+        "task_id": "w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:build-lifecycle",
+        "verdict": "PASS"
+      },
+      "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+      "source_triads": 1,
+      "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:build-lifecycle.trace.json",
+      "verdict": "PASS",
+      "weak_triads": []
+    },
+    {
+      "candidate_triads": 1,
+      "canonicalization": {
+        "applied": [],
+        "applied_count": 0,
+        "conflict_count": 0,
+        "conflicts": [],
+        "enabled": false,
+        "warnings": [],
+        "watch_count": 0
+      },
+      "conflicts": [],
+      "evidence_binding": {
+        "checked": 0,
+        "complete": false,
+        "issues": [],
+        "missing_triads": [
+          "s7",
+          "c7"
+        ],
+        "required": false,
+        "schema": "nanda.evidence-binding.v1",
+        "total": 2,
+        "verdict": "NOT_REQUESTED"
+      },
+      "evidence_gaps": [],
+      "foreign_pull": [],
+      "key": "claim-boundary",
+      "limits": [],
+      "quality_ready": false,
+      "receipt": {
+        "branch_key": "claim-boundary",
+        "candidate_triads": 1,
+        "candidate_triads_sha256": "1567ea32737b7081950fbfd86155b1518d2230bad0a6fa631d20e3c759c0fd36",
+        "core_version": "sparse-triad-v6.2-quality-gates",
+        "engine": "nanda-check sparse-triad-v6.2-rust",
+        "evidence_binding_verdict": "NOT_REQUESTED",
+        "packet_sha256": "5a3308d4b183c3c85e97b90a2a974dd14f4f9bfdaac417a81bfefd0d4445230d",
+        "quality_ready": false,
+        "receipt_sha256": "d2a51bae083a829d2c5f4cb76292bb88acc4ab1c436c235f9397bbf7a0936cc1",
+        "schema": "nanda.route-verdict-receipt.v1",
+        "source_triads": 1,
+        "source_triads_sha256": "7d193b618a2595fc0d27b73db93f5276c968c8e646eb7d69c08da3d42e6ca685",
+        "task_id": "w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:claim-boundary",
+        "verdict": "PASS"
+      },
+      "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+      "source_triads": 1,
+      "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:claim-boundary.trace.json",
+      "verdict": "PASS",
+      "weak_triads": []
+    },
+    {
+      "candidate_triads": 1,
+      "canonicalization": {
+        "applied": [],
+        "applied_count": 0,
+        "conflict_count": 0,
+        "conflicts": [],
+        "enabled": false,
+        "warnings": [],
+        "watch_count": 0
+      },
+      "conflicts": [],
+      "evidence_binding": {
+        "checked": 0,
+        "complete": false,
+        "issues": [],
+        "missing_triads": [
+          "s10",
+          "c10"
+        ],
+        "required": false,
+        "schema": "nanda.evidence-binding.v1",
+        "total": 2,
+        "verdict": "NOT_REQUESTED"
+      },
+      "evidence_gaps": [],
+      "foreign_pull": [],
+      "key": "failure-boundary",
+      "limits": [],
+      "quality_ready": false,
+      "receipt": {
+        "branch_key": "failure-boundary",
+        "candidate_triads": 1,
+        "candidate_triads_sha256": "d1b265f405e16593b88e01997fbce238c7cb32db96c0020508c391d9e4059b5e",
+        "core_version": "sparse-triad-v6.2-quality-gates",
+        "engine": "nanda-check sparse-triad-v6.2-rust",
+        "evidence_binding_verdict": "NOT_REQUESTED",
+        "packet_sha256": "3dacb003b372f7712d23030c868648c7ddf58a4ae8cd4a933baf1009edbe5f5e",
+        "quality_ready": false,
+        "receipt_sha256": "806690adf0e8c09798d5e245a91f7a320c9b4d5e8a375512dde5bf667b9bd4c2",
+        "schema": "nanda.route-verdict-receipt.v1",
+        "source_triads": 1,
+        "source_triads_sha256": "e270bdfde9c76cd5bb9aba1aefb94127a71483c9c9cec248d051308d09ccb742",
+        "task_id": "w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:failure-boundary",
+        "verdict": "PASS"
+      },
+      "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+      "source_triads": 1,
+      "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:failure-boundary.trace.json",
+      "verdict": "PASS",
+      "weak_triads": []
+    },
+    {
+      "candidate_triads": 1,
+      "canonicalization": {
+        "applied": [],
+        "applied_count": 0,
+        "conflict_count": 0,
+        "conflicts": [],
+        "enabled": false,
+        "warnings": [],
+        "watch_count": 0
+      },
+      "conflicts": [],
+      "evidence_binding": {
+        "checked": 0,
+        "complete": false,
+        "issues": [],
+        "missing_triads": [
+          "s2",
+          "c2"
+        ],
+        "required": false,
+        "schema": "nanda.evidence-binding.v1",
+        "total": 2,
+        "verdict": "NOT_REQUESTED"
+      },
+      "evidence_gaps": [],
+      "foreign_pull": [],
+      "key": "observation",
+      "limits": [],
+      "quality_ready": false,
+      "receipt": {
+        "branch_key": "observation",
+        "candidate_triads": 1,
+        "candidate_triads_sha256": "b996fcbd15e573db4a744ac57143f7c33f805e0cbeb82d81dc8aba4d67adcbd9",
+        "core_version": "sparse-triad-v6.2-quality-gates",
+        "engine": "nanda-check sparse-triad-v6.2-rust",
+        "evidence_binding_verdict": "NOT_REQUESTED",
+        "packet_sha256": "0f750f513e28e2d2c198341759a2df43aab74446d04e35c8b3c3a77cccc3b7d0",
+        "quality_ready": false,
+        "receipt_sha256": "e5451ea23cb573e2a90b34fa6b5428382dc08a87d100a584b6d71f2fab131db7",
+        "schema": "nanda.route-verdict-receipt.v1",
+        "source_triads": 1,
+        "source_triads_sha256": "086f4e948dad34c7a94e97a4f2796a4bd0e129e1024719f39f6100f4eeabdb53",
+        "task_id": "w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:observation",
+        "verdict": "PASS"
+      },
+      "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+      "source_triads": 1,
+      "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:observation.trace.json",
+      "verdict": "PASS",
+      "weak_triads": []
+    },
+    {
+      "candidate_triads": 1,
+      "canonicalization": {
+        "applied": [],
+        "applied_count": 0,
+        "conflict_count": 0,
+        "conflicts": [],
+        "enabled": false,
+        "warnings": [],
+        "watch_count": 0
+      },
+      "conflicts": [],
+      "evidence_binding": {
+        "checked": 0,
+        "complete": false,
+        "issues": [],
+        "missing_triads": [
+          "s1",
+          "c1"
+        ],
+        "required": false,
+        "schema": "nanda.evidence-binding.v1",
+        "total": 2,
+        "verdict": "NOT_REQUESTED"
+      },
+      "evidence_gaps": [],
+      "foreign_pull": [],
+      "key": "predecessor",
+      "limits": [],
+      "quality_ready": false,
+      "receipt": {
+        "branch_key": "predecessor",
+        "candidate_triads": 1,
+        "candidate_triads_sha256": "f824d3c250427e9cf532caf57b7bee9d54e99cefb7869f68661a2f0c5105b687",
+        "core_version": "sparse-triad-v6.2-quality-gates",
+        "engine": "nanda-check sparse-triad-v6.2-rust",
+        "evidence_binding_verdict": "NOT_REQUESTED",
+        "packet_sha256": "388e71ecc67bf299b075380123b53686961578eec4db1eedc9f5154596163a93",
+        "quality_ready": false,
+        "receipt_sha256": "2b3e8c34b53f02a561ceed14bf72f60df6c3eaa519f944373ed58c22bc6abd49",
+        "schema": "nanda.route-verdict-receipt.v1",
+        "source_triads": 1,
+        "source_triads_sha256": "b2a7b224d0bdc996daeefd6e95a12e7b28a62f54f9cea7aaee307acb515cf157",
+        "task_id": "w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:predecessor",
+        "verdict": "PASS"
+      },
+      "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+      "source_triads": 1,
+      "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:predecessor.trace.json",
+      "verdict": "PASS",
+      "weak_triads": []
+    },
+    {
+      "candidate_triads": 1,
+      "canonicalization": {
+        "applied": [],
+        "applied_count": 0,
+        "conflict_count": 0,
+        "conflicts": [],
+        "enabled": false,
+        "warnings": [],
+        "watch_count": 0
+      },
+      "conflicts": [],
+      "evidence_binding": {
+        "checked": 0,
+        "complete": false,
+        "issues": [],
+        "missing_triads": [
+          "s9",
+          "c9"
+        ],
+        "required": false,
+        "schema": "nanda.evidence-binding.v1",
+        "total": 2,
+        "verdict": "NOT_REQUESTED"
+      },
+      "evidence_gaps": [],
+      "foreign_pull": [],
+      "key": "runtime-boundary",
+      "limits": [],
+      "quality_ready": false,
+      "receipt": {
+        "branch_key": "runtime-boundary",
+        "candidate_triads": 1,
+        "candidate_triads_sha256": "f32c8c51043d7b7fade4d91e2d7748dbd86499b412a267d5b458164853201613",
+        "core_version": "sparse-triad-v6.2-quality-gates",
+        "engine": "nanda-check sparse-triad-v6.2-rust",
+        "evidence_binding_verdict": "NOT_REQUESTED",
+        "packet_sha256": "b185f6237a6fbd5e41164c26f7cc1b821d8a67778cc42ce5e07853ba72e73063",
+        "quality_ready": false,
+        "receipt_sha256": "0f8845629d7fd4681118fd30625c2a3b0b8def5642d936ecc125cf010be6ab3c",
+        "schema": "nanda.route-verdict-receipt.v1",
+        "source_triads": 1,
+        "source_triads_sha256": "e8c78588937a7d287e87793a1d7f26172ab1f5225ac349a853eb85d0655b374a",
+        "task_id": "w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:runtime-boundary",
+        "verdict": "PASS"
+      },
+      "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+      "source_triads": 1,
+      "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:runtime-boundary.trace.json",
+      "verdict": "PASS",
+      "weak_triads": []
+    },
+    {
+      "candidate_triads": 1,
+      "canonicalization": {
+        "applied": [],
+        "applied_count": 0,
+        "conflict_count": 0,
+        "conflicts": [],
+        "enabled": false,
+        "warnings": [],
+        "watch_count": 0
+      },
+      "conflicts": [],
+      "evidence_binding": {
+        "checked": 0,
+        "complete": false,
+        "issues": [],
+        "missing_triads": [
+          "s4",
+          "c4"
+        ],
+        "required": false,
+        "schema": "nanda.evidence-binding.v1",
+        "total": 2,
+        "verdict": "NOT_REQUESTED"
+      },
+      "evidence_gaps": [],
+      "foreign_pull": [],
+      "key": "semantic-parity",
+      "limits": [],
+      "quality_ready": false,
+      "receipt": {
+        "branch_key": "semantic-parity",
+        "candidate_triads": 1,
+        "candidate_triads_sha256": "a42472f744ec79e65e67e8eb50270ef39c7f5dc31bb83a5d895f7dfa13dff81a",
+        "core_version": "sparse-triad-v6.2-quality-gates",
+        "engine": "nanda-check sparse-triad-v6.2-rust",
+        "evidence_binding_verdict": "NOT_REQUESTED",
+        "packet_sha256": "127ccd129bcfae0df5c8975b1f743b5b606ed6fdbf732613ddc90c8f17a2e604",
+        "quality_ready": false,
+        "receipt_sha256": "8890205dc7152504d4e83d8842657050734c2d2c7e27f0f8ff88cfd9ed89aed6",
+        "schema": "nanda.route-verdict-receipt.v1",
+        "source_triads": 1,
+        "source_triads_sha256": "6b554573e329c74ec5723e4fda3ccfb2ff8e6c6b71beca08ee8df2ec726ac190",
+        "task_id": "w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:semantic-parity",
+        "verdict": "PASS"
+      },
+      "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+      "source_triads": 1,
+      "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:semantic-parity.trace.json",
+      "verdict": "PASS",
+      "weak_triads": []
+    },
+    {
+      "candidate_triads": 1,
+      "canonicalization": {
+        "applied": [],
+        "applied_count": 0,
+        "conflict_count": 0,
+        "conflicts": [],
+        "enabled": false,
+        "warnings": [],
+        "watch_count": 0
+      },
+      "conflicts": [],
+      "evidence_binding": {
+        "checked": 0,
+        "complete": false,
+        "issues": [],
+        "missing_triads": [
+          "s8",
+          "c8"
+        ],
+        "required": false,
+        "schema": "nanda.evidence-binding.v1",
+        "total": 2,
+        "verdict": "NOT_REQUESTED"
+      },
+      "evidence_gaps": [],
+      "foreign_pull": [],
+      "key": "successor-boundary",
+      "limits": [],
+      "quality_ready": false,
+      "receipt": {
+        "branch_key": "successor-boundary",
+        "candidate_triads": 1,
+        "candidate_triads_sha256": "1e19364d5c4124ed996f1d8ab0c94296fcbd3174466bb1baf3387e05b7e781e0",
+        "core_version": "sparse-triad-v6.2-quality-gates",
+        "engine": "nanda-check sparse-triad-v6.2-rust",
+        "evidence_binding_verdict": "NOT_REQUESTED",
+        "packet_sha256": "27aeaeaec1249d67e9f544e857925b09896ab82c0e0590f9196760b2eb368d19",
+        "quality_ready": false,
+        "receipt_sha256": "2431c4d4151ceb83078a5b9e51324f7254ad364b59537cbe0ac673d6d70d4051",
+        "schema": "nanda.route-verdict-receipt.v1",
+        "source_triads": 1,
+        "source_triads_sha256": "15489d22371eb2b56f07b2c8f35f3f76bb8680b68798beaef6772386a8ae8e33",
+        "task_id": "w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:successor-boundary",
+        "verdict": "PASS"
+      },
+      "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+      "source_triads": 1,
+      "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:successor-boundary.trace.json",
+      "verdict": "PASS",
+      "weak_triads": []
+    },
+    {
+      "candidate_triads": 1,
+      "canonicalization": {
+        "applied": [],
+        "applied_count": 0,
+        "conflict_count": 0,
+        "conflicts": [],
+        "enabled": false,
+        "warnings": [],
+        "watch_count": 0
+      },
+      "conflicts": [],
+      "evidence_binding": {
+        "checked": 0,
+        "complete": false,
+        "issues": [],
+        "missing_triads": [
+          "s6",
+          "c6"
+        ],
+        "required": false,
+        "schema": "nanda.evidence-binding.v1",
+        "total": 2,
+        "verdict": "NOT_REQUESTED"
+      },
+      "evidence_gaps": [],
+      "foreign_pull": [],
+      "key": "trace-lifecycle",
+      "limits": [],
+      "quality_ready": false,
+      "receipt": {
+        "branch_key": "trace-lifecycle",
+        "candidate_triads": 1,
+        "candidate_triads_sha256": "959f1be9fff0e2f3908d329620769a259ca953f058455e65e993864f6f2d514b",
+        "core_version": "sparse-triad-v6.2-quality-gates",
+        "engine": "nanda-check sparse-triad-v6.2-rust",
+        "evidence_binding_verdict": "NOT_REQUESTED",
+        "packet_sha256": "c742868e111ccdd297535504605f3d863befbeb4660b689e3fa296c90df2fbc6",
+        "quality_ready": false,
+        "receipt_sha256": "8ee4ec4852f1383ecb651c277dc69e2bea08abeda10cef98074146b4ba8102be",
+        "schema": "nanda.route-verdict-receipt.v1",
+        "source_triads": 1,
+        "source_triads_sha256": "4b80a3768c9f92b8a6cba47c8b1342a62b72b65085633b311501fc9931372aa0",
+        "task_id": "w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:trace-lifecycle",
+        "verdict": "PASS"
+      },
+      "repair_prompt": "No structural repair needed. Do not use this PASS for authority; rerun with an externally pinned trusted proof manifest.",
+      "source_triads": 1,
+      "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10:trace-lifecycle.trace.json",
+      "verdict": "PASS",
+      "weak_triads": []
+    }
+  ],
+  "canonicalization": {
+    "applied": [],
+    "applied_count": 0,
+    "conflict_count": 0,
+    "conflicts": [],
+    "enabled": false,
+    "warnings": [],
+    "watch_count": 0
+  },
+  "claim_boundary": {
+    "coverage_complete": true,
+    "deferred": 0,
+    "passed": 1,
+    "reason_codes": [],
+    "required": true,
+    "results": [
+      {
+        "actual": true,
+        "expected": true,
+        "id": "v10-all-routes",
+        "kind": "all_routes_pass",
+        "reason": "deterministic result matched",
+        "state": "PASS"
+      }
+    ],
+    "schema": "nanda.derived-claims.v1",
+    "total": 1,
+    "verdict": "PASS"
+  },
+  "core_version": "sparse-triad-v6.2-quality-gates",
+  "global": {
+    "codex_failure_field": {
+      "enabled": false,
+      "read_as": "Add failure_contract.enabled=true to turn on Codex Failure Field.",
+      "reason_codes": [],
+      "verdict": "NOT_ENABLED"
+    },
+    "complexity_score": 59,
+    "conflicts": [],
+    "evidence_gaps": [],
+    "foreign_pull": [],
+    "limits": [
+      "routes target limit exceeded: 10>8"
+    ],
+    "mixed_candidate_groups": [],
+    "repair_tasks": [],
+    "trace_path": "/tmp/nanda-structural-gate/w1-dafsa-typed-view-m3-admission-substage-diagnostic-v10.trace.json",
+    "verdict": "WATCH",
+    "weak_triads": []
+  },
+  "hierarchical_decision": {
+    "accepted_with_split": true,
+    "action": "STRUCTURALLY_ACCEPTED",
+    "agent_interpretation": "STRUCTURALLY_ACCEPTED_WITH_SPLIT",
+    "branches": 10,
+    "claim_boundary_complete": true,
+    "claim_boundary_verdict": "PASS",
+    "codex_failure_reasons": [],
+    "codex_failure_verdict": "NOT_ENABLED",
+    "global_foreign_pull": 0,
+    "global_size_only": true,
+    "global_verdict": "WATCH",
+    "local_pass": 10,
+    "local_veto": 0,
+    "local_watch": 0,
+    "next": "Use the local branch PASS results as the trusted acceptance surface.",
+    "receipt_aggregation_verdict": "PASS",
+    "receipts_complete": true,
+    "structurally_accepted": true,
+    "truncated_branches": 0,
+    "verified_receipts": 10
+  },
+  "input": "docs/structural_gates/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_SUBSTAGE_DIAGNOSTIC_V10_SPLIT_PACKET_2026-08-27.json",
+  "interpretation": "Global WATCH caused only by size can be accepted when every linked branch passes. Global foreign_pull, conflicts, or any local VETO remain repair blockers.",
+  "mode": "hierarchical-gate",
+  "receipt_aggregation": {
+    "all_routes_pass": true,
+    "complete": true,
+    "duplicate_routes": [],
+    "invalid_receipts": [],
+    "local_pass": 10,
+    "local_veto": 0,
+    "local_watch": 0,
+    "missing_routes": [],
+    "required_routes": [
+      "authority-boundary",
+      "build-lifecycle",
+      "claim-boundary",
+      "failure-boundary",
+      "observation",
+      "predecessor",
+      "runtime-boundary",
+      "semantic-parity",
+      "successor-boundary",
+      "trace-lifecycle"
+    ],
+    "schema": "nanda.route-receipt-aggregation.v1",
+    "unexpected_routes": [],
+    "verdict": "PASS",
+    "verified_receipts": 10,
+    "verified_route_verdicts": {
+      "authority-boundary": "PASS",
+      "build-lifecycle": "PASS",
+      "claim-boundary": "PASS",
+      "failure-boundary": "PASS",
+      "observation": "PASS",
+      "predecessor": "PASS",
+      "runtime-boundary": "PASS",
+      "semantic-parity": "PASS",
+      "successor-boundary": "PASS",
+      "trace-lifecycle": "PASS"
+    }
+  },
+  "split_by": "linked-group",
+  "split_warnings": [],
+  "truncated_branches": 0,
+  "wave_dim": 1024
+}

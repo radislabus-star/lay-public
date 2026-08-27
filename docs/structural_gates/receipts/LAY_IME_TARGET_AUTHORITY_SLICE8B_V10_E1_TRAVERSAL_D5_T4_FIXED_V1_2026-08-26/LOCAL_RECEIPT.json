@@ -1,0 +1,47 @@
+{
+  "cargo_invocations": 0,
+  "d2_marker_mutations": 0,
+  "dispatch": {
+    "all_violations": {
+      "bucket_map": [],
+      "capability": [],
+      "perturbation": [],
+      "provenance": [
+        "worker TID graph failed: D5Error: worker sample CPU sets are not singleton: {568865: {0}, 568866: {1}, 568867: {2}, 568868: {3}, 568869: {4}, 568870: {5}, 568871: {6}, 568872: {7}, 568873: {8}, 568874: {9}, 568875: {10}, 568876: {11}, 568877: {12}, 568878: {18, 13}, 568879: {14}, 568880: {15}, 568881: {16}, 568882: {17}, 568883: {18}, 568884: {19}}"
+      ],
+      "sample_coverage": [
+        "lost/throttle/unthrottle=0/29/29"
+      ],
+      "thermal": []
+    },
+    "reason": "worker TID graph failed: D5Error: worker sample CPU sets are not singleton: {568865: {0}, 568866: {1}, 568867: {2}, 568868: {3}, 568869: {4}, 568870: {5}, 568871: {6}, 568872: {7}, 568873: {8}, 568874: {9}, 568875: {10}, 568876: {11}, 568877: {12}, 568878: {18, 13}, 568879: {14}, 568880: {15}, 568881: {16}, 568882: {17}, 568883: {18}, 568884: {19}}",
+    "selected_cause": "provenance",
+    "selected_rank": 0,
+    "verdict": "BLOCKED_PROVENANCE"
+  },
+  "marker_consumed": true,
+  "next_action_admitted": "none; terminal D5 blocked verdict",
+  "perf_readers": 4,
+  "perf_record": 1,
+  "perf_stat": 0,
+  "pmu_events_opened": 1,
+  "remote_receipt_sha256": "d337dcddcd74e95e8009e520347f6e3cf6c1319c46bf7e896862200af8f5cbbf",
+  "retry_permitted": false,
+  "route": "T4-FIXED",
+  "runtime_after": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "runtime_authority_changed": false,
+  "runtime_before": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "schema": "lay.v10.e1-traversal-d5-local-route.v1",
+  "subject_executions": 1,
+  "task_id": "slice8b-v10-e1-traversal-d5-multiworker-tid-estimator-v1-20260826",
+  "transaction_id": "3ee46e2c915677e1b2d3cd6bcc9709e0232252dbc120745b097d736537779036",
+  "verdict": "BLOCKED_PROVENANCE"
+}

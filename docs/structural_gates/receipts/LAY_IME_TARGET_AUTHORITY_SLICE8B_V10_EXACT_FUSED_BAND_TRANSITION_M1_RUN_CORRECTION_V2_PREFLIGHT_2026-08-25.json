@@ -1,0 +1,217 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "correction-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_RUN_CORRECTION_V2_2026-08-25.md",
+      "sha256": "2f3965883a9a28b45d9255d85492ad841245d95fa4d0af63b5544f65f3c3e2be",
+      "size_bytes": 2450
+    },
+    {
+      "exists": true,
+      "id": "correction-route",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_RUN_CORRECTION_V2_ROUTE.md",
+      "sha256": "64dcef2961a7d1518ffac59d0d599339ce30f21bf72a4be5dc5d610611d41594",
+      "size_bytes": 3536
+    },
+    {
+      "exists": true,
+      "id": "correction-route-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_RUN_CORRECTION_V2_ROUTE_RECEIPT_2026-08-25.json",
+      "sha256": "f5c13d7bdc898595b074346f5d5d05233f4a80094c28daa7280d6b20f1582bc3",
+      "size_bytes": 21249
+    },
+    {
+      "exists": true,
+      "id": "v1-failure-manifest",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_RUN_FAILURE_V1_2026-08-25/SHA256SUMS",
+      "sha256": "9e34abc512307db4730aba857701b73fd7727b03ccc0ca052e58ef0318a2391c",
+      "size_bytes": 340
+    },
+    {
+      "exists": true,
+      "id": "sealed-build-audit",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_REMOTE_BUILD_AUDIT_V1_2026-08-25.json",
+      "sha256": "6c5a2f41fffb8fc0505e629354bef0a6f8905ddc76c056352c68e0e912774427",
+      "size_bytes": 1328
+    },
+    {
+      "exists": true,
+      "id": "controller-v1",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-fused-band-transition-m1.py",
+      "sha256": "3132a8f29f25ffef44d9e2fce724e88f56f3798515b6c57de350b1d659028237",
+      "size_bytes": 35361
+    },
+    {
+      "exists": true,
+      "id": "fragment",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay_v10_fused_band_transition_m1_test_module.rs.inc",
+      "sha256": "bdef992d1f9bec095b3f683b384f1e7d23323823625cf3547dc44480511f0d76",
+      "size_bytes": 33866
+    },
+    {
+      "exists": true,
+      "id": "m1-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_CONTRACT_2026-08-25.md",
+      "sha256": "891a5ee2aa11840d8692d1ab110738bdd50d7bdca2b4873e92ab2ce125d2298b",
+      "size_bytes": 5478
+    },
+    {
+      "exists": true,
+      "id": "decision",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_PMU_DECISION_2026-08-25.json",
+      "sha256": "98f7f606e3a21448e92137091f75c53c1cb210049895f0c9a18f7745da3afd09",
+      "size_bytes": 5014
+    },
+    {
+      "exists": true,
+      "id": "active-v11",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+      "size_bytes": 124127
+    },
+    {
+      "exists": false,
+      "id": "v2-local-result",
+      "kind": "absent",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_2026-08-25"
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[0].forbidden_effect_patterns[3]",
+      "message": "foreign_process_control_reaffinity_or_repriority matched at line 235"
+    },
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[0].forbidden_effect_patterns[4]",
+      "message": "host_policy_tuning matched at line 237"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: adaptive_rerun_or_threshold_change"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: cargo_build_check_test_or_rustc"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: clean_c1_marker_consumption"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: full_b_measurement_or_promotion"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: new_or_replaced_executable"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: rust_fragment_or_production_source_edit"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: s1_swar_candidate"
+    },
+    {
+      "code": "forbidden_effect_scan_missing",
+      "field": "source_checks",
+      "message": "no reused-source veto pattern covers: v1_state_marker_or_failure_mutation"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 11,
+    "forbidden_side_effect_kinds": [
+      "adaptive_rerun_or_threshold_change",
+      "cargo_build_check_test_or_rustc",
+      "clean_c1_marker_consumption",
+      "foreign_process_control_reaffinity_or_repriority",
+      "full_b_measurement_or_promotion",
+      "generated_traffic",
+      "host_policy_tuning",
+      "installed_lay_mutation_or_restart",
+      "new_or_replaced_executable",
+      "runtime_authority_change",
+      "rust_fragment_or_production_source_edit",
+      "s1_swar_candidate",
+      "synthetic_fixture",
+      "third_loaded_c1_run",
+      "v12_implementation_or_admission",
+      "v1_state_marker_or_failure_mutation"
+    ],
+    "identity_contracts": 4,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "documentation_edit",
+      "local_source_edit",
+      "remote_and_local_evidence_write",
+      "remote_diagnostic_execution",
+      "remote_process_scoped_pmu_execution",
+      "remote_state_create"
+    ],
+    "preserved_artifacts": 5,
+    "runtime_comparisons": 1,
+    "source_checks": 1,
+    "tests": 14
+  },
+  "manifest_sha256": "3667f4c0b75c43e9b5eaf8fe07b7dffd0a62b3183292438228a563f2a64f04de",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [
+        {
+          "effect": "foreign_process_control_reaffinity_or_repriority",
+          "line": 235
+        },
+        {
+          "effect": "host_policy_tuning",
+          "line": 237
+        }
+      ],
+      "id": "controller-v1-veto-scan",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-fused-band-transition-m1.py",
+      "sha256": "3132a8f29f25ffef44d9e2fce724e88f56f3798515b6c57de350b1d659028237",
+      "size_bytes": 35361
+    }
+  ],
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_EXACT_FUSED_BAND_TRANSITION_M1_RUN_CORRECTION_V2_2026-08-25",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

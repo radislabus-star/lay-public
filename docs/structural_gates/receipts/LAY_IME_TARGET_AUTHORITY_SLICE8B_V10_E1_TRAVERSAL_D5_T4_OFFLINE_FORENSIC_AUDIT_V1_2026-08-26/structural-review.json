@@ -1,0 +1,34 @@
+{
+  "aggregate": {
+    "reason": "routes target limit exceeded: 10>8",
+    "route_sha256": "56b8fe7cac35e16e9a7060caff5dfdda5b2a3df3c0c61ec4b0aa86051d0f374a",
+    "verdict": "WATCH"
+  },
+  "all_routes_pass": true,
+  "authority_ready": false,
+  "implementation_authority": false,
+  "paper_sha256": "5624f6337c8df385e317f5a08b7886d3aa30768c10920bb34fa94639a2063856",
+  "schema": "lay.v10.e1-traversal-d5-t4-offline-forensic-structural-review.v1",
+  "split_routes": [
+    {
+      "agent_safe_to_edit": true,
+      "authority_ready": false,
+      "route": "evidence-scope",
+      "route_sha256": "6d51177a5c69128c52c59a876dcb5d0c0db072bed62aa53ba5802e7bba7e81e0",
+      "stable_triads": 5,
+      "verdict": "PASS",
+      "weak_triads": 0
+    },
+    {
+      "agent_safe_to_edit": true,
+      "authority_ready": false,
+      "route": "diagnostic-authority",
+      "route_sha256": "d8d6da4c41f9b610b4c8d9421a52ce5a9a9ae76241933596d966353b5e2094ac",
+      "stable_triads": 5,
+      "verdict": "PASS",
+      "weak_triads": 0
+    }
+  ],
+  "task_id": "d5-t4-offline-forensic-interpretation-v1",
+  "verdict": "STRUCTURALLY_ACCEPTED_WITH_SPLIT"
+}

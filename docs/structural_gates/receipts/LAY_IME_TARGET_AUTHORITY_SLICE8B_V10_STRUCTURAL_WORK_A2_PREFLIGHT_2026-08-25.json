@@ -1,0 +1,187 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "a2-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_CORRECTION_2026-08-25.md",
+      "sha256": "8731a5f310ad960f89045166368d7df1cb6a8cfd931d79fc3bfacc802070e09e",
+      "size_bytes": 2139
+    },
+    {
+      "exists": true,
+      "id": "a2-route",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_ROUTE.md",
+      "sha256": "c96b3b6f8440743060edfb10df19d4e352985735acdc3c67cc274bbfaa0e089f",
+      "size_bytes": 3187
+    },
+    {
+      "exists": true,
+      "id": "a2-route-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_ROUTE_RECEIPT_2026-08-25.json",
+      "sha256": "fa5862265cec399c5aba5ca27548847073f71c21d07c002ed6d29ee7006999ce",
+      "size_bytes": 19336
+    },
+    {
+      "exists": true,
+      "id": "a1-fragment",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay_v10_structural_work_test_module.rs.inc",
+      "sha256": "22b30c74593ba567ca03304ad1eb1afcd5fc467dd4b9839111cd863bd3a18163",
+      "size_bytes": 36894
+    },
+    {
+      "exists": true,
+      "id": "a1-controller",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-structural-work.py",
+      "sha256": "799edaa3610c8e30570178f0e4095c3ba869ea1e0e2c977ff5f18cd1125e4883",
+      "size_bytes": 41484
+    },
+    {
+      "exists": true,
+      "id": "a1-failure-manifest",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A1_BUILD_FAILURE_V1_2026-08-25/SHA256SUMS",
+      "sha256": "3245a80cf97f35071a1f9eadd218aa2745b013b67444b821ac187e6f4c1ef3da",
+      "size_bytes": 1040
+    },
+    {
+      "exists": true,
+      "id": "a1-cargo-log",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A1_BUILD_FAILURE_V1_2026-08-25/cargo.log",
+      "sha256": "0f8ba83f3ea9adef7b8528de129d1b7f4b94f7e6801125c7d200b1727f9de5f9",
+      "size_bytes": 6494
+    },
+    {
+      "exists": true,
+      "id": "a1-preflight",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A1_V2_2026-08-25.json",
+      "sha256": "8cd99ad96b963b96e09cc055804355a60df172941538a20dc9c97fb95ab62435",
+      "size_bytes": 16791
+    },
+    {
+      "exists": true,
+      "id": "a1-preflight-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A1_V2_PREFLIGHT_2026-08-25.json",
+      "sha256": "8cd8509ea384cbaf845e3ae85d49ebba74a8b9565b50bb172518a2b12114a6b1",
+      "size_bytes": 6977
+    },
+    {
+      "exists": true,
+      "id": "v10-source",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c",
+      "size_bytes": 91518
+    },
+    {
+      "exists": true,
+      "id": "active-v11",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b",
+      "size_bytes": 124127
+    },
+    {
+      "exists": true,
+      "id": "combined-pmu",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_LOADED_PMU_DIAGNOSIS_COMBINED_V3_V4_2026-08-25.json",
+      "sha256": "ea9a19cace1eab5418f783dfb6c18a4de2adb7281356afffd12bb2b28cdacbd1",
+      "size_bytes": 4621
+    },
+    {
+      "exists": false,
+      "id": "a2-local-result",
+      "kind": "absent",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_2026-08-25"
+    }
+  ],
+  "blockers": [
+    {
+      "code": "forbidden_effect_in_reused_source",
+      "field": "source_checks[1].forbidden_effect_patterns[3]",
+      "message": "latency_measurement_or_acceptance matched at line 947"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 13,
+    "forbidden_side_effect_kinds": [
+      "adaptive_retry_or_second_build",
+      "foreign_process_control",
+      "generated_traffic",
+      "host_tuning_or_policy_change",
+      "installed_lay_mutation_or_restart",
+      "latency_measurement_or_acceptance",
+      "perf_or_pmu",
+      "runtime_authority_change",
+      "synthetic_fixture",
+      "v12_action"
+    ],
+    "identity_contracts": 4,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "documentation_edit",
+      "local_source_edit",
+      "remote_and_local_evidence_write",
+      "remote_diagnostic_execution",
+      "remote_guarded_cargo_build"
+    ],
+    "preserved_artifacts": 5,
+    "runtime_comparisons": 1,
+    "source_checks": 2,
+    "tests": 12
+  },
+  "manifest_sha256": "a1c083377ad52a0729b9a170ee1190ca5e53bbaa83e88895f4ffbaaa6d6e586a",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "a1-fragment-veto-scan",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay_v10_structural_work_test_module.rs.inc",
+      "sha256": "22b30c74593ba567ca03304ad1eb1afcd5fc467dd4b9839111cd863bd3a18163",
+      "size_bytes": 36894
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [
+        {
+          "effect": "latency_measurement_or_acceptance",
+          "line": 947
+        }
+      ],
+      "id": "a1-controller-veto-scan",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/lay-v10-structural-work.py",
+      "sha256": "799edaa3610c8e30570178f0e4095c3ba869ea1e0e2c977ff5f18cd1125e4883",
+      "size_bytes": 41484
+    }
+  ],
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_STRUCTURAL_WORK_A2_2026-08-25",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

@@ -50,6 +50,7 @@ fn manual_toggle_gate_trace(text_tail: &str) -> Option<RecentActionGateTrace> {
     let decision = decide_input_gate(InputGateRequest {
         trigger: InputGateTrigger::DoubleShift,
         text_tail,
+        lexical_authority_frame: None,
         auto_replace: true,
         typing_assist: false,
         auto_switch_layout: false,

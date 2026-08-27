@@ -1,0 +1,291 @@
+{
+  "base_controller_sha256": "f0aa4b55a803ef204d1d898cec70eb282757009a71ef5d9310417b2ac17a45e8",
+  "cargo_invoked": false,
+  "commands": {
+    "refresh_readiness": "scripts/lay-v10-hardware-clean.py ready",
+    "run_once_when_ready": "scripts/lay-v10-hardware-clean.py run"
+  },
+  "controller": {
+    "path": "/home/ubu/projects/lay-l1-exact-peak-search/scripts/lay-v10-hardware-clean.py",
+    "sha256": "10167af258b0412582b17667deb41f14594b5ec12dd88f3aba12094d707383a5"
+  },
+  "formal_b_pass": false,
+  "installed_lay_changed": false,
+  "measurement_attempt_consumed": false,
+  "per_query_p99_observed": false,
+  "perf_invoked": false,
+  "preflight_manifest_sha256": "9f90f17794e99712e1ad137a282d0a2da78f08cf8a67bdd39cdefe3119768bd0",
+  "preflight_verdict": "READY_TO_IMPLEMENT",
+  "prepared_at": "2026-08-24T22:14:52.671835+00:00",
+  "readiness_at_preparation": {
+    "failures": [
+      "busy:150005:nando-operator-:107.8",
+      "busy:150005:nando-operator-:107.9",
+      "busy:3481471:btop:12.0",
+      "busy:3481471:btop:4.0",
+      "busy:3481471:btop:8.0",
+      "cpu_psi:5.57",
+      "cpu_psi:5.92",
+      "io_psi:5.43",
+      "procs_running:3"
+    ],
+    "final_output_exists": false,
+    "formal_b_pass": false,
+    "measurement_attempt_consumed": false,
+    "observed_at": "2026-08-24T22:14:52.635144+00:00",
+    "per_query_p99_observed": false,
+    "ready": false,
+    "remote_writes_performed": false,
+    "samples": [
+      {
+        "busy_processes": [
+          {
+            "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+            "comm": "nando-operator-",
+            "cpu_percent": 107.92618321669765,
+            "pid": 150005
+          },
+          {
+            "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+            "comm": "btop",
+            "cpu_percent": 3.997266044416566,
+            "pid": 3481471
+          }
+        ],
+        "cpu_pressure": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 0.0
+          },
+          "some": {
+            "avg10": 5.92,
+            "avg300": 4.8,
+            "avg60": 5.1,
+            "total": 155316850343.0
+          }
+        },
+        "io_pressure": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 33975214452.0
+          },
+          "some": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 36072996404.0
+          }
+        },
+        "maximum_temperature_c": 62.0,
+        "memory_pressure": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 17849447931.0
+          },
+          "some": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 18949550614.0
+          }
+        },
+        "monotonic_ns": 2714768772193942,
+        "procs_running": 2
+      },
+      {
+        "busy_processes": [
+          {
+            "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+            "comm": "nando-operator-",
+            "cpu_percent": 107.8687478317719,
+            "pid": 150005
+          },
+          {
+            "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+            "comm": "btop",
+            "cpu_percent": 11.985416424460501,
+            "pid": 3481471
+          }
+        ],
+        "cpu_pressure": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 0.0
+          },
+          "some": {
+            "avg10": 5.92,
+            "avg300": 4.8,
+            "avg60": 5.1,
+            "total": 155316906108.0
+          }
+        },
+        "io_pressure": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 33975819211.0
+          },
+          "some": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 36073620837.0
+          }
+        },
+        "maximum_temperature_c": 61.0,
+        "memory_pressure": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 17849447931.0
+          },
+          "some": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 18949550614.0
+          }
+        },
+        "monotonic_ns": 2714770453267816,
+        "procs_running": 3
+      },
+      {
+        "busy_processes": [
+          {
+            "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+            "comm": "nando-operator-",
+            "cpu_percent": 107.84375207791332,
+            "pid": 150005
+          },
+          {
+            "cmdline": "/snap/btop/1004/usr/local/bin/btop",
+            "comm": "btop",
+            "cpu_percent": 7.9884260809217915,
+            "pid": 3481471
+          }
+        ],
+        "cpu_pressure": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 0.0
+          },
+          "some": {
+            "avg10": 5.57,
+            "avg300": 4.79,
+            "avg60": 5.06,
+            "total": 155316906150.0
+          }
+        },
+        "io_pressure": {
+          "full": {
+            "avg10": 5.43,
+            "avg300": 0.2,
+            "avg60": 0.98,
+            "total": 33975821697.0
+          },
+          "some": {
+            "avg10": 5.61,
+            "avg300": 0.21,
+            "avg60": 1.01,
+            "total": 36073623727.0
+          }
+        },
+        "maximum_temperature_c": 62.0,
+        "memory_pressure": {
+          "full": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 17849447931.0
+          },
+          "some": {
+            "avg10": 0.0,
+            "avg300": 0.0,
+            "avg60": 0.0,
+            "total": 18949550614.0
+          }
+        },
+        "monotonic_ns": 2714770761707104,
+        "procs_running": 2
+      }
+    ],
+    "schema": "lay.v10.clean-speed-readiness.v2",
+    "sealed_inputs": {
+      "b0a_receipt": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/INPUT_CLOSURE.json",
+        "sha256": "48176ec6faae86f43ddda8404542367be5b6c9d6813762dedb829b4946593eb3",
+        "size_bytes": 366665
+      },
+      "b1_receipt": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b1-environment-v1/ENVIRONMENT_RECEIPT.json",
+        "sha256": "12c591b447f0025548e96272a4e8d5d4f23debc8458ae99fce61b2e751673925",
+        "size_bytes": 229467
+      },
+      "elf": {
+        "build_id": "9829fb05f34bd353877fb6d71f1f8523e084af55",
+        "mode": "0555",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/diagnostic-build-v1/diagnostic-test-elf",
+        "sha256": "f7bcee37d5dffd583577d66c982c2a28072889b8aac2ccbed22612aa6d4feb09",
+        "size_bytes": 20542920
+      },
+      "package": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/LAY-L2-RU-FULL-v13.bin",
+        "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+        "size_bytes": 140556462
+      },
+      "schedule": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0b-schedule-closure-v1/query-schedule.json",
+        "sha256": "2f8346d97246ac3704434279739fa5ed27705465d628890a367c21875d879e78",
+        "size_bytes": 174941
+      },
+      "sidecar": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/LAY-L2-RU-FULL-v13.dafsa",
+        "sha256": "a1aa95be8c43fae8fedf02d3261dd1265dcbfbc8d618330fcd6449ae829df8cd",
+        "size_bytes": 3689884
+      },
+      "v7": {
+        "mode": "0444",
+        "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2/inputs/slice8b-v10-f6178f/artifacts/slice8b-v7-fixed-13x100.json",
+        "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4",
+        "size_bytes": 1606189
+      }
+    },
+    "stable_host_unchanged": true,
+    "task_id": "slice8b-v10-clean-speed-v2-20260825",
+    "thresholds": {
+      "busy_process_cpu_percent": 1.0,
+      "cpu_psi_some_avg10": 2.0,
+      "io_psi_full_avg10": 0.1,
+      "memory_psi_full_avg10": 0.1,
+      "procs_running": 2,
+      "temperature_c": 90.0
+    },
+    "throttle_counters_unchanged": true,
+    "v12_admitted": false,
+    "verdict": "BLOCKED_ENVIRONMENT"
+  },
+  "remote_output_exists": false,
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.clean-speed-preparation.v2",
+  "state": "CLEAN_TEST_PREPARED_UNRUN",
+  "subject_executed": false,
+  "task_id": "slice8b-v10-clean-speed-v2-20260825",
+  "v12_admitted": false
+}

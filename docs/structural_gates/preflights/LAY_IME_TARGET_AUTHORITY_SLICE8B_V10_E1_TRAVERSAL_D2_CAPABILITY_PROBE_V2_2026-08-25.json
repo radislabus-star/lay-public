@@ -1,0 +1,290 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_CAPABILITY_PROBE_V2_2026-08-25",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "d2-paper-contract",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_CONTRACT_2026-08-25.md",
+      "expect": {"mode": "0664", "size_bytes": 15177, "sha256": "2a34829ac0ccf36f092a55f3c26cbbd3a1d9083834a9174eac036120e964933d"}
+    },
+    {
+      "id": "d2-paper-review",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_ROUTE_V4_2026-08-25/STRUCTURAL_REVIEW.json",
+      "expect": {"mode": "0444", "size_bytes": 5869, "sha256": "00438023ff26b3b5b0cc9b46dbb6687c1f9cde5687d2d222901b9d2cfdfc730e"}
+    },
+    {
+      "id": "implementation-preflight-contract",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_CONTRACT_2026-08-25.md",
+      "expect": {"mode": "0664", "size_bytes": 8884, "sha256": "55b95e4fcab3872ffd0e2b098722a8603f910b7b638b3f1a9b79f1dbebe981d2"}
+    },
+    {
+      "id": "p0-static-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P0_STATIC_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 7003, "sha256": "9b6aff3d74d36e7f5868fff596eb17326e819bf45496bbe4f3cf50870a7f71e0"}
+    },
+    {
+      "id": "d1-decision",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/D1_DECISION.json",
+      "expect": {"mode": "0444", "size_bytes": 5361257, "sha256": "80530f9f5787f846ce2cf222c1b60e3ae42887ce95a11ac153ec7271cce98baf"}
+    },
+    {
+      "id": "d1-correction-v2",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_PMU_INTERPRETATION_CORRECTION_V2_2026-08-25/CORRECTION.json",
+      "expect": {"mode": "0444", "size_bytes": 1932, "sha256": "004bc1f5d7cd493525cfb9287e79e8159f983b41a51a2374eaeb7931c72aad38"}
+    },
+    {
+      "id": "v10-source",
+      "kind": "file",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "expect": {"mode": "0444", "size_bytes": 91518, "sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c"}
+    },
+    {
+      "id": "d1-fragment",
+      "kind": "file",
+      "path": "../../../scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc",
+      "expect": {"mode": "0664", "size_bytes": 113204, "sha256": "bbd8b8d318810eec721812f21efbeb5f231dacba774cb5ade854e2201c6c7665"}
+    },
+    {
+      "id": "remote-input-audit",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_C1_IMPLEMENTATION_REMOTE_AUDIT_V2_2026-08-25.json",
+      "expect": {"mode": "0664", "size_bytes": 1977, "sha256": "50dd3c02bc932546b535c46ff44f3bd7f18fde360cbbb020bc9a447461eccab0"}
+    },
+    {
+      "id": "active-v11",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {"mode": "0664", "size_bytes": 124127, "sha256": "d9edfe7346b8636096701d4ac38044d5e386e6741a086a4d8da57ac15bffdf3b"}
+    },
+    {
+      "id": "probe-controller-absent",
+      "kind": "absent",
+      "path": "../../../scripts/lay-v10-e1-traversal-d2-capability-probe.py",
+      "expect": {}
+    },
+    {
+      "id": "probe-receipt-absent",
+      "kind": "absent",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P1_CAPABILITY_PROBE_RECEIPT.json",
+      "expect": {}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "create-probe-only-controller", "kind": "local_source_create"},
+      {"id": "create-one-shot-remote-probe-state", "kind": "remote_state_create"},
+      {"id": "run-one-benign-three-subrun-perf-record-transaction", "kind": "remote_benign_capability_probe"},
+      {"id": "read-probe-perf-data", "kind": "remote_perf_data_read"},
+      {"id": "publish-immutable-capability-receipt", "kind": "remote_and_local_evidence_write"},
+      {"id": "record-preflight-result", "kind": "documentation_edit"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "d2_controller_or_fragment_implementation",
+      "cargo_build_check_test_or_rustc_compilation",
+      "d2_elf_build_or_execution",
+      "v10_v13_package_sidecar_schedule_or_search_execution",
+      "perf_stat_or_non_preregistered_perf_event",
+      "event_period_precision_cpu_or_privilege_substitution",
+      "adaptive_frequency_period_or_probe_retry",
+      "foreign_process_stop_reaffinity_repriority_or_policy_change",
+      "host_governor_smt_turbo_thermal_or_perf_sysctl_tuning",
+      "d2_bucket_map_or_attribution_publication",
+      "full_b_v12_runtime_integration_or_deployment",
+      "installed_lay_mutation_or_process_restart",
+      "runtime_authority_change"
+    ]
+  },
+  "source_checks": [],
+  "state_machine": {
+    "initial_state": "D2_P0_STATIC_SEALED_PROBE_CONTROLLER_ABSENT",
+    "steps": [
+      {
+        "id": "create-probe-controller",
+        "from": "D2_P0_STATIC_SEALED_PROBE_CONTROLLER_ABSENT",
+        "to": "D2_PROBE_CONTROLLER_UNRUN",
+        "mutates": true,
+        "failure_state": "D2_PROBE_CONTROLLER_REJECTED",
+        "cleanup": "remove only a partial new probe controller; preserve all paper and predecessor evidence",
+        "preserves": ["d2-paper", "d1-evidence", "v10-source", "d1-fragment", "active-v11", "installed-runtime"],
+        "test_id": "probe-controller-creation-fault"
+      },
+      {
+        "id": "self-check-probe-controller",
+        "from": "D2_PROBE_CONTROLLER_UNRUN",
+        "to": "D2_PROBE_CONTROLLER_VERIFIED_UNRUN",
+        "mutates": false,
+        "test_id": "probe-static-parity"
+      },
+      {
+        "id": "create-remote-probe-state",
+        "from": "D2_PROBE_CONTROLLER_VERIFIED_UNRUN",
+        "to": "D2_PROBE_STATE_READY",
+        "mutates": true,
+        "failure_state": "D2_PROBE_STATE_TERMINAL",
+        "cleanup": "retain failed-state evidence or remove unpublished empty staging; no PMU event and no retry",
+        "preserves": ["d2-paper", "d1-evidence", "v10-source", "d1-fragment", "active-v11", "installed-runtime"],
+        "test_id": "probe-remote-state-fault"
+      },
+      {
+        "id": "consume-marker-and-run-probe-transaction",
+        "from": "D2_PROBE_STATE_READY",
+        "to": "D2_PROBE_OBSERVED",
+        "mutates": true,
+        "failure_state": "D2_PROBE_BLOCKED_CAPABILITY_RETAINED",
+        "cleanup": "retain consumed marker, every completed perf.data file, maps, logs and first failure; no substitution or retry",
+        "preserves": ["d2-paper", "d1-evidence", "v10-source", "d1-fragment", "active-v11", "installed-runtime"],
+        "test_id": "probe-transaction-fault"
+      },
+      {
+        "id": "publish-probe-receipt",
+        "from": "D2_PROBE_OBSERVED",
+        "to": "D2_PROBE_RECEIPT_PUBLISHED",
+        "mutates": true,
+        "failure_state": "D2_PROBE_PUBLICATION_FAILED_REMOTE_RETAINED",
+        "cleanup": "retain sealed remote evidence and remove only an incomplete local stage",
+        "preserves": ["d2-paper", "d1-evidence", "v10-source", "d1-fragment", "active-v11", "installed-runtime"],
+        "test_id": "probe-publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "D2_PROBE_RECEIPT_PUBLISHED",
+      "D2_PROBE_CONTROLLER_REJECTED",
+      "D2_PROBE_STATE_TERMINAL",
+      "D2_PROBE_BLOCKED_CAPABILITY_RETAINED",
+      "D2_PROBE_PUBLICATION_FAILED_REMOTE_RETAINED"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "d2-paper",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_ROUTE_V4_2026-08-25/STRUCTURAL_REVIEW.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "d2-paper-review"
+    },
+    {
+      "id": "d1-evidence",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_REMAINING_COST_D1_2026-08-25/D1_DECISION.json",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "d1-decision"
+    },
+    {
+      "id": "v10-source",
+      "path": "/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/artifacts/v13_typed_peak.v10.rs",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "v10-source"
+    },
+    {
+      "id": "d1-fragment",
+      "path": "../../../scripts/lay_v10_e1_remaining_cost_d1_test_module.rs.inc",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "d1-fragment"
+    },
+    {
+      "id": "active-v11",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "policy": "immutable",
+      "rollback_policy": "retain_exact_bytes",
+      "baseline_check_id": "active-v11"
+    },
+    {
+      "id": "installed-runtime",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_IMPLEMENTATION_PREFLIGHT_2026-08-25/P0_STATIC_RECEIPT.json",
+      "policy": "immutable_observation",
+      "rollback_policy": "no_runtime_mutation_permitted",
+      "baseline_check_id": "p0-static-receipt"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "probe-event-identity",
+      "producer": "P0 frozen task-clock cpu_core and cpu_atom selectors periods precision and CPU sets",
+      "consumer": "three probe perf.data evlists and sample rows",
+      "comparison": "exact event string period precise_ip exclude-kernel PMU type and pinned CPU",
+      "test_id": "probe-event-parity"
+    },
+    {
+      "id": "probe-benign-subject",
+      "producer": "P0 pinned yes and taskset bytes",
+      "consumer": "probe-attached process and sampled DSO",
+      "comparison": "exact SHA-256 ELF Build ID argv PID affinity and maps identity; no D2 or V13 path",
+      "test_id": "probe-benign-boundary"
+    },
+    {
+      "id": "probe-pie-normalization",
+      "producer": "yes ET_DYN PT_LOAD and Build ID plus live PID maps",
+      "consumer": "sample runtime IPs",
+      "comparison": "Build ID plus normalized ELF virtual IP falls in the executable PT_LOAD and resolves to the sampled DSO",
+      "test_id": "probe-pie-normalization"
+    },
+    {
+      "id": "local-remote-probe-controller",
+      "producer": "locally reviewed probe-only controller",
+      "consumer": "remote one-shot probe controller",
+      "comparison": "exact SHA-256 mode and source scan before marker consumption",
+      "test_id": "probe-static-parity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "probe-host-stability",
+      "source": "P0 target-host projection before and after the probe transaction",
+      "comparison": "exact_stable_projection",
+      "reason": "capability applies only to the pinned mini-PC PMUs and kernel without policy tuning",
+      "stable_fields": ["hostname", "machine_id_exact_file_sha256", "kernel", "online_cpus", "cpu_core_type_and_cpus", "cpu_atom_type_and_cpus", "perf_wrapper_sha256", "resolved_perf_sha256", "perf_event_paranoid", "kptr_restrict", "perf_event_max_sample_rate"],
+      "expected_to_change_fields": ["wall_clock", "load_average", "pressure", "temperature", "process_cpu_time"],
+      "observed_not_compared_fields": ["foreign_process_pid_set", "filesystem_cache_residency"],
+      "test_id": "probe-host-parity"
+    },
+    {
+      "id": "installed-runtime-stability",
+      "source": "P0 installed Lay projection and post-probe projection",
+      "comparison": "exact_stable_projection",
+      "reason": "a benign remote capability probe cannot mutate installed Lay or authority",
+      "stable_fields": ["lay_version", "active_v11_sha256", "ibus_daemon_pid", "lay_daemon_pid", "lay_ibus_engine_pid", "runtime_authority_changed"],
+      "expected_to_change_fields": [],
+      "observed_not_compared_fields": ["process_cpu_time", "host_load", "temperature"],
+      "test_id": "runtime-noninterference"
+    }
+  ],
+  "invariants": [
+    {"id": "probe-is-benign-only", "statement": "the transaction samples only taskset-pinned yes PIDs and cannot load or execute any D2 V10 V13 package sidecar schedule search or fixture bytes", "test_id": "probe-benign-boundary"},
+    {"id": "probe-events-are-frozen", "statement": "one transaction uses exactly task-clock:u period 100000 on CPU0, cpu_core event 0xc0 upp period 5000000 on CPU0 and cpu_atom event 0xc0 upp period 5000000 on CPU12 with no substitution", "test_id": "probe-capability-transaction"},
+    {"id": "probe-is-one-shot", "statement": "the probe marker is consumed before the first perf record and remains consumed after success or any failure; no retry is permitted", "test_id": "probe-marker-fault"},
+    {"id": "probe-must-not-throttle", "statement": "lost throttle unthrottle period drift adaptive frequency or missing event identity blocks capability and cannot relax the frozen task-clock period", "test_id": "probe-capability-transaction"},
+    {"id": "pie-normalization-is-build-id-bound", "statement": "ET_DYN runtime IPs are normalized only from live maps or perf mmap evidence and matching PT_LOAD offsets, then joined by exact DSO Build ID plus normalized ELF address", "test_id": "probe-pie-normalization"},
+    {"id": "foreign-load-is-not-controlled", "statement": "Nando btop K1 and all foreign processes remain untouched; no host governor SMT turbo thermal perf sysctl affinity or policy tuning occurs", "test_id": "probe-host-parity"},
+    {"id": "probe-does-not-admit-d2", "statement": "a probe PASS admits only evaluation by the final D2 implementation preflight and cannot build execute sample or attribute D2", "test_id": "later-gate-absence"},
+    {"id": "runtime-authority-is-unchanged", "statement": "installed Lay V11 daemon PIDs and runtime authority remain unchanged", "test_id": "runtime-noninterference"}
+  ],
+  "tests": [
+    {"id": "probe-controller-creation-fault", "kind": "fault_injection", "expected": "a partial or invalid probe-controller creation removes only the new partial file and cannot create remote state or invoke perf"},
+    {"id": "probe-controller-source-scan", "kind": "integration", "expected": "new controller contains only static identity checks, one consumed marker, three pinned benign record subruns, read-only perf-data extraction, fail-closed validation and immutable publication; no D2 build subject or foreign-process control route"},
+    {"id": "probe-static-parity", "kind": "parity", "expected": "controller constants reproduce every P0 host binary PMU event period CPU and benign Build-ID identity before any remote state or PMU event"},
+    {"id": "probe-remote-state-fault", "kind": "fault_injection", "expected": "destination collision identity drift permission failure or marker fault creates no perf event, retains paper evidence and cannot retry"},
+    {"id": "probe-marker-fault", "kind": "fault_injection", "expected": "a pre-record injected failure proves the marker is consumed before execution and remains consumed with no perf.data and no retry"},
+    {"id": "probe-transaction-fault", "kind": "fault_injection", "expected": "any subrun launch event sample lost throttle period precision Build-ID maps or normalization failure retains consumed marker and raw evidence, stops remaining routes where safe and forbids retry"},
+    {"id": "probe-capability-transaction", "kind": "integration", "expected": "exactly three record subruns produce samples and IPs with exact events periods user privilege precision and CPUs, zero lost throttle unthrottle or adaptive changes, and immutable raw evidence"},
+    {"id": "probe-event-parity", "kind": "parity", "expected": "each perf.data evlist and sample stream matches its preregistered selector period precise_ip exclude-kernel PMU type and pinned CPU exactly"},
+    {"id": "probe-benign-boundary", "kind": "parity", "expected": "every attached PID executable maps to pinned yes/taskset bytes; no command argv or open path references D2 V10 V13 package sidecar schedule search or fixture artifacts"},
+    {"id": "probe-pie-normalization", "kind": "parity", "expected": "yes Build ID 8c99ebc2c856857219acc612c2d9be3172b74be5 matches perf evidence and each sampled yes IP normalizes through its live map and PT_LOAD into an executable ELF virtual address"},
+    {"id": "probe-host-parity", "kind": "parity", "expected": "host machine kernel online CPUs hybrid PMUs perf identities and perf sysctls match P0 before and after; ordinary load may vary and no policy is changed"},
+    {"id": "probe-publication-fault", "kind": "fault_injection", "expected": "incomplete or invalid evidence never exposes a PASS receipt; sealed remote evidence is retained and local partial staging alone is removed"},
+    {"id": "runtime-noninterference", "kind": "parity", "expected": "Lay 1.0.43 active V11 SHA and the three daemon PIDs remain unchanged; no install restart or authority change occurs"},
+    {"id": "later-gate-absence", "kind": "integration", "expected": "zero Cargo build/check/test, rustc compilation, D2 build, D2 subject, parity, U/T/I route, full B, V12, runtime integration or deployment action occurs"}
+  ]
+}

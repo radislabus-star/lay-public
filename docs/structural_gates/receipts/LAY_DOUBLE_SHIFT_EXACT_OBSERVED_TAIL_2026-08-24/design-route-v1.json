@@ -1,0 +1,378 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "VETO",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": false,
+  "contract": "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_ROUTE_V1_2026-08-24.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 12,
+  "edge_count": 22,
+  "routes": [
+    {
+      "id": "ime-proven-execution",
+      "event": "ime-proven-handled",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "ime-proven-output",
+      "path_count": 0,
+      "paths": [],
+      "role_owners": {},
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "ime-proven-output",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 1,
+          "max": 1,
+          "paths": []
+        }
+      ]
+    },
+    {
+      "id": "delegated-exact-execution",
+      "event": "delegated-exact-tail",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "daemon-uinput-output",
+      "path_count": 0,
+      "paths": [],
+      "role_owners": {},
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "daemon-uinput-output",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 1,
+          "max": 1,
+          "paths": []
+        }
+      ]
+    },
+    {
+      "id": "delegated-exact-authority",
+      "event": "delegated-exact-tail",
+      "kind": "authority",
+      "entry": "ime-tail-snapshot",
+      "via": [],
+      "terminal": "daemon-uinput-output",
+      "path_count": 1,
+      "paths": [
+        [
+          "ime-tail-snapshot",
+          "daemon-exact-tail-planner",
+          "daemon-uinput-output"
+        ]
+      ],
+      "role_owners": {
+        "authorization_owner": [
+          "daemon-exact-tail-planner"
+        ],
+        "mutation_owner": [
+          "daemon-uinput-output"
+        ],
+        "observer": [
+          "ime-tail-snapshot"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "ime-tail-snapshot",
+          "to": "daemon-uinput-output",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "ime-tail-snapshot",
+              "daemon-exact-tail-planner",
+              "daemon-uinput-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "delegated-mismatch-stop",
+      "event": "delegated-tail-mismatch",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "fail-closed-terminal",
+      "path_count": 0,
+      "paths": [],
+      "role_owners": {},
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "fail-closed-terminal",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 1,
+          "max": 1,
+          "paths": []
+        }
+      ]
+    },
+    {
+      "id": "pending-undo-authority",
+      "event": "pending-autocorrect-undo",
+      "kind": "authority",
+      "entry": "daemon-trigger-dispatch",
+      "via": [],
+      "terminal": "configured-undo-output",
+      "path_count": 1,
+      "paths": [
+        [
+          "daemon-trigger-dispatch",
+          "pending-undo-planner",
+          "configured-undo-output"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "configured-undo-output"
+        ],
+        "orchestrator": [
+          "daemon-trigger-dispatch"
+        ],
+        "authorization_owner": [
+          "pending-undo-planner"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "daemon-trigger-dispatch",
+          "to": "configured-undo-output",
+          "via": [],
+          "graph": "authority",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "daemon-trigger-dispatch",
+              "pending-undo-planner",
+              "configured-undo-output"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "blocked-execution",
+      "event": "atomic-or-error-blocked",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "fail-closed-terminal",
+      "path_count": 0,
+      "paths": [],
+      "role_owners": {},
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "fail-closed-terminal",
+          "via": [],
+          "graph": "execution",
+          "count": 0,
+          "minimum_count": 0,
+          "min": 1,
+          "max": 1,
+          "paths": []
+        }
+      ]
+    },
+    {
+      "id": "route-proof",
+      "event": "exact-tail-route-proof",
+      "kind": "proof",
+      "entry": "fail-closed-terminal",
+      "via": [],
+      "terminal": "route-proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "fail-closed-terminal",
+          "route-proof"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "fail-closed-terminal"
+        ],
+        "proof_owner": [
+          "route-proof"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "delegated-exact-tail": {
+      "mutation_owner": [
+        "daemon-uinput-output"
+      ],
+      "display_rank_owner": [],
+      "authorization_owner": [
+        "daemon-exact-tail-planner"
+      ],
+      "candidate_rank_owner": [],
+      "render_owner": [],
+      "evidence_owner": []
+    },
+    "pending-autocorrect-undo": {
+      "mutation_owner": [
+        "configured-undo-output"
+      ],
+      "display_rank_owner": [],
+      "authorization_owner": [
+        "pending-undo-planner"
+      ],
+      "candidate_rank_owner": [],
+      "render_owner": [],
+      "evidence_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [
+    {
+      "code": "authorization_relation_role_mismatch",
+      "message": "authorizes must connect authorization_owner to mutation_owner",
+      "edge": "handled-output",
+      "source_role": "producer",
+      "target_role": "mutation_owner"
+    },
+    {
+      "code": "authority_stage_reversal",
+      "message": "logical authority flow moves backward; control calls must use calls/delegates",
+      "edge": "delegated-plan",
+      "source": "ime-tail-snapshot",
+      "target": "daemon-exact-tail-planner",
+      "source_role": "observer",
+      "target_role": "authorization_owner"
+    },
+    {
+      "code": "route_disconnected",
+      "message": "no path of the declared kind connects entry, ordered via nodes, and terminal",
+      "route": "ime-proven-execution",
+      "kind": "execution"
+    },
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "ime-proven-execution",
+      "event": "ime-proven-handled",
+      "graph": "execution",
+      "source": "physical-double-shift",
+      "target": "ime-proven-output",
+      "count": 0,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": []
+    },
+    {
+      "code": "route_disconnected",
+      "message": "no path of the declared kind connects entry, ordered via nodes, and terminal",
+      "route": "delegated-exact-execution",
+      "kind": "execution"
+    },
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "delegated-exact-execution",
+      "event": "delegated-exact-tail",
+      "graph": "execution",
+      "source": "physical-double-shift",
+      "target": "daemon-uinput-output",
+      "count": 0,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": []
+    },
+    {
+      "code": "authority_route_observer_contamination",
+      "message": "observer and proof nodes cannot participate in live authority flow",
+      "route": "delegated-exact-authority",
+      "nodes": [
+        "ime-tail-snapshot"
+      ]
+    },
+    {
+      "code": "route_disconnected",
+      "message": "no path of the declared kind connects entry, ordered via nodes, and terminal",
+      "route": "delegated-mismatch-stop",
+      "kind": "execution"
+    },
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "delegated-mismatch-stop",
+      "event": "delegated-tail-mismatch",
+      "graph": "execution",
+      "source": "physical-double-shift",
+      "target": "fail-closed-terminal",
+      "count": 0,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": []
+    },
+    {
+      "code": "route_disconnected",
+      "message": "no path of the declared kind connects entry, ordered via nodes, and terminal",
+      "route": "blocked-execution",
+      "kind": "execution"
+    },
+    {
+      "code": "path_cardinality_violation",
+      "message": "event reaches the endpoint through the wrong number of same-kind paths",
+      "route": "blocked-execution",
+      "event": "atomic-or-error-blocked",
+      "graph": "execution",
+      "source": "physical-double-shift",
+      "target": "fail-closed-terminal",
+      "count": 0,
+      "minimum": 1,
+      "maximum": 1,
+      "paths": []
+    }
+  ],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

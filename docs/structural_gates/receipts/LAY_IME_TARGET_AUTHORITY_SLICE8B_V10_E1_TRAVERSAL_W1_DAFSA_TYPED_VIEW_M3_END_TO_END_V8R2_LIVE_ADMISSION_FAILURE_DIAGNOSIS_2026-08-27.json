@@ -1,0 +1,66 @@
+{
+  "schema": "lay.m3-v8r2-live-admission-failure-diagnosis.v1",
+  "task_id": "slice8b-v10-e1-traversal-w1-dafsa-typed-view-m3-e2e-v8r2-direct-exec-20260827",
+  "transaction_id": "59694b7b9f0327d78896b5bc4797671f54478674186558e338e4a1b0d9ef7813",
+  "verdict": "V8R2_REMOTE_TERMINAL_PROJECTION_DEFECT_CONFIRMED",
+  "execution_verdict": "BLOCKED_PROVENANCE",
+  "execution_journal_sha256sums_sha256": "298ebe81c77f48edca3d9df1fd514b14d6bcd7abf15f41ac42752cf27029d785",
+  "controller_implementation_sha256": "0c8e792d88e532b5cfb18c65a4ba15c031cc0956e6c9798a0b4de8c30b450b34",
+  "controller_sha256": "7a77aaa1a1b42e77e3c654e12953c6f02e70ecee71046a50befe6ffaea7a446a",
+  "remote_controller_sha256": "f40183fb405a0ab52ac86dc1493fc38ae4ca14aef0830e46188b49cb4e21081a",
+  "auditor_sha256": "72b9071d75bd0cfb15545c1820dae453ff961d207f7cd346c17ae1881f61592f",
+  "failed_action": {
+    "sequence": 1,
+    "action": "live-admission",
+    "intent_durable": true,
+    "completion_present": false,
+    "controller_error": "external action verdict drift: live-admission: BLOCKED_PROVENANCE",
+    "retry_permitted": false
+  },
+  "incorrect_predicate": {
+    "location": "independent auditor validate_v8r1",
+    "required_remote_latest_state": "BLOCKED_PROVENANCE",
+    "actual_remote_latest_state": "E2E_CREATED_UNAUDITED",
+    "interpretation": "remote producer state was incorrectly treated as the final independent audit verdict"
+  },
+  "authoritative_v8r1_pair": {
+    "remote_producer_state": "E2E_CREATED_UNAUDITED",
+    "remote_e2e_wrapper_sha256": "1edc2c195b67485d007c1ed9354db14cf6f9907eaa1ffc3d77fa5f07b13f291b",
+    "local_terminal_audit_verdict": "BLOCKED_PROVENANCE",
+    "local_terminal_audit_sha256": "04d0e17158a63a49088e8c8ff9dc25df67e50ac6a97b770ea3fcf1a73d67ec91",
+    "relation": "producer state is an immutable input to the later independent terminal verdict; it is not rewritten by that audit"
+  },
+  "post_failure_read_only_projection": {
+    "v8r2_remote_parent_present": false,
+    "v8r2_remote_state_present": false,
+    "v8r2_remote_cache_present": false,
+    "v8r2_markers_created": 0,
+    "v8r2_markers_consumed": 0,
+    "v8r2_elf_copies": 0,
+    "v8r2_subject_executions": 0,
+    "cargo_invocations": 0,
+    "rustc_compilations": 0,
+    "perf_record_invocations": 0,
+    "perf_stat_invocations": 0,
+    "runtime_authority_changed": false
+  },
+  "journal_observation": {
+    "blocked_response_was_received": true,
+    "blocked_response_payload_was_not_persisted": true,
+    "pending_intent": true,
+    "required_repair": "persist every verified structured response before checking whether its verdict admits the next action"
+  },
+  "salvage_boundary": {
+    "v8r2_retry_permitted": false,
+    "new_namespace_required": true,
+    "new_build_required": false,
+    "source_edit_required": false,
+    "exact_v8r1_elf_reusable": true,
+    "scientific_subject_was_tested": false,
+    "required_changes": [
+      "validate the exact V8R1 remote producer state together with the exact local terminal audit",
+      "retain a verified blocked external response before terminal controller dispatch"
+    ]
+  },
+  "production_authority_admitted": false
+}

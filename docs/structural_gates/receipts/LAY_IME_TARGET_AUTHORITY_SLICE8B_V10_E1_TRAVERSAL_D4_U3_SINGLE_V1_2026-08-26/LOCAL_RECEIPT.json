@@ -1,0 +1,40 @@
+{
+  "cargo_invocations": 0,
+  "d2_marker_mutations": 0,
+  "dispatch": {
+    "all_violations": {
+      "provenance": [],
+      "semantic": [],
+      "thermal": []
+    },
+    "reason": "all frozen D4 route predicates passed",
+    "selected_cause": null,
+    "selected_rank": null,
+    "verdict": "U3_SINGLE_PASS"
+  },
+  "marker_consumed": true,
+  "next_action_admitted": "T3-SINGLE only",
+  "perf_readers": 0,
+  "perf_record": 0,
+  "perf_stat": 0,
+  "pmu_events_opened": 0,
+  "remote_receipt_sha256": "db2ba1b3d4e11ac2c4edb24e382f93d282b1b5d605fcbb1636f5e346030dc000",
+  "retry_permitted": false,
+  "route": "U3-SINGLE",
+  "runtime_after": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "runtime_authority_changed": false,
+  "runtime_before": {
+    "launcher": "/home/ubu/.local/bin/lay",
+    "resolved": "/home/ubu/.local/lib/lay/bin/lay",
+    "resolved_sha256": "fcf203449a851fffd27c6cb0b4f08ada9bf829c05203c3630939fae000da3383"
+  },
+  "schema": "lay.v10.e1-traversal-d4-local-route.v1",
+  "subject_executions": 1,
+  "task_id": "slice8b-v10-e1-traversal-d4-estimator-recovery-v1-20260826",
+  "transaction_id": "2d3002b7cf615459a4250d7e44eb2094863dc422f908080b7afa59551ba4ee26",
+  "verdict": "U3_SINGLE_PASS"
+}

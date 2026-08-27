@@ -1,0 +1,23 @@
+{
+  "cargo_started_when_written": false,
+  "final_source_sha256": "858ee0cdea82245d15a107f4f74aac6e69fbc28daa94211e7867a3d877d75221",
+  "fragment_sha256": "22b30c74593ba567ca03304ad1eb1afcd5fc467dd4b9839111cd863bd3a18163",
+  "prerequisites": {
+    "build_jobs": "20",
+    "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)",
+    "cargo_incremental": "0",
+    "cargo_net_offline": "true",
+    "host": {
+      "hostname": "e-MEGA-MINI-M1-13th",
+      "machine_id_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441"
+    },
+    "loaded_host_is_blocker": false,
+    "rustc_vv": "rustc 1.97.1 (8bab26f4f 2026-07-14)\nbinary: rustc\ncommit-hash: 8bab26f4f68e0e26f0bb7960be334d5b520ea452\ncommit-date: 2026-07-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.97.1\nLLVM version: 22.1.6",
+    "rustflags": ""
+  },
+  "production_prefix_bytes": 39047,
+  "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+  "recovered_v10_sha256": "f6178f3882c1a216a9c2aaf7ff59dd6bdd78798708516b753ea7208177d9718c",
+  "schema": "lay.v10.structural-work-a1-prebuild.v1",
+  "task_id": "slice8b-v10-structural-work-a1-20260825"
+}

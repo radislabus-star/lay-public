@@ -1,0 +1,53 @@
+{
+  "schema": "lay.m3-actual-owner-provenance-blocked.v1",
+  "execution_admission": {
+    "manifest_sha256": "7b5ac007e3f30e59bf46d1e4a78200b2fbac79e40bcbfb3db28d6b9e7fed5aee",
+    "receipt_sha256": "48c248a761fc0cdeade9a474dda20e68f16e24ea26ccaae6007aa80c9fbc4d47"
+  },
+  "cargo": {
+    "invocations": 1,
+    "exit_status": 101,
+    "compile_completed": true,
+    "test_started": true,
+    "test_elapsed_seconds": 2.12,
+    "log": {
+      "path": "CARGO.log",
+      "size_bytes": 40548,
+      "sha256": "feee0ffb2d0abc2b0fbd269201d62aead25ed6d032456bd8358bee55089474c1"
+    }
+  },
+  "observation": {
+    "receipt": {
+      "path": "OWNER_RECEIPT.json",
+      "size_bytes": 253,
+      "sha256": "0d9ebe8d262877dff2c78f312dc7c1e4b6e5f25c87f31f1222f321bba830beb6"
+    },
+    "receipt_verdict": "BLOCKED_PROVENANCE",
+    "error": "reconstructed V11 sidecar identity drift",
+    "reconstructed_sidecars": 1,
+    "fixed_owner_request_denominator": 764,
+    "fixed_owner_requests_started": 0,
+    "fixed_owner_requests_completed": 0
+  },
+  "classification": {
+    "historical_v11_full_sha256": "5ebffb813ba0ca1e0080ec01756a2dafc51346297558d37cdd135abfde6acfaa",
+    "historical_phase7d_source_sha256": "d983d16169c7526d56e9f78299524ab80d3d4f3e67ff19770f07a7ae6e61045d",
+    "staged_phase7d_source_sha256": "16b6cc0128099e99c5a77037feac5cf49efd2ed088f6ddb2ade433da92241e5b",
+    "phase7d_semantics_digest_is_source_bound": true,
+    "payload_identity_tested": false,
+    "owner_semantics_tested": false,
+    "capability_tested": false,
+    "scope": "the full reconstructed V11 byte identity changed before owner proof because the sidecar header binds the Phase 7D source digest"
+  },
+  "side_effects": {
+    "network_or_remote_used": false,
+    "perf_or_pmu_used": false,
+    "sidecar_file_written": false,
+    "installed_lay_changed": false,
+    "production_activation_admitted": false,
+    "runtime_authority_changed": false
+  },
+  "retry_under_v4_permitted": false,
+  "next_action": "immutable sidecar identity interpretation correction before any new Cargo route",
+  "verdict": "BLOCKED_PROVENANCE"
+}

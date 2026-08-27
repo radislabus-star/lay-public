@@ -1,0 +1,421 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_TEST_SOURCE_INTEGRATION_CODE_ROUTE_V2_2026-08-27.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 8,
+  "edge_count": 16,
+  "routes": [
+    {
+      "id": "fixture-materialization-execution",
+      "event": "fixture-materialization",
+      "kind": "execution",
+      "entry": "test-entry",
+      "via": [],
+      "terminal": "typed-materializer",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-entry",
+          "integration-runner",
+          "byte-validator",
+          "typed-materializer"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "byte-validator",
+          "typed-materializer"
+        ],
+        "orchestrator": [
+          "integration-runner"
+        ],
+        "interface": [
+          "test-entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test-entry",
+          "to": "typed-materializer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test-entry",
+              "integration-runner",
+              "byte-validator",
+              "typed-materializer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fixed-materialization-execution",
+      "event": "fixed-materialization",
+      "kind": "execution",
+      "entry": "test-entry",
+      "via": [],
+      "terminal": "typed-materializer",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-entry",
+          "integration-runner",
+          "byte-validator",
+          "typed-materializer"
+        ]
+      ],
+      "role_owners": {
+        "producer": [
+          "byte-validator",
+          "typed-materializer"
+        ],
+        "orchestrator": [
+          "integration-runner"
+        ],
+        "interface": [
+          "test-entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test-entry",
+          "to": "typed-materializer",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test-entry",
+              "integration-runner",
+              "byte-validator",
+              "typed-materializer"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fixture-byte-execution",
+      "event": "fixture-parity",
+      "kind": "execution",
+      "entry": "test-entry",
+      "via": [],
+      "terminal": "byte-oracle",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-entry",
+          "integration-runner",
+          "byte-oracle"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "byte-oracle"
+        ],
+        "orchestrator": [
+          "integration-runner"
+        ],
+        "interface": [
+          "test-entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test-entry",
+          "to": "byte-oracle",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test-entry",
+              "integration-runner",
+              "byte-oracle"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fixture-typed-execution",
+      "event": "fixture-parity",
+      "kind": "execution",
+      "entry": "test-entry",
+      "via": [],
+      "terminal": "typed-executor",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-entry",
+          "integration-runner",
+          "typed-executor"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "integration-runner"
+        ],
+        "interface": [
+          "test-entry"
+        ],
+        "producer": [
+          "typed-executor"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test-entry",
+          "to": "typed-executor",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test-entry",
+              "integration-runner",
+              "typed-executor"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fixed-byte-execution",
+      "event": "fixed-parity",
+      "kind": "execution",
+      "entry": "test-entry",
+      "via": [],
+      "terminal": "byte-oracle",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-entry",
+          "integration-runner",
+          "byte-oracle"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "byte-oracle"
+        ],
+        "orchestrator": [
+          "integration-runner"
+        ],
+        "interface": [
+          "test-entry"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test-entry",
+          "to": "byte-oracle",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test-entry",
+              "integration-runner",
+              "byte-oracle"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fixed-typed-execution",
+      "event": "fixed-parity",
+      "kind": "execution",
+      "entry": "test-entry",
+      "via": [],
+      "terminal": "typed-executor",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-entry",
+          "integration-runner",
+          "typed-executor"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "integration-runner"
+        ],
+        "interface": [
+          "test-entry"
+        ],
+        "producer": [
+          "typed-executor"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "test-entry",
+          "to": "typed-executor",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "test-entry",
+              "integration-runner",
+              "typed-executor"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fixture-parity-observation",
+      "event": "fixture-parity",
+      "kind": "observation",
+      "entry": "byte-oracle",
+      "via": [],
+      "terminal": "integration-observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "byte-oracle",
+          "integration-observer"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "byte-oracle"
+        ],
+        "observer": [
+          "integration-observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "fixed-parity-observation",
+      "event": "fixed-parity",
+      "kind": "observation",
+      "entry": "byte-oracle",
+      "via": [],
+      "terminal": "integration-observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "byte-oracle",
+          "integration-observer"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "byte-oracle"
+        ],
+        "observer": [
+          "integration-observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "lifetime-observation",
+      "event": "lifetime-evidence",
+      "kind": "observation",
+      "entry": "typed-materializer",
+      "via": [],
+      "terminal": "integration-observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "typed-materializer",
+          "integration-observer"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "integration-observer"
+        ],
+        "producer": [
+          "typed-materializer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "integration-decision-proof",
+      "event": "integration-decision",
+      "kind": "proof",
+      "entry": "integration-observer",
+      "via": [],
+      "terminal": "integration-proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "integration-observer",
+          "integration-proof"
+        ]
+      ],
+      "role_owners": {
+        "observer": [
+          "integration-observer"
+        ],
+        "proof_owner": [
+          "integration-proof"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {},
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "lay.slice8b-v5-v6-stable-projection.v1",
+  "baseline_schema": "lay.live-cohort-compare-shadow.v1",
+  "candidate_schema": "lay.live-cohort-compare-shadow.v2",
+  "measured": {
+    "baseline_produced_fields": 918,
+    "candidate_produced_fields": 918,
+    "baseline_missing_comparator_errors": 382,
+    "candidate_no_field_cases": 382,
+    "baseline_empty_l11": 377,
+    "candidate_empty_l11": 377,
+    "baseline_unsupported_input": 5,
+    "candidate_unsupported_input": 5
+  },
+  "stable_projection": {
+    "produced_field_count": true,
+    "missing_to_no_field_count": true,
+    "empty_l11_count": true,
+    "unsupported_input_count": true,
+    "status_counts": true,
+    "material_scope_counts": true,
+    "field_producer_count": true,
+    "candidate_retention_failures": true,
+    "grounded_l11_losses": true,
+    "legacy_decision_parity_failures": true,
+    "runtime_authority_changed": true
+  },
+  "all_stable_projection_exact": true
+}

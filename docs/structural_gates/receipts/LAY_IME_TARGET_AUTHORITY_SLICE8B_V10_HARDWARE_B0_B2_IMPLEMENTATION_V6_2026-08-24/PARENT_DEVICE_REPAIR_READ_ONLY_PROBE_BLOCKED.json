@@ -1,0 +1,60 @@
+{
+  "schema": "lay.v10.hardware-b0-b2-implementation-repair.v1",
+  "task_id": "slice8b-v10-hardware-b0-b2-v3-20260824",
+  "recorded_at": "2026-08-24T23:59:33+03:00",
+  "preflight": {
+    "manifest_path": "docs/structural_gates/preflights/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_V6_2026-08-24.json",
+    "manifest_sha256": "f21253044cf866b209f70c279dd810cdeb784699daee99569fa42a1148d5e54b",
+    "receipt_path": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_HARDWARE_B0_B2_IMPLEMENTATION_PREFLIGHT_V6_2026-08-24.json",
+    "receipt_sha256": "5e64650e5e6267922df0dc35d6cf0c2bcc1e0aa8aec0817da5b9ab242ca1fa15",
+    "verdict": "READY_TO_IMPLEMENT",
+    "safe_to_implement": true
+  },
+  "implementation": {
+    "controller_path": "scripts/lay-v10-hardware-b0-b2.py",
+    "controller_size_bytes": 108738,
+    "controller_sha256": "6012c312a739a0f092eb5fcae7ee3eeb46573d68221fda18c3dd7a0f71c8d4ad",
+    "scope": "nearest-existing-parent resolution and pre/post-creation filesystem device validation",
+    "local_self_check": "PASS",
+    "focused_checks": 14,
+    "production_prefix_sha256": "ce9ea2d290602774e2f45444e10e6fdabce6af4a61ae2bdca54c6d2e31a53f26",
+    "remote_actions_during_self_check": 0,
+    "perf_invocations_during_self_check": 0
+  },
+  "read_only_remote_probe": {
+    "hostname": "e-MEGA-MINI-M1-13th",
+    "requested_output_parent": "/home/e/.local/share/lay/provenance",
+    "requested_output_parent_exists": false,
+    "nearest_existing_parent": "/home/e/.local/share/lay",
+    "nearest_existing_parent_device": 66306,
+    "nearest_existing_parent_inode": 23366571,
+    "v13_size_bytes": 140556462,
+    "v13_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "expected_machine_id_file_sha256": "5ac0bb537745673ef80942c2df32d586f5753c85de1c8b2453aa4e7317b77441",
+    "controller_stripped_machine_id_sha256": "ab7e08a8686d34233ac14d8d07a3ed5671ba14f0d2c08b6e3bba9eb2825ab876",
+    "result": "BLOCKED_BEFORE_B0A_MUTATION",
+    "failure_class": "MACHINE_ID_HASH_NORMALIZATION_MISMATCH"
+  },
+  "post_probe_audit": {
+    "provenance_root_exists": false,
+    "state_root_exists": false,
+    "stage_count": 0,
+    "matching_route_processes_excluding_audit": 0,
+    "remote_writes": 0,
+    "build_marker_created": false,
+    "freezer_marker_created": false,
+    "cargo_build_check_test": 0,
+    "perf_executable_invocations": 0,
+    "pmu_measurements": 0,
+    "v10_or_proxy_execution": 0
+  },
+  "decision": {
+    "v6_reused_for_retry": false,
+    "b0a_started": false,
+    "diagnostic_build_status": "NOT_STARTED",
+    "freezer_b0b_b1_b2_status": "NOT_STARTED",
+    "required_next_artifact": "new implementation preflight for exact-byte machine-id hashing across every B0-B2 owner",
+    "b3_parity_b5_b6_v12_admitted": false,
+    "runtime_authority_changed": false
+  }
+}

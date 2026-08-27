@@ -1,0 +1,78 @@
+{
+  "schema": "lay.v10.hardware-b1-local-index.v1",
+  "task_id": "slice8b-v10-hardware-b0-b2-v3-20260824",
+  "recorded_at": "2026-08-25T00:28:17+03:00",
+  "state": "BLOCKED_ENVIRONMENT",
+  "remote_receipt": {
+    "path": "/home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b1-environment-v1/ENVIRONMENT_RECEIPT.json",
+    "size_bytes": 229467,
+    "sha256": "12c591b447f0025548e96272a4e8d5d4f23debc8458ae99fce61b2e751673925",
+    "verdict": "BLOCKED_ENVIRONMENT"
+  },
+  "publication": {
+    "root_mode": "0555",
+    "writable_objects": 0,
+    "wait_limit_seconds": 120,
+    "samples_in_terminal_batch": 3
+  },
+  "terminal_samples": [
+    {
+      "cpu_psi_some_avg10": 10.43,
+      "io_psi_full_avg10": 2.08,
+      "memory_psi_full_avg10": 0.0,
+      "procs_running": 3,
+      "busy": ["150005:nando-operator-:107.837"]
+    },
+    {
+      "cpu_psi_some_avg10": 11.08,
+      "io_psi_full_avg10": 1.71,
+      "memory_psi_full_avg10": 0.0,
+      "procs_running": 2,
+      "busy": ["150005:nando-operator-:107.841", "3481471:btop:7.988"]
+    },
+    {
+      "cpu_psi_some_avg10": 11.08,
+      "io_psi_full_avg10": 1.71,
+      "memory_psi_full_avg10": 0.0,
+      "procs_running": 2,
+      "busy": ["150005:nando-operator-:107.840", "3481420:sshd:3.994", "3481471:btop:3.994"]
+    }
+  ],
+  "blocking_process_identity": {
+    "pid": 150005,
+    "comm": "nando-operator-",
+    "cmdline": "/opt/nando-wave/bin/nando-operator-certification-authority",
+    "cgroup": "/system.slice/nando-operator-certification-authority.service",
+    "cpus_allowed_list": "0-19",
+    "observed_cpu_percent_range": [107.837, 107.841]
+  },
+  "additional_observer_load": [
+    {
+      "pid": 3481471,
+      "comm": "btop",
+      "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/snap.btop.btop-2ec0716e-1a17-4961-81b8-4867ecde3a5a.scope",
+      "cpus_allowed_list": "0-19"
+    },
+    {
+      "pid": 3481420,
+      "comm": "sshd",
+      "cgroup": "/user.slice/user-1000.slice/session-18569.scope",
+      "cpus_allowed_list": "0-19"
+    }
+  ],
+  "noninterference": {
+    "host_policy_modified": false,
+    "perf_invoked": false,
+    "pmu_event_opened": false,
+    "runtime_authority_changed": false,
+    "installed_lay_changed": false
+  },
+  "decision": {
+    "b1_retry_under_v7": false,
+    "b2_executed": false,
+    "b2_admitted": false,
+    "b3_parity_b5_b6_v12_admitted": false,
+    "required_external_change": "a separately authorized quiet-host maintenance window or a different admitted measurement host",
+    "gate_relaxation_permitted": false
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "auditor": {
+    "mode": "0755",
+    "path": "scripts/lay-v10-e1-traversal-d6-concurrency-accounting.py",
+    "sha256": "864f09c4a127c69222637e909cbd6951818a00410e5a4f719cf7a489fb6f861a",
+    "size_bytes": 23404
+  },
+  "external_commands": 0,
+  "marker_mutations": 0,
+  "network_or_remote": 0,
+  "perf_or_pmu": 0,
+  "runtime_authority_changed": false,
+  "schema": "lay.v10.e1-traversal-d6-concurrency-accounting-self-check.v1",
+  "subject_executions": 0,
+  "task_id": "slice8b-v10-e1-traversal-d6-concurrency-accounting-v1-20260826",
+  "verdict": "D6_ACCOUNTING_AUDITOR_VERIFIED_UNRUN"
+}

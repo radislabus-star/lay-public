@@ -1,0 +1,292 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "id": "v8-paper-contract",
+      "kind": "file",
+      "path": "../../ime-target-authority-slice8-lexical-readout-2026-08-23.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 29374,
+        "sha256": "d2fd03a06562da2421d0ec649bbdced1caf3e163b4b3a2e535d572b99b1362c0"
+      }
+    },
+    {
+      "id": "v7-fixed-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-fixed-13x100.json",
+      "expect": {
+        "mode": "0600",
+        "size_bytes": 1606189,
+        "sha256": "33fded73e13f565bdc08a83bd440be67c80f6d85a196453050b09bc9f7ef28e4"
+      }
+    },
+    {
+      "id": "v8-route-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v8-typed-contour-material-route.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 7416,
+        "sha256": "2f071b44ef74e33bb11a8115c5c6a069dfbb9af2c215130e48934d944eca44ee"
+      }
+    },
+    {
+      "id": "contour-birth-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 21028,
+        "sha256": "9e8358b32ac721d2541332d6175e920d8bf4ce4bf98ca710737e4e058dc95677"
+      }
+    },
+    {
+      "id": "canonical-v13-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/runtime.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 142756,
+        "sha256": "cb94bd3ffaf61b31f7cce8d2051ae9087cf8aba26487c037ba6fbeaaa57f0966"
+      }
+    },
+    {
+      "id": "production-bridge-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 111807,
+        "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad"
+      }
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "attempt-identity",
+      "producer": "each V7 NoField record keyed by damage_class and proof_identity",
+      "consumer": "exactly one V8 discovery-audit row",
+      "comparison": "the 382 saved attempt identities and availability classes are preserved one-to-one",
+      "test_id": "audit-denominator-conservation"
+    },
+    {
+      "id": "target-blind-generation",
+      "producer": "enumerate_typed_contour_births receiving damaged_surface and immutable V13 only",
+      "consumer": "a frozen birth set and work record completed before target_surface is decoded",
+      "comparison": "target bytes are absent from generation inputs and can affect only post-generation labels",
+      "test_id": "target-noninterference"
+    },
+    {
+      "id": "canonical-form-lemma-namespace",
+      "producer": "CanonicalForm grounding_ref emitted by the existing contour enumerator",
+      "consumer": "StandaloneL2Field imported lemma identities for that exact form_ref",
+      "comparison": "no surface rewrite fuzzy remap or target-conditioned form_ref substitution occurs",
+      "test_id": "form-lemma-binding"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "measurement-only",
+      "statement": "the audit is test-only and cannot change bridge runtime packages authority cache daemon IBus or installed Lay",
+      "test_id": "runtime-noninterference"
+    },
+    {
+      "id": "complete-partitions",
+      "statement": "exact-target same-lemma and no-target-lemma discovery partitions sum to all 382 NoField records globally by availability and by damage class",
+      "test_id": "audit-denominator-conservation"
+    },
+    {
+      "id": "unsupported-separated",
+      "statement": "UnsupportedInput remains separate from EmptyL11Lattice in every discovery projection",
+      "test_id": "availability-conservation"
+    },
+    {
+      "id": "work-and-latency-observed",
+      "statement": "every attempt records births exact lookups operator steps overflow and closed generation latency without claiming the five millisecond product gate",
+      "test_id": "audit-work-accounting"
+    },
+    {
+      "id": "no-heavy-search-loop",
+      "statement": "the audit reads only the saved 382 NoField records and does not rerun the fixed 13x100 proof rebuild any package or mutate runtime authority",
+      "test_id": "bounded-audit-scope"
+    },
+    {
+      "id": "no-runtime-shortcut",
+      "statement": "the change adds no literal runtime case class branch top-k increase fallback verdict safety weakening or direct Born-to-Winner promotion",
+      "test_id": "systemic-source-scan"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "id": "v7-fixed-evidence",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-fixed-13x100.json",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "retain the complete V7 denominator and provenance records exactly",
+      "baseline_check_id": "v7-fixed-receipt"
+    },
+    {
+      "id": "production-bridge",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "do not edit the live field bridge in the discovery-audit slice",
+      "baseline_check_id": "production-bridge-owner"
+    },
+    {
+      "id": "canonical-v13-runtime",
+      "path": "../../../src/nanda_wave/l2_field/runtime.rs",
+      "policy": "read_only_exact_bytes",
+      "rollback_policy": "use the existing exact form and lemma indexes without changing runtime behavior",
+      "baseline_check_id": "canonical-v13-owner"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [
+    {
+      "id": "v7-v8-audit-projection",
+      "source": "saved V7 NoField records and the same immutable canonical V13 package named by V7",
+      "comparison": "exact_stable_projection",
+      "reason": "V8 adds post-generation lemma-discovery labels without reevaluating the productive proof",
+      "baseline": "V7 NoField provenance",
+      "candidate": "V8 target-blind discovery audit",
+      "stable_fields": [
+        "no_field_record_count",
+        "damage_class",
+        "proof_identity",
+        "availability",
+        "damaged_surface",
+        "target_surface"
+      ],
+      "expected_to_change_fields": [
+        "exact_target_discovered",
+        "same_lemma_discovered",
+        "birth_count",
+        "work_counters",
+        "closed_generation_latency"
+      ],
+      "observed_not_compared_fields": [
+        "productive_readout",
+        "live_candidate_order",
+        "queue_latency",
+        "physical_input"
+      ],
+      "test_id": "v7-v8-stable-projection"
+    }
+  ],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": true,
+  "source_checks": [
+    {
+      "id": "contour-owner-pinned",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/contour_birth.rs",
+      "sha256": "9e8358b32ac721d2541332d6175e920d8bf4ce4bf98ca710737e4e058dc95677",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_deployment", "regex": "(?:systemctl|lay-runtime-control|install-release)"},
+        {"effect": "restart_lay_daemon", "regex": "(?:restart|stop|kill|pkill).{0,80}lay-daemon"},
+        {"effect": "restart_lay_ibus_engine", "regex": "(?:restart|stop|kill|pkill).{0,80}lay-ibus-engine"},
+        {"effect": "restart_global_ibus_daemon", "regex": "(?:restart|stop|kill|pkill).{0,80}ibus-daemon"},
+        {"effect": "generated_traffic", "regex": "(?:TcpStream|UdpSocket|reqwest|hyper::|https?://)"},
+        {"effect": "synthetic_fixture", "regex": "(?:write|create|generate)_synthetic_fixture"},
+        {"effect": "package_rebuild", "regex": "(?:reinduce|compile|rebuild).{0,100}(?:V9|V13|V90|package)"},
+        {"effect": "package_write", "regex": "(?:File::create|OpenOptions::new).{0,300}(?:V9|V13|V90|p2m|bin)"},
+        {"effect": "full_13x100_proof", "regex": "(?:13x100|heldout_per_class.{0,40}100)"},
+        {"effect": "raise_global_limit", "regex": "MAX_CONTOUR_(?:EXACT_LOOKUPS|OPERATOR_STEPS)\\s*:\\s*u64\\s*=\\s*(?:32768|65536|131072|262144)"},
+        {"effect": "literal_case_runtime_branch", "regex": "(?:damage_class|case\\.class).{0,120}(?:if|match)"},
+        {"effect": "fallback_authority", "regex": "(?:fallback_authority|fallback_winner|legacy_fallback)"},
+        {"effect": "target_conditioned_enumerator", "regex": "enumerate_(?:typed_)?contour_births[^\\n]{0,180}target_surface"},
+        {"effect": "runtime_authority_flip", "regex": "(?:runtime_authority_changed|promotion_eligible)\\s*[:=]\\s*true"},
+        {"effect": "weaken_verifier", "regex": "(?:SafetyGate|verifier).{0,120}(?:bypass|disable|skip|weaken)"}
+      ]
+    },
+    {
+      "id": "production-bridge-pinned",
+      "path": "../../../src/nanda_wave/l2_field/bridge.rs",
+      "sha256": "5f3cd350c59b0b84a6f2250077f4d3e6f061c93a548451c9aafe4cf0f5f820ad",
+      "forbidden_effect_patterns": [
+        {"effect": "production_bridge_edit", "regex": "(?:target_blind_lemma_audit|v8_discovery_audit|coverage_audit)"},
+        {"effect": "audit_leaks_into_runtime", "regex": "(?:target_blind_lemma_audit|v8_discovery_audit|coverage_audit)"}
+      ]
+    },
+    {
+      "id": "canonical-v13-runtime-pinned",
+      "path": "../../../src/nanda_wave/l2_field/runtime.rs",
+      "sha256": "cb94bd3ffaf61b31f7cce8d2051ae9087cf8aba26487c037ba6fbeaaa57f0966",
+      "forbidden_effect_patterns": [
+        {"effect": "canonical_v13_runtime_edit", "regex": "(?:target_blind_lemma_audit|v8_discovery_audit|coverage_audit)"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "record-v8-paper-contract", "kind": "documentation_edit"},
+      {"id": "add-test-only-discovery-audit", "kind": "source_edit"},
+      {"id": "run-focused-remote-test-build", "kind": "remote_test"},
+      {"id": "read-v7-and-v13", "kind": "filesystem_read"},
+      {"id": "capture-audit-receipt", "kind": "proof_artifact_write"}
+    ],
+    "forbidden": [
+      "runtime_deployment",
+      "restart_lay_daemon",
+      "restart_lay_ibus_engine",
+      "restart_global_ibus_daemon",
+      "production_bridge_edit",
+      "canonical_v13_runtime_edit",
+      "package_rebuild",
+      "package_write",
+      "full_13x100_proof",
+      "raise_global_limit",
+      "literal_case_runtime_branch",
+      "fallback_authority",
+      "target_conditioned_enumerator",
+      "runtime_authority_flip",
+      "audit_leaks_into_runtime",
+      "weaken_verifier",
+      "generated_traffic",
+      "synthetic_fixture"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "SLICE8B_V8_PAPER_ROUTE_PASS_RUNTIME_UNCHANGED",
+    "steps": [
+      {
+        "id": "implement-test-only-audit",
+        "from": "SLICE8B_V8_PAPER_ROUTE_PASS_RUNTIME_UNCHANGED",
+        "to": "SLICE8B_V8_AUDIT_SOURCE_READY_RUNTIME_UNCHANGED",
+        "mutates": true,
+        "failure_state": "SLICE8B_V8_AUDIT_SOURCE_REJECTED_RUNTIME_UNCHANGED",
+        "cleanup": "retain the failed diff and receipt for diagnosis; do not reset the dirty tree or edit bridge runtime packages or installed processes",
+        "preserves": ["v7-fixed-evidence", "production-bridge", "canonical-v13-runtime"],
+        "test_id": "audit-source-fault"
+      },
+      {
+        "id": "run-focused-remote-audit",
+        "from": "SLICE8B_V8_AUDIT_SOURCE_READY_RUNTIME_UNCHANGED",
+        "to": "SLICE8B_V8_TARGET_BLIND_DISCOVERY_MEASURED_RUNTIME_UNCHANGED",
+        "mutates": false,
+        "failure_state": "SLICE8B_V8_TARGET_BLIND_DISCOVERY_FAILED_RUNTIME_UNCHANGED",
+        "cleanup": "retain complete failure output and return to paper analysis without a full proof or runtime implementation",
+        "preserves": ["v7-fixed-evidence", "production-bridge", "canonical-v13-runtime"],
+        "test_id": "target-blind-discovery-audit"
+      }
+    ],
+    "terminal_states": [
+      "SLICE8B_V8_TARGET_BLIND_DISCOVERY_MEASURED_RUNTIME_UNCHANGED",
+      "SLICE8B_V8_AUDIT_SOURCE_REJECTED_RUNTIME_UNCHANGED",
+      "SLICE8B_V8_TARGET_BLIND_DISCOVERY_FAILED_RUNTIME_UNCHANGED"
+    ]
+  },
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_TARGET_BLIND_LEMMA_AUDIT_V8_V2_2026-08-24",
+  "tests": [
+    {"id": "audit-source-fault", "kind": "fault_injection", "expected": "a source or compile failure leaves V7 bridge V13 packages and installed runtime untouched"},
+    {"id": "audit-denominator-conservation", "kind": "parity", "expected": "382 unique V7 NoField identities produce 382 unique audit rows and all discovery partitions sum to 382"},
+    {"id": "target-noninterference", "kind": "parity", "expected": "birth generation accepts damaged_surface and V13 only and freezes output before target labels are read"},
+    {"id": "form-lemma-binding", "kind": "parity", "expected": "every audited CanonicalForm grounding_ref resolves through the unchanged V13 form-to-lemma index"},
+    {"id": "runtime-noninterference", "kind": "parity", "expected": "bridge and V13 runtime SHA-256 remain at their pinned baseline and no installed process is touched"},
+    {"id": "availability-conservation", "kind": "parity", "expected": "377 EmptyL11Lattice and 5 UnsupportedInput records remain separate"},
+    {"id": "audit-work-accounting", "kind": "integration", "expected": "all 382 rows report deterministic birth work overflow and closed generation latency"},
+    {"id": "bounded-audit-scope", "kind": "integration", "expected": "the command reads 382 saved records and does not invoke fixed 13x100 package compilation or deployment"},
+    {"id": "systemic-source-scan", "kind": "integration", "expected": "no runtime literal class branch limit increase fallback authority or safety weakening is introduced"},
+    {"id": "v7-v8-stable-projection", "kind": "parity", "expected": "all saved V7 identity and availability fields match the audit projection exactly"},
+    {"id": "target-blind-discovery-audit", "kind": "integration", "expected": "one bounded proof-only pass emits global availability and damage-class discovery coverage with work and latency"}
+  ]
+}

@@ -1,0 +1,321 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_IMPLEMENTATION_V2_2026-08-27",
+  "authority_bearing": false,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "v11-implementation-v1-blocked-manifest",
+      "kind": "file",
+      "path": "LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_IMPLEMENTATION_V1_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 14449, "sha256": "5c4c0f5c653de0058ffda62fcfb006f0613d5bc697e055556471b8b35a91edb6"}
+    },
+    {
+      "id": "v11-implementation-v1-blocked-receipt",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_IMPLEMENTATION_V1_PREFLIGHT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 9595, "sha256": "9594d11a03eaf5d47e11dd36bc396a318a8576bd7cdca6b7283987acb28deca4"}
+    },
+    {
+      "id": "v11-decision-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_DECISION_V1_2026-08-27.md",
+      "expect": {"mode": "0444", "size_bytes": 7781, "sha256": "d2cac2d9cf09cc85a25e5b29cb1a8f8ab11b90a31eeb33190f26808df1118f8f"}
+    },
+    {
+      "id": "v11-decision-route",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_DECISION_V1_ROUTE_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 26386, "sha256": "590fdb5767a891d6b21c0266c13b6de1413afe73a690d89780ffd01783c13fc3"}
+    },
+    {
+      "id": "v11-consequence-paper",
+      "kind": "file",
+      "path": "../LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_IMPLEMENTATION_CONSEQUENCE_V1_2026-08-27.md",
+      "expect": {"mode": "0444", "size_bytes": 4574, "sha256": "d7a6b932c50c0f43493ad7d8b673297c0a9f0fc7d899ac9af32a2b508eaf6015"}
+    },
+    {
+      "id": "v11-consequence-route",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_LEXICAL_FACT_REUSE_V11_IMPLEMENTATION_CONSEQUENCE_V1_ROUTE_RECEIPT_2026-08-27.json",
+      "expect": {"mode": "0444", "size_bytes": 25409, "sha256": "301b51ba44253960cbf2202456d744d8db78ff8eca7eab259dd7dc7a1f658f8c"}
+    },
+    {
+      "id": "v10r4-terminal",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_SUBSTAGE_DIAGNOSTIC_V10R4_TERMINAL_AUDIT_V1_2026-08-27/TERMINAL_AUDIT.json",
+      "expect": {"mode": "0444", "size_bytes": 126306, "sha256": "7548ed321c9e2c4beb7f60d8591dc422627c04fb7b86edcfb9a15a7ce4f63ccc"}
+    },
+    {
+      "id": "v10r4-terminal-manifest",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ADMISSION_SUBSTAGE_DIAGNOSTIC_V10R4_TERMINAL_AUDIT_V1_2026-08-27/SHA256SUMS",
+      "expect": {"mode": "0444", "size_bytes": 986, "sha256": "681782abac120aea89455477f3ad0c8bea28ae76e3d455a42e90b96464d24497"}
+    },
+    {
+      "id": "v8r3-terminal",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R3_TERMINAL_AUDIT_V1_2026-08-27/TERMINAL_AUDIT.json",
+      "expect": {"mode": "0444", "size_bytes": 32242, "sha256": "2115a4ce7c8a79fffde043b87c5aa462014873a0365df3a6e82892f395f6aedc"}
+    },
+    {
+      "id": "v8-implementation",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_IMPLEMENTATION_V8_2026-08-27/IMPLEMENTATION_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 5477, "sha256": "cf4b38d81cc7f9ea9125855194635fafde9c76c9d022f7185635e8bb6c2f29e5"}
+    },
+    {
+      "id": "actual-owner-parity",
+      "kind": "file",
+      "path": "../receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_ACTUAL_OWNER_V4_2026-08-27/PARITY_PASS_RECEIPT.json",
+      "expect": {"mode": "0444", "size_bytes": 2578, "sha256": "8a703dd385e7787816afa016e034284834540b53ed794d2544f638dcbd421e83"}
+    },
+    {
+      "id": "proposal-admission-source",
+      "kind": "file",
+      "path": "../../../src/typing_transition/proposal_admission.rs",
+      "expect": {"mode": "0664", "size_bytes": 88326, "sha256": "6169e6d89a06c9ad3d7aefd467a8147f6d094b962faa25c739ad6d94a364b3dd"}
+    },
+    {
+      "id": "live-owner-source",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/productive_v1/live.rs",
+      "expect": {"mode": "0664", "size_bytes": 71012, "sha256": "36aeddd5e605e67377f99343f9937606ac774d9ba4bb5710152de060bc9d183b"}
+    },
+    {
+      "id": "decision-owner-source",
+      "kind": "file",
+      "path": "../../../src/typing_transition/decision.rs",
+      "expect": {"mode": "0664", "size_bytes": 45197, "sha256": "ad3c6d450c01811844a49e9c714d0eb9ff80f7de7d2f03a2e8b3e290deda3691"}
+    },
+    {
+      "id": "hot-policy-source",
+      "kind": "file",
+      "path": "../../../src/hot_field.rs",
+      "expect": {"mode": "0664", "size_bytes": 16989, "sha256": "ebe452eee9393e8d02df9338c930b4fa6708de3ac07a2148c3a7b2136cbb3c68"}
+    },
+    {
+      "id": "russian-lexicon-source",
+      "kind": "file",
+      "path": "../../../src/russian_lexicon.rs",
+      "expect": {"mode": "0664", "size_bytes": 10057, "sha256": "8c3cc2ed5767420875c6f458387863065c8edace8079b4ae4c700761c0b1df7f"}
+    },
+    {
+      "id": "word-reader-source",
+      "kind": "file",
+      "path": "../../../src/word_reader.rs",
+      "expect": {"mode": "0664", "size_bytes": 7806, "sha256": "b881a7562b263699d0c2e773dd3d386927e9a5acc537b8d0f5a15d7b55de4522"}
+    },
+    {
+      "id": "v13-test-owner",
+      "kind": "file",
+      "path": "../../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "expect": {"mode": "0664", "size_bytes": 253080, "sha256": "28f87a76fc1996989e980cab51f0443bd95e656fcae3a2ff61f581db9c3a7ee2"}
+    },
+    {
+      "id": "cargo-toml",
+      "kind": "file",
+      "path": "../../../Cargo.toml",
+      "expect": {"mode": "0664", "size_bytes": 2399, "sha256": "90a3ae6b16677ff49b70aab3457b794cd1e114a547f9e113a8b49595f976207b"}
+    },
+    {
+      "id": "cargo-lock",
+      "kind": "file",
+      "path": "../../../Cargo.lock",
+      "expect": {"mode": "0664", "size_bytes": 70770, "sha256": "e6399be48c393e1557b451fcb04d886f9fbdaa9812109410ac3d9ecdc98b93f1"}
+    },
+    {
+      "id": "cargo-guard",
+      "kind": "file",
+      "path": "../../../scripts/cargo-guard.sh",
+      "expect": {"mode": "0775", "size_bytes": 2534, "sha256": "a5b01f9a12b32ee2bcfc957a5e9f65efb52fe6e7644850ae3f00e412648243fe"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "edit-proposal-admission", "kind": "local_test_mechanism_source_edit"},
+      {"id": "format-proposal-admission", "kind": "local_rustfmt_edit"},
+      {"id": "focused-compile-and-tests", "kind": "local_cargo_guard_only"},
+      {"id": "publish-implementation-receipt", "kind": "local_evidence_write"}
+    ],
+    "forbidden": [
+      "generated_traffic",
+      "synthetic_fixture",
+      "network_or_remote_read_or_write",
+      "scientific_namespace_or_marker_creation",
+      "scientific_subject_execution",
+      "future_b0_or_b1_execution",
+      "perf_or_pmu",
+      "live_owner_decision_hot_policy_lexicon_word_reader_or_v13_edit",
+      "cargo_toml_lock_or_guard_edit",
+      "predicate_removal_reorder_bypass_or_reason_edit",
+      "global_thread_local_result_or_cross_request_cache",
+      "candidate_cap_filter_case_word_or_source_special_case",
+      "runtime_activation_install_restart_or_deployment",
+      "latency_rss_production_or_release_pass_claim"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "steps": [
+      {
+        "id": "edit-proposal-admission",
+        "from": "PREFLIGHT_READY",
+        "to": "V11_SOURCE_EDITED",
+        "mutates": true,
+        "failure_state": "BLOCKED_SOURCE_EDIT",
+        "cleanup": "retain exact partial diff and diagnostics; do not modify protected source",
+        "preserves": ["predecessor-evidence", "protected-source", "cargo-inputs"],
+        "test_id": "source-edit-fault"
+      },
+      {
+        "id": "format-and-static-check",
+        "from": "V11_SOURCE_EDITED",
+        "to": "V11_STATIC_PASS",
+        "mutates": true,
+        "failure_state": "BLOCKED_SOURCE_EDIT",
+        "cleanup": "retain source and formatter diagnostics; publish no implementation PASS",
+        "preserves": ["predecessor-evidence", "protected-source", "cargo-inputs"],
+        "test_id": "format-static-fault"
+      },
+      {
+        "id": "focused-compile-and-tests",
+        "from": "V11_STATIC_PASS",
+        "to": "V11_LOCAL_PARITY_PASS",
+        "mutates": true,
+        "failure_state": "BLOCKED_SEMANTIC",
+        "cleanup": "retain Cargo logs and target cache; perform no scientific or remote action",
+        "preserves": ["predecessor-evidence", "protected-source", "cargo-inputs"],
+        "test_id": "local-parity-fault"
+      },
+      {
+        "id": "publish-implementation-receipt",
+        "from": "V11_LOCAL_PARITY_PASS",
+        "to": "V11_MECHANISM_IMPLEMENTED_UNRUN",
+        "mutates": true,
+        "failure_state": "BLOCKED_PROVENANCE",
+        "cleanup": "remove incomplete receipt stage and retain source and complete local logs",
+        "preserves": ["predecessor-evidence", "protected-source", "cargo-inputs"],
+        "test_id": "receipt-publication-fault"
+      }
+    ],
+    "terminal_states": [
+      "V11_MECHANISM_IMPLEMENTED_UNRUN",
+      "BLOCKED_SOURCE_EDIT",
+      "BLOCKED_SEMANTIC",
+      "BLOCKED_PROVENANCE"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "predecessor-evidence",
+      "path": "V8R3 and V10R4 terminal evidence plus V11 paper receipts",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "v10r4-terminal"
+    },
+    {
+      "id": "protected-source",
+      "path": "live owner decision hot policy Russian lexicon word reader and V13 test owner",
+      "policy": "immutable_during_v11_mechanism_implementation",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "live-owner-source"
+    },
+    {
+      "id": "cargo-inputs",
+      "path": "Cargo.toml Cargo.lock and scripts/cargo-guard.sh",
+      "policy": "immutable",
+      "cursor_policy": "whole_file",
+      "rollback_policy": "never modify",
+      "baseline_check_id": "cargo-toml"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "uncached-to-existing",
+      "producer": "UNCACHED candidate_admission",
+      "consumer": "existing fixture decisions",
+      "comparison": "exact action and reason for every existing proposal-admission fixture",
+      "test_id": "uncached-existing-parity"
+    },
+    {
+      "id": "reuse-to-uncached",
+      "producer": "REUSE candidate_admission",
+      "consumer": "UNCACHED candidate_admission",
+      "comparison": "exact action and reason over the complete fixture matrix",
+      "test_id": "reuse-decision-parity"
+    },
+    {
+      "id": "policy-mode-parity",
+      "producer": "FullReferenceAllowed and FieldSnapshotOnly fixture runs",
+      "consumer": "paired UNCACHED and REUSE decisions",
+      "comparison": "exact within each authority policy with no cross-policy promotion claim",
+      "test_id": "authority-policy-parity"
+    },
+    {
+      "id": "fact-lifetime",
+      "producer": "one candidate_admission call",
+      "consumer": "lazy lexical fact owner",
+      "comparison": "one owner exact pair key and zero retained cross-call entries",
+      "test_id": "call-local-lifetime"
+    },
+    {
+      "id": "future-mode-binding",
+      "producer": "future B0 or B1 wrapper mode",
+      "consumer": "same future test ELF",
+      "comparison": "explicit UNCACHED or REUSE mode only; no source or ELF split",
+      "test_id": "future-mode-static"
+    }
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {
+      "id": "one-edit-surface",
+      "statement": "only proposal_admission.rs changes during implementation",
+      "test_id": "protected-source-parity"
+    },
+    {
+      "id": "lazy-first-consumer",
+      "statement": "a reusable fact is computed only when the existing predicate first requests it",
+      "test_id": "lazy-first-consumer"
+    },
+    {
+      "id": "decision-owner-preserved",
+      "statement": "existing predicates retain order branch and reason ownership",
+      "test_id": "reuse-decision-parity"
+    },
+    {
+      "id": "call-local-only",
+      "statement": "no fact survives one candidate_admission call",
+      "test_id": "call-local-lifetime"
+    },
+    {
+      "id": "production-route-unchanged",
+      "statement": "non-test compilation contains no experiment selector or retained fact cache",
+      "test_id": "non-test-cfg-static"
+    },
+    {
+      "id": "scientific-routes-unrun",
+      "statement": "implementation creates no remote namespace marker B0 B1 subject perf or PMU evidence",
+      "test_id": "claim-boundary-static"
+    }
+  ],
+  "tests": [
+    {"id": "source-edit-fault", "kind": "fault_injection", "expected": "partial source edit cannot alter protected files or publish PASS"},
+    {"id": "format-static-fault", "kind": "fault_injection", "expected": "formatter or static failure retains diagnostics and no implementation PASS"},
+    {"id": "local-parity-fault", "kind": "fault_injection", "expected": "compile or parity failure admits no remote or scientific action"},
+    {"id": "receipt-publication-fault", "kind": "fault_injection", "expected": "incomplete implementation receipt is not published"},
+    {"id": "uncached-existing-parity", "kind": "parity", "expected": "UNCACHED mode passes every existing proposal-admission fixture"},
+    {"id": "reuse-decision-parity", "kind": "parity", "expected": "REUSE and UNCACHED actions and reasons are exact for the complete matrix"},
+    {"id": "authority-policy-parity", "kind": "parity", "expected": "paired decisions are exact under FullReferenceAllowed and FieldSnapshotOnly"},
+    {"id": "lazy-first-consumer", "kind": "unit", "expected": "early short-circuit paths do not compute later lexical facts"},
+    {"id": "call-local-lifetime", "kind": "parity", "expected": "one call owns one exact candidate pair and retains no result afterward"},
+    {"id": "protected-source-parity", "kind": "parity", "expected": "all protected source and Cargo hashes remain exact"},
+    {"id": "non-test-cfg-static", "kind": "parity", "expected": "production compilation excludes mode override and retained fact cache"},
+    {"id": "future-mode-static", "kind": "parity", "expected": "future B0 and B1 bind explicit modes to one ELF without executing now"},
+    {"id": "claim-boundary-static", "kind": "unit", "expected": "receipt records zero remote marker subject perf PMU B0 and B1 actions"}
+  ]
+}
