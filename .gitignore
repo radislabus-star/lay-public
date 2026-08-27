@@ -22,3 +22,21 @@ __pycache__/
 /corpus/*.model
 /data/neural_arbiter/dataset.tsv
 /docs/research/neural-arbiter-results.md
+
+# Local sealed research payloads. Compact receipt files at the first receipt
+# level remain trackable; copied execution trees and large machine artifacts do
+# not belong in Git.
+/docs/structural_gates/receipts/*/*/
+/docs/structural_gates/receipts/*/*.py
+/docs/structural_gates/receipts/*/*.rs
+/docs/structural_gates/receipts/*/*.inc
+/docs/structural_gates/receipts/*/*.elf
+/docs/structural_gates/receipts/*/*.bin
+/docs/structural_gates/receipts/*/*.dafsa
+/docs/structural_gates/receipts/*/*.raw
+/docs/structural_gates/receipts/*/*.stdout
+/docs/structural_gates/receipts/*/*.stderr
+/docs/structural_gates/receipts/*/*.tsv
+/docs/structural_gates/receipts/*/*.failed-attempt-zero-byte
+/docs/structural_gates/receipts/*/D1_DECISION.json
+/docs/structural_gates/receipts/*/slice8b-v*-fixed-13x100*.json
