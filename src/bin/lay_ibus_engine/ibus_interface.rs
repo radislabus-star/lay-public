@@ -188,12 +188,13 @@ impl LayIbusEngine {
             .map(|text| SurroundingTextSnapshot::new(text, cursor_pos, anchor_pos));
         self.observe_external_surrounding_text(snapshot);
         let retry_status = self.pending_ime_auto_undo_retry_status();
+        let sensitive = self.content_is_sensitive();
         trace::record_surrounding_text_snapshot(
             self.surrounding_text_snapshot
                 .as_ref()
                 .map_or(0, |snapshot| snapshot.text.chars().count()),
-            cursor_pos,
-            anchor_pos,
+            if sensitive { 0 } else { cursor_pos },
+            if sensitive { 0 } else { anchor_pos },
             retry_status,
         );
         if self.atomic_route_active {
@@ -272,11 +273,19 @@ impl LayIbusEngine {
 
     #[zbus(property, name = "ContentType")]
     fn content_type(&self) -> (u32, u32) {
-        (0, 0)
+        (self.content_purpose, self.content_hints)
     }
 
     #[zbus(property, name = "ContentType")]
-    fn set_content_type(&mut self, _value: (u32, u32)) {}
+    fn set_content_type(&mut self, value: (u32, u32)) {
+        self.set_content_type_state(value.0, value.1);
+        trace::record(format!(
+            r#"{{"kind":"ibus_content_type","purpose":{},"hints":{},"text_assistance":{}}}"#,
+            value.0,
+            value.1,
+            self.content_allows_text_assistance()
+        ));
+    }
 
     #[zbus(property, name = "FocusId")]
     fn focus_id(&self) -> bool {

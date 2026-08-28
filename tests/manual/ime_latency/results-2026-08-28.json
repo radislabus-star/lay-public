@@ -1,0 +1,95 @@
+{
+  "schema": "lay.ime-window-latency.v1",
+  "measured_on": "2026-08-28",
+  "runtime": {
+    "version": "1.0.44",
+    "lay_ibus_engine_sha256": "2f9fb292adde023b7f0b9d57cb0b55b752f91e18d204fd14eccb981eba7cc574",
+    "host": "t480",
+    "session": "wayland",
+    "ibus": "1.5.34-rc2"
+  },
+  "clients": {
+    "chrome": "150.0.7871.186",
+    "gtk": "4.22.4",
+    "kitty": "0.48.2"
+  },
+  "method": {
+    "input": "dedicated ydotoold virtual keyboard",
+    "physical_key_delay_ms": 70,
+    "replacement_probe": "hf,jftn -> рабоает",
+    "suffix_probe": "ghjd -> пров + ерить",
+    "chrome_fixture": "tests/manual/ime_latency/fields.html"
+  },
+  "chrome_page_fields": [
+    {
+      "field": "text",
+      "replacement_final": "рабоает",
+      "replacement_candidates": 0,
+      "suffix_final_visual": "проверить",
+      "suffix_max_browser_event_latency_ms": 3.6
+    },
+    {
+      "field": "search",
+      "replacement_final": "рабоает",
+      "replacement_candidates": 0,
+      "suffix_final_visual": "проверить",
+      "suffix_max_browser_event_latency_ms": 0.7
+    },
+    {
+      "field": "textarea",
+      "replacement_final": "рабоает",
+      "replacement_candidates": 0,
+      "suffix_final_visual": "проверить",
+      "suffix_max_browser_event_latency_ms": 0.6
+    },
+    {
+      "field": "contenteditable",
+      "replacement_final": "рабоает",
+      "replacement_candidates": 0,
+      "suffix_final_visual": "проверить",
+      "suffix_max_browser_event_latency_ms": 0.8
+    }
+  ],
+  "chrome_address_bar": {
+    "content_purpose": 5,
+    "text_assistance": true,
+    "replacement_preedits": 0,
+    "printable_path_us": {
+      "min": 126,
+      "max": 212
+    }
+  },
+  "password": {
+    "content_purpose": 8,
+    "content_hints": 6144,
+    "text_assistance": false,
+    "candidate_count": 0,
+    "decoded_trace_values": 0,
+    "nonzero_tail_or_preedit_trace_values": 0,
+    "nonzero_surrounding_trace_values": 0,
+    "nonzero_auto_undo_snapshot_trace_values": 0,
+    "precognition_records": 0,
+    "token_payloads": 0
+  },
+  "gtk_entry": {
+    "replacement_final": "рабоает",
+    "replacement_preedits": 0,
+    "suffix_observed": "ерить",
+    "suffix_display_age_us": 84,
+    "printable_path_max_us": 287
+  },
+  "kitty_terminal": {
+    "content_purpose": 10,
+    "text_assistance": false,
+    "replacement_preedits": 0,
+    "nonzero_preedits": 0,
+    "precognition_records": 0
+  },
+  "not_tested": [
+    "real Telegram or WeChat conversations",
+    "a native Qt input fixture",
+    "a live PIN field",
+    "clients that set only PRIVATE or HIDDEN_TEXT hints"
+  ],
+  "verdict": "IME_WINDOW_LATENCY_AND_REPLACEMENT_SHAPE_PASS"
+}

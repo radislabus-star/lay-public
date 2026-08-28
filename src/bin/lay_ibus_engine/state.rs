@@ -286,6 +286,8 @@ impl LayIbusEngine {
             pending_display_frame: None,
             pending_passthrough_preedit_clear: false,
             cursor_cell_width: 0,
+            content_purpose: 0,
+            content_hints: 0,
             surrounding_text_supported: false,
             surrounding_text_snapshot: None,
             surrounding_observation_revision: 0,

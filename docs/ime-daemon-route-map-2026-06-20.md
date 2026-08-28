@@ -790,3 +790,74 @@ Contract and preflight:
 - `docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_DETERMINISTIC_VISIBLE_REPLAY_V1_2026-08-23.json`
 - `docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/deterministic-visible-replay-preflight-v2.json`
 - `docs/structural_gates/receipts/LAY_DOUBLE_SHIFT_DELEGATED_UINPUT_2026-08-22/installed-live-v2.json`
+
+## 1.0.44 IME Suggestion Shape And Window Latency
+
+Measured on 2026-08-28 against the installed `lay-ibus-engine` SHA-256
+`2f9fb292adde023b7f0b9d57cb0b55b752f91e18d204fd14eccb981eba7cc574`.
+
+After that live receipt, the same change received one fail-closed repair: the
+`50 ms` age check is repeated under the engine lock immediately before a
+background result can begin publication. The final deployed binary SHA-256 is
+`c8b0d77e81d5449f2ceeb2506781136229185ff0d9f50e3af9e1d41f8d4b266f`.
+The measured values below remain bound to the receipt SHA above; the final
+binary passed the complete changed-file gate and release build, but was not
+substituted into that already completed physical latency measurement.
+
+The IME presentation adapter no longer exposes whole-token replacement
+proposals as live preedit. The shared candidate producer is unchanged; only
+the IBus display route filters proposals whose edit geometry replaces the
+observed token. Ordinary suffix completion remains available. Background
+results older than `50 ms` from scheduling are retained as timing evidence but
+cannot update a visible preedit frame.
+
+The physical replacement probe `hf,jftn -> рабоает` and suffix probe
+`ghjd -> пров + ерить` were sent through a dedicated virtual keyboard. The
+tested client classes were Chrome text/search/textarea/contenteditable,
+Chrome password, Chrome address bar, GTK 4 Entry and Kitty terminal.
+
+```text
+Chrome page replacement final     рабоает in all four fields
+whole-token replacement preedit   0 in all four fields
+ordinary replacement-path suffix  0.3-1.1 ms browser event latency
+
+Chrome suffix visual              проверить in all four fields
+max suffix event latency           3.6 / 0.7 / 0.6 / 0.8 ms
+                                   text/search/textarea/contenteditable
+
+Chrome address bar                ContentType purpose 5
+whole-token replacement preedit   0
+printable engine path             126-212 us
+
+GTK Entry replacement final       рабоает
+GTK suffix                        ерить, display age 84 us
+GTK printable engine path         <=287 us
+
+Kitty terminal                    ContentType purpose 10
+text assistance / precognition    false / 0
+```
+
+Sensitive content is a separate fail-closed route. Password/PIN and
+PRIVATE/HIDDEN_TEXT hints disable precognition and Space autocorrect. Entering
+a sensitive field clears the in-memory tail and visible completion state.
+Key/preedit traces redact decoded text, text length and cursor position.
+
+The live Chrome password observation was `purpose=8`, `hints=6144`, with zero
+candidates, zero decoded trace values, zero nonzero tail/preedit trace values,
+zero precognition records and zero token payloads.
+
+Not tested in this pass: real Telegram/WeChat conversations, a native Qt test
+fixture, a live PIN field, or clients setting only PRIVATE/HIDDEN_TEXT hints.
+The latter three sensitive variants are covered by engine tests, not claimed
+as live client observations. Runtime authority changed only for
+`lay-ibus-engine`; `lay-daemon`, the shared candidate producer and candidate
+ranking authority were not changed.
+
+Verdict: `IME_WINDOW_LATENCY_AND_REPLACEMENT_SHAPE_PASS`.
+
+Evidence:
+
+- `tests/manual/ime_latency/fields.html`
+- `tests/manual/ime_latency/replacement.tsv`
+- `tests/manual/ime_latency/suffix.tsv`
+- `tests/manual/ime_latency/results-2026-08-28.json`

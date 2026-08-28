@@ -7,6 +7,11 @@ use super::preedit::PreeditFastState;
 use super::protocol::Shared;
 
 const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
+const IBUS_INPUT_PURPOSE_PASSWORD: u32 = 8;
+const IBUS_INPUT_PURPOSE_PIN: u32 = 9;
+const IBUS_INPUT_PURPOSE_TERMINAL: u32 = 10;
+const IBUS_INPUT_HINT_PRIVATE: u32 = 1 << 11;
+const IBUS_INPUT_HINT_HIDDEN_TEXT: u32 = 1 << 12;
 
 pub(super) fn next_input_identity() -> u64 {
     static NEXT: AtomicU64 = AtomicU64::new(1);
@@ -41,6 +46,8 @@ pub(crate) struct LayIbusEngine {
     pub(super) pending_display_frame: Option<InputFrameIdentity>,
     pub(super) pending_passthrough_preedit_clear: bool,
     pub(super) cursor_cell_width: i32,
+    pub(super) content_purpose: u32,
+    pub(super) content_hints: u32,
     pub(super) surrounding_text_supported: bool,
     pub(super) surrounding_text_snapshot: Option<SurroundingTextSnapshot>,
     pub(super) surrounding_observation_revision: u64,
@@ -236,13 +243,44 @@ impl LayIbusEngine {
         }
     }
 
+    pub(super) fn set_content_type_state(&mut self, purpose: u32, hints: u32) {
+        if self.content_purpose == purpose && self.content_hints == hints {
+            return;
+        }
+        self.content_purpose = purpose;
+        self.content_hints = hints;
+        self.invalidate_input_frame_background_work();
+        self.clear_preedit_completion_state();
+        if self.content_is_sensitive() {
+            self.buffer.clear();
+            self.composition_cursor = 0;
+            self.surrounding_text_snapshot = None;
+            self.close_committed_tail_field();
+        }
+    }
+
+    pub(super) fn content_is_sensitive(&self) -> bool {
+        matches!(
+            self.content_purpose,
+            IBUS_INPUT_PURPOSE_PASSWORD | IBUS_INPUT_PURPOSE_PIN
+        ) || self.content_hints & (IBUS_INPUT_HINT_PRIVATE | IBUS_INPUT_HINT_HIDDEN_TEXT) != 0
+    }
+
+    pub(super) fn content_allows_text_assistance(&self) -> bool {
+        !self.content_is_sensitive() && self.content_purpose != IBUS_INPUT_PURPOSE_TERMINAL
+    }
+
     pub(super) fn observe_external_surrounding_text(
         &mut self,
         snapshot: Option<SurroundingTextSnapshot>,
     ) {
         self.advance_surrounding_observation_revision();
         self.surrounding_text_supported = true;
-        self.surrounding_text_snapshot = snapshot;
+        self.surrounding_text_snapshot = if self.content_is_sensitive() {
+            None
+        } else {
+            snapshot
+        };
     }
 
     fn advance_surrounding_observation_revision(&mut self) {

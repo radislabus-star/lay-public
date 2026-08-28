@@ -10,14 +10,23 @@ impl LayIbusEngine {
         handled: bool,
         decoded: Option<char>,
     ) {
+        let sensitive = self.content_is_sensitive();
         trace::record_key(
             stage,
             keyval,
             keycode,
             handled,
-            decoded,
-            self.tail_buffer.chars().count(),
-            self.preedit_suffix.chars().count(),
+            (!sensitive).then_some(decoded).flatten(),
+            if sensitive {
+                0
+            } else {
+                self.tail_buffer.chars().count()
+            },
+            if sensitive {
+                0
+            } else {
+                self.preedit_suffix.chars().count()
+            },
         );
     }
 }

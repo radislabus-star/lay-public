@@ -128,7 +128,7 @@ fn invalidated_target_retargets_to_fresh_top_candidate_without_blank_frame() {
 }
 
 #[test]
-fn replacement_target_survives_as_a_full_surface() {
+fn replacement_target_is_not_exposed_by_live_preedit() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
@@ -148,14 +148,19 @@ fn replacement_target_survives_as_a_full_surface() {
 
     engine.refresh_precognition_candidates();
 
-    assert_eq!(
-        engine.preedit_candidates.first().map(String::as_str),
-        Some("→нет"),
+    assert!(
+        engine
+            .preedit_candidates
+            .iter()
+            .all(|candidate| !candidate.starts_with('→')),
         "candidates={:?} replacements={:?}",
         engine.preedit_candidates,
         engine.preedit_replacement_targets
     );
-    assert_eq!(engine.selected_precognition_replacement(), Some("нет"));
+    assert!(engine
+        .preedit_replacement_targets
+        .iter()
+        .all(Option::is_none));
 }
 
 #[test]
@@ -1157,7 +1162,7 @@ fn composition_preedit_keeps_visible_suffix_when_autocorrect_is_pending() {
 }
 
 #[test]
-fn composition_preedit_renders_typed_replacement_as_the_full_token() {
+fn candidate_installation_defensively_discards_typed_replacements() {
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
         Arc::new(Mutex::new(Default::default())),
@@ -1170,16 +1175,15 @@ fn composition_preedit_renders_typed_replacement_as_the_full_token() {
             ..LayConfig::default()
         },
     );
-    engine.buffer = "рабоает".to_string();
-    engine.composition_cursor = engine.buffer.chars().count();
-    engine.preedit_candidates = vec!["работает".to_string()];
-    engine.preedit_replacement_targets = vec![Some("работает".to_string())];
+    engine.install_precognition_candidates(vec![ImeCandidateProposal::replacement(
+        "работает".to_string(),
+        1.0,
+        lay::typing_cpu::ImeCandidateSource::L2Replacement,
+    )]);
 
-    let (text, cursor_pos) = engine.composition_preedit_payload();
-
-    assert_eq!(text, "работает");
-    assert_eq!(cursor_pos, "работает".chars().count() as u32);
-    assert!(engine.preedit_suffix.is_empty());
+    assert!(engine.preedit_candidates.is_empty());
+    assert!(engine.preedit_replacement_targets.is_empty());
+    assert_eq!(engine.selected_precognition_replacement(), None);
 }
 
 #[test]
@@ -1482,7 +1486,7 @@ fn live_ime_does_not_project_typo_replacement_as_suffix() {
 }
 
 #[test]
-fn active_ime_offers_a_longer_completion_after_a_single_prefix_typo() {
+fn active_ime_does_not_render_a_longer_replacement_after_a_single_prefix_typo() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
@@ -1507,8 +1511,9 @@ fn active_ime_offers_a_longer_completion_after_a_single_prefix_typo() {
             .preedit_replacement_targets
             .iter()
             .flatten()
-            .any(|target| target.starts_with("перспектив")),
-        "IME must expose the corrected lexical family as Tab-only replacements: candidates={:?}, replacements={:?}",
+            .next()
+            .is_none(),
+        "the shared gate retains this family, but live IBus must not replace the visible token: candidates={:?}, replacements={:?}",
         engine.preedit_candidates,
         engine.preedit_replacement_targets
     );

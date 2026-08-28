@@ -1,0 +1,8 @@
+# Type the known one-edit Russian token "рабоает" on the physical US key map.
+layout	ru
+ctrl_a
+backspace
+sleep	100
+sleep	300
+type	hf,jftn	70
+sleep	1200

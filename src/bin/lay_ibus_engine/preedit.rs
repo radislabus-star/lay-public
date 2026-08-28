@@ -355,18 +355,16 @@ impl LayIbusEngine {
             )
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        trace::record_preedit(
-            "update",
-            true,
-            text.chars().count(),
-            cursor_pos,
-            Some(&text),
-        );
+        let sensitive = self.content_is_sensitive();
+        let trace_text = (!sensitive).then_some(text.as_str());
+        let trace_chars = if sensitive { 0 } else { text.chars().count() };
+        let trace_cursor = if sensitive { 0 } else { cursor_pos };
+        trace::record_preedit("update", true, trace_chars, trace_cursor, trace_text);
         emitter
             .show_preedit_text()
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        trace::record_preedit("show", true, text.chars().count(), cursor_pos, Some(&text));
+        trace::record_preedit("show", true, trace_chars, trace_cursor, trace_text);
         Ok(())
     }
 
@@ -429,6 +427,10 @@ impl LayIbusEngine {
     }
 
     fn install_precognition_candidates(&mut self, proposals: Vec<ImeCandidateProposal>) {
+        let proposals = proposals
+            .into_iter()
+            .filter(|proposal| !proposal.is_replacement())
+            .collect::<Vec<_>>();
         let partial = self.live_candidate_partial();
         self.preedit_replacement_targets = proposals
             .iter()
@@ -436,10 +438,7 @@ impl LayIbusEngine {
             .collect();
         self.preedit_candidates = proposals
             .into_iter()
-            .map(|proposal| match proposal.replacement {
-                Some(replacement) => format!("→{replacement}"),
-                None => proposal.suffix,
-            })
+            .map(|proposal| proposal.suffix)
             .collect();
         self.preedit_candidate_index = stable_candidate_index(
             self.preedit_fast.target_surface(),
@@ -483,6 +482,7 @@ impl LayIbusEngine {
             identity,
             input,
             connection: connection.clone(),
+            scheduled_at: Instant::now(),
         });
     }
 
@@ -736,10 +736,14 @@ impl LayIbusEngine {
     }
 
     fn precognition_preedit_enabled(&self) -> bool {
-        self.config.active_nanda_precognition()
+        self.config.active_nanda_precognition() && self.content_allows_text_assistance()
     }
 
     pub(super) fn push_tail_char(&mut self, ch: char) {
+        if self.content_is_sensitive() {
+            self.close_committed_tail_field();
+            return;
+        }
         let is_boundary = ch.is_whitespace()
             || is_hard_precognition_boundary(ch)
                 && !self.preedit_fast.ascii_layout_symbol_continues_token(ch);

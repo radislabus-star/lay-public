@@ -1,0 +1,8 @@
+# Type the Russian prefix "пров" on the physical US key map.
+layout	ru
+ctrl_a
+backspace
+sleep	100
+sleep	300
+type	ghjd	70
+sleep	1200

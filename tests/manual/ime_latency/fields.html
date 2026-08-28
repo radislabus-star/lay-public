@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lay IME latency fields</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, sans-serif;
+    }
+    body {
+      margin: 24px;
+      max-width: 880px;
+      color: #202124;
+      background: #f7f8fa;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 0 0 20px;
+    }
+    .field {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin: 12px 0;
+    }
+    label {
+      padding-top: 10px;
+      font-weight: 600;
+    }
+    input,
+    textarea,
+    [contenteditable] {
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 44px;
+      padding: 9px 11px;
+      border: 1px solid #9aa0a6;
+      border-radius: 4px;
+      background: #fff;
+      color: #202124;
+      font: 18px/1.4 system-ui, sans-serif;
+    }
+    textarea,
+    [contenteditable] {
+      min-height: 86px;
+    }
+    :focus {
+      outline: 3px solid #1a73e8;
+      outline-offset: 1px;
+    }
+    pre {
+      min-height: 180px;
+      max-height: 260px;
+      overflow: auto;
+      padding: 12px;
+      border: 1px solid #dadce0;
+      background: #fff;
+      font: 13px/1.45 monospace;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lay IME latency fields</h1>
+  <div class="field">
+    <label for="plain">Text input</label>
+    <input id="plain" data-ime-field="plain" autocomplete="off" spellcheck="false">
+  </div>
+  <div class="field">
+    <label for="search">Search input</label>
+    <input id="search" data-ime-field="search" type="search" autocomplete="off" spellcheck="false">
+  </div>
+  <div class="field">
+    <label for="multiline">Textarea</label>
+    <textarea id="multiline" data-ime-field="textarea" spellcheck="false"></textarea>
+  </div>
+  <div class="field">
+    <label for="editable">Contenteditable</label>
+    <div id="editable" data-ime-field="contenteditable" contenteditable="true" spellcheck="false"></div>
+  </div>
+  <div class="field">
+    <label for="password">Password</label>
+    <input id="password" data-ime-field="password" type="password" autocomplete="off">
+  </div>
+  <pre id="events" aria-label="Event log"></pre>
+  <script>
+    (() => {
+      const eventLog = [];
+      const output = document.querySelector('#events');
+      const valueOf = (target) => target.isContentEditable ? target.textContent : target.value;
+      const record = (event) => {
+        const target = event.target.closest('[data-ime-field]');
+        if (!target) return;
+        eventLog.push({
+          t: performance.now(),
+          field: target.dataset.imeField,
+          type: event.type,
+          key: event.key || null,
+          data: event.data || null,
+          composing: Boolean(event.isComposing),
+          value: valueOf(target),
+        });
+        output.textContent = eventLog.slice(-24).map((row) => JSON.stringify(row)).join('\n');
+      };
+      for (const field of document.querySelectorAll('[data-ime-field]')) {
+        for (const type of [
+          'focus', 'keydown', 'beforeinput', 'compositionstart',
+          'compositionupdate', 'compositionend', 'input', 'keyup',
+        ]) {
+          field.addEventListener(type, record);
+        }
+      }
+      window.layImeProbe = {
+        clear() {
+          eventLog.length = 0;
+          output.textContent = '';
+        },
+        events() {
+          return eventLog.slice();
+        },
+        summary() {
+          const candidates = [];
+          for (let index = 0; index < eventLog.length; index += 1) {
+            if (eventLog[index].type !== 'compositionstart') continue;
+            const update = eventLog.slice(index + 1).find((row) => row.type === 'compositionupdate');
+            if (!update) continue;
+            const previous = eventLog.slice(0, index).reverse().find((row) =>
+              row.type === 'compositionend' ||
+              (row.type === 'input' && !row.composing)
+            );
+            candidates.push({
+              data: update.data,
+              replacement: String(update.data || '').startsWith('\u2192'),
+              latencyMs: previous ? update.t - previous.t : null,
+            });
+          }
+          return {
+            field: document.activeElement.dataset?.imeField || null,
+            value: document.activeElement.matches?.('[data-ime-field]')
+              ? valueOf(document.activeElement)
+              : null,
+            candidates,
+          };
+        },
+        value(field) {
+          const target = document.querySelector(`[data-ime-field="${field}"]`);
+          return target ? valueOf(target) : null;
+        },
+      };
+    })();
+  </script>
+</body>
+</html>

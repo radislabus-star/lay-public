@@ -1,5 +1,5 @@
 use std::sync::{Arc, Condvar, Mutex, OnceLock};
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use zbus::Connection;
 
@@ -10,10 +10,13 @@ use super::preedit::{
 };
 use super::trace;
 
+const PRECOGNITION_DISPLAY_DEADLINE: Duration = Duration::from_millis(50);
+
 pub(crate) struct PrecognitionWork {
     pub(crate) identity: InputFrameIdentity,
     pub(crate) input: PrecognitionInput,
     pub(crate) connection: Connection,
+    pub(crate) scheduled_at: Instant,
 }
 
 #[derive(Default)]
@@ -39,6 +42,11 @@ struct Worker {
 }
 
 static WORKER: OnceLock<Worker> = OnceLock::new();
+
+struct ApplyCompletion {
+    stage: &'static str,
+    display_age: Duration,
+}
 
 impl Worker {
     fn start() -> Self {
@@ -90,6 +98,7 @@ fn run_worker(shared: Arc<(Mutex<WorkerState>, Condvar)>) {
         let materialized = materialize_precognition_candidates_observed(&work.input);
         let candidates = materialized.candidates;
         let material_us = started.elapsed().as_micros();
+        let display_age = work.scheduled_at.elapsed();
         let identity = work.identity.clone();
         let token = identity.observed_token.clone();
         let top = candidates
@@ -102,6 +111,21 @@ fn run_worker(shared: Arc<(Mutex<WorkerState>, Condvar)>) {
                 &identity,
                 &materialized.timing,
                 material_us,
+                display_age.as_micros(),
+                candidates.len(),
+                &token,
+                top.as_deref(),
+            );
+            continue;
+        }
+        if !display_age_is_fresh(display_age) {
+            record_completion(
+                "late",
+                generation,
+                &identity,
+                &materialized.timing,
+                material_us,
+                display_age.as_micros(),
                 candidates.len(),
                 &token,
                 top.as_deref(),
@@ -110,18 +134,19 @@ fn run_worker(shared: Arc<(Mutex<WorkerState>, Condvar)>) {
         }
 
         let candidate_count = candidates.len();
-        let applied = zbus::block_on(apply_completed(
+        let completion = zbus::block_on(apply_completed(
             Arc::clone(&shared),
             generation,
             work,
             candidates,
         ));
         record_completion(
-            if applied { "applied" } else { "discarded" },
+            completion.stage,
             generation,
             &identity,
             &materialized.timing,
             material_us,
+            completion.display_age.as_micros(),
             candidate_count,
             &token,
             top.as_deref(),
@@ -134,9 +159,12 @@ async fn apply_completed(
     generation: u64,
     work: PrecognitionWork,
     candidates: Vec<lay::typing_cpu::ImeCandidateProposal>,
-) -> bool {
+) -> ApplyCompletion {
     if !generation_is_current(&shared, generation) {
-        return false;
+        return ApplyCompletion {
+            stage: "discarded",
+            display_age: work.scheduled_at.elapsed(),
+        };
     }
     let Ok(iface_ref) = work
         .connection
@@ -144,20 +172,39 @@ async fn apply_completed(
         .interface::<_, LayIbusEngine>(work.identity.path.as_str())
         .await
     else {
-        return false;
+        return ApplyCompletion {
+            stage: "discarded",
+            display_age: work.scheduled_at.elapsed(),
+        };
     };
     let emitter = iface_ref.signal_emitter();
     let mut engine = iface_ref.get_mut().await;
     if !generation_is_current(&shared, generation)
         || !engine.precognition_identity_matches(&work.identity)
     {
-        return false;
+        return ApplyCompletion {
+            stage: "discarded",
+            display_age: work.scheduled_at.elapsed(),
+        };
+    }
+    let display_age = work.scheduled_at.elapsed();
+    if !display_age_is_fresh(display_age) {
+        return ApplyCompletion {
+            stage: "late",
+            display_age,
+        };
     }
     let mut output = super::output::EngineOutput::legacy(emitter);
-    engine
+    let stage = if engine
         .apply_background_precognition(&mut output, candidates)
         .await
         .is_ok()
+    {
+        "applied"
+    } else {
+        "discarded"
+    };
+    ApplyCompletion { stage, display_age }
 }
 
 fn generation_is_current(shared: &Arc<(Mutex<WorkerState>, Condvar)>, generation: u64) -> bool {
@@ -167,6 +214,10 @@ fn generation_is_current(shared: &Arc<(Mutex<WorkerState>, Condvar)>, generation
         .is_ok_and(|state| state.generation == generation)
 }
 
+fn display_age_is_fresh(age: Duration) -> bool {
+    age <= PRECOGNITION_DISPLAY_DEADLINE
+}
+
 #[allow(clippy::too_many_arguments)]
 fn record_completion(
     stage: &str,
@@ -174,12 +225,13 @@ fn record_completion(
     identity: &InputFrameIdentity,
     timing: &PrecognitionMaterializationTiming,
     material_us: u128,
+    display_age_us: u128,
     candidates: usize,
     token: &str,
     top: Option<&str>,
 ) {
     trace::record(format!(
-        r#"{{"kind":"ibus_precognition_worker","stage":{},"generation":{generation},"tail_epoch":{},"material_us":{material_us},"candidates":{candidates}}}"#,
+        r#"{{"kind":"ibus_precognition_worker","stage":{},"generation":{generation},"tail_epoch":{},"material_us":{material_us},"display_age_us":{display_age_us},"candidates":{candidates}}}"#,
         serde_json::to_string(stage).unwrap_or_else(|_| "\"unknown\"".to_string()),
         identity.tail_epoch,
     ));
@@ -214,7 +266,8 @@ mod tests {
 
     use lay::config::LayConfig;
 
-    use super::{generation_is_current, InputFrameIdentity, WorkerState};
+    use super::{display_age_is_fresh, generation_is_current, InputFrameIdentity, WorkerState};
+    use std::time::Duration;
 
     fn identity() -> InputFrameIdentity {
         InputFrameIdentity::new(
@@ -281,5 +334,11 @@ mod tests {
 
         assert!(!generation_is_current(&shared, 41));
         assert!(generation_is_current(&shared, 42));
+    }
+
+    #[test]
+    fn late_display_results_are_not_publishable() {
+        assert!(display_age_is_fresh(Duration::from_millis(50)));
+        assert!(!display_age_is_fresh(Duration::from_millis(51)));
     }
 }

@@ -71,8 +71,8 @@ fn semantic_phrase_candidates_for_input(input: &PrecognitionInput) -> Vec<ImeCan
         return Vec::new();
     }
 
-    // Phrase memory is suffix-only. L2 replacement proposals travel through
-    // the typed IME readout and remain display-only until explicit Tab.
+    // Phrase memory is suffix-only. Whole-token replacements remain available
+    // to correction routes but are not projected onto live IBus preedit.
     llmwave_phrase_candidates_for_input(&input.tail, input.max_suffix_chars)
 }
 
@@ -115,33 +115,22 @@ fn word_candidate_readout_for_input(
         limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT,
     });
     let timing = readout.timing;
-    // The shared candidate gate owns ranking. IBus projects typed suffix or
-    // single-token replacement proposals without gaining mutation authority.
-    // A replacement containing whitespace is a word-boundary edit owned by the
-    // verified Space route, not passive preedit or explicit Tab completion.
+    // The shared candidate gate still owns and exposes replacement candidates
+    // to correction routes. Live IBus preedit only projects suffix completion;
+    // replacing the visible token after a background result is a disruptive UI
+    // transition and is not passive completion.
     let proposals = readout
         .candidates
         .into_iter()
-        .filter(|candidate| {
-            !candidate.replacement || !candidate.surface.chars().any(char::is_whitespace)
-        })
+        .filter(|candidate| !candidate.replacement)
         .enumerate()
         .map(|(order, candidate)| {
-            if candidate.replacement {
-                ImeCandidateProposal::replacement(
-                    candidate.surface,
-                    candidate.score,
-                    ImeCandidateSource::L2Replacement,
-                )
-                .with_authority_order(order)
-            } else {
-                ImeCandidateProposal::new(
-                    candidate.suffix,
-                    candidate.score,
-                    ImeCandidateSource::L2Completion,
-                )
-                .with_authority_order(order)
-            }
+            ImeCandidateProposal::new(
+                candidate.suffix,
+                candidate.score,
+                ImeCandidateSource::L2Completion,
+            )
+            .with_authority_order(order)
         })
         .collect();
     (proposals, timing)

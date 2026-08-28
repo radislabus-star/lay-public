@@ -17,6 +17,78 @@ fn engine() -> LayIbusEngine {
 }
 
 #[test]
+fn sensitive_content_types_disable_text_assistance() {
+    let mut engine = engine();
+    assert!(engine.content_allows_text_assistance());
+
+    engine.set_content_type_state(8, 0);
+    assert!(!engine.content_allows_text_assistance());
+
+    engine.set_content_type_state(9, 0);
+    assert!(!engine.content_allows_text_assistance());
+
+    engine.set_content_type_state(10, 0);
+    assert!(!engine.content_allows_text_assistance());
+
+    engine.set_content_type_state(0, 1 << 11);
+    assert!(!engine.content_allows_text_assistance());
+
+    engine.set_content_type_state(0, 1 << 12);
+    assert!(!engine.content_allows_text_assistance());
+
+    engine.set_content_type_state(0, 0);
+    assert!(engine.content_allows_text_assistance());
+}
+
+#[test]
+fn sensitive_content_never_enters_committed_tail_memory() {
+    let mut engine = engine();
+    engine.push_tail_char('x');
+    assert_eq!(engine.tail_buffer, "x");
+
+    engine.set_content_type_state(8, 0);
+    assert!(engine.tail_buffer.is_empty());
+
+    engine.push_tail_char('p');
+    assert!(engine.tail_buffer.is_empty());
+    assert_eq!(engine.preedit_fast.token(), "");
+}
+
+#[test]
+fn sensitive_content_discards_surrounding_text_snapshots() {
+    let mut engine = engine();
+    engine.observe_external_surrounding_text(Some(super::SurroundingTextSnapshot::new(
+        "visible".to_string(),
+        7,
+        7,
+    )));
+    assert!(engine.surrounding_text_snapshot.is_some());
+
+    engine.set_content_type_state(8, 0);
+    engine.observe_external_surrounding_text(Some(super::SurroundingTextSnapshot::new(
+        "secret".to_string(),
+        6,
+        6,
+    )));
+
+    assert!(engine.surrounding_text_snapshot.is_none());
+}
+
+#[test]
+fn entering_sensitive_content_clears_visible_completion_state() {
+    let mut engine = engine();
+    engine.preedit_suffix = "ерить".to_string();
+    engine.preedit_candidates = vec!["ерить".to_string()];
+    engine.preedit_replacement_targets = vec![None];
+
+    engine.set_content_type_state(8, 0);
+
+    assert!(engine.preedit_suffix.is_empty());
+    assert!(engine.preedit_candidates.is_empty());
+    assert!(engine.preedit_replacement_targets.is_empty());
+}
+
+#[test]
 fn narrow_cursor_uses_terminal_passthrough_profile() {
     let mut engine = engine();
     engine.cursor_cell_width = 2;

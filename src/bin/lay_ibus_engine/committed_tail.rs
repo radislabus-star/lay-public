@@ -17,7 +17,7 @@ use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 
 impl LayIbusEngine {
     pub(super) fn schedule_space_autocorrect_prefetch(&self, identity: &InputFrameIdentity) {
-        if !self.config.auto_replace {
+        if !self.config.auto_replace || !self.content_allows_text_assistance() {
             return;
         }
         if !self.input_frame_identity_matches(identity) {
@@ -62,7 +62,7 @@ impl LayIbusEngine {
         lookup: SpaceAutocorrectLookupReceipt,
     ) -> fdo::Result<bool> {
         let total_started = Instant::now();
-        if !self.config.auto_replace {
+        if !self.config.auto_replace || !self.content_allows_text_assistance() {
             return Ok(false);
         }
         let token = self.last_tail_token_text();
