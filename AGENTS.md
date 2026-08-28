@@ -35,6 +35,11 @@ Rules:
 - Ordinary Double Shift is an exact physical-key projection only: for example,
   `а <-> f` and `привет <-> ghbdtn`. It must not call lexical correction,
   ranking, morphology, learning, or any model.
+- After IME autocomplete acceptance, the accepted token is an
+  `ImeCommittedTail`. `ManualToggleV3` must execute
+  `toggle_committed_tail_target`; only `DaemonWordBuffer` may return
+  `DelegateDaemon`. Delegating an accepted completion loses the suffix that
+  only the IME observed and makes the next Double Shift a no-op.
 - Every complete `press -> release -> press -> release` pair toggles once and
   rearms immediately. Do not add a burst latch, quiet-window rearm, pair
   debounce, or multi-tap delay. Four Shift taps are exactly two toggles.

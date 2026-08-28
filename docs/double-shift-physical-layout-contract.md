@@ -15,6 +15,41 @@ captured physical keycodes K[0..N]
 The operation preserves key count and key identity. Only the layout used to
 interpret those keys changes.
 
+## Canonical installed behavior (1.0.54)
+
+This is the complete deployed route. Later implementation work must preserve
+all branches together rather than copying one branch into another:
+
+```text
+Left Shift press/release/press/release
+-> lay-daemon trigger FSM                         sole legacy detector
+-> ManualToggleV3
+-> decision priority
+   1. exact pending autocorrect undo              if one is still valid
+   2. ImeActiveComposition                        IME edits live composition
+   3. ImeCommittedTail                            IME edits visible committed tail
+   4. DaemonWordBuffer                            daemon/uinput fallback only
+-> literal opposite-layout key projection
+-> exactly one text mutation backend
+-> exactly one layout owner
+```
+
+After IME autocomplete is accepted, the completed token belongs to
+`ImeCommittedTail`. The daemon still detects the physical gesture, but the IME
+must execute `toggle_committed_tail_target` because only the IME observed the
+accepted suffix. Only `DaemonWordBuffer` may return `DelegateDaemon`.
+
+For example:
+
+```text
+autocomplete: пров + ерка -> проверка
+Double Shift: проверка -> ghjdthrf
+next input layout: US
+```
+
+No model, candidate search, spelling correction, morphology, ranking, or
+learning runs during that projection.
+
 ## User-visible behavior
 
 With the configured `double-lshift` trigger, the gesture is exactly:
@@ -41,17 +76,24 @@ over ordinary projection.
 physical Double Shift
 ├── pending autocorrect undo
 │   └── existing exact undo route
-└── layout projection
-    ├── read captured physical keycodes
-    ├── compute opposite layout
-    ├── prepare the target GNOME and IBus layout before mutation
-    ├── delete exactly N visible characters
-    ├── replay exactly N captured keycodes
-    └── update replay bookkeeping
+└── ordinary layout projection
+    ├── focused IME owns active composition
+    │   └── one authorized IME composition replacement
+    ├── focused IME owns committed tail
+    │   ├── one authorized committed-tail delete + commit
+    │   ├── wait for exact full SurroundingText postcondition
+    │   └── activate target GNOME source and matching IBus engine once
+    └── DaemonWordBuffer fallback
+        ├── prepare target layout
+        ├── delete exactly N visible characters
+        ├── replay exactly N captured physical keycodes
+        └── update replay bookkeeping
 ```
 
-The layout-projection route must not call a model, replace replay output with a
-ranked text candidate, or write a correction-learning sample.
+The IME and daemon fallback are mutually exclusive text backends. The IME route
+must not delegate `ImeCommittedTail`, and the daemon must not repeat the layout
+switch after an IME-handled result. Neither projection route may call a model,
+replace physical mapping with a ranked candidate, or write a learning sample.
 
 ## Physical gesture owner
 
