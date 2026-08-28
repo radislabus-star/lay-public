@@ -1,0 +1,541 @@
+{
+  "counts": {
+    "ibus_causal_outcome": 5,
+    "ibus_committed_tail_replace": 5,
+    "ibus_layout_postcondition_route": 5,
+    "ibus_layout_sync": 5,
+    "ibus_layout_sync_owner": 5,
+    "ibus_layout_sync_requested": 5,
+    "ibus_manual_toggle_plan": 5,
+    "ibus_visible_postcondition": 5
+  },
+  "inverse_plans": 0,
+  "matrix_sha256": "5b05f26c84785abd8442f48102ef757d2d0019694076adf5f28663d9a31f950a",
+  "recorded_at": "2026-08-28T16:52:44+03:00",
+  "rows": 934,
+  "schema": "lay.double-shift-single-owner-trace-validation.v1",
+  "segments": [
+    {
+      "events": [
+        {
+          "insert_text": "проверка",
+          "kind": "ibus_manual_toggle_plan",
+          "line": 157,
+          "ok": null,
+          "original_token": "ghjdthrf",
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_committed_tail_replace",
+          "line": 159,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_postcondition_route",
+          "line": 160,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_causal_outcome",
+          "line": 165,
+          "ok": null,
+          "original_token": null,
+          "outcome": "confirmed_positive",
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync_owner",
+          "line": 166,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": "visible_postcondition_confirmed",
+          "status": null,
+          "target_is_ru": true
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync_requested",
+          "line": 167,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": true
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_visible_postcondition",
+          "line": 168,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": "observed",
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync",
+          "line": 174,
+          "ok": true,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": true
+        }
+      ],
+      "iteration": 1,
+      "passed": true,
+      "signature": [
+        "ibus_manual_toggle_plan",
+        "ibus_committed_tail_replace",
+        "ibus_layout_postcondition_route",
+        "ibus_causal_outcome:confirmed_positive",
+        "ibus_layout_sync_owner",
+        "ibus_layout_sync_requested",
+        "ibus_visible_postcondition:observed",
+        "ibus_layout_sync"
+      ]
+    },
+    {
+      "events": [
+        {
+          "insert_text": "проверка",
+          "kind": "ibus_manual_toggle_plan",
+          "line": 345,
+          "ok": null,
+          "original_token": "ghjdthrf",
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_committed_tail_replace",
+          "line": 347,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_postcondition_route",
+          "line": 348,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_causal_outcome",
+          "line": 353,
+          "ok": null,
+          "original_token": null,
+          "outcome": "confirmed_positive",
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync_owner",
+          "line": 354,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": "visible_postcondition_confirmed",
+          "status": null,
+          "target_is_ru": true
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync_requested",
+          "line": 355,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": true
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_visible_postcondition",
+          "line": 356,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": "observed",
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync",
+          "line": 362,
+          "ok": true,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": true
+        }
+      ],
+      "iteration": 2,
+      "passed": true,
+      "signature": [
+        "ibus_manual_toggle_plan",
+        "ibus_committed_tail_replace",
+        "ibus_layout_postcondition_route",
+        "ibus_causal_outcome:confirmed_positive",
+        "ibus_layout_sync_owner",
+        "ibus_layout_sync_requested",
+        "ibus_visible_postcondition:observed",
+        "ibus_layout_sync"
+      ]
+    },
+    {
+      "events": [
+        {
+          "insert_text": "проверка",
+          "kind": "ibus_manual_toggle_plan",
+          "line": 532,
+          "ok": null,
+          "original_token": "ghjdthrf",
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_committed_tail_replace",
+          "line": 534,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_postcondition_route",
+          "line": 535,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_causal_outcome",
+          "line": 540,
+          "ok": null,
+          "original_token": null,
+          "outcome": "confirmed_positive",
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync_owner",
+          "line": 541,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": "visible_postcondition_confirmed",
+          "status": null,
+          "target_is_ru": true
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync_requested",
+          "line": 542,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": true
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_visible_postcondition",
+          "line": 543,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": "observed",
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync",
+          "line": 549,
+          "ok": true,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": true
+        }
+      ],
+      "iteration": 3,
+      "passed": true,
+      "signature": [
+        "ibus_manual_toggle_plan",
+        "ibus_committed_tail_replace",
+        "ibus_layout_postcondition_route",
+        "ibus_causal_outcome:confirmed_positive",
+        "ibus_layout_sync_owner",
+        "ibus_layout_sync_requested",
+        "ibus_visible_postcondition:observed",
+        "ibus_layout_sync"
+      ]
+    },
+    {
+      "events": [
+        {
+          "insert_text": "проверка",
+          "kind": "ibus_manual_toggle_plan",
+          "line": 719,
+          "ok": null,
+          "original_token": "ghjdthrf",
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_committed_tail_replace",
+          "line": 721,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_postcondition_route",
+          "line": 722,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_causal_outcome",
+          "line": 727,
+          "ok": null,
+          "original_token": null,
+          "outcome": "confirmed_positive",
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync_owner",
+          "line": 728,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": "visible_postcondition_confirmed",
+          "status": null,
+          "target_is_ru": true
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync_requested",
+          "line": 729,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": true
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_visible_postcondition",
+          "line": 730,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": "observed",
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync",
+          "line": 736,
+          "ok": true,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": true
+        }
+      ],
+      "iteration": 4,
+      "passed": true,
+      "signature": [
+        "ibus_manual_toggle_plan",
+        "ibus_committed_tail_replace",
+        "ibus_layout_postcondition_route",
+        "ibus_causal_outcome:confirmed_positive",
+        "ibus_layout_sync_owner",
+        "ibus_layout_sync_requested",
+        "ibus_visible_postcondition:observed",
+        "ibus_layout_sync"
+      ]
+    },
+    {
+      "events": [
+        {
+          "insert_text": "проверка",
+          "kind": "ibus_manual_toggle_plan",
+          "line": 906,
+          "ok": null,
+          "original_token": "ghjdthrf",
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_committed_tail_replace",
+          "line": 908,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_postcondition_route",
+          "line": 909,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_causal_outcome",
+          "line": 914,
+          "ok": null,
+          "original_token": null,
+          "outcome": "confirmed_positive",
+          "owner": null,
+          "status": null,
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync_owner",
+          "line": 915,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": "visible_postcondition_confirmed",
+          "status": null,
+          "target_is_ru": true
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync_requested",
+          "line": 916,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": true
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_visible_postcondition",
+          "line": 917,
+          "ok": null,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": "observed",
+          "target_is_ru": null
+        },
+        {
+          "insert_text": null,
+          "kind": "ibus_layout_sync",
+          "line": 923,
+          "ok": true,
+          "original_token": null,
+          "outcome": null,
+          "owner": null,
+          "status": null,
+          "target_is_ru": true
+        }
+      ],
+      "iteration": 5,
+      "passed": true,
+      "signature": [
+        "ibus_manual_toggle_plan",
+        "ibus_committed_tail_replace",
+        "ibus_layout_postcondition_route",
+        "ibus_causal_outcome:confirmed_positive",
+        "ibus_layout_sync_owner",
+        "ibus_layout_sync_requested",
+        "ibus_visible_postcondition:observed",
+        "ibus_layout_sync"
+      ]
+    }
+  ],
+  "trace_sha256": "19ba7d6dfae99a7debcc513275bec0533081790d4492af7a46be47de86e02aae",
+  "verdict": "PASS"
+}

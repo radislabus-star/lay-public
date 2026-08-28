@@ -1,0 +1,47 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "physical-keys", "role": "interface"},
+    {"id": "daemon-detector", "role": "orchestrator"},
+    {"id": "daemon-manual-planner", "role": "authorization_owner"},
+    {"id": "ime-bridge", "role": "interface"},
+    {"id": "ime-output", "role": "mutation_owner"},
+    {"id": "ibus-key-observer", "role": "observer"}
+  ],
+  "edges": [
+    {"id": "exec-keys-daemon", "from": "physical-keys", "relation": "calls", "to": "daemon-detector", "events": ["physical-double-shift"]},
+    {"id": "exec-daemon-planner", "from": "daemon-detector", "relation": "delegates", "to": "daemon-manual-planner", "events": ["physical-double-shift"]},
+    {"id": "exec-planner-bridge", "from": "daemon-manual-planner", "relation": "calls", "to": "ime-bridge", "events": ["physical-double-shift"]},
+    {"id": "exec-bridge-output", "from": "ime-bridge", "relation": "delegates", "to": "ime-output", "events": ["physical-double-shift"]},
+    {"id": "auth-planner-output", "from": "daemon-manual-planner", "relation": "authorizes", "to": "ime-output", "events": ["physical-double-shift"]},
+    {"id": "observe-ibus-keys", "from": "physical-keys", "relation": "observes", "to": "ibus-key-observer", "events": ["physical-double-shift"]}
+  ],
+  "routes": [
+    {
+      "id": "physical-double-shift-execution",
+      "event": "physical-double-shift",
+      "kind": "execution",
+      "entry": "physical-keys",
+      "terminal": "ime-output",
+      "required_roles": ["interface", "orchestrator", "authorization_owner", "mutation_owner"],
+      "path_cardinality": [{"from": "physical-keys", "to": "ime-output", "min": 1, "max": 1}]
+    },
+    {
+      "id": "physical-double-shift-authority",
+      "event": "physical-double-shift",
+      "kind": "authority",
+      "entry": "daemon-manual-planner",
+      "terminal": "ime-output",
+      "required_roles": ["authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "ibus-key-observation",
+      "event": "physical-double-shift",
+      "kind": "observation",
+      "entry": "physical-keys",
+      "terminal": "ibus-key-observer",
+      "required_roles": ["observer", "interface"]
+    }
+  ]
+}

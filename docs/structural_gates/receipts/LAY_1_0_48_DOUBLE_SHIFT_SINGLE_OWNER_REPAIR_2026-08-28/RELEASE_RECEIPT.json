@@ -1,0 +1,112 @@
+{
+  "schema": "lay-1.0.48-double-shift-single-owner-repair-v1",
+  "recorded_at": "2026-08-28T16:54:28+03:00",
+  "verdict": "LAY_1_0_48_DOUBLE_SHIFT_SINGLE_OWNER_REPAIRED",
+  "version": "1.0.48",
+  "branch": "codex/l1-exact-peak-search",
+  "base_commit": "2365480e36810377d5ec39efa9bdb2eaa23633b5",
+  "defects": {
+    "duplicate_gesture_owner": "legacy IBus ProcessKeyEvent and lay-daemon independently recognized the same physical Double Shift, allowing one gesture to produce original -> replacement -> original",
+    "duplicate_layout_owner": "after one exact IBus committed-tail mutation, lay-daemon repeated the layout switch before the client-visible SurroundingText postcondition and raced GTK focus handoff",
+    "pre_repair_user_surface": "Double Shift could switch and immediately switch back, or leave the original wrong-layout token visible"
+  },
+  "effective_contract": {
+    "physical_detector": "lay-daemon trigger FSM only",
+    "legacy_ibus_shift_route": "observe-only; no EngineOutput or edit capability",
+    "exclusive_atomic_route": "ProcessKeyEventAtomicV1 retains one isolated gesture detector because legacy mutation is disabled",
+    "text_mutation_backend": "focused IBus ManualToggleV3 owner",
+    "committed_tail_transaction": [
+      "delete exact old committed tail",
+      "commit exact projected tail",
+      "observe exact replacement through SurroundingText",
+      "switch active IBus engine exactly once"
+    ],
+    "daemon_after_ime_handled": "no switch_to_target_layout call",
+    "no_surrounding_text_fallback": "existing immediate IBus layout sync",
+    "daemon_uinput_delegation": "existing daemon-owned layout sync",
+    "burst_rule": "continued Shift-only taps inside shift_window_ms cannot reverse the completed action",
+    "global_ibus_restart": "forbidden"
+  },
+  "implementation": {
+    "agents_contract_sha256": "577b47b5f207817c1444cc647fe9befb4fdf4a1a7ca9daa548e10abbf90a32c3",
+    "canonical_contract_sha256": "32cb3d04686d2ea2c141b20b5ba6a11512cca782c3e20ab23df4d0c49900fdfa",
+    "route_map_sha256": "4e9ff567f99b8ae501a7a31a94cb3523f87085f2f910168e0c63c2d1cdb0d0ab",
+    "changed_gate_sha256": "1e36c507d8c07c1e0c97bbbb5452ea2316690dc229ac921f102b4e98c6d94d7d",
+    "daemon_ime_manual_toggle_sha256": "b7c1269d3555344535ff205de10a435fbc0a1952537e530dcedde042cfc2a425",
+    "ibus_committed_tail_sha256": "7dbfdb39404bc651325922229134c4fc58b9525a619f05cf0a6692d8576cf81b",
+    "ibus_interface_sha256": "df68f68885981c7c336487fd7386bde6c8c8369d9f679e218fd3fbac4ae5b299"
+  },
+  "verification": {
+    "implementation_preflight": "READY_TO_IMPLEMENT",
+    "ibus_physical_double_shift_owner": "3 pass / 0 fail",
+    "daemon_physical_double_shift_owner": "1 pass / 0 fail",
+    "daemon_double_shift_trigger": "5 pass / 0 fail",
+    "full_lay_ibus_engine": "251 pass / 0 fail / 0 ignored",
+    "changed_file_gate": "PASS",
+    "release_build": "PASS",
+    "broad_lay_daemon": "212 pass / 3 fail / 0 ignored",
+    "broad_daemon_failures": [
+      "typing_assist_each_default_rule_has_isolated_positive_case",
+      "typing_assist_moves_letter_from_next_word_back",
+      "typing_assist_regression_suite_100_cases"
+    ],
+    "broad_daemon_failure_fixture": "расчет ыприблизительные",
+    "broad_daemon_failure_scope": "pre-existing correction-core expectations; no trigger FSM, ManualToggleV3, committed-tail, or layout-postcondition reachability"
+  },
+  "diagnostic_evidence": {
+    "single_detector_before_layout_owner_repair_sha256": "3bf149cc71175689180d4e10f651fb83ee06d073b000d92cdc20b387c73431a9",
+    "single_detector_before_layout_owner_repair": "5/5 controlled cases passed before the independent postcondition race was stress-reproduced",
+    "pre_layout_owner_repair_matrix_sha256": "730fb77c53eda76d2f8788f1bda10bd50832531ee6783535024ca8e737731e1d",
+    "pre_layout_owner_repair_matrix": "3/5 installed GTK repetitions passed",
+    "failed_evidence_is_scientific_result": false
+  },
+  "live": {
+    "case": "ime_file_ghjdthrf_shift_enter",
+    "expected": "file проверка",
+    "iterations": 5,
+    "passed": 5,
+    "matrix_sha256": "5b05f26c84785abd8442f48102ef757d2d0019694076adf5f28663d9a31f950a",
+    "trace_sha256": "19ba7d6dfae99a7debcc513275bec0533081790d4492af7a46be47de86e02aae",
+    "trace_validation_sha256": "76fe92a394d7ea93b869078898339a970741256c80c8eaa03a363ff8447e6701",
+    "manual_toggle_plans": 5,
+    "committed_tail_replacements": 5,
+    "confirmed_positive_postconditions": 5,
+    "layout_sync_owners": 5,
+    "layout_syncs": 5,
+    "inverse_plans": 0,
+    "controlled_evdev_keyboard": true,
+    "real_gtk_field": true,
+    "human_physical_keyboard_single_detector_confirmation": "PASS before final postcondition-only repair",
+    "human_physical_keyboard_current_exact_bytes": "NOT_REPEATED"
+  },
+  "release": {
+    "cargo_toml_sha256": "4557a91c419faebd9c1be982138080cdd1aa5a595df8629df7b259b18929859f",
+    "cargo_lock_sha256": "c4e4b85ed1cadb98c849a2f518fef6a6fbb771577bcf04609f0f30f404921bd9",
+    "lay_daemon_sha256": "95276fa3fe2e11d016ae5386127784ccf4e165bd52c652f4001ebf70b36a41d3",
+    "lay_ibus_engine_sha256": "06601d99abc4b8b9ea083bbf4d7790e9eff871891d00f6e9e3c0550071721bcb",
+    "lay_test_input_sha256": "3b1b3a57ab6616ffb27c9faf9aa7bd7f4487e816dfe0ae275ef67cd4e84dcca2",
+    "lay_daemon_pid_after": 3687447,
+    "lay_ibus_engine_pid_after": 3674893,
+    "global_ibus_pid_before": 4594,
+    "global_ibus_pid_after": 4594,
+    "loaded_extension_version": 1000048,
+    "loaded_extension_metadata_sha256": "eb8d3cf7b1c46169fb846cefa05c20de286e214f8fc0f2ce83b28dfd59aad950",
+    "loaded_extension_tray_sha256": "9f00394242a52f8467082024103da4990578d6daa3cd11f0728625a52de88698"
+  },
+  "preserved": {
+    "live_config_sha256": "d73d5974a6b205e90db2e4562d438cea71f1c967315341fa53c4093dc73d0af4",
+    "canonical_l2_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "exact_v13_sidecar_sha256": "a277b3c8b7d441de55fdc3c77abf483c2061653e9068b3bcce57629c742de9d7"
+  },
+  "scope": {
+    "runtime_authority_changed": true,
+    "gesture_detector_ownership_changed": true,
+    "layout_postcondition_ownership_changed": true,
+    "candidate_producer_changed": false,
+    "candidate_ranking_changed": false,
+    "correction_policy_changed": false,
+    "learning_changed": false,
+    "model_or_sidecar_changed": false,
+    "global_ibus_restarted": false
+  }
+}

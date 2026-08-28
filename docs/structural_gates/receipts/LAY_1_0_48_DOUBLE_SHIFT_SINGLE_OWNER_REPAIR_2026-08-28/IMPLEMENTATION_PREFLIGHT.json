@@ -1,0 +1,117 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "lay-1.0.48-single-double-shift-owner-20260828",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {
+      "id": "ibus-interface-v147",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "expect": {"mode": "0664", "size_bytes": 19498, "sha256": "6aa6f63186707173a726dd75af3184d1aef308627e6944e0d0b5846de281386b"}
+    },
+    {
+      "id": "ibus-shared-state-v147",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/protocol/state.rs",
+      "expect": {"mode": "0664", "size_bytes": 1555, "sha256": "0f2db775ce9c392d46be40f44dfba79b285283f0a2b6913267514ed63ee6b826"}
+    },
+    {
+      "id": "daemon-detector-v147",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+      "expect": {"mode": "0664", "size_bytes": 6528, "sha256": "db22e4d9d5b531674561347c57c265d4ba2e40abcd01358818959186bd108b7c"}
+    },
+    {
+      "id": "daemon-ime-dispatch-v147",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+      "expect": {"mode": "0664", "size_bytes": 3700, "sha256": "1cf64e7a33e6c90b6f757eddf759dfafdb962fe599815011d3971db5632c8646"}
+    },
+    {
+      "id": "ime-bridge-v147",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "expect": {"mode": "0664", "size_bytes": 10342, "sha256": "9d515bb6c02704f09b23166e8c0e1fd000cdc6a41c772cebd673b27fbb2aca4c"}
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "remove-ibus-physical-detector", "kind": "source_edit"},
+      {"id": "run-owner-regressions", "kind": "local_test"},
+      {"id": "build-release", "kind": "local_build"},
+      {"id": "install-release", "kind": "local_runtime_install"},
+      {"id": "restart-lay-owned-processes", "kind": "local_runtime_restart"},
+      {"id": "observe-one-mutation", "kind": "live_trace_read"}
+    ],
+    "forbidden": [
+      "second_physical_double_shift_detector",
+      "direct_ibus_process_key_manual_toggle",
+      "global_ibus_daemon_restart",
+      "config_edit",
+      "model_or_sidecar_edit",
+      "candidate_or_correction_policy_edit",
+      "generated_traffic",
+      "synthetic_fixture"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "pinned-daemon-ime-dispatch",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+      "sha256": "1cf64e7a33e6c90b6f757eddf759dfafdb962fe599815011d3971db5632c8646",
+      "forbidden_effect_patterns": [
+        {"effect": "direct_ibus_process_key_manual_toggle", "regex": "process_key_event_with_output"},
+        {"effect": "global_ibus_daemon_restart", "regex": "ibus-daemon\\s+--replace"},
+        {"effect": "config_edit", "regex": "config[.]json|write_config"},
+        {"effect": "model_or_sidecar_edit", "regex": "LAY-L2|[.]dafsa|compile-v13"},
+        {"effect": "candidate_or_correction_policy_edit", "regex": "candidate_gate|SafetyGate|candidate_ranking"},
+        {"effect": "generated_traffic", "regex": "reqwest|curl|wget"},
+        {"effect": "synthetic_fixture", "regex": "synthetic_fixture|test_fixture_write"}
+      ]
+    },
+    {
+      "id": "pinned-ime-bridge",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "9d515bb6c02704f09b23166e8c0e1fd000cdc6a41c772cebd673b27fbb2aca4c",
+      "forbidden_effect_patterns": [
+        {"effect": "second_physical_double_shift_detector", "regex": "last_shift_release_at|double_tapped"},
+        {"effect": "global_ibus_daemon_restart", "regex": "ibus-daemon\\s+--replace"}
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {"id": "daemon-detector", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/event.rs", "policy": "byte_identical", "baseline_check_id": "daemon-detector-v147", "cursor_policy": "whole_file", "rollback_policy": "retain exact baseline"},
+    {"id": "daemon-ime-dispatch", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/ime.rs", "policy": "byte_identical", "baseline_check_id": "daemon-ime-dispatch-v147", "cursor_policy": "whole_file", "rollback_policy": "retain exact baseline"},
+    {"id": "ime-bridge", "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs", "policy": "byte_identical", "baseline_check_id": "ime-bridge-v147", "cursor_policy": "whole_file", "rollback_policy": "retain exact baseline"}
+  ],
+  "state_machine": {
+    "initial_state": "V147_DUPLICATE_OWNER_CONFIRMED",
+    "steps": [
+      {"id": "edit-owner-route", "from": "V147_DUPLICATE_OWNER_CONFIRMED", "to": "SINGLE_OWNER_SOURCE", "mutates": true, "failure_state": "SOURCE_EDIT_FAILED", "cleanup": "retain scoped diff and leave installed 1.0.47 unchanged", "preserves": ["daemon-detector", "daemon-ime-dispatch", "ime-bridge"], "test_id": "source-edit-fault"},
+      {"id": "test-single-owner", "from": "SINGLE_OWNER_SOURCE", "to": "SINGLE_OWNER_TESTED", "mutates": false, "failure_state": "TEST_FAILED", "cleanup": "do not build or install", "preserves": ["daemon-detector", "daemon-ime-dispatch", "ime-bridge"], "test_id": "single-owner-test"},
+      {"id": "build-install-restart", "from": "SINGLE_OWNER_TESTED", "to": "V148_LIVE_UNVERIFIED", "mutates": true, "failure_state": "INSTALL_FAILED", "cleanup": "retain exact pre-install binaries in rollback; restart only Lay-owned processes; never restart global IBus", "preserves": ["daemon-detector", "daemon-ime-dispatch", "ime-bridge"], "test_id": "install-fault"},
+      {"id": "live-cardinality", "from": "V148_LIVE_UNVERIFIED", "to": "V148_SINGLE_OWNER_PASS", "mutates": false, "failure_state": "LIVE_CARDINALITY_FAILED", "cleanup": "retain trace and do not claim PASS", "preserves": ["daemon-detector", "daemon-ime-dispatch", "ime-bridge"], "test_id": "live-cardinality"}
+    ],
+    "terminal_states": ["V148_SINGLE_OWNER_PASS", "SOURCE_EDIT_FAILED", "TEST_FAILED", "INSTALL_FAILED", "LIVE_CARDINALITY_FAILED"]
+  },
+  "identity_contracts": [
+    {"id": "physical-event-cardinality", "producer": "one daemon-confirmed physical Double Shift", "consumer": "one ManualToggleV3 IBus mutation", "comparison": "exactly one manual-toggle plan and one layout target per gesture", "test_id": "single-owner-test"},
+    {"id": "release-install-parity", "producer": "target release binaries", "consumer": "installed and loaded Lay-owned binaries", "comparison": "SHA-256 byte identity", "test_id": "installed-parity"}
+  ],
+  "runtime_comparisons": [],
+  "invariants": [
+    {"id": "daemon-only-detector", "statement": "IBus ProcessKeyEvent observes Shift state but cannot call manual_toggle_active_text_target", "test_id": "single-owner-test"},
+    {"id": "bridge-preserved", "statement": "ManualToggleV3 remains the only IME mutation entry for the physical gesture", "test_id": "bridge-parity"},
+    {"id": "global-ibus-preserved", "statement": "global ibus-daemon PID is unchanged", "test_id": "installed-parity"}
+  ],
+  "tests": [
+    {"id": "source-edit-fault", "kind": "fault_injection", "expected": "partial source edit changes no installed runtime"},
+    {"id": "single-owner-test", "kind": "parity", "expected": "direct IBus Shift sequence produces zero manual mutation while one daemon bridge action produces exactly one"},
+    {"id": "install-fault", "kind": "fault_injection", "expected": "pre-install binaries are retained and global IBus is never restarted"},
+    {"id": "live-cardinality", "kind": "integration", "expected": "one physical Double Shift produces one plan one layout switch and one visible projection"},
+    {"id": "installed-parity", "kind": "parity", "expected": "target installed and loaded daemon and IME hashes match; global IBus PID unchanged"},
+    {"id": "bridge-parity", "kind": "parity", "expected": "daemon ManualToggleV3 dispatch and IBus bridge bytes remain exact"}
+  ]
+}

@@ -19,6 +19,32 @@ Rules:
 - `target/` is disposable build cache. Installed release binaries live in `~/.local/lib/lay/bin` and are linked from `~/.local/bin`.
 - Check current usage with `scripts/cargo-guard.sh --status` before and after an unusually broad build.
 
+## Protected Double Shift route
+
+- In the deployed legacy route, physical Double Shift has exactly one detector:
+  `lay-daemon` trigger FSM. It invokes `ManualToggleV3`; the focused IBus engine
+  is the single text mutation backend.
+- Legacy IBus `ProcessKeyEvent` is observe-only for Shift press/release events.
+  Never add local pair recognition or call a manual-toggle/text-edit method from
+  that route. Two detectors produce the forbidden `x -> y -> x` reversal.
+- `ProcessKeyEventAtomicV1` is an exclusive route and may retain its own atomic
+  gesture detector because legacy processing is disabled there.
+- The code boundary is `observe_daemon_owned_legacy_shift`, which intentionally
+  has no `EngineOutput` argument. Keep Double Shift mutation capability only in
+  `process_atomic_shift_gesture` and the daemon-owned `ManualToggleV3` route.
+- For a committed-tail projection with SurroundingText, changing the active
+  IBus engine is owned by the client-visible postcondition. Never switch layout
+  immediately after delete-plus-commit dispatch: wait until the exact expected
+  replacement is observed. The no-SurroundingText fallback remains immediate.
+- An IME-handled `ManualToggleV3` reply must not trigger
+  `switch_to_target_layout` in `lay-daemon`; that would create a second layout
+  owner and force focus handoff before the IBus postcondition. Daemon/uinput
+  delegation retains its existing daemon-owned layout transition.
+- Before any Double Shift release or installation, run
+  `scripts/check-lay-changed.sh`; the explicit
+  `physical_double_shift_owner_` tests must pass, followed by a single-owner
+  client-visible smoke and one real-keyboard confirmation.
+
 ## Architecture evidence discipline
 
 - After every architecture experiment, update the owning architecture document in the same change. Do not leave the result only in terminal output or a receipt.

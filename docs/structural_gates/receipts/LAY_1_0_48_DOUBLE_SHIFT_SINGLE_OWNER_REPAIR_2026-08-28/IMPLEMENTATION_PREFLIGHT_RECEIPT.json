@@ -1,0 +1,106 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "ibus-interface-v147",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "6aa6f63186707173a726dd75af3184d1aef308627e6944e0d0b5846de281386b",
+      "size_bytes": 19498
+    },
+    {
+      "exists": true,
+      "id": "ibus-shared-state-v147",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/protocol/state.rs",
+      "sha256": "0f2db775ce9c392d46be40f44dfba79b285283f0a2b6913267514ed63ee6b826",
+      "size_bytes": 1555
+    },
+    {
+      "exists": true,
+      "id": "daemon-detector-v147",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+      "sha256": "db22e4d9d5b531674561347c57c265d4ba2e40abcd01358818959186bd108b7c",
+      "size_bytes": 6528
+    },
+    {
+      "exists": true,
+      "id": "daemon-ime-dispatch-v147",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+      "sha256": "1cf64e7a33e6c90b6f757eddf759dfafdb962fe599815011d3971db5632c8646",
+      "size_bytes": 3700
+    },
+    {
+      "exists": true,
+      "id": "ime-bridge-v147",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "9d515bb6c02704f09b23166e8c0e1fd000cdc6a41c772cebd673b27fbb2aca4c",
+      "size_bytes": 10342
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 5,
+    "forbidden_side_effect_kinds": [
+      "candidate_or_correction_policy_edit",
+      "config_edit",
+      "direct_ibus_process_key_manual_toggle",
+      "generated_traffic",
+      "global_ibus_daemon_restart",
+      "model_or_sidecar_edit",
+      "second_physical_double_shift_detector",
+      "synthetic_fixture"
+    ],
+    "identity_contracts": 2,
+    "invariants": 3,
+    "planned_side_effect_kinds": [
+      "live_trace_read",
+      "local_build",
+      "local_runtime_install",
+      "local_runtime_restart",
+      "local_test",
+      "source_edit"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 0,
+    "source_checks": 2,
+    "tests": 6
+  },
+  "manifest_sha256": "b19adc629e3431af41c3f64f2098fb95e19bd2c42664e6c60baab2d1fdb184c5",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-daemon-ime-dispatch",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+      "sha256": "1cf64e7a33e6c90b6f757eddf759dfafdb962fe599815011d3971db5632c8646",
+      "size_bytes": 3700
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-ime-bridge",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "9d515bb6c02704f09b23166e8c0e1fd000cdc6a41c772cebd673b27fbb2aca4c",
+      "size_bytes": 10342
+    }
+  ],
+  "task_id": "lay-1.0.48-single-double-shift-owner-20260828",
+  "verdict": "READY_TO_IMPLEMENT"
+}

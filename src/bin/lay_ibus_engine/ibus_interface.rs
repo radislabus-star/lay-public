@@ -333,6 +333,89 @@ impl LayIbusEngine {
         shared.manual_toggle_burst_last_release_at = None;
     }
 
+    fn observe_daemon_owned_legacy_shift(&mut self, keyval: u32, keycode: u32, state: u32) -> bool {
+        let pressed = is_key_press(state);
+        self.shift_active = pressed;
+        self.shift_pressed_at = None;
+        self.last_shift_release_at = None;
+        if pressed {
+            self.shift_used_as_modifier = false;
+            if self.alt_completion_active {
+                self.alt_used_as_modifier = true;
+                self.shift_used_as_modifier = true;
+                return self.toggle_layout_from_modifier_hotkey();
+            }
+        } else {
+            self.shift_used_as_modifier = false;
+        }
+        trace::record_key(
+            "shift_observed_daemon_owner",
+            keyval,
+            keycode,
+            false,
+            None,
+            self.tail_buffer.chars().count(),
+            self.preedit_suffix.chars().count(),
+        );
+        false
+    }
+
+    async fn process_atomic_shift_gesture(
+        &mut self,
+        output: &mut EngineOutput<'_, '_>,
+        keyval: u32,
+        state: u32,
+    ) -> fdo::Result<bool> {
+        debug_assert!(self.atomic_speculation);
+        let pressed = is_key_press(state);
+        self.shift_active = pressed;
+        if pressed {
+            self.shift_used_as_modifier = false;
+            if self.alt_completion_active {
+                self.alt_used_as_modifier = true;
+                self.shift_used_as_modifier = true;
+                return Ok(self.toggle_layout_from_modifier_hotkey());
+            }
+        }
+
+        let gesture_key = configured_atomic_double_shift_key(&self.config.trigger, keyval);
+        if pressed {
+            self.shift_pressed_at = gesture_key.then(Instant::now);
+            if !gesture_key {
+                self.last_shift_release_at = None;
+            }
+        } else {
+            let now = Instant::now();
+            let tapped = gesture_key
+                && self.shift_pressed_at.take().is_some()
+                && !self.shift_used_as_modifier;
+            if tapped && self.manual_toggle_burst_blocks_release(now) {
+                self.shift_used_as_modifier = false;
+                self.last_shift_release_at = None;
+                return Ok(false);
+            }
+            let double_tapped = tapped
+                && self.last_shift_release_at.is_some_and(|released_at| {
+                    now.duration_since(released_at)
+                        <= Duration::from_millis(self.config.shift_window_ms)
+                });
+            self.shift_used_as_modifier = false;
+            self.last_shift_release_at = tapped.then_some(now);
+            if double_tapped {
+                self.last_shift_release_at = None;
+                if self
+                    .manual_toggle_active_text_target(output)
+                    .await?
+                    .is_some()
+                {
+                    self.latch_manual_toggle_burst(now);
+                    return Ok(true);
+                }
+            }
+        }
+        Ok(false)
+    }
+
     pub(crate) async fn process_key_event_with_output(
         &mut self,
         output: &mut EngineOutput<'_, '_>,
@@ -364,50 +447,12 @@ impl LayIbusEngine {
             return Ok(false);
         }
         if is_shift_key(keyval) {
-            let pressed = is_key_press(state);
-            let gesture_key = configured_double_shift_key(&self.config.trigger, keyval);
-            self.shift_active = pressed;
-            if pressed {
-                self.shift_pressed_at = gesture_key.then(Instant::now);
-                self.shift_used_as_modifier = false;
-                if !gesture_key {
-                    self.last_shift_release_at = None;
-                }
-                if self.alt_completion_active {
-                    self.alt_used_as_modifier = true;
-                    self.shift_used_as_modifier = true;
-                    return Ok(self.toggle_layout_from_modifier_hotkey());
-                }
-            } else {
-                let now = Instant::now();
-                let tapped = gesture_key
-                    && self.shift_pressed_at.take().is_some()
-                    && !self.shift_used_as_modifier;
-                if tapped && self.manual_toggle_burst_blocks_release(now) {
-                    self.shift_used_as_modifier = false;
-                    self.last_shift_release_at = None;
-                    return Ok(false);
-                }
-                let double_tapped = tapped
-                    && self.last_shift_release_at.is_some_and(|released_at| {
-                        now.duration_since(released_at)
-                            <= Duration::from_millis(self.config.shift_window_ms)
-                    });
-                self.shift_used_as_modifier = false;
-                self.last_shift_release_at = tapped.then_some(now);
-                if double_tapped {
-                    self.last_shift_release_at = None;
-                    if self
-                        .manual_toggle_active_text_target(output)
-                        .await?
-                        .is_some()
-                    {
-                        self.latch_manual_toggle_burst(now);
-                        return Ok(true);
-                    }
-                }
+            if !self.atomic_speculation {
+                return Ok(self.observe_daemon_owned_legacy_shift(keyval, keycode, state));
             }
-            return Ok(false);
+            return self
+                .process_atomic_shift_gesture(output, keyval, state)
+                .await;
         }
         if is_key_press(state) {
             self.last_shift_release_at = None;
@@ -450,7 +495,7 @@ impl LayIbusEngine {
     }
 }
 
-fn configured_double_shift_key(trigger: &str, keyval: u32) -> bool {
+fn configured_atomic_double_shift_key(trigger: &str, keyval: u32) -> bool {
     trigger == "double-lshift" && keyval == KEY_LEFT_SHIFT
 }
 
@@ -461,7 +506,9 @@ fn should_apply_auto_undo_before_postcondition(retry_status: &str) -> bool {
 #[cfg(test)]
 mod causal_precondition_tests {
     use super::{should_apply_auto_undo_before_postcondition, LayIbusEngine};
+    use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_NATIVE_UNHANDLED};
     use crate::protocol::SharedState;
+    use crate::protocol::{KEY_LEFT_SHIFT, KEY_RIGHT_SHIFT, RELEASE_MASK};
     use lay::config::LayConfig;
     use std::sync::{Arc, Mutex};
     use std::time::{Duration, Instant};
@@ -508,6 +555,80 @@ mod causal_precondition_tests {
         target.clear_manual_toggle_burst();
         assert!(!target.manual_toggle_burst_blocks_release(start + Duration::from_millis(910)));
     }
+
+    #[test]
+    fn physical_double_shift_owner_legacy_route_is_observation_only() {
+        let mut config = LayConfig::default();
+        config.text_backend = "ime".to_string();
+        let mut engine = LayIbusEngine::new(
+            "/engine/legacy-double-shift".to_string(),
+            Arc::new(Mutex::new(SharedState::default())),
+            false,
+            true,
+            config,
+        );
+        engine.buffer = "ghbdtn".to_string();
+        engine.composition_cursor = engine.buffer.chars().count();
+        engine.tail_buffer = "prefix ghbdtn".to_string();
+
+        for keyval in [KEY_LEFT_SHIFT, KEY_RIGHT_SHIFT] {
+            for _ in 0..4 {
+                for state in [0, RELEASE_MASK] {
+                    let mut builder = AtomicEffectBuilder::default();
+                    let mut output = EngineOutput::atomic(&mut builder);
+                    let handled = zbus::block_on(engine.process_key_event_with_output(
+                        &mut output,
+                        keyval,
+                        42,
+                        state,
+                    ))
+                    .expect("legacy Shift observation");
+
+                    assert!(!handled);
+                    assert_eq!(
+                        builder.finish(handled),
+                        (PROPOSAL_NATIVE_UNHANDLED, Vec::new())
+                    );
+                }
+            }
+        }
+
+        assert_eq!(engine.buffer, "ghbdtn");
+        assert_eq!(engine.tail_buffer, "prefix ghbdtn");
+        assert!(engine.shift_pressed_at.is_none());
+        assert!(engine.last_shift_release_at.is_none());
+        assert!(engine
+            .shared
+            .lock()
+            .expect("shared state")
+            .manual_toggle_burst_last_release_at
+            .is_none());
+    }
+
+    #[test]
+    fn physical_double_shift_owner_legacy_boundary_has_no_edit_capability() {
+        let source = include_str!("ibus_interface.rs");
+        let legacy_handler = source
+            .split("fn observe_daemon_owned_legacy_shift")
+            .nth(1)
+            .expect("legacy Shift owner boundary")
+            .split("async fn process_atomic_shift_gesture")
+            .next()
+            .expect("atomic Shift boundary");
+
+        for forbidden in [
+            "EngineOutput",
+            "manual_toggle_active_text_target",
+            "replace_committed_tail",
+            "commit_text",
+            "delete_surrounding_text",
+        ] {
+            assert!(
+                !legacy_handler.contains(forbidden),
+                "legacy Shift observer gained edit capability: {forbidden}"
+            );
+        }
+    }
 }
 
 pub(crate) fn ibus_text_value_to_string(value: &Value<'_>) -> Option<String> {
@@ -526,19 +647,25 @@ pub(crate) fn ibus_text_value_to_string(value: &Value<'_>) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::{configured_double_shift_key, ibus_text_value_to_string};
+    use super::{configured_atomic_double_shift_key, ibus_text_value_to_string};
     use crate::protocol::{KEY_LEFT_SHIFT, KEY_RIGHT_SHIFT};
     use crate::text::make_ibus_text;
     use zbus::zvariant::Value;
 
     #[test]
     fn double_shift_matches_only_two_left_shift_members() {
-        assert!(configured_double_shift_key("double-lshift", KEY_LEFT_SHIFT));
-        assert!(!configured_double_shift_key(
+        assert!(configured_atomic_double_shift_key(
+            "double-lshift",
+            KEY_LEFT_SHIFT
+        ));
+        assert!(!configured_atomic_double_shift_key(
             "double-lshift",
             KEY_RIGHT_SHIFT
         ));
-        assert!(!configured_double_shift_key("double-ctrl", KEY_LEFT_SHIFT));
+        assert!(!configured_atomic_double_shift_key(
+            "double-ctrl",
+            KEY_LEFT_SHIFT
+        ));
     }
 
     #[test]

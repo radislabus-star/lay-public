@@ -1034,3 +1034,112 @@ Evidence:
 
 - `docs/double-shift-physical-layout-contract.md`
 - `docs/structural_gates/receipts/LAY_1_0_47_DOUBLE_SHIFT_BURST_REPAIR_2026-08-28/RELEASE_RECEIPT.json`
+
+## 1.0.48 Double Shift Single-Owner Repair
+
+The `1.0.47` verdict above is superseded. Its controlled GTK and Kitty tests
+did not reproduce the user's physical keyboard route, where both the daemon
+and legacy IBus `ProcessKeyEvent` observed the same key pair. The live trace
+then recorded two complete plans for one gesture:
+
+```text
+проверка -> ghjdthrf -> проверка
+```
+
+The first plan came from local IBus Double Shift recognition. The daemon
+independently recognized the same physical pair and called `ManualToggleV3`,
+which applied the second plan. The burst latch suppressed later pairs but could
+not make two owners of the first pair safe.
+
+Release `1.0.48` restores one deployed owner:
+
+```text
+physical Double Shift
+-> daemon trigger FSM
+-> daemon manual-toggle plan
+-> ManualToggleV3
+-> focused IBus replacement backend
+```
+
+Legacy IBus key handling now records Shift modifier state and returns native
+unhandled without producing a replacement. Alt+Shift is unchanged. The
+exclusive atomic route retains its existing single atomic frame because legacy
+mutation is disabled for that route and `ManualToggleV3` deliberately refuses
+it.
+
+Removing the second gesture detector exposed a separate layout-owner race. The
+committed-tail backend dispatched the exact delete-plus-commit and armed its
+existing client-visible postcondition, but `lay-daemon` immediately repeated
+the layout switch from the successful `ManualToggleV3` reply. That focus handoff
+could precede GTK's `SurroundingText` acknowledgement; the installed repetition
+matrix then passed only `3/5` despite one correct text plan per iteration.
+
+The final ownership is therefore split by responsibility, without duplication:
+
+```text
+gesture detection             one lay-daemon FSM
+text mutation                 one focused IBus backend
+SurroundingText acknowledgement one IBus visible postcondition
+IME layout transition         one IBus postcondition owner
+daemon/uinput fallback layout one daemon owner
+```
+
+For committed client text the ordered transaction is now:
+
+```text
+delete ghjdthrf
+-> commit проверка
+-> observe exact проверка through SurroundingText
+-> switch lay-ime-us to lay-ime-ru once
+```
+
+Neither `toggle_committed_tail_target` nor the daemon's IME-handled reply path
+may perform an immediate second layout sync. The no-SurroundingText fallback and
+daemon/uinput delegation retain their existing immediate owner because they do
+not have a client acknowledgement route.
+
+Final verification:
+
+```text
+IBus physical_double_shift_owner_              3 pass / 0 fail
+daemon physical_double_shift_owner_            1 pass / 0 fail
+daemon Double Shift trigger tests              5 pass / 0 fail
+full lay-ibus-engine                         251 pass / 0 fail
+changed-file gate                             PASS
+release build                                 PASS
+
+broad lay-daemon                            212 pass / 3 fail
+existing unrelated fixture                  расчет ыприблизительные
+
+installed GTK repetition matrix                5 pass / 0 fail
+manual-toggle plans                             5
+committed-tail replacements                     5
+confirmed-positive visible postconditions       5
+layout transitions                              5
+inverse plans                                    0
+
+installed lay-daemon SHA-256                  95276fa3fe2e11d016ae5386127784ccf4e165bd52c652f4001ebf70b36a41d3
+installed lay-ibus-engine SHA-256             06601d99abc4b8b9ea083bbf4d7790e9eff871891d00f6e9e3c0550071721bcb
+loaded lay-daemon PID                         3687447
+loaded lay-ibus-engine PID                    3674893
+global ibus-daemon PID                        4594 -> 4594
+```
+
+The three broad daemon failures are the pre-existing correction-core
+expectations for `расчет ыприблизительные`; none reaches the trigger FSM,
+`ManualToggleV3`, committed-tail mutation, or layout postcondition. They are
+recorded rather than hidden and do not invalidate this isolated ownership
+repair. The user's physical keyboard confirmed the single-detector behavior;
+the final installed-byte postcondition proof used a controlled evdev keyboard
+and a real GTK field.
+
+Runtime authority changed to `1.0.48`. No candidate producer, ranking,
+correction policy, live config, L2 package, or exact V13 sidecar changed.
+Global IBus was not restarted.
+
+Verdict: `LAY_1_0_48_DOUBLE_SHIFT_SINGLE_OWNER_REPAIRED`.
+
+Evidence:
+
+- `docs/double-shift-physical-layout-contract.md`
+- `docs/structural_gates/receipts/LAY_1_0_48_DOUBLE_SHIFT_SINGLE_OWNER_REPAIR_2026-08-28/RELEASE_RECEIPT.json`

@@ -1,0 +1,36 @@
+{
+  "all_passed": true,
+  "cases": [
+    {
+      "expected": "file проверка",
+      "got": "file проверка",
+      "name": "ime_file_ghjdthrf_shift_enter",
+      "ok": true
+    },
+    {
+      "expected": "file ghjdthrf",
+      "got": "file ghjdthrf",
+      "name": "ime_file_ghjdthrf_shift_twice_enter",
+      "ok": true
+    },
+    {
+      "expected": "привет",
+      "got": "привет",
+      "name": "ghbdtn_fast_lshift_enter",
+      "ok": true
+    },
+    {
+      "expected": "привет",
+      "got": "привет",
+      "name": "ghbdtn_long_lshift_enter",
+      "ok": true
+    },
+    {
+      "expected": "привет",
+      "got": "привет",
+      "name": "ghbdtn_extra_lshift_enter",
+      "ok": true
+    }
+  ],
+  "schema": "lay.runtime-smoke-receipt.v1"
+}

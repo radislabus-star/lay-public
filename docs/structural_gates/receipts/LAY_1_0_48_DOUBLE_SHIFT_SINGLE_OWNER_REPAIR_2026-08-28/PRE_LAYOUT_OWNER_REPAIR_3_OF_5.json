@@ -1,0 +1,73 @@
+{
+  "all_passed": false,
+  "daemon_active": true,
+  "global_ibus_after": 4594,
+  "global_ibus_before": 4594,
+  "global_ibus_preserved": true,
+  "iterations_expected": 5,
+  "iterations_passed": 3,
+  "results": [
+    {
+      "case": "ime_file_ghjdthrf_shift_enter",
+      "device": "/dev/input/event24",
+      "dialog_exit": 0,
+      "dialog_stderr": "",
+      "expected": "file проверка",
+      "got": "file ghjdthrf",
+      "iteration": 1,
+      "passed": false,
+      "sender_exit": 0,
+      "sender_stderr": "[test] virtual keyboard создана\n[test] сценарий ime_file_ghjdthrf_shift_enter отправлен"
+    },
+    {
+      "case": "ime_file_ghjdthrf_shift_enter",
+      "device": "/dev/input/event24",
+      "dialog_exit": 0,
+      "dialog_stderr": "",
+      "expected": "file проверка",
+      "got": "file проверка",
+      "iteration": 2,
+      "passed": true,
+      "sender_exit": 0,
+      "sender_stderr": "[test] virtual keyboard создана\n[test] сценарий ime_file_ghjdthrf_shift_enter отправлен"
+    },
+    {
+      "case": "ime_file_ghjdthrf_shift_enter",
+      "device": "/dev/input/event24",
+      "dialog_exit": 0,
+      "dialog_stderr": "",
+      "expected": "file проверка",
+      "got": "file проверка",
+      "iteration": 3,
+      "passed": true,
+      "sender_exit": 0,
+      "sender_stderr": "[test] virtual keyboard создана\n[test] сценарий ime_file_ghjdthrf_shift_enter отправлен"
+    },
+    {
+      "case": "ime_file_ghjdthrf_shift_enter",
+      "device": "/dev/input/event24",
+      "dialog_exit": 0,
+      "dialog_stderr": "",
+      "expected": "file проверка",
+      "got": "file проверка",
+      "iteration": 4,
+      "passed": true,
+      "sender_exit": 0,
+      "sender_stderr": "[test] virtual keyboard создана\n[test] сценарий ime_file_ghjdthrf_shift_enter отправлен"
+    },
+    {
+      "case": "ime_file_ghjdthrf_shift_enter",
+      "device": "/dev/input/event24",
+      "dialog_exit": 0,
+      "dialog_stderr": "",
+      "expected": "file проверка",
+      "got": "file ghjdthrf",
+      "iteration": 5,
+      "passed": false,
+      "sender_exit": 0,
+      "sender_stderr": "[test] virtual keyboard создана\n[test] сценарий ime_file_ghjdthrf_shift_enter отправлен"
+    }
+  ],
+  "schema": "lay.runtime-smoke-installed-service-matrix.v1",
+  "version": "1.0.48"
+}

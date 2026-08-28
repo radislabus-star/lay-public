@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1787908161.6062484,
-    "ast_hash": "03cd642f42abb675f18854fe73b5558c",
+    "mtime": 1787920372.939883,
+    "ast_hash": "0ede496807c56fc2582c13dccd9e9089",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1787908161.6807868,
-    "ast_hash": "b292e8506da16f69e85b1e0918547bd6",
+    "mtime": 1787920372.940883,
+    "ast_hash": "8d02ee4e7407914fb4399519300c9842",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -85,8 +85,8 @@
     "semantic_hash": ""
   },
   "scripts/check-lay-changed.sh": {
-    "mtime": 1786792817.6094515,
-    "ast_hash": "825dcdc25e88649e0b06b602ba0baa98",
+    "mtime": 1787924331.8081584,
+    "ast_hash": "6952abfffea24797ac77c38c52faaefd",
     "semantic_hash": ""
   },
   "scripts/check-lay-full.sh": {
@@ -865,8 +865,8 @@
     "semantic_hash": "562af74b70d3d9a2ef9b8fe78fb73ccf"
   },
   "src/bin/lay_ibus_engine/committed_tail.rs": {
-    "mtime": 1787877433.3972547,
-    "ast_hash": "821449cb8db9a2a3d463bc3c4563b09e",
+    "mtime": 1787923756.578052,
+    "ast_hash": "e4cf7ca47c03926663653ee0191ae903",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_commit.rs": {
@@ -895,8 +895,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/ibus_interface.rs": {
-    "mtime": 1787910214.5226927,
-    "ast_hash": "4b37300a9efd6387fecf726b04477591",
+    "mtime": 1787922691.9294407,
+    "ast_hash": "293bef36118f2d5d2c84379294fd1c97",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/key_decode.rs": {
@@ -2485,8 +2485,8 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1786841973.7829835,
-    "ast_hash": "baa845e304daffe2f067a7a5d5680423",
+    "mtime": 1787924316.4302828,
+    "ast_hash": "a996ab875708b7adfbda5fee4abdc0eb",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -2505,8 +2505,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1787908161.6823883,
-    "ast_hash": "2511e203c62e06b94b542686f4038983",
+    "mtime": 1787920372.939883,
+    "ast_hash": "25995d1d49d11da21723087bbbd20238",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2675,8 +2675,8 @@
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
-    "mtime": 1787911127.342633,
-    "ast_hash": "51d23fe263cb587ca882ca26c85e7fd2",
+    "mtime": 1787925198.6899986,
+    "ast_hash": "7010fc23f025f4eab3a21572ed16917f",
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
@@ -14420,8 +14420,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/layout_controller/ime_manual_toggle.rs": {
-    "mtime": 1787393090.6108947,
-    "ast_hash": "67a92809f0d822acbb341325f72c6923",
+    "mtime": 1787924331.8081584,
+    "ast_hash": "ab2f044ec58da2def6aca7b620230b35",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/manual_trigger_runtime/ime.rs": {
@@ -14965,8 +14965,8 @@
     "semantic_hash": ""
   },
   "docs/double-shift-physical-layout-contract.md": {
-    "mtime": 1787911127.341633,
-    "ast_hash": "c3b8c35bb61f11f125d31589f5b69598",
+    "mtime": 1787925212.7801352,
+    "ast_hash": "cdb5386bee34854e31c5f3b16d58ffd8",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_ORDERED_AUTHORITY_V2_2026-08-23.json": {

@@ -418,7 +418,6 @@ impl LayIbusEngine {
             )
             .await?;
         if handled {
-            self.sync_layout_after_manual_toggle(&plan.replacement);
             self.trace_key("double_shift_committed_tail", 0, 0, true, None);
         }
         Ok(handled.then_some(plan.target_layout_is_ru))
@@ -536,6 +535,8 @@ mod tests {
         autocorrect_replacement_has_one_trailing_space,
         committed_tail_autocorrect_decision_is_authorized, LayIbusEngine,
     };
+    use crate::engine::SurroundingTextSnapshot;
+    use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY};
     use lay::config::LayConfig;
     use lay::ime_correction::{
         decide_active_composition_autocorrect, ActiveCompositionAutocorrectRequest,
@@ -646,6 +647,42 @@ mod tests {
 
         assert_eq!(plan.replacement, "djn ");
         assert_eq!(plan.backspaces, 4);
+    }
+
+    #[test]
+    fn physical_double_shift_owner_committed_tail_waits_for_visible_postcondition() {
+        let mut engine = engine();
+        engine.layout_is_ru = false;
+        engine.surrounding_text_supported = true;
+        engine.tail_buffer = "ghjdthrf".to_string();
+        engine.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("ghjdthrf".to_string(), 8, 8));
+
+        let mut builder = AtomicEffectBuilder::default();
+        let mut output = EngineOutput::atomic(&mut builder);
+        let target_is_ru = zbus::block_on(engine.toggle_committed_tail_target(&mut output))
+            .expect("committed-tail manual toggle");
+
+        assert_eq!(target_is_ru, Some(true));
+        assert_eq!(builder.finish(true).0, PROPOSAL_FRAME_READY);
+        assert_eq!(engine.tail_buffer, "проверка");
+        assert!(!engine.layout_is_ru, "layout changed before client ACK");
+        assert!(engine.pending_visible_postcondition.is_some());
+
+        engine.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("ghjdthrf".to_string(), 8, 8));
+        engine.observe_visible_postcondition();
+        assert!(!engine.layout_is_ru, "stale client text switched layout");
+        assert!(engine.pending_visible_postcondition.is_some());
+
+        engine.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("проверка".to_string(), 8, 8));
+        engine.observe_visible_postcondition();
+        assert!(
+            engine.layout_is_ru,
+            "confirmed replacement did not switch layout"
+        );
+        assert!(engine.pending_visible_postcondition.is_none());
     }
 
     #[test]

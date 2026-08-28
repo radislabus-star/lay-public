@@ -15,6 +15,25 @@ captured physical keycodes K[0..N]
 The operation preserves key count and key identity. Only the layout used to
 interpret those keys changes.
 
+## User-visible behavior
+
+With the configured `double-lshift` trigger, the gesture is exactly:
+
+```text
+Left Shift press -> release -> Left Shift press -> release
+```
+
+The second press must begin within `shift_window_ms` of the first release. The
+hold duration does not matter, so the user must not need to strike Shift hard
+or unnaturally fast. An intervening ordinary key cancels the partial gesture.
+
+One completed gesture performs one action. If the last token was typed in the
+wrong layout, Lay replaces that exact visible token once and leaves the opposite
+layout active for subsequent typing. Continued Shift-only taps in the same
+burst cannot reverse the result. A later deliberate Double Shift, after an
+ordinary key or the quiet rearm window, may perform the opposite projection
+once. A valid pending autocorrect undo has priority over ordinary projection.
+
 ## Runtime routes
 
 ```text
@@ -33,6 +52,114 @@ physical Double Shift
 The layout-projection route must not call a model, replace replay output with a
 ranked text candidate, or write a correction-learning sample.
 
+## Physical gesture owner
+
+This is a protected runtime invariant, not an implementation preference. The
+forbidden regression signature is one physical gesture producing
+`original -> replacement -> original`.
+
+The daemon is the sole detector of physical Double Shift in the deployed
+legacy input route:
+
+```text
+physical Shift events
+-> lay-daemon trigger FSM
+-> one daemon manual-toggle decision
+-> ManualToggleV3 when the focused IME owns the visible text
+-> one IBus replacement backend
+```
+
+Legacy IBus `ProcessKeyEvent` observes Shift modifier state for composition and
+Alt+Shift, but it must not recognize the same Double Shift pair or invoke the
+manual-toggle mutator. Otherwise one physical gesture reaches two independent
+detectors and the second replacement restores the original text.
+
+The source boundary is intentionally capability-shaped:
+
+```text
+observe_daemon_owned_legacy_shift
+    inputs: keyval, keycode, state
+    output: handled boolean
+    EngineOutput/edit capability: absent
+
+process_atomic_shift_gesture
+    reachable only while atomic_speculation == true
+    EngineOutput capability: present
+```
+
+The release gate must run the `physical_double_shift_owner_` tests. They send
+both Left and Right Shift pairs and four-tap bursts through legacy
+`ProcessKeyEvent`, require native-unhandled output with zero effects, and fail
+if the legacy boundary acquires any edit API.
+
+The exclusive atomic adapter is separate: Shell sends the event through
+`ProcessKeyEventAtomicV1`, legacy mutation is disabled, and IBus may return one
+atomic effect frame. This does not grant legacy `ProcessKeyEvent` a second
+gesture owner.
+
+## Client-visible layout postcondition
+
+Committed-tail mutation and layout switching form one ordered transaction:
+
+```text
+delete old committed tail
+-> commit exact projected tail
+-> observe the exact replacement through SurroundingText
+-> switch the active IBus engine once
+```
+
+When SurroundingText was available at dispatch, switching the engine before
+the exact visible replacement is observed is forbidden. GTK may acknowledge
+delete and commit asynchronously; an early engine switch can leave the old
+surface visible, duplicate text, or race focus handoff. A stale pre-dispatch
+snapshot keeps the postcondition pending and must not change layout.
+
+`replace_committed_tail` is the sole owner of this ordering. It arms
+`pending_visible_postcondition` with the projected text, and
+`observe_visible_postcondition` performs the layout transition only after an
+exact or permitted boundary-elided match. `toggle_committed_tail_target` must
+not perform a second immediate layout sync after dispatch.
+
+The daemon also must not call `switch_to_target_layout` after an IME-handled
+`ManualToggleV3` reply. That reply closes daemon gesture dispatch; it does not
+transfer the IBus layout postcondition back to the daemon. The daemon may keep
+the target layout in its bounded gesture bookkeeping, while the focused IBus
+engine remains the sole owner of the actual engine transition.
+
+If the client does not expose SurroundingText, no acknowledgement route exists;
+the already defined terminal/no-snapshot fallback may switch immediately after
+successful output dispatch. This fallback does not weaken the acknowledged
+client route.
+
+### Consequence analysis
+
+Measured before this ownership repair, an installed GTK repetition matrix
+passed only `3/5`: every iteration dispatched one exact delete-plus-commit, but
+the daemon's immediate layout switch could force focus handoff before GTK made
+the replacement visible. The candidate set, ranking, correction policy and
+manual-toggle text plan were not involved.
+
+The selected design removes the daemon's second layout action for an
+IME-handled result. Existing IBus branches remain complete:
+
+```text
+active composition                 -> IBus blocking layout sync
+committed tail + SurroundingText   -> IBus visible-postcondition sync
+committed tail without snapshot    -> IBus immediate fallback sync
+exact autocorrect undo             -> same committed-tail postcondition owner
+daemon/uinput delegation           -> existing daemon layout owner
+```
+
+Rejected alternatives were a fixed sleep before daemon switching, which would
+only move the race, and a second acknowledgement protocol, which would duplicate
+the existing SurroundingText postcondition state. This change does not alter
+candidate/lattice retention, authority ranking, package or cache identity,
+learning, RSS, or allocation behavior. It removes one process-level layout
+write and therefore narrows concurrency and failure surface. The rollback
+boundary is the daemon ownership call plus the committed-tail immediate sync;
+acceptance requires full IBus/daemon tests and repeated installed client-visible
+proof with the global `ibus-daemon` PID preserved.
+
 ## Burst membership
 
 One exact Double Shift pair triggers one layout projection. After that action,
@@ -44,10 +171,11 @@ Any ordinary key press ends the burst and rearms the gesture immediately. A
 full quiet window without another Shift release also rearms it, so a deliberate
 later Double Shift remains available without requiring an intervening key.
 
-The focused IBus observer keeps this burst latch in state shared by the US and
-RU engine objects. A successful layout switch therefore cannot reset burst
-membership while the user's taps continue. This shared state owns gesture
-timing only; it grants no correction, candidate, deletion, or replay authority.
+The daemon keeps this latch for the deployed physical route. The exclusive
+atomic route keeps equivalent shared state across its US and RU engine objects
+because an atomic layout switch can replace the active engine while the burst
+continues. Neither latch grants correction, candidate, deletion, or replay
+authority outside its route.
 
 ## Decision priority
 
@@ -128,6 +256,10 @@ hide the production race and is not acceptance evidence.
 - For each successful case, `N captured = N deleted = N replayed = N visible`.
 - Multi-character tokens preserve first, middle, and last characters.
 - There is no duplicate output and no stuck modifier or character key.
+- One physical gesture produces exactly one manual-toggle plan and one layout
+  transition; the legacy IBus key route produces zero replacement effects.
+- A SurroundingText committed-tail projection keeps the original layout until
+  the exact replacement is visible, then performs one layout transition.
 - Pending autocorrect undo remains unchanged.
 - Model and correction-learning calls on ordinary Double Shift are zero.
 - Full-engine tests pass when executed together; isolated targeted PASS cannot

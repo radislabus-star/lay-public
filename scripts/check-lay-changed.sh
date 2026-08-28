@@ -159,6 +159,7 @@ if has_file_matching '^src/bin/lay_ibus_engine'; then
     cargo test --bin lay-ibus-engine live_ime_
     cargo test --bin lay-ibus-engine known_russian_word_does_not_get_extended_by_precognition
     cargo test --bin lay-ibus-engine short_russian_prefix_stays_fast_without_dropping_valid_candidates
+    cargo test --bin lay-ibus-engine physical_double_shift_owner_
     cargo test --bin lay-ibus-engine manual_toggle_
     cargo test --bin lay-ibus-engine committed_tail
     cargo test --bin lay-ibus-engine daemon_bridge
@@ -181,6 +182,7 @@ if has_file_matching '^src/bin/lay_daemon'; then
     cargo test --bin lay-daemon
   else
     echo "== cargo test --bin lay-daemon targeted =="
+    cargo test --bin lay-daemon physical_double_shift_owner_
     cargo test --bin lay-daemon text_output_contract
     cargo test --bin lay-daemon enter_autocorrect
     cargo test --bin lay-daemon runtime_state::typing_assist
