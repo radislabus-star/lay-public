@@ -61,6 +61,12 @@ def make_ime_cases(Case):
         "ime_prefix_prov_completion_alt_enter": Case(
             "ime_prefix_prov_completion_alt_enter", "проверка", start_layout="ru"
         ),
+        "ime_autocomplete_then_double_shift_enter": Case(
+            "ime_autocomplete_then_double_shift_enter",
+            "ghjdthrf",
+            start_layout="ru",
+            expected_manual_toggles=1,
+        ),
         "ime_alt_left_right_passthrough_enter": Case(
             "ime_alt_left_right_passthrough_enter", "фисч", start_layout="ru"
         ),

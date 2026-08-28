@@ -22,6 +22,7 @@ const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
 const PREEDIT_RU_WAVE_CANDIDATE_LIMIT: usize = 12;
 const PREEDIT_RU_PREFIX_MIN_CHARS: usize = 1;
+const PREEDIT_VISIBLE_PREFIX_MIN_CHARS: usize = 3;
 #[cfg(test)]
 const PREEDIT_PROBE_SYMBOL: &str = "*";
 const PREEDIT_MODE_CLEAR: u32 = 0;
@@ -119,19 +120,27 @@ impl PreeditFastState {
             self.reset();
             return;
         }
-        // Printable input instead of Tab declines the currently visible full
-        // target for this token. Keep the first prediction separately because
-        // boundary feedback treats absence of Tab as censored evidence.
-        if let Some(target) = self.target_surface.take() {
-            if !self
-                .declined_target_surfaces
-                .iter()
-                .any(|declined| declined == &target)
-            {
-                if self.declined_target_surfaces.len() >= PREEDIT_TOKEN_LIMIT {
-                    self.declined_target_surfaces.remove(0);
+        let target_still_matches = self.target_surface.as_deref().is_some_and(|target| {
+            let mut continued_token = self.token.clone();
+            continued_token.push(ch);
+            target
+                .to_lowercase()
+                .starts_with(&continued_token.to_lowercase())
+        });
+        // Typing the next suggested character confirms the same target and
+        // only shortens its visible suffix. A divergent character declines it.
+        if !target_still_matches {
+            if let Some(target) = self.target_surface.take() {
+                if !self
+                    .declined_target_surfaces
+                    .iter()
+                    .any(|declined| declined == &target)
+                {
+                    if self.declined_target_surfaces.len() >= PREEDIT_TOKEN_LIMIT {
+                        self.declined_target_surfaces.remove(0);
+                    }
+                    self.declined_target_surfaces.push(target);
                 }
-                self.declined_target_surfaces.push(target);
             }
         }
         self.token.push(ch);
@@ -217,8 +226,10 @@ impl LayIbusEngine {
         }
         self.preedit_dirty = false;
         self.pending_display_frame = None;
-        self.clear_preedit(emitter).await?;
-        self.schedule_background_precognition(emitter, frame);
+        self.begin_pending_precognition_refresh();
+        if !self.schedule_background_precognition(emitter, frame) {
+            self.clear_preedit(emitter).await?;
+        }
         Ok(())
     }
 
@@ -231,8 +242,10 @@ impl LayIbusEngine {
         }
         self.preedit_dirty = false;
         let frame = self.pending_display_frame.take();
-        self.clear_preedit(emitter).await?;
-        self.schedule_background_precognition(emitter, frame);
+        self.begin_pending_precognition_refresh();
+        if !self.schedule_background_precognition(emitter, frame) {
+            self.clear_preedit(emitter).await?;
+        }
         Ok(())
     }
 
@@ -261,15 +274,16 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<()> {
-        if !self.preedit_clear_needed() {
-            return Ok(());
-        }
-        trace::record_preedit("clear", false, 0, 0, None);
+        let was_visible = self.preedit_clear_needed();
         self.preedit_suffix.clear();
         self.preedit_candidates.clear();
         self.preedit_replacement_targets.clear();
         self.preedit_candidate_index = 0;
         self.preedit_fast.clear_target();
+        if !was_visible {
+            return Ok(());
+        }
+        trace::record_preedit("clear", false, 0, 0, None);
         emitter
             .update_preedit_text(make_ibus_text(String::new()), 0, false, PREEDIT_MODE_CLEAR)
             .await
@@ -278,6 +292,7 @@ impl LayIbusEngine {
             .hide_preedit_text()
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        self.preedit_visible = false;
         Ok(())
     }
 
@@ -299,9 +314,7 @@ impl LayIbusEngine {
     }
 
     fn preedit_clear_needed(&self) -> bool {
-        !self.buffer.is_empty()
-            || !self.preedit_suffix.is_empty()
-            || !self.preedit_candidates.is_empty()
+        self.preedit_visible
     }
 
     pub(super) async fn update_composition_preedit(
@@ -333,16 +346,17 @@ impl LayIbusEngine {
         let cursor_pos = self.composition_cursor.min(self.buffer.chars().count()) as u32;
         self.publish_preedit_payload(emitter, self.buffer.clone(), cursor_pos)
             .await?;
-        self.schedule_background_precognition(emitter, frame);
+        let _ = self.schedule_background_precognition(emitter, frame);
         Ok(())
     }
 
     async fn publish_preedit_payload(
-        &self,
+        &mut self,
         emitter: &mut EngineOutput<'_, '_>,
         text: String,
         cursor_pos: u32,
     ) -> fdo::Result<()> {
+        let show_transition = !self.preedit_visible;
         // UpdatePreeditText owns the visible frame. Install the new payload
         // before ShowPreeditText so a client cannot expose an empty or stale
         // frame while a previous completion is being replaced.
@@ -360,11 +374,14 @@ impl LayIbusEngine {
         let trace_chars = if sensitive { 0 } else { text.chars().count() };
         let trace_cursor = if sensitive { 0 } else { cursor_pos };
         trace::record_preedit("update", true, trace_chars, trace_cursor, trace_text);
-        emitter
-            .show_preedit_text()
-            .await
-            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        trace::record_preedit("show", true, trace_chars, trace_cursor, trace_text);
+        if show_transition {
+            emitter
+                .show_preedit_text()
+                .await
+                .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+            trace::record_preedit("show", true, trace_chars, trace_cursor, trace_text);
+        }
+        self.preedit_visible = true;
         Ok(())
     }
 
@@ -454,29 +471,39 @@ impl LayIbusEngine {
         self.preedit_candidates.clear();
         self.preedit_replacement_targets.clear();
         self.preedit_candidate_index = 0;
-        self.preedit_fast.clear_target();
+    }
+
+    fn begin_pending_precognition_refresh(&mut self) {
+        // The previous surface remains visible until the matching worker result
+        // replaces or hides it. Its candidates are invalidated immediately, so
+        // Tab can never accept a stale completion during that short interval.
+        self.clear_visible_precognition_candidates();
     }
 
     fn schedule_background_precognition(
         &self,
         emitter: &mut EngineOutput<'_, '_>,
         identity: Option<InputFrameIdentity>,
-    ) {
+    ) -> bool {
         let Some(identity) = identity else {
             super::precognition_worker::cancel();
-            return;
+            return false;
         };
         if !self.input_frame_identity_matches(&identity) {
             super::precognition_worker::cancel();
-            return;
+            return false;
+        }
+        if !self.precognition_display_ready() {
+            super::precognition_worker::cancel();
+            return false;
         }
         let Some(input) = self.precognition_input() else {
             super::precognition_worker::cancel();
-            return;
+            return false;
         };
         let Some(connection) = emitter.connection() else {
             super::precognition_worker::cancel();
-            return;
+            return false;
         };
         super::precognition_worker::schedule(PrecognitionWork {
             identity,
@@ -484,6 +511,11 @@ impl LayIbusEngine {
             connection: connection.clone(),
             scheduled_at: Instant::now(),
         });
+        true
+    }
+
+    fn precognition_display_ready(&self) -> bool {
+        self.live_candidate_partial().chars().count() >= PREEDIT_VISIBLE_PREFIX_MIN_CHARS
     }
 
     pub(crate) fn precognition_identity_matches(&self, expected: &InputFrameIdentity) -> bool {

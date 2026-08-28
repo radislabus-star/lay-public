@@ -87,6 +87,12 @@ def managed_ime_session(root: Path, ibus_engine_bin: Path | None):
     )
     original_engine = current_ibus_engine()
     temp_dir = tempfile.TemporaryDirectory(prefix="lay-ime-managed-")
+    previous_trace_path = os.environ.get("LAY_IBUS_TRACE_PATH")
+    trace_path = (
+        Path(previous_trace_path)
+        if previous_trace_path
+        else Path(temp_dir.name) / "ibus_engine_debug.jsonl"
+    )
     engine = None
     try:
         subprocess.run(
@@ -106,7 +112,9 @@ def managed_ime_session(root: Path, ibus_engine_bin: Path | None):
             "LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS": str(
                 Path(temp_dir.name) / "feedback-counts.json"
             ),
+            "LAY_IBUS_TRACE_PATH": str(trace_path),
         }
+        os.environ["LAY_IBUS_TRACE_PATH"] = str(trace_path)
         engine = subprocess.Popen(
             [str(ibus_engine_bin), "--ibus", "--managed"],
             cwd=root,
@@ -129,6 +137,10 @@ def managed_ime_session(root: Path, ibus_engine_bin: Path | None):
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
+        if previous_trace_path is None:
+            os.environ.pop("LAY_IBUS_TRACE_PATH", None)
+        else:
+            os.environ["LAY_IBUS_TRACE_PATH"] = previous_trace_path
         temp_dir.cleanup()
 
 

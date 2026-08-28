@@ -86,10 +86,6 @@ fn handle_double_or_multi_tap_event(ctx: &mut ManualTriggerEventContext<'_>) -> 
     if ctx.key != ctx.trigger_key || ctx.is_caps_trigger {
         return false;
     }
-    if trigger_debounce_active(*ctx.last_double_at, ctx.debounce_window) {
-        return true;
-    }
-
     let now = Instant::now();
     if pending_multi_tap_can_continue(ctx, now) {
         ctx.dshift_state.begin_additional_press();
@@ -132,7 +128,6 @@ fn handle_confirmed_double_shift(ctx: &mut ManualTriggerEventContext<'_>, now: I
 
     log_manual_trigger_cross_check(ctx.buffer, ctx.events_since_word_start);
     fire_configured_manual_trigger(ctx.fire_context());
-    ctx.dshift_state.latch_until_quiet_or_other_key(now);
     log("· FSM: DOUBLE! (p→r→p→r)");
 }
 

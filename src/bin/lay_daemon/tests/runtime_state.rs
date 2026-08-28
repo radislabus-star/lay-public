@@ -92,9 +92,6 @@ fn another_key_press_cancels_every_partial_double_shift_phase() {
         },
         DShiftState::SecondPress,
         DShiftState::AdditionalPress,
-        DShiftState::Latched {
-            last_release: Instant::now(),
-        },
     ] {
         state.cancel();
         assert!(state.is_idle());
@@ -108,7 +105,7 @@ fn another_key_press_cancels_every_partial_double_shift_phase() {
 }
 
 #[test]
-fn completed_double_shift_collapses_one_burst_but_allows_a_deliberate_later_toggle() {
+fn completed_double_shift_rearms_immediately_for_every_next_pair() {
     let start = Instant::now();
     let window = Duration::from_millis(800);
     let mut state = DShiftState::Idle;
@@ -124,35 +121,31 @@ fn completed_double_shift_collapses_one_burst_but_allows_a_deliberate_later_togg
         DShiftRelease::Double
     );
 
-    state.latch_until_quiet_or_other_key(start + Duration::from_millis(30));
-    for offset_ms in [40, 50, 60, 70] {
-        state.trigger_press(start + Duration::from_millis(offset_ms), window);
-        assert_eq!(
-            state.trigger_release(start + Duration::from_millis(offset_ms + 5)),
-            DShiftRelease::None
-        );
-        assert!(matches!(state, DShiftState::Latched { .. }));
-    }
-
-    state.trigger_press(start + Duration::from_millis(880), window);
+    assert!(state.is_idle());
+    state.trigger_press(start + Duration::from_millis(40), window);
     assert_eq!(
-        state.trigger_release(start + Duration::from_millis(890)),
+        state.trigger_release(start + Duration::from_millis(50)),
         DShiftRelease::None
     );
-    state.trigger_press(start + Duration::from_millis(900), window);
+    state.trigger_press(start + Duration::from_millis(60), window);
     assert_eq!(
-        state.trigger_release(start + Duration::from_millis(910)),
+        state.trigger_release(start + Duration::from_millis(70)),
         DShiftRelease::Double
     );
-
-    state.latch_until_quiet_or_other_key(start + Duration::from_millis(910));
-    state.cancel();
     assert!(state.is_idle());
-    state.trigger_press(start + Duration::from_millis(100), window);
-    assert_eq!(
-        state.trigger_release(start + Duration::from_millis(110)),
-        DShiftRelease::None
-    );
+}
+
+#[test]
+fn double_left_shift_cannot_be_delayed_by_multi_tap_scope() {
+    let mut config = LayConfig {
+        multi_tap_scope: true,
+        ..LayConfig::default()
+    };
+    config.trigger = "double-lshift".to_string();
+
+    assert!(!crate::daemon_state::active_multi_tap_scope(
+        &config, false, false
+    ));
 }
 
 #[test]

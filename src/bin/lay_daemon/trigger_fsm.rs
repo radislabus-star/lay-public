@@ -78,10 +78,8 @@ pub(super) fn single_hotkey_keycode(id: &str) -> Option<KeyCode> {
 ///
 /// Hold duration is irrelevant. Another key press cancels the sequence, which
 /// keeps Shift+letter and other modifier uses out of the manual-toggle route.
-/// After one completed trigger, Shift-only repeats stay latched until the
-/// configured window passes without another Shift release. This turns one
-/// continuous tap burst into one action while preserving a deliberate later
-/// Double Shift. Any other key rearms the gesture immediately.
+/// The second release returns the machine to Idle immediately. Every next
+/// complete press-release-press-release sequence is another toggle.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum DShiftState {
     Idle,
@@ -89,7 +87,6 @@ pub(super) enum DShiftState {
     WaitingSecond { first_release: Instant },
     SecondPress,
     AdditionalPress,
-    Latched { last_release: Instant },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -109,9 +106,6 @@ impl DShiftState {
                 Self::SecondPress
             }
             Self::WaitingSecond { .. } => Self::FirstPress,
-            Self::Latched { last_release } if now.duration_since(last_release) > window => {
-                Self::FirstPress
-            }
             state => state,
         };
     }
@@ -130,10 +124,6 @@ impl DShiftState {
                 *self = Self::Idle;
                 DShiftRelease::Additional
             }
-            Self::Latched { .. } => {
-                *self = Self::Latched { last_release: now };
-                DShiftRelease::None
-            }
             _ => {
                 *self = Self::Idle;
                 DShiftRelease::None
@@ -143,10 +133,6 @@ impl DShiftState {
 
     pub(super) fn begin_additional_press(&mut self) {
         *self = Self::AdditionalPress;
-    }
-
-    pub(super) fn latch_until_quiet_or_other_key(&mut self, now: Instant) {
-        *self = Self::Latched { last_release: now };
     }
 
     pub(super) fn cancel(&mut self) {

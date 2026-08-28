@@ -70,8 +70,8 @@ function scheduleIbusEngineAttempt(engine, generation, attempt) {
     });
 }
 
-export function syncIbusEngineForCurrentLayout() {
-    const engine = imeEngineForLayoutKind(currentLayoutKind());
+function syncIbusEngineForLayoutKind(kind) {
+    const engine = imeEngineForLayoutKind(kind);
     if (!engine)
         return false;
     _ibusSyncGeneration += 1;
@@ -79,11 +79,8 @@ export function syncIbusEngineForCurrentLayout() {
     return true;
 }
 
-function syncIbusEngineSoon() {
-    GLib.timeout_add(GLib.PRIORITY_DEFAULT, 25, () => {
-        syncIbusEngineForCurrentLayout();
-        return GLib.SOURCE_REMOVE;
-    });
+export function syncIbusEngineForCurrentLayout() {
+    return syncIbusEngineForLayoutKind(currentLayoutKind());
 }
 
 export function activateLayoutId(id) {
@@ -92,7 +89,6 @@ export function activateLayoutId(id) {
         for (const i in mgr.inputSources)
             if (mgr.inputSources[i].id === id) {
                 mgr.inputSources[i].activate();
-                syncIbusEngineSoon();
                 return true;
             }
 
@@ -100,7 +96,6 @@ export function activateLayoutId(id) {
         for (const i in mgr.inputSources)
             if (normalizeLayoutKind(mgr.inputSources[i].id) === targetKind) {
                 mgr.inputSources[i].activate();
-                syncIbusEngineSoon();
                 return true;
             }
     } catch(e) {}

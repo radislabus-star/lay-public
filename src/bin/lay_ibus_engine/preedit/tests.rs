@@ -48,19 +48,23 @@ fn candidate_target_preserves_nonzero_selection_by_surface() {
 }
 
 #[test]
-fn typed_continuation_releases_auto_target_but_keeps_learning_observation() {
+fn matching_typed_continuation_keeps_target_and_learning_observation() {
     let mut fast = PreeditFastState::default();
+    for ch in "пере".chars() {
+        fast.push(ch);
+    }
     fast.remember_target(Some("перезагрузка".to_string()));
     fast.observe_prediction_target("пере", Some("перезагрузка".to_string()));
 
     fast.push('з');
 
-    assert_eq!(fast.target_surface(), None);
+    assert_eq!(fast.target_surface(), Some("перезагрузка"));
+    assert!(fast.declined_target_surfaces.is_empty());
     assert_eq!(fast.observed_prediction_target(), Some("перезагрузка"));
 }
 
 #[test]
-fn typed_continuation_suppresses_only_the_declined_full_target() {
+fn divergent_typed_continuation_suppresses_only_the_declined_full_target() {
     let mut fast = PreeditFastState::default();
     for ch in "про".chars() {
         fast.push(ch);
@@ -68,28 +72,29 @@ fn typed_continuation_suppresses_only_the_declined_full_target() {
     fast.remember_target(Some("проверка".to_string()));
     fast.observe_prediction_target("про", Some("проверка".to_string()));
 
-    fast.push('в');
+    fast.push('д');
 
-    let declined = ImeCandidateProposal::new(
-        "ерка",
+    let declined = ImeCandidateProposal::replacement(
+        "проверка",
         0.9,
-        lay::typing_cpu::ImeCandidateSource::L2Completion,
+        lay::typing_cpu::ImeCandidateSource::L2Replacement,
     );
-    let alternative = ImeCandidateProposal::new(
-        "ерить",
+    let alternative = ImeCandidateProposal::replacement(
+        "продолжить",
         0.8,
-        lay::typing_cpu::ImeCandidateSource::L2Completion,
+        lay::typing_cpu::ImeCandidateSource::L2Replacement,
     );
     assert!(proposal_repeats_declined_target(
         &fast.declined_target_surfaces,
-        "пров",
+        "прод",
         &declined
     ));
     assert!(!proposal_repeats_declined_target(
         &fast.declined_target_surfaces,
-        "пров",
+        "прод",
         &alternative
     ));
+    assert_eq!(fast.target_surface(), None);
     assert_eq!(fast.observed_prediction_target(), Some("проверка"));
 }
 
@@ -356,7 +361,7 @@ fn layout_switch_away_and_back_keeps_the_old_frame_stale() {
 }
 
 #[test]
-fn manual_continuation_rebuilds_without_the_declined_full_target() {
+fn matching_continuation_keeps_the_same_full_target() {
     lay::nanda_wave::warm_up_l2_for_ime();
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
@@ -384,7 +389,10 @@ fn manual_continuation_rebuilds_without_the_declined_full_target() {
         .expect("completion must extend the typed prefix");
 
     engine.push_tail_char(continuation);
-    assert_eq!(engine.preedit_fast.target_surface(), None);
+    assert_eq!(
+        engine.preedit_fast.target_surface(),
+        Some(previous_target.as_str())
+    );
     engine.refresh_precognition_candidates();
 
     let partial = format!("{initial_partial}{continuation}");
@@ -406,11 +414,10 @@ fn manual_continuation_rebuilds_without_the_declined_full_target() {
     );
     assert!(format!("{partial}{suffix}").starts_with(&partial));
     assert!(
-        !refreshed_targets.contains(&previous_target),
-        "declined target={previous_target} refreshed targets={refreshed_targets:?}"
+        refreshed_targets.contains(&previous_target),
+        "stable target={previous_target} refreshed targets={refreshed_targets:?}"
     );
-    assert!(engine.preedit_fast.target_surface().is_some());
-    assert_ne!(
+    assert_eq!(
         engine.preedit_fast.target_surface(),
         Some(previous_target.as_str())
     );
@@ -1187,7 +1194,7 @@ fn candidate_installation_defensively_discards_typed_replacements() {
 }
 
 #[test]
-fn active_composition_requires_preedit_clear_even_without_suffix() {
+fn visible_active_composition_requires_one_preedit_clear_even_without_suffix() {
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
         Arc::new(Mutex::new(Default::default())),
@@ -1200,6 +1207,7 @@ fn active_composition_requires_preedit_clear_even_without_suffix() {
         },
     );
     engine.buffer = "ghbdtn".to_string();
+    engine.preedit_visible = true;
     engine.preedit_suffix.clear();
     engine.preedit_candidates.clear();
 
@@ -2137,4 +2145,73 @@ fn tail_buffer_stays_bounded() {
     let mut text = "x".repeat(PREEDIT_TAIL_LIMIT + 10);
     trim_tail_buffer(&mut text);
     assert_eq!(text.chars().count(), PREEDIT_TAIL_LIMIT);
+}
+
+#[test]
+fn pending_refresh_invalidates_candidates_without_hiding_the_surface() {
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    engine.preedit_visible = true;
+    engine.preedit_suffix = "вет".to_string();
+    engine.preedit_candidates = vec!["вет".to_string()];
+    engine.preedit_replacement_targets = vec![None];
+    engine
+        .preedit_fast
+        .remember_target(Some("привет".to_string()));
+
+    engine.begin_pending_precognition_refresh();
+
+    assert!(engine.preedit_visible, "visible surface must not blink");
+    assert!(engine.preedit_suffix.is_empty());
+    assert!(engine.preedit_candidates.is_empty());
+    assert!(engine.preedit_replacement_targets.is_empty());
+    assert_eq!(engine.preedit_fast.target_surface(), Some("привет"));
+}
+
+#[test]
+fn visible_precognition_waits_for_three_letter_prefix() {
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig::default(),
+    );
+
+    for ch in "пр".chars() {
+        engine.push_tail_char(ch);
+    }
+    assert!(!engine.precognition_display_ready());
+
+    engine.push_tail_char('о');
+    assert!(engine.precognition_display_ready());
+}
+
+#[test]
+fn clearing_an_already_hidden_preedit_emits_no_empty_frame() {
+    use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_NATIVE_UNHANDLED};
+
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    engine.tail_buffer = "ghbdtn".to_string();
+    engine
+        .preedit_fast
+        .remember_target(Some("привет".to_string()));
+    let mut builder = AtomicEffectBuilder::default();
+    let mut output = EngineOutput::atomic(&mut builder);
+
+    zbus::block_on(engine.clear_preedit(&mut output)).expect("hidden clear");
+
+    assert_eq!(builder.finish(false).0, PROPOSAL_NATIVE_UNHANDLED);
+    assert!(engine.preedit_fast.target_surface().is_none());
 }

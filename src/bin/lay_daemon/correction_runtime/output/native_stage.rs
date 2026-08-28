@@ -14,17 +14,19 @@ pub(super) fn try_native_output_stage<'a, 'grab>(
     physical_grab: &mut Option<&'a mut PhysicalInputGrab<'grab>>,
     input_gate: Option<RecentActionGateTrace>,
 ) -> Option<Option<bool>> {
-    match try_ime_replace_output(common, input_gate.clone()) {
-        NativeReplaceAttempt::NotSelected => {}
-        NativeReplaceAttempt::Finished(output) => {
-            forward_queued_after_native_output(
-                virtual_kbd,
-                physical_grab,
-                common,
-                &output,
-                "manual-ime",
-            );
-            return Some(output.result);
+    if common.output_route.allows_ime_stage() {
+        match try_ime_replace_output(common, input_gate.clone()) {
+            NativeReplaceAttempt::NotSelected => {}
+            NativeReplaceAttempt::Finished(output) => {
+                forward_queued_after_native_output(
+                    virtual_kbd,
+                    physical_grab,
+                    common,
+                    &output,
+                    "manual-ime",
+                );
+                return Some(output.result);
+            }
         }
     }
     match try_gnome_native_replace_output(common, input_gate) {

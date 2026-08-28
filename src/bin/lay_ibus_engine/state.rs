@@ -277,6 +277,7 @@ impl LayIbusEngine {
             focus_receipt: handoff_focus_receipt,
             focus_serial: super::engine::next_input_identity(),
             runtime_owner_lease_identity: super::engine::next_input_identity(),
+            preedit_visible: false,
             preedit_suffix: String::new(),
             preedit_candidates: Vec::new(),
             preedit_replacement_targets: Vec::new(),
@@ -304,6 +305,7 @@ impl LayIbusEngine {
             last_commit_at: None,
             last_tail_input_at: None,
             recent_committed_tail_replace: None,
+            pending_manual_toggle: false,
             pending_visible_postcondition: None,
             pending_ime_completion_learning: None,
             suppress_next_committed_tail_autocorrect: false,
@@ -326,6 +328,7 @@ impl LayIbusEngine {
             self.should_preserve_focus_handoff() || self.shared_active_path_preserved();
         self.buffer.clear();
         self.composition_cursor = 0;
+        self.preedit_visible = false;
         self.preedit_suffix.clear();
         self.preedit_candidates.clear();
         self.preedit_replacement_targets.clear();
@@ -354,6 +357,7 @@ impl LayIbusEngine {
             self.publish_tail_handoff();
         }
         self.surrounding_text_snapshot = None;
+        self.pending_manual_toggle = false;
     }
 
     pub(super) fn should_preserve_focus_handoff(&self) -> bool {
@@ -379,6 +383,7 @@ impl LayIbusEngine {
         }
         self.buffer.clear();
         self.composition_cursor = 0;
+        self.preedit_visible = false;
         self.preedit_suffix.clear();
         self.preedit_candidates.clear();
         self.preedit_replacement_targets.clear();
@@ -396,6 +401,7 @@ impl LayIbusEngine {
         self.alt_used_as_modifier = false;
         self.handled_press_keycodes.clear();
         self.surrounding_text_snapshot = None;
+        self.pending_manual_toggle = false;
         self.rebuild_preedit_fast_from_tail();
         self.publish_tail_handoff();
     }
@@ -571,6 +577,31 @@ impl LayIbusEngine {
             return Ok(false);
         }
         let text = authorized_plan.insert.clone();
+        let exact_final_snapshot = if output_profile == CommittedTailOutputProfile::SurroundingText
+            && emitter.is_legacy()
+            && authorized_plan.move_left == 0
+            && authorized_plan.move_right == 0
+            && authorized_plan.backspaces > 0
+            && !text.is_empty()
+        {
+            let Some(snapshot) = surrounding_replacement_final_snapshot(
+                self.surrounding_text_snapshot.as_ref(),
+                authorized_plan.backspaces,
+                &text,
+            ) else {
+                trace::record_committed_tail_replace_guard(
+                    source,
+                    "exact_surrounding_snapshot_unavailable",
+                    backspaces,
+                    "exact_unselected_snapshot",
+                    "unavailable",
+                );
+                return Ok(false);
+            };
+            Some(snapshot)
+        } else {
+            None
+        };
         let now = Instant::now();
         self.last_commit_at = Some(now);
         self.publish_active_path_preserve_handoff(now + Duration::from_millis(700));
@@ -591,7 +622,11 @@ impl LayIbusEngine {
         let clear_started = Instant::now();
         self.clear_preedit(emitter).await?;
         let clear_us = clear_started.elapsed().as_micros();
-        let output_route = output_profile.output_route();
+        let output_route = if exact_final_snapshot.is_some() {
+            "surrounding_text_immediate_delete_commit"
+        } else {
+            output_profile.output_route()
+        };
         trace::record_committed_tail_replace(source, output_route, backspaces, &logical_text);
         let mut delete_us = 0;
         let commit_text = if output_profile.uses_terminal_erase() {
@@ -663,7 +698,17 @@ impl LayIbusEngine {
             text: logical_text,
             at: now,
         });
-        if surrounding_postcondition_available {
+        if let Some(expected_final_snapshot) = exact_final_snapshot {
+            self.arm_exact_visible_postcondition_from_surrounding_dispatch(
+                now,
+                outcome_feedback,
+                deferred_layout_sync_text,
+                expected_final_snapshot,
+            );
+            trace::record(
+                r#"{"kind":"ibus_surrounding_replace","stage":"delete_commit_dispatched_waiting_exact_final"}"#,
+            );
+        } else if surrounding_postcondition_available {
             self.arm_visible_postcondition_from_surrounding_dispatch(
                 now,
                 outcome_feedback,
@@ -793,6 +838,40 @@ fn surrounding_snapshot_match_for_suffix(
     }
 }
 
+fn surrounding_replacement_final_snapshot(
+    snapshot: Option<&SurroundingTextSnapshot>,
+    backspaces: u32,
+    insert: &str,
+) -> Option<SurroundingTextSnapshot> {
+    let snapshot = snapshot?;
+    if snapshot.has_selection() {
+        return None;
+    }
+    let cursor = snapshot.cursor_pos as usize;
+    let backspaces = backspaces as usize;
+    let source: Vec<char> = snapshot.text.chars().collect();
+    if cursor > source.len() || backspaces > cursor {
+        return None;
+    }
+
+    let delete_start = cursor - backspaces;
+    let mut deleted = Vec::with_capacity(source.len() - backspaces);
+    deleted.extend_from_slice(&source[..delete_start]);
+    deleted.extend_from_slice(&source[cursor..]);
+    let insert_chars: Vec<char> = insert.chars().collect();
+    let mut final_state = Vec::with_capacity(deleted.len() + insert_chars.len());
+    final_state.extend_from_slice(&deleted[..delete_start]);
+    final_state.extend_from_slice(&insert_chars);
+    final_state.extend_from_slice(&deleted[delete_start..]);
+    let final_cursor = u32::try_from(delete_start.checked_add(insert_chars.len())?).ok()?;
+
+    Some(SurroundingTextSnapshot::new(
+        final_state.into_iter().collect(),
+        final_cursor,
+        final_cursor,
+    ))
+}
+
 async fn forward_cursor_steps(
     emitter: &mut EngineOutput<'_, '_>,
     keyval: u32,
@@ -837,9 +916,9 @@ fn terminal_erase_prefix(count: u32) -> String {
 #[cfg(test)]
 mod tests {
     use super::{
-        committed_tail_external_observation, CommittedTailExternalObservation,
-        CommittedTailOutputProfile, CommittedTailReplaceRequest, LayIbusEngine,
-        RecentCommittedTailReplace, SurroundingTextSnapshot,
+        committed_tail_external_observation, surrounding_replacement_final_snapshot,
+        CommittedTailExternalObservation, CommittedTailOutputProfile, CommittedTailReplaceRequest,
+        LayIbusEngine, RecentCommittedTailReplace, SurroundingTextSnapshot,
     };
     use lay::config::LayConfig;
     use lay::manual_toggle::VisibleTailSource;
@@ -1134,6 +1213,28 @@ mod tests {
         assert_eq!(profile, CommittedTailOutputProfile::CommitOnly);
         assert_eq!(profile.output_route(), "commit");
         assert!(!profile.uses_terminal_erase());
+    }
+
+    #[test]
+    fn exact_surrounding_final_snapshot_preserves_context_and_cursor_geometry() {
+        let snapshot = SurroundingTextSnapshot::new("prefix ghbdtn suffix".to_string(), 13, 13);
+
+        let final_snapshot = surrounding_replacement_final_snapshot(Some(&snapshot), 6, "привет")
+            .expect("exact final replacement snapshot");
+
+        assert_eq!(
+            final_snapshot,
+            SurroundingTextSnapshot::new("prefix привет suffix".to_string(), 13, 13)
+        );
+    }
+
+    #[test]
+    fn exact_surrounding_final_snapshot_rejects_selection_and_invalid_cursor() {
+        let selected = SurroundingTextSnapshot::new("ghbdtn".to_string(), 6, 0);
+        let invalid = SurroundingTextSnapshot::new("ghbdtn".to_string(), 9, 9);
+
+        assert!(surrounding_replacement_final_snapshot(Some(&selected), 6, "привет").is_none());
+        assert!(surrounding_replacement_final_snapshot(Some(&invalid), 6, "привет").is_none());
     }
 
     #[test]

@@ -179,6 +179,10 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
         }
     }
 
+    pub(crate) const fn is_legacy(&self) -> bool {
+        !matches!(self, Self::Atomic(_))
+    }
+
     pub(crate) async fn commit_text(&mut self, text: Value<'_>) -> fdo::Result<()> {
         match self {
             Self::Legacy(emitter) => LayIbusEngine::commit_text(emitter, text)
@@ -207,6 +211,18 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
             }
             Self::Atomic(builder) => {
                 builder.push_delete(offset, nchars);
+                Ok(())
+            }
+        }
+    }
+
+    pub(crate) async fn require_surrounding_text(&mut self) -> fdo::Result<()> {
+        match self {
+            Self::Legacy(emitter) => LayIbusEngine::require_surrounding_text(emitter)
+                .await
+                .map_err(|error| fdo::Error::Failed(error.to_string())),
+            Self::Atomic(builder) => {
+                builder.unsupported = true;
                 Ok(())
             }
         }

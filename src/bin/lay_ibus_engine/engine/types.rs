@@ -356,6 +356,9 @@ pub(crate) struct RecentCommittedTailReplace {
 #[derive(Debug, Clone)]
 pub(crate) struct PendingVisiblePostcondition {
     pub(crate) expected_suffix: String,
+    /// Full client snapshot expected by a staged surrounding-text replacement.
+    /// Legacy routes without an exact pre-dispatch snapshot keep suffix matching.
+    pub(crate) expected_external_snapshot: Option<SurroundingTextSnapshot>,
     /// Immutable identity of the field state that dispatched this transition.
     /// A later observation can confirm this receipt, but cannot teach L4 if it
     /// belongs to a different focus, epoch, or visible tail.

@@ -71,7 +71,7 @@ impl LayIbusEngine {
                         previous_is_ru,
                         target_is_ru,
                         engine: target_engine,
-                        activate_gnome: false,
+                        activate_gnome: true,
                     });
             }
             return;
@@ -81,7 +81,7 @@ impl LayIbusEngine {
             trace::record_layout_sync(target_is_ru, target_engine, true);
             return;
         }
-        let ok = switch_active_ime_engine(target_engine).is_ok();
+        let ok = switch_complete_layout_stack(target_is_ru, target_engine).is_ok();
         if ok {
             self.set_layout_is_ru(target_is_ru);
         }
@@ -107,9 +107,7 @@ impl LayIbusEngine {
                 });
             return true;
         }
-        let ok = activate_gnome_layout_for_ime(target_is_ru)
-            .or_else(|_| switch_active_ime_engine(target_engine))
-            .is_ok();
+        let ok = switch_complete_layout_stack(target_is_ru, target_engine).is_ok();
         if ok {
             self.set_layout_is_ru(target_is_ru);
         }
@@ -137,8 +135,7 @@ impl LayIbusEngine {
                     activate_gnome,
                 } => {
                     let result = if activate_gnome {
-                        activate_gnome_layout_for_ime(target_is_ru)
-                            .or_else(|_| switch_active_ime_engine(engine))
+                        switch_complete_layout_stack(target_is_ru, engine)
                     } else {
                         switch_active_ime_engine(engine)
                     };
@@ -203,7 +200,7 @@ fn run_layout_switch_worker(shared: Arc<(Mutex<LayoutSwitchState>, Condvar)>) {
             }
             state.desired.take().expect("desired switch checked above")
         };
-        let ok = switch_active_ime_engine(request.engine).is_ok();
+        let ok = switch_complete_layout_stack(request.target_is_ru, request.engine).is_ok();
         trace::record_layout_sync(request.target_is_ru, request.engine, ok);
     }
 }
@@ -250,6 +247,11 @@ fn switch_active_ime_engine(engine: &str) -> Result<(), String> {
             })
         }
     }
+}
+
+fn switch_complete_layout_stack(target_is_ru: bool, engine: &str) -> Result<(), String> {
+    let _ = engine;
+    activate_gnome_layout_for_ime(target_is_ru)
 }
 
 fn current_active_ime_layout_is_ru() -> Option<bool> {

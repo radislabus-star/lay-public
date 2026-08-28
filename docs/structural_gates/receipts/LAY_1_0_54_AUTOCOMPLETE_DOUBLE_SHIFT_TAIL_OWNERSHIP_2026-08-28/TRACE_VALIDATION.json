@@ -1,0 +1,19 @@
+{
+  "schema": "lay.double-shift.trace-validation.v1",
+  "verdict": "PASS",
+  "case": "ime_autocomplete_then_double_shift_enter",
+  "original_token": "проверка",
+  "projected_token": "ghjdthrf",
+  "authority": "ImeCommittedTail",
+  "source": "ime_committed_tail",
+  "route": "ime_committed_tail",
+  "target_layout": "lay-ime-us",
+  "counts": {
+    "ibus_manual_toggle_plan": 1,
+    "ibus_manual_toggle_delegation": 0,
+    "ibus_committed_tail_replace": 1,
+    "ibus_layout_sync_owner": 1,
+    "ibus_layout_sync_requested": 1,
+    "ibus_layout_sync": 1
+  }
+}

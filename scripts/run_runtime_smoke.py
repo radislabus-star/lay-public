@@ -50,6 +50,11 @@ def main() -> int:
     parser.add_argument("--ibus-engine-bin", type=Path, default=DEFAULT_IBUS_ENGINE)
     parser.add_argument("--use-system-daemon", action="store_true")
     parser.add_argument("--daemon-debug", action="store_true")
+    parser.add_argument(
+        "--verify-ime-trace",
+        action="store_true",
+        help="require the preregistered manual-toggle count from the IBus trace",
+    )
     parser.add_argument("--no-build", action="store_true")
     parser.add_argument(
         "--json-out",
@@ -67,6 +72,10 @@ def main() -> int:
         help="run Rust lay IBus engine in managed mode for this test and restore daemon after",
     )
     args = parser.parse_args()
+    if args.ime_managed and args.use_system_daemon:
+        raise SystemExit("--ime-managed requires its isolated per-device daemon")
+    if args.verify_ime_trace and not (args.ime_engine or args.ime_managed):
+        raise SystemExit("--verify-ime-trace requires --ime-engine or --ime-managed")
 
     dialog = choose_dialog_command(args.dialog)
     require_command("gdbus")
@@ -77,7 +86,6 @@ def main() -> int:
     ibus_engine_bin = None
     if args.ime_managed:
         ibus_engine_bin = ensure_binary(args.ibus_engine_bin, "lay-ibus-engine", args.no_build)
-        daemon_bin = None
 
     selected = [CASES[name] for name in (args.case or sorted(CASES))]
     failures = 0
@@ -96,6 +104,7 @@ def main() -> int:
                 args.timeout,
                 args.daemon_debug,
                 args.ime_engine or args.ime_managed,
+                args.verify_ime_trace,
             )
             status = "OK" if ok else "BAD"
             print(f"{status} {case.name}: got={got!r} expected={case.expected!r}")
@@ -184,8 +193,10 @@ def run_case(
     timeout: float,
     daemon_debug: bool,
     ime_engine: bool,
+    verify_ime_trace: bool,
 ) -> tuple[bool, str, str]:
     activate_layout(case.start_layout, ime_engine)
+    trace_cursor = capture_ime_trace_cursor() if verify_ime_trace else None
     runtime_env = dict_env()
     temp_home: tempfile.TemporaryDirectory[str] | None = None
     if case.config_overrides:
@@ -313,7 +324,65 @@ def run_case(
     if temp_home is not None:
         temp_home.cleanup()
 
-    return got == case.expected and sender.returncode == 0 and dialog_proc.returncode == 0, got, "\n".join(details)
+    trace_ok = True
+    if trace_cursor is not None and case.expected_manual_toggles is not None:
+        toggle_count = manual_toggle_count_since(trace_cursor)
+        trace_ok = toggle_count == case.expected_manual_toggles
+        details.append(
+            "IME manual-toggle trace: "
+            f"got={toggle_count} expected={case.expected_manual_toggles}"
+        )
+
+    return (
+        got == case.expected
+        and sender.returncode == 0
+        and dialog_proc.returncode == 0
+        and trace_ok,
+        got,
+        "\n".join(details),
+    )
+
+
+def capture_ime_trace_cursor() -> tuple[Path, int, int | None]:
+    path = Path(
+        os.environ.get(
+            "LAY_IBUS_TRACE_PATH",
+            str(Path.home() / ".local/share/lay/ibus_engine_debug.jsonl"),
+        )
+    )
+    try:
+        stat = path.stat()
+    except FileNotFoundError:
+        return path, 0, None
+    return path, stat.st_size, stat.st_ino
+
+
+def manual_toggle_count_since(cursor: tuple[Path, int, int | None]) -> int:
+    path, offset, inode = cursor
+    try:
+        stat = path.stat()
+        if inode is not None and stat.st_ino != inode:
+            offset = 0
+        if stat.st_size < offset:
+            offset = 0
+        with path.open("rb") as source:
+            source.seek(offset)
+            lines = source.read().decode("utf-8", errors="replace").splitlines()
+    except FileNotFoundError:
+        return 0
+
+    count = 0
+    for line in lines:
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if record.get("kind") in {
+            "ibus_manual_toggle_plan",
+            "ibus_manual_toggle_delegation",
+        }:
+            count += 1
+    return count
 
 
 def dialog_args(dialog: str, case: Case) -> list[str]:

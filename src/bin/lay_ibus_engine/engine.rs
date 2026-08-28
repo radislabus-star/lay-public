@@ -37,6 +37,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) focus_receipt: Option<String>,
     pub(super) focus_serial: u64,
     pub(super) runtime_owner_lease_identity: u64,
+    pub(super) preedit_visible: bool,
     pub(super) preedit_suffix: String,
     pub(super) preedit_candidates: Vec<String>,
     pub(super) preedit_replacement_targets: Vec<Option<String>>,
@@ -64,6 +65,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) last_commit_at: Option<Instant>,
     pub(super) last_tail_input_at: Option<Instant>,
     pub(super) recent_committed_tail_replace: Option<RecentCommittedTailReplace>,
+    pub(super) pending_manual_toggle: bool,
     pub(super) pending_visible_postcondition: Option<PendingVisiblePostcondition>,
     pub(super) pending_ime_completion_learning: Option<PendingImeCompletionLearning>,
     pub(super) suppress_next_committed_tail_autocorrect: bool,
@@ -214,7 +216,8 @@ impl LayIbusEngine {
     }
 
     pub(super) fn has_live_composition_state(&self) -> bool {
-        !self.buffer.is_empty()
+        self.preedit_visible
+            || !self.buffer.is_empty()
             || !self.preedit_suffix.is_empty()
             || !self.preedit_candidates.is_empty()
             || self.preedit_dirty
@@ -245,6 +248,7 @@ impl LayIbusEngine {
         }
         if !self.surrounding_text_supported {
             self.surrounding_text_snapshot = None;
+            self.pending_manual_toggle = false;
         }
     }
 

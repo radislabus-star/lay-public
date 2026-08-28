@@ -32,14 +32,36 @@ Rules:
 - The code boundary is `observe_daemon_owned_legacy_shift`, which intentionally
   has no `EngineOutput` argument. Keep Double Shift mutation capability only in
   `process_atomic_shift_gesture` and the daemon-owned `ManualToggleV3` route.
+- Ordinary Double Shift is an exact physical-key projection only: for example,
+  `а <-> f` and `привет <-> ghbdtn`. It must not call lexical correction,
+  ranking, morphology, learning, or any model.
+- Every complete `press -> release -> press -> release` pair toggles once and
+  rearms immediately. Do not add a burst latch, quiet-window rearm, pair
+  debounce, or multi-tap delay. Four Shift taps are exactly two toggles.
 - For a committed-tail projection with SurroundingText, changing the active
-  IBus engine is owned by the client-visible postcondition. Never switch layout
-  immediately after delete-plus-commit dispatch: wait until the exact expected
-  replacement is observed. The no-SurroundingText fallback remains immediate.
+  GNOME source and matching IBus engine is owned by the client-visible
+  postcondition. Never switch either immediately after delete-plus-commit
+  dispatch: wait until the exact expected replacement is observed. The
+  no-SurroundingText fallback remains immediate. A successful postcondition
+  requires both stack members, not one as a fallback for the other.
+- On legacy IBus, emit `DeleteSurroundingText` and `CommitText` consecutively
+  from the same input handler. Do not expose a wait-for-deleted-snapshot phase:
+  it makes the client visibly blank between the two signals. Arm the expected
+  full final snapshot before dispatch and accept only that exact postcondition;
+  suffix-only matching must not accept an appended transient such as
+  `ghbdtnпривет`.
 - An IME-handled `ManualToggleV3` reply must not trigger
   `switch_to_target_layout` in `lay-daemon`; that would create a second layout
   owner and force focus handoff before the IBus postcondition. Daemon/uinput
   delegation retains its existing daemon-owned layout transition.
+- The GNOME extension activates the target Lay input source exactly once.
+  GNOME's input-source manager owns the resulting IBus transition; do not run a
+  second `ibus engine` command from `activateLayoutId` or its
+  `current-source-changed` callback.
+- Printable IME input invalidates old candidate authority immediately but keeps
+  the current preedit surface visible until the matching background result can
+  replace or hide it once. Do not restore per-key `clear -> update -> show`
+  blinking, and never let Tab accept the retained stale surface.
 - Before any Double Shift release or installation, run
   `scripts/check-lay-changed.sh`; the explicit
   `physical_double_shift_owner_` tests must pass, followed by a single-owner

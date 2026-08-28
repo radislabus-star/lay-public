@@ -29,10 +29,11 @@ or unnaturally fast. An intervening ordinary key cancels the partial gesture.
 
 One completed gesture performs one action. If the last token was typed in the
 wrong layout, Lay replaces that exact visible token once and leaves the opposite
-layout active for subsequent typing. Continued Shift-only taps in the same
-burst cannot reverse the result. A later deliberate Double Shift, after an
-ordinary key or the quiet rearm window, may perform the opposite projection
-once. A valid pending autocorrect undo has priority over ordinary projection.
+layout active for subsequent typing. The detector rearms on the second release,
+so the next complete pair immediately performs the inverse projection. Four
+Shift taps are two pairs and therefore two toggles; no ordinary key or quiet
+window is required between them. A valid pending autocorrect undo has priority
+over ordinary projection.
 
 ## Runtime routes
 
@@ -105,7 +106,8 @@ Committed-tail mutation and layout switching form one ordered transaction:
 delete old committed tail
 -> commit exact projected tail
 -> observe the exact replacement through SurroundingText
--> switch the active IBus engine once
+-> one GNOME bridge request activates the target input source
+-> that same owner immediately schedules the matching Lay IBus engine
 ```
 
 When SurroundingText was available at dispatch, switching the engine before
@@ -160,22 +162,29 @@ boundary is the daemon ownership call plus the committed-tail immediate sync;
 acceptance requires full IBus/daemon tests and repeated installed client-visible
 proof with the global `ibus-daemon` PID preserved.
 
-## Burst membership
+## Pairwise rearm
 
-One exact Double Shift pair triggers one layout projection. After that action,
-continued Shift-only releases within `shift_window_ms` belong to the same
-physical burst and cannot trigger a second projection. Every suppressed Shift
-release extends the quiet deadline.
+One exact Double Shift pair triggers one layout projection and returns the
+gesture state to `Idle` on its second release. The next Shift press starts a new
+pair immediately, including when it arrives inside the previous
+`shift_window_ms` and no ordinary key was pressed.
 
-Any ordinary key press ends the burst and rearms the gesture immediately. A
-full quiet window without another Shift release also rearms it, so a deliberate
-later Double Shift remains available without requiring an intervening key.
+The route has no post-action burst membership, latch, quiet deadline, debounce,
+or multi-tap delay. In particular:
 
-The daemon keeps this latch for the deployed physical route. The exclusive
-atomic route keeps equivalent shared state across its US and RU engine objects
-because an atomic layout switch can replace the active engine while the burst
-continues. Neither latch grants correction, candidate, deletion, or replay
-authority outside its route.
+```text
+press release press release  -> toggle 1
+press release press release  -> toggle 2
+four consecutive taps        -> two toggles
+```
+
+The single-owner rule still applies independently: each pair may mint exactly
+one plan, never plans from both daemon and legacy IBus recognition.
+
+The configured IME executor does not grab or drain the physical input device.
+It performs no key replay, so a third and fourth Shift tap remain in the normal
+daemon event stream and form the next pair. Only the explicit uinput fallback
+may isolate physical input while replaying keys.
 
 ## Decision priority
 
@@ -206,6 +215,10 @@ current RU -> Direction::Ru2Us -> target US
 current US -> Direction::Us2Ru -> target RU
 ```
 
+The conversion is the literal reversible physical-key table. For example,
+`а <-> f`, `п <-> g`, and `привет <-> ghbdtn`. It does not ask whether the
+result is a word and it does not choose among candidates.
+
 Script detection, mixed-script repair, candidate birth, ranking, morphology,
 context, and preferred-layout inference are not part of this route. Characters
 without a key-map counterpart are preserved by the projection table.
@@ -222,6 +235,27 @@ emitter.
 Cross-engine Shift handoff may move gesture state between the US and RU engine
 instances, but it must preserve the same shared pending undo and exact source
 surface.
+
+## Legacy SurroundingText route
+
+Legacy IBus clients do not receive delete-plus-commit as one atomic effect.
+Lay emits the two ordered signals consecutively from one input handler and
+waits only for the exact final client postcondition:
+
+```text
+exact full source snapshot
+-> arm exact full replacement postcondition
+DeleteSurroundingText
+-> CommitText
+-> exact full replacement snapshot
+-> layout synchronization
+```
+
+Suffix equality is insufficient: an appended transient such as
+`ghbdtnпривет` must not confirm `привет`. Waiting for an observable deleted
+snapshot is forbidden because it exposes a blank intermediate surface. A focus
+reset, capability loss, stale epoch, or snapshot mismatch clears the pending
+final-postcondition authority without replaying the mutation.
 
 ## Multi-client preparation isolation
 
@@ -258,8 +292,14 @@ hide the production race and is not acceptance evidence.
 - There is no duplicate output and no stuck modifier or character key.
 - One physical gesture produces exactly one manual-toggle plan and one layout
   transition; the legacy IBus key route produces zero replacement effects.
+- Every adjacent pair is independent: four Shift taps produce two plans and
+  restore the original text and layout.
 - A SurroundingText committed-tail projection keeps the original layout until
-  the exact replacement is visible, then performs one layout transition.
+  the exact replacement is visible, then makes both GNOME `CurrentLayout` and
+  `ibus engine` equal to the target language through one GNOME input-source
+  activation. The bridge must not launch a second `ibus engine` transition.
+- A layout toggle produces one IBus focus handoff, not a visible two-stage
+  source-then-engine handoff.
 - Pending autocorrect undo remains unchanged.
 - Model and correction-learning calls on ordinary Double Shift are zero.
 - Full-engine tests pass when executed together; isolated targeted PASS cannot

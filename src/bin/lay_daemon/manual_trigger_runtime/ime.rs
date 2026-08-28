@@ -9,7 +9,10 @@ pub(crate) enum ImeManualToggleDispatch {
 }
 
 pub(crate) fn dispatch_ime_manual_toggle(buffer: &mut WordBuffer) -> ImeManualToggleDispatch {
-    if buffer.pending_auto_undo_ready() || !active_text_backend().should_try_ime() {
+    if !active_text_backend().should_try_ime() {
+        return ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::DaemonUinput);
+    }
+    if buffer.pending_auto_undo_ready() {
         return ImeManualToggleDispatch::DelegateDaemon(
             ManualCorrectionOutputRoute::ConfiguredBackend,
         );
@@ -48,7 +51,7 @@ fn dispatch_from_result(result: Result<ImeManualToggleOutcome, String>) -> ImeMa
 fn dispatch_from_outcome(outcome: ImeManualToggleOutcome) -> ImeManualToggleDispatch {
     match outcome {
         ImeManualToggleOutcome::DelegateDaemon => {
-            ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::DaemonUinput)
+            ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::ConfiguredBackend)
         }
         ImeManualToggleOutcome::NotHandled => ImeManualToggleDispatch::Complete(None),
         ImeManualToggleOutcome::Handled {
@@ -78,7 +81,7 @@ mod tests {
     fn ime_dispatch_shape_delegates_only_the_explicit_daemon_outcome() {
         assert_eq!(
             dispatch_from_outcome(ImeManualToggleOutcome::DelegateDaemon),
-            ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::DaemonUinput)
+            ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::ConfiguredBackend,)
         );
         assert_eq!(
             dispatch_from_outcome(ImeManualToggleOutcome::NotHandled),

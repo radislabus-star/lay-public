@@ -406,6 +406,23 @@ impl LayIbusEngine {
         let Some(plan) = self.committed_tail_toggle_plan() else {
             return Ok(None);
         };
+        if emitter.is_legacy()
+            && self.surrounding_text_supported
+            && self.surrounding_text_snapshot.is_none()
+        {
+            self.pending_manual_toggle = !self.pending_manual_toggle;
+            let stage = if self.pending_manual_toggle {
+                emitter.require_surrounding_text().await?;
+                "queued_waiting_exact_snapshot"
+            } else {
+                "cancelled_even_pair"
+            };
+            trace::record(format!(
+                r#"{{"kind":"ibus_manual_toggle_pending","stage":"{stage}","tail_chars":{}}}"#,
+                self.tail_buffer.chars().count(),
+            ));
+            return Ok(Some(self.layout_is_ru));
+        }
         trace::record_manual_toggle_plan(&plan);
         let handled = self
             .replace_committed_tail(
@@ -421,6 +438,47 @@ impl LayIbusEngine {
             self.trace_key("double_shift_committed_tail", 0, 0, true, None);
         }
         Ok(handled.then_some(plan.target_layout_is_ru))
+    }
+
+    pub(super) async fn apply_pending_manual_toggle_after_surrounding_snapshot(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> fdo::Result<bool> {
+        if !self.pending_manual_toggle {
+            return Ok(false);
+        }
+        let Some(plan) = self.committed_tail_toggle_plan() else {
+            self.pending_manual_toggle = false;
+            trace::record(r#"{"kind":"ibus_manual_toggle_pending","stage":"cancelled_no_plan"}"#);
+            return Ok(true);
+        };
+        let Some(snapshot) = self.surrounding_text_snapshot.as_ref() else {
+            return Ok(true);
+        };
+        if snapshot.text.is_empty() && !self.tail_buffer.is_empty() {
+            trace::record(
+                r#"{"kind":"ibus_manual_toggle_pending","stage":"waiting_nonempty_snapshot"}"#,
+            );
+            return Ok(true);
+        }
+        let expected = lay::text_edit::tail_chars(&self.tail_buffer, plan.backspaces as usize);
+        if snapshot.has_selection()
+            || snapshot
+                .suffix_before_cursor(plan.backspaces as usize)
+                .as_deref()
+                != Some(expected.as_str())
+        {
+            self.pending_manual_toggle = false;
+            trace::record(
+                r#"{"kind":"ibus_manual_toggle_pending","stage":"cancelled_snapshot_mismatch"}"#,
+            );
+            return Ok(true);
+        }
+
+        self.pending_manual_toggle = false;
+        trace::record(r#"{"kind":"ibus_manual_toggle_pending","stage":"released_exact_snapshot"}"#);
+        let _ = self.toggle_committed_tail_target(emitter).await?;
+        Ok(true)
     }
 
     pub(super) async fn undo_last_ime_autocorrect(
@@ -683,6 +741,59 @@ mod tests {
             "confirmed replacement did not switch layout"
         );
         assert!(engine.pending_visible_postcondition.is_none());
+    }
+
+    #[test]
+    fn pending_double_shift_releases_once_on_exact_new_engine_snapshot() {
+        let mut engine = engine();
+        engine.layout_is_ru = false;
+        engine.surrounding_text_supported = true;
+        engine.tail_buffer = "ghbdtn".to_string();
+        engine.pending_manual_toggle = true;
+        engine.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("ghbdtn".to_string(), 6, 6));
+        let mut builder = AtomicEffectBuilder::default();
+        let mut output = EngineOutput::atomic(&mut builder);
+
+        assert!(zbus::block_on(
+            engine.apply_pending_manual_toggle_after_surrounding_snapshot(&mut output)
+        )
+        .expect("pending toggle"));
+
+        assert!(!engine.pending_manual_toggle);
+        assert_eq!(engine.tail_buffer, "привет");
+        assert_eq!(builder.finish(true).0, PROPOSAL_FRAME_READY);
+    }
+
+    #[test]
+    fn pending_double_shift_cancels_on_unrelated_nonempty_snapshot() {
+        let mut engine = engine();
+        engine.layout_is_ru = false;
+        engine.surrounding_text_supported = true;
+        engine.tail_buffer = "ghbdtn".to_string();
+        engine.pending_manual_toggle = true;
+        engine.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("другое".to_string(), 6, 6));
+        let mut builder = AtomicEffectBuilder::default();
+        let mut output = EngineOutput::atomic(&mut builder);
+
+        assert!(zbus::block_on(
+            engine.apply_pending_manual_toggle_after_surrounding_snapshot(&mut output)
+        )
+        .expect("mismatched pending toggle"));
+
+        assert!(!engine.pending_manual_toggle);
+        assert_eq!(engine.tail_buffer, "ghbdtn");
+    }
+
+    #[test]
+    fn focus_reset_cancels_pending_double_shift() {
+        let mut engine = engine();
+        engine.pending_manual_toggle = true;
+
+        engine.reset_for_ibus_focus_change();
+
+        assert!(!engine.pending_manual_toggle);
     }
 
     #[test]

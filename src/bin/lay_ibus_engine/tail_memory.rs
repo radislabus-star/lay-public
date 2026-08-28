@@ -381,6 +381,36 @@ impl LayIbusEngine {
         feedback: Option<PendingSystemOutcomeFeedback>,
         layout_sync_text: Option<String>,
     ) {
+        self.arm_visible_postcondition_from_surrounding_dispatch_with_snapshot(
+            dispatched_at,
+            feedback,
+            layout_sync_text,
+            None,
+        );
+    }
+
+    pub(super) fn arm_exact_visible_postcondition_from_surrounding_dispatch(
+        &mut self,
+        dispatched_at: Instant,
+        feedback: Option<PendingSystemOutcomeFeedback>,
+        layout_sync_text: Option<String>,
+        expected_external_snapshot: super::engine::SurroundingTextSnapshot,
+    ) {
+        self.arm_visible_postcondition_from_surrounding_dispatch_with_snapshot(
+            dispatched_at,
+            feedback,
+            layout_sync_text,
+            Some(expected_external_snapshot),
+        );
+    }
+
+    fn arm_visible_postcondition_from_surrounding_dispatch_with_snapshot(
+        &mut self,
+        dispatched_at: Instant,
+        feedback: Option<PendingSystemOutcomeFeedback>,
+        layout_sync_text: Option<String>,
+        expected_external_snapshot: Option<super::engine::SurroundingTextSnapshot>,
+    ) {
         let snapshot = VisibleTailSnapshot::new(
             VisibleTailSource::ImeCommittedTail,
             self.tail_buffer.clone(),
@@ -390,6 +420,7 @@ impl LayIbusEngine {
         .identity();
         self.pending_visible_postcondition = Some(super::engine::PendingVisiblePostcondition {
             expected_suffix: self.tail_buffer.clone(),
+            expected_external_snapshot,
             snapshot,
             dispatched_epoch: self.tail_epoch,
             dispatched_at,
@@ -409,10 +440,16 @@ impl LayIbusEngine {
             record_causal_outcome("censored", &pending, self.tail_epoch);
             return;
         }
-        let observed = surrounding_snapshot_match(
-            self.surrounding_text_snapshot.as_ref(),
-            &pending.expected_suffix,
-        );
+        let observed = match pending.expected_external_snapshot.as_ref() {
+            Some(expected) if self.surrounding_text_snapshot.as_ref() == Some(expected) => {
+                SurroundingSnapshotMatch::Exact
+            }
+            Some(_) => SurroundingSnapshotMatch::Missing,
+            None => surrounding_snapshot_match(
+                self.surrounding_text_snapshot.as_ref(),
+                &pending.expected_suffix,
+            ),
+        };
         let status = if matches!(
             observed,
             SurroundingSnapshotMatch::Exact | SurroundingSnapshotMatch::TrailingBoundaryElided
@@ -535,6 +572,7 @@ impl LayIbusEngine {
         self.last_tail_input_at = None;
         self.last_commit_at = None;
         self.recent_committed_tail_replace = None;
+        self.pending_manual_toggle = false;
         self.pending_visible_postcondition = None;
         self.tail_epoch = self.tail_epoch.wrapping_add(1);
         let Ok(mut state) = self.shared.lock() else {
@@ -561,6 +599,7 @@ impl LayIbusEngine {
         self.word_input_mode = None;
         self.last_tail_input_at = None;
         self.recent_committed_tail_replace = None;
+        self.pending_manual_toggle = false;
         self.suppress_next_committed_tail_autocorrect = false;
         self.tail_epoch = self.tail_epoch.wrapping_add(1);
         if let Ok(mut state) = shared.lock() {
@@ -993,6 +1032,42 @@ mod tests {
             super::super::engine::SurroundingTextSnapshot::new("собака".to_string(), 6, 6),
         );
         engine.observe_visible_postcondition();
+        assert!(engine.layout_is_ru);
+        assert!(engine.pending_visible_postcondition.is_none());
+    }
+
+    #[test]
+    fn exact_postcondition_rejects_the_transient_appended_replacement() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        engine.surrounding_text_supported = true;
+        engine.tail_buffer = "привет".to_string();
+        engine.publish_tail_handoff();
+        engine.arm_exact_visible_postcondition_from_surrounding_dispatch(
+            Instant::now(),
+            None,
+            Some("привет".to_string()),
+            super::super::engine::SurroundingTextSnapshot::new("привет".to_string(), 6, 6),
+        );
+
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("ghbdtnпривет".to_string(), 12, 12),
+        );
+        engine.observe_visible_postcondition();
+
+        assert!(!engine.layout_is_ru);
+        assert!(engine.pending_visible_postcondition.is_some());
+
+        engine.surrounding_text_snapshot = Some(
+            super::super::engine::SurroundingTextSnapshot::new("привет".to_string(), 6, 6),
+        );
+        engine.observe_visible_postcondition();
+
         assert!(engine.layout_is_ru);
         assert!(engine.pending_visible_postcondition.is_none());
     }

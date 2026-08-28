@@ -98,8 +98,6 @@ class LayIndicator extends PanelMenu.Button {
 
         this._mgr = getInputSourceManager();
         this._srcId = this._mgr.connect('current-source-changed', () => {
-            if (this._daemonActive === true && this._cfg.text_backend === 'ime')
-                syncIbusEngineForCurrentLayout();
             this._refreshLayout();
         });
         this._refreshLayout();
@@ -352,6 +350,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     _applyDaemonStatus(active) {
+        const becameActive = active && this._daemonActive !== true;
         this._daemonActive = active;
         if (this._statusLabel)
             this._statusLabel.text = active ? 'демон работает' : 'демон остановлен';
@@ -362,7 +361,7 @@ class LayIndicator extends PanelMenu.Button {
             this._enabledSwitch.setToggleState(active);
             this._updatingEnabledSwitch = false;
         }
-        if (active && this._cfg.text_backend === 'ime')
+        if (becameActive && this._cfg.text_backend === 'ime')
             syncIbusEngineForCurrentLayout();
         this._setDaemonStatus(active);
     }

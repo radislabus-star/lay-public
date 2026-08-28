@@ -18,6 +18,7 @@ class Case:
     expected: str
     start_layout: str = "us"
     config_overrides: dict[str, object] | None = None
+    expected_manual_toggles: int | None = None
 
 
 def normal_autocorrect_config() -> dict[str, object]:
@@ -45,9 +46,13 @@ CASES = {
         "ghbdtn",
         config_overrides={"enter_autocorrect": True},
     ),
-    "ghbdtn_fast_lshift_enter": Case("ghbdtn_fast_lshift_enter", "привет"),
+    "ghbdtn_fast_lshift_enter": Case(
+        "ghbdtn_fast_lshift_enter", "привет", expected_manual_toggles=1
+    ),
     "ghbdtn_long_lshift_enter": Case("ghbdtn_long_lshift_enter", "привет"),
-    "ghbdtn_extra_lshift_enter": Case("ghbdtn_extra_lshift_enter", "привет"),
+    "ghbdtn_extra_lshift_enter": Case(
+        "ghbdtn_extra_lshift_enter", "ghbdtn", expected_manual_toggles=2
+    ),
     "ctrl_plus_ghbdtn_enter": Case("ctrl_plus_ghbdtn_enter", "привет"),
     "dhtvz_toggle_enter": Case("dhtvz_toggle_enter", "dhtvz"),
     "dhtvz_toggle3_enter": Case("dhtvz_toggle3_enter", "время"),
@@ -123,10 +128,16 @@ CASES = {
     "ru_p_to_g_enter": Case("ru_p_to_g_enter", "g", start_layout="ru"),
     "ru_p_toggle2_enter": Case("ru_p_toggle2_enter", "п", start_layout="ru"),
     "slovo_ru_to_us_fast_lshift_enter": Case(
-        "slovo_ru_to_us_fast_lshift_enter", "ckjdj", start_layout="ru"
+        "slovo_ru_to_us_fast_lshift_enter",
+        "ckjdj",
+        start_layout="ru",
+        expected_manual_toggles=1,
     ),
     "slovo_ru_to_us_extra_lshift_enter": Case(
-        "slovo_ru_to_us_extra_lshift_enter", "ckjdj", start_layout="ru"
+        "slovo_ru_to_us_extra_lshift_enter",
+        "слово",
+        start_layout="ru",
+        expected_manual_toggles=2,
     ),
     "vyvodim_dva_enter": Case("vyvodim_dva_enter", "выводим два"),
     "wifi_ye_enter": Case("wifi_ye_enter", "wi-fi ну"),

@@ -1,0 +1,12 @@
+{
+  "all_passed": true,
+  "cases": [
+    {
+      "expected": "ckjdj",
+      "got": "ckjdj",
+      "name": "slovo_ru_to_us_fast_lshift_enter",
+      "ok": true
+    }
+  ],
+  "schema": "lay.runtime-smoke-receipt.v1"
+}

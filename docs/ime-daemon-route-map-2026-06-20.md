@@ -1143,3 +1143,166 @@ Evidence:
 
 - `docs/double-shift-physical-layout-contract.md`
 - `docs/structural_gates/receipts/LAY_1_0_48_DOUBLE_SHIFT_SINGLE_OWNER_REPAIR_2026-08-28/RELEASE_RECEIPT.json`
+
+## 1.0.49 Exact Pairwise Double Shift Contract
+
+Release `1.0.49` supersedes only the burst semantics retained by `1.0.48`.
+Gesture and mutation ownership remain single-owner, but there is no latch after
+a completed pair:
+
+```text
+Left Shift press -> release -> press -> release -> one toggle -> Idle
+next press -> release -> press -> release              -> one toggle -> Idle
+```
+
+Ordinary projection is the reversible physical-key table (`а <-> f`,
+`привет <-> ghbdtn`). It has no lexical, candidate, model, or learning route.
+The old optional multi-tap scope cannot delay `double-lshift`, and the Double
+Shift detector has no post-pair debounce or quiet-window rearm.
+
+The client-visible postcondition now closes the complete keyboard stack. After
+the exact replacement is observed, one GNOME bridge owner activates the target
+Lay input source. GNOME's input-source manager owns the corresponding IBus
+engine transition; the replacement route does not launch an additional
+`ibus engine` process. The former 25 ms deferred readback and a second
+Rust-owned engine call are both absent. Success still requires both live states
+to match.
+
+Acceptance requires adjacent-pair proof in both directions and a four-fast-tap
+round trip, with one daemon plan per pair, zero legacy IBus plans, matching GNOME
+and IBus state, and the global `ibus-daemon` left running.
+
+## 1.0.50 Nonblinking IME Surface Contract
+
+Release `1.0.50` keeps the exact pairwise Double Shift behavior and removes two
+visible intermediate transitions:
+
+```text
+printable input
+-> invalidate old candidate authority immediately
+-> retain the current preedit surface while matching work is pending
+-> replace it once, or hide it once when the result is empty
+
+Double Shift
+-> exact text replacement
+-> one GNOME Lay-source activation
+-> one matching IBus focus handoff
+```
+
+The retained preedit surface is display-only. Tab cannot accept its stale
+candidate after the token changes. A matching background result remains the
+only route that can install the next selectable candidate. Ordinary typing must
+not emit the previous `clear -> update -> show` sequence for every character,
+and layout activation must not issue a redundant `ibus engine` command from the
+source-change callback.
+
+## 1.0.51 Staged Surrounding-Text Replacement Contract (Superseded)
+
+The live GTK gate for `1.0.50` exposed a separate client-ordering defect:
+legacy IBus emitted `DeleteSurroundingText` and `CommitText` back-to-back. GTK
+could publish the appended intermediate state before applying deletion, and the
+old suffix-only postcondition could incorrectly accept that transient state.
+
+Release `1.0.51` makes a surrounding-text replacement a client-acknowledged
+two-phase operation:
+
+```text
+exact pre-dispatch SurroundingText snapshot
+-> DeleteSurroundingText
+-> exact deleted snapshot observed
+-> CommitText
+-> exact final snapshot observed
+-> one layout synchronization
+```
+
+No timer releases either mutation. A stale, selected, geometrically invalid, or
+unrelated snapshot cannot dispatch the commit and cannot confirm the layout
+postcondition. Atomic-effect and terminal-erase routes retain their existing
+contracts. Focus/reset/capability loss clears any pending staged commit.
+
+## 1.0.52 Nonblinking IME Output Contract
+
+The installed `1.0.51` route preserved exact postcondition safety but exposed
+its deleted-text phase to the client. That made Double Shift visibly blank and
+reappear. It also allowed a newly selected Lay engine to discard the next exact
+Shift pair while waiting for its first SurroundingText snapshot.
+
+Release `1.0.52` supersedes only that output sequencing:
+
+```text
+exact pre-dispatch SurroundingText snapshot
+-> arm exact full final postcondition
+-> DeleteSurroundingText + CommitText from one input handler
+-> exact full final snapshot observed
+-> one layout synchronization
+```
+
+There is no deleted-snapshot wait and no suffix-only acceptance. An appended
+transient such as `ghbdtnпривет` cannot satisfy the exact projected snapshot.
+The daemon does not grab the physical device for this non-replay IME executor,
+so every following complete Shift pair remains in the normal event stream.
+The atomic engine path separately retains a pending parity bit only when its
+exact source snapshot is not yet available.
+
+Preedit display uses transition-only signaling:
+
+```text
+hidden -> visible    UpdatePreeditText + ShowPreeditText
+visible -> visible   UpdatePreeditText only
+visible -> hidden    one empty update + HidePreeditText
+hidden -> hidden     no client signal
+```
+
+Printable input invalidates stale candidate acceptance immediately while the
+old display frame remains until the matching background result replaces or
+hides it. The contract forbids a per-key `clear -> update -> show` sequence.
+
+## 1.0.53 Stable IME Completion Surface Contract
+
+The installed `1.0.52` trace confirmed transition-only IBus signaling, but the
+first one- and two-letter prefixes still produced unstable top candidates. It
+also showed that typing the next character of a visible completion discarded
+that full target and selected another one. The resulting suffix sequence made
+the internal readout work visible even without a `hide -> show` blink.
+
+Release `1.0.53` freezes the display policy independently of candidate
+generation:
+
+```text
+prefix length 1..2       no visible completion
+prefix length >= 3       first admitted completion may become visible
+typed character matches  retain the same full target and shorten its suffix
+typed character diverges decline the old target and admit a fresh result
+worker pending           keep the last frame display-only; Tab stays disabled
+```
+
+There is no debounce, sleep, or delayed publish timer. Candidate authority is
+still recomputed for every current input identity. The policy only prevents
+ambiguous early results and intermediate worker state from becoming client
+frames. A true boundary, empty current result, focus loss, or disabled text
+assistance still performs one normal visible-to-hidden transition.
+
+## 1.0.54 Autocomplete Double Shift Tail Ownership
+
+After an IME completion is accepted, the resulting committed token remains an
+IME-owned visible tail. The daemon remains the only physical Double Shift
+detector, but `ManualToggleV3` dispatches the mutation to that IME owner:
+
+```text
+physical Left Shift pair
+-> daemon gesture detector
+-> ManualToggleV3
+-> ImeCommittedTail
+-> exact physical-key projection of the visible committed token
+-> exact client postcondition
+-> one target-layout synchronization
+```
+
+Only `DaemonWordBuffer` may return `DelegateDaemon`. `ImeCommittedTail` must
+execute `toggle_committed_tail_target` and must not delegate to a daemon buffer
+that never observed the accepted completion suffix. This route performs no
+candidate generation, ranking, correction, morphology, or learning.
+
+Evidence:
+
+- `docs/structural_gates/receipts/LAY_1_0_54_AUTOCOMPLETE_DOUBLE_SHIFT_TAIL_OWNERSHIP_2026-08-28/RELEASE_RECEIPT.json`

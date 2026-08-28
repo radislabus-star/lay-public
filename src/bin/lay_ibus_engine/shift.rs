@@ -43,13 +43,16 @@ impl LayIbusEngine {
         }
         let authority = self.manual_toggle_authority();
         match authority {
-            ManualToggleAuthority::DaemonWordBuffer => {
-                self.defer_committed_tail_manual_toggle_to_daemon();
-                self.trace_key("double_shift_defer_to_daemon", 0, 0, false, None);
-                return Ok(None);
-            }
             ManualToggleAuthority::ImeCommittedTail => {
                 return self.toggle_committed_tail_target(emitter).await;
+            }
+            ManualToggleAuthority::DaemonWordBuffer => {
+                self.defer_committed_tail_manual_toggle_to_daemon();
+                trace::record(
+                    r#"{"kind":"ibus_manual_toggle_delegation","source":"daemon_word_buffer"}"#,
+                );
+                self.trace_key("double_shift_defer_to_daemon", 0, 0, false, None);
+                return Ok(None);
             }
             ManualToggleAuthority::ImeActiveComposition => {}
         }
@@ -123,6 +126,22 @@ mod tests {
             .expect("pending undo route");
 
         assert!(pending_undo < delegation);
+    }
+
+    #[test]
+    fn physical_double_shift_owner_routes_ime_committed_tail_to_ime_executor() {
+        let source = include_str!("shift.rs");
+        let production = source.split("#[cfg(test)]").next().unwrap();
+        let committed_tail_arm = production
+            .split("ManualToggleAuthority::ImeCommittedTail =>")
+            .nth(1)
+            .expect("IME committed-tail authority arm")
+            .split("ManualToggleAuthority::DaemonWordBuffer =>")
+            .next()
+            .expect("daemon authority arm follows committed-tail arm");
+
+        assert!(committed_tail_arm.contains("toggle_committed_tail_target(emitter).await"));
+        assert!(!committed_tail_arm.contains("defer_committed_tail_manual_toggle_to_daemon"));
     }
 
     #[test]

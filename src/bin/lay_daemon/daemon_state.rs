@@ -84,7 +84,7 @@ impl DaemonLoopState {
             single_pressed_at: None,
             single_other_key: false,
             force_layout_hotkeys: ForceLayoutHotkeys::from_config(cfg),
-            multi_tap_scope: cfg.multi_tap_scope && !is_caps_trigger && !is_single_trigger,
+            multi_tap_scope: active_multi_tap_scope(cfg, is_caps_trigger, is_single_trigger),
             multi_tap_max_taps: cfg.active_multi_tap_max_taps(),
             pending_multi_tap: None,
             buffer: WordBuffer::new(),
@@ -193,4 +193,12 @@ impl DaemonLoopState {
             self.window_states.remove(&oldest_key);
         }
     }
+}
+
+pub(crate) fn active_multi_tap_scope(
+    cfg: &LayConfig,
+    is_caps_trigger: bool,
+    is_single_trigger: bool,
+) -> bool {
+    cfg.multi_tap_scope && cfg.trigger != "double-lshift" && !is_caps_trigger && !is_single_trigger
 }

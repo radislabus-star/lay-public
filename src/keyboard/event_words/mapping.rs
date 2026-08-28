@@ -50,3 +50,22 @@ pub fn original_event_char(event: &KeyEvent) -> Option<char> {
         keycode_to_us_char(event.keycode, event.shift)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::map_events_to_layout;
+    use crate::keyboard::text_to_key_events;
+
+    #[test]
+    fn physical_layout_projection_is_exact_and_reversible() {
+        let ru = text_to_key_events("а", true).expect("Russian physical key");
+        let us = text_to_key_events("f", false).expect("US physical key");
+        assert_eq!(map_events_to_layout(&ru, false), "f");
+        assert_eq!(map_events_to_layout(&us, true), "а");
+
+        let ru_word = text_to_key_events("привет", true).expect("Russian physical word");
+        let us_word = text_to_key_events("ghbdtn", false).expect("US physical word");
+        assert_eq!(map_events_to_layout(&ru_word, false), "ghbdtn");
+        assert_eq!(map_events_to_layout(&us_word, true), "привет");
+    }
+}

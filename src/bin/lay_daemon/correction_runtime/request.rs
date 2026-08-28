@@ -12,7 +12,15 @@ pub(crate) enum ManualCorrectionOutputRoute {
 
 impl ManualCorrectionOutputRoute {
     pub(crate) fn allows_native_stage(self) -> bool {
+        !matches!(self, Self::DaemonUinput)
+    }
+
+    pub(crate) fn allows_ime_stage(self) -> bool {
         matches!(self, Self::ConfiguredBackend)
+    }
+
+    pub(crate) fn requires_physical_grab(self) -> bool {
+        !self.allows_ime_stage()
     }
 }
 
@@ -38,8 +46,12 @@ mod tests {
     use super::ManualCorrectionOutputRoute;
 
     #[test]
-    fn explicit_daemon_uinput_route_cannot_enter_native_output_stage() {
+    fn output_routes_keep_configured_and_uinput_ownership_distinct() {
         assert!(ManualCorrectionOutputRoute::ConfiguredBackend.allows_native_stage());
+        assert!(ManualCorrectionOutputRoute::ConfiguredBackend.allows_ime_stage());
+        assert!(!ManualCorrectionOutputRoute::ConfiguredBackend.requires_physical_grab());
         assert!(!ManualCorrectionOutputRoute::DaemonUinput.allows_native_stage());
+        assert!(!ManualCorrectionOutputRoute::DaemonUinput.allows_ime_stage());
+        assert!(ManualCorrectionOutputRoute::DaemonUinput.requires_physical_grab());
     }
 }

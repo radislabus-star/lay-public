@@ -1,0 +1,80 @@
+{
+  "schema": "lay-1.0.54-autocomplete-double-shift-tail-ownership-v1",
+  "recorded_at": "2026-08-28T21:40:11+03:00",
+  "verdict": "LAY_1_0_54_AUTOCOMPLETE_DOUBLE_SHIFT_TAIL_OWNERSHIP_PASS",
+  "version": "1.0.54",
+  "branch": "codex/l1-exact-peak-search",
+  "base_commit": "38098ac2636f376070aa7235ba818f88ac69e789",
+  "defect": "after IME autocomplete acceptance, ManualToggleV3 delegated the visible committed tail to a daemon WordBuffer that had not observed the accepted completion suffix",
+  "effective_route": [
+    "physical Left Shift pair",
+    "lay-daemon trigger FSM",
+    "ManualToggleV3",
+    "ImeCommittedTail",
+    "toggle_committed_tail_target",
+    "exact client-visible postcondition",
+    "one target-layout synchronization"
+  ],
+  "invariants": {
+    "physical_gesture_detectors": 1,
+    "physical_gesture_detector": "lay-daemon trigger FSM",
+    "ime_committed_tail_delegates_to_daemon": false,
+    "daemon_word_buffer_may_delegate": true,
+    "projection": "literal reversible physical-key mapping",
+    "candidate_generation": false,
+    "ranking": false,
+    "morphology": false,
+    "learning": false,
+    "preedit_follow_up_included": false
+  },
+  "verification": {
+    "cargo_fmt": "PASS",
+    "focused_route_test": "1 pass / 0 fail",
+    "visible_postcondition_test": "1 pass / 0 fail",
+    "exact_snapshot_release_test": "1 pass / 0 fail",
+    "manual_toggle_tests": "13 pass / 0 fail",
+    "changed_file_gate": "PASS",
+    "changed_file_gate_sha256": "318c9ecc632f9df2e36fa45c7eb372c72f38875929296f5ac38f694f23a320a5",
+    "release_build": "PASS",
+    "autocomplete_smoke": "проверка -> ghjdthrf; PASS",
+    "ru_to_us_smoke": "слово -> ckjdj; PASS",
+    "four_shift_taps_smoke": "слово -> ckjdj -> слово; PASS",
+    "human_physical_keyboard_current_exact_bytes": "NOT_REPEATED"
+  },
+  "trace": {
+    "sha256": "835abe182385b4ccd26c9968efb4569b5dfde3f1d5bf9993c0261cb70e01661f",
+    "manual_toggle_plans": 1,
+    "manual_toggle_delegations": 0,
+    "committed_tail_replacements": 1,
+    "confirmed_layout_sync_owners": 1,
+    "layout_sync_requests": 1,
+    "successful_layout_syncs": 1
+  },
+  "release": {
+    "cargo_toml_sha256": "8c8aa7e4edf4004a46fee4c603d6b7542359c872e9b9d2af7aa0919708ece838",
+    "cargo_lock_sha256": "cdcd53b345db5ca98507b5fd9024eeb0eb5315874a1c6bf0b68873c2c7d3e6f3",
+    "lay_sha256": "2584575c6e63c70435f884989ffa21d2b812cc820add9b05802dae590c748ecc",
+    "lay_daemon_sha256": "bab99d5258a442b9345d56feac39a209d600c607ec28fe92b6d0fdcdf5db116b",
+    "lay_ibus_engine_sha256": "2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0",
+    "lay_test_input_sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a",
+    "loaded_extension_version": 1000054,
+    "lay_daemon_pid_after": 1170952,
+    "lay_ibus_engine_pid_after": 1170929,
+    "global_ibus_pid_before": 4594,
+    "global_ibus_pid_after": 4594
+  },
+  "preserved": {
+    "live_config_sha256": "d73d5974a6b205e90db2e4562d438cea71f1c967315341fa53c4093dc73d0af4",
+    "canonical_l2_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "exact_v13_sidecar_sha256": "a277b3c8b7d441de55fdc3c77abf483c2061653e9068b3bcce57629c742de9d7"
+  },
+  "scope": {
+    "runtime_authority_changed": true,
+    "gesture_detector_ownership_changed": false,
+    "committed_tail_execution_dispatch_changed": true,
+    "candidate_producer_changed": false,
+    "correction_policy_changed": false,
+    "model_or_sidecar_changed": false,
+    "global_ibus_restarted": false
+  }
+}

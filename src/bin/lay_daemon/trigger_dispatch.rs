@@ -38,7 +38,14 @@ pub(super) fn run_configured_manual_correction(
     text_observation: DaemonTextObservation<'_>,
     output_route: ManualCorrectionOutputRoute,
 ) -> Option<bool> {
-    let mut physical_grab = PhysicalInputGrab::new(Some(device));
+    let mut physical_grab = if !output_route.requires_physical_grab() {
+        // The IME committed-tail executor completes without key replay. Keep
+        // subsequent physical Shift taps in the normal event stream so every
+        // complete press-release pair remains a separate toggle.
+        PhysicalInputGrab::new(None)
+    } else {
+        PhysicalInputGrab::new(Some(device))
+    };
     let input_isolated = physical_grab.is_active();
     let mut g = lock_virtual_keyboard(virtual_kbd);
     handle_double_shift(ManualCorrectionRequest {
@@ -60,7 +67,11 @@ pub(super) fn run_scoped_manual_correction(
     reason: &str,
     output_route: ManualCorrectionOutputRoute,
 ) -> Option<bool> {
-    let mut physical_grab = PhysicalInputGrab::new(Some(ctx.device));
+    let mut physical_grab = if !output_route.requires_physical_grab() {
+        PhysicalInputGrab::new(None)
+    } else {
+        PhysicalInputGrab::new(Some(ctx.device))
+    };
     let input_isolated = physical_grab.is_active();
     let mut g = lock_virtual_keyboard(ctx.virtual_kbd);
     run_manual_correction_with_scope(ScopedManualCorrectionRequest {
