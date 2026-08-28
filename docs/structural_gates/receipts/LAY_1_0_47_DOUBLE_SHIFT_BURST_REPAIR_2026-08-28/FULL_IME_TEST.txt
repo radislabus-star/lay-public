@@ -1,0 +1,4 @@
+command: scripts/cargo-guard.sh test --bin lay-ibus-engine
+result: 248 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+elapsed: 38.59s
+full log SHA-256: 40b4ac7f8261956d23cf4a71afc113e41e44941c86951e6336b6637b60a8f004

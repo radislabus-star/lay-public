@@ -977,3 +977,60 @@ Evidence:
 
 - `docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_KEY_SEQUENCE_REPAIR_V1_2026-08-28.json`
 - `docs/structural_gates/receipts/LAY_1_0_46_DOUBLE_SHIFT_KEY_SEQUENCE_REPAIR_2026-08-28/RELEASE_RECEIPT.json`
+
+## 1.0.47 Double Shift Burst Repair
+
+Release `1.0.47` fixes the apparent need to hit Shift unusually hard or fast.
+The detector was not dropping the user's releases: a continuous train of four
+or more Left Shift taps contained several valid pairs, so the first pair
+changed layout and the next pair immediately changed it back. The focused IBus
+observer had a second version of the defect because its local pair state was
+recreated when the successful toggle switched between the US and RU engine
+objects.
+
+The daemon now enters a burst latch after one completed Double Shift. Shift-only
+releases inside `shift_window_ms` extend that latch and cannot trigger another
+toggle. Any ordinary key rearms immediately; a full quiet window also rearms,
+so a later deliberate Double Shift still works. IBus applies the same rule with
+a small shared timing field that survives the US/RU engine handoff. The field
+does not own correction planning or text mutation.
+
+```text
+targeted daemon burst regression              PASS
+shared IBus cross-engine burst regression     PASS
+full lay-ibus-engine                          248 pass / 0 fail
+changed-file gate                             PASS
+release build                                 PASS
+installed/source binary parity                10/10 PASS
+
+GTK four-fast-tap US -> RU                    ghbdtn -> привет
+GTK four-fast-tap RU -> US                    слово -> ckjdj
+GTK two pairs separated by 900 ms             п -> g -> п
+Kitty four-fast-tap US -> RU                  ghbdtn -> привет
+Kitty two pairs separated by 900 ms           п -> g -> п
+
+installed lay-daemon SHA-256                  f928d1b1a405c50fac70e7f567bf5b644904f1bc36524a64b51a6c06d7132526
+installed lay-ibus-engine SHA-256             76a0c6af279363d87cd96cea3d17904711e028952998fba51d1316355fa1eee6
+loaded lay-daemon PID                         2291234
+loaded lay-ibus-engine PID                    2275367
+global ibus-daemon PID                        4594 -> 4594
+loaded extension D-Bus version                1.0.47
+```
+
+The Kitty routes used the existing `terminal_erase_commit` authority; daemon
+uinput fallback was not selected. The final client-visible matrix was run after
+the unrelated Nando compilation had ended. It is correctness evidence, not a
+new latency benchmark. The broad daemon suite was not rerun after the final
+burst implementation; its focused regressions and the complete changed-file
+gate passed.
+
+Runtime authority changed to `1.0.47`. The live config, canonical L2 package,
+exact V13 sidecar, candidate producer, ranking and correction policy remained
+unchanged. Global IBus was not restarted.
+
+Verdict: `LAY_1_0_47_DOUBLE_SHIFT_BURST_REPAIRED`.
+
+Evidence:
+
+- `docs/double-shift-physical-layout-contract.md`
+- `docs/structural_gates/receipts/LAY_1_0_47_DOUBLE_SHIFT_BURST_REPAIR_2026-08-28/RELEASE_RECEIPT.json`

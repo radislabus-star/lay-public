@@ -33,6 +33,22 @@ physical Double Shift
 The layout-projection route must not call a model, replace replay output with a
 ranked text candidate, or write a correction-learning sample.
 
+## Burst membership
+
+One exact Double Shift pair triggers one layout projection. After that action,
+continued Shift-only releases within `shift_window_ms` belong to the same
+physical burst and cannot trigger a second projection. Every suppressed Shift
+release extends the quiet deadline.
+
+Any ordinary key press ends the burst and rearms the gesture immediately. A
+full quiet window without another Shift release also rearms it, so a deliberate
+later Double Shift remains available without requiring an intervening key.
+
+The focused IBus observer keeps this burst latch in state shared by the US and
+RU engine objects. A successful layout switch therefore cannot reset burst
+membership while the user's taps continue. This shared state owns gesture
+timing only; it grants no correction, candidate, deletion, or replay authority.
+
 ## Decision priority
 
 The gesture has one ordered decision tree. Output ownership is selected only

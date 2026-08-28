@@ -37,6 +37,7 @@ pub(crate) struct SharedState {
     pub(crate) pending_auto_undo: Option<PendingImeAutoUndo>,
     pub(crate) pending_auto_undo_retry: Option<PendingImeAutoUndoRetry>,
     pub(crate) shift_gesture_handoff: Option<ShiftGestureHandoff>,
+    pub(crate) manual_toggle_burst_last_release_at: Option<Instant>,
     pub(crate) next_engine_id: u32,
 }
 

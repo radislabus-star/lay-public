@@ -132,6 +132,7 @@ fn handle_confirmed_double_shift(ctx: &mut ManualTriggerEventContext<'_>, now: I
 
     log_manual_trigger_cross_check(ctx.buffer, ctx.events_since_word_start);
     fire_configured_manual_trigger(ctx.fire_context());
+    ctx.dshift_state.latch_until_quiet_or_other_key(now);
     log("· FSM: DOUBLE! (p→r→p→r)");
 }
 

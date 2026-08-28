@@ -92,6 +92,9 @@ fn another_key_press_cancels_every_partial_double_shift_phase() {
         },
         DShiftState::SecondPress,
         DShiftState::AdditionalPress,
+        DShiftState::Latched {
+            last_release: Instant::now(),
+        },
     ] {
         state.cancel();
         assert!(state.is_idle());
@@ -102,6 +105,54 @@ fn another_key_press_cancels_every_partial_double_shift_phase() {
     };
     expired.trigger_press(start + Duration::from_millis(801), window);
     assert_eq!(expired, DShiftState::FirstPress);
+}
+
+#[test]
+fn completed_double_shift_collapses_one_burst_but_allows_a_deliberate_later_toggle() {
+    let start = Instant::now();
+    let window = Duration::from_millis(800);
+    let mut state = DShiftState::Idle;
+
+    state.trigger_press(start, window);
+    assert_eq!(
+        state.trigger_release(start + Duration::from_millis(10)),
+        DShiftRelease::None
+    );
+    state.trigger_press(start + Duration::from_millis(20), window);
+    assert_eq!(
+        state.trigger_release(start + Duration::from_millis(30)),
+        DShiftRelease::Double
+    );
+
+    state.latch_until_quiet_or_other_key(start + Duration::from_millis(30));
+    for offset_ms in [40, 50, 60, 70] {
+        state.trigger_press(start + Duration::from_millis(offset_ms), window);
+        assert_eq!(
+            state.trigger_release(start + Duration::from_millis(offset_ms + 5)),
+            DShiftRelease::None
+        );
+        assert!(matches!(state, DShiftState::Latched { .. }));
+    }
+
+    state.trigger_press(start + Duration::from_millis(880), window);
+    assert_eq!(
+        state.trigger_release(start + Duration::from_millis(890)),
+        DShiftRelease::None
+    );
+    state.trigger_press(start + Duration::from_millis(900), window);
+    assert_eq!(
+        state.trigger_release(start + Duration::from_millis(910)),
+        DShiftRelease::Double
+    );
+
+    state.latch_until_quiet_or_other_key(start + Duration::from_millis(910));
+    state.cancel();
+    assert!(state.is_idle());
+    state.trigger_press(start + Duration::from_millis(100), window);
+    assert_eq!(
+        state.trigger_release(start + Duration::from_millis(110)),
+        DShiftRelease::None
+    );
 }
 
 #[test]

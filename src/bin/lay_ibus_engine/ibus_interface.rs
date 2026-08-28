@@ -301,6 +301,38 @@ impl LayIbusEngine {
 }
 
 impl LayIbusEngine {
+    fn manual_toggle_burst_blocks_release(&self, now: Instant) -> bool {
+        let Ok(mut shared) = self.shared.lock() else {
+            return true;
+        };
+        let Some(last_release) = shared.manual_toggle_burst_last_release_at else {
+            return false;
+        };
+        if now.duration_since(last_release) <= Duration::from_millis(self.config.shift_window_ms) {
+            shared.manual_toggle_burst_last_release_at = Some(now);
+            trace::record(r#"{"kind":"ibus_double_shift_burst_suppressed"}"#);
+            true
+        } else {
+            shared.manual_toggle_burst_last_release_at = None;
+            false
+        }
+    }
+
+    fn latch_manual_toggle_burst(&self, now: Instant) {
+        let Ok(mut shared) = self.shared.lock() else {
+            return;
+        };
+        shared.manual_toggle_burst_last_release_at = Some(now);
+        trace::record(r#"{"kind":"ibus_double_shift_burst_latched"}"#);
+    }
+
+    fn clear_manual_toggle_burst(&self) {
+        let Ok(mut shared) = self.shared.lock() else {
+            return;
+        };
+        shared.manual_toggle_burst_last_release_at = None;
+    }
+
     pub(crate) async fn process_key_event_with_output(
         &mut self,
         output: &mut EngineOutput<'_, '_>,
@@ -351,6 +383,11 @@ impl LayIbusEngine {
                 let tapped = gesture_key
                     && self.shift_pressed_at.take().is_some()
                     && !self.shift_used_as_modifier;
+                if tapped && self.manual_toggle_burst_blocks_release(now) {
+                    self.shift_used_as_modifier = false;
+                    self.last_shift_release_at = None;
+                    return Ok(false);
+                }
                 let double_tapped = tapped
                     && self.last_shift_release_at.is_some_and(|released_at| {
                         now.duration_since(released_at)
@@ -365,11 +402,16 @@ impl LayIbusEngine {
                         .await?
                         .is_some()
                     {
+                        self.latch_manual_toggle_burst(now);
                         return Ok(true);
                     }
                 }
             }
             return Ok(false);
+        }
+        if is_key_press(state) {
+            self.last_shift_release_at = None;
+            self.clear_manual_toggle_burst();
         }
         if is_accept_completion_with_space_key(keyval) {
             let pressed = is_key_press(state);
@@ -418,7 +460,11 @@ fn should_apply_auto_undo_before_postcondition(retry_status: &str) -> bool {
 
 #[cfg(test)]
 mod causal_precondition_tests {
-    use super::should_apply_auto_undo_before_postcondition;
+    use super::{should_apply_auto_undo_before_postcondition, LayIbusEngine};
+    use crate::protocol::SharedState;
+    use lay::config::LayConfig;
+    use std::sync::{Arc, Mutex};
+    use std::time::{Duration, Instant};
 
     #[test]
     fn causal_precondition_undo_precedes_stale_postcondition_quarantine() {
@@ -432,6 +478,35 @@ mod causal_precondition_tests {
         assert!(!should_apply_auto_undo_before_postcondition(
             "waiting_exact_snapshot"
         ));
+    }
+
+    #[test]
+    fn manual_toggle_burst_latch_survives_engine_switch_and_rearms() {
+        let shared = Arc::new(Mutex::new(SharedState::default()));
+        let source = LayIbusEngine::new(
+            "/engine/us".to_string(),
+            Arc::clone(&shared),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        let target = LayIbusEngine::new(
+            "/engine/ru".to_string(),
+            shared,
+            true,
+            true,
+            LayConfig::default(),
+        );
+        let start = Instant::now();
+
+        source.latch_manual_toggle_burst(start);
+        assert!(target.manual_toggle_burst_blocks_release(start + Duration::from_millis(10)));
+        assert!(target.manual_toggle_burst_blocks_release(start + Duration::from_millis(20)));
+        assert!(!target.manual_toggle_burst_blocks_release(start + Duration::from_millis(821)));
+
+        source.latch_manual_toggle_burst(start + Duration::from_millis(900));
+        target.clear_manual_toggle_burst();
+        assert!(!target.manual_toggle_burst_blocks_release(start + Duration::from_millis(910)));
     }
 }
 

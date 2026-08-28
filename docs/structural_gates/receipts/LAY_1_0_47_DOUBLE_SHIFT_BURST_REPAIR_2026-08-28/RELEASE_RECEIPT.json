@@ -1,0 +1,88 @@
+{
+  "schema": "lay-1.0.47-double-shift-burst-repair-v1",
+  "recorded_at": "2026-08-28T12:57:25+03:00",
+  "verdict": "LAY_1_0_47_DOUBLE_SHIFT_BURST_REPAIRED",
+  "version": "1.0.47",
+  "defect": {
+    "daemon": "a continuous Shift-only tap train was partitioned into multiple valid pairs, so a later pair could immediately reverse the first toggle",
+    "ime": "focused Double Shift state was local to one engine object and did not preserve burst membership across the successful US/RU engine switch",
+    "user_surface": "the layout appeared unchanged unless Shift was hit with a timing pattern that happened to produce only one pair"
+  },
+  "effective_contract": {
+    "trigger": "double-lshift",
+    "one_pair_one_action": true,
+    "continued_shift_only_releases_inside_window": "same burst; suppress and extend quiet deadline",
+    "ordinary_key": "rearm immediately",
+    "quiet_window": "rearm after shift_window_ms",
+    "shift_window_ms": 800,
+    "cross_engine_burst_state": "shared between focused US and RU IBus engine objects",
+    "shared_state_scope": "gesture timing only",
+    "hold_duration_limit": null
+  },
+  "implementation": {
+    "daemon_trigger_fsm_sha256": "4376988c24e9dca89b4b05823b28bbe8464e0548fab303cbe3d803ee9b64ba84",
+    "daemon_event_sha256": "db22e4d9d5b531674561347c57c265d4ba2e40abcd01358818959186bd108b7c",
+    "daemon_runtime_test_sha256": "f7388d4c7e6948f7ab2dbdab6f5219638c39033cb6f338cdc37cc20a1a14586d",
+    "ibus_interface_sha256": "6aa6f63186707173a726dd75af3184d1aef308627e6944e0d0b5846de281386b",
+    "ibus_shared_state_sha256": "0f2db775ce9c392d46be40f44dfba79b285283f0a2b6913267514ed63ee6b826"
+  },
+  "verification": {
+    "targeted_daemon_burst": "PASS",
+    "targeted_ibus_cross_engine_burst": "PASS",
+    "full_lay_ibus_engine": "248 pass / 0 fail / 0 ignored",
+    "full_lay_ibus_engine_elapsed": "38.59s",
+    "full_lay_ibus_engine_log_sha256": "40b4ac7f8261956d23cf4a71afc113e41e44941c86951e6336b6637b60a8f004",
+    "full_lay_daemon_after_final_burst_logic": "NOT_RERUN",
+    "changed_file_gate": "PASS",
+    "release_build": "PASS",
+    "installed_source_binary_parity": "10/10 PASS",
+    "rollback_manifest": "PASS"
+  },
+  "live": {
+    "gtk": {
+      "cases": 3,
+      "passed": 3,
+      "fast_burst_us_to_ru": "ghbdtn -> привет",
+      "fast_burst_ru_to_us": "слово -> ckjdj",
+      "deliberate_rearm_900_ms": "п -> g -> п"
+    },
+    "kitty": {
+      "cases": 2,
+      "passed": 2,
+      "fast_burst_us_to_ru": "ghbdtn -> привет",
+      "deliberate_rearm_900_ms": "п -> g -> п",
+      "output_route": "terminal_erase_commit",
+      "daemon_uinput_fallback": false,
+      "isolated_fixture_closed_after_test": true
+    },
+    "controlled_input": true,
+    "human_keyboard_timing": "NOT_CLAIMED",
+    "latency_benchmark": "NOT_CLAIMED"
+  },
+  "release": {
+    "lay_daemon_sha256": "f928d1b1a405c50fac70e7f567bf5b644904f1bc36524a64b51a6c06d7132526",
+    "lay_ibus_engine_sha256": "76a0c6af279363d87cd96cea3d17904711e028952998fba51d1316355fa1eee6",
+    "lay_test_input_sha256": "5f213fa2f4762b64fbb170bcd0bf8f54c1144104b63a36cf4199aabdc6192304",
+    "daemon_pid_after": 2291234,
+    "ime_pid_after": 2275367,
+    "global_ibus_pid_before": 4594,
+    "global_ibus_pid_after": 4594,
+    "active_engine_after": "lay-ime-ru",
+    "loaded_extension_dbus_version": "1.0.47",
+    "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.46-before-1.0.47-20260828T121832+0300"
+  },
+  "preserved": {
+    "live_config_sha256": "d73d5974a6b205e90db2e4562d438cea71f1c967315341fa53c4093dc73d0af4",
+    "canonical_l2_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "exact_v13_sidecar_sha256": "a277b3c8b7d441de55fdc3c77abf483c2061653e9068b3bcce57629c742de9d7"
+  },
+  "scope": {
+    "runtime_authority_changed": true,
+    "gesture_timing_changed": true,
+    "text_output_authority_changed": false,
+    "correction_policy_changed": false,
+    "candidate_producer_changed": false,
+    "candidate_ranking_changed": false,
+    "global_ibus_restarted": false
+  }
+}
