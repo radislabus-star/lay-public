@@ -2485,8 +2485,8 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1787933665.9052887,
-    "ast_hash": "a088f0f0e8c5d089f4d1d16d66da3d3e",
+    "mtime": 1787956466.4111085,
+    "ast_hash": "308fbb75e34512599ecc2913609e5ca5",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -2675,8 +2675,8 @@
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
-    "mtime": 1787941236.131692,
-    "ast_hash": "fc670566cc2fc59cf37f2d24420571cf",
+    "mtime": 1787942486.1469367,
+    "ast_hash": "46795534320970550ee0627b1597ab62",
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
@@ -14965,8 +14965,8 @@
     "semantic_hash": ""
   },
   "docs/double-shift-physical-layout-contract.md": {
-    "mtime": 1787937800.0204854,
-    "ast_hash": "897b465ed03f83992db0e9f5ceb5e953",
+    "mtime": 1787956466.4121084,
+    "ast_hash": "8804b0cb549118ccc2d6101ed132aecc",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_ORDERED_AUTHORITY_V2_2026-08-23.json": {
@@ -28752,6 +28752,76 @@
   "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_KEY_SEQUENCE_REPAIR_V1_2026-08-28.json": {
     "mtime": 1787904452.7397585,
     "ast_hash": "ae455bfbd59e6f0b70da8a664caa12b6",
+    "semantic_hash": ""
+  },
+  "tech_debt/001-repair-architecture-and-audit-gates.md": {
+    "mtime": 1787959142.224477,
+    "ast_hash": "dbef850c535d0079cf63cab7dd9cff22",
+    "semantic_hash": ""
+  },
+  "tech_debt/002-isolate-live-runtime-smoke.md": {
+    "mtime": 1787959142.2247567,
+    "ast_hash": "7af0f64943208389c3c5132cfffab342",
+    "semantic_hash": ""
+  },
+  "tech_debt/003-fix-preedit-refresh-convergence.md": {
+    "mtime": 1787959142.224934,
+    "ast_hash": "91ec8f5c468d06939345575afaf3b500",
+    "semantic_hash": ""
+  },
+  "tech_debt/004-enforce-real-msrv.md": {
+    "mtime": 1787959142.2250733,
+    "ast_hash": "3d47a30c7d678425c3587e83691e6b96",
+    "semantic_hash": ""
+  },
+  "tech_debt/005-make-lint-gate-truthful.md": {
+    "mtime": 1787959142.2252116,
+    "ast_hash": "d8417bf637a49b44a9826df2dc6e3b0e",
+    "semantic_hash": ""
+  },
+  "tech_debt/006-build-hermetic-test-lanes.md": {
+    "mtime": 1787959142.2253728,
+    "ast_hash": "d0171d5a655351aa5abc58efafade7b3",
+    "semantic_hash": ""
+  },
+  "tech_debt/007-reconcile-semantic-contract-tests.md": {
+    "mtime": 1787959142.2255337,
+    "ast_hash": "dd56aa596ec2bc85cf1323b627718337",
+    "semantic_hash": ""
+  },
+  "tech_debt/008-reduce-dead-code-and-proof-surface.md": {
+    "mtime": 1787959142.2256904,
+    "ast_hash": "6284ebb4a440c43554eaab349ef07fad",
+    "semantic_hash": ""
+  },
+  "tech_debt/101-decompose-ibus-engine-state-owner.md": {
+    "mtime": 1787959142.2257936,
+    "ast_hash": "586f303ab208f36f70829a27e463ca2b",
+    "semantic_hash": ""
+  },
+  "tech_debt/102-separate-nanda-runtime-and-research.md": {
+    "mtime": 1787959142.2258906,
+    "ast_hash": "1d339b74a989ad101ae3a62e169886ce",
+    "semantic_hash": ""
+  },
+  "tech_debt/103-externalize-research-payloads.md": {
+    "mtime": 1787959142.2259984,
+    "ast_hash": "b4026ec6f9629223c6d2dec33c971cf5",
+    "semantic_hash": ""
+  },
+  "tech_debt/104-isolate-proof-compiler-build-surface.md": {
+    "mtime": 1787959142.226102,
+    "ast_hash": "c318933a022813f1e80879b2484c26ea",
+    "semantic_hash": ""
+  },
+  "tech_debt/BASELINE_2026-08-29.md": {
+    "mtime": 1787959142.2262928,
+    "ast_hash": "1f6081c103111a0b0f68072145857997",
+    "semantic_hash": ""
+  },
+  "tech_debt/README.md": {
+    "mtime": 1787959579.8391542,
+    "ast_hash": "74b24cd4826dd9e95749ddc1720c523b",
     "semantic_hash": ""
   }
 }
