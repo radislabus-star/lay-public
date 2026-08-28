@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1787836946.4488814,
-    "ast_hash": "4a9b2a0206b66f860866cfc128fae6ad",
+    "mtime": 1787882748.0898702,
+    "ast_hash": "99387111cba87c282089baa60b9528ac",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1787836946.5448837,
-    "ast_hash": "4e0182965a272a2b0d2f4f0f9f36fc57",
+    "mtime": 1787882748.1065478,
+    "ast_hash": "2bdb64fab273e94c4fbf7818b2572384",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -880,13 +880,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine.rs": {
-    "mtime": 1787880680.3680422,
-    "ast_hash": "4dadc276405dd577564d483297827228",
+    "mtime": 1787882643.7550044,
+    "ast_hash": "34cdedaead1d5a8c8ed726ead36a34ce",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine/profile_tests.rs": {
-    "mtime": 1787880680.3690422,
-    "ast_hash": "147b498c1f3bdf8cf2f609779cf13993",
+    "mtime": 1787882603.0577927,
+    "ast_hash": "eecddded97a829fd11466d26515dfaf1",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/factory.rs": {
@@ -2500,13 +2500,13 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1787863552.286621,
-    "ast_hash": "ac650739270f3fcb581ff63340d86db8",
+    "mtime": 1787884117.4965425,
+    "ast_hash": "c6eb57f1c002f388f32df60ba4d53d99",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1787516471.4467404,
-    "ast_hash": "e8f284376af11fd431b04c0912750f3e",
+    "mtime": 1787882748.1102123,
+    "ast_hash": "bf94dcc18a0282ee26666c6c54c9db19",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2675,8 +2675,8 @@
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
-    "mtime": 1787881927.5463288,
-    "ast_hash": "f7593bf81b788d40c87762c863bd510f",
+    "mtime": 1787884117.4975424,
+    "ast_hash": "747deef9b251de1263517c67dd07409b",
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
@@ -15045,8 +15045,8 @@
     "semantic_hash": ""
   },
   "docs/ime-target-authority-slice8-lexical-readout-2026-08-23.md": {
-    "mtime": 1787837204.9239242,
-    "ast_hash": "54e0f5680dd6ba3b0ba545b0417389ea",
+    "mtime": 1787884117.5915458,
+    "ast_hash": "5b5f26e6cf3410685faa19aa6e5fc5b2",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_IMPLEMENTATION_V1_2026-08-24.json": {

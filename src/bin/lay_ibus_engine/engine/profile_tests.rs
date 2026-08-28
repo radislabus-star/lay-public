@@ -17,7 +17,7 @@ fn engine() -> LayIbusEngine {
 }
 
 #[test]
-fn sensitive_content_types_disable_text_assistance() {
+fn sensitive_content_types_disable_text_assistance_but_terminal_allows_it() {
     let mut engine = engine();
     assert!(engine.content_allows_text_assistance());
 
@@ -28,7 +28,7 @@ fn sensitive_content_types_disable_text_assistance() {
     assert!(!engine.content_allows_text_assistance());
 
     engine.set_content_type_state(10, 0);
-    assert!(!engine.content_allows_text_assistance());
+    assert!(engine.content_allows_text_assistance());
 
     engine.set_content_type_state(0, 1 << 11);
     assert!(!engine.content_allows_text_assistance());

@@ -5946,3 +5946,48 @@ shell session. No correction policy or runtime authority changed.
 Correction receipt:
 
 `docs/structural_gates/receipts/LAY_1_0_44_GNOME_VERSION_DISPLAY_CORRECTION_V1_2026-08-27.json`
+
+#### Release 1.0.45 Kitty terminal IME regression repair
+
+The `1.0.44` IME presentation change incorrectly classified IBus terminal
+purpose `10` as ineligible for text assistance. It also delegated committed
+Kitty tails to daemon uinput because Kitty does not advertise SurroundingText,
+despite the existing IME terminal erase-and-commit backend. The daemon detected
+Double Shift and produced a valid replacement decision, but that delegated
+output route did not alter the visible Kitty text.
+
+Release `1.0.45` separates terminal from sensitive content and grants
+committed-tail IME authority only when the client is explicitly terminal and
+the terminal output profile can execute. Generic cursor geometry remains
+insufficient. Password, PIN, PRIVATE and HIDDEN_TEXT behavior is unchanged.
+
+```text
+full lay-ibus-engine                       245 pass / 0 fail
+changed-file / latency / replay gates      PASS
+release build                              PASS
+installed/source binaries                  10/10 byte-identical
+Kitty terminal assistance                  true
+Kitty warm suffix                          пров + ерить -> проверить
+Kitty Double Shift                         ghbdtn -> привет
+output route                               terminal_erase_commit
+daemon-uinput fallback                     not used
+global ibus-daemon PID                     4594 -> 4594
+installed version                          1.0.45
+```
+
+The first cold `пров` result took `231625 us` and remained hidden under the
+unchanged `50 ms` stale-display rule. The warm result took `12 us`, was
+published at display age `81 us`, and was accepted visibly. The isolated Kitty
+fixture was removed and the active engine restored to `lay-ime-ru`.
+
+```text
+lay-ibus-engine SHA-256  342c79f422e38769424ce9ba111c3fc607ed312725d3fd5d0fb7a955b71b48e6
+lay-daemon SHA-256       1160738dc8d310cb1c67883e3e7ffffceb5eade9f10b093832de4a3c8b22f446
+rollback                 /home/ubu/.local/lib/lay/rollback/1.0.44-before-1.0.45-20260828T052241+0300
+```
+
+Verdict: `LAY_1_0_45_KITTY_IME_REGRESSION_REPAIRED`.
+
+Immutable release evidence:
+
+`docs/structural_gates/receipts/LAY_1_0_45_KITTY_IME_REGRESSION_REPAIR_2026-08-28/RELEASE_RECEIPT.json`

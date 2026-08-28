@@ -861,3 +861,53 @@ Evidence:
 - `tests/manual/ime_latency/replacement.tsv`
 - `tests/manual/ime_latency/suffix.tsv`
 - `tests/manual/ime_latency/results-2026-08-28.json`
+
+## 1.0.45 Kitty Terminal IME Regression Repair
+
+The `1.0.44` presentation pass introduced two independent terminal
+regressions. `content_allows_text_assistance()` treated IBus terminal purpose
+`10` like a sensitive field, so Kitty received no completion frame. The manual
+toggle authority also required SurroundingText for every committed tail, even
+though the engine already had a tested terminal erase-and-commit backend.
+
+Release `1.0.45` keeps password, PIN, PRIVATE and HIDDEN_TEXT fail-closed, but
+allows ordinary text assistance for an explicit terminal purpose. A committed
+tail is IME-owned when either SurroundingText exists or the client declares
+terminal purpose and `CommittedTailOutputProfile` can execute. Cursor geometry
+alone still grants no authority to a generic GUI client.
+
+```text
+full lay-ibus-engine                         245 pass / 0 fail
+changed-file gate                            PASS
+release build                                PASS, 8m 11s
+installed/source binary parity               PASS, 10/10
+
+Kitty ContentType                            purpose=10, hints=0
+Kitty text assistance                        true
+warm completion                              пров + ерить -> проверить
+warm completion material/display age         12 us / 81 us
+Double Shift                                 ghbdtn -> привет
+Double Shift output route                     terminal_erase_commit
+daemon-uinput fallback                        not used
+
+installed lay-ibus-engine SHA-256             342c79f422e38769424ce9ba111c3fc607ed312725d3fd5d0fb7a955b71b48e6
+installed lay-daemon SHA-256                  1160738dc8d310cb1c67883e3e7ffffceb5eade9f10b093832de4a3c8b22f446
+global ibus-daemon PID                        4594 -> 4594
+active engine                                 lay-ime-ru
+```
+
+The first cold `пров` materialization after restart took `231625 us` and was
+correctly excluded by the existing `50 ms` stale-display gate. The repeated
+warm route published `ерить` before acceptance. This repair does not weaken
+that latency gate and does not change candidate production or ranking.
+
+The isolated Kitty fixture was closed after verification. Chrome and GTK were
+not physically rerun in this repair transaction; their routes remain covered
+by the unchanged engine suite and the preceding `1.0.44` live matrix. Runtime
+authority changed to `1.0.45`; correction policy did not change.
+
+Verdict: `LAY_1_0_45_KITTY_IME_REGRESSION_REPAIRED`.
+
+Evidence:
+
+- `docs/structural_gates/receipts/LAY_1_0_45_KITTY_IME_REGRESSION_REPAIR_2026-08-28/RELEASE_RECEIPT.json`

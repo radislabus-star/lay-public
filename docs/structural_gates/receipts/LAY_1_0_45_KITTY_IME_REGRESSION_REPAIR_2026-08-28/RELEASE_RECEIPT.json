@@ -1,0 +1,68 @@
+{
+  "schema": "lay-1.0.45-kitty-ime-regression-repair-v1",
+  "recorded_at": "2026-08-28T05:27:29+03:00",
+  "verdict": "LAY_1_0_45_KITTY_IME_REGRESSION_REPAIRED",
+  "version": "1.0.45",
+  "regression": {
+    "kitty_suggestions": "terminal purpose 10 was incorrectly excluded from text assistance",
+    "double_shift": "committed terminal tail was delegated to daemon uinput despite an executable IME terminal erase profile"
+  },
+  "effective_contract": {
+    "terminal_text_assistance": true,
+    "sensitive_text_assistance": false,
+    "terminal_committed_tail_owner": "IME when purpose=10 and terminal erase profile can execute",
+    "generic_cursor_geometry_grants_terminal_authority": false,
+    "password_pin_private_hidden_behavior_changed": false
+  },
+  "verification": {
+    "lay_ibus_engine": {
+      "passed": 245,
+      "failed": 0,
+      "ignored": 0
+    },
+    "changed_file_gate": "PASS",
+    "transition_replay": "PASS-shadow",
+    "unsafe_edit_gate": "PASS",
+    "release_build": "PASS",
+    "release_build_elapsed": "8m 11s",
+    "release_binary_parity": "10/10 PASS"
+  },
+  "live_kitty": {
+    "content_purpose": 10,
+    "content_hints": 0,
+    "text_assistance": true,
+    "cold_prov_material_us": 231625,
+    "cold_result_display": "rejected by unchanged 50 ms stale gate",
+    "warm_suffix": "ерить",
+    "warm_material_us": 12,
+    "warm_display_age_us": 81,
+    "completion_final": "проверить",
+    "double_shift_before": "ghbdtn",
+    "double_shift_after": "привет",
+    "double_shift_output_route": "terminal_erase_commit",
+    "daemon_uinput_fallback_used": false,
+    "fixture_window_id": 17,
+    "fixture_removed_after_test": true
+  },
+  "release": {
+    "lay_ibus_engine_sha256": "342c79f422e38769424ce9ba111c3fc607ed312725d3fd5d0fb7a955b71b48e6",
+    "lay_daemon_sha256": "1160738dc8d310cb1c67883e3e7ffffceb5eade9f10b093832de4a3c8b22f446",
+    "daemon_pid_before": 3484259,
+    "daemon_pid_after": 3862382,
+    "ime_pid_before": 3670361,
+    "ime_pid_after": 3862444,
+    "global_ibus_pid_before": 4594,
+    "global_ibus_pid_after": 4594,
+    "active_engine_after": "lay-ime-ru",
+    "gnome_extension_loaded_version": "1.0.45",
+    "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.44-before-1.0.45-20260828T052241+0300"
+  },
+  "scope": {
+    "runtime_authority_changed": true,
+    "correction_policy_changed": false,
+    "candidate_producer_changed": false,
+    "candidate_ranking_changed": false,
+    "chrome_physically_retested": false,
+    "gtk_physically_retested": false
+  }
+}

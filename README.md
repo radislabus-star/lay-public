@@ -7,7 +7,7 @@
 `lay` исправляет слово, набранное не в той раскладке: нажмите
 **Shift два раза** и продолжайте писать.
 
-**Текущая версия: 1.0.44. Статус: alpha.**
+**Текущая версия: 1.0.45. Статус: alpha.**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -43,6 +43,28 @@ Daemon локально слушает физические клавиши, хр
 По умолчанию double Shift исправляет одно последнее слово. Автопомощь после
 пробела и автоматическое применение исправлений выключены, пока пользователь
 сам их не включит.
+
+## Что исправлено в 1.0.45
+
+- IME-подсказки снова работают в Kitty и других клиентах с IBus
+  `ContentType=TERMINAL`; терминал больше не ошибочно считается sensitive-полем;
+- password, PIN, PRIVATE и HIDDEN_TEXT по-прежнему полностью отключают
+  подсказки и очищают IME tail;
+- Double Shift в Kitty заменяет последнее слово через уже проверенный
+  IME-маршрут `terminal_erase_commit`, а не через daemon-uinput fallback;
+- неизвестные GUI-клиенты без SurroundingText и без явного terminal purpose
+  по-прежнему не получают terminal-erase authority.
+
+Проверка релиза:
+
+```text
+lay-ibus-engine                    245 passed, 0 failed
+changed-file gate                  PASS
+release binary parity              PASS
+Kitty suffix                       пров + ерить -> проверить
+Kitty Double Shift                 ghbdtn -> привет
+global ibus-daemon                 не перезапускался
+```
 
 ## Что вошло в 1.0.44
 
@@ -376,7 +398,7 @@ graphify update .
 
 ## English
 
-`lay` 1.0.44 is a local Double Shift RU/EN layout rescue and bounded
+`lay` 1.0.45 is a local Double Shift RU/EN layout rescue and bounded
 typing-correction tool for Linux desktops.
 
 ```text
@@ -391,7 +413,9 @@ L3 context, `TransitionDecisionCore`, and a structural verifier.
 Exact search contributes candidates and certificates but does not bypass final
 authority.
 
-Release 1.0.44 reduced the measured V13 traversal CPU cost by 11.8% and the
+Release 1.0.45 restores Kitty terminal suggestions and routes terminal Double
+Shift through the proven IME erase-and-commit backend. Release 1.0.44 reduced
+the measured V13 traversal CPU cost by 11.8% and the
 paired internal end-to-end p99 by 33.0%, without narrowing the candidate set.
 These are fixed target-host internal benchmarks, not a desktop key-to-text
 latency claim.

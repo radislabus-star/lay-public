@@ -191,10 +191,15 @@ impl LayIbusEngine {
         if !self.buffer.is_empty() {
             return ManualToggleAuthority::ImeActiveComposition;
         }
-        // Cursor geometry is not proof that CommitText control characters can
-        // delete client text. A committed tail stays IME-owned only when the
-        // client advertises the typed SurroundingText deletion protocol.
-        if !self.last_tail_token_text().is_empty() && self.surrounding_text_supported {
+        let committed_tail_chars = self.last_tail_token_text().chars().count() as u32;
+        // Generic cursor geometry is not proof that CommitText control
+        // characters can delete client text. An explicit terminal purpose plus
+        // an executable terminal-erase profile is such proof for terminals
+        // that do not expose SurroundingText (notably Kitty).
+        let terminal_erase_supported = self.content_purpose == IBUS_INPUT_PURPOSE_TERMINAL
+            && self.can_replace_committed_tail(committed_tail_chars);
+        if committed_tail_chars > 0 && (self.surrounding_text_supported || terminal_erase_supported)
+        {
             return ManualToggleAuthority::ImeCommittedTail;
         }
         ManualToggleAuthority::DaemonWordBuffer
@@ -267,7 +272,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn content_allows_text_assistance(&self) -> bool {
-        !self.content_is_sensitive() && self.content_purpose != IBUS_INPUT_PURPOSE_TERMINAL
+        !self.content_is_sensitive()
     }
 
     pub(super) fn observe_external_surrounding_text(
@@ -305,7 +310,7 @@ mod profile_tests;
 
 #[cfg(test)]
 mod tests {
-    use super::{LayIbusEngine, ManualToggleAuthority};
+    use super::{LayIbusEngine, ManualToggleAuthority, IBUS_INPUT_PURPOSE_TERMINAL};
     use lay::config::LayConfig;
     use std::sync::{Arc, Mutex};
 
@@ -428,6 +433,23 @@ mod tests {
         assert_eq!(
             engine.manual_toggle_authority(),
             ManualToggleAuthority::DaemonWordBuffer
+        );
+    }
+
+    #[test]
+    fn manual_toggle_uses_terminal_erase_authority_for_terminal_committed_tail() {
+        let mut engine = engine(LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            ..LayConfig::default()
+        });
+        engine.tail_buffer.push_str("typed ");
+        engine.cursor_cell_width = 11;
+        engine.set_content_type_state(IBUS_INPUT_PURPOSE_TERMINAL, 0);
+
+        assert_eq!(
+            engine.manual_toggle_authority(),
+            ManualToggleAuthority::ImeCommittedTail
         );
     }
 
