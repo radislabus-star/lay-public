@@ -62,6 +62,49 @@ fn shift_state_cleanup_after_trigger_keeps_shortcuts_but_drops_caps() {
 }
 
 #[test]
+fn double_shift_depends_on_key_sequence_not_hold_duration() {
+    let start = Instant::now();
+    let window = Duration::from_millis(800);
+    let mut state = DShiftState::Idle;
+
+    state.trigger_press(start, window);
+    assert_eq!(
+        state.trigger_release(start + Duration::from_secs(2)),
+        DShiftRelease::None
+    );
+    state.trigger_press(start + Duration::from_millis(2100), window);
+    assert_eq!(
+        state.trigger_release(start + Duration::from_secs(4)),
+        DShiftRelease::Double
+    );
+    assert!(state.is_idle());
+}
+
+#[test]
+fn another_key_press_cancels_every_partial_double_shift_phase() {
+    let start = Instant::now();
+    let window = Duration::from_millis(800);
+
+    for mut state in [
+        DShiftState::FirstPress,
+        DShiftState::WaitingSecond {
+            first_release: start,
+        },
+        DShiftState::SecondPress,
+        DShiftState::AdditionalPress,
+    ] {
+        state.cancel();
+        assert!(state.is_idle());
+    }
+
+    let mut expired = DShiftState::WaitingSecond {
+        first_release: start,
+    };
+    expired.trigger_press(start + Duration::from_millis(801), window);
+    assert_eq!(expired, DShiftState::FirstPress);
+}
+
+#[test]
 fn marks_current_word_after_replay_for_next_toggle() {
     let mut buffer = WordBuffer::new();
     for key in [

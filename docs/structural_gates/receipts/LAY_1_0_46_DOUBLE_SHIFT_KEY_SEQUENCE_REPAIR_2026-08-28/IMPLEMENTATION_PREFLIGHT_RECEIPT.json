@@ -1,0 +1,110 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "daemon-trigger-fsm",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/trigger_fsm.rs",
+      "sha256": "efa9417e68a639deff53dc7c3bca922725fe09947831c8f6911a9cfeabbfe7e3",
+      "size_bytes": 5593
+    },
+    {
+      "exists": true,
+      "id": "daemon-trigger-events",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+      "sha256": "c0939591665b307bb4aa669303411d4170b32fdcb5e07cb8eed2d728cf5d37a6",
+      "size_bytes": 8768
+    },
+    {
+      "exists": true,
+      "id": "ime-key-events",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "0302133fbae44f41ce50efe907ac25b2893950387fcfeaa1339d32abacdc3cc6",
+      "size_bytes": 15867
+    },
+    {
+      "exists": true,
+      "id": "installed-daemon-1-0-45",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "1160738dc8d310cb1c67883e3e7ffffceb5eade9f10b093832de4a3c8b22f446",
+      "size_bytes": 8891896
+    },
+    {
+      "exists": true,
+      "id": "installed-engine-1-0-45",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "342c79f422e38769424ce9ba111c3fc607ed312725d3fd5d0fb7a955b71b48e6",
+      "size_bytes": 7150120
+    },
+    {
+      "exists": true,
+      "id": "live-config",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/.config/lay/config.json",
+      "sha256": "d73d5974a6b205e90db2e4562d438cea71f1c967315341fa53c4093dc73d0af4",
+      "size_bytes": 2979
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 6,
+    "forbidden_side_effect_kinds": [
+      "change_live_config",
+      "change_manual_toggle_candidate_or_mutation_authority",
+      "global_ibus_restart",
+      "install_before_tests_pass",
+      "remove_rollback",
+      "trigger_after_intervening_non_trigger_key",
+      "trigger_on_second_press_before_clean_release"
+    ],
+    "identity_contracts": 2,
+    "invariants": 4,
+    "planned_side_effect_kinds": [
+      "installed_runtime_mutation",
+      "source_edit"
+    ],
+    "preserved_artifacts": 3,
+    "runtime_comparisons": 1,
+    "source_checks": 2,
+    "tests": 10
+  },
+  "manifest_sha256": "253b6e4d5933714c95c50317129ce728fe51d27b6da36f0a78d329931a5a4886",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-daemon-trigger-events",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+      "sha256": "c0939591665b307bb4aa669303411d4170b32fdcb5e07cb8eed2d728cf5d37a6",
+      "size_bytes": 8768
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "pinned-ime-key-events",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "0302133fbae44f41ce50efe907ac25b2893950387fcfeaa1339d32abacdc3cc6",
+      "size_bytes": 15867
+    }
+  ],
+  "task_id": "LAY_DOUBLE_SHIFT_KEY_SEQUENCE_REPAIR_V1_2026-08-28",
+  "verdict": "READY_TO_IMPLEMENT"
+}

@@ -1,0 +1,341 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "LAY_DOUBLE_SHIFT_KEY_SEQUENCE_REPAIR_V1_2026-08-28",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "baseline_checks": [
+    {
+      "id": "daemon-trigger-fsm",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/trigger_fsm.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 5593,
+        "sha256": "efa9417e68a639deff53dc7c3bca922725fe09947831c8f6911a9cfeabbfe7e3"
+      }
+    },
+    {
+      "id": "daemon-trigger-events",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 8768,
+        "sha256": "c0939591665b307bb4aa669303411d4170b32fdcb5e07cb8eed2d728cf5d37a6"
+      }
+    },
+    {
+      "id": "ime-key-events",
+      "kind": "file",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 15867,
+        "sha256": "0302133fbae44f41ce50efe907ac25b2893950387fcfeaa1339d32abacdc3cc6"
+      }
+    },
+    {
+      "id": "installed-daemon-1-0-45",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 8891896,
+        "sha256": "1160738dc8d310cb1c67883e3e7ffffceb5eade9f10b093832de4a3c8b22f446"
+      }
+    },
+    {
+      "id": "installed-engine-1-0-45",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "expect": {
+        "mode": "0755",
+        "size_bytes": 7150120,
+        "sha256": "342c79f422e38769424ce9ba111c3fc607ed312725d3fd5d0fb7a955b71b48e6"
+      }
+    },
+    {
+      "id": "live-config",
+      "kind": "file",
+      "path": "/home/ubu/.config/lay/config.json",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2979,
+        "sha256": "d73d5974a6b205e90db2e4562d438cea71f1c967315341fa53c4093dc73d0af4"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {
+        "id": "repair-daemon-sequence-fsm",
+        "kind": "source_edit"
+      },
+      {
+        "id": "repair-ime-sequence-observer",
+        "kind": "source_edit"
+      },
+      {
+        "id": "add-sequence-regression-tests",
+        "kind": "source_edit"
+      },
+      {
+        "id": "release-build-and-install",
+        "kind": "installed_runtime_mutation"
+      }
+    ],
+    "forbidden": [
+      "trigger_on_second_press_before_clean_release",
+      "trigger_after_intervening_non_trigger_key",
+      "change_manual_toggle_candidate_or_mutation_authority",
+      "change_live_config",
+      "global_ibus_restart",
+      "install_before_tests_pass",
+      "remove_rollback"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "DOUBLE_SHIFT_DURATION_GATED",
+    "steps": [
+      {
+        "id": "implement-key-sequence-repair",
+        "from": "DOUBLE_SHIFT_DURATION_GATED",
+        "to": "KEY_SEQUENCE_IMPLEMENTED",
+        "mutates": true,
+        "failure_state": "SOURCE_EDIT_FAILED",
+        "cleanup": "retain scoped diff; installed 1.0.45 remains active",
+        "preserves": [
+          "installed-daemon-1-0-45",
+          "installed-engine-1-0-45",
+          "live-config"
+        ],
+        "test_id": "source-edit-fault"
+      },
+      {
+        "id": "run-regression-gates",
+        "from": "KEY_SEQUENCE_IMPLEMENTED",
+        "to": "REGRESSION_GATES_PASS",
+        "mutates": false,
+        "failure_state": "TESTS_FAILED",
+        "cleanup": "do not install; retain test logs and scoped source diff",
+        "preserves": [
+          "installed-daemon-1-0-45",
+          "installed-engine-1-0-45",
+          "live-config"
+        ],
+        "test_id": "regression-gates"
+      },
+      {
+        "id": "install-and-observe",
+        "from": "REGRESSION_GATES_PASS",
+        "to": "DOUBLE_SHIFT_KEY_SEQUENCE_LIVE",
+        "mutates": true,
+        "failure_state": "INSTALL_ROLLED_BACK",
+        "cleanup": "restore exact 1.0.45 binaries and restart only Lay-owned processes",
+        "preserves": [
+          "live-config"
+        ],
+        "test_id": "install-fault"
+      }
+    ],
+    "terminal_states": [
+      "DOUBLE_SHIFT_KEY_SEQUENCE_LIVE",
+      "SOURCE_EDIT_FAILED",
+      "TESTS_FAILED",
+      "INSTALL_ROLLED_BACK"
+    ]
+  },
+  "preserved_artifacts": [
+    {
+      "id": "installed-daemon-1-0-45",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "policy": "immutable_until_regression_gates_pass",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes",
+      "baseline_check_id": "installed-daemon-1-0-45"
+    },
+    {
+      "id": "installed-engine-1-0-45",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "immutable_until_regression_gates_pass",
+      "cursor_policy": "none",
+      "rollback_policy": "restore_exact_bytes",
+      "baseline_check_id": "installed-engine-1-0-45"
+    },
+    {
+      "id": "live-config",
+      "path": "/home/ubu/.config/lay/config.json",
+      "policy": "immutable",
+      "cursor_policy": "none",
+      "rollback_policy": "preserve_exact_bytes",
+      "baseline_check_id": "live-config"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "daemon-ime-sequence-parity",
+      "producer": "ordered configured-key press/release events",
+      "consumer": "daemon FSM and focused IME observer",
+      "comparison": "both accept exactly press release press release with no intervening key, ignore hold duration, and require the second press inside shift_window_ms",
+      "test_id": "daemon-ime-sequence-parity"
+    },
+    {
+      "id": "configured-key-identity",
+      "producer": "trigger=double-lshift",
+      "consumer": "gesture recognizer",
+      "comparison": "only left Shift contributes gesture members; right Shift and mixed keys cannot complete it",
+      "test_id": "configured-key-identity"
+    }
+  ],
+  "runtime_comparisons": [
+    {
+      "id": "live-process-continuity",
+      "source": "process table, selected IBus engine, installed hashes and config hash",
+      "comparison": "exact_stable_projection",
+      "reason": "only Lay-owned daemon and engine may change",
+      "stable_fields": [
+        "global_ibus_pid",
+        "selected_engine",
+        "config_sha256"
+      ],
+      "expected_to_change_fields": [
+        "lay_daemon_pid",
+        "lay_engine_pid",
+        "binary_sha256",
+        "version"
+      ],
+      "observed_not_compared_fields": [
+        "cpu_time",
+        "rss"
+      ],
+      "test_id": "live-process-continuity"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "duration-independent-double-shift",
+      "statement": "clean Double Shift has no per-press hold-duration predicate",
+      "test_id": "duration-independent-double-shift"
+    },
+    {
+      "id": "modifier-use-cancels",
+      "statement": "any other key press before the second Shift release cancels the gesture",
+      "test_id": "modifier-use-cancels"
+    },
+    {
+      "id": "release-confirmed",
+      "statement": "the command is minted only after both matching press/release pairs complete",
+      "test_id": "release-confirmed"
+    },
+    {
+      "id": "manual-toggle-authority-unchanged",
+      "statement": "gesture repair does not change correction planning or text mutation ownership",
+      "test_id": "manual-toggle-authority-unchanged"
+    }
+  ],
+  "tests": [
+    {
+      "id": "source-edit-fault",
+      "kind": "fault_injection",
+      "expected": "failed source edit cannot mutate installed runtime"
+    },
+    {
+      "id": "regression-gates",
+      "kind": "integration",
+      "expected": "focused daemon, IME and changed-project tests pass before install"
+    },
+    {
+      "id": "install-fault",
+      "kind": "fault_injection",
+      "expected": "failed install restores exact 1.0.45 without global IBus restart"
+    },
+    {
+      "id": "daemon-ime-sequence-parity",
+      "kind": "parity",
+      "expected": "daemon and IME share duration-independent clean-sequence semantics"
+    },
+    {
+      "id": "configured-key-identity",
+      "kind": "parity",
+      "expected": "double-lshift accepts two left Shift pairs only"
+    },
+    {
+      "id": "duration-independent-double-shift",
+      "kind": "integration",
+      "expected": "long clean holds still complete Double Shift when the inter-tap gap is in range"
+    },
+    {
+      "id": "modifier-use-cancels",
+      "kind": "fault_injection",
+      "expected": "letter, right Shift, Ctrl, Alt or Meta press cancels a partial gesture"
+    },
+    {
+      "id": "release-confirmed",
+      "kind": "integration",
+      "expected": "zero command on either press and exactly one command on the second clean release"
+    },
+    {
+      "id": "manual-toggle-authority-unchanged",
+      "kind": "parity",
+      "expected": "existing daemon-to-IME and uinput planner routes remain byte-unmodified"
+    },
+    {
+      "id": "live-process-continuity",
+      "kind": "parity",
+      "expected": "global IBus PID, selected engine and live config remain stable"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "source_checks": [
+    {
+      "id": "pinned-daemon-trigger-events",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+      "sha256": "c0939591665b307bb4aa669303411d4170b32fdcb5e07cb8eed2d728cf5d37a6",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "change_manual_toggle_candidate_or_mutation_authority",
+          "regex": "(plan_manual_toggle|apply_text_replacement|emit_backspaces)"
+        },
+        {
+          "effect": "global_ibus_restart",
+          "regex": "(kill|restart).*ibus-daemon"
+        },
+        {
+          "effect": "change_live_config",
+          "regex": "(write|remove|rename).{0,120}config\\.json"
+        },
+        {
+          "effect": "install_before_tests_pass",
+          "regex": "(install|copy).{0,120}(before|without).{0,80}test"
+        },
+        {
+          "effect": "remove_rollback",
+          "regex": "(remove|unlink).{0,120}rollback"
+        },
+        {
+          "effect": "trigger_after_intervening_non_trigger_key",
+          "regex": "SecondPress.{0,160}(preserve|ignore).{0,80}other"
+        },
+        {
+          "effect": "trigger_on_second_press_before_clean_release",
+          "regex": "WaitingSecond.{0,160}handle_confirmed_double_shift"
+        }
+      ]
+    },
+    {
+      "id": "pinned-ime-key-events",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "0302133fbae44f41ce50efe907ac25b2893950387fcfeaa1339d32abacdc3cc6",
+      "forbidden_effect_patterns": [
+        {
+          "effect": "change_manual_toggle_candidate_or_mutation_authority",
+          "regex": "(plan_manual_toggle|apply_text_replacement|emit_backspaces)"
+        },
+        {
+          "effect": "global_ibus_restart",
+          "regex": "(kill|restart).*ibus-daemon"
+        }
+      ]
+    }
+  ]
+}

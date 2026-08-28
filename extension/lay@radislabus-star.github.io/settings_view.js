@@ -194,8 +194,8 @@ export class LaySettingsView {
             {restart: true}
         ));
         group.add(this._timingRow(
-            'Длительность нажатия Shift',
-            'Максимальная длительность одного короткого нажатия, мс',
+            'Длительность одиночной клавиши',
+            'Лимит для одиночных Shift/Ctrl/Alt; Double Shift от удержания не зависит',
             'tap_max_ms',
             100,
             800,

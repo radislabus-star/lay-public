@@ -95,6 +95,19 @@ pub(crate) fn double_shift(dev: &mut VirtualDevice, settle_ms: u64) -> std::io::
     Ok(())
 }
 
+pub(crate) fn double_shift_with_hold(
+    dev: &mut VirtualDevice,
+    hold_ms: u64,
+    settle_ms: u64,
+) -> std::io::Result<()> {
+    sleep(Duration::from_millis(220));
+    tap_with_hold(dev, KeyCode::KEY_LEFTSHIFT.code(), hold_ms)?;
+    sleep(Duration::from_millis(80));
+    tap_with_hold(dev, KeyCode::KEY_LEFTSHIFT.code(), hold_ms)?;
+    sleep(Duration::from_millis(settle_ms));
+    Ok(())
+}
+
 pub(crate) fn double_alt(dev: &mut VirtualDevice, settle_ms: u64) -> std::io::Result<()> {
     sleep(Duration::from_millis(220));
     tap(dev, KeyCode::KEY_LEFTALT.code())?;

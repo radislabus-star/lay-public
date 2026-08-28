@@ -8,7 +8,9 @@ use zbus::zvariant::Value;
 use super::atomic::{AtomicCapability, AtomicEnvelope, AtomicPriorReceipt};
 use super::engine::{LayIbusEngine, SurroundingTextSnapshot};
 use super::output::{AtomicProposal, EngineOutput};
-use super::protocol::{is_accept_completion_with_space_key, is_key_press, is_shift_key};
+use super::protocol::{
+    is_accept_completion_with_space_key, is_key_press, is_shift_key, KEY_LEFT_SHIFT,
+};
 use super::trace;
 
 #[interface(name = "org.freedesktop.IBus.Engine")]
@@ -331,10 +333,14 @@ impl LayIbusEngine {
         }
         if is_shift_key(keyval) {
             let pressed = is_key_press(state);
+            let gesture_key = configured_double_shift_key(&self.config.trigger, keyval);
             self.shift_active = pressed;
             if pressed {
-                self.shift_pressed_at = Some(Instant::now());
+                self.shift_pressed_at = gesture_key.then(Instant::now);
                 self.shift_used_as_modifier = false;
+                if !gesture_key {
+                    self.last_shift_release_at = None;
+                }
                 if self.alt_completion_active {
                     self.alt_used_as_modifier = true;
                     self.shift_used_as_modifier = true;
@@ -342,9 +348,9 @@ impl LayIbusEngine {
                 }
             } else {
                 let now = Instant::now();
-                let tapped = self.shift_pressed_at.take().is_some_and(|pressed_at| {
-                    now.duration_since(pressed_at) <= Duration::from_millis(self.config.tap_max_ms)
-                }) && !self.shift_used_as_modifier;
+                let tapped = gesture_key
+                    && self.shift_pressed_at.take().is_some()
+                    && !self.shift_used_as_modifier;
                 let double_tapped = tapped
                     && self.last_shift_release_at.is_some_and(|released_at| {
                         now.duration_since(released_at)
@@ -387,6 +393,7 @@ impl LayIbusEngine {
         if !is_key_press(state) {
             return Ok(false);
         }
+        self.last_shift_release_at = None;
         if self.shift_active {
             self.shift_used_as_modifier = true;
         }
@@ -399,6 +406,10 @@ impl LayIbusEngine {
         self.remember_handled_press(keycode, handled);
         Ok(handled)
     }
+}
+
+fn configured_double_shift_key(trigger: &str, keyval: u32) -> bool {
+    trigger == "double-lshift" && keyval == KEY_LEFT_SHIFT
 }
 
 fn should_apply_auto_undo_before_postcondition(retry_status: &str) -> bool {
@@ -440,9 +451,20 @@ pub(crate) fn ibus_text_value_to_string(value: &Value<'_>) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::ibus_text_value_to_string;
+    use super::{configured_double_shift_key, ibus_text_value_to_string};
+    use crate::protocol::{KEY_LEFT_SHIFT, KEY_RIGHT_SHIFT};
     use crate::text::make_ibus_text;
     use zbus::zvariant::Value;
+
+    #[test]
+    fn double_shift_matches_only_two_left_shift_members() {
+        assert!(configured_double_shift_key("double-lshift", KEY_LEFT_SHIFT));
+        assert!(!configured_double_shift_key(
+            "double-lshift",
+            KEY_RIGHT_SHIFT
+        ));
+        assert!(!configured_double_shift_key("double-ctrl", KEY_LEFT_SHIFT));
+    }
 
     #[test]
     fn parses_plain_string_surrounding_text() {

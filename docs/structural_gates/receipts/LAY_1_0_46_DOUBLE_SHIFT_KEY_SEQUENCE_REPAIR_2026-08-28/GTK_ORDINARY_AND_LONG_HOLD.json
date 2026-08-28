@@ -1,0 +1,18 @@
+{
+  "all_passed": true,
+  "cases": [
+    {
+      "expected": "привет",
+      "got": "привет",
+      "name": "ghbdtn_enter",
+      "ok": true
+    },
+    {
+      "expected": "привет",
+      "got": "привет",
+      "name": "ghbdtn_long_lshift_enter",
+      "ok": true
+    }
+  ],
+  "schema": "lay.runtime-smoke-receipt.v1"
+}

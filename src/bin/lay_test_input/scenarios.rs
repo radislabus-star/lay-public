@@ -1,7 +1,7 @@
 use super::desktop_probe::activate_layout;
 use super::input_device::{
-    double_shift, double_shift_enter, double_shift_fast, extra_fast_lshift_taps, hold_tap,
-    hold_two_tap, tap,
+    double_shift, double_shift_enter, double_shift_fast, double_shift_with_hold,
+    extra_fast_lshift_taps, hold_tap, hold_two_tap, tap,
 };
 use evdev::{uinput::VirtualDevice, KeyCode};
 use std::path::Path;
@@ -52,11 +52,14 @@ pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::
         "ghbdtn_shift"
         | "ghbdtn_enter"
         | "ghbdtn_fast_lshift_enter"
+        | "ghbdtn_long_lshift_enter"
         | "ghbdtn_extra_lshift_enter" => {
             type_physical(dev, "ghbdtn", 50)?;
             sleep(Duration::from_millis(200));
             if scenario == "ghbdtn_fast_lshift_enter" {
                 double_shift_fast(dev, 800)?;
+            } else if scenario == "ghbdtn_long_lshift_enter" {
+                double_shift_with_hold(dev, 650, 800)?;
             } else if scenario == "ghbdtn_extra_lshift_enter" {
                 extra_fast_lshift_taps(dev, 800)?;
             } else {
@@ -64,7 +67,10 @@ pub(crate) fn run_scenario(dev: &mut VirtualDevice, scenario: &str) -> std::io::
             }
             if matches!(
                 scenario,
-                "ghbdtn_enter" | "ghbdtn_fast_lshift_enter" | "ghbdtn_extra_lshift_enter"
+                "ghbdtn_enter"
+                    | "ghbdtn_fast_lshift_enter"
+                    | "ghbdtn_long_lshift_enter"
+                    | "ghbdtn_extra_lshift_enter"
             ) {
                 tap(dev, KeyCode::KEY_ENTER.code())?;
             }

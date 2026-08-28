@@ -1,0 +1,76 @@
+{
+  "schema": "lay-1.0.46-double-shift-key-sequence-repair-v1",
+  "recorded_at": "2026-08-28T11:43:43+03:00",
+  "verdict": "LAY_1_0_46_DOUBLE_SHIFT_KEY_SEQUENCE_REPAIRED",
+  "version": "1.0.46",
+  "defect": {
+    "daemon": "both Shift holds had to fit tap_max_ms and an intervening key did not cancel SecondPress",
+    "ime": "duplicated the hold-duration gate, accepted mixed Shift sides and retained the first release across another key"
+  },
+  "effective_contract": {
+    "trigger": "double-lshift",
+    "sequence": "left-press,left-release,left-press,left-release",
+    "second_press_window_ms": 800,
+    "hold_duration_limit": null,
+    "intervening_key": "cancel",
+    "mixed_shift_sides": "reject",
+    "action_point": "second left Shift release",
+    "single_key_hotkeys_still_use_tap_max_ms": true
+  },
+  "verification": {
+    "implementation_preflight": {
+      "verdict": "READY_TO_IMPLEMENT",
+      "receipt_sha256": "89698da83dbd94f92703c2b56e3ab8baaff01e705c71eb95d5591e5c909ae5e3",
+      "manifest_file_sha256": "de1076f59623836a629f8686341b3692d334943a021d5a4558cb250e04a5cbe9",
+      "recorded_manifest_sha256": "253b6e4d5933714c95c50317129ce728fe51d27b6da36f0a78d329931a5a4886"
+    },
+    "targeted_daemon_double_shift": "4 pass / 0 fail",
+    "targeted_ime_double_shift": "5 pass / 0 fail",
+    "atomic_ime_routes": "9 pass / 0 fail",
+    "full_lay_ibus_engine": "247 pass / 0 fail",
+    "full_lay_daemon": "211 pass / 3 unrelated baseline fail",
+    "changed_file_gate": "PASS",
+    "release_build": "PASS",
+    "release_build_elapsed": "6m 32s",
+    "installed_source_binary_parity": "10/10 PASS"
+  },
+  "live": {
+    "gtk": {
+      "ordinary": "ghbdtn -> привет",
+      "two_ms_holds": "ghbdtn -> привет",
+      "six_hundred_fifty_ms_holds": "ghbdtn -> привет"
+    },
+    "kitty": {
+      "six_hundred_fifty_ms_holds": "ghbdtn -> привет",
+      "isolated_fixture": true,
+      "fixture_closed_after_test": true
+    },
+    "human_keyboard_timing": "NOT_TESTED"
+  },
+  "release": {
+    "lay_daemon_sha256": "1cb2d89a8efa3d9bcc80c74045713eeb28889231e96baa6fe6919815cf9e681d",
+    "lay_ibus_engine_sha256": "e7a0237a578f503d33388857c4af70bc67a384a5de67242c3ebebe439d23d0b6",
+    "lay_test_input_sha256": "7b0698e62c01049d004a4297e0a440864d0f08d85b48850d8d5eec0d567f5d79",
+    "daemon_pid_before": 3862382,
+    "daemon_pid_after": 1839304,
+    "ime_pid_before": 3862444,
+    "ime_pid_after": 1843501,
+    "global_ibus_pid_before": 4594,
+    "global_ibus_pid_after": 4594,
+    "active_engine_after": "lay-ime-ru",
+    "gnome_extension_loaded_version": "1.0.46",
+    "rollback": "/home/ubu/.local/lib/lay/rollback/1.0.45-before-1.0.46-20260828T113627+0300"
+  },
+  "preserved": {
+    "live_config_sha256": "d73d5974a6b205e90db2e4562d438cea71f1c967315341fa53c4093dc73d0af4",
+    "canonical_l2_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "exact_v13_sidecar_sha256": "a277b3c8b7d441de55fdc3c77abf483c2061653e9068b3bcce57629c742de9d7"
+  },
+  "scope": {
+    "runtime_authority_changed": true,
+    "correction_policy_changed": false,
+    "candidate_producer_changed": false,
+    "candidate_ranking_changed": false,
+    "global_ibus_restarted": false
+  }
+}

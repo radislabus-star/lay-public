@@ -74,30 +74,72 @@ pub(super) fn single_hotkey_keycode(id: &str) -> Option<KeyCode> {
     }
 }
 
-/// FSM для детекции двойного левого Shift по паттерну press→release→press→release.
+/// FSM for an exact press-release-press-release trigger sequence.
 ///
-/// Каждый Shift должен быть именно тапом (≤ tap_max мс).
-/// Если держать дольше — это заглавная буква, не двойной Shift.
-/// Любая другая клавиша в любом состоянии → Idle (отмена).
-#[derive(Debug, Clone, Copy)]
+/// Hold duration is irrelevant. Another key press cancels the sequence, which
+/// keeps Shift+letter and other modifier uses out of the manual-toggle route.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum DShiftState {
     Idle,
-    /// Первый Shift нажат, ждём release
-    FirstPress {
-        pressed_at: Instant,
-    },
-    /// Первый тап завершён, ждём второй press
-    WaitingSecond {
-        first_release: Instant,
-    },
-    /// Второй Shift нажат, ждём release → DOUBLE
-    SecondPress {
-        second_press: Instant,
-    },
-    /// Третий/четвёртый тап в optional multi-tap mode.
-    AdditionalPress {
-        pressed_at: Instant,
-    },
+    FirstPress,
+    WaitingSecond { first_release: Instant },
+    SecondPress,
+    AdditionalPress,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum DShiftRelease {
+    None,
+    Double,
+    Additional,
+}
+
+impl DShiftState {
+    pub(super) fn trigger_press(&mut self, now: Instant, window: std::time::Duration) {
+        *self = match *self {
+            Self::Idle => Self::FirstPress,
+            Self::WaitingSecond { first_release }
+                if now.duration_since(first_release) <= window =>
+            {
+                Self::SecondPress
+            }
+            Self::WaitingSecond { .. } => Self::FirstPress,
+            state => state,
+        };
+    }
+
+    pub(super) fn trigger_release(&mut self, now: Instant) -> DShiftRelease {
+        match *self {
+            Self::FirstPress => {
+                *self = Self::WaitingSecond { first_release: now };
+                DShiftRelease::None
+            }
+            Self::SecondPress => {
+                *self = Self::Idle;
+                DShiftRelease::Double
+            }
+            Self::AdditionalPress => {
+                *self = Self::Idle;
+                DShiftRelease::Additional
+            }
+            _ => {
+                *self = Self::Idle;
+                DShiftRelease::None
+            }
+        }
+    }
+
+    pub(super) fn begin_additional_press(&mut self) {
+        *self = Self::AdditionalPress;
+    }
+
+    pub(super) fn cancel(&mut self) {
+        *self = Self::Idle;
+    }
+
+    pub(super) fn is_idle(self) -> bool {
+        self == Self::Idle
+    }
 }
 
 #[derive(Debug, Clone, Copy)]

@@ -911,3 +911,69 @@ Verdict: `LAY_1_0_45_KITTY_IME_REGRESSION_REPAIRED`.
 Evidence:
 
 - `docs/structural_gates/receipts/LAY_1_0_45_KITTY_IME_REGRESSION_REPAIR_2026-08-28/RELEASE_RECEIPT.json`
+
+## 1.0.46 Double Shift Key Sequence Repair
+
+Release `1.0.46` removes hold duration from the Double Shift gesture. The
+configured `double-lshift` trigger is now recognized as one exact ordered key
+sequence:
+
+```text
+Left Shift press
+-> Left Shift release
+-> Left Shift press within shift_window_ms of the first release
+-> Left Shift release
+-> manual toggle
+```
+
+The duration of either press is irrelevant. Any intervening non-trigger key,
+including a modifier use such as `Shift+letter`, cancels the partial sequence.
+Right Shift and mixed left/right sequences cannot satisfy `double-lshift`.
+The action remains release-triggered, so the second press alone never mutates
+text. `tap_max_ms` is unchanged for configured single-key Shift/Ctrl/Alt
+hotkeys and no longer participates in Double Shift detection.
+
+The daemon event FSM and focused IME observer implement the same membership
+contract. Candidate production, candidate ranking and the existing GTK/Kitty
+output authorities are unchanged.
+
+```text
+implementation preflight                    READY_TO_IMPLEMENT
+targeted daemon Double Shift tests           4 pass / 0 fail
+targeted IME Double Shift tests              5 pass / 0 fail
+atomic IME route tests                       9 pass / 0 fail
+full lay-ibus-engine                         247 pass / 0 fail
+full lay-daemon                              211 pass / 3 unrelated baseline fail
+changed-file gate                            PASS
+release build                                PASS, 6m 32s
+installed/source binary parity               10/10 PASS
+
+GTK ordinary Double Shift                    ghbdtn -> привет
+GTK 2 ms holds                               ghbdtn -> привет
+GTK 650 ms holds                             ghbdtn -> привет
+Kitty 650 ms holds                           ghbdtn -> привет
+
+installed lay-daemon SHA-256                 1cb2d89a8efa3d9bcc80c74045713eeb28889231e96baa6fe6919815cf9e681d
+installed lay-ibus-engine SHA-256             e7a0237a578f503d33388857c4af70bc67a384a5de67242c3ebebe439d23d0b6
+loaded lay-daemon PID                        1839304
+loaded lay-ibus-engine PID                   1843501
+global ibus-daemon PID                       4594 -> 4594
+active engine                                lay-ime-ru
+loaded extension                             1.0.46
+live config SHA-256                          d73d5974a6b205e90db2e4562d438cea71f1c967315341fa53c4093dc73d0af4
+```
+
+The three daemon failures are the existing broad correction-core expectations
+for `расчет ыприблизительные`; none enters the trigger FSM or manual-toggle
+route. The live tests use a dedicated evdev/uinput keyboard and isolated GTK
+and Kitty fields. A human-keyboard timing pass was not claimed.
+
+Runtime authority changed to `1.0.46`; the canonical L2 package, exact V13
+sidecar, live config and correction policy remained byte-identical.
+
+Verdict: `LAY_1_0_46_DOUBLE_SHIFT_KEY_SEQUENCE_REPAIRED`.
+
+Evidence:
+
+- `docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_KEY_SEQUENCE_REPAIR_V1_2026-08-28.json`
+- `docs/structural_gates/receipts/LAY_1_0_46_DOUBLE_SHIFT_KEY_SEQUENCE_REPAIR_2026-08-28/RELEASE_RECEIPT.json`

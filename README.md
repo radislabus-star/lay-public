@@ -7,7 +7,7 @@
 `lay` исправляет слово, набранное не в той раскладке: нажмите
 **Shift два раза** и продолжайте писать.
 
-**Текущая версия: 1.0.45. Статус: alpha.**
+**Текущая версия: 1.0.46. Статус: alpha.**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -43,6 +43,19 @@ Daemon локально слушает физические клавиши, хр
 По умолчанию double Shift исправляет одно последнее слово. Автопомощь после
 пробела и автоматическое применение исправлений выключены, пока пользователь
 сам их не включит.
+
+## Что исправлено в 1.0.46
+
+- Double Shift теперь определяется по точной последовательности
+  `левый Shift press/release` два раза, а не по силе или длительности
+  удержания;
+- команда подтверждается на втором отпускании, а любая другая нажатая клавиша
+  отменяет незавершённую последовательность, поэтому `Shift+буква` не считается
+  ручным переключением;
+- правый Shift и смешанная пара Shift не завершают настроенный
+  `double-lshift`;
+- `tap_max_ms` сохранён только для одиночных горячих клавиш; правила выбора
+  исправления и маршруты изменения текста не менялись.
 
 ## Что исправлено в 1.0.45
 
@@ -398,7 +411,7 @@ graphify update .
 
 ## English
 
-`lay` 1.0.45 is a local Double Shift RU/EN layout rescue and bounded
+`lay` 1.0.46 is a local Double Shift RU/EN layout rescue and bounded
 typing-correction tool for Linux desktops.
 
 ```text
@@ -413,8 +426,10 @@ L3 context, `TransitionDecisionCore`, and a structural verifier.
 Exact search contributes candidates and certificates but does not bypass final
 authority.
 
-Release 1.0.45 restores Kitty terminal suggestions and routes terminal Double
-Shift through the proven IME erase-and-commit backend. Release 1.0.44 reduced
+Release 1.0.46 makes Double Shift an exact clean key sequence without a
+per-press hold-duration limit; any intervening key cancels it. Release 1.0.45
+restored Kitty terminal suggestions and routed terminal Double Shift through
+the proven IME erase-and-commit backend. Release 1.0.44 reduced
 the measured V13 traversal CPU cost by 11.8% and the
 paired internal end-to-end p99 by 33.0%, without narrowing the candidate set.
 These are fixed target-host internal benchmarks, not a desktop key-to-text

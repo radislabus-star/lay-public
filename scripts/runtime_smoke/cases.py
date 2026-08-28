@@ -46,6 +46,7 @@ CASES = {
         config_overrides={"enter_autocorrect": True},
     ),
     "ghbdtn_fast_lshift_enter": Case("ghbdtn_fast_lshift_enter", "привет"),
+    "ghbdtn_long_lshift_enter": Case("ghbdtn_long_lshift_enter", "привет"),
     "ghbdtn_extra_lshift_enter": Case("ghbdtn_extra_lshift_enter", "привет"),
     "ctrl_plus_ghbdtn_enter": Case("ctrl_plus_ghbdtn_enter", "привет"),
     "dhtvz_toggle_enter": Case("dhtvz_toggle_enter", "dhtvz"),

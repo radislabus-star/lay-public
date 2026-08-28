@@ -534,6 +534,10 @@ mod tests {
         let release = super::super::protocol::RELEASE_MASK;
 
         for (transaction, state) in [(101, 0), (102, release), (103, 0)] {
+            if state == release {
+                live.shift_pressed_at =
+                    Some(std::time::Instant::now() - std::time::Duration::from_secs(2));
+            }
             let envelope = (transaction, 2, 12, 41, 5, 13, vec![8; DIGEST_BYTES]);
             let proposal = zbus::block_on(live.process_atomic_key_event(
                 key,
@@ -546,6 +550,8 @@ mod tests {
             .expect("atomic shift observation");
             assert_eq!(proposal.0, PROPOSAL_NATIVE_UNHANDLED);
         }
+
+        live.shift_pressed_at = Some(std::time::Instant::now() - std::time::Duration::from_secs(2));
 
         let proposal = zbus::block_on(live.process_atomic_key_event(
             key,
@@ -560,6 +566,39 @@ mod tests {
         assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
         assert_eq!(live.buffer, "ghbdtn");
         live.discard_atomic_pending();
+    }
+
+    #[test]
+    fn mixed_shift_sides_cannot_complete_double_left_shift() {
+        let mut live = engine();
+        live.layout_is_ru = false;
+        live.buffer = "ghbdtn".to_string();
+        live.composition_cursor = live.buffer.chars().count();
+        let left = super::super::protocol::KEY_LEFT_SHIFT;
+        let right = super::super::protocol::KEY_RIGHT_SHIFT;
+        let release = super::super::protocol::RELEASE_MASK;
+
+        for (transaction, key, state) in [
+            (201, left, 0),
+            (202, left, release),
+            (203, right, 0),
+            (204, right, release),
+            (205, left, 0),
+            (206, left, release),
+        ] {
+            let proposal = zbus::block_on(live.process_atomic_key_event(
+                key,
+                42,
+                state,
+                (transaction, 2, 12, 41, 5, 13, vec![8; DIGEST_BYTES]),
+                capability(),
+                (RECEIPT_NONE, 0, Vec::new()),
+            ))
+            .expect("mixed Shift observation");
+            assert_eq!(proposal.0, PROPOSAL_NATIVE_UNHANDLED);
+        }
+
+        assert_eq!(live.buffer, "ghbdtn");
     }
 }
 

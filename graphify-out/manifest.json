@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1787882748.0898702,
-    "ast_hash": "99387111cba87c282089baa60b9528ac",
+    "mtime": 1787904976.9829688,
+    "ast_hash": "c9eb2e5be77d07876320ce1497f96b4b",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1787882748.1065478,
-    "ast_hash": "2bdb64fab273e94c4fbf7818b2572384",
+    "mtime": 1787904976.983969,
+    "ast_hash": "66395d10cec6cb6479e706b0e4772e7b",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -155,9 +155,9 @@
     "semantic_hash": "68b329da9893e34099c7d8ad5cb9c940"
   },
   "scripts/runtime_smoke/cases.py": {
-    "mtime": 1786642120.3983352,
-    "ast_hash": "9a0f7c9210849f618bbddb80f785ab67",
-    "semantic_hash": "9a0f7c9210849f618bbddb80f785ab67"
+    "mtime": 1787905500.2661772,
+    "ast_hash": "5333370e077ddf425b43fbb7bd66cf9e",
+    "semantic_hash": ""
   },
   "scripts/runtime_smoke/ime.py": {
     "mtime": 1786869091.7652504,
@@ -425,9 +425,9 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/manual_trigger_runtime/event.rs": {
-    "mtime": 1786642120.4027967,
-    "ast_hash": "0c66f94af9c7863f3e2121f4bf1f58ed",
-    "semantic_hash": "0c66f94af9c7863f3e2121f4bf1f58ed"
+    "mtime": 1787904610.070901,
+    "ast_hash": "3970daa2d5dc4a456d56c71c512aaaa6",
+    "semantic_hash": ""
   },
   "src/bin/lay_daemon/manual_trigger_runtime/fire.rs": {
     "mtime": 1787399782.3699765,
@@ -525,8 +525,8 @@
     "semantic_hash": "b5e0282151f4c80087c37f6dadb19422"
   },
   "src/bin/lay_daemon/tests/runtime_state.rs": {
-    "mtime": 1786642120.40387,
-    "ast_hash": "9226c1e53b44d85dacc1bd0d21beae4f",
+    "mtime": 1787904571.4187267,
+    "ast_hash": "8bf62157ef7567ab6a5ef245729fb64f",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/tests/scoped_tail.rs": {
@@ -740,9 +740,9 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/trigger_fsm.rs": {
-    "mtime": 1786642120.406205,
-    "ast_hash": "0b562fd0ee3b0f8c0abf4b8490f20c3b",
-    "semantic_hash": "0b562fd0ee3b0f8c0abf4b8490f20c3b"
+    "mtime": 1787904610.102902,
+    "ast_hash": "2566b51d0efe2ba39156d4bfc392da6d",
+    "semantic_hash": ""
   },
   "src/bin/lay_daemon/typing_assist_runtime.rs": {
     "mtime": 1786642120.406205,
@@ -895,8 +895,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/ibus_interface.rs": {
-    "mtime": 1787880680.3680422,
-    "ast_hash": "00dcb2dd724595fad81054d71a08946a",
+    "mtime": 1787904571.4187267,
+    "ast_hash": "c6f392ccb436d4d5c28ac43f55a2f0b3",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/key_decode.rs": {
@@ -1060,13 +1060,13 @@
     "semantic_hash": "3036820eb744ab9250479a95a0b86b95"
   },
   "src/bin/lay_test_input/input_device.rs": {
-    "mtime": 1786642120.4187038,
-    "ast_hash": "9c4cdf667bf6331fb79d097e1c4b076e",
-    "semantic_hash": "9c4cdf667bf6331fb79d097e1c4b076e"
+    "mtime": 1787905500.1791759,
+    "ast_hash": "b26fc9b5c4f39cced95d0dbf6061ba89",
+    "semantic_hash": ""
   },
   "src/bin/lay_test_input/scenarios.rs": {
-    "mtime": 1786642120.4187038,
-    "ast_hash": "124539ddcf792fa947c7cea8b3460beb",
+    "mtime": 1787905500.180176,
+    "ast_hash": "aa07527bd1346abcc6ccd39ab2613127",
     "semantic_hash": ""
   },
   "src/bin/lay_test_input/scenarios/script.rs": {
@@ -2500,13 +2500,13 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1787884117.4965425,
-    "ast_hash": "c6eb57f1c002f388f32df60ba4d53d99",
+    "mtime": 1787904976.983969,
+    "ast_hash": "bd57a8ec85a462a84cabd92fed2e46c0",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1787882748.1102123,
-    "ast_hash": "bf94dcc18a0282ee26666c6c54c9db19",
+    "mtime": 1787904976.9829688,
+    "ast_hash": "f3aa722a80cf88e82bd345597b39887e",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2675,8 +2675,8 @@
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
-    "mtime": 1787884117.4975424,
-    "ast_hash": "747deef9b251de1263517c67dd07409b",
+    "mtime": 1787906690.6740437,
+    "ast_hash": "3c1665245f2dd6323bc51f6cc92f5622",
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
@@ -7485,8 +7485,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings_view.js": {
-    "mtime": 1787836946.5438838,
-    "ast_hash": "e8a28060a2ec1a8bb17bf26ab9e3dac5",
+    "mtime": 1787904976.983969,
+    "ast_hash": "3662e970a5edd990244ce1b0e6e11307",
     "semantic_hash": ""
   },
   "docs/lay-menu-settings-architecture.md": {
@@ -13975,8 +13975,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/atomic.rs": {
-    "mtime": 1787516256.4091454,
-    "ast_hash": "53027f1a214d04d114294ab9b670d277",
+    "mtime": 1787904696.9513602,
+    "ast_hash": "1525218478999c2515debc2b22eb0fd6",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/output.rs": {
@@ -28747,6 +28747,11 @@
   "tests/manual/ime_latency/fields.html": {
     "mtime": 1787878380.8201854,
     "ast_hash": "1799fceb7811cf3bcd760d5ebcdcf849",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_KEY_SEQUENCE_REPAIR_V1_2026-08-28.json": {
+    "mtime": 1787904452.7397585,
+    "ast_hash": "ae455bfbd59e6f0b70da8a664caa12b6",
     "semantic_hash": ""
   }
 }
