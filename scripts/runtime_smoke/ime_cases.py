@@ -19,6 +19,11 @@ def make_ime_cases(Case):
         "ime_file_ghjdthrf_shift_enter": Case(
             "ime_file_ghjdthrf_shift_enter", "file проверка"
         ),
+        "ime_file_ghjdthrf_shift_immediate_a_enter": Case(
+            "ime_file_ghjdthrf_shift_immediate_a_enter",
+            "file проверкаа",
+            expected_manual_toggles=1,
+        ),
         "ime_file_ghjdthrf_shift_twice_enter": Case(
             "ime_file_ghjdthrf_shift_twice_enter", "file ghjdthrf"
         ),

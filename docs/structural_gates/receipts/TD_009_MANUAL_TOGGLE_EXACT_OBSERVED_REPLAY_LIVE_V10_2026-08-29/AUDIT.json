@@ -1,0 +1,29 @@
+{
+  "schema": "lay.td009-exact-observed-replay-live-audit.v4",
+  "verdict": "REJECTED_GLOBAL_INPUT_GRAB",
+  "scope": "diagnostic mechanism rejection; not selected runtime authority",
+  "matrix": {
+    "all_passed": false,
+    "cases_passed": 5,
+    "cases_total": 7,
+    "failed_cases": [
+      "ghbdtn_extra_lshift_enter",
+      "slovo_ru_to_us_extra_lshift_enter"
+    ],
+    "receipt_path": "MATRIX_BIDIRECTIONAL_INVERSE_AUTOCOMPLETE/RECEIPT.json",
+    "receipt_sha256": "62fc1479461115c3024d912c00bea22b3edc3e1de0bb0ea857e42280955ead4f"
+  },
+  "observation": {
+    "manual_toggle_gestures": 10,
+    "suppression_arms": 9,
+    "malformed_trace_records": 0,
+    "failure": "process-wide keyboard and pointer grab retained fast Enter until the synthetic input device disappeared, leaving the capture empty",
+    "decision": "remove the global grab; retain exact path/epoch rollback and focused-window identity checks"
+  },
+  "candidate_binaries": {
+    "lay_daemon_sha256": "6e4fc8cf05882c850127d1b441c9ba3463ab0233ac5861e9680959f7aa684e24",
+    "lay_ibus_engine_sha256": "649106389719d665190db878590348fc221a88c3bca0718f7b51faf41d265053",
+    "lay_test_input_sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a"
+  },
+  "installed_runtime_changed": false
+}

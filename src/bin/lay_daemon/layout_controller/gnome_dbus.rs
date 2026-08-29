@@ -1,5 +1,6 @@
 use std::process::Command;
 use std::sync::{Mutex, OnceLock};
+use std::time::Duration;
 
 use super::super::log;
 
@@ -7,6 +8,7 @@ const DBUS_PATH: &str = "/io/github/radislabus_star/LayDaemon";
 const DBUS_INTERFACE: &str = "io.github.radislabus_star.LayDaemon";
 const DBUS_DEST: &str = "org.gnome.Shell";
 static DBUS_CONNECTION: OnceLock<Mutex<Option<zbus::blocking::Connection>>> = OnceLock::new();
+const DBUS_METHOD_TIMEOUT: Duration = Duration::from_millis(250);
 
 pub(super) fn call_list_layouts() -> Result<String, String> {
     call_dbus_list_layouts().or_else(|fast_error| {
@@ -66,6 +68,10 @@ pub(super) fn call_activate_layout(id: &str) -> Result<bool, String> {
     })
 }
 
+pub(super) fn call_activate_layout_once(id: &str) -> Result<bool, String> {
+    call_dbus_activate_layout(id)
+}
+
 pub(super) fn call_focused_window_info() -> Result<String, String> {
     call_dbus_focused_window_info().or_else(|fast_error| {
         reset_dbus_connection();
@@ -75,6 +81,10 @@ pub(super) fn call_focused_window_info() -> Result<String, String> {
         let reply = run_gdbus(&format!("{DBUS_INTERFACE}.FocusedWindowInfo"), &[])?;
         parse_gdbus_string(&reply).ok_or_else(|| format!("не распарсил FocusedWindowInfo: {reply}"))
     })
+}
+
+pub(super) fn call_focused_window_info_once() -> Result<String, String> {
+    call_dbus_focused_window_info()
 }
 
 pub(super) fn call_replace_text(
@@ -114,6 +124,10 @@ pub(super) fn call_current_layout() -> Result<String, String> {
     })
 }
 
+pub(super) fn call_current_layout_once() -> Result<String, String> {
+    call_dbus_current_layout()
+}
+
 pub(super) fn dbus_connection() -> Result<zbus::blocking::Connection, String> {
     let cell = DBUS_CONNECTION.get_or_init(|| Mutex::new(None));
     let mut guard = cell.lock().map_err(|e| e.to_string())?;
@@ -121,7 +135,11 @@ pub(super) fn dbus_connection() -> Result<zbus::blocking::Connection, String> {
         return Ok(conn.clone());
     }
 
-    let conn = zbus::blocking::Connection::session().map_err(|e| e.to_string())?;
+    let conn = zbus::blocking::connection::Builder::session()
+        .map_err(|e| e.to_string())?
+        .method_timeout(DBUS_METHOD_TIMEOUT)
+        .build()
+        .map_err(|e| e.to_string())?;
     *guard = Some(conn.clone());
     Ok(conn)
 }

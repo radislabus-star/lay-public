@@ -43,7 +43,13 @@ def same_process(left: ProcessIdentity, right: ProcessIdentity) -> bool:
 
 
 def same_process_command(left: ProcessIdentity, right: ProcessIdentity) -> bool:
-    return left.executable == right.executable and left.argv == right.argv
+    if left.executable != right.executable:
+        return False
+    if not left.argv or not right.argv:
+        return left.argv == right.argv
+    # Linux preserves the actual executable in /proc/PID/exe while argv[0] may
+    # retain either the launch symlink or its resolved target across a restart.
+    return left.argv[1:] == right.argv[1:]
 
 
 def read_process_identity(

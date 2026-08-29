@@ -1,4 +1,5 @@
 use evdev::{uinput::VirtualDevice, Device, KeyCode};
+use lay::manual_toggle::ImeManualToggleOutcome;
 use lay::word_buffer::WordBuffer;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
@@ -7,9 +8,10 @@ use crate::pending_typing_assist::PendingTypingAssist;
 
 use super::physical_input_grab::PhysicalInputGrab;
 use super::{
-    active_replace_words, handle_double_shift, lock_virtual_keyboard,
-    run_manual_correction_with_scope, ManualCorrectionOutputRoute, ManualCorrectionRequest,
-    ScopedManualCorrectionRequest,
+    active_replace_words, capture_ime_committed_tail_replay, execute_exact_ime_tail_replay,
+    handle_double_shift, lock_virtual_keyboard, run_manual_correction_with_scope,
+    try_ime_manual_toggle, wait_for_ime_committed_tail_settlement, ImeCommittedTailReplay,
+    ManualCorrectionOutputRoute, ManualCorrectionRequest, ScopedManualCorrectionRequest,
 };
 use super::{DShiftState, DaemonTextObservation, MultiTapPending, ShiftState};
 
@@ -58,6 +60,87 @@ pub(super) fn run_configured_manual_correction(
         physical_grab: Some(&mut physical_grab),
         output_route,
     })
+}
+
+pub(super) fn run_exact_ime_tail_replay(
+    buffer: &mut WordBuffer,
+    device: &mut Device,
+    virtual_kbd: &Arc<Mutex<Option<VirtualDevice>>>,
+    executing: &mut bool,
+    replay: ImeCommittedTailReplay,
+) -> Option<bool> {
+    let mut keyboard = lock_virtual_keyboard(virtual_kbd);
+    let mut physical_grab = PhysicalInputGrab::new(Some(device));
+    let input_isolated = physical_grab.is_active();
+    let mut result =
+        execute_exact_ime_tail_replay(buffer, keyboard.as_mut(), executing, input_isolated, replay);
+    if let (Some(layout_is_ru), Some(virtual_keyboard)) = (result, keyboard.as_mut()) {
+        let mut replay_queued_manual_toggle =
+            |queued_keyboard: &mut VirtualDevice, queued_buffer: &mut WordBuffer| {
+                let Some(expected_tail) =
+                    queued_buffer.visible_tail_text(lay::word_buffer::MAX_REPLACE_WORDS)
+                else {
+                    super::log("warning: queued Double Shift has no settled daemon tail");
+                    return None;
+                };
+                if let Err(error) =
+                    wait_for_ime_committed_tail_settlement(&expected_tail, layout_is_ru)
+                {
+                    super::log(&format!(
+                        "warning: queued Double Shift settlement failed: {error}"
+                    ));
+                    return None;
+                }
+                match try_ime_manual_toggle() {
+                    Ok(ImeManualToggleOutcome::DelegateExactImeTail) => {}
+                    Ok(ImeManualToggleOutcome::Handled {
+                        target_layout_is_ru,
+                    }) => return Some(target_layout_is_ru),
+                    Ok(other) => {
+                        super::log(&format!(
+                            "warning: queued Double Shift IME admission rejected: {other:?}"
+                        ));
+                        return None;
+                    }
+                    Err(error) => {
+                        super::log(&format!(
+                            "warning: queued Double Shift IME admission failed: {error}"
+                        ));
+                        return None;
+                    }
+                }
+                let replay = match capture_ime_committed_tail_replay() {
+                    Ok(replay) => replay,
+                    Err(error) => {
+                        super::log(&format!(
+                            "warning: queued Double Shift exact tail capture failed: {error}"
+                        ));
+                        return None;
+                    }
+                };
+                execute_exact_ime_tail_replay(
+                    queued_buffer,
+                    Some(queued_keyboard),
+                    executing,
+                    input_isolated,
+                    replay,
+                )
+            };
+        let forwarded = physical_grab.forward_queued_typing_with_manual_toggles(
+            virtual_keyboard,
+            buffer,
+            layout_is_ru,
+            "exact-ime-tail-replay",
+            0,
+            true,
+            &mut replay_queued_manual_toggle,
+        );
+        if forwarded.last_manual_toggle_layout_is_ru.is_some() {
+            result = forwarded.last_manual_toggle_layout_is_ru;
+        }
+    }
+    drop(physical_grab);
+    result
 }
 
 pub(super) fn run_scoped_manual_correction(
@@ -136,6 +219,14 @@ pub(super) fn complete_manual_trigger(
         ctx.suppress_next_typing_assist_after_manual_replay,
         ctx.pending_typing_assist_after_space,
     );
+    ctx.shift_state.clear_shifts();
+    *ctx.dshift_state = DShiftState::Idle;
+    *ctx.pending_multi_tap = None;
+    *ctx.last_double_at = Some(Instant::now());
+    *ctx.clear_on_next_typing = true;
+}
+
+pub(super) fn reject_manual_trigger(ctx: ManualTriggerCompletion<'_>) {
     ctx.shift_state.clear_shifts();
     *ctx.dshift_state = DShiftState::Idle;
     *ctx.pending_multi_tap = None;

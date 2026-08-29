@@ -26,6 +26,13 @@ pub(crate) struct ShiftGestureHandoff {
     pub(crate) last_shift_release_at: Option<Instant>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct ExactManualToggleSuppression {
+    pub(crate) path: String,
+    pub(crate) epoch: u64,
+    pub(crate) expires_at: Instant,
+}
+
 #[derive(Debug, Clone, Default)]
 pub(crate) struct SharedState {
     pub(crate) active_path: Option<String>,
@@ -33,7 +40,10 @@ pub(crate) struct SharedState {
     pub(crate) handoff_tail_epoch: u64,
     pub(crate) handoff_focus_receipt: Option<String>,
     pub(crate) suppress_next_committed_tail_autocorrect: bool,
+    pub(crate) exact_manual_toggle_suppression: Option<ExactManualToggleSuppression>,
     pub(crate) preserve_active_path_until: Option<Instant>,
+    pub(crate) exact_manual_toggle_handoff_epoch: Option<u64>,
+    pub(crate) exact_manual_toggle_handoff_path: Option<String>,
     pub(crate) pending_auto_undo: Option<PendingImeAutoUndo>,
     pub(crate) pending_auto_undo_retry: Option<PendingImeAutoUndoRetry>,
     pub(crate) shift_gesture_handoff: Option<ShiftGestureHandoff>,

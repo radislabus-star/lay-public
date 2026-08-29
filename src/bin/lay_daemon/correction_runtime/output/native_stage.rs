@@ -59,6 +59,7 @@ fn forward_queued_after_native_output<'a, 'grab>(
             output.layout_is_ru,
             reason,
             output.trailing_spaces,
+            false,
         );
     }
 }

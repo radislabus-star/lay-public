@@ -1,0 +1,10 @@
+layout	us	40
+type	file	25
+space
+sleep	80
+type	ghjdthrf	25
+sleep	120
+double_shift	30
+type	f	0
+sleep	500
+enter

@@ -49,6 +49,7 @@ pub struct ManualTogglePlan {
 pub enum ImeManualToggleOutcome {
     NotHandled,
     DelegateDaemon,
+    DelegateExactImeTail,
     Handled { target_layout_is_ru: bool },
 }
 
@@ -61,7 +62,7 @@ impl ImeManualToggleOutcome {
 
     pub fn target_layout_is_ru(self) -> Option<bool> {
         match self {
-            Self::NotHandled | Self::DelegateDaemon => None,
+            Self::NotHandled | Self::DelegateDaemon | Self::DelegateExactImeTail => None,
             Self::Handled {
                 target_layout_is_ru,
             } => Some(target_layout_is_ru),
@@ -70,7 +71,7 @@ impl ImeManualToggleOutcome {
 
     pub fn as_legacy_v2(self) -> (bool, bool) {
         match self {
-            Self::NotHandled | Self::DelegateDaemon => (false, false),
+            Self::NotHandled | Self::DelegateDaemon | Self::DelegateExactImeTail => (false, false),
             Self::Handled {
                 target_layout_is_ru,
             } => (true, target_layout_is_ru),
@@ -84,6 +85,7 @@ impl ImeManualToggleOutcome {
                 target_layout_is_ru,
             } => (1, target_layout_is_ru),
             Self::DelegateDaemon => (2, false),
+            Self::DelegateExactImeTail => (3, false),
         }
     }
 
@@ -92,6 +94,7 @@ impl ImeManualToggleOutcome {
             (0, false) => Ok(Self::NotHandled),
             (1, target_layout_is_ru) => Ok(Self::handled(target_layout_is_ru)),
             (2, false) => Ok(Self::DelegateDaemon),
+            (3, false) => Ok(Self::DelegateExactImeTail),
             _ => Err("invalid ManualToggleV3 outcome"),
         }
     }
@@ -297,6 +300,10 @@ mod tests {
             ImeManualToggleOutcome::DelegateDaemon.as_legacy_v2(),
             (false, false)
         );
+        assert_eq!(
+            ImeManualToggleOutcome::DelegateExactImeTail.as_legacy_v2(),
+            (false, false)
+        );
 
         let handled = ImeManualToggleOutcome::handled(true);
         assert_eq!(handled.target_layout_is_ru(), Some(true));
@@ -308,6 +315,7 @@ mod tests {
         for outcome in [
             ImeManualToggleOutcome::NotHandled,
             ImeManualToggleOutcome::DelegateDaemon,
+            ImeManualToggleOutcome::DelegateExactImeTail,
             ImeManualToggleOutcome::handled(false),
             ImeManualToggleOutcome::handled(true),
         ] {
@@ -317,6 +325,7 @@ mod tests {
 
         assert!(ImeManualToggleOutcome::from_v3(0, true).is_err());
         assert!(ImeManualToggleOutcome::from_v3(2, true).is_err());
-        assert!(ImeManualToggleOutcome::from_v3(3, false).is_err());
+        assert!(ImeManualToggleOutcome::from_v3(3, true).is_err());
+        assert!(ImeManualToggleOutcome::from_v3(4, false).is_err());
     }
 }

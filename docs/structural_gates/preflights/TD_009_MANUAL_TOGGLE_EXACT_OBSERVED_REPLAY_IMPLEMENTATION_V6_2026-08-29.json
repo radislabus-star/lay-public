@@ -1,0 +1,153 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "td009-manual-toggle-exact-observed-replay-v6-20260829",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "design_decision": {
+    "baseline_fact": "Two immutable GTK live routes disproved RequireSurroundingText as a deterministic pre- or post-mutation acknowledgement. Official IBus source proves that legacy effects can straddle the processing_key_event boundary.",
+    "selected_route": "Committed-tail ManualToggleV3 delegates without an IBus text mutation. The daemon captures one exact VisibleTailV2 snapshot, builds one shared literal projection plan, acquires the physical grab, revalidates source focus epoch and suffix, establishes target-layout readiness, revalidates the same lease after the controlled engine handoff, and emits one Backspace plus exact uinput replay.",
+    "legacy_repair": "The old delegated-uinput route is reused only for its physical isolation and layout readiness. Its WordBuffer-derived plan is forbidden for IME committed tails because it can omit an accepted autocomplete suffix.",
+    "active_composition": "Active composition remains IME-owned and daemon WordBuffer remains a separate configured-backend lane.",
+    "rollback_boundary": "Remove the failed V4 pending fresh-snapshot fence, retain all V1-V4 and live-failure evidence, and leave installed runtime bytes unchanged."
+  },
+  "consequence_analysis": {
+    "candidate_and_ranking": "No candidate, ranking, correction model, dictionary, or keyboard mapping changes.",
+    "latency": "The route is synchronous and bounded by one snapshot call, two exact lease checks, existing layout readiness, and one short replay. No timer, polling, or retry is added.",
+    "cpu_rss_allocation": "One bounded plan, snapshot, lease, and key-event vector per explicit toggle; no worker, queue, cache, or persistent allocation.",
+    "cache_reload_learning": "Package, cache, reload, and learning authority are unchanged. Daemon replay memory is reconstructed only from the exact post-replay visible-tail projection.",
+    "concurrency": "Physical input remains grabbed from pre-mutation revalidation through replay. Any source, focus, epoch, suffix, layout-readiness, or second-lease mismatch aborts before Backspace.",
+    "failure_and_rollback": "Before-delete failure restores the initial layout best effort and leaves text unchanged. Any emission failure is terminal evidence and grants no retry. Managed-test cleanup restores desktop authority.",
+    "compatibility": "Active composition, daemon buffer, terminal passthrough, pending auto-undo, and the sole daemon pair detector keep distinct existing routes.",
+    "maintenance": "A dedicated exact committed-tail replay function avoids broadening the generic WordBuffer correction pipeline."
+  },
+  "baseline_checks": [
+    {"id":"td009-contract","kind":"file","path":"../../../tech_debt/009-fix-manual-toggle-visible-postcondition-race.md","expect":{"mode":"0664","size_bytes":9869,"sha256":"df97b7e2ffd225938cf24768142433843cef694b1db920c53d3fea1cc76b5d63"}},
+    {"id":"agents-contract","kind":"file","path":"../../../AGENTS.md","expect":{"mode":"0664","size_bytes":9997,"sha256":"d8d2b09b9686170fcb8a724b24ea545677d3addede404af82c235c8183cc51d4"}},
+    {"id":"route-v2-manifest","kind":"file","path":"TD_009_MANUAL_TOGGLE_EXACT_OBSERVED_REPLAY_ROUTE_V2_2026-08-29.json","expect":{"mode":"0664","size_bytes":7362,"sha256":"4972a8248825248bb4361e2871799d32ba5c540bf2333d0c99fe62a935706c18"}},
+    {"id":"route-v2-receipt","kind":"file","path":"../receipts/TD_009_MANUAL_TOGGLE_EXACT_OBSERVED_REPLAY_ROUTE_V2_2026-08-29.json","expect":{"mode":"0664","size_bytes":12318,"sha256":"6f26b67dd62227980726b8bf8ed9945a4003227a269a1d14353d282383f1e8f8"}},
+    {"id":"v5-blocked-manifest","kind":"file","path":"TD_009_MANUAL_TOGGLE_EXACT_OBSERVED_REPLAY_IMPLEMENTATION_V5_2026-08-29.json","expect":{"mode":"0664","size_bytes":19428,"sha256":"001ae010e70ee899152775054452399f4e482853121b576df5fb80ad096af84c"}},
+    {"id":"v5-blocked-receipt","kind":"file","path":"../receipts/TD_009_MANUAL_TOGGLE_EXACT_OBSERVED_REPLAY_IMPLEMENTATION_PREFLIGHT_V5_2026-08-29.json","expect":{"mode":"0664","size_bytes":11056,"sha256":"e74295fbf2bba1394384b31e30119d45c70b9cbdc3900e98c51d12f186708f7c"}},
+    {"id":"v4-manifest","kind":"file","path":"TD_009_MANUAL_TOGGLE_VISIBLE_POSTCONDITION_IMPLEMENTATION_V4_2026-08-29.json","expect":{"mode":"0664","size_bytes":21179,"sha256":"7ddc2a9cecd51a1fe2c2433a10d195c44f58c0934d2d02a6c0b905a18ec7d49e"}},
+    {"id":"v4-preflight-receipt","kind":"file","path":"../receipts/TD_009_MANUAL_TOGGLE_VISIBLE_POSTCONDITION_IMPLEMENTATION_PREFLIGHT_V4_2026-08-29.json","expect":{"mode":"0664","size_bytes":8698,"sha256":"3b7f29e04567c115c5228c106afb771a7fd002724225bf65eb7cec5bfc123958"}},
+    {"id":"v4-failed-live-receipt","kind":"file","path":"../receipts/TD_009_MANUAL_TOGGLE_VISIBLE_POSTCONDITION_V3_2026-08-29/SINGLE_US_TO_RU/RECEIPT.json","expect":{"mode":"0600","size_bytes":4680,"sha256":"b04d31bcaa7aee5134715cb2d29ef430e6319ee87d26e0651b74b8e55ad75e7a"}},
+    {"id":"v4-failed-live-trace","kind":"file","path":"../receipts/TD_009_MANUAL_TOGGLE_VISIBLE_POSTCONDITION_V3_2026-08-29/SINGLE_US_TO_RU/ghbdtn_fast_lshift_enter-a924fc9f61736ee0898e/ibus_engine_debug.jsonl","expect":{"mode":"0600","size_bytes":11929,"sha256":"0492d72d1b7055eeaf395472143dd2a408fb8d76e6722327fa731615ce4e23e8"}},
+    {"id":"manual-toggle-source","kind":"file","path":"../../../src/manual_toggle.rs","expect":{"mode":"0664","size_bytes":10742,"sha256":"68fd8c0051aad6d46e300084930a6f0296103c43ce04da674e7ad5eb6e20dba0"}},
+    {"id":"bridge-actions-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/bridge_actions.rs","expect":{"mode":"0664","size_bytes":10342,"sha256":"9d515bb6c02704f09b23166e8c0e1fd000cdc6a41c772cebd673b27fbb2aca4c"}},
+    {"id":"shift-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/shift.rs","expect":{"mode":"0664","size_bytes":7174,"sha256":"f57d375c7919f1281cc4fb939af87d462c69230af29b9b78e41ceaeeb293975c"}},
+    {"id":"committed-tail-v4-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/committed_tail.rs","expect":{"mode":"0664","size_bytes":38983,"sha256":"9d7a576c9684d3936f7babf2118cf5efc8eb563ef088082c34d7fc480f4eb3e8"}},
+    {"id":"engine-v4-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/engine.rs","expect":{"mode":"0664","size_bytes":18941,"sha256":"3cab1ed794b1c10020e1742c7cfa0d7eb8191a582068520eda0d55b4f598dab7"}},
+    {"id":"engine-types-v4-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/engine/types.rs","expect":{"mode":"0664","size_bytes":15736,"sha256":"cb7a5f8c0753b1554eeeccd5dcaf5b024c0fea728baf8268baac85369519dff7"}},
+    {"id":"engine-state-v4-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/state.rs","expect":{"mode":"0664","size_bytes":46810,"sha256":"78551c045c760c742b98ce84c1f3c926053e5d2c7aa7a811e8c8b6670d6e766c"}},
+    {"id":"tail-memory-v4-source","kind":"file","path":"../../../src/bin/lay_ibus_engine/tail_memory.rs","expect":{"mode":"0664","size_bytes":62477,"sha256":"c6cc277f7ffc0badf05a70045ec9c5aa03ab58306a142197836eeb66b0a6b932"}},
+    {"id":"daemon-ime-source","kind":"file","path":"../../../src/bin/lay_daemon/manual_trigger_runtime/ime.rs","expect":{"mode":"0664","size_bytes":3822,"sha256":"9f608319c056591c0ea56e5dd7cda1d65fbbb87f0a914bb8198270dd6e8ff418"}},
+    {"id":"ime-bridge-source","kind":"file","path":"../../../src/bin/lay_daemon/layout_controller/ime_bridge.rs","expect":{"mode":"0664","size_bytes":10390,"sha256":"4bf0d6996b375e599e8801da60bd46cfb021e925a35bb387b9231b321a268c49"}},
+    {"id":"pair-detector-source","kind":"file","path":"../../../src/bin/lay_daemon/manual_trigger_runtime/event.rs","expect":{"mode":"0664","size_bytes":6367,"sha256":"18096d6e5ba07a1fb7708f265805b96f5755e6f86d574dca4100bb7b3ee81f71"}},
+    {"id":"word-buffer-memory-source","kind":"file","path":"../../../src/word_buffer/replay_memory.rs","expect":{"mode":"0664","size_bytes":8481,"sha256":"fb005785fda7140f21bd40a75c268c3c0f029658cb18e8a7108ae81878212977"}},
+    {"id":"desktop-harness-source","kind":"file","path":"../../../scripts/runtime_smoke/desktop.py","expect":{"mode":"0664","size_bytes":17132,"sha256":"78f72e7953e3da60e3543ca95ff9d1af711815d092318937c5fbd16c2f562bd1"}},
+    {"id":"desktop-harness-tests","kind":"file","path":"../../../tests/test_runtime_smoke_isolation.py","expect":{"mode":"0664","size_bytes":36940,"sha256":"23aea1ee05fddaf9d6ebd3d768d48440535c3f2bd066dbe8089a7394b3314d93"}},
+    {"id":"installed-daemon","kind":"file","path":"/home/ubu/.local/lib/lay/bin/lay-daemon","expect":{"mode":"0755","size_bytes":8890872,"sha256":"bab99d5258a442b9345d56feac39a209d600c607ec28fe92b6d0fdcdf5db116b"}},
+    {"id":"installed-engine","kind":"file","path":"/home/ubu/.local/lib/lay/bin/lay-ibus-engine","expect":{"mode":"0755","size_bytes":7161768,"sha256":"2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0"}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id":"remove-falsified-v4-fence","kind":"source_edit"},
+      {"id":"add-exact-ime-tail-replay","kind":"source_edit"},
+      {"id":"run-focused-checks","kind":"local_test"},
+      {"id":"run-managed-gtk-proof","kind":"managed_desktop_test"}
+    ],
+    "forbidden": [
+      "daemon_pair_detector_change",
+      "legacy_ibus_committed_tail_mutation",
+      "second_text_mutation",
+      "timer_poll_or_retry",
+      "unisolated_exact_replay",
+      "ime_tail_plan_from_word_buffer",
+      "installed_runtime_change"
+    ]
+  },
+  "source_checks": [
+    {
+      "id":"manual-toggle-shared-planner",
+      "path":"../../../src/manual_toggle.rs",
+      "sha256":"68fd8c0051aad6d46e300084930a6f0296103c43ce04da674e7ad5eb6e20dba0",
+      "forbidden_effect_patterns":[
+        {"effect":"legacy_ibus_committed_tail_mutation","regex":"legacy_ibus_committed_tail_mutation"},
+        {"effect":"second_text_mutation","regex":"retry_exact_ime_tail_replay|second_exact_ime_tail_mutation"},
+        {"effect":"timer_poll_or_retry","regex":"poll_exact_ime_tail|retry_exact_ime_tail|sleep_exact_ime_tail"},
+        {"effect":"unisolated_exact_replay","regex":"allow_unisolated_exact_ime_tail"},
+        {"effect":"ime_tail_plan_from_word_buffer","regex":"exact_ime_tail_from_word_buffer"},
+        {"effect":"installed_runtime_change","regex":"(?:install\\.sh|\\.local/lib/lay/bin)"}
+      ]
+    },
+    {
+      "id":"daemon-detector-owner",
+      "path":"../../../src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+      "sha256":"18096d6e5ba07a1fb7708f265805b96f5755e6f86d574dca4100bb7b3ee81f71",
+      "forbidden_effect_patterns":[
+        {"effect":"daemon_pair_detector_change","regex":"second_pair_detector|ime_local_pair_detector|ProcessKeyEventAtomicV1"}
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {"id":"installed-daemon-runtime","path":"/home/ubu/.local/lib/lay/bin/lay-daemon","policy":"byte_identical","cursor_policy":"freeze_entire_artifact","baseline_check_id":"installed-daemon","rollback_policy":"candidate implementation and managed tests cannot install or replace runtime bytes"},
+    {"id":"installed-engine-runtime","path":"/home/ubu/.local/lib/lay/bin/lay-ibus-engine","policy":"byte_identical","cursor_policy":"freeze_entire_artifact","baseline_check_id":"installed-engine","rollback_policy":"candidate implementation and managed tests cannot install or replace runtime bytes"},
+    {"id":"v4-live-failure","path":"../receipts/TD_009_MANUAL_TOGGLE_VISIBLE_POSTCONDITION_V3_2026-08-29/SINGLE_US_TO_RU/RECEIPT.json","policy":"byte_identical","cursor_policy":"freeze_entire_artifact","baseline_check_id":"v4-failed-live-receipt","rollback_policy":"retain immutable failure evidence without overwrite"},
+    {"id":"v4-live-trace","path":"../receipts/TD_009_MANUAL_TOGGLE_VISIBLE_POSTCONDITION_V3_2026-08-29/SINGLE_US_TO_RU/ghbdtn_fast_lshift_enter-a924fc9f61736ee0898e/ibus_engine_debug.jsonl","policy":"byte_identical","cursor_policy":"freeze_entire_artifact","baseline_check_id":"v4-failed-live-trace","rollback_policy":"retain immutable failure trace without overwrite"},
+    {"id":"route-v2-proof","path":"../receipts/TD_009_MANUAL_TOGGLE_EXACT_OBSERVED_REPLAY_ROUTE_V2_2026-08-29.json","policy":"byte_identical","cursor_policy":"freeze_entire_artifact","baseline_check_id":"route-v2-receipt","rollback_policy":"retain the selected structural route receipt"},
+    {"id":"daemon-detector","path":"../../../src/bin/lay_daemon/manual_trigger_runtime/event.rs","policy":"byte_identical","cursor_policy":"freeze_entire_artifact","baseline_check_id":"pair-detector-source","rollback_policy":"TD-009 has no authority to change detector bytes"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id":"managed-desktop-restoration",
+      "source":"TD-002 managed runtime-smoke capture and final projection",
+      "comparison":"exact_stable_projection",
+      "stable_fields":["installed daemon and engine SHA-256","lay-daemon executable and arguments","service enabled and active state","active input source and layout","original trace destination"],
+      "expected_to_change_fields":["test-owned daemon and engine PID/start time","candidate evidence paths","argv[0] symlink spelling"],
+      "observed_not_compared_fields":["wall-clock timestamps","volatile cursor trace count"],
+      "reason":"candidate tests may restart only managed test processes and must restore the captured desktop authority",
+      "test_id":"desktop-restoration"
+    }
+  ],
+  "state_machine": {
+    "initial_state":"V4_FALSIFIED_RUNTIME_RESTORED",
+    "steps":[
+      {"id":"remove-v4-fresh-snapshot-fence","from":"V4_FALSIFIED_RUNTIME_RESTORED","to":"FALSIFIED_SOURCE_REMOVED","mutates":true,"failure_state":"BLOCKED_SOURCE_RUNTIME_UNCHANGED","cleanup":"retain the scoped diff and immutable evidence; do not change installed runtime","preserves":["installed-daemon-runtime","installed-engine-runtime","v4-live-failure","v4-live-trace","route-v2-proof","daemon-detector"],"test_id":"v4-rollback-fault"},
+      {"id":"implement-and-check-exact-replay","from":"FALSIFIED_SOURCE_REMOVED","to":"CANDIDATE_LOCALLY_VERIFIED","mutates":true,"failure_state":"BLOCKED_SOURCE_RUNTIME_UNCHANGED","cleanup":"retain failing local evidence and source diff; no live run or installation","preserves":["installed-daemon-runtime","installed-engine-runtime","v4-live-failure","v4-live-trace","route-v2-proof","daemon-detector"],"test_id":"exact-replay-source-fault"},
+      {"id":"run-first-managed-gtk-case","from":"CANDIDATE_LOCALLY_VERIFIED","to":"FIRST_LIVE_CASE_PASS","mutates":true,"failure_state":"BLOCKED_LIVE_RUNTIME_RESTORED","cleanup":"stop candidate-owned processes, restore desktop projection, retain new receipt, and do not retry its namespace","preserves":["installed-daemon-runtime","installed-engine-runtime","v4-live-failure","v4-live-trace","route-v2-proof","daemon-detector"],"test_id":"managed-case-fault"},
+      {"id":"run-bidirectional-and-inverse-matrix","from":"FIRST_LIVE_CASE_PASS","to":"TD009_PASS_RUNTIME_UNCHANGED","mutates":true,"failure_state":"BLOCKED_LIVE_RUNTIME_RESTORED","cleanup":"stop candidate-owned processes, restore desktop projection, and retain all completed receipts","preserves":["installed-daemon-runtime","installed-engine-runtime","v4-live-failure","v4-live-trace","route-v2-proof","daemon-detector"],"test_id":"managed-matrix-fault"}
+    ],
+    "terminal_states":["TD009_PASS_RUNTIME_UNCHANGED","BLOCKED_SOURCE_RUNTIME_UNCHANGED","BLOCKED_LIVE_RUNTIME_RESTORED"]
+  },
+  "invariants": [
+    {"id":"one-pair-detector","statement":"only the unchanged daemon release-pair detector fires a manual toggle","test_id":"double-shift-owner-contract"},
+    {"id":"one-exact-plan","statement":"the committed-tail replay plan is derived from exact VisibleTailV2 text and layout, never daemon WordBuffer","test_id":"exact-snapshot-plan"},
+    {"id":"no-ibus-committed-mutation","statement":"legacy committed-tail ManualToggleV3 delegates before DeleteSurroundingText or CommitText while active composition remains IME-owned","test_id":"typed-route-separation"},
+    {"id":"lease-before-delete","statement":"physical grab and exact source focus epoch suffix validation both before and after controlled layout handoff precede the first Backspace","test_id":"lease-fault-matrix"},
+    {"id":"one-physical-mutation","statement":"one accepted plan emits one Backspace batch and one exact replay; no retry or second mutation exists","test_id":"single-replay-contract"},
+    {"id":"inverse-toggle","statement":"a later Double Shift snapshots the new visible tail and performs the inverse through the same route","test_id":"bidirectional-inverse"},
+    {"id":"runtime-unchanged","statement":"candidate checks and managed live proof preserve installed daemon and engine bytes","test_id":"installed-runtime-parity"}
+  ],
+  "identity_contracts": [
+    {"id":"snapshot-to-plan","producer":"one VisibleTailV2 source text layout epoch and focus tuple","consumer":"one shared ManualTogglePlan plus exact tail lease","comparison":"source must be ime_committed_tail; plan original tail delete count replacement direction epoch and focus bind the same snapshot","test_id":"snapshot-plan-parity"},
+    {"id":"lease-to-replay","producer":"the immutable exact IME tail lease captured before physical grab","consumer":"the sole daemon uinput mutation owner","comparison":"same source epoch suffix and nonempty focus before layout; only engine path may change after controlled handoff","test_id":"lease-replay-parity"},
+    {"id":"candidate-to-gtk","producer":"one candidate replay receipt and trace","consumer":"managed GTK client text and layout projection","comparison":"expected visible text, target layout, one manual-toggle trace, malformed zero, and exact desktop restoration","test_id":"managed-gtk-proof"}
+  ],
+  "tests": [
+    {"id":"v4-rollback-fault","kind":"fault_injection","expected":"partial rollback cannot touch installed runtime or immutable V4 evidence"},
+    {"id":"exact-replay-source-fault","kind":"fault_injection","expected":"compile or focused-test failure remains repository-local and grants no live mutation"},
+    {"id":"managed-case-fault","kind":"fault_injection","expected":"setup assertion timeout signal or teardown failure retains its receipt and restores the desktop"},
+    {"id":"managed-matrix-fault","kind":"fault_injection","expected":"a failed matrix case is terminal for its namespace and cleanup restores desktop authority"},
+    {"id":"double-shift-owner-contract","kind":"integration","expected":"the daemon detector bytes remain exact and one physical pair produces one dispatch"},
+    {"id":"exact-snapshot-plan","kind":"unit","expected":"committed-tail snapshot including autocomplete and trailing whitespace yields one exact reversible plan and lease"},
+    {"id":"snapshot-plan-parity","kind":"parity","expected":"the plan and immutable lease preserve the exact source text layout epoch focus suffix and delete count from one VisibleTailV2 tuple"},
+    {"id":"typed-route-separation","kind":"integration","expected":"committed tail delegates exact replay, active composition remains IME-owned, daemon buffer remains separate"},
+    {"id":"lease-fault-matrix","kind":"fault_injection","expected":"source focus epoch suffix length layout-readiness and post-handoff mismatch all abort before Backspace"},
+    {"id":"lease-replay-parity","kind":"parity","expected":"the sole mutation consumes the same lease identity validated before and after controlled layout handoff"},
+    {"id":"single-replay-contract","kind":"unit","expected":"authorized exact plan has one delete batch and one replay batch with no retry path"},
+    {"id":"bidirectional-inverse","kind":"integration","expected":"US to RU, RU to US, and two consecutive inverse toggles use the same route"},
+    {"id":"desktop-restoration","kind":"parity","expected":"managed cases restore every stable desktop projection field"},
+    {"id":"installed-runtime-parity","kind":"parity","expected":"installed daemon and engine mode size and SHA-256 remain exact"},
+    {"id":"managed-gtk-proof","kind":"parity","expected":"both directions and inverse cases have exact visible text and layout with one trace per physical pair"}
+  ]
+}

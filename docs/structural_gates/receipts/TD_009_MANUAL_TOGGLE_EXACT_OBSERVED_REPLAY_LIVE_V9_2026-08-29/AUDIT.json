@@ -1,0 +1,39 @@
+{
+  "schema": "lay.td009-exact-observed-replay-live-audit.v3",
+  "verdict": "TD009_EXACT_OBSERVED_REPLAY_LIVE_PASS",
+  "matrix": {
+    "all_passed": true,
+    "cases_passed": 7,
+    "cases_total": 7,
+    "desktop_restoration_verified": true,
+    "independent_receipt_validation": "PASS",
+    "receipt_path": "MATRIX_BIDIRECTIONAL_INVERSE_AUTOCOMPLETE/RECEIPT.json",
+    "receipt_sha256": "00da7354fb41aef114740c3d43b7d87a82a64cca44823ca6afa6b1e00e0c27e8"
+  },
+  "required_boundaries": {
+    "manual_toggle_gestures": 10,
+    "exact_checked_suppression_arms": 10,
+    "generic_suppression_arms": 0,
+    "exact_suppression_cancellations_on_success_routes": 0,
+    "autocomplete_manual_toggle_suppression": "PASS",
+    "autocomplete_space_autocorrect_authorized_after_replay": 0,
+    "fast_four_shift_us_ru_us": "PASS",
+    "fast_four_shift_ru_us_ru": "PASS",
+    "manual_toggle_trace_malformed": 0,
+    "failure_path_exact_suppression_rollback_unit_test": "PASS"
+  },
+  "candidate_binaries": {
+    "lay_daemon_sha256": "df059e22ec384308b722d8af5bc6dca61693da312d2685331215b157efb20131",
+    "lay_ibus_engine_sha256": "e3a452c1240840424489cf888018743878f816b9c126e27eb1cf368350b5c2d0",
+    "lay_test_input_sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a"
+  },
+  "installed_runtime": {
+    "changed": false,
+    "lay_daemon_before_sha256": "bab99d5258a442b9345d56feac39a209d600c607ec28fe92b6d0fdcdf5db116b",
+    "lay_daemon_after_sha256": "bab99d5258a442b9345d56feac39a209d600c607ec28fe92b6d0fdcdf5db116b",
+    "lay_ibus_engine_before_sha256": "2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0",
+    "lay_ibus_engine_after_sha256": "2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0",
+    "lay_test_input_before_sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a",
+    "lay_test_input_after_sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a"
+  }
+}

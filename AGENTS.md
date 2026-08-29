@@ -21,9 +21,9 @@ Rules:
 
 ## Protected Double Shift route
 
-- In the deployed legacy route, physical Double Shift has exactly one detector:
-  `lay-daemon` trigger FSM. It invokes `ManualToggleV3`; the focused IBus engine
-  is the single text mutation backend.
+- Physical Double Shift has exactly one detector: the `lay-daemon` trigger FSM.
+  It invokes `ManualToggleV3`; that reply selects one typed execution route and
+  never authorizes a second detector or mutation.
 - Legacy IBus `ProcessKeyEvent` is observe-only for Shift press/release events.
   Never add local pair recognition or call a manual-toggle/text-edit method from
   that route. Two detectors produce the forbidden `x -> y -> x` reversal.
@@ -36,29 +36,23 @@ Rules:
   `а <-> f` and `привет <-> ghbdtn`. It must not call lexical correction,
   ranking, morphology, learning, or any model.
 - After IME autocomplete acceptance, the accepted token is an
-  `ImeCommittedTail`. `ManualToggleV3` must execute
-  `toggle_committed_tail_target`; only `DaemonWordBuffer` may return
-  `DelegateDaemon`. Delegating an accepted completion loses the suffix that
-  only the IME observed and makes the next Double Shift a no-op.
+  `ImeCommittedTail`. `ManualToggleV3` must return the typed exact-tail
+  disposition. The daemon then reads one exact `VisibleTailV2` snapshot from
+  the IME; it must never reconstruct that suffix from `DaemonWordBuffer`.
 - Every complete `press -> release -> press -> release` pair toggles once and
   rearms immediately. Do not add a burst latch, quiet-window rearm, pair
   debounce, or multi-tap delay. Four Shift taps are exactly two toggles.
-- For a committed-tail projection with SurroundingText, changing the active
-  GNOME source and matching IBus engine is owned by the client-visible
-  postcondition. Never switch either immediately after delete-plus-commit
-  dispatch: wait until the exact expected replacement is observed. The
-  no-SurroundingText fallback remains immediate. A successful postcondition
-  requires both stack members, not one as a fallback for the other.
-- On legacy IBus, emit `DeleteSurroundingText` and `CommitText` consecutively
-  from the same input handler. Do not expose a wait-for-deleted-snapshot phase:
-  it makes the client visibly blank between the two signals. Arm the expected
-  full final snapshot before dispatch and accept only that exact postcondition;
-  suffix-only matching must not accept an appended transient such as
-  `ghbdtnпривет`.
-- An IME-handled `ManualToggleV3` reply must not trigger
-  `switch_to_target_layout` in `lay-daemon`; that would create a second layout
-  owner and force focus handoff before the IBus postcondition. Daemon/uinput
-  delegation retains its existing daemon-owned layout transition.
+- Legacy sequential `DeleteSurroundingText` plus `CommitText` is not the GTK
+  committed-tail route: two sealed attempts proved that
+  `RequireSurroundingText` does not produce a deterministic callback there.
+- Exact committed-tail replay requires an active physical-input grab, two
+  validations of the same source/focus/epoch/tail lease, one no-fallback GNOME
+  `ActivateLayout`, exact shell and IBus readback, checked autocorrect
+  suppression, and one bounded zero-pace uinput delete-plus-replay. No polling,
+  sleep, retry, second mutation, or generic layout reconciliation is admitted.
+- Do not arm committed-tail suppression merely when `ManualToggleV3` delegates.
+  Arm it only after exact capture, both lease checks, and target-layout handoff
+  succeed, immediately before the first Backspace.
 - The GNOME extension activates the target Lay input source exactly once.
   GNOME's input-source manager owns the resulting IBus transition; do not run a
   second `ibus engine` command from `activateLayoutId` or its

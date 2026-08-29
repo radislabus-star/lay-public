@@ -70,7 +70,7 @@ The 88 full-suite failures must not become 88 example-specific patches:
 |---:|---|---|---|---|---|
 | 001 | [Repair architecture and audit gates](001-repair-architecture-and-audit-gates.md) | P0 | M | DONE | Makes structural checks truthful again |
 | 002 | [Isolate live runtime smoke cases](002-isolate-live-runtime-smoke.md) | P0 | M | DONE | Makes user-visible proof safe and case-independent |
-| 003 | [Converge the manual-toggle visible postcondition](009-fix-manual-toggle-visible-postcondition-race.md) | P0 | M | READY | Removes the isolated Double Shift commit race without timing sleeps |
+| 003 | [Converge the manual-toggle visible postcondition](009-fix-manual-toggle-visible-postcondition-race.md) | P0 | M | DONE | Removes the isolated Double Shift commit race without timing sleeps |
 | 004 | [Fix pending preedit refresh convergence](003-fix-preedit-refresh-convergence.md) | P0 | S | READY | Removes visible stale/duplicated IME suffix |
 | 005 | [Enforce the real MSRV and pinned lint toolchain](004-enforce-real-msrv.md) | P0 | S | READY | Replaces false and floating compiler contracts |
 | 006 | [Make the lint gate truthful](005-make-lint-gate-truthful.md) | P0 | M | READY | Restores an enforceable green CI contract |

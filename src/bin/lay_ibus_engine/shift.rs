@@ -44,7 +44,12 @@ impl LayIbusEngine {
         let authority = self.manual_toggle_authority();
         match authority {
             ManualToggleAuthority::ImeCommittedTail => {
-                return self.toggle_committed_tail_target(emitter).await;
+                self.prepare_exact_manual_toggle_layout_handoff();
+                trace::record(
+                    r#"{"kind":"ibus_manual_toggle_delegation","source":"ime_committed_tail"}"#,
+                );
+                self.trace_key("double_shift_defer_exact_ime_tail", 0, 0, false, None);
+                return Ok(None);
             }
             ManualToggleAuthority::DaemonWordBuffer => {
                 self.defer_committed_tail_manual_toggle_to_daemon();
@@ -83,6 +88,7 @@ impl LayIbusEngine {
         self.commit_verified_active_composition(emitter, authorized_edit)
             .await?;
         self.suppress_next_committed_tail_autocorrect = plan.suppress_next_autocorrect;
+        self.exact_manual_toggle_suppression = None;
         self.sync_layout_after_manual_toggle(&plan.replacement);
         self.trace_key("double_shift_commit", 0, 0, true, None);
         Ok(Some(plan.target_layout_is_ru))
@@ -90,6 +96,7 @@ impl LayIbusEngine {
 
     fn defer_committed_tail_manual_toggle_to_daemon(&mut self) {
         self.suppress_next_committed_tail_autocorrect = true;
+        self.exact_manual_toggle_suppression = None;
     }
 }
 
@@ -129,7 +136,7 @@ mod tests {
     }
 
     #[test]
-    fn physical_double_shift_owner_routes_ime_committed_tail_to_ime_executor() {
+    fn physical_double_shift_delegates_committed_tail_without_legacy_ibus_mutation() {
         let source = include_str!("shift.rs");
         let production = source.split("#[cfg(test)]").next().unwrap();
         let committed_tail_arm = production
@@ -140,8 +147,10 @@ mod tests {
             .next()
             .expect("daemon authority arm follows committed-tail arm");
 
-        assert!(committed_tail_arm.contains("toggle_committed_tail_target(emitter).await"));
+        assert!(committed_tail_arm.contains("prepare_exact_manual_toggle_layout_handoff"));
         assert!(!committed_tail_arm.contains("defer_committed_tail_manual_toggle_to_daemon"));
+        assert!(committed_tail_arm.contains("ime_committed_tail"));
+        assert!(!committed_tail_arm.contains("toggle_committed_tail_target(emitter).await"));
     }
 
     #[test]

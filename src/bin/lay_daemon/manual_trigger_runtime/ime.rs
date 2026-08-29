@@ -1,10 +1,15 @@
-use super::super::{active_text_backend, log, try_ime_manual_toggle, ManualCorrectionOutputRoute};
+use super::super::{
+    active_text_backend, capture_ime_committed_tail_replay, log, try_ime_manual_toggle,
+    ImeCommittedTailReplay, ManualCorrectionOutputRoute,
+};
 use lay::manual_toggle::ImeManualToggleOutcome;
 use lay::word_buffer::WordBuffer;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum ImeManualToggleDispatch {
     DelegateDaemon(ManualCorrectionOutputRoute),
+    ReplayExactImeTail(ImeCommittedTailReplay),
+    RejectExactImeTailCapture,
     Complete(Option<bool>),
 }
 
@@ -22,41 +27,40 @@ pub(crate) fn dispatch_ime_manual_toggle(buffer: &mut WordBuffer) -> ImeManualTo
 
 fn run_ime_manual_toggle() -> ImeManualToggleDispatch {
     match try_ime_manual_toggle() {
-        Ok(outcome @ ImeManualToggleOutcome::Handled { .. }) => {
+        Ok(ImeManualToggleOutcome::Handled {
+            target_layout_is_ru,
+        }) => {
             log("· physical manual trigger handled by focused IME engine");
-            dispatch_from_result(Ok(outcome))
+            ImeManualToggleDispatch::Complete(Some(target_layout_is_ru))
         }
         Ok(ImeManualToggleOutcome::DelegateDaemon) => {
             log("· physical manual trigger delegated to daemon WordBuffer");
-            dispatch_from_result(Ok(ImeManualToggleOutcome::DelegateDaemon))
+            ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::ConfiguredBackend)
+        }
+        Ok(ImeManualToggleOutcome::DelegateExactImeTail) => {
+            match capture_ime_committed_tail_replay() {
+                Ok(replay) => {
+                    log("· physical manual trigger delegated with exact IME committed tail");
+                    ImeManualToggleDispatch::ReplayExactImeTail(replay)
+                }
+                Err(error) => {
+                    log(&format!(
+                        "⚠ exact IME committed-tail capture failed before replay: {error}; identity-free cancellation forbidden, bounded handoff will expire"
+                    ));
+                    ImeManualToggleDispatch::RejectExactImeTailCapture
+                }
+            }
         }
         Ok(ImeManualToggleOutcome::NotHandled) => {
             log("· physical manual trigger blocked by focused IME owner");
-            dispatch_from_result(Ok(ImeManualToggleOutcome::NotHandled))
+            ImeManualToggleDispatch::Complete(None)
         }
         Err(error) => {
-            log(&format!("⚠ IME physical manual trigger failed: {error}"));
-            dispatch_from_result(Err(error))
+            log(&format!(
+                "⚠ IME physical manual trigger failed: {error}; identity-free cancellation forbidden"
+            ));
+            ImeManualToggleDispatch::Complete(None)
         }
-    }
-}
-
-fn dispatch_from_result(result: Result<ImeManualToggleOutcome, String>) -> ImeManualToggleDispatch {
-    match result {
-        Ok(outcome) => dispatch_from_outcome(outcome),
-        Err(_) => ImeManualToggleDispatch::Complete(None),
-    }
-}
-
-fn dispatch_from_outcome(outcome: ImeManualToggleOutcome) -> ImeManualToggleDispatch {
-    match outcome {
-        ImeManualToggleOutcome::DelegateDaemon => {
-            ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::ConfiguredBackend)
-        }
-        ImeManualToggleOutcome::NotHandled => ImeManualToggleDispatch::Complete(None),
-        ImeManualToggleOutcome::Handled {
-            target_layout_is_ru,
-        } => ImeManualToggleDispatch::Complete(Some(target_layout_is_ru)),
     }
 }
 
@@ -78,22 +82,21 @@ mod tests {
     }
 
     #[test]
-    fn ime_dispatch_shape_delegates_only_the_explicit_daemon_outcome() {
-        assert_eq!(
-            dispatch_from_outcome(ImeManualToggleOutcome::DelegateDaemon),
-            ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::ConfiguredBackend,)
-        );
-        assert_eq!(
-            dispatch_from_outcome(ImeManualToggleOutcome::NotHandled),
-            ImeManualToggleDispatch::Complete(None)
-        );
-        assert_eq!(
-            dispatch_from_outcome(ImeManualToggleOutcome::handled(true)),
-            ImeManualToggleDispatch::Complete(Some(true))
-        );
-        assert_eq!(
-            dispatch_from_result(Err("malformed ManualToggleV3 reply".to_string())),
-            ImeManualToggleDispatch::Complete(None)
-        );
+    fn exact_tail_disposition_cannot_be_downgraded_to_a_completed_noop() {
+        let source = include_str!("ime.rs");
+        let production = source.split("#[cfg(test)]").next().expect("production");
+        let exact_arm = production
+            .split("Ok(ImeManualToggleOutcome::DelegateExactImeTail)")
+            .nth(1)
+            .expect("exact-tail arm")
+            .split("Ok(ImeManualToggleOutcome::NotHandled)")
+            .next()
+            .expect("next arm");
+
+        assert!(exact_arm.contains("capture_ime_committed_tail_replay()"));
+        assert!(exact_arm.contains("ReplayExactImeTail(replay)"));
+        assert!(exact_arm.contains("RejectExactImeTailCapture"));
+        assert!(!exact_arm.contains("DelegateDaemon"));
+        assert!(!exact_arm.contains("Complete(None)"));
     }
 }

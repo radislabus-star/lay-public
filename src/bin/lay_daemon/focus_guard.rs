@@ -4,7 +4,7 @@ use std::os::fd::RawFd;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
-use super::{active_layout_backend, call_focused_window_info, log};
+use super::{active_layout_backend, call_focused_window_info, call_focused_window_info_once, log};
 
 pub(super) const FOCUS_IGNORE_POLL_INTERVAL_MS: u64 = 500;
 pub(super) const FOCUS_KEY_EVENT_POLL_INTERVAL_MS: u64 = 50;
@@ -183,6 +183,24 @@ pub(super) fn focused_window_identity_from_json(json: &str) -> Option<String> {
         None
     } else {
         Some(format!("gnome-window:fallback:{}", parts.join("\u{1f}")))
+    }
+}
+
+pub(super) fn capture_exact_focused_window_identity() -> Result<String, String> {
+    let json = call_focused_window_info_once()
+        .map_err(|error| format!("exact focused-window read failed: {error}"))?;
+    focused_window_identity_from_json(&json)
+        .ok_or_else(|| "exact focused-window identity is unavailable".to_string())
+}
+
+pub(super) fn verify_exact_focused_window_identity(expected: &str) -> Result<(), String> {
+    let observed = capture_exact_focused_window_identity()?;
+    if observed == expected {
+        Ok(())
+    } else {
+        Err(format!(
+            "focused window changed: expected={expected:?} observed={observed:?}"
+        ))
     }
 }
 

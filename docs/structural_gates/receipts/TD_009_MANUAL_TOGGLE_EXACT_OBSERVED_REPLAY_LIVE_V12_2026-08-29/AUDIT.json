@@ -1,0 +1,15 @@
+{
+  "schema": "lay.td009-exact-observed-replay-live-audit.v5",
+  "verdict": "REJECTED_PRE_GRAB_QUEUE_RACE",
+  "selected": false,
+  "matrix": {
+    "all_passed": false,
+    "cases_passed": 5,
+    "cases_total": 8,
+    "desktop_restoration_verified": true,
+    "receipt_path": "MATRIX_BIDIRECTIONAL_INVERSE_AUTOCOMPLETE/RECEIPT.json",
+    "receipt_sha256": "69d7fd0c53d32970fc3c86c57f69e108b0f29a1b585ffc3900a07121c97180c6"
+  },
+  "failure": "fast inverse gestures were swallowed and a zero-settle ordinary key reached the old field before exact replay isolation",
+  "runtime_authority_changed": false
+}

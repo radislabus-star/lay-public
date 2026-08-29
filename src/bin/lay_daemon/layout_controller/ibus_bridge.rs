@@ -8,6 +8,17 @@ pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {
     read_engine().map(|engine| is_ru_layout_id(&engine))
 }
 
+pub(super) fn verify_engine_once(expected_engine: &str) -> Result<(), String> {
+    let observed_engine = read_engine()?;
+    if observed_engine == expected_engine {
+        Ok(())
+    } else {
+        Err(format!(
+            "IBus engine readback mismatch: expected={expected_engine} actual={observed_engine}"
+        ))
+    }
+}
+
 pub(super) fn ensure_engine(ibus_engine: &str, target_is_ru: bool) -> Result<(), String> {
     if read_engine().is_ok_and(|engine| engine == ibus_engine) {
         return Ok(());

@@ -309,6 +309,7 @@ impl LayIbusEngine {
             pending_visible_postcondition: None,
             pending_ime_completion_learning: None,
             suppress_next_committed_tail_autocorrect: false,
+            exact_manual_toggle_suppression: None,
             word_input_mode: None,
             managed_input,
             config,
@@ -344,6 +345,7 @@ impl LayIbusEngine {
             self.recent_committed_tail_replace = None;
             self.word_input_mode = None;
             self.suppress_next_committed_tail_autocorrect = false;
+            self.exact_manual_toggle_suppression = None;
             self.clear_autocorrect_suppression_handoff();
         }
         self.shift_active = false;
@@ -403,7 +405,9 @@ impl LayIbusEngine {
         self.surrounding_text_snapshot = None;
         self.pending_manual_toggle = false;
         self.rebuild_preedit_fast_from_tail();
-        self.publish_tail_handoff();
+        if !self.exact_manual_toggle_handoff_is_live() {
+            self.publish_tail_handoff();
+        }
     }
 
     /// Replaces text that has already been committed into the focused client.
@@ -607,6 +611,7 @@ impl LayIbusEngine {
         self.publish_active_path_preserve_handoff(now + Duration::from_millis(700));
         if suppress_next_autocorrect {
             self.suppress_next_committed_tail_autocorrect = true;
+            self.exact_manual_toggle_suppression = None;
             self.publish_autocorrect_suppression_handoff();
         }
         if self.should_skip_duplicate_committed_tail_replace(backspaces, &logical_text, now) {

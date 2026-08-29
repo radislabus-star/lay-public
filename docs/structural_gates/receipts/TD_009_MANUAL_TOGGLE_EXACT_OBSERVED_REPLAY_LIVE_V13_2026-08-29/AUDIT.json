@@ -1,0 +1,15 @@
+{
+  "schema": "lay.td009-exact-observed-replay-live-audit.v5",
+  "verdict": "REJECTED_QUEUED_INVERSE_WITHOUT_SETTLEMENT",
+  "selected": false,
+  "matrix": {
+    "all_passed": false,
+    "cases_passed": 6,
+    "cases_total": 8,
+    "desktop_restoration_verified": true,
+    "receipt_path": "MATRIX_BIDIRECTIONAL_INVERSE_AUTOCOMPLETE/RECEIPT.json",
+    "receipt_sha256": "87d14e93822e3f5349497815216d9785ed01a4c960203037943d7d58cf58c41f"
+  },
+  "failure": "queued inverse admission raced the still-in-flight first replay and captured a partial committed tail",
+  "runtime_authority_changed": false
+}

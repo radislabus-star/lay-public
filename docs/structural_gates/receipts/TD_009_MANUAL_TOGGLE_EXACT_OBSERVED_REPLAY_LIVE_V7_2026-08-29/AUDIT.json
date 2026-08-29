@@ -1,0 +1,34 @@
+{
+  "schema": "lay.td009-exact-observed-replay-live-audit.v1",
+  "verdict": "TD009_EXACT_OBSERVED_REPLAY_LIVE_PASS",
+  "matrix": {
+    "all_passed": true,
+    "cases_passed": 7,
+    "cases_total": 7,
+    "desktop_restoration_verified": true,
+    "independent_receipt_validation": "PASS",
+    "receipt_path": "MATRIX_BIDIRECTIONAL_INVERSE_AUTOCOMPLETE/RECEIPT.json",
+    "receipt_sha256": "b992e259c8fa337dbb6b6cf3446ed503662612b7493517d666a483a078af96c9"
+  },
+  "required_boundaries": {
+    "autocomplete_manual_toggle_suppression": "PASS",
+    "autocomplete_space_autocorrect_authorized_after_replay": 0,
+    "fast_four_shift_us_ru_us": "PASS",
+    "fast_four_shift_ru_us_ru": "PASS",
+    "manual_toggle_trace_malformed": 0
+  },
+  "candidate_binaries": {
+    "lay_daemon_sha256": "3788623c29c94f8e3169120a7baa30a606dad5b0c7344abd284a4e9117bdc010",
+    "lay_ibus_engine_sha256": "13b8d1cae65ebd90fe64456e7c981360376e0177d69be8020b39ca97a530a38a",
+    "lay_test_input_sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a"
+  },
+  "installed_runtime": {
+    "changed": false,
+    "lay_daemon_before_sha256": "bab99d5258a442b9345d56feac39a209d600c607ec28fe92b6d0fdcdf5db116b",
+    "lay_daemon_after_sha256": "bab99d5258a442b9345d56feac39a209d600c607ec28fe92b6d0fdcdf5db116b",
+    "lay_ibus_engine_before_sha256": "2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0",
+    "lay_ibus_engine_after_sha256": "2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0",
+    "lay_test_input_before_sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a",
+    "lay_test_input_after_sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a"
+  }
+}

@@ -213,6 +213,10 @@ mod auto_undo_runtime;
 mod correction_runtime;
 use correction_runtime::*;
 
+#[path = "lay_daemon/exact_ime_tail_replay.rs"]
+mod exact_ime_tail_replay;
+use exact_ime_tail_replay::*;
+
 #[path = "lay_daemon/physical_input_grab.rs"]
 mod physical_input_grab;
 

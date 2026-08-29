@@ -1,0 +1,41 @@
+{
+  "schema": "lay.td009-exact-observed-replay-live-audit.v4",
+  "verdict": "TD009_EXACT_OWNED_REPLAY_LIVE_PASS",
+  "selected_route": "triggering-keyboard grab plus exact path/epoch rollback and repeated focused-window identity checks",
+  "matrix": {
+    "all_passed": true,
+    "cases_passed": 7,
+    "cases_total": 7,
+    "desktop_restoration_verified": true,
+    "independent_receipt_validation": "PASS",
+    "receipt_path": "MATRIX_BIDIRECTIONAL_INVERSE_AUTOCOMPLETE/RECEIPT.json",
+    "receipt_sha256": "e2684d6f7a0a87cc5c3ee28db25e54021a1e4494c87073087f3960c7da30d588"
+  },
+  "required_boundaries": {
+    "manual_toggle_gestures": 10,
+    "exact_checked_suppression_arms": 10,
+    "generic_suppression_arms": 0,
+    "fast_four_shift_us_ru_us": "PASS",
+    "fast_four_shift_ru_us_ru": "PASS",
+    "autocomplete_manual_toggle_suppression": "PASS",
+    "backspace_after_committed_toggle": "PASS",
+    "manual_toggle_trace_malformed": 0,
+    "lost_reply_exact_suppression_rollback_unit_test": "PASS",
+    "exact_handoff_path_epoch_cancellation_unit_test": "PASS",
+    "focused_window_identity_unit_tests": "PASS"
+  },
+  "candidate_binaries": {
+    "lay_daemon_sha256": "a74e6376d2eb3704b435d4742fcf5bf864e8fad3c33dec1f12befd8897c342f0",
+    "lay_ibus_engine_sha256": "649106389719d665190db878590348fc221a88c3bca0718f7b51faf41d265053",
+    "lay_test_input_sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a"
+  },
+  "installed_runtime": {
+    "changed": false,
+    "lay_daemon_before_sha256": "bab99d5258a442b9345d56feac39a209d600c607ec28fe92b6d0fdcdf5db116b",
+    "lay_daemon_after_sha256": "bab99d5258a442b9345d56feac39a209d600c607ec28fe92b6d0fdcdf5db116b",
+    "lay_ibus_engine_before_sha256": "2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0",
+    "lay_ibus_engine_after_sha256": "2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0",
+    "lay_test_input_before_sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a",
+    "lay_test_input_after_sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a"
+  }
+}

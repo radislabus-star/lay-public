@@ -1,0 +1,45 @@
+{
+  "schema": "lay.td009-exact-observed-replay-live-audit.v5",
+  "verdict": "TD009_EXACT_OWNED_REPLAY_LIVE_PASS",
+  "selected": true,
+  "selected_route": "triggering-keyboard isolation, exact engine path and epoch lease, available field receipt, repeated focused-window checks, ordered queued-input forwarding, and bounded exact-tail settlement for an already queued inverse gesture",
+  "matrix": {
+    "all_passed": true,
+    "cases_passed": 8,
+    "cases_total": 8,
+    "desktop_restoration_verified": true,
+    "receipt_path": "MATRIX_BIDIRECTIONAL_INVERSE_AUTOCOMPLETE/RECEIPT.json",
+    "receipt_sha256": "e9a3468a942495215ab997ad95a945428fa0abf68c452fe5462478991bf350f5"
+  },
+  "required_boundaries": {
+    "manual_toggle_gestures": 11,
+    "exact_checked_suppression_accepts": 11,
+    "generic_suppression_arms": 0,
+    "fast_four_shift_us_ru_us": "PASS",
+    "fast_four_shift_ru_us_ru": "PASS",
+    "immediate_physical_key_after_toggle_30ms": "PASS",
+    "queued_physical_keys_forwarded": 1,
+    "queued_inverse_gestures_replayed": 2,
+    "autocomplete_manual_toggle_suppression": "PASS",
+    "backspace_after_committed_toggle": "PASS",
+    "manual_toggle_trace_malformed": 0,
+    "dbus_method_timeout_ms": 250,
+    "exact_suppression_max_age_ms": 700,
+    "queued_inverse_settlement_max_ms": 80,
+    "field_receipt_policy": "exact when FocusInId supplies it; fallback engine identity remains engine-scoped and focused-window identity is checked separately"
+  },
+  "candidate_binaries": {
+    "lay_daemon_sha256": "5bda386281c176c3fb502d20566c63eda280dd9dfcc589e4ed0edcb6ea949e76",
+    "lay_ibus_engine_sha256": "70852988c37916020bdfbfbc5fcb73fd980e405adbcaa00b216fa413f9ada9f3",
+    "lay_test_input_sha256": "ab9628fd8995edfa5ecc9d9d086e308abfdf7906d9c71938e916b55d7d287b2c"
+  },
+  "installed_runtime": {
+    "changed": false,
+    "lay_daemon_before_sha256": "bab99d5258a442b9345d56feac39a209d600c607ec28fe92b6d0fdcdf5db116b",
+    "lay_daemon_after_sha256": "bab99d5258a442b9345d56feac39a209d600c607ec28fe92b6d0fdcdf5db116b",
+    "lay_ibus_engine_before_sha256": "2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0",
+    "lay_ibus_engine_after_sha256": "2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0",
+    "lay_test_input_before_sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a",
+    "lay_test_input_after_sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id":"physical-double-shift","role":"interface"},
+    {"id":"daemon-pair-detector","role":"orchestrator"},
+    {"id":"ime-visible-tail-v2","role":"evidence_owner"},
+    {"id":"shared-manual-toggle-planner","role":"authorization_owner"},
+    {"id":"prepared-committed-tail-plan","role":"producer"},
+    {"id":"physical-input-grab","role":"orchestrator"},
+    {"id":"exact-ime-tail-lease","role":"evidence_owner"},
+    {"id":"daemon-uinput-replay","role":"mutation_owner"},
+    {"id":"ime-active-composition-owner","role":"mutation_owner"},
+    {"id":"daemon-word-buffer-owner","role":"mutation_owner"},
+    {"id":"fail-closed-terminal","role":"observer"},
+    {"id":"gtk-visible-proof","role":"proof_owner"}
+  ],
+  "edges": [
+    {"id":"committed-entry","from":"physical-double-shift","relation":"calls","to":"daemon-pair-detector","events":["committed-tail-exact-replay"]},
+    {"id":"committed-observe","from":"daemon-pair-detector","relation":"calls","to":"ime-visible-tail-v2","events":["committed-tail-exact-replay"]},
+    {"id":"committed-plan","from":"ime-visible-tail-v2","relation":"passes_to","to":"shared-manual-toggle-planner","events":["committed-tail-exact-replay"]},
+    {"id":"committed-produce","from":"shared-manual-toggle-planner","relation":"produces_for","to":"prepared-committed-tail-plan","events":["committed-tail-exact-replay"]},
+    {"id":"committed-grab","from":"prepared-committed-tail-plan","relation":"delegates","to":"physical-input-grab","events":["committed-tail-exact-replay"]},
+    {"id":"committed-revalidate","from":"physical-input-grab","relation":"calls","to":"exact-ime-tail-lease","events":["committed-tail-exact-replay"]},
+    {"id":"committed-authorize","from":"exact-ime-tail-lease","relation":"authorizes","to":"daemon-uinput-replay","events":["committed-tail-exact-replay"]},
+
+    {"id":"active-entry","from":"physical-double-shift","relation":"calls","to":"daemon-pair-detector","events":["active-composition"]},
+    {"id":"active-observe","from":"daemon-pair-detector","relation":"calls","to":"ime-visible-tail-v2","events":["active-composition"]},
+    {"id":"active-execute","from":"ime-visible-tail-v2","relation":"delegates","to":"ime-active-composition-owner","events":["active-composition"]},
+
+    {"id":"daemon-entry","from":"physical-double-shift","relation":"calls","to":"daemon-pair-detector","events":["daemon-word-buffer"]},
+    {"id":"daemon-observe","from":"daemon-pair-detector","relation":"calls","to":"ime-visible-tail-v2","events":["daemon-word-buffer"]},
+    {"id":"daemon-execute","from":"ime-visible-tail-v2","relation":"delegates","to":"daemon-word-buffer-owner","events":["daemon-word-buffer"]},
+
+    {"id":"stale-entry","from":"physical-double-shift","relation":"calls","to":"daemon-pair-detector","events":["stale-or-mismatched-tail"]},
+    {"id":"stale-observe","from":"daemon-pair-detector","relation":"calls","to":"ime-visible-tail-v2","events":["stale-or-mismatched-tail"]},
+    {"id":"stale-plan","from":"ime-visible-tail-v2","relation":"passes_to","to":"shared-manual-toggle-planner","events":["stale-or-mismatched-tail"]},
+    {"id":"stale-grab","from":"shared-manual-toggle-planner","relation":"delegates","to":"physical-input-grab","events":["stale-or-mismatched-tail"]},
+    {"id":"stale-revalidate","from":"physical-input-grab","relation":"calls","to":"exact-ime-tail-lease","events":["stale-or-mismatched-tail"]},
+    {"id":"stale-stop","from":"exact-ime-tail-lease","relation":"observes","to":"fail-closed-terminal","events":["stale-or-mismatched-tail"]},
+
+    {"id":"proof-observe","from":"daemon-uinput-replay","relation":"observes","to":"gtk-visible-proof","events":["gtk-bidirectional-proof"]},
+    {"id":"proof-failure","from":"fail-closed-terminal","relation":"proves","to":"gtk-visible-proof","events":["gtk-stale-refusal-proof"]}
+  ],
+  "routes": [
+    {"id":"committed-execution","event":"committed-tail-exact-replay","kind":"execution","entry":"physical-double-shift","terminal":"daemon-uinput-replay","required_roles":["interface","orchestrator","evidence_owner","authorization_owner","producer","mutation_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"daemon-uinput-replay","min":1,"max":1}]},
+    {"id":"committed-authority","event":"committed-tail-exact-replay","kind":"authority","entry":"ime-visible-tail-v2","terminal":"daemon-uinput-replay","required_roles":["evidence_owner","authorization_owner","producer","orchestrator","mutation_owner"],"path_cardinality":[{"from":"ime-visible-tail-v2","to":"daemon-uinput-replay","min":1,"max":1}]},
+    {"id":"active-composition-execution","event":"active-composition","kind":"execution","entry":"physical-double-shift","terminal":"ime-active-composition-owner","required_roles":["interface","orchestrator","evidence_owner","mutation_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"ime-active-composition-owner","min":1,"max":1}]},
+    {"id":"daemon-buffer-execution","event":"daemon-word-buffer","kind":"execution","entry":"physical-double-shift","terminal":"daemon-word-buffer-owner","required_roles":["interface","orchestrator","evidence_owner","mutation_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"daemon-word-buffer-owner","min":1,"max":1}]},
+    {"id":"stale-stop","event":"stale-or-mismatched-tail","kind":"execution","entry":"physical-double-shift","terminal":"exact-ime-tail-lease","required_roles":["interface","orchestrator","evidence_owner","authorization_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"exact-ime-tail-lease","min":1,"max":1}]},
+    {"id":"gtk-visible-proof","event":"gtk-bidirectional-proof","kind":"proof","entry":"daemon-uinput-replay","terminal":"gtk-visible-proof","required_roles":["mutation_owner","proof_owner"]},
+    {"id":"gtk-stale-refusal-proof","event":"gtk-stale-refusal-proof","kind":"proof","entry":"fail-closed-terminal","terminal":"gtk-visible-proof","required_roles":["observer","proof_owner"]}
+  ]
+}

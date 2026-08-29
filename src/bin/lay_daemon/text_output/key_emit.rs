@@ -12,7 +12,35 @@ const TEXT_REPLACE_BACKSPACE_PACE_MS: u64 = 1;
 const TEXT_REPLACE_BACKSPACE_SETTLE_MS: u64 = 1;
 const TEXT_INSERT_KEY_PACE_MS: u64 = 1;
 const TEXT_INSERT_SPACE_SETTLE_MS: u64 = 0;
-const ISOLATED_ZERO_PACE_MAX_EVENTS: usize = 32;
+const ISOLATED_REPLAY_MAX_EVENTS: usize = 32;
+
+pub(crate) fn validate_isolated_replay_bounds(
+    backspaces: u32,
+    events: &[KeyEvent],
+) -> std::io::Result<()> {
+    let backspaces = usize::try_from(backspaces).map_err(|_| {
+        std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "Backspace count does not fit usize",
+        )
+    })?;
+    if backspaces == 0 || events.is_empty() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "isolated replay requires non-empty delete and insert batches",
+        ));
+    }
+    if backspaces > ISOLATED_REPLAY_MAX_EVENTS || events.len() > ISOLATED_REPLAY_MAX_EVENTS {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            format!(
+                "isolated replay exceeds the bounded batch: backspaces={backspaces} events={}",
+                events.len()
+            ),
+        ));
+    }
+    Ok(())
+}
 
 trait KeyFrameEmitter {
     fn emit_frame(&mut self, events: &[InputEvent]) -> std::io::Result<()>;
@@ -93,12 +121,28 @@ pub(super) fn replay_text_insert_keycodes_fast_after_modifier_cleanup(
     dev: &mut VirtualDevice,
     events: &[KeyEvent],
 ) -> std::io::Result<()> {
-    let key_pace_ms = if events.len() <= ISOLATED_ZERO_PACE_MAX_EVENTS {
+    let key_pace_ms = if events.len() <= ISOLATED_REPLAY_MAX_EVENTS {
         0
     } else {
         TEXT_INSERT_KEY_PACE_MS
     };
     replay_keycodes_with_pace(dev, events, key_pace_ms, 0, false)
+}
+
+pub(crate) fn replay_keycodes_isolated_paced_after_modifier_cleanup(
+    dev: &mut VirtualDevice,
+    events: &[KeyEvent],
+) -> std::io::Result<()> {
+    if events.is_empty() || events.len() > ISOLATED_REPLAY_MAX_EVENTS {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            format!(
+                "isolated replay event count must be 1..={ISOLATED_REPLAY_MAX_EVENTS}, got {}",
+                events.len()
+            ),
+        ));
+    }
+    replay_keycodes_with_pace(dev, events, KEY_PACE_MS, 0, false)
 }
 
 fn replay_keycodes_with_pace(
@@ -191,7 +235,7 @@ pub(super) fn emit_backspaces_for_text_replace_fast(
     dev: &mut VirtualDevice,
     n: u32,
 ) -> std::io::Result<()> {
-    if n as usize > ISOLATED_ZERO_PACE_MAX_EVENTS {
+    if n as usize > ISOLATED_REPLAY_MAX_EVENTS {
         return emit_backspaces_for_text_replace(dev, n);
     }
     let bs = KeyCode::KEY_BACKSPACE.code();
@@ -265,5 +309,19 @@ mod tests {
         assert!(emitter.frames[1]
             .iter()
             .any(|(code, _)| *code == KeyCode::KEY_Y.code()));
+    }
+
+    #[test]
+    fn isolated_replay_is_bounded_before_emission() {
+        let one = [KeyEvent {
+            keycode: KeyCode::KEY_Y.code(),
+            shift: false,
+            layout_is_ru: false,
+        }];
+        assert!(validate_isolated_replay_bounds(1, &one).is_ok());
+        assert!(validate_isolated_replay_bounds(0, &one).is_err());
+        assert!(validate_isolated_replay_bounds(33, &one).is_err());
+        assert!(validate_isolated_replay_bounds(1, &[]).is_err());
+        assert!(validate_isolated_replay_bounds(1, &vec![one[0]; 33]).is_err());
     }
 }

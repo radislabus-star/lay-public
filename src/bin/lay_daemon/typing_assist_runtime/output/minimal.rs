@@ -139,6 +139,7 @@ pub(crate) fn apply_minimal_typing_replacement(
         insert_outcome.layout_is_ru,
         "typing-assist",
         lay::word_reader::trailing_whitespace_char_count(replacement),
+        false,
     );
     log(&format!(
         "✓ done: помощь при наборе {:?} → {:?} за {}ms",

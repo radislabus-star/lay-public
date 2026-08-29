@@ -24,14 +24,40 @@ const LAYOUT_SWITCH_SETTLE_MS: u64 = 12;
 const MANUAL_REPLAY_READY_SETTLE_MS: u64 = 8;
 const TRIGGER_RELEASE_SETTLE_MS: u64 = 80;
 
-pub(super) use ime_bridge::ImeDelegatedTailLease;
+pub(super) use ime_bridge::{ImeCommittedTailReplay, ImeDelegatedTailLease};
 pub(super) use verify::verify_current_layout;
+
+#[derive(Debug, Clone, Copy)]
+pub(super) struct ExactReplayLayoutHandoff {
+    initial_layout_is_ru: bool,
+}
+
+impl ExactReplayLayoutHandoff {
+    pub(super) fn restore_initial_best_effort(&self, label: &str) {
+        if let Err(error) = activate_gnome_layout_once(self.initial_layout_is_ru) {
+            log(&format!(
+                "warning: {label} one-shot layout restore failed: {error}"
+            ));
+        }
+    }
+}
 
 pub(super) fn capture_ime_delegated_tail_lease(
     expected_suffix: &str,
     backspaces: u32,
 ) -> Result<ImeDelegatedTailLease, String> {
     ime_bridge::capture_delegated_tail_lease(expected_suffix, backspaces)
+}
+
+pub(super) fn capture_ime_committed_tail_replay() -> Result<ImeCommittedTailReplay, String> {
+    ime_bridge::capture_committed_tail_replay()
+}
+
+pub(super) fn wait_for_ime_committed_tail_settlement(
+    expected_tail: &str,
+    expected_layout_is_ru: bool,
+) -> Result<(), String> {
+    ime_bridge::wait_for_committed_tail_settlement(expected_tail, expected_layout_is_ru)
 }
 
 pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {
@@ -55,6 +81,59 @@ fn read_current_ibus_layout_is_ru() -> Result<bool, String> {
     ibus_bridge::read_current_layout_is_ru()
 }
 
+pub(super) fn activate_target_layout_once_for_exact_replay(
+    initial_layout_is_ru: bool,
+    target_layout_is_ru: bool,
+) -> Result<ExactReplayLayoutHandoff, String> {
+    if active_layout_backend() != LayoutBackend::Gnome {
+        return Err("exact IME tail replay requires the GNOME layout backend".to_string());
+    }
+    if !active_text_backend().should_try_ime() {
+        return Err("exact IME tail replay requires the IBus text backend".to_string());
+    }
+    if initial_layout_is_ru == target_layout_is_ru {
+        return Err("exact IME tail replay target must invert the observed layout".to_string());
+    }
+    let (initial_layout_id, initial_ibus_engine) = target_layout(initial_layout_is_ru);
+    verify_gnome_layout_stack_once(initial_layout_id, initial_ibus_engine)
+        .map_err(|error| format!("initial exact replay layout mismatch: {error}"))?;
+    if let Err(error) = activate_gnome_layout_once(target_layout_is_ru) {
+        let restore = activate_gnome_layout_once(initial_layout_is_ru)
+            .err()
+            .map(|restore_error| format!("; initial layout restore failed: {restore_error}"))
+            .unwrap_or_default();
+        return Err(format!("{error}{restore}"));
+    }
+    Ok(ExactReplayLayoutHandoff {
+        initial_layout_is_ru,
+    })
+}
+
+fn activate_gnome_layout_once(target_layout_is_ru: bool) -> Result<(), String> {
+    let (layout_id, ibus_engine) = target_layout(target_layout_is_ru);
+    match gnome_dbus::call_activate_layout_once(layout_id) {
+        Ok(true) => {}
+        Ok(false) => return Err("ActivateLayout returned false".to_string()),
+        Err(error) => return Err(format!("ActivateLayout failed: {error}")),
+    }
+    verify_gnome_layout_stack_once(layout_id, ibus_engine)
+}
+
+fn verify_gnome_layout_stack_once(layout_id: &str, ibus_engine: &str) -> Result<(), String> {
+    let observed_layout = gnome_dbus::call_current_layout_once()
+        .map_err(|error| format!("GNOME layout readback failed: {error}"))?;
+    if !exact_gnome_layout_id_matches(&observed_layout, layout_id, ibus_engine) {
+        return Err(format!(
+            "GNOME layout readback mismatch: expected={layout_id}|{ibus_engine} actual={observed_layout}"
+        ));
+    }
+    ibus_bridge::verify_engine_once(ibus_engine)
+}
+
+fn exact_gnome_layout_id_matches(observed: &str, layout_id: &str, ibus_engine: &str) -> bool {
+    observed == layout_id || observed == ibus_engine
+}
+
 pub(super) fn call_ping() -> Result<String, String> {
     gnome_dbus::call_ping()
 }
@@ -64,6 +143,13 @@ pub(super) fn call_focused_window_info() -> Result<String, String> {
         return Err("FocusedWindowInfo is available only through the GNOME backend".to_string());
     }
     gnome_dbus::call_focused_window_info()
+}
+
+pub(super) fn call_focused_window_info_once() -> Result<String, String> {
+    if active_layout_backend() != LayoutBackend::Gnome {
+        return Err("exact focused-window identity requires GNOME".to_string());
+    }
+    gnome_dbus::call_focused_window_info_once()
 }
 
 fn switch_to_layout(layout_id: &str, ibus_engine: &str, target_is_ru: bool) -> Result<(), String> {
@@ -293,8 +379,56 @@ pub(super) fn focused_ime_engine_handles_typing() -> bool {
 }
 
 pub(super) fn suppress_next_ime_autocorrect() {
-    if active_text_backend().should_try_ime() {
-        let _ = ime_bridge::suppress_next_autocorrect();
+    let _ = suppress_next_ime_autocorrect_checked();
+}
+
+pub(super) fn suppress_next_ime_autocorrect_checked() -> Result<(), String> {
+    if !active_text_backend().should_try_ime() {
+        return Err("IME autocorrect suppression requires the IBus text backend".to_string());
+    }
+    match ime_bridge::suppress_next_autocorrect()? {
+        true => Ok(()),
+        false => Err("focused IME rejected autocorrect suppression".to_string()),
+    }
+}
+
+pub(super) fn suppress_next_ime_autocorrect_for_exact_replay(
+    expected_suffix: &str,
+    expected_epoch: u64,
+    expected_path: &str,
+    expected_layout_is_ru: bool,
+) -> Result<(), String> {
+    if !active_text_backend().should_try_ime() {
+        return Err("exact IME replay suppression requires the IBus text backend".to_string());
+    }
+    match ime_bridge::suppress_next_autocorrect_v2(
+        expected_suffix,
+        expected_epoch,
+        expected_path,
+        expected_layout_is_ru,
+    )? {
+        true => Ok(()),
+        false => Err("focused IME rejected exact autocorrect suppression".to_string()),
+    }
+}
+
+pub(super) fn cancel_exact_ime_manual_toggle_handoff_v2(
+    expected_epoch: u64,
+    expected_path: &str,
+) -> Result<(), String> {
+    match ime_bridge::cancel_exact_manual_toggle_handoff_v2(expected_epoch, expected_path)? {
+        true => Ok(()),
+        false => Err("focused IME rejected exact handoff cancellation".to_string()),
+    }
+}
+
+pub(super) fn cancel_exact_ime_autocorrect_suppression(
+    expected_epoch: u64,
+    expected_path: &str,
+) -> Result<(), String> {
+    match ime_bridge::cancel_exact_manual_toggle_suppression_v2(expected_epoch, expected_path)? {
+        true => Ok(()),
+        false => Err("focused IME rejected exact suppression cancellation".to_string()),
     }
 }
 

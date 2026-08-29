@@ -1,0 +1,380 @@
+{
+  "authority_bearing": true,
+  "baseline_checks": [
+    {
+      "expect": {
+        "mode": "0664",
+        "sha256": "b3e060349f908d926224e7b612ce45da4bbf330fcfb2bbb81117b3ae04a551b4",
+        "size_bytes": 7583
+      },
+      "id": "td009-contract",
+      "kind": "file",
+      "path": "../../../tech_debt/009-fix-manual-toggle-visible-postcondition-race.md"
+    },
+    {
+      "expect": {
+        "mode": "0664",
+        "sha256": "cc21570a81e53a41b017873df6e2fb8e68e0e56b80b59322f94c4578dd325d1d",
+        "size_bytes": 62479
+      },
+      "id": "tail-memory-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/tail_memory.rs"
+    },
+    {
+      "expect": {
+        "mode": "0664",
+        "sha256": "bee5154e931fbe4234fcd6678cf92b9f50efc5db9ac50899e02739b277b375a7",
+        "size_bytes": 21011
+      },
+      "id": "ibus-interface-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/ibus_interface.rs"
+    },
+    {
+      "expect": {
+        "mode": "0664",
+        "sha256": "e12ff99e3c0e2d53c95294c98e5fc1e4b6ce879f0a5aee0b357f50604e82b8df",
+        "size_bytes": 15466
+      },
+      "id": "engine-types-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/engine/types.rs"
+    },
+    {
+      "expect": {
+        "mode": "0664",
+        "sha256": "a69cfadb684cb34d1a1c351c316f7571df5dd379ab16d35adc241f9ed41b4418",
+        "size_bytes": 31701
+      },
+      "id": "committed-tail-source",
+      "kind": "file",
+      "path": "../../../src/bin/lay_ibus_engine/committed_tail.rs"
+    },
+    {
+      "expect": {
+        "mode": "0600",
+        "sha256": "3f6cb2511e7ac8c79e0b1565e7cb805fa5cf015a079a7a5d3b56cb96646bf1c7",
+        "size_bytes": 3032
+      },
+      "id": "failed-ru-to-us-receipt",
+      "kind": "file",
+      "path": "../receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ORDER_REVERSED/RECEIPT.json"
+    },
+    {
+      "expect": {
+        "mode": "0600",
+        "sha256": "37e93b11b8f3dba808bf82cf2dbe2a70d605764683a77095c694509f2084f90b",
+        "size_bytes": 3028
+      },
+      "id": "failed-us-to-ru-receipt",
+      "kind": "file",
+      "path": "../receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ORDER_REVERSED_REPEAT/RECEIPT.json"
+    },
+    {
+      "expect": {
+        "mode": "0755",
+        "sha256": "2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0",
+        "size_bytes": 7161768
+      },
+      "id": "installed-engine",
+      "kind": "file",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "comparison": "one stale SetSurroundingText observation claims one refresh request; a later exact snapshot confirms the same pending epoch",
+      "consumer": "SetSurroundingText visible-postcondition observer",
+      "id": "pending-receipt-to-refresh-request",
+      "producer": "PendingVisiblePostcondition transaction",
+      "test_id": "stale-then-exact-convergence"
+    },
+    {
+      "comparison": "candidate state-machine behavior and both-direction GTK receipts agree on one mutation, one confirmation, and one layout handoff",
+      "consumer": "TD-002 managed desktop proof",
+      "id": "unit-to-live-route-parity",
+      "producer": "repository-local lay-ibus-engine",
+      "test_id": "managed-gtk-bidirectional-proof"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "one-text-mutation",
+      "statement": "one admitted manual toggle emits at most one delete and one commit even when the first client snapshot is stale",
+      "test_id": "duplicate-callback-safety"
+    },
+    {
+      "id": "one-refresh-request",
+      "statement": "one pending visible-postcondition epoch can emit at most one explicit surrounding-text refresh request",
+      "test_id": "stale-then-exact-convergence"
+    },
+    {
+      "id": "layout-after-visible-text",
+      "statement": "layout and system feedback remain downstream of exact client-visible text confirmation",
+      "test_id": "layout-postcondition-order"
+    },
+    {
+      "id": "canonical-double-shift-owner-preserved",
+      "statement": "the daemon pair detector, ManualToggleV3 planner, terminal fallback, and physical-key mapping remain unchanged",
+      "test_id": "double-shift-contract-suite"
+    },
+    {
+      "id": "installed-runtime-unchanged",
+      "statement": "candidate implementation and review do not replace or modify the installed Lay engine",
+      "test_id": "installed-engine-parity"
+    }
+  ],
+  "preserved_artifacts": [
+    {
+      "baseline_check_id": "installed-engine",
+      "cursor_policy": "freeze_entire_artifact",
+      "id": "installed-engine-runtime",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "policy": "byte_identical",
+      "rollback_policy": "no install is admitted; retain the exact installed engine"
+    },
+    {
+      "baseline_check_id": "failed-ru-to-us-receipt",
+      "cursor_policy": "freeze_entire_artifact",
+      "id": "failed-ru-to-us-evidence",
+      "path": "../receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ORDER_REVERSED/RECEIPT.json",
+      "policy": "byte_identical",
+      "rollback_policy": "retain immutable failed evidence"
+    },
+    {
+      "baseline_check_id": "failed-us-to-ru-receipt",
+      "cursor_policy": "freeze_entire_artifact",
+      "id": "failed-us-to-ru-evidence",
+      "path": "../receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ORDER_REVERSED_REPEAT/RECEIPT.json",
+      "policy": "byte_identical",
+      "rollback_policy": "retain immutable failed evidence"
+    }
+  ],
+  "reuses_existing_implementation": true,
+  "runtime_comparisons": [
+    {
+      "comparison": "exact_stable_projection",
+      "expected_to_change_fields": [
+        "test-owned daemon and IBus-engine PIDs",
+        "per-case evidence path"
+      ],
+      "id": "managed-desktop-restoration",
+      "observed_not_compared_fields": [
+        "volatile ibus_cursor trace count",
+        "wall-clock timestamps"
+      ],
+      "reason": "the live proof owns temporary candidate processes but must restore the user's desktop authority exactly",
+      "source": "runtime-smoke v3 receipt and desktop snapshot",
+      "stable_fields": [
+        "global ibus-daemon identity",
+        "lay-daemon enabled and active state",
+        "active input source and IBus engine",
+        "installed engine SHA-256"
+      ],
+      "test_id": "managed-gtk-bidirectional-proof"
+    }
+  ],
+  "schema": "nanda.implementation-preflight.v1",
+  "scientific_future_sensitive": false,
+  "side_effects": {
+    "forbidden": [
+      "second_text_mutation",
+      "timer_or_polling_retry",
+      "layout_before_visible_confirmation",
+      "daemon_pair_detector_change",
+      "installed_runtime_change"
+    ],
+    "planned": [
+      {
+        "id": "add-state-machine-regressions",
+        "kind": "source_edit"
+      },
+      {
+        "id": "add-single-refresh-ownership",
+        "kind": "source_edit"
+      },
+      {
+        "id": "run-guarded-candidate-tests",
+        "kind": "local_test"
+      },
+      {
+        "id": "run-managed-desktop-proof",
+        "kind": "managed_desktop_test"
+      }
+    ]
+  },
+  "source_checks": [
+    {
+      "forbidden_effect_patterns": [
+        {
+          "effect": "second_text_mutation",
+          "regex": "(?s)visible_postcondition_refresh.{0,900}(?:delete_surrounding_text|commit_text)"
+        },
+        {
+          "effect": "timer_or_polling_retry",
+          "regex": "(?s)visible_postcondition_refresh.{0,900}(?:thread::sleep|tokio::time::sleep|spawn)"
+        },
+        {
+          "effect": "layout_before_visible_confirmation",
+          "regex": "(?s)visible_postcondition_refresh.{0,900}sync_layout_after_committed_text"
+        },
+        {
+          "effect": "daemon_pair_detector_change",
+          "regex": "trigger_fsm|DShiftState"
+        },
+        {
+          "effect": "installed_runtime_change",
+          "regex": "(?:install\\.sh|\\.local/lib/lay/bin)"
+        }
+      ],
+      "id": "tail-memory-owner",
+      "path": "../../../src/bin/lay_ibus_engine/tail_memory.rs",
+      "sha256": "cc21570a81e53a41b017873df6e2fb8e68e0e56b80b59322f94c4578dd325d1d"
+    },
+    {
+      "forbidden_effect_patterns": [
+        {
+          "effect": "second_text_mutation",
+          "regex": "(?s)request_visible_postcondition_refresh.{0,900}(?:delete_surrounding_text|commit_text)"
+        },
+        {
+          "effect": "timer_or_polling_retry",
+          "regex": "(?s)request_visible_postcondition_refresh.{0,900}(?:thread::sleep|tokio::time::sleep|spawn)"
+        },
+        {
+          "effect": "layout_before_visible_confirmation",
+          "regex": "(?s)request_visible_postcondition_refresh.{0,900}sync_layout_after_committed_text"
+        },
+        {
+          "effect": "daemon_pair_detector_change",
+          "regex": "trigger_fsm|DShiftState"
+        },
+        {
+          "effect": "installed_runtime_change",
+          "regex": "(?:install\\.sh|\\.local/lib/lay/bin)"
+        }
+      ],
+      "id": "ibus-callback-owner",
+      "path": "../../../src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "bee5154e931fbe4234fcd6678cf92b9f50efc5db9ac50899e02739b277b375a7"
+    },
+    {
+      "forbidden_effect_patterns": [
+        {
+          "effect": "second_text_mutation",
+          "regex": "delete_surrounding_text|commit_text"
+        },
+        {
+          "effect": "timer_or_polling_retry",
+          "regex": "thread::sleep|tokio::time::sleep|spawn"
+        },
+        {
+          "effect": "layout_before_visible_confirmation",
+          "regex": "sync_layout_after_committed_text"
+        },
+        {
+          "effect": "daemon_pair_detector_change",
+          "regex": "trigger_fsm|DShiftState"
+        },
+        {
+          "effect": "installed_runtime_change",
+          "regex": "(?:install\\.sh|\\.local/lib/lay/bin)"
+        }
+      ],
+      "id": "pending-receipt-type",
+      "path": "../../../src/bin/lay_ibus_engine/engine/types.rs",
+      "sha256": "e12ff99e3c0e2d53c95294c98e5fc1e4b6ce879f0a5aee0b357f50604e82b8df"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "TD002_EVIDENCE_PINNED_RUNTIME_UNCHANGED",
+    "steps": [
+      {
+        "cleanup": "retain the failing test and immutable TD-002 evidence; do not install or mutate the desktop",
+        "failure_state": "BLOCKED_SOURCE_RUNTIME_UNCHANGED",
+        "from": "TD002_EVIDENCE_PINNED_RUNTIME_UNCHANGED",
+        "id": "add-red-state-machine-test",
+        "mutates": true,
+        "preserves": [
+          "installed-engine-runtime",
+          "failed-ru-to-us-evidence",
+          "failed-us-to-ru-evidence"
+        ],
+        "test_id": "red-test-proves-gap",
+        "to": "RED_TEST_PRESENT"
+      },
+      {
+        "cleanup": "retain the scoped source diff and failing receipts; no install or retry-based workaround",
+        "failure_state": "BLOCKED_SOURCE_RUNTIME_UNCHANGED",
+        "from": "RED_TEST_PRESENT",
+        "id": "implement-one-refresh-request",
+        "mutates": true,
+        "preserves": [
+          "installed-engine-runtime",
+          "failed-ru-to-us-evidence",
+          "failed-us-to-ru-evidence"
+        ],
+        "test_id": "stale-then-exact-convergence",
+        "to": "CANDIDATE_VERIFIED"
+      },
+      {
+        "cleanup": "stop only test-owned processes, restore captured service/engine/layout/trace state, and retain the failed live receipt",
+        "failure_state": "BLOCKED_LIVE_RUNTIME_RESTORED",
+        "from": "CANDIDATE_VERIFIED",
+        "id": "run-managed-gtk-proof",
+        "mutates": true,
+        "preserves": [
+          "installed-engine-runtime",
+          "failed-ru-to-us-evidence",
+          "failed-us-to-ru-evidence"
+        ],
+        "test_id": "managed-gtk-bidirectional-proof",
+        "to": "TD009_PASS_RUNTIME_UNCHANGED"
+      }
+    ],
+    "terminal_states": [
+      "TD009_PASS_RUNTIME_UNCHANGED",
+      "BLOCKED_SOURCE_RUNTIME_UNCHANGED",
+      "BLOCKED_LIVE_RUNTIME_RESTORED"
+    ]
+  },
+  "task_id": "td009-manual-toggle-visible-postcondition-20260829",
+  "tests": [
+    {
+      "expected": "the existing implementation leaves a stale first snapshot pending without owning any explicit refresh request",
+      "id": "red-test-proves-gap",
+      "kind": "integration"
+    },
+    {
+      "expected": "one stale snapshot yields one refresh claim; duplicate stale callbacks yield no second claim; a later exact snapshot confirms and clears the same pending epoch",
+      "id": "stale-then-exact-convergence",
+      "kind": "integration"
+    },
+    {
+      "expected": "duplicate and late callbacks cannot emit another delete/commit or synchronize layout twice",
+      "id": "duplicate-callback-safety",
+      "kind": "fault_injection"
+    },
+    {
+      "expected": "layout and feedback remain unchanged after stale observation and change exactly once after exact confirmation",
+      "id": "layout-postcondition-order",
+      "kind": "parity"
+    },
+    {
+      "expected": "current Double Shift, text-mutation monopoly, terminal passthrough, candidate visibility, and layout-sync tests pass",
+      "id": "double-shift-contract-suite",
+      "kind": "integration"
+    },
+    {
+      "expected": "both manual-toggle directions pass alone and in both orders with exact text, one toggle, one refresh at most, malformed trace zero, and exact desktop restoration",
+      "id": "managed-gtk-bidirectional-proof",
+      "kind": "integration"
+    },
+    {
+      "expected": "installed lay-ibus-engine size and SHA-256 remain exact before and after candidate tests",
+      "id": "installed-engine-parity",
+      "kind": "parity"
+    }
+  ]
+}

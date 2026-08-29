@@ -1,0 +1,284 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "td009-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../tech_debt/009-fix-manual-toggle-visible-postcondition-race.md",
+      "sha256": "df97b7e2ffd225938cf24768142433843cef694b1db920c53d3fea1cc76b5d63",
+      "size_bytes": 9869
+    },
+    {
+      "exists": true,
+      "id": "agents-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../AGENTS.md",
+      "sha256": "d8d2b09b9686170fcb8a724b24ea545677d3addede404af82c235c8183cc51d4",
+      "size_bytes": 9997
+    },
+    {
+      "exists": true,
+      "id": "route-v2-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/TD_009_MANUAL_TOGGLE_EXACT_OBSERVED_REPLAY_ROUTE_V2_2026-08-29.json",
+      "sha256": "4972a8248825248bb4361e2871799d32ba5c540bf2333d0c99fe62a935706c18",
+      "size_bytes": 7362
+    },
+    {
+      "exists": true,
+      "id": "route-v2-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/TD_009_MANUAL_TOGGLE_EXACT_OBSERVED_REPLAY_ROUTE_V2_2026-08-29.json",
+      "sha256": "6f26b67dd62227980726b8bf8ed9945a4003227a269a1d14353d282383f1e8f8",
+      "size_bytes": 12318
+    },
+    {
+      "exists": true,
+      "id": "v4-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/TD_009_MANUAL_TOGGLE_VISIBLE_POSTCONDITION_IMPLEMENTATION_V4_2026-08-29.json",
+      "sha256": "7ddc2a9cecd51a1fe2c2433a10d195c44f58c0934d2d02a6c0b905a18ec7d49e",
+      "size_bytes": 21179
+    },
+    {
+      "exists": true,
+      "id": "v4-preflight-receipt",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/TD_009_MANUAL_TOGGLE_VISIBLE_POSTCONDITION_IMPLEMENTATION_PREFLIGHT_V4_2026-08-29.json",
+      "sha256": "3b7f29e04567c115c5228c106afb771a7fd002724225bf65eb7cec5bfc123958",
+      "size_bytes": 8698
+    },
+    {
+      "exists": true,
+      "id": "v4-failed-live-receipt",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/TD_009_MANUAL_TOGGLE_VISIBLE_POSTCONDITION_V3_2026-08-29/SINGLE_US_TO_RU/RECEIPT.json",
+      "sha256": "b04d31bcaa7aee5134715cb2d29ef430e6319ee87d26e0651b74b8e55ad75e7a",
+      "size_bytes": 4680
+    },
+    {
+      "exists": true,
+      "id": "v4-failed-live-trace",
+      "kind": "file",
+      "mode": "0600",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../receipts/TD_009_MANUAL_TOGGLE_VISIBLE_POSTCONDITION_V3_2026-08-29/SINGLE_US_TO_RU/ghbdtn_fast_lshift_enter-a924fc9f61736ee0898e/ibus_engine_debug.jsonl",
+      "sha256": "0492d72d1b7055eeaf395472143dd2a408fb8d76e6722327fa731615ce4e23e8",
+      "size_bytes": 11929
+    },
+    {
+      "exists": true,
+      "id": "manual-toggle-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/manual_toggle.rs",
+      "sha256": "68fd8c0051aad6d46e300084930a6f0296103c43ce04da674e7ad5eb6e20dba0",
+      "size_bytes": 10742
+    },
+    {
+      "exists": true,
+      "id": "bridge-actions-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/bridge_actions.rs",
+      "sha256": "9d515bb6c02704f09b23166e8c0e1fd000cdc6a41c772cebd673b27fbb2aca4c",
+      "size_bytes": 10342
+    },
+    {
+      "exists": true,
+      "id": "shift-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/shift.rs",
+      "sha256": "f57d375c7919f1281cc4fb939af87d462c69230af29b9b78e41ceaeeb293975c",
+      "size_bytes": 7174
+    },
+    {
+      "exists": true,
+      "id": "committed-tail-v4-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/committed_tail.rs",
+      "sha256": "9d7a576c9684d3936f7babf2118cf5efc8eb563ef088082c34d7fc480f4eb3e8",
+      "size_bytes": 38983
+    },
+    {
+      "exists": true,
+      "id": "engine-v4-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "3cab1ed794b1c10020e1742c7cfa0d7eb8191a582068520eda0d55b4f598dab7",
+      "size_bytes": 18941
+    },
+    {
+      "exists": true,
+      "id": "engine-types-v4-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/engine/types.rs",
+      "sha256": "cb7a5f8c0753b1554eeeccd5dcaf5b024c0fea728baf8268baac85369519dff7",
+      "size_bytes": 15736
+    },
+    {
+      "exists": true,
+      "id": "engine-state-v4-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/state.rs",
+      "sha256": "78551c045c760c742b98ce84c1f3c926053e5d2c7aa7a811e8c8b6670d6e766c",
+      "size_bytes": 46810
+    },
+    {
+      "exists": true,
+      "id": "tail-memory-v4-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_ibus_engine/tail_memory.rs",
+      "sha256": "c6cc277f7ffc0badf05a70045ec9c5aa03ab58306a142197836eeb66b0a6b932",
+      "size_bytes": 62477
+    },
+    {
+      "exists": true,
+      "id": "daemon-ime-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+      "sha256": "9f608319c056591c0ea56e5dd7cda1d65fbbb87f0a914bb8198270dd6e8ff418",
+      "size_bytes": 3822
+    },
+    {
+      "exists": true,
+      "id": "ime-bridge-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_daemon/layout_controller/ime_bridge.rs",
+      "sha256": "4bf0d6996b375e599e8801da60bd46cfb021e925a35bb387b9231b321a268c49",
+      "size_bytes": 10390
+    },
+    {
+      "exists": true,
+      "id": "pair-detector-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+      "sha256": "18096d6e5ba07a1fb7708f265805b96f5755e6f86d574dca4100bb7b3ee81f71",
+      "size_bytes": 6367
+    },
+    {
+      "exists": true,
+      "id": "word-buffer-memory-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/word_buffer/replay_memory.rs",
+      "sha256": "fb005785fda7140f21bd40a75c268c3c0f029658cb18e8a7108ae81878212977",
+      "size_bytes": 8481
+    },
+    {
+      "exists": true,
+      "id": "desktop-harness-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../scripts/runtime_smoke/desktop.py",
+      "sha256": "78f72e7953e3da60e3543ca95ff9d1af711815d092318937c5fbd16c2f562bd1",
+      "size_bytes": 17132
+    },
+    {
+      "exists": true,
+      "id": "desktop-harness-tests",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../tests/test_runtime_smoke_isolation.py",
+      "sha256": "23aea1ee05fddaf9d6ebd3d768d48440535c3f2bd066dbe8089a7394b3314d93",
+      "size_bytes": 36940
+    },
+    {
+      "exists": true,
+      "id": "installed-daemon",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "bab99d5258a442b9345d56feac39a209d600c607ec28fe92b6d0fdcdf5db116b",
+      "size_bytes": 8890872
+    },
+    {
+      "exists": true,
+      "id": "installed-engine",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0",
+      "size_bytes": 7161768
+    }
+  ],
+  "blockers": [
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[0].test_id",
+      "message": "identity contract requires a parity test"
+    },
+    {
+      "code": "identity_parity_missing",
+      "field": "identity_contracts[1].test_id",
+      "message": "identity contract requires a parity test"
+    }
+  ],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 24,
+    "forbidden_side_effect_kinds": [
+      "daemon_pair_detector_change",
+      "ime_tail_plan_from_word_buffer",
+      "installed_runtime_change",
+      "legacy_ibus_committed_tail_mutation",
+      "second_text_mutation",
+      "timer_poll_or_retry",
+      "unisolated_exact_replay"
+    ],
+    "identity_contracts": 3,
+    "invariants": 7,
+    "planned_side_effect_kinds": [
+      "local_test",
+      "managed_desktop_test",
+      "source_edit"
+    ],
+    "preserved_artifacts": 6,
+    "runtime_comparisons": 1,
+    "source_checks": 2,
+    "tests": 13
+  },
+  "manifest_sha256": "c329e4ff48e8767571df145ce9a76326fcd798fc9557d6ecf69013f80581d681",
+  "safe_to_implement": false,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "manual-toggle-shared-planner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/manual_toggle.rs",
+      "sha256": "68fd8c0051aad6d46e300084930a6f0296103c43ce04da674e7ad5eb6e20dba0",
+      "size_bytes": 10742
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "daemon-detector-owner",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/../../../src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+      "sha256": "18096d6e5ba07a1fb7708f265805b96f5755e6f86d574dca4100bb7b3ee81f71",
+      "size_bytes": 6367
+    }
+  ],
+  "task_id": "td009-manual-toggle-exact-observed-replay-v5-20260829",
+  "verdict": "BLOCKED_BEFORE_CODE"
+}

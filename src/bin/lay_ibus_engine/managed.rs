@@ -69,6 +69,31 @@ impl LayIbusEngine {
                 let mode = *self.word_input_mode.get_or_insert(initial_mode);
                 let setup_us = space_started.elapsed().as_micros();
                 if mode == WordInputMode::ManagedCommit {
+                    if self.take_manual_toggle_autocorrect_suppression() {
+                        super::trace::record(
+                            r#"{"kind":"ibus_space_autocorrect","status":"manual_toggle_suppressed"}"#,
+                        );
+                        self.clear_preedit(emitter).await?;
+                        self.cancel_precognition_display_generation();
+                        let commit_started = Instant::now();
+                        self.commit_managed_passthrough_char(emitter, ' ').await?;
+                        let commit_us = commit_started.elapsed().as_micros();
+                        super::trace::record_space_autocorrect_timing(
+                            "manual_toggle_suppressed",
+                            0,
+                            0,
+                            space_started.elapsed().as_micros(),
+                        );
+                        super::trace::record_space_key_timing(
+                            "managed_manual_toggle_suppressed",
+                            setup_us,
+                            0,
+                            commit_us,
+                            space_started.elapsed().as_micros(),
+                        );
+                        self.trace_key("space_managed_commit", keyval, keycode, true, Some(' '));
+                        return Ok(true);
+                    }
                     let autocorrect_started = Instant::now();
                     let frame = self.capture_input_frame_identity();
                     let lookup = frame
@@ -262,6 +287,9 @@ mod word_boundary_route_contract {
             .split("if mode == WordInputMode::ManagedCommit")
             .nth(1)
             .expect("managed Space route")
+            .split("let autocorrect_started = Instant::now();")
+            .nth(1)
+            .expect("ordinary autocorrect route")
             .split("self.push_tail_char(' ')")
             .next()
             .expect("managed route body");
@@ -276,5 +304,26 @@ mod word_boundary_route_contract {
             take < close,
             "Space must take its exact lease before display close"
         );
+    }
+
+    #[test]
+    fn managed_space_consumes_manual_toggle_suppression_before_lookup() {
+        let source = include_str!("managed.rs");
+        let route = source
+            .split("if mode == WordInputMode::ManagedCommit")
+            .nth(1)
+            .expect("managed Space route")
+            .split("self.push_tail_char(' ')")
+            .next()
+            .expect("managed route body");
+        let suppression = route
+            .find("take_manual_toggle_autocorrect_suppression")
+            .expect("manual-toggle suppression");
+        let lookup = route
+            .find("take_space_autocorrect_lease")
+            .expect("space lookup");
+
+        assert!(suppression < lookup);
+        assert!(route.contains("manual_toggle_suppressed"));
     }
 }

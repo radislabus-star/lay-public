@@ -539,10 +539,16 @@ impl LayIbusEngine {
         })
     }
 
-    #[cfg(test)]
-    fn take_manual_toggle_autocorrect_suppression(&mut self) -> bool {
+    pub(super) fn take_manual_toggle_autocorrect_suppression(&mut self) -> bool {
         let shared_suppression = self.take_autocorrect_suppression_handoff();
-        let suppress = self.suppress_next_committed_tail_autocorrect || shared_suppression;
+        let now = std::time::Instant::now();
+        let local_identity_is_live = self
+            .exact_manual_toggle_suppression
+            .take()
+            .is_none_or(|identity| identity.path == self.path && now <= identity.expires_at);
+        let local_suppression =
+            local_identity_is_live && self.suppress_next_committed_tail_autocorrect;
+        let suppress = local_suppression || shared_suppression;
         self.suppress_next_committed_tail_autocorrect = false;
         suppress
     }
@@ -595,11 +601,13 @@ mod tests {
     };
     use crate::engine::SurroundingTextSnapshot;
     use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY};
+    use crate::protocol::ExactManualToggleSuppression;
     use lay::config::LayConfig;
     use lay::ime_correction::{
         decide_active_composition_autocorrect, ActiveCompositionAutocorrectRequest,
     };
     use std::sync::{Arc, Mutex};
+    use std::time::{Duration, Instant};
 
     fn engine() -> LayIbusEngine {
         LayIbusEngine::new(
@@ -693,6 +701,36 @@ mod tests {
 
         assert!(engine_b.take_manual_toggle_autocorrect_suppression());
         assert!(!engine_b.take_manual_toggle_autocorrect_suppression());
+    }
+
+    #[test]
+    fn expired_exact_manual_toggle_suppression_cannot_reach_a_later_space() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut engine = LayIbusEngine::new(
+            "/test/expired".to_string(),
+            Arc::clone(&shared),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        let expired = ExactManualToggleSuppression {
+            path: engine.path.clone(),
+            epoch: 7,
+            expires_at: Instant::now() - Duration::from_millis(1),
+        };
+        engine.suppress_next_committed_tail_autocorrect = true;
+        engine.exact_manual_toggle_suppression = Some(expired.clone());
+        {
+            let mut state = shared.lock().expect("lay ime state poisoned");
+            state.suppress_next_committed_tail_autocorrect = true;
+            state.exact_manual_toggle_suppression = Some(expired);
+        }
+
+        assert!(!engine.take_manual_toggle_autocorrect_suppression());
+        assert!(!engine.suppress_next_committed_tail_autocorrect);
+        let state = shared.lock().expect("lay ime state poisoned");
+        assert!(!state.suppress_next_committed_tail_autocorrect);
+        assert!(state.exact_manual_toggle_suppression.is_none());
     }
 
     #[test]

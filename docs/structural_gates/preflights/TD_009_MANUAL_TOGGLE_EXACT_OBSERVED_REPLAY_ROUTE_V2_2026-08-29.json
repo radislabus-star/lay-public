@@ -1,0 +1,61 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id":"physical-double-shift","role":"interface"},
+    {"id":"daemon-pair-detector","role":"orchestrator"},
+    {"id":"ime-visible-tail-v2","role":"producer"},
+    {"id":"shared-manual-toggle-planner","role":"authorization_owner"},
+    {"id":"physical-input-grab","role":"orchestrator"},
+    {"id":"exact-ime-tail-lease","role":"evidence_owner"},
+    {"id":"daemon-uinput-replay","role":"mutation_owner"},
+    {"id":"ime-active-composition-owner","role":"mutation_owner"},
+    {"id":"daemon-word-buffer-owner","role":"mutation_owner"},
+    {"id":"gtk-visible-state","role":"producer"},
+    {"id":"gtk-visible-observer","role":"observer"},
+    {"id":"fail-closed-terminal","role":"observer"},
+    {"id":"gtk-visible-proof","role":"proof_owner"},
+    {"id":"stale-refusal-proof","role":"proof_owner"}
+  ],
+  "edges": [
+    {"id":"committed-entry","from":"physical-double-shift","relation":"calls","to":"daemon-pair-detector","events":["committed-tail-exact-replay"]},
+    {"id":"committed-observe","from":"daemon-pair-detector","relation":"calls","to":"ime-visible-tail-v2","events":["committed-tail-exact-replay"]},
+    {"id":"committed-plan-exec","from":"ime-visible-tail-v2","relation":"delegates","to":"shared-manual-toggle-planner","events":["committed-tail-exact-replay"]},
+    {"id":"committed-grab","from":"shared-manual-toggle-planner","relation":"delegates","to":"physical-input-grab","events":["committed-tail-exact-replay"]},
+    {"id":"committed-revalidate","from":"physical-input-grab","relation":"calls","to":"exact-ime-tail-lease","events":["committed-tail-exact-replay"]},
+    {"id":"committed-execute","from":"exact-ime-tail-lease","relation":"delegates","to":"daemon-uinput-replay","events":["committed-tail-exact-replay"]},
+    {"id":"committed-snapshot-data","from":"ime-visible-tail-v2","relation":"produces_for","to":"exact-ime-tail-lease","events":["committed-tail-exact-replay"]},
+    {"id":"committed-lease-data","from":"exact-ime-tail-lease","relation":"passes_to","to":"shared-manual-toggle-planner","events":["committed-tail-exact-replay"]},
+    {"id":"committed-authorize","from":"shared-manual-toggle-planner","relation":"authorizes","to":"daemon-uinput-replay","events":["committed-tail-exact-replay"]},
+
+    {"id":"active-entry","from":"physical-double-shift","relation":"calls","to":"daemon-pair-detector","events":["active-composition"]},
+    {"id":"active-observe","from":"daemon-pair-detector","relation":"calls","to":"ime-visible-tail-v2","events":["active-composition"]},
+    {"id":"active-execute","from":"ime-visible-tail-v2","relation":"delegates","to":"ime-active-composition-owner","events":["active-composition"]},
+
+    {"id":"daemon-entry","from":"physical-double-shift","relation":"calls","to":"daemon-pair-detector","events":["daemon-word-buffer"]},
+    {"id":"daemon-observe","from":"daemon-pair-detector","relation":"calls","to":"ime-visible-tail-v2","events":["daemon-word-buffer"]},
+    {"id":"daemon-execute","from":"ime-visible-tail-v2","relation":"delegates","to":"daemon-word-buffer-owner","events":["daemon-word-buffer"]},
+
+    {"id":"stale-entry","from":"physical-double-shift","relation":"calls","to":"daemon-pair-detector","events":["stale-or-mismatched-tail"]},
+    {"id":"stale-observe","from":"daemon-pair-detector","relation":"calls","to":"ime-visible-tail-v2","events":["stale-or-mismatched-tail"]},
+    {"id":"stale-plan","from":"ime-visible-tail-v2","relation":"delegates","to":"shared-manual-toggle-planner","events":["stale-or-mismatched-tail"]},
+    {"id":"stale-grab","from":"shared-manual-toggle-planner","relation":"delegates","to":"physical-input-grab","events":["stale-or-mismatched-tail"]},
+    {"id":"stale-revalidate","from":"physical-input-grab","relation":"calls","to":"exact-ime-tail-lease","events":["stale-or-mismatched-tail"]},
+    {"id":"stale-observation","from":"exact-ime-tail-lease","relation":"observes","to":"fail-closed-terminal","events":["stale-refusal-observation"]},
+    {"id":"stale-proof","from":"fail-closed-terminal","relation":"proves","to":"stale-refusal-proof","events":["stale-refusal-proof"]},
+
+    {"id":"visible-observation","from":"gtk-visible-state","relation":"observes","to":"gtk-visible-observer","events":["gtk-visible-observation"]},
+    {"id":"visible-proof","from":"gtk-visible-observer","relation":"proves","to":"gtk-visible-proof","events":["gtk-bidirectional-proof"]}
+  ],
+  "routes": [
+    {"id":"committed-execution","event":"committed-tail-exact-replay","kind":"execution","entry":"physical-double-shift","terminal":"daemon-uinput-replay","required_roles":["interface","orchestrator","producer","authorization_owner","evidence_owner","mutation_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"daemon-uinput-replay","min":1,"max":1}]},
+    {"id":"committed-authority","event":"committed-tail-exact-replay","kind":"authority","entry":"ime-visible-tail-v2","terminal":"daemon-uinput-replay","required_roles":["producer","evidence_owner","authorization_owner","mutation_owner"],"path_cardinality":[{"from":"ime-visible-tail-v2","to":"daemon-uinput-replay","min":1,"max":1}]},
+    {"id":"active-composition-execution","event":"active-composition","kind":"execution","entry":"physical-double-shift","terminal":"ime-active-composition-owner","required_roles":["interface","orchestrator","producer","mutation_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"ime-active-composition-owner","min":1,"max":1}]},
+    {"id":"daemon-buffer-execution","event":"daemon-word-buffer","kind":"execution","entry":"physical-double-shift","terminal":"daemon-word-buffer-owner","required_roles":["interface","orchestrator","producer","mutation_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"daemon-word-buffer-owner","min":1,"max":1}]},
+    {"id":"stale-stop","event":"stale-or-mismatched-tail","kind":"execution","entry":"physical-double-shift","terminal":"exact-ime-tail-lease","required_roles":["interface","orchestrator","producer","authorization_owner","evidence_owner"],"path_cardinality":[{"from":"physical-double-shift","to":"exact-ime-tail-lease","min":1,"max":1}]},
+    {"id":"stale-observation","event":"stale-refusal-observation","kind":"observation","entry":"exact-ime-tail-lease","terminal":"fail-closed-terminal","required_roles":["evidence_owner","observer"],"path_cardinality":[{"from":"exact-ime-tail-lease","to":"fail-closed-terminal","min":1,"max":1}]},
+    {"id":"stale-refusal-proof","event":"stale-refusal-proof","kind":"proof","entry":"fail-closed-terminal","terminal":"stale-refusal-proof","required_roles":["observer","proof_owner"],"path_cardinality":[{"from":"fail-closed-terminal","to":"stale-refusal-proof","min":1,"max":1}]},
+    {"id":"gtk-visible-observation","event":"gtk-visible-observation","kind":"observation","entry":"gtk-visible-state","terminal":"gtk-visible-observer","required_roles":["producer","observer"],"path_cardinality":[{"from":"gtk-visible-state","to":"gtk-visible-observer","min":1,"max":1}]},
+    {"id":"gtk-visible-proof","event":"gtk-bidirectional-proof","kind":"proof","entry":"gtk-visible-observer","terminal":"gtk-visible-proof","required_roles":["observer","proof_owner"],"path_cardinality":[{"from":"gtk-visible-observer","to":"gtk-visible-proof","min":1,"max":1}]}
+  ]
+}

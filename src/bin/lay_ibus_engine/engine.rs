@@ -4,7 +4,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
 
 use super::preedit::PreeditFastState;
-use super::protocol::Shared;
+use super::protocol::{ExactManualToggleSuppression, Shared};
 
 const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
 const IBUS_INPUT_PURPOSE_PASSWORD: u32 = 8;
@@ -69,6 +69,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) pending_visible_postcondition: Option<PendingVisiblePostcondition>,
     pub(super) pending_ime_completion_learning: Option<PendingImeCompletionLearning>,
     pub(super) suppress_next_committed_tail_autocorrect: bool,
+    pub(super) exact_manual_toggle_suppression: Option<ExactManualToggleSuppression>,
     pub(super) word_input_mode: Option<WordInputMode>,
     pub(super) managed_input: bool,
     pub(super) config: LayConfig,
@@ -137,6 +138,8 @@ impl LayIbusEngine {
                     .is_some_and(|until| now <= until);
                 if !preserve_handoff {
                     state.preserve_active_path_until = None;
+                    state.exact_manual_toggle_handoff_epoch = None;
+                    state.exact_manual_toggle_handoff_path = None;
                 }
                 state.active_path = Some(self.path.clone());
                 let handoff = preserve_handoff.then(|| {
@@ -151,6 +154,7 @@ impl LayIbusEngine {
                     state.handoff_tail_epoch = next_epoch;
                     state.handoff_focus_receipt = None;
                     state.suppress_next_committed_tail_autocorrect = false;
+                    state.exact_manual_toggle_suppression = None;
                     state.pending_auto_undo = None;
                     state.pending_auto_undo_retry = None;
                     state.shift_gesture_handoff = None;
@@ -183,6 +187,7 @@ impl LayIbusEngine {
             self.recent_committed_tail_replace = None;
             self.pending_ime_completion_learning = None;
             self.suppress_next_committed_tail_autocorrect = false;
+            self.exact_manual_toggle_suppression = None;
             self.focus_receipt
                 .get_or_insert_with(|| format!("engine:{}", self.path));
         }

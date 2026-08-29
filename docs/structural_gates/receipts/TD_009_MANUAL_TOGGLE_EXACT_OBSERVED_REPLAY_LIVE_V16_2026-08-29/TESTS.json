@@ -1,0 +1,49 @@
+{
+  "schema": "lay.td009-exact-observed-replay-tests.v1",
+  "verdict": "PASS",
+  "commands": [
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-daemon exact_replay",
+      "result": "8 passed, 0 failed"
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-ibus-engine exact_manual_toggle",
+      "result": "3 passed, 0 failed"
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-daemon queued_left_shift_pairs_remain_exact_inverse_gestures",
+      "result": "1 passed, 0 failed"
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-daemon queued_manual_toggle_waits_for_the_complete_previous_replay",
+      "result": "1 passed, 0 failed"
+    },
+    {
+      "command": "python3 -m unittest tests.test_runtime_smoke_isolation",
+      "result": "39 passed, 0 failed"
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-test-input every_indexed_builtin_script_is_embedded",
+      "result": "1 passed, 0 failed"
+    },
+    {
+      "command": "scripts/cargo-guard.sh fmt --check",
+      "result": "PASS"
+    },
+    {
+      "command": "scripts/cargo-guard.sh build --release --bins",
+      "result": "PASS"
+    },
+    {
+      "command": "scripts/check-lay-changed.sh",
+      "result": "PASS"
+    }
+  ],
+  "live_matrix": {
+    "receipt": "MATRIX_BIDIRECTIONAL_INVERSE_AUTOCOMPLETE/RECEIPT.json",
+    "receipt_sha256": "e9a3468a942495215ab997ad95a945428fa0abf68c452fe5462478991bf350f5",
+    "cases_passed": 8,
+    "cases_total": 8
+  },
+  "installed_runtime_changed": false
+}

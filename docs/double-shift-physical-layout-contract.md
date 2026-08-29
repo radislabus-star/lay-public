@@ -70,7 +70,11 @@ Shift taps are two pairs and therefore two toggles; no ordinary key or quiet
 window is required between them. A valid pending autocorrect undo has priority
 over ordinary projection.
 
-## Runtime routes
+## Installed 1.0.54 runtime routes (historical)
+
+This section records the installed baseline that preceded TD-009. Its
+committed-tail delete-plus-commit branch is superseded by the effective
+exact-observed-tail route below; it is not an alternative executable route.
 
 ```text
 physical Double Shift
@@ -240,7 +244,7 @@ Double Shift
 │   └── snapshot not available -> preserve undo and request/await observation
 └── no valid pending autocorrect undo
     ├── active IME composition -> IME projection
-    ├── committed tail with SurroundingText capability -> IME projection
+    ├── exact IME committed tail -> leased daemon isolated replay
     └── otherwise -> daemon physical replay
 ```
 
@@ -278,11 +282,12 @@ Cross-engine Shift handoff may move gesture state between the US and RU engine
 instances, but it must preserve the same shared pending undo and exact source
 surface.
 
-## Legacy SurroundingText route
+## Historical rejected SurroundingText route
 
-Legacy IBus clients do not receive delete-plus-commit as one atomic effect.
-Lay emits the two ordered signals consecutively from one input handler and
-waits only for the exact final client postcondition:
+This route is preserved only as failed evidence. Legacy IBus clients do not
+receive delete-plus-commit as one atomic effect, and two managed GTK attempts
+proved that `RequireSurroundingText` does not force the callback required by
+the old transaction:
 
 ```text
 exact full source snapshot
@@ -293,11 +298,8 @@ DeleteSurroundingText
 -> layout synchronization
 ```
 
-Suffix equality is insufficient: an appended transient such as
-`ghbdtnпривет` must not confirm `привет`. Waiting for an observable deleted
-snapshot is forbidden because it exposes a blank intermediate surface. A focus
-reset, capability loss, stale epoch, or snapshot mismatch clears the pending
-final-postcondition authority without replaying the mutation.
+Neither pre-mutation nor post-mutation refresh produced a new exact snapshot.
+This sequence is therefore not an admitted GTK committed-tail executor.
 
 ## Multi-client preparation isolation
 
@@ -318,8 +320,10 @@ hide the production race and is not acceptance evidence.
 
 1. No Backspace is emitted until the target layout stack is ready.
 2. A layout-readiness failure leaves the original visible text untouched.
-3. Backspace and replay are paced even while physical input is isolated. Input
-   isolation prevents re-entry; it does not prove that the client consumes a
+3. The exact committed-tail lane uses the existing bounded paced replay while
+   physical input is grabbed. Delete and insert are each limited to 32 events;
+   any invalid or unrepresentable plan fails before layout or text mutation.
+   A grab isolates physical input but does not acknowledge that GTK consumed a
    zero-delay uinput burst.
 4. Every emitted key tap is a closed key-down/key-up frame.
 5. Replay failure after deletion is an explicit partial-output failure. It must
@@ -336,10 +340,14 @@ hide the production race and is not acceptance evidence.
   transition; the legacy IBus key route produces zero replacement effects.
 - Every adjacent pair is independent: four Shift taps produce two plans and
   restore the original text and layout.
-- A SurroundingText committed-tail projection keeps the original layout until
-  the exact replacement is visible, then makes both GNOME `CurrentLayout` and
-  `ibus engine` equal to the target language through one GNOME input-source
-  activation. The bridge must not launch a second `ibus engine` transition.
+- A committed-tail projection validates one exact IME snapshot before and
+  after one GNOME input-source activation. The second lease proves target
+  layout, focused IME, source, epoch, and unchanged suffix before mutation.
+- The exact route uses no generic D-Bus transport fallback: a lost
+  `ActivateLayout` or `CurrentLayout` response fails closed instead of invoking
+  the method again.
+- Checked autocorrect suppression is armed only after both lease checks and
+  immediately before the first Backspace.
 - A layout toggle produces one IBus focus handoff, not a visible two-stage
   source-then-engine handoff.
 - Pending autocorrect undo remains unchanged.
@@ -349,3 +357,43 @@ hide the production race and is not acceptance evidence.
 
 Daemon emission logs prove attempted mutation only. They are not a visible-text
 PASS without an independent client-visible observation.
+
+## 2026-08-29 exact observed-tail correction
+
+The effective GTK route was selected only after the two historical
+SurroundingText variants failed with immutable receipts. It is:
+
+```text
+daemon pair detector
+-> ManualToggleV3 exact-tail disposition
+-> one IME VisibleTailV2 snapshot and literal projection plan
+-> physical input grab
+-> first exact lease check
+-> existing expiry-bounded cross-engine tail handoff
+-> one no-fallback GNOME ActivateLayout
+-> exact shell + IBus readback
+-> second exact lease check on the focused target engine
+-> checked suppression
+-> one bounded paced Backspace + replay
+-> independent managed-GTK visible result
+```
+
+`us` and `lay-ime-us` (likewise `ru` and `lay-ime-ru`) are the only accepted
+GNOME readback identities for the corresponding frozen language. The exact
+IBus engine identity remains mandatory. No daemon-buffer reconstruction may
+replace the IME-observed suffix, including an accepted autocomplete suffix.
+The handoff has the existing 700-ms safety expiry but introduces no delay,
+polling, retry, or scheduled mutation.
+
+The first live inverse matrix rejected the zero-pace candidate: the second
+pair reached the daemon after only the first character of the first replay was
+visible to IBus. The effective executor therefore reuses the already proven
+paced key emitters; it adds no pre-trigger wait or gesture debounce. The same
+matrix also exposed that an older boundary-correction refactor had left the
+manual-toggle suppression consumer test-only. Production Space handling now
+consumes that existing one-shot capability before consulting its prepared
+autocorrect lease.
+
+The failed implementation attempts and selected-route receipts are recorded in
+`tech_debt/009-fix-manual-toggle-visible-postcondition-race.md`. Installed
+runtime authority remained unchanged throughout candidate review.

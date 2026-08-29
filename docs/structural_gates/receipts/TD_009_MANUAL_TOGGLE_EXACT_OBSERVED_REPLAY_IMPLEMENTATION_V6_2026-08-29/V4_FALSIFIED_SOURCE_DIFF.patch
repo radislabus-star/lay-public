@@ -1,0 +1,465 @@
+diff --git a/src/bin/lay_ibus_engine/committed_tail.rs b/src/bin/lay_ibus_engine/committed_tail.rs
+index af06ae3f..9202d005 100644
+--- a/src/bin/lay_ibus_engine/committed_tail.rs
++++ b/src/bin/lay_ibus_engine/committed_tail.rs
+@@ -3,7 +3,8 @@ use std::time::Instant;
+ use zbus::fdo;
+ 
+ use super::engine::{
+-    InputFrameIdentity, LayIbusEngine, PendingSystemOutcomeFeedback, SystemOutcomeKind,
++    InputFrameIdentity, LayIbusEngine, PendingManualToggle, PendingSystemOutcomeFeedback,
++    SystemOutcomeKind,
+ };
+ use super::space_autocorrect_prefetch::{
+     self, PreparedNoApplyStage, SpaceAutocorrectLookup, SpaceAutocorrectLookupReceipt,
+@@ -15,6 +16,12 @@ use super::trace::{self, SpaceCorrectionLeaseOutcome};
+ use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
+ use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
+ 
++#[derive(Debug, Clone, Copy, PartialEq, Eq)]
++enum ManualToggleFenceStage {
++    FreshSnapshotRequested,
++    CancelledEvenPair,
++}
++
+ impl LayIbusEngine {
+     pub(super) fn schedule_space_autocorrect_prefetch(&self, identity: &InputFrameIdentity) {
+         if !self.config.auto_replace || !self.content_allows_text_assistance() {
+@@ -406,16 +413,17 @@ impl LayIbusEngine {
+         let Some(plan) = self.committed_tail_toggle_plan() else {
+             return Ok(None);
+         };
+-        if emitter.is_legacy()
+-            && self.surrounding_text_supported
+-            && self.surrounding_text_snapshot.is_none()
+-        {
+-            self.pending_manual_toggle = !self.pending_manual_toggle;
+-            let stage = if self.pending_manual_toggle {
+-                emitter.require_surrounding_text().await?;
+-                "queued_waiting_exact_snapshot"
+-            } else {
+-                "cancelled_even_pair"
++        if emitter.is_legacy() && self.surrounding_text_supported {
++            let fence_stage = self.stage_committed_tail_toggle_for_fresh_snapshot(plan);
++            let stage = match fence_stage {
++                ManualToggleFenceStage::FreshSnapshotRequested => {
++                    if let Err(error) = emitter.require_surrounding_text().await {
++                        self.pending_manual_toggle = None;
++                        return Err(error);
++                    }
++                    "queued_waiting_fresh_snapshot"
++                }
++                ManualToggleFenceStage::CancelledEvenPair => "cancelled_even_pair",
+             };
+             trace::record(format!(
+                 r#"{{"kind":"ibus_manual_toggle_pending","stage":"{stage}","tail_chars":{}}}"#,
+@@ -423,6 +431,31 @@ impl LayIbusEngine {
+             ));
+             return Ok(Some(self.layout_is_ru));
+         }
++
++        self.apply_committed_tail_toggle_plan(emitter, plan).await
++    }
++
++    fn stage_committed_tail_toggle_for_fresh_snapshot(
++        &mut self,
++        plan: lay::manual_toggle::ManualTogglePlan,
++    ) -> ManualToggleFenceStage {
++        if self.pending_manual_toggle.take().is_some() {
++            return ManualToggleFenceStage::CancelledEvenPair;
++        }
++        self.pending_manual_toggle = Some(PendingManualToggle {
++            plan,
++            tail_epoch: self.tail_epoch,
++            focus_receipt: self.focus_receipt.clone(),
++            path: self.path.clone(),
++        });
++        ManualToggleFenceStage::FreshSnapshotRequested
++    }
++
++    async fn apply_committed_tail_toggle_plan(
++        &mut self,
++        emitter: &mut EngineOutput<'_, '_>,
++        plan: lay::manual_toggle::ManualTogglePlan,
++    ) -> fdo::Result<Option<bool>> {
+         trace::record_manual_toggle_plan(&plan);
+         let handled = self
+             .replace_committed_tail(
+@@ -444,40 +477,50 @@ impl LayIbusEngine {
+         &mut self,
+         emitter: &mut EngineOutput<'_, '_>,
+     ) -> fdo::Result<bool> {
+-        if !self.pending_manual_toggle {
++        let Some(pending) = self.pending_manual_toggle.take() else {
+             return Ok(false);
+-        }
+-        let Some(plan) = self.committed_tail_toggle_plan() else {
+-            self.pending_manual_toggle = false;
+-            trace::record(r#"{"kind":"ibus_manual_toggle_pending","stage":"cancelled_no_plan"}"#);
+-            return Ok(true);
+         };
++        let current_plan = self.committed_tail_toggle_plan();
++        if pending.tail_epoch != self.tail_epoch
++            || pending.focus_receipt != self.focus_receipt
++            || pending.path != self.path
++            || current_plan.as_ref() != Some(&pending.plan)
++        {
++            trace::record(
++                r#"{"kind":"ibus_manual_toggle_pending","stage":"cancelled_identity_mismatch"}"#,
++            );
++            return Ok(true);
++        }
+         let Some(snapshot) = self.surrounding_text_snapshot.as_ref() else {
++            trace::record(
++                r#"{"kind":"ibus_manual_toggle_pending","stage":"cancelled_missing_snapshot"}"#,
++            );
+             return Ok(true);
+         };
+         if snapshot.text.is_empty() && !self.tail_buffer.is_empty() {
+             trace::record(
+-                r#"{"kind":"ibus_manual_toggle_pending","stage":"waiting_nonempty_snapshot"}"#,
++                r#"{"kind":"ibus_manual_toggle_pending","stage":"cancelled_empty_snapshot"}"#,
+             );
+             return Ok(true);
+         }
+-        let expected = lay::text_edit::tail_chars(&self.tail_buffer, plan.backspaces as usize);
++        let expected =
++            lay::text_edit::tail_chars(&self.tail_buffer, pending.plan.backspaces as usize);
+         if snapshot.has_selection()
+             || snapshot
+-                .suffix_before_cursor(plan.backspaces as usize)
++                .suffix_before_cursor(pending.plan.backspaces as usize)
+                 .as_deref()
+                 != Some(expected.as_str())
+         {
+-            self.pending_manual_toggle = false;
+             trace::record(
+                 r#"{"kind":"ibus_manual_toggle_pending","stage":"cancelled_snapshot_mismatch"}"#,
+             );
+             return Ok(true);
+         }
+ 
+-        self.pending_manual_toggle = false;
+         trace::record(r#"{"kind":"ibus_manual_toggle_pending","stage":"released_exact_snapshot"}"#);
+-        let _ = self.toggle_committed_tail_target(emitter).await?;
++        let _ = self
++            .apply_committed_tail_toggle_plan(emitter, pending.plan)
++            .await?;
+         Ok(true)
+     }
+ 
+@@ -591,10 +634,12 @@ fn autocorrect_replacement_has_one_trailing_space(replacement: &str) -> bool {
+ mod tests {
+     use super::{
+         autocorrect_replacement_has_one_trailing_space,
+-        committed_tail_autocorrect_decision_is_authorized, LayIbusEngine,
++        committed_tail_autocorrect_decision_is_authorized, LayIbusEngine, ManualToggleFenceStage,
+     };
+     use crate::engine::SurroundingTextSnapshot;
+-    use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY};
++    use crate::output::{
++        AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY, PROPOSAL_NATIVE_UNHANDLED,
++    };
+     use lay::config::LayConfig;
+     use lay::ime_correction::{
+         decide_active_composition_autocorrect, ActiveCompositionAutocorrectRequest,
+@@ -744,12 +789,40 @@ mod tests {
+     }
+ 
+     #[test]
+-    fn pending_double_shift_releases_once_on_exact_new_engine_snapshot() {
++    fn legacy_committed_tail_route_always_fences_even_with_cached_snapshot() {
++        let source = include_str!("committed_tail.rs");
++        let route = source
++            .split("pub(super) async fn toggle_committed_tail_target")
++            .nth(1)
++            .expect("committed-tail toggle route")
++            .split("fn stage_committed_tail_toggle_for_fresh_snapshot")
++            .next()
++            .expect("fresh-snapshot staging boundary");
++
++        assert!(route.contains("emitter.is_legacy() && self.surrounding_text_supported"));
++        assert!(route.contains("stage_committed_tail_toggle_for_fresh_snapshot(plan)"));
++        assert!(route.contains("emitter.require_surrounding_text().await"));
++        assert!(!route.contains("surrounding_text_snapshot.is_none()"));
++        assert!(!route.contains("replace_committed_tail("));
++    }
++
++    #[test]
++    fn fresh_snapshot_fence_stages_without_mutating_then_releases_once() {
+         let mut engine = engine();
+         engine.layout_is_ru = false;
+         engine.surrounding_text_supported = true;
+         engine.tail_buffer = "ghbdtn".to_string();
+-        engine.pending_manual_toggle = true;
++        engine.publish_tail_handoff();
++        let plan = engine.committed_tail_toggle_plan().expect("toggle plan");
++
++        assert_eq!(
++            engine.stage_committed_tail_toggle_for_fresh_snapshot(plan),
++            ManualToggleFenceStage::FreshSnapshotRequested
++        );
++        assert!(engine.pending_manual_toggle.is_some());
++        assert_eq!(engine.tail_buffer, "ghbdtn");
++        assert!(engine.pending_visible_postcondition.is_none());
++
+         engine.surrounding_text_snapshot =
+             Some(SurroundingTextSnapshot::new("ghbdtn".to_string(), 6, 6));
+         let mut builder = AtomicEffectBuilder::default();
+@@ -760,9 +833,25 @@ mod tests {
+         )
+         .expect("pending toggle"));
+ 
+-        assert!(!engine.pending_manual_toggle);
++        assert!(engine.pending_manual_toggle.is_none());
+         assert_eq!(engine.tail_buffer, "привет");
+-        assert_eq!(builder.finish(true).0, PROPOSAL_FRAME_READY);
++        let (status, effects) = builder.finish(true);
++        assert_eq!(status, PROPOSAL_FRAME_READY);
++        assert_eq!(
++            effects.iter().map(|(tag, _)| *tag).collect::<Vec<_>>(),
++            vec![2, 1],
++            "the callback must release exactly delete then commit"
++        );
++
++        let mut duplicate_builder = AtomicEffectBuilder::default();
++        let mut duplicate_output = EngineOutput::atomic(&mut duplicate_builder);
++        assert!(!zbus::block_on(
++            engine.apply_pending_manual_toggle_after_surrounding_snapshot(&mut duplicate_output)
++        )
++        .expect("duplicate callback"));
++        let (status, effects) = duplicate_builder.finish(false);
++        assert_eq!(status, PROPOSAL_NATIVE_UNHANDLED);
++        assert!(effects.is_empty());
+     }
+ 
+     #[test]
+@@ -771,7 +860,12 @@ mod tests {
+         engine.layout_is_ru = false;
+         engine.surrounding_text_supported = true;
+         engine.tail_buffer = "ghbdtn".to_string();
+-        engine.pending_manual_toggle = true;
++        engine.publish_tail_handoff();
++        let plan = engine.committed_tail_toggle_plan().expect("toggle plan");
++        assert_eq!(
++            engine.stage_committed_tail_toggle_for_fresh_snapshot(plan),
++            ManualToggleFenceStage::FreshSnapshotRequested
++        );
+         engine.surrounding_text_snapshot =
+             Some(SurroundingTextSnapshot::new("другое".to_string(), 6, 6));
+         let mut builder = AtomicEffectBuilder::default();
+@@ -782,18 +876,97 @@ mod tests {
+         )
+         .expect("mismatched pending toggle"));
+ 
+-        assert!(!engine.pending_manual_toggle);
++        assert!(engine.pending_manual_toggle.is_none());
+         assert_eq!(engine.tail_buffer, "ghbdtn");
++        assert!(builder.finish(false).1.is_empty());
++    }
++
++    #[test]
++    fn fresh_snapshot_fence_rejects_changed_tail_epoch() {
++        let mut engine = engine();
++        engine.layout_is_ru = false;
++        engine.surrounding_text_supported = true;
++        engine.tail_buffer = "ghbdtn".to_string();
++        engine.publish_tail_handoff();
++        let plan = engine.committed_tail_toggle_plan().expect("toggle plan");
++        assert_eq!(
++            engine.stage_committed_tail_toggle_for_fresh_snapshot(plan),
++            ManualToggleFenceStage::FreshSnapshotRequested
++        );
++
++        engine.push_tail_char('x');
++        engine.surrounding_text_snapshot =
++            Some(SurroundingTextSnapshot::new("ghbdtnx".to_string(), 7, 7));
++        let mut builder = AtomicEffectBuilder::default();
++        let mut output = EngineOutput::atomic(&mut builder);
++
++        assert!(zbus::block_on(
++            engine.apply_pending_manual_toggle_after_surrounding_snapshot(&mut output)
++        )
++        .expect("stale pending toggle"));
++        assert!(engine.pending_manual_toggle.is_none());
++        assert_eq!(engine.tail_buffer, "ghbdtnx");
++        assert!(builder.finish(false).1.is_empty());
++    }
++
++    #[test]
++    fn two_fresh_snapshot_fences_perform_inverse_toggles() {
++        let mut engine = engine();
++        engine.layout_is_ru = false;
++        engine.surrounding_text_supported = true;
++        engine.tail_buffer = "ghbdtn".to_string();
++        engine.publish_tail_handoff();
++
++        for (before, after, target_layout_is_ru) in
++            [("ghbdtn", "привет", true), ("привет", "ghbdtn", false)]
++        {
++            assert_eq!(engine.tail_buffer, before);
++            let plan = engine.committed_tail_toggle_plan().expect("toggle plan");
++            assert_eq!(
++                engine.stage_committed_tail_toggle_for_fresh_snapshot(plan),
++                ManualToggleFenceStage::FreshSnapshotRequested
++            );
++            engine.surrounding_text_snapshot = Some(SurroundingTextSnapshot::new(
++                before.to_string(),
++                before.chars().count() as u32,
++                before.chars().count() as u32,
++            ));
++            let mut builder = AtomicEffectBuilder::default();
++            let mut output = EngineOutput::atomic(&mut builder);
++            assert!(zbus::block_on(
++                engine.apply_pending_manual_toggle_after_surrounding_snapshot(&mut output)
++            )
++            .expect("pending toggle"));
++            assert_eq!(engine.tail_buffer, after);
++            assert_eq!(builder.finish(true).0, PROPOSAL_FRAME_READY);
++            assert_ne!(engine.layout_is_ru, target_layout_is_ru);
++
++            engine.surrounding_text_snapshot = Some(SurroundingTextSnapshot::new(
++                after.to_string(),
++                after.chars().count() as u32,
++                after.chars().count() as u32,
++            ));
++            engine.observe_visible_postcondition();
++            assert_eq!(engine.layout_is_ru, target_layout_is_ru);
++            assert!(engine.pending_visible_postcondition.is_none());
++        }
+     }
+ 
+     #[test]
+     fn focus_reset_cancels_pending_double_shift() {
+         let mut engine = engine();
+-        engine.pending_manual_toggle = true;
++        engine.layout_is_ru = false;
++        engine.tail_buffer = "ghbdtn".to_string();
++        engine.publish_tail_handoff();
++        let plan = engine.committed_tail_toggle_plan().expect("toggle plan");
++        assert_eq!(
++            engine.stage_committed_tail_toggle_for_fresh_snapshot(plan),
++            ManualToggleFenceStage::FreshSnapshotRequested
++        );
+ 
+         engine.reset_for_ibus_focus_change();
+ 
+-        assert!(!engine.pending_manual_toggle);
++        assert!(engine.pending_manual_toggle.is_none());
+     }
+ 
+     #[test]
+diff --git a/src/bin/lay_ibus_engine/engine.rs b/src/bin/lay_ibus_engine/engine.rs
+index d848b4f7..2c743ac2 100644
+--- a/src/bin/lay_ibus_engine/engine.rs
++++ b/src/bin/lay_ibus_engine/engine.rs
+@@ -22,8 +22,9 @@ pub(super) fn next_input_identity() -> u64 {
+ mod types;
+ pub(super) use types::{
+     DeferredLayoutAction, DeferredLearningAction, InputFrameIdentity, ManualToggleAuthority,
+-    PendingImeCompletionLearning, PendingSystemOutcomeFeedback, PendingVisiblePostcondition,
+-    RecentCommittedTailReplace, SurroundingTextSnapshot, SystemOutcomeKind, WordInputMode,
++    PendingImeCompletionLearning, PendingManualToggle, PendingSystemOutcomeFeedback,
++    PendingVisiblePostcondition, RecentCommittedTailReplace, SurroundingTextSnapshot,
++    SystemOutcomeKind, WordInputMode,
+ };
+ 
+ #[derive(Clone)]
+@@ -65,7 +66,7 @@ pub(crate) struct LayIbusEngine {
+     pub(super) last_commit_at: Option<Instant>,
+     pub(super) last_tail_input_at: Option<Instant>,
+     pub(super) recent_committed_tail_replace: Option<RecentCommittedTailReplace>,
+-    pub(super) pending_manual_toggle: bool,
++    pub(super) pending_manual_toggle: Option<PendingManualToggle>,
+     pub(super) pending_visible_postcondition: Option<PendingVisiblePostcondition>,
+     pub(super) pending_ime_completion_learning: Option<PendingImeCompletionLearning>,
+     pub(super) suppress_next_committed_tail_autocorrect: bool,
+@@ -248,7 +249,7 @@ impl LayIbusEngine {
+         }
+         if !self.surrounding_text_supported {
+             self.surrounding_text_snapshot = None;
+-            self.pending_manual_toggle = false;
++            self.pending_manual_toggle = None;
+         }
+     }
+ 
+diff --git a/src/bin/lay_ibus_engine/engine/types.rs b/src/bin/lay_ibus_engine/engine/types.rs
+index e3fd097d..61ce868e 100644
+--- a/src/bin/lay_ibus_engine/engine/types.rs
++++ b/src/bin/lay_ibus_engine/engine/types.rs
+@@ -8,6 +8,7 @@ use lay::config::LayConfig;
+ use lay::lexical_authority_frame::{
+     LexicalAuthorityConfigIdentityV1, LexicalAuthorityCoordinatesV1, LexicalAuthorityFrameV1,
+ };
++use lay::manual_toggle::ManualTogglePlan;
+ use lay::text_edit::{EditAction, SnapshotIdentity, TransitionOperator, VisibleTailSource};
+ 
+ #[derive(Debug, Clone)]
+@@ -346,6 +347,14 @@ pub(crate) enum ManualToggleAuthority {
+     DaemonWordBuffer,
+ }
+ 
++#[derive(Debug, Clone, PartialEq, Eq)]
++pub(crate) struct PendingManualToggle {
++    pub(crate) plan: ManualTogglePlan,
++    pub(crate) tail_epoch: u64,
++    pub(crate) focus_receipt: Option<String>,
++    pub(crate) path: String,
++}
++
+ #[derive(Debug, Clone)]
+ pub(crate) struct RecentCommittedTailReplace {
+     pub(crate) backspaces: u32,
+diff --git a/src/bin/lay_ibus_engine/state.rs b/src/bin/lay_ibus_engine/state.rs
+index 46ac160e..0eba0e09 100644
+--- a/src/bin/lay_ibus_engine/state.rs
++++ b/src/bin/lay_ibus_engine/state.rs
+@@ -305,7 +305,7 @@ impl LayIbusEngine {
+             last_commit_at: None,
+             last_tail_input_at: None,
+             recent_committed_tail_replace: None,
+-            pending_manual_toggle: false,
++            pending_manual_toggle: None,
+             pending_visible_postcondition: None,
+             pending_ime_completion_learning: None,
+             suppress_next_committed_tail_autocorrect: false,
+@@ -357,7 +357,7 @@ impl LayIbusEngine {
+             self.publish_tail_handoff();
+         }
+         self.surrounding_text_snapshot = None;
+-        self.pending_manual_toggle = false;
++        self.pending_manual_toggle = None;
+     }
+ 
+     pub(super) fn should_preserve_focus_handoff(&self) -> bool {
+@@ -401,7 +401,7 @@ impl LayIbusEngine {
+         self.alt_used_as_modifier = false;
+         self.handled_press_keycodes.clear();
+         self.surrounding_text_snapshot = None;
+-        self.pending_manual_toggle = false;
++        self.pending_manual_toggle = None;
+         self.rebuild_preedit_fast_from_tail();
+         self.publish_tail_handoff();
+     }
+diff --git a/src/bin/lay_ibus_engine/tail_memory.rs b/src/bin/lay_ibus_engine/tail_memory.rs
+index 097b0ca0..3b893d7b 100644
+--- a/src/bin/lay_ibus_engine/tail_memory.rs
++++ b/src/bin/lay_ibus_engine/tail_memory.rs
+@@ -572,7 +572,7 @@ impl LayIbusEngine {
+         self.last_tail_input_at = None;
+         self.last_commit_at = None;
+         self.recent_committed_tail_replace = None;
+-        self.pending_manual_toggle = false;
++        self.pending_manual_toggle = None;
+         self.pending_visible_postcondition = None;
+         self.tail_epoch = self.tail_epoch.wrapping_add(1);
+         let Ok(mut state) = self.shared.lock() else {
+@@ -599,7 +599,7 @@ impl LayIbusEngine {
+         self.word_input_mode = None;
+         self.last_tail_input_at = None;
+         self.recent_committed_tail_replace = None;
+-        self.pending_manual_toggle = false;
++        self.pending_manual_toggle = None;
+         self.suppress_next_committed_tail_autocorrect = false;
+         self.tail_epoch = self.tail_epoch.wrapping_add(1);
+         if let Ok(mut state) = shared.lock() {

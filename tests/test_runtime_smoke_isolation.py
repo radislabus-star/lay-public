@@ -831,6 +831,55 @@ class RuntimeSmokeIsolationTest(unittest.TestCase):
             DESKTOP.effective_engine_trace_path(identity, proc_root),
         )
 
+    def test_process_command_identity_ignores_only_argv_zero_path_spelling(self) -> None:
+        captured = DESKTOP.ProcessIdentity(
+            42,
+            100,
+            "/home/test/.local/lib/lay/bin/lay-daemon",
+            ("/home/test/.local/bin/lay-daemon", "--example"),
+        )
+        restored = dataclasses.replace(
+            captured,
+            pid=43,
+            start_time=200,
+            argv=("/home/test/.local/lib/lay/bin/lay-daemon", "--example"),
+        )
+
+        self.assertTrue(DESKTOP.same_process_command(captured, restored))
+
+    def test_process_command_identity_rejects_executable_drift(self) -> None:
+        captured = DESKTOP.ProcessIdentity(
+            42,
+            100,
+            "/home/test/.local/lib/lay/bin/lay-daemon",
+            ("/home/test/.local/bin/lay-daemon",),
+        )
+        restored = dataclasses.replace(
+            captured,
+            pid=43,
+            start_time=200,
+            executable="/tmp/lay-daemon",
+            argv=("/tmp/lay-daemon",),
+        )
+
+        self.assertFalse(DESKTOP.same_process_command(captured, restored))
+
+    def test_process_command_identity_rejects_argument_drift(self) -> None:
+        captured = DESKTOP.ProcessIdentity(
+            42,
+            100,
+            "/home/test/.local/lib/lay/bin/lay-daemon",
+            ("/home/test/.local/bin/lay-daemon", "--example"),
+        )
+        restored = dataclasses.replace(
+            captured,
+            pid=43,
+            start_time=200,
+            argv=("/home/test/.local/lib/lay/bin/lay-daemon", "--different"),
+        )
+
+        self.assertFalse(DESKTOP.same_process_command(captured, restored))
+
     def desktop_snapshot(self, *, active_state: str = "inactive"):
         main = None
         main_pid = 0

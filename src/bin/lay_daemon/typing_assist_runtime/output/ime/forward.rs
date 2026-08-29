@@ -14,7 +14,7 @@ pub(super) fn forward_after_ime_replace<'kbd, 'grab>(
         return 0;
     };
     physical_grab
-        .forward_queued_typing(kbd, buf, target_layout, "typing-assist", skip_spaces)
+        .forward_queued_typing(kbd, buf, target_layout, "typing-assist", skip_spaces, false)
         .spaces
 }
 

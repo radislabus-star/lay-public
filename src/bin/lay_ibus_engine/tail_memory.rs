@@ -2,13 +2,15 @@ use super::engine::{
     LayIbusEngine, PendingImeCompletionLearning, PendingSystemOutcomeFeedback, SystemOutcomeKind,
 };
 use super::protocol::{
-    PendingImeAutoUndo, PendingImeAutoUndoRetry, SharedState, ShiftGestureHandoff,
+    ExactManualToggleSuppression, PendingImeAutoUndo, PendingImeAutoUndoRetry, SharedState,
+    ShiftGestureHandoff,
 };
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 use std::time::{Duration, Instant};
 
 const IME_AUTO_UNDO_MAX_AGE: Duration = Duration::from_secs(30);
 const IME_AUTO_UNDO_RETRY_MAX_AGE: Duration = Duration::from_secs(5);
+const IME_LAYOUT_HANDOFF_MAX_AGE: Duration = Duration::from_millis(700);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum SurroundingSnapshotMatch {
@@ -561,6 +563,119 @@ impl LayIbusEngine {
         state.handoff_tail_buffer = self.tail_buffer.clone();
         state.handoff_tail_epoch = self.tail_epoch;
         state.handoff_focus_receipt = self.focus_receipt.clone();
+        state.exact_manual_toggle_handoff_epoch = None;
+        state.exact_manual_toggle_handoff_path = None;
+    }
+
+    pub(super) fn prepare_exact_manual_toggle_layout_handoff(&mut self) {
+        self.publish_tail_handoff();
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        state.preserve_active_path_until = Some(Instant::now() + IME_LAYOUT_HANDOFF_MAX_AGE);
+        state.exact_manual_toggle_handoff_epoch = Some(self.tail_epoch);
+        state.exact_manual_toggle_handoff_path = Some(self.path.clone());
+    }
+
+    pub(super) fn exact_manual_toggle_handoff_is_live(&self) -> bool {
+        let Ok(mut state) = self.shared.lock() else {
+            return false;
+        };
+        let now = Instant::now();
+        let live = state
+            .preserve_active_path_until
+            .is_some_and(|until| now <= until)
+            && state.exact_manual_toggle_handoff_epoch == Some(self.tail_epoch)
+            && state.handoff_tail_epoch == self.tail_epoch
+            && state.handoff_tail_buffer == self.tail_buffer;
+        if !live {
+            state.exact_manual_toggle_handoff_epoch = None;
+            state.exact_manual_toggle_handoff_path = None;
+        }
+        live
+    }
+
+    pub(super) fn consume_exact_manual_toggle_handoff(&self) {
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        state.preserve_active_path_until = None;
+        state.exact_manual_toggle_handoff_epoch = None;
+        state.exact_manual_toggle_handoff_path = None;
+    }
+
+    pub(super) fn arm_exact_manual_toggle_autocorrect_suppression(
+        &mut self,
+        expected_suffix: &str,
+        expected_epoch: u64,
+        expected_path: &str,
+        expected_layout_is_ru: bool,
+    ) -> bool {
+        let exact_tail_suffix =
+            last_tail_token_range(&self.tail_buffer).map(|(start, _)| &self.tail_buffer[start..]);
+        if expected_suffix.is_empty()
+            || exact_tail_suffix != Some(expected_suffix)
+            || self.path != expected_path
+            || self.layout_is_ru != expected_layout_is_ru
+            || self.tail_epoch != expected_epoch
+            || !self.tail_buffer.ends_with(expected_suffix)
+        {
+            return false;
+        }
+        let Ok(mut state) = self.shared.lock() else {
+            return false;
+        };
+        let live = state.active_path.as_deref() == Some(expected_path)
+            && state
+                .preserve_active_path_until
+                .is_some_and(|until| Instant::now() <= until)
+            && state.exact_manual_toggle_handoff_epoch == Some(expected_epoch)
+            && state.exact_manual_toggle_handoff_path.is_some()
+            && state.handoff_tail_epoch == expected_epoch
+            && state.handoff_tail_buffer == self.tail_buffer;
+        if !live {
+            return false;
+        }
+
+        state.preserve_active_path_until = None;
+        state.exact_manual_toggle_handoff_epoch = None;
+        state.exact_manual_toggle_handoff_path = None;
+        state.suppress_next_committed_tail_autocorrect = true;
+        state.exact_manual_toggle_suppression = Some(ExactManualToggleSuppression {
+            path: expected_path.to_string(),
+            epoch: expected_epoch,
+            expires_at: Instant::now() + IME_LAYOUT_HANDOFF_MAX_AGE,
+        });
+        self.suppress_next_committed_tail_autocorrect = true;
+        self.exact_manual_toggle_suppression = state.exact_manual_toggle_suppression.clone();
+        true
+    }
+
+    pub(super) fn revoke_exact_manual_toggle_autocorrect_suppression(
+        &mut self,
+        expected_epoch: u64,
+        expected_path: &str,
+    ) -> bool {
+        if self.path != expected_path {
+            return false;
+        }
+        let Ok(mut state) = self.shared.lock() else {
+            return false;
+        };
+        let matches = state
+            .exact_manual_toggle_suppression
+            .as_ref()
+            .is_some_and(|identity| {
+                identity.path == expected_path && identity.epoch == expected_epoch
+            });
+        if !matches {
+            return false;
+        }
+        state.suppress_next_committed_tail_autocorrect = false;
+        state.exact_manual_toggle_suppression = None;
+        self.suppress_next_committed_tail_autocorrect = false;
+        self.exact_manual_toggle_suppression = None;
+        true
     }
 
     pub(super) fn close_committed_tail_field(&mut self) {
@@ -568,6 +683,7 @@ impl LayIbusEngine {
         self.tail_buffer.clear();
         self.preedit_fast.reset();
         self.suppress_next_committed_tail_autocorrect = false;
+        self.exact_manual_toggle_suppression = None;
         self.word_input_mode = None;
         self.last_tail_input_at = None;
         self.last_commit_at = None;
@@ -583,7 +699,10 @@ impl LayIbusEngine {
         state.handoff_tail_epoch = self.tail_epoch;
         state.handoff_focus_receipt = None;
         state.suppress_next_committed_tail_autocorrect = false;
+        state.exact_manual_toggle_suppression = None;
         state.preserve_active_path_until = None;
+        state.exact_manual_toggle_handoff_epoch = None;
+        state.exact_manual_toggle_handoff_path = None;
         state.pending_auto_undo = None;
         state.pending_auto_undo_retry = None;
         state.shift_gesture_handoff = None;
@@ -601,6 +720,7 @@ impl LayIbusEngine {
         self.recent_committed_tail_replace = None;
         self.pending_manual_toggle = false;
         self.suppress_next_committed_tail_autocorrect = false;
+        self.exact_manual_toggle_suppression = None;
         self.tail_epoch = self.tail_epoch.wrapping_add(1);
         if let Ok(mut state) = shared.lock() {
             record_pending_ime_auto_undo_lifecycle(
@@ -613,7 +733,10 @@ impl LayIbusEngine {
             state.handoff_tail_epoch = self.tail_epoch;
             state.handoff_focus_receipt = None;
             state.suppress_next_committed_tail_autocorrect = false;
+            state.exact_manual_toggle_suppression = None;
             state.preserve_active_path_until = None;
+            state.exact_manual_toggle_handoff_epoch = None;
+            state.exact_manual_toggle_handoff_path = None;
             state.pending_auto_undo = None;
             state.pending_auto_undo_retry = None;
             state.shift_gesture_handoff = None;
@@ -641,15 +764,21 @@ impl LayIbusEngine {
             return;
         };
         state.suppress_next_committed_tail_autocorrect = true;
+        state.exact_manual_toggle_suppression = None;
     }
 
-    #[cfg(test)]
     pub(super) fn take_autocorrect_suppression_handoff(&self) -> bool {
         let Ok(mut state) = self.shared.lock() else {
             return false;
         };
-        let suppress = state.suppress_next_committed_tail_autocorrect;
+        let now = Instant::now();
+        let exact_path_matches = state
+            .exact_manual_toggle_suppression
+            .as_ref()
+            .is_none_or(|identity| identity.path == self.path && now <= identity.expires_at);
+        let suppress = state.suppress_next_committed_tail_autocorrect && exact_path_matches;
         state.suppress_next_committed_tail_autocorrect = false;
+        state.exact_manual_toggle_suppression = None;
         suppress
     }
 
@@ -658,6 +787,7 @@ impl LayIbusEngine {
             return;
         };
         state.suppress_next_committed_tail_autocorrect = false;
+        state.exact_manual_toggle_suppression = None;
     }
 
     pub(super) fn publish_active_path_preserve_handoff(&self, until: Instant) {
@@ -678,6 +808,8 @@ impl LayIbusEngine {
             return true;
         }
         state.preserve_active_path_until = None;
+        state.exact_manual_toggle_handoff_epoch = None;
+        state.exact_manual_toggle_handoff_path = None;
         state.shift_gesture_handoff = None;
         false
     }
@@ -1628,6 +1760,134 @@ mod tests {
         publisher.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(100));
 
         assert!(reader.shared_active_path_preserved());
+    }
+
+    #[test]
+    fn exact_manual_toggle_handoff_preserves_tail_and_epoch_for_target_engine() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut source = LayIbusEngine::new(
+            "/engine/us".to_string(),
+            shared.clone(),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        assert!(source.bind_focus_path());
+        source.tail_buffer = "ghbdtn".to_string();
+        source.prepare_exact_manual_toggle_layout_handoff();
+        let leased_epoch = source.tail_epoch;
+        source.reset_for_ibus_soft_reset();
+        assert_eq!(source.tail_epoch, leased_epoch);
+
+        let mut target = LayIbusEngine::new(
+            "/engine/ru".to_string(),
+            shared.clone(),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        assert!(target.bind_focus_path());
+        target.reset_for_ibus_soft_reset();
+
+        assert_eq!(target.tail_buffer, "ghbdtn");
+        assert_eq!(target.tail_epoch, leased_epoch);
+        assert!(!target.suppress_next_committed_tail_autocorrect);
+        assert!(
+            !shared
+                .lock()
+                .expect("lay ime state poisoned")
+                .suppress_next_committed_tail_autocorrect
+        );
+
+        target.consume_exact_manual_toggle_handoff();
+        target.reset_for_ibus_soft_reset();
+        assert_eq!(target.tail_epoch, leased_epoch.wrapping_add(1));
+    }
+
+    #[test]
+    fn exact_manual_toggle_suppression_requires_and_consumes_the_exact_handoff() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut source = LayIbusEngine::new(
+            "/engine/us".to_string(),
+            shared.clone(),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        assert!(source.bind_focus_path());
+        source.tail_buffer = "ghbdtn".to_string();
+        source.prepare_exact_manual_toggle_layout_handoff();
+        let leased_epoch = source.tail_epoch;
+
+        let mut target = LayIbusEngine::new(
+            "/engine/ru".to_string(),
+            shared.clone(),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        assert!(target.bind_focus_path());
+        target.reset_for_ibus_soft_reset();
+
+        assert!(!target.arm_exact_manual_toggle_autocorrect_suppression(
+            "hbdtn",
+            leased_epoch,
+            "/engine/ru",
+            true,
+        ));
+        assert!(!target.arm_exact_manual_toggle_autocorrect_suppression(
+            "ghbdtn",
+            leased_epoch.wrapping_add(1),
+            "/engine/ru",
+            true,
+        ));
+        assert!(!target.arm_exact_manual_toggle_autocorrect_suppression(
+            "ghbdtn",
+            leased_epoch,
+            "/engine/us",
+            true,
+        ));
+        assert!(!target.arm_exact_manual_toggle_autocorrect_suppression(
+            "ghbdtn",
+            leased_epoch,
+            "/engine/ru",
+            false,
+        ));
+        assert!(target.arm_exact_manual_toggle_autocorrect_suppression(
+            "ghbdtn",
+            leased_epoch,
+            "/engine/ru",
+            true,
+        ));
+
+        let state = shared.lock().expect("lay ime state poisoned");
+        assert!(target.suppress_next_committed_tail_autocorrect);
+        assert!(state.suppress_next_committed_tail_autocorrect);
+        assert!(state.preserve_active_path_until.is_none());
+        assert!(state.exact_manual_toggle_handoff_epoch.is_none());
+        let suppression = state
+            .exact_manual_toggle_suppression
+            .as_ref()
+            .expect("exact suppression");
+        assert_eq!(suppression.path, "/engine/ru");
+        assert_eq!(suppression.epoch, leased_epoch);
+        assert!(suppression.expires_at > Instant::now());
+        drop(state);
+
+        assert!(!target.revoke_exact_manual_toggle_autocorrect_suppression(
+            leased_epoch.wrapping_add(1),
+            "/engine/ru",
+        ));
+        assert!(
+            !target.revoke_exact_manual_toggle_autocorrect_suppression(leased_epoch, "/engine/us",)
+        );
+        assert!(
+            target.revoke_exact_manual_toggle_autocorrect_suppression(leased_epoch, "/engine/ru",)
+        );
+        assert!(!target.suppress_next_committed_tail_autocorrect);
+        let state = shared.lock().expect("lay ime state poisoned");
+        assert!(!state.suppress_next_committed_tail_autocorrect);
+        assert!(state.exact_manual_toggle_suppression.is_none());
     }
 
     #[test]

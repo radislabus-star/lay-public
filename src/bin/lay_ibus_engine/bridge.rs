@@ -49,6 +49,11 @@ impl LayImeBridge {
         self.visible_tail_v2_inner().await
     }
 
+    #[zbus(name = "VisibleTailV3")]
+    async fn visible_tail_v3(&self) -> fdo::Result<(String, String, bool, u64, String, String)> {
+        self.visible_tail_v3_inner().await
+    }
+
     #[zbus(name = "CanReplaceCommittedTail")]
     async fn can_replace_committed_tail(&self, backspaces: u32) -> fdo::Result<bool> {
         self.can_replace_committed_tail_inner(backspaces).await
@@ -57,6 +62,42 @@ impl LayImeBridge {
     #[zbus(name = "SuppressNextAutocorrect")]
     async fn suppress_next_autocorrect(&self) -> fdo::Result<bool> {
         self.suppress_next_autocorrect_inner().await
+    }
+
+    #[zbus(name = "SuppressNextAutocorrectV2")]
+    async fn suppress_next_autocorrect_v2(
+        &self,
+        expected_suffix: String,
+        expected_epoch: u64,
+        expected_path: String,
+        expected_layout_is_ru: bool,
+    ) -> fdo::Result<bool> {
+        self.suppress_next_autocorrect_v2_inner(
+            expected_suffix,
+            expected_epoch,
+            expected_path,
+            expected_layout_is_ru,
+        )
+        .await
+    }
+
+    #[zbus(name = "CancelExactManualToggleSuppressionV2")]
+    async fn cancel_exact_manual_toggle_suppression_v2(
+        &self,
+        expected_epoch: u64,
+        expected_path: String,
+    ) -> fdo::Result<bool> {
+        self.cancel_exact_manual_toggle_suppression_v2_inner(expected_epoch, expected_path)
+            .await
+    }
+
+    #[zbus(name = "CancelExactManualToggleHandoffV2")]
+    fn cancel_exact_manual_toggle_handoff_v2(
+        &self,
+        expected_epoch: u64,
+        expected_path: String,
+    ) -> bool {
+        self.cancel_exact_manual_toggle_handoff_v2_inner(expected_epoch, expected_path)
     }
 
     #[zbus(name = "ManualToggle")]
