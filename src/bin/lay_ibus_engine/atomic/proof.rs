@@ -217,6 +217,39 @@ fn prepare(engine: &LayIbusEngine) {
 }
 
 #[test]
+fn atomic_printable_route_materializes_completion_in_its_submitted_frame() {
+    lay::nanda_wave::warm_up_l2_for_ime();
+    let mut live = engine_with_shared(
+        "/atomic/completion",
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        "про",
+    );
+    live.config.nanda_precognition = true;
+
+    let proposal = zbus::block_on(live.process_atomic_key_event(
+        1751,
+        32,
+        0,
+        envelope(71),
+        capability(3, true),
+        (RECEIPT_NONE, 0, Vec::new()),
+    ))
+    .expect("atomic printable completion");
+
+    assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
+    assert_eq!(
+        proposal.1.iter().map(|(tag, _)| *tag).collect::<Vec<_>>(),
+        [1, 3]
+    );
+    assert!(
+        live.settle_atomic_pending(41, &(RECEIPT_SUBMITTED_ATOMIC, 71, vec![17; DIGEST_BYTES]),)
+    );
+    assert_eq!(live.tail_buffer, "пров");
+    assert_eq!(live.selected_precognition_suffix().as_deref(), Some("ерка"));
+}
+
+#[test]
 fn v27_atomic_space_refusal_and_double_shift_round_trip() {
     lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
         .expect("warm exact-layout authority");

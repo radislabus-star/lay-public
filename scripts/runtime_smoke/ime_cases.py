@@ -63,8 +63,27 @@ def make_ime_cases(Case):
             "в коде",
             start_layout="ru",
         ),
-        "ime_prefix_prov_completion_alt_enter": Case(
-            "ime_prefix_prov_completion_alt_enter", "проверка", start_layout="ru"
+        "ime_prefix_pro_completion_alt_enter": Case(
+            "ime_prefix_pro_completion_alt_enter",
+            "проверка",
+            start_layout="ru",
+            expected_preedit_updates=("верка",),
+            expected_managed_commits=("п", "р", "о"),
+            expected_pending_shortens=0,
+            expected_completion_accepts=1,
+            minimum_ibus_keys=8,
+            minimum_preedit_clears=1,
+        ),
+        "ime_prefix_prov_pending_alt_enter": Case(
+            "ime_prefix_prov_pending_alt_enter",
+            "пров",
+            start_layout="ru",
+            expected_preedit_updates=("верка", "ерка"),
+            expected_managed_commits=("п", "р", "о", "в"),
+            expected_pending_shortens=1,
+            expected_completion_accepts=0,
+            minimum_ibus_keys=8,
+            minimum_preedit_clears=1,
         ),
         "ime_autocomplete_then_double_shift_enter": Case(
             "ime_autocomplete_then_double_shift_enter",

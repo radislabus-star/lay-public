@@ -42,6 +42,7 @@ def run_case(
     dialog_env = context.environment()
     if ime_engine:
         dialog_env["GTK_IM_MODULE"] = "ibus"
+        dialog_env["IBUS_ENABLE_SYNC_MODE"] = "1"
     sender_env = context.environment()
     sender_env.update(
         {

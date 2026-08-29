@@ -282,6 +282,7 @@ impl LayIbusEngine {
             preedit_candidates: Vec::new(),
             preedit_replacement_targets: Vec::new(),
             preedit_candidate_index: 0,
+            preedit_display_only_pending: false,
             preedit_fast: Default::default(),
             preedit_dirty: false,
             pending_display_frame: None,
@@ -334,6 +335,7 @@ impl LayIbusEngine {
         self.preedit_candidates.clear();
         self.preedit_replacement_targets.clear();
         self.preedit_candidate_index = 0;
+        self.preedit_display_only_pending = false;
         self.preedit_fast.clear_candidate_tracking();
         self.preedit_dirty = false;
         self.pending_display_frame = None;
@@ -390,6 +392,7 @@ impl LayIbusEngine {
         self.preedit_candidates.clear();
         self.preedit_replacement_targets.clear();
         self.preedit_candidate_index = 0;
+        self.preedit_display_only_pending = false;
         self.preedit_fast.reset();
         self.preedit_dirty = false;
         self.pending_display_frame = None;

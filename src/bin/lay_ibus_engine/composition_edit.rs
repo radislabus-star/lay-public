@@ -56,9 +56,12 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         keyval: u32,
     ) -> fdo::Result<bool> {
+        let retired = self.retire_pending_precognition(emitter).await?;
         if self.buffer.is_empty() {
             self.forget_committed_tail_after_passive_cursor_move();
-            self.clear_preedit(emitter).await?;
+            if !retired {
+                self.clear_preedit(emitter).await?;
+            }
             return Ok(false);
         }
         let len = self.buffer.chars().count();
@@ -76,6 +79,12 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         keyval: u32,
     ) -> fdo::Result<bool> {
+        if self.retire_pending_precognition(emitter).await? {
+            if self.buffer.is_empty() {
+                self.forget_committed_tail_after_passive_cursor_move();
+            }
+            return Ok(false);
+        }
         let step = if keyval == KEY_UP { -1 } else { 1 };
         if self.buffer.is_empty() {
             if !self.cycle_precognition_candidate(step) {

@@ -429,7 +429,8 @@ impl LayIbusEngine {
             let pressed = is_key_press(state);
             if pressed {
                 self.alt_completion_active = true;
-                self.alt_used_as_modifier = self.shift_active;
+                let retired = self.retire_pending_precognition(output).await?;
+                self.alt_used_as_modifier = self.shift_active || retired;
                 if self.shift_active {
                     self.shift_used_as_modifier = true;
                     return Ok(self.toggle_layout_from_modifier_hotkey());

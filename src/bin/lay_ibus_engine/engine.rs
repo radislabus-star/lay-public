@@ -42,6 +42,7 @@ pub(crate) struct LayIbusEngine {
     pub(super) preedit_candidates: Vec<String>,
     pub(super) preedit_replacement_targets: Vec<Option<String>>,
     pub(super) preedit_candidate_index: usize,
+    pub(super) preedit_display_only_pending: bool,
     pub(super) preedit_fast: PreeditFastState,
     pub(super) preedit_dirty: bool,
     pub(super) pending_display_frame: Option<InputFrameIdentity>,
@@ -233,6 +234,7 @@ impl LayIbusEngine {
         self.preedit_candidates.clear();
         self.preedit_replacement_targets.clear();
         self.preedit_candidate_index = 0;
+        self.preedit_display_only_pending = false;
         self.preedit_fast.clear_candidate_tracking();
         self.preedit_dirty = false;
         self.pending_display_frame = None;

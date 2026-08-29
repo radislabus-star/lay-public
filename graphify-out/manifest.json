@@ -145,8 +145,8 @@
     "semantic_hash": "f33fe11e542c7dde7360706248700138"
   },
   "scripts/run_runtime_smoke.py": {
-    "mtime": 1787966912.64528,
-    "ast_hash": "5f1fd78ef0d95fd786aa95091b7a3112",
+    "mtime": 1788011607.8277874,
+    "ast_hash": "13dcad0acfbee1b7225e64675558c97e",
     "semantic_hash": ""
   },
   "scripts/runtime_smoke/__init__.py": {
@@ -155,18 +155,18 @@
     "semantic_hash": "68b329da9893e34099c7d8ad5cb9c940"
   },
   "scripts/runtime_smoke/cases.py": {
-    "mtime": 1787933193.3880079,
-    "ast_hash": "9e250e1518568978e5a76d1895b29ebe",
+    "mtime": 1788011607.8277874,
+    "ast_hash": "95eb929bcb743e3ad6c8ac82ade9702d",
     "semantic_hash": ""
   },
   "scripts/runtime_smoke/ime.py": {
-    "mtime": 1787966728.6100817,
-    "ast_hash": "75fd1b3c1dc06ee596a3f47bdbc876e0",
+    "mtime": 1788011607.8287876,
+    "ast_hash": "30f77f1b8ecb0d782ee7d3f11bf460a5",
     "semantic_hash": ""
   },
   "scripts/runtime_smoke/ime_cases.py": {
-    "mtime": 1788005347.6627648,
-    "ast_hash": "d5a5178abe58da16f62f96e14917c17c",
+    "mtime": 1788012794.1859798,
+    "ast_hash": "cdff244c084070e695320053a9fe1b05",
     "semantic_hash": ""
   },
   "src/action_log.rs": {
@@ -870,18 +870,18 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_commit.rs": {
-    "mtime": 1787518398.1302428,
-    "ast_hash": "5d06f11464dbd82cad83d25b51d29d0b",
+    "mtime": 1788010010.8710413,
+    "ast_hash": "486657e4458bba2413755b00358dee15",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_edit.rs": {
-    "mtime": 1787315531.5723948,
-    "ast_hash": "382461d1f687268192ff1c7d152252f4",
+    "mtime": 1788013664.8657339,
+    "ast_hash": "6adb22a36e33dd9b379842155f462a74",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine.rs": {
-    "mtime": 1788002680.2182786,
-    "ast_hash": "06d6d2ade41ec0fe52607f073a749cac",
+    "mtime": 1788009925.6210778,
+    "ast_hash": "41ff1e3489047a0d01f5fe5d7700eafc",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine/profile_tests.rs": {
@@ -895,8 +895,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/ibus_interface.rs": {
-    "mtime": 1787970411.4114637,
-    "ast_hash": "95bc14b785acd54f8f9ae3700b75e3a7",
+    "mtime": 1788011495.6625702,
+    "ast_hash": "f2172f38c0d35d1f0173c811a0dbce71",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/key_decode.rs": {
@@ -920,8 +920,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit.rs": {
-    "mtime": 1787940859.162446,
-    "ast_hash": "f8c8f65bc4f30672a95f5308c996e2ab",
+    "mtime": 1788013664.8667338,
+    "ast_hash": "0aec9ce3260523782eea288a138dfc2a",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol.rs": {
@@ -955,8 +955,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/state.rs": {
-    "mtime": 1788002680.2222788,
-    "ast_hash": "97364f9810cc1ac9268bd4ff98146071",
+    "mtime": 1788009925.6220777,
+    "ast_hash": "2d164b64aa23547e45f20e3abcf1b0aa",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
@@ -965,9 +965,9 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/text.rs": {
-    "mtime": 1786642120.412044,
-    "ast_hash": "aea6657c6db1dcc71acc4c90c0df29e2",
-    "semantic_hash": "aea6657c6db1dcc71acc4c90c0df29e2"
+    "mtime": 1788008631.684301,
+    "ast_hash": "930b578355f7d0cccad706aed97b4270",
+    "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/text/attrs.rs": {
     "mtime": 1786642120.412044,
@@ -1055,7 +1055,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_test_input/desktop_probe.rs": {
-    "mtime": 1786642120.417505,
+    "mtime": 1788011060.2989025,
     "ast_hash": "3036820eb744ab9250479a95a0b86b95",
     "semantic_hash": "3036820eb744ab9250479a95a0b86b95"
   },
@@ -2675,8 +2675,8 @@
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
-    "mtime": 1787942486.1469367,
-    "ast_hash": "46795534320970550ee0627b1597ab62",
+    "mtime": 1788013923.718617,
+    "ast_hash": "d26b34d104b4083f88c992ddf7b355bc",
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
@@ -3280,8 +3280,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit/tests.rs": {
-    "mtime": 1787940859.164446,
-    "ast_hash": "bc40936c64d4aa8cecc7e4f4bccf16e7",
+    "mtime": 1788013664.9537349,
+    "ast_hash": "b39b1c254a5d3a45f0743a6ef04cd854",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/grammar_adapter.rs": {
@@ -9280,8 +9280,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/precognition_worker.rs": {
-    "mtime": 1787881326.024438,
-    "ast_hash": "310ff74402a9a39c844759ac3fc3580f",
+    "mtime": 1788011495.6615703,
+    "ast_hash": "c8d59dc1d8d40d3b9eb08befe170c42f",
     "semantic_hash": ""
   },
   "docs/ime-unified-token-field-implementation-plan-2026-08-16.md": {
@@ -13980,8 +13980,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/output.rs": {
-    "mtime": 1787936182.9317038,
-    "ast_hash": "586dc66fbf9da5ceeffcc61755196abd",
+    "mtime": 1788011495.6635702,
+    "ast_hash": "6426fd158c1b3bd4d1636b25571dac89",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/LAY_IME_ATOMIC_CANONICAL_SNAPSHOT_V23_2026-08-21.json": {
@@ -14780,8 +14780,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/atomic/proof.rs": {
-    "mtime": 1787513123.3553638,
-    "ast_hash": "8762e766b0d4af50d929018f1f453b71",
+    "mtime": 1788011619.0409093,
+    "ast_hash": "bd70905a7a313dc271b151fc0ce96abd",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs": {
@@ -28850,8 +28850,8 @@
     "semantic_hash": ""
   },
   "scripts/runtime_smoke/execution.py": {
-    "mtime": 1787967196.2372336,
-    "ast_hash": "7d51b7662785738f4c0b66d69a3e61b5",
+    "mtime": 1788011060.2999027,
+    "ast_hash": "f6ca50013b63067ed0ee5d87e00cfbd8",
     "semantic_hash": ""
   },
   "scripts/runtime_smoke/isolation.py": {
@@ -28860,8 +28860,8 @@
     "semantic_hash": ""
   },
   "scripts/runtime_smoke/receipt.py": {
-    "mtime": 1787967102.5145767,
-    "ast_hash": "e347fb14043bff4f93ca25c21da81271",
+    "mtime": 1788011607.8287876,
+    "ast_hash": "6e03d75264071caaf66f713b8d67f4ff",
     "semantic_hash": ""
   },
   "scripts/verify_runtime_smoke_isolation.py": {
@@ -28870,8 +28870,8 @@
     "semantic_hash": ""
   },
   "tests/test_runtime_smoke_isolation.py": {
-    "mtime": 1787969305.0177662,
-    "ast_hash": "a0e9752dde72481d7509fc4d58a7c402",
+    "mtime": 1788012460.7801857,
+    "ast_hash": "8d855aad452d519d392a63a9743e64f8",
     "semantic_hash": ""
   },
   "tech_debt/009-fix-manual-toggle-visible-postcondition-race.md": {
@@ -28922,6 +28922,266 @@
   "src/bin/lay_daemon/exact_ime_tail_replay.rs": {
     "mtime": 1788002972.5627255,
     "ast_hash": "8cb3e716f130df558e2e9b540d39364a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V10_2026-08-29/RECEIPT.json": {
+    "mtime": 1788011202.704436,
+    "ast_hash": "de1c72dd2b815fae9c487a7d75e2384e",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V10_2026-08-29/ime_prefix_prov_pending_enter-b999b2d5c19addfc64b6/config.json": {
+    "mtime": 1788011196.1805282,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V10_2026-08-29/ime_prefix_prov_pending_enter-b999b2d5c19addfc64b6/counts.json": {
+    "mtime": 1788011200.9873981,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V11_2026-08-29/RECEIPT.json": {
+    "mtime": 1788012279.4563777,
+    "ast_hash": "d2d83e4782861b1cb8fc47ee7362a62f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V11_2026-08-29/ime_prefix_prov_pending_enter-3da155ae080f9fe4dae1/config.json": {
+    "mtime": 1788012272.9145355,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V11_2026-08-29/ime_prefix_prov_pending_enter-3da155ae080f9fe4dae1/counts.json": {
+    "mtime": 1788012276.833106,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V12_2026-08-29/RECEIPT.json": {
+    "mtime": 1788012386.8039,
+    "ast_hash": "0e56048b7a35b531b20a4578db75ce4f",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V12_2026-08-29/ime_prefix_prov_completion_alt_enter-ecbb1ca05d1169adc909/config.json": {
+    "mtime": 1788012378.8563983,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V12_2026-08-29/ime_prefix_prov_completion_alt_enter-ecbb1ca05d1169adc909/counts.json": {
+    "mtime": 1788012382.7132874,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V13_2026-08-29/RECEIPT.json": {
+    "mtime": 1788012747.956942,
+    "ast_hash": "da087ad061c620f2b8eeeb3334ca77c0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V13_2026-08-29/ime_prefix_prov_pending_alt_enter-93e1a4561fa9a13ea743/config.json": {
+    "mtime": 1788012739.9241297,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V13_2026-08-29/ime_prefix_prov_pending_alt_enter-93e1a4561fa9a13ea743/counts.json": {
+    "mtime": 1788012743.985412,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V14_2026-08-29/RECEIPT.json": {
+    "mtime": 1788012764.7356467,
+    "ast_hash": "e3ba22ffc2048a3682150f100a9a1f71",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V14_2026-08-29/ime_prefix_prov_completion_alt_enter-18e0e1f515dd1d851b62/config.json": {
+    "mtime": 1788012756.2097323,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V14_2026-08-29/ime_prefix_prov_completion_alt_enter-18e0e1f515dd1d851b62/counts.json": {
+    "mtime": 1788012760.7946022,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V15_2026-08-29/RECEIPT.json": {
+    "mtime": 1788013068.1009905,
+    "ast_hash": "952892bc0c182047cefe6e4ab82a1d1a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V15_2026-08-29/ime_prefix_pro_completion_alt_enter-e1d48d2a714f6cf9da2a/config.json": {
+    "mtime": 1788013052.2727528,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V15_2026-08-29/ime_prefix_pro_completion_alt_enter-e1d48d2a714f6cf9da2a/counts.json": {
+    "mtime": 1788013059.469967,
+    "ast_hash": "872e6c742c7ab4851e54e43a6269d90c",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V15_2026-08-29/ime_prefix_prov_pending_alt_enter-49917418882e1ff49bb3/config.json": {
+    "mtime": 1788013060.0451121,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V15_2026-08-29/ime_prefix_prov_pending_alt_enter-49917418882e1ff49bb3/counts.json": {
+    "mtime": 1788013064.009018,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V16_2026-08-29/RECEIPT.json": {
+    "mtime": 1788013891.3997447,
+    "ast_hash": "7ea240b6a890151e3427c44576615b1d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V16_2026-08-29/ime_prefix_pro_completion_alt_enter-d82bc3defc9290b13fcf/config.json": {
+    "mtime": 1788013875.5417461,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V16_2026-08-29/ime_prefix_pro_completion_alt_enter-d82bc3defc9290b13fcf/counts.json": {
+    "mtime": 1788013882.829162,
+    "ast_hash": "545899c6e35331c61b4cd63f4889f5ad",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V16_2026-08-29/ime_prefix_prov_pending_alt_enter-458b0a5b27a0c0e6cae2/config.json": {
+    "mtime": 1788013883.4228156,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V16_2026-08-29/ime_prefix_prov_pending_alt_enter-458b0a5b27a0c0e6cae2/counts.json": {
+    "mtime": 1788013888.4082239,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V1_2026-08-29/RECEIPT.json": {
+    "mtime": 1788009231.8227565,
+    "ast_hash": "69490a90c58a03eacce534641ccaf7c0",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V1_2026-08-29/ime_prefix_prov_completion_alt_enter-d5e1e4d17c5d199ebae1/config.json": {
+    "mtime": 1788009223.79437,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V1_2026-08-29/ime_prefix_prov_completion_alt_enter-d5e1e4d17c5d199ebae1/counts.json": {
+    "mtime": 1788009227.8721633,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V2_2026-08-29/RECEIPT.json": {
+    "mtime": 1788009291.7208905,
+    "ast_hash": "568f085efc782ff793dd68817a02aa20",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V2_2026-08-29/ime_prefix_prov_completion_alt_enter-e40e94c87bf2486c0b45/config.json": {
+    "mtime": 1788009283.7113245,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V2_2026-08-29/ime_prefix_prov_completion_alt_enter-e40e94c87bf2486c0b45/counts.json": {
+    "mtime": 1788009287.720845,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V3_2026-08-29/RECEIPT.json": {
+    "mtime": 1788009433.2864957,
+    "ast_hash": "069682b10ffaeae453e1296f8be53283",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V3_2026-08-29/ime_prefix_prov_completion_alt_enter-f96a292184e517770026/config.json": {
+    "mtime": 1788009425.2017586,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V3_2026-08-29/ime_prefix_prov_completion_alt_enter-f96a292184e517770026/counts.json": {
+    "mtime": 1788009429.123453,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V4_2026-08-29/RECEIPT.json": {
+    "mtime": 1788010472.1289172,
+    "ast_hash": "f1145c0a8a06d0417eaf61d48f4991d8",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V4_2026-08-29/ime_prefix_prov_pending_enter-51978b544b631fc1f44e/config.json": {
+    "mtime": 1788010465.6259341,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V4_2026-08-29/ime_prefix_prov_pending_enter-51978b544b631fc1f44e/counts.json": {
+    "mtime": 1788010469.2738898,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V5_2026-08-29/RECEIPT.json": {
+    "mtime": 1788010775.37051,
+    "ast_hash": "68d027c2cd133b1b2ae337a7c9fce85d",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V5_2026-08-29/ime_prefix_prov_pending_enter-25f24186b1bf22c64931/config.json": {
+    "mtime": 1788010768.8727946,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V5_2026-08-29/ime_prefix_prov_pending_enter-25f24186b1bf22c64931/counts.json": {
+    "mtime": 1788010772.7179065,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V6_2026-08-29/RECEIPT.json": {
+    "mtime": 1788010923.383873,
+    "ast_hash": "21f783ff61d1e1fdf2893dc7afd804a1",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V6_2026-08-29/ime_prefix_prov_pending_enter-8b06d5bc56c7fc930d2b/config.json": {
+    "mtime": 1788010916.8055758,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V6_2026-08-29/ime_prefix_prov_pending_enter-8b06d5bc56c7fc930d2b/counts.json": {
+    "mtime": 1788010921.1214404,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V7_2026-08-29/RECEIPT.json": {
+    "mtime": 1788010940.7906458,
+    "ast_hash": "5cfcd94309650bcfac2a097f53f16b97",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V7_2026-08-29/ime_prefix_prov_completion_alt_enter-9765cce917f6e0836b8a/config.json": {
+    "mtime": 1788010932.664344,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V7_2026-08-29/ime_prefix_prov_completion_alt_enter-9765cce917f6e0836b8a/counts.json": {
+    "mtime": 1788010939.3266306,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V8_2026-08-29/RECEIPT.json": {
+    "mtime": 1788011021.0164878,
+    "ast_hash": "80b0befaefbcdccf0210dfd7df04eb14",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V8_2026-08-29/ime_prefix_prov_completion_alt_enter-538951a0ea2fa097b854/config.json": {
+    "mtime": 1788011013.028149,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V8_2026-08-29/ime_prefix_prov_completion_alt_enter-538951a0ea2fa097b854/counts.json": {
+    "mtime": 1788011020.26448,
+    "ast_hash": "9fa86fb959f893093a80f8d00fa7ea97",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V9_2026-08-29/RECEIPT.json": {
+    "mtime": 1788011118.364518,
+    "ast_hash": "83b88e17b04f368e2a9b882e7ee14cd2",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V9_2026-08-29/ime_prefix_prov_pending_enter-c3db4ca7e599582b2127/config.json": {
+    "mtime": 1788011111.9044182,
+    "ast_hash": "509b2822f4ac72322ad4e22eff80ccdf",
+    "semantic_hash": ""
+  },
+  "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V9_2026-08-29/ime_prefix_prov_pending_enter-c3db4ca7e599582b2127/counts.json": {
+    "mtime": 1788011115.8494911,
+    "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
     "semantic_hash": ""
   }
 }

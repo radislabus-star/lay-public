@@ -119,6 +119,7 @@ fn run_worker(shared: Arc<(Mutex<WorkerState>, Condvar)>) {
             continue;
         }
         if !display_age_is_fresh(display_age) {
+            zbus::block_on(retire_late(Arc::clone(&shared), generation, &work));
             record_completion(
                 "late",
                 generation,
@@ -152,6 +153,33 @@ fn run_worker(shared: Arc<(Mutex<WorkerState>, Condvar)>) {
             top.as_deref(),
         );
     }
+}
+
+async fn retire_late(
+    shared: Arc<(Mutex<WorkerState>, Condvar)>,
+    generation: u64,
+    work: &PrecognitionWork,
+) {
+    if !generation_is_current(&shared, generation) {
+        return;
+    }
+    let Ok(iface_ref) = work
+        .connection
+        .object_server()
+        .interface::<_, LayIbusEngine>(work.identity.path.as_str())
+        .await
+    else {
+        return;
+    };
+    let emitter = iface_ref.signal_emitter();
+    let mut engine = iface_ref.get_mut().await;
+    if !generation_is_current(&shared, generation)
+        || !engine.precognition_identity_matches(&work.identity)
+    {
+        return;
+    }
+    let mut output = super::output::EngineOutput::legacy(emitter);
+    let _ = engine.retire_late_precognition(&mut output).await;
 }
 
 async fn apply_completed(
@@ -189,6 +217,8 @@ async fn apply_completed(
     }
     let display_age = work.scheduled_at.elapsed();
     if !display_age_is_fresh(display_age) {
+        let mut output = super::output::EngineOutput::legacy(emitter);
+        let _ = engine.retire_late_precognition(&mut output).await;
         return ApplyCompletion {
             stage: "late",
             display_age,

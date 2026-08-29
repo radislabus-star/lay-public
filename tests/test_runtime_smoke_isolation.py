@@ -294,6 +294,100 @@ class RuntimeSmokeIsolationTest(unittest.TestCase):
         self.assertEqual(1, summary["manual_toggles"])
         self.assertEqual(1, summary["semantic_records"])
 
+    def test_trace_summary_projects_visible_preedit_updates_and_clears(self) -> None:
+        trace = self.root / "preedit.jsonl"
+        trace.write_text(
+            "\n".join(
+                [
+                    json.dumps(
+                        {
+                            "kind": "ibus_preedit",
+                            "stage": "update",
+                            "visible": True,
+                            "text": "верка",
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "kind": "ibus_preedit",
+                            "stage": "update",
+                            "visible": True,
+                            "text": "ерка",
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "kind": "ibus_preedit",
+                            "stage": "update",
+                            "visible": False,
+                            "text": "ignored",
+                        }
+                    ),
+                    json.dumps({"kind": "ibus_preedit", "stage": "clear"}),
+                    json.dumps(
+                        {
+                            "kind": "ibus_key",
+                            "stage": "printable_managed_commit",
+                            "decoded": "в",
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "kind": "ibus_precognition_display",
+                            "stage": "retained_shortened",
+                        }
+                    ),
+                ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+        summary = IME.trace_summary(trace)
+
+        self.assertEqual(["верка", "ерка"], summary["preedit_updates"])
+        self.assertEqual(1, summary["preedit_clears"])
+        self.assertEqual(["в"], summary["managed_commits"])
+        self.assertEqual(1, summary["pending_shortens"])
+
+    def test_case_trace_contract_rejects_text_bypass_of_candidate_ime(self) -> None:
+        case = CASE_MODULE.CASES["ime_prefix_prov_pending_alt_enter"]
+        trace = IME.trace_error("unused")
+        trace.update(
+            {
+                "read_error": None,
+                "kind_counts": {"ibus_focus": 8},
+                "preedit_updates": [],
+                "preedit_clears": 0,
+                "managed_commits": [],
+                "pending_shortens": 0,
+            }
+        )
+
+        ok, detail = SMOKE.validate_case_trace_contract(case, trace)
+
+        self.assertFalse(ok)
+        self.assertIn("ibus_keys=0>=8", detail)
+        self.assertIn("preedit_updates=()/('верка', 'ерка')", detail)
+
+    def test_case_trace_contract_accepts_exact_pending_refresh_route(self) -> None:
+        case = CASE_MODULE.CASES["ime_prefix_prov_pending_alt_enter"]
+        trace = IME.trace_error("unused")
+        trace.update(
+            {
+                "read_error": None,
+                "kind_counts": {"ibus_key": 8, "ibus_preedit": 4},
+                "preedit_updates": ["верка", "ерка"],
+                "preedit_clears": 1,
+                "managed_commits": ["п", "р", "о", "в"],
+                "pending_shortens": 1,
+            }
+        )
+
+        ok, detail = SMOKE.validate_case_trace_contract(case, trace)
+
+        self.assertTrue(ok, detail)
+
     def test_managed_ime_cleanup_stops_candidate_when_fallback_fails(self) -> None:
         events: list[str] = []
         engine = FakeProcess("ime", events)
@@ -367,6 +461,39 @@ class RuntimeSmokeIsolationTest(unittest.TestCase):
 
         self.assertFalse(ok)
         self.assertIn("OSError: dialog", detail)
+
+    def test_managed_ime_dialog_forces_synchronous_ibus_key_routing(self) -> None:
+        context = self.case_context()
+        case = CASE_MODULE.Case("fake", "expected")
+        events: list[str] = []
+        dialog = FakeProcess("dialog", events, output=("expected\n", ""))
+        sender = FakeProcess("sender", events)
+        environments: list[dict[str, str]] = []
+
+        def popen(*_args, **kwargs):
+            environments.append(kwargs["env"])
+            return (dialog, sender)[len(environments) - 1]
+
+        with (
+            mock.patch.object(EXECUTION, "activate_layout"),
+            mock.patch.object(EXECUTION.time, "sleep"),
+            mock.patch.object(EXECUTION.subprocess, "Popen", side_effect=popen),
+        ):
+            ok, _, detail = SMOKE.run_case(
+                case,
+                context,
+                Path("/input"),
+                None,
+                "gtk-entry-capture",
+                0,
+                1,
+                False,
+                True,
+            )
+
+        self.assertTrue(ok, detail)
+        self.assertEqual("ibus", environments[0]["GTK_IM_MODULE"])
+        self.assertEqual("1", environments[0]["IBUS_ENABLE_SYNC_MODE"])
 
     def test_invalid_device_path_cleans_sender_then_dialog(self) -> None:
         context = self.case_context()
@@ -635,6 +762,7 @@ class RuntimeSmokeIsolationTest(unittest.TestCase):
 
     def test_fatal_preflight_writes_persistent_failure_receipt(self) -> None:
         evidence = self.root / "fatal-evidence"
+        previous_sync_mode = SMOKE.os.environ.get("IBUS_ENABLE_SYNC_MODE")
         argv = [
             "run_runtime_smoke.py",
             "--managed-desktop",
@@ -663,6 +791,10 @@ class RuntimeSmokeIsolationTest(unittest.TestCase):
         self.assertEqual("RuntimeError: preflight failed", receipt["fatal_error"])
         self.assertFalse(receipt["desktop_restoration_verified"])
         self.assertFalse(receipt["all_passed"])
+        self.assertEqual("1", receipt["ibus_sync_mode"])
+        self.assertEqual(
+            previous_sync_mode, SMOKE.os.environ.get("IBUS_ENABLE_SYNC_MODE")
+        )
 
     def valid_receipt(
         self,

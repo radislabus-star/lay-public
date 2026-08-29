@@ -1306,3 +1306,48 @@ candidate generation, ranking, correction, morphology, or learning.
 Evidence:
 
 - `docs/structural_gates/receipts/LAY_1_0_54_AUTOCOMPLETE_DOUBLE_SHIFT_TAIL_OWNERSHIP_2026-08-28/RELEASE_RECEIPT.json`
+
+## Pending Preedit Convergence Repair (2026-08-29)
+
+TD-003 separates visible pending state from completion authority. A matching
+retained target may be shortened synchronously while the next worker is
+pending, but that suffix is display-only:
+
+```text
+published candidate "верка" for prefix "про"
+-> type "в"
+-> publish shortened display "ерка"
+-> clear actionable candidates
+-> matching current worker may publish new authority
+-> late, cancelled, stale, or failed publication cannot be accepted
+```
+
+Tab, cursor arrows, and an Alt acceptance gesture retire a pending display
+before they inspect completion authority. Alt retirement covers the complete
+press/release gesture. Cancellation also clears deferred cursor-flush state,
+so a later cursor acknowledgement cannot resurrect the retired frame. A
+background result is first projected and published on a cloned engine state;
+the live engine receives the candidate authority only after publication
+succeeds. The atomic frame route remains synchronous and materializes its
+candidate in the same submitted frame; the legacy route has no hidden
+synchronous fallback.
+
+The final managed GTK receipt proves both sides in one isolated desktop
+transaction. Prefix `про` publishes `верка` and accepts exactly one completed
+worker result as `проверка`. Prefix `пров` publishes `верка -> ерка`; the
+second worker is late, Alt accepts nothing, and committed text remains `пров`.
+Both cases have exact managed-key traces, one clear, zero malformed records,
+and exact desktop restoration. Receipt SHA-256:
+`8cde9837198ec4868a4fdd91e5e22723b0b3c58af78683647675e5e9d010b58a`;
+manifest SHA-256:
+`5917af92a2e71ef87dd0cea45a1e60eae46ee5bbc87ffd7fb00e2eef79e7e097`.
+Diagnostic V1-V15 receipts remain immutable failed or superseded evidence.
+
+What was tested: `275/276` `lay-ibus-engine` tests passed in the final full run,
+all `88` focused preedit tests passed, as did the atomic printable-frame proof,
+`43` runtime-smoke isolation tests, and the two-case managed GTK route above.
+The sole full-run failure was the pre-existing TD-006 wall-clock assertion
+`v27_component_latency_denominators`; an isolated rerun changed which timing
+sub-gate exceeded its fixed threshold and did not fail IME semantics. What was
+not tested: a production install, package release, or applications outside the
+managed GTK harness. Runtime authority changed: **no**.

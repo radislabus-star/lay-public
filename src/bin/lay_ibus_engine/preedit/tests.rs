@@ -2148,7 +2148,415 @@ fn tail_buffer_stays_bounded() {
 }
 
 #[test]
-fn pending_refresh_invalidates_candidates_without_hiding_the_surface() {
+fn pending_refresh_shortens_the_retained_surface_without_accepting_it() {
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    for ch in "пров".chars() {
+        engine.push_tail_char(ch);
+    }
+    engine.preedit_visible = true;
+    engine.preedit_suffix = "ерка".to_string();
+    engine.preedit_candidates = vec!["ерка".to_string()];
+    engine.preedit_replacement_targets = vec![None];
+    engine
+        .preedit_fast
+        .remember_target(Some("проверка".to_string()));
+
+    use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY};
+
+    let mut builder = AtomicEffectBuilder::default();
+    let mut output = EngineOutput::atomic(&mut builder);
+    zbus::block_on(engine.begin_pending_precognition_refresh(&mut output, true))
+        .expect("pending retained surface");
+
+    assert!(engine.preedit_visible, "visible surface must not blink");
+    assert_eq!(engine.preedit_suffix, "ерка");
+    assert!(engine.preedit_candidates.is_empty());
+    assert!(engine.preedit_replacement_targets.is_empty());
+    assert_eq!(engine.preedit_fast.target_surface(), Some("проверка"));
+    assert_eq!(
+        engine.selected_precognition_suffix(),
+        None,
+        "the retained suffix is display-only until the worker installs it"
+    );
+    assert!(
+        !engine.cycle_precognition_candidate(1),
+        "candidate cycling cannot repopulate pending acceptance authority"
+    );
+    assert_eq!(builder.pending_preedit_update(), Some(("ерка", 0, 0)));
+    assert_eq!(builder.preedit_calls(), ["update-visible"]);
+    let proposal = builder.finish(false);
+    assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
+    assert_eq!(
+        proposal.1.iter().map(|effect| effect.0).collect::<Vec<_>>(),
+        [3],
+        "pending refresh must emit one UpdatePreeditText and no hide/show frame"
+    );
+}
+
+#[test]
+fn pending_refresh_hides_a_target_that_no_longer_matches_the_partial() {
+    use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY};
+
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    for ch in "прод".chars() {
+        engine.push_tail_char(ch);
+    }
+    engine.preedit_visible = true;
+    engine.preedit_suffix = "ерка".to_string();
+    engine.preedit_candidates = vec!["ерка".to_string()];
+    engine
+        .preedit_fast
+        .remember_target(Some("проверка".to_string()));
+
+    let mut builder = AtomicEffectBuilder::default();
+    let mut output = EngineOutput::atomic(&mut builder);
+    zbus::block_on(engine.begin_pending_precognition_refresh(&mut output, true))
+        .expect("mismatched pending surface");
+
+    assert!(!engine.preedit_visible);
+    assert!(engine.preedit_suffix.is_empty());
+    assert!(engine.preedit_candidates.is_empty());
+    assert_eq!(engine.preedit_fast.target_surface(), None);
+    assert_eq!(builder.preedit_calls(), ["update-hidden", "hide"]);
+    let proposal = builder.finish(false);
+    assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
+    assert_eq!(
+        proposal.1.iter().map(|effect| effect.0).collect::<Vec<_>>(),
+        [4],
+        "a mismatched retained target must emit exactly one HidePreeditText"
+    );
+}
+
+#[test]
+fn terminal_cursor_ack_wait_publishes_the_shortened_surface_first() {
+    use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY};
+
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::clone(&shared),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    shared.lock().expect("shared state").active_path = Some("/test".to_string());
+    engine.surrounding_text_supported = false;
+    engine.cursor_cell_width = 1;
+    for ch in "пров".chars() {
+        engine.push_tail_char(ch);
+    }
+    engine.preedit_visible = true;
+    engine.preedit_suffix = "верка".to_string();
+    engine.preedit_candidates = vec!["верка".to_string()];
+    engine
+        .preedit_fast
+        .remember_target(Some("проверка".to_string()));
+    let frame = engine.capture_input_frame_identity();
+
+    let mut builder = AtomicEffectBuilder::default();
+    let mut output = EngineOutput::atomic(&mut builder);
+    zbus::block_on(
+        engine.refresh_precognition_after_visible_input_with_background(
+            &mut output,
+            frame.clone(),
+            true,
+        ),
+    )
+    .expect("terminal pending refresh");
+
+    assert_eq!(builder.pending_preedit_update(), Some(("ерка", 0, 0)));
+    assert_eq!(builder.preedit_calls(), ["update-visible"]);
+    assert_eq!(builder.finish(false).0, PROPOSAL_FRAME_READY);
+    assert!(engine.preedit_dirty);
+    assert_eq!(engine.pending_display_frame, frame);
+    assert!(engine.preedit_candidates.is_empty());
+    assert_eq!(engine.selected_precognition_suffix(), None);
+}
+
+#[test]
+fn stale_layout_frame_cannot_publish_a_retained_surface() {
+    use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY};
+
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::clone(&shared),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    shared.lock().expect("shared state").active_path = Some("/test".to_string());
+    for ch in "пров".chars() {
+        engine.push_tail_char(ch);
+    }
+    engine.preedit_visible = true;
+    engine.preedit_suffix = "верка".to_string();
+    engine.preedit_candidates = vec!["верка".to_string()];
+    engine
+        .preedit_fast
+        .remember_target(Some("проверка".to_string()));
+    let frame = engine
+        .capture_input_frame_identity()
+        .expect("current frame");
+    engine.layout_generation = engine.layout_generation.wrapping_add(1);
+
+    let mut builder = AtomicEffectBuilder::default();
+    let mut output = EngineOutput::atomic(&mut builder);
+    zbus::block_on(
+        engine.refresh_precognition_after_visible_input_with_background(
+            &mut output,
+            Some(frame),
+            true,
+        ),
+    )
+    .expect("stale frame refusal");
+
+    assert!(!engine.preedit_visible);
+    assert!(!engine.preedit_display_only_pending);
+    assert_eq!(
+        builder.preedit_calls(),
+        ["update-hidden", "hide"],
+        "a stale layout frame must clear without a preceding visible update"
+    );
+    assert_eq!(builder.finish(false).0, PROPOSAL_FRAME_READY);
+}
+
+#[test]
+fn atomic_output_refresh_materializes_candidates_before_publication() {
+    lay::nanda_wave::warm_up_l2_for_ime();
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::clone(&shared),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            correction_safety: "experimental".to_string(),
+            ..LayConfig::default()
+        },
+    );
+    for ch in "пров".chars() {
+        engine.push_tail_char(ch);
+    }
+    shared.lock().expect("shared state").active_path = Some("/test".to_string());
+    let frame = engine.capture_input_frame_identity();
+
+    use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY};
+    let mut builder = AtomicEffectBuilder::default();
+    let mut output = EngineOutput::atomic(&mut builder);
+    zbus::block_on(
+        engine.refresh_precognition_after_visible_input_with_background(&mut output, frame, false),
+    )
+    .expect("atomic synchronous refresh");
+
+    assert_eq!(
+        engine.selected_precognition_suffix().as_deref(),
+        Some("ерка")
+    );
+    assert_eq!(builder.pending_preedit_update(), Some(("ерка", 0, 0)));
+    assert_eq!(builder.finish(false).0, PROPOSAL_FRAME_READY);
+}
+
+#[test]
+fn pending_tab_and_arrow_retire_the_display_without_accepting_it() {
+    use crate::output::{AtomicEffectBuilder, EngineOutput};
+    use crate::protocol::{KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_TAB, KEY_UP};
+
+    for keyval in [KEY_TAB, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT] {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        engine.tail_buffer = "пров".to_string();
+        engine.preedit_visible = true;
+        engine.preedit_suffix = "ерка".to_string();
+        engine.preedit_display_only_pending = true;
+        engine.preedit_dirty = true;
+        engine.pending_display_frame = engine.capture_input_frame_identity();
+
+        let mut builder = AtomicEffectBuilder::default();
+        let handled = {
+            let mut output = EngineOutput::atomic(&mut builder);
+            zbus::block_on(engine.process_pressed_key(&mut output, keyval, 0, 0))
+                .expect("pending candidate key")
+        };
+
+        assert!(!handled);
+        assert!(!engine.preedit_visible);
+        assert!(!engine.preedit_display_only_pending);
+        assert!(!engine.preedit_dirty);
+        assert!(engine.pending_display_frame.is_none());
+        assert_eq!(builder.preedit_calls(), ["update-hidden", "hide"]);
+
+        let mut cursor_builder = AtomicEffectBuilder::default();
+        let mut cursor_output = EngineOutput::atomic(&mut cursor_builder);
+        zbus::block_on(engine.flush_dirty_preedit(&mut cursor_output))
+            .expect("retired cursor acknowledgement");
+        assert!(cursor_builder.preedit_calls().is_empty());
+    }
+}
+
+#[test]
+fn pending_active_composition_keeps_its_buffer_visible_and_editable() {
+    use crate::output::{AtomicEffectBuilder, EngineOutput};
+    use crate::protocol::{KEY_LEFT, KEY_TAB};
+
+    let mut tab_engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    tab_engine.buffer = "пров".to_string();
+    tab_engine.composition_cursor = 4;
+    tab_engine.preedit_visible = true;
+    tab_engine.preedit_suffix = "ерка".to_string();
+    tab_engine.preedit_display_only_pending = true;
+
+    let mut tab_builder = AtomicEffectBuilder::default();
+    let tab_handled = {
+        let mut output = EngineOutput::atomic(&mut tab_builder);
+        zbus::block_on(tab_engine.process_pressed_key(&mut output, KEY_TAB, 0, 0))
+            .expect("pending composition Tab")
+    };
+
+    assert!(!tab_handled);
+    assert_eq!(tab_engine.buffer, "пров");
+    assert_eq!(tab_engine.composition_cursor, 4);
+    assert!(tab_engine.preedit_visible);
+    assert!(!tab_engine.preedit_display_only_pending);
+    assert_eq!(tab_engine.selected_precognition_suffix(), None);
+    assert_eq!(tab_builder.pending_preedit_update(), Some(("пров", 4, 0)));
+    assert!(!tab_builder.preedit_calls().contains(&"hide"));
+
+    let mut cursor_engine = tab_engine;
+    cursor_engine.preedit_display_only_pending = true;
+    cursor_engine.preedit_suffix = "ерка".to_string();
+    let mut cursor_builder = AtomicEffectBuilder::default();
+    let cursor_handled = {
+        let mut output = EngineOutput::atomic(&mut cursor_builder);
+        zbus::block_on(cursor_engine.process_pressed_key(&mut output, KEY_LEFT, 0, 0))
+            .expect("pending composition cursor move")
+    };
+
+    assert!(cursor_handled);
+    assert_eq!(cursor_engine.buffer, "пров");
+    assert_eq!(cursor_engine.composition_cursor, 3);
+    assert!(cursor_engine.preedit_visible);
+    assert!(!cursor_engine.preedit_display_only_pending);
+    assert!(!cursor_builder.preedit_calls().contains(&"hide"));
+}
+
+#[test]
+fn pending_alt_gesture_retires_before_release_and_cannot_accept() {
+    use crate::output::{AtomicEffectBuilder, EngineOutput};
+    use crate::protocol::{KEY_ISO_LEVEL3_SHIFT, KEY_LEFT_ALT, KEY_RIGHT_ALT, RELEASE_MASK};
+
+    for keyval in [KEY_LEFT_ALT, KEY_RIGHT_ALT, KEY_ISO_LEVEL3_SHIFT] {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "пров".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.preedit_visible = true;
+        engine.preedit_suffix = "ерка".to_string();
+        engine.preedit_display_only_pending = true;
+        engine
+            .preedit_fast
+            .remember_target(Some("проверка".to_string()));
+
+        let mut builder = AtomicEffectBuilder::default();
+        let press = {
+            let mut output = EngineOutput::atomic(&mut builder);
+            zbus::block_on(engine.process_key_event_with_output(&mut output, keyval, 64, 0))
+                .expect("pending Alt press")
+        };
+        let release = {
+            let mut output = EngineOutput::atomic(&mut builder);
+            zbus::block_on(engine.process_key_event_with_output(
+                &mut output,
+                keyval,
+                64,
+                RELEASE_MASK,
+            ))
+            .expect("pending Alt release")
+        };
+
+        assert!(!press);
+        assert!(!release);
+        assert!(engine.preedit_candidates.is_empty());
+        assert_eq!(engine.selected_precognition_suffix(), None);
+        assert_eq!(builder.preedit_calls(), ["update-hidden", "hide"]);
+    }
+}
+
+#[test]
+fn background_candidates_remain_unauthorized_when_publication_fails() {
+    use crate::output::{AtomicEffectBuilder, EngineOutput};
+
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    for ch in "пров".chars() {
+        engine.push_tail_char(ch);
+    }
+    engine.preedit_visible = true;
+    engine.preedit_suffix = "ерка".to_string();
+    engine.preedit_display_only_pending = true;
+
+    let proposals = vec![ImeCandidateProposal::new(
+        "ерка",
+        1.0,
+        lay::typing_cpu::ImeCandidateSource::L2Completion,
+    )];
+    let mut builder = AtomicEffectBuilder::default();
+    builder.fail_preedit_publication();
+    let mut output = EngineOutput::atomic(&mut builder);
+    let result = zbus::block_on(engine.apply_background_precognition(&mut output, proposals));
+
+    assert!(result.is_err());
+    assert!(engine.preedit_display_only_pending);
+    assert!(engine.preedit_candidates.is_empty());
+    assert_eq!(engine.selected_precognition_suffix(), None);
+}
+
+#[test]
+fn late_worker_retires_the_display_exactly_once() {
+    use crate::output::{AtomicEffectBuilder, EngineOutput};
+
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
         Arc::new(Mutex::new(Default::default())),
@@ -2157,20 +2565,21 @@ fn pending_refresh_invalidates_candidates_without_hiding_the_surface() {
         LayConfig::default(),
     );
     engine.preedit_visible = true;
-    engine.preedit_suffix = "вет".to_string();
-    engine.preedit_candidates = vec!["вет".to_string()];
-    engine.preedit_replacement_targets = vec![None];
-    engine
-        .preedit_fast
-        .remember_target(Some("привет".to_string()));
+    engine.preedit_suffix = "ерка".to_string();
+    engine.preedit_display_only_pending = true;
 
-    engine.begin_pending_precognition_refresh();
+    let mut builder = AtomicEffectBuilder::default();
+    let mut output = EngineOutput::atomic(&mut builder);
+    assert!(zbus::block_on(engine.retire_late_precognition(&mut output)).expect("late retirement"));
+    assert!(
+        !zbus::block_on(engine.retire_late_precognition(&mut output))
+            .expect("idempotent late retirement")
+    );
 
-    assert!(engine.preedit_visible, "visible surface must not blink");
-    assert!(engine.preedit_suffix.is_empty());
+    assert_eq!(builder.preedit_calls(), ["update-hidden", "hide"]);
+    assert!(!engine.preedit_visible);
     assert!(engine.preedit_candidates.is_empty());
-    assert!(engine.preedit_replacement_targets.is_empty());
-    assert_eq!(engine.preedit_fast.target_surface(), Some("привет"));
+    assert_eq!(engine.selected_precognition_suffix(), None);
 }
 
 #[test]

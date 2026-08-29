@@ -19,6 +19,12 @@ class Case:
     start_layout: str = "us"
     config_overrides: dict[str, object] | None = None
     expected_manual_toggles: int | None = None
+    expected_preedit_updates: tuple[str, ...] | None = None
+    expected_managed_commits: tuple[str, ...] | None = None
+    expected_pending_shortens: int | None = None
+    expected_completion_accepts: int | None = None
+    minimum_ibus_keys: int = 0
+    minimum_preedit_clears: int = 0
 
 
 def normal_autocorrect_config() -> dict[str, object]:

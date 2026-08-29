@@ -39,6 +39,10 @@ pub(crate) struct AtomicEffectBuilder {
     allowed_mask: u32,
     maximum_effects: usize,
     delete_allowed: bool,
+    #[cfg(test)]
+    preedit_calls: Vec<&'static str>,
+    #[cfg(test)]
+    fail_preedit_publication: bool,
 }
 
 impl Default for AtomicEffectBuilder {
@@ -57,6 +61,10 @@ impl AtomicEffectBuilder {
             allowed_mask,
             maximum_effects: (maximum_effects as usize).min(MAX_EFFECTS),
             delete_allowed,
+            #[cfg(test)]
+            preedit_calls: Vec::new(),
+            #[cfg(test)]
+            fail_preedit_publication: false,
         }
     }
 
@@ -88,6 +96,12 @@ impl AtomicEffectBuilder {
     }
 
     fn push_preedit(&mut self, text: String, cursor: u32, visible: bool, mode: u32) {
+        #[cfg(test)]
+        self.preedit_calls.push(if visible && !text.is_empty() {
+            "update-visible"
+        } else {
+            "update-hidden"
+        });
         let chars = text.chars().count() as u32;
         if !visible || text.is_empty() {
             self.preedit = Some(PendingPreedit::Hide);
@@ -99,10 +113,14 @@ impl AtomicEffectBuilder {
     }
 
     fn hide_preedit(&mut self) {
+        #[cfg(test)]
+        self.preedit_calls.push("hide");
         self.preedit = Some(PendingPreedit::Hide);
     }
 
     fn show_preedit(&mut self) {
+        #[cfg(test)]
+        self.preedit_calls.push("show");
         if !matches!(self.preedit, Some(PendingPreedit::Update { .. })) {
             self.unsupported = true;
         }
@@ -148,6 +166,24 @@ impl AtomicEffectBuilder {
         } else {
             (PROPOSAL_FRAME_READY, effects)
         }
+    }
+
+    #[cfg(test)]
+    pub(crate) fn pending_preedit_update(&self) -> Option<(&str, u32, u32)> {
+        match self.preedit.as_ref()? {
+            PendingPreedit::Update { text, cursor, mode } => Some((text.as_str(), *cursor, *mode)),
+            PendingPreedit::Hide => None,
+        }
+    }
+
+    #[cfg(test)]
+    pub(crate) fn preedit_calls(&self) -> &[&'static str] {
+        &self.preedit_calls
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fail_preedit_publication(&mut self) {
+        self.fail_preedit_publication = true;
     }
 }
 
@@ -242,6 +278,12 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
                     .map_err(|error| fdo::Error::Failed(error.to_string()))
             }
             Self::Atomic(builder) => {
+                #[cfg(test)]
+                if builder.fail_preedit_publication {
+                    return Err(fdo::Error::Failed(
+                        "injected preedit publication failure".into(),
+                    ));
+                }
                 let Some(text) = ibus_text_value_to_string(&text) else {
                     return Err(fdo::Error::InvalidArgs("invalid IBusText preedit".into()));
                 };

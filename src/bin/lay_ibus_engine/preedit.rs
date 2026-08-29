@@ -219,15 +219,46 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         frame: Option<InputFrameIdentity>,
     ) -> fdo::Result<()> {
+        let background_supported = emitter.connection().is_some();
+        self.refresh_precognition_after_visible_input_with_background(
+            emitter,
+            frame,
+            background_supported,
+        )
+        .await
+    }
+
+    async fn refresh_precognition_after_visible_input_with_background(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        frame: Option<InputFrameIdentity>,
+        background_supported: bool,
+    ) -> fdo::Result<()> {
+        if !frame
+            .as_ref()
+            .is_some_and(|identity| self.input_frame_identity_matches(identity))
+        {
+            self.cancel_precognition_display_generation();
+            return self.clear_preedit(emitter).await;
+        }
+        if !background_supported {
+            self.cancel_precognition_display_generation();
+            self.preedit_display_only_pending = false;
+            return self.update_precognition_preedit(emitter).await;
+        }
+        self.begin_pending_precognition_refresh(emitter, background_supported)
+            .await?;
         if self.preedit_waits_for_cursor_ack() {
+            self.preedit_display_only_pending = background_supported;
             self.preedit_dirty = true;
             self.pending_display_frame = frame;
             return Ok(());
         }
         self.preedit_dirty = false;
         self.pending_display_frame = None;
-        self.begin_pending_precognition_refresh();
-        if !self.schedule_background_precognition(emitter, frame) {
+        let scheduled = self.schedule_background_precognition(emitter, frame);
+        self.preedit_display_only_pending = scheduled;
+        if !scheduled {
             self.clear_preedit(emitter).await?;
         }
         Ok(())
@@ -242,8 +273,9 @@ impl LayIbusEngine {
         }
         self.preedit_dirty = false;
         let frame = self.pending_display_frame.take();
-        self.begin_pending_precognition_refresh();
-        if !self.schedule_background_precognition(emitter, frame) {
+        let scheduled = self.schedule_background_precognition(emitter, frame);
+        self.preedit_display_only_pending = scheduled;
+        if !scheduled {
             self.clear_preedit(emitter).await?;
         }
         Ok(())
@@ -279,6 +311,9 @@ impl LayIbusEngine {
         self.preedit_candidates.clear();
         self.preedit_replacement_targets.clear();
         self.preedit_candidate_index = 0;
+        self.preedit_display_only_pending = false;
+        self.preedit_dirty = false;
+        self.pending_display_frame = None;
         self.preedit_fast.clear_target();
         if !was_visible {
             return Ok(());
@@ -341,12 +376,17 @@ impl LayIbusEngine {
         if self.buffer.is_empty() {
             return self.clear_preedit(emitter).await;
         }
+        if emitter.connection().is_none() {
+            self.cancel_precognition_display_generation();
+            self.preedit_display_only_pending = false;
+            return self.update_composition_preedit(emitter).await;
+        }
 
         self.clear_visible_precognition_candidates();
         let cursor_pos = self.composition_cursor.min(self.buffer.chars().count()) as u32;
         self.publish_preedit_payload(emitter, self.buffer.clone(), cursor_pos)
             .await?;
-        let _ = self.schedule_background_precognition(emitter, frame);
+        self.preedit_display_only_pending = self.schedule_background_precognition(emitter, frame);
         Ok(())
     }
 
@@ -429,7 +469,6 @@ impl LayIbusEngine {
         self.preedit_candidates
             .get(self.preedit_candidate_index)
             .cloned()
-            .or_else(|| self.precognition_suffix())
     }
 
     pub(super) fn selected_precognition_replacement(&self) -> Option<&str> {
@@ -444,6 +483,7 @@ impl LayIbusEngine {
     }
 
     fn install_precognition_candidates(&mut self, proposals: Vec<ImeCandidateProposal>) {
+        self.preedit_display_only_pending = false;
         let proposals = proposals
             .into_iter()
             .filter(|proposal| !proposal.is_replacement())
@@ -471,13 +511,43 @@ impl LayIbusEngine {
         self.preedit_candidates.clear();
         self.preedit_replacement_targets.clear();
         self.preedit_candidate_index = 0;
+        self.preedit_display_only_pending = false;
     }
 
-    fn begin_pending_precognition_refresh(&mut self) {
-        // The previous surface remains visible until the matching worker result
-        // replaces or hides it. Its candidates are invalidated immediately, so
-        // Tab can never accept a stale completion during that short interval.
+    async fn begin_pending_precognition_refresh(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        background_supported: bool,
+    ) -> fdo::Result<()> {
+        let retained_suffix = background_supported
+            .then(|| self.matching_target_suffix())
+            .flatten();
         self.clear_visible_precognition_candidates();
+        let Some(retained_suffix) = retained_suffix else {
+            return self.clear_preedit(emitter).await;
+        };
+        self.preedit_display_only_pending = true;
+        self.preedit_suffix = retained_suffix;
+        if !self.preedit_visible {
+            return Ok(());
+        }
+        let (preedit_text, cursor_pos) = self.inactive_preedit_payload();
+        self.publish_preedit_payload(emitter, preedit_text, cursor_pos)
+            .await?;
+        trace::record(format!(
+            r#"{{"kind":"ibus_precognition_display","stage":"retained_shortened","chars":{}}}"#,
+            self.preedit_suffix.chars().count()
+        ));
+        Ok(())
+    }
+
+    fn matching_target_suffix(&self) -> Option<String> {
+        let partial = self.live_candidate_partial();
+        self.preedit_fast
+            .target_surface()
+            .and_then(|target| target.strip_prefix(&partial))
+            .filter(|suffix| !suffix.is_empty())
+            .map(str::to_owned)
     }
 
     fn schedule_background_precognition(
@@ -636,37 +706,75 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         proposals: Vec<ImeCandidateProposal>,
     ) -> fdo::Result<()> {
-        self.install_precognition_candidates(proposals);
-        if self.buffer.is_empty() {
-            let Some(candidate) = self
+        let mut projected = self.clone();
+        projected.install_precognition_candidates(proposals);
+        let publication = if projected.buffer.is_empty() {
+            let Some(candidate) = projected
                 .preedit_candidates
-                .get(self.preedit_candidate_index)
+                .get(projected.preedit_candidate_index)
                 .cloned()
             else {
-                return self.clear_preedit(emitter).await;
+                projected.clear_preedit(emitter).await.map(|_| ())?;
+                *self = projected;
+                return Ok(());
             };
-            self.preedit_suffix = candidate;
-            let (preedit_text, cursor_pos) = self.inactive_preedit_payload();
-            return self
+            projected.preedit_suffix = candidate;
+            let (preedit_text, cursor_pos) = projected.inactive_preedit_payload();
+            projected
                 .publish_preedit_payload(emitter, preedit_text, cursor_pos)
-                .await;
-        }
-
-        if self.preedit_candidates.is_empty() {
-            self.preedit_suffix.clear();
-            let cursor_pos = self.composition_cursor.min(self.buffer.chars().count()) as u32;
-            return self
-                .publish_preedit_payload(emitter, self.buffer.clone(), cursor_pos)
-                .await;
-        }
-        let (text, cursor_pos) = self.composition_preedit_payload();
-        self.publish_preedit_payload(emitter, text, cursor_pos)
-            .await
+                .await
+        } else if projected.preedit_candidates.is_empty() {
+            projected.preedit_suffix.clear();
+            let cursor_pos = projected
+                .composition_cursor
+                .min(projected.buffer.chars().count()) as u32;
+            projected
+                .publish_preedit_payload(emitter, projected.buffer.clone(), cursor_pos)
+                .await
+        } else {
+            let (text, cursor_pos) = projected.composition_preedit_payload();
+            projected
+                .publish_preedit_payload(emitter, text, cursor_pos)
+                .await
+        };
+        publication?;
+        *self = projected;
+        Ok(())
     }
 
     pub(super) fn cycle_precognition_candidate(&mut self, step: isize) -> bool {
-        self.refresh_precognition_candidates();
         self.advance_precognition_candidate(step)
+    }
+
+    pub(super) async fn retire_pending_precognition(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> fdo::Result<bool> {
+        if !self.preedit_display_only_pending {
+            return Ok(false);
+        }
+        self.cancel_precognition_display_generation();
+        if self.buffer.is_empty() {
+            self.clear_preedit(emitter).await?;
+        } else {
+            self.clear_visible_precognition_candidates();
+            let cursor_pos = self.composition_cursor.min(self.buffer.chars().count()) as u32;
+            self.publish_preedit_payload(emitter, self.buffer.clone(), cursor_pos)
+                .await?;
+        }
+        Ok(true)
+    }
+
+    pub(crate) async fn retire_late_precognition(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> fdo::Result<bool> {
+        if !self.preedit_display_only_pending {
+            return Ok(false);
+        }
+        self.cancel_precognition_display_generation();
+        self.clear_preedit(emitter).await?;
+        Ok(true)
     }
 
     fn advance_precognition_candidate(&mut self, step: isize) -> bool {

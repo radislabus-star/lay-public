@@ -1,0 +1,143 @@
+{
+  "active_case_at_failure": null,
+  "all_passed": false,
+  "binaries": {
+    "daemon": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-daemon",
+      "sha256": "5bda386281c176c3fb502d20566c63eda280dd9dfcc589e4ed0edcb6ea949e76",
+      "size": 8957176
+    },
+    "ibus_engine": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-ibus-engine",
+      "sha256": "848fac4e0b2c08f6942155ae28c7aa66843bf7c963074bd5a5f2de23c5f4bac5",
+      "size": 7200296
+    },
+    "input": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-test-input",
+      "sha256": "ab9628fd8995edfa5ecc9d9d086e308abfdf7906d9c71938e916b55d7d287b2c",
+      "size": 1843312
+    }
+  },
+  "case_results_sha256": "a950a6c18786a2ebf4cdfd6aa6b01a34a26ddc02186416d30fa902e60b1f27a7",
+  "cases": [
+    {
+      "case_id": "ime_prefix_prov_completion_alt_enter-e40e94c87bf2486c0b45",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий ime_prefix_prov_completion_alt_enter отправлен\n",
+      "expected": "проверка",
+      "got": "пров",
+      "name": "ime_prefix_prov_completion_alt_enter",
+      "ok": false,
+      "trace": {
+        "kind_counts": {
+          "ibus_auto_undo_lifecycle": 4,
+          "ibus_capabilities": 4,
+          "ibus_content_type": 3,
+          "ibus_cursor": 3,
+          "ibus_focus": 12,
+          "ibus_key": 10,
+          "ibus_precognition_timing": 2,
+          "ibus_precognition_worker": 2,
+          "ibus_preedit": 3,
+          "ibus_printable_key_timing": 4,
+          "ibus_surrounding_text": 4,
+          "ibus_token_field_route": 6
+        },
+        "malformed": 0,
+        "manual_toggles": 0,
+        "read_error": null,
+        "records": 57,
+        "semantic_kind_counts": {
+          "ibus_auto_undo_lifecycle": 4,
+          "ibus_capabilities": 4,
+          "ibus_content_type": 3,
+          "ibus_focus": 12,
+          "ibus_key": 10,
+          "ibus_precognition_timing": 2,
+          "ibus_precognition_worker": 2,
+          "ibus_preedit": 3,
+          "ibus_printable_key_timing": 4,
+          "ibus_surrounding_text": 4,
+          "ibus_token_field_route": 6
+        },
+        "semantic_records": 54,
+        "sha256": "4e28deb43ac0239da8b2a0ca9ae36f12defbaa9090f37ef334de65a7e273fa40",
+        "volatile_records": 3
+      }
+    }
+  ],
+  "desktop_before": {
+    "active_engine": "lay-ime-ru",
+    "active_layout": "lay-ime-ru",
+    "harness_trace_path": null,
+    "ibus_daemons": [
+      {
+        "argv": [
+          "/usr/bin/ibus-daemon",
+          "--panel",
+          "disable"
+        ],
+        "executable": "/usr/bin/ibus-daemon",
+        "pid": 4594,
+        "start_time": 8971
+      }
+    ],
+    "lay_engine_trace_paths": [
+      "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl"
+    ],
+    "lay_engines": [
+      {
+        "argv": [
+          "/home/ubu/.local/bin/lay-ibus-engine",
+          "--ibus",
+          "--managed"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+        "pid": 3617149,
+        "start_time": 26955364
+      }
+    ],
+    "service": {
+      "active_state": "active",
+      "main_pid": 3617134,
+      "main_process": {
+        "argv": [
+          "/home/ubu/.local/bin/lay-daemon"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+        "pid": 3617134,
+        "start_time": 26955356
+      },
+      "sub_state": "running",
+      "unit_file_state": "enabled"
+    }
+  },
+  "desktop_restoration_verified": true,
+  "evidence_root": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V2_2026-08-29",
+  "execution_order": [
+    "ime_prefix_prov_completion_alt_enter"
+  ],
+  "fatal_error": null,
+  "harness_process_group": 3623563,
+  "invocation": [
+    "/home/ubu/projects/lay-l1-exact-peak-search/scripts/run_runtime_smoke.py",
+    "--case",
+    "ime_prefix_prov_completion_alt_enter",
+    "--managed-desktop",
+    "--ime-managed",
+    "--verify-ime-trace",
+    "--no-build",
+    "--daemon-bin",
+    "target/release/lay-daemon",
+    "--ibus-engine-bin",
+    "target/release/lay-ibus-engine",
+    "--input-bin",
+    "target/release/lay-test-input",
+    "--evidence-dir",
+    "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V2_2026-08-29"
+  ],
+  "run_id": "018eda063e084902be2e7c8c2d46072c",
+  "schema": "lay.runtime-smoke-receipt.v3",
+  "selected_cases": [
+    "ime_prefix_prov_completion_alt_enter"
+  ]
+}

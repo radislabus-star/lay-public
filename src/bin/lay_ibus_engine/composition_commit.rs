@@ -80,6 +80,9 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         with_space: bool,
     ) -> fdo::Result<bool> {
+        if self.retire_pending_precognition(emitter).await? {
+            return Ok(false);
+        }
         if self.buffer.is_empty() {
             if self.accept_stuck_tail(emitter, with_space).await? {
                 return Ok(true);

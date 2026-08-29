@@ -21,6 +21,10 @@ import tempfile
 import uuid
 from pathlib import Path
 
+if __name__ == "__main__" and os.environ.get("IBUS_ENABLE_SYNC_MODE") != "1":
+    environment = {**os.environ, "IBUS_ENABLE_SYNC_MODE": "1"}
+    os.execvpe(sys.executable, [sys.executable, *sys.argv], environment)
+
 from runtime_smoke.cases import CASES
 from runtime_smoke.desktop import (
     capture_desktop_snapshot,
@@ -70,6 +74,56 @@ def validate_live_admission(args) -> None:
         raise ValueError("--timeout must be positive")
     if getattr(args, "focus_delay", 0.0) < 0:
         raise ValueError("--focus-delay cannot be negative")
+
+
+def validate_case_trace_contract(case, trace: dict[str, object]) -> tuple[bool, str]:
+    checks: list[bool] = []
+    details: list[str] = []
+
+    if case.expected_manual_toggles is not None:
+        got = trace["manual_toggles"]
+        expected = case.expected_manual_toggles
+        checks.append(got == expected)
+        details.append(f"manual_toggles={got}/{expected}")
+
+    if case.expected_preedit_updates is not None:
+        got = tuple(trace["preedit_updates"])
+        expected = case.expected_preedit_updates
+        checks.append(got == expected)
+        details.append(f"preedit_updates={got!r}/{expected!r}")
+
+    if case.expected_managed_commits is not None:
+        got = tuple(trace["managed_commits"])
+        expected = case.expected_managed_commits
+        checks.append(got == expected)
+        details.append(f"managed_commits={got!r}/{expected!r}")
+
+    if case.expected_pending_shortens is not None:
+        got = trace["pending_shortens"]
+        expected = case.expected_pending_shortens
+        checks.append(got == expected)
+        details.append(f"pending_shortens={got}/{expected}")
+
+    if case.expected_completion_accepts is not None:
+        got = trace["kind_counts"].get("ibus_completion_accept", 0)
+        expected = case.expected_completion_accepts
+        checks.append(got == expected)
+        details.append(f"completion_accepts={got}/{expected}")
+
+    ibus_keys = int(trace["kind_counts"].get("ibus_key", 0))
+    if case.minimum_ibus_keys:
+        checks.append(ibus_keys >= case.minimum_ibus_keys)
+        details.append(f"ibus_keys={ibus_keys}>={case.minimum_ibus_keys}")
+
+    preedit_clears = int(trace["preedit_clears"])
+    if case.minimum_preedit_clears:
+        checks.append(preedit_clears >= case.minimum_preedit_clears)
+        details.append(
+            f"preedit_clears={preedit_clears}>={case.minimum_preedit_clears}"
+        )
+
+    trace_clean = trace["read_error"] is None and trace["malformed"] == 0
+    return trace_clean and all(checks), " ".join(details)
 
 
 def main() -> int:
@@ -151,6 +205,8 @@ def main() -> int:
     active_case: str | None = None
     fatal_exception: BaseException | None = None
     binary_receipt: dict[str, object] | None = None
+    previous_ibus_sync_mode = os.environ.get("IBUS_ENABLE_SYNC_MODE")
+    os.environ["IBUS_ENABLE_SYNC_MODE"] = "1"
 
     try:
         dialog = choose_dialog_command(args.dialog)
@@ -216,24 +272,17 @@ def main() -> int:
                             f"read_error={trace['read_error']!r} "
                             f"malformed={trace['malformed']}",
                         )
-                    if (
-                        args.verify_ime_trace
-                        and case.expected_manual_toggles is not None
-                    ):
-                        trace_ok = (
-                            trace["read_error"] is None
-                            and trace["malformed"] == 0
-                            and trace["manual_toggles"]
-                            == case.expected_manual_toggles
+                    if args.verify_ime_trace:
+                        trace_ok, trace_detail = validate_case_trace_contract(
+                            case, trace
                         )
                         ok = ok and trace_ok
-                        detail = append_detail(
-                            detail,
-                            "IME manual-toggle trace: "
-                            f"got={trace['manual_toggles']} "
-                            f"expected={case.expected_manual_toggles} "
-                            f"malformed={trace['malformed']}",
-                        )
+                        if trace_detail:
+                            detail = append_detail(
+                                detail,
+                                f"IME case trace: {trace_detail} "
+                                f"malformed={trace['malformed']}",
+                            )
                     status = "OK" if ok else "BAD"
                     print(
                         f"{status} {case.name}: "
@@ -258,6 +307,11 @@ def main() -> int:
             raise RuntimeError("runtime smoke process group changed during execution")
     except BaseException as error:
         fatal_exception = error
+    finally:
+        if previous_ibus_sync_mode is None:
+            os.environ.pop("IBUS_ENABLE_SYNC_MODE", None)
+        else:
+            os.environ["IBUS_ENABLE_SYNC_MODE"] = previous_ibus_sync_mode
 
     sorted_results = sorted(results, key=lambda item: str(item["name"]))
     fatal_error = (
@@ -286,6 +340,7 @@ def main() -> int:
         "evidence_root": str(evidence_root),
         "fatal_error": fatal_error,
         "binaries": binary_receipt,
+        "ibus_sync_mode": "1",
         "invocation": [str(Path(sys.argv[0]).resolve()), *sys.argv[1:]],
     }
     validate_runtime_smoke_receipt(receipt)

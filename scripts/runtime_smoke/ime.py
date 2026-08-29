@@ -78,6 +78,10 @@ def trace_summary(path: Path) -> dict[str, object]:
     volatile_records = 0
     malformed = 0
     manual_toggles = 0
+    preedit_updates: list[str] = []
+    preedit_clears = 0
+    managed_commits: list[str] = []
+    pending_shortens = 0
     kind_counts: dict[str, int] = {}
     semantic_kind_counts: dict[str, int] = {}
     if not path.is_file():
@@ -115,6 +119,27 @@ def trace_summary(path: Path) -> dict[str, object]:
             "ibus_manual_toggle_delegation",
         }:
             manual_toggles += 1
+        if kind == "ibus_preedit":
+            stage = record.get("stage")
+            if (
+                stage == "update"
+                and record.get("visible") is True
+                and isinstance(record.get("text"), str)
+            ):
+                preedit_updates.append(record["text"])
+            elif stage == "clear":
+                preedit_clears += 1
+        elif (
+            kind == "ibus_key"
+            and record.get("stage") == "printable_managed_commit"
+            and isinstance(record.get("decoded"), str)
+        ):
+            managed_commits.append(record["decoded"])
+        elif (
+            kind == "ibus_precognition_display"
+            and record.get("stage") == "retained_shortened"
+        ):
+            pending_shortens += 1
     return {
         "records": records,
         "semantic_records": semantic_records,
@@ -123,6 +148,10 @@ def trace_summary(path: Path) -> dict[str, object]:
         "semantic_kind_counts": dict(sorted(semantic_kind_counts.items())),
         "malformed": malformed,
         "manual_toggles": manual_toggles,
+        "preedit_updates": preedit_updates,
+        "preedit_clears": preedit_clears,
+        "managed_commits": managed_commits,
+        "pending_shortens": pending_shortens,
         "sha256": digest,
         "read_error": None,
     }
@@ -137,6 +166,10 @@ def trace_error(message: str, *, digest: str | None = None) -> dict[str, object]
         "semantic_kind_counts": {},
         "malformed": 0,
         "manual_toggles": 0,
+        "preedit_updates": [],
+        "preedit_clears": 0,
+        "managed_commits": [],
+        "pending_shortens": 0,
         "sha256": digest,
         "read_error": message,
     }

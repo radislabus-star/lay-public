@@ -124,6 +124,8 @@ def validate_runtime_smoke_receipt(receipt: dict[str, object]) -> None:
     fatal_error = receipt.get("fatal_error")
     if fatal_error is not None and not isinstance(fatal_error, str):
         raise ValueError("runtime smoke fatal_error is invalid")
+    if "ibus_sync_mode" in receipt and receipt["ibus_sync_mode"] != "1":
+        raise ValueError("runtime smoke IBus sync mode is invalid")
     active_case = receipt.get("active_case_at_failure")
     if active_case is not None and (
         not isinstance(active_case, str) or active_case not in selected
@@ -157,6 +159,10 @@ def _validate_trace(value: object, *, schema: str) -> bool:
     integer_fields = ["records", "malformed", "manual_toggles"]
     if schema == SCHEMA_V3:
         integer_fields.extend(["semantic_records", "volatile_records"])
+        if "preedit_clears" in value or "preedit_updates" in value:
+            integer_fields.append("preedit_clears")
+        if "pending_shortens" in value:
+            integer_fields.append("pending_shortens")
     for key in integer_fields:
         item = value.get(key)
         if not isinstance(item, int) or isinstance(item, bool) or item < 0:
@@ -168,6 +174,18 @@ def _validate_trace(value: object, *, schema: str) -> bool:
     if read_error is not None and not isinstance(read_error, str):
         raise ValueError("runtime smoke trace read_error is invalid")
     if schema == SCHEMA_V3:
+        if "preedit_clears" in value or "preedit_updates" in value:
+            preedit_updates = value.get("preedit_updates")
+            if not isinstance(preedit_updates, list) or not all(
+                isinstance(item, str) for item in preedit_updates
+            ):
+                raise ValueError("runtime smoke preedit updates are invalid")
+        if "managed_commits" in value:
+            managed_commits = value.get("managed_commits")
+            if not isinstance(managed_commits, list) or not all(
+                isinstance(item, str) and len(item) == 1 for item in managed_commits
+            ):
+                raise ValueError("runtime smoke managed commits are invalid")
         kinds = _count_map(value.get("kind_counts"), "trace kind counts")
         semantic_kinds = _count_map(
             value.get("semantic_kind_counts"), "semantic trace kind counts"
