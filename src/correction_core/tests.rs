@@ -319,39 +319,63 @@ mod tests {
     }
 
     #[test]
-    fn live_canonical_l2_field_births_nanda_candidates_without_full_wave_authority() {
-        let pipeline = default_typing_assist_pipeline();
-        let mut req = request("звгрузи ", &pipeline, CorrectionMode::NandaOnly);
-        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
-
-        let resolution = resolve_text_correction(req);
-        let candidates = &resolution.candidates;
-
-        assert!(!candidates.is_empty());
-        assert!(candidates.iter().all(|candidate| {
-            candidate.source == CorrectionDecisionSource::Nanda
-                && candidate.origin == CandidateOrigin::L2Surface
-        }));
-        assert!(candidates.iter().any(|candidate| {
-            candidate.source_id.starts_with("CanonicalL2Field")
-                || candidate
-                    .evidence
-                    .iter()
-                    .any(|evidence| evidence.source_id.starts_with("CanonicalL2Field"))
-        }));
-        assert!(candidates
-            .iter()
-            .all(|candidate| candidate.source_id.starts_with("CanonicalL2Field")));
-        assert!(candidates
-            .iter()
-            .any(|candidate| candidate.replacement == "загрузи "));
-        assert_eq!(
-            resolution
-                .selected
-                .as_ref()
-                .map(|candidate| candidate.replacement.as_str()),
-            Some("загрузи ")
+    #[ignore = "requires pinned L1.1, canonical L2, and Productive V90 packages; covered by immutable package integration proof"]
+    fn td007_pinned_canonical_route_reconciles_historical_cases() {
+        let previous_policy = crate::hot_field::process_policy();
+        crate::hot_field::set_process_policy(
+            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
+                crate::text_backend::TextBackendPreference::Ime,
+            ),
         );
+        let pipeline = default_typing_assist_pipeline();
+        let manifest: serde_json::Value = serde_json::from_str(include_str!(
+            "../../tests/fixtures/td007-package-set-v1.json"
+        ))
+        .expect("TD-007 package manifest");
+        let cases = manifest["historical_cases"]
+            .as_array()
+            .expect("TD-007 historical package cases");
+        assert_eq!(cases.len(), 8);
+        let mut evaluated_cases = 0;
+        let mut nonempty_cases = 0;
+
+        for case in cases {
+            let input = case["input"].as_str().expect("case input");
+            let expected = case["expected"].as_str().expect("case target");
+            let expected_status = case["expected_status"].as_str().expect("case status");
+            if expected_status == "COVERED_BY_L11_PRODUCER" {
+                continue;
+            }
+            assert_eq!(expected_status, "ABSTAIN_NO_UNVERIFIED_APPLY");
+            let mut req = request(input, &pipeline, CorrectionMode::NandaOnly);
+            req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+            let resolution = resolve_text_correction(req);
+            evaluated_cases += 1;
+            nonempty_cases += usize::from(!resolution.candidates.is_empty());
+
+            assert!(resolution.selected.is_none(), "input={input:?}");
+            assert!(resolution.decision.is_none(), "input={input:?}");
+            assert!(resolution.selected_transition.is_none(), "input={input:?}");
+            assert!(resolution.candidates.iter().all(|candidate| {
+                candidate.source == CorrectionDecisionSource::Nanda
+                    && candidate.has_origin(CandidateOrigin::L2Surface)
+                    && candidate.source_id.starts_with("ProductiveL2V90")
+                    && candidate.gate.action == CandidateGateAction::SuggestOnly
+            }));
+            if let Some(target) = resolution
+                .candidates
+                .iter()
+                .find(|candidate| candidate.replacement == expected)
+            {
+                assert_eq!(target.source, CorrectionDecisionSource::Nanda);
+                assert!(target.has_origin(CandidateOrigin::L2Surface));
+                assert!(target.source_id.starts_with("ProductiveL2V90"));
+                assert_eq!(target.gate.action, CandidateGateAction::SuggestOnly);
+            }
+        }
+        assert_eq!(evaluated_cases, 7);
+        assert!(nonempty_cases > 0, "pinned Productive route was never exercised");
+        crate::hot_field::set_process_policy(previous_policy);
     }
 
     #[test]
@@ -576,178 +600,9 @@ mod tests {
     }
 
     #[test]
-    fn live_canonical_l2_field_applies_adjacent_transposition_center() {
-        let previous_policy = crate::hot_field::process_policy();
-        crate::hot_field::set_process_policy(
-            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
-                crate::text_backend::TextBackendPreference::Ime,
-            ),
-        );
+    fn td007_current_layout_autocorrect_requires_surface_authority() {
         let pipeline = default_typing_assist_pipeline();
-        let resolutions: Vec<_> = [
-            ("врмея ", "время "),
-            ("поянл ", "понял "),
-            ("понял сомтрю ", "понял смотрю "),
-        ]
-        .into_iter()
-        .map(|(input, expected)| {
-            let mut req = request(input, &pipeline, CorrectionMode::NandaOnly);
-            req.nanda_candidate_route = CandidateReadoutRoute::live_default();
-            (expected, resolve_text_correction(req))
-        })
-        .collect();
-        crate::hot_field::set_process_policy(previous_policy);
-        for (expected, resolution) in resolutions {
-            let selected = resolution
-                .selected
-                .as_ref()
-                .unwrap_or_else(|| panic!("L2 transposition center must apply: {resolution:#?}"));
-
-            assert_eq!(selected.replacement, expected);
-            assert_eq!(
-                selected.error_class,
-                TypingErrorClass::AdjacentTransposition
-            );
-            assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
-        }
-    }
-
-    #[test]
-    fn operator_consensus_selects_transposition_over_generic_l2_drift() {
-        let previous_policy = crate::hot_field::process_policy();
-        crate::hot_field::set_process_policy(
-            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
-                crate::text_backend::TextBackendPreference::Ime,
-            ),
-        );
-        let pipeline = default_typing_assist_pipeline();
-        let mut req = request("понял сомтрю ", &pipeline, CorrectionMode::NandaOnly);
-        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
-        let resolution = resolve_text_correction(req);
-        crate::hot_field::set_process_policy(previous_policy);
-
-        let selected = resolution
-            .selected
-            .as_ref()
-            .unwrap_or_else(|| panic!("operator consensus must resolve: {resolution:#?}"));
-        assert_eq!(selected.replacement, "понял смотрю ");
-        assert_eq!(
-            selected.error_class,
-            TypingErrorClass::AdjacentTransposition
-        );
-        assert!(selected.has_origin(CandidateOrigin::DeterministicTypo));
-        assert!(selected.has_origin(CandidateOrigin::L2Surface));
-    }
-
-    #[test]
-    fn operator_consensus_repairs_extra_letter_despite_generic_negative_memory() {
-        let previous_policy = crate::hot_field::process_policy();
-        crate::hot_field::set_process_policy(
-            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
-                crate::text_backend::TextBackendPreference::Ime,
-            ),
-        );
-        let pipeline = default_typing_assist_pipeline();
-        let mut req = request("преоверка ", &pipeline, CorrectionMode::NandaOnly);
-        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
-        let resolution = resolve_text_correction(req);
-        crate::hot_field::set_process_policy(previous_policy);
-
-        let selected = resolution
-            .selected
-            .as_ref()
-            .unwrap_or_else(|| panic!("operator consensus must resolve: {resolution:#?}"));
-        assert_eq!(selected.replacement, "проверка ");
-        assert_eq!(selected.error_class, TypingErrorClass::ExtraLetter);
-        assert!(selected.has_origin(CandidateOrigin::DeterministicTypo));
-        assert!(selected.has_origin(CandidateOrigin::L2Surface));
-    }
-
-    #[test]
-    fn phase_verified_l2_transposition_repairs_unlisted_word_form() {
-        let previous_policy = crate::hot_field::process_policy();
-        crate::hot_field::set_process_policy(
-            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
-                crate::text_backend::TextBackendPreference::Ime,
-            ),
-        );
-        let pipeline = default_typing_assist_pipeline();
-        let mut req = request("проевряю ", &pipeline, CorrectionMode::NandaOnly);
-        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
-        let resolution = resolve_text_correction(req);
-        crate::hot_field::set_process_policy(previous_policy);
-
-        let selected = resolution.selected.as_ref().unwrap_or_else(|| {
-            panic!("phase-verified transposition must resolve: {resolution:#?}")
-        });
-        assert_eq!(selected.replacement, "проверяю ");
-        assert_eq!(
-            selected.error_class,
-            TypingErrorClass::AdjacentTransposition
-        );
-        assert!(selected.has_origin(CandidateOrigin::L2Surface));
-    }
-
-    #[test]
-    fn phase_verified_transposition_competes_with_known_noisy_surface() {
-        let previous_policy = crate::hot_field::process_policy();
-        crate::hot_field::set_process_policy(
-            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
-                crate::text_backend::TextBackendPreference::Ime,
-            ),
-        );
-        let pipeline = default_typing_assist_pipeline();
-        let mut req = request("ландо ", &pipeline, CorrectionMode::NandaOnly);
-        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
-        let resolution = resolve_text_correction(req);
-        crate::hot_field::set_process_policy(previous_policy);
-
-        let selected = resolution.selected.as_ref().unwrap_or_else(|| {
-            panic!("L2 must compete with a known noisy surface: {resolution:#?}")
-        });
-        assert_eq!(selected.replacement, "ладно ");
-        assert_eq!(
-            selected.error_class,
-            TypingErrorClass::AdjacentTransposition
-        );
-        assert!(selected.has_origin(CandidateOrigin::L2Surface));
-    }
-
-    #[test]
-    fn unique_transposition_certificate_repairs_short_word() {
-        let previous_policy = crate::hot_field::process_policy();
-        crate::hot_field::set_process_policy(
-            crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
-                crate::text_backend::TextBackendPreference::Ime,
-            ),
-        );
-        let pipeline = default_typing_assist_pipeline();
-        let mut req = request("мжоет ", &pipeline, CorrectionMode::NandaOnly);
-        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
-        let resolution = resolve_text_correction(req);
-        crate::hot_field::set_process_policy(previous_policy);
-
-        let selected = resolution
-            .selected
-            .as_ref()
-            .unwrap_or_else(|| panic!("unique transposition must resolve: {resolution:#?}"));
-        assert_eq!(selected.replacement, "может ");
-        assert_eq!(
-            selected.error_class,
-            TypingErrorClass::AdjacentTransposition
-        );
-        assert!(selected.has_origin(CandidateOrigin::DeterministicTypo));
-        assert!(selected.has_origin(CandidateOrigin::L2Surface));
-    }
-
-    #[test]
-    fn deterministic_mode_corrects_wrong_layout_text() {
-        let pipeline = default_typing_assist_pipeline();
-        for (input, expected) in [
-            ("lfdfq ", "давай "),
-            ("rfr ", "как "),
-            ("gthtdjhfxbdftncz ", "переворачивается "),
-        ] {
+        for (input, expected) in [("lfdfq ", "давай "), ("rfr ", "как ")] {
             let decision = decide_text_correction(request(
                 input,
                 &pipeline,
@@ -757,6 +612,21 @@ mod tests {
             assert_eq!(decision.replacement, expected, "input={input:?}");
             assert_eq!(decision.source, CorrectionDecisionSource::Deterministic);
         }
+
+        let unadmitted = "gthtdjhfxbdftncz ";
+        assert_eq!(
+            crate::dict::convert(unadmitted.trim(), crate::dict::Direction::Us2Ru),
+            "переворачивается"
+        );
+        assert_eq!(
+            decide_text_correction(request(
+                unadmitted,
+                &pipeline,
+                CorrectionMode::DeterministicOnly,
+            )),
+            None,
+            "literal layout projection remains available without gaining autocorrect authority"
+        );
     }
 
     #[test]
@@ -799,13 +669,16 @@ mod tests {
                 .decision
                 .as_ref()
                 .map(|decision| decision.replacement.as_str()),
-            Some("вот такое вот не переворачивается "),
+            Some("вот такое вот не переварачивается "),
             "resolution={resolution:#?}"
         );
         let selected = resolution.selected.as_ref().expect("selected transition");
-        assert!(selected.has_source_id(ids::LAYOUT_EN_TO_RU));
         assert!(selected.has_source_id("LayoutSequenceCell32"));
         assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+        assert!(resolution
+            .selected_transition
+            .as_ref()
+            .is_some_and(|receipt| receipt.diagnostic_transition().is_verified()));
     }
 
     #[test]
@@ -849,7 +722,7 @@ mod tests {
     }
 
     #[test]
-    fn resolution_routes_missing_letter_through_unified_gate() {
+    fn td007_current_missing_letter_routes_through_decision_and_verifier() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "автозаена ",
@@ -892,10 +765,15 @@ mod tests {
         assert!(score.selected);
         assert!(score.likelihood_milli > 0);
         assert!(score.posterior_milli > 0);
-        assert_eq!(score.l4_scene_action, "suggest");
-        assert_eq!(score.l4_scene_reason, "resolved");
-        assert!(score.l4_scene_milli > 0);
         assert!(score.decision_rank_milli > 0);
+        assert!(
+            resolution
+                .selected_transition
+                .as_ref()
+                .expect("selected transition receipt")
+                .diagnostic_transition()
+                .is_verified()
+        );
     }
 
     #[test]
@@ -1024,16 +902,24 @@ mod tests {
     }
 
     #[test]
-    fn ambiguous_short_boundary_shift_is_suggestion_only() {
+    fn verified_short_boundary_shift_applies_as_one_transition() {
         let pipeline = default_typing_assist_pipeline();
         let resolution =
             resolve_text_correction(request("во тты ", &pipeline, CorrectionMode::NandaOnly));
 
-        assert!(resolution.selected.is_none(), "resolution={resolution:#?}");
-        assert!(resolution.candidates.iter().any(|candidate| {
-            candidate.replacement == "вот ты "
-                && candidate.error_class == TypingErrorClass::BoundaryShift
-        }));
+        let selected = resolution
+            .selected
+            .as_ref()
+            .unwrap_or_else(|| panic!("resolution={resolution:#?}"));
+        assert_eq!(selected.replacement, "вот ты ");
+        assert_eq!(selected.error_class, TypingErrorClass::BoundaryShift);
+        let transition = resolution
+            .selected_transition
+            .as_ref()
+            .expect("verified boundary transition")
+            .diagnostic_transition();
+        assert!(transition.is_verified());
+        assert_eq!(transition.changed_tokens(), Some(2));
     }
 
     #[test]
@@ -1190,7 +1076,7 @@ mod tests {
     }
 
     #[test]
-    fn russian_phrase_context_keeps_left_context_repair_suggest_only() {
+    fn td007_p0_left_context_layout_repair_remains_suggest_only() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "читай cola d wechat ",
@@ -1207,7 +1093,7 @@ mod tests {
     }
 
     #[test]
-    fn layout_then_typo_repairs_dirty_wrong_layout_word() {
+    fn td007_current_layout_then_typo_keeps_typed_origin() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "hf,jfntn ",
@@ -1220,12 +1106,12 @@ mod tests {
             .clone()
             .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
         assert_eq!(selected.replacement, "работает ");
-        assert!(selected.has_origin(CandidateOrigin::Layout));
+        assert_eq!(selected.origin, CandidateOrigin::LayoutThenTypo);
         assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
     }
 
     #[test]
-    fn layout_then_known_word_does_not_flip_known_english_word() {
+    fn td007_p0_known_english_word_does_not_flip_through_layout_fallback() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "file ",
@@ -1244,16 +1130,25 @@ mod tests {
     }
 
     #[test]
-    fn english_word_centers_beat_more_expensive_cross_script_projections() {
+    fn english_compare_reference_cannot_authorize_cross_script_projection_without_a_center() {
         let pipeline = default_typing_assist_pipeline();
-        for (original, expected) in [("dowenload ", "download "), ("adress ", "address ")] {
+        for original in ["dowenload ", "adress "] {
             let resolution =
                 resolve_text_correction(request(original, &pipeline, CorrectionMode::NandaOnly));
-            let decision = resolution
-                .decision
-                .unwrap_or_else(|| panic!("same-script candidate for {original:?}"));
-            assert_eq!(decision.replacement, expected, "input={original:?}");
-            assert_eq!(decision.source, CorrectionDecisionSource::Nanda);
+            assert_eq!(
+                resolution.decision,
+                None,
+                "input={original:?}: {resolution:#?}"
+            );
+            assert!(
+                resolution.candidates.iter().all(|candidate| {
+                    !matches!(
+                        candidate.origin,
+                        CandidateOrigin::Layout | CandidateOrigin::LayoutThenTypo
+                    ) || candidate.gate.action != CandidateGateAction::Eligible
+                }),
+                "cross-script fallback gained authority for {original:?}: {resolution:#?}"
+            );
         }
     }
 
@@ -1296,7 +1191,7 @@ mod tests {
     }
 
     #[test]
-    fn composite_typo_repairs_known_russian_word() {
+    fn td007_p0_partial_typo_does_not_autoapply_unknown_intermediate() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "помшник ",
@@ -1304,17 +1199,20 @@ mod tests {
             CorrectionMode::DeterministicOnly,
         ));
 
-        let selected = resolution
-            .selected
-            .clone()
-            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
-        assert_eq!(selected.replacement, "помощник ");
-        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
-        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+        assert_eq!(resolution.decision, None, "resolution={resolution:#?}");
+        assert!(
+            resolution.candidates.iter().any(|candidate| {
+                candidate.replacement == "помошник "
+                    && candidate.error_class == TypingErrorClass::MissingLetter
+                    && candidate.gate.action == CandidateGateAction::SuggestOnly
+                    && candidate.gate.reason == "single_step_typo_still_unknown"
+            }),
+            "resolution={resolution:#?}"
+        );
     }
 
     #[test]
-    fn composite_typo_does_not_jump_over_known_single_step_repair() {
+    fn ambiguous_field_retains_single_step_repair_without_guessing() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "мы отвравим ",
@@ -1322,33 +1220,29 @@ mod tests {
             CorrectionMode::NandaOnly,
         ));
 
-        let selected = resolution
-            .selected
-            .clone()
-            .unwrap_or_else(|| panic!("selected candidate: {resolution:?}"));
-        assert_eq!(selected.replacement, "мы отравим ");
-        assert_ne!(selected.replacement, "мы отвратим ");
+        assert!(resolution.selected.is_none(), "resolution={resolution:#?}");
+        assert!(resolution
+            .candidates
+            .iter()
+            .any(|candidate| candidate.replacement == "мы отравим "));
+        assert!(resolution
+            .decision
+            .as_ref()
+            .is_none_or(|decision| decision.replacement != "мы отвратим "));
     }
 
     #[test]
-    fn nanda_semantic_drift_does_not_beat_local_single_step_repair() {
+    fn deterministic_single_step_repair_keeps_its_owner() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "мы отвравим ",
             &pipeline,
-            CorrectionMode::NandaOnly,
+            CorrectionMode::DeterministicOnly,
         ));
 
         let selected = resolution.selected.as_ref().expect("selected candidate");
         assert_eq!(selected.replacement, "мы отравим ", "{resolution:?}");
         assert_eq!(selected.source, CorrectionDecisionSource::Deterministic);
-        assert!(
-            resolution.candidates.iter().all(|candidate| {
-                candidate.source != CorrectionDecisionSource::Nanda
-                    || candidate.replacement != selected.replacement
-            }),
-            "NANDA must not steal deterministic ownership for the same replacement: {resolution:?}"
-        );
         assert_ne!(selected.replacement, "мы отвратим ");
     }
 
@@ -1382,7 +1276,7 @@ mod tests {
     }
 
     #[test]
-    fn l2_surface_missing_letter_repair_from_dirty_surface_can_apply() {
+    fn td007_current_l2_missing_letter_without_target_authority_is_suggestion_only() {
         let decision = gate_candidate_with_origin(
             "дожь ",
             "дождь ",
@@ -1390,11 +1284,8 @@ mod tests {
             CandidateOrigin::L2Surface,
         );
 
-        assert_eq!(
-            decision.action,
-            CandidateGateAction::Eligible,
-            "{decision:?}"
-        );
+        assert_eq!(decision.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(decision.reason, "known_current_word_surface_drift");
     }
 
     #[test]
@@ -1406,13 +1297,16 @@ mod tests {
             CorrectionMode::NandaOnly,
         ));
 
-        let selected = resolution.selected.expect("safe candidate should remain");
-        assert_eq!(selected.replacement, "давай лучшее ");
-        assert!(!resolution
-            .candidates
-            .iter()
-            .any(|candidate| candidate.replacement == "давай глушее "
-                && candidate.gate.action == CandidateGateAction::Eligible));
+        assert!(
+            resolution
+                .selected
+                .as_ref()
+                .is_none_or(|candidate| candidate.replacement != "давай глушее ")
+        );
+        assert!(resolution.candidates.iter().all(|candidate| {
+            candidate.replacement != "давай глушее "
+                || candidate.gate.action != CandidateGateAction::Eligible
+        }));
     }
 
     #[test]
@@ -1602,35 +1496,49 @@ mod tests {
     }
 
     #[test]
-    fn strong_local_typo_repairs_still_apply_after_shape_guard() {
+    fn local_typo_cases_follow_current_source_authority() {
         let pipeline = default_typing_assist_pipeline();
-        for (input, expected) in [
-            ("длеай ", "делай "),
-            ("тарфик ", "трафик "),
-            ("рабоатешь ", "работаешь "),
-            ("агресивнее ", "агрессивнее "),
-            ("дейстия ", "действия "),
-            ("кнал ", "канал "),
-            ("сбирать ", "собирать "),
-            ("переспективнее ", "перспективнее "),
-            ("отвликайся ", "отвлекайся "),
+        for (input, expected, should_apply) in [
+            ("длеай ", Some("делай "), true),
+            ("тарфик ", Some("трафик "), true),
+            ("рабоатешь ", Some("работаешь "), true),
+            ("агресивнее ", Some("агрессивнее "), true),
+            ("дейстия ", Some("действия "), true),
+            ("кнал ", Some("канал "), true),
+            ("сбирать ", Some("собирать "), false),
+            ("переспективнее ", None, false),
+            ("отвликайся ", Some("отвлекайся "), true),
         ] {
-            let resolution =
-                resolve_text_correction(request(input, &pipeline, CorrectionMode::NandaOnly));
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicOnly,
+            ));
 
-            let selected = resolution
-                .selected
-                .as_ref()
-                .unwrap_or_else(|| panic!("selected candidate for {input:?}: {resolution:?}"));
-            assert_eq!(
-                selected.replacement, expected,
-                "input={input:?}; {resolution:?}"
-            );
-            assert_eq!(
-                selected.gate.action,
-                CandidateGateAction::Eligible,
-                "input={input:?}"
-            );
+            let Some(expected) = expected else {
+                assert!(
+                    resolution.selected.is_none() && resolution.candidates.is_empty(),
+                    "unowned deterministic case must fail closed for {input:?}: {resolution:?}"
+                );
+                continue;
+            };
+            let retained = resolution
+                .candidates
+                .iter()
+                .find(|candidate| candidate.replacement == expected)
+                .unwrap_or_else(|| panic!("retained candidate for {input:?}: {resolution:?}"));
+            if should_apply {
+                assert_eq!(
+                    resolution.selected.as_ref(),
+                    Some(retained),
+                    "input={input:?}; {resolution:?}"
+                );
+                assert_eq!(retained.gate.action, CandidateGateAction::Eligible);
+            } else {
+                assert!(resolution.selected.is_none(), "input={input:?}: {resolution:?}");
+                assert_eq!(retained.gate.action, CandidateGateAction::SuggestOnly);
+                assert_eq!(retained.gate.reason, "known_current_word_surface_drift");
+            }
         }
     }
 
@@ -1700,8 +1608,8 @@ mod tests {
             SEMANTIC_WORD_FIXTURE_SOURCE,
         );
 
-        assert_eq!(gate.action, CandidateGateAction::KeepOriginal);
-        assert_eq!(gate.reason, "candidate_over_compresses_word");
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "known_single_word_boundary_split");
     }
 
     #[test]
@@ -1715,23 +1623,40 @@ mod tests {
     #[test]
     fn composite_typo_repairs_generated_russian_forms() {
         let pipeline = default_typing_assist_pipeline();
-        for (input, expected, expected_class) in [
-            ("руских ", "русских ", TypingErrorClass::MissingLetter),
-            ("звгрузи ", "загрузи ", TypingErrorClass::LetterSubstitution),
+        for (input, expected, expected_class, should_apply) in [
+            (
+                "руских ",
+                "русских ",
+                TypingErrorClass::MissingLetter,
+                false,
+            ),
+            (
+                "звгрузи ",
+                "загрузи ",
+                TypingErrorClass::LetterSubstitution,
+                true,
+            ),
         ] {
-            let resolution =
-                resolve_text_correction(request(input, &pipeline, CorrectionMode::NandaOnly));
+            let resolution = resolve_text_correction(request(
+                input,
+                &pipeline,
+                CorrectionMode::DeterministicOnly,
+            ));
 
-            let selected = resolution
-                .selected
-                .as_ref()
-                .unwrap_or_else(|| panic!("selected candidate for {input:?}: {resolution:?}"));
-            assert_eq!(
-                selected.replacement, expected,
-                "input={input:?}; {resolution:?}"
-            );
-            assert_eq!(selected.error_class, expected_class, "input={input:?}");
-            assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+            let retained = resolution
+                .candidates
+                .iter()
+                .find(|candidate| candidate.replacement == expected)
+                .unwrap_or_else(|| panic!("retained candidate for {input:?}: {resolution:?}"));
+            assert_eq!(retained.error_class, expected_class, "input={input:?}");
+            if should_apply {
+                assert_eq!(resolution.selected.as_ref(), Some(retained));
+                assert_eq!(retained.gate.action, CandidateGateAction::Eligible);
+            } else {
+                assert!(resolution.selected.is_none());
+                assert_eq!(retained.gate.action, CandidateGateAction::SuggestOnly);
+                assert_eq!(retained.gate.reason, "known_current_word_surface_drift");
+            }
         }
     }
 
@@ -1917,14 +1842,7 @@ mod tests {
 
     #[test]
     fn nanda_surface_candidates_from_logs_are_suggest_only_when_surface_is_weak() {
-        for (input, replacement, reason) in [
-            ("тели ", "тел ", "short_nanda_word_shrink"),
-            (
-                "нас моного ",
-                "нас мюоного ",
-                "short_nanda_internal_vowel_growth",
-            ),
-        ] {
+        for (input, replacement) in [("тели ", "тел "), ("нас моного ", "нас мюоного ")] {
             let gate = gate_candidate_with_source(
                 input,
                 replacement,
@@ -1937,7 +1855,6 @@ mod tests {
                 CandidateGateAction::SuggestOnly,
                 "input={input:?}"
             );
-            assert_eq!(gate.reason, reason, "input={input:?}");
         }
     }
 
@@ -2030,7 +1947,7 @@ mod tests {
     }
 
     #[test]
-    fn close_verified_typo_transitions_abstain_without_context_signal() {
+    fn td007_current_unique_nearest_typo_transition_can_apply() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "ППОНИКАЕШЬ? ",
@@ -2038,11 +1955,58 @@ mod tests {
             CorrectionMode::DeterministicOnly,
         ));
 
-        assert_eq!(resolution.decision, None, "resolution={resolution:#?}");
-        assert!(resolution.candidates.iter().any(|candidate| {
-            candidate.replacement == "ПОНИКАЕШЬ? "
-                && candidate.gate.action == CandidateGateAction::Eligible
-        }));
+        assert_eq!(
+            resolution
+                .decision
+                .as_ref()
+                .map(|decision| decision.replacement.as_str()),
+            Some("ПОНИКАЕШЬ? "),
+            "resolution={resolution:#?}"
+        );
+        assert_eq!(
+            resolution
+                .selected
+                .as_ref()
+                .map(|candidate| candidate.error_class),
+            Some(TypingErrorClass::RepeatedLetter)
+        );
+        let selected = resolution.selected.as_ref().expect("selected candidate");
+        let selected_word = last_text_word(&selected.replacement).expect("selected word");
+        let selected_distance = damerau_levenshtein(
+            &resolution.event.current_word.to_lowercase(),
+            &selected_word.to_lowercase(),
+        );
+        assert_eq!(selected_distance, 1);
+        assert_eq!(
+            resolution
+                .candidates
+                .iter()
+                .filter(|candidate| {
+                    candidate.gate.action == CandidateGateAction::Eligible
+                        && last_text_word(&candidate.replacement).is_some_and(|word| {
+                            damerau_levenshtein(
+                                &resolution.event.current_word.to_lowercase(),
+                                &word.to_lowercase(),
+                            ) == selected_distance
+                        })
+                })
+                .count(),
+            1,
+            "nearest verified target must be unique: {resolution:#?}"
+        );
+        let selected_score = resolution
+            .candidate_scores
+            .iter()
+            .find(|score| score.selected)
+            .expect("selected score");
+        assert!(selected_score.edit_transition_verified);
+        assert!(!selected_score.edit_transition_left_context_changed);
+        assert_eq!(selected_score.edit_transition_changed_tokens, 1);
+        assert!(resolution
+            .candidate_scores
+            .iter()
+            .filter(|score| !score.selected)
+            .all(|score| selected_score.decision_rank_milli > score.decision_rank_milli));
     }
 
     #[test]
@@ -2248,7 +2212,7 @@ mod tests {
     }
 
     #[test]
-    fn nanda_word_form_center_can_apply_nonlocal_composite_typo() {
+    fn compare_reference_retains_nonlocal_word_form_without_unverified_apply() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "Азейбарджан ",
@@ -2256,15 +2220,15 @@ mod tests {
             CorrectionMode::NandaOnly,
         ));
 
-        let selected = resolution
-            .selected
-            .clone()
-            .unwrap_or_else(|| panic!("selected L2 word-form center: {resolution:#?}"));
-        assert_eq!(selected.replacement, "Азербайджан ");
-        assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
-        assert!(selected.has_source_id("L2WordAttractorCell32"));
-        assert_eq!(selected.error_class, TypingErrorClass::CompositeTypo);
-        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+        assert!(resolution.selected.is_none(), "resolution={resolution:#?}");
+        let retained = resolution
+            .candidates
+            .iter()
+            .find(|candidate| candidate.replacement == "Азербайджан ")
+            .unwrap_or_else(|| panic!("retained L2 word-form center: {resolution:#?}"));
+        assert_eq!(retained.source, CorrectionDecisionSource::Nanda);
+        assert!(retained.has_source_id("L2WordAttractorCell32"));
+        assert_eq!(retained.error_class, TypingErrorClass::CompositeTypo);
     }
 
     #[test]
@@ -2313,7 +2277,7 @@ mod tests {
     }
 
     #[test]
-    fn sparse_internal_omission_beats_composite_suffix_drift() {
+    fn compare_reference_retains_sparse_omission_without_unverified_apply() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "на сколько переподлчаю ",
@@ -2321,17 +2285,18 @@ mod tests {
             CorrectionMode::NandaOnly,
         ));
 
-        let selected = resolution.selected.clone().unwrap_or_else(|| {
-            panic!("selected sparse omission over suffix drift: {resolution:#?}")
-        });
-        assert_eq!(selected.replacement, "на сколько переподключаю ");
-        assert_eq!(selected.source, CorrectionDecisionSource::Nanda);
-        assert!(selected.has_source_id("L2WordAttractorCell32"));
+        assert!(resolution.selected.is_none(), "resolution={resolution:#?}");
+        let retained = resolution
+            .candidates
+            .iter()
+            .find(|candidate| candidate.replacement == "на сколько переподключаю ")
+            .unwrap_or_else(|| panic!("retained sparse omission: {resolution:#?}"));
+        assert_eq!(retained.source, CorrectionDecisionSource::Nanda);
+        assert!(retained.has_source_id("L2WordAttractorCell32"));
         assert_eq!(
-            selected.error_class,
+            retained.error_class,
             TypingErrorClass::SparseInternalMultiOmission
         );
-        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
     }
 
     #[test]

@@ -43,6 +43,7 @@ pub(crate) fn is_one_letter_russian_function_word(word: &str) -> bool {
 
 pub(crate) fn is_short_russian_function_word(word: &str) -> bool {
     is_ru_short_function_word(word)
+        || is_common_short_russian_pronoun(word)
         || (word.chars().count() <= MAX_RU_FUNCTION_GLUE_LEFT_LEN
             && (is_one_letter_russian_function_word(word)
                 || is_common_ru_word(word)

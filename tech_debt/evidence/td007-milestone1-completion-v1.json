@@ -1,0 +1,62 @@
+{
+  "schema": "lay.td007.milestone-completion.v1",
+  "task": "TD-007",
+  "milestone": 1,
+  "verdict": "MILESTONE_1_PASS",
+  "recorded_at_utc": "2026-08-29T23:00:37Z",
+  "base_git_head": "6f14574452d9ab504f23be21b11288179bc6f0f2",
+  "source_closure_sha256": "6bf210117510ab2b2a5833cb4f60d22659105a4dfff9255835f6269dbeec72c9",
+  "baseline_failure_count": 116,
+  "closed_failure_count": 35,
+  "remaining_failure_count": 81,
+  "partition_overlap_count": 0,
+  "remaining_by_lane": {
+    "correctness": 61,
+    "package": 20
+  },
+  "dispositions": {
+    "CURRENT_CONTRACT_RUNTIME_REPAIR": 5,
+    "SUPERSEDED_EXPECTATION_REPLACED": 22,
+    "HIDDEN_INPUT_DEPENDENCY_REMOVED": 8,
+    "HISTORICAL_CASE_ARCHIVED_WITH_REPLACEMENT_PROOF": 0
+  },
+  "evidence": {
+    "ledger": {
+      "path": "tech_debt/evidence/td007-milestone1-ledger-v1.json",
+      "sha256": "fb9da024791a5c0a793d3a528e6e2c880daa5d5cabdc6de6b94e45c7715dc606"
+    },
+    "known_failures": {
+      "path": "tech_debt/evidence/td007-milestone1-known-failures-v5.json",
+      "sha256": "4a3b7dcfef4a48ef27e1435a7ac97fe26aea13b22cf7dd30c727f6da64ea4fc3"
+    },
+    "correctness": {
+      "path": "tech_debt/evidence/td007-milestone1-correctness-verified-v5.json",
+      "sha256": "6e87aed56ac0c302a45bec266bb62786d13ba57dbc5039e35be0ea3bb7266ee6",
+      "verdict": "PASS_WITH_EXACT_KNOWN_FAILURES"
+    },
+    "package": {
+      "path": "tech_debt/evidence/td007-milestone1-package-verified-v5.json",
+      "sha256": "41c84dcef53fbada6800ba5e193b008b025f965b4f3ae5145634657ef259171a",
+      "verdict": "PASS_WITH_EXACT_KNOWN_FAILURES"
+    },
+    "package_proof": {
+      "path": "tech_debt/evidence/td007-milestone1-package-proof-v12.json",
+      "sha256": "9a1d2abec0cce557ae43dd93c87e166f5c341e1098a1326b83427a96c0d1a8a5",
+      "verdict": "TD007_PINNED_PACKAGE_PROOF_PASS"
+    },
+    "review": {
+      "path": "tech_debt/evidence/td007-milestone1-independent-review-v2.md",
+      "sha256": "13eca39436144385d9287cf5a5b7e3726ce53cebc6d867dc52f9eb11574e25b9",
+      "allowed_passes_used": 2,
+      "score_at_review_time": 5,
+      "material_findings_repaired": 4
+    }
+  },
+  "source_runtime_semantics_changed": true,
+  "installed_runtime_authority_changed": false,
+  "installed_runtime_mutated": false,
+  "live_desktop_contacted": false,
+  "release_admitted": false,
+  "full_heldout_quality_gate": "DEFERRED_UNTIL_ALL_TD007_RUNTIME_MILESTONES_COMPLETE",
+  "next_action": "TD007_MILESTONE_2"
+}

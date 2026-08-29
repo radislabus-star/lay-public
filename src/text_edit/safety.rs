@@ -65,16 +65,15 @@ pub fn autocorrect_edit_safety(
     );
     let layout_phrase = transition.proof() == Some(TransitionProof::Layout);
     let semantic_source = transition.proof() == Some(TransitionProof::Context);
-
-    let verified_current_token_boundary_shape = transition.is_verified()
-        && transition.operator() == Some(super::mutation::TransitionOperator::BoundaryMergeSplit)
-        && transition.proof() == Some(TransitionProof::Boundary)
+    let manual_current_token_boundary_shape = transition.is_verified()
+        && transition.proof() == Some(TransitionProof::ManualIntent)
         && !changes_non_last_word
         && would_touch_words == 1
         && same_non_whitespace_surface(original, replacement);
+
     let strong_boundary_shape = !boundary_changed
         || layout_phrase
-        || verified_current_token_boundary_shape
+        || manual_current_token_boundary_shape
         || strong_boundary_edit_shape(original, replacement);
 
     let (allow_apply, reason) = if let Some(reason) = transition.block_reason() {

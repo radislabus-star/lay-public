@@ -368,6 +368,9 @@ fn layout_then_typo_candidate(
     if !looks_like_ascii_layout_word(&current_word) {
         return None;
     }
+    if is_known_english_layout_word(&current_word) {
+        return None;
+    }
 
     let converted_word = crate::dict::convert(&current_word, crate::dict::Direction::Us2Ru);
     if converted_word == current_word || !is_cyrillic_letters_only(&converted_word) {
@@ -381,9 +384,6 @@ fn layout_then_typo_candidate(
         (converted_text, "layout_then_known_word".to_string())
     } else {
         let explanation = explain_typing_assist_with_pipeline(&converted_text, false, pipeline);
-        if explanation.chosen.is_none() && is_protected_known_english_layout_word(&current_word) {
-            return None;
-        }
         let source_id = explanation
             .chosen
             .as_ref()
@@ -424,11 +424,8 @@ fn exact_physical_layout_projection_has_authority(text: &str) -> bool {
         && crate::layout_autoswitch::is_russian_layout_surface_authority_word(&projection)
 }
 
-fn is_protected_known_english_layout_word(word: &str) -> bool {
-    crate::layout_autoswitch::is_protected_ascii_layout_token(word)
-        && crate::layout_autoswitch::is_known_english_layout_autoswitch_word(
-            &word.to_ascii_lowercase(),
-        )
+fn is_known_english_layout_word(word: &str) -> bool {
+    crate::layout_autoswitch::is_known_english_layout_autoswitch_word(&word.to_ascii_lowercase())
 }
 
 fn composite_russian_typo_candidate(
@@ -740,30 +737,13 @@ fn delayed_context_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate>
 mod candidate_sources_tests {
     use super::*;
     use crate::config::{default_typing_assist_pipeline, CorrectionSafety};
-    use std::fs;
-    use std::io::{BufRead, BufReader, BufWriter, Write};
-    use std::os::unix::net::UnixListener;
-    use std::path::{Path, PathBuf};
     use std::sync::{Mutex, OnceLock};
-    use std::thread;
 
     fn env_lock() -> std::sync::MutexGuard<'static, ()> {
         static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
         LOCK.get_or_init(|| Mutex::new(()))
             .lock()
             .expect("env lock")
-    }
-
-    fn with_l11_socket_env<T>(socket_path: &Path, f: impl FnOnce() -> T) -> T {
-        let _lock = env_lock();
-        let previous = std::env::var_os("LAY_L11_SOCKET");
-        std::env::set_var("LAY_L11_SOCKET", socket_path);
-        let output = f();
-        match previous {
-            Some(value) => std::env::set_var("LAY_L11_SOCKET", value),
-            None => std::env::remove_var("LAY_L11_SOCKET"),
-        }
-        output
     }
 
     fn with_l11_socket_env_cleared<T>(f: impl FnOnce() -> T) -> T {
@@ -776,41 +756,6 @@ mod candidate_sources_tests {
             None => std::env::remove_var("LAY_L11_SOCKET"),
         }
         output
-    }
-
-    fn temp_socket_path(name: &str) -> PathBuf {
-        std::env::temp_dir().join(format!(
-            "lay-{name}-{}-{}.sock",
-            std::process::id(),
-            std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .expect("time")
-                .as_nanos()
-        ))
-    }
-
-    fn spawn_mock_l11_service(
-        response: crate::nanda_wave::L1ServiceResponse,
-    ) -> (PathBuf, thread::JoinHandle<()>) {
-        let socket_path = temp_socket_path("l11-mock");
-        let listener = UnixListener::bind(&socket_path).expect("bind mock socket");
-        let handle = thread::spawn(move || {
-            let (stream, _) = listener.accept().expect("accept mock request");
-            let mut reader = BufReader::new(stream.try_clone().expect("clone mock stream"));
-            let mut writer = BufWriter::new(stream);
-            let mut line = String::new();
-            reader.read_line(&mut line).expect("read request");
-            let request: crate::nanda_wave::L1ServiceRequest =
-                serde_json::from_str(line.trim_end()).expect("decode request");
-            assert!(matches!(
-                request,
-                crate::nanda_wave::L1ServiceRequest::Lattice { .. }
-            ));
-            serde_json::to_writer(&mut writer, &response).expect("encode response");
-            writer.write_all(b"\n").expect("write newline");
-            writer.flush().expect("flush response");
-        });
-        (socket_path, handle)
     }
 
     fn request<'a>(text: &'a str, pipeline: &'a [TypingAssistRuleConfig]) -> CorrectionRequest<'a> {
@@ -887,7 +832,7 @@ mod candidate_sources_tests {
     }
 
     #[test]
-    fn canonical_l2_field_route_uses_owned_surface_source_ids() {
+    fn td007_current_canonical_l2_field_fails_closed_without_l11_service() {
         let candidates = with_l11_socket_env_cleared(|| {
             nanda_text_candidates_for_route(
                 &request("пукнт ", &default_typing_assist_pipeline()),
@@ -897,71 +842,47 @@ mod candidate_sources_tests {
         });
 
         assert!(
-            candidates
-                .iter()
-                .any(|candidate| {
-                    candidate.source_id == "CanonicalL2FieldSurface"
-                        || candidate
-                            .evidence
-                            .iter()
-                            .any(|evidence| evidence.source_id == "CanonicalL2FieldSurface")
-                }),
-            "canonical route must self-birth surface candidates inside its owned local field: {candidates:?}"
-        );
-        assert!(
-            candidates
-                .iter()
-                .all(|candidate| candidate.source_id.starts_with("CanonicalL2Field")),
-            "canonical route must emit only canonical L2 source ids: {candidates:?}"
+            candidates.is_empty(),
+            "the live canonical route must not synthesize candidates when L1.1 is unavailable: {candidates:?}"
         );
     }
 
     #[test]
-    fn canonical_l2_field_self_prepares_l11_candidate_without_peak_context() {
-        let response = crate::nanda_wave::L1ServiceResponse::Lattice {
-            seeds: vec![crate::nanda_wave::L11SeedSurface {
-                terminal_id: Some(1),
-                surface: "время".to_string(),
-                authority: true,
-                score_milli: 991,
-            }],
-        };
-        let (socket_path, handle) = spawn_mock_l11_service(response);
+    #[ignore = "requires independently pinned L1.1, canonical L2, and Productive V90 packages"]
+    fn td007_pinned_canonical_route_internalizes_authoritative_l11_seed() {
+        assert!(
+            std::env::var_os("LAY_L11_SOCKET").is_some(),
+            "the pinned package proof must provide a real isolated L1.1 service"
+        );
+        let pipeline = default_typing_assist_pipeline();
+        let mut request = request("врмея ", &pipeline);
+        request.nanda_candidate_route = CandidateReadoutRoute::CanonicalL2Field;
+        let resolution = crate::correction_core::resolve_text_correction(request);
 
-        let candidates = with_l11_socket_env(&socket_path, || {
-            nanda_text_candidates_for_route(
-                &request("врмея ", &default_typing_assist_pipeline()),
-                CandidateReadoutRoute::CanonicalL2Field,
-                None,
-            )
-        });
-        handle.join().expect("mock service");
-        let _ = fs::remove_file(&socket_path);
-
-        let candidate = candidates
+        let candidate = resolution
+            .candidates
             .iter()
             .find(|candidate| candidate.replacement == "время ")
             .expect("canonical field should internalize authoritative L1.1 seed");
+        assert_eq!(candidate.source, CorrectionDecisionSource::Nanda);
+        assert_eq!(candidate.origin, CandidateOrigin::L2Surface);
         assert!(
-            matches!(
-                candidate.source_id.as_str(),
-                "CanonicalL2FieldSurface" | "CanonicalL2FieldReadout"
-            ),
-            "authoritative L1.1 seed must enter the owned L2 field, not survive as sidecar: {candidate:?}"
+            candidate.source_id.starts_with("CanonicalL2Field")
+                || candidate.source_id.starts_with("ProductiveL2V90"),
+            "the pinned L1.1 seed must be internalized by an owned canonical or Productive producer: {candidate:?}"
         );
         assert!(
-            candidate
-                .evidence
-                .iter()
-                .any(|evidence| evidence.source_id == "CanonicalL2FieldSurface"),
-            "authoritative L1.1 seed must still carry owned surface provenance: {candidate:?}"
-        );
-        assert!(
-            candidates
+            resolution
+                .candidates
                 .iter()
                 .all(|candidate| candidate.source_id != "CanonicalL2FieldL11"),
-            "canonical route should internalize L1.1 seed into the field, not emit a separate sidecar: {candidates:?}"
+            "canonical route should internalize L1.1 seed into the field, not emit a separate sidecar: {:?}",
+            resolution.candidates
         );
+        assert_eq!(candidate.gate.action, CandidateGateAction::SuggestOnly);
+        assert!(resolution.selected.is_none());
+        assert!(resolution.decision.is_none());
+        assert!(resolution.selected_transition.is_none());
     }
 
     #[test]
@@ -1037,7 +958,7 @@ mod candidate_sources_tests {
     }
 
     #[test]
-    fn l2_field_births_generic_short_layout_candidate_for_l3_context() {
+    fn td007_current_canonical_l2_field_does_not_birth_layout_without_l11_authority() {
         let candidates = with_l11_socket_env_cleared(|| {
             nanda_text_candidates_for_route(
                 &request("Apple b ", &default_typing_assist_pipeline()),
@@ -1045,14 +966,10 @@ mod candidate_sources_tests {
                 None,
             )
         });
-        let candidate = candidates
-            .iter()
-            .find(|candidate| candidate.replacement == "Apple и ")
-            .expect("L2 field must preserve the exact b -> и layout projection");
-
-        assert_eq!(candidate.source_id, "CanonicalL2FieldSurface");
-        assert_eq!(candidate.origin, CandidateOrigin::Layout);
-        assert_eq!(candidate.gate.action, CandidateGateAction::Eligible);
+        assert!(
+            candidates.is_empty(),
+            "layout projection cannot bypass unavailable L1.1 authority: {candidates:?}"
+        );
     }
 
     #[test]

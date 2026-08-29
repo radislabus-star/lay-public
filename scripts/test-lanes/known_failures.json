@@ -1,5 +1,5 @@
 {
-  "failure_count": 116,
+  "failure_count": 81,
   "failures": [
     {
       "cluster": "typing_assist_surface",
@@ -81,303 +81,6 @@
       "signature_sha256": "aaa26f2f93030de41ef8646c39feda53be38a6c9455baf554cfa9e263f965589",
       "target": "lib:lay",
       "test": "architecture_contract::tests::exact_auto_undo_is_reverted_evidence_in_both_live_adapters"
-    },
-    {
-      "cluster": "candidate_birth",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "canonical route must self-birth surface candidates inside its owned local field: []",
-      "signature_sha256": "18cedc71e738fe1afd973bdefa33f90450703586fbec65030a12aa62927d030d",
-      "target": "lib:lay",
-      "test": "correction_core::candidate_sources_tests::canonical_l2_field_route_uses_owned_surface_source_ids"
-    },
-    {
-      "cluster": "candidate_birth",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "canonical field should internalize authoritative L1.1 seed",
-      "signature_sha256": "0c2eb14e8046df06fde780940ec99e8b0b4a972484a0bc8bf3573a650d3419e4",
-      "target": "lib:lay",
-      "test": "correction_core::candidate_sources_tests::canonical_l2_field_self_prepares_l11_candidate_without_peak_context"
-    },
-    {
-      "cluster": "candidate_birth",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "L2 field must preserve the exact b -> \u0438 layout projection",
-      "signature_sha256": "6d2edf8e727559c73a09fa1040ebc1351f5227b48f124d6d7f809f228fbdb0e3",
-      "target": "lib:lay",
-      "test": "correction_core::candidate_sources_tests::l2_field_births_generic_short_layout_candidate_for_l3_context"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "resolution=CorrectionResolution { | event: TypingErrorEvent { | original: \"\u0441\u0430\u043c\u043a\u0430 \u0441\u0445\u0435\u043c\u0430 \u043f\u0430\u0440\u043e\u0447\u0438\u043d\u043d\u0430\u044f \",",
-      "signature_sha256": "d070cc06ae9d174cd6f97aa1884aad1fee9d3b79265ef58f9343958c7a331e60",
-      "target": "lib:lay",
-      "test": "correction_core::tests::ambiguous_long_l2_surface_drift_from_live_log_is_suggestion_only"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "resolution=CorrectionResolution { | event: TypingErrorEvent { | original: \"\u0432\u043e \u0442\u0442\u044b \",",
-      "signature_sha256": "53e5f27c766dc4c04d8ba7dbba2b7d3bd9cfda0182125c596cc0302bd9d25223",
-      "target": "lib:lay",
-      "test": "correction_core::tests::ambiguous_short_boundary_shift_is_suggestion_only"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: SuggestOnly | right: KeepOriginal",
-      "signature_sha256": "48a979eccbc5b6c4817d042257968325cd670eb91aecfda09bc1f61ac8ce19db",
-      "target": "lib:lay",
-      "test": "correction_core::tests::boundary_gate_rejects_known_word_split_from_non_boundary_candidate"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "resolution=CorrectionResolution { | event: TypingErrorEvent { | original: \"\u044f \u0432\u0438\u0436\u0443 \u0432\u0438\u0434\u0438\u0442 \u0444\u0440\u0430\u0437\u0443 \",",
-      "signature_sha256": "3d2745b0ab47da046986bd2478d4c391d170ae94354ea05f5f7b8697079c52fc",
-      "target": "lib:lay",
-      "test": "correction_core::tests::clean_phrase_boundary_cannot_apply_a_shifted_alternative"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: resolution=CorrectionResolution { | event: TypingErrorEvent { | original: \"\u041f\u041f\u041e\u041d\u0418\u041a\u0410\u0415\u0428\u042c? \",",
-      "signature_sha256": "df49651b191c19f40c8c2a6b329b34905a198afa5c1ba001c207a31a02bc99a3",
-      "target": "lib:lay",
-      "test": "correction_core::tests::close_verified_typo_transitions_abstain_without_context_signal"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "selected candidate: CorrectionResolution { event: TypingErrorEvent { original: \"\u043c\u044b \u043e\u0442\u0432\u0440\u0430\u0432\u0438\u043c \", core: \"\u043c\u044b \u043e\u0442\u0432\u0440\u0430\u0432\u0438\u043c\", current_word: \"\u043e\u0442\u0432\u0440\u0430\u0432\u0438\u043c\", input_class: CompositeTypo }, candidates: [UnifiedCorrectionCandidate { replacement: \"\u043c\u044b \u043e\u0442\u043f\u0440\u0430\u0432\u0438\u043c \", source: Nanda, origin: L2Surface, source_id: \"L2SurfaceMotifCell32\", error_cl",
-      "signature_sha256": "0d9fd25846749b189683580ea98fd570daa28eceb2fb97356389c9572337e07d",
-      "target": "lib:lay",
-      "test": "correction_core::tests::composite_typo_does_not_jump_over_known_single_step_repair"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "safe candidate should remain",
-      "signature_sha256": "4e1b1b13be4d5d398afe0ad2363d75299248e03347556a61d5b0b97b142322a7",
-      "target": "lib:lay",
-      "test": "correction_core::tests::composite_typo_rejects_short_initial_consonant_growth"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "selected candidate for \"\u0440\u0443\u0441\u043a\u0438\u0445 \": CorrectionResolution { event: TypingErrorEvent { original: \"\u0440\u0443\u0441\u043a\u0438\u0445 \", core: \"\u0440\u0443\u0441\u043a\u0438\u0445\", current_word: \"\u0440\u0443\u0441\u043a\u0438\u0445\", input_class: CompositeTypo }, candidates: [UnifiedCorrectionCandidate { replacement: \"\u0440\u0443\u0441\u0441\u043a\u0438\u0445 \", source: Nanda, origin: L2Surface, source_id: \"L2SurfaceMotifCell32\", error_clas",
-      "signature_sha256": "317320332a17d1b607a568665aa2af4974a427e64b0aa5360e22eccc075f87cb",
-      "target": "lib:lay",
-      "test": "correction_core::tests::composite_typo_repairs_generated_russian_forms"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: \"\u043f\u043e\u043c\u043e\u0448\u043d\u0438\u043a \" | right: \"\u043f\u043e\u043c\u043e\u0449\u043d\u0438\u043a \"",
-      "signature_sha256": "eb8904c6f03ed8462b60938a9c9cf85ec2b683e60693c28315289710b188fa1f",
-      "target": "lib:lay",
-      "test": "correction_core::tests::composite_typo_repairs_known_russian_word"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "wrong-layout candidate missing for \"gthtdjhfxbdftncz \"",
-      "signature_sha256": "08b9a4829c9aec6ac641eaf55be3c288e76e23be1781c91d9a461d7935b00b02",
-      "target": "lib:lay",
-      "test": "correction_core::tests::deterministic_mode_corrects_wrong_layout_text"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "same-script candidate for \"dowenload \"",
-      "signature_sha256": "05afea172f548722d5af542679a682809738be3d85c505500bc3ea45fb7ad425",
-      "target": "lib:lay",
-      "test": "correction_core::tests::english_word_centers_beat_more_expensive_cross_script_projections"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: resolution=CorrectionResolution { | event: TypingErrorEvent { | original: \"djn nfrjt djn yt gthtdfhfxbdftncz \",",
-      "signature_sha256": "b0d9598b3393a0e6942797b2ba941d69c3a913d6dfee1e1f5415018398de1af0",
-      "target": "lib:lay",
-      "test": "correction_core::tests::full_wave_selects_noisy_multiword_layout_as_one_verified_transition"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: CandidateGateDecision { action: SuggestOnly, reason: \"known_current_word_surface_drift\" } | left: SuggestOnly | right: Eligible",
-      "signature_sha256": "cc3400094c5c68af799c89550b4cc26f10597e5fb4cd81f759ce7cb087324083",
-      "target": "lib:lay",
-      "test": "correction_core::tests::l2_surface_missing_letter_repair_from_dirty_surface_can_apply"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: Some(CorrectionDecision { replacement: \"\u0432\u0430\u0448\u0434\u0443 \", source: Deterministic }) | right: None",
-      "signature_sha256": "a0df0e93134281e0ac7438206d5690927d78d2d90715487c9cabefc6cc9c77c2",
-      "target": "lib:lay",
-      "test": "correction_core::tests::layout_then_known_word_does_not_flip_known_english_word"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion failed: selected.has_origin(CandidateOrigin::Layout)",
-      "signature_sha256": "f03f670cf58f14b9398eac55ff6f796b7c79766c418bc728771dbfccc23b0dde",
-      "target": "lib:lay",
-      "test": "correction_core::tests::layout_then_typo_repairs_dirty_wrong_layout_word"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "L2 transposition center must apply: CorrectionResolution { | event: TypingErrorEvent { | original: \"\u0432\u0440\u043c\u0435\u044f \",",
-      "signature_sha256": "aac2452fe567fc011be36145a181d6b45084dc1fc8bdf03f083191594383c1ad",
-      "target": "lib:lay",
-      "test": "correction_core::tests::live_canonical_l2_field_applies_adjacent_transposition_center"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion failed: !candidates.is_empty()",
-      "signature_sha256": "c6ddfa9d1643da93dae3104ef492299480636be54942a036beaf0920aa8765d7",
-      "target": "lib:lay",
-      "test": "correction_core::tests::live_canonical_l2_field_births_nanda_candidates_without_full_wave_authority"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: multi-word dirty log case must not auto-apply: \"\u043c\u0435\u0442\u0435 \u0442\u044b \": CorrectionResolution { event: TypingErrorEvent { original: \"\u043c\u0435\u0442\u0435 \u0442\u044b \", core: \"\u043c\u0435\u0442\u0435 \u0442\u044b\", current_word: \"\u0442\u044b\", input_class: Unknown }, candidates: [UnifiedCorrectionCandidate { replacement: \"\u043c\u0435\u0442\u0438\u0435 \u0442\u044b \", source: Nanda, origin: L2Su",
-      "signature_sha256": "e6dc054df5cda435692069fce19e0c019b96ff8ccc90d32bdb738b7438a8167c",
-      "target": "lib:lay",
-      "test": "correction_core::tests::live_log_multi_word_drifts_do_not_autoreplace_neighbors"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "selected candidate",
-      "signature_sha256": "2a14aa07d43c94fa0cd7fd4b6b022b809a0e3d6a5d13220ba5ee4dcd9a57586f",
-      "target": "lib:lay",
-      "test": "correction_core::tests::nanda_semantic_drift_does_not_beat_local_single_step_repair"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: input=\"\u0442\u0435\u043b\u0438 \" | left: \"known_current_word_surface_drift\" | right: \"short_nanda_word_shrink\"",
-      "signature_sha256": "d84bb8d735a5c14b490b62d349b4b9bbf680d55a57b31da606a0c292cfbba615",
-      "target": "lib:lay",
-      "test": "correction_core::tests::nanda_surface_candidates_from_logs_are_suggest_only_when_surface_is_weak"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "selected L2 word-form center: CorrectionResolution { | event: TypingErrorEvent { | original: \"\u0410\u0437\u0435\u0439\u0431\u0430\u0440\u0434\u0436\u0430\u043d \",",
-      "signature_sha256": "bb5dff557fdc2af21839a0960c8dfa24fd6b2d879680f817e0f4341772ccfd9f",
-      "target": "lib:lay",
-      "test": "correction_core::tests::nanda_word_form_center_can_apply_nonlocal_composite_typo"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "operator consensus must resolve: CorrectionResolution { | event: TypingErrorEvent { | original: \"\u043f\u0440\u0435\u043e\u0432\u0435\u0440\u043a\u0430 \",",
-      "signature_sha256": "018467ac6a0831cbb7eab9de994f3d399f67a8ba4e4b789f516006c8da4855a7",
-      "target": "lib:lay",
-      "test": "correction_core::tests::operator_consensus_repairs_extra_letter_despite_generic_negative_memory"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "operator consensus must resolve: CorrectionResolution { | event: TypingErrorEvent { | original: \"\u043f\u043e\u043d\u044f\u043b \u0441\u043e\u043c\u0442\u0440\u044e \",",
-      "signature_sha256": "647e170858a46631096ca4c110b410dbcd0e41feb58c9fd3fca175d5a50f7553",
-      "target": "lib:lay",
-      "test": "correction_core::tests::operator_consensus_selects_transposition_over_generic_l2_drift"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "phase-verified transposition must resolve: CorrectionResolution { | event: TypingErrorEvent { | original: \"\u043f\u0440\u043e\u0435\u0432\u0440\u044f\u044e \",",
-      "signature_sha256": "427b19e1a7cdc28ad9f2a3851e5e982260ac3da843f828ec3c87dabd6e18163b",
-      "target": "lib:lay",
-      "test": "correction_core::tests::phase_verified_l2_transposition_repairs_unlisted_word_form"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "L2 must compete with a known noisy surface: CorrectionResolution { | event: TypingErrorEvent { | original: \"\u043b\u0430\u043d\u0434\u043e \",",
-      "signature_sha256": "4888706c84940ebd594fed5680cdb0baf2836e7004148cac831f47361475f6b5",
-      "target": "lib:lay",
-      "test": "correction_core::tests::phase_verified_transposition_competes_with_known_noisy_surface"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: \"wait\" | right: \"suggest\"",
-      "signature_sha256": "fe7fc3cca2e36240799de2a95b231e648ba0e2c76d9b21bcde554d388985d974",
-      "target": "lib:lay",
-      "test": "correction_core::tests::resolution_routes_missing_letter_through_unified_gate"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "CorrectionResolution { event: TypingErrorEvent { original: \"\u0447\u0438\u0442\u0430\u0439 cola d wechat \", core: \"\u0447\u0438\u0442\u0430\u0439 cola d wechat\", current_word: \"wechat\", input_class: WrongLayout }, candidates: [UnifiedCorrectionCandidate { replacement: \"\u0447\u0438\u0442\u0430\u0439 cola \u0432 wechat \", source: Deterministic, origin: Layout, source_id: \"contextual_ru_preposition_",
-      "signature_sha256": "b2a1282ae29e3584ef450d0d49a4405715e260ae0f1702d2ffc03d03a020d2f6",
-      "target": "lib:lay",
-      "test": "correction_core::tests::russian_phrase_context_keeps_left_context_repair_suggest_only"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "selected sparse omission over suffix drift: CorrectionResolution { | event: TypingErrorEvent { | original: \"\u043d\u0430 \u0441\u043a\u043e\u043b\u044c\u043a\u043e \u043f\u0435\u0440\u0435\u043f\u043e\u0434\u043b\u0447\u0430\u044e \",",
-      "signature_sha256": "0b2141b7f834cef8f705dbc31eeae5816561641c4a6a2e806c0282c4137fce78",
-      "target": "lib:lay",
-      "test": "correction_core::tests::sparse_internal_omission_beats_composite_suffix_drift"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: input=\"\u0434\u043b\u0435\u0430\u0439 \"; CorrectionResolution { event: TypingErrorEvent { original: \"\u0434\u043b\u0435\u0430\u0439 \", core: \"\u0434\u043b\u0435\u0430\u0439\", current_word: \"\u0434\u043b\u0435\u0430\u0439\", input_class: CompositeTypo }, candidates: [UnifiedCorrectionCandidate { replacement: \"\u0434\u0430\u0432\u0430\u0439 \", source: Nanda, origin: L2Surface, source_id: \"L2WordAttractorCell32\"",
-      "signature_sha256": "9522fffd4f7b33166f658f94bf10ff4fdbf5dde5e273bc81a2cd38830c6939e4",
-      "target": "lib:lay",
-      "test": "correction_core::tests::strong_local_typo_repairs_still_apply_after_shape_guard"
-    },
-    {
-      "cluster": "correction_ranking_admission",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "unique transposition must resolve: CorrectionResolution { | event: TypingErrorEvent { | original: \"\u043c\u0436\u043e\u0435\u0442 \",",
-      "signature_sha256": "5fdd0c5ce7cd928132ded22536db7d0d93e7dd10d89cca4a9c2b2e0db7bca230",
-      "target": "lib:lay",
-      "test": "correction_core::tests::unique_transposition_certificate_repairs_short_word"
     },
     {
       "cluster": "ime_authority",
@@ -716,15 +419,6 @@
       "cluster": "nanda_l3_context",
       "lane": "correctness",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: Some(\"html \u0432\u043e\u0442 api \") | right: None",
-      "signature_sha256": "f3706f17fbf3d16da91b9f39784084b18ba795dd91c05f3522e60549843af7c2",
-      "target": "lib:lay",
-      "test": "nanda_wave::l3::tests::phrase_layout_candidate_cannot_rewrite_middle_token"
-    },
-    {
-      "cluster": "nanda_l3_context",
-      "lane": "correctness",
-      "owner": "TD-007",
       "signature_excerpt": "assertion `left == right` failed | left: Some(1) | right: Some(0)",
       "signature_sha256": "a93c204ab308bfb724e1fe38d23dbd19a973fb0e155a7cae5db7f007e7950f38",
       "target": "lib:lay",
@@ -761,19 +455,10 @@
       "cluster": "phrase_boundary",
       "lane": "correctness",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: Some(\"\u0440\u0435\u0430\u043b\u044c\u043d\u043e\u043e\u0435\") | right: None",
-      "signature_sha256": "189eb3fa4f0b8846c26e0ec6b45656f016886d2c3a62b6ddb1631713ad068388",
+      "signature_excerpt": "assertion `left == right` failed | left: None | right: Some(\"\u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0430\u0445\")",
+      "signature_sha256": "94987516de62faa0ef7d408b0cd96f06a03a9630c9cb7779e6469e6e71dfe6f3",
       "target": "lib:lay",
       "test": "phrase_reader::tests::merges_accidental_split_word_but_keeps_normal_pair"
-    },
-    {
-      "cluster": "edit_safety_contract",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: case=weak_known_word_boundary_split safety=EditPlanSafetyReport { deleted_text: \"\", inserted_text: \" \", deleted_contains_space: false, inserted_contains_space: true, insertion_splits_word: true, word_count_changed: true, boundary_changed: true, changes_non_last_word: false, would_touch",
-      "signature_sha256": "935b6e0ed818ac0f4963f516df23876bc44ac207f88b5a9ed7b65d29d6294a52",
-      "target": "lib:lay",
-      "test": "text_edit::tests::autocorrect_safety_requires_strong_boundary_shape"
     },
     {
       "cluster": "edit_safety_contract",
@@ -1046,8 +731,8 @@
       "test": "short_russian_words_typed_in_us_layout_are_recovered_between_english_words_when_not_ambiguous"
     }
   ],
-  "manifest_sha256": "50bd81bec003d866397a07de01b965c420a60361927dc5aefeb842f40253ddda",
-  "observation_path": "tech_debt/evidence/td006-hermetic-observation-v1.json",
-  "observation_sha256": "2c03eafe5a3bd7b71b2cc67c6cc8d774f148ef20b92684d1efeb354712d2d2b0",
+  "manifest_sha256": "cd130f2db52a23133666eeb301ce8199bbe8a7095b7faa9c2d4f71df13095e94",
+  "observation_path": "tech_debt/evidence/td007-milestone1-known-failures-v5.json",
+  "observation_sha256": "4a3b7dcfef4a48ef27e1435a7ac97fe26aea13b22cf7dd30c727f6da64ea4fc3",
   "schema": "lay.test-known-failures.v1"
 }

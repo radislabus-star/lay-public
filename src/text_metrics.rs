@@ -113,6 +113,11 @@ pub(crate) fn confident_boundary_split_pair(
     let right_len = right.chars().count();
     let left_known = crate::phrase_lexicon::is_known_russian_phrase_part(left);
     let right_known = crate::phrase_lexicon::is_known_russian_phrase_part(right);
+    let left_form_known = left_known || crate::russian_lexicon::is_known_russian_word_or_form(left);
+    let right_form_known =
+        right_known || crate::russian_lexicon::is_known_russian_word_or_form(right);
+    let left_lexical = crate::russian_lexicon::is_known_russian_lexical_surface(left);
+    let right_lexical = crate::russian_lexicon::is_known_russian_lexical_surface(right);
     let original_known = crate::phrase_lexicon::is_known_russian_phrase_part(original);
     let left_one_letter_function =
         left_len == 1 && crate::phrase_lexicon::is_one_letter_russian_function_word(left);
@@ -124,16 +129,29 @@ pub(crate) fn confident_boundary_split_pair(
     let right_short_function = crate::phrase_lexicon::is_short_russian_function_word(right);
 
     if compact_equal {
-        let both_stable_content =
-            !original_known && left_known && right_known && left_len >= 4 && right_len >= 4;
-        return (left_one_letter_function && right_known)
-            || (right_one_letter_function && left_known)
-            || (left_short_function && !left_multi_letter_preposition && right_known)
-            || (left_known && right_short_function)
+        let both_stable_content = !original_known
+            && left_known
+            && right_known
+            && left_lexical
+            && right_lexical
+            && left_len >= 4
+            && right_len >= 4;
+        return (left_one_letter_function && right_form_known)
+            || (right_one_letter_function && left_form_known)
+            || (left_short_function && !left_multi_letter_preposition && right_form_known)
+            || (left_form_known && right_short_function)
             || both_stable_content;
     }
 
-    if original_known || !left_known || !right_known || !single_original_word {
+    let repaired_parts_have_authority = (left_lexical && right_lexical)
+        || (left_short_function && !left_multi_letter_preposition && right_form_known)
+        || (right_short_function && left_form_known);
+    if original_known
+        || !left_form_known
+        || !right_form_known
+        || !repaired_parts_have_authority
+        || !single_original_word
+    {
         return false;
     }
 
@@ -493,6 +511,10 @@ mod tests {
         assert!(!current_token_repaired_boundary_split(
             "мы прблематут ",
             "проблема мы тут "
+        ));
+        assert!(!current_token_repaired_boundary_split(
+            "самка схема парочинная ",
+            "самка схема парчо инная "
         ));
     }
 }

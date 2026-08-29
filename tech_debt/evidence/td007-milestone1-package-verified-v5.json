@@ -1,0 +1,165 @@
+{
+  "elapsed_by_lane_seconds": {
+    "package": 27.132842375023756
+  },
+  "elapsed_by_target_seconds": {
+    "test:decoder_alternating_stress": 1.8672483710106462,
+    "test:l3_context_feedback_overlay_contract": 1.3548080690088682,
+    "test:protected_words_runtime": 0.9314923020428978,
+    "test:restore_word_cli": 6.095343313994817,
+    "test:typing_assist_alternating_stress": 3.3004944709828123,
+    "test:typing_assist_mixed_corpus": 9.151817948033568,
+    "test:typing_assist_short_alternating": 4.431637899950147
+  },
+  "failures": [
+    {
+      "failure_block": "thread 'feedback_overlay_keeps_live_text_out_of_the_compiled_packet' (3) panicked at tests/l3_context_feedback_overlay_contract.rs:33:5:\nassertion `left == right` failed\n  left: Number(0)\n right: 1\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:l3_context_feedback_overlay_contract",
+      "test": "feedback_overlay_keeps_live_text_out_of_the_compiled_packet"
+    },
+    {
+      "failure_block": "thread 'restore_word_stream_reuses_one_loaded_core' (15) panicked at tests/restore_word_cli.rs:58:5:\nassertion `left == right` failed\n  left: \"\u0432\u0440\u043c\u0435\u044f\\n\u0440\u0430\u0431\u043e\u0442\u0430 \u0442\u0435\u0442\\n\u043a\u043e\u0440\u043e\u0447\u0435\"\n right: \"\u0432\u0440\u0435\u043c\u044f\\n\u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442\\n\u043a\u043e\u0440\u043e\u0447\u0435\"\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:restore_word_cli",
+      "test": "restore_word_stream_reuses_one_loaded_core"
+    },
+    {
+      "failure_block": "thread 'restore_word_uses_the_shared_correction_core' (26) panicked at tests/restore_word_cli.rs:21:5:\nassertion `left == right` failed\n  left: \"\u0432\u0440\u043c\u0435\u044f\"\n right: \"\u0432\u0440\u0435\u043c\u044f\"",
+      "target": "test:restore_word_cli",
+      "test": "restore_word_uses_the_shared_correction_core"
+    },
+    {
+      "failure_block": "thread 'alternating_language_stress_cases_hold_boundaries' (3) panicked at tests/typing_assist_alternating_stress.rs:12:9:\nassertion `left == right` failed: class=ru_en_wrong_en input=\"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u0446\u0449\u043a\u0432 \u043f\u043e\u0442\u043e\u043c \u0430\u0448\u0434\u0443 \u0434\u0430\u043b\u044c\u0448\u0435 \u0435\u0443\u043a\u044c\u0448\u0442\u0444\u0434 \u0437\u0434\u0435\u0441\u044c \u044b\u0435\u0444\u0435\u0433\u044b \u0440\u044f\u0434\u043e\u043c \u043f\u0448\u0435 \u0437\u0433\u044b\u0440 \"\n  left: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f word \u043f\u043e\u0442\u043e\u043c \u0432\u0430\u0448\u0434\u0443 \u0434\u0430\u043b\u044c\u0448\u0435 terminal \u0437\u0434\u0435\u0441\u044c status \u0440\u044f\u0434\u043e\u043c git push \"\n right: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f word \u043f\u043e\u0442\u043e\u043c file \u0434\u0430\u043b\u044c\u0448\u0435 terminal \u0437\u0434\u0435\u0441\u044c status \u0440\u044f\u0434\u043e\u043c git push \"\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:typing_assist_alternating_stress",
+      "test": "alternating_language_stress_cases_hold_boundaries"
+    },
+    {
+      "failure_block": "thread 'alternating_layout_sentences_fix_every_second_word' (3) panicked at tests/typing_assist_mixed_corpus.rs:305:9:\nassertion `left == right` failed: input=\"\u0441\u0435\u0433\u043e\u0434\u043d\u044f ghbdtn \u043f\u043e\u0442\u043e\u043c \u0430\u0448\u0434\u0443 \u0434\u0430\u043b\u044c\u0448\u0435 ckjdf \u0441\u043d\u043e\u0432\u0430 \u0435\u0443\u043a\u044c\u0448\u0442\u0444\u0434 \u0437\u0434\u0435\u0441\u044c 'nj \"\n  left: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u0438\u0432\u0435\u0442 \u043f\u043e\u0442\u043e\u043c \u0432\u0430\u0448\u0434\u0443 \u0434\u0430\u043b\u044c\u0448\u0435 ckjdf \u0441\u043d\u043e\u0432\u0430 terminal \u0437\u0434\u0435\u0441\u044c '\u0442\u043e \"\n right: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u0438\u0432\u0435\u0442 \u043f\u043e\u0442\u043e\u043c file \u0434\u0430\u043b\u044c\u0448\u0435 \u0441\u043b\u043e\u0432\u0430 \u0441\u043d\u043e\u0432\u0430 terminal \u0437\u0434\u0435\u0441\u044c \u044d\u0442\u043e \"\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "alternating_layout_sentences_fix_every_second_word"
+    },
+    {
+      "failure_block": "thread 'beta_alternating_layout_sentences_keep_language_boundaries' (4) panicked at tests/typing_assist_mixed_corpus.rs:317:9:\nassertion `left == right` failed: input=\"\u044f ghbdtn word \u043f\u043e\u0442\u043e\u043c ckjdf file \u0434\u0430\u043b\u044c\u0448\u0435 hf,jnftn terminal \u0437\u0434\u0435\u0441\u044c 'nj status \"\n  left: \"\u044f \u043f\u0440\u0438\u0432\u0435\u0442 word \u043f\u043e\u0442\u043e\u043c ckjdf file \u0434\u0430\u043b\u044c\u0448\u0435 \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442 terminal \u0437\u0434\u0435\u0441\u044c '\u0442\u043e status \"\n right: \"\u044f \u043f\u0440\u0438\u0432\u0435\u0442 word \u043f\u043e\u0442\u043e\u043c \u0441\u043b\u043e\u0432\u0430 file \u0434\u0430\u043b\u044c\u0448\u0435 \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442 terminal \u0437\u0434\u0435\u0441\u044c \u044d\u0442\u043e status \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "beta_alternating_layout_sentences_keep_language_boundaries"
+    },
+    {
+      "failure_block": "thread 'clean_shell_like_commands_and_symbols_are_not_rewritten' (5) panicked at tests/typing_assist_mixed_corpus.rs:527:9:\nassertion `left == right` failed: command-like text was changed: \"tar -xf archive.tar && rm archive.tar \"\n  left: \"tar -xf archive.tar && rm \u0444\u043a\u0441\u0440\u0448\u043c\u0443\u044e\u0435\u0444\u043a \"\n right: \"tar -xf archive.tar && rm archive.tar \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "clean_shell_like_commands_and_symbols_are_not_rewritten"
+    },
+    {
+      "failure_block": "thread 'cli_commands_stay_ascii_and_recover_from_ru_layout' (6) panicked at tests/typing_assist_mixed_corpus.rs:549:9:\nassertion `left == right` failed: RU-layout CLI command was not restored: \"cd\" typed=\"\u0441\u0432\"\n  left: \"\u0441\u0432 \"\n right: \"cd \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "cli_commands_stay_ascii_and_recover_from_ru_layout"
+    },
+    {
+      "failure_block": "thread 'confident_en_to_ru_layout_words_use_fast_path_without_rewriting_english' (7) panicked at tests/typing_assist_mixed_corpus.rs:247:9:\nassertion `left == right` failed: input=\"djn \"\n  left: Some(\"experimental_layout_en_to_ru\")\n right: Some(\"fast_layout_en_to_ru\")",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "confident_en_to_ru_layout_words_use_fast_path_without_rewriting_english"
+    },
+    {
+      "failure_block": "thread 'dynamic_context_allows_ascii_to_ru_in_russian_sentence' (10) panicked at tests/typing_assist_mixed_corpus.rs:110:9:\nassertion `left == right` failed\n  left: Some(\"\u043f\u0438\u0448\u0443 '\u0442\u043e \")\n right: Some(\"\u043f\u0438\u0448\u0443 \u044d\u0442\u043e \")",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "dynamic_context_allows_ascii_to_ru_in_russian_sentence"
+    },
+    {
+      "failure_block": "thread 'forum_like_clean_mixed_sentences_do_not_get_rewritten' (13) panicked at tests/typing_assist_mixed_corpus.rs:69:5:\nassertion `left == right` failed: input=\"\u0442\u0443\u0442 good test \u0440\u044f\u0434\u043e\u043c \u0441 \u0440\u0443\u0441\u0441\u043a\u0438\u043c \u0442\u0435\u043a\u0441\u0442\u043e\u043c \"\n  left: \"\u0442\u0443\u0442 good test \u0440\u044f\u0434\u043e\u043c \u0441 \u0440\u0443\u0441\u043a\u0438\u043c \u0442\u0435\u043a\u0441\u0442\u043e\u043c \"\n right: \"\u0442\u0443\u0442 good test \u0440\u044f\u0434\u043e\u043c \u0441 \u0440\u0443\u0441\u0441\u043a\u0438\u043c \u0442\u0435\u043a\u0441\u0442\u043e\u043c \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "forum_like_clean_mixed_sentences_do_not_get_rewritten"
+    },
+    {
+      "failure_block": "thread 'forum_like_mixed_matrix_autofixes_contextual_layout_words_and_keeps_boundaries' (14) panicked at tests/typing_assist_mixed_corpus.rs:457:13:\nsafe RU->EN layout word was not auto-fixed: input=\"\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git \u0438 \u043f\u0438\u0448\u0443 njkmrj \u0434\u0430\u043b\u044c\u0448\u0435 \" got=\"\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git \u0438 \u043f\u0438\u0448\u0443 njkmrj \u0434\u0430\u043b\u044c\u0448\u0435 \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "forum_like_mixed_matrix_autofixes_contextual_layout_words_and_keeps_boundaries"
+    },
+    {
+      "failure_block": "thread 'forum_like_mixed_sentences_preserve_spaces_and_terms' (15) panicked at tests/typing_assist_mixed_corpus.rs:69:5:\nassertion `left == right` failed: input=\"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git status \u0438 \u043f\u043e\u0442\u043e\u043c njkmrj \u0442\u0435\u0441\u0442 \"\n  left: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git status \u0438 \u043f\u043e\u0442\u043e\u043c njkmrj \u0442\u0435\u0441\u0442 \"\n right: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git status \u0438 \u043f\u043e\u0442\u043e\u043c \u0442\u043e\u043b\u044c\u043a\u043e \u0442\u0435\u0441\u0442 \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "forum_like_mixed_sentences_preserve_spaces_and_terms"
+    },
+    {
+      "failure_block": "thread 'live_journal_false_positive_candidates_are_rejected' (18) panicked at tests/typing_assist_mixed_corpus.rs:62:13:\nassertion `left == right` failed: single-letter substitution must not guess a different dictionary word\n  left: Some(\"\u0434\u0435\u043b\u0430\u0442\u044c \")\n right: None",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "live_journal_false_positive_candidates_are_rejected"
+    },
+    {
+      "failure_block": "thread 'live_user_sentences_keep_spaces_after_typing_assist' (19) panicked at tests/typing_assist_mixed_corpus.rs:371:9:\nassertion `left == right` failed: input=\"\u0437\u0430 \u043d\u0430\u0441 \u0443\u0436\u0435 \u043f\u043e \u043b\u044e\u0431\u043e\u043c\u0443 \u0438 \u0434\u0430\u043b\u044c\u0448\u0435 \u043f\u0438\u0448\u0435\u043c \"\n  left: \"\u0437\u0430 \u043d\u0430\u0441 \u0443\u0436\u0435 \u043f\u043e \u043b\u044e\u0431\u043e\u043c\u0443 \u0438 \u0434\u0430\u043b\u044c\u0448\u0435 \u043f\u0438\u0432\u0448\u0435\u043c \"\n right: \"\u0437\u0430 \u043d\u0430\u0441 \u0443\u0436\u0435 \u043f\u043e \u043b\u044e\u0431\u043e\u043c\u0443 \u0438 \u0434\u0430\u043b\u044c\u0448\u0435 \u043f\u0438\u0448\u0435\u043c \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "live_user_sentences_keep_spaces_after_typing_assist"
+    },
+    {
+      "failure_block": "thread 'normal_autocorrect_keeps_safe_rules_and_rejects_aggressive_guesses' (21) panicked at tests/typing_assist_mixed_corpus.rs:416:9:\nassertion `left == right` failed: safe normal autocorrect case failed: \"\u043a\u0442\u043e\u0440\u043e\u0435 \"\n  left: Some(\"\u043a\u0430\u0442\u043e\u0440\u043e\u0435 \")\n right: Some(\"\u043a\u043e\u0442\u043e\u0440\u043e\u0435 \")",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "normal_autocorrect_keeps_safe_rules_and_rejects_aggressive_guesses"
+    },
+    {
+      "failure_block": "thread 'normal_mode_autocorrects_confident_english_typed_in_ru_layout' (22) panicked at tests/typing_assist_mixed_corpus.rs:499:9:\nassertion `left == right` failed: input=\"\u0441\u0432 \"\n  left: \"\u0441\u0432 \"\n right: \"cd \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "normal_mode_autocorrects_confident_english_typed_in_ru_layout"
+    },
+    {
+      "failure_block": "thread 'one_letter_function_words_do_not_steal_next_word_prefix' (24) panicked at tests/typing_assist_mixed_corpus.rs:69:5:\nassertion `left == right` failed: input=\"\u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e \u0432 \u0432\u043e\u0434\u0435 \u0434\u0430\u043b\u044c\u0448\u0435 \"\n  left: \"\u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e \u0432 \u0432\u043e\u0434\u043e\u0435 \u0434\u0430\u043b\u044c\u0448\u0435 \"\n right: \"\u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e \u0432 \u0432\u043e\u0434\u0435 \u0434\u0430\u043b\u044c\u0448\u0435 \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "one_letter_function_words_do_not_steal_next_word_prefix"
+    },
+    {
+      "failure_block": "thread 'short_english_words_typed_in_ru_layout_are_recovered_between_russian_words' (4) panicked at tests/typing_assist_short_alternating.rs:136:5:\nassertion `left == right` failed: input=\"\u044f \u043f\u0448\u0435 \u0438 \u0444\u0437\u0448 \u043c\u044b \u0441\u044b\u044b \u0442\u044b \u0441\u0437\u0433 \u043e\u043d \u043f\u0437\u0433 \u0432 \u0440\u0435\u044c\u0434 \u043a \u043e\u044b\u0449\u0442 \u0441 \u0434\u0434\u044c \u043d\u0435 \u0434\u0449\u043f \u043d\u0430 \u044c\u0432 \u043d\u0443 \u0437\u0432\u0430 \u043f\u043e \u043a\u0444\u044c \u0437\u0430 \u044b\u0439\u0434 \u0432\u043e\u0442 \u044b\u044b\u0440 \u044d\u0442\u043e \u043c\u0437\u0442 \u0434\u0430 \u043f\u0449 \u043a\u0430\u043a \u0448\u0442 \u0434\u043e\u043c \u0433\u0437 \u043c\u0438\u0440 \u0435\u0449 \u043a\u043e\u0434 \u0449\u0442 \u0442\u0443\u0442 \u0449\u0430\u0430 \u0442\u0430\u043c \u0430\u0448\u0434\u0443 \u0434\u043b\u044f \u0435\u0443\u044b\u0435 \u043f\u0440\u0438 \u0437\u0433\u044b\u0440 \u0445\u043e\u0434 \u0438\u0444\u044b\u0440 \"\n  left: \"\u044f git \u0438 api \u043c\u044b css \u0442\u044b cpu \u043e\u043d gpu \u0432 html \u043a json \u0441 llm \u043d\u0435 log \u043d\u0430 md \u043d\u0443 pdf \u043f\u043e ram \u0437\u0430 sql \u0432\u043e\u0442 ssh \u044d\u0442\u043e vpn \u0434\u0430\u043f \u0449 \u043a\u0430\u043a in \u0434\u043e\u043c up \u043c\u0438\u0440 to \u043a\u043e\u0434\u0449 \u0442 \u0442\u0443\u0442 off \u0442\u0430\u043c \u0432\u0430\u0448\u0434\u0443 \u0434\u043b\u044f \u0435\u0436\u0443\u044b\u0435 \u043f\u0440\u0438 push \u0445\u043e\u0434 bash \"\n right: \"\u044f git \u0438 api \u043c\u044b css \u0442\u044b cpu \u043e\u043d gpu \u0432 html \u043a json \u0441 llm \u043d\u0435 log \u043d\u0430 md \u043d\u0443 pdf \u043f\u043e ram \u0437\u0430 sql \u0432\u043e\u0442 ssh \u044d\u0442\u043e vpn \u0434\u0430 go \u043a\u0430\u043a in \u0434\u043e\u043c up \u043c\u0438\u0440 to \u043a\u043e\u0434 on \u0442\u0443\u0442 off \u0442\u0430\u043c file \u0434\u043b\u044f test \u043f\u0440\u0438 push \u0445\u043e\u0434 bash \"\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:typing_assist_short_alternating",
+      "test": "short_english_words_typed_in_ru_layout_are_recovered_between_russian_words"
+    },
+    {
+      "failure_block": "thread 'short_russian_words_typed_in_us_layout_are_recovered_between_english_words_when_not_ambiguous' (5) panicked at tests/typing_assist_short_alternating.rs:178:5:\nassertion `left == right` failed: input=\"z git b api vs css ns cpu jy gpu d html r json c llm yt log yf md ye pdf gj ram pf sql djn ssh 'nj vpn lf go rfr in ljv up vbh to rjl on nen off nfv file lkz test ghb push [jl bash \"\n  left: \"z git b api \u043c\u044b css \u0442\u044b cpu \u043e\u043d gpu d html r json c llm \u043d\u0435 log \u043d\u0430 md \u043d\u0443 pdf \u043f\u043e ram \u0437\u0430 sql \u0432\u043e\u0442 ssh '\u0442\u043e vpn \u0434\u0430 go \u043a\u0430\u043a in \u0434\u043e\u043c up \u043c\u0438\u0440 to \u043a\u043e\u0434 on \u0442\u0443\u0442 off \u0442\u0430\u043c file \u0434\u043b\u044f test \u043f\u0440\u0438 push \u0445\u043e\u0434 bash \"\n right: \"z git b api \u043c\u044b css \u0442\u044b cpu \u043e\u043d gpu d html r json c llm \u043d\u0435 log \u043d\u0430 md \u043d\u0443 pdf \u043f\u043e ram \u0437\u0430 sql \u0432\u043e\u0442 ssh \u044d\u0442\u043e vpn \u0434\u0430 go \u043a\u0430\u043a in \u0434\u043e\u043c up \u043c\u0438\u0440 to \u043a\u043e\u0434 on \u0442\u0443\u0442 off \u0442\u0430\u043c file \u0434\u043b\u044f test \u043f\u0440\u0438 push \u0445\u043e\u0434 bash \"",
+      "target": "test:typing_assist_short_alternating",
+      "test": "short_russian_words_typed_in_us_layout_are_recovered_between_english_words_when_not_ambiguous"
+    }
+  ],
+  "failures_by_lane": {
+    "package": 20
+  },
+  "installed_runtime_authority_changed": false,
+  "invocation": {
+    "action": "package",
+    "lanes": [
+      "package"
+    ],
+    "results_dir": "/home/ubu/projects/lay-l1-exact-peak-search/target/test-lanes-results",
+    "target_dir": "/home/ubu/projects/lay-l1-exact-peak-search/target/test-lanes"
+  },
+  "known_failure_contract": {
+    "full_failure_count": 81,
+    "lane_failure_count": 20,
+    "path": "scripts/test-lanes/known_failures.json",
+    "sha256": "bb0e1061a5b9d0333a2f1580a520b9b1a7b1339c112a759baac2a7f56cf5bbc1"
+  },
+  "lanes": [
+    "package"
+  ],
+  "manifest_sha256": "cd130f2db52a23133666eeb301ce8199bbe8a7095b7faa9c2d4f71df13095e94",
+  "recorded_at_utc": "2026-08-29T22:59:02.457838+00:00",
+  "runtime_authority_changed": false,
+  "runtime_authority_scope": "installed_live_runtime",
+  "sandbox": {
+    "filesystem": "host and repository read-only; result sandbox writable",
+    "home_xdg": "fresh",
+    "network": "unshared",
+    "run": "empty tmpfs",
+    "test_threads": 1
+  },
+  "schema": "lay.test-failure-observation.v1",
+  "selected_by_lane": {
+    "package": 35
+  },
+  "source_closure": {
+    "files": 1222,
+    "git_head": "6f14574452d9ab504f23be21b11288179bc6f0f2",
+    "sha256": "6bf210117510ab2b2a5833cb4f60d22659105a4dfff9255835f6269dbeec72c9"
+  },
+  "source_closure_changed_during_execution": false,
+  "untested_scope": [
+    "live_desktop_smoke",
+    "correctness",
+    "performance",
+    "ignored"
+  ],
+  "verdict": "PASS_WITH_EXACT_KNOWN_FAILURES"
+}

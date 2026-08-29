@@ -25,12 +25,13 @@ The manifest has four disjoint lanes:
   repository fixture pinned by size and SHA-256 in the manifest;
 - `performance`: eleven explicit latency/resource budget tests, serialized and
   opt-in;
-- `ignored`: eleven externally admitted proof/helper tests, never promoted by
+- `ignored`: thirteen externally admitted proof/helper tests, never promoted by
   the ordinary runner.
 
-The TD-006 closure manifest contains 2,372 rows: 2,315 correctness, 35 package,
-11 performance, and 11 ignored. Twenty-seven rows are process-isolated; the
-other 2,345 use target isolation. The process set is fail-closed: sixteen
+The current TD-007 milestone-1 manifest contains 2,367 rows: 2,308 correctness,
+35 package, 11 performance, and 13 ignored. Twenty-seven rows are
+process-isolated; the other 2,340 use target isolation. The process set is
+fail-closed: sixteen
 explicit environment/singleton mutators plus all eleven performance routes must
 remain present in the registry.
 

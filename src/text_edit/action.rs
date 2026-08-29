@@ -425,7 +425,7 @@ mod tests {
     }
 
     #[test]
-    fn low_confidence_boundary_split_blocks_apply() {
+    fn unproven_boundary_split_blocks_before_confidence_downgrade() {
         let plan = plan_text_replacement("принамать ", "перинам ать ").expect("plan");
         let action = EditAction::planned_replacement(PlannedReplacementInput {
             source: "typing-assist",
@@ -446,7 +446,7 @@ mod tests {
 
         assert_eq!(action.kind, EditActionKind::BlockUnsafe);
         assert!(!action.allow_apply());
-        assert_eq!(action.safety_reason(), "low_confidence_boundary_edit");
+        assert_eq!(action.safety_reason(), "weak_boundary_edit_shape");
     }
 
     #[test]

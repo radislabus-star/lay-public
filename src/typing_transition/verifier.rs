@@ -177,6 +177,7 @@ fn layout_projection_is_verified(
         && !original_words.is_empty()
         && original_words.len() == replacement_words.len()
         && changed_tokens > 0
+        && original_words.last() != replacement_words.last()
         && original_words
             .iter()
             .zip(replacement_words)
@@ -441,6 +442,24 @@ mod tests {
         assert!(proof.verified);
         assert!(!proof.left_context_changed);
         assert_eq!(proof.changed_tokens, 1);
+    }
+
+    #[test]
+    fn layout_projection_cannot_change_only_a_neighbor_token() {
+        let proof = proof(
+            "читай cola d wechat ",
+            "читай cola в wechat ",
+            TypingErrorClass::WrongLayout,
+            CandidateOrigin::Layout,
+        );
+
+        assert_eq!(proof.operator, TransitionOperator::Unknown);
+        assert!(!proof.verified);
+        assert!(proof.left_context_changed);
+        assert_eq!(
+            proof.reject_apply_reason(),
+            Some("edit_transition_not_verified")
+        );
     }
 
     #[test]

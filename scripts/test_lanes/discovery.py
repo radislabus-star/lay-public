@@ -77,15 +77,15 @@ PROCESS_ISOLATED_TESTS = {
     ),
     (
         "lib:lay",
-        "correction_core::candidate_sources_tests::canonical_l2_field_route_uses_owned_surface_source_ids",
+        "correction_core::candidate_sources_tests::td007_current_canonical_l2_field_fails_closed_without_l11_service",
     ),
     (
         "lib:lay",
-        "correction_core::candidate_sources_tests::canonical_l2_field_self_prepares_l11_candidate_without_peak_context",
+        "correction_core::candidate_sources_tests::td007_pinned_canonical_route_internalizes_authoritative_l11_seed",
     ),
     (
         "lib:lay",
-        "correction_core::candidate_sources_tests::l2_field_births_generic_short_layout_candidate_for_l3_context",
+        "correction_core::candidate_sources_tests::td007_current_canonical_l2_field_does_not_birth_layout_without_l11_authority",
     ),
     (
         "lib:lay",

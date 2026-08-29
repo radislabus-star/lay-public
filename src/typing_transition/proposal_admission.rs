@@ -505,7 +505,9 @@ fn candidate_admission_with_facts(
                     reason: "protected_or_technical",
                 }
             }
-            TypingErrorClass::RepeatedLetter | TypingErrorClass::ExtraLetter
+            TypingErrorClass::MissingLetter
+            | TypingErrorClass::ExtraLetter
+            | TypingErrorClass::RepeatedLetter
                 if replacement_last_word_is_unknown_cyrillic(original, replacement) =>
             {
                 CandidateGateDecision {

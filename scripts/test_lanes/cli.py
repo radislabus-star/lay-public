@@ -188,6 +188,25 @@ def run_non_timing(
                 f"cannot attribute target elapsed time to one lane: {target} {target_lanes}"
             )
         elapsed_by_lane[next(iter(target_lanes))] += elapsed
+    known_payload = load_known_failures(KNOWN_FAILURES, MANIFEST)
+    known = known_failures_for_lanes(known_payload, lanes)
+    compare_known_failures(failures, known)
+    summary = {
+        "schema": "lay.test-lane-run.v1",
+        "lanes": sorted(lanes),
+        "selected": sum(
+            1 for row in manifest["tests"] if row["lane"] in lanes
+        ),
+        "selected_by_lane": selected_by_lane,
+        "known_semantic_failures": len(failures),
+        "known_semantic_failures_by_lane": failures_by_lane,
+        "infrastructure_failures": 0,
+        "elapsed_by_lane_seconds": elapsed_by_lane,
+        "elapsed_by_target_seconds": elapsed_by_target,
+        "elapsed_seconds": time.monotonic() - run_started,
+        "verdict": "PASS_WITH_EXACT_KNOWN_FAILURES" if failures else "PASS",
+    }
+    write_json(args.results_dir / "SUMMARY.json", summary)
     if args.observations_out is not None:
         untested = ["live_desktop_smoke"]
         untested.extend(
@@ -209,7 +228,14 @@ def run_non_timing(
                     "results_dir": str(args.results_dir),
                 },
                 "source_closure": source_before,
+                "source_closure_changed_during_execution": False,
                 "manifest_sha256": file_sha256(MANIFEST),
+                "known_failure_contract": {
+                    "path": str(KNOWN_FAILURES.relative_to(ROOT)),
+                    "sha256": file_sha256(KNOWN_FAILURES),
+                    "full_failure_count": known_payload["failure_count"],
+                    "lane_failure_count": len(known["failures"]),
+                },
                 "sandbox": {
                     "filesystem": "host and repository read-only; result sandbox writable",
                     "network": "unshared",
@@ -224,29 +250,12 @@ def run_non_timing(
                 "elapsed_by_target_seconds": elapsed_by_target,
                 "failures": failures,
                 "untested_scope": untested,
+                "verdict": summary["verdict"],
+                "runtime_authority_scope": "installed_live_runtime",
                 "runtime_authority_changed": False,
+                "installed_runtime_authority_changed": False,
             },
         )
-    known = known_failures_for_lanes(
-        load_known_failures(KNOWN_FAILURES, MANIFEST), lanes
-    )
-    compare_known_failures(failures, known)
-    summary = {
-        "schema": "lay.test-lane-run.v1",
-        "lanes": sorted(lanes),
-        "selected": sum(
-            1 for row in manifest["tests"] if row["lane"] in lanes
-        ),
-        "selected_by_lane": selected_by_lane,
-        "known_semantic_failures": len(failures),
-        "known_semantic_failures_by_lane": failures_by_lane,
-        "infrastructure_failures": 0,
-        "elapsed_by_lane_seconds": elapsed_by_lane,
-        "elapsed_by_target_seconds": elapsed_by_target,
-        "elapsed_seconds": time.monotonic() - run_started,
-        "verdict": "PASS_WITH_EXACT_KNOWN_FAILURES" if failures else "PASS",
-    }
-    write_json(args.results_dir / "SUMMARY.json", summary)
     print(
         f"test_lanes={','.join(sorted(lanes))} selected={summary['selected']} "
         f"known_semantic_failures={len(failures)} infrastructure_failures=0 "

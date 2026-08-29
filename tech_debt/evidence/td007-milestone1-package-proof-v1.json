@@ -1,0 +1,74 @@
+{
+  "schema": "lay.td007.package-proof.v1",
+  "verdict": "TD007_PINNED_PACKAGE_PROOF_PASS",
+  "recorded_at_utc": "2026-08-29T21:03:51Z",
+  "source_head": "6f14574452d9ab504f23be21b11288179bc6f0f2",
+  "source_diff_sha256": "7d4691982fff8c03afad574717260f385410e3c4c014ab3aebd6cc95d203d1ba",
+  "controller_sha256": "3cccd0cc57712b2db645761059a94be7303e0ed00218708eeae416c90cd68a1f",
+  "package_manifest_sha256": "d0db064b10362cab42cf64174049f3665d6b7bcc717613b1dd3c9d6c3d0a7f50",
+  "package_set": {
+    "schema": "lay.td007.package-set.v1",
+    "root_default": "/home/ubu/.local/share/lay/nanda_wave",
+    "files": [
+      {
+        "role": "l11_receipt",
+        "relative_path": "l1.1/active.installed.json",
+        "bytes": 955,
+        "sha256": "52076ffdf4f17e8b02d2334ec8d04fc10991a16c7dffccbf03849b8985c8eb2e"
+      },
+      {
+        "role": "l11_package",
+        "relative_path": "l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+        "bytes": 77962328,
+        "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7"
+      },
+      {
+        "role": "l11_proof",
+        "relative_path": "l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.4983930495e793c1d28c7558fe006ddf8097ee575bebb1afd3f1dba4ddb1d01d.proof.json",
+        "bytes": 539536,
+        "sha256": "4983930495e793c1d28c7558fe006ddf8097ee575bebb1afd3f1dba4ddb1d01d"
+      },
+      {
+        "role": "canonical_l2",
+        "relative_path": "l2/LAY-L2-RU-FULL-v13.bin",
+        "bytes": 140556462,
+        "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"
+      },
+      {
+        "role": "productive_v90",
+        "relative_path": "l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+        "bytes": 17309944,
+        "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44"
+      },
+      {
+        "role": "productive_sidecar",
+        "relative_path": "l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r",
+        "bytes": 2123112,
+        "sha256": "de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e"
+      },
+      {
+        "role": "v13_dafsa",
+        "relative_path": "l2/LAY-L2-RU-FULL-v13.dafsa",
+        "bytes": 2460144,
+        "sha256": "a277b3c8b7d441de55fdc3c77abf483c2061653e9068b3bcce57629c742de9d7"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "correction_core::candidate_sources_tests::td007_pinned_canonical_route_internalizes_authoritative_l11_seed",
+      "verdict": "PASS",
+      "log_sha256": "41acb42e2c0ad71dca9d609a6693a741193eb1fc75f9883f5baf356e7f6ae97d"
+    },
+    {
+      "id": "correction_core::tests::td007_pinned_canonical_route_never_substitutes_unbound_targets",
+      "verdict": "PASS",
+      "log_sha256": "cc937c77b3c971dc76dca0eba00f07d7f21024ec69fdfd1f35b19fd3665d16e3"
+    }
+  ],
+  "historical_cases_covered": 8,
+  "cargo_test_processes": 2,
+  "installed_runtime_mutated": false,
+  "runtime_authority_changed": false,
+  "live_desktop_contacted": false
+}

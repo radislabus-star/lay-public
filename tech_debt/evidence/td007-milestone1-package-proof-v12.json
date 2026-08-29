@@ -1,0 +1,171 @@
+{
+  "schema": "lay.td007.package-proof.v2",
+  "verdict": "TD007_PINNED_PACKAGE_PROOF_PASS",
+  "recorded_at_utc": "2026-08-29T22:50:38Z",
+  "source_head": "6f14574452d9ab504f23be21b11288179bc6f0f2",
+  "source_closure": {
+    "files": 1222,
+    "git_head": "6f14574452d9ab504f23be21b11288179bc6f0f2",
+    "sha256": "6bf210117510ab2b2a5833cb4f60d22659105a4dfff9255835f6269dbeec72c9"
+  },
+  "source_closure_changed_during_execution": false,
+  "controller_sha256": "c53c08ce91a327ac180b81178ce47f977db3d37d59cc62c7607a1e5805998ee3",
+  "package_manifest_sha256": "7da884d4ddb3a6ea03837e2e52751a996713e3129b2558e81592a93d928a378b",
+  "package_set": {
+    "schema": "lay.td007.package-set.v1",
+    "root_default": "/home/ubu/.local/share/lay/nanda_wave",
+    "historical_cases": [
+      {
+        "input": "звгрузи ",
+        "expected": "загрузи ",
+        "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+      },
+      {
+        "input": "врмея ",
+        "expected": "время ",
+        "expected_status": "COVERED_BY_L11_PRODUCER"
+      },
+      {
+        "input": "поянл ",
+        "expected": "понял ",
+        "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+      },
+      {
+        "input": "понял сомтрю ",
+        "expected": "понял смотрю ",
+        "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+      },
+      {
+        "input": "преоверка ",
+        "expected": "проверка ",
+        "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+      },
+      {
+        "input": "проевряю ",
+        "expected": "проверяю ",
+        "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+      },
+      {
+        "input": "ландо ",
+        "expected": "ладно ",
+        "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+      },
+      {
+        "input": "мжоет ",
+        "expected": "может ",
+        "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+      }
+    ],
+    "files": [
+      {
+        "role": "l11_receipt",
+        "relative_path": "l1.1/active.installed.json",
+        "bytes": 955,
+        "sha256": "52076ffdf4f17e8b02d2334ec8d04fc10991a16c7dffccbf03849b8985c8eb2e"
+      },
+      {
+        "role": "l11_package",
+        "relative_path": "l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+        "bytes": 77962328,
+        "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7"
+      },
+      {
+        "role": "l11_proof",
+        "relative_path": "l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.4983930495e793c1d28c7558fe006ddf8097ee575bebb1afd3f1dba4ddb1d01d.proof.json",
+        "bytes": 539536,
+        "sha256": "4983930495e793c1d28c7558fe006ddf8097ee575bebb1afd3f1dba4ddb1d01d"
+      },
+      {
+        "role": "canonical_l2",
+        "relative_path": "l2/LAY-L2-RU-FULL-v13.bin",
+        "bytes": 140556462,
+        "sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b"
+      },
+      {
+        "role": "productive_v90",
+        "relative_path": "l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m",
+        "bytes": 17309944,
+        "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44"
+      },
+      {
+        "role": "productive_sidecar",
+        "relative_path": "l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r",
+        "bytes": 2123112,
+        "sha256": "de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e"
+      },
+      {
+        "role": "v13_dafsa",
+        "relative_path": "l2/LAY-L2-RU-FULL-v13.dafsa",
+        "bytes": 2460144,
+        "sha256": "a277b3c8b7d441de55fdc3c77abf483c2061653e9068b3bcce57629c742de9d7"
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "correction_core::candidate_sources_tests::td007_pinned_canonical_route_internalizes_authoritative_l11_seed",
+      "verdict": "PASS",
+      "log_sha256": "3f65181e9ccc71c74a1571541ebcfb40595dcac246c4ac61a4536729ed9ba3a0"
+    },
+    {
+      "id": "correction_core::tests::td007_pinned_canonical_route_reconciles_historical_cases",
+      "verdict": "PASS",
+      "log_sha256": "3f65181e9ccc71c74a1571541ebcfb40595dcac246c4ac61a4536729ed9ba3a0"
+    }
+  ],
+  "test_filter": "td007_pinned_canonical_route",
+  "historical_case_contract": [
+    {
+      "input": "звгрузи ",
+      "expected": "загрузи ",
+      "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+    },
+    {
+      "input": "врмея ",
+      "expected": "время ",
+      "expected_status": "COVERED_BY_L11_PRODUCER"
+    },
+    {
+      "input": "поянл ",
+      "expected": "понял ",
+      "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+    },
+    {
+      "input": "понял сомтрю ",
+      "expected": "понял смотрю ",
+      "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+    },
+    {
+      "input": "преоверка ",
+      "expected": "проверка ",
+      "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+    },
+    {
+      "input": "проевряю ",
+      "expected": "проверяю ",
+      "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+    },
+    {
+      "input": "ландо ",
+      "expected": "ладно ",
+      "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+    },
+    {
+      "input": "мжоет ",
+      "expected": "может ",
+      "expected_status": "ABSTAIN_NO_UNVERIFIED_APPLY"
+    }
+  ],
+  "historical_cases_covered": 8,
+  "l11_lattice_ready_probe": {
+    "input": "врмея",
+    "expected_seed": "время",
+    "verdict": "PASS"
+  },
+  "cargo_test_processes": 1,
+  "installed_runtime_mutated": false,
+  "installed_runtime_authority_changed": false,
+  "runtime_authority_scope": "installed_live_runtime",
+  "runtime_authority_changed": false,
+  "live_desktop_contacted": false
+}

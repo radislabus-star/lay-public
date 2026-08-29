@@ -1,0 +1,299 @@
+{
+  "baseline_git_head": "6f14574452d9ab504f23be21b11288179bc6f0f2",
+  "baseline_manifest_sha256": "50bd81bec003d866397a07de01b965c420a60361927dc5aefeb842f40253ddda",
+  "baseline_observation_path": "tech_debt/evidence/td006-hermetic-observation-v1.json",
+  "baseline_observation_sha256": "2c03eafe5a3bd7b71b2cc67c6cc8d774f148ef20b92684d1efeb354712d2d2b0",
+  "disposition_contract": [
+    "CURRENT_CONTRACT_RUNTIME_REPAIR",
+    "SUPERSEDED_EXPECTATION_REPLACED",
+    "HIDDEN_INPUT_DEPENDENCY_REMOVED",
+    "HISTORICAL_CASE_ARCHIVED_WITH_REPLACEMENT_PROOF"
+  ],
+  "milestone": 1,
+  "package_proof_receipt": "tech_debt/evidence/td007-milestone1-package-proof-v12.json",
+  "package_proof_receipt_sha256": "9a1d2abec0cce557ae43dd93c87e166f5c341e1098a1326b83427a96c0d1a8a5",
+  "row_count": 35,
+  "rows": [
+    {
+      "authority_source": "src/nanda_wave/l2_field/bridge.rs:792",
+      "baseline_test": "correction_core::candidate_sources_tests::canonical_l2_field_route_uses_owned_surface_source_ids",
+      "cluster": "candidate_birth",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "L1.1 service unavailable before canonical candidate birth",
+      "replacement_proof": "correction_core::candidate_sources_tests::td007_current_canonical_l2_field_fails_closed_without_l11_service"
+    },
+    {
+      "authority_source": "src/nanda_wave/l2_field/bridge.rs:792",
+      "baseline_test": "correction_core::candidate_sources_tests::canonical_l2_field_self_prepares_l11_candidate_without_peak_context",
+      "cluster": "candidate_birth",
+      "disposition": "HIDDEN_INPUT_DEPENDENCY_REMOVED",
+      "first_loss_layer": "L1.1 or pinned Productive package admission",
+      "replacement_proof": "correction_core::candidate_sources_tests::td007_pinned_canonical_route_internalizes_authoritative_l11_seed; tech_debt/evidence/td007-milestone1-package-proof-v12.json (TD007_PINNED_PACKAGE_PROOF_PASS)"
+    },
+    {
+      "authority_source": "src/nanda_wave/l2_field/bridge.rs:792",
+      "baseline_test": "correction_core::candidate_sources_tests::l2_field_births_generic_short_layout_candidate_for_l3_context",
+      "cluster": "candidate_birth",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "L1.1 service unavailable before canonical candidate birth",
+      "replacement_proof": "correction_core::candidate_sources_tests::td007_current_canonical_l2_field_does_not_birth_layout_without_l11_authority"
+    },
+    {
+      "authority_source": "docs/text-correction-gate-architecture.md:58",
+      "baseline_test": "correction_core::tests::ambiguous_long_l2_surface_drift_from_live_log_is_suggestion_only",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "compare-only FullWave producer",
+      "replacement_proof": "correction_core::tests::ambiguous_long_l2_surface_drift_from_live_log_is_suggestion_only"
+    },
+    {
+      "authority_source": "docs/text-correction-gate-architecture.md:58",
+      "baseline_test": "correction_core::tests::ambiguous_short_boundary_shift_is_suggestion_only",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "compare-only FullWave producer",
+      "replacement_proof": "correction_core::tests::verified_short_boundary_shift_applies_as_one_transition"
+    },
+    {
+      "authority_source": "src/candidate_contract.rs:1",
+      "baseline_test": "correction_core::tests::boundary_gate_rejects_known_word_split_from_non_boundary_candidate",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "assertion contract drift",
+      "replacement_proof": "correction_core::tests::boundary_gate_rejects_known_word_split_from_non_boundary_candidate"
+    },
+    {
+      "authority_source": "docs/text-correction-gate-architecture.md:58",
+      "baseline_test": "correction_core::tests::clean_phrase_boundary_cannot_apply_a_shifted_alternative",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "compare-only FullWave producer",
+      "replacement_proof": "correction_core::tests::clean_phrase_boundary_cannot_apply_a_shifted_alternative"
+    },
+    {
+      "authority_source": "src/candidate_contract.rs:1",
+      "baseline_test": "correction_core::tests::close_verified_typo_transitions_abstain_without_context_signal",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "assertion contract drift",
+      "replacement_proof": "correction_core::tests::td007_current_unique_nearest_typo_transition_can_apply"
+    },
+    {
+      "authority_source": "docs/text-correction-gate-architecture.md:58",
+      "baseline_test": "correction_core::tests::composite_typo_does_not_jump_over_known_single_step_repair",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "compare-only FullWave producer",
+      "replacement_proof": "correction_core::tests::ambiguous_field_retains_single_step_repair_without_guessing"
+    },
+    {
+      "authority_source": "docs/text-correction-gate-architecture.md:58",
+      "baseline_test": "correction_core::tests::composite_typo_rejects_short_initial_consonant_growth",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "compare-only FullWave producer",
+      "replacement_proof": "correction_core::tests::composite_typo_rejects_short_initial_consonant_growth"
+    },
+    {
+      "authority_source": "docs/text-correction-gate-architecture.md:58",
+      "baseline_test": "correction_core::tests::composite_typo_repairs_generated_russian_forms",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "compare-only FullWave producer",
+      "replacement_proof": "correction_core::tests::composite_typo_repairs_generated_russian_forms"
+    },
+    {
+      "authority_source": "src/typing_transition/proposal_admission.rs",
+      "baseline_test": "correction_core::tests::composite_typo_repairs_known_russian_word",
+      "cluster": "correction_ranking_admission",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR",
+      "first_loss_layer": "proposal admission accepted an unknown intermediate target",
+      "replacement_proof": "correction_core::tests::td007_p0_partial_typo_does_not_autoapply_unknown_intermediate"
+    },
+    {
+      "authority_source": "src/candidate_contract.rs:1",
+      "baseline_test": "correction_core::tests::deterministic_mode_corrects_wrong_layout_text",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "assertion contract drift",
+      "replacement_proof": "correction_core::tests::td007_current_layout_autocorrect_requires_surface_authority"
+    },
+    {
+      "authority_source": "docs/text-correction-gate-architecture.md:58",
+      "baseline_test": "correction_core::tests::english_word_centers_beat_more_expensive_cross_script_projections",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "compare-only FullWave producer",
+      "replacement_proof": "correction_core::tests::english_compare_reference_cannot_authorize_cross_script_projection_without_a_center"
+    },
+    {
+      "authority_source": "docs/text-correction-gate-architecture.md:58",
+      "baseline_test": "correction_core::tests::full_wave_selects_noisy_multiword_layout_as_one_verified_transition",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "compare-only FullWave producer",
+      "replacement_proof": "correction_core::tests::full_wave_selects_noisy_multiword_layout_as_one_verified_transition"
+    },
+    {
+      "authority_source": "src/candidate_contract.rs:1",
+      "baseline_test": "correction_core::tests::l2_surface_missing_letter_repair_from_dirty_surface_can_apply",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "assertion contract drift",
+      "replacement_proof": "correction_core::tests::td007_current_l2_missing_letter_without_target_authority_is_suggestion_only"
+    },
+    {
+      "authority_source": "src/correction_core/candidate_sources.rs",
+      "baseline_test": "correction_core::tests::layout_then_known_word_does_not_flip_known_english_word",
+      "cluster": "correction_ranking_admission",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR",
+      "first_loss_layer": "layout fallback bypassed known-English ownership",
+      "replacement_proof": "correction_core::tests::td007_p0_known_english_word_does_not_flip_through_layout_fallback"
+    },
+    {
+      "authority_source": "src/candidate_contract.rs:1",
+      "baseline_test": "correction_core::tests::layout_then_typo_repairs_dirty_wrong_layout_word",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "assertion contract drift",
+      "replacement_proof": "correction_core::tests::td007_current_layout_then_typo_keeps_typed_origin"
+    },
+    {
+      "authority_source": "src/nanda_wave/l2_field/bridge.rs:792",
+      "baseline_test": "correction_core::tests::live_canonical_l2_field_applies_adjacent_transposition_center",
+      "cluster": "correction_ranking_admission",
+      "disposition": "HIDDEN_INPUT_DEPENDENCY_REMOVED",
+      "first_loss_layer": "L1.1 or pinned Productive package admission",
+      "replacement_proof": "correction_core::tests::td007_pinned_canonical_route_reconciles_historical_cases; tech_debt/evidence/td007-milestone1-package-proof-v12.json (TD007_PINNED_PACKAGE_PROOF_PASS)"
+    },
+    {
+      "authority_source": "src/nanda_wave/l2_field/bridge.rs:792",
+      "baseline_test": "correction_core::tests::live_canonical_l2_field_births_nanda_candidates_without_full_wave_authority",
+      "cluster": "correction_ranking_admission",
+      "disposition": "HIDDEN_INPUT_DEPENDENCY_REMOVED",
+      "first_loss_layer": "L1.1 or pinned Productive package admission",
+      "replacement_proof": "correction_core::tests::td007_pinned_canonical_route_reconciles_historical_cases; tech_debt/evidence/td007-milestone1-package-proof-v12.json (TD007_PINNED_PACKAGE_PROOF_PASS)"
+    },
+    {
+      "authority_source": "docs/text-correction-gate-architecture.md:58",
+      "baseline_test": "correction_core::tests::live_log_multi_word_drifts_do_not_autoreplace_neighbors",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "compare-only FullWave producer",
+      "replacement_proof": "correction_core::tests::live_log_multi_word_drifts_do_not_autoreplace_neighbors"
+    },
+    {
+      "authority_source": "docs/text-correction-gate-architecture.md:58",
+      "baseline_test": "correction_core::tests::nanda_semantic_drift_does_not_beat_local_single_step_repair",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "compare-only FullWave producer",
+      "replacement_proof": "correction_core::tests::deterministic_single_step_repair_keeps_its_owner"
+    },
+    {
+      "authority_source": "src/candidate_contract.rs:1",
+      "baseline_test": "correction_core::tests::nanda_surface_candidates_from_logs_are_suggest_only_when_surface_is_weak",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "assertion contract drift",
+      "replacement_proof": "correction_core::tests::nanda_surface_candidates_from_logs_are_suggest_only_when_surface_is_weak"
+    },
+    {
+      "authority_source": "docs/text-correction-gate-architecture.md:58",
+      "baseline_test": "correction_core::tests::nanda_word_form_center_can_apply_nonlocal_composite_typo",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "compare-only FullWave producer",
+      "replacement_proof": "correction_core::tests::compare_reference_retains_nonlocal_word_form_without_unverified_apply"
+    },
+    {
+      "authority_source": "src/nanda_wave/l2_field/bridge.rs:792",
+      "baseline_test": "correction_core::tests::operator_consensus_repairs_extra_letter_despite_generic_negative_memory",
+      "cluster": "correction_ranking_admission",
+      "disposition": "HIDDEN_INPUT_DEPENDENCY_REMOVED",
+      "first_loss_layer": "L1.1 or pinned Productive package admission",
+      "replacement_proof": "correction_core::tests::td007_pinned_canonical_route_reconciles_historical_cases; tech_debt/evidence/td007-milestone1-package-proof-v12.json (TD007_PINNED_PACKAGE_PROOF_PASS)"
+    },
+    {
+      "authority_source": "src/nanda_wave/l2_field/bridge.rs:792",
+      "baseline_test": "correction_core::tests::operator_consensus_selects_transposition_over_generic_l2_drift",
+      "cluster": "correction_ranking_admission",
+      "disposition": "HIDDEN_INPUT_DEPENDENCY_REMOVED",
+      "first_loss_layer": "L1.1 or pinned Productive package admission",
+      "replacement_proof": "correction_core::tests::td007_pinned_canonical_route_reconciles_historical_cases; tech_debt/evidence/td007-milestone1-package-proof-v12.json (TD007_PINNED_PACKAGE_PROOF_PASS)"
+    },
+    {
+      "authority_source": "src/nanda_wave/l2_field/bridge.rs:792",
+      "baseline_test": "correction_core::tests::phase_verified_l2_transposition_repairs_unlisted_word_form",
+      "cluster": "correction_ranking_admission",
+      "disposition": "HIDDEN_INPUT_DEPENDENCY_REMOVED",
+      "first_loss_layer": "L1.1 or pinned Productive package admission",
+      "replacement_proof": "correction_core::tests::td007_pinned_canonical_route_reconciles_historical_cases; tech_debt/evidence/td007-milestone1-package-proof-v12.json (TD007_PINNED_PACKAGE_PROOF_PASS)"
+    },
+    {
+      "authority_source": "src/nanda_wave/l2_field/bridge.rs:792",
+      "baseline_test": "correction_core::tests::phase_verified_transposition_competes_with_known_noisy_surface",
+      "cluster": "correction_ranking_admission",
+      "disposition": "HIDDEN_INPUT_DEPENDENCY_REMOVED",
+      "first_loss_layer": "L1.1 or pinned Productive package admission",
+      "replacement_proof": "correction_core::tests::td007_pinned_canonical_route_reconciles_historical_cases; tech_debt/evidence/td007-milestone1-package-proof-v12.json (TD007_PINNED_PACKAGE_PROOF_PASS)"
+    },
+    {
+      "authority_source": "src/candidate_contract.rs:1",
+      "baseline_test": "correction_core::tests::resolution_routes_missing_letter_through_unified_gate",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "assertion contract drift",
+      "replacement_proof": "correction_core::tests::td007_current_missing_letter_routes_through_decision_and_verifier"
+    },
+    {
+      "authority_source": "src/typing_transition/verifier.rs",
+      "baseline_test": "correction_core::tests::russian_phrase_context_keeps_left_context_repair_suggest_only",
+      "cluster": "correction_ranking_admission",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR",
+      "first_loss_layer": "layout verifier authorized a neighbor-only mutation",
+      "replacement_proof": "correction_core::tests::td007_p0_left_context_layout_repair_remains_suggest_only"
+    },
+    {
+      "authority_source": "docs/text-correction-gate-architecture.md:58",
+      "baseline_test": "correction_core::tests::sparse_internal_omission_beats_composite_suffix_drift",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "compare-only FullWave producer",
+      "replacement_proof": "correction_core::tests::compare_reference_retains_sparse_omission_without_unverified_apply"
+    },
+    {
+      "authority_source": "docs/text-correction-gate-architecture.md:58",
+      "baseline_test": "correction_core::tests::strong_local_typo_repairs_still_apply_after_shape_guard",
+      "cluster": "correction_ranking_admission",
+      "disposition": "SUPERSEDED_EXPECTATION_REPLACED",
+      "first_loss_layer": "compare-only FullWave producer",
+      "replacement_proof": "correction_core::tests::local_typo_cases_follow_current_source_authority"
+    },
+    {
+      "authority_source": "src/nanda_wave/l2_field/bridge.rs:792",
+      "baseline_test": "correction_core::tests::unique_transposition_certificate_repairs_short_word",
+      "cluster": "correction_ranking_admission",
+      "disposition": "HIDDEN_INPUT_DEPENDENCY_REMOVED",
+      "first_loss_layer": "L1.1 or pinned Productive package admission",
+      "replacement_proof": "correction_core::tests::td007_pinned_canonical_route_reconciles_historical_cases; tech_debt/evidence/td007-milestone1-package-proof-v12.json (TD007_PINNED_PACKAGE_PROOF_PASS)"
+    },
+    {
+      "authority_source": "src/typing_transition/verifier.rs",
+      "baseline_test": "nanda_wave::l3::tests::phrase_layout_candidate_cannot_rewrite_middle_token",
+      "cluster": "nanda_l3_context",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR",
+      "first_loss_layer": "layout verifier authorized a neighbor-only mutation",
+      "replacement_proof": "typing_transition::verifier::tests::layout_projection_cannot_change_only_a_neighbor_token"
+    },
+    {
+      "authority_source": "src/text_edit/safety.rs",
+      "baseline_test": "text_edit::tests::autocorrect_safety_requires_strong_boundary_shape",
+      "cluster": "edit_safety_contract",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR",
+      "first_loss_layer": "SafetyGate generic verified-boundary bypass",
+      "replacement_proof": "text_edit::tests::autocorrect_safety_requires_strong_boundary_shape; text_edit::tests::ime_accept_candidate_allows_surface_preserving_boundary_split"
+    }
+  ],
+  "schema": "lay.td007.semantic-failure-ledger.v1"
+}

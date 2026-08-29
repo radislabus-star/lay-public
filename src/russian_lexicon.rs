@@ -199,6 +199,24 @@ pub fn is_known_russian_word_or_form(word: &str) -> bool {
         || crate::lexicon::is_ru_technical_loanword(word)
 }
 
+/// Exact lexical-surface membership without morphology-generated forms.
+///
+/// Repaired boundary splits require both resulting words to be observed
+/// lexical centers; a merely plausible inflection is not enough to authorize
+/// inserting a space into user text.
+pub(crate) fn is_known_russian_lexical_surface(word: &str) -> bool {
+    if !crate::hot_field::process_allows_full_reference_authority() {
+        return crate::hot_field::HotFieldSnapshot::current()
+            .word_readout(word)
+            .is_known()
+            || crate::lexicon::is_ru_technical_loanword(word);
+    }
+
+    full_russian_dictionary().contains(word)
+        || full_russian_short_dictionary().contains(word)
+        || crate::lexicon::is_ru_technical_loanword(word)
+}
+
 pub(crate) fn is_known_russian_imperative_form(word: &str) -> bool {
     forms::is_known_russian_imperative_form(word)
 }
