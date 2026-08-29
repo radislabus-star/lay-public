@@ -20,8 +20,11 @@ commit, and push must all be present.
    feature set, output or receipt hash, untested scope, and revert boundary.
 4. After implementation, run a fresh-context independent code review. The
    reviewer reports findings first and a score from 1 to 10.
-5. Allow at most two correction passes. A score below 8/10 or an unresolved
-   correctness finding keeps the task open. Two unsuccessful passes move it to
+5. Allow at most two correction passes. An unresolved correctness finding keeps
+   the task open. A score below 8/10 triggers correction, but the numeric score
+   does not override verified fixes after the two-pass limit; record the actual
+   pre-correction scores and objective final gates without inventing a third
+   review. Two passes that leave findings unresolved move the task to
    `REPLAN_REQUIRED`; they do not authorize a weakened acceptance gate.
 6. Mark the task `DONE`, record tests and review evidence, then commit and push
    before starting the next task.
@@ -71,7 +74,7 @@ The 88 full-suite failures must not become 88 example-specific patches:
 | 001 | [Repair architecture and audit gates](001-repair-architecture-and-audit-gates.md) | P0 | M | DONE | Makes structural checks truthful again |
 | 002 | [Isolate live runtime smoke cases](002-isolate-live-runtime-smoke.md) | P0 | M | DONE | Makes user-visible proof safe and case-independent |
 | 003 | [Converge the manual-toggle visible postcondition](009-fix-manual-toggle-visible-postcondition-race.md) | P0 | M | DONE | Removes the isolated Double Shift commit race without timing sleeps |
-| 004 | [Fix pending preedit refresh convergence](003-fix-preedit-refresh-convergence.md) | P0 | S | READY | Removes visible stale/duplicated IME suffix |
+| 004 | [Fix pending preedit refresh convergence](003-fix-preedit-refresh-convergence.md) | P0 | S | DONE | Removes visible stale/duplicated IME suffix |
 | 005 | [Enforce the real MSRV and pinned lint toolchain](004-enforce-real-msrv.md) | P0 | S | READY | Replaces false and floating compiler contracts |
 | 006 | [Make the lint gate truthful](005-make-lint-gate-truthful.md) | P0 | M | READY | Restores an enforceable green CI contract |
 | 007 | [Build hermetic test lanes](006-build-hermetic-test-lanes.md) | P0 | L | READY | Separates correctness, environment, and timing failures |

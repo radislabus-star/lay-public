@@ -1,6 +1,6 @@
 # TD-003: Fix Pending Preedit Refresh Convergence
 
-Status: `READY`
+Status: `DONE`
 Priority: `P0`
 Class: user-visible correctness and latency
 Size: `S`
@@ -92,6 +92,38 @@ Score 1-10.
 
 ## Completion Record
 
-- Commit: pending
-- Review score: pending
-- Verification: pending
+- Implementation commit:
+  `e7e1167d6ac3fc9d9e1f42a52de4197c3f334b1d`
+- Implementation: pending suffixes now have an explicit display-only state;
+  only a matching, current, successfully published worker result installs
+  completion authority. Tab, arrows, Alt, late-worker, cursor-ack, focus and
+  publication-failure routes retire that state fail-closed. Active composition
+  keeps its typed buffer visible while only its pending suffix is retired. The
+  atomic frame route still materializes its candidate synchronously in the
+  submitted proposal.
+- Smoke contract: a positive `про -> проверка` route and a pending
+  `пров -> пров` route now assert exact managed commits, preedit sequence,
+  shortened-display event, clear count, candidate-IME key count and completion
+  acceptance count. A text-only GTK bypass cannot pass this contract.
+- Review pass 1: `3/10`; it found completion fallback and atomic-route gaps.
+- Review pass 2: `4/10`, fresh-context agent
+  `01a04db8-f4b7-7b53-8abe-30dc10fa3c8e`; it found hidden fallback after late
+  clear, post-lock lateness, deferred cursor resurrection, Alt press/release
+  races, pre-publication authority and missing route proofs. All findings were
+  corrected. Per the two-pass limit, no third score was fabricated; closure is
+  based on the corrected source and objective gates below.
+- Verification: `88/88` focused preedit tests PASS; atomic submitted-frame
+  proof PASS; `43/43` runtime-smoke isolation tests PASS; `fmt --check`,
+  `py_compile`, `git diff --check`, and `scripts/check-lay-changed.sh` PASS.
+  The final full engine run passed `275/276`; its sole failure was the existing
+  TD-006 wall-clock assertion, and an isolated rerun failed a different timing
+  sub-gate while all IME semantics remained green.
+- Live evidence:
+  `docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V16_2026-08-29/`.
+  Receipt SHA-256:
+  `8cde9837198ec4868a4fdd91e5e22723b0b3c58af78683647675e5e9d010b58a`;
+  manifest SHA-256:
+  `5917af92a2e71ef87dd0cea45a1e60eae46ee5bbc87ffd7fb00e2eef79e7e097`.
+  V1-V15 remain rejected or superseded diagnostic evidence.
+- Runtime authority: unchanged; no production install or release was made.
+- Push: `origin/codex/l1-exact-peak-search`.

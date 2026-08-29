@@ -1,0 +1,17 @@
+{"kind":"ibus_focus","stage":"focus_in","receipt":"new_path"}
+{"kind":"ibus_focus","stage":"enable"}
+{"kind":"ibus_capabilities","caps":9,"surrounding_text_supported":false}
+{"kind":"ibus_cursor","x":736,"y":1013,"w":0,"h":23}
+{"kind":"ibus_content_type","purpose":0,"hints":65,"text_assistance":true}
+{"kind":"ibus_focus","stage":"focus_out"}
+{"kind":"ibus_focus","stage":"disable"}
+{"kind":"ibus_focus","stage":"focus_in","receipt":"new_path"}
+{"kind":"ibus_focus","stage":"enable"}
+{"kind":"ibus_capabilities","caps":9,"surrounding_text_supported":false}
+{"kind":"ibus_cursor","x":736,"y":1013,"w":0,"h":23}
+{"kind":"ibus_content_type","purpose":0,"hints":65,"text_assistance":true}
+{"kind":"ibus_focus","stage":"focus_out"}
+{"kind":"ibus_focus","stage":"focus_in","receipt":"new_path"}
+{"kind":"ibus_capabilities","caps":41,"surrounding_text_supported":true}
+{"kind":"ibus_cursor","x":0,"y":0,"w":0,"h":0}
+{"kind":"ibus_content_type","purpose":0,"hints":0,"text_assistance":true}
