@@ -6,7 +6,7 @@ description = "Typing correction and RU/EN layout switching for Linux desktops"
 license-file = "LICENSE"
 repository = "https://github.com/radislabus-star/lay-public"
 readme = "README.md"
-rust-version = "1.75"
+rust-version = "1.88"
 keywords = ["keyboard", "gnome", "wayland", "layout", "russian"]
 categories = ["command-line-utilities"]
 

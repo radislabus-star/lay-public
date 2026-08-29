@@ -55,7 +55,7 @@ export CARGO_INCREMENTAL=0
 
 toolchain="${LAY_RUST_TOOLCHAIN:-}"
 if [[ -z "$toolchain" ]] && ! rustc --version >/dev/null 2>&1; then
-  toolchain="1.97.0"
+  toolchain="1.97.1"
 fi
 
 cargo_command=(cargo)

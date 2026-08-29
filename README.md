@@ -13,7 +13,7 @@
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
 ```
 
-[![Rust](https://img.shields.io/badge/Rust-1.75+-orange?logo=rust)](https://www.rust-lang.org/)
+[![Rust](https://img.shields.io/badge/Rust-1.88+-orange?logo=rust)](https://www.rust-lang.org/)
 [![GNOME](https://img.shields.io/badge/GNOME-45--47%2C%2050-4A86CF?logo=gnome)](https://gnome.org/)
 [![Wayland](https://img.shields.io/badge/Wayland-native-blue)](https://wayland.freedesktop.org/)
 [![Status](https://img.shields.io/badge/status-alpha-yellow)](#статус-и-ограничения)
@@ -379,6 +379,12 @@ double Shift rescue невозможен. По умолчанию он не от
 только текущий продукт.
 
 ## Разработка
+
+Минимальная поддерживаемая версия Rust — `1.88.0` для default features и
+`lexical-compiler`; optional `direct-llm` в этот контракт не входит. Обычная
+разработка, `rustfmt` и `clippy` закреплены на `1.97.1`; точные compiler
+identities и процедура обновления описаны в
+[Rust Toolchain Policy](docs/rust-toolchain-policy.md).
 
 Обычная локальная проверка:
 

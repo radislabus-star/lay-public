@@ -1,6 +1,6 @@
 # TD-004: Enforce The Real MSRV And Lint Toolchain
 
-Status: `READY`
+Status: `DONE`
 Priority: `P0`
 Class: build and release contract
 Size: `S`
@@ -77,6 +77,29 @@ and documentation consistency. Score 1-10.
 
 ## Completion Record
 
-- Commit: pending
-- Review score: pending
-- Verification: pending
+- Base commit: `b8699f3b`
+- Implementation commit: pending closure commit
+- Review pass 1: `7/10`; two medium findings and one low finding
+  identified the unqualified CI-tool mismatch, missing `lexical-compiler` MSRV
+  coverage, and unnecessary host-triple restriction.
+- Review pass 2: `10/10`; no findings after correction.
+- Exact floor: Rust `1.88.0`, rustc commit
+  `6b00bc3880198600130e1cf62b8f8a93494488cc`, Cargo
+  `1.88.0 (873a06493 2025-05-10)`.
+- Exact lint toolchain: Rust `1.97.1`, rustc commit
+  `8bab26f4f68e0e26f0bb7960be334d5b520ea452`, Cargo
+  `1.97.1 (c980f4866 2026-06-30)`.
+- Lower-bound evidence: Rust `1.87.0` exits `101`; locked
+  `image 0.25.10` and Lay both require Rust `1.88`.
+- Verification:
+  - exact 1.88 default-feature `--locked --all-targets`: PASS;
+  - exact 1.88 `lexical-compiler` `--locked --all-targets`: PASS;
+  - exact 1.87 lower-bound rejection: PASS;
+  - MSRV/lint identity verifiers and hostile active-toolchain test: PASS;
+  - TOML, YAML, and shell syntax: PASS;
+  - `scripts/cargo-guard.sh fmt --check`: PASS;
+  - `scripts/check-lay-changed.sh`: PASS;
+  - `git diff --check`: PASS.
+- Untested and unsupported by this contract: optional `direct-llm` and its
+  native dependency.
+- Runtime authority changed: no.

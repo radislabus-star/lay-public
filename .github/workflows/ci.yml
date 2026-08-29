@@ -25,8 +25,33 @@ jobs:
           bash scripts/test-public-issues.sh
           bash scripts/test-install-release-binaries.sh
 
+  msrv:
+    name: Rust 1.88.0 MSRV
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust 1.88.0
+        uses: dtolnay/rust-toolchain@1.88.0
+
+      - name: Verify MSRV identity
+        run: scripts/verify-rust-toolchain.sh msrv
+
+      - name: Check locked active targets
+        env:
+          CARGO_TARGET_DIR: target/msrv-1.88.0
+          LAY_RUST_TOOLCHAIN: 1.88.0
+        run: scripts/cargo-guard.sh check --locked --all-targets
+
+      - name: Check lexical compiler feature
+        env:
+          CARGO_TARGET_DIR: target/msrv-1.88.0
+          LAY_RUST_TOOLCHAIN: 1.88.0
+        run: scripts/cargo-guard.sh check --locked --all-targets --features lexical-compiler
+
   check:
-    name: Rust, tray, and extension checks
+    name: Rust 1.97.1, tray, and extension checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,10 +62,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y hunspell-ru hunspell-en-us wamerican
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Setup Rust 1.97.1
+        uses: dtolnay/rust-toolchain@1.97.1
         with:
           components: rustfmt, clippy
+
+      - name: Verify lint toolchain identity
+        run: scripts/verify-rust-toolchain.sh lint
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

@@ -2480,8 +2480,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1786642117.0696957,
-    "ast_hash": "41b7b73cca2209caff46aaf54f5243f3",
+    "mtime": 1788015372.2939875,
+    "ast_hash": "4a2dcf9e9d92c246b635cea1f1a8f685",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -2500,8 +2500,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1787904976.983969,
-    "ast_hash": "bd57a8ec85a462a84cabd92fed2e46c0",
+    "mtime": 1788015372.2949874,
+    "ast_hash": "38b73a0fdbbbc32603fc3138f79471b7",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
@@ -3415,8 +3415,8 @@
     "semantic_hash": ""
   },
   "scripts/cargo-guard.sh": {
-    "mtime": 1786642120.3930442,
-    "ast_hash": "84e0e70ddb5e2e0324f875943460b95c",
+    "mtime": 1788014769.6641724,
+    "ast_hash": "f554e4151933f7ff65afccea245257e9",
     "semantic_hash": ""
   },
   "scripts/install-release-binaries.sh": {
@@ -28765,13 +28765,13 @@
     "semantic_hash": ""
   },
   "tech_debt/003-fix-preedit-refresh-convergence.md": {
-    "mtime": 1787959142.224934,
-    "ast_hash": "91ec8f5c468d06939345575afaf3b500",
+    "mtime": 1788014315.6489775,
+    "ast_hash": "54983ed974b1356318570ff98c04a837",
     "semantic_hash": ""
   },
   "tech_debt/004-enforce-real-msrv.md": {
-    "mtime": 1787959142.2250733,
-    "ast_hash": "3d47a30c7d678425c3587e83691e6b96",
+    "mtime": 1788015575.3912683,
+    "ast_hash": "331141ebcdd3e922791acfe1f7ed84f6",
     "semantic_hash": ""
   },
   "tech_debt/005-make-lint-gate-truthful.md": {
@@ -28820,8 +28820,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1788007895.2438858,
-    "ast_hash": "4332239e6903d59271d93c744c812f80",
+    "mtime": 1788015575.3922684,
+    "ast_hash": "b87b2d3aed4b8af2d9f2aa83de612e1c",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -29182,6 +29182,16 @@
   "docs/structural_gates/evidence/TD003_PREEDIT_REFRESH_CONVERGENCE_V9_2026-08-29/ime_prefix_prov_pending_enter-c3db4ca7e599582b2127/counts.json": {
     "mtime": 1788011115.8494911,
     "ast_hash": "2177d5d2d31e64c82104a05ca3f4593a",
+    "semantic_hash": ""
+  },
+  "scripts/verify-rust-toolchain.sh": {
+    "mtime": 1788015372.2939875,
+    "ast_hash": "8446cba6fb3d3ffdfdffde332113dee9",
+    "semantic_hash": ""
+  },
+  "docs/rust-toolchain-policy.md": {
+    "mtime": 1788015372.2939875,
+    "ast_hash": "d3c2ba4b65f3d0695a4c7ae1fd4deb0b",
     "semantic_hash": ""
   }
 }
