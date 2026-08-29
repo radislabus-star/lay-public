@@ -1,6 +1,6 @@
 # TD-006: Build Hermetic Test Lanes
 
-Status: `READY`
+Status: `DONE`
 Priority: `P0`
 Class: test architecture
 Size: `L`
@@ -93,6 +93,37 @@ package paths. Verify timing tests cannot run in parallel. Score 1-10.
 
 ## Completion Record
 
-- Commit: pending
-- Review score: pending
-- Verification: pending
+- Base commit: `5aba0e9afb45171517f0aa313cc2a5b5f45288bc`.
+- Implementation commit: `9a15193a60d40d5840e39f6ca280f034a34b736d`.
+- Manifest: 2,372 exact rows; 2,315 correctness, 35 package, 11
+  performance, and 11 ignored. Isolation is 27 process / 2,345 target.
+- Hermetic boundary: network, IPC, PID, HOME/XDG, and `/run` are isolated;
+  repository/host bytes are read-only; live D-Bus/Wayland sockets are absent;
+  external Cargo configuration is rejected before compilation.
+- Sealed semantic denominator: 116 exact failures, split 96 correctness / 20
+  package and owned only by TD-007. Observation SHA-256:
+  `2c03eafe5a3bd7b71b2cc67c6cc8d774f148ef20b92684d1efeb354712d2d2b0`.
+  Independent repeat SHA-256:
+  `d054266e4b0708d622e81db1b27547d87207a9140c6e3b5733e8b1f1ade2673b`.
+  Both runs have identical target/test identities, normalized signatures, and
+  source closure `021466aced1f5dee84465531ed42ddc31a0b5b88ef8ddf5671f09146273f67b2`.
+- Run summaries: `b85456d65d35bed8e708d4b0c005beebbb9684bf67e8fe8a9757cf6eebf99c47`
+  and `eac01f2022400f460e167c49bbdf3488917e04aff21ba25cd5842da1ab3332bd`;
+  both verdicts are `PASS_WITH_EXACT_KNOWN_FAILURES` with zero infrastructure
+  failures.
+- Performance is explicit and truthfully red: 8/11 PASS, 3/11
+  `BLOCKED_PERFORMANCE`; receipt SHA-256:
+  `4269ff79210076ab0ba8bb4033ac38f67198a68733f9dbcdf3ff918c853cdaef`.
+  No latency or RSS budget was relaxed.
+- Review pass 1: `4/10`, agent
+  `01a04e79-df40-77b0-bda1-327b4eccbcce`. Review pass 2: `6/10`, agent
+  `01a04e97-8f9e-76f0-9135-1d6a0969bbf2`. The second pass found live `/run`
+  socket exposure, external Cargo config authority, three omitted env
+  mutators, incomplete evidence provenance, and missing per-lane totals. All
+  findings were corrected and covered by objective gates; per the two-pass
+  limit, no third score was invented.
+- Verification: 16/16 runner self-tests PASS; manifest drift check PASS;
+  package lane exact PASS; two full hermetic runs exact PASS; Python/shell/JSON
+  syntax, `cargo fmt --check`, `git diff --check`, and graphify update PASS.
+- Untested: managed live desktop mutation and installation. Runtime authority
+  changed: no.

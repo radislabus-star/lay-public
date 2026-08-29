@@ -43,6 +43,8 @@ commit, and push must all be present.
 | `src/bin` | 50,562 lines / 216 files | Many binaries plus substantial adapter state |
 | Static Rust tests | 2,336 `#[test]` declarations | High raw count, but authority and determinism are uneven |
 | Full test run | 1,539 pass / 88 fail / 11 ignored | `cargo test --all-targets` is not a usable release signal |
+| Hermetic manifest | 2,315 correctness / 35 package / 11 performance / 11 ignored | Exact 2,372-row lane union |
+| Hermetic semantic denominator | 116 exact failures: 96 correctness / 20 package | Temporary TD-007 ledger; two stable runs |
 | `cargo check --all-targets` | 385 warnings / 0 errors | 348 unique diagnostics; warning ownership is not controlled |
 | Warning classes | 377 dead code / 6 unused imports / 2 dropping-copy | Research/proof surface dominates, with some live-route residue |
 | CI clippy | exit 101, 5,097 stderr lines | Declared `-D warnings` gate is currently red |
@@ -56,16 +58,20 @@ commit, and push must all be present.
 
 ## Failure Clusters
 
-The 88 full-suite failures must not become 88 example-specific patches:
+The sealed 116-failure denominator must not become 116 example-specific patches:
 
 | Cluster | Failures | First shared issue |
 |---|---:|---|
-| `correction_core::tests` | 31 | Superseded semantic expectations |
-| `ime_correction` | 27 | Superseded semantic/authority expectations |
-| Nanda L2/L3/bridge/candidate routes | 17 | Mixed current and historical contracts |
-| Text edit / typing / phrase routes | 9 | Old reason or selection assertions |
-| Architecture contract | 2 | Stale receipt and owner text |
-| Timing assertions | 2 | Performance checks run inside contended unit-test execution |
+| `correction_ranking_admission` | 30 | Old selection and admission expectations |
+| `ime_authority` | 28 | Mixed current and historical IME authority |
+| `typing_assist_surface` | 23 | Superseded surface expectations |
+| `nanda_l2_field` | 9 | L2 field ownership/retention drift |
+| `remaining_semantic` | 7 | Residual contracts requiring first-loss classification |
+| `architecture_integration` | 6 | Stale cross-owner integration assertions |
+| `edit_safety_contract` | 5 | Old edit admission or safety expectations |
+| `candidate_birth` | 3 | Candidate creation/retention disagreement |
+| `nanda_l3_context` | 3 | Context authority disagreement |
+| `phrase_boundary` | 2 | Boundary route disagreement |
 
 ## Execution Queue
 
@@ -77,7 +83,7 @@ The 88 full-suite failures must not become 88 example-specific patches:
 | 004 | [Fix pending preedit refresh convergence](003-fix-preedit-refresh-convergence.md) | P0 | S | DONE | Removes visible stale/duplicated IME suffix |
 | 005 | [Enforce the real MSRV and pinned lint toolchain](004-enforce-real-msrv.md) | P0 | S | DONE | Replaces false and floating compiler contracts |
 | 006 | [Make the lint gate truthful](005-make-lint-gate-truthful.md) | P0 | M | DONE | Restores an enforceable green CI contract |
-| 007 | [Build hermetic test lanes](006-build-hermetic-test-lanes.md) | P0 | L | READY | Separates correctness, environment, and timing failures |
+| 007 | [Build hermetic test lanes](006-build-hermetic-test-lanes.md) | P0 | L | DONE | Separates correctness, environment, and timing failures |
 | 008 | [Reconcile superseded semantic tests](007-reconcile-semantic-contract-tests.md) | P0 | XL | READY | Converts the full suite into current authority evidence |
 | 009 | [Classify and remove obvious dead code](008-reduce-dead-code-and-proof-surface.md) | P1 | L | READY | Removes proven residue without a workspace rewrite |
 

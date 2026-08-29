@@ -14,10 +14,13 @@ assertions mechanically would be equally unsafe.
 
 ## Evidence
 
-Residual failure clusters include 31 `correction_core`, 27 `ime_correction`, 17
-Nanda field/candidate tests, and 9 text-edit/typing/phrase tests. Typical drift
-includes old source IDs, an old selected candidate, an old veto reason, or an
-expectation that a candidate applies without current authority evidence.
+The TD-006 hermetic ledger seals 116 failures: 30
+`correction_ranking_admission`, 28 `ime_authority`, 23
+`typing_assist_surface`, 9 `nanda_l2_field`, 7 `remaining_semantic`, 6
+`architecture_integration`, 5 `edit_safety_contract`, 3 `candidate_birth`, 3
+`nanda_l3_context`, and 2 `phrase_boundary`. Typical drift includes old source
+IDs, an old selected candidate, an old veto reason, or an expectation that a
+candidate applies without current authority evidence.
 
 ## Target State
 
@@ -86,7 +89,7 @@ For each mechanism group:
   preservation, false certainty, package/RSS, and latency remain separate
   conjuncts and all required gates pass.
 - `false_accepts = 0` where the existing contract requires it.
-- The 88-row ledger closes with exactly one evidence-backed disposition per
+- The 116-row ledger closes with exactly one evidence-backed disposition per
   baseline failure and no dropped replacement proof.
 - No runtime source contains fixture text or test IDs.
 - Architecture documents record changed contract interpretations.
