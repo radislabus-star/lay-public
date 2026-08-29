@@ -39,9 +39,11 @@ no_grep() {
 }
 
 no_live_abusive_snippets() {
-  ! grep -RInE -- "БЛЯТЬ|ДОЛБА|СУКА|ДИКТУ|ебан|хуе|пизд|YTN YJ|LJK<FT" \
-      src tests docs README.md HOW_IT_WORKS.md \
-    | grep -Ev '(^src/.*/tests(\.rs|/)|_tests\.rs:|^tests/)'
+  python3 scripts/architecture_scope_gate.py abusive
+}
+
+no_runtime_tmp_lay_paths() {
+  python3 scripts/architecture_scope_gate.py tmp-path
 }
 
 one_owner() {
@@ -60,8 +62,7 @@ max_lines() {
 }
 
 no_runtime_sleep_outside_output() {
-  ! grep -RInF -- "thread::sleep" src \
-    | grep -Ev '(_tests\.rs:|^src/.*/tests(\.rs:|/)|^src/bin/lay_daemon/text_output(\.rs:|/)|^src/bin/lay_daemon/layout_controller(\.rs:|/)|^src/bin/lay_test_input(\.rs:|/))'
+  python3 scripts/architecture_scope_gate.py sleep
 }
 
 gdbus_fallback_only() {
@@ -70,12 +71,11 @@ gdbus_fallback_only() {
 }
 
 private_file_open_centralized() {
-  ! grep -RInF -- "OpenOptionsExt" src | grep -v '^src/private_file.rs:'
+  python3 scripts/architecture_scope_gate.py open-options
 }
 
 chmod_centralized() {
-  ! grep -RInE "PermissionsExt|set_permissions" src \
-    | grep -Ev '(^src/private_file\.rs:|_tests\.rs:|^src/.*/tests/)'
+  python3 scripts/architecture_scope_gate.py permissions
 }
 
 no_clipboard_in_correction_hot_path() {
@@ -96,7 +96,7 @@ no_runtime_user_phrase_rules() {
 check "architecture guard" bash scripts/check-architecture.sh
 check "format check" cargo fmt --all --check
 check "no profanity/live abusive snippets" no_live_abusive_snippets
-check "no runtime /tmp lay paths" no_grep "/tmp/lay" src extension install.sh update.sh README.md HOW_IT_WORKS.md
+check "no runtime /tmp lay paths" no_runtime_tmp_lay_paths
 check "daemon orchestrator <=500 lines" max_lines src/bin/lay_daemon.rs 500
 check "typing facade <=80 lines" max_lines src/typing_assist.rs 80
 check "phrase reader <=800 lines" max_lines src/phrase_reader.rs 800
@@ -106,10 +106,11 @@ check "gdbus fallback only" gdbus_fallback_only
 
 check "split ws single owner" one_owner "fn split_ws_segments" "src/word_reader.rs"
 check "candidate ranking single owner" one_owner "fn rank_typing_candidates" "src/typing_candidate/ranking.rs"
-check "layout letter symbol single owner" one_owner "fn is_ascii_layout_letter_symbol" "src/layout_autoswitch/ascii/symbols.rs"
+check "layout letter implementation single owner" one_owner "pub(crate) fn is_ascii_layout_letter_symbol" "src/layout_autoswitch/ascii/symbols.rs"
+check "layout letter facade single owner" one_owner "pub fn is_ascii_layout_letter_symbol" "src/typing_cpu/candidate.rs"
 check "shift layout symbol single owner" one_owner "fn is_ascii_shift_letter_symbol" "src/layout_autoswitch/ascii/symbols.rs"
-check "private file open centralized" private_file_open_centralized
-check "chmod centralized" chmod_centralized
+check "private/package open owners explicit" private_file_open_centralized
+check "file/socket permission owners explicit" chmod_centralized
 check "scoped tail independent from public facade" bash -c '! grep -nF "use crate::typing_assist" src/scoped_tail.rs'
 check "typing pipeline independent from scoped tail" bash -c '! grep -nF "use crate::scoped_tail" src/typing_pipeline.rs'
 check "llm facade no transport crates" bash -c '! grep -nE "ureq::|llama_cpp|serde::" src/llm.rs'

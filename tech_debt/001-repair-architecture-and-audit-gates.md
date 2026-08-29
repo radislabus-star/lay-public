@@ -1,6 +1,6 @@
 # TD-001: Repair Architecture And Audit Gates
 
-Status: `READY`
+Status: `DONE`
 Priority: `P0`
 Class: proof and release infrastructure
 Size: `M`
@@ -34,17 +34,46 @@ choose between ignoring a red gate and editing against an unclassified signal.
 
 ## Current Graph Disposition Worklist
 
-| Graph check | Current violation | Disposition before implementation |
+| Graph check | Original violation | Disposition and evidence |
 |---|---|---|
-| `decision-authority` | `context_phase/compiler.rs` imports `text_edit::cursor` | pending contract trace |
-| `decision-authority` | `context_phase/proof.rs` imports `text_edit::cursor` | pending contract trace |
-| `decision-authority` | `TransitionDecisionCore` appears in `decision/live_field.rs` | pending owner trace |
-| `typed-transition-capability` | two visible-tail receipt constructor sites | pending constructor-authority trace |
-| `hot-field-memory` | `LexicalPhaseMemory` owns hot `Vec<String>` | pending representation contract trace |
-| `fast-verifiable` | three `normalize_surface()` symbols | pending semantic-owner trace |
+| `decision-authority` | `context_phase/compiler.rs` imports `text_edit::cursor` | `FIX_GATE_MODEL`: source is `std::io::Cursor`; Graphify collapsed the external symbol onto an internal node. The gate now checks the actual import path. A seeded `crate::text_edit::cursor` import still fails. |
+| `decision-authority` | `context_phase/proof.rs` imports `text_edit::cursor` | `FIX_GATE_MODEL`: same external-symbol collision and the same source-path verification. |
+| `decision-authority` | `TransitionDecisionCore` appears in `decision/live_field.rs` | `FIX_GATE_MODEL`: the type has one declaration in `decision.rs`; `live_field.rs` is a registered child capability `impl`. Foreign declarations and unregistered capability owners remain failures. |
+| `typed-transition-capability` | two visible-tail receipt constructor sites | `FIX_GATE_MODEL`: one site is the production issuer and one is a `#[cfg(test)]` fixture. The shared Rust scope parser excludes that exact test item without hiding later production code. |
+| `hot-field-memory` | `LexicalPhaseMemory` owns hot `Vec<String>` | `FIX_GATE_MODEL`: the match was an ephemeral method return type, not persistent memory. The check now inspects the named hot-state struct bodies; a seeded `Vec<String>` field fails. |
+| `fast-verifiable` | three `normalize_surface()` symbols | `FIX_GATE_MODEL`: Graphify reports module-qualified helpers under one bare label. Generic duplicates remain visible diagnostics; only `PROTECTED_SINGLE_OWNER_SYMBOLS` are hard uniqueness contracts. |
 
-`pending` is not an allow. TD-001 must replace every row with one evidence-backed
-disposition before writing a new receipt.
+The independent classification found no runtime-ownership defect in these six
+rows. The first full repaired run exposed four additional shell-gate model
+defects, also fixed without changing runtime code:
+
+- inline test modules with nonstandard names are scoped by `#[cfg(test)]` item,
+  not filename or `mod tests` convention;
+- call ownership matches an exact Rust identifier, so
+  `replace_committed_tail` cannot match `can_replace_committed_tail`;
+- function ownership checks name the exact visibility/signature and do not
+  confuse `_inner`, `_bounded`, or `_if_warm` helpers with the protected API;
+- typing-rule IDs and Nanda error-class labels have separate explicit owners,
+  while an unowned runtime rule literal still fails.
+
+The first independent implementation review scored `4/10` and found five
+false-negative paths. One corrective pass closed all five:
+
+- stale source references in `graph.json` are checked independently of
+  `manifest.json`;
+- proof-only files are an exact registry, not a filename convention;
+- hot-state struct extraction ignores braces in comments and literals;
+- call ownership follows identifiers across comments and newlines;
+- Rust lifetimes and loop labels cannot be mistaken for character literals.
+
+The second and final review pass also scored `4/10` and found three remaining
+false-negative paths. They were closed within the two-pass cap:
+
+- `#[cfg(test)]` is excluded only when it guards a recognized Rust item;
+  comma-delimited fields, variants, and arms cannot consume later production;
+- `source_graph_binding.json` binds same-path source hashes to the exact graph
+  and manifest, so changing only a manifest hash cannot bless stale AST nodes;
+- delay ownership scans normalized code across comments and line breaks.
 
 ## Target State
 
@@ -131,6 +160,13 @@ whether the generated receipt was produced rather than edited. Score 1-10.
 
 ## Completion Record
 
-- Commit: pending
-- Review score: pending
-- Verification: pending
+- Commit: implementation commit containing this completion record
+- Review score: first pass `4/10`, second pass `4/10`; every reported
+  high/medium finding was corrected, and no third pass was opened
+- Verification: architecture gate `PASS`; audit `50/50 OK`; focused Python
+  regression tests `36/36 PASS`; `check-lay-changed` `PASS`; generated
+  receipt SHA-256
+  `e5d18465db82605a90a49f36b7507449bf3d38ba83ded702f2b67c1db6cdd398`;
+  graph binding SHA-256
+  `4004fdda3f2fc31ba03518d9a57fea03ab2c736c64ef3ec92551a5bc95d6f675`
+- Runtime authority changed: `false`

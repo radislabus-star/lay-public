@@ -33,6 +33,25 @@ def receipt(source_fingerprint: str) -> dict[str, object]:
 
 
 class ArchitectureReceiptFreshnessTest(unittest.TestCase):
+    def graph_freshness(
+        self,
+        sources: dict[str, str],
+        manifest: dict[str, object],
+        graph: dict[str, object] | None = None,
+    ) -> list[str]:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for relative, content in sources.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(content, encoding="utf-8")
+            previous_root = gate.ROOT
+            gate.ROOT = root
+            try:
+                return gate.graph_freshness_violations(manifest, graph)
+            finally:
+                gate.ROOT = previous_root
+
     def test_graph_source_freshness_uses_content_not_mtime(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory) / "source.rs"
@@ -59,6 +78,82 @@ class ArchitectureReceiptFreshnessTest(unittest.TestCase):
                     source, "src/source.rs", entry
                 ),
             )
+
+    def test_graph_freshness_accepts_unchanged_source_set(self) -> None:
+        source = "fn stable() {}\n"
+        manifest = {
+            "src/stable.rs": {
+                "ast_hash": gate.hashlib.md5(source.encode()).hexdigest()
+            }
+        }
+
+        self.assertEqual([], self.graph_freshness({"src/stable.rs": source}, manifest))
+
+    def test_graph_freshness_rejects_added_source(self) -> None:
+        self.assertEqual(
+            ["graph_missing_source:src/added.rs"],
+            self.graph_freshness({"src/added.rs": "fn added() {}\n"}, {}),
+        )
+
+    def test_graph_freshness_rejects_deleted_source(self) -> None:
+        self.assertEqual(
+            ["graph_removed_source:src/deleted.rs"],
+            self.graph_freshness(
+                {},
+                {"src/deleted.rs": {"ast_hash": "obsolete"}},
+            ),
+        )
+
+    def test_graph_freshness_rejects_renamed_source(self) -> None:
+        source = "fn renamed() {}\n"
+        self.assertEqual(
+            [
+                "graph_missing_source:src/new.rs",
+                "graph_removed_source:src/old.rs",
+            ],
+            self.graph_freshness(
+                {"src/new.rs": source},
+                {"src/old.rs": {"ast_hash": gate.hashlib.md5(source.encode()).hexdigest()}},
+            ),
+        )
+
+    def test_graph_freshness_rejects_stale_graph_after_manifest_repair(self) -> None:
+        source = "fn current() {}\n"
+        manifest = {
+            "src/current.rs": {
+                "ast_hash": gate.hashlib.md5(source.encode()).hexdigest()
+            }
+        }
+        graph = {
+            "nodes": [{"source_file": "src/deleted.rs"}],
+            "links": [],
+        }
+
+        self.assertEqual(
+            [
+                "graph_missing_source_reference:src/current.rs",
+                "graph_removed_source_reference:src/deleted.rs",
+            ],
+            self.graph_freshness({"src/current.rs": source}, manifest, graph),
+        )
+
+    def test_graph_binding_rejects_same_path_source_drift(self) -> None:
+        binding = {
+            "schema": gate.GRAPH_BINDING_SCHEMA,
+            "graph_fingerprint": "graph-a",
+            "manifest_fingerprint": "manifest-current",
+            "rust_sources": {"src/current.rs": "old-source"},
+        }
+
+        self.assertEqual(
+            ["graph_binding_rust_sources_mismatch"],
+            gate.graph_binding_violations(
+                binding,
+                "graph-a",
+                "manifest-current",
+                {"src/current.rs": "new-source"},
+            ),
+        )
 
     def test_head_only_metadata_change_does_not_stale_receipt(self) -> None:
         existing = receipt("source-a")
@@ -90,6 +185,142 @@ class ArchitectureReceiptFreshnessTest(unittest.TestCase):
             "receipt_payload_mismatch",
             gate.receipt_staleness_violations(existing, expected),
         )
+
+    def test_external_import_with_ambiguous_graph_target_is_not_forbidden(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "src/nanda_wave/example.rs"
+            path.parent.mkdir(parents=True)
+            path.write_text("use std::io::Cursor;\n", encoding="utf-8")
+            graph = gate.ArchitectureGraph(
+                {
+                    "nodes": [],
+                    "links": [
+                        {
+                            "relation": "imports_from",
+                            "source_file": "src/nanda_wave/example.rs",
+                            "source_location": "L1",
+                            "target": "src_text_edit_cursor",
+                        }
+                    ],
+                }
+            )
+            previous_root = gate.ROOT
+            gate.ROOT = root
+            try:
+                self.assertEqual(
+                    [],
+                    graph.source_imports("src/nanda_wave", ("src_text_edit",)),
+                )
+            finally:
+                gate.ROOT = previous_root
+
+    def test_internal_forbidden_import_still_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "src/nanda_wave/example.rs"
+            path.parent.mkdir(parents=True)
+            path.write_text("use crate::text_edit::cursor::Cursor;\n", encoding="utf-8")
+            graph = gate.ArchitectureGraph(
+                {
+                    "nodes": [],
+                    "links": [
+                        {
+                            "relation": "imports_from",
+                            "source_file": "src/nanda_wave/example.rs",
+                            "source_location": "L1",
+                            "target": "src_text_edit_cursor",
+                        }
+                    ],
+                }
+            )
+            previous_root = gate.ROOT
+            gate.ROOT = root
+            try:
+                self.assertEqual(
+                    [
+                        "forbidden_import:src/nanda_wave/example.rs:L1:src_text_edit_cursor"
+                    ],
+                    graph.source_imports("src/nanda_wave", ("src_text_edit",)),
+                )
+            finally:
+                gate.ROOT = previous_root
+
+    def test_bare_internal_import_is_not_hidden_as_external(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "src/nanda_wave/example.rs"
+            path.parent.mkdir(parents=True)
+            path.write_text("use text_edit::cursor::Cursor;\n", encoding="utf-8")
+            graph = gate.ArchitectureGraph(
+                {
+                    "nodes": [],
+                    "links": [
+                        {
+                            "relation": "imports_from",
+                            "source_file": "src/nanda_wave/example.rs",
+                            "source_location": "L1",
+                            "target": "src_text_edit_cursor",
+                        }
+                    ],
+                }
+            )
+            previous_root = gate.ROOT
+            gate.ROOT = root
+            try:
+                self.assertEqual(
+                    [
+                        "forbidden_import:src/nanda_wave/example.rs:L1:src_text_edit_cursor"
+                    ],
+                    graph.source_imports("src/nanda_wave", ("src_text_edit",)),
+                )
+            finally:
+                gate.ROOT = previous_root
+
+    def test_production_rows_exclude_terminal_cfg_test_module(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "source.rs"
+            path.write_text(
+                "production();\n#[cfg(test)]\nmod tests {\ntest_only();\n}\n",
+                encoding="utf-8",
+            )
+
+            self.assertEqual([(1, "production();")], gate.production_source_rows(path))
+
+    def test_struct_body_excludes_ephemeral_return_types(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "source.rs"
+            path.write_text(
+                "struct Memory {\n  bytes: Vec<u8>,\n}\n"
+                "fn output() -> Vec<String> { Vec::new() }\n",
+                encoding="utf-8",
+            )
+
+            self.assertNotIn("Vec<String>", gate.struct_body(path, "Memory"))
+
+    def test_struct_body_includes_persistent_string_storage(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "source.rs"
+            path.write_text(
+                "struct Memory {\n  words: Vec<String>,\n}\n",
+                encoding="utf-8",
+            )
+
+            self.assertIn("Vec<String>", gate.struct_body(path, "Memory"))
+
+    def test_struct_body_ignores_braces_in_comments(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "source.rs"
+            path.write_text(
+                "struct Memory {\n"
+                "  /// A misleading closing brace: }\n"
+                "  marker: u8,\n"
+                "  words: Vec<String>,\n"
+                "}\n",
+                encoding="utf-8",
+            )
+
+            self.assertIn("Vec<String>", gate.struct_body(path, "Memory"))
 
 
 if __name__ == "__main__":

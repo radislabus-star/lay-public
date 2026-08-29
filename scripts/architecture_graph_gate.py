@@ -13,19 +13,31 @@ from pathlib import Path
 from typing import Any
 
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from rust_source_scope import production_source_rows, rust_code_projection
+
+
 ROOT = Path(__file__).resolve().parents[1]
 GRAPH_PATH = ROOT / "graphify-out" / "graph.json"
 MANIFEST_PATH = ROOT / "graphify-out" / "manifest.json"
+GRAPH_BINDING_PATH = ROOT / "graphify-out" / "source_graph_binding.json"
 RECEIPT_PATH = (
     ROOT / "src" / "generated" / "architecture_graph_receipt.json"
 )
 SCHEMA = "lay.architecture-graph-receipt.v1"
+GRAPH_BINDING_SCHEMA = "lay.graph-source-binding.v1"
 
 RECEIPT_INPUTS = (
     ROOT / "Cargo.toml",
     ROOT / ".github" / "workflows" / "ci.yml",
     ROOT / "docs" / "phase-word-recovery-canonical-cutover.md",
     ROOT / "scripts" / "check-architecture.sh",
+    ROOT / "scripts" / "architecture_scope_gate.py",
+    ROOT / "scripts" / "rust_source_scope.py",
+    ROOT / "scripts" / "update-architecture-graph.sh",
     Path(__file__).resolve(),
     ROOT / "src" / "action_log.rs",
     ROOT / "src" / "architecture_contract.rs",
@@ -115,6 +127,43 @@ def file_fingerprint(path: Path) -> str:
     return digest.hexdigest()
 
 
+def rust_source_hashes(root: Path = ROOT) -> dict[str, str]:
+    return {
+        path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted((root / "src").rglob("*.rs"))
+    }
+
+
+def build_graph_binding() -> dict[str, Any]:
+    return {
+        "schema": GRAPH_BINDING_SCHEMA,
+        "graph_fingerprint": file_fingerprint(GRAPH_PATH),
+        "manifest_fingerprint": file_fingerprint(MANIFEST_PATH),
+        "rust_sources": rust_source_hashes(),
+    }
+
+
+def graph_binding_violations(
+    binding: dict[str, Any],
+    graph_fingerprint: str,
+    manifest_fingerprint: str,
+    source_hashes: dict[str, str],
+) -> list[str]:
+    violations: list[str] = []
+    if binding.get("schema") != GRAPH_BINDING_SCHEMA:
+        violations.append("graph_binding_schema")
+    if binding.get("graph_fingerprint") != graph_fingerprint:
+        violations.append("graph_binding_graph_fingerprint")
+    if binding.get("manifest_fingerprint") != manifest_fingerprint:
+        violations.append("graph_binding_manifest_fingerprint")
+    bound_sources = binding.get("rust_sources")
+    if not isinstance(bound_sources, dict):
+        violations.append("graph_binding_rust_sources_missing")
+    elif bound_sources != source_hashes:
+        violations.append("graph_binding_rust_sources_mismatch")
+    return violations
+
+
 def graph_source_freshness_violation(
     path: Path, relative: str, entry: Any
 ) -> str | None:
@@ -129,16 +178,88 @@ def graph_source_freshness_violation(
     return None
 
 
-def graph_freshness_violations(manifest: dict[str, Any]) -> list[str]:
+def graph_source_files(payload: dict[str, Any]) -> set[str]:
+    return {
+        source_file
+        for collection in (payload.get("nodes", []), payload.get("links", []))
+        for item in collection
+        if (source_file := str(item.get("source_file", ""))).startswith("src/")
+        and source_file.endswith(".rs")
+    }
+
+
+def graph_freshness_violations(
+    manifest: dict[str, Any], graph_payload: dict[str, Any] | None = None
+) -> list[str]:
     violations: list[str] = []
-    for path in sorted((ROOT / "src").rglob("*.rs")):
+    source_paths = sorted((ROOT / "src").rglob("*.rs"))
+    current_sources = {
+        path.relative_to(ROOT).as_posix()
+        for path in source_paths
+    }
+    for path in source_paths:
         relative = path.relative_to(ROOT).as_posix()
         violation = graph_source_freshness_violation(
             path, relative, manifest.get(relative)
         )
         if violation is not None:
             violations.append(violation)
-    return violations
+    manifest_sources = {
+        relative
+        for relative in manifest
+        if relative.startswith("src/") and relative.endswith(".rs")
+    }
+    violations.extend(
+        f"graph_removed_source:{relative}"
+        for relative in sorted(manifest_sources - current_sources)
+    )
+    if graph_payload is not None:
+        graph_sources = graph_source_files(graph_payload)
+        violations.extend(
+            f"graph_missing_source_reference:{relative}"
+            for relative in sorted(current_sources - graph_sources)
+        )
+        violations.extend(
+            f"graph_removed_source_reference:{relative}"
+            for relative in sorted(graph_sources - current_sources)
+        )
+    return sorted(violations)
+
+
+def source_location_line(source_file: str, source_location: str) -> str:
+    match = re.fullmatch(r"L(\d+)", source_location)
+    path = ROOT / source_file
+    if match is None or not path.is_file():
+        return ""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    index = int(match.group(1)) - 1
+    return lines[index].strip() if 0 <= index < len(lines) else ""
+
+
+def struct_body(path: Path, struct_name: str) -> str:
+    lines = path.read_text(encoding="utf-8").splitlines()
+    code_lines = rust_code_projection("\n".join(lines)).splitlines()
+    start = next(
+        (
+            index
+            for index, line in enumerate(code_lines)
+            if re.search(rf"\bstruct\s+{re.escape(struct_name)}\b", line)
+        ),
+        None,
+    )
+    if start is None:
+        return ""
+    body: list[str] = []
+    depth = 0
+    opened = False
+    for line, code_line in zip(lines[start:], code_lines[start:]):
+        depth += code_line.count("{") - code_line.count("}")
+        if "{" in code_line:
+            opened = True
+        body.append(line)
+        if opened and depth == 0:
+            break
+    return "\n".join(body)
 
 
 class ArchitectureGraph:
@@ -199,6 +320,11 @@ class ArchitectureGraph:
             if source_file.startswith(prefix) and any(
                 fragment in target for fragment in forbidden_target_fragments
             ):
+                source_line = source_location_line(
+                    source_file, str(edge.get("source_location", ""))
+                )
+                if re.search(r"\b(?:std|core|alloc)::", source_line):
+                    continue
                 violations.append(
                     f"forbidden_import:{source_file}:{edge.get('source_location')}:{target}"
                 )
@@ -267,6 +393,10 @@ def check(check_id: str, evidence: list[str], violations: list[str]) -> dict[str
 def build_receipt() -> dict[str, Any]:
     graph_payload = load_json(GRAPH_PATH)
     manifest = load_json(MANIFEST_PATH)
+    try:
+        graph_binding = load_json(GRAPH_BINDING_PATH)
+    except RuntimeError:
+        graph_binding = {}
     graph = ArchitectureGraph(graph_payload)
     checks: list[dict[str, Any]] = []
 
@@ -275,7 +405,10 @@ def build_receipt() -> dict[str, Any]:
     item_evidence, item_violations = graph.type_owner(
         "TransitionDecisionCore",
         "src/typing_transition/decision.rs",
-        ("src/typing_transition/live_candidate.rs",),
+        (
+            "src/typing_transition/live_candidate.rs",
+            "src/typing_transition/decision/live_field.rs",
+        ),
     )
     evidence.extend(item_evidence)
     violations.extend(item_violations)
@@ -369,7 +502,7 @@ def build_receipt() -> dict[str, Any]:
     constructor_sites: list[str] = []
     for path in (ROOT / "src").rglob("*.rs"):
         relative = path.relative_to(ROOT).as_posix()
-        for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        for line_number, line in production_source_rows(path):
             if "AuthorizedEdit {" in line and "struct AuthorizedEdit" not in line and "impl AuthorizedEdit" not in line:
                 constructor_sites.append(f"{relative}:L{line_number}")
     capability_violations: list[str] = []
@@ -387,7 +520,7 @@ def build_receipt() -> dict[str, Any]:
     receipt_attach_sites: list[str] = []
     for path in (ROOT / "src").rglob("*.rs"):
         relative = path.relative_to(ROOT).as_posix()
-        for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        for line_number, line in production_source_rows(path):
             if "DecisionTransitionReceipt::issue(" in line:
                 decision_receipt_sites.append(f"{relative}:L{line_number}")
             if "DecisionTransitionReceipt::for_visible_tail(" in line:
@@ -470,14 +603,18 @@ def build_receipt() -> dict[str, Any]:
         item_evidence, item_violations = graph.node(label, owner)
         hot_evidence.extend(item_evidence)
         hot_violations.extend(item_violations)
-    for relative in (
-        "src/nanda_wave/lexical_phase/runtime.rs",
-        "src/nanda_wave/l2/hot_memory.rs",
+    for relative, struct_names in (
+        ("src/nanda_wave/lexical_phase/runtime.rs", ("LexicalPhaseMemory",)),
+        ("src/nanda_wave/l2/hot_memory.rs", ("L2SurfaceMemoryStatus",)),
     ):
-        source = (ROOT / relative).read_text(encoding="utf-8")
-        for forbidden in (r"HashSet\s*<\s*String\s*>", r"Vec\s*<\s*String\s*>"):
-            if re.search(forbidden, source):
-                hot_violations.append(f"hot_full_word_authority:{relative}:{forbidden}")
+        path = ROOT / relative
+        for struct_name in struct_names:
+            source = struct_body(path, struct_name)
+            for forbidden in (r"HashSet\s*<\s*String\s*>", r"Vec\s*<\s*String\s*>"):
+                if re.search(forbidden, source):
+                    hot_violations.append(
+                        f"hot_full_word_authority:{relative}:{struct_name}:{forbidden}"
+                    )
     checks.append(check("hot-field-memory", hot_evidence, hot_violations))
 
     l1_evidence: list[str] = []
@@ -520,10 +657,14 @@ def build_receipt() -> dict[str, Any]:
         refs = [node_ref(node) for node in graph.production_nodes(label)]
         if len(refs) > 1:
             duplicate_symbols[label] = refs
-    graph_violations = graph_freshness_violations(manifest)
+    graph_violations = graph_freshness_violations(manifest, graph_payload)
     graph_violations.extend(
-        f"duplicate_symbol:{label}:{len(refs)}"
-        for label, refs in duplicate_symbols.items()
+        graph_binding_violations(
+            graph_binding,
+            file_fingerprint(GRAPH_PATH),
+            file_fingerprint(MANIFEST_PATH),
+            rust_source_hashes(),
+        )
     )
     for label, owner in PROTECTED_SINGLE_OWNER_SYMBOLS.items():
         nodes = graph.production_nodes(label)
@@ -546,6 +687,11 @@ def build_receipt() -> dict[str, Any]:
         "verdict": verdict,
         "source_fingerprint": source_fingerprint(),
         "graph_fingerprint": file_fingerprint(GRAPH_PATH),
+        "graph_binding_fingerprint": (
+            file_fingerprint(GRAPH_BINDING_PATH)
+            if GRAPH_BINDING_PATH.is_file()
+            else None
+        ),
         "graph_nodes": len(graph.nodes),
         "graph_links": len(graph.links),
         "checks": checks,
@@ -584,11 +730,24 @@ def receipt_staleness_violations(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--write-graph-binding", action="store_true")
     parser.add_argument("--write-receipt", action="store_true")
     parser.add_argument("--check-receipt", action="store_true")
     parser.add_argument("--source-fingerprint", action="store_true")
     parser.add_argument("--format", choices=("text", "json"), default="text")
     args = parser.parse_args()
+
+    if args.write_graph_binding:
+        try:
+            binding = build_graph_binding()
+        except OSError as error:
+            print(f"architecture graph binding error: {error}", file=sys.stderr)
+            return 2
+        GRAPH_BINDING_PATH.parent.mkdir(parents=True, exist_ok=True)
+        GRAPH_BINDING_PATH.write_text(canonical_json(binding), encoding="utf-8")
+        print(f"graph_binding={GRAPH_BINDING_PATH.relative_to(ROOT)}")
+        print(f"rust_sources={len(binding['rust_sources'])}")
+        return 0
 
     if args.source_fingerprint:
         print(source_fingerprint())

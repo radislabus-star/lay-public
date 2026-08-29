@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "scripts/check-architecture.sh": {
-    "mtime": 1786642120.3930442,
-    "ast_hash": "41507956076bddd21d78408434491805",
+    "mtime": 1787960888.4627397,
+    "ast_hash": "0459b04b62e75745fbe8f00e80b32740",
     "semantic_hash": ""
   },
   "scripts/check-gnome-extension-runtime.sh": {
@@ -80,8 +80,8 @@
     "semantic_hash": "a7beb6bba730ceb32b28a8d21b148ce4"
   },
   "scripts/check-lay-audit-50.sh": {
-    "mtime": 1786642120.3930442,
-    "ast_hash": "91a51fea377c1ab45fe7e817610879cc",
+    "mtime": 1787960066.4615183,
+    "ast_hash": "2b8bf868478f91cf41127bd9b513fc0b",
     "semantic_hash": ""
   },
   "scripts/check-lay-changed.sh": {
@@ -3185,8 +3185,8 @@
     "semantic_hash": ""
   },
   "docs/phase-word-recovery-canonical-cutover.md": {
-    "mtime": 1786642120.2010446,
-    "ast_hash": "4cf4f4992a00074e563dc68634f3aaf7",
+    "mtime": 1787962580.9234536,
+    "ast_hash": "dbf3b225f6779bc973947c2a6910852a",
     "semantic_hash": ""
   },
   "docs/refactor-baselines/phase-word-recovery-0.2.241.md": {
@@ -3255,8 +3255,8 @@
     "semantic_hash": ""
   },
   "scripts/architecture_graph_gate.py": {
-    "mtime": 1786642120.3910441,
-    "ast_hash": "b194237bfc48700ab7aebd0e0d4b00bb",
+    "mtime": 1787962485.975778,
+    "ast_hash": "2620b84204a178e62dad6b147cbc993d",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/typing_assist_worker_tests.rs": {
@@ -3265,8 +3265,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1787226449.0800304,
-    "ast_hash": "f7d94fdb5d2fb3183a38d3546ee093c1",
+    "mtime": 1787962558.9543514,
+    "ast_hash": "ccf0f049f48d1fae48949126c95382ee",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -3400,8 +3400,8 @@
     "semantic_hash": ""
   },
   "tests/test_architecture_graph_gate.py": {
-    "mtime": 1786642120.481044,
-    "ast_hash": "041024c535ae04f4c4c758d0faec992b",
+    "mtime": 1787962506.9071527,
+    "ast_hash": "5b6a1c1485ea0d5802957f29d915db4e",
     "semantic_hash": ""
   },
   "src/typing_transition/decision/interference.rs": {
@@ -28755,8 +28755,8 @@
     "semantic_hash": ""
   },
   "tech_debt/001-repair-architecture-and-audit-gates.md": {
-    "mtime": 1787959142.224477,
-    "ast_hash": "dbef850c535d0079cf63cab7dd9cff22",
+    "mtime": 1787962580.9234536,
+    "ast_hash": "a887d788f2a4fab21fc6f5c554d1c885",
     "semantic_hash": ""
   },
   "tech_debt/002-isolate-live-runtime-smoke.md": {
@@ -28795,8 +28795,8 @@
     "semantic_hash": ""
   },
   "tech_debt/101-decompose-ibus-engine-state-owner.md": {
-    "mtime": 1787959142.2257936,
-    "ast_hash": "586f303ab208f36f70829a27e463ca2b",
+    "mtime": 1787959640.3779106,
+    "ast_hash": "c9ae200f45217cf137c79151f2613fa3",
     "semantic_hash": ""
   },
   "tech_debt/102-separate-nanda-runtime-and-research.md": {
@@ -28805,8 +28805,8 @@
     "semantic_hash": ""
   },
   "tech_debt/103-externalize-research-payloads.md": {
-    "mtime": 1787959142.2259984,
-    "ast_hash": "b4026ec6f9629223c6d2dec33c971cf5",
+    "mtime": 1787959640.3789105,
+    "ast_hash": "f5a4b39e88e241115ecf7770883019d6",
     "semantic_hash": ""
   },
   "tech_debt/104-isolate-proof-compiler-build-surface.md": {
@@ -28822,6 +28822,26 @@
   "tech_debt/README.md": {
     "mtime": 1787959579.8391542,
     "ast_hash": "74b24cd4826dd9e95749ddc1720c523b",
+    "semantic_hash": ""
+  },
+  "scripts/architecture_scope_gate.py": {
+    "mtime": 1787962462.9393623,
+    "ast_hash": "0c891d68d6d1f46dcd31c3a3bff06553",
+    "semantic_hash": ""
+  },
+  "scripts/rust_source_scope.py": {
+    "mtime": 1787962452.9441807,
+    "ast_hash": "7b8aa80498a28ec03ab84cc0cea40365",
+    "semantic_hash": ""
+  },
+  "tests/test_architecture_scope_gate.py": {
+    "mtime": 1787962506.9071527,
+    "ast_hash": "cf86088918340d62c2fdae31fa607f1d",
+    "semantic_hash": ""
+  },
+  "scripts/update-architecture-graph.sh": {
+    "mtime": 1787962491.815883,
+    "ast_hash": "471529c2d0bbc8801fc46d4c4baf4890",
     "semantic_hash": ""
   }
 }

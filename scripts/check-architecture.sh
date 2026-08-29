@@ -70,21 +70,8 @@ report_line_budget() {
 
 assert_no_runtime_example() {
   local pattern="$1"
-  local hits
-  if command -v rg >/dev/null 2>&1; then
-    hits="$(rg -n --fixed-strings "$pattern" src \
-        --glob '!src/**/*tests.rs' \
-        --glob '!src/**/tests/**' \
-        --glob '!src/*_tests.rs' \
-        --glob '!src/bin/lay_test_input.rs' \
-        --glob '!src/bin/lay_test_input/**' \
-        || true)"
-  else
-    hits="$(grep -RInF -- "$pattern" src || true)"
-    hits="$(printf '%s\n' "$hits" \
-      | grep -Ev '(^src/.*/tests/|_tests\.rs:|^src/bin/lay_daemon/tests\.rs:|^src/bin/lay_test_input(\.rs|/))' || true)"
-  fi
-  if [[ -n "$hits" ]]; then
+  local hits=""
+  if ! hits="$(python3 scripts/architecture_scope_gate.py production-literal --pattern "$pattern")"; then
     printf '%s\n' "$hits" >&2
     error "chat/log regression example '$pattern' must stay in tests or data, not runtime code"
   fi
@@ -119,13 +106,8 @@ assert_no_rust_phrase_literal_in_file() {
 }
 
 assert_no_runtime_rule_id_literals() {
-  local rule_id_regex
-  rule_id_regex='moved_prefix_pair|split_word_pair|visual_b|personal_phrase|personal_token|duplicate_layout_prefix|mixed_script_layout|layout_technical|layout_ru_to_en|layout_en_to_ru|contextual_layout_en_to_ru|cyrillic_case|hard_sign|adjacent_transposition|repeated_letter|single_letter_substitution|verb_ending|vowel_confusion|extra_letters|missing_letter|glued_phrase'
-  local hits
-  hits="$(grep -RInE "\"(${rule_id_regex})\"" src --include='*.rs' || true)"
-  hits="$(printf '%s\n' "$hits" \
-    | grep -Ev '(^src/typing_rule_graph/ids\.rs:|^src/transition_relation\.rs:|_tests\.rs:|^src/.*/tests/|^src/bin/lay_daemon/tests\.rs:|^src/bin/lay_nanda_(dataset|wave_train)\.rs:|^src/bin/lay_nanda_wave_eval/)' || true)"
-  if [[ -n "$hits" ]]; then
+  local hits=""
+  if ! hits="$(python3 scripts/architecture_scope_gate.py runtime-rule-ids)"; then
     printf '%s\n' "$hits" >&2
     error "runtime rule id strings must go through src/typing_rule_graph/ids.rs"
   fi
@@ -133,25 +115,13 @@ assert_no_runtime_rule_id_literals() {
 
 assert_live_correction_entrypoint_owned_by_input_gate() {
   local pattern="$1"
-  local hits
-  if command -v rg >/dev/null 2>&1; then
-    hits="$(rg -n --fixed-strings "$pattern" src \
-        --glob '!src/correction_core.rs' \
-        --glob '!src/input_gate.rs' \
-        --glob '!src/main.rs' \
-        --glob '!src/bin/lay_nanda_wave_eval/**' \
-        --glob '!**/tests.rs' \
-        --glob '!**/*_tests.rs' \
-        --glob '!**/tests/**' \
-        || true)"
-    hits="$(printf '%s\n' "$hits" \
-      | grep -Ev '(_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
-  else
-    hits="$(grep -RInF -- "$pattern" src || true)"
-    hits="$(printf '%s\n' "$hits" \
-      | grep -Ev '(^src/correction_core\.rs:|^src/input_gate\.rs:|^src/main\.rs:|^src/bin/lay_nanda_wave_eval/|_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
-  fi
-  if [[ -n "$hits" ]]; then
+  local hits=""
+  if ! hits="$(python3 scripts/architecture_scope_gate.py call-owner \
+      --pattern "$pattern" \
+      --allow src/correction_core.rs \
+      --allow src/input_gate.rs \
+      --allow src/main.rs \
+      --allow src/bin/lay_nanda_wave_eval/)"; then
     printf '%s\n' "$hits" >&2
     error "live correction decisions must enter through input_gate, not direct '$pattern' calls"
   fi
@@ -162,42 +132,14 @@ assert_text_mutation_call_owners() {
   local reason="$2"
   shift 2
   local allowed=("$@")
-  local hits
-  if command -v rg >/dev/null 2>&1; then
-    hits="$(rg -n --fixed-strings "$pattern" src \
-        --glob '*.rs' \
-        --glob '!**/architecture_contract.rs' \
-        --glob '!**/tests.rs' \
-        --glob '!**/*_tests.rs' \
-        --glob '!**/tests/**' \
-        || true)"
-    hits="$(printf '%s\n' "$hits" \
-      | grep -Ev '(^src/architecture_contract\.rs:|_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
-  else
-    hits="$(grep -RInF --include='*.rs' -- "$pattern" src || true)"
-    hits="$(printf '%s\n' "$hits" \
-      | grep -Ev '(^src/architecture_contract\.rs:|_tests\.rs:|^src/.*/tests(\.rs:|/))' || true)"
-  fi
-
-  local filtered=""
-  local line file ok allowed_file
-  while IFS= read -r line; do
-    [[ -z "$line" ]] && continue
-    file="${line%%:*}"
-    ok=0
-    for allowed_file in "${allowed[@]}"; do
-      if [[ "$file" == "$allowed_file" ]]; then
-        ok=1
-        break
-      fi
-    done
-    if [[ "$ok" == "0" ]]; then
-      filtered+="${line}"$'\n'
-    fi
-  done <<< "$hits"
-
-  if [[ -n "$filtered" ]]; then
-    printf '%s' "$filtered" >&2
+  local command=(python3 scripts/architecture_scope_gate.py call-owner --pattern "$pattern")
+  local allowed_file
+  for allowed_file in "${allowed[@]}"; do
+    command+=(--allow "$allowed_file")
+  done
+  local hits=""
+  if ! hits="$("${command[@]}")"; then
+    printf '%s\n' "$hits" >&2
     error "$reason"
   fi
 }
@@ -630,7 +572,7 @@ assert_single_owner "fn looks_like_plausible_russian_past_tense" "src/ru_typo/gu
 assert_single_owner "pub fn recognize_token" "src/word_recognizer/identity.rs"
 assert_single_owner "pub(super) fn detect_script" "src/word_recognizer/script.rs"
 assert_single_owner "pub(super) fn known_russian_word" "src/word_recognizer/lexicon.rs"
-assert_single_owner "pub(super) fn known_english_word" "src/word_recognizer/lexicon.rs"
+assert_single_owner "pub(super) fn known_english_word(" "src/word_recognizer/lexicon.rs"
 assert_single_owner "pub fn is_plain_layout_autocorrect_risky" "src/word_recognizer/risk.rs"
 assert_single_owner "pub fn is_cli_option_token" "src/word_recognizer/technical.rs"
 assert_single_owner "pub fn is_protected_ascii_token" "src/word_recognizer/technical.rs"
@@ -642,13 +584,13 @@ assert_single_owner "pub fn is_mixed_cyrillic_ascii_alpha_token" "src/word_recog
 assert_single_owner "pub(crate) fn correct_wrong_layout_ascii_word(" "src/layout_autoswitch/ascii/word.rs"
 assert_single_owner "pub(crate) fn correct_wrong_layout_ascii_phrase" "src/layout_autoswitch/ascii/phrase.rs"
 assert_single_owner "pub(crate) fn is_confident_wrong_layout_ascii_pair" "src/layout_autoswitch/ascii/phrase.rs"
-assert_single_owner "fn ascii_to_russian_layout_candidate" "src/layout_autoswitch/ascii/candidate.rs"
-assert_single_owner "fn is_ascii_layout_letter_symbol" "src/layout_autoswitch/ascii/symbols.rs"
+assert_single_owner "pub(super) fn ascii_to_russian_layout_candidate(" "src/layout_autoswitch/ascii/candidate.rs"
+assert_single_owner "pub(crate) fn is_ascii_layout_letter_symbol(" "src/layout_autoswitch/ascii/symbols.rs"
 assert_single_owner "fn is_ascii_shift_letter_symbol" "src/layout_autoswitch/ascii/symbols.rs"
 assert_single_owner "fn is_plain_ascii_layout_token" "src/layout_autoswitch/ascii/symbols.rs"
 assert_single_owner "fn has_cyrillic(text" "src/text_metrics.rs"
 assert_single_owner "fn without_whitespace" "src/text_metrics.rs"
-assert_single_owner "fn damerau_levenshtein" "src/text_metrics.rs"
+assert_single_owner "pub fn damerau_levenshtein(" "src/text_metrics.rs"
 assert_single_owner "fn apply_replacement_plan_to_text" "src/text_edit/diff_plan.rs"
 assert_single_owner "fn plan_text_replacement_with_options" "src/text_edit/diff_plan.rs"
 assert_single_owner "fn committed_separator_is_preserved" "src/text_edit/committed_tail.rs"
@@ -698,7 +640,7 @@ assert_single_owner "fn is_typing_key" "src/keyboard/keymap/typing_key.rs"
 assert_single_owner "fn keycode_to_ru_char" "src/keyboard/keymap/ru_char.rs"
 assert_single_owner "fn keycode_to_us_char" "src/keyboard/keymap/us_char.rs"
 assert_single_owner "fn text_to_uinput_runs" "src/keyboard/text_input/runs.rs"
-assert_single_owner "fn text_to_key_events" "src/keyboard/text_input/runs.rs"
+assert_single_owner "pub fn text_to_key_events(" "src/keyboard/text_input/runs.rs"
 assert_single_owner "fn char_to_layout_key_event" "src/keyboard/text_input/runs.rs"
 assert_single_owner "fn char_to_ru_key_event" "src/keyboard/text_input/ru_emit.rs"
 assert_single_owner "fn char_to_us_key_event" "src/keyboard/text_input/us_emit.rs"
@@ -799,72 +741,12 @@ if [[ -n "$second_best_hits" ]]; then
   error "best/second-best arbitration must go through candidate_ranker"
 fi
 
-if command -v rg >/dev/null 2>&1; then
-  private_file_hits="$(rg -n --fixed-strings "OpenOptionsExt" src --glob '!private_file.rs' || true)"
-else
-  private_file_hits="$(grep -RInF -- "OpenOptionsExt" src | grep -v '^src/private_file\.rs:' || true)"
-fi
-if [[ -n "$private_file_hits" ]]; then
-  printf '%s\n' "$private_file_hits" >&2
-  error "private file open mode must stay centralized in src/private_file.rs"
-fi
-
-permission_api_hits="$(search_fixed "PermissionsExt" src || true)"
-permission_api_hits="$(printf '%s\n' "$permission_api_hits" \
-  | grep -Ev '(^src/private_file\.rs:|_tests\.rs:|^src/.*/tests/)' || true)"
-if [[ -n "$permission_api_hits" ]]; then
-  printf '%s\n' "$permission_api_hits" >&2
-  error "chmod-style permission changes must stay centralized in src/private_file.rs"
-fi
-
-set_permissions_hits="$(search_fixed "set_permissions" src || true)"
-set_permissions_hits="$(printf '%s\n' "$set_permissions_hits" \
-  | grep -Ev '(^src/private_file\.rs:|_tests\.rs:|^src/.*/tests/)' || true)"
-if [[ -n "$set_permissions_hits" ]]; then
-  printf '%s\n' "$set_permissions_hits" >&2
-  error "private file chmod calls must go through src/private_file.rs"
-fi
-
-if command -v rg >/dev/null 2>&1; then
-  sleep_hits="$(rg -n --fixed-strings "thread::sleep" src \
-    --glob '!**/*_tests.rs' \
-    --glob '!**/tests.rs' \
-    --glob '!**/tests/**' \
-    --glob '!src/bin/lay_daemon/text_output.rs' \
-    --glob '!src/bin/lay_daemon/text_output/**' \
-    --glob '!src/bin/lay_daemon/layout_controller.rs' \
-    --glob '!src/bin/lay_daemon/layout_controller/**' \
-    --glob '!src/bin/lay_test_input.rs' \
-    --glob '!src/bin/lay_test_input/**' || true)"
-else
-  sleep_hits="$(grep -RInF -- "thread::sleep" src \
-    | grep -Ev '(_tests\.rs:|^src/.*/tests(\.rs:|/)|^src/bin/lay_daemon/text_output(\.rs|/)|^src/bin/lay_daemon/layout_controller(\.rs:|/)|^src/bin/lay_test_input(\.rs|/))' || true)"
-fi
-if [[ -n "$sleep_hits" ]]; then
-  printf '%s\n' "$sleep_hits" >&2
-  error "runtime delays must stay in text_output/layout_controller only; do not add sleep as correction logic"
-fi
-
-if command -v rg >/dev/null 2>&1; then
-  tmp_lay_hits="$(rg -n --fixed-strings "/tmp/lay" . \
-    --glob '!target/**' \
-    --glob '!.git/**' \
-    --glob '!scripts/check-architecture.sh' \
-    --glob '!scripts/check-lay-audit-50.sh' \
-    --glob '!scripts/lay-host-vm-guard.sh' || true)"
-else
-  tmp_lay_hits="$(grep -RInF \
-    --exclude-dir=.git \
-    --exclude-dir=target \
-    --exclude='check-architecture.sh' \
-    --exclude='check-lay-audit-50.sh' \
-    --exclude='lay-host-vm-guard.sh' \
-    -- "/tmp/lay" . || true)"
-fi
-if [[ -n "$tmp_lay_hits" ]]; then
-  printf '%s\n' "$tmp_lay_hits" >&2
-  error "lay runtime/install logs must use ~/.local/state/lay, not /tmp/lay-*"
-fi
+for scope_check in open-options permissions sleep tmp-path; do
+  if ! scope_hits="$(python3 scripts/architecture_scope_gate.py "$scope_check")"; then
+    printf '%s\n' "$scope_hits" >&2
+    error "architecture scope check failed: $scope_check"
+  fi
+done
 
 if [[ "$fail" != "0" ]]; then
   exit 1

@@ -167,7 +167,20 @@ AuthorizedEdit
 ```
 
 The generated architecture receipt currently proves the authority path. It
-does not prove language quality.
+also binds the complete current Rust source set: additions, modifications,
+deletions, and renames all invalidate stale evidence. Source-only checks remove
+only the exact items guarded by `#[cfg(test)]`; production items before or after
+an inline test module remain in scope. Runtime string/call scans use explicit
+owner classes for private files, immutable packages, Unix sockets, background
+delays, typing rule IDs, and Nanda error-class labels. Generic duplicate helper
+names remain diagnostic, while contract-listed single-owner symbols remain hard
+failures. These checks prove structure and evidence freshness only. They do not
+prove language quality, and TD-001 changed no runtime authority.
+
+The canonical graph refresh is `scripts/update-architecture-graph.sh`. It runs
+Graphify and then writes `graphify-out/source_graph_binding.json`, binding the
+exact graph and manifest bytes to the SHA-256 of every current Rust source.
+Writing an architecture receipt without that matching binding fails closed.
 
 ## 4. Layer Truth
 
