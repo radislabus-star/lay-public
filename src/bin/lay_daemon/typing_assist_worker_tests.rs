@@ -32,6 +32,19 @@ fn submit_never_runs_boundary_decision_on_key_thread() {
 }
 
 #[test]
+fn submit_returns_pending_while_boundary_decision_runs() {
+    let mut worker = TypingAssistWorker::with_prepare(slow_no_correction);
+    let request_id = worker.submit(&WordBuffer::new()).expect("submitted");
+
+    assert!(matches!(worker.poll(request_id), WorkerPoll::Pending));
+    std::thread::sleep(Duration::from_millis(60));
+    assert!(matches!(
+        worker.poll(request_id),
+        WorkerPoll::Completed(None)
+    ));
+}
+
+#[test]
 fn busy_worker_keeps_the_latest_boundary_snapshot() {
     SLOW_PREPARE_STARTED.store(false, Ordering::Release);
     let mut worker = TypingAssistWorker::with_prepare(slow_started_no_correction);

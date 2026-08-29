@@ -570,18 +570,18 @@ fn manually_finished_visible_prediction_records_positive_usage() {
             ..LayConfig::default()
         },
     );
-    for ch in "ну д".chars() {
+    for ch in "н".chars() {
         engine.push_tail_char(ch);
     }
-    engine.preedit_suffix = "а".to_string();
-    engine.preedit_candidates = vec!["а".to_string()];
+    engine.preedit_suffix = "у".to_string();
+    engine.preedit_candidates = vec!["у".to_string()];
     engine
         .preedit_fast
-        .observe_prediction_target("д", Some("да".to_string()));
-    engine.push_tail_char('а');
+        .observe_prediction_target("н", Some("ну".to_string()));
+    engine.push_tail_char('у');
     assert_eq!(
         engine.preedit_fast.observed_prediction_target(),
-        Some("да"),
+        Some("ну"),
         "typing through a prediction must preserve its target until Space"
     );
     engine.push_tail_char(' ');
@@ -601,7 +601,7 @@ fn manually_finished_visible_prediction_records_positive_usage() {
         text.contains(r#""kind":"confirmed_ime_prediction""#),
         "{text}"
     );
-    assert!(text.contains(r#""word":"да""#), "{text}");
+    assert!(text.contains(r#""word":"ну""#), "{text}");
     assert!(!text.contains(r#""kind":"rejected_ime""#), "{text}");
 
     std::env::remove_var("LAY_NANDA_WORD_USAGE_EVENTS");

@@ -320,8 +320,6 @@ mod tests {
 
     #[test]
     fn live_canonical_l2_field_births_nanda_candidates_without_full_wave_authority() {
-        use std::time::Instant;
-
         let pipeline = default_typing_assist_pipeline();
         let mut req = request("звгрузи ", &pipeline, CorrectionMode::NandaOnly);
         req.nanda_candidate_route = CandidateReadoutRoute::live_default();
@@ -354,7 +352,16 @@ mod tests {
                 .map(|candidate| candidate.replacement.as_str()),
             Some("загрузи ")
         );
+    }
 
+    #[test]
+    fn live_canonical_l2_field_stays_under_latency_budget() {
+        use std::time::Instant;
+
+        let pipeline = default_typing_assist_pipeline();
+        let mut warmup = request("звгрузи ", &pipeline, CorrectionMode::NandaOnly);
+        warmup.nanda_candidate_route = CandidateReadoutRoute::live_default();
+        let _warmup_resolution = resolve_text_correction(warmup);
         let sample_count = std::env::var("LAY_CANONICAL_L2_FIELD_SAMPLES")
             .or_else(|_| std::env::var("LAY_L2_FIELD_SHADOW_SAMPLES"))
             .ok()
@@ -366,15 +373,8 @@ mod tests {
             let mut req = request("звгрузи ", &pipeline, CorrectionMode::NandaOnly);
             req.nanda_candidate_route = CandidateReadoutRoute::live_default();
             let started = Instant::now();
-            let resolution = resolve_text_correction(req);
+            let _resolution = resolve_text_correction(req);
             timings.push(started.elapsed().as_micros() as u64);
-            assert_eq!(
-                resolution
-                    .selected
-                    .as_ref()
-                    .map(|candidate| candidate.replacement.as_str()),
-                Some("загрузи ")
-            );
         }
         timings.sort_unstable();
         let p50 = timings[timings.len() / 2];

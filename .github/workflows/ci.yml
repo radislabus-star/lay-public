@@ -60,7 +60,7 @@ jobs:
       - name: Install system dictionaries
         run: |
           sudo apt-get update
-          sudo apt-get install -y hunspell-ru hunspell-en-us wamerican
+          sudo apt-get install -y bubblewrap hunspell-ru hunspell-en-us wamerican
 
       - name: Setup Rust 1.97.1
         uses: dtolnay/rust-toolchain@1.97.1
@@ -87,12 +87,11 @@ jobs:
       - name: 50-pass architecture audit
         run: bash scripts/check-lay-audit-50.sh
 
-      - name: Current architecture regressions
-        run: |
-          cargo test --test typing_transition_authority_contract
-          cargo test --test text_mutation_monopoly_contract
-          cargo test typing_replacements::tests:: --lib
-          cargo test nanda_wave::context_wave::tests::warm_up_prepares_wave_memory_without_prefix_indexes --lib
+      - name: Fetch locked Rust dependencies
+        run: scripts/check-lay-tests.sh fetch
+
+      - name: Hermetic Rust correctness and package lanes
+        run: scripts/check-lay-tests.sh all
 
       - name: Rust lint contract
         run: scripts/check-lay-lints.sh
@@ -110,12 +109,12 @@ jobs:
           bash -n install.sh update.sh dev-reload.sh scripts/*.sh
 
       - name: CLI explain smoke
-        run: cargo run --quiet --bin lay -- --no-llm ghbdtn | grep -F 'привет'
+        run: scripts/cargo-guard.sh run --quiet --bin lay -- --no-llm ghbdtn | grep -F 'привет'
 
       - name: release binaries
-        run: cargo build --release --bins
+        run: scripts/cargo-guard.sh build --release --bins
 
       - name: ngram cache probe
         run: |
-          cargo run --quiet --bin lay-ngram-corpus -- cache --out target/lay-ci-ngram-ru.json
-          cargo run --quiet --bin lay-ngram-corpus -- check-cache --cache target/lay-ci-ngram-ru.json
+          scripts/cargo-guard.sh run --quiet --bin lay-ngram-corpus -- cache --out target/lay-ci-ngram-ru.json
+          scripts/cargo-guard.sh run --quiet --bin lay-ngram-corpus -- check-cache --cache target/lay-ci-ngram-ru.json

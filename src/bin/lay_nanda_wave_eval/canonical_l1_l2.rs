@@ -283,11 +283,12 @@ mod tests {
 
     #[test]
     fn canonical_l2_shadow_words_include_local_lexicon() {
-        let words = load_words(WordSource::ExpectedOnly).expect("candidate words");
+        let mut words = BTreeSet::new();
+        collect_shadow_lexicon_words(&mut words);
 
-        assert!(words.contains(&"эксперимент".to_string()));
-        assert!(words.contains(&"эффективная".to_string()));
-        assert!(words.contains(&"другие".to_string()));
-        assert!(words.contains(&"видеть".to_string()));
+        assert!(words.contains("эксперимент"));
+        assert!(words.contains("эффективная"));
+        assert!(words.contains("другие"));
+        assert!(words.contains("видеть"));
     }
 }

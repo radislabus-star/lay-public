@@ -373,6 +373,7 @@ double Shift rescue невозможен. По умолчанию он не от
 - [Архитектурное исследование V13 exact owner](docs/ime-target-authority-slice8-lexical-readout-2026-08-23.md)
 - [Память кристаллического ядра L1.1](docs/l1-crystal-kernel-memory-layout.md)
 - [Архитектура меню и настроек](docs/lay-menu-settings-architecture.md)
+- [Герметичные Rust test lanes](docs/test-lanes.md)
 - [Публичные материалы](docs/publicity/README.md)
 
 История старых alpha-релизов остаётся в Git и GitHub Releases; README описывает
@@ -393,6 +394,15 @@ identities и процедура обновления описаны в
 ```bash
 scripts/check-lay-changed.sh
 ```
+
+Полный герметичный correctness/package denominator:
+
+```bash
+scripts/check-lay-tests.sh all
+```
+
+Timing budgets запускаются отдельно через
+`scripts/check-lay-tests.sh performance`; live desktop smoke всегда opt-in.
 
 Cargo-команды выполняются через disk guard:
 

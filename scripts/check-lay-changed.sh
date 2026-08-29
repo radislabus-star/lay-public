@@ -93,6 +93,12 @@ if has_file_matching '^extension/.*\.js$'; then
   done
 fi
 
+if has_file_matching '(^scripts/test_lanes/|^scripts/test-lanes/|^scripts/test-lanes\.py$|^scripts/check-lay-tests\.sh$|^tests/test_test_lanes\.py$)'; then
+  echo "== hermetic test-lane self-check =="
+  scripts/check-lay-tests.sh self-test
+  scripts/check-lay-tests.sh manifest
+fi
+
 if has_file_matching '(^Cargo\.toml$|^Cargo\.lock$|^VERSIONING\.md$|^extension/)'; then
   echo "== lay version consistency =="
   python3 - <<'PY'
@@ -150,113 +156,11 @@ fi
 echo "== cargo fmt --check =="
 cargo fmt --check
 
-if has_file_matching '^src/bin/lay_ibus_engine'; then
-  if [[ "${LAY_CHANGED_FULL_IME:-0}" == "1" ]]; then
-    echo "== cargo test --bin lay-ibus-engine =="
-    cargo test --bin lay-ibus-engine
-  else
-    echo "== cargo test --bin lay-ibus-engine targeted =="
-    cargo test --bin lay-ibus-engine live_ime_
-    cargo test --bin lay-ibus-engine known_russian_word_does_not_get_extended_by_precognition
-    cargo test --bin lay-ibus-engine short_russian_prefix_stays_fast_without_dropping_valid_candidates
-    cargo test --bin lay-ibus-engine physical_double_shift_owner_
-    cargo test --bin lay-ibus-engine manual_toggle_
-    cargo test --bin lay-ibus-engine committed_tail
-    cargo test --bin lay-ibus-engine daemon_bridge
-    cargo test --bin lay-ibus-engine delete_profile
-    cargo test --bin lay-ibus-engine handoff
-    cargo test --bin lay-ibus-engine reset
-  fi
-  echo "== isolated IME latency budget =="
-  LAY_ENFORCE_IME_LATENCY_BUDGET=1 \
-    cargo test --bin lay-ibus-engine cold_english_wave_memory_does_not_block_precognition \
-      -- --nocapture --test-threads=1
-  LAY_ENFORCE_IME_LATENCY_BUDGET=1 \
-    cargo test --bin lay-ibus-engine precognition_candidate_generation_stays_under_budget \
-      -- --nocapture --test-threads=1
-fi
-
-if has_file_matching '^src/bin/lay_daemon'; then
-  if [[ "${LAY_CHANGED_FULL_DAEMON:-0}" == "1" ]]; then
-    echo "== cargo test --bin lay-daemon =="
-    cargo test --bin lay-daemon
-  else
-    echo "== cargo test --bin lay-daemon targeted =="
-    cargo test --bin lay-daemon physical_double_shift_owner_
-    cargo test --bin lay-daemon text_output_contract
-    cargo test --bin lay-daemon enter_autocorrect
-    cargo test --bin lay-daemon runtime_state::typing_assist
-    cargo test --bin lay-daemon layout_switch_policy
-  fi
-fi
-
-if has_file_matching '^src/bin/lay_debug_actions\.rs$'; then
-  echo "== cargo test --bin lay-debug-actions =="
-  cargo test --bin lay-debug-actions
-fi
-
-if has_file_matching '^src/correction_core(\.rs|/)'; then
-  if [[ "${LAY_CHANGED_FULL_CORE:-0}" == "1" ]]; then
-    echo "== cargo test correction_core:: --lib =="
-    cargo test correction_core:: --lib
-  else
-    echo "== correction-core route contracts =="
-    cargo test --test typing_transition_authority_contract
-    cargo test --test text_mutation_monopoly_contract
-  fi
-
-  echo "== cargo test input_gate:: --lib =="
-  cargo test input_gate:: --lib
-elif has_file_matching '^src/input_gate\.rs$'; then
-  echo "== cargo test input_gate:: --lib =="
-  cargo test input_gate:: --lib
-fi
-
-if has_file_matching '^src/phrase_reader'; then
-  echo "== cargo test phrase_reader:: --lib =="
-  cargo test phrase_reader:: --lib
-fi
-
-if has_file_matching '^src/ru_typo'; then
-  echo "== cargo test ru_typo:: --lib =="
-  cargo test ru_typo:: --lib
-fi
-
-if has_file_matching '^src/nanda_wave/(context_phase/|phase_field\.rs$|l3|l3_phrase_gate|l4_hidden_state)'; then
-  echo "== cargo test nanda_wave::context_phase --lib =="
-  cargo test nanda_wave::context_phase --lib
-
-  echo "== cargo test nanda_wave::l3:: --lib =="
-  cargo test nanda_wave::l3:: --lib
-
-  echo "== cargo test nanda_wave::l3_phrase_gate --lib =="
-  cargo test nanda_wave::l3_phrase_gate --lib
-
-  echo "== cargo test nanda_wave::l4_hidden_state --lib =="
-  cargo test nanda_wave::l4_hidden_state --lib
-elif has_file_matching '^src/nanda_wave'; then
-  if [[ "${LAY_CHANGED_FULL_L2:-0}" == "1" ]]; then
-    echo "== cargo test nanda_wave:: --lib =="
-    cargo test nanda_wave:: --lib
-  else
-    echo "== nanda-wave route contracts =="
-    cargo test --test typing_transition_authority_contract
-    cargo test --test text_mutation_monopoly_contract
-  fi
-fi
-
-if has_file_matching '^tests/.*\.rs$'; then
-  echo "== cargo test changed integration tests =="
-  for file in "${files[@]}"; do
-    if [[ "$file" =~ ^tests/([^/]+)\.rs$ ]]; then
-      cargo test --test "${BASH_REMATCH[1]}"
-    fi
-  done
-fi
-
-if has_file_matching '^tests/fixtures/'; then
-  echo "== cargo test typing assist fixture suites =="
-  cargo test typing_assist_rules:: --bin lay-daemon
+echo "== hermetic Rust correctness and package lanes =="
+scripts/check-lay-tests.sh all
+if [[ "${LAY_CHANGED_PERFORMANCE:-0}" == "1" ]]; then
+  echo "== serialized Rust performance lane =="
+  scripts/check-lay-tests.sh performance
 fi
 
 echo "== cargo check --lib --bins =="

@@ -1,0 +1,35 @@
+{
+  "command": "scripts/check-lay-tests.sh performance --target-dir target/td006-lanes --results-dir target/td006-final-performance",
+  "failed": 3,
+  "failures": [
+    {
+      "budget": 5000,
+      "metric": "p99_us",
+      "observed": 5868,
+      "test": "lib:lay::correction_core::tests::live_canonical_l2_field_stays_under_latency_budget"
+    },
+    {
+      "budget": 14336,
+      "metric": "rss_delta_kib",
+      "observed": 14864,
+      "test": "lib:lay::exact_layout_authority::proof::v27_exact_en_guard_controlled_resource_budget"
+    },
+    {
+      "budget": 50000,
+      "metric": "max_unique_prefix_us",
+      "observed": 674089,
+      "test": "lib:lay::nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget"
+    }
+  ],
+  "manifest_sha256": "50bd81bec003d866397a07de01b965c420a60361927dc5aefeb842f40253ddda",
+  "passed": 8,
+  "recorded_at": "2026-08-29T21:40:51+03:00",
+  "runtime_authority_changed": false,
+  "schema": "lay.test-performance-observation.v1",
+  "source_closure_sha256": "021466aced1f5dee84465531ed42ddc31a0b5b88ef8ddf5671f09146273f67b2",
+  "tests": 11,
+  "untested_scope": [
+    "live_desktop_smoke"
+  ],
+  "verdict": "BLOCKED_PERFORMANCE"
+}

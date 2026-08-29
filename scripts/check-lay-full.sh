@@ -18,8 +18,16 @@ if [[ "${LAY_AUDIT_50:-0}" == "1" ]]; then
   scripts/check-lay-audit-50.sh
 fi
 
-echo "== cargo test --all-targets =="
-cargo test --all-targets
+echo "== hermetic Rust test-lane contracts =="
+scripts/check-lay-tests.sh self-test
+scripts/check-lay-tests.sh fetch
+scripts/check-lay-tests.sh all
+if [[ "${LAY_CHECK_PERFORMANCE:-0}" == "1" ]]; then
+  echo "== serialized Rust performance lane =="
+  scripts/check-lay-tests.sh performance
+else
+  echo "== skip performance lane (set LAY_CHECK_PERFORMANCE=1) =="
+fi
 
 echo "== scripts/check-lay-lints.sh =="
 scripts/check-lay-lints.sh

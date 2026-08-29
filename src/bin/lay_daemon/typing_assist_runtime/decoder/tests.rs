@@ -92,6 +92,18 @@ fn input_gate_allows_unknown_cyrillic_token_to_project_from_active_russian_layou
 }
 
 #[test]
+fn startup_warmup_preserves_first_boundary_decision_result() {
+    lay::typing_assist::warm_up();
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "дфн ", true);
+    let events = buffer
+        .last_completed_words_events(1)
+        .expect("last completed word");
+    let decoded = decode_completed_tail(&buffer, 1, &events, true).expect("decoded");
+    assert_eq!(decoded.edit.replacement, "lay ");
+}
+
+#[test]
 fn startup_warmup_removes_first_boundary_decision_stall() {
     lay::typing_assist::warm_up();
     let mut buffer = WordBuffer::new();
@@ -105,7 +117,7 @@ fn startup_warmup_removes_first_boundary_decision_stall() {
     let elapsed = started.elapsed();
 
     assert_eq!(decoded.edit.replacement, "lay ");
-    if !cfg!(debug_assertions) {
+    if !cfg!(debug_assertions) || std::env::var_os("LAY_ENFORCE_DAEMON_LATENCY_BUDGET").is_some() {
         assert!(
             elapsed < Duration::from_millis(250),
             "warmed boundary decision took {elapsed:?}"
