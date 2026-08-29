@@ -562,7 +562,7 @@ fn calibrate_from_evidence(
     TieCalibration {
         minimum_positive: 1,
         minimum_margin: 1,
-        tie_window: i32::from((heldout > train).then_some(2).unwrap_or(1)),
+        tie_window: (if heldout > train { 2 } else { 1 }),
         abstain_window: 0,
         false_authority_ceiling_milli: 0,
         flags: 0,

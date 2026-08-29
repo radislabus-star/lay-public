@@ -83,6 +83,7 @@ struct ReplayCase {
     source_index: usize,
 }
 
+#[expect(clippy::too_many_arguments, reason = "proof inputs remain explicit")]
 pub fn fingerprint_l1_behavior(
     package_path: &Path,
     surfaces_path: &Path,
@@ -303,7 +304,7 @@ fn replay_cases(
     let ru = corpus
         .iter()
         .enumerate()
-        .filter(|(_, surface)| surface.chars().any(|character| !character.is_ascii()))
+        .filter(|(_, surface)| !surface.is_ascii())
         .map(|(index, surface)| (index, surface.clone()))
         .collect::<Vec<_>>();
     let en = corpus
@@ -314,7 +315,7 @@ fn replay_cases(
                 .chars()
                 .any(|character| character.is_ascii_alphabetic())
         })
-        .filter(|(_, surface)| surface.chars().all(|character| character.is_ascii()))
+        .filter(|(_, surface)| surface.is_ascii())
         .map(|(index, surface)| (index, surface.clone()))
         .collect::<Vec<_>>();
     cases.extend(select_evenly(&ru, clean_per_language).into_iter().map(

@@ -18,11 +18,12 @@ mod settlement;
 use legacy::select_birth_atoms;
 #[cfg(test)]
 use legacy::should_expand_operator_lattice;
+pub(super) use settlement::candidate_order;
 pub(in crate::nanda_wave::lexical_grokking) use settlement::observed_sequence;
-#[allow(unused_imports)]
-pub(super) use settlement::{
+#[cfg(test)]
+pub(in crate::nanda_wave::lexical_grokking) use settlement::{
     apply_geometry_certificate_interference, apply_position_certificate_interference,
-    apply_sequence_certificate_interference, candidate_order, legacy_sequence_coherence_milli,
+    apply_sequence_certificate_interference, legacy_sequence_coherence_milli,
     sequence_coherence_milli,
 };
 use settlement::{
@@ -316,9 +317,8 @@ impl LexicalGrokkingMemory {
             return runtime
                 .readout(self, surface, limit)
                 .map(|output| output.candidates)
-                .map_err(|error| {
-                    runtime.record_failure(&error);
-                    error
+                .inspect_err(|error| {
+                    runtime.record_failure(error);
                 });
         }
         Ok(self.legacy_readout(surface, limit, mode))
@@ -373,9 +373,8 @@ impl LexicalGrokkingMemory {
             return runtime
                 .readout(self, surface, limit)
                 .map(|output| (output.candidates, output.readout))
-                .map_err(|error| {
-                    runtime.record_failure(&error);
-                    error
+                .inspect_err(|error| {
+                    runtime.record_failure(error);
                 });
         }
         let mut candidates = self.legacy_readout(surface, limit, ReadoutMode::Full);
@@ -739,43 +738,29 @@ impl LexicalGrokkingMemory {
     }
 }
 
-fn compile_surface_indices(
-    package: &LexicalGrokkingPackage,
-) -> (
+type CompiledSurfaceIndices = (
     HashMap<u64, u32>,
     HashMap<u64, Vec<u32>>,
     HashMap<char, u32>,
     Vec<u32>,
     Vec<u32>,
     Option<DecodedSurfacePool>,
-) {
+);
+
+fn compile_surface_indices(package: &LexicalGrokkingPackage) -> CompiledSurfaceIndices {
     compile_surface_indices_impl(package, false)
 }
 
 fn compile_surface_indices_with_decoded_pool(
     package: &LexicalGrokkingPackage,
-) -> (
-    HashMap<u64, u32>,
-    HashMap<u64, Vec<u32>>,
-    HashMap<char, u32>,
-    Vec<u32>,
-    Vec<u32>,
-    Option<DecodedSurfacePool>,
-) {
+) -> CompiledSurfaceIndices {
     compile_surface_indices_impl(package, true)
 }
 
 fn compile_surface_indices_impl(
     package: &LexicalGrokkingPackage,
     retain_decoded_surfaces: bool,
-) -> (
-    HashMap<u64, u32>,
-    HashMap<u64, Vec<u32>>,
-    HashMap<char, u32>,
-    Vec<u32>,
-    Vec<u32>,
-    Option<DecodedSurfacePool>,
-) {
+) -> CompiledSurfaceIndices {
     let mut index = HashMap::with_capacity(package.centers.len());
     let mut collisions = HashMap::<u64, Vec<u32>>::new();
     let mut anchor_by_char = HashMap::new();

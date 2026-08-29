@@ -64,6 +64,10 @@ impl Drop for ActiveConnectionGuard {
     }
 }
 
+#[expect(
+    clippy::large_enum_variant,
+    reason = "boxing would change the established hosted-memory state"
+)]
 enum HostedMemory {
     Loading {
         package_path: PathBuf,
@@ -509,6 +513,10 @@ fn handle_request(
     }
 }
 
+#[expect(
+    clippy::result_large_err,
+    reason = "the service response is the established protocol error"
+)]
 fn validate_live_lattice_limit(limit: usize) -> Result<(), lay::nanda_wave::L1ServiceResponse> {
     if (1..=lay::nanda_wave::L11_LIVE_LATTICE_LIMIT).contains(&limit) {
         return Ok(());

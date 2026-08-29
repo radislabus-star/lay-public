@@ -489,7 +489,10 @@ pub(super) fn reduce_train_morphology_with_imported_ownership(
     })
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn flush_imported_lemma(
     (language, normalized_lemma): (String, String),
     split: ProductiveSplitV1,
@@ -564,7 +567,6 @@ fn flush_imported_lemma(
     )
 }
 
-#[allow(clippy::too_many_arguments)]
 fn flush_lemma(
     (language, normalized_lemma): (String, String),
     forms: &mut BTreeMap<(MorphologySlotKeyV1, String), PendingFormV1>,
@@ -620,7 +622,7 @@ fn write_reduced_lemma(
     writer: &mut BufWriter<File>,
     output_hasher: &mut Sha256,
 ) -> Result<(), String> {
-    let payload = encode_lemma(&lemma)?;
+    let payload = encode_lemma(lemma)?;
     let payload_sha256: [u8; 32] = Sha256::digest(&payload).into();
     let mut header = [0_u8; REDUCED_LEMMA_HEADER_BYTES];
     header[0..4].copy_from_slice(&REDUCED_LEMMA_MAGIC);

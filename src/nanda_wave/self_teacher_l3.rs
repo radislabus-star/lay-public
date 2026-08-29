@@ -1053,6 +1053,10 @@ fn support_rank(readout: &context_phase::ContextPhaseReadout) -> i32 {
     }
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "diagnostic identity inputs remain explicit"
+)]
 fn shadow_miss_example(
     example: &DirtyExample,
     context: &[String],

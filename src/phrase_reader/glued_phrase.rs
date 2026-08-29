@@ -166,16 +166,16 @@ fn correct_multiword_glued_russian_phrase(lower: &str) -> Option<String> {
     for_each_viable_multiword_segmentation(lower, MAX_RU_GLUED_PHRASE_PARTS, |parts| {
         complete_paths += 1;
         let guard_started = std::time::Instant::now();
-        if starts_with_multi_letter_preposition(&parts) {
+        if starts_with_multi_letter_preposition(parts) {
             guard_us += guard_started.elapsed().as_micros();
             return;
         }
-        if contains_preferable_merged_russian_part(&parts) {
+        if contains_preferable_merged_russian_part(parts) {
             merged_rejects += 1;
             guard_us += guard_started.elapsed().as_micros();
             return;
         }
-        if !is_confident_multiword_glued_phrase(&parts) && !is_function_chain_glued_phrase(&parts) {
+        if !is_confident_multiword_glued_phrase(parts) && !is_function_chain_glued_phrase(parts) {
             confidence_rejects += 1;
             guard_us += guard_started.elapsed().as_micros();
             return;
@@ -185,7 +185,7 @@ fn correct_multiword_glued_russian_phrase(lower: &str) -> Option<String> {
         let score_started = std::time::Instant::now();
         let candidate = parts.join(" ");
         let margin = crate::ngram::ru_candidate_margin(&candidate, lower);
-        let score = multiword_glued_phrase_score(&parts, margin);
+        let score = multiword_glued_phrase_score(parts, margin);
         score_us += score_started.elapsed().as_micros();
         if score < 7.0 {
             return;
@@ -264,6 +264,10 @@ fn for_each_viable_multiword_segmentation<'a>(
     }
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "bounded search state remains explicit"
+)]
 fn collect_viable_multiword_segmentations<'a>(
     word: &'a str,
     boundaries: &[usize],

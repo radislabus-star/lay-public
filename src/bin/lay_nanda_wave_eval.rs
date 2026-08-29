@@ -1132,7 +1132,10 @@ fn prediction_next_token(prediction: &llmwave::LlmWavePhrasePrediction) -> Optio
     prediction.tokens.last().map(String::as_str)
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn maybe_push_corpus_example(
     examples: &mut Vec<LlmWaveCorpusExample>,
     limit: usize,

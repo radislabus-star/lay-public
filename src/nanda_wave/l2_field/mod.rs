@@ -21,7 +21,7 @@ mod teacher;
 mod v13_typed_peak;
 
 pub(crate) use bridge::{
-    canonical_ime_candidates_observed, canonical_text_candidates, canonical_text_readout_observed,
+    canonical_ime_candidates_observed, canonical_text_candidates,
     canonical_text_readout_observed_with_frame, cold_probe_surfaces,
 };
 pub(crate) use runtime::CanonicalFieldTelemetry;
@@ -218,33 +218,6 @@ fn reload_productive_l2_v1_inner(
         .map_err(|_| "productive V1 runtime lock poisoned")? = Some(loaded.clone());
     clear_productive_runtime_dependents();
     loaded
-}
-
-#[cfg(test)]
-mod productive_runtime_cache_tests {
-    use std::sync::atomic::{AtomicUsize, Ordering};
-    use std::sync::Mutex;
-
-    use super::load_cached_generation;
-
-    #[test]
-    fn failed_admission_is_cached_until_explicit_reload() {
-        let state = Mutex::new(None);
-        let attempts = AtomicUsize::new(0);
-        let load = || {
-            attempts.fetch_add(1, Ordering::SeqCst);
-            Err::<usize, _>("fingerprint mismatch".to_string())
-        };
-
-        let (first, first_loaded) = load_cached_generation(&state, load).expect("first load");
-        let (second, second_loaded) = load_cached_generation(&state, load).expect("cached load");
-
-        assert_eq!(first, Err("fingerprint mismatch".to_string()));
-        assert_eq!(second, first);
-        assert!(first_loaded);
-        assert!(!second_loaded);
-        assert_eq!(attempts.load(Ordering::SeqCst), 1);
-    }
 }
 
 fn load_productive_l2_v1(
@@ -661,7 +634,6 @@ pub fn estimate_productive_semantic_transducer_v1(
         .map_err(std::io::Error::other)
 }
 
-#[allow(clippy::too_many_arguments)]
 pub fn estimate_productive_semantic_transducer_heldout_v1(
     l1_package_path: &std::path::Path,
     l2_package_path: &std::path::Path,
@@ -682,7 +654,10 @@ pub fn estimate_productive_semantic_transducer_heldout_v1(
     )
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub fn compile_productive_paradigm_field_v1(
     l11_package_path: &std::path::Path,
     canonical_l2_path: &std::path::Path,
@@ -715,7 +690,10 @@ pub fn compile_productive_paradigm_field_v1(
     .map_err(std::io::Error::other)
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub fn resume_productive_paradigm_field_v1(
     l11_package_path: &std::path::Path,
     canonical_l2_path: &std::path::Path,
@@ -748,7 +726,10 @@ pub fn resume_productive_paradigm_field_v1(
     .map_err(std::io::Error::other)
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub fn resume_productive_paradigm_field_v1_shared_support(
     l11_package_path: &std::path::Path,
     canonical_l2_path: &std::path::Path,
@@ -781,7 +762,10 @@ pub fn resume_productive_paradigm_field_v1_shared_support(
     .map_err(std::io::Error::other)
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub fn reinduce_productive_paradigm_field_v1(
     l11_package_path: &std::path::Path,
     canonical_l2_path: &std::path::Path,
@@ -1027,7 +1011,10 @@ pub fn prove_compositional_l2_restoration(
     )
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub fn prove_contextual_compositional_l2_restoration(
     l1_package_path: &std::path::Path,
     l2_package_path: &std::path::Path,
@@ -1054,7 +1041,10 @@ pub fn prove_contextual_compositional_l2_restoration(
     )
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub fn prove_productive_l2_restoration(
     l1_package_path: &std::path::Path,
     l2_package_path: &std::path::Path,
@@ -1083,7 +1073,10 @@ pub fn prove_productive_l2_restoration(
     )
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub fn prove_productive_l2_sidecar(
     l1_package_path: &std::path::Path,
     l2_package_path: &std::path::Path,
@@ -1471,4 +1464,31 @@ fn resolve_l1_terminals(
             .collect::<std::collections::BTreeMap<_, _>>()
     });
     (terminals, workers)
+}
+
+#[cfg(test)]
+mod productive_runtime_cache_tests {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::Mutex;
+
+    use super::load_cached_generation;
+
+    #[test]
+    fn failed_admission_is_cached_until_explicit_reload() {
+        let state = Mutex::new(None);
+        let attempts = AtomicUsize::new(0);
+        let load = || {
+            attempts.fetch_add(1, Ordering::SeqCst);
+            Err::<usize, _>("fingerprint mismatch".to_string())
+        };
+
+        let (first, first_loaded) = load_cached_generation(&state, load).expect("first load");
+        let (second, second_loaded) = load_cached_generation(&state, load).expect("cached load");
+
+        assert_eq!(first, Err("fingerprint mismatch".to_string()));
+        assert_eq!(second, first);
+        assert!(first_loaded);
+        assert!(!second_loaded);
+        assert_eq!(attempts.load(Ordering::SeqCst), 1);
+    }
 }

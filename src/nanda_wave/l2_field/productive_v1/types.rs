@@ -60,7 +60,10 @@ pub(super) struct MorphologySlotKeyV1 {
 const _: [(); MORPHOLOGY_SLOT_BYTES] = [(); std::mem::size_of::<MorphologySlotKeyV1>()];
 
 impl MorphologySlotKeyV1 {
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     pub(super) const fn new(
         part_of_speech: u8,
         number: u8,

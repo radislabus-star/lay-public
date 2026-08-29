@@ -156,7 +156,7 @@ impl VisibleTailSnapshot {
             && self
                 .focus_id
                 .as_deref()
-                .map_or(true, |expected| Some(expected) == focus_id)
+                .is_none_or(|expected| Some(expected) == focus_id)
     }
 
     pub fn matches_current_suffix(&self, current_tail: &str, delete_chars: usize) -> bool {

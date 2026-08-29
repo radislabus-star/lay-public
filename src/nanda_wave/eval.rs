@@ -297,8 +297,9 @@ mod tests {
         let report = canonical_l2_candidate_report(&words, "эсперемнт", 4);
 
         assert_eq!(report.candidates[0].word, "эксперимент");
-        assert!(report.candidates.get(1).map_or(true, |runner_up| {
-            report.candidates[0].score > runner_up.score
-        }));
+        assert!(report
+            .candidates
+            .get(1)
+            .is_none_or(|runner_up| { report.candidates[0].score > runner_up.score }));
     }
 }

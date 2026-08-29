@@ -21,8 +21,8 @@ fi
 echo "== cargo test --all-targets =="
 cargo test --all-targets
 
-echo "== cargo clippy --all-targets -- -D warnings =="
-cargo clippy --all-targets -- -D warnings
+echo "== scripts/check-lay-lints.sh =="
+scripts/check-lay-lints.sh
 
 echo "== node --check GNOME extension =="
 python3 -m json.tool extension/lay@radislabus-star.github.io/metadata.json >/dev/null

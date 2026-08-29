@@ -688,7 +688,7 @@ fn validate_directory_entry(
     entry: SectionDirectoryEntryV1,
     section_floor: u64,
 ) -> Result<(), String> {
-    if entry.flags != 0 || entry.offset % 8 != 0 {
+    if entry.flags != 0 || !entry.offset.is_multiple_of(8) {
         return Err("productive V1 section flags or alignment invalid".to_string());
     }
     let end = entry

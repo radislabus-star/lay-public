@@ -92,7 +92,7 @@ impl ProofProgress {
 
     fn advance(&self) {
         let completed = self.completed.fetch_add(1, Ordering::Relaxed) + 1;
-        if completed == self.total || completed % self.interval == 0 {
+        if completed == self.total || completed.is_multiple_of(self.interval) {
             eprintln!(
                 "gate_c_progress phase={} completed={}/{} elapsed_ms={}",
                 self.label,
@@ -142,7 +142,6 @@ pub fn diagnose_l1_typed_basin_quality_class(
     )
 }
 
-#[allow(clippy::too_many_arguments)]
 fn prove_l1_typed_basin_quality_scoped(
     corpus_path: &Path,
     package_path: &Path,
@@ -503,6 +502,10 @@ fn quality_verdict(
     }
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "proof prerequisite identities remain explicit"
+)]
 fn prerequisite_rejection(
     corpus_path: &Path,
     package_path: &Path,
@@ -707,9 +710,11 @@ fn evaluate_surface(
     } else {
         (Vec::new(), None)
     };
-    let legacy_us = observe_legacy
-        .then(|| elapsed_us(legacy_started))
-        .unwrap_or_default();
+    let legacy_us = if observe_legacy {
+        elapsed_us(legacy_started)
+    } else {
+        Default::default()
+    };
     Ok(SurfaceEvaluation {
         exact,
         typed_certificate_classes: typed.certificate_classes,
@@ -1015,7 +1020,10 @@ fn record_clean(
     }
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn loss_diagnostic(
     scope: &'static str,
     mechanism: &'static str,

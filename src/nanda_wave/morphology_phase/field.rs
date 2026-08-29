@@ -300,9 +300,9 @@ impl MorphologyField {
                     anti: slot.anti,
                     score: slot.score,
                 };
-                let replace = best_by_form.get(form_id).map_or(true, |current| {
-                    score_order(&scored, current) == Ordering::Less
-                });
+                let replace = best_by_form
+                    .get(form_id)
+                    .is_none_or(|current| score_order(&scored, current) == Ordering::Less);
                 if replace {
                     best_by_form.insert(*form_id, scored);
                 }

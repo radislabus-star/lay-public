@@ -365,10 +365,12 @@ mod tests {
             .unwrap()
             .as_nanos();
         let path = std::env::temp_dir().join(format!("lay-l3-online-v1-{unique}.json"));
-        let mut old = OnlineState::default();
-        old.format = LEGACY_STATE_FORMAT.to_string();
-        old.generation = 7;
-        old.admitted_deltas = 3;
+        let mut old = OnlineState {
+            format: LEGACY_STATE_FORMAT.to_string(),
+            generation: 7,
+            admitted_deltas: 3,
+            ..OnlineState::default()
+        };
         old.pending.insert(
             "слово\u{1f}сайт".to_string(),
             PendingRelation {
@@ -400,8 +402,10 @@ mod tests {
             .unwrap()
             .as_nanos();
         let path = std::env::temp_dir().join(format!("lay-l3-online-v2-{unique}.json"));
-        let mut old = OnlineState::default();
-        old.format = DIRECT_STATE_FORMAT.to_string();
+        let mut old = OnlineState {
+            format: DIRECT_STATE_FORMAT.to_string(),
+            ..OnlineState::default()
+        };
         old.pending.insert(
             "слово\u{1f}сайт".to_string(),
             PendingRelation {
@@ -432,10 +436,12 @@ mod tests {
             .unwrap()
             .as_nanos();
         let path = std::env::temp_dir().join(format!("lay-l3-online-proof-revision-{unique}.json"));
-        let mut old = OnlineState::default();
-        old.proof_pipeline_revision = 0;
-        old.generation = 2;
-        old.admitted_deltas = 1;
+        let mut old = OnlineState {
+            proof_pipeline_revision: 0,
+            generation: 2,
+            admitted_deltas: 1,
+            ..OnlineState::default()
+        };
         old.pending.insert(
             "old-watch".to_string(),
             PendingRelation {

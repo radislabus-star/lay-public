@@ -3515,7 +3515,10 @@ mod tests {
         })
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn byte_exact_lane(
         index: &V13DafsaView,
         lane: &Phase7dRetrievalLane,
@@ -5409,10 +5412,13 @@ mod tests {
             let search_us = elapsed_micros(search_started);
             let result = exhaustive_result(&oracle, package, &exact)?;
 
-            let mut counters = SemanticCounters::default();
-            counters.completeness_mismatches =
-                usize::from(result.completeness != SearchCompleteness::CertifiedExhaustive);
-            counters.unresolved = usize::from(exact.unresolved.is_some());
+            let mut counters = SemanticCounters {
+                completeness_mismatches: usize::from(
+                    result.completeness != SearchCompleteness::CertifiedExhaustive,
+                ),
+                unresolved: usize::from(exact.unresolved.is_some()),
+                ..SemanticCounters::default()
+            };
             let mut inputs = Vec::<ExactPeakCandidateInputV1>::new();
             let mut expected_candidates = BTreeSet::<(u32, String)>::new();
             let mut expected_certificates = BTreeSet::<(u32, String, u8, String)>::new();

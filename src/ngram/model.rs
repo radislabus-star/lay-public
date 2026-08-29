@@ -98,7 +98,7 @@ impl CharNgramModel {
 
 fn char_ngrams(word: &str) -> Vec<String> {
     let mut chars = Vec::with_capacity(word.chars().count() + N);
-    chars.extend(std::iter::repeat('^').take(N - 1));
+    chars.extend(std::iter::repeat_n('^', N - 1));
     chars.extend(word.chars());
     chars.push('$');
 

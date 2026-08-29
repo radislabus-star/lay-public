@@ -1382,7 +1382,7 @@ fn write_l11_extension(
     Ok(())
 }
 
-#[allow(clippy::type_complexity)]
+#[expect(clippy::type_complexity, reason = "existing explicit type contract")]
 fn read_l11_extension(
     bytes: &[u8],
     offset: usize,
@@ -1524,6 +1524,10 @@ fn validate_graph(graph: &NGramGraph) -> Result<(), String> {
     Ok(())
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "sealed format sections remain explicit"
+)]
 fn validate_ranges(
     atoms: &[AtomRecord],
     centers: &[WordCenter64],
@@ -1553,6 +1557,10 @@ fn validate_ranges(
     Ok(())
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "sealed format sections remain explicit"
+)]
 fn validate_l11_ranges(
     profiles: &[CenterPhaseProfile],
     positive_len: usize,

@@ -147,6 +147,10 @@ pub(super) trait ProductiveMorphologySource: Sync {
         limit: usize,
     ) -> Vec<ProductiveFormBirth>;
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn generate_forms_prepared(
         &self,
         prepared: &PreparedProductiveGeneration<'_>,
@@ -286,6 +290,10 @@ impl ProductiveMorphologyIndex {
         )
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn generate_prepared(
         &self,
         prepared: &PreparedProductiveGeneration<'_>,
@@ -960,7 +968,7 @@ fn finish_training(
         report.admitted_profiles += 1;
     }
     for rules in rules_by_family.values_mut() {
-        rules.sort_by(|left, right| productive_rule_order(left, right));
+        rules.sort_by(productive_rule_order);
     }
     let target_features_by_source = target_features_by_source
         .into_iter()

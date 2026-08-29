@@ -965,7 +965,7 @@ impl CompactPackageView {
         let competition_edges = read_section(
             &data[competition_range],
             counts.competition_edges,
-            |cursor| format::read_competition_edge(cursor),
+            format::read_competition_edge,
         )?;
         let mut calibration_cursor = Cursor::new(&data[calibration_range]);
         let calibration = format::read_calibration(&mut calibration_cursor)?;

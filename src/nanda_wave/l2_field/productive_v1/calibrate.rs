@@ -215,10 +215,9 @@ impl CalibrationTableV1 {
                 && key.transition_class.is_none()
                 && key.support_bin.is_none()
                 && key.ambiguity_kind.is_none()
+                && generated_fallback_key.replace(hash).is_some()
             {
-                if generated_fallback_key.replace(hash).is_some() {
-                    return Err("productive calibration has multiple generated fallback keys");
-                }
+                return Err("productive calibration has multiple generated fallback keys");
             }
             rows.push(PackagedCalibrationCellV1 {
                 stratum_key_id: hash,
@@ -288,7 +287,7 @@ pub(super) fn fit_calibration_table(
         return Err("productive calibration requires disjoint calibration groups");
     }
     let mut ordered = groups.to_vec();
-    ordered.sort_by(|left, right| left.group_identity.cmp(&right.group_identity));
+    ordered.sort_by_key(|left| left.group_identity);
     if ordered
         .windows(2)
         .any(|pair| pair[0].group_identity == pair[1].group_identity)
@@ -369,7 +368,7 @@ fn fit_cell(
             ))
         })
         .collect::<Result<Vec<_>, &'static str>>()?;
-    authority.sort_by(|left, right| right.0.cmp(&left.0));
+    authority.sort_by_key(|item| std::cmp::Reverse(item.0));
     let mut wrong = 0_usize;
     let mut false_singleton = 0_usize;
     let mut grounded_violations = 0_usize;
@@ -554,7 +553,6 @@ pub(super) enum ProductiveCalibratedVerdictV1 {
     },
 }
 
-#[allow(clippy::too_many_arguments)]
 pub(super) fn calibrated_readout(
     table: &CalibrationTableV1,
     stratum: &ObservableCalibrationStratumV1,
@@ -577,7 +575,6 @@ pub(super) fn calibrated_readout(
     )
 }
 
-#[allow(clippy::too_many_arguments)]
 pub(super) fn calibrated_readout_packaged(
     selected: Option<(u32, CalibrationCellRecordV1)>,
     candidates: Vec<ReadoutCandidateV1>,
@@ -769,7 +766,7 @@ mod tests {
                     grounded_lemma_evidence: 0,
                     exact_osa_distance: 0,
                     exact_form: false,
-                    gold_valid: !valid_leader || index % 100 == 0,
+                    gold_valid: !valid_leader || index.is_multiple_of(100),
                 },
             ],
             false_singleton: false,
@@ -864,7 +861,7 @@ mod tests {
             rank_origin: CandidateRankOriginV1::BaseV64,
             cross_lane_certified: false,
         };
-        let mut candidates = vec![
+        let mut candidates = [
             candidate(4, 8, 2, false),
             candidate(3, 9, 3, false),
             candidate(2, 9, 2, false),

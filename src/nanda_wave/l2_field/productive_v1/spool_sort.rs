@@ -274,7 +274,6 @@ fn write_initial_run(
     Ok(path)
 }
 
-#[allow(clippy::too_many_arguments)]
 fn merge_all_runs(
     shard_index: usize,
     split_seed: u64,
@@ -336,16 +335,13 @@ fn merge_run_group(
         .collect::<Result<Vec<_>, String>>()?;
     let mut writer = VerifiedSpoolShardWriterV1::create(output_path, write_buffer_bytes)?;
     let mut previous: Option<([u8; 32], Vec<u8>)> = None;
-    loop {
-        let Some(selected) = heads
-            .iter()
-            .enumerate()
-            .filter_map(|(index, head)| head.as_ref().map(|head| (index, head)))
-            .min_by(|(_, left), (_, right)| sort_order(left, right))
-            .map(|(index, _)| index)
-        else {
-            break;
-        };
+    while let Some(selected) = heads
+        .iter()
+        .enumerate()
+        .filter_map(|(index, head)| head.as_ref().map(|head| (index, head)))
+        .min_by(|(_, left), (_, right)| sort_order(left, right))
+        .map(|(index, _)| index)
+    {
         let head = heads[selected].take().expect("selected merge head");
         let duplicate = previous.as_ref().is_some_and(|(hash, bytes)| {
             *hash == head.record.event_sha256 && *bytes == head.record.canonical_event_bytes

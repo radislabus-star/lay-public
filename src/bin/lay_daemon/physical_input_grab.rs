@@ -4,6 +4,8 @@ use lay::word_buffer::WordBuffer;
 
 use super::{emit_key_taps_fast, emit_shifted_key_tap_fast, log};
 
+type ManualToggleReplay<'a> = dyn FnMut(&mut VirtualDevice, &mut WordBuffer) -> Option<bool> + 'a;
+
 pub(super) struct PhysicalInputGrab<'a> {
     device: Option<&'a mut Device>,
     active: bool,
@@ -92,6 +94,10 @@ impl<'a> PhysicalInputGrab<'a> {
         )
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "input replay state remains explicit"
+    )]
     pub(super) fn forward_queued_typing_with_manual_toggles(
         &mut self,
         virtual_kbd: &mut VirtualDevice,
@@ -100,7 +106,7 @@ impl<'a> PhysicalInputGrab<'a> {
         label: &str,
         skip_spaces: usize,
         forward_boundaries: bool,
-        replay_manual_toggle: &mut dyn FnMut(&mut VirtualDevice, &mut WordBuffer) -> Option<bool>,
+        replay_manual_toggle: &mut ManualToggleReplay<'_>,
     ) -> ForwardedTyping {
         self.forward_queued_input(
             virtual_kbd,
@@ -113,7 +119,10 @@ impl<'a> PhysicalInputGrab<'a> {
         )
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "input replay state remains explicit"
+    )]
     fn forward_queued_input(
         &mut self,
         virtual_kbd: &mut VirtualDevice,
@@ -122,9 +131,7 @@ impl<'a> PhysicalInputGrab<'a> {
         label: &str,
         mut skip_spaces: usize,
         forward_boundaries: bool,
-        mut replay_manual_toggle: Option<
-            &mut dyn FnMut(&mut VirtualDevice, &mut WordBuffer) -> Option<bool>,
-        >,
+        mut replay_manual_toggle: Option<&mut ManualToggleReplay<'_>>,
     ) -> ForwardedTyping {
         if !self.active {
             return ForwardedTyping::default();

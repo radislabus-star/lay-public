@@ -2079,7 +2079,10 @@ fn b_to_s0_mechanism(diagnostics: &TargetColdGroundingDiagnosticsV1) -> &'static
     }
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn load_or_build_frozen_hypothesis_manifest(
     path: &Path,
     l11_sha256: [u8; 32],
@@ -2329,7 +2332,6 @@ fn validate_frozen_manifest(manifest: &FrozenHypothesisManifestV1) -> io::Result
     Ok(())
 }
 
-#[allow(clippy::too_many_arguments)]
 pub(in crate::nanda_wave::l2_field) fn prove_productive_paradigm_field_v1(
     l1_package_path: &Path,
     l2_package_path: &Path,
@@ -2372,7 +2374,10 @@ pub(in crate::nanda_wave::l2_field) fn prove_productive_paradigm_field_v1_semant
     )
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn prove_productive_paradigm_field_v1_inner(
     l1_package_path: &Path,
     l2_package_path: &Path,
@@ -2870,7 +2875,6 @@ fn prove_productive_paradigm_field_v1_inner(
     Ok(report)
 }
 
-#[allow(clippy::too_many_arguments)]
 pub(super) fn collect_fixed_shared_replay_audits_v1(
     l1_package_path: &Path,
     l2_package_path: &Path,
@@ -2960,12 +2964,12 @@ pub(super) fn collect_fixed_shared_replay_audits_v1(
                         .map(|case_index| {
                             collect_case_shared_replay_audits(
                                 &cases[*case_index],
-                                &runtime,
+                                runtime,
                                 semantic_runtime,
-                                &frozen_oracle_runtime,
-                                &canonical_l2,
-                                &axis_schema,
-                                &frozen_manifest,
+                                frozen_oracle_runtime,
+                                canonical_l2,
+                                axis_schema,
+                                frozen_manifest,
                             )
                             .map(|case| (*case_index, case))
                         })
@@ -3192,6 +3196,10 @@ fn sample_cases(
     Ok((cases, scanned, sampled_by_cohort))
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "proof denominators remain explicit"
+)]
 fn evaluate_cases(
     case_indices: &[usize],
     cases: &[ProofCaseV1],
@@ -3560,7 +3568,10 @@ fn evaluate_live_cohort_compare_case(
     ))
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn live_no_field_outcome(
     case: &ProofCaseV1,
     availability: L2FieldAvailability,
@@ -4181,6 +4192,10 @@ fn case_targets_and_frozen_entry<'a>(
     Ok((targets, frozen_entry))
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "proof denominators remain explicit"
+)]
 fn evaluate_case(
     case: &ProofCaseV1,
     runtime: &PackagedProductiveRuntimeV1,
@@ -4501,6 +4516,10 @@ fn evaluate_case(
     })
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "proof denominators remain explicit"
+)]
 fn evaluate_material_frame_case(
     case: &ProofCaseV1,
     runtime: &PackagedProductiveRuntimeV1,
@@ -5009,6 +5028,10 @@ fn valid_targets(
         .collect()
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "proof identity inputs remain explicit"
+)]
 fn build_groundings(
     identities: &[CanonicalL2BindingIdentityV1],
     masked_targets: &[CanonicalL2BindingIdentityV1],

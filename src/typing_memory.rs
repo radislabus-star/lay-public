@@ -746,6 +746,10 @@ fn rejected_events(
         .collect()
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "event identity fields remain explicit"
+)]
 fn accepted_events(
     kind: TypingMemoryEventKind,
     from: &str,

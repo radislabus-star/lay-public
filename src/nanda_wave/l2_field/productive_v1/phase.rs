@@ -522,11 +522,9 @@ fn package_centers(
         .into_iter()
         .map(|center| {
             let saturated = center.exact_support > u32::from(u16::MAX);
-            let mass = if total == 0 {
-                0
-            } else {
-                ((u64::from(center.exact_support) * u64::from(u16::MAX) + total / 2) / total) as u16
-            };
+            let mass = (u64::from(center.exact_support) * u64::from(u16::MAX) + total / 2)
+                .checked_div(total)
+                .unwrap_or(0) as u16;
             FittedPhaseCenterV1 {
                 cells: center.cells,
                 feature_mask,

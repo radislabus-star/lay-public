@@ -6,6 +6,10 @@ use lay::manual_toggle::ImeManualToggleOutcome;
 use lay::word_buffer::WordBuffer;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "boxing would change the bounded manual-toggle dispatch"
+)]
 pub(crate) enum ImeManualToggleDispatch {
     DelegateDaemon(ManualCorrectionOutputRoute),
     ReplayExactImeTail(ImeCommittedTailReplay),

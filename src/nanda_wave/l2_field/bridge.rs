@@ -1885,6 +1885,10 @@ fn l11_service_timeout() -> std::time::Duration {
     )
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn apply_standalone_l2_field(
     field: &StandaloneL2Field,
     context: &str,
@@ -2064,7 +2068,7 @@ fn apply_standalone_l2_field(
         return None;
     }
     let readout = field.readout_observed(
-        &context,
+        context,
         token,
         &lexical_seeds,
         super::CANONICAL_L2_FORM_LIMIT,

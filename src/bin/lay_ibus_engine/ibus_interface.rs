@@ -496,8 +496,10 @@ mod causal_precondition_tests {
 
     #[test]
     fn physical_double_shift_owner_legacy_route_is_observation_only() {
-        let mut config = LayConfig::default();
-        config.text_backend = "ime".to_string();
+        let config = LayConfig {
+            text_backend: "ime".to_string(),
+            ..LayConfig::default()
+        };
         let mut engine = LayIbusEngine::new(
             "/engine/legacy-double-shift".to_string(),
             Arc::new(Mutex::new(SharedState::default())),

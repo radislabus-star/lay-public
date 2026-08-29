@@ -86,7 +86,7 @@ impl<'a> CheckedPoolV1<'a> {
         let mut entries = Vec::with_capacity(entry_count as usize);
         let mut offset = 8_usize;
         for _ in 0..entry_count {
-            if offset % 8 != 0 || offset > u32::MAX as usize {
+            if !offset.is_multiple_of(8) || offset > u32::MAX as usize {
                 return Err(
                     "productive variable pool entry alignment or offset is invalid".to_string(),
                 );
@@ -653,7 +653,10 @@ fn validate_delta_manifest(
     Ok(())
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn validate_paradigms(
     paradigms: FixedRecordViewV1<'_, ParadigmCenterRecordV1>,
     program_count: usize,
@@ -727,7 +730,6 @@ fn validate_paradigms(
     Ok(roots)
 }
 
-#[allow(clippy::too_many_arguments)]
 fn validate_bindings(
     bindings: FixedRecordViewV1<'_, LemmaParadigmBindingV1>,
     paradigm_count: usize,
@@ -810,7 +812,10 @@ fn validate_compatibility(
     require_complete_ownership(&posting_owner, "compatibility posting")
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn validate_programs(
     programs: FixedRecordViewV1<'_, MorphProgramHeaderRecordV1>,
     operations: FixedRecordViewV1<'_, MorphOpRecordV1>,
@@ -895,7 +900,10 @@ fn validate_programs(
     Ok(terminators)
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn validate_phase_profiles(
     profiles: FixedRecordViewV1<'_, SlotPhaseProfileRecordV1>,
     positive: FixedRecordViewV1<'_, PhaseCenterRecordV1>,
@@ -911,14 +919,15 @@ fn validate_phase_profiles(
     let mut anti_owner = vec![0_u8; anti.len()];
     let mut hard_owner = vec![0_u8; hard_negative.len()];
     let mut ambiguity_owner = vec![0_u8; ambiguity.len()];
-    for index in 0..profiles.len() {
+    for (index, paradigm_id) in profile_owner_paradigm
+        .iter()
+        .copied()
+        .enumerate()
+        .take(profiles.len())
+    {
         let profile = profiles.get(index)?;
         let slot = one_based(slots, profile.slot_id, "phase profile slot")?;
-        let paradigm = one_based(
-            paradigms,
-            profile_owner_paradigm[index],
-            "phase profile paradigm",
-        )?;
+        let paradigm = one_based(paradigms, paradigm_id, "phase profile paradigm")?;
         if profile.support == 0
             || profile.calibration_class as usize > calibration_count
             || u16::from(slot.pos_domain()) != paradigm.pos_domain
@@ -1013,7 +1022,10 @@ fn validate_residuals(
     Ok(())
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn validate_trie(
     nodes: FixedRecordViewV1<'_, ProductiveTrieNodeRecordV1>,
     arcs: FixedRecordViewV1<'_, ProductiveTrieArcRecordV1>,
@@ -1054,9 +1066,8 @@ fn validate_trie(
             {
                 return Err("productive trie arc child or order is invalid".to_string());
             }
-            match opcode {
-                ProductiveTrieArcOpcodeV1::EmitSegment => require_segment(segment_pool, arc.arg1)?,
-                _ => {}
+            if opcode == ProductiveTrieArcOpcodeV1::EmitSegment {
+                require_segment(segment_pool, arc.arg1)?
             }
             parent_count[arc.child_node as usize] = parent_count[arc.child_node as usize]
                 .checked_add(1)
@@ -1117,8 +1128,7 @@ fn validate_trie(
 
     let mut terminal_identities = BTreeSet::new();
     let mut terminal_hashes = BTreeSet::new();
-    for node_index in 0..nodes.len() {
-        let owner = root_owner[node_index];
+    for (node_index, owner) in root_owner.iter().copied().enumerate().take(nodes.len()) {
         let node = nodes.get(node_index)?;
         let range = checked_range(
             node.terminal_start,
@@ -1249,7 +1259,7 @@ fn claim_u8_range(
 }
 
 fn require_complete_ownership(owners: &[u8], label: &str) -> Result<(), String> {
-    if owners.iter().any(|owner| *owner == 0) {
+    if owners.contains(&0) {
         Err(format!(
             "productive {label} section contains an unowned row"
         ))
@@ -1259,7 +1269,7 @@ fn require_complete_ownership(owners: &[u8], label: &str) -> Result<(), String> 
 }
 
 fn require_complete_ownership_u32(owners: &[u32], label: &str) -> Result<(), String> {
-    if owners.iter().any(|owner| *owner == 0) {
+    if owners.contains(&0) {
         Err(format!(
             "productive {label} section contains an unowned row"
         ))

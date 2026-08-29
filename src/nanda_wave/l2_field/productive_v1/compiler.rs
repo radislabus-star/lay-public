@@ -658,7 +658,7 @@ fn representative_anchor_lengths(
         );
         let source_len = u16::try_from(current.source_surface.chars().count())
             .map_err(|_| "productive representative anchor exceeds u16".to_string())?;
-        while assignment.is_some_and(|binding| (binding.lemma_id, binding.pos_domain) < basin) {
+        if assignment.is_some_and(|binding| (binding.lemma_id, binding.pos_domain) < basin) {
             return Err("productive paradigm assignment has no classified lemma".to_string());
         }
         if let Some(binding) =
@@ -914,17 +914,16 @@ fn replacement_segment_ref(refs: &BTreeMap<String, u32>, segment: &str) -> Resul
     }
 }
 
+type FlatTrieSections = (
+    Vec<ProductiveTrieNodeRecordV1>,
+    Vec<ProductiveTrieArcRecordV1>,
+    Vec<ProductiveTerminalRecordV1>,
+);
+
 fn flatten_trie(
     forest: &super::trie::ProductiveTrieForestV1,
     segment_refs: &BTreeMap<String, u32>,
-) -> Result<
-    (
-        Vec<ProductiveTrieNodeRecordV1>,
-        Vec<ProductiveTrieArcRecordV1>,
-        Vec<ProductiveTerminalRecordV1>,
-    ),
-    String,
-> {
+) -> Result<FlatTrieSections, String> {
     let mut nodes = Vec::with_capacity(forest.nodes.len());
     let mut arcs = Vec::new();
     let mut terminals = Vec::new();
@@ -1071,7 +1070,7 @@ fn compile_bindings_and_local_programs(
             group.push(row.take().expect("classified lemma row"));
             row = classified.next()?;
         }
-        while assignment.is_some_and(|binding| (binding.lemma_id, binding.pos_domain) < basin) {
+        if assignment.is_some_and(|binding| (binding.lemma_id, binding.pos_domain) < basin) {
             return Err("productive assignment has no classified lemma".to_string());
         }
         let Some(matched) =
@@ -1147,10 +1146,12 @@ fn compile_bindings_and_local_programs(
     Ok((bindings, observed_sets))
 }
 
+type AxisPool = (Vec<u8>, BTreeMap<Vec<u32>, u32>);
+
 fn build_axis_pool(
     schema: &MorphologyAxisSchemaV1,
     observed_sets: &BTreeSet<Vec<u32>>,
-) -> Result<(Vec<u8>, BTreeMap<Vec<u32>, u32>), String> {
+) -> Result<AxisPool, String> {
     let count = schema
         .labels
         .len()

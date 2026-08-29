@@ -197,8 +197,8 @@ pub(crate) fn estimate_productive_semantic_transducer_v1(
         .map(|owners| 8_u64 + owners.len() as u64 * 4)
         .sum::<u64>();
     let dense_owner_bytes = semantic_owners
-        .iter()
-        .map(|(transform, _)| {
+        .keys()
+        .map(|transform| {
             let paradigms = paradigms_by_pos
                 .get(&transform.pos_domain)
                 .copied()
@@ -353,7 +353,6 @@ struct SemanticExecutionV1 {
     emitted_scalars: u64,
 }
 
-#[allow(clippy::too_many_arguments)]
 pub(crate) fn estimate_productive_semantic_transducer_heldout_v1(
     l1_package_path: &Path,
     l2_package_path: &Path,

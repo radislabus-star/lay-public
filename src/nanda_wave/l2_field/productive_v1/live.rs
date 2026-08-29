@@ -301,6 +301,10 @@ pub(in crate::nanda_wave::l2_field) fn prepare_live_productive_v1_field(
     )
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub(in crate::nanda_wave::l2_field) fn prepare_live_productive_v1_field_with_exact_peaks(
     context_prefix: &str,
     observed: &str,
@@ -323,7 +327,10 @@ pub(in crate::nanda_wave::l2_field) fn prepare_live_productive_v1_field_with_exa
     )
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn prepare_live_productive_v1_field_inner(
     context_prefix: &str,
     observed: &str,
@@ -555,7 +562,10 @@ fn shared_field_contour_births(
     }
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn insert_shared_contour_birth(
     births: &mut BTreeMap<
         (

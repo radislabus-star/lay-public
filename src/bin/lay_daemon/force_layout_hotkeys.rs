@@ -106,7 +106,7 @@ impl ForceLayoutHotkeys {
                     || held > ctx.shift_tap_max
                     || !ctx
                         .last_double_at
-                        .map_or(true, |d| d.elapsed() >= ctx.debounce_window)
+                        .is_none_or(|d| d.elapsed() >= ctx.debounce_window)
                 {
                     return;
                 }

@@ -1287,7 +1287,7 @@ mod tests {
             req.nanda_wave_options = req.nanda_wave_options.with_l2_phase_apply(true);
             let resolution = resolve_text_correction(req);
             assert!(
-                resolution.selected.as_ref().map_or(true, |candidate| {
+                resolution.selected.as_ref().is_none_or(|candidate| {
                     is_cyrillic_letters_only(candidate.replacement.trim())
                 }),
                 "known Russian center must retain script: {resolution:?}"

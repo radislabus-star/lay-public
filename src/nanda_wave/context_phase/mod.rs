@@ -358,8 +358,10 @@ impl ContextPhasePackage {
                     .or_default() += 1;
             }
         }
-        let mut merged = Self::default();
-        merged.signature_schema = signature_schema;
+        let mut merged = Self {
+            signature_schema,
+            ..Self::default()
+        };
         for shard in shards {
             merged.transitions = merged.transitions.saturating_add(shard.transitions);
             merged.corpus_fragments = merged
@@ -871,10 +873,11 @@ impl ContextPhasePackage {
             .is_some_and(|state| state.support >= 2);
         if structured {
             let encoded = scene.encoded_tokens();
-            let pair_views = scene
-                .has_directional_context()
-                .then(|| scene.pair_views())
-                .unwrap_or_default();
+            let pair_views = if scene.has_directional_context() {
+                scene.pair_views()
+            } else {
+                Default::default()
+            };
             let direct_pair_view_indices = scene.direct_pair_view_indices();
             self.score_candidates_with_mode_and_pair_views(
                 &encoded,
@@ -1028,6 +1031,10 @@ impl ContextPhasePackage {
             .unwrap_or_else(|| exact.unwrap_or(PairEdgeOutcome::Unknown))
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn pair_view_edge_evidence(
         &self,
         scene: &[PhaseCell],
@@ -1591,13 +1598,15 @@ impl ContextPhasePackage {
             // The only candidate-local destructive authority is a witnessed
             // false winner, retained in the hard bank below.
             let hard = strongest_center(vector, &profile.hard_negative).unwrap_or_default();
-            let relation = relation_script_mismatch
-                .then(|| {
+            let relation = if relation_script_mismatch {
+                {
                     signature_profile
                         .and_then(|profile| strongest_center(scene, &profile.negative))
                         .unwrap_or_default()
-                })
-                .unwrap_or_default();
+                }
+            } else {
+                Default::default()
+            };
             if relation.0 > hard.0 {
                 relation
             } else {

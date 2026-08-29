@@ -323,6 +323,8 @@ pub(crate) struct StandaloneL2Readout {
     pub(crate) context_mode_id: Option<u32>,
 }
 
+type ProductiveSourceCell = std::sync::OnceLock<Option<(u16, ProductiveForm)>>;
+
 #[derive(Clone, Debug)]
 pub(crate) struct StandaloneL2Field {
     package: RuntimeL2Package,
@@ -331,8 +333,7 @@ pub(crate) struct StandaloneL2Field {
     form_by_terminal: Vec<(u32, u32)>,
     binding_offsets_by_form: Vec<u32>,
     binding_indices_by_form: Vec<u32>,
-    productive_source_by_lemma:
-        std::sync::Arc<[std::sync::OnceLock<Option<(u16, ProductiveForm)>>]>,
+    productive_source_by_lemma: std::sync::Arc<[ProductiveSourceCell]>,
     context_by_key: BTreeMap<u32, u32>,
     slot_centers_by_mode_feature: BTreeMap<(u32, u32), Vec<u32>>,
     neighbor_couplings_by_mode_lemma_feature: BTreeMap<(u32, u32, u32), Vec<u32>>,
@@ -559,7 +560,10 @@ impl StandaloneL2Field {
         )
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn productive_form_births_from_lemmas_impl<I: ProductiveMorphologySource + ?Sized>(
         &self,
         index: &I,
@@ -1284,10 +1288,10 @@ impl StandaloneL2Field {
         let wave = scene_wave(context);
         let mut evidence = self
             .bindings_for_form(form_ref)
-            .filter_map(|binding| {
+            .map(|binding| {
                 let context_evidence =
                     index.context_slot_evidence_for(context, binding.feature_mask);
-                Some(MorphologySlotEvidence {
+                MorphologySlotEvidence {
                     lemma_id: binding.lemma_center_id,
                     // An exact package form is already grounded in this slot. It does not
                     // need the productive generator's canonical source form, and decoding
@@ -1310,7 +1314,7 @@ impl StandaloneL2Field {
                     ),
                     joint_evidence_milli: 0,
                     generated: false,
-                })
+                }
             })
             .collect::<Vec<_>>();
         evidence.sort_unstable_by_key(|item| {

@@ -325,7 +325,7 @@ fn select_witness(
             std::cmp::Reverse(buckets.len()),
             probe,
         );
-        if best.as_ref().map_or(true, |current| score < *current) {
+        if best.as_ref().is_none_or(|current| score < *current) {
             best = Some(score);
         }
     }

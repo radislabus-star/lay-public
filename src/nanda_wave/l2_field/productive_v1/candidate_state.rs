@@ -41,6 +41,10 @@ pub(super) struct CandidateValidityShadowV1 {
     pub(super) exact_projected_target_hash: [u64; 2],
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "sealed evidence inputs remain explicit"
+)]
 pub(super) fn derive_candidate_validity_shadow(
     material: &PreparedTargetMaterialShadowV1,
     lease: PreparedMaterialLeaseV1,

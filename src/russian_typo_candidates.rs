@@ -29,7 +29,7 @@ pub(crate) fn repeated_run_deletion_candidates(lower: &str) -> Vec<String> {
             for keep in 1..run_len {
                 let mut candidate = String::with_capacity(lower.len());
                 candidate.extend(chars[..idx].iter());
-                candidate.extend(std::iter::repeat(chars[idx]).take(keep));
+                candidate.extend(std::iter::repeat_n(chars[idx], keep));
                 candidate.extend(chars[end..].iter());
                 if seen.insert(candidate.clone()) {
                     candidates.push(candidate);

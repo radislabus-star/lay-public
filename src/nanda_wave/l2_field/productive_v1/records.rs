@@ -19,7 +19,7 @@ pub(super) fn encode_records<T: FixedRecordV1>(records: &[T]) -> Vec<u8> {
 }
 
 pub(super) fn decode_records<T: FixedRecordV1>(bytes: &[u8]) -> Result<Vec<T>, &'static str> {
-    if bytes.len() % T::BYTES != 0 {
+    if !bytes.len().is_multiple_of(T::BYTES) {
         return Err("productive fixed-record section has a partial record");
     }
     bytes.chunks_exact(T::BYTES).map(T::decode_record).collect()
@@ -398,7 +398,7 @@ pub(super) struct ProvenanceRecordV1 {
     pub(super) source_hash_prefix: u64,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub(super) struct DeltaManifestRecordV1 {
     pub(super) base_package_sha256: [u8; 32],
     pub(super) previous_generation_sha256: [u8; 32],
@@ -412,25 +412,6 @@ pub(super) struct DeltaManifestRecordV1 {
     pub(super) requested_authority_scope: u32,
     pub(super) flags: u32,
     pub(super) payload_sha256: [u8; 32],
-}
-
-impl Default for DeltaManifestRecordV1 {
-    fn default() -> Self {
-        Self {
-            base_package_sha256: [0; 32],
-            previous_generation_sha256: [0; 32],
-            generation: 0,
-            event_start: 0,
-            event_end: 0,
-            section_count_ref: 0,
-            coefficient_generation: 0,
-            calibration_generation: 0,
-            proof_receipt_sha256: [0; 32],
-            requested_authority_scope: 0,
-            flags: 0,
-            payload_sha256: [0; 32],
-        }
-    }
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -715,7 +696,7 @@ impl FixedRecordV1 for PhaseCenterRecordV1 {
         };
         if input.u16()? != 0
             || record.flags & !1 != 0
-            || !matches!(record.polarity, -2 | -1 | 0 | 1)
+            || !matches!(record.polarity, -2..=1)
             || record.support == 0
         {
             return Err(
@@ -755,9 +736,9 @@ fixed_record!(EvidencePriorRecordV1, 24, {
     if !(1..=4).contains(&record.channel_id)
         || record.flags != 0
         || record.positive_prior_twice == 0
-        || record.positive_prior_twice % 2 == 0
+        || record.positive_prior_twice.is_multiple_of(2)
         || record.contradiction_prior_twice == 0
-        || record.contradiction_prior_twice % 2 == 0
+        || record.contradiction_prior_twice.is_multiple_of(2)
         || record.reserved != 0
     {
         Err("productive evidence prior identity, smoothing, or reserved value is invalid")

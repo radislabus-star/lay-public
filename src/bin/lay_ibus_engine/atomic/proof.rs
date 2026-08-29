@@ -189,9 +189,11 @@ fn capability(maximum_effects: u8, delete_allowed: bool) -> AtomicCapability {
             14,
             15,
             delete_allowed,
-            delete_allowed
-                .then(|| vec![7; DIGEST_BYTES])
-                .unwrap_or_default(),
+            if delete_allowed {
+                vec![7; DIGEST_BYTES]
+            } else {
+                Default::default()
+            },
         ),
     )
 }

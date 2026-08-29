@@ -543,7 +543,7 @@ impl LexicalGrokkingMemory {
             .iter()
             .filter_map(|(terminal_id, activation)| {
                 let expected = self.character_anchors(*terminal_id);
-                let modes = reconstruction_modes(observed, &expected);
+                let modes = reconstruction_modes(observed, expected);
                 (modes != 0).then_some((modes, *terminal_id, *activation))
             })
             .collect::<Vec<_>>();
@@ -695,8 +695,10 @@ impl LexicalGrokkingMemory {
             .collect::<Vec<_>>();
         for insert_at in 0..=base.as_slice().len() {
             for inserted in &inserted_atoms {
-                let mut repaired = AnchorSequence::default();
-                repaired.len = base.len.saturating_add(1);
+                let mut repaired = AnchorSequence {
+                    len: base.len.saturating_add(1),
+                    ..AnchorSequence::default()
+                };
                 repaired.atoms[..insert_at].copy_from_slice(&base.as_slice()[..insert_at]);
                 repaired.atoms[insert_at] = *inserted;
                 repaired.atoms[insert_at + 1..usize::from(repaired.len)]
@@ -777,7 +779,7 @@ impl LexicalGrokkingMemory {
             if expected.len().abs_diff(observed.len()) > maximum_distance {
                 continue;
             }
-            let distance = damerau_distance(observed, &expected);
+            let distance = damerau_distance(observed, expected);
             if distance > maximum_distance {
                 continue;
             }

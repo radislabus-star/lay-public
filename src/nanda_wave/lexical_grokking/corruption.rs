@@ -161,7 +161,7 @@ fn split_damages_with_training_augmentations(
     let mut training = Vec::new();
     let mut heldout = Vec::new();
     for example in all {
-        if split_hash(word, &example) % 4 == 0 {
+        if split_hash(word, &example).is_multiple_of(4) {
             heldout.push(example);
         } else {
             training.push(example);

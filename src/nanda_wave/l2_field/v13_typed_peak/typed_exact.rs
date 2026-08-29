@@ -334,7 +334,10 @@ where
     })
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn enumerate_lane<F>(
     index: &TypedExactView,
     lane: &Phase7dRetrievalLane,

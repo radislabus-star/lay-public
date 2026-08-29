@@ -335,7 +335,10 @@ fn preserve_typed_damage_frontier(
     });
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn latin_surface_word_candidates(
     prefix: &str,
     leading: &str,

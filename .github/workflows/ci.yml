@@ -94,8 +94,8 @@ jobs:
           cargo test typing_replacements::tests:: --lib
           cargo test nanda_wave::context_wave::tests::warm_up_prepares_wave_memory_without_prefix_indexes --lib
 
-      - name: cargo clippy
-        run: cargo clippy --all-targets -- -D warnings
+      - name: Rust lint contract
+        run: scripts/check-lay-lints.sh
 
       - name: GNOME extension syntax
         run: |

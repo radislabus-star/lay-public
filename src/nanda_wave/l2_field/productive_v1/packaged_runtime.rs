@@ -2561,6 +2561,10 @@ impl PackagedProductiveRuntimeV1 {
         }
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn evaluate_checked(
         &self,
         observed_surface: &str,
@@ -2709,7 +2713,7 @@ impl PackagedProductiveRuntimeV1 {
                 scene_key,
                 &binding,
                 paradigm,
-                &slot_profiles,
+                slot_profiles,
                 execution_lane.as_mut(),
                 &execution_source_scalars,
                 &mut execution_output,
@@ -2807,7 +2811,7 @@ impl PackagedProductiveRuntimeV1 {
                 .evaluate(&candidate.normalized_surface)
                 .map_err(str::to_string)?;
         }
-        if let Some(probe) = target_probe.as_deref_mut() {
+        if let Some(probe) = target_probe {
             for candidate in &candidates {
                 probe.observe_post_surface_basin_bound(candidate);
             }
@@ -2963,7 +2967,7 @@ impl PackagedProductiveRuntimeV1 {
             scene_key,
             &active,
             paradigm,
-            &selected_slots,
+            selected_slots,
             execution_lane.as_mut(),
             &source_scalars,
             &mut execution_output,
@@ -2988,7 +2992,7 @@ impl PackagedProductiveRuntimeV1 {
             scene_key,
             &active,
             paradigm,
-            &selected_slots,
+            selected_slots,
             &mut complete_count,
             &mut complete_relation_replay_count,
             &mut complete_operator_step_count,
@@ -3214,7 +3218,10 @@ impl PackagedProductiveRuntimeV1 {
             .ok_or_else(|| "productive prepared slot-profile range is invalid".to_string())
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn traverse_binding(
         &self,
         observed: &ObservedGeometryV1,
@@ -3427,7 +3434,10 @@ impl PackagedProductiveRuntimeV1 {
         self.terminal(index as usize - 1).map(Some)
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn traverse_binding_complete_trie(
         &self,
         observed: &ObservedGeometryV1,
@@ -3740,6 +3750,10 @@ impl PackagedProductiveRuntimeV1 {
             .collect()
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn feature_input(
         &self,
         binding: &ActiveBindingV1,
@@ -4597,12 +4611,12 @@ mod tests {
         let mut recovered = ranked(2, 1, 10_000);
         recovered.output.rank_origin = CandidateRankOriginV1::RecoveredV66;
 
-        let mut uncertified = vec![recovered.clone(), base.clone()];
+        let mut uncertified = [recovered.clone(), base.clone()];
         uncertified.sort_by(rank_preserving_candidate_order);
         assert_eq!(uncertified[0].output.identity, base.output.identity);
 
         recovered.output.cross_lane_certified = true;
-        let mut certified = vec![recovered.clone(), base.clone()];
+        let mut certified = [recovered.clone(), base.clone()];
         certified.sort_by(rank_preserving_candidate_order);
         assert_eq!(certified[0].output.identity, recovered.output.identity);
         assert_eq!(certified[1].output.identity, base.output.identity);

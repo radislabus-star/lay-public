@@ -377,7 +377,10 @@ where
     )
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn compile_context_phase_reader_with_projection_base<R, F>(
     reader: R,
     max_fragments: usize,

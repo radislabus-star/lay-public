@@ -445,7 +445,10 @@ pub fn record_candidate_edit_action_before_apply(
     );
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn record_candidate_before_apply_inner(
     mutation_route: MutationLogRoute,
     from: &str,
@@ -528,7 +531,10 @@ pub fn record_action(
     );
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub fn record_action_with_stages(
     kind: &str,
     from: &str,
@@ -554,7 +560,10 @@ pub fn record_action_with_stages(
     );
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub fn record_action_with_stages_and_gate(
     kind: &str,
     from: &str,

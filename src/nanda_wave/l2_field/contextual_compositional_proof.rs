@@ -127,7 +127,10 @@ impl ProofShard {
     }
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub(super) fn prove_package(
     l1_package_path: &Path,
     l2_package_path: &Path,

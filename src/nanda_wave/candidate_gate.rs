@@ -792,14 +792,18 @@ fn replacement_target_evidence(
         return ReplacementTargetEvidence::None;
     }
     match source {
-        L2ImeWordCandidateSource::ExactLayoutPhase => (target_evidence
-            == l2::L2ImeTargetEvidence::ExactLayout
-            && unique_layout_repair_target.is_none()
-            && crate::hot_field::HotFieldSnapshot::current()
-                .form_readout(surface)
-                .has_structural_center())
-        .then_some(ReplacementTargetEvidence::ExactLayoutProjection)
-        .unwrap_or(ReplacementTargetEvidence::None),
+        L2ImeWordCandidateSource::ExactLayoutPhase => {
+            if target_evidence == l2::L2ImeTargetEvidence::ExactLayout
+                && unique_layout_repair_target.is_none()
+                && crate::hot_field::HotFieldSnapshot::current()
+                    .form_readout(surface)
+                    .has_structural_center()
+            {
+                ReplacementTargetEvidence::ExactLayoutProjection
+            } else {
+                ReplacementTargetEvidence::None
+            }
+        }
         L2ImeWordCandidateSource::BoundaryPhase => {
             if target_evidence == l2::L2ImeTargetEvidence::Boundary
                 && l2::ime_l2_boundary_target_evidence(partial, surface)
@@ -809,12 +813,16 @@ fn replacement_target_evidence(
                 ReplacementTargetEvidence::None
             }
         }
-        L2ImeWordCandidateSource::LayoutThenTypoPhase => (target_evidence
-            == l2::L2ImeTargetEvidence::LayoutRepair
-            && unique_layout_repair_target
-                .is_some_and(|target| target.eq_ignore_ascii_case(surface)))
-        .then_some(ReplacementTargetEvidence::VerifiedLexicalEdit)
-        .unwrap_or(ReplacementTargetEvidence::None),
+        L2ImeWordCandidateSource::LayoutThenTypoPhase => {
+            if target_evidence == l2::L2ImeTargetEvidence::LayoutRepair
+                && unique_layout_repair_target
+                    .is_some_and(|target| target.eq_ignore_ascii_case(surface))
+            {
+                ReplacementTargetEvidence::VerifiedLexicalEdit
+            } else {
+                ReplacementTargetEvidence::None
+            }
+        }
         L2ImeWordCandidateSource::LexicalPhase
         | L2ImeWordCandidateSource::CanonicalField
         | L2ImeWordCandidateSource::CorrectedPrefixPhase

@@ -277,7 +277,7 @@ pub(crate) fn productive_neighbor_context_slot_features(features: u32) -> u32 {
 }
 
 pub(crate) fn productive_source_priority(features: u32) -> u8 {
-    let base = match features & POS_MASK {
+    match features & POS_MASK {
         POS_NOUN
             if features & NUMBER_MASK == NUMBER_SINGULAR
                 && features & CASE_MASK == CASE_NOMINATIVE =>
@@ -302,8 +302,7 @@ pub(crate) fn productive_source_priority(features: u32) -> u8 {
         POS_ADJECTIVE if features & NUMBER_MASK == NUMBER_SINGULAR => 1,
         POS_PRONOUN if features & CASE_MASK == CASE_NOMINATIVE => 1,
         _ => 2,
-    };
-    base
+    }
 }
 
 pub(crate) fn same_inclusive_imperative_family(left: u32, right: u32) -> bool {

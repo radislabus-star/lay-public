@@ -173,7 +173,7 @@ fn induce_anchor_recovery_field_inner(
         }
         let basin = (row.lemma_id, pos_domain);
         if current_basin != Some(basin) {
-            while assignment
+            if assignment
                 .as_ref()
                 .is_some_and(|candidate| (candidate.lemma_id, candidate.pos_domain) < basin)
             {

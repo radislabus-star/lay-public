@@ -64,6 +64,24 @@ pub(super) fn save_ru_cache_for_source(
     save_cached_model(path, model, Some(source_fingerprint.to_string()))
 }
 
+fn save_cached_model(
+    path: &std::path::Path,
+    model: &CharNgramModel,
+    source_fingerprint: Option<String>,
+) -> io::Result<u64> {
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let cached = CachedModel {
+        version: CACHE_VERSION,
+        source_fingerprint,
+        model: model.clone(),
+    };
+    let text = serde_json::to_string(&cached).map_err(io::Error::other)?;
+    std::fs::write(path, text)?;
+    Ok(std::fs::metadata(path)?.len())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -96,22 +114,4 @@ mod tests {
         assert!(load_ru_cache_for_source(&path, "source-a").is_err());
         let _ = std::fs::remove_file(path);
     }
-}
-
-fn save_cached_model(
-    path: &std::path::Path,
-    model: &CharNgramModel,
-    source_fingerprint: Option<String>,
-) -> io::Result<u64> {
-    if let Some(parent) = path.parent() {
-        std::fs::create_dir_all(parent)?;
-    }
-    let cached = CachedModel {
-        version: CACHE_VERSION,
-        source_fingerprint,
-        model: model.clone(),
-    };
-    let text = serde_json::to_string(&cached).map_err(io::Error::other)?;
-    std::fs::write(path, text)?;
-    Ok(std::fs::metadata(path)?.len())
 }

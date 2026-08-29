@@ -51,6 +51,8 @@ pub use forward_decoder_index::prove_l1_forward_decoder_index;
 #[cfg(feature = "lexical-compiler")]
 pub use posting_bounds::prove_l1_posting_bounds;
 pub use posting_codec::analyze_package as analyze_l1_forward_compression;
+#[cfg(test)]
+pub(in crate::nanda_wave) use proof::prepare_fixed_heldout_cases;
 pub use proof::{
     crystallize_l1_lexical_grokking, crystallize_l1_lexical_grokking_with_rss_budget,
     crystallize_l1_lexical_grokking_with_surface_policy, export_l1_fixed_latency_surfaces,
@@ -58,8 +60,6 @@ pub use proof::{
     prove_l1_lexical_grokking_composite, prove_l1_lexical_grokking_package,
     prove_l1_lexical_grokking_scale_package, prove_l1_lexical_grokking_scale_package_range,
 };
-#[cfg(test)]
-pub(in crate::nanda_wave) use proof::{prepare_fixed_heldout_cases, FixedHeldoutCase};
 pub(crate) use runtime::ExactL11SurfaceIndexV1;
 pub use runtime::{
     benchmark_diverse_restoration as benchmark_l1_diverse_restoration,
@@ -82,9 +82,7 @@ pub use typed_basin::{
     prove_l1_typed_basin_quality,
 };
 #[cfg(test)]
-pub(in crate::nanda_wave) use typed_edit_traversal::{
-    phase7d_certificate_keys, phase7d_retrieval_lanes,
-};
+pub(in crate::nanda_wave) use typed_edit_traversal::phase7d_certificate_keys;
 pub(in crate::nanda_wave) use typed_edit_traversal::{
     phase7d_semantics_digest, Phase7dCertificateClass, Phase7dCertificateEvidence,
     Phase7dCertificateOracle, Phase7dRetrievalLane,

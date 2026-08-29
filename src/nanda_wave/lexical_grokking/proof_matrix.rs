@@ -196,7 +196,10 @@ pub(super) struct ProofMatrix {
 }
 
 impl ProofMatrix {
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     pub(super) fn record(
         &mut self,
         memory: &LexicalGrokkingMemory,
@@ -682,8 +685,10 @@ mod tests {
             class: "missing_letter",
             ambiguity: "objective_unique",
         };
-        let mut left = ProofMatrix::default();
-        left.cases = 1;
+        let mut left = ProofMatrix {
+            cases: 1,
+            ..ProofMatrix::default()
+        };
         left.by_language.insert("ru", 1);
         left.by_length.insert("5_8", 1);
         left.by_frequency.insert("head", 1);
@@ -693,8 +698,10 @@ mod tests {
         left.by_ambiguity.insert("objective_unique", 1);
         left.first_loss.insert("contract_satisfied", 1);
         left.strata.entry(key.clone()).or_default().cases = 1;
-        let mut right = ProofMatrix::default();
-        right.cases = 2;
+        let mut right = ProofMatrix {
+            cases: 2,
+            ..ProofMatrix::default()
+        };
         right.by_language.insert("ru", 2);
         right.by_length.insert("5_8", 2);
         right.by_frequency.insert("head", 2);
@@ -719,8 +726,10 @@ mod tests {
 
     #[test]
     fn matrix_finalize_exposes_fixed_axes_and_exact_totals() {
-        let mut matrix = ProofMatrix::default();
-        matrix.cases = 2;
+        let mut matrix = ProofMatrix {
+            cases: 2,
+            ..ProofMatrix::default()
+        };
         for counts in [
             &mut matrix.by_language,
             &mut matrix.by_length,

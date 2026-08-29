@@ -172,7 +172,7 @@ impl BoundaryEnumerationStateV1 {
         }
         self.work.operator_steps += 1;
         let composite_bytes = composite_grounding.exact_bytes();
-        let grounding_ref = stable_bytes_ref(&composite_bytes) as u32;
+        let grounding_ref = stable_bytes_ref(&composite_bytes);
         let derivation_ref = boundary_derivation_ref(
             &normalized_surface,
             relation,
@@ -337,7 +337,7 @@ fn boundary_derivation_ref(
     bytes.extend_from_slice(&operator_ref.to_le_bytes());
     hash_len_vec(&mut bytes, target.as_bytes());
     hash_len_vec(&mut bytes, composite_bytes);
-    stable_bytes_ref(&bytes) as u32
+    stable_bytes_ref(&bytes)
 }
 
 fn hash_len_bytes(hasher: &mut Sha256, bytes: &[u8]) {

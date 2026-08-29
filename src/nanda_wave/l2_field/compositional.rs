@@ -351,7 +351,10 @@ impl LemmaWaveIndex {
 }
 
 impl CompactLemmaWaveIndexView {
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     pub(super) fn from_sections(
         bytes: PackageBytes,
         range_section: Range<usize>,
@@ -1169,9 +1172,9 @@ impl LemmaWaveSource for L2FieldPackage {
     }
 }
 
-fn build_atom_postings(
-    rows: &[LemmaWaveBuildRow],
-) -> Result<(Vec<u64>, Vec<u32>, Vec<u8>), String> {
+type AtomPostingSections = (Vec<u64>, Vec<u32>, Vec<u8>);
+
+fn build_atom_postings(rows: &[LemmaWaveBuildRow]) -> Result<AtomPostingSections, String> {
     let relation_count = rows.iter().try_fold(0_usize, |total, row| {
         total
             .checked_add(row.atoms.len())
@@ -1615,7 +1618,10 @@ fn surface_atom_keys_normalized(surface: &str) -> Vec<u64> {
     atoms
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub(super) fn append_atom_family(
     units: &[u32],
     start_marker: u32,

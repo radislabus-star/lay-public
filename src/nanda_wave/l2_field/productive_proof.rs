@@ -225,12 +225,14 @@ fn prove_directional_heldout_gate<I: ProductiveMorphologySource + ?Sized>(
     ))
 }
 
-fn collect_directional_heldout_rows(
-    mut reader: impl BufRead,
-) -> io::Result<(
+type DirectionalHeldoutRows = (
     Vec<DirectionalHeldoutRow>,
     BTreeMap<String, BTreeSet<String>>,
-)> {
+);
+
+fn collect_directional_heldout_rows(
+    mut reader: impl BufRead,
+) -> io::Result<DirectionalHeldoutRows> {
     let mut rows = Vec::new();
     let mut wanted_surfaces = BTreeMap::<String, BTreeSet<String>>::new();
     let mut line = String::with_capacity(256);
@@ -430,7 +432,10 @@ fn push_bounded(target: &mut Vec<serde_json::Value>, value: serde_json::Value) {
     }
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub(super) fn prove_package(
     l1_package_path: &Path,
     l2_package_path: &Path,
@@ -707,7 +712,10 @@ pub(super) fn prove_package(
     }))
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub(super) fn prove_compact_sidecar(
     l1_package_path: &Path,
     l2_package_path: &Path,
@@ -1116,7 +1124,10 @@ fn sample_fixed_productive_cases(
     Ok(sampled)
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn evaluate_cases<I: ProductiveMorphologySource + Sync + ?Sized>(
     cases: &[ProofCase],
     field: &StandaloneL2Field,

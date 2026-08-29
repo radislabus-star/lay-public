@@ -1731,7 +1731,7 @@ fn load_persisted_usage_counts(path: &Path, source_len: Option<u64>) -> Option<U
     let text = std::fs::read_to_string(path).ok()?;
     let snapshot = serde_json::from_str::<PersistedUsageCounts>(&text).ok()?;
     (snapshot.schema_version == USAGE_COUNTS_SCHEMA_VERSION
-        && source_len.map_or(true, |expected| snapshot.source_len == expected))
+        && source_len.is_none_or(|expected| snapshot.source_len == expected))
     .then_some(snapshot.counts)
 }
 

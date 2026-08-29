@@ -503,10 +503,11 @@ impl MaterialTargetAccumulatorV1 {
                 canonical_bytes_ref: canonical_ref,
                 normalization_layout_profile_id: NormalizationLayoutProfileIdV1(1),
                 separator_profile_id: SeparatorProfileIdV1(
-                    self.normalized_scalars
-                        .contains(' ')
-                        .then_some(ASCII_SPACE_SEPARATOR_PROFILE)
-                        .unwrap_or(0),
+                    if self.normalized_scalars.contains(' ') {
+                        ASCII_SPACE_SEPARATOR_PROFILE
+                    } else {
+                        0
+                    },
                 ),
                 exact_scalar_count: self
                     .normalized_scalars
@@ -1164,6 +1165,10 @@ fn evidence_table_identities(
     }
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "sealed identity tuple remains explicit"
+)]
 fn material_integrity_digest(
     observed: &str,
     package_tuple: ExactPackageTupleV1,
@@ -1226,7 +1231,10 @@ pub(super) struct ExactInputFrameV1 {
 }
 
 impl ExactInputFrameV1 {
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     pub(super) fn new(
         focus_serial: u64,
         tail_epoch: u64,
@@ -1356,6 +1364,10 @@ pub(super) struct BoundFrameTargetV1 {
     pub(super) replayed_source_window: String,
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "sealed evidence inputs remain explicit"
+)]
 pub(super) fn bind_exact_frame_target(
     material: &PreparedTargetMaterialShadowV1,
     lease: PreparedMaterialLeaseV1,
@@ -1483,7 +1495,6 @@ pub(super) struct PreparedMaterialLeaseArenaV1 {
 }
 
 impl PreparedMaterialLeaseArenaV1 {
-    #[allow(clippy::too_many_arguments)]
     pub(super) fn pin(
         &mut self,
         material: &PreparedTargetMaterialShadowV1,
@@ -1666,7 +1677,7 @@ mod tests {
             .map(|part| ExactBoundaryPartGroundingV1 {
                 normalized_surface: part.to_string(),
                 grounding_namespace: GroundingNamespaceV1::CanonicalForm,
-                grounding_ref: stable_bytes_ref(part.as_bytes()) as u32,
+                grounding_ref: stable_bytes_ref(part.as_bytes()),
             })
             .collect::<Vec<_>>();
         TypedBoundaryBirthV1 {

@@ -606,7 +606,10 @@ impl LexicalGrokkingMemory {
         observations
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     pub(in crate::nanda_wave::lexical_grokking) fn settle_candidate(
         &self,
         terminal_id: u32,
@@ -634,7 +637,10 @@ impl LexicalGrokkingMemory {
         )
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     pub(in crate::nanda_wave::lexical_grokking) fn settle_candidate_with_reverse(
         &self,
         terminal_id: u32,
@@ -654,12 +660,12 @@ impl LexicalGrokkingMemory {
             character_sequence.as_slice().len() == usize::from(observed_char_count);
         let legacy_sequence_milli =
             if observed_char_count < expected_char_count && anchors_cover_surface {
-                legacy_reconstruction_sequence_milli(&reverse, character_sequence)
+                legacy_reconstruction_sequence_milli(reverse, character_sequence)
             } else {
                 750
             };
         let expected_character_sequence =
-            expected_sequence(&reverse, COUPLING_FLAG_CHARACTER_ANCHOR);
+            expected_sequence(reverse, COUPLING_FLAG_CHARACTER_ANCHOR);
         let character_distance = damerau_distance(
             character_sequence.as_slice(),
             expected_character_sequence.as_slice(),
@@ -683,7 +689,7 @@ impl LexicalGrokkingMemory {
             ReadoutMode::LegacySequence => legacy_sequence_milli,
             _ if anchors_cover_surface && activation.surface_hits > activation.keyboard_hits => {
                 legacy_sequence_milli
-                    .max(reconstruction_sequence_milli(&reverse, character_sequence))
+                    .max(reconstruction_sequence_milli(reverse, character_sequence))
             }
             _ => legacy_sequence_milli,
         };
@@ -856,7 +862,7 @@ fn max_subcenter_coherence(
         .unwrap_or_default()
         .iter()
         .filter(|center| {
-            active_owners.map_or(true, |owners| owners.contains(&center.decoder_terminal))
+            active_owners.is_none_or(|owners| owners.contains(&center.decoder_terminal))
         })
         .map(|center| {
             let (center_re, center_im) = expand_word(basis, *center);

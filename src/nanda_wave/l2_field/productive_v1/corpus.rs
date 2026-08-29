@@ -566,7 +566,10 @@ fn normalize_context_token(token: &str) -> String {
         .to_lowercase()
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn append_raw_context(
     writer: &mut RawContextWriterV1,
     canonical_l2: &super::super::runtime::StandaloneL2Field,

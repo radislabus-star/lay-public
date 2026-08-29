@@ -10,6 +10,10 @@ use super::super::v8::{self, V8Artifact};
 use super::config::reverse_cache_bytes;
 use super::LexicalGrokkingMemory;
 
+#[expect(
+    clippy::large_enum_variant,
+    reason = "boxing would change the established runtime representation"
+)]
 pub(super) enum RelationStore {
     Eager,
     LazyV8(V8Artifact),

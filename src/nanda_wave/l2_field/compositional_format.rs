@@ -35,6 +35,10 @@ pub(super) fn encode(index: &LemmaWaveIndex, out: &mut Vec<u8>) {
     out.extend_from_slice(index.atom_postings());
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "sealed format sections remain explicit"
+)]
 pub(super) fn decode(
     range_bytes: &[u8],
     range_count: usize,

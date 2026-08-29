@@ -59,7 +59,10 @@ pub(crate) struct InputFrameIdentity {
 }
 
 impl InputFrameIdentity {
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     #[cfg(test)]
     pub(crate) fn new(
         path: String,
@@ -92,7 +95,10 @@ impl InputFrameIdentity {
         )
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     pub(crate) fn new_authoritative(
         path: String,
         focus_receipt: Option<String>,

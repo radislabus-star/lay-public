@@ -301,9 +301,7 @@ fn comparison_inputs(text: &str) -> Vec<String> {
         .map(str::to_string)
         .filter(|line| !line.trim().is_empty())
         .collect::<Vec<_>>();
-    if lines.is_empty() {
-        vec![text.to_string()]
-    } else if lines.len() == 1 && !text.contains('\n') {
+    if lines.is_empty() || (lines.len() == 1 && !text.contains('\n')) {
         vec![text.to_string()]
     } else {
         lines

@@ -11,6 +11,10 @@ use super::model::{
 use super::package_bytes::PackageBytes;
 
 #[derive(Clone, Debug)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "boxing would change the established runtime representation"
+)]
 pub(super) enum RuntimeL2Package {
     Reference(L2FieldPackage),
     Compact(CompactPackageView),

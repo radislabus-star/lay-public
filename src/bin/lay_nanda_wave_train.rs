@@ -13,7 +13,6 @@ use serde::Deserialize;
 #[path = "lay_nanda_wave_train/l3_online.rs"]
 mod l3_online;
 
-#[allow(dead_code)]
 #[path = "../nanda_wave/lexical_phase/format.rs"]
 mod lexical_phase_format;
 #[path = "../lexical_surface_atoms.rs"]
@@ -21,7 +20,6 @@ mod lexical_surface_atoms;
 #[path = "../stable_hash.rs"]
 mod stable_hash;
 
-#[allow(dead_code)]
 mod lexical_phase_compiler {
     include!("../nanda_wave/lexical_phase/compiler.rs");
 }

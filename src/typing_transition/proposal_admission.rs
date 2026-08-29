@@ -310,7 +310,7 @@ fn candidate_admission_with_facts(
             reason: "unexplained_signal_loss",
         };
     }
-    drop(explanation);
+    let _ = explanation;
     if admission_trace_bool!(
         ReplacementGluesSeparateWords,
         replacement_glues_separate_words_without_boundary_class(original, replacement, error_class)

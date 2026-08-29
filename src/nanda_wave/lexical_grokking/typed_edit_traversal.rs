@@ -390,7 +390,7 @@ impl Phase7dCertificateOracle {
         &self,
         target: &[u32],
     ) -> Result<Vec<Phase7dCertificateEvidence>, String> {
-        direct_typed_certificates(&self.query, &target, TraversalScope::Phase7D)
+        direct_typed_certificates(&self.query, target, TraversalScope::Phase7D)
             .into_iter()
             .map(|certificate| certificate.evidence())
             .collect()
@@ -606,7 +606,10 @@ impl<'a> L1TypedEditTraversal<'a> {
         TraversalResult { terminals, metrics }
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn advance_lexical(
         &self,
         query: &L1TypedQueryField,
@@ -1041,7 +1044,10 @@ impl<'a> L1TypedEditTraversal<'a> {
         sources
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn advance_layout(
         &self,
         query: &L1TypedQueryField,

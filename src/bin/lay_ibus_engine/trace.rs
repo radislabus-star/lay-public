@@ -103,6 +103,7 @@ pub(crate) fn record_auto_undo_retry(status: &str) {
     ));
 }
 
+#[expect(clippy::too_many_arguments, reason = "trace fields remain explicit")]
 pub(crate) fn record_auto_undo_lifecycle(
     stage: &str,
     reason: &str,

@@ -416,7 +416,7 @@ Production runtime не хранит большие списки в `match`/`if`
 ```bash
 cargo fmt --all
 cargo test -q --all-targets
-cargo clippy --all-targets -- -D warnings
+scripts/check-lay-lints.sh
 cargo build --release --bins
 git diff --check
 for js in extension/lay@radislabus-star.github.io/*.js; do node --check "$js"; done

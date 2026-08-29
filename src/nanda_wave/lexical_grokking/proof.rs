@@ -835,7 +835,6 @@ pub fn crystallize_l1_lexical_grokking_with_rss_budget(
     )
 }
 
-#[allow(clippy::too_many_arguments)]
 pub fn crystallize_l1_lexical_grokking_with_surface_policy(
     corpus_path: &Path,
     output_path: &Path,
@@ -896,7 +895,6 @@ pub fn prove_l1_lexical_grokking_scale_package(
     )
 }
 
-#[allow(clippy::too_many_arguments)]
 pub fn prove_l1_lexical_grokking_scale_package_range(
     corpus_path: &Path,
     package_path: &Path,

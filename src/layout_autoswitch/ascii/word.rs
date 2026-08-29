@@ -117,11 +117,10 @@ pub(crate) fn correct_exact_wrong_layout_ascii_word(token: &str) -> Option<Strin
         crate::exact_layout_authority::FactoryEngineProfile::UsQwerty,
         crate::exact_layout_authority::ActiveDecoderLayout::Us,
     )?;
-    if crate::nanda_wave::exact_layout_terminal_contains_if_warm(
+    if !crate::nanda_wave::exact_layout_terminal_contains_if_warm(
         &candidate.word.to_lowercase(),
         snapshot.russian_terminal_fingerprint(),
-    )? != true
-    {
+    )? {
         return None;
     }
     if is_protected_ascii_layout_token(token)

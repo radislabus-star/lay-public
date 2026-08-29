@@ -796,7 +796,10 @@ impl LexicalPhaseMemory {
         candidates
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn collect_one_edit_prefix_nodes(
         &self,
         node_id: u32,
@@ -931,6 +934,10 @@ impl LexicalPhaseMemory {
         candidates
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn collect_decoded_completions(
         &self,
         state_id: u32,
@@ -1083,7 +1090,10 @@ impl LexicalPhaseMemory {
     }
 
     #[cfg(test)]
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn collect_decoded_completion_surfaces_for_test(
         &self,
         state_id: u32,
@@ -1292,7 +1302,10 @@ impl LexicalPhaseMemory {
         candidates
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     fn collect_reconstructed_matches(
         &self,
         state_id: u32,
@@ -1324,7 +1337,7 @@ impl LexicalPhaseMemory {
                 .iter()
                 .copied()
                 .min()
-                .map_or(true, |minimum| minimum > max_edits)
+                .is_none_or(|minimum| minimum > max_edits)
         {
             return;
         }

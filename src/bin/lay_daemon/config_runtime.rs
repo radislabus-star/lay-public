@@ -127,7 +127,7 @@ pub(super) fn active_enter_autocorrect_from_env(
     env_value: Option<&str>,
 ) -> bool {
     config_enabled
-        && env_value.map_or(true, |value| {
+        && env_value.is_none_or(|value| {
             matches!(
                 value.trim().to_ascii_lowercase().as_str(),
                 "1" | "true" | "yes" | "on"

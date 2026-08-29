@@ -359,8 +359,10 @@ mod tests {
 
     #[test]
     fn refuses_forward_or_delete_without_commit() {
-        let mut forward = AtomicEffectBuilder::default();
-        forward.unsupported = true;
+        let forward = AtomicEffectBuilder {
+            unsupported: true,
+            ..AtomicEffectBuilder::default()
+        };
         assert_eq!(forward.finish(true).0, PROPOSAL_NATIVE_UNHANDLED);
 
         let mut delete = AtomicEffectBuilder::default();

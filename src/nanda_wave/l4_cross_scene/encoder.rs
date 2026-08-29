@@ -375,7 +375,7 @@ pub(crate) fn context_signal_from_text(
 }
 
 fn push_code(vector: &mut [PhaseCell], role: &str, code: u64, weight: f32) {
-    let identity = stable_hash64(role.as_bytes(), 0x4c34_5343_454e_45);
+    let identity = stable_hash64(role.as_bytes(), 0x004c_3453_4345_4e45);
     add_hashed_atom(vector, identity, code, weight);
 }
 

@@ -19,7 +19,6 @@ pub(crate) struct EncodedSurfaceField {
 
 impl EncodedSurfaceField {
     #[must_use]
-    #[allow(dead_code)] // The standalone compiler includes this module without the runtime sensor head.
     pub(crate) fn symbols(&self) -> &[char] {
         &self.symbols
     }

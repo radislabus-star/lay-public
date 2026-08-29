@@ -126,6 +126,10 @@ pub(crate) struct TargetWitnessV1 {
 }
 
 impl TargetWitnessV1 {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "witness identity fields remain explicit"
+    )]
     pub(crate) fn new(
         relation: TargetRelationV1,
         grounding_namespace: GroundingNamespaceV1,
@@ -233,8 +237,9 @@ pub(crate) enum CompletenessScopeKindV1 {
 /// Authority scope for one completeness claim. Narrow scopes cannot be
 /// represented without a non-zero reference to the exhaustive partition proof
 /// that established them before truncation.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub(crate) enum CompletenessScopeV1 {
+    #[default]
     WholePreparedField,
     EditFootprintPartition {
         exhaustive_partition_proof_ref: NonZeroU32,
@@ -242,12 +247,6 @@ pub(crate) enum CompletenessScopeV1 {
     RelationPartition {
         exhaustive_partition_proof_ref: NonZeroU32,
     },
-}
-
-impl Default for CompletenessScopeV1 {
-    fn default() -> Self {
-        Self::WholePreparedField
-    }
 }
 
 impl CompletenessScopeV1 {
@@ -803,7 +802,6 @@ impl EnumerationCompletenessV1 {
             retained_count: saturating_u16(retained_count),
             logical_count_lower_bound: saturating_u16(logical_count_lower_bound),
             all_seen_digest: digest,
-            ..Self::default()
         }
     }
 
@@ -934,7 +932,10 @@ pub(crate) struct PreparedMaterialLeaseV1 {
 }
 
 impl PreparedMaterialLeaseV1 {
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     pub(crate) fn new(
         material_key: PreparedMaterialKeyV1,
         integrity_digest: [u64; 2],

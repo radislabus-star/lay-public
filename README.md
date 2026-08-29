@@ -385,6 +385,8 @@ double Shift rescue невозможен. По умолчанию он не от
 разработка, `rustfmt` и `clippy` закреплены на `1.97.1`; точные compiler
 identities и процедура обновления описаны в
 [Rust Toolchain Policy](docs/rust-toolchain-policy.md).
+Единый локальный и CI lint-контракт описан в
+[Rust Lint Policy](docs/lint-policy.md).
 
 Обычная локальная проверка:
 

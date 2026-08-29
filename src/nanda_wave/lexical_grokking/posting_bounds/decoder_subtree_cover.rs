@@ -316,14 +316,8 @@ impl DecoderTopology {
         if next_rank as usize != terminal_count || visited.iter().any(|value| !*value) {
             return Err("decoder DFS does not cover every node and terminal".to_string());
         }
-        if topology
-            .terminal_id_to_rank
-            .iter()
-            .any(|rank| *rank == u32::MAX)
-            || topology
-                .terminal_rank_to_id
-                .iter()
-                .any(|terminal_id| *terminal_id == u32::MAX)
+        if topology.terminal_id_to_rank.contains(&u32::MAX)
+            || topology.terminal_rank_to_id.contains(&u32::MAX)
         {
             return Err("decoder DFS terminal permutation is incomplete".to_string());
         }
@@ -350,8 +344,12 @@ impl DecoderTopology {
 
         let terminal_start = self.terminal_offsets[node] as usize;
         let terminal_end = self.terminal_offsets[node + 1] as usize;
-        for slot in terminal_start..terminal_end {
-            let terminal_id = terminal_ids_by_node[slot];
+        for (slot, &terminal_id) in terminal_ids_by_node
+            .iter()
+            .enumerate()
+            .take(terminal_end)
+            .skip(terminal_start)
+        {
             let rank = *next_rank;
             self.terminal_ranks_by_node[slot] = rank;
             self.terminal_id_to_rank[terminal_id as usize] = rank;
@@ -1209,7 +1207,7 @@ fn symbolic_kth_mass(
         .iter()
         .map(|(activation, count)| (activation.mass, *count))
         .collect::<Vec<_>>();
-    masses.sort_unstable_by(|left, right| right.0.cmp(&left.0));
+    masses.sort_unstable_by_key(|item| std::cmp::Reverse(item.0));
     let mut cumulative = 0_usize;
     for (mass, count) in masses {
         cumulative = cumulative.saturating_add(count);

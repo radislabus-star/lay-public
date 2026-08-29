@@ -123,7 +123,7 @@ impl ExactContourLexiconV1 for ExactContourIdentityUnionV1<'_> {
         if embedded_reference_surface(surface) {
             identities.push(ExactContourIdentityV1 {
                 grounding_namespace: GroundingNamespaceV1::ReferenceSurface,
-                grounding_ref: stable_bytes_ref(surface.as_bytes()) as u32,
+                grounding_ref: stable_bytes_ref(surface.as_bytes()),
             });
         }
         identities.sort_unstable();
@@ -215,7 +215,6 @@ impl EnumerationStateV1 {
         self.exhausted
     }
 
-    #[allow(clippy::too_many_arguments)]
     fn consider(
         &mut self,
         canonical: &impl ExactContourLexiconV1,
@@ -523,7 +522,7 @@ fn contour_derivation_ref(
     for value in geometry {
         bytes.extend_from_slice(&value.to_le_bytes());
     }
-    stable_bytes_ref(&bytes) as u32
+    stable_bytes_ref(&bytes)
 }
 
 fn hash_len_bytes(hasher: &mut Sha256, bytes: &[u8]) {

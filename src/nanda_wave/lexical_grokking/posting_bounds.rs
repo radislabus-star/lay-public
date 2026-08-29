@@ -350,10 +350,8 @@ fn bucket_position_coherence_upper(observed: u8, bucket: usize) -> u16 {
     .min(255) as u8;
     let distance = if observed < low {
         low - observed
-    } else if observed > high {
-        observed - high
     } else {
-        0
+        observed.saturating_sub(high)
     };
     256_u16.saturating_sub(u16::from(distance))
 }
@@ -1127,6 +1125,7 @@ impl ClassMetrics {
     }
 }
 
+#[expect(clippy::too_many_arguments, reason = "proof inputs remain explicit")]
 pub fn prove_l1_posting_bounds(
     corpus_path: &Path,
     package_path: &Path,

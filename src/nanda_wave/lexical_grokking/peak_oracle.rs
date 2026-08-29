@@ -322,7 +322,10 @@ fn dense_oracle_with_iteration(
     })
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn settle_subset(
     memory: &LexicalGrokkingMemory,
     surface: &str,
@@ -546,9 +549,7 @@ mod tests {
                     continue;
                 }
                 let selected = (0..5)
-                    .filter_map(|terminal_id| {
-                        (mask & (1 << terminal_id) != 0).then_some(terminal_id)
-                    })
+                    .filter(|&terminal_id| mask & (1 << terminal_id) != 0)
                     .collect::<Vec<_>>();
                 let result = settle_subset(
                     &memory,

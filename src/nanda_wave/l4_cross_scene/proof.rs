@@ -646,7 +646,7 @@ fn load_words(path: &Path, russian: bool) -> io::Result<LoadedWords> {
             });
         if valid && opposite_layout(&word).is_some() {
             eligible_tokens = eligible_tokens.saturating_add(1);
-            let key = (stable_hash64(word.as_bytes(), 0x4c34_574f_5244_53), word);
+            let key = (stable_hash64(word.as_bytes(), 0x004c_3457_4f52_4453), word);
             words.insert(key, ());
             if words.len() > MAX_WORDS_PER_LANGUAGE {
                 words.pop_last();
@@ -666,7 +666,7 @@ fn split_words(words: &[String]) -> (Vec<String>, Vec<String>) {
     let mut ordered = words.to_vec();
     ordered.sort_by_key(|word| {
         (
-            stable_hash64(word.as_bytes(), 0x4c34_5350_4c49_54),
+            stable_hash64(word.as_bytes(), 0x004c_3453_504c_4954),
             word.clone(),
         )
     });

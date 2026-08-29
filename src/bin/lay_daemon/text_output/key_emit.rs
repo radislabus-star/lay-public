@@ -322,6 +322,6 @@ mod tests {
         assert!(validate_isolated_replay_bounds(0, &one).is_err());
         assert!(validate_isolated_replay_bounds(33, &one).is_err());
         assert!(validate_isolated_replay_bounds(1, &[]).is_err());
-        assert!(validate_isolated_replay_bounds(1, &vec![one[0]; 33]).is_err());
+        assert!(validate_isolated_replay_bounds(1, &[one[0]; 33]).is_err());
     }
 }

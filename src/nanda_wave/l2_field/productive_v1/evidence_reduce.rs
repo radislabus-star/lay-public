@@ -648,7 +648,10 @@ fn resolve_target(
     )
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn attach_direct_contradiction(
     groups: &mut BTreeMap<[u8; 32], ContextGroupV1>,
     event: ContextContradictionEventV1,

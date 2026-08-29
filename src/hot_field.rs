@@ -99,7 +99,6 @@ pub fn set_process_policy(policy: HotFieldPolicy) {
     #[cfg(test)]
     {
         TEST_PROCESS_POLICY.with(|slot| slot.set(Some(policy)));
-        return;
     }
 
     #[cfg(not(test))]

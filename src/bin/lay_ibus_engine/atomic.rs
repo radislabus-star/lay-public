@@ -162,7 +162,7 @@ impl LayIbusEngine {
             RECEIPT_REFUSED_ZERO_EFFECT
             | RECEIPT_FOCUS_LINEAGE_TERMINATED
             | RECEIPT_SUBMISSION_UNCERTAIN_NO_RETRY => true,
-            RECEIPT_NONE | _ => false,
+            _ => false,
         }
     }
 
@@ -308,8 +308,10 @@ mod tests {
 
     fn engine() -> LayIbusEngine {
         static NEXT_PATH: AtomicU64 = AtomicU64::new(1);
-        let mut config = LayConfig::default();
-        config.text_backend = "ime".to_string();
+        let config = LayConfig {
+            text_backend: "ime".to_string(),
+            ..LayConfig::default()
+        };
         LayIbusEngine::new(
             format!(
                 "/io/github/radislabus_star/LayIme/test/{}",

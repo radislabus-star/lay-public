@@ -274,8 +274,8 @@ else
 fi
 
 if [[ "${LAY_CHANGED_CLIPPY:-0}" == "1" ]]; then
-  echo "== cargo clippy --all-targets -- -D warnings =="
-  cargo clippy --all-targets -- -D warnings
+  echo "== Lay lint contract =="
+  scripts/check-lay-lints.sh
 fi
 
 if [[ "${LAY_CHANGED_RELEASE:-0}" == "1" ]]; then

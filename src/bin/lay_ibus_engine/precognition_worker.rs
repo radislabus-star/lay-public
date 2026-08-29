@@ -248,7 +248,10 @@ fn display_age_is_fresh(age: Duration) -> bool {
     age <= PRECOGNITION_DISPLAY_DEADLINE
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn record_completion(
     stage: &str,
     generation: u64,

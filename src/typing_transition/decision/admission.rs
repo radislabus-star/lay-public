@@ -511,58 +511,6 @@ fn stable_current_word_center(text: &str) -> bool {
         .has_phase_authority()
 }
 
-#[cfg(test)]
-mod known_word_transposition_tests {
-    use super::*;
-    use crate::candidate_contract::CandidateOrigin;
-    use crate::correction_core::{
-        CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource,
-    };
-
-    fn event(text: &str) -> TypingErrorEvent {
-        TypingErrorEvent {
-            original: text.to_string(),
-            core: text.trim().to_string(),
-            current_word: text
-                .split_whitespace()
-                .last()
-                .unwrap_or_default()
-                .to_string(),
-            input_class: TypingErrorClass::AdjacentTransposition,
-        }
-    }
-
-    fn candidate(replacement: &str) -> UnifiedCorrectionCandidate {
-        UnifiedCorrectionCandidate::new(
-            replacement,
-            CorrectionDecisionSource::Nanda,
-            CandidateOrigin::L2Surface,
-            "CanonicalL2FieldSurface",
-            TypingErrorClass::AdjacentTransposition,
-            CandidateGateDecision {
-                action: CandidateGateAction::Eligible,
-                reason: "class_allows_apply",
-            },
-        )
-    }
-
-    #[test]
-    fn ambiguous_known_to_known_swap_requires_relation_proof() {
-        assert!(known_word_transposition_requires_relation_proof(
-            &event("он "),
-            &candidate("но "),
-        ));
-    }
-
-    #[test]
-    fn unknown_to_known_transposition_remains_an_l2_repair() {
-        assert!(!known_word_transposition_requires_relation_proof(
-            &event("ландо "),
-            &candidate("ладно "),
-        ));
-    }
-}
-
 fn close_unresolved_competitor_exists(
     event: &TypingErrorEvent,
     selected_index: usize,
@@ -1136,7 +1084,7 @@ fn phase_center_separates_candidate(
         .max();
     if selected_signal.l2_wave_peak_milli >= CURRENT.l2_peak_milli
         && selected_signal.l2_wave_peak_uncertainty_milli <= CURRENT.l2_peak_uncertainty_milli
-        && strongest_lexical_competitor.map_or(true, |competitor| {
+        && strongest_lexical_competitor.is_none_or(|competitor| {
             selected_signal
                 .l2_wave_peak_positive_milli
                 .saturating_sub(competitor)
@@ -1178,10 +1126,62 @@ fn phase_center_separates_candidate(
                 .l2_transition_phase_milli
         })
         .max();
-    strongest_competitor.map_or(true, |competitor| {
+    strongest_competitor.is_none_or(|competitor| {
         selected_signal
             .l2_transition_phase_milli
             .saturating_sub(competitor)
             >= CURRENT.phase_competitor_gap_milli
     })
+}
+
+#[cfg(test)]
+mod known_word_transposition_tests {
+    use super::*;
+    use crate::candidate_contract::CandidateOrigin;
+    use crate::correction_core::{
+        CandidateGateAction, CandidateGateDecision, CorrectionDecisionSource,
+    };
+
+    fn event(text: &str) -> TypingErrorEvent {
+        TypingErrorEvent {
+            original: text.to_string(),
+            core: text.trim().to_string(),
+            current_word: text
+                .split_whitespace()
+                .last()
+                .unwrap_or_default()
+                .to_string(),
+            input_class: TypingErrorClass::AdjacentTransposition,
+        }
+    }
+
+    fn candidate(replacement: &str) -> UnifiedCorrectionCandidate {
+        UnifiedCorrectionCandidate::new(
+            replacement,
+            CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
+            "CanonicalL2FieldSurface",
+            TypingErrorClass::AdjacentTransposition,
+            CandidateGateDecision {
+                action: CandidateGateAction::Eligible,
+                reason: "class_allows_apply",
+            },
+        )
+    }
+
+    #[test]
+    fn ambiguous_known_to_known_swap_requires_relation_proof() {
+        assert!(known_word_transposition_requires_relation_proof(
+            &event("он "),
+            &candidate("но "),
+        ));
+    }
+
+    #[test]
+    fn unknown_to_known_transposition_remains_an_l2_repair() {
+        assert!(!known_word_transposition_requires_relation_proof(
+            &event("ландо "),
+            &candidate("ладно "),
+        ));
+    }
 }

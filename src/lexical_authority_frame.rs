@@ -24,7 +24,10 @@ pub struct LexicalAuthorityCoordinatesV1 {
 }
 
 impl LexicalAuthorityCoordinatesV1 {
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     pub fn new(
         runtime_owner_lease_identity: u64,
         monotonic_epoch_identity: [u64; 2],
@@ -186,7 +189,10 @@ pub struct LexicalAuthorityFrameV1 {
 }
 
 impl LexicalAuthorityFrameV1 {
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "existing explicit boundary contract"
+    )]
     pub fn from_exact_parts(
         path: String,
         focus_receipt: Option<String>,

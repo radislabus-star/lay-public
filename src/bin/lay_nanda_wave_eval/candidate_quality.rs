@@ -883,7 +883,7 @@ fn candidate_is_viable(candidate: &Value) -> bool {
     candidate
         .get("gate_action")
         .and_then(Value::as_str)
-        .map_or(true, |action| action == "apply" || action == "suggest_only")
+        .is_none_or(|action| action == "apply" || action == "suggest_only")
 }
 
 fn candidate_rank_tuple(candidate: &Value) -> (i64, i64) {

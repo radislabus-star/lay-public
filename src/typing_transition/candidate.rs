@@ -21,6 +21,10 @@ pub(crate) struct L2CandidateLattice {
     l2_field_authority: Option<crate::nanda_wave::l2_field::L2FieldAuthority>,
 }
 
+#[expect(
+    clippy::large_enum_variant,
+    reason = "boxing would change the bounded inline candidate slot"
+)]
 enum RetainedExactSlot {
     Empty,
     Candidate(UnifiedCorrectionCandidate),

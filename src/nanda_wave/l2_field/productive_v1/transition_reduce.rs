@@ -1326,16 +1326,13 @@ fn merge_wire_group(
         config.maximum_record_bytes,
     )?;
     let mut previous: Option<Vec<u8>> = None;
-    loop {
-        let Some(index) = heads
-            .iter()
-            .enumerate()
-            .filter_map(|(index, item)| item.as_ref().map(|item| (index, item)))
-            .min_by(|(_, left), (_, right)| sort_item_order(left, right))
-            .map(|(index, _)| index)
-        else {
-            break;
-        };
+    while let Some(index) = heads
+        .iter()
+        .enumerate()
+        .filter_map(|(index, item)| item.as_ref().map(|item| (index, item)))
+        .min_by(|(_, left), (_, right)| sort_item_order(left, right))
+        .map(|(index, _)| index)
+    {
         let item = heads[index].take().expect("selected wire merge head");
         if previous.as_ref() != Some(&item.payload) {
             writer.write(&item.payload)?;

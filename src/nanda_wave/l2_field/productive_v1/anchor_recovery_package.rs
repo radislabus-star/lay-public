@@ -148,7 +148,10 @@ impl AnchorRecoveryProgramKeyV1 {
     }
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 pub(super) fn compile_anchor_recovery_package(
     manifest: &AnchorRecoveryManifestV1,
     output_path: &Path,

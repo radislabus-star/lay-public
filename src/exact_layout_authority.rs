@@ -257,10 +257,10 @@ pub(crate) fn certify_closed_exact_layout(
     let projected_token = crate::dict::convert_us_to_ru_if_warm(token)?;
     if projected_token == token
         || !projected_token.chars().all(is_cyrillic_letter)
-        || crate::nanda_wave::exact_layout_terminal_contains_if_warm(
+        || !crate::nanda_wave::exact_layout_terminal_contains_if_warm(
             &projected_token.to_lowercase(),
             snapshot.russian_terminal_fingerprint(),
-        )? != true
+        )?
     {
         return None;
     }

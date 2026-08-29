@@ -839,7 +839,7 @@ fn calibrate_l11_ambiguity_thresholds(
                         for surface in corpus.training_surfaces(word) {
                             let candidates =
                                 memory.readout(surface, CANDIDATE_LIMIT, ReadoutMode::Full);
-                            let calibration = calibration_surface_hash(surface) % 5 == 0;
+                            let calibration = calibration_surface_hash(surface).is_multiple_of(5);
                             for observation in memory.ambiguity_observations(surface, &candidates) {
                                 if !observation.structurally_applicable
                                     || !objective_contains(
@@ -1039,7 +1039,7 @@ fn worker_count(item_count: usize) -> usize {
         .min(item_count.max(1));
     #[cfg(test)]
     {
-        return workers.min(2);
+        workers.min(2)
     }
     #[cfg(not(test))]
     workers
@@ -1310,7 +1310,9 @@ fn discover_anti_centers(
                             return;
                         }
                         let completed = completed_targets.fetch_add(1, Ordering::Relaxed) + 1;
-                        if completed % ANTI_PROGRESS_INTERVAL == 0 || completed == target_count {
+                        if completed.is_multiple_of(ANTI_PROGRESS_INTERVAL)
+                            || completed == target_count
+                        {
                             eprintln!(
                                 concat!(
                                     "l11_anti_discovery targets={} total={} ",
@@ -1495,7 +1497,10 @@ fn compile_l11_subcenters(
     merged
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "existing explicit boundary contract"
+)]
 fn compile_l11_subcenter_range(
     corpus: &TrainingCorpus,
     graph: &NGramGraph,
@@ -1562,7 +1567,7 @@ fn compile_l11_subcenter_range(
             let Some(owners) = surface_owners.get(surface_name) else {
                 continue;
             };
-            if owners.len() < 2 || calibration_surface_hash(surface_name) % 5 == 0 {
+            if owners.len() < 2 || calibration_surface_hash(surface_name).is_multiple_of(5) {
                 continue;
             }
             for competitor in owners {
@@ -1678,7 +1683,7 @@ fn compile_l11_subcenter_range(
             min_ambiguity_milli: 0,
         });
         let completed = completed_words.fetch_add(1, Ordering::Relaxed) + 1;
-        if completed % SUBCENTER_PROGRESS_INTERVAL == 0 || completed == total_words {
+        if completed.is_multiple_of(SUBCENTER_PROGRESS_INTERVAL) || completed == total_words {
             eprintln!(
                 "l11_subcenters_progress words={completed} total={total_words} \
                  percent_milli={} elapsed_ms={}",
@@ -1925,6 +1930,7 @@ fn depth0_l11_banks(corpus: &TrainingCorpus) -> L11Banks {
     }
 }
 
+#[expect(clippy::too_many_arguments, reason = "compiler inputs remain explicit")]
 fn calibrate_l11(
     corpus: &TrainingCorpus,
     graph: &NGramGraph,
@@ -2028,7 +2034,9 @@ fn calibrate_l11_tied_energy_margin(
                     let mut maximum_safe_margin = None::<u16>;
                     for word in words.iter().skip(worker).step_by(workers) {
                         for surface in corpus.training_surfaces(word) {
-                            if calibration_surface_hash(surface) % CALIBRATION_BUCKETS != 0 {
+                            if !calibration_surface_hash(surface)
+                                .is_multiple_of(CALIBRATION_BUCKETS)
+                            {
                                 continue;
                             }
                             let mut candidates =
@@ -2240,6 +2248,7 @@ fn anti_relation_order(
         .then_with(|| left.0.cmp(&right.0))
 }
 
+#[expect(clippy::too_many_arguments, reason = "compiler inputs remain explicit")]
 fn discover_target_relations(
     target: u32,
     surfaces: &[ResolvedSurface],

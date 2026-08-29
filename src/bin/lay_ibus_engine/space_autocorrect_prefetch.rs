@@ -48,6 +48,10 @@ pub(crate) enum PreparedNoApplyStage {
     Infrastructure,
 }
 
+#[expect(
+    clippy::large_enum_variant,
+    reason = "boxing would change the bounded prefetch handoff"
+)]
 pub(crate) enum SpaceAutocorrectLookup {
     Ready(PreparedCorrectionLease),
     NoApply(PreparedNoApplyStage),
@@ -61,6 +65,10 @@ pub(crate) struct SpaceAutocorrectLookupReceipt {
     pub(crate) worker_generation: u64,
 }
 
+#[expect(
+    clippy::large_enum_variant,
+    reason = "boxing would change the bounded prefetch slot"
+)]
 enum PreparedFullOutcome {
     Apply(PreparedCorrectionLease),
     NoApply {
@@ -69,11 +77,19 @@ enum PreparedFullOutcome {
     },
 }
 
+#[expect(
+    clippy::large_enum_variant,
+    reason = "boxing would change the bounded prefetch slot"
+)]
 enum FullSlotState {
     Pending,
     Terminal(PreparedFullOutcome),
 }
 
+#[expect(
+    clippy::large_enum_variant,
+    reason = "boxing would change the bounded prefetch slot"
+)]
 enum ExactSlotState {
     Absent,
     Prepared(PreparedCorrectionLease),

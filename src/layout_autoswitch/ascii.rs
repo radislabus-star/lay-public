@@ -16,6 +16,6 @@ pub(crate) use symbols::{
     is_ascii_layout_letter_symbol, is_protected_ascii_layout_token,
 };
 pub(crate) use word::{
-    correct_confident_wrong_layout_ascii_word, correct_exact_wrong_layout_ascii_word,
-    correct_wrong_layout_ascii_word, correct_wrong_layout_ascii_word_experimental,
+    correct_confident_wrong_layout_ascii_word, correct_wrong_layout_ascii_word,
+    correct_wrong_layout_ascii_word_experimental,
 };
