@@ -1,6 +1,6 @@
 # TD-005: Make The Lint Gate Truthful
 
-Status: `READY`
+Status: `DONE`
 Priority: `P0`
 Class: CI and maintainability
 Size: `M`
@@ -77,6 +77,42 @@ warning. All three cases must produce the intended result. Score 1-10.
 
 ## Completion Record
 
-- Commit: pending
-- Review score: pending
-- Verification: pending
+- Base commit: `cf03e3d0`
+- Separate stale TD-009 owner-contract correction:
+  `67797979043f0312ba6564ff040902e27203875b`; test-only, no runtime change.
+- Implementation commit: `9445102ed2e240ad9ec3f23cf497ae2cc6695d68`.
+- Exact lint baseline: schema `lay.dead-code-baseline.v3`, 368 entries,
+  SHA-256 `5452d74d5c58e1471be3a3ff95f78082d2a72b95f47a11f8335de16912807056`.
+- Review pass 1: `3/10`. Findings: red baseline after removing broad
+  allowances, generic diagnostic collapse, acceptance of incomplete Cargo
+  streams, a divergent full-check Clippy route, and a mixed structural-test
+  correction.
+- Review pass 2: `6/10`. Findings: the writer could ratchet debt upward,
+  same-shaped source items could collapse, and `build-finished` was not
+  required to be the terminal record.
+- Review limit: two passes. The second-pass findings were corrected and proven
+  by objective adversarial gates; no third score was invented.
+- Final contract:
+  - CI, changed, full, and documented routes use
+    `scripts/check-lay-lints.sh`;
+  - every non-`dead_code` rustc/Clippy diagnostic is fatal;
+  - same-shaped dead items retain exact multiplicity through occurrence rows;
+  - empty, malformed, failed, truncated, and post-`build-finished` streams fail;
+  - `--write-baseline` accepts only an equal or strictly reduced inventory;
+  - item-local `#[expect(..., reason = "...")]` replaces broad suppression.
+- Verification:
+  - exact Rust 1.97.1 lint contract: PASS, 368/368, zero non-dead diagnostics;
+  - parser/self-test including same-shape multiplicity, stream finality, and
+    monotonic writer: PASS;
+  - injected dead row through the supported writer: rejected and no candidate
+    baseline published;
+  - exact Rust 1.88.0 default and `lexical-compiler` all-target checks: PASS;
+  - architecture graph and source binding refreshed; architecture gate: PASS;
+  - focused correction, IME, daemon, context-phase, L3/L4, and mutation-owner
+    suites run during implementation: PASS;
+  - `cargo fmt --all --check`, Python/shell syntax, and `git diff --check`: PASS.
+- Existing semantic residuals were reproduced on the clean base and remain
+  owned by TD-007: one phrase-reader expectation and three Nanda L3
+  expectations. They were not rewritten or waived in this task.
+- Untested: live desktop behavior and installation; this task changed no
+  runtime authority.
