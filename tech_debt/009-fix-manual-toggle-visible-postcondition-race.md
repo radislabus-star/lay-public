@@ -373,8 +373,8 @@ mutation boundary; the evidence does not claim unavailable widget identity.
 
 ## Completion Record
 
-- Implementation commit: recorded by the follow-up closure commit after this
-  task's implementation commit is created
+- Implementation commit:
+  `44151a6c25aaefd375512263f309fd6f1608a27a`
 - First independent review: `6/10`; exact suppression rollback, no-fallback
   focus calls, and handoff cancellation findings repaired
 - Final independent review: `4/10`; bounded input queueing, field identity,

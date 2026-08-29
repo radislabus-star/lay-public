@@ -28875,8 +28875,8 @@
     "semantic_hash": ""
   },
   "tech_debt/009-fix-manual-toggle-visible-postcondition-race.md": {
-    "mtime": 1788007895.2438858,
-    "ast_hash": "a62ba90d9ce6fcb1d0bf2a8854470f25",
+    "mtime": 1788008045.114523,
+    "ast_hash": "75531cc89ce15b2a302322428f0f7af6",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/TD_009_MANUAL_TOGGLE_EXACT_OBSERVED_REPLAY_IMPLEMENTATION_V5_2026-08-29.json": {
