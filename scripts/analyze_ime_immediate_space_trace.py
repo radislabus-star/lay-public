@@ -13,6 +13,12 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
+from runtime_smoke.receipt import (
+    SCHEMA_V2,
+    SCHEMA_V3,
+    validate_runtime_smoke_receipt,
+)
+
 
 MAX_TRACE_BYTES = 8 * 1024 * 1024
 LEASE_OUTCOMES = {"ready", "not_ready", "stale", "unauthorized", "applied"}
@@ -184,8 +190,21 @@ def validate_harness_output(
     harness_path: Path, manifest: dict[str, Any]
 ) -> tuple[dict[str, Any], list[str]]:
     harness = load_json(harness_path)
-    if harness.get("schema") != "lay.runtime-smoke-receipt.v1":
+    schema = harness.get("schema")
+    if schema not in {"lay.runtime-smoke-receipt.v1", SCHEMA_V2, SCHEMA_V3}:
         raise AnalysisError("unsupported runtime smoke receipt schema")
+    v2_issues: list[str] = []
+    if schema in {SCHEMA_V2, SCHEMA_V3}:
+        try:
+            validate_runtime_smoke_receipt(harness)
+        except ValueError as error:
+            raise AnalysisError(f"invalid v2 runtime smoke receipt: {error}") from error
+        if harness.get("fatal_error") is not None:
+            v2_issues.append("runtime smoke ended with a fatal error")
+        if harness.get("desktop_restoration_verified") is not True:
+            v2_issues.append("runtime smoke desktop restoration was not verified")
+        if harness.get("all_passed") is not True:
+            v2_issues.append("runtime smoke did not pass all selected cases")
     rows = harness.get("cases")
     if not isinstance(rows, list):
         raise AnalysisError("runtime smoke receipt cases must be a list")
@@ -199,7 +218,7 @@ def validate_harness_output(
     if set(expected_hashes) != set(required_names):
         raise AnalysisError("manifest expected_text_sha256 keys must match the replay cases")
 
-    issues: list[str] = []
+    issues: list[str] = list(v2_issues)
     cases: list[dict[str, Any]] = []
     for name in required_names:
         matches = [row for row in rows if isinstance(row, dict) and row.get("name") == name]

@@ -1,0 +1,77 @@
+{
+  "active_case_at_failure": null,
+  "all_passed": true,
+  "case_results_sha256": "2e9a00cd62e344518e15c71948304c00f9a6a5351329da8a8cfb0e2712a67a79",
+  "cases": [
+    {
+      "case_id": "slovo_ru_to_us_fast_lshift_enter-3699951248882f477fc5",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий slovo_ru_to_us_fast_lshift_enter отправлен\n\nIME manual-toggle trace: got=1 expected=1 malformed=0",
+      "expected": "ckjdj",
+      "got": "ckjdj",
+      "name": "slovo_ru_to_us_fast_lshift_enter",
+      "ok": true,
+      "trace": {
+        "malformed": 0,
+        "manual_toggles": 1,
+        "read_error": null,
+        "records": 85,
+        "sha256": "3bbffd7502db8ea67cb0be6a8f85858f84cceb7a81b4743b00badaf037d817c0"
+      }
+    }
+  ],
+  "desktop_before": {
+    "active_engine": "lay-ime-ru",
+    "active_layout": "lay-ime-ru",
+    "harness_trace_path": null,
+    "ibus_daemons": [
+      {
+        "argv": [
+          "/usr/bin/ibus-daemon",
+          "--panel",
+          "disable"
+        ],
+        "executable": "/usr/bin/ibus-daemon",
+        "pid": 4594,
+        "start_time": 8971
+      }
+    ],
+    "lay_engine_trace_paths": [
+      "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl"
+    ],
+    "lay_engines": [
+      {
+        "argv": [
+          "/home/ubu/.local/bin/lay-ibus-engine",
+          "--ibus",
+          "--managed"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+        "pid": 3544015,
+        "start_time": 22545247
+      }
+    ],
+    "service": {
+      "active_state": "active",
+      "main_pid": 3543998,
+      "main_process": {
+        "argv": [
+          "/home/ubu/.local/bin/lay-daemon"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+        "pid": 3543998,
+        "start_time": 22545245
+      },
+      "sub_state": "running",
+      "unit_file_state": "enabled"
+    }
+  },
+  "desktop_restoration_verified": true,
+  "evidence_root": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ORDER_SINGLE_B_REPEAT",
+  "fatal_error": null,
+  "harness_process_group": 3559592,
+  "run_id": "td002-order-v1",
+  "schema": "lay.runtime-smoke-receipt.v2",
+  "selected_cases": [
+    "slovo_ru_to_us_fast_lshift_enter"
+  ]
+}

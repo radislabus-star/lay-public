@@ -1,0 +1,177 @@
+{
+  "active_case_at_failure": null,
+  "all_passed": true,
+  "binaries": {
+    "daemon": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-daemon",
+      "sha256": "bab99d5258a442b9345d56feac39a209d600c607ec28fe92b6d0fdcdf5db116b",
+      "size": 8890872
+    },
+    "ibus_engine": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-ibus-engine",
+      "sha256": "2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0",
+      "size": 7161768
+    },
+    "input": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-test-input",
+      "sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a",
+      "size": 1842816
+    }
+  },
+  "case_results_sha256": "ffe69c98cef8049618dce771ce9b3613060a126996699465962dc3528ac20f4d",
+  "cases": [
+    {
+      "case_id": "no_ne_ty_enter-c906b35a8c30f550e966",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий no_ne_ty_enter отправлен\n",
+      "expected": "но не ты",
+      "got": "но не ты",
+      "name": "no_ne_ty_enter",
+      "ok": true,
+      "trace": {
+        "kind_counts": {
+          "ibus_auto_undo_lifecycle": 11,
+          "ibus_capabilities": 5,
+          "ibus_content_type": 4,
+          "ibus_cursor": 4,
+          "ibus_focus": 17,
+          "ibus_key": 19,
+          "ibus_prediction_outcome": 3,
+          "ibus_printable_key_timing": 6,
+          "ibus_space_autocorrect": 3,
+          "ibus_space_autocorrect_timing": 3,
+          "ibus_space_correction_lease": 3,
+          "ibus_space_full_terminal": 3,
+          "ibus_space_key_timing": 3,
+          "ibus_surrounding_text": 9,
+          "ibus_token_field_route": 6
+        },
+        "malformed": 0,
+        "manual_toggles": 0,
+        "read_error": null,
+        "records": 99,
+        "semantic_kind_counts": {
+          "ibus_auto_undo_lifecycle": 11,
+          "ibus_capabilities": 5,
+          "ibus_content_type": 4,
+          "ibus_focus": 17,
+          "ibus_key": 19,
+          "ibus_prediction_outcome": 3,
+          "ibus_printable_key_timing": 6,
+          "ibus_space_autocorrect": 3,
+          "ibus_space_autocorrect_timing": 3,
+          "ibus_space_correction_lease": 3,
+          "ibus_space_full_terminal": 3,
+          "ibus_space_key_timing": 3,
+          "ibus_surrounding_text": 9,
+          "ibus_token_field_route": 6
+        },
+        "semantic_records": 95,
+        "sha256": "4552160c01a09c3794a7dc7fa334ca7eb25e68716c9ec609e167e9e7faf9ab2c",
+        "volatile_records": 4
+      }
+    },
+    {
+      "case_id": "ru_p_enter-5edd7e4c746bcd623520",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий ru_p_enter отправлен\n",
+      "expected": "п",
+      "got": "п",
+      "name": "ru_p_enter",
+      "ok": true,
+      "trace": {
+        "kind_counts": {
+          "ibus_capabilities": 3,
+          "ibus_content_type": 3,
+          "ibus_cursor": 3,
+          "ibus_focus": 8
+        },
+        "malformed": 0,
+        "manual_toggles": 0,
+        "read_error": null,
+        "records": 17,
+        "semantic_kind_counts": {
+          "ibus_capabilities": 3,
+          "ibus_content_type": 3,
+          "ibus_focus": 8
+        },
+        "semantic_records": 14,
+        "sha256": "06bff64b639898d101cc2cb7d31343135cdd8c331208a677350fc79327b34d3d",
+        "volatile_records": 3
+      }
+    }
+  ],
+  "desktop_before": {
+    "active_engine": "lay-ime-ru",
+    "active_layout": "lay-ime-ru",
+    "harness_trace_path": null,
+    "ibus_daemons": [
+      {
+        "argv": [
+          "/usr/bin/ibus-daemon",
+          "--panel",
+          "disable"
+        ],
+        "executable": "/usr/bin/ibus-daemon",
+        "pid": 4594,
+        "start_time": 8971
+      }
+    ],
+    "lay_engine_trace_paths": [
+      "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl"
+    ],
+    "lay_engines": [
+      {
+        "argv": [
+          "/home/ubu/.local/bin/lay-ibus-engine",
+          "--ibus",
+          "--managed"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+        "pid": 3773642,
+        "start_time": 22757420
+      }
+    ],
+    "service": {
+      "active_state": "active",
+      "main_pid": 3773627,
+      "main_process": {
+        "argv": [
+          "/home/ubu/.local/bin/lay-daemon"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+        "pid": 3773627,
+        "start_time": 22757412
+      },
+      "sub_state": "running",
+      "unit_file_state": "enabled"
+    }
+  },
+  "desktop_restoration_verified": true,
+  "evidence_root": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ISOLATION_V6_REVERSED",
+  "execution_order": [
+    "no_ne_ty_enter",
+    "ru_p_enter"
+  ],
+  "fatal_error": null,
+  "harness_process_group": 3771008,
+  "invocation": [
+    "/home/ubu/projects/lay-l1-exact-peak-search/scripts/run_runtime_smoke.py",
+    "--managed-desktop",
+    "--ime-managed",
+    "--verify-ime-trace",
+    "--no-build",
+    "--run-id",
+    "td002-isolation-v6",
+    "--case",
+    "no_ne_ty_enter",
+    "--case",
+    "ru_p_enter",
+    "--evidence-dir",
+    "docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ISOLATION_V6_REVERSED"
+  ],
+  "run_id": "td002-isolation-v6",
+  "schema": "lay.runtime-smoke-receipt.v3",
+  "selected_cases": [
+    "no_ne_ty_enter",
+    "ru_p_enter"
+  ]
+}

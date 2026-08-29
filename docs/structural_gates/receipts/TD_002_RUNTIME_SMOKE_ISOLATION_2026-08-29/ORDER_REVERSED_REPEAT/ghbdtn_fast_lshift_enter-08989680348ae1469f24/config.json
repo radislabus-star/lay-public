@@ -1,0 +1,14 @@
+{
+  "auto_replace": true,
+  "auto_switch_layout": true,
+  "correction_engine": "replay",
+  "correction_safety": "experimental",
+  "debug_action_log": true,
+  "mode": "simple",
+  "nanda_autocorrect": true,
+  "nanda_precognition": true,
+  "replace_words": 1,
+  "text_backend": "ime",
+  "typing_assist": true,
+  "typing_assist_words": 2
+}

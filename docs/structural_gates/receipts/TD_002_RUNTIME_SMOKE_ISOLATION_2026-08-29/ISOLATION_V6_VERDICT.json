@@ -1,0 +1,65 @@
+{
+  "cases": [
+    "ru_p_enter",
+    "no_ne_ty_enter"
+  ],
+  "raw_trace_records": {
+    "forward": {
+      "no_ne_ty_enter": 99,
+      "ru_p_enter": 17
+    },
+    "reversed": {
+      "no_ne_ty_enter": 99,
+      "ru_p_enter": 17
+    },
+    "single_a": {
+      "ru_p_enter": 17
+    },
+    "single_b": {
+      "no_ne_ty_enter": 99
+    }
+  },
+  "receipts": {
+    "forward": {
+      "case_results_sha256": "ffe69c98cef8049618dce771ce9b3613060a126996699465962dc3528ac20f4d",
+      "execution_order": [
+        "ru_p_enter",
+        "no_ne_ty_enter"
+      ],
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ISOLATION_V6_FORWARD/RECEIPT.json",
+      "sha256": "99b72fb4c8b2d83493bb05b5e168149f893116bc5e9ac8464d515b3ce84f29bc"
+    },
+    "reversed": {
+      "case_results_sha256": "ffe69c98cef8049618dce771ce9b3613060a126996699465962dc3528ac20f4d",
+      "execution_order": [
+        "no_ne_ty_enter",
+        "ru_p_enter"
+      ],
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ISOLATION_V6_REVERSED/RECEIPT.json",
+      "sha256": "a7d67c7a1ad84cfdc9480fd7c5ddbdace22cf5ca1b7c92f045d4e0573ebddea8"
+    },
+    "single_a": {
+      "case_results_sha256": "a7aa8ccc953cd297d069137d415bc67e7232cba78b2bee2cdd041db7af57ddfb",
+      "execution_order": [
+        "ru_p_enter"
+      ],
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ISOLATION_V6_SINGLE_A/RECEIPT.json",
+      "sha256": "872972426f7c401150fdbbf29a4f8fd2fdb2f7e0e6706fee76b374dc71a8d7cf"
+    },
+    "single_b": {
+      "case_results_sha256": "d1e9bdbf76112faf8491edc0e4169825f5b25076389f880aa7f6dfafc777be00",
+      "execution_order": [
+        "no_ne_ty_enter"
+      ],
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ISOLATION_V6_SINGLE_B/RECEIPT.json",
+      "sha256": "d25b646562663d2c9d5b1c93d4b0bb494264950fc8ef816f0b75aba76103a75f"
+    }
+  },
+  "run_id": "td002-isolation-v6",
+  "schema": "lay.runtime-smoke-isolation-verdict.v1",
+  "semantic_projection_sha256": "ffe69c98cef8049618dce771ce9b3613060a126996699465962dc3528ac20f4d",
+  "verdict": "RUNTIME_SMOKE_ORDER_ISOLATION_PASS",
+  "volatile_trace_kinds_excluded": [
+    "ibus_cursor"
+  ]
+}

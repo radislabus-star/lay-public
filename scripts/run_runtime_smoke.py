@@ -9,24 +9,67 @@ the text returned by the dialog after Enter.
 from __future__ import annotations
 
 import argparse
+import dataclasses
+import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
-import time
-from contextlib import nullcontext
+import uuid
 from pathlib import Path
 
-from runtime_smoke.cases import CASES, Case
-from runtime_smoke.ime import managed_ime_session
+from runtime_smoke.cases import CASES
+from runtime_smoke.desktop import (
+    capture_desktop_snapshot,
+    managed_desktop_session,
+    xkb_fallback_for,
+)
+from runtime_smoke.execution import run_case
+from runtime_smoke.ime import managed_ime_case, trace_summary, write_managed_ime_config
+from runtime_smoke.isolation import (
+    CleanupSignalHandlers,
+    prepare_case_context,
+)
+from runtime_smoke.receipt import (
+    CURRENT_SCHEMA,
+    case_results_sha256,
+    validate_runtime_smoke_receipt,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = ROOT / "target/release/lay-test-input"
 DEFAULT_DAEMON = ROOT / "target/release/lay-daemon"
 DEFAULT_IBUS_ENGINE = ROOT / "target/release/lay-ibus-engine"
+RUN_ID = re.compile(r"[A-Za-z0-9._-]+")
+
+
+def validate_live_admission(args) -> None:
+    if not args.managed_desktop:
+        raise ValueError(
+            "live runtime smoke requires explicit --managed-desktop admission"
+        )
+    if not args.ime_managed:
+        raise ValueError(
+            "live runtime smoke requires --ime-managed per-case engine isolation"
+        )
+    if not args.verify_ime_trace:
+        raise ValueError(
+            "live runtime smoke requires --verify-ime-trace evidence validation"
+        )
+    if args.ime_engine and not args.ime_managed:
+        raise ValueError("--ime-engine requires --ime-managed isolation")
+    if args.use_system_daemon:
+        raise ValueError(
+            "--use-system-daemon is not admitted; every case requires an isolated daemon"
+        )
+    if getattr(args, "timeout", 1.0) <= 0:
+        raise ValueError("--timeout must be positive")
+    if getattr(args, "focus_delay", 0.0) < 0:
+        raise ValueError("--focus-delay cannot be negative")
 
 
 def main() -> int:
@@ -48,7 +91,25 @@ def main() -> int:
     parser.add_argument("--input-bin", type=Path, default=DEFAULT_INPUT)
     parser.add_argument("--daemon-bin", type=Path, default=DEFAULT_DAEMON)
     parser.add_argument("--ibus-engine-bin", type=Path, default=DEFAULT_IBUS_ENGINE)
-    parser.add_argument("--use-system-daemon", action="store_true")
+    parser.add_argument(
+        "--use-system-daemon",
+        action="store_true",
+        help="rejected legacy option; every live case requires an isolated daemon",
+    )
+    parser.add_argument(
+        "--managed-desktop",
+        action="store_true",
+        help="admit temporary, verified mutation and restoration of the live desktop",
+    )
+    parser.add_argument(
+        "--run-id",
+        help="stable run identity for order-equivalence checks; defaults to a UUID",
+    )
+    parser.add_argument(
+        "--evidence-dir",
+        type=Path,
+        help="new persistent evidence directory; defaults under target/runtime-smoke-runs",
+    )
     parser.add_argument("--daemon-debug", action="store_true")
     parser.add_argument(
         "--verify-ime-trace",
@@ -59,7 +120,7 @@ def main() -> int:
     parser.add_argument(
         "--json-out",
         type=Path,
-        help="write exact per-case GTK output for a fail-closed proof consumer",
+        help="also write the complete v2 receipt to this path",
     )
     parser.add_argument(
         "--ime-engine",
@@ -69,67 +130,173 @@ def main() -> int:
     parser.add_argument(
         "--ime-managed",
         action="store_true",
-        help="run Rust lay IBus engine in managed mode for this test and restore daemon after",
+        help="run a fresh repository-local IBus engine for every case",
     )
     args = parser.parse_args()
-    if args.ime_managed and args.use_system_daemon:
-        raise SystemExit("--ime-managed requires its isolated per-device daemon")
-    if args.verify_ime_trace and not (args.ime_engine or args.ime_managed):
-        raise SystemExit("--verify-ime-trace requires --ime-engine or --ime-managed")
+    try:
+        validate_live_admission(args)
+    except ValueError as error:
+        raise SystemExit(str(error)) from error
+    run_id = args.run_id or uuid.uuid4().hex
+    if RUN_ID.fullmatch(run_id) is None:
+        raise SystemExit("--run-id accepts only letters, digits, '.', '_', and '-'")
 
-    dialog = choose_dialog_command(args.dialog)
-    require_command("gdbus")
-    if args.ime_managed:
-        require_command("ibus")
-    input_bin = ensure_binary(args.input_bin, "lay-test-input", args.no_build)
-    daemon_bin = None if args.use_system_daemon else ensure_binary(args.daemon_bin, "lay-daemon", args.no_build)
-    ibus_engine_bin = None
-    if args.ime_managed:
-        ibus_engine_bin = ensure_binary(args.ibus_engine_bin, "lay-ibus-engine", args.no_build)
-
+    evidence_root = prepare_evidence_root(args.evidence_dir, run_id)
+    evidence_receipt = evidence_root / "RECEIPT.json"
     selected = [CASES[name] for name in (args.case or sorted(CASES))]
-    failures = 0
     results: list[dict[str, object]] = []
-    ime_context = (
-        managed_ime_session(ROOT, ibus_engine_bin) if args.ime_managed else nullcontext()
-    )
-    with ime_context:
-        for case in selected:
-            ok, got, detail = run_case(
-                case,
-                input_bin,
-                daemon_bin,
-                dialog,
-                args.focus_delay,
-                args.timeout,
-                args.daemon_debug,
-                args.ime_engine or args.ime_managed,
-                args.verify_ime_trace,
-            )
-            status = "OK" if ok else "BAD"
-            print(f"{status} {case.name}: got={got!r} expected={case.expected!r}")
-            if detail:
-                print(indent(detail.rstrip()))
-            results.append(
-                {
-                    "name": case.name,
-                    "ok": ok,
-                    "got": got,
-                    "expected": case.expected,
-                }
-            )
-            failures += 0 if ok else 1
+    desktop_receipt: dict[str, object] | None = None
+    desktop_restoration_verified = False
+    harness_process_group = os.getpgrp()
+    active_case: str | None = None
+    fatal_exception: BaseException | None = None
+    binary_receipt: dict[str, object] | None = None
 
-    if args.json_out is not None:
-        write_json_atomic(
-            args.json_out,
-            {
-                "schema": "lay.runtime-smoke-receipt.v1",
-                "all_passed": failures == 0,
-                "cases": results,
-            },
+    try:
+        dialog = choose_dialog_command(args.dialog)
+        require_command("gdbus")
+        require_command("ibus")
+        require_command("systemctl")
+        input_bin = ensure_binary(args.input_bin, "lay-test-input", args.no_build)
+        daemon_bin = ensure_binary(args.daemon_bin, "lay-daemon", args.no_build)
+        ibus_engine_bin = ensure_binary(
+            args.ibus_engine_bin, "lay-ibus-engine", args.no_build
         )
-    return 1 if failures else 0
+        binary_receipt = {
+            "input": binary_identity(input_bin),
+            "daemon": binary_identity(daemon_bin),
+            "ibus_engine": binary_identity(ibus_engine_bin),
+        }
+
+        with CleanupSignalHandlers():
+            desktop_before = capture_desktop_snapshot()
+            desktop_receipt = dataclasses.asdict(desktop_before)
+            with managed_desktop_session(
+                admitted=args.managed_desktop,
+                replace_service=True,
+                replace_lay_engines=args.ime_managed,
+                snapshot=desktop_before,
+            ) as desktop_before:
+                fallback_source = xkb_fallback_for(desktop_before.active_engine)
+                for case in selected:
+                    active_case = case.name
+                    context = prepare_case_context(
+                        root=evidence_root,
+                        run_id=run_id,
+                        case_name=case.name,
+                    )
+                    write_case_config(
+                        context.config_path,
+                        case.config_overrides,
+                        managed_ime=True,
+                    )
+                    with managed_ime_case(
+                        ROOT,
+                        ibus_engine_bin,
+                        context,
+                        fallback_source,
+                    ):
+                        ok, got, detail = run_case(
+                            case,
+                            context,
+                            input_bin,
+                            daemon_bin,
+                            dialog,
+                            args.focus_delay,
+                            args.timeout,
+                            args.daemon_debug,
+                            True,
+                        )
+                    trace = trace_summary(context.trace_path)
+                    if trace["read_error"] is not None or trace["malformed"] != 0:
+                        ok = False
+                        detail = append_detail(
+                            detail,
+                            "IME trace integrity: "
+                            f"read_error={trace['read_error']!r} "
+                            f"malformed={trace['malformed']}",
+                        )
+                    if (
+                        args.verify_ime_trace
+                        and case.expected_manual_toggles is not None
+                    ):
+                        trace_ok = (
+                            trace["read_error"] is None
+                            and trace["malformed"] == 0
+                            and trace["manual_toggles"]
+                            == case.expected_manual_toggles
+                        )
+                        ok = ok and trace_ok
+                        detail = append_detail(
+                            detail,
+                            "IME manual-toggle trace: "
+                            f"got={trace['manual_toggles']} "
+                            f"expected={case.expected_manual_toggles} "
+                            f"malformed={trace['malformed']}",
+                        )
+                    status = "OK" if ok else "BAD"
+                    print(
+                        f"{status} {case.name}: "
+                        f"got={got!r} expected={case.expected!r}"
+                    )
+                    if detail:
+                        print(indent(detail.rstrip()))
+                    results.append(
+                        {
+                            "case_id": context.case_id,
+                            "name": case.name,
+                            "ok": ok,
+                            "got": got,
+                            "expected": case.expected,
+                            "detail": detail,
+                            "trace": trace,
+                        }
+                    )
+                    active_case = None
+            desktop_restoration_verified = True
+        if os.getpgrp() != harness_process_group:
+            raise RuntimeError("runtime smoke process group changed during execution")
+    except BaseException as error:
+        fatal_exception = error
+
+    sorted_results = sorted(results, key=lambda item: str(item["name"]))
+    fatal_error = (
+        None
+        if fatal_exception is None
+        else f"{type(fatal_exception).__name__}: {fatal_exception}"
+    )
+    all_passed = (
+        fatal_exception is None
+        and desktop_restoration_verified
+        and bool(sorted_results)
+        and all(result["ok"] is True for result in sorted_results)
+    )
+    receipt: dict[str, object] = {
+        "schema": CURRENT_SCHEMA,
+        "run_id": run_id,
+        "selected_cases": [case.name for case in selected],
+        "execution_order": [case.name for case in selected],
+        "active_case_at_failure": active_case,
+        "all_passed": all_passed,
+        "cases": sorted_results,
+        "case_results_sha256": case_results_sha256(sorted_results),
+        "desktop_before": desktop_receipt,
+        "desktop_restoration_verified": desktop_restoration_verified,
+        "harness_process_group": harness_process_group,
+        "evidence_root": str(evidence_root),
+        "fatal_error": fatal_error,
+        "binaries": binary_receipt,
+        "invocation": [str(Path(sys.argv[0]).resolve()), *sys.argv[1:]],
+    }
+    validate_runtime_smoke_receipt(receipt)
+    write_json_atomic(evidence_receipt, receipt)
+    if args.json_out is not None and args.json_out.resolve() != evidence_receipt:
+        write_json_atomic(args.json_out, receipt)
+    print(f"runtime smoke evidence: {evidence_receipt}")
+
+    if fatal_exception is not None:
+        raise fatal_exception
+    return 0 if all_passed else 1
 
 
 def require_command(name: str) -> None:
@@ -137,9 +304,36 @@ def require_command(name: str) -> None:
         raise SystemExit(f"required command not found: {name}")
 
 
+def binary_identity(path: Path) -> dict[str, object]:
+    resolved = path.resolve()
+    with resolved.open("rb") as source:
+        digest = hashlib.file_digest(source, "sha256").hexdigest()
+    return {
+        "path": str(resolved),
+        "size": resolved.stat().st_size,
+        "sha256": digest,
+    }
+
+
+def prepare_evidence_root(requested: Path | None, run_id: str) -> Path:
+    path = requested
+    if path is None:
+        path = (
+            ROOT
+            / "target"
+            / "runtime-smoke-runs"
+            / f"{run_id}-{uuid.uuid4().hex[:12]}"
+        )
+    path = path.expanduser().resolve()
+    path.mkdir(parents=True, exist_ok=False)
+    return path
+
+
 def choose_dialog_command(preferred: str) -> str:
     if preferred != "auto":
-        if preferred == "gtk-entry-capture" and (ROOT / "scripts" / "gtk_entry_capture.py").exists():
+        if preferred == "gtk-entry-capture" and (
+            ROOT / "scripts" / "gtk_entry_capture.py"
+        ).exists():
             return preferred
         if preferred in {"zenity", "kdialog"} and shutil.which(preferred) is not None:
             return preferred
@@ -160,13 +354,48 @@ def ensure_binary(path: Path, bin_name: str, no_build: bool) -> Path:
     if no_build:
         raise SystemExit(f"{bin_name} binary not found: {path}")
     subprocess.run(
-        ["cargo", "build", "--release", "--bin", bin_name],
+        [
+            str(ROOT / "scripts" / "cargo-guard.sh"),
+            "build",
+            "--release",
+            "--bin",
+            bin_name,
+        ],
         cwd=ROOT,
         check=True,
     )
     if not path.exists():
         raise SystemExit(f"{bin_name} binary was not built: {path}")
     return path
+
+
+def write_case_config(
+    path: Path,
+    overrides: dict[str, object] | None,
+    *,
+    managed_ime: bool,
+) -> None:
+    if managed_ime:
+        write_managed_ime_config(path)
+        config = json.loads(path.read_text(encoding="utf-8"))
+    else:
+        config = {
+            "mode": "simple",
+            "correction_engine": "replay",
+            "replace_words": 1,
+            "auto_replace": False,
+            "typing_assist": False,
+            "auto_switch_layout": True,
+        }
+    config.update(overrides or {})
+    path.write_text(
+        json.dumps(config, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def append_detail(current: str, extra: str) -> str:
+    return "\n".join(part for part in (current, extra) if part)
 
 
 def write_json_atomic(path: Path, value: dict[str, object]) -> None:
@@ -182,346 +411,6 @@ def write_json_atomic(path: Path, value: dict[str, object]) -> None:
     except BaseException:
         Path(temp_name).unlink(missing_ok=True)
         raise
-
-
-def run_case(
-    case: Case,
-    input_bin: Path,
-    daemon_bin: Path | None,
-    dialog: str,
-    focus_delay: float,
-    timeout: float,
-    daemon_debug: bool,
-    ime_engine: bool,
-    verify_ime_trace: bool,
-) -> tuple[bool, str, str]:
-    activate_layout(case.start_layout, ime_engine)
-    trace_cursor = capture_ime_trace_cursor() if verify_ime_trace else None
-    runtime_env = dict_env()
-    temp_home: tempfile.TemporaryDirectory[str] | None = None
-    if case.config_overrides:
-        if daemon_bin is None:
-            return (
-                False,
-                "",
-                "case needs isolated config; run without --use-system-daemon",
-            )
-        temp_home = tempfile.TemporaryDirectory(prefix="lay-smoke-home-")
-        config_dir = Path(temp_home.name) / ".config" / "lay"
-        config_dir.mkdir(parents=True, exist_ok=True)
-        config_path = config_dir / "config.json"
-        runtime_env["LAY_CONFIG_PATH"] = str(config_path)
-        config = {
-            "mode": "simple",
-            "correction_engine": "replay",
-            "replace_words": 1,
-            "auto_replace": False,
-            "typing_assist": False,
-            "auto_switch_layout": True,
-            **case.config_overrides,
-        }
-        config_path.write_text(
-            json.dumps(config, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
-        if config.get("enter_autocorrect"):
-            runtime_env["LAY_EXPERIMENTAL_ENTER_AUTOCORRECT"] = "1"
-    dialog_env = dict_env()
-    if ime_engine:
-        dialog_env["GTK_IM_MODULE"] = "ibus"
-    dialog_proc = subprocess.Popen(
-        dialog_args(dialog, case),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        env=dialog_env,
-    )
-    time.sleep(focus_delay)
-
-    sender_env = {
-        **dict_env(),
-        "LAY_TEST_INPUT_ARMED": "1",
-        "LAY_TEST_START_DELAY_MS": "3500",
-        "LAY_TEST_INITIAL_LAYOUT": case.start_layout,
-    }
-    if ime_engine:
-        sender_env["LAY_TEST_IME_ENGINE"] = "1"
-    sender = subprocess.Popen(
-        [str(input_bin), case.name],
-        cwd=ROOT,
-        env=sender_env,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    device_path = ""
-    daemon = None
-    daemon_stderr = ""
-    if daemon_bin is not None:
-        assert sender.stdout is not None
-        device_path = sender.stdout.readline().strip()
-        if not device_path.startswith("/dev/input/event"):
-            sender.kill()
-            stdout, stderr = dialog_proc.communicate(timeout=1)
-            return False, stdout.strip(), f"invalid test device path: {device_path!r}\nsender stderr:\n{stderr}"
-        if not wait_for_device_access(Path(device_path), timeout=3.0):
-            sender.kill()
-            stdout, stderr = dialog_proc.communicate(timeout=1)
-            return False, stdout.strip(), f"test device is not readable: {device_path}"
-        daemon_args = [str(daemon_bin), "--device", device_path]
-        if daemon_debug:
-            daemon_args.extend(["--debug-log", "--verbose"])
-        daemon = subprocess.Popen(
-            daemon_args,
-            cwd=ROOT,
-            text=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.PIPE,
-            env=runtime_env,
-        )
-        time.sleep(0.8)
-
-    try:
-        sender_stdout, sender_stderr = sender.communicate(timeout=timeout)
-    except subprocess.TimeoutExpired:
-        sender.kill()
-        sender_stdout, sender_stderr = sender.communicate()
-        sender_stderr += "\nsender timeout"
-
-    try:
-        stdout, stderr = dialog_proc.communicate(timeout=timeout)
-    except subprocess.TimeoutExpired:
-        dialog_proc.kill()
-        stdout, stderr = dialog_proc.communicate()
-        stderr += f"\n{dialog} timeout"
-
-    if daemon is not None:
-        daemon.terminate()
-        try:
-            _, daemon_stderr = daemon.communicate(timeout=3)
-        except subprocess.TimeoutExpired:
-            daemon.kill()
-            _, daemon_stderr = daemon.communicate()
-
-    got = stdout.strip()
-    details = []
-    if sender.returncode != 0:
-        details.append(f"sender exited {sender.returncode}")
-    if dialog_proc.returncode != 0:
-        details.append(f"{dialog} exited {dialog_proc.returncode}")
-    if device_path:
-        details.append(f"device: {device_path}")
-    if sender_stdout:
-        details.append(f"sender stdout:\n{sender_stdout}")
-    if sender_stderr:
-        details.append(f"sender stderr:\n{sender_stderr}")
-    if daemon_stderr:
-        details.append(f"daemon stderr:\n{daemon_stderr}")
-    if daemon is not None and daemon.returncode not in {None, 0, -15}:
-        details.append(f"daemon exited {daemon.returncode}")
-    if stderr:
-        details.append(f"{dialog} stderr:\n{stderr}")
-    if temp_home is not None:
-        temp_home.cleanup()
-
-    trace_ok = True
-    if trace_cursor is not None and case.expected_manual_toggles is not None:
-        toggle_count = manual_toggle_count_since(trace_cursor)
-        trace_ok = toggle_count == case.expected_manual_toggles
-        details.append(
-            "IME manual-toggle trace: "
-            f"got={toggle_count} expected={case.expected_manual_toggles}"
-        )
-
-    return (
-        got == case.expected
-        and sender.returncode == 0
-        and dialog_proc.returncode == 0
-        and trace_ok,
-        got,
-        "\n".join(details),
-    )
-
-
-def capture_ime_trace_cursor() -> tuple[Path, int, int | None]:
-    path = Path(
-        os.environ.get(
-            "LAY_IBUS_TRACE_PATH",
-            str(Path.home() / ".local/share/lay/ibus_engine_debug.jsonl"),
-        )
-    )
-    try:
-        stat = path.stat()
-    except FileNotFoundError:
-        return path, 0, None
-    return path, stat.st_size, stat.st_ino
-
-
-def manual_toggle_count_since(cursor: tuple[Path, int, int | None]) -> int:
-    path, offset, inode = cursor
-    try:
-        stat = path.stat()
-        if inode is not None and stat.st_ino != inode:
-            offset = 0
-        if stat.st_size < offset:
-            offset = 0
-        with path.open("rb") as source:
-            source.seek(offset)
-            lines = source.read().decode("utf-8", errors="replace").splitlines()
-    except FileNotFoundError:
-        return 0
-
-    count = 0
-    for line in lines:
-        try:
-            record = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        if record.get("kind") in {
-            "ibus_manual_toggle_plan",
-            "ibus_manual_toggle_delegation",
-        }:
-            count += 1
-    return count
-
-
-def dialog_args(dialog: str, case: Case) -> list[str]:
-    if dialog == "gtk-entry-capture":
-        return [
-            sys.executable,
-            str(ROOT / "scripts" / "gtk_entry_capture.py"),
-            "--title",
-            f"Lay runtime smoke: {case.name}",
-            "--text",
-            f"Runtime smoke: {case.name}",
-        ]
-    if dialog == "zenity":
-        return [
-            "zenity",
-            "--entry",
-            "--title",
-            f"Lay runtime smoke: {case.name}",
-            "--text",
-            f"Runtime smoke: {case.name}",
-            "--width",
-            "520",
-        ]
-    if dialog == "kdialog":
-        return [
-            "kdialog",
-            "--title",
-            f"Lay runtime smoke: {case.name}",
-            "--inputbox",
-            f"Runtime smoke: {case.name}",
-            "",
-        ]
-    raise ValueError(f"unsupported dialog: {dialog}")
-
-
-def dict_env() -> dict[str, str]:
-    return dict(os.environ)
-
-
-def wait_for_device_access(path: Path, timeout: float) -> bool:
-    deadline = time.monotonic() + timeout
-    while time.monotonic() < deadline:
-        if os.access(path, os.R_OK):
-            return True
-        time.sleep(0.05)
-    return os.access(path, os.R_OK)
-
-
-def activate_layout(layout: str, ime_engine: bool = False) -> None:
-    if ime_engine:
-        activate_layout(layout)
-        engine = "lay-ime-ru" if layout == "ru" else "lay-ime-us"
-        for _ in range(8):
-            subprocess.run(
-                ["ibus", "engine", engine],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-            current = subprocess.run(
-                ["ibus", "engine"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
-                text=True,
-            )
-            if current.stdout.strip() == engine:
-                return
-            time.sleep(0.15)
-        return
-
-    if activate_layout_kde(layout):
-        return
-
-    subprocess.run(
-        [
-            "gdbus",
-            "call",
-            "--session",
-            "--dest",
-            "org.gnome.Shell",
-            "--object-path",
-            "/io/github/radislabus_star/LayDaemon",
-            "--method",
-            "io.github.radislabus_star.LayDaemon.ActivateLayout",
-            f'"{layout}"',
-        ],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    engine = "xkb:ru::rus" if layout == "ru" else "xkb:us::eng"
-    subprocess.run(
-        ["ibus", "engine", engine],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-
-
-def activate_layout_kde(layout: str) -> bool:
-    qdbus = shutil.which("qdbus6") or shutil.which("qdbus-qt6") or shutil.which("qdbus")
-    if qdbus is None:
-        return False
-
-    index = kde_layout_index(qdbus, layout)
-    if index is None:
-        return False
-
-    return (
-        subprocess.run(
-            [qdbus, "org.kde.keyboard", "/Layouts", "setLayout", str(index)],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        ).returncode
-        == 0
-    )
-
-
-def kde_layout_index(qdbus: str, layout: str) -> int | None:
-    out = subprocess.run(
-        [qdbus, "--literal", "org.kde.keyboard", "/Layouts", "getLayoutsList"],
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    if out.returncode != 0:
-        return None
-
-    layouts: list[str] = []
-    for chunk in out.stdout.split("[Argument: (sss)")[1:]:
-        first = chunk.find('"')
-        if first < 0:
-            continue
-        second = chunk.find('"', first + 1)
-        if second < 0:
-            continue
-        layouts.append(chunk[first + 1 : second])
-
-    try:
-        return layouts.index(layout)
-    except ValueError:
-        return None
 
 
 def indent(text: str) -> str:

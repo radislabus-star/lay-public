@@ -90,8 +90,8 @@
     "semantic_hash": ""
   },
   "scripts/check-lay-full.sh": {
-    "mtime": 1786642120.3940442,
-    "ast_hash": "1257d269f050502e6621454614ff1d12",
+    "mtime": 1787966703.4239237,
+    "ast_hash": "3acb9e72717bfb86f4da051fc8093bed",
     "semantic_hash": ""
   },
   "scripts/eval_two_word_models.py": {
@@ -145,8 +145,8 @@
     "semantic_hash": "f33fe11e542c7dde7360706248700138"
   },
   "scripts/run_runtime_smoke.py": {
-    "mtime": 1787936788.909357,
-    "ast_hash": "eadd2d7b896a86ddc2726d79b9f0e363",
+    "mtime": 1787966912.64528,
+    "ast_hash": "5f1fd78ef0d95fd786aa95091b7a3112",
     "semantic_hash": ""
   },
   "scripts/runtime_smoke/__init__.py": {
@@ -160,8 +160,8 @@
     "semantic_hash": ""
   },
   "scripts/runtime_smoke/ime.py": {
-    "mtime": 1787933356.9198775,
-    "ast_hash": "5b54bc8d49f501b9861cefc2a2cb547c",
+    "mtime": 1787966728.6100817,
+    "ast_hash": "75fd1b3c1dc06ee596a3f47bdbc876e0",
     "semantic_hash": ""
   },
   "scripts/runtime_smoke/ime_cases.py": {
@@ -2670,8 +2670,8 @@
     "semantic_hash": ""
   },
   "docs/architecture-checklist-2026-05-19.md": {
-    "mtime": 1786642120.190181,
-    "ast_hash": "7016e4f95c5886c1b45812d1194d6e03",
+    "mtime": 1787967372.0215669,
+    "ast_hash": "690d6f4d5e563724b7231c7c4491a530",
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
@@ -3265,8 +3265,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1787962558.9543514,
-    "ast_hash": "ccf0f049f48d1fae48949126c95382ee",
+    "mtime": 1787967528.5646706,
+    "ast_hash": "0358df5ca37001fd74ee1e0312d820f5",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -9650,8 +9650,8 @@
     "semantic_hash": ""
   },
   "scripts/analyze_ime_immediate_space_trace.py": {
-    "mtime": 1786869091.7672503,
-    "ast_hash": "8d3e0b3839e876e8d22e7433ebf2a8d6",
+    "mtime": 1787966960.4896016,
+    "ast_hash": "0e7c2160d422a21533b1ceab64c75fcc",
     "semantic_hash": ""
   },
   "src/ru_typo/memo.rs": {
@@ -9660,8 +9660,8 @@
     "semantic_hash": ""
   },
   "tests/test_ime_immediate_space_trace.py": {
-    "mtime": 1786869091.7672503,
-    "ast_hash": "a8ed6f2f6219b460156b6dd4f89579a0",
+    "mtime": 1787967102.5155766,
+    "ast_hash": "7d87adccf26e1d39e9026fb039b2d1d7",
     "semantic_hash": ""
   },
   "docs/ime-canonical-target-authority-paper-2026-08-17.md": {
@@ -28755,13 +28755,13 @@
     "semantic_hash": ""
   },
   "tech_debt/001-repair-architecture-and-audit-gates.md": {
-    "mtime": 1787962580.9234536,
-    "ast_hash": "a887d788f2a4fab21fc6f5c554d1c885",
+    "mtime": 1787962639.922467,
+    "ast_hash": "5727edc8ae76263e581b33bfd7132694",
     "semantic_hash": ""
   },
   "tech_debt/002-isolate-live-runtime-smoke.md": {
-    "mtime": 1787959142.2247567,
-    "ast_hash": "7af0f64943208389c3c5132cfffab342",
+    "mtime": 1787967756.7366004,
+    "ast_hash": "7b8d7141df9409619162ebd20d637550",
     "semantic_hash": ""
   },
   "tech_debt/003-fix-preedit-refresh-convergence.md": {
@@ -28820,8 +28820,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1787959579.8391542,
-    "ast_hash": "74b24cd4826dd9e95749ddc1720c523b",
+    "mtime": 1787967756.7356002,
+    "ast_hash": "c559bb2ca68f31fc8507b80c0c0b040c",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -28842,6 +28842,41 @@
   "scripts/update-architecture-graph.sh": {
     "mtime": 1787962491.815883,
     "ast_hash": "471529c2d0bbc8801fc46d4c4baf4890",
+    "semantic_hash": ""
+  },
+  "scripts/runtime_smoke/desktop.py": {
+    "mtime": 1787964999.7095206,
+    "ast_hash": "8fbbfe34bce98804e57b252f86511628",
+    "semantic_hash": ""
+  },
+  "scripts/runtime_smoke/execution.py": {
+    "mtime": 1787967196.2372336,
+    "ast_hash": "7d51b7662785738f4c0b66d69a3e61b5",
+    "semantic_hash": ""
+  },
+  "scripts/runtime_smoke/isolation.py": {
+    "mtime": 1787967196.2362335,
+    "ast_hash": "aee2577f20bccd37def5ebf236e84c46",
+    "semantic_hash": ""
+  },
+  "scripts/runtime_smoke/receipt.py": {
+    "mtime": 1787967102.5145767,
+    "ast_hash": "e347fb14043bff4f93ca25c21da81271",
+    "semantic_hash": ""
+  },
+  "scripts/verify_runtime_smoke_isolation.py": {
+    "mtime": 1787966951.1215384,
+    "ast_hash": "3fab848bdcf0afa0c6b1540137be1e9f",
+    "semantic_hash": ""
+  },
+  "tests/test_runtime_smoke_isolation.py": {
+    "mtime": 1787967358.7250836,
+    "ast_hash": "b64828023866feb0bda58935fccd45e1",
+    "semantic_hash": ""
+  },
+  "tech_debt/009-fix-manual-toggle-visible-postcondition-race.md": {
+    "mtime": 1787965921.7134354,
+    "ast_hash": "049b37d803cdac6825ee864d7b0e5ecb",
     "semantic_hash": ""
   }
 }

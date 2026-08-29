@@ -3,12 +3,16 @@ from __future__ import annotations
 import importlib.util
 import hashlib
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = ROOT / "scripts"
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
 SCRIPT = ROOT / "scripts" / "analyze_ime_immediate_space_trace.py"
 SPEC = importlib.util.spec_from_file_location("immediate_space_trace", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
@@ -20,6 +24,7 @@ IME_SPEC = importlib.util.spec_from_file_location("runtime_smoke_ime", IME_SCRIP
 assert IME_SPEC is not None and IME_SPEC.loader is not None
 IME_MODULE = importlib.util.module_from_spec(IME_SPEC)
 IME_SPEC.loader.exec_module(IME_MODULE)
+RECEIPT_MODULE = sys.modules["runtime_smoke.receipt"]
 
 
 def route(path: str, epoch: int, projection: str, producers: int) -> dict[str, object]:
@@ -136,19 +141,77 @@ class ImmediateSpaceTraceTest(unittest.TestCase):
         )
 
     def write_harness(self, *, eligible_got: str | None = None) -> None:
+        rows = [
+            {
+                "case_id": f"case-{name}",
+                "name": name,
+                "ok": eligible_got is None or name != "eligible",
+                "got": (
+                    eligible_got
+                    if name == "eligible" and eligible_got is not None
+                    else value
+                ),
+                "expected": value,
+                "detail": "",
+                "trace": {
+                    "records": 1,
+                    "semantic_records": 1,
+                    "volatile_records": 0,
+                    "kind_counts": {"ibus_key": 1},
+                    "semantic_kind_counts": {"ibus_key": 1},
+                    "malformed": 0,
+                    "manual_toggles": 0,
+                    "sha256": "1" * 64,
+                    "read_error": None,
+                },
+            }
+            for name, value in self.expected.items()
+        ]
+        for row in rows:
+            row["case_id"] = RECEIPT_MODULE.case_id_for("unit-test", row["name"])
+        selected = list(self.expected)
         self.harness.write_text(
             json.dumps(
                 {
-                    "schema": "lay.runtime-smoke-receipt.v1",
+                    "schema": "lay.runtime-smoke-receipt.v3",
+                    "run_id": "unit-test",
+                    "selected_cases": selected,
+                    "execution_order": selected,
                     "all_passed": eligible_got is None,
-                    "cases": [
-                        {
-                            "name": name,
-                            "ok": eligible_got is None or name != "eligible",
-                            "got": eligible_got if name == "eligible" and eligible_got is not None else value,
-                            "expected": value,
+                    "cases": rows,
+                    "case_results_sha256": RECEIPT_MODULE.case_results_sha256(rows),
+                    "desktop_before": {
+                        "service": {
+                            "active_state": "inactive",
+                            "sub_state": "dead",
+                            "unit_file_state": "enabled",
+                            "main_pid": 0,
+                            "main_process": None,
+                        },
+                        "active_layout": "lay-ime-ru",
+                        "active_engine": "lay-ime-ru",
+                        "ibus_daemons": [],
+                        "lay_engines": [],
+                        "lay_engine_trace_paths": [],
+                        "harness_trace_path": None,
+                    },
+                    "desktop_restoration_verified": True,
+                    "harness_process_group": 123,
+                    "evidence_root": str(self.root),
+                    "fatal_error": None,
+                    "binaries": {
+                        role: {
+                            "path": f"/candidate/{role}",
+                            "size": 1,
+                            "sha256": "2" * 64,
                         }
-                        for name, value in self.expected.items()
+                        for role in ("input", "daemon", "ibus_engine")
+                    },
+                    "invocation": [
+                        "/repo/scripts/run_runtime_smoke.py",
+                        "--managed-desktop",
+                        "--ime-managed",
+                        "--verify-ime-trace",
                     ],
                 }
             ),
@@ -202,6 +265,15 @@ class ImmediateSpaceTraceTest(unittest.TestCase):
         receipt = MODULE.analyze(self.trace, self.manifest, self.harness)
         self.assertEqual(receipt["verdict"], "FAIL")
         self.assertFalse(receipt["gates"]["harness_output_parity"])
+
+    def test_incomplete_v3_harness_receipt_is_rejected(self) -> None:
+        self.write_records(self.records())
+        harness = json.loads(self.harness.read_text(encoding="utf-8"))
+        del harness["desktop_restoration_verified"]
+        self.harness.write_text(json.dumps(harness), encoding="utf-8")
+
+        with self.assertRaisesRegex(MODULE.AnalysisError, "restoration verdict"):
+            MODULE.analyze(self.trace, self.manifest, self.harness)
 
     def test_malformed_json_is_rejected(self) -> None:
         self.trace.write_text('{"kind":"ibus_key"}\nnot-json\n', encoding="utf-8")

@@ -1,0 +1,133 @@
+{
+  "active_case_at_failure": null,
+  "all_passed": true,
+  "binaries": {
+    "daemon": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-daemon",
+      "sha256": "bab99d5258a442b9345d56feac39a209d600c607ec28fe92b6d0fdcdf5db116b",
+      "size": 8890872
+    },
+    "ibus_engine": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-ibus-engine",
+      "sha256": "2232277072cd7176c6465875e31d2e4f3abf3977b51d3344d22a871a106336c0",
+      "size": 7161768
+    },
+    "input": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-test-input",
+      "sha256": "af9398773c5841e0aaaeca7c5f94336ae430f58296a02613b0259da75ff1ef0a",
+      "size": 1842816
+    }
+  },
+  "case_results_sha256": "892058c18abd698b8aecbf226ba15a41536a8e8e80b6edc907b8fb7368b69f3a",
+  "cases": [
+    {
+      "case_id": "ru_p_enter-8f56f63248c49b119e79",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий ru_p_enter отправлен\n\ndaemon exited -9",
+      "expected": "п",
+      "got": "п",
+      "name": "ru_p_enter",
+      "ok": true,
+      "trace": {
+        "kind_counts": {
+          "ibus_auto_undo_lifecycle": 3,
+          "ibus_capabilities": 5,
+          "ibus_content_type": 4,
+          "ibus_cursor": 5,
+          "ibus_focus": 19,
+          "ibus_key": 3,
+          "ibus_printable_key_timing": 1,
+          "ibus_surrounding_text": 1,
+          "ibus_token_field_route": 1
+        },
+        "malformed": 0,
+        "manual_toggles": 0,
+        "read_error": null,
+        "records": 42,
+        "semantic_kind_counts": {
+          "ibus_auto_undo_lifecycle": 3,
+          "ibus_capabilities": 5,
+          "ibus_content_type": 4,
+          "ibus_focus": 19,
+          "ibus_key": 3,
+          "ibus_printable_key_timing": 1,
+          "ibus_surrounding_text": 1,
+          "ibus_token_field_route": 1
+        },
+        "semantic_records": 37,
+        "sha256": "68a9dc812edf4655c780aff470d675876a8a169a1ac874794f0b42b99329be6d",
+        "volatile_records": 5
+      }
+    }
+  ],
+  "desktop_before": {
+    "active_engine": "lay-ime-ru",
+    "active_layout": "lay-ime-ru",
+    "harness_trace_path": null,
+    "ibus_daemons": [
+      {
+        "argv": [
+          "/usr/bin/ibus-daemon",
+          "--panel",
+          "disable"
+        ],
+        "executable": "/usr/bin/ibus-daemon",
+        "pid": 4594,
+        "start_time": 8971
+      }
+    ],
+    "lay_engine_trace_paths": [
+      "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl"
+    ],
+    "lay_engines": [
+      {
+        "argv": [
+          "/home/ubu/.local/bin/lay-ibus-engine",
+          "--ibus",
+          "--managed"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+        "pid": 3619658,
+        "start_time": 22612935
+      }
+    ],
+    "service": {
+      "active_state": "active",
+      "main_pid": 3619643,
+      "main_process": {
+        "argv": [
+          "/home/ubu/.local/bin/lay-daemon"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+        "pid": 3619643,
+        "start_time": 22612927
+      },
+      "sub_state": "running",
+      "unit_file_state": "enabled"
+    }
+  },
+  "desktop_restoration_verified": true,
+  "evidence_root": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ISOLATION_V5_SINGLE_A",
+  "execution_order": [
+    "ru_p_enter"
+  ],
+  "fatal_error": null,
+  "harness_process_group": 3762154,
+  "invocation": [
+    "/home/ubu/projects/lay-l1-exact-peak-search/scripts/run_runtime_smoke.py",
+    "--managed-desktop",
+    "--ime-managed",
+    "--verify-ime-trace",
+    "--no-build",
+    "--case",
+    "ru_p_enter",
+    "--run-id",
+    "td002-isolation-v5",
+    "--evidence-dir",
+    "docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ISOLATION_V5_SINGLE_A"
+  ],
+  "run_id": "td002-isolation-v5",
+  "schema": "lay.runtime-smoke-receipt.v3",
+  "selected_cases": [
+    "ru_p_enter"
+  ]
+}

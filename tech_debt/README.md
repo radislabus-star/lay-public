@@ -11,8 +11,9 @@ commit, and push must all be present.
 
 ## Operating Rules
 
-1. Execute `001` through `008` in order unless a task discovers a higher-priority
-   regression.
+1. Execute the table order below unless a task discovers a higher-priority
+   regression. `TD-009` was inserted after `TD-002` because the isolated live
+   proof exposed a user-visible Double Shift race that blocks later IME gates.
 2. Start with a failing test or a frozen baseline. Do not mix behavior changes
    with move-only refactors.
 3. Before edits, record the base commit, exact command, environment/toolchain,
@@ -67,14 +68,15 @@ The 88 full-suite failures must not become 88 example-specific patches:
 
 | Order | Task | Priority | Size | Status | Product value |
 |---:|---|---|---|---|---|
-| 001 | [Repair architecture and audit gates](001-repair-architecture-and-audit-gates.md) | P0 | M | READY | Makes structural checks truthful again |
-| 002 | [Isolate live runtime smoke cases](002-isolate-live-runtime-smoke.md) | P0 | M | READY | Makes user-visible proof safe and case-independent |
-| 003 | [Fix pending preedit refresh convergence](003-fix-preedit-refresh-convergence.md) | P0 | S | READY | Removes visible stale/duplicated IME suffix |
-| 004 | [Enforce the real MSRV and pinned lint toolchain](004-enforce-real-msrv.md) | P0 | S | READY | Replaces false and floating compiler contracts |
-| 005 | [Make the lint gate truthful](005-make-lint-gate-truthful.md) | P0 | M | READY | Restores an enforceable green CI contract |
-| 006 | [Build hermetic test lanes](006-build-hermetic-test-lanes.md) | P0 | L | READY | Separates correctness, environment, and timing failures |
-| 007 | [Reconcile superseded semantic tests](007-reconcile-semantic-contract-tests.md) | P0 | XL | READY | Converts the full suite into current authority evidence |
-| 008 | [Classify and remove obvious dead code](008-reduce-dead-code-and-proof-surface.md) | P1 | L | READY | Removes proven residue without a workspace rewrite |
+| 001 | [Repair architecture and audit gates](001-repair-architecture-and-audit-gates.md) | P0 | M | DONE | Makes structural checks truthful again |
+| 002 | [Isolate live runtime smoke cases](002-isolate-live-runtime-smoke.md) | P0 | M | DONE | Makes user-visible proof safe and case-independent |
+| 003 | [Converge the manual-toggle visible postcondition](009-fix-manual-toggle-visible-postcondition-race.md) | P0 | M | READY | Removes the isolated Double Shift commit race without timing sleeps |
+| 004 | [Fix pending preedit refresh convergence](003-fix-preedit-refresh-convergence.md) | P0 | S | READY | Removes visible stale/duplicated IME suffix |
+| 005 | [Enforce the real MSRV and pinned lint toolchain](004-enforce-real-msrv.md) | P0 | S | READY | Replaces false and floating compiler contracts |
+| 006 | [Make the lint gate truthful](005-make-lint-gate-truthful.md) | P0 | M | READY | Restores an enforceable green CI contract |
+| 007 | [Build hermetic test lanes](006-build-hermetic-test-lanes.md) | P0 | L | READY | Separates correctness, environment, and timing failures |
+| 008 | [Reconcile superseded semantic tests](007-reconcile-semantic-contract-tests.md) | P0 | XL | READY | Converts the full suite into current authority evidence |
+| 009 | [Classify and remove obvious dead code](008-reduce-dead-code-and-proof-surface.md) | P1 | L | READY | Removes proven residue without a workspace rewrite |
 
 ## Decision Queue
 

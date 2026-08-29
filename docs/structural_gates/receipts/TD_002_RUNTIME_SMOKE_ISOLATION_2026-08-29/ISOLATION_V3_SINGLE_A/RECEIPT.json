@@ -1,0 +1,77 @@
+{
+  "active_case_at_failure": null,
+  "all_passed": true,
+  "case_results_sha256": "763433d120e87fc78b4a90182a86e119a47c8e640cfb47ec5c865d657513decd",
+  "cases": [
+    {
+      "case_id": "ru_p_enter-c48d85ae8e9678b9e584",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий ru_p_enter отправлен\n",
+      "expected": "п",
+      "got": "п",
+      "name": "ru_p_enter",
+      "ok": true,
+      "trace": {
+        "malformed": 0,
+        "manual_toggles": 0,
+        "read_error": null,
+        "records": 17,
+        "sha256": "06bff64b639898d101cc2cb7d31343135cdd8c331208a677350fc79327b34d3d"
+      }
+    }
+  ],
+  "desktop_before": {
+    "active_engine": "lay-ime-ru",
+    "active_layout": "lay-ime-ru",
+    "harness_trace_path": null,
+    "ibus_daemons": [
+      {
+        "argv": [
+          "/usr/bin/ibus-daemon",
+          "--panel",
+          "disable"
+        ],
+        "executable": "/usr/bin/ibus-daemon",
+        "pid": 4594,
+        "start_time": 8971
+      }
+    ],
+    "lay_engine_trace_paths": [
+      "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl"
+    ],
+    "lay_engines": [
+      {
+        "argv": [
+          "/home/ubu/.local/bin/lay-ibus-engine",
+          "--ibus",
+          "--managed"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+        "pid": 3605531,
+        "start_time": 22600588
+      }
+    ],
+    "service": {
+      "active_state": "active",
+      "main_pid": 3605514,
+      "main_process": {
+        "argv": [
+          "/home/ubu/.local/bin/lay-daemon"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+        "pid": 3605514,
+        "start_time": 22600580
+      },
+      "sub_state": "running",
+      "unit_file_state": "enabled"
+    }
+  },
+  "desktop_restoration_verified": true,
+  "evidence_root": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ISOLATION_V3_SINGLE_A",
+  "fatal_error": null,
+  "harness_process_group": 3606390,
+  "run_id": "td002-isolation-v3",
+  "schema": "lay.runtime-smoke-receipt.v2",
+  "selected_cases": [
+    "ru_p_enter"
+  ]
+}

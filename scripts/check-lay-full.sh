@@ -58,8 +58,15 @@ echo "== git diff --check =="
 git diff --check
 
 if [[ "${LAY_RUNTIME_SMOKE:-0}" == "1" ]]; then
+  if [[ "${LAY_RUNTIME_SMOKE_MANAGED_DESKTOP:-0}" != "1" ]]; then
+    echo "LAY_RUNTIME_SMOKE_MANAGED_DESKTOP=1 is required for live desktop mutation" >&2
+    exit 1
+  fi
   echo "== scripts/run_runtime_smoke.py =="
-  scripts/run_runtime_smoke.py
+  scripts/run_runtime_smoke.py \
+    --managed-desktop \
+    --ime-managed \
+    --verify-ime-trace
 fi
 
 echo "== lay full check OK =="

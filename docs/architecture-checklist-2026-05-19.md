@@ -203,11 +203,76 @@
   release build.
 - `LAY_AUDIT_50=1 scripts/check-lay-full.sh` — строгий полный gate: 50-pass
   audit + обычный full check.
-- `scripts/run_runtime_smoke.py --no-build` для окна ввода.
+- `scripts/run_runtime_smoke.py --managed-desktop --ime-managed
+  --verify-ime-trace --no-build` для явно admitted live-окна ввода.
 - `scripts/cargo-guard.sh test --all-targets`
 - `scripts/cargo-guard.sh clippy --all-targets -- -D warnings`
 - `scripts/cargo-guard.sh build --release --bins`
 - `scripts/cargo-guard.sh run --quiet --bin lay-ngram-corpus -- check-cache`
+
+## Изоляция live runtime smoke, 2026-08-29
+
+Проверочный GTK-контур переведён с общей mutable IME-сессии на две явные
+границы владения:
+
+```text
+explicit --managed-desktop admission
+-> one captured desktop transaction
+-> one fresh config/data/trace directory per case
+-> one candidate IBus-engine lifetime per managed case
+-> reverse child cleanup
+-> exact desktop restoration checks
+```
+
+Desktop transaction фиксирует `lay-daemon` unit state и `/proc` identity,
+GNOME input source, IBus engine, global `ibus-daemon` identities, Lay engine
+identities и исходный `LAY_IBUS_TRACE_PATH`. Broad `pgrep`/name-only kill
+удалён: captured PID можно сигналить только при повторном совпадении PID,
+start-time, executable и argv. Все restoration dimensions проверяются даже
+после ошибки одного из cleanup steps; неполное восстановление является
+ошибкой всего smoke.
+
+Каждый case получает стабильный `run_id/case_id`, отдельные config, usage,
+feedback и trace paths. Receipt `lay.runtime-smoke-receipt.v3` хранит actual
+execution order, candidate binary identities/argv, raw trace SHA/counts и
+отдельный order-independent hash semantic projection. В projection не входит
+только явно записанный volatile `ibus_cursor`; raw evidence сохраняется.
+Исторические receipt `v1/v2` остаются допустимыми входами существующего
+immediate-space analyzer, но не получают новый isolation verdict.
+
+Проверено на текущей implementation boundary:
+
+- `45/45` focused Python tests PASS, включая dialog/device/daemon failures,
+  sender timeout, deferred SIGINT/SIGTERM/SIGHUP ownership, PID reuse,
+  missing/empty/invalid-UTF-8/non-object/truncated trace, strict receipt
+  contradictions, persistent failure receipt и частичный desktop teardown;
+- `scripts/check-lay-changed.sh` PASS;
+- `scripts/check-lay-audit-50.sh` PASS (`50/50`);
+- raw Cargo, global `ibus-daemon` restart и broad process kill из harness
+  удалены;
+- live managed GTK cases `ru_p_enter` и `no_ne_ty_enter` прошли отдельно и в
+  обоих receipt-bound порядках; automatic verifier verdict
+  `RUNTIME_SMOKE_ORDER_ISOLATION_PASS`, semantic projection SHA-256
+  `ffe69c98cef8049618dce771ce9b3613060a126996699465962dc3528ac20f4d`,
+  raw trace counts `17/99` во всех single/forward/reversed receipts, manual
+  toggles `0/0`, malformed records `0/0`;
+- после каждого live transaction восстановлены active/running/enabled
+  `lay-daemon`, исходные `lay-ime-ru` layout/engine и trace destination;
+  глобальный `ibus-daemon` сохранил exact process identity.
+
+Live proof также отделил два существующих runtime/contract дефекта от
+инфраструктурной изоляции. Два свежих Double Shift batch receipt дошли до exact
+`delete_commit_dispatched_waiting_exact_final`, но один из двух directions
+недетерминированно остался в `visible_postcondition=pending`; это вынесено в
+`TD-009` без увеличения test sleeps. Два старых autocorrect cases стабильно дали
+одинаковый current output отдельно и в обоих порядках, но не совпали со своими
+historical expected values; их semantic disposition остаётся в `TD-007`.
+
+Полный raw evidence, включая неуспешные попытки, сохранён под
+`docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/`.
+Эти изменения не меняли Rust runtime, установленные binary bytes или runtime
+authority; live harness использовал repository-local binaries, byte-identical
+установленным `lay-daemon`, `lay-ibus-engine` и `lay-test-input`.
 
 `scripts/check-lay-full.sh` проверяет существующий пользовательский n-gram
 cache, а если cache ещё не создан на чистой машине, собирает временный cache в

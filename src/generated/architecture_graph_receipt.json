@@ -108,8 +108,8 @@
     },
     {
       "evidence": [
-        "graph_links:50991",
-        "graph_nodes:20041"
+        "graph_links:51296",
+        "graph_nodes:20192"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -123,10 +123,10 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_binding_fingerprint": "4004fdda3f2fc31ba03518d9a57fea03ab2c736c64ef3ec92551a5bc95d6f675",
-  "graph_fingerprint": "20db181ca3f86a8bc9f1d9a8d44da2b59a5be36a29ae7b090006a7870d78be85",
-  "graph_links": 50991,
-  "graph_nodes": 20041,
+  "graph_binding_fingerprint": "185c8d92bd805cde2e14eefd28c7920e649e4a348413347f8437c4141d1768e9",
+  "graph_fingerprint": "575de4564586614c19c5882672679ce4fa3868f8241ff6ee480cb9572bbf552e",
+  "graph_links": 51296,
+  "graph_nodes": 20192,
   "schema": "lay.architecture-graph-receipt.v1",
   "source_fingerprint": "db503b7292f7bd6df33e12523d85e4678466f075b16e9a6708bc556a0165a788",
   "verdict": "PASS"

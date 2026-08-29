@@ -1,0 +1,93 @@
+{
+  "active_case_at_failure": null,
+  "all_passed": false,
+  "case_results_sha256": "49b285727e254b08a8e0e8227cfff5a8b3b42dbd69580bb181b4ab548db57392",
+  "cases": [
+    {
+      "case_id": "g_to_ru_enter-56caec8185cc2e048a15",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий g_to_ru_enter отправлен\n",
+      "expected": "п",
+      "got": "g",
+      "name": "g_to_ru_enter",
+      "ok": false,
+      "trace": {
+        "malformed": 0,
+        "manual_toggles": 1,
+        "read_error": null,
+        "records": 37,
+        "sha256": "f4910a9697f1adc6a63daf00e49abef7c8661c4e735f7fb128be6941f024ae00"
+      }
+    },
+    {
+      "case_id": "ru_p_enter-c48d85ae8e9678b9e584",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий ru_p_enter отправлен\n",
+      "expected": "п",
+      "got": "п",
+      "name": "ru_p_enter",
+      "ok": true,
+      "trace": {
+        "malformed": 0,
+        "manual_toggles": 0,
+        "read_error": null,
+        "records": 10,
+        "sha256": "8ca444c0b747f8d89e9cbd3d487d73dd8d2ece4292efaee46579c5b8c442cf97"
+      }
+    }
+  ],
+  "desktop_before": {
+    "active_engine": "lay-ime-ru",
+    "active_layout": "lay-ime-ru",
+    "harness_trace_path": null,
+    "ibus_daemons": [
+      {
+        "argv": [
+          "/usr/bin/ibus-daemon",
+          "--panel",
+          "disable"
+        ],
+        "executable": "/usr/bin/ibus-daemon",
+        "pid": 4594,
+        "start_time": 8971
+      }
+    ],
+    "lay_engine_trace_paths": [
+      "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl"
+    ],
+    "lay_engines": [
+      {
+        "argv": [
+          "/home/ubu/.local/bin/lay-ibus-engine",
+          "--ibus",
+          "--managed"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+        "pid": 3608745,
+        "start_time": 22603523
+      }
+    ],
+    "service": {
+      "active_state": "active",
+      "main_pid": 3608730,
+      "main_process": {
+        "argv": [
+          "/home/ubu/.local/bin/lay-daemon"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+        "pid": 3608730,
+        "start_time": 22603515
+      },
+      "sub_state": "running",
+      "unit_file_state": "enabled"
+    }
+  },
+  "desktop_restoration_verified": true,
+  "evidence_root": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ISOLATION_V3_REVERSED",
+  "fatal_error": null,
+  "harness_process_group": 3606390,
+  "run_id": "td002-isolation-v3",
+  "schema": "lay.runtime-smoke-receipt.v2",
+  "selected_cases": [
+    "g_to_ru_enter",
+    "ru_p_enter"
+  ]
+}

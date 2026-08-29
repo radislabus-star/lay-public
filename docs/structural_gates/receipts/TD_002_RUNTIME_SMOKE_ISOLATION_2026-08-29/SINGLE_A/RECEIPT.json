@@ -1,0 +1,16 @@
+{
+  "active_case_at_failure": null,
+  "all_passed": false,
+  "case_results_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "cases": [],
+  "desktop_before": null,
+  "desktop_restoration_verified": false,
+  "evidence_root": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/SINGLE_A",
+  "fatal_error": "RuntimeError: desktop restoration failed: service: RuntimeError: active lay-daemon MainPID identity is ambiguous",
+  "harness_process_group": 3522030,
+  "run_id": "td002-single-a",
+  "schema": "lay.runtime-smoke-receipt.v2",
+  "selected_cases": [
+    "ghbdtn_fast_lshift_enter"
+  ]
+}

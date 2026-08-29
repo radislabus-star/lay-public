@@ -1,0 +1,77 @@
+{
+  "active_case_at_failure": null,
+  "all_passed": false,
+  "case_results_sha256": "283bad3b5053bb69319cd32427349a85902d79fc4ef25fb6d35fb540bc6dcdeb",
+  "cases": [
+    {
+      "case_id": "plain_layout_ashdu_space_enter-b4caf844ba6e99fd94d3",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий plain_layout_ashdu_space_enter отправлен\n",
+      "expected": "file",
+      "got": "ашду",
+      "name": "plain_layout_ashdu_space_enter",
+      "ok": false,
+      "trace": {
+        "malformed": 0,
+        "manual_toggles": 0,
+        "read_error": null,
+        "records": 65,
+        "sha256": "6bc9fc102d1b862d5b3eb346e23b0d81819495c8e56d50d72f38d5d2ae47fa1d"
+      }
+    }
+  ],
+  "desktop_before": {
+    "active_engine": "lay-ime-ru",
+    "active_layout": "lay-ime-ru",
+    "harness_trace_path": null,
+    "ibus_daemons": [
+      {
+        "argv": [
+          "/usr/bin/ibus-daemon",
+          "--panel",
+          "disable"
+        ],
+        "executable": "/usr/bin/ibus-daemon",
+        "pid": 4594,
+        "start_time": 8971
+      }
+    ],
+    "lay_engine_trace_paths": [
+      "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl"
+    ],
+    "lay_engines": [
+      {
+        "argv": [
+          "/home/ubu/.local/bin/lay-ibus-engine",
+          "--ibus",
+          "--managed"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+        "pid": 3593439,
+        "start_time": 22589516
+      }
+    ],
+    "service": {
+      "active_state": "active",
+      "main_pid": 3593424,
+      "main_process": {
+        "argv": [
+          "/home/ubu/.local/bin/lay-daemon"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+        "pid": 3593424,
+        "start_time": 22589507
+      },
+      "sub_state": "running",
+      "unit_file_state": "enabled"
+    }
+  },
+  "desktop_restoration_verified": true,
+  "evidence_root": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/TD_002_RUNTIME_SMOKE_ISOLATION_2026-08-29/ISOLATION_SINGLE_B",
+  "fatal_error": null,
+  "harness_process_group": 3592375,
+  "run_id": "td002-isolation-v1",
+  "schema": "lay.runtime-smoke-receipt.v2",
+  "selected_cases": [
+    "plain_layout_ashdu_space_enter"
+  ]
+}
