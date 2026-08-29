@@ -524,6 +524,7 @@ fn typed_authority_mints_have_only_named_runtime_callers() {
             &[
                 "src/bin/lay_daemon/correction_runtime/output/replay/action.rs",
                 "src/bin/lay_daemon/correction_runtime/output/text_replace.rs",
+                "src/bin/lay_daemon/exact_ime_tail_replay.rs",
             ][..],
         ),
         (
