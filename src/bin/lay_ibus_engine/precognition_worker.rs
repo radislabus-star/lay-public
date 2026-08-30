@@ -10,7 +10,7 @@ use super::preedit::{
 };
 use super::trace;
 
-const PRECOGNITION_DISPLAY_DEADLINE: Duration = Duration::from_millis(50);
+const PRECOGNITION_DISPLAY_DEADLINE: Duration = Duration::from_millis(150);
 
 pub(crate) struct PrecognitionWork {
     pub(crate) identity: InputFrameIdentity,
@@ -371,7 +371,7 @@ mod tests {
 
     #[test]
     fn late_display_results_are_not_publishable() {
-        assert!(display_age_is_fresh(Duration::from_millis(50)));
-        assert!(!display_age_is_fresh(Duration::from_millis(51)));
+        assert!(display_age_is_fresh(Duration::from_millis(150)));
+        assert!(!display_age_is_fresh(Duration::from_millis(151)));
     }
 }

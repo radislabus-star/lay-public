@@ -1,0 +1,353 @@
+{
+  "schema": "lay.ime-three-character-onset-release-receipt.v1",
+  "version": "1.0.57",
+  "verdict": "LAY_1_0_57_IME_THREE_CHAR_ONSET_DEPLOYED_VERIFIED",
+  "recorded_at_utc": "2026-08-30T23:05:10Z",
+  "base_commit": "1ff42e11276f5ec5140f0ec0e2888c445c413db9",
+  "cause": {
+    "visible_prefix_minimum": 3,
+    "affected_release": "1.0.56",
+    "defect": "exact-current positive worker results older than 50 ms were retired before publication",
+    "bounded_live_window": {
+      "current_results": 44,
+      "positive_current_results": 22,
+      "positive_admitted_at_50_ms": 17,
+      "positive_admitted_at_150_ms": 22,
+      "positive_rejected_only_for_age_us": [
+        77554,
+        82813,
+        86620,
+        88752,
+        146115
+      ]
+    },
+    "true_zero_candidate_results_remain_distinct": true
+  },
+  "repair": {
+    "display_deadline_ms_before": 50,
+    "display_deadline_ms_after": 150,
+    "visible_prefix_minimum": 3,
+    "candidate_limit": 12,
+    "candidate_sources_changed": false,
+    "ranking_changed": false,
+    "printable_input_remains_asynchronous": true,
+    "generation_and_input_frame_identity_checks_changed": false,
+    "zero_candidate_result": "no suggestion"
+  },
+  "tests": {
+    "boundary_tdd": {
+      "red_before_repair": true,
+      "green_after_repair": true,
+      "fresh_at_ms": 150,
+      "late_at_ms": 151
+    },
+    "lay_ibus_engine_full_observation": {
+      "semantic_and_other_passed": 277,
+      "performance_failed_under_concurrent_desktop_load": 1,
+      "failed_test": "space_autocorrect_prefetch::proof::v27_component_latency_denominators",
+      "observed_space_full_wait_p99_us": 5656,
+      "failure_scope": "pre-existing TD-006 wall-clock assertion, not IME semantics"
+    },
+    "isolated_timing_rerun": {
+      "passed": 1,
+      "failed": 0,
+      "space_full_wait_p99_us": 3700,
+      "budget_us": 4000
+    },
+    "test_manifest": {
+      "total": 2394,
+      "correctness": 2334,
+      "package": 36,
+      "performance": 11,
+      "ignored": 13,
+      "sha256": "5dcf2eeb51e405adb56f2b3722ed72302401e9ef9e2bc2b5be6f227986990269"
+    },
+    "changed_gate": {
+      "verdict": "PASS",
+      "selected_correctness_and_package": 2370,
+      "semantic_failures": 0,
+      "infrastructure_failures": 0,
+      "lay_ibus_engine_selected": 275,
+      "lay_ibus_engine_failures": 0
+    },
+    "transition_replay": {
+      "verdict": "PASS-shadow",
+      "false_apply_candidates": 0,
+      "missed_good_candidates": 0,
+      "unverified_transitions": 0
+    },
+    "unsafe_edit_gate": {
+      "verdict": "PASS",
+      "gate_failures": 0,
+      "blocked_unsafe": 0
+    },
+    "git_diff_check": "PASS"
+  },
+  "release_binaries": {
+    "lay": {
+      "built": {
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay",
+        "size": 6796768,
+        "mode": "0775",
+        "sha256": "65a381d47d73a71376de84d936c47f4872b8fb1ba3006cef7b7977b0a8b0cd74"
+      },
+      "installed": {
+        "path": "/home/ubu/.local/lib/lay/bin/lay",
+        "size": 6796768,
+        "mode": "0755",
+        "sha256": "65a381d47d73a71376de84d936c47f4872b8fb1ba3006cef7b7977b0a8b0cd74"
+      },
+      "installed_sha256_matches": true
+    },
+    "lay_daemon": {
+      "built": {
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-daemon",
+        "size": 8960120,
+        "mode": "0775",
+        "sha256": "8d8ce07243e06a2ac0f8644ccf7dd51f92a204d42e08a9fce80e6a3707ec6fc9"
+      },
+      "installed": {
+        "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+        "size": 8960120,
+        "mode": "0755",
+        "sha256": "8d8ce07243e06a2ac0f8644ccf7dd51f92a204d42e08a9fce80e6a3707ec6fc9"
+      },
+      "installed_sha256_matches": true
+    },
+    "lay_nanda_wave_eval": {
+      "built": {
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-nanda-wave-eval",
+        "size": 7213840,
+        "mode": "0775",
+        "sha256": "f0ca12a3dad30c13db17b2e284a1a10b1d944344d63a61ffab87a03788a64ccc"
+      },
+      "installed": {
+        "path": "/home/ubu/.local/lib/lay/bin/lay-nanda-wave-eval",
+        "size": 7213840,
+        "mode": "0755",
+        "sha256": "f0ca12a3dad30c13db17b2e284a1a10b1d944344d63a61ffab87a03788a64ccc"
+      },
+      "installed_sha256_matches": true
+    },
+    "lay_nanda_wave_train": {
+      "built": {
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-nanda-wave-train",
+        "size": 11852048,
+        "mode": "0775",
+        "sha256": "f689cfe4cd23066ed3cd4a8baa08e2b6a4e1cd0ff7aed26b3434f7d45f9a3d77"
+      },
+      "installed": {
+        "path": "/home/ubu/.local/lib/lay/bin/lay-nanda-wave-train",
+        "size": 11852048,
+        "mode": "0755",
+        "sha256": "f689cfe4cd23066ed3cd4a8baa08e2b6a4e1cd0ff7aed26b3434f7d45f9a3d77"
+      },
+      "installed_sha256_matches": true
+    },
+    "lay_test_input": {
+      "built": {
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-test-input",
+        "size": 1839840,
+        "mode": "0775",
+        "sha256": "e1e8ca29103e7fb486302c7e5c0fd0ba10467af6c1a8d0270594e86e1a0f2369"
+      },
+      "installed": {
+        "path": "/home/ubu/.local/lib/lay/bin/lay-test-input",
+        "size": 1839840,
+        "mode": "0755",
+        "sha256": "e1e8ca29103e7fb486302c7e5c0fd0ba10467af6c1a8d0270594e86e1a0f2369"
+      },
+      "installed_sha256_matches": true
+    },
+    "lay_ngram_corpus": {
+      "built": {
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-ngram-corpus",
+        "size": 789736,
+        "mode": "0775",
+        "sha256": "115ada12cf4da4b54c2fe0746fcd2eab496a7484084f8dc902195bb52bc28f3d"
+      },
+      "installed": {
+        "path": "/home/ubu/.local/lib/lay/bin/lay-ngram-corpus",
+        "size": 789736,
+        "mode": "0755",
+        "sha256": "115ada12cf4da4b54c2fe0746fcd2eab496a7484084f8dc902195bb52bc28f3d"
+      },
+      "installed_sha256_matches": true
+    },
+    "lay_ibus_engine": {
+      "built": {
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-ibus-engine",
+        "size": 7217464,
+        "mode": "0775",
+        "sha256": "877b8e534f6acb5a72fafac0272f28ea95ec2e16e5ad07b6ff869ae43c3ec7fd"
+      },
+      "installed": {
+        "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+        "size": 7217464,
+        "mode": "0755",
+        "sha256": "877b8e534f6acb5a72fafac0272f28ea95ec2e16e5ad07b6ff869ae43c3ec7fd"
+      },
+      "installed_sha256_matches": true
+    },
+    "lay_memory_report": {
+      "built": {
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-memory-report",
+        "size": 644360,
+        "mode": "0775",
+        "sha256": "68d57a8cec6156570146616745c405cd7fb46eb21693076b11ad3dee8483f9eb"
+      },
+      "installed": {
+        "path": "/home/ubu/.local/lib/lay/bin/lay-memory-report",
+        "size": 644360,
+        "mode": "0755",
+        "sha256": "68d57a8cec6156570146616745c405cd7fb46eb21693076b11ad3dee8483f9eb"
+      },
+      "installed_sha256_matches": true
+    },
+    "lay_l11_restore": {
+      "built": {
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-l11-restore",
+        "size": 1948024,
+        "mode": "0775",
+        "sha256": "0c5799f146a0446c13500a3539a14da13444a7f94c602635601d36858ca21275"
+      },
+      "installed": {
+        "path": "/home/ubu/.local/lib/lay/bin/lay-l1.1-restore",
+        "size": 1948024,
+        "mode": "0755",
+        "sha256": "0c5799f146a0446c13500a3539a14da13444a7f94c602635601d36858ca21275"
+      },
+      "installed_sha256_matches": true
+    },
+    "lay_l11_serve": {
+      "built": {
+        "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-l11-serve",
+        "size": 2159728,
+        "mode": "0775",
+        "sha256": "efc865631772676c2c7cdb0bfc4c674d2010b40af3930aac71a86dd78427262a"
+      },
+      "installed": {
+        "path": "/home/ubu/.local/lib/lay/bin/lay-l1.1-serve",
+        "size": 2159728,
+        "mode": "0755",
+        "sha256": "efc865631772676c2c7cdb0bfc4c674d2010b40af3930aac71a86dd78427262a"
+      },
+      "installed_sha256_matches": true
+    }
+  },
+  "exact_v13_sidecar": {
+    "path": "/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.dafsa",
+    "size": 2460144,
+    "mode": "0644",
+    "sha256": "f116a230fc05a04c375bcddf1c85169276c6d149295eed8ccf93e37672a907b9"
+  },
+  "loaded_runtime": {
+    "lay_version": "1.0.57",
+    "lay_daemon_version": "1.0.57",
+    "lay_ibus_engine_version": "1.0.57",
+    "gnome_extension_dbus_version": "1.0.57",
+    "active_ibus_engine": "lay-ime-ru",
+    "daemon": {
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "size": 8960120,
+      "mode": "0755",
+      "sha256": "8d8ce07243e06a2ac0f8644ccf7dd51f92a204d42e08a9fce80e6a3707ec6fc9",
+      "pid": 3528611
+    },
+    "ibus_engine": {
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "size": 7217464,
+      "mode": "0755",
+      "sha256": "877b8e534f6acb5a72fafac0272f28ea95ec2e16e5ad07b6ff869ae43c3ec7fd",
+      "pid": 3528626
+    },
+    "global_ibus_pid_before": 4594,
+    "global_ibus_pid_after": 4594,
+    "global_ibus_restarted": false,
+    "runtime_authority_changed": true
+  },
+  "live_smoke": {
+    "receipt": "FINAL_RELEASE_LIVE_SMOKE.json",
+    "receipt_sha256": "2ec8d874a01ce287f7887902b12112c8c30f36d5a3f6f2d9f9dec31c85f3aa66",
+    "raw_trace": "FINAL_RELEASE_LIVE_SMOKE/ime_prefix_pro_completion_alt_enter-c04f737da6e0a3fcc26a/ibus_engine_debug.jsonl",
+    "raw_trace_sha256": "991d122062d35c4f50f292b0a92085319c71abf7e14d12764c279edcb2b16fda",
+    "all_passed": true,
+    "desktop_restoration_verified": true,
+    "typed_prefix": "про",
+    "prefix_chars": 3,
+    "visible_suffix": "верка",
+    "committed_text": "проверка",
+    "precognition_workers": 1,
+    "worker_stage": "applied",
+    "worker_display_age_us": 469,
+    "candidate_count": 11,
+    "completion_accepts": 1,
+    "trace_records": 51,
+    "malformed_trace_records": 0,
+    "concurrent_desktop_policy": "isolated managed desktop; restore and verify live desktop after case"
+  },
+  "scope": {
+    "established": "positive exact-current completion can publish from exactly three characters on installed 1.0.57",
+    "not_established": [
+      "every three-character string has a candidate",
+      "a result older than 150 ms can publish"
+    ]
+  },
+  "source_evidence": {
+    "Cargo.toml": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/Cargo.toml",
+      "size": 2775,
+      "mode": "0664",
+      "sha256": "d2bd0b479d5de907163d035372d7c5f0a3de7d138d988c791b339f5c48ad65cd"
+    },
+    "Cargo.lock": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/Cargo.lock",
+      "size": 70770,
+      "mode": "0664",
+      "sha256": "32c17b556e9d575d574f876d68ce48f2686e4a74781cbbeeaec0ac28aa15e062"
+    },
+    "README.md": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/README.md",
+      "size": 24832,
+      "mode": "0664",
+      "sha256": "55ebd2fa8c8f47ab074b32f066cc1ab01875247d8b5072ffbd7bd8b45207ede6"
+    },
+    "VERSIONING.md": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/VERSIONING.md",
+      "size": 1921,
+      "mode": "0664",
+      "sha256": "76daa7f9897c50550e478173d72fc6f882992643bd5d4fa1fb2d6c18ab714d6f"
+    },
+    "src/bin/lay_ibus_engine/precognition_worker.rs": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/precognition_worker.rs",
+      "size": 10801,
+      "mode": "0664",
+      "sha256": "81b7d80aa85d68ddda329de36cee20ce1775e90c4109bd0738c3611010504fb5"
+    },
+    "src/bin/lay_ibus_engine/preedit.rs": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/preedit.rs",
+      "size": 42136,
+      "mode": "0664",
+      "sha256": "175cabe1762bf3d35cdc18186915f2118a47bca602c315eb5e2be28baef66f30"
+    },
+    "docs/ime-daemon-route-map-2026-06-20.md": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-daemon-route-map-2026-06-20.md",
+      "size": 57495,
+      "mode": "0664",
+      "sha256": "f7ccd9d584c98b8dd1b0a9f5eac75c585ab0c990f162d113544d625f516f3e6f"
+    },
+    "extension/lay@radislabus-star.github.io/metadata.json": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/metadata.json",
+      "size": 420,
+      "mode": "0664",
+      "sha256": "11430f0215449941659029ea2f6bf8f75ff91e6c5d4afb040b0aaf8df4b7203f"
+    },
+    "extension/lay@radislabus-star.github.io/tray_support.js": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/extension/lay@radislabus-star.github.io/tray_support.js",
+      "size": 8982,
+      "mode": "0664",
+      "sha256": "935c96f15bf9db732580f48954ff81b3a1fa4cd1cdc20f7aefe110b902788bcd"
+    }
+  },
+  "runtime_authority_changed": true
+}

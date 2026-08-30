@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1788112740.5471354,
-    "ast_hash": "89abe1267bfd6da8c81bfa1744161761",
+    "mtime": 1788129526.54399,
+    "ast_hash": "a77ea950bf2ca63387780d34c8aaf910",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1788112740.5547163,
-    "ast_hash": "cfb4f390bd27826979406ebc568cd9fb",
+    "mtime": 1788129526.6347191,
+    "ast_hash": "99178fd19ed115583b99469381275da8",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -2500,13 +2500,13 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1788112800.034915,
-    "ast_hash": "8b2dd003bc0da8a289a0e361accaef0d",
+    "mtime": 1788129560.4020727,
+    "ast_hash": "fff20d6e32ba69d00e07b1b4bf138a96",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1788112740.5572143,
-    "ast_hash": "48014cf7d2b73998e9061c4053ba16e3",
+    "mtime": 1788129526.637026,
+    "ast_hash": "4f6613cd13d172247ce4aa976632aafc",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2675,8 +2675,8 @@
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
-    "mtime": 1788115662.552472,
-    "ast_hash": "e6139b2e789c6da36ebcf0d265e394b9",
+    "mtime": 1788131022.3558376,
+    "ast_hash": "797fc4784947f4e05104c9fa99d7504d",
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
@@ -9280,8 +9280,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/precognition_worker.rs": {
-    "mtime": 1788092993.0844305,
-    "ast_hash": "3ee039c3ae52bbdf6407116a8e474c9e",
+    "mtime": 1788129506.1224399,
+    "ast_hash": "53d2268531833add2b579fcbe0b95466",
     "semantic_hash": ""
   },
   "docs/ime-unified-token-field-implementation-plan-2026-08-16.md": {

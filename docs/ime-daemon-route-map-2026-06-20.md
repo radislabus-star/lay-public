@@ -1399,3 +1399,84 @@ Receipt:
 (SHA-256 `806a704f855b7b5b6254915d3039269dbf00af4ada4c519e1b94cce437943bea`).
 Runtime authority changed: **yes, by the verified `1.0.56` release install**;
 candidate sources, ranking, and the limit of `12` did not change.
+
+## 1.0.57 Three-Character Suggestion Onset Preflight (2026-08-31)
+
+The intended visible threshold is exactly three characters:
+`PREEDIT_VISIBLE_PREFIX_MIN_CHARS = 3`. The installed `1.0.56` trace explains
+the inconsistent observed onset. In the latest bounded window, `44` worker
+results still matched their current input identity and `22` of those contained
+at least one candidate. The `50 ms` display deadline admitted only `17/22`
+positive results. The five positive current results rejected only for age
+completed at `77.554`, `82.813`, `86.620`, `88.752`, and `146.115 ms`.
+
+This is separate from a valid empty result. A completed word or a token that is
+not a prefix of an admitted completion can return zero candidates; the display
+must stay empty in that case. The repair must not invent candidates or expose
+whole-token replacement proposals as suffix completion.
+
+Three designs were considered:
+
+1. Lower the visible threshold to two characters. Rejected: `1.0.53` already
+   established that one- and two-letter top candidates are unstable, and the
+   route would schedule more broad-prefix work.
+2. Add a synchronous fallback prefix table or a second fast ranker. Rejected:
+   it would block ordinary printable input, duplicate candidate ownership, and
+   risk narrowing or reordering the shared L2/L3 field.
+3. Admit an exact-current background result for up to `150 ms`. Selected: the
+   measured window recovers `22/22` positive current results without adding a
+   producer, cache, ranking rule, or worker invocation.
+
+The selected route changes only the bounded presentation deadline. Existing
+generation checks and the complete input-frame identity check are still
+required before and under the engine lock. A result for an older token, focus,
+layout generation, configuration, or worker generation remains discarded.
+The first visible result may now appear between `50` and `150 ms`; results older
+than `150 ms` remain late and cannot publish. The prior `203 ms` stale-surface
+failure therefore remains outside the admitted window.
+
+Frozen invariants:
+
+```text
+visible prefix minimum             3
+candidate limit                   12
+candidate sources/ranking          unchanged
+whole-token replacement preedit    forbidden
+ordinary printable input           asynchronous
+generation/input identity checks   unchanged
+zero-candidate result              no suggestion
+CPU/RSS/cache/learning semantics    unchanged
+rollback                           restore 50 ms constant
+```
+
+Required proof before release: threshold boundary tests at `150/151 ms`, the
+full IBus regression class, the changed-file release gate, and an installed
+managed-desktop JSONL trace proving a three-character suggestion while global
+`ibus-daemon` remains unchanged.
+
+### 1.0.57 Result
+
+The implementation changed only `PRECOGNITION_DISPLAY_DEADLINE` from `50 ms`
+to `150 ms`. The boundary test was red before the production change and passed
+after it: age `150 ms` is fresh and `151 ms` is late. The hermetic non-timing
+gate passed all `2,370` selected correctness and package tests with zero
+semantic and infrastructure failures; its `lay-ibus-engine` target passed
+`275/275`. A separate full engine run passed `277` tests and hit only the
+pre-existing TD-006 wall-clock p99 assertion under concurrent desktop load;
+the isolated serialized rerun passed at `3.700 ms` against its `4 ms` budget.
+
+The installed managed-GTK case typed exactly `про`, published suffix `верка`,
+and accepted it once as `проверка`. Its JSONL contains one exact-current
+`applied` worker with `11` candidates, one visible preedit update, one
+completion accept, `51` valid records, and zero malformed records. The test
+restored the desktop, retained `lay-ime-ru`, and did not restart global
+`ibus-daemon` PID `4594`. Daemon, IBus engine, CLI, and GNOME extension all
+reported `1.0.57`; installed release-binary hashes matched the build outputs.
+
+What was not established: every three-character string has a completion.
+Exact zero-candidate prefixes still display nothing, and an exact-current
+result older than `150 ms` remains suppressed. Candidate production, ranking,
+the limit of `12`, cache ownership, and printable-key scheduling were not
+changed. Runtime authority changed: **yes, by the verified `1.0.57` release
+install**, limited to the longer exact-current presentation window. Evidence:
+`docs/structural_gates/receipts/LAY_1_0_57_IME_THREE_CHAR_ONSET_2026-08-31/`.

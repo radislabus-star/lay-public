@@ -7,7 +7,7 @@
 `lay` исправляет слово, набранное не в той раскладке: нажмите
 **Shift два раза** и продолжайте писать.
 
-**Текущая версия: 1.0.56. Статус: alpha.**
+**Текущая версия: 1.0.57. Статус: alpha.**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -43,6 +43,17 @@ Daemon локально слушает физические клавиши, хр
 По умолчанию double Shift исправляет одно последнее слово. Автопомощь после
 пробела и автоматическое применение исправлений выключены, пока пользователь
 сам их не включит.
+
+## Что вошло в 1.0.57
+
+- IME-подсказка допускается уже на точном префиксе из трёх символов, даже
+  если фоновый readout занял больше прежних `50 ms`;
+- окно публикации точного актуального результата расширено до `150 ms`, при
+  этом проверки текста, фокуса, раскладки, конфигурации и поколения сохранены;
+- устаревший результат по-прежнему не показывается, а настоящий пустой набор
+  кандидатов остаётся без подсказки;
+- источники кандидатов, их ранжирование, предел `12` и асинхронная обработка
+  обычных клавиш не изменились.
 
 ## Что вошло в 1.0.56
 
@@ -457,7 +468,7 @@ graphify update .
 
 ## English
 
-`lay` 1.0.56 is a local Double Shift RU/EN layout rescue and bounded
+`lay` 1.0.57 is a local Double Shift RU/EN layout rescue and bounded
 typing-correction tool for Linux desktops.
 
 ```text
@@ -472,6 +483,9 @@ L3 context, `TransitionDecisionCore`, and a structural verifier.
 Exact search contributes candidates and certificates but does not bypass final
 authority.
 
+Release 1.0.57 admits an exact-current three-character IME completion for up
+to 150 ms while retaining full input-identity checks and the existing
+12-candidate field. A genuine zero-candidate prefix still displays nothing.
 Release 1.0.56 restores `Up`/`Down` candidate cycling during an in-flight IME
 readout without authorizing a stale completion or narrowing the 12-candidate
 field. Release 1.0.55 adds symmetric exact automatic layout correction: a token such
