@@ -73,6 +73,28 @@ fn repeated_letter_autocorrect_has_authority(candidate: &str) -> bool {
         || crate::lexicon::is_common_ru_word(candidate)
 }
 
+fn correct_short_repeated_function_word(original: &str, lower: &str) -> Option<String> {
+    if !(3..=4).contains(&lower.chars().count()) {
+        return None;
+    }
+
+    let mut found: Option<String> = None;
+    for candidate in repeated_run_deletion_candidates(lower) {
+        if candidate.chars().count() < 2 {
+            continue;
+        }
+        if !is_short_russian_function_word(&candidate) {
+            continue;
+        }
+        if found.is_some() {
+            return None;
+        }
+        found = Some(candidate);
+    }
+
+    found.map(|candidate| apply_word_case(original, &candidate))
+}
+
 #[cfg(test)]
 mod tests {
     use super::{correct_repeated_letter, propose_repeated_letter_candidate};
@@ -106,26 +128,4 @@ mod tests {
             Some("печатается")
         );
     }
-}
-
-fn correct_short_repeated_function_word(original: &str, lower: &str) -> Option<String> {
-    if !(3..=4).contains(&lower.chars().count()) {
-        return None;
-    }
-
-    let mut found: Option<String> = None;
-    for candidate in repeated_run_deletion_candidates(lower) {
-        if candidate.chars().count() < 2 {
-            continue;
-        }
-        if !is_short_russian_function_word(&candidate) {
-            continue;
-        }
-        if found.is_some() {
-            return None;
-        }
-        found = Some(candidate);
-    }
-
-    found.map(|candidate| apply_word_case(original, &candidate))
 }

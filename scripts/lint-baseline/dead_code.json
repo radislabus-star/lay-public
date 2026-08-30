@@ -7214,38 +7214,6 @@
       "occurrence": 1,
       "subjects": [
         {
-          "file": "src/exact_layout_authority.rs",
-          "is_primary": false,
-          "label": "method in this implementation",
-          "text": [
-            "impl ExactLayoutContourCertificate {"
-          ]
-        },
-        {
-          "file": "src/exact_layout_authority.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn snapshot(&self) -> ExactAuthoritySnapshot {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "message": "method `snapshot` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
           "file": "src/nanda_wave/lexical_phase/format.rs",
           "is_primary": false,
           "label": "method in this implementation",
@@ -7683,46 +7651,6 @@
           "label": "",
           "text": [
             "pub(super) fn reverse_parity_passes(&self) -> bool {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "message": "methods `center_candidates` and `has_local_single_edit_peak` are never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/nanda_wave/l2_wave_peak.rs",
-          "is_primary": false,
-          "label": "methods in this implementation",
-          "text": [
-            "impl L2CorrectionPeakContext {"
-          ]
-        },
-        {
-          "file": "src/nanda_wave/l2_wave_peak.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn center_candidates(&self) -> &[l2::L2ImeWordCandidate] {"
-          ]
-        },
-        {
-          "file": "src/nanda_wave/l2_wave_peak.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn has_local_single_edit_peak(&self) -> bool {"
           ]
         }
       ],

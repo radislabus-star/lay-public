@@ -1,0 +1,69 @@
+{
+  "schema": "lay.td008-compile-surface-measurement.v1",
+  "verdict": "TD008_MEASUREMENT_COMPLETE_NO_SPEED_CLAIM",
+  "base_commit": "b4f908e40eeb1a1faa90dd2b169e94061dd4caf0",
+  "host": "e-MEGA-MINI-M1-13th",
+  "toolchain": {
+    "cargo": "1.97.1",
+    "rustc": "1.97.1",
+    "rustc_commit": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+    "llvm": "22.1.6"
+  },
+  "route": {
+    "check": "scripts/cargo-guard.sh check --locked --all-targets --message-format=json",
+    "clippy": "scripts/cargo-guard.sh clippy --locked --all-targets --message-format=json -- -D warnings -A dead-code",
+    "target_before_each_measurement_bytes": 0
+  },
+  "before": {
+    "source_patch_sha256": "1b769d345069cf1edf20daa78ad7f275d1f80a2f1772f5b2111624911c5b16e6",
+    "dead_code_rows": 368,
+    "non_dead_diagnostics": 0,
+    "check_wall_seconds": 24.23,
+    "clippy_wall_seconds": 19.68,
+    "total_wall_seconds": 43.91,
+    "check_rebuilt_units": 266,
+    "check_unique_packages": 176,
+    "clippy_rebuilt_units": 51,
+    "clippy_unique_packages": 1,
+    "target_files": 2226,
+    "target_bytes": 299925636,
+    "maximum_rss_kib": 1682004,
+    "raw_check_sha256": "0dfc69bb57bda4bf1c10739123f1d71ab9c5d56f82bc9037aabca75e7d2ae383",
+    "raw_clippy_sha256": "ea3949355956df1ceb6a447d48fd299317b16c6abe490a0bdc70ad26118d554b"
+  },
+  "after": {
+    "source_patch_sha256": "4462c4a5fbb3d448259fa611806f71932ae66d042d27315264d5536d9d1a1fed",
+    "dead_code_rows": 366,
+    "non_dead_diagnostics": 0,
+    "check_wall_seconds": 24.12,
+    "clippy_wall_seconds": 19.71,
+    "total_wall_seconds": 43.83,
+    "check_rebuilt_units": 266,
+    "check_unique_packages": 176,
+    "clippy_rebuilt_units": 51,
+    "clippy_unique_packages": 1,
+    "target_files": 2226,
+    "target_bytes": 299914894,
+    "maximum_rss_kib": 1683012,
+    "raw_check_sha256": "b75044117bccf5bb7ac85a7c17397092b1bc903eedd169761f2b0e000c4c33a9",
+    "raw_clippy_sha256": "985d485a01f7e047322d7418d9342426dbabbc4abcdef73f5c7bbf725573e494"
+  },
+  "delta": {
+    "dead_code_rows": -2,
+    "non_dead_diagnostics": 0,
+    "total_wall_seconds": -0.08,
+    "rebuilt_units": 0,
+    "target_files": 0,
+    "target_bytes": -10742
+  },
+  "interpretation": {
+    "compile_speed_gain_proven": false,
+    "reason": "The 0.08 second wall reduction is within measurement noise; TD-008 claims ownership closure and exact warning reduction only.",
+    "runtime_performance_claim": false,
+    "installed_runtime_changed": false
+  },
+  "remote_raw_evidence": {
+    "before": "/tmp/lay-td008-before-v1",
+    "after": "/tmp/lay-td008-after-v1"
+  }
+}

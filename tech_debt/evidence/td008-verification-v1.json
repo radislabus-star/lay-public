@@ -1,0 +1,53 @@
+{
+  "schema": "lay.td008-verification.v1",
+  "verdict": "TD008_REMOTE_VERIFICATION_PASS",
+  "base_commit": "b4f908e40eeb1a1faa90dd2b169e94061dd4caf0",
+  "host": "e-MEGA-MINI-M1-13th",
+  "route": "LAY_CHANGED_CLIPPY=1 scripts/check-lay-changed.sh",
+  "exit_status": 0,
+  "elapsed_seconds": 444.45,
+  "maximum_rss_kib": 2685216,
+  "manifest": {
+    "verdict": "PASS",
+    "targets": 35,
+    "total": 2383,
+    "correctness": 2323,
+    "package": 36,
+    "performance_not_selected": 11,
+    "ignored": 13
+  },
+  "executed_lanes": {
+    "selected": 2359,
+    "failures": 0,
+    "known_semantic_failures": 0,
+    "infrastructure_failures": 0,
+    "verdict": "PASS"
+  },
+  "lint": {
+    "dead_code_inventory": 366,
+    "baseline": "PASS",
+    "non_dead_diagnostics": 0,
+    "verdict": "PASS"
+  },
+  "additional_gates": {
+    "cargo_fmt_check": "PASS",
+    "git_diff_check": "PASS",
+    "cargo_check_lib_bins": "PASS",
+    "transition_shadow_replay": "PASS-shadow",
+    "unsafe_edit_scoreboard": "PASS"
+  },
+  "authority_boundary": {
+    "release_builds": 0,
+    "installations": 0,
+    "service_restarts": 0,
+    "perf_or_pmu_runs": 0,
+    "installed_runtime_changed": false
+  },
+  "raw_evidence": {
+    "remote_directory": "/tmp/lay-td008-verification-v1",
+    "stdout_sha256": "c7279dff6a95d41bfa9e0e63a8fd72dbb67201295a6224e1f928d6b86f968a2c",
+    "stderr_sha256": "a26d1ceb8ff75b9ad2bca703d95ca44c25ee5e5af51014e15bf83a4354e7f814",
+    "time_sha256": "63d6cbb0227c8c278336293c30b5755dfd1aac948970fb835840d400c005d197",
+    "sha256sums_sha256": "2c9cd4f6bd56328aef5ca0836467be92284b50c42c9327fcd8bed02264f34f8f"
+  }
+}

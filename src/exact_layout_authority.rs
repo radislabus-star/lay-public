@@ -130,10 +130,6 @@ impl ExactLayoutContourCertificate {
     pub fn matches_frame(&self, frame_revision: u64, frame_fingerprint: u64) -> bool {
         self.frame_revision == frame_revision && self.frame_fingerprint == frame_fingerprint
     }
-
-    pub(crate) fn snapshot(&self) -> ExactAuthoritySnapshot {
-        self.authority_snapshot
-    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

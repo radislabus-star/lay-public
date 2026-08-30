@@ -527,7 +527,7 @@ fn normal_mode_only_applies_exact_projection_to_english_typed_in_ru_layout() {
     for row in fixture_cols(CONFIDENT_EN_CASES) {
         let disposition = &row[0];
         let expected = &row[1];
-        let input = en_text_typed_in_ru_layout(&expected);
+        let input = en_text_typed_in_ru_layout(expected);
         let got = simulate_space_triggered_typing_assist(&input, true);
         let expected_output = match disposition.as_str() {
             "convert" => expected,

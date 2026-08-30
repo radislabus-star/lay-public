@@ -65,20 +65,6 @@ fn select_single_letter_substitution(
     Some(apply_word_case(word, &candidate))
 }
 
-#[cfg(test)]
-mod tests {
-    use super::{correct_single_letter_substitution, propose_single_letter_substitution_candidate};
-
-    #[test]
-    fn proposal_only_authority_exposes_a_boundary_split_competitor() {
-        assert_eq!(correct_single_letter_substitution("парочинная"), None);
-        assert_eq!(
-            propose_single_letter_substitution_candidate("парочинная").as_deref(),
-            Some("перочинная")
-        );
-    }
-}
-
 fn safe_neighbor_substitution_candidate(original: &str, candidate: &str) -> bool {
     if !is_known_russian_word_or_form(candidate) {
         return false;
@@ -107,4 +93,18 @@ fn single_substitution_pair(original: &str, candidate: &str) -> Option<(char, ch
         .filter(|(left, right)| left != right)
         .collect();
     (diffs.len() == 1).then(|| diffs[0])
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{correct_single_letter_substitution, propose_single_letter_substitution_candidate};
+
+    #[test]
+    fn proposal_only_authority_exposes_a_boundary_split_competitor() {
+        assert_eq!(correct_single_letter_substitution("парочинная"), None);
+        assert_eq!(
+            propose_single_letter_substitution_candidate("парочинная").as_deref(),
+            Some("перочинная")
+        );
+    }
 }

@@ -1,6 +1,6 @@
 # TD-008: Classify And Remove Obvious Dead Code
 
-Status: `READY`
+Status: `IN_PROGRESS`
 Priority: `P1`
 Class: compile surface and ownership
 Size: `L`
@@ -14,11 +14,12 @@ diagnostics and makes every normal change traverse a much larger surface.
 
 ## Evidence
 
-- 348 unique warnings, 326 unique `dead_code` messages after deduplication.
+- The canonical TD-005 baseline contains 368 exact `dead_code` rows under Rust
+  1.97.1; occurrence identity is retained rather than collapsed by message.
 - Concentrations include `text_edit/output_transaction.rs`, V13 experiment
   kernels, lexical typed-basin code, productive delta/phase code, and target
   evidence helpers.
-- `src/nanda_wave` is 163,770 lines in the main library crate.
+- `src/nanda_wave` is 164,071 Rust lines in the main library crate.
 - Some live files contain genuinely unused methods; other items are proof-only
   and should not be judged by production reachability.
 

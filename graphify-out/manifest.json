@@ -1475,8 +1475,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/candidate_gate.rs": {
-    "mtime": 1788073682.07682,
-    "ast_hash": "966aecf9afc623586f0e18086a863f62",
+    "mtime": 1788090077.0857048,
+    "ast_hash": "2cc2273352a20c1c9ee89831d9ba3367",
     "semantic_hash": ""
   },
   "src/nanda_wave/cell32.rs": {
@@ -1525,8 +1525,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_wave_peak.rs": {
-    "mtime": 1786642120.4460442,
-    "ast_hash": "d282419f07134ff1041584cf92b52118",
+    "mtime": 1788090420.988075,
+    "ast_hash": "4d584644435f51af8a4f930b2fd64edd",
     "semantic_hash": ""
   },
   "src/nanda_wave/l3.rs": {
@@ -1815,13 +1815,13 @@
     "semantic_hash": ""
   },
   "src/ru_typo/repeated.rs": {
-    "mtime": 1788073659.9516776,
-    "ast_hash": "0a6923389c953397d49889a3e84b5087",
+    "mtime": 1788090077.0857048,
+    "ast_hash": "4d9b1ff37e15bf748c7bbf90816bdbcd",
     "semantic_hash": ""
   },
   "src/ru_typo/substitution.rs": {
-    "mtime": 1788064276.9135835,
-    "ast_hash": "1f5178b62493839f43ceb6aae0b264d2",
+    "mtime": 1788090077.087705,
+    "ast_hash": "e040e5e828aea0b2d5b1deaa4fc37cf0",
     "semantic_hash": ""
   },
   "src/ru_typo/thresholds.rs": {
@@ -2395,8 +2395,8 @@
     "semantic_hash": "39c169abeaab8e1f8f32988fa733095c"
   },
   "tests/typing_assist_mixed_corpus.rs": {
-    "mtime": 1788080055.5327654,
-    "ast_hash": "8423e5558ccac97c2bae555c5bcc0260",
+    "mtime": 1788090077.0707047,
+    "ast_hash": "006f4c58ceba2c69c458e7df799974c9",
     "semantic_hash": ""
   },
   "tests/typing_assist_short_alternating.rs": {
@@ -14790,8 +14790,8 @@
     "semantic_hash": ""
   },
   "src/exact_layout_authority.rs": {
-    "mtime": 1788016513.6282969,
-    "ast_hash": "89cc4e38f666635e37a5f53171d87603",
+    "mtime": 1788090442.5715325,
+    "ast_hash": "76befc4f644c1780727194c4529f34a2",
     "semantic_hash": ""
   },
   "src/exact_layout_authority/proof.rs": {
@@ -28790,8 +28790,8 @@
     "semantic_hash": ""
   },
   "tech_debt/008-reduce-dead-code-and-proof-surface.md": {
-    "mtime": 1787959142.2256904,
-    "ast_hash": "6284ebb4a440c43554eaab349ef07fad",
+    "mtime": 1788091403.3149326,
+    "ast_hash": "9ac360ee5e5e26e84e5e36b1fb60d5ac",
     "semantic_hash": ""
   },
   "tech_debt/101-decompose-ibus-engine-state-owner.md": {
@@ -29200,8 +29200,8 @@
     "semantic_hash": ""
   },
   "scripts/lint-baseline/dead_code.json": {
-    "mtime": 1788020503.112037,
-    "ast_hash": "5ce95bc1d02751f8189e3b795cb42914",
+    "mtime": 1788090517.5098681,
+    "ast_hash": "5afc352f219a6c2e6b734c9bc77b11c0",
     "semantic_hash": ""
   },
   "scripts/lint_inventory.py": {
@@ -29497,6 +29497,31 @@
   "tests/fixtures/typing_assist_cli_layout_keep.txt": {
     "mtime": 1788069424.0785494,
     "ast_hash": "7816cc7a95301703687205364becc8c1",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td008-compile-surface-measurement-v1.json": {
+    "mtime": 1788090697.7900314,
+    "ast_hash": "d33b19af1301c7d7f150dd8635319241",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td008-dead-code-ownership-v1.json": {
+    "mtime": 1788091678.5316129,
+    "ast_hash": "481cbff3ac707d2600300195f3807e01",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td008-verification-v1.json": {
+    "mtime": 1788091098.1256647,
+    "ast_hash": "48933f88ac11ba5460c5ab4f76baddbb",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td008-consequence-analysis-v1.md": {
+    "mtime": 1788090077.0697045,
+    "ast_hash": "48ecfea1ef100569d971e3862fea84e5",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td008-independent-review-v1.md": {
+    "mtime": 1788091641.968806,
+    "ast_hash": "df4652337d80fd827fbcc84225a76905",
     "semantic_hash": ""
   }
 }
