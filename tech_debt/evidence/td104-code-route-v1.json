@@ -1,0 +1,90 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "cargo-default", "role": "interface"},
+    {"id": "cargo-research", "role": "interface"},
+    {"id": "shared-runtime", "role": "orchestrator"},
+    {"id": "cold-research", "role": "orchestrator"},
+    {"id": "runtime-target", "role": "evidence_owner"},
+    {"id": "research-target", "role": "evidence_owner"},
+    {"id": "research-feature", "role": "authorization_owner"},
+    {"id": "research-artifacts", "role": "mutation_owner"},
+    {"id": "release-lane", "role": "orchestrator"},
+    {"id": "test-lint-lane", "role": "observer"},
+    {"id": "remote-metrics", "role": "observer"},
+    {"id": "candidate-comparison", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "default-shared", "from": "cargo-default", "relation": "calls", "to": "shared-runtime", "events": ["default-daemon-check"]},
+    {"id": "shared-runtime-target", "from": "shared-runtime", "relation": "delegates", "to": "runtime-target", "events": ["default-daemon-check"]},
+    {"id": "research-cold", "from": "cargo-research", "relation": "calls", "to": "cold-research", "events": ["research-check"]},
+    {"id": "cold-research-target", "from": "cold-research", "relation": "delegates", "to": "research-target", "events": ["research-check"]},
+    {"id": "feature-authority", "from": "research-feature", "relation": "authorizes", "to": "research-artifacts", "events": ["research-feature-admission"]},
+    {"id": "research-observation", "from": "research-target", "relation": "observes", "to": "test-lint-lane", "events": ["full-test"]},
+    {"id": "release-entry", "from": "cargo-research", "relation": "calls", "to": "release-lane", "events": ["release-build"]},
+    {"id": "release-artifacts", "from": "release-lane", "relation": "delegates", "to": "research-artifacts", "events": ["release-build"]},
+    {"id": "candidate-proof", "from": "test-lint-lane", "relation": "proves", "to": "candidate-comparison", "events": ["correctness-proof"]},
+    {"id": "metrics-proof", "from": "remote-metrics", "relation": "proves", "to": "candidate-comparison", "events": ["performance-proof"]}
+  ],
+  "routes": [
+    {
+      "id": "default-daemon-execution",
+      "event": "default-daemon-check",
+      "kind": "execution",
+      "entry": "cargo-default",
+      "terminal": "runtime-target",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "cargo-default", "to": "runtime-target", "min": 1, "max": 1}]
+    },
+    {
+      "id": "research-execution",
+      "event": "research-check",
+      "kind": "execution",
+      "entry": "cargo-research",
+      "terminal": "research-target",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "cargo-research", "to": "research-target", "min": 1, "max": 1}]
+    },
+    {
+      "id": "research-feature-authority",
+      "event": "research-feature-admission",
+      "kind": "authority",
+      "entry": "research-feature",
+      "terminal": "research-artifacts",
+      "required_roles": ["authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "full-test-observation",
+      "event": "full-test",
+      "kind": "observation",
+      "entry": "research-target",
+      "terminal": "test-lint-lane",
+      "required_roles": ["evidence_owner", "observer"]
+    },
+    {
+      "id": "release-execution",
+      "event": "release-build",
+      "kind": "execution",
+      "entry": "cargo-research",
+      "terminal": "research-artifacts",
+      "required_roles": ["interface", "orchestrator", "mutation_owner"]
+    },
+    {
+      "id": "correctness-proof",
+      "event": "correctness-proof",
+      "kind": "proof",
+      "entry": "test-lint-lane",
+      "terminal": "candidate-comparison",
+      "required_roles": ["observer", "proof_owner"]
+    },
+    {
+      "id": "performance-proof",
+      "event": "performance-proof",
+      "kind": "proof",
+      "entry": "remote-metrics",
+      "terminal": "candidate-comparison",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

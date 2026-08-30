@@ -1,8 +1,8 @@
 {
   "failure_count": 0,
   "failures": [],
-  "manifest_sha256": "75a3aa84240b0e9cf4c5cba52246e06c1a7fc8fa39e6a30638d29cbe23483c29",
-  "observation_path": "tech_debt/evidence/td007-milestone4-zero-failure-observation-post-review-v2.json",
-  "observation_sha256": "2d4faddaf2d571bd437180c73c763daa894313a1b4ac5b3acb461edeaa266c73",
+  "manifest_sha256": "63ffc60237503704c8d151391260425c591c141663978a93323c553a1d44bf0e",
+  "observation_path": "tech_debt/evidence/td104-zero-failure-observation-v1.json",
+  "observation_sha256": "ef1f2714b282a24e90731c040d7faaee739f7eeb2f716381ce10b3df78717a42",
   "schema": "lay.test-known-failures.v1"
 }

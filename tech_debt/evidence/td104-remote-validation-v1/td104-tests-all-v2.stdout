@@ -1,0 +1,33 @@
+test_manifest=PASS correctness=2323 ignored=13 package=36 performance=11 targets=35 total=2383
+test_target=bin:lay-daemon selected=229 failures=0 elapsed_seconds=160.993
+test_target=bin:lay-debug-actions selected=12 failures=0 elapsed_seconds=0.009
+test_target=bin:lay-ibus-engine selected=273 failures=0 elapsed_seconds=4.518
+test_target=bin:lay-l11-serve selected=6 failures=0 elapsed_seconds=0.011
+test_target=bin:lay-memory-report selected=1 failures=0 elapsed_seconds=0.009
+test_target=bin:lay-nanda-dataset selected=1 failures=0 elapsed_seconds=0.028
+test_target=bin:lay-nanda-wave-eval selected=42 failures=0 elapsed_seconds=1.276
+test_target=bin:lay-nanda-wave-train selected=40 failures=0 elapsed_seconds=0.270
+test_target=bin:lay-test-input selected=1 failures=0 elapsed_seconds=0.010
+test_target=bin:lay_output_transaction_microproof selected=8 failures=0 elapsed_seconds=0.013
+test_target=lib:lay selected=1627 failures=0 elapsed_seconds=119.551
+test_target=test:correction_gate_metrics selected=1 failures=0 elapsed_seconds=2.022
+test_target=test:decoder_alternating_stress selected=1 failures=0 elapsed_seconds=1.265
+test_target=test:decoder_transition_regression selected=5 failures=0 elapsed_seconds=2.262
+test_target=test:ime_space_boundary_contract selected=1 failures=0 elapsed_seconds=0.008
+test_target=test:input_gate_operator_contract selected=2 failures=0 elapsed_seconds=0.009
+test_target=test:input_gate_space_contract selected=6 failures=0 elapsed_seconds=8.606
+test_target=test:l3_context_feedback_overlay_contract selected=1 failures=0 elapsed_seconds=1.386
+test_target=test:l3_context_metrics_contract selected=2 failures=0 elapsed_seconds=0.008
+test_target=test:l4_feedback_memory_contract selected=1 failures=0 elapsed_seconds=0.008
+test_target=test:live_candidate_gate_metrics selected=6 failures=0 elapsed_seconds=3.540
+test_target=test:protected_words_runtime selected=2 failures=0 elapsed_seconds=0.596
+test_target=test:restore_word_cli selected=4 failures=0 elapsed_seconds=5.671
+test_target=test:text_edit_gate_contract selected=5 failures=0 elapsed_seconds=0.063
+test_target=test:text_mutation_monopoly_contract selected=16 failures=0 elapsed_seconds=0.052
+test_target=test:tray_ui_contract selected=17 failures=0 elapsed_seconds=0.014
+test_target=test:typing_assist_alternating_stress selected=1 failures=0 elapsed_seconds=4.755
+test_target=test:typing_assist_mixed_corpus selected=23 failures=0 elapsed_seconds=47.148
+test_target=test:typing_assist_short_alternating selected=4 failures=0 elapsed_seconds=3.022
+test_target=test:typing_transition_authority_contract selected=21 failures=0 elapsed_seconds=0.021
+test_lanes=correctness,package selected=2359 known_semantic_failures=0 infrastructure_failures=0 verdict=PASS
+test_lane_action=all elapsed_seconds=368.799

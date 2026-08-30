@@ -112,9 +112,9 @@ jobs:
         run: scripts/cargo-guard.sh run --quiet --bin lay -- --no-llm ghbdtn | grep -F 'привет'
 
       - name: release binaries
-        run: scripts/cargo-guard.sh build --release --bins
+        run: scripts/cargo-guard.sh build --release --bins --features research-tools
 
       - name: ngram cache probe
         run: |
-          scripts/cargo-guard.sh run --quiet --bin lay-ngram-corpus -- cache --out target/lay-ci-ngram-ru.json
-          scripts/cargo-guard.sh run --quiet --bin lay-ngram-corpus -- check-cache --cache target/lay-ci-ngram-ru.json
+          scripts/cargo-guard.sh run --quiet --features research-tools --bin lay-ngram-corpus -- cache --out target/lay-ci-ngram-ru.json
+          scripts/cargo-guard.sh run --quiet --features research-tools --bin lay-ngram-corpus -- check-cache --cache target/lay-ci-ngram-ru.json

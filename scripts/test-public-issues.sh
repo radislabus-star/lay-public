@@ -21,6 +21,14 @@ grep -q '^package_manager=rpm-ostree$' <<<"$platform"
 remote_platform="$(LAY_PACKAGE_MANAGER_OVERRIDE=rpm-ostree bash "$ROOT/scripts/install-remote.sh" --check-platform)"
 grep -q '^package_manager=rpm-ostree$' <<<"$remote_platform"
 
+echo "== research-tool build admission =="
+grep -Fq \
+    'scripts/cargo-guard.sh build --release --bins --features research-tools --quiet' \
+    "$ROOT/install.sh"
+grep -Fq \
+    'run --quiet --features research-tools --bin "$bin"' \
+    "$ROOT/scripts/l3-self-teacher-promotion-gate.sh"
+
 echo "== dirty checkout update preservation =="
 git init --bare -q "$TMP/origin.git"
 git init -q -b main "$TMP/seed"

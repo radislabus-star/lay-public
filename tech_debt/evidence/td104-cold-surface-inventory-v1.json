@@ -1,0 +1,75 @@
+{
+  "schema": "lay.td104-cold-surface-inventory.v1",
+  "base_commit": "307efa8f57d764ff9390d5c84359001866ea3db4",
+  "verdict": "NARROW_SAME_CRATE_CANDIDATE",
+  "runtime_default_route": {
+    "entry": "cargo check --bin lay-daemon",
+    "must_retain": [
+      "runtime package and format types",
+      "L1 service and exact restoration runtime",
+      "L2 field runtime and V13 typed certificate semantics",
+      "L3 context runtime package and refresh",
+      "L4 encoder, format, model, runtime, and episode segments",
+      "morphology feature projection",
+      "lexical phase format and runtime"
+    ]
+  },
+  "feature": {
+    "name": "research-tools",
+    "lexical_compiler_implies_feature": true,
+    "test_and_lint_lanes_enable_feature": true,
+    "release_all_bins_enables_feature": true
+  },
+  "closed_cold_roots": [
+    {"path": "src/eval_cases.rs", "class": "eval-input"},
+    {"path": "src/nanda_wave/eval.rs", "class": "eval"},
+    {"path": "src/nanda_wave/l3_context_metrics.rs", "class": "eval"},
+    {"path": "src/nanda_wave/self_teacher_l3.rs", "class": "research-orchestration"},
+    {"path": "src/nanda_wave/context_phase/compiler.rs", "class": "compiler"},
+    {"path": "src/nanda_wave/context_phase/proof.rs", "class": "proof"},
+    {"path": "src/nanda_wave/context_phase/sentence.rs", "class": "compiler-proof"},
+    {"path": "src/nanda_wave/context_phase/stream.rs", "class": "compiler-input"},
+    {"path": "src/nanda_wave/context_phase/surface_field.rs", "class": "compiler-input"},
+    {"path": "src/nanda_wave/l4_cross_scene/compiler.rs", "class": "compiler"},
+    {"path": "src/nanda_wave/l4_cross_scene/incremental.rs", "class": "cold-updater"},
+    {"path": "src/nanda_wave/l4_cross_scene/proof.rs", "class": "proof"},
+    {"path": "src/nanda_wave/l4_cross_scene/usage_adapter.rs", "class": "compiler-input"},
+    {"path": "src/nanda_wave/morphology_phase/proof.rs", "class": "proof"},
+    {"path": "src/nanda_wave/lexical_phase/compiler.rs", "class": "compiler"}
+  ],
+  "research_binary_targets": [
+    "lay-morphology-proof",
+    "lay-nanda-dataset",
+    "lay-nanda-wave-eval",
+    "lay-nanda-wave-train",
+    "lay-ngram-corpus",
+    "lay_output_transaction_microproof"
+  ],
+  "deferred_mixed_roots": [
+    {
+      "path": "src/nanda_wave/lexical_grokking",
+      "reason": "compiler and proof helpers share typed certificate semantics, package construction helpers, runtime test contracts, and V13 material ownership"
+    },
+    {
+      "path": "src/nanda_wave/l2_field",
+      "reason": "compiler and proof helpers are coupled to productive runtime material, package types, semantic estimator inputs, and in-module runtime tests"
+    },
+    {
+      "path": "src/nanda_wave/l4_cross_scene/encoder.rs",
+      "reason": "shared compiler/runtime representation"
+    },
+    {
+      "path": "src/nanda_wave/context_phase/composite.rs",
+      "reason": "shared runtime loading plus cold admission metadata"
+    }
+  ],
+  "forbidden": [
+    "workspace split",
+    "package schema change",
+    "runtime scoring change",
+    "runtime authority change",
+    "installed runtime mutation",
+    "deletion based only on reachability",
+    "crate-wide dead_code allowance"
+  ]
+}

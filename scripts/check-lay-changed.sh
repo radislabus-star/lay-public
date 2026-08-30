@@ -183,8 +183,8 @@ if [[ "${LAY_CHANGED_CLIPPY:-0}" == "1" ]]; then
 fi
 
 if [[ "${LAY_CHANGED_RELEASE:-0}" == "1" ]]; then
-  echo "== cargo build --release --bins =="
-  cargo build --release --bins
+  echo "== cargo build --release --bins --features research-tools =="
+  cargo build --release --bins --features research-tools
 fi
 
 echo "== lay changed check OK =="

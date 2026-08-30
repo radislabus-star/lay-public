@@ -67,7 +67,7 @@ run_bin() {
   if [[ -n "$BIN_DIR" && -x "$BIN_DIR/$bin" ]]; then
     "$BIN_DIR/$bin" "$@"
   elif [[ -x "$ROOT/scripts/cargo-guard.sh" ]]; then
-    "$ROOT/scripts/cargo-guard.sh" run --quiet --bin "$bin" -- "$@"
+    "$ROOT/scripts/cargo-guard.sh" run --quiet --features research-tools --bin "$bin" -- "$@"
   elif command -v "$bin" >/dev/null 2>&1; then
     "$bin" "$@"
   else

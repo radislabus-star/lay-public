@@ -255,7 +255,7 @@ export LAY_L2_PACKAGE_SOURCE
 
 echo ""
 echo "=== сборка release ==="
-scripts/cargo-guard.sh build --release --bins --quiet
+scripts/cargo-guard.sh build --release --bins --features research-tools --quiet
 echo "✓ lay:        $(ls -lh target/release/lay | awk '{print $5}')"
 echo "✓ lay-daemon: $(ls -lh target/release/lay-daemon | awk '{print $5}')"
 

@@ -44,19 +44,19 @@ bash -n install.sh update.sh dev-reload.sh scripts/*.sh
 echo "== CLI explain smoke =="
 cargo run --quiet --bin lay -- --explain-correct 'кторое ' | grep -F 'confidence:' >/dev/null
 
-echo "== cargo build --release --bins =="
-cargo build --release --bins
+echo "== cargo build --release --bins --features research-tools =="
+cargo build --release --bins --features research-tools
 
 if [[ "${LAY_CHECK_NGRAM:-0}" == "1" ]]; then
   NGRAM_CHECK_CACHE="${LAY_NGRAM_CHECK_CACHE:-${HOME:-}/.cache/lay/ngram_ru_v1.json}"
   if [[ -n "$NGRAM_CHECK_CACHE" && -f "$NGRAM_CHECK_CACHE" ]]; then
     echo "== cargo run --quiet --bin lay-ngram-corpus -- check-cache =="
-    cargo run --quiet --bin lay-ngram-corpus -- check-cache --cache "$NGRAM_CHECK_CACHE"
+    cargo run --quiet --features research-tools --bin lay-ngram-corpus -- check-cache --cache "$NGRAM_CHECK_CACHE"
   else
     echo "== cargo run --quiet --bin lay-ngram-corpus -- cache/check-cache target =="
     NGRAM_CHECK_CACHE="target/lay-full-ngram-ru.json"
-    cargo run --quiet --bin lay-ngram-corpus -- cache --out "$NGRAM_CHECK_CACHE"
-    cargo run --quiet --bin lay-ngram-corpus -- check-cache --cache "$NGRAM_CHECK_CACHE"
+    cargo run --quiet --features research-tools --bin lay-ngram-corpus -- cache --out "$NGRAM_CHECK_CACHE"
+    cargo run --quiet --features research-tools --bin lay-ngram-corpus -- check-cache --cache "$NGRAM_CHECK_CACHE"
   fi
 else
   echo "== skip ngram cache check (set LAY_CHECK_NGRAM=1) =="

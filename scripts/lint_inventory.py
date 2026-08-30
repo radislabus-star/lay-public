@@ -14,8 +14,14 @@ from typing import Any
 
 SCHEMA = "lay.dead-code-baseline.v3"
 SCOPE = {
-    "cargo_args": ["check", "--locked", "--all-targets"],
-    "features": "default",
+    "cargo_args": [
+        "check",
+        "--locked",
+        "--all-targets",
+        "--features",
+        "research-tools",
+    ],
+    "features": "research-tools",
 }
 
 

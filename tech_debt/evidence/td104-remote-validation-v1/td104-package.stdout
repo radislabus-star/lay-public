@@ -1,0 +1,5 @@
+== clean checkout downloads and verifies canonical L2 ==
+== offline update reuses the verified installed package ==
+== unavailable package fails before partial binary installation ==
+== corrupt download is rejected before binary installation ==
+release installer canonical L2 regressions: PASS

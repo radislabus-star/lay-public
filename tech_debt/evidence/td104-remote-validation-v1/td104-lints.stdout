@@ -1,0 +1,12 @@
+toolchain_profile=lint
+rustc 1.97.1 (8bab26f4f 2026-07-14)
+binary: rustc
+commit-hash: 8bab26f4f68e0e26f0bb7960be334d5b520ea452
+commit-date: 2026-07-14
+host: x86_64-unknown-linux-gnu
+release: 1.97.1
+LLVM version: 22.1.6
+cargo 1.97.1 (c980f4866 2026-06-30)
+dead_code_inventory=366 baseline=PASS
+non_dead_diagnostics=0
+lay_lint_contract=PASS

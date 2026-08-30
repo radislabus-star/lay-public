@@ -4,13 +4,16 @@
 //! context centers. The hot package stores hashes, quantized phase vectors,
 //! support and learned thresholds; it stores no raw phrase or word strings.
 
+#[cfg(any(test, feature = "research-tools"))]
 mod compiler;
 mod composite;
 mod format;
 mod online;
+#[cfg(any(test, feature = "research-tools"))]
 mod proof;
 mod runtime_refresh;
 mod sentence;
+#[cfg(any(test, feature = "research-tools"))]
 mod stream;
 mod surface_field;
 
@@ -25,6 +28,7 @@ use crate::lexical_surface_atoms::{surface_atom_projection, SurfaceFieldEncoder}
 use crate::stable_hash::mix64_golden;
 use sha2::{Digest, Sha256};
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) use compiler::{
     apply_feedback_overlay, build_feedback_corpus,
     compile_context_phase_delta_reader_with_projection_base, compile_context_phase_reader,
@@ -32,21 +36,27 @@ pub(crate) use compiler::{
 };
 #[cfg(test)]
 pub(crate) use compiler::{compile_context_phase, ContextPhaseCompileInput};
+pub(crate) use composite::L3CompositeMemory;
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) use composite::{
     admit_delta, admit_delta_with_full_proof, compact_manifest, initialize_manifest,
-    snapshot_manifest, snapshot_manifest_with_delta, L3CompositeMemory,
+    snapshot_manifest, snapshot_manifest_with_delta,
 };
 pub(crate) use format::{encode_package, read_package, write_package};
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) use proof::build_and_prove_context_phase_path_with_surface_field;
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) use proof::{
     build_and_prove_context_phase_path, prove_context_phase_package_delta,
     prove_context_phase_package_delta_path, prove_context_phase_package_path,
     prove_context_phase_package_path_with_surface_field, prove_context_phase_path,
 };
 pub(crate) use runtime_refresh::{
-    default_memory_is_warm, default_memory_runtime_status_json, reload_default_memory,
-    warm_default_memory, with_default_memory,
+    default_memory_is_warm, warm_default_memory, with_default_memory,
 };
+#[cfg(any(test, feature = "research-tools"))]
+pub(crate) use runtime_refresh::{default_memory_runtime_status_json, reload_default_memory};
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) use sentence::{
     build_and_prove_sentence_context_path, compile_supervised_relation_delta,
     prove_sentence_context_delta_path,

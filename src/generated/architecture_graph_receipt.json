@@ -17,7 +17,7 @@
     {
       "evidence": [
         "src/bin/lay_ibus_engine/state.rs:L190:.with_winner_action()",
-        "src/bin/lay_ibus_engine/state.rs:L422:.replace_committed_tail()",
+        "src/bin/lay_ibus_engine/state.rs:L390:.replace_committed_tail()",
         "src/text_edit/structural_verifier.rs:L20:verify_visible_text_transition()",
         "src/text_edit/visible_tail.rs:L100:VisibleTailSnapshot",
         "src/text_edit/visible_tail.rs:L65:SnapshotIdentity"
@@ -61,8 +61,8 @@
     {
       "evidence": [
         "src/bin/lay_ibus_engine/engine/types.rs:L384:PendingSystemOutcomeFeedback",
-        "src/bin/lay_ibus_engine/tail_memory.rs:L356:.arm_visible_postcondition_with_feedback()",
-        "src/bin/lay_ibus_engine/tail_memory.rs:L434:.observe_visible_postcondition()"
+        "src/bin/lay_ibus_engine/tail_memory.rs:L367:.arm_visible_postcondition_with_feedback()",
+        "src/bin/lay_ibus_engine/tail_memory.rs:L446:.observe_visible_postcondition()"
       ],
       "id": "observed-outcome-feedback",
       "status": "PASS",
@@ -108,8 +108,8 @@
     },
     {
       "evidence": [
-        "graph_links:51752",
-        "graph_nodes:20358"
+        "graph_links:52592",
+        "graph_nodes:20772"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -123,11 +123,11 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_binding_fingerprint": "0be685596d8241f59dfc198125694802988ba19ea72a9d29ade2919fdb0708ba",
-  "graph_fingerprint": "7dcb5a07a8e24749f458e6200c9b7b81ad528bade397a25af286a54e75356a95",
-  "graph_links": 51752,
-  "graph_nodes": 20358,
+  "graph_binding_fingerprint": "eb1e1c9d5a570626e8ac375179749f1cf0a07d234c064cdd07cfeefee25b2f01",
+  "graph_fingerprint": "8c5421804564893c78a9f2de715a2938191a47092259c319a8cee5578c510a65",
+  "graph_links": 52592,
+  "graph_nodes": 20772,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "4a614fb146582626b9943e4ce2b556db92d1e98248c1c86deb6777b34ecc42ce",
+  "source_fingerprint": "7c778abeaf44cacda2008518aeb7fb12b2d7553026725017a20a21a805e5beca",
   "verdict": "PASS"
 }

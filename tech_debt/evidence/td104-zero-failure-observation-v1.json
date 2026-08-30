@@ -1,0 +1,52 @@
+{
+  "elapsed_by_lane_seconds": {
+    "correctness": 303.3001314587891,
+    "package": 63.842862816527486
+  },
+  "failure_count": 0,
+  "failures": [],
+  "failures_by_lane": {
+    "correctness": 0,
+    "package": 0
+  },
+  "invocation": {
+    "action": "all",
+    "host": "e-MEGA-MINI-M1-13th",
+    "results_dir": "/home/e/td104-test-results-v2",
+    "target_dir": "/home/e/td104-manifest-target"
+  },
+  "lanes": [
+    "correctness",
+    "package"
+  ],
+  "manifest_path": "scripts/test-lanes/manifest.json",
+  "manifest_sha256": "63ffc60237503704c8d151391260425c591c141663978a93323c553a1d44bf0e",
+  "recorded_at_utc": "2026-08-30T15:17:21Z",
+  "remote_summary_path": "/home/e/td104-test-results-v2/SUMMARY.json",
+  "remote_summary_sha256": "78024f31b24aa4a21bd4194bb1754a2c0fc62ca27b28fcd92c68f2ce28c83f00",
+  "sandbox": {
+    "filesystem": "host and repository read-only; result sandbox writable",
+    "home_xdg": "fresh",
+    "network": "unshared",
+    "run": "empty tmpfs",
+    "test_threads": 1
+  },
+  "schema": "lay.test-failure-observation.v1",
+  "selected_by_lane": {
+    "correctness": 2323,
+    "package": 36
+  },
+  "source_closure": {
+    "files": 1226,
+    "git_head": "307efa8f57d764ff9390d5c84359001866ea3db4",
+    "sha256": "22b96580e3f27ee0306ac82c0f4f2d740b322f01ca2c5cad6fdf520100fe187f"
+  },
+  "source_closure_changed_during_execution": false,
+  "test_execution": "FULL_HERMETIC_CORRECTNESS_AND_PACKAGE_PASS",
+  "untested_scope": [
+    "live_desktop_smoke",
+    "performance",
+    "ignored"
+  ],
+  "verdict": "PASS"
+}

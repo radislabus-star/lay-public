@@ -1,3 +1,5 @@
+#![cfg(feature = "research-tools")]
+
 use std::path::PathBuf;
 
 const ROOT: &str = env!("CARGO_MANIFEST_DIR");

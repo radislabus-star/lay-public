@@ -1,0 +1,353 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "cargo-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../Cargo.toml",
+      "sha256": "b6266e5a5777063fe1af003dc4ec1a586f0051b3da2c281161a91f4961fa83dc",
+      "size_bytes": 2775
+    },
+    {
+      "exists": true,
+      "id": "library-root",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/lib.rs",
+      "sha256": "1062e20e9c0f9f74a73aed567c45d0189cb2114e7cc2a4db373a92b4afc8f3d1",
+      "size_bytes": 2109
+    },
+    {
+      "exists": true,
+      "id": "wave-root",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/nanda_wave/mod.rs",
+      "sha256": "e1f6a0693570d77c6dd9224f158e7bd10665f9b1780cc49df60d7e1b30256e8f",
+      "size_bytes": 64251
+    },
+    {
+      "exists": true,
+      "id": "context-root",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/nanda_wave/context_phase/mod.rs",
+      "sha256": "cd761ecdf1609ae9675a5a9222e8733c764db45e08bf6a97f8a05439db0cbc94",
+      "size_bytes": 96532
+    },
+    {
+      "exists": true,
+      "id": "cross-scene-root",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/nanda_wave/l4_cross_scene/mod.rs",
+      "sha256": "1791ae1b2ba4423512ceda3a7a9f7a1495972f5d09263150484219f8eb66fda7",
+      "size_bytes": 2133
+    },
+    {
+      "exists": true,
+      "id": "morphology-root",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/nanda_wave/morphology_phase/mod.rs",
+      "sha256": "ee66c5c26fe3cbeecdb24731bdab52e0375805697c21596ce50e9c0de4f1f859",
+      "size_bytes": 17687
+    },
+    {
+      "exists": true,
+      "id": "lexical-phase-root",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/nanda_wave/lexical_phase/mod.rs",
+      "sha256": "b3805e8b573bf4ee12810a5320f6c2d2c5d06f768de3236684b3c6835e7f192e",
+      "size_bytes": 542
+    },
+    {
+      "exists": true,
+      "id": "full-check",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../scripts/check-lay-full.sh",
+      "sha256": "d6a43e78a981420892cbd368bec66d40e5675df68bc990922c75f92fee77bd0a",
+      "size_bytes": 2781
+    },
+    {
+      "exists": true,
+      "id": "changed-check",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../scripts/check-lay-changed.sh",
+      "sha256": "dbd950a18b6f9f6b5908df340a8ed2ce544c0db23f78b44def91831784dba892",
+      "size_bytes": 6162
+    },
+    {
+      "exists": true,
+      "id": "lint-check",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../scripts/check-lay-lints.sh",
+      "sha256": "e7ff54afd618f27a31cc10465363061e27678aa5f65b61f1b41b614c0f93db38",
+      "size_bytes": 1792
+    },
+    {
+      "exists": true,
+      "id": "lint-inventory",
+      "kind": "file",
+      "mode": "0755",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../scripts/lint_inventory.py",
+      "sha256": "1e34562578755df73888f4103fb4025a002906e91466bd290f67ca2cdb8985d0",
+      "size_bytes": 16773
+    },
+    {
+      "exists": true,
+      "id": "test-discovery",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../scripts/test_lanes/discovery.py",
+      "sha256": "8d7e6f8b9bb727382b073a025a25a154ab297e0d55ac156f3457bdf4c945c762",
+      "size_bytes": 17275
+    },
+    {
+      "exists": true,
+      "id": "test-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../scripts/test-lanes/manifest.json",
+      "sha256": "63ffc60237503704c8d151391260425c591c141663978a93323c553a1d44bf0e",
+      "size_bytes": 546560
+    },
+    {
+      "exists": true,
+      "id": "version-release-route",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../scripts/bump-lay-version.sh",
+      "sha256": "16cfce8d3b03f6fb613fa25bc7ce804c6bf53b64c3dd186146457d86608cf942",
+      "size_bytes": 2699
+    },
+    {
+      "exists": true,
+      "id": "ci-route",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../.github/workflows/ci.yml",
+      "sha256": "f2ccc1e5d5be130c858703ca66832775dc84c3a63181d8d32008054c71491f2c",
+      "size_bytes": 3484
+    },
+    {
+      "exists": true,
+      "id": "task-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../104-isolate-proof-compiler-build-surface.md",
+      "sha256": "752ace4b7f0990d643b5514f910fec3be38c9bb16b9ec73ce77456074971fc09",
+      "size_bytes": 3122
+    },
+    {
+      "exists": true,
+      "id": "boundary-decision",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/td104-boundary-decision-v1.md",
+      "sha256": "155c276c35bd8af4f0de740d2c27067b800a4b7a81aa4572c210ac8db5d2ced2",
+      "size_bytes": 1883
+    },
+    {
+      "exists": true,
+      "id": "cold-inventory",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/td104-cold-surface-inventory-v3.json",
+      "sha256": "edff937f6f7342c4104c8abd84abb9ddbe910e7cc3d0327551f13bf20bf35cf5",
+      "size_bytes": 3381
+    },
+    {
+      "exists": true,
+      "id": "boundary-correction",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/td104-boundary-correction-v3.md",
+      "sha256": "2e4b878d8f1a3096c722ed4f7752f8788555e591fb4059610c2c997ba2dc1726",
+      "size_bytes": 822
+    },
+    {
+      "exists": true,
+      "id": "v2-failure-stderr",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/td104-remote-candidate-v2-failure/td104-candidate-v2-failure.stderr",
+      "sha256": "e0ca046f92fbb4b33c24aa74aa5b1561312f8c1979e19d967b4d04242aace396",
+      "size_bytes": 7692
+    },
+    {
+      "exists": true,
+      "id": "v2-failure-status",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/td104-remote-candidate-v2-failure/td104-candidate-v2-failure.status",
+      "sha256": "509c896a4e2961247a2ea8a4db31ee6e6dfe9926007dc0505e55777e5f64995e",
+      "size_bytes": 16
+    },
+    {
+      "exists": true,
+      "id": "code-route",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/td104-code-route-v1.json",
+      "sha256": "d664eb990bd0223e1a2765c39d9e3b6940ae82cc3e8aa7cf22e33916347487a0",
+      "size_bytes": 4088
+    },
+    {
+      "exists": true,
+      "id": "remote-baseline",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/td104-remote-baseline-v1/BASELINE.json",
+      "sha256": "525e0f6d01758d8a9231599c81b90332d286eaeee25a7d2c1169257a11810822",
+      "size_bytes": 1936
+    },
+    {
+      "exists": true,
+      "id": "remote-raw-manifest",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/td104-remote-baseline-v1/REMOTE_SHA256SUMS",
+      "sha256": "b2e781393bf1d0ff5b6757dc25eaa80bbcdbadfc0c195b20398704c974d8e420",
+      "size_bytes": 4404
+    },
+    {
+      "exists": true,
+      "id": "cargo-lock-baseline",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../Cargo.lock",
+      "sha256": "cdcd53b345db5ca98507b5fd9024eeb0eb5315874a1c6bf0b68873c2c7d3e6f3",
+      "size_bytes": 70770
+    },
+    {
+      "exists": true,
+      "id": "build-script-baseline",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../build.rs",
+      "sha256": "798e056cd2f95aa151a2d7522090a6ae42f732aa26386b924d036111dc9d3df5",
+      "size_bytes": 1664
+    },
+    {
+      "exists": true,
+      "id": "v13-runtime-baseline",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/nanda_wave/l2_field/v13_typed_peak.rs",
+      "sha256": "a6d301f87f08e551130a6a57a5b72cc4fed6d9374c64b942725a540568acfc01",
+      "size_bytes": 260347
+    },
+    {
+      "exists": true,
+      "id": "typed-certificate-baseline",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs",
+      "sha256": "c88910fe9080556589c9f5b0fbd8725903f9e5bcd06e832098dfd834d87a6382",
+      "size_bytes": 91544
+    },
+    {
+      "exists": true,
+      "id": "daemon-entry-baseline",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/bin/lay_daemon.rs",
+      "sha256": "18702427489ebb085f147dd94cc30e41ef5f88576ddae7bf144d945548dab1de",
+      "size_bytes": 8361
+    },
+    {
+      "exists": true,
+      "id": "installer-baseline",
+      "kind": "file",
+      "mode": "0775",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../scripts/install-release-binaries.sh",
+      "sha256": "3427ae85155f073cfaacf37b09eb901defb57ee8912977ad31b786d928b35c82",
+      "size_bytes": 3251
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 30,
+    "forbidden_side_effect_kinds": [
+      "cargo_lock_change",
+      "crate_wide_dead_code_allow",
+      "installed_runtime_change",
+      "package_schema_change",
+      "proof_coverage_reduction",
+      "runtime_algorithm_change",
+      "scoring_change",
+      "service_restart",
+      "workspace_split"
+    ],
+    "identity_contracts": 5,
+    "invariants": 6,
+    "planned_side_effect_kinds": [
+      "evidence_write",
+      "remote_test",
+      "source_edit"
+    ],
+    "preserved_artifacts": 6,
+    "runtime_comparisons": 0,
+    "source_checks": 5,
+    "tests": 11
+  },
+  "manifest_sha256": "6b78ca0b8cbf4fb75b30b42f000553b2d05d7e8a34ca0855b6e38198f0c98ce0",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "cargo-feature-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../Cargo.toml",
+      "sha256": "b6266e5a5777063fe1af003dc4ec1a586f0051b3da2c281161a91f4961fa83dc",
+      "size_bytes": 2775
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "library-root-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/lib.rs",
+      "sha256": "1062e20e9c0f9f74a73aed567c45d0189cb2114e7cc2a4db373a92b4afc8f3d1",
+      "size_bytes": 2109
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "wave-root-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/nanda_wave/mod.rs",
+      "sha256": "e1f6a0693570d77c6dd9224f158e7bd10665f9b1780cc49df60d7e1b30256e8f",
+      "size_bytes": 64251
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "test-discovery-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../scripts/test_lanes/discovery.py",
+      "sha256": "8d7e6f8b9bb727382b073a025a25a154ab297e0d55ac156f3457bdf4c945c762",
+      "size_bytes": 17275
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "full-check-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../scripts/check-lay-full.sh",
+      "sha256": "d6a43e78a981420892cbd368bec66d40e5675df68bc990922c75f92fee77bd0a",
+      "size_bytes": 2781
+    }
+  ],
+  "task_id": "td104-isolate-proof-compiler-build-surface-v3-20260830",
+  "verdict": "READY_TO_IMPLEMENT"
+}

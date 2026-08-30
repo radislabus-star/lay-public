@@ -17,6 +17,7 @@ pub mod decoder;
 pub mod desktop;
 pub mod dict;
 pub mod engine;
+#[cfg(any(test, feature = "research-tools"))]
 pub mod eval_cases;
 pub mod exact_layout_authority;
 pub mod hot_field;

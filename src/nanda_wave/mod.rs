@@ -2,6 +2,7 @@ pub mod candidate_gate;
 pub mod cell32;
 pub mod context;
 pub(crate) mod context_phase;
+#[cfg(any(test, feature = "research-tools"))]
 pub mod eval;
 pub mod feedback;
 pub mod journal;
@@ -12,6 +13,7 @@ mod l2_candidate_phase;
 pub(crate) mod l2_field;
 pub(crate) mod l2_wave_peak;
 pub mod l3;
+#[cfg(any(test, feature = "research-tools"))]
 mod l3_context_metrics;
 pub(crate) mod l3_phrase_gate;
 pub(crate) mod l4_active_disambiguation;
@@ -33,6 +35,7 @@ pub mod pattern_wave;
 pub(crate) mod phase_field;
 pub mod precognition;
 pub mod resonance_memory;
+#[cfg(any(test, feature = "research-tools"))]
 mod self_teacher_l3;
 pub mod signal;
 pub mod structural_relation;
@@ -42,6 +45,7 @@ mod surface_wave;
 pub mod trace;
 pub(crate) mod usage_prior;
 
+#[cfg(any(test, feature = "research-tools"))]
 pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEvalStats};
 pub use l2_candidate_phase::L2PhaseTrainingEntry;
 pub(crate) use l2_candidate_phase::{PhaseReadout, PhaseVerdict};
@@ -92,15 +96,18 @@ pub use lexical_grokking::{
     prove_l1_typed_edit_phase7d,
 };
 pub use mode::{Mode8, ModeRole, CELL32_BYTES, MODES_PER_CELL32};
+#[cfg(any(test, feature = "research-tools"))]
 pub use morphology_phase::{
     run_embedded_russian_morphology_proof, run_russian_morphology_proof_path,
 };
 pub use options::WaveOptions;
+#[cfg(any(test, feature = "research-tools"))]
 pub use self_teacher_l3::{build_lay_self_teacher_l3_report, LaySelfTeacherL3Config};
 pub use signal::{ActiveMode, LayerTrace, WaveDecision, WavePacket, WaveTrace, WordCandidate};
 pub use trace::{run_wave_trace, run_wave_trace_with_options};
 pub use usage_prior::UsagePriorSnapshot;
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn l3_context_report_json(
     cases: &[crate::eval_cases::EvalCase],
     full_cases: usize,
@@ -108,6 +115,7 @@ pub fn l3_context_report_json(
     l3_context_metrics::report_json(cases, full_cases)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn l3_context_report_json_with_jobs(
     cases: &[crate::eval_cases::EvalCase],
     full_cases: usize,
@@ -116,6 +124,7 @@ pub fn l3_context_report_json_with_jobs(
     l3_context_metrics::report_json_with_jobs(cases, full_cases, jobs)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn compile_l3_context_phase_memory(
     corpus_path: &std::path::Path,
     output_path: &std::path::Path,
@@ -135,6 +144,7 @@ pub fn compile_l3_context_phase_memory(
 /// Cold compiles L3 from clean context plus compact observed surface geometry.
 /// The correction JSONL is read only here; the emitted package still contains
 /// phase centers and hashes, never correction strings.
+#[cfg(any(test, feature = "research-tools"))]
 pub fn compile_l3_context_phase_memory_with_surface_evidence(
     corpus_path: &std::path::Path,
     surface_evidence_path: &std::path::Path,
@@ -185,6 +195,7 @@ pub fn compile_l3_context_phase_memory_with_surface_evidence(
     Ok(value)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn compile_l3_context_delta_for_manifest(
     manifest_path: &std::path::Path,
     corpus_path: &std::path::Path,
@@ -293,6 +304,7 @@ pub fn compile_l3_context_delta_for_manifest(
 /// `target` and `competitors` are evidence labels for one observed sentence
 /// slot. They are converted to directional pair profiles and are never used as
 /// runtime exceptions or stored as raw strings in the package.
+#[cfg(any(test, feature = "research-tools"))]
 pub fn compile_l3_supervised_relation_delta_for_manifest(
     manifest_path: &std::path::Path,
     scenes: &[String],
@@ -333,6 +345,7 @@ pub fn compile_l3_supervised_relation_delta_for_manifest(
     Ok(report)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn compile_l3_context_phase_memory_with_progress<F>(
     corpus_path: &std::path::Path,
     output_path: &std::path::Path,
@@ -372,6 +385,7 @@ where
     Ok(value)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn merge_l3_context_phase_shards(
     inputs: &[std::path::PathBuf],
     output_path: &std::path::Path,
@@ -403,6 +417,7 @@ pub fn merge_l3_context_phase_shards(
     )
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn initialize_l3_context_composite_manifest(
     manifest_path: &std::path::Path,
     base_path: &std::path::Path,
@@ -417,6 +432,7 @@ pub fn initialize_l3_context_composite_manifest(
     }))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn admit_l3_context_delta(
     manifest_path: &std::path::Path,
     delta_path: &std::path::Path,
@@ -433,6 +449,7 @@ pub fn admit_l3_context_delta(
     context_phase::admit_delta(manifest_path, delta_path, Some(proof_receipt), scope)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn admit_l3_context_delta_with_full_proof(
     manifest_path: &std::path::Path,
     delta_path: &std::path::Path,
@@ -451,6 +468,7 @@ pub fn admit_l3_context_delta_with_full_proof(
     )
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn validate_l3_targeted_proof_receipt(
     manifest_path: &std::path::Path,
     delta_path: &std::path::Path,
@@ -511,6 +529,7 @@ fn validate_l3_targeted_proof_receipt(
     Ok(())
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn validate_l3_full_proof_receipt(
     manifest_path: &std::path::Path,
     delta_path: &std::path::Path,
@@ -708,6 +727,7 @@ mod l3_delta_admission_tests {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn compact_l3_context_composite(
     manifest_path: &std::path::Path,
     output_base: &std::path::Path,
@@ -715,6 +735,7 @@ pub fn compact_l3_context_composite(
     context_phase::compact_manifest(manifest_path, output_base)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn snapshot_l3_context_composite(
     manifest_path: &std::path::Path,
     output_base: &std::path::Path,
@@ -722,6 +743,7 @@ pub fn snapshot_l3_context_composite(
     context_phase::snapshot_manifest(manifest_path, output_base)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn snapshot_l3_context_composite_with_delta(
     manifest_path: &std::path::Path,
     delta_path: &std::path::Path,
@@ -730,10 +752,12 @@ pub fn snapshot_l3_context_composite_with_delta(
     context_phase::snapshot_manifest_with_delta(manifest_path, delta_path, output_path)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn reload_l3_context_composite() -> std::io::Result<serde_json::Value> {
     context_phase::reload_default_memory()
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn l3_context_runtime_status_json() -> serde_json::Value {
     context_phase::default_memory_runtime_status_json()
 }
@@ -741,6 +765,7 @@ pub fn l3_context_runtime_status_json() -> serde_json::Value {
 /// Proves one small delta against explicit changed sentence scenes and fixed
 /// safety sentinels. The sentence proof parser is the sole owner of the TSV
 /// contract: `split<TAB>class<TAB>original<TAB>a|b<TAB>expected|-`.
+#[cfg(any(test, feature = "research-tools"))]
 pub fn prove_l3_context_delta_targeted(
     manifest_path: &std::path::Path,
     delta_path: &std::path::Path,
@@ -755,6 +780,7 @@ pub fn prove_l3_context_delta_targeted(
     )
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn prove_l3_sentence_context_delta_targeted(
     manifest_path: &std::path::Path,
     delta_path: &std::path::Path,
@@ -771,6 +797,7 @@ pub fn prove_l3_sentence_context_delta_targeted(
 
 /// Runs the heldout and ablation proof for an existing package without
 /// rebuilding it from the evaluation corpus.
+#[cfg(any(test, feature = "research-tools"))]
 pub fn prove_l3_context_phase_package(
     corpus_path: &std::path::Path,
     package_path: &std::path::Path,
@@ -831,6 +858,7 @@ pub fn prove_l3_context_phase_package(
     Ok(value)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn prove_l3_context_phase_delta_full(
     corpus_path: &std::path::Path,
     baseline_path: &std::path::Path,
@@ -877,6 +905,7 @@ pub fn prove_l3_context_phase_delta_full(
     Ok(value)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn prove_l3_context_composite_delta_full(
     corpus_path: &std::path::Path,
     manifest_path: &std::path::Path,
@@ -940,6 +969,7 @@ pub fn prove_l3_context_composite_delta_full(
 /// Rebuilds the private live L3 packet from the canonical package plus
 /// explicit IME accepts/rejections. The packet remains a compact hashed phase
 /// memory; the human text log remains only the training source.
+#[cfg(any(test, feature = "research-tools"))]
 pub fn compile_l3_context_feedback_overlay_memory(
     base_path: &std::path::Path,
     usage_events_path: &std::path::Path,
@@ -970,6 +1000,7 @@ pub fn compile_l3_context_feedback_overlay_memory(
 /// Extracts a private clean-text L3 corpus from explicit accepted IME outcomes.
 /// It does not build or install a package; callers can inspect the corpus
 /// receipt, merge it with a clean external corpus, and run cold training.
+#[cfg(any(test, feature = "research-tools"))]
 pub fn build_l3_context_feedback_corpus(
     usage_events_path: &std::path::Path,
     output_path: &std::path::Path,
@@ -998,6 +1029,7 @@ pub fn build_l3_context_feedback_corpus(
 /// Extracts confirmed IME outcomes into a bounded lexical training source for
 /// the next cold L2 phase compile. This writes a corpus only: hot runtime
 /// still loads compact centers from a separately proved artifact.
+#[cfg(any(test, feature = "research-tools"))]
 pub fn build_l2_lexical_feedback_corpus(
     usage_events_path: &std::path::Path,
     output_path: &std::path::Path,
@@ -1045,6 +1077,7 @@ pub fn build_l2_lexical_feedback_corpus(
     }))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn l3_context_phase_status_json(path: Option<&std::path::Path>) -> serde_json::Value {
     if let Some(path) = path {
         return context_phase::package_report(path);
@@ -1065,6 +1098,7 @@ pub fn l3_context_phase_status_json(path: Option<&std::path::Path>) -> serde_jso
     context_phase::package_report(&context_phase::default_memory_path())
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn prove_l3_context_phase_memory(
     corpus_path: &std::path::Path,
     max_fragments: usize,
@@ -1078,6 +1112,7 @@ pub fn prove_l3_context_phase_memory(
     .map_err(std::io::Error::other)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn build_and_prove_l3_sentence_context_memory(
     cases_path: &std::path::Path,
     output_path: &std::path::Path,
@@ -1088,6 +1123,7 @@ pub fn build_and_prove_l3_sentence_context_memory(
 /// Builds the candidate field from the fixed support partition and publishes
 /// it only when the untouched heldout partition proves the phase and anti-wave
 /// contribution. A WATCH result never replaces the runtime package.
+#[cfg(any(test, feature = "research-tools"))]
 pub fn build_and_prove_l3_context_phase_memory(
     corpus_path: &std::path::Path,
     output_path: &std::path::Path,
@@ -1154,6 +1190,7 @@ pub fn build_and_prove_l3_context_phase_memory(
 
 /// Builds and proves L3 against the same learned surface field used during
 /// training. A failed proof does not write the runtime package.
+#[cfg(any(test, feature = "research-tools"))]
 pub fn build_and_prove_l3_context_phase_memory_with_surface_evidence(
     corpus_path: &std::path::Path,
     surface_evidence_path: &std::path::Path,
@@ -1429,6 +1466,7 @@ pub fn usage_memory_typed_replay_report_json(path: Option<&std::path::Path>) -> 
 /// Compiles a bounded, candidate-relative L4 package from completed causal
 /// usage receipts. The package remains shadow-only and cannot grant edit
 /// authority.
+#[cfg(any(test, feature = "research-tools"))]
 pub fn compile_l4_cross_scene_memory(
     input: &std::path::Path,
     output: &std::path::Path,
@@ -1441,6 +1479,7 @@ pub fn compile_l4_cross_scene_memory(
     serde_json::to_value(report).map_err(std::io::Error::other)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub fn compile_l4_cross_scene_memory_with_corrections(
     input: &std::path::Path,
     corrections: &std::path::Path,
@@ -1457,6 +1496,7 @@ pub fn compile_l4_cross_scene_memory_with_corrections(
 
 /// Builds and proves transferable whole-token and grapheme layout scenes on a
 /// word-disjoint heldout split. Passing this proof still means SuggestOnly.
+#[cfg(any(test, feature = "research-tools"))]
 pub fn prove_l4_cross_scene_memory(
     russian_words: &std::path::Path,
     english_words: &std::path::Path,
@@ -1467,6 +1507,7 @@ pub fn prove_l4_cross_scene_memory(
 
 /// Applies complete immutable inbox segments to a V2 package through the cold,
 /// checkpointed updater. This does not reload runtime state or change authority.
+#[cfg(any(test, feature = "research-tools"))]
 pub fn update_l4_cross_scene_memory_from_inbox(
     inbox: &std::path::Path,
     package: &std::path::Path,

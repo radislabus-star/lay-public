@@ -1,0 +1,176 @@
+    Checking lay v1.0.54 (/home/e/codex-worktrees/lay-td104-307efa8f)
+error[E0433]: cannot find module or crate `sentence` in this scope
+   --> src/nanda_wave/context_phase/mod.rs:880:29
+    |
+880 |             .semantic_state(sentence::SentenceContextScene::anchor_hash())
+    |                             ^^^^^^^^ use of unresolved module or unlinked crate `sentence`
+    |
+help: to make use of source file src/nanda_wave/context_phase/sentence.rs, use `mod sentence` in this file to declare the module
+   --> src/lib.rs:4:1
+    |
+  4 + mod sentence;
+    |
+
+error[E0433]: cannot find module or crate `sentence` in this scope
+    --> src/nanda_wave/context_phase/mod.rs:2216:25
+     |
+2216 |         .semantic_state(sentence::SentenceContextScene::anchor_hash())
+     |                         ^^^^^^^^ use of unresolved module or unlinked crate `sentence`
+     |
+help: to make use of source file src/nanda_wave/context_phase/sentence.rs, use `mod sentence` in this file to declare the module
+    -->  src/lib.rs:4:1
+     |
+   4 + mod sentence;
+     |
+
+warning: unused imports: `admit_delta_with_full_proof`, `admit_delta`, `compact_manifest`, `initialize_manifest`, `snapshot_manifest_with_delta`, and `snapshot_manifest`
+  --> src/nanda_wave/context_phase/mod.rs:41:5
+   |
+41 |     admit_delta, admit_delta_with_full_proof, compact_manifest, initialize_manifest,
+   |     ^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^
+42 |     snapshot_manifest, snapshot_manifest_with_delta, L3CompositeMemory,
+   |     ^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused imports: `default_memory_runtime_status_json` and `reload_default_memory`
+  --> src/nanda_wave/context_phase/mod.rs:54:29
+   |
+54 |     default_memory_is_warm, default_memory_runtime_status_json, reload_default_memory,
+   |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^
+
+error[E0433]: cannot find module or crate `sentence` in this scope
+    --> src/nanda_wave/context_phase/mod.rs:2120:26
+     |
+2120 |         .filter(|token| !sentence::is_sentence_marker(token))
+     |                          ^^^^^^^^ use of unresolved module or unlinked crate `sentence`
+     |
+help: to make use of source file src/nanda_wave/context_phase/sentence.rs, use `mod sentence` in this file to declare the module
+    -->  src/lib.rs:4:1
+     |
+   4 + mod sentence;
+     |
+
+error[E0433]: cannot find module or crate `sentence` in this scope
+    --> src/nanda_wave/context_phase/mod.rs:2221:40
+     |
+2221 |             (sentence_encoder_known && sentence::is_sentence_structural_marker(token))
+     |                                        ^^^^^^^^ use of unresolved module or unlinked crate `sentence`
+     |
+help: to make use of source file src/nanda_wave/context_phase/sentence.rs, use `mod sentence` in this file to declare the module
+    -->  src/lib.rs:4:1
+     |
+   4 + mod sentence;
+     |
+
+error[E0433]: cannot find module or crate `sentence` in this scope
+    --> src/nanda_wave/context_phase/mod.rs:2351:31
+     |
+2351 |     if let Some(projection) = sentence::project_candidate_lattice(original, replacements) {
+     |                               ^^^^^^^^ use of unresolved module or unlinked crate `sentence`
+     |
+help: to make use of source file src/nanda_wave/context_phase/sentence.rs, use `mod sentence` in this file to declare the module
+    -->  src/lib.rs:4:1
+     |
+   4 + mod sentence;
+     |
+
+error[E0433]: cannot find module or crate `sentence` in this scope
+   --> src/nanda_wave/context_phase/mod.rs:626:29
+    |
+626 | ...                   sentence::PAIR_VIEW_LEFT_EXACT | sentence::PAIR_VIEW_RIGHT_EXACT
+    |                       ^^^^^^^^ use of unresolved module or unlinked crate `sentence`
+    |
+help: to make use of source file src/nanda_wave/context_phase/sentence.rs, use `mod sentence` in this file to declare the module
+   --> src/lib.rs:4:1
+    |
+  4 + mod sentence;
+    |
+
+error[E0433]: cannot find module or crate `sentence` in this scope
+   --> src/nanda_wave/context_phase/mod.rs:626:62
+    |
+626 | ...                   sentence::PAIR_VIEW_LEFT_EXACT | sentence::PAIR_VIEW_RIGHT_EXACT
+    |                                                        ^^^^^^^^ use of unresolved module or unlinked crate `sentence`
+    |
+help: to make use of source file src/nanda_wave/context_phase/sentence.rs, use `mod sentence` in this file to declare the module
+   --> src/lib.rs:4:1
+    |
+  4 + mod sentence;
+    |
+
+error[E0433]: cannot find module or crate `sentence` in this scope
+   --> src/nanda_wave/context_phase/mod.rs:876:17
+    |
+876 |         scene: &sentence::SentenceContextScene,
+    |                 ^^^^^^^^ use of unresolved module or unlinked crate `sentence`
+    |
+help: to make use of source file src/nanda_wave/context_phase/sentence.rs, use `mod sentence` in this file to declare the module
+   --> src/lib.rs:4:1
+    |
+  4 + mod sentence;
+    |
+
+error[E0433]: cannot find module or crate `sentence` in this scope
+   --> src/nanda_wave/context_phase/mod.rs:904:17
+    |
+904 |         scene: &sentence::SentenceContextScene,
+    |                 ^^^^^^^^ use of unresolved module or unlinked crate `sentence`
+    |
+help: to make use of source file src/nanda_wave/context_phase/sentence.rs, use `mod sentence` in this file to declare the module
+   --> src/lib.rs:4:1
+    |
+  4 + mod sentence;
+    |
+
+error[E0433]: cannot find module or crate `sentence` in this scope
+    --> src/nanda_wave/context_phase/mod.rs:1134:13
+     |
+1134 |             sentence::PAIR_VIEW_LEFT_EXACT | sentence::PAIR_VIEW_RIGHT_EXACT
+     |             ^^^^^^^^ use of unresolved module or unlinked crate `sentence`
+     |
+help: to make use of source file src/nanda_wave/context_phase/sentence.rs, use `mod sentence` in this file to declare the module
+    -->  src/lib.rs:4:1
+     |
+   4 + mod sentence;
+     |
+
+error[E0433]: cannot find module or crate `sentence` in this scope
+    --> src/nanda_wave/context_phase/mod.rs:1134:46
+     |
+1134 |             sentence::PAIR_VIEW_LEFT_EXACT | sentence::PAIR_VIEW_RIGHT_EXACT
+     |                                              ^^^^^^^^ use of unresolved module or unlinked crate `sentence`
+     |
+help: to make use of source file src/nanda_wave/context_phase/sentence.rs, use `mod sentence` in this file to declare the module
+    -->  src/lib.rs:4:1
+     |
+   4 + mod sentence;
+     |
+
+error[E0433]: cannot find module or crate `sentence` in this scope
+    --> src/nanda_wave/context_phase/mod.rs:1474:17
+     |
+1474 |                 sentence::PAIR_VIEW_LEFT_EXACT | sentence::PAIR_VIEW_RIGHT_EXACT
+     |                 ^^^^^^^^ use of unresolved module or unlinked crate `sentence`
+     |
+help: to make use of source file src/nanda_wave/context_phase/sentence.rs, use `mod sentence` in this file to declare the module
+    -->  src/lib.rs:4:1
+     |
+   4 + mod sentence;
+     |
+
+error[E0433]: cannot find module or crate `sentence` in this scope
+    --> src/nanda_wave/context_phase/mod.rs:1474:50
+     |
+1474 |                 sentence::PAIR_VIEW_LEFT_EXACT | sentence::PAIR_VIEW_RIGHT_EXACT
+     |                                                  ^^^^^^^^ use of unresolved module or unlinked crate `sentence`
+     |
+help: to make use of source file src/nanda_wave/context_phase/sentence.rs, use `mod sentence` in this file to declare the module
+    -->  src/lib.rs:4:1
+     |
+   4 + mod sentence;
+     |
+
+For more information about this error, try `rustc --explain E0433`.
+warning: `lay` (lib) generated 2 warnings
+error: could not compile `lay` (lib) due to 13 previous errors; 2 warnings emitted

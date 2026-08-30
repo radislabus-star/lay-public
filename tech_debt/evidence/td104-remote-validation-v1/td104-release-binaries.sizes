@@ -1,0 +1,14 @@
+lay 6778552
+lay-daemon 8940160
+lay-debug-actions 440848
+lay-ibus-engine 7202224
+lay-l11-restore 1954904
+lay-l11-serve 2166720
+lay-memory-report 643128
+lay-morphology-proof 806456
+lay-nanda-dataset 416144
+lay-nanda-wave-eval 7209784
+lay-nanda-wave-train 11843768
+lay-ngram-corpus 787360
+lay-test-input 1837424
+lay_output_transaction_microproof 802048

@@ -14,7 +14,15 @@ from typing import Any
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCHEMA = "lay.test-lanes.v1"
-CARGO_ARGS = ["test", "--locked", "--offline", "--all-targets", "--no-run"]
+CARGO_ARGS = [
+    "test",
+    "--locked",
+    "--offline",
+    "--all-targets",
+    "--features",
+    "research-tools",
+    "--no-run",
+]
 
 PACKAGE_TARGETS = {
     "test:decoder_alternating_stress",

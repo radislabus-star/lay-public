@@ -1,0 +1,102 @@
+{
+  "schema": "lay.td104-remote-build-candidate.v1",
+  "verdict": "TD104_RESEARCH_TOOLS_BOUNDARY_ACCEPTED",
+  "base_commit": "307efa8f57d764ff9390d5c84359001866ea3db4",
+  "host": "e-MEGA-MINI-M1-13th",
+  "toolchain": {
+    "cargo": "1.97.1",
+    "rustc": "1.97.1",
+    "rustc_commit": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+    "host": "x86_64-unknown-linux-gnu"
+  },
+  "measurement": {
+    "fresh_target_per_run": true,
+    "cargo_incremental": false,
+    "offline": true,
+    "runs_per_lane": 3,
+    "daemon": {
+      "argv": [
+        "scripts/cargo-guard.sh",
+        "check",
+        "--offline",
+        "--locked",
+        "-v",
+        "--bin",
+        "lay-daemon"
+      ],
+      "baseline_wall_seconds": [22.21, 20.8, 20.3],
+      "candidate_wall_seconds": [19.41, 19.42, 19.5],
+      "baseline_median_wall_seconds": 20.8,
+      "candidate_median_wall_seconds": 19.42,
+      "median_delta_percent": -6.634615384615379,
+      "baseline_median_max_rss_kib": 1295896,
+      "candidate_median_max_rss_kib": 1224580,
+      "median_max_rss_delta_percent": -5.503219394148913,
+      "baseline_target_bytes": 278852088,
+      "candidate_target_bytes": 278528396,
+      "target_bytes_delta": -323692,
+      "baseline_rustc_verbose_lines": 218,
+      "candidate_rustc_verbose_lines": 218
+    },
+    "default_all_targets": {
+      "argv": [
+        "scripts/cargo-guard.sh",
+        "check",
+        "--offline",
+        "--locked",
+        "-v",
+        "--all-targets"
+      ],
+      "baseline_wall_seconds": [24.41, 24.45, 24.27],
+      "candidate_wall_seconds": [23.65, 23.86, 23.83],
+      "baseline_median_wall_seconds": 24.41,
+      "candidate_median_wall_seconds": 23.83,
+      "median_delta_percent": -2.3760753789430638,
+      "baseline_rustc_verbose_lines": 266,
+      "candidate_rustc_verbose_lines": 254,
+      "baseline_target_bytes": 279556536,
+      "candidate_target_bytes": 279112546,
+      "target_bytes_delta": -443990
+    },
+    "research_train": {
+      "argv": [
+        "scripts/cargo-guard.sh",
+        "check",
+        "--offline",
+        "--locked",
+        "-v",
+        "--bin",
+        "lay-nanda-wave-train",
+        "--features",
+        "lexical-compiler"
+      ],
+      "baseline_wall_seconds": [20.92, 21.45, 21.02],
+      "candidate_wall_seconds": [20.66, 20.77, 20.45],
+      "baseline_median_wall_seconds": 21.02,
+      "candidate_median_wall_seconds": 20.66,
+      "median_delta_percent": -1.7126546146527093,
+      "baseline_rustc_verbose_lines": 218,
+      "candidate_rustc_verbose_lines": 218,
+      "baseline_target_bytes": 279530338,
+      "candidate_target_bytes": 279530541,
+      "target_bytes_delta": 203
+    }
+  },
+  "source": {
+    "git_diff_sha256": "5374f3ec123331bcf8d97a4f5b7282b0b4390cb353b0ae7638d2e2db9d60937f",
+    "integration_test_boundary_correction": "../td104-integration-test-boundary-correction-v4.md"
+  },
+  "remote_raw": {
+    "path": "/home/e/td104-candidate-v4",
+    "manifest_sha256": "7ebbf9da9a5edefbc7f690c0fcefb5d1d8251b6607391e6df8be03294bdbcff7",
+    "manifest_entries": 47,
+    "manifest_check": "47/47 PASS"
+  },
+  "local_projection": {
+    "raw_stdout_stderr_copied": false,
+    "compact_time_target_and_rustc_counts_copied": true,
+    "remote_manifest_copied": true
+  },
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": false
+}

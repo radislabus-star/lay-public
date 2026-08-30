@@ -10790,9 +10790,11 @@
     "cargo_args": [
       "check",
       "--locked",
-      "--all-targets"
+      "--all-targets",
+      "--features",
+      "research-tools"
     ],
-    "features": "default"
+    "features": "research-tools"
   },
   "toolchain": {
     "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)",

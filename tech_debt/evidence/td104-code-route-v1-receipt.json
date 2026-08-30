@@ -1,0 +1,269 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "tech_debt/evidence/td104-code-route-v1.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "source_root": null,
+  "node_count": 12,
+  "edge_count": 10,
+  "routes": [
+    {
+      "id": "default-daemon-execution",
+      "event": "default-daemon-check",
+      "kind": "execution",
+      "entry": "cargo-default",
+      "via": [],
+      "terminal": "runtime-target",
+      "path_count": 1,
+      "paths": [
+        [
+          "cargo-default",
+          "shared-runtime",
+          "runtime-target"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "cargo-default"
+        ],
+        "evidence_owner": [
+          "runtime-target"
+        ],
+        "orchestrator": [
+          "shared-runtime"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "cargo-default",
+          "to": "runtime-target",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "cargo-default",
+              "shared-runtime",
+              "runtime-target"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "research-execution",
+      "event": "research-check",
+      "kind": "execution",
+      "entry": "cargo-research",
+      "via": [],
+      "terminal": "research-target",
+      "path_count": 1,
+      "paths": [
+        [
+          "cargo-research",
+          "cold-research",
+          "research-target"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "cargo-research"
+        ],
+        "orchestrator": [
+          "cold-research"
+        ],
+        "evidence_owner": [
+          "research-target"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "cargo-research",
+          "to": "research-target",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "cargo-research",
+              "cold-research",
+              "research-target"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "research-feature-authority",
+      "event": "research-feature-admission",
+      "kind": "authority",
+      "entry": "research-feature",
+      "via": [],
+      "terminal": "research-artifacts",
+      "path_count": 1,
+      "paths": [
+        [
+          "research-feature",
+          "research-artifacts"
+        ]
+      ],
+      "role_owners": {
+        "mutation_owner": [
+          "research-artifacts"
+        ],
+        "authorization_owner": [
+          "research-feature"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "full-test-observation",
+      "event": "full-test",
+      "kind": "observation",
+      "entry": "research-target",
+      "via": [],
+      "terminal": "test-lint-lane",
+      "path_count": 1,
+      "paths": [
+        [
+          "research-target",
+          "test-lint-lane"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "research-target"
+        ],
+        "observer": [
+          "test-lint-lane"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "release-execution",
+      "event": "release-build",
+      "kind": "execution",
+      "entry": "cargo-research",
+      "via": [],
+      "terminal": "research-artifacts",
+      "path_count": 1,
+      "paths": [
+        [
+          "cargo-research",
+          "release-lane",
+          "research-artifacts"
+        ]
+      ],
+      "role_owners": {
+        "interface": [
+          "cargo-research"
+        ],
+        "orchestrator": [
+          "release-lane"
+        ],
+        "mutation_owner": [
+          "research-artifacts"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "correctness-proof",
+      "event": "correctness-proof",
+      "kind": "proof",
+      "entry": "test-lint-lane",
+      "via": [],
+      "terminal": "candidate-comparison",
+      "path_count": 1,
+      "paths": [
+        [
+          "test-lint-lane",
+          "candidate-comparison"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "candidate-comparison"
+        ],
+        "observer": [
+          "test-lint-lane"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "performance-proof",
+      "event": "performance-proof",
+      "kind": "proof",
+      "entry": "remote-metrics",
+      "via": [],
+      "terminal": "candidate-comparison",
+      "path_count": 1,
+      "paths": [
+        [
+          "remote-metrics",
+          "candidate-comparison"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "candidate-comparison"
+        ],
+        "observer": [
+          "remote-metrics"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "research-feature-admission": {
+      "render_owner": [],
+      "mutation_owner": [
+        "research-artifacts"
+      ],
+      "authorization_owner": [
+        "research-feature"
+      ],
+      "candidate_rank_owner": [],
+      "display_rank_owner": [],
+      "evidence_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 0,
+    "verified": 0,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": false,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

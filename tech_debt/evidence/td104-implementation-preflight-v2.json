@@ -1,0 +1,153 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "td104-isolate-proof-compiler-build-surface-v2-20260830",
+  "authority_bearing": false,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id": "cargo-manifest", "kind": "file", "path": "../../Cargo.toml", "expect": {"mode": "0664", "size_bytes": 2399, "sha256": "8888f211b05c3c2906f0385296a997756a782148b69757667ca1433db503011d"}},
+    {"id": "library-root", "kind": "file", "path": "../../src/lib.rs", "expect": {"mode": "0664", "size_bytes": 2063, "sha256": "00598e07834f1c9afa96032db17e5bb8cb3b1ec69e0ef674458dfbdebaf867e4"}},
+    {"id": "wave-root", "kind": "file", "path": "../../src/nanda_wave/mod.rs", "expect": {"mode": "0664", "size_bytes": 62365, "sha256": "3ae66b604affa93984e0a31476f3c00ae650cb479225162e0946d9180a3474f8"}},
+    {"id": "context-root", "kind": "file", "path": "../../src/nanda_wave/context_phase/mod.rs", "expect": {"mode": "0664", "size_bytes": 96022, "sha256": "051ea4fb2e05a5e47dcbc3da41fa50947699330f10ccbecc5d9871d4f2b45fad"}},
+    {"id": "cross-scene-root", "kind": "file", "path": "../../src/nanda_wave/l4_cross_scene/mod.rs", "expect": {"mode": "0664", "size_bytes": 1765, "sha256": "c3cc1fdab627f47ebcc6779884c9a613d6304b3a076075330c4af5cb5643c458"}},
+    {"id": "morphology-root", "kind": "file", "path": "../../src/nanda_wave/morphology_phase/mod.rs", "expect": {"mode": "0664", "size_bytes": 17595, "sha256": "190c0d02753402dfb369cd34330f96c05100da601ae5ba44b240b0258baeaa8a"}},
+    {"id": "lexical-phase-root", "kind": "file", "path": "../../src/nanda_wave/lexical_phase/mod.rs", "expect": {"mode": "0664", "size_bytes": 450, "sha256": "a2518c9e7e1b653665dd66c45177c0327f6c5fea4919febf25c41e000e5a3b1e"}},
+    {"id": "full-check", "kind": "file", "path": "../../scripts/check-lay-full.sh", "expect": {"mode": "0775", "size_bytes": 2651, "sha256": "f758ea2a87641b1f9256fbf363cb4bae5a25ab8da7931d48d95c567ba9c81c12"}},
+    {"id": "changed-check", "kind": "file", "path": "../../scripts/check-lay-changed.sh", "expect": {"mode": "0775", "size_bytes": 6110, "sha256": "9b2d0d53641782348222d5947c0fc21731adcde12cdbe9bdf0eb0ffca7be2a2a"}},
+    {"id": "lint-check", "kind": "file", "path": "../../scripts/check-lay-lints.sh", "expect": {"mode": "0755", "size_bytes": 1728, "sha256": "d38b4ae8852f56be706f7d023becf1fbbc5f266db83a4d565bac37ffdc17ba0c"}},
+    {"id": "lint-inventory", "kind": "file", "path": "../../scripts/lint_inventory.py", "expect": {"mode": "0755", "size_bytes": 16687, "sha256": "61ec153d5e66668aff23f2be6a144be6e45eeda9df822fe8113f62b4b7254c8f"}},
+    {"id": "test-discovery", "kind": "file", "path": "../../scripts/test_lanes/discovery.py", "expect": {"mode": "0664", "size_bytes": 17212, "sha256": "8a775e4fe88b3ecc01c3c8a493a61e75aa2f9f47984b99522651f8e810220b6d"}},
+    {"id": "test-manifest", "kind": "file", "path": "../../scripts/test-lanes/manifest.json", "expect": {"mode": "0664", "size_bytes": 546520, "sha256": "75a3aa84240b0e9cf4c5cba52246e06c1a7fc8fa39e6a30638d29cbe23483c29"}},
+    {"id": "version-release-route", "kind": "file", "path": "../../scripts/bump-lay-version.sh", "expect": {"mode": "0775", "size_bytes": 2673, "sha256": "bc53fc7823832b0876075948102f64525327b3f22cf8fb5a09fe10317c139e16"}},
+    {"id": "ci-route", "kind": "file", "path": "../../.github/workflows/ci.yml", "expect": {"mode": "0664", "size_bytes": 3406, "sha256": "c3681df34d8547a2ea24e0ccd7dacb9a7b79dcb0b29c8cf6a7a4c1f8a9c88eb6"}},
+    {"id": "task-contract", "kind": "file", "path": "../104-isolate-proof-compiler-build-surface.md", "expect": {"mode": "0664", "size_bytes": 3097, "sha256": "99c6bf2aad5b75998cd427ae62021b72131f24c76b08bc9bf12f55d64a35acb9"}},
+    {"id": "boundary-decision", "kind": "file", "path": "td104-boundary-decision-v1.md", "expect": {"mode": "0664", "size_bytes": 1883, "sha256": "155c276c35bd8af4f0de740d2c27067b800a4b7a81aa4572c210ac8db5d2ced2"}},
+    {"id": "cold-inventory", "kind": "file", "path": "td104-cold-surface-inventory-v2.json", "expect": {"mode": "0664", "size_bytes": 3267, "sha256": "66910db2e5e285517f52a1568eafd2b7e9e1678c724def34a72fc11f244c63b2"}},
+    {"id": "boundary-correction", "kind": "file", "path": "td104-boundary-correction-v2.md", "expect": {"mode": "0664", "size_bytes": 695, "sha256": "e28411ff3394e07d5d125886f1391e944b62d5cf30d22a5c1107667d00df4a50"}},
+    {"id": "code-route", "kind": "file", "path": "td104-code-route-v1.json", "expect": {"mode": "0664", "size_bytes": 4088, "sha256": "d664eb990bd0223e1a2765c39d9e3b6940ae82cc3e8aa7cf22e33916347487a0"}},
+    {"id": "remote-baseline", "kind": "file", "path": "td104-remote-baseline-v1/BASELINE.json", "expect": {"mode": "0664", "size_bytes": 1936, "sha256": "525e0f6d01758d8a9231599c81b90332d286eaeee25a7d2c1169257a11810822"}},
+    {"id": "remote-raw-manifest", "kind": "file", "path": "td104-remote-baseline-v1/REMOTE_SHA256SUMS", "expect": {"mode": "0664", "size_bytes": 4404, "sha256": "b2e781393bf1d0ff5b6757dc25eaa80bbcdbadfc0c195b20398704c974d8e420"}},
+    {"id": "cargo-lock-baseline", "kind": "file", "path": "../../Cargo.lock", "expect": {"mode": "0664", "size_bytes": 70770, "sha256": "cdcd53b345db5ca98507b5fd9024eeb0eb5315874a1c6bf0b68873c2c7d3e6f3"}},
+    {"id": "build-script-baseline", "kind": "file", "path": "../../build.rs", "expect": {"mode": "0664", "size_bytes": 1664, "sha256": "798e056cd2f95aa151a2d7522090a6ae42f732aa26386b924d036111dc9d3df5"}},
+    {"id": "v13-runtime-baseline", "kind": "file", "path": "../../src/nanda_wave/l2_field/v13_typed_peak.rs", "expect": {"mode": "0664", "size_bytes": 260347, "sha256": "a6d301f87f08e551130a6a57a5b72cc4fed6d9374c64b942725a540568acfc01"}},
+    {"id": "typed-certificate-baseline", "kind": "file", "path": "../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs", "expect": {"mode": "0664", "size_bytes": 91544, "sha256": "c88910fe9080556589c9f5b0fbd8725903f9e5bcd06e832098dfd834d87a6382"}},
+    {"id": "daemon-entry-baseline", "kind": "file", "path": "../../src/bin/lay_daemon.rs", "expect": {"mode": "0664", "size_bytes": 8361, "sha256": "18702427489ebb085f147dd94cc30e41ef5f88576ddae7bf144d945548dab1de"}},
+    {"id": "installer-baseline", "kind": "file", "path": "../../scripts/install-release-binaries.sh", "expect": {"mode": "0775", "size_bytes": 3251, "sha256": "3427ae85155f073cfaacf37b09eb901defb57ee8912977ad31b786d928b35c82"}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-research-feature", "kind": "source_edit"},
+      {"id": "gate-closed-cold-roots", "kind": "source_edit"},
+      {"id": "align-explicit-build-routes", "kind": "source_edit"},
+      {"id": "run-disposable-remote-builds", "kind": "remote_test"},
+      {"id": "record-build-evidence", "kind": "evidence_write"}
+    ],
+    "forbidden": [
+      "workspace_split",
+      "runtime_algorithm_change",
+      "package_schema_change",
+      "scoring_change",
+      "installed_runtime_change",
+      "service_restart",
+      "cargo_lock_change",
+      "proof_coverage_reduction",
+      "crate_wide_dead_code_allow"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "cargo-feature-vetoes",
+      "path": "../../Cargo.toml",
+      "sha256": "8888f211b05c3c2906f0385296a997756a782148b69757667ca1433db503011d",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_algorithm_change", "regex": "default\\s*=\\s*\\[[^\\]]*research-tools"},
+        {"effect": "workspace_split", "regex": "\\[workspace\\]"},
+        {"effect": "package_schema_change", "regex": "research-tools\\s*=\\s*\\[[^\\]]*dep:"},
+        {"effect": "cargo_lock_change", "regex": "\\[patch\\.|\\[replace\\]"}
+      ]
+    },
+    {
+      "id": "library-root-vetoes",
+      "path": "../../src/lib.rs",
+      "sha256": "00598e07834f1c9afa96032db17e5bb8cb3b1ec69e0ef674458dfbdebaf867e4",
+      "forbidden_effect_patterns": [
+        {"effect": "runtime_algorithm_change", "regex": "unsafe\\s*\\{"},
+        {"effect": "installed_runtime_change", "regex": "(?:systemctl|install-release-binaries|dev-reload)"}
+      ]
+    },
+    {
+      "id": "wave-root-vetoes",
+      "path": "../../src/nanda_wave/mod.rs",
+      "sha256": "3ae66b604affa93984e0a31476f3c00ae650cb479225162e0946d9180a3474f8",
+      "forbidden_effect_patterns": [
+        {"effect": "installed_runtime_change", "regex": "(?:systemctl|Command::new\\(\\\"cargo\\\")"},
+        {"effect": "crate_wide_dead_code_allow", "regex": "#!\\[allow\\(dead_code\\)\\]"},
+        {"effect": "scoring_change", "regex": "TD104_SCORING_OVERRIDE"}
+      ]
+    },
+    {
+      "id": "test-discovery-vetoes",
+      "path": "../../scripts/test_lanes/discovery.py",
+      "sha256": "8a775e4fe88b3ecc01c3c8a493a61e75aa2f9f47984b99522651f8e810220b6d",
+      "forbidden_effect_patterns": [
+        {"effect": "proof_coverage_reduction", "regex": "TD104_SKIP_EXISTING_TEST"}
+      ]
+    },
+    {
+      "id": "full-check-vetoes",
+      "path": "../../scripts/check-lay-full.sh",
+      "sha256": "f758ea2a87641b1f9256fbf363cb4bae5a25ab8da7931d48d95c567ba9c81c12",
+      "forbidden_effect_patterns": [
+        {"effect": "service_restart", "regex": "systemctl\\s+--user\\s+restart"}
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {"id": "cargo-lock", "path": "../../Cargo.lock", "policy": "byte_identical", "rollback_policy": "feature-only metadata must not update dependency resolution", "cursor_policy": "freeze_entire_artifact", "baseline_check_id": "cargo-lock-baseline"},
+    {"id": "build-script", "path": "../../build.rs", "policy": "byte_identical", "rollback_policy": "package generation remains unchanged", "cursor_policy": "freeze_entire_artifact", "baseline_check_id": "build-script-baseline"},
+    {"id": "v13-runtime-contract", "path": "../../src/nanda_wave/l2_field/v13_typed_peak.rs", "policy": "byte_identical", "rollback_policy": "typed exact runtime and package semantics are outside TD-104", "cursor_policy": "freeze_entire_artifact", "baseline_check_id": "v13-runtime-baseline"},
+    {"id": "typed-certificate-contract", "path": "../../src/nanda_wave/lexical_grokking/typed_edit_traversal.rs", "policy": "byte_identical", "rollback_policy": "mixed certificate semantics remain in the default crate", "cursor_policy": "freeze_entire_artifact", "baseline_check_id": "typed-certificate-baseline"},
+    {"id": "daemon-entry", "path": "../../src/bin/lay_daemon.rs", "policy": "byte_identical", "rollback_policy": "target selection cannot edit daemon runtime behavior", "cursor_policy": "freeze_entire_artifact", "baseline_check_id": "daemon-entry-baseline"},
+    {"id": "installer", "path": "../../scripts/install-release-binaries.sh", "policy": "byte_identical", "rollback_policy": "installation semantics remain unchanged and are not executed", "cursor_policy": "freeze_entire_artifact", "baseline_check_id": "installer-baseline"}
+  ],
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "terminal_states": ["TD104_ACCEPTED", "TD104_REJECTED_BENEFIT_UNPROVEN", "BLOCKED_SOURCE_RUNTIME_UNCHANGED"],
+    "steps": [
+      {"id": "add-feature-and-target-contracts", "from": "PREFLIGHT_READY", "to": "CARGO_ROUTE_DEFINED", "mutates": true, "failure_state": "BLOCKED_SOURCE_RUNTIME_UNCHANGED", "cleanup": "retain diff and compiler diagnostics; do not install or restart Lay", "preserves": ["cargo-lock", "daemon-entry", "installer"], "test_id": "cargo-route-fault"},
+      {"id": "gate-closed-cold-roots", "from": "CARGO_ROUTE_DEFINED", "to": "SOURCE_BOUNDARY_DEFINED", "mutates": true, "failure_state": "BLOCKED_SOURCE_RUNTIME_UNCHANGED", "cleanup": "retain exact compile failure and narrow or revert the implicated gate; do not broaden mixed ownership", "preserves": ["v13-runtime-contract", "typed-certificate-contract", "build-script"], "test_id": "source-boundary-fault"},
+      {"id": "align-test-lint-release-routes", "from": "SOURCE_BOUNDARY_DEFINED", "to": "EXPLICIT_ROUTES_DEFINED", "mutates": true, "failure_state": "BLOCKED_SOURCE_RUNTIME_UNCHANGED", "cleanup": "retain route diff and failed manifest; no proof target may disappear silently", "preserves": ["cargo-lock", "installer"], "test_id": "explicit-route-fault"},
+      {"id": "run-remote-candidate-gates", "from": "EXPLICIT_ROUTES_DEFINED", "to": "CANDIDATE_VERIFIED", "mutates": true, "failure_state": "BLOCKED_SOURCE_RUNTIME_UNCHANGED", "cleanup": "retain remote logs in the disposable checkout; installed runtime remains untouched", "preserves": ["daemon-entry", "installer"], "test_id": "remote-gate-fault"},
+      {"id": "compare-three-clean-runs", "from": "CANDIDATE_VERIFIED", "to": "TD104_ACCEPTED", "mutates": true, "failure_state": "TD104_REJECTED_BENEFIT_UNPROVEN", "cleanup": "if benefit is negligible, revert source/config changes and retain only the decision and measurements", "preserves": ["cargo-lock", "daemon-entry", "installer"], "test_id": "benefit-gate-fault"}
+    ]
+  },
+  "invariants": [
+    {"id": "default-runtime-closed", "statement": "the default lay-daemon target does not compile the declared closed cold roots", "test_id": "default-route-parity"},
+    {"id": "research-commands-preserved", "statement": "all six research binaries and lexical-compiler commands remain available in explicit feature lanes", "test_id": "research-route-parity"},
+    {"id": "proof-denominator-preserved", "statement": "the hermetic manifest retains every correctness, package, ignored, and performance test", "test_id": "test-manifest-parity"},
+    {"id": "release-output-preserved", "statement": "the full release route still produces every binary consumed by the installer", "test_id": "release-route-parity"},
+    {"id": "no-runtime-mutation", "statement": "all Cargo work runs in a disposable mini-PC checkout without installation or service restart", "test_id": "remote-boundary-parity"},
+    {"id": "benefit-is-measured", "statement": "acceptance uses three fresh-target candidate runs compared with the three-run remote baseline", "test_id": "measurement-parity"}
+  ],
+  "identity_contracts": [
+    {"id": "default-feature-identity", "producer": "Cargo default feature set", "consumer": "lay-daemon runtime target", "comparison": "default remains empty and research-tools is not transitively enabled", "test_id": "default-route-parity"},
+    {"id": "research-feature-identity", "producer": "research-tools and lexical-compiler Cargo features", "consumer": "research binaries plus cold library modules", "comparison": "lexical-compiler implies research-tools and each research binary declares the same required feature", "test_id": "research-route-parity"},
+    {"id": "test-manifest-identity", "producer": "feature-enabled Cargo test discovery", "consumer": "committed hermetic test manifest", "comparison": "target/test identities and lane counts remain exact; only Cargo args may gain research-tools", "test_id": "test-manifest-parity"},
+    {"id": "local-remote-source", "producer": "local candidate diff at base commit 307efa8f", "consumer": "disposable mini-PC candidate checkout", "comparison": "candidate source manifest and git diff are byte-identical before Cargo", "test_id": "remote-boundary-parity"},
+    {"id": "baseline-candidate-measurement", "producer": "remote baseline V1", "consumer": "remote candidate V1", "comparison": "same host, toolchain, fresh targets, CARGO_INCREMENTAL=0, offline argv, and three runs per lane", "test_id": "measurement-parity"}
+  ],
+  "runtime_comparisons": [],
+  "tests": [
+    {"id": "cargo-route-fault", "kind": "fault_injection", "expected": "a missing required feature or accidental default activation blocks before source gating"},
+    {"id": "source-boundary-fault", "kind": "fault_injection", "expected": "an unavailable runtime symbol blocks and the boundary is narrowed without editing runtime implementation"},
+    {"id": "explicit-route-fault", "kind": "fault_injection", "expected": "a missing test, lint, release, or package command blocks the candidate"},
+    {"id": "remote-gate-fault", "kind": "fault_injection", "expected": "any remote compile/test/lint failure blocks acceptance and leaves installed Lay unchanged"},
+    {"id": "benefit-gate-fault", "kind": "fault_injection", "expected": "negligible or contradictory measurements reject and revert the candidate source/config change"},
+    {"id": "default-route-parity", "kind": "parity", "expected": "default Cargo metadata and verbose rustc inputs exclude each closed cold root"},
+    {"id": "research-route-parity", "kind": "parity", "expected": "research-tools and lexical-compiler compile the six preserved research targets"},
+    {"id": "test-manifest-parity", "kind": "parity", "expected": "hermetic manifest counts and test identities remain unchanged"},
+    {"id": "release-route-parity", "kind": "parity", "expected": "feature-enabled release build produces all installer-owned binaries"},
+    {"id": "remote-boundary-parity", "kind": "parity", "expected": "remote disposable checkout matches local candidate and installed paths/processes are untouched"},
+    {"id": "measurement-parity", "kind": "parity", "expected": "three fresh candidate runs use the exact baseline environment and report wall, RSS, target bytes, and rustc unit counts"}
+  ]
+}

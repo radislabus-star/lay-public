@@ -1,7 +1,9 @@
 mod corpus;
 mod field;
+#[cfg(any(test, feature = "research-tools"))]
 mod proof;
 
+#[cfg(any(test, feature = "research-tools"))]
 pub use proof::{run_embedded_russian_morphology_proof, run_russian_morphology_proof_path};
 
 const PHASE_CELLS: usize = 60;

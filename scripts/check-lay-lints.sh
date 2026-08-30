@@ -22,9 +22,29 @@ scripts/verify-rust-toolchain.sh lint
 stage="$(mktemp -d)"
 trap 'rm -rf "$stage"' EXIT
 
+default_check_json="$stage/default-check.jsonl"
+default_check_stderr="$stage/default-check.stderr"
+if ! scripts/cargo-guard.sh check --locked --all-targets --message-format=json \
+    >"$default_check_json" 2>"$default_check_stderr"; then
+  cat "$default_check_stderr" >&2
+  python3 scripts/lint_inventory.py clean --input "$default_check_json" || true
+  exit 1
+fi
+
+default_clippy_json="$stage/default-clippy.jsonl"
+default_clippy_stderr="$stage/default-clippy.stderr"
+if ! scripts/cargo-guard.sh clippy --locked --all-targets --message-format=json \
+    -- -D warnings -A dead-code >"$default_clippy_json" 2>"$default_clippy_stderr"; then
+  python3 scripts/lint_inventory.py clean --input "$default_clippy_json" || true
+  cat "$default_clippy_stderr" >&2
+  exit 1
+fi
+python3 scripts/lint_inventory.py clean --input "$default_clippy_json"
+
 check_json="$stage/check.jsonl"
 check_stderr="$stage/check.stderr"
-if ! scripts/cargo-guard.sh check --locked --all-targets --message-format=json \
+if ! scripts/cargo-guard.sh check --locked --all-targets --features research-tools \
+    --message-format=json \
     >"$check_json" 2>"$check_stderr"; then
   cat "$check_stderr" >&2
   python3 scripts/lint_inventory.py clean --input "$check_json" || true
@@ -42,7 +62,8 @@ fi
 
 clippy_json="$stage/clippy.jsonl"
 clippy_stderr="$stage/clippy.stderr"
-if ! scripts/cargo-guard.sh clippy --locked --all-targets --message-format=json \
+if ! scripts/cargo-guard.sh clippy --locked --all-targets --features research-tools \
+    --message-format=json \
     -- -D warnings -A dead-code >"$clippy_json" 2>"$clippy_stderr"; then
   python3 scripts/lint_inventory.py clean --input "$clippy_json" || true
   cat "$clippy_stderr" >&2

@@ -13,7 +13,8 @@ categories = ["command-line-utilities"]
 [features]
 default = []
 direct-llm = ["dep:llama_cpp"]
-lexical-compiler = []
+research-tools = []
+lexical-compiler = ["research-tools"]
 
 [[bin]]
 name = "lay"
@@ -30,18 +31,22 @@ path = "src/bin/lay_test_input.rs"
 [[bin]]
 name = "lay-ngram-corpus"
 path = "src/bin/lay_ngram_corpus.rs"
+required-features = ["research-tools"]
 
 [[bin]]
 name = "lay-nanda-wave-eval"
 path = "src/bin/lay_nanda_wave_eval.rs"
+required-features = ["research-tools"]
 
 [[bin]]
 name = "lay-nanda-dataset"
 path = "src/bin/lay_nanda_dataset.rs"
+required-features = ["research-tools"]
 
 [[bin]]
 name = "lay-nanda-wave-train"
 path = "src/bin/lay_nanda_wave_train.rs"
+required-features = ["research-tools"]
 
 [[bin]]
 # Cargo target names become Rust crate identifiers and cannot contain a dot.
@@ -58,6 +63,7 @@ path = "src/bin/lay_l1_1_serve.rs"
 [[bin]]
 name = "lay-morphology-proof"
 path = "src/bin/lay_morphology_proof.rs"
+required-features = ["research-tools"]
 
 [[bin]]
 name = "lay-ibus-engine"
@@ -70,6 +76,11 @@ path = "src/bin/lay_debug_actions.rs"
 [[bin]]
 name = "lay-memory-report"
 path = "src/bin/lay_memory_report.rs"
+
+[[bin]]
+name = "lay_output_transaction_microproof"
+path = "src/bin/lay_output_transaction_microproof.rs"
+required-features = ["research-tools"]
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }

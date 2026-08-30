@@ -4,6 +4,8 @@
     "--locked",
     "--offline",
     "--all-targets",
+    "--features",
+    "research-tools",
     "--no-run"
   ],
   "cargo_configuration": {

@@ -1,0 +1,54 @@
+{
+  "schema": "lay.td104-remote-build-baseline.v1",
+  "verdict": "TD104_BASELINE_COMPLETE",
+  "base_commit": "307efa8f57d764ff9390d5c84359001866ea3db4",
+  "host": "e-MEGA-MINI-M1-13th",
+  "toolchain": {
+    "cargo": "1.97.1",
+    "rustc": "1.97.1",
+    "rustc_commit": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+    "host": "x86_64-unknown-linux-gnu"
+  },
+  "measurement": {
+    "fresh_target_per_run": true,
+    "cargo_incremental": false,
+    "offline": true,
+    "runs_per_lane": 3,
+    "daemon": {
+      "argv": ["scripts/cargo-guard.sh", "check", "--offline", "--locked", "-v", "--bin", "lay-daemon"],
+      "wall_seconds": [22.21, 20.80, 20.30],
+      "median_wall_seconds": 20.80,
+      "max_rss_kib": [1294704, 1295896, 1296028],
+      "target_bytes": 278852088,
+      "rustc_verbose_lines": 218
+    },
+    "all_targets": {
+      "argv": ["scripts/cargo-guard.sh", "check", "--offline", "--locked", "-v", "--all-targets"],
+      "wall_seconds": [24.41, 24.45, 24.27],
+      "median_wall_seconds": 24.41,
+      "max_rss_kib": [1654328, 1655100, 1653420],
+      "target_bytes": 279556536,
+      "rustc_verbose_lines": 266
+    },
+    "research_train": {
+      "argv": ["scripts/cargo-guard.sh", "check", "--offline", "--locked", "-v", "--bin", "lay-nanda-wave-train", "--features", "lexical-compiler"],
+      "wall_seconds": [20.92, 21.45, 21.02],
+      "median_wall_seconds": 21.02,
+      "max_rss_kib": [1366300, 1366548, 1366520],
+      "target_bytes": 279530338,
+      "rustc_verbose_lines": 218
+    }
+  },
+  "remote_raw": {
+    "path": "/home/e/td104-baseline-307efa8f-v2",
+    "manifest_sha256": "b2e781393bf1d0ff5b6757dc25eaa80bbcdbadfc0c195b20398704c974d8e420",
+    "manifest_entries": 36,
+    "manifest_check": "36/36 PASS"
+  },
+  "local_projection": {
+    "raw_stdout_stderr_copied": false,
+    "compact_time_and_target_files_copied": true,
+    "remote_manifest_copied": true
+  },
+  "installed_runtime_changed": false
+}

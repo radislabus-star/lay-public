@@ -1,0 +1,76 @@
+{
+  "schema": "lay.td104-remote-validation.v1",
+  "verdict": "TD104_REMOTE_VALIDATION_PASS",
+  "host": "e-MEGA-MINI-M1-13th",
+  "toolchain": {
+    "cargo": "1.97.1",
+    "rustc": "1.97.1",
+    "rustc_commit": "8bab26f4f68e0e26f0bb7960be334d5b520ea452",
+    "llvm": "22.1.6",
+    "host": "x86_64-unknown-linux-gnu"
+  },
+  "manifest": {
+    "verdict": "PASS",
+    "targets": 35,
+    "total": 2383,
+    "correctness": 2323,
+    "package": 36,
+    "ignored": 13,
+    "performance": 11
+  },
+  "test_execution": {
+    "verdict": "PASS",
+    "selected": 2359,
+    "known_semantic_failures": 0,
+    "infrastructure_failures": 0,
+    "elapsed_seconds": 368.32790840091184,
+    "summary_sha256": "78024f31b24aa4a21bd4194bb1754a2c0fc62ca27b28fcd92c68f2ce28c83f00",
+    "source_closure": {
+      "files": 1226,
+      "git_head": "307efa8f57d764ff9390d5c84359001866ea3db4",
+      "sha256": "22b96580e3f27ee0306ac82c0f4f2d740b322f01ca2c5cad6fdf520100fe187f"
+    }
+  },
+  "lint": {
+    "verdict": "PASS",
+    "default_check_and_clippy": "PASS",
+    "research_tools_check_and_clippy": "PASS",
+    "dead_code_inventory": 366,
+    "dead_code_baseline": "PASS",
+    "non_dead_diagnostics": 0,
+    "stdout_sha256": "0a3bd17532d6d87b7cdb05e095f6dc684d091262cb29cfd589155d9eceaa10be",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "release_build": {
+    "verdict": "PASS",
+    "argv": [
+      "scripts/cargo-guard.sh",
+      "build",
+      "--offline",
+      "--locked",
+      "--release",
+      "--bins",
+      "--features",
+      "research-tools"
+    ],
+    "binary_count": 14,
+    "binary_sha256_manifest_sha256": "f880fcb0c4b662e770b0833ce83342d57d7156c3ba76785f163fde9fee5298f5",
+    "binary_size_manifest_sha256": "16e8f3a3645f2cb3c82c8fa726efb63ad8ba3934563551329fff887520cf8f6f",
+    "remote_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "remote_stderr_sha256": "39296b6a54cbc8107d7cc2f36c54baf930a1c55396a666e8d35f44ae507c9b9f"
+  },
+  "release_package_contract": {
+    "verdict": "PASS",
+    "stdout_sha256": "6c882fdcf9c84710b892694a3d67aad5a2bb0e386e79cf011158562c82ac223c",
+    "stderr_sha256": "cd91abf72731079dc2d888382637e808607a6db5026e9a528e451625b1564d86"
+  },
+  "remote_paths": {
+    "worktree": "/home/e/codex-worktrees/lay-td104-307efa8f",
+    "test_results": "/home/e/td104-test-results-v2",
+    "release_target": "/home/e/td104-release-target"
+  },
+  "performance_lane_executed": false,
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": false,
+  "services_restarted": false
+}
