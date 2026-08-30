@@ -1,0 +1,76 @@
+{
+  "schema": "lay.td008-completion.v1",
+  "task_verdict": "TD008_COMPLETE",
+  "base_commit": "b4f908e40eeb1a1faa90dd2b169e94061dd4caf0",
+  "implementation_commit": "8149b11050ff462a54e12ac188d62b7753e1ed9d",
+  "classification": {
+    "original_rows": 368,
+    "live_unused": 2,
+    "obsolete": 0,
+    "proof_only": 236,
+    "compiler_only": 17,
+    "compatibility_api": 113,
+    "retained_rows": 366,
+    "removed_rows": 2,
+    "added_rows": 0,
+    "ledger_path": "tech_debt/evidence/td008-dead-code-ownership-v1.json",
+    "ledger_sha256": "d6fa40470048ca2b9ba52a0248baf61d4f633addeab03c00ac2b16afb7e93d55"
+  },
+  "baseline": {
+    "before_sha256": "5452d74d5c58e1471be3a3ff95f78082d2a72b95f47a11f8335de16912807056",
+    "after_sha256": "250c0dadc2594828318a02df58fd55dad84ef5bb6ccef8e99fb24f9bfe300772",
+    "writer_verdict": "dead_code_inventory=366 baseline=WRITTEN removed=2"
+  },
+  "removed_owners": [
+    {
+      "file": "src/exact_layout_authority.rs",
+      "item": "ExactLayoutContourCertificate::snapshot",
+      "row_sha256": "49793e37d310685070fe5d94e90ddf76c9f64b6024375f7773dcd0d3810f91cd"
+    },
+    {
+      "file": "src/nanda_wave/l2_wave_peak.rs",
+      "item": "L2CorrectionPeakContext::{center_candidates,has_local_single_edit_peak}",
+      "row_sha256": "604371569a60ce8abc0c8a9934ffd122baec6e369bc59ad0ab279f4553e437fb"
+    }
+  ],
+  "verification": {
+    "verdict": "TD008_REMOTE_VERIFICATION_PASS",
+    "selected_tests": 2359,
+    "test_failures": 0,
+    "known_semantic_failures": 0,
+    "infrastructure_failures": 0,
+    "lint_inventory": 366,
+    "non_dead_diagnostics": 0,
+    "path": "tech_debt/evidence/td008-verification-v1.json",
+    "sha256": "4df917c5cc3f48c612004ce619601a996cac2c65310eeb873623a063039738c3"
+  },
+  "measurement": {
+    "verdict": "TD008_MEASUREMENT_COMPLETE_NO_SPEED_CLAIM",
+    "cold_total_wall_before_seconds": 43.91,
+    "cold_total_wall_after_seconds": 43.83,
+    "rebuilt_units_delta": 0,
+    "target_bytes_delta": -10742,
+    "path": "tech_debt/evidence/td008-compile-surface-measurement-v1.json",
+    "sha256": "304ef7283cbc1e01bdc55324d64d3bca743f66ac473a68d2a35a7d29742d7dbc"
+  },
+  "review": {
+    "score_at_review_time": "8/10",
+    "findings": 1,
+    "open_findings": 0,
+    "path": "tech_debt/evidence/td008-independent-review-v1.md",
+    "sha256": "949e9b8ffb40a36f962a8ab1e8d9054a1c53811c253d568caa011cdf9a470f24"
+  },
+  "consequence_analysis": {
+    "path": "tech_debt/evidence/td008-consequence-analysis-v1.md",
+    "sha256": "f3856eea484d3f845a7d5a435129036e1fa8006a49e027cd0b7afce3a31e0c88"
+  },
+  "authority_boundary": {
+    "feature_or_package_boundary_added": false,
+    "runtime_behavior_changed": false,
+    "release_builds": 0,
+    "installations": 0,
+    "service_restarts": 0,
+    "installed_runtime_changed": false
+  },
+  "next_action": "TD101_DECOMPOSE_IBUS_ENGINE_STATE_OWNER"
+}

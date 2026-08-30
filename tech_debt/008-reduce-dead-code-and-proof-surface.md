@@ -1,6 +1,6 @@
 # TD-008: Classify And Remove Obvious Dead Code
 
-Status: `IN_PROGRESS`
+Status: `DONE`
 Priority: `P1`
 Class: compile surface and ownership
 Size: `L`
@@ -82,6 +82,22 @@ accidental algorithm changes hidden in deletion diffs. Score 1-10.
 
 ## Completion Record
 
-- Commit: pending
-- Review score: pending
-- Verification: pending
+- Implementation commit:
+  `8149b11050ff462a54e12ac188d62b7753e1ed9d`.
+- All 368 TD-005 rows are classified: 236 proof-only, 17 compiler-only,
+  113 compatibility API, 2 live-unused, and 0 obsolete.
+- The two live-unused owner groups were removed. The canonical baseline moved
+  monotonically from 368 to 366 rows with zero additions.
+- Independent review: `8/10`; its one low-severity generic-symbol evidence
+  finding was corrected, with zero open findings.
+- Remote verification: 2,359 / 2,359 correctness and package tests PASS;
+  semantic and infrastructure failures 0 / 0; lint 366 / 366 and zero non-dead
+  diagnostics.
+- Cold compile measurement did not prove a speed change: 43.91 s before and
+  43.83 s after, with unchanged rebuilt-unit counts. Target artifacts decreased
+  by 10,742 bytes. Retained proof/compiler isolation remains owned by TD-104.
+- Completion receipt:
+  `tech_debt/evidence/td008-completion-v1.json`, SHA-256
+  `56e1d2b8f59d22c5386d42ee7f2acfce6160d5824bb03035def5ed4cd198a947`.
+- No release build, installation, service restart, or live runtime change was
+  performed.
