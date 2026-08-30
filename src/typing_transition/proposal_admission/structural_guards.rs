@@ -1225,6 +1225,9 @@ fn boundary_candidate_splits_to_short_function_and_weak_tail(
         let (_, second_word, _) = split_word_punctuation(second);
         let first_lower = first_word.to_lowercase();
         let second_lower = second_word.to_lowercase();
+        if short_left_is_unbacked_derivational_prefix_fragment(&first_lower, &second_lower) {
+            return true;
+        }
         if first_word.chars().count() == 1
             && crate::phrase_lexicon::is_one_letter_russian_function_word(&first_lower)
             && !strong_standalone_split_tail(&second_lower)
@@ -1233,4 +1236,19 @@ fn boundary_candidate_splits_to_short_function_and_weak_tail(
         }
     }
     false
+}
+
+fn short_left_is_unbacked_derivational_prefix_fragment(left: &str, right: &str) -> bool {
+    let left_len = left.chars().count();
+    if left_len < 2 || right.chars().count() < 5 {
+        return false;
+    }
+    if crate::lexicon::is_common_ru_word(left)
+        || crate::phrase_lexicon::is_short_russian_function_word(left)
+    {
+        return false;
+    }
+
+    crate::russian_prefixes::derivational_prefixes()
+        .any(|prefix| prefix == left || prefix.starts_with(left))
 }

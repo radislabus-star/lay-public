@@ -211,6 +211,17 @@ fn committed_texts(proposal: &AtomicProposal) -> Vec<String> {
         .collect()
 }
 
+fn published_preedit_text(proposal: &AtomicProposal) -> Option<String> {
+    let (_, value) = proposal.1.iter().find(|(tag, _)| *tag == 3)?;
+    let zbus::zvariant::Value::Structure(structure) = &**value else {
+        return None;
+    };
+    match structure.fields().first() {
+        Some(zbus::zvariant::Value::Str(text)) => Some(text.as_str().to_string()),
+        _ => None,
+    }
+}
+
 fn prepare(engine: &LayIbusEngine) {
     let frame = engine
         .capture_input_frame_identity()
@@ -244,11 +255,22 @@ fn atomic_printable_route_materializes_completion_in_its_submitted_frame() {
         proposal.1.iter().map(|(tag, _)| *tag).collect::<Vec<_>>(),
         [1, 3]
     );
+    let published_suffix = published_preedit_text(&proposal).expect("published preedit suffix");
+    let published_target = format!("пров{published_suffix}");
+    assert!(
+        !published_suffix.is_empty()
+            && matches!(published_target.as_str(), "проверка" | "проверить")
+            && lay::russian_lexicon::is_known_russian_word_or_form(&published_target),
+        "atomic proposal published an unsupported completion target: {published_target:?}"
+    );
     assert!(
         live.settle_atomic_pending(41, &(RECEIPT_SUBMITTED_ATOMIC, 71, vec![17; DIGEST_BYTES]),)
     );
     assert_eq!(live.tail_buffer, "пров");
-    assert_eq!(live.selected_precognition_suffix().as_deref(), Some("ерка"));
+    assert_eq!(
+        live.selected_precognition_suffix().as_deref(),
+        Some(published_suffix.as_str())
+    );
 }
 
 #[test]

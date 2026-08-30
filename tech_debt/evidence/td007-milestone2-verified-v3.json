@@ -1,0 +1,357 @@
+{
+  "elapsed_by_lane_seconds": {
+    "correctness": 352.79771609412273,
+    "package": 27.312065947975498
+  },
+  "elapsed_by_target_seconds": {
+    "bin:lay-daemon": 149.30240401998162,
+    "bin:lay-debug-actions": 0.009675618028268218,
+    "bin:lay-ibus-engine": 6.116335964004975,
+    "bin:lay-l11-serve": 0.00991045095724985,
+    "bin:lay-memory-report": 0.00905610399786383,
+    "bin:lay-nanda-dataset": 0.028184248018078506,
+    "bin:lay-nanda-wave-eval": 1.9300303870113567,
+    "bin:lay-nanda-wave-train": 0.3506378380116075,
+    "bin:lay-test-input": 0.007684430980589241,
+    "bin:lay_output_transaction_microproof": 0.011881839949637651,
+    "lib:lay": 172.60555633710464,
+    "test:correction_gate_metrics": 3.0860879269894212,
+    "test:decoder_alternating_stress": 1.8783383659902029,
+    "test:decoder_transition_regression": 3.72111889597727,
+    "test:ime_space_boundary_contract": 0.007860749028623104,
+    "test:input_gate_operator_contract": 0.008329589967615902,
+    "test:input_gate_space_contract": 9.265695057052653,
+    "test:l3_context_feedback_overlay_contract": 1.3605987440096214,
+    "test:l3_context_metrics_contract": 0.010059344000183046,
+    "test:l4_feedback_memory_contract": 0.00814960099523887,
+    "test:live_candidate_gate_metrics": 6.107433505996596,
+    "test:protected_words_runtime": 1.0402512020082213,
+    "test:restore_word_cli": 6.719580155971926,
+    "test:text_edit_gate_contract": 0.10296346998075023,
+    "test:text_mutation_monopoly_contract": 0.06782510405173525,
+    "test:tray_ui_contract": 0.01308439701097086,
+    "test:typing_assist_alternating_stress": 3.2342380009940825,
+    "test:typing_assist_mixed_corpus": 8.82936257001711,
+    "test:typing_assist_short_alternating": 4.249696908984333,
+    "test:typing_transition_authority_contract": 0.017751215025782585
+  },
+  "failures": [
+    {
+      "failure_block": "thread 'manual_trigger_runtime::ime::tests::daemon_pending_auto_undo_keeps_precedence_without_consuming_it' (46) panicked at src/bin/lay_daemon/manual_trigger_runtime/ime.rs:81:9:\nassertion `left == right` failed\n  left: DelegateDaemon(DaemonUinput)\n right: DelegateDaemon(ConfiguredBackend)\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "bin:lay-daemon",
+      "test": "manual_trigger_runtime::ime::tests::daemon_pending_auto_undo_keeps_precedence_without_consuming_it"
+    },
+    {
+      "failure_block": "thread 'tests::typing_assist_rules::exact_layout::typing_assist_auto_replace_pipeline_avoids_risky_deletions' (229) panicked at src/bin/lay_daemon/tests/typing_assist_rules/exact_layout.rs:97:9:\nassertion `left == right` failed\n  left: Some(\"\u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043d\u043e \")\n right: Some(\"\u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043e \")",
+      "target": "bin:lay-daemon",
+      "test": "tests::typing_assist_rules::exact_layout::typing_assist_auto_replace_pipeline_avoids_risky_deletions"
+    },
+    {
+      "failure_block": "thread 'tests::typing_assist_rules::pipeline::typing_assist_each_default_rule_has_isolated_positive_case' (235) panicked at src/bin/lay_daemon/tests/typing_assist_rules/pipeline.rs:76:9:\nassertion `left == right` failed: rule=moved_prefix_pair input=\"\u0440\u0430\u0441\u0447\u0435\u0442 \u044b\u043f\u0440\u0438\u0431\u043b\u0438\u0437\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \"\n  left: None\n right: Some(\"\u0440\u0430\u0441\u0447\u0435\u0442\u044b \u043f\u0440\u0438\u0431\u043b\u0438\u0437\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \")",
+      "target": "bin:lay-daemon",
+      "test": "tests::typing_assist_rules::pipeline::typing_assist_each_default_rule_has_isolated_positive_case"
+    },
+    {
+      "failure_block": "thread 'tests::typing_assist_rules::safety_regression::typing_assist_regression_suite_100_cases' (244) panicked at src/bin/lay_daemon/tests/typing_assist_rules/safety_regression.rs:33:9:\nassertion `left == right` failed: input=\"\u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043d\u043e \"\n  left: None\n right: Some(\"\u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043e \")",
+      "target": "bin:lay-daemon",
+      "test": "tests::typing_assist_rules::safety_regression::typing_assist_regression_suite_100_cases"
+    },
+    {
+      "failure_block": "thread 'tests::typing_assist_rules::typo_families::phrase_spacing::typing_assist_moves_letter_from_next_word_back' (251) panicked at src/bin/lay_daemon/tests/typing_assist_rules/typo_families/phrase_spacing.rs:73:9:\nassertion `left == right` failed: input=\"\u0440\u0430\u0441\u0447\u0435\u0442 \u044b\u043f\u0440\u0438\u0431\u043b\u0438\u0437\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \"\n  left: Some(\"\u0440\u0430\u0441\u0447\u0435\u0442 \u043f\u0440\u0438\u0431\u043b\u0438\u0437\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \")\n right: Some(\"\u0440\u0430\u0441\u0447\u0435\u0442\u044b \u043f\u0440\u0438\u0431\u043b\u0438\u0437\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \")",
+      "target": "bin:lay-daemon",
+      "test": "tests::typing_assist_rules::typo_families::phrase_spacing::typing_assist_moves_letter_from_next_word_back"
+    },
+    {
+      "failure_block": "thread 'tests::typing_assist_rules::typo_families::repeated_extra::typing_assist_fixes_extra_repeated_letter' (256) panicked at src/bin/lay_daemon/tests/typing_assist_rules/typo_families/repeated_extra.rs:7:9:\nassertion `left == right` failed\n  left: None\n right: Some(\"\u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043e \")",
+      "target": "bin:lay-daemon",
+      "test": "tests::typing_assist_rules::typo_families::repeated_extra::typing_assist_fixes_extra_repeated_letter"
+    },
+    {
+      "failure_block": "thread 'dirty_log_collect::tests::suffix_feedback_preserves_review_and_negative_transitions' (25) panicked at src/bin/lay_nanda_wave_eval/dirty_log_collect.rs:1903:9:\nassertion failed: collector.pairs.iter().any(|pair|\n        {\n            pair.train_role == \"review\" &&\n                    pair.original == \"\u041f\u0440\u0430\u0438\u0432\u043b\u044c\u043d\u043e? \" &&\n                pair.expected == \"\u041f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u043e? \"\n        })\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "bin:lay-nanda-wave-eval",
+      "test": "dirty_log_collect::tests::suffix_feedback_preserves_review_and_negative_transitions"
+    },
+    {
+      "failure_block": "thread 'architecture_contract::tests::exact_auto_undo_is_reverted_evidence_in_both_live_adapters' (16) panicked at src/architecture_contract.rs:120:9:\nassertion failed: ime.contains(\"TypingCpu::record_reverted_system_apply\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "lib:lay",
+      "test": "architecture_contract::tests::exact_auto_undo_is_reverted_evidence_in_both_live_adapters"
+    },
+    {
+      "failure_block": "thread 'layout_autoswitch::ascii::phrase::tests::whole_phrase_projection_uses_l2_form_centers_for_noisy_words' (247) panicked at src/layout_autoswitch/ascii/phrase.rs:152:9:\nassertion `left == right` failed\n  left: Some(\"\u0432\u043e\u0442 \u0442\u0430\u043a\u043e\u0435 \u0432\u043e\u0442 \u043d\u0435 \u043f\u0435\u0440\u0435\u0432\u0430\u0440\u0430\u0447\u0438\u0432\u0430\u0435\u0442\u0441\u044f\")\n right: Some(\"\u0432\u043e\u0442 \u0442\u0430\u043a\u043e\u0435 \u0432\u043e\u0442 \u043d\u0435 \u043f\u0435\u0440\u0435\u0432\u043e\u0440\u0430\u0447\u0438\u0432\u0430\u0435\u0442\u0441\u044f\")",
+      "target": "lib:lay",
+      "test": "layout_autoswitch::ascii::phrase::tests::whole_phrase_projection_uses_l2_form_centers_for_noisy_words"
+    },
+    {
+      "failure_block": "thread 'nanda_wave::journal_record::tests::trace_record_lists_participating_cells' (437) panicked at src/nanda_wave/journal_record.rs:294:9:\nassertion failed: record.cells.iter().any(|cell| cell.cell == \"layout_then_l2_word_center\")",
+      "target": "lib:lay",
+      "test": "nanda_wave::journal_record::tests::trace_record_lists_participating_cells"
+    },
+    {
+      "failure_block": "thread 'nanda_wave::l2::tests::boundary_field_splits_trailing_one_letter_pronoun_from_l2_centers' (481) panicked at src/nanda_wave/l2/tests.rs:59:5:\nboundary candidates=[]",
+      "target": "lib:lay",
+      "test": "nanda_wave::l2::tests::boundary_field_splits_trailing_one_letter_pronoun_from_l2_centers"
+    },
+    {
+      "failure_block": "thread 'nanda_wave::l2::tests::first_word_layout_uses_l2_word_center_not_phrase_context' (490) panicked at src/nanda_wave/l2/tests.rs:45:5:\nfirst-word L2 candidates=[WordCandidate { text: \"\u0441\u043b\u043e\u0432\u0430\", origin: Layout, source: \"LayoutWordCell32\", energy: 0.9027559, risk: 0.05, support: [\"Utf8Cell32#1401:utf8:0.794\", \"ScriptCell32#2:script:0.903\", \"KeyboardCell32#3:keyboard:0.903\", \"BoundaryCell32#191:boundary:0.805\", \"Utf8Cell32#1250:utf8:0.784\", \"ScriptCell32#823:script:0.794\", \"KeyboardCell32#1005:keyboard:0.691\", \"BoundaryCell32#947:boundary:0.881\", \"ctx:ascii_word\", \"l2-phase:loaded=false margin=0 admitted=false\"] }]",
+      "target": "lib:lay",
+      "test": "nanda_wave::l2::tests::first_word_layout_uses_l2_word_center_not_phrase_context"
+    },
+    {
+      "failure_block": "thread 'nanda_wave::l2::tests::guard_prefix_blocks_short_layout_argument' (498) panicked at src/nanda_wave/l2/tests.rs:167:5:\nassertion failed: candidates.iter().all(|candidate| candidate.text != \"api \u0432\u043e\u0442\")",
+      "target": "lib:lay",
+      "test": "nanda_wave::l2::tests::guard_prefix_blocks_short_layout_argument"
+    },
+    {
+      "failure_block": "thread 'nanda_wave::l2::tests::ime_boundary_authority_is_bound_to_the_selected_split_target' (500) panicked at src/nanda_wave/l2/tests.rs:507:9:\nmissing target-specific boundary evidence: \"\u0434\u0430\u043d\u043e\u0440\u043c\" -> \"\u0434\u0430 \u043d\u043e\u0440\u043c\"",
+      "target": "lib:lay",
+      "test": "nanda_wave::l2::tests::ime_boundary_authority_is_bound_to_the_selected_split_target"
+    },
+    {
+      "failure_block": "thread 'nanda_wave::l2::tests::l2_surface_layer_marks_repeated_letter_collapse_center' (513) panicked at src/nanda_wave/l2/tests.rs:1325:10:\nrepeated letter collapse candidate",
+      "target": "lib:lay",
+      "test": "nanda_wave::l2::tests::l2_surface_layer_marks_repeated_letter_collapse_center"
+    },
+    {
+      "failure_block": "thread 'nanda_wave::l2::tests::layout_sequence_is_one_coherent_l2_candidate' (531) panicked at src/nanda_wave/l2/tests.rs:73:5:\ncandidates=[WordCandidate { text: \"\u0432\u043e\u0442 \u0442\u0430\u043a\u043e\u0435 \u0432\u043e\u0442 \u043d\u0435 \u043f\u0435\u0440\u0435\u0432\u0430\u0440\u0430\u0447\u0438\u0432\u0430\u0435\u0442\u0441\u044f\", origin: Layout, source: \"LayoutWordCell32\", energy: 0.99, risk: 0.07, support: [\"Utf8Cell32#285:utf8:0.699\", \"ScriptCell32#755:script:0.797\", \"KeyboardCell32#1197:keyboard:0.781\", \"BoundaryCell32#30:boundary:0.858\", \"Utf8Cell32#1291:utf8:0.810\", \"ScriptCell32#2:script:0.941\", \"KeyboardCell32#1678:keyboard:0.833\", \"BoundaryCell32#1404:boundary:0.808\", \"ctx:ascii_word ascii_word ascii_word ascii_word ascii_word\", \"l2-phase:loaded=false margin=0 admitted=false\"] }, WordCandidate { text: \"\u0432\u043e\u0442 \u0442\u0430\u043a\u043e\u0435 \u0432\u043e\u0442 \u043d\u0435 \u043f\u0435\u0440\u0435\u0432\u0430\u0440\u0430\u0447\u0438\u0432\u0430\u0435\u0442\u0441\u044f\", origin: Layout, source: \"LayoutSequenceCell32\", energy: 0.92, risk: 0.04, support: [\"Utf8Cell32#285:utf8:0.699\", \"ScriptCell32#755:script:0.797\", \"KeyboardCell32#1197:keyboard:0.781\", \"BoundaryCell32#30:boundary:0.858\", \"Utf8Cell32#1291:utf8:0.810\", \"ScriptCell32#2:script:0.941\", \"KeyboardCell32#1678:keyboard:0.833\", \"BoundaryCell32#1404:boundary:0.808\", \"ctx:ascii_word ascii_word ascii_word ascii_word ascii_word\", \"layout-sequence:all-token-projection\", \"l2-phase:loaded=false margin=0 admitted=false\"] }, WordCandidate { text: \"djn nfrjt \u0432\u043e\u0442 yt gthtdfhfxbdftncz\", origin: Layout, source: \"LayoutWordCell32\", energy: 0.90593016, risk: 0.08, support: [\"Utf8Cell32#285:utf8:0.699\", \"ScriptCell32#755:script:0.797\", \"KeyboardCell32#1197:keyboard:0.781\", \"BoundaryCell32#30:boundary:0.858\", \"Utf8Cell32#1291:utf8:0.810\", \"ScriptCell32#2:script:0.941\", \"KeyboardCell32#1678:keyboard:0.833\", \"BoundaryCell32#1404:boundary:0.808\", \"ctx:ascii_word ascii_word ascii_word ascii_word ascii_word\", \"l2-phase:loaded=false margin=0 admitted=false\"] }, WordCandidate { text: \"djn \u0442\u0430\u043a\u043e\u0435 djn yt gthtdfhfxbdftncz\", origin: Layout, source: \"LayoutWordCell32\", energy: 0.90593016, risk: 0.08, support: [\"Utf8Cell32#285:utf8:0.699\", \"ScriptCell32#755:script:0.797\", \"KeyboardCell32#1197:keyboard:0.781\", \"BoundaryCell32#30:boundary:0.858\", \"Utf8Cell32#1291:utf8:0.810\", \"ScriptCell32#2:script:0.941\", \"KeyboardCell32#1678:keyboard:0.833\", \"BoundaryCell32#1404:boundary:0.808\", \"ctx:ascii_word ascii_word ascii_word ascii_word ascii_word\", \"l2-phase:loaded=false margin=0 admitted=false\"] }, WordCandidate { text: \"\u0432\u043e\u0442 nfrjt djn yt gthtdfhfxbdftncz\", origin: Layout, source: \"LayoutWordCell32\", energy: 0.90593016, risk: 0.08, support: [\"Utf8Cell32#285:utf8:0.699\", \"ScriptCell32#755:script:0.797\", \"KeyboardCell32#1197:keyboard:0.781\", \"BoundaryCell32#30:boundary:0.858\", \"Utf8Cell32#1291:utf8:0.810\", \"ScriptCell32#2:script:0.941\", \"KeyboardCell32#1678:keyboard:0.833\", \"BoundaryCell32#1404:boundary:0.808\", \"ctx:ascii_word ascii_word ascii_word ascii_word ascii_word\", \"l2-phase:loaded=false margin=0 admitted=false\"] }]",
+      "target": "lib:lay",
+      "test": "nanda_wave::l2::tests::layout_sequence_is_one_coherent_l2_candidate"
+    },
+    {
+      "failure_block": "thread 'nanda_wave::l2_field::bridge::tests::canonical_readout_retains_sparse_omission_candidate_below_general_frontier' (564) panicked at src/nanda_wave/l2_field/bridge.rs:2639:14:\nsparse multi-omission reserve must survive the general top-8 frontier",
+      "target": "lib:lay",
+      "test": "nanda_wave::l2_field::bridge::tests::canonical_readout_retains_sparse_omission_candidate_below_general_frontier"
+    },
+    {
+      "failure_block": "thread 'nanda_wave::l2_field::bridge::tests::reference_backed_short_participle_blocks_false_singleton' (574) panicked at src/nanda_wave/l2_field/bridge.rs:2678:14:\nreference-backed missing-letter candidate",
+      "target": "lib:lay",
+      "test": "nanda_wave::l2_field::bridge::tests::reference_backed_short_participle_blocks_false_singleton"
+    },
+    {
+      "failure_block": "thread 'nanda_wave::l3::tests::repeated_letter_collapse_beats_suffix_expansion_competitors' (980) panicked at src/nanda_wave/l3.rs:2197:9:\nassertion `left == right` failed\n  left: Some(1)\n right: Some(0)",
+      "target": "lib:lay",
+      "test": "nanda_wave::l3::tests::repeated_letter_collapse_beats_suffix_expansion_competitors"
+    },
+    {
+      "failure_block": "thread 'nanda_wave::l3::tests::typed_damage_operator_coherence_beats_morphological_drift' (992) panicked at src/nanda_wave/l3.rs:2721:9:\nassertion `left == right` failed\n  left: None\n right: Some(1)",
+      "target": "lib:lay",
+      "test": "nanda_wave::l3::tests::typed_damage_operator_coherence_beats_morphological_drift"
+    },
+    {
+      "failure_block": "thread 'nanda_wave::lexical_attractor::tests::l2_pipeline_exposes_attractor_candidate_and_canonical_layout_l2_owner' (1055) panicked at src/nanda_wave/lexical_attractor.rs:436:9:\nassertion failed: candidates.iter().any(|candidate|\n        candidate.source == \"layout_then_l2_word_center\" &&\n            candidate.text == \"\u043c\u044b \u0432\u043e\u0442\")",
+      "target": "lib:lay",
+      "test": "nanda_wave::lexical_attractor::tests::l2_pipeline_exposes_attractor_candidate_and_canonical_layout_l2_owner"
+    },
+    {
+      "failure_block": "thread 'nanda_wave::llmwave::tests::phrase_experience_jsonl_loads_training_text' (3104) panicked at src/nanda_wave/llmwave.rs:1963:78:\ncalled `Option::unwrap()` on a `None` value",
+      "target": "lib:lay",
+      "test": "nanda_wave::llmwave::tests::phrase_experience_jsonl_loads_training_text"
+    },
+    {
+      "failure_block": "thread 'phrase_reader::tests::merges_accidental_split_word_but_keeps_normal_pair' (3225) panicked at src/phrase_reader_tests.rs:52:9:\nassertion `left == right` failed\n  left: None\n right: Some(\"\u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0430\u0445\")",
+      "target": "lib:lay",
+      "test": "phrase_reader::tests::merges_accidental_split_word_but_keeps_normal_pair"
+    },
+    {
+      "failure_block": "thread 'text_edit::transition::tests::text_transition_blocks_two_word_cursor_teleport_edit' (3336) panicked at src/text_edit/transition.rs:807:17:\nassertion `left == right` failed\n  left: UnsafeEdit { reason: \"non_executable_edit_action\" }\n right: UnsafeEdit { reason: \"unsafe_multiword_autocorrect_scope\" }",
+      "target": "lib:lay",
+      "test": "text_edit::transition::tests::text_transition_blocks_two_word_cursor_teleport_edit"
+    },
+    {
+      "failure_block": "thread 'text_edit::transition::tests::text_transition_blocks_unsafe_multiword_edit' (3337) panicked at src/text_edit/transition.rs:776:17:\nassertion `left == right` failed\n  left: UnsafeEdit { reason: \"non_executable_edit_action\" }\n right: UnsafeEdit { reason: \"unsafe_multiword_autocorrect_scope\" }",
+      "target": "lib:lay",
+      "test": "text_edit::transition::tests::text_transition_blocks_unsafe_multiword_edit"
+    },
+    {
+      "failure_block": "thread 'typing_context::tests::no_context_or_english_context_keeps_ascii_to_ru_disabled' (3383) panicked at src/typing_context_tests.rs:88:9:\ncontext=\"git 'nj \"",
+      "target": "lib:lay",
+      "test": "typing_context::tests::no_context_or_english_context_keeps_ascii_to_ru_disabled"
+    },
+    {
+      "failure_block": "thread 'typing_pipeline::tests::explain_reports_chosen_candidate' (3412) panicked at src/typing_pipeline_tests.rs:115:5:\nassertion `left == right` failed\n  left: Some(\"\u043a\u0430\u0442\u043e\u0440\u043e\u0435 \")\n right: Some(\"\u043a\u043e\u0442\u043e\u0440\u043e\u0435 \")",
+      "target": "lib:lay",
+      "test": "typing_pipeline::tests::explain_reports_chosen_candidate"
+    },
+    {
+      "failure_block": "thread 'typing_transition::live_candidate::tests::bounded_readout_preserves_exact_and_corrected_prefix_lanes' (3480) panicked at src/typing_transition/live_candidate.rs:429:9:\nassertion failed: selected.iter().any(|candidate| candidate.suffix.is_empty())",
+      "target": "lib:lay",
+      "test": "typing_transition::live_candidate::tests::bounded_readout_preserves_exact_and_corrected_prefix_lanes"
+    },
+    {
+      "failure_block": "thread 'every_ime_space_route_finishes_the_full_precognition_boundary' (3) panicked at tests/ime_space_boundary_contract.rs:7:5:\nempty and active-composition Space routes must close the same preedit state\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:ime_space_boundary_contract",
+      "test": "every_ime_space_route_finishes_the_full_precognition_boundary"
+    },
+    {
+      "failure_block": "thread 'daemon_space_and_enter_decoders_share_input_gate_replacement_contract' (3) panicked at tests/input_gate_space_contract.rs:107:13:\nexpected gate replacement for \"\u0447\u0438\u0442\u0430\u0439 \u043b\u043e\u0433\u0438\u0438 \", got SuggestOnly { best: Some(\"\u0447\u0438\u0442\u0430\u0439\u043b \u043e\u0433\u0438\u0438 \") }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:input_gate_space_contract",
+      "test": "daemon_space_and_enter_decoders_share_input_gate_replacement_contract"
+    },
+    {
+      "failure_block": "thread 'space_autocorrect_keeps_existing_public_gate_contract' (3) panicked at tests/input_gate_space_contract.rs:67:13:\nexpected replacement for \"\u0447\u0438\u0442\u0430\u0439 \u043b\u043e\u0433\u0438\u0438 \", got SuggestOnly { best: Some(\"\u0447\u0438\u0442\u0430\u0439\u043b \u043e\u0433\u0438\u0438 \") }, trace=Some(InputGateDecisionTrace { stage: WordBoundary, input_class: Some(CompositeTypo), candidate_count: 3, scoreboard: CorrectionScoreboard { total_candidates: 3, apply_candidates: 0, suggest_only_candidates: 3, keep_original_candidates: 0, veto_candidates: 0, deterministic_candidates: 3, nanda_candidates: 0, selected_bayes_posterior_milli: None }, candidate_scores: [CorrectionCandidateScoreTrace { replacement: \"\u0447\u0438\u0442\u0430\u0439\u043b \u043e\u0433\u0438\u0438 \", source: Deterministic, source_id: \"moved_prefix_pair\", error_class: BoundaryShift, action_operator: \"shift_word_boundary\", action_proof: \"boundary\", edit_transition_operator: \"unknown\", edit_transition_proof: \"boundary\", edit_transition_operator_kind: Unknown, edit_transition_proof_kind: Boundary, edit_transition_verified: false, edit_transition_left_context_changed: true, edit_transition_changed_tokens: 2, edit_shape: \"boundary_only\", preservation_milli: 1000, lost_mass_milli: 0, added_mass_milli: 0, operator_fit_milli: 1000, shortcut_risk_milli: 0, anti_wave_milli: 0, explanation_score_milli: 1000, gate_action: SuggestOnly, gate_reason: \"edit_transition_not_verified\", likelihood_milli: 450, usage_prior_milli: 0, context_prior_milli: 0, transition_field_milli: -57, transition_field_attraction_milli: 0, transition_field_repulsion_milli: 57, transition_field_uncertainty_milli: 1000, transition_field_phase_competition_milli: 0, l2_wave_peak_milli: -205, l2_wave_peak_positive_milli: 35, l2_wave_peak_negative_milli: 120, l2_wave_peak_uncertainty_milli: 1000, l2_wave_peak_reason: \"l2_wave_weak_peak\", l2_transition_phase_milli: 0, l2_transition_phase_threshold_milli: 0, l2_transition_phase_verdict: \"unknown\", l2_transition_phase_package_loaded: false, l2_transition_phase_operator_present: false, l2_transition_phase_operator_promoted: false, l2_transition_phase_positive_centers: 0, l2_transition_phase_anti_centers: 0, l2_transition_phase_surfaces: 0, l2_morphology_milli: 0, l2_morphology_disposition: \"not_applicable\", l2_morphology_lemma_id: 0, l2_morphology_source_feature_mask: 0, l2_morphology_target_feature_mask: 0, l2_morphology_context_posterior_milli: 0, l2_morphology_slot_evidence_milli: 0, l2_morphology_joint_evidence_milli: 0, l2_morphology_competitors: 0, l2_morphology_generated: false, l3_phrase_milli: 0, l3_phrase_decision: \"not_applicable\", l4_hidden_disposition: \"unobserved\", l4_hidden_semantic_classes: 0, l4_hidden_unresolved_classes: 0, l4_hidden_plan_commitment: 0, l4_hidden_receipts: 0, l4_hidden_probe: \"\", l4_hidden_certificate_valid: false, l4_scene_milli: 0, l4_scene_action: \"wait\", l4_scene_reason: \"unobserved\", l4_signed_milli: 0, l4_signed_reason: \"learned_state_empty\", l4_surface_status: \"unknown\", l4_transition_state_specific: false, l4_transition_attract_count: 0, l4_transition_repel_count: 0, l4_phase_witness_milli: 0, l4_phase_witness_supported: false, l4_phase_positive_centers: 0, l4_phase_negative_centers: 0, l4_cross_scene_package_loaded: false, l4_cross_scene_profile_present: false, l4_cross_scene_disposition: \"unknown\", l4_cross_scene_recommendation: \"keep\", l4_cross_scene_margin_milli: 0, l4_cross_scene_threshold_milli: 0, l4_cross_scene_pair_margin_milli: 0, l4_cross_scene_automatic_apply: false, risk_milli: 240, posterior_milli: 8, decision_rank_milli: 0, selected: false }, CorrectionCandidateScoreTrace { replacement: \"\u0447\u0438\u0442\u0430\u0439 \u043b\u043e\u0433\u0438\u043d\u0438 \", source: Deterministic, source_id: \"missing_letter\", error_class: MissingLetter, action_operator: \"restore_missing_letter\", action_proof: \"typo\", edit_transition_operator: \"replace_current_word\", edit_transition_proof: \"typo\", edit_transition_operator_kind: ReplaceCurrentWord, edit_transition_proof_kind: Typo, edit_transition_verified: true, edit_transition_left_context_changed: false, edit_transition_changed_tokens: 1, edit_shape: \"insert_char\", preservation_milli: 1000, lost_mass_milli: 0, added_mass_milli: 91, operator_fit_milli: 850, shortcut_risk_milli: 0, anti_wave_milli: 0, explanation_score_milli: 947, gate_action: SuggestOnly, gate_reason: \"known_current_word_surface_drift\", likelihood_milli: 833, usage_prior_milli: 0, context_prior_milli: 0, transition_field_milli: 9, transition_field_attraction_milli: 9, transition_field_repulsion_milli: 0, transition_field_uncertainty_milli: 865, transition_field_phase_competition_milli: 0, l2_wave_peak_milli: 31, l2_wave_peak_positive_milli: 135, l2_wave_peak_negative_milli: 0, l2_wave_peak_uncertainty_milli: 865, l2_wave_peak_reason: \"l2_wave_weak_peak\", l2_transition_phase_milli: 0, l2_transition_phase_threshold_milli: 0, l2_transition_phase_verdict: \"unknown\", l2_transition_phase_package_loaded: false, l2_transition_phase_operator_present: false, l2_transition_phase_operator_promoted: false, l2_transition_phase_positive_centers: 0, l2_transition_phase_anti_centers: 0, l2_transition_phase_surfaces: 0, l2_morphology_milli: 0, l2_morphology_disposition: \"not_applicable\", l2_morphology_lemma_id: 0, l2_morphology_source_feature_mask: 0, l2_morphology_target_feature_mask: 0, l2_morphology_context_posterior_milli: 0, l2_morphology_slot_evidence_milli: 0, l2_morphology_joint_evidence_milli: 0, l2_morphology_competitors: 0, l2_morphology_generated: false, l3_phrase_milli: 0, l3_phrase_decision: \"not_applicable\", l4_hidden_disposition: \"unobserved\", l4_hidden_semantic_classes: 0, l4_hidden_unresolved_classes: 0, l4_hidden_plan_commitment: 0, l4_hidden_receipts: 0, l4_hidden_probe: \"\", l4_hidden_certificate_valid: false, l4_scene_milli: 0, l4_scene_action: \"wait\", l4_scene_reason: \"unobserved\", l4_signed_milli: 0, l4_signed_reason: \"learned_state_empty\", l4_surface_status: \"unknown\", l4_transition_state_specific: false, l4_transition_attract_count: 0, l4_transition_repel_count: 0, l4_phase_witness_milli: 0, l4_phase_witness_supported: false, l4_phase_positive_centers: 0, l4_phase_negative_centers: 0, l4_cross_scene_package_loaded: false, l4_cross_scene_profile_present: false, l4_cross_scene_disposition: \"unknown\", l4_cross_scene_recommendation: \"keep\", l4_cross_scene_margin_milli: 0, l4_cross_scene_threshold_milli: 0, l4_cross_scene_pair_margin_milli: 0, l4_cross_scene_automatic_apply: false, risk_milli: 0, posterior_milli: 618, decision_rank_milli: 931, selected: false }, CorrectionCandidateScoreTrace { replacement: \"\u0447\u0438\u0442\u0430\u0439 \u043b\u043e\u0433\u0438 \", source: Deterministic, source_id: \"repeated_letter\", error_class: RepeatedLetter, action_operator: \"remove_extra_letter\", action_proof: \"typo\", edit_transition_operator: \"replace_current_word\", edit_transition_proof: \"typo\", edit_transition_operator_kind: ReplaceCurrentWord, edit_transition_proof_kind: Typo, edit_transition_verified: true, edit_transition_left_context_changed: false, edit_transition_changed_tokens: 1, edit_shape: \"delete_char\", preservation_milli: 900, lost_mass_milli: 100, added_mass_milli: 0, operator_fit_milli: 850, shortcut_risk_milli: 100, anti_wave_milli: 15, explanation_score_milli: 869, gate_action: SuggestOnly, gate_reason: \"known_current_word_surface_drift\", likelihood_milli: 800, usage_prior_milli: 0, context_prior_milli: 0, transition_field_milli: 231, transition_field_attraction_milli: 231, transition_field_repulsion_milli: 0, transition_field_uncertainty_milli: 91, transition_field_phase_competition_milli: 0, l2_wave_peak_milli: 824, l2_wave_peak_positive_milli: 955, l2_wave_peak_negative_milli: 120, l2_wave_peak_uncertainty_milli: 91, l2_wave_peak_reason: \"l2_wave_center_resonance\", l2_transition_phase_milli: 0, l2_transition_phase_threshold_milli: 0, l2_transition_phase_verdict: \"unknown\", l2_transition_phase_package_loaded: false, l2_transition_phase_operator_present: false, l2_transition_phase_operator_promoted: false, l2_transition_phase_positive_centers: 0, l2_transition_phase_anti_centers: 0, l2_transition_phase_surfaces: 0, l2_morphology_milli: 0, l2_morphology_disposition: \"not_applicable\", l2_morphology_lemma_id: 0, l2_morphology_source_feature_mask: 0, l2_morphology_target_feature_mask: 0, l2_morphology_context_posterior_milli: 0, l2_morphology_slot_evidence_milli: 0, l2_morphology_joint_evidence_milli: 0, l2_morphology_competitors: 0, l2_morphology_generated: false, l3_phrase_milli: 0, l3_phrase_decision: \"not_applicable\", l4_hidden_disposition: \"unobserved\", l4_hidden_semantic_classes: 0, l4_hidden_unresolved_classes: 0, l4_hidden_plan_commitment: 0, l4_hidden_receipts: 0, l4_hidden_probe: \"\", l4_hidden_certificate_valid: false, l4_scene_milli: 0, l4_scene_action: \"wait\", l4_scene_reason: \"unobserved\", l4_signed_milli: 0, l4_signed_reason: \"learned_state_empty\", l4_surface_status: \"unknown\", l4_transition_state_specific: false, l4_transition_attract_count: 0, l4_transition_repel_count: 0, l4_phase_witness_milli: 0, l4_phase_witness_supported: false, l4_phase_positive_centers: 0, l4_phase_negative_centers: 0, l4_cross_scene_package_loaded: false, l4_cross_scene_profile_present: false, l4_cross_scene_disposition: \"unknown\", l4_cross_scene_recommendation: \"keep\", l4_cross_scene_margin_milli: 0, l4_cross_scene_threshold_milli: 0, l4_cross_scene_pair_margin_milli: 0, l4_cross_scene_automatic_apply: false, risk_milli: 0, posterior_milli: 600, decision_rank_milli: 1095, selected: false }], selected_source: None, selected_source_id: None, selected_error_class: None, selected_candidate_gate_action: None, outcome: SuggestOnly, reason: \"suggest_only_candidate\" })\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:input_gate_space_contract",
+      "test": "space_autocorrect_keeps_existing_public_gate_contract"
+    },
+    {
+      "failure_block": "thread 'feedback_overlay_keeps_live_text_out_of_the_compiled_packet' (3) panicked at tests/l3_context_feedback_overlay_contract.rs:33:5:\nassertion `left == right` failed\n  left: Number(0)\n right: 1\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:l3_context_feedback_overlay_contract",
+      "test": "feedback_overlay_keeps_live_text_out_of_the_compiled_packet"
+    },
+    {
+      "failure_block": "thread 'restore_word_stream_reuses_one_loaded_core' (15) panicked at tests/restore_word_cli.rs:58:5:\nassertion `left == right` failed\n  left: \"\u0432\u0440\u043c\u0435\u044f\\n\u0440\u0430\u0431\u043e\u0442\u0430 \u0442\u0435\u0442\\n\u043a\u043e\u0440\u043e\u0447\u0435\"\n right: \"\u0432\u0440\u0435\u043c\u044f\\n\u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442\\n\u043a\u043e\u0440\u043e\u0447\u0435\"\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:restore_word_cli",
+      "test": "restore_word_stream_reuses_one_loaded_core"
+    },
+    {
+      "failure_block": "thread 'restore_word_uses_the_shared_correction_core' (26) panicked at tests/restore_word_cli.rs:21:5:\nassertion `left == right` failed\n  left: \"\u0432\u0440\u043c\u0435\u044f\"\n right: \"\u0432\u0440\u0435\u043c\u044f\"",
+      "target": "test:restore_word_cli",
+      "test": "restore_word_uses_the_shared_correction_core"
+    },
+    {
+      "failure_block": "thread 'transition_proof_constructor_and_fields_are_not_public_capabilities' (7) panicked at tests/text_edit_gate_contract.rs:44:9:\nTransitionAuthorityKind must include CompletionAcceptance\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:text_edit_gate_contract",
+      "test": "transition_proof_constructor_and_fields_are_not_public_capabilities"
+    },
+    {
+      "failure_block": "thread 'disabled_lay_cannot_be_reactivated_by_input_source_sync' (7) panicked at tests/tray_ui_contract.rs:196:5:\nassertion failed: source_change.contains(\"this._daemonActive === true\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:tray_ui_contract",
+      "test": "disabled_lay_cannot_be_reactivated_by_input_source_sync"
+    },
+    {
+      "failure_block": "thread 'alternating_language_stress_cases_hold_boundaries' (3) panicked at tests/typing_assist_alternating_stress.rs:12:9:\nassertion `left == right` failed: class=ru_en_wrong_en input=\"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u0446\u0449\u043a\u0432 \u043f\u043e\u0442\u043e\u043c \u0430\u0448\u0434\u0443 \u0434\u0430\u043b\u044c\u0448\u0435 \u0435\u0443\u043a\u044c\u0448\u0442\u0444\u0434 \u0437\u0434\u0435\u0441\u044c \u044b\u0435\u0444\u0435\u0433\u044b \u0440\u044f\u0434\u043e\u043c \u043f\u0448\u0435 \u0437\u0433\u044b\u0440 \"\n  left: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f word \u043f\u043e\u0442\u043e\u043c \u0432\u0430\u0448\u0434\u0443 \u0434\u0430\u043b\u044c\u0448\u0435 terminal \u0437\u0434\u0435\u0441\u044c status \u0440\u044f\u0434\u043e\u043c git push \"\n right: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f word \u043f\u043e\u0442\u043e\u043c file \u0434\u0430\u043b\u044c\u0448\u0435 terminal \u0437\u0434\u0435\u0441\u044c status \u0440\u044f\u0434\u043e\u043c git push \"\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:typing_assist_alternating_stress",
+      "test": "alternating_language_stress_cases_hold_boundaries"
+    },
+    {
+      "failure_block": "thread 'alternating_layout_sentences_fix_every_second_word' (3) panicked at tests/typing_assist_mixed_corpus.rs:305:9:\nassertion `left == right` failed: input=\"\u0441\u0435\u0433\u043e\u0434\u043d\u044f ghbdtn \u043f\u043e\u0442\u043e\u043c \u0430\u0448\u0434\u0443 \u0434\u0430\u043b\u044c\u0448\u0435 ckjdf \u0441\u043d\u043e\u0432\u0430 \u0435\u0443\u043a\u044c\u0448\u0442\u0444\u0434 \u0437\u0434\u0435\u0441\u044c 'nj \"\n  left: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u0438\u0432\u0435\u0442 \u043f\u043e\u0442\u043e\u043c \u0432\u0430\u0448\u0434\u0443 \u0434\u0430\u043b\u044c\u0448\u0435 ckjdf \u0441\u043d\u043e\u0432\u0430 terminal \u0437\u0434\u0435\u0441\u044c '\u0442\u043e \"\n right: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u0438\u0432\u0435\u0442 \u043f\u043e\u0442\u043e\u043c file \u0434\u0430\u043b\u044c\u0448\u0435 \u0441\u043b\u043e\u0432\u0430 \u0441\u043d\u043e\u0432\u0430 terminal \u0437\u0434\u0435\u0441\u044c \u044d\u0442\u043e \"\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "alternating_layout_sentences_fix_every_second_word"
+    },
+    {
+      "failure_block": "thread 'beta_alternating_layout_sentences_keep_language_boundaries' (4) panicked at tests/typing_assist_mixed_corpus.rs:317:9:\nassertion `left == right` failed: input=\"\u044f ghbdtn word \u043f\u043e\u0442\u043e\u043c ckjdf file \u0434\u0430\u043b\u044c\u0448\u0435 hf,jnftn terminal \u0437\u0434\u0435\u0441\u044c 'nj status \"\n  left: \"\u044f \u043f\u0440\u0438\u0432\u0435\u0442 word \u043f\u043e\u0442\u043e\u043c ckjdf file \u0434\u0430\u043b\u044c\u0448\u0435 \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442 terminal \u0437\u0434\u0435\u0441\u044c '\u0442\u043e status \"\n right: \"\u044f \u043f\u0440\u0438\u0432\u0435\u0442 word \u043f\u043e\u0442\u043e\u043c \u0441\u043b\u043e\u0432\u0430 file \u0434\u0430\u043b\u044c\u0448\u0435 \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442 terminal \u0437\u0434\u0435\u0441\u044c \u044d\u0442\u043e status \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "beta_alternating_layout_sentences_keep_language_boundaries"
+    },
+    {
+      "failure_block": "thread 'clean_shell_like_commands_and_symbols_are_not_rewritten' (5) panicked at tests/typing_assist_mixed_corpus.rs:527:9:\nassertion `left == right` failed: command-like text was changed: \"tar -xf archive.tar && rm archive.tar \"\n  left: \"tar -xf archive.tar && rm \u0444\u043a\u0441\u0440\u0448\u043c\u0443\u044e\u0435\u0444\u043a \"\n right: \"tar -xf archive.tar && rm archive.tar \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "clean_shell_like_commands_and_symbols_are_not_rewritten"
+    },
+    {
+      "failure_block": "thread 'cli_commands_stay_ascii_and_recover_from_ru_layout' (6) panicked at tests/typing_assist_mixed_corpus.rs:549:9:\nassertion `left == right` failed: RU-layout CLI command was not restored: \"cd\" typed=\"\u0441\u0432\"\n  left: \"\u0441\u0432 \"\n right: \"cd \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "cli_commands_stay_ascii_and_recover_from_ru_layout"
+    },
+    {
+      "failure_block": "thread 'confident_en_to_ru_layout_words_use_fast_path_without_rewriting_english' (7) panicked at tests/typing_assist_mixed_corpus.rs:247:9:\nassertion `left == right` failed: input=\"djn \"\n  left: Some(\"experimental_layout_en_to_ru\")\n right: Some(\"fast_layout_en_to_ru\")",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "confident_en_to_ru_layout_words_use_fast_path_without_rewriting_english"
+    },
+    {
+      "failure_block": "thread 'dynamic_context_allows_ascii_to_ru_in_russian_sentence' (10) panicked at tests/typing_assist_mixed_corpus.rs:110:9:\nassertion `left == right` failed\n  left: Some(\"\u043f\u0438\u0448\u0443 '\u0442\u043e \")\n right: Some(\"\u043f\u0438\u0448\u0443 \u044d\u0442\u043e \")",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "dynamic_context_allows_ascii_to_ru_in_russian_sentence"
+    },
+    {
+      "failure_block": "thread 'forum_like_clean_mixed_sentences_do_not_get_rewritten' (13) panicked at tests/typing_assist_mixed_corpus.rs:69:5:\nassertion `left == right` failed: input=\"\u0442\u0443\u0442 good test \u0440\u044f\u0434\u043e\u043c \u0441 \u0440\u0443\u0441\u0441\u043a\u0438\u043c \u0442\u0435\u043a\u0441\u0442\u043e\u043c \"\n  left: \"\u0442\u0443\u0442 good test \u0440\u044f\u0434\u043e\u043c \u0441 \u0440\u0443\u0441\u043a\u0438\u043c \u0442\u0435\u043a\u0441\u0442\u043e\u043c \"\n right: \"\u0442\u0443\u0442 good test \u0440\u044f\u0434\u043e\u043c \u0441 \u0440\u0443\u0441\u0441\u043a\u0438\u043c \u0442\u0435\u043a\u0441\u0442\u043e\u043c \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "forum_like_clean_mixed_sentences_do_not_get_rewritten"
+    },
+    {
+      "failure_block": "thread 'forum_like_mixed_matrix_autofixes_contextual_layout_words_and_keeps_boundaries' (14) panicked at tests/typing_assist_mixed_corpus.rs:457:13:\nsafe RU->EN layout word was not auto-fixed: input=\"\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git \u0438 \u043f\u0438\u0448\u0443 njkmrj \u0434\u0430\u043b\u044c\u0448\u0435 \" got=\"\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git \u0438 \u043f\u0438\u0448\u0443 njkmrj \u0434\u0430\u043b\u044c\u0448\u0435 \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "forum_like_mixed_matrix_autofixes_contextual_layout_words_and_keeps_boundaries"
+    },
+    {
+      "failure_block": "thread 'forum_like_mixed_sentences_preserve_spaces_and_terms' (15) panicked at tests/typing_assist_mixed_corpus.rs:69:5:\nassertion `left == right` failed: input=\"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git status \u0438 \u043f\u043e\u0442\u043e\u043c njkmrj \u0442\u0435\u0441\u0442 \"\n  left: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git status \u0438 \u043f\u043e\u0442\u043e\u043c njkmrj \u0442\u0435\u0441\u0442 \"\n right: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git status \u0438 \u043f\u043e\u0442\u043e\u043c \u0442\u043e\u043b\u044c\u043a\u043e \u0442\u0435\u0441\u0442 \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "forum_like_mixed_sentences_preserve_spaces_and_terms"
+    },
+    {
+      "failure_block": "thread 'live_journal_false_positive_candidates_are_rejected' (18) panicked at tests/typing_assist_mixed_corpus.rs:62:13:\nassertion `left == right` failed: single-letter substitution must not guess a different dictionary word\n  left: Some(\"\u0434\u0435\u043b\u0430\u0442\u044c \")\n right: None",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "live_journal_false_positive_candidates_are_rejected"
+    },
+    {
+      "failure_block": "thread 'live_user_sentences_keep_spaces_after_typing_assist' (19) panicked at tests/typing_assist_mixed_corpus.rs:371:9:\nassertion `left == right` failed: input=\"\u0437\u0430 \u043d\u0430\u0441 \u0443\u0436\u0435 \u043f\u043e \u043b\u044e\u0431\u043e\u043c\u0443 \u0438 \u0434\u0430\u043b\u044c\u0448\u0435 \u043f\u0438\u0448\u0435\u043c \"\n  left: \"\u0437\u0430 \u043d\u0430\u0441 \u0443\u0436\u0435 \u043f\u043e \u043b\u044e\u0431\u043e\u043c\u0443 \u0438 \u0434\u0430\u043b\u044c\u0448\u0435 \u043f\u0438\u0432\u0448\u0435\u043c \"\n right: \"\u0437\u0430 \u043d\u0430\u0441 \u0443\u0436\u0435 \u043f\u043e \u043b\u044e\u0431\u043e\u043c\u0443 \u0438 \u0434\u0430\u043b\u044c\u0448\u0435 \u043f\u0438\u0448\u0435\u043c \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "live_user_sentences_keep_spaces_after_typing_assist"
+    },
+    {
+      "failure_block": "thread 'normal_autocorrect_keeps_safe_rules_and_rejects_aggressive_guesses' (21) panicked at tests/typing_assist_mixed_corpus.rs:416:9:\nassertion `left == right` failed: safe normal autocorrect case failed: \"\u043a\u0442\u043e\u0440\u043e\u0435 \"\n  left: Some(\"\u043a\u0430\u0442\u043e\u0440\u043e\u0435 \")\n right: Some(\"\u043a\u043e\u0442\u043e\u0440\u043e\u0435 \")",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "normal_autocorrect_keeps_safe_rules_and_rejects_aggressive_guesses"
+    },
+    {
+      "failure_block": "thread 'normal_mode_autocorrects_confident_english_typed_in_ru_layout' (22) panicked at tests/typing_assist_mixed_corpus.rs:499:9:\nassertion `left == right` failed: input=\"\u0441\u0432 \"\n  left: \"\u0441\u0432 \"\n right: \"cd \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "normal_mode_autocorrects_confident_english_typed_in_ru_layout"
+    },
+    {
+      "failure_block": "thread 'one_letter_function_words_do_not_steal_next_word_prefix' (24) panicked at tests/typing_assist_mixed_corpus.rs:69:5:\nassertion `left == right` failed: input=\"\u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e \u0432 \u0432\u043e\u0434\u0435 \u0434\u0430\u043b\u044c\u0448\u0435 \"\n  left: \"\u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e \u0432 \u0432\u043e\u0434\u043e\u0435 \u0434\u0430\u043b\u044c\u0448\u0435 \"\n right: \"\u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e \u0432 \u0432\u043e\u0434\u0435 \u0434\u0430\u043b\u044c\u0448\u0435 \"",
+      "target": "test:typing_assist_mixed_corpus",
+      "test": "one_letter_function_words_do_not_steal_next_word_prefix"
+    },
+    {
+      "failure_block": "thread 'short_english_words_typed_in_ru_layout_are_recovered_between_russian_words' (4) panicked at tests/typing_assist_short_alternating.rs:136:5:\nassertion `left == right` failed: input=\"\u044f \u043f\u0448\u0435 \u0438 \u0444\u0437\u0448 \u043c\u044b \u0441\u044b\u044b \u0442\u044b \u0441\u0437\u0433 \u043e\u043d \u043f\u0437\u0433 \u0432 \u0440\u0435\u044c\u0434 \u043a \u043e\u044b\u0449\u0442 \u0441 \u0434\u0434\u044c \u043d\u0435 \u0434\u0449\u043f \u043d\u0430 \u044c\u0432 \u043d\u0443 \u0437\u0432\u0430 \u043f\u043e \u043a\u0444\u044c \u0437\u0430 \u044b\u0439\u0434 \u0432\u043e\u0442 \u044b\u044b\u0440 \u044d\u0442\u043e \u043c\u0437\u0442 \u0434\u0430 \u043f\u0449 \u043a\u0430\u043a \u0448\u0442 \u0434\u043e\u043c \u0433\u0437 \u043c\u0438\u0440 \u0435\u0449 \u043a\u043e\u0434 \u0449\u0442 \u0442\u0443\u0442 \u0449\u0430\u0430 \u0442\u0430\u043c \u0430\u0448\u0434\u0443 \u0434\u043b\u044f \u0435\u0443\u044b\u0435 \u043f\u0440\u0438 \u0437\u0433\u044b\u0440 \u0445\u043e\u0434 \u0438\u0444\u044b\u0440 \"\n  left: \"\u044f git \u0438 api \u043c\u044b css \u0442\u044b cpu \u043e\u043d gpu \u0432 html \u043a json \u0441 llm \u043d\u0435 log \u043d\u0430 md \u043d\u0443 pdf \u043f\u043e ram \u0437\u0430 sql \u0432\u043e\u0442 ssh \u044d\u0442\u043e vpn \u0434\u0430\u043f \u0449 \u043a\u0430\u043a in \u0434\u043e\u043c up \u043c\u0438\u0440 to \u043a\u043e\u0434\u0449 \u0442 \u0442\u0443\u0442 off \u0442\u0430\u043c \u0432\u0430\u0448\u0434\u0443 \u0434\u043b\u044f \u0435\u0436\u0443\u044b\u0435 \u043f\u0440\u0438 push \u0445\u043e\u0434 bash \"\n right: \"\u044f git \u0438 api \u043c\u044b css \u0442\u044b cpu \u043e\u043d gpu \u0432 html \u043a json \u0441 llm \u043d\u0435 log \u043d\u0430 md \u043d\u0443 pdf \u043f\u043e ram \u0437\u0430 sql \u0432\u043e\u0442 ssh \u044d\u0442\u043e vpn \u0434\u0430 go \u043a\u0430\u043a in \u0434\u043e\u043c up \u043c\u0438\u0440 to \u043a\u043e\u0434 on \u0442\u0443\u0442 off \u0442\u0430\u043c file \u0434\u043b\u044f test \u043f\u0440\u0438 push \u0445\u043e\u0434 bash \"\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+      "target": "test:typing_assist_short_alternating",
+      "test": "short_english_words_typed_in_ru_layout_are_recovered_between_russian_words"
+    },
+    {
+      "failure_block": "thread 'short_russian_words_typed_in_us_layout_are_recovered_between_english_words_when_not_ambiguous' (5) panicked at tests/typing_assist_short_alternating.rs:178:5:\nassertion `left == right` failed: input=\"z git b api vs css ns cpu jy gpu d html r json c llm yt log yf md ye pdf gj ram pf sql djn ssh 'nj vpn lf go rfr in ljv up vbh to rjl on nen off nfv file lkz test ghb push [jl bash \"\n  left: \"z git b api \u043c\u044b css \u0442\u044b cpu \u043e\u043d gpu d html r json c llm \u043d\u0435 log \u043d\u0430 md \u043d\u0443 pdf \u043f\u043e ram \u0437\u0430 sql \u0432\u043e\u0442 ssh '\u0442\u043e vpn \u0434\u0430 go \u043a\u0430\u043a in \u0434\u043e\u043c up \u043c\u0438\u0440 to \u043a\u043e\u0434 on \u0442\u0443\u0442 off \u0442\u0430\u043c file \u0434\u043b\u044f test \u043f\u0440\u0438 push \u0445\u043e\u0434 bash \"\n right: \"z git b api \u043c\u044b css \u0442\u044b cpu \u043e\u043d gpu d html r json c llm \u043d\u0435 log \u043d\u0430 md \u043d\u0443 pdf \u043f\u043e ram \u0437\u0430 sql \u0432\u043e\u0442 ssh \u044d\u0442\u043e vpn \u0434\u0430 go \u043a\u0430\u043a in \u0434\u043e\u043c up \u043c\u0438\u0440 to \u043a\u043e\u0434 on \u0442\u0443\u0442 off \u0442\u0430\u043c file \u0434\u043b\u044f test \u043f\u0440\u0438 push \u0445\u043e\u0434 bash \"",
+      "target": "test:typing_assist_short_alternating",
+      "test": "short_russian_words_typed_in_us_layout_are_recovered_between_english_words_when_not_ambiguous"
+    }
+  ],
+  "failures_by_lane": {
+    "correctness": 33,
+    "package": 20
+  },
+  "installed_runtime_authority_changed": false,
+  "invocation": {
+    "action": "all",
+    "lanes": [
+      "correctness",
+      "package"
+    ],
+    "results_dir": "/home/ubu/projects/lay-l1-exact-peak-search/target/test-lanes-results",
+    "target_dir": "/home/ubu/projects/lay-l1-exact-peak-search/target/test-lanes"
+  },
+  "known_failure_contract": {
+    "full_failure_count": 53,
+    "lane_failure_count": 53,
+    "path": "scripts/test-lanes/known_failures.json",
+    "sha256": "41a7ca18b9d5c6a9f58796f682cadf6b2f23780235f020ea233b711b08e71a28"
+  },
+  "lanes": [
+    "correctness",
+    "package"
+  ],
+  "manifest_sha256": "ff16fd9031dc23fe48fedbe4782e42530cbfde7d29da5929fa2fe5f756eee967",
+  "recorded_at_utc": "2026-08-30T00:52:13.063419+00:00",
+  "runtime_authority_changed": false,
+  "runtime_authority_scope": "installed_live_runtime",
+  "sandbox": {
+    "filesystem": "host and repository read-only; result sandbox writable",
+    "home_xdg": "fresh",
+    "network": "unshared",
+    "run": "empty tmpfs",
+    "test_threads": 1
+  },
+  "schema": "lay.test-failure-observation.v1",
+  "selected_by_lane": {
+    "correctness": 2309,
+    "package": 35
+  },
+  "source_closure": {
+    "files": 1222,
+    "git_head": "447e1d24d49110637ff7f1e671098ef3736c2df6",
+    "sha256": "aa6ecabde1a2c17e29ffdcc15abe2e9ab3ce4f3ce616fff0227da9147a7ce09b"
+  },
+  "source_closure_changed_during_execution": false,
+  "untested_scope": [
+    "live_desktop_smoke",
+    "performance",
+    "ignored"
+  ],
+  "verdict": "PASS_WITH_EXACT_KNOWN_FAILURES"
+}

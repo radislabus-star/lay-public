@@ -1235,8 +1235,8 @@
     "semantic_hash": "e6fdbc6001da80e49fd905fe306afbac"
   },
   "src/ime_correction.rs": {
-    "mtime": 1787518544.3680816,
-    "ast_hash": "a40c60b0f4640193e32c8e3d99649a76",
+    "mtime": 1788049984.8193922,
+    "ast_hash": "7309a98d6646f43aa14c4ed26e04ccb2",
     "semantic_hash": ""
   },
   "src/input_gate.rs": {
@@ -3100,8 +3100,8 @@
     "semantic_hash": ""
   },
   "src/correction_core/tests.rs": {
-    "mtime": 1788042256.825943,
-    "ast_hash": "2364086c174b4532c8c774e08a69d244",
+    "mtime": 1788049880.4471843,
+    "ast_hash": "cc239a7fb078eb8f03b4cc4ad5ab52b4",
     "semantic_hash": ""
   },
   "src/typing_transition/candidate_resolution.rs": {
@@ -14780,8 +14780,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/atomic/proof.rs": {
-    "mtime": 1788016746.0821757,
-    "ast_hash": "5c9e086b8ce084a415a67f7053e0dadb",
+    "mtime": 1788050690.5060964,
+    "ast_hash": "ea1b811580609805b094cb9d1166c4a1",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs": {
@@ -15045,8 +15045,8 @@
     "semantic_hash": ""
   },
   "docs/ime-target-authority-slice8-lexical-readout-2026-08-23.md": {
-    "mtime": 1787884117.5915458,
-    "ast_hash": "5b5f26e6cf3410685faa19aa6e5fc5b2",
+    "mtime": 1788051209.8356674,
+    "ast_hash": "3f6b00a0412a30d608d4f8bf3ec58328",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_IMPLEMENTATION_V1_2026-08-24.json": {
@@ -28715,8 +28715,8 @@
     "semantic_hash": ""
   },
   "src/typing_transition/proposal_admission/structural_guards.rs": {
-    "mtime": 1787839586.9018831,
-    "ast_hash": "a0652f832b26f51682a9c46cbd949865",
+    "mtime": 1788049784.5118918,
+    "ast_hash": "c2f10b88a54cef1c6ff3b96ba5d3345b",
     "semantic_hash": ""
   },
   "src/typing_transition/proposal_admission/surface_support.rs": {
@@ -28785,8 +28785,8 @@
     "semantic_hash": ""
   },
   "tech_debt/007-reconcile-semantic-contract-tests.md": {
-    "mtime": 1788044547.5486696,
-    "ast_hash": "e05a0622727ffc3a7b23f75d8b5c0191",
+    "mtime": 1788051241.9961646,
+    "ast_hash": "212910408608dde56e136170c7c233a5",
     "semantic_hash": ""
   },
   "tech_debt/008-reduce-dead-code-and-proof-surface.md": {
@@ -29225,13 +29225,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1788042733.7554448,
-    "ast_hash": "ec480e0950d3c8ad098a0d0959423134",
+    "mtime": 1788048231.1165655,
+    "ast_hash": "982bbd465373823ff86b5baa7f69fe5e",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1788042684.101636,
-    "ast_hash": "c622776d4bcf79269474e917675b69b8",
+    "mtime": 1788046257.9834604,
+    "ast_hash": "6f283ec9241d738942a44df50ba237ee",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -29352,6 +29352,36 @@
   "tech_debt/evidence/td007-structural-route-v1.md": {
     "mtime": 1788029772.0100367,
     "ast_hash": "00d19d8d846b5a71575e273038973d6d",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td007-milestone2-completion-v1.json": {
+    "mtime": 1788051236.0540729,
+    "ast_hash": "074ea4423403506175f986bd8d02a1cd",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td007-milestone2-known-failures-v1.json": {
+    "mtime": 1788048210.6131482,
+    "ast_hash": "5c0265913777ddf45a5226b37947ca1b",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td007-milestone2-ledger-v1.json": {
+    "mtime": 1788048363.8177269,
+    "ast_hash": "49a04dcabac7c299d5bceeea1b71b027",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td007-milestone2-verified-v3.json": {
+    "mtime": 1788051133.0650294,
+    "ast_hash": "36d23c834e09012c6b946c6d502baf2d",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td007-milestone2-completion-v1.md": {
+    "mtime": 1788051222.5048635,
+    "ast_hash": "30794bb659c0cb981c5159ee2f303ce9",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td007-milestone2-independent-review-v2.md": {
+    "mtime": 1788051169.5960412,
+    "ast_hash": "d568e9435376cdf382f832a523910e91",
     "semantic_hash": ""
   }
 }

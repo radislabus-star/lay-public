@@ -5991,3 +5991,46 @@ Verdict: `LAY_1_0_45_KITTY_IME_REGRESSION_REPAIRED`.
 Immutable release evidence:
 
 `docs/structural_gates/receipts/LAY_1_0_45_KITTY_IME_REGRESSION_REPAIR_2026-08-28/RELEASE_RECEIPT.json`
+
+### TD-007 milestone 2: IME authority contract reconciliation
+
+The 28 historical `ime_authority` failures were reconciled against the active
+frame-bound authority contract. A mutable layout hint, visible dictionary
+projection, contextual recurrence, or frameless lexical candidate does not by
+itself authorize an automatic edit. Exact layout auto-apply remains available
+when the request carries a closed exact-layout contour certificate.
+
+Three tests that asserted the retired `glued_phrase` producer now assert the
+active `CanonicalL2FieldBoundary` owner without changing boundary semantics.
+The IBus atomic proof no longer assumes one nondeterministic lexical suffix; it
+proves that settlement preserves the exact suffix published by the same atomic
+proposal.
+
+One real safety defect was found while replacing the stale assertions. Without
+the lexical package, `перхвачу` could fall through to the false boundary
+`пер хвачу`. Admission now rejects an unbacked short fragment of a known Russian
+derivational prefix while preserving verified boundaries including `да норм`,
+`то есть`, and `Елена просит`. The rule is structural and contains no fixture
+surface or test identity.
+
+```text
+baseline failures before milestone 2    81
+milestone 2 ledger rows                  28
+remaining exact-known failures           53
+correctness selected                    2309
+package selected                          35
+unexpected failures                        0
+infrastructure failures                    0
+verdict          PASS_WITH_EXACT_KNOWN_FAILURES
+installed runtime authority changed     false
+```
+
+Evidence:
+
+- `tech_debt/evidence/td007-milestone2-ledger-v1.json`
+- `tech_debt/evidence/td007-milestone2-known-failures-v1.json`
+- `tech_debt/evidence/td007-milestone2-verified-v3.json`
+
+This milestone does not promote frameless lexical candidates, change installed
+Lay, or claim the final 13 x 20,000 heldout quality gate. That gate remains due
+after all TD-007 runtime milestones close.

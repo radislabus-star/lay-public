@@ -1,0 +1,273 @@
+{
+  "schema": "lay.td007.semantic-failure-ledger.v1",
+  "milestone": 2,
+  "baseline_git_head": "447e1d24d49110637ff7f1e671098ef3736c2df6",
+  "baseline_manifest_sha256": "cd130f2db52a23133666eeb301ce8199bbe8a7095b7faa9c2d4f71df13095e94",
+  "baseline_observation_path": "tech_debt/evidence/td007-milestone1-known-failures-v5.json",
+  "baseline_observation_sha256": "4a3b7dcfef4a48ef27e1435a7ac97fe26aea13b22cf7dd30c727f6da64ea4fc3",
+  "first_loss_freeze": "docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_FIRST_LOSS_FREEZE_2026-08-20/first-loss-manifest.v1.json",
+  "row_count": 28,
+  "disposition_contract": {
+    "NONDETERMINISTIC_TARGET_ASSERTION_REPLACED_BY_FRAME_CONSISTENCY": 1,
+    "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED": 13,
+    "PROJECTION_PRESERVED_AUTHORITY_WITHHELD": 4,
+    "SUPERSEDED_PRODUCER_ID_REPLACED": 3,
+    "CLOSED_EXACT_AUTHORITY_REPLACEMENT": 6,
+    "SAFETY_REGRESSION_REPAIRED": 1
+  },
+  "rows": [
+    {
+      "target": "bin:lay-ibus-engine",
+      "baseline_test": "atomic::proof::atomic_printable_route_materializes_completion_in_its_submitted_frame",
+      "cluster": "ime_authority",
+      "first_loss_layer": "IBUS_ATOMIC_FRAME",
+      "authority_source": "src/bin/lay_ibus_engine/atomic/proof.rs",
+      "disposition": "NONDETERMINISTIC_TARGET_ASSERTION_REPLACED_BY_FRAME_CONSISTENCY",
+      "replacement_proof": "atomic::proof::atomic_printable_route_materializes_completion_in_its_submitted_frame"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::active_composition_autocorrect_uses_the_nanda_owner",
+      "cluster": "ime_authority",
+      "first_loss_layer": "AlreadySatisfied",
+      "authority_source": "src/ime_correction.rs",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED",
+      "replacement_proof": "ime_correction::tests::frameless_nanda_candidate_does_not_mint_automatic_authority"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::active_composition_autocorrect_uses_unified_input_gate",
+      "cluster": "ime_authority",
+      "first_loss_layer": "LexicalAuthority",
+      "authority_source": "src/ime_correction.rs",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED",
+      "replacement_proof": "ime_correction::tests::frameless_typo_candidate_does_not_mint_automatic_authority"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::active_composition_context_replacement_keeps_previous_words_out_of_commit",
+      "cluster": "ime_authority",
+      "first_loss_layer": "ContextSettlement",
+      "authority_source": "src/ime_correction.rs",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED",
+      "replacement_proof": "ime_correction::tests::frameless_context_candidate_does_not_mint_automatic_authority"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::active_composition_decision_returns_only_live_text_replacement",
+      "cluster": "ime_authority",
+      "first_loss_layer": "LexicalAuthority",
+      "authority_source": "src/ime_correction.rs",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED",
+      "replacement_proof": "ime_correction::tests::frameless_composition_does_not_return_unbound_typo_replacement"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::active_english_layout_does_not_protect_internal_layout_letter_symbol",
+      "cluster": "ime_authority",
+      "first_loss_layer": "AlreadySatisfied",
+      "authority_source": "src/exact_layout_authority.rs",
+      "disposition": "PROJECTION_PRESERVED_AUTHORITY_WITHHELD",
+      "replacement_proof": "ime_correction::tests::internal_layout_symbol_projection_remains_non_authoritative_without_a_closed_certificate"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::active_layout_guard_does_not_block_non_layout_typo_repair",
+      "cluster": "ime_authority",
+      "first_loss_layer": "LexicalAuthority",
+      "authority_source": "src/ime_correction.rs",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED",
+      "replacement_proof": "ime_correction::tests::mutable_active_layout_hint_does_not_mint_typo_authority"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::active_russian_layout_allows_unknown_cyrillic_projection_to_known_ascii",
+      "cluster": "ime_authority",
+      "first_loss_layer": "BirthOrRetention",
+      "authority_source": "src/exact_layout_authority.rs",
+      "disposition": "PROJECTION_PRESERVED_AUTHORITY_WITHHELD",
+      "replacement_proof": "ime_correction::tests::mutable_ru_layout_hint_does_not_mint_inverse_layout_authority"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::boundary_split_survives_live_l2_phase_apply",
+      "cluster": "ime_authority",
+      "first_loss_layer": "NonSemanticLegacyProducerAssertion",
+      "authority_source": "src/nanda_wave/l2_field/bridge.rs",
+      "disposition": "SUPERSEDED_PRODUCER_ID_REPLACED",
+      "replacement_proof": "ime_correction::tests::boundary_split_survives_live_l2_phase_apply"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_autocorrect_can_use_tail_context_for_nanda",
+      "cluster": "ime_authority",
+      "first_loss_layer": "AlreadySatisfied",
+      "authority_source": "src/exact_layout_authority.rs",
+      "disposition": "CLOSED_EXACT_AUTHORITY_REPLACEMENT",
+      "replacement_proof": "ime_correction::tests::closed_exact_layout_uses_ascii_tail_context"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_autocorrect_handles_ascii_tail_after_russian_context",
+      "cluster": "ime_authority",
+      "first_loss_layer": "AlreadySatisfied",
+      "authority_source": "src/exact_layout_authority.rs",
+      "disposition": "CLOSED_EXACT_AUTHORITY_REPLACEMENT",
+      "replacement_proof": "ime_correction::tests::closed_exact_layout_uses_russian_tail_context"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_autocorrect_handles_autozamena_layout_word",
+      "cluster": "ime_authority",
+      "first_loss_layer": "AlreadySatisfied",
+      "authority_source": "src/exact_layout_authority.rs",
+      "disposition": "CLOSED_EXACT_AUTHORITY_REPLACEMENT",
+      "replacement_proof": "ime_correction::tests::closed_exact_layout_handles_autozamena_word"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_autocorrect_handles_plain_en_to_ru_layout_words",
+      "cluster": "ime_authority",
+      "first_loss_layer": "AlreadySatisfied",
+      "authority_source": "src/exact_layout_authority.rs",
+      "disposition": "CLOSED_EXACT_AUTHORITY_REPLACEMENT",
+      "replacement_proof": "ime_correction::tests::closed_exact_layout_handles_plain_us_to_ru_word"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_autocorrect_keeps_ascii_layout_punctuation_in_token",
+      "cluster": "ime_authority",
+      "first_loss_layer": "AlreadySatisfied",
+      "authority_source": "src/exact_layout_authority.rs",
+      "disposition": "CLOSED_EXACT_AUTHORITY_REPLACEMENT",
+      "replacement_proof": "ime_correction::tests::closed_exact_layout_keeps_ascii_layout_punctuation_in_token"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_autocorrect_repairs_autozamena_mixed_prefix",
+      "cluster": "ime_authority",
+      "first_loss_layer": "AlreadySatisfied",
+      "authority_source": "src/ime_correction.rs",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED",
+      "replacement_proof": "ime_correction::tests::frameless_mixed_layout_prefix_remains_unapplied"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_autocorrect_repairs_duplicate_latin_prefix_before_russian_word",
+      "cluster": "ime_authority",
+      "first_loss_layer": "BirthOrRetention",
+      "authority_source": "src/ime_correction.rs",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED",
+      "replacement_proof": "ime_correction::tests::frameless_duplicate_latin_prefix_remains_unapplied"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_autocorrect_repairs_layout_word_with_missing_initial_letter",
+      "cluster": "ime_authority",
+      "first_loss_layer": "BirthOrRetention",
+      "authority_source": "src/ime_correction.rs",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED",
+      "replacement_proof": "ime_correction::tests::frameless_missing_initial_layout_letter_remains_unapplied"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_boundary_split_is_authorized_for_space_autocorrect",
+      "cluster": "ime_authority",
+      "first_loss_layer": "NonSemanticLegacyProducerAssertion",
+      "authority_source": "src/nanda_wave/l2_field/bridge.rs",
+      "disposition": "SUPERSEDED_PRODUCER_ID_REPLACED",
+      "replacement_proof": "ime_correction::tests::committed_tail_boundary_split_is_authorized_for_space_autocorrect"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_boundary_uses_same_dual_layout_decision_as_cli",
+      "cluster": "ime_authority",
+      "first_loss_layer": "BirthOrRetention",
+      "authority_source": "src/exact_layout_authority.rs",
+      "disposition": "CLOSED_EXACT_AUTHORITY_REPLACEMENT",
+      "replacement_proof": "ime_correction::tests::mutable_layout_hint_cannot_replace_closed_exact_layout_authority"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_context_recurrence_restores_unique_one_edit_word",
+      "cluster": "ime_authority",
+      "first_loss_layer": "AlreadySatisfied",
+      "authority_source": "src/ime_correction.rs",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED",
+      "replacement_proof": "ime_correction::tests::frameless_context_recurrence_does_not_mint_one_edit_authority"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_repairs_accidental_final_consonant_after_imperative",
+      "cluster": "ime_authority",
+      "first_loss_layer": "BirthOrRetention",
+      "authority_source": "src/ime_correction.rs",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED",
+      "replacement_proof": "ime_correction::tests::frameless_final_consonant_repair_remains_unapplied"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_space_action_matches_physical_token_without_pending_space",
+      "cluster": "ime_authority",
+      "first_loss_layer": "BirthOrRetention",
+      "authority_source": "src/ime_correction.rs",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED",
+      "replacement_proof": "ime_correction::tests::frameless_typo_does_not_build_a_physical_edit_plan"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_space_route_defaults_to_canonical_l2_owner_for_l11_seeded_restore",
+      "cluster": "ime_authority",
+      "first_loss_layer": "LexicalAuthority",
+      "authority_source": "src/ime_correction.rs",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED",
+      "replacement_proof": "ime_correction::tests::frameless_l11_seeded_restore_remains_non_authoritative"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_space_route_keeps_verified_inverse_length_member_of_l2_tie",
+      "cluster": "ime_authority",
+      "first_loss_layer": "LexicalAuthority",
+      "authority_source": "src/typing_transition/proposal_admission/structural_guards.rs",
+      "disposition": "SAFETY_REGRESSION_REPAIRED",
+      "replacement_proof": "ime_correction::tests::unverified_inverse_length_candidate_cannot_fall_back_to_a_weak_split"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::committed_tail_space_route_uses_shared_decision_core_for_dirty_tokens",
+      "cluster": "ime_authority",
+      "first_loss_layer": "LexicalAuthority",
+      "authority_source": "src/ime_correction.rs",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED",
+      "replacement_proof": "ime_correction::tests::frameless_dirty_tokens_preserve_only_structurally_verified_boundary_authority"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::live_l2_space_route_keeps_short_wrong_layout_function_word_authority",
+      "cluster": "ime_authority",
+      "first_loss_layer": "BirthOrRetention",
+      "authority_source": "src/exact_layout_authority.rs",
+      "disposition": "PROJECTION_PRESERVED_AUTHORITY_WITHHELD",
+      "replacement_proof": "ime_correction::tests::short_layout_projection_remains_non_authoritative_without_a_closed_certificate"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::repeated_boundary_token_live_route_changes_only_current_token",
+      "cluster": "ime_authority",
+      "first_loss_layer": "NonSemanticLegacyProducerAssertion",
+      "authority_source": "src/nanda_wave/l2_field/bridge.rs",
+      "disposition": "SUPERSEDED_PRODUCER_ID_REPLACED",
+      "replacement_proof": "ime_correction::tests::repeated_boundary_token_live_route_changes_only_current_token"
+    },
+    {
+      "target": "lib:lay",
+      "baseline_test": "ime_correction::tests::sequential_layout_words_keep_the_same_boundary_authority",
+      "cluster": "ime_authority",
+      "first_loss_layer": "BirthOrRetention",
+      "authority_source": "src/exact_layout_authority.rs",
+      "disposition": "PROJECTION_PRESERVED_AUTHORITY_WITHHELD",
+      "replacement_proof": "ime_correction::tests::sequential_frameless_layout_words_keep_projection_without_automatic_authority"
+    }
+  ]
+}
+

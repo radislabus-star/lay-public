@@ -11,14 +11,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2308,
+    "correctness": 2309,
     "ignored": 13,
     "package": 35,
     "performance": 11
   },
   "isolation_counts": {
     "process": 27,
-    "target": 2340
+    "target": 2341
   },
   "package_fixtures": [
     {
@@ -1222,6 +1222,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "correction_core::tests::boundary_gate_rejects_short_function_split_with_unknown_tail",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "correction_core::tests::boundary_gate_rejects_unproven_prefix_like_split",
       "target": "lib:lay"
     },
     {
@@ -2747,42 +2754,7 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "ime_correction::tests::active_composition_autocorrect_uses_the_nanda_owner",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "ime_correction::tests::active_composition_autocorrect_uses_unified_input_gate",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "ime_correction::tests::active_composition_context_replacement_keeps_previous_words_out_of_commit",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "ime_correction::tests::active_composition_decision_returns_only_live_text_replacement",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
       "name": "ime_correction::tests::active_composition_gate_text_preserves_committed_prefix_for_decision_only",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "ime_correction::tests::active_english_layout_does_not_protect_internal_layout_letter_symbol",
       "target": "lib:lay"
     },
     {
@@ -2796,20 +2768,6 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "ime_correction::tests::active_layout_guard_does_not_block_non_layout_typo_repair",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "ime_correction::tests::active_russian_layout_allows_unknown_cyrillic_projection_to_known_ascii",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
       "name": "ime_correction::tests::boundary_split_survives_live_l2_phase_apply",
       "target": "lib:lay"
     },
@@ -2817,56 +2775,35 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_autocorrect_can_use_tail_context_for_nanda",
+      "name": "ime_correction::tests::closed_exact_layout_handles_autozamena_word",
       "target": "lib:lay"
     },
     {
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_autocorrect_handles_ascii_tail_after_russian_context",
+      "name": "ime_correction::tests::closed_exact_layout_handles_plain_us_to_ru_word",
       "target": "lib:lay"
     },
     {
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_autocorrect_handles_autozamena_layout_word",
+      "name": "ime_correction::tests::closed_exact_layout_keeps_ascii_layout_punctuation_in_token",
       "target": "lib:lay"
     },
     {
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_autocorrect_handles_plain_en_to_ru_layout_words",
+      "name": "ime_correction::tests::closed_exact_layout_uses_ascii_tail_context",
       "target": "lib:lay"
     },
     {
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_autocorrect_keeps_ascii_layout_punctuation_in_token",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_autocorrect_repairs_autozamena_mixed_prefix",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_autocorrect_repairs_duplicate_latin_prefix_before_russian_word",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_autocorrect_repairs_layout_word_with_missing_initial_letter",
+      "name": "ime_correction::tests::closed_exact_layout_uses_russian_tail_context",
       "target": "lib:lay"
     },
     {
@@ -2887,42 +2824,7 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_boundary_uses_same_dual_layout_decision_as_cli",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
       "name": "ime_correction::tests::committed_tail_boundary_winner_survives_the_structural_adapter",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_context_recurrence_restores_unique_one_edit_word",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_repairs_accidental_final_consonant_after_imperative",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_space_action_matches_physical_token_without_pending_space",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_space_route_defaults_to_canonical_l2_owner_for_l11_seeded_restore",
       "target": "lib:lay"
     },
     {
@@ -2943,21 +2845,7 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_space_route_keeps_verified_inverse_length_member_of_l2_tie",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
       "name": "ime_correction::tests::committed_tail_space_route_restores_trailing_function_boundaries",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "ime_correction::tests::committed_tail_space_route_uses_shared_decision_core_for_dirty_tokens",
       "target": "lib:lay"
     },
     {
@@ -2992,6 +2880,97 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "ime_correction::tests::frameless_composition_does_not_return_unbound_typo_replacement",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::frameless_context_candidate_does_not_mint_automatic_authority",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::frameless_context_recurrence_does_not_mint_one_edit_authority",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::frameless_dirty_tokens_preserve_only_structurally_verified_boundary_authority",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::frameless_duplicate_latin_prefix_remains_unapplied",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::frameless_final_consonant_repair_remains_unapplied",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::frameless_l11_seeded_restore_remains_non_authoritative",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::frameless_missing_initial_layout_letter_remains_unapplied",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::frameless_mixed_layout_prefix_remains_unapplied",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::frameless_nanda_candidate_does_not_mint_automatic_authority",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::frameless_typo_candidate_does_not_mint_automatic_authority",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::frameless_typo_does_not_build_a_physical_edit_plan",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::internal_layout_symbol_projection_remains_non_authoritative_without_a_closed_certificate",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "ime_correction::tests::isolated_short_one_edit_word_remains_ambiguous",
       "target": "lib:lay"
     },
@@ -2999,7 +2978,21 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "ime_correction::tests::live_l2_space_route_keeps_short_wrong_layout_function_word_authority",
+      "name": "ime_correction::tests::mutable_active_layout_hint_does_not_mint_typo_authority",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::mutable_layout_hint_cannot_replace_closed_exact_layout_authority",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::mutable_ru_layout_hint_does_not_mint_inverse_layout_authority",
       "target": "lib:lay"
     },
     {
@@ -3020,7 +3013,21 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "ime_correction::tests::sequential_layout_words_keep_the_same_boundary_authority",
+      "name": "ime_correction::tests::sequential_frameless_layout_words_keep_projection_without_automatic_authority",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::short_layout_projection_remains_non_authoritative_without_a_closed_certificate",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::unverified_inverse_length_candidate_cannot_fall_back_to_a_weak_split",
       "target": "lib:lay"
     },
     {

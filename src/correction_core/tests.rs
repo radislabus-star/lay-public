@@ -1621,6 +1621,44 @@ mod tests {
     }
 
     #[test]
+    fn boundary_gate_rejects_unproven_prefix_like_split() {
+        for (original, replacement, expected_reason) in [
+            ("перхвачу ", "пер хвачу ", "weak_boundary_split_tail"),
+            (
+                "внутренний ",
+                "вну тренний ",
+                "known_single_word_boundary_split",
+            ),
+            (
+                "псевдоним ",
+                "псев доним ",
+                "known_single_word_boundary_split",
+            ),
+        ] {
+            let gate = gate_candidate(original, replacement, TypingErrorClass::GluedWords);
+            assert_eq!(
+                gate.action,
+                CandidateGateAction::SuggestOnly,
+                "prefix fragment {original:?} -> {replacement:?}"
+            );
+            assert_eq!(gate.reason, expected_reason);
+        }
+
+        for (original, replacement) in [
+            ("данорм ", "да норм "),
+            ("тоесть ", "то есть "),
+            ("Еленапросит ", "Елена просит "),
+        ] {
+            let gate = gate_candidate(original, replacement, TypingErrorClass::GluedWords);
+            assert_eq!(
+                gate.action,
+                CandidateGateAction::Eligible,
+                "valid boundary {original:?} -> {replacement:?}"
+            );
+        }
+    }
+
+    #[test]
     fn composite_typo_repairs_generated_russian_forms() {
         let pipeline = default_typing_assist_pipeline();
         for (input, expected, expected_class, should_apply) in [

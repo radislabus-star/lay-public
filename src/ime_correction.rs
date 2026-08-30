@@ -366,9 +366,10 @@ impl ActiveCompositionGateConfig {
 mod tests {
     use super::{
         active_composition_gate_text, decide_active_composition_autocorrect,
+        decide_active_composition_autocorrect_observed,
         decide_active_composition_autocorrect_observed_with_exact,
         prepare_exact_layout_active_composition_autocorrect_observed,
-        ActiveCompositionAutocorrectRequest,
+        ActiveCompositionAutocorrectRequest, AutocorrectNoApplyStage,
     };
     use crate::config::LayConfig;
     use crate::exact_layout_authority::{
@@ -417,6 +418,84 @@ mod tests {
         }
     }
 
+    fn assert_frameless_abstains(
+        text: &str,
+        committed_tail: &str,
+        active_layout_is_ru: Option<bool>,
+    ) {
+        let cfg = config();
+        let observed =
+            decide_active_composition_autocorrect_observed(ActiveCompositionAutocorrectRequest {
+                text,
+                committed_tail,
+                config: &cfg,
+                lexical_authority_frame: None,
+                active_layout_is_ru,
+            });
+
+        assert!(
+            observed.decision.is_none(),
+            "frameless route must not mint automatic lexical authority: text={text:?} tail={committed_tail:?}"
+        );
+        assert!(
+            matches!(
+                observed.no_apply_stage,
+                Some(AutocorrectNoApplyStage::Rank | AutocorrectNoApplyStage::Verifier)
+            ),
+            "frameless route must record an explicit no-apply stage: text={text:?} tail={committed_tail:?}"
+        );
+    }
+
+    fn assert_exact_us_layout_replacement(token: &str, committed_tail: &str, expected: &str) {
+        let cfg = config();
+        let text = format!("{token} ");
+        let (_, active_prefix) = active_composition_gate_text(&text, committed_tail);
+        let frame = exact_us_frame(token);
+        let prepared = prepare_exact_layout_active_composition_autocorrect_observed(
+            ActiveCompositionAutocorrectRequest {
+                text: &text,
+                committed_tail,
+                config: &cfg,
+                lexical_authority_frame: None,
+                active_layout_is_ru: Some(false),
+            },
+            &frame,
+        )
+        .prepared
+        .unwrap_or_else(|| panic!("closed exact layout certificate for {token:?}"));
+        assert!(prepared.certificate.matches_frame(17, 0x27_10));
+        assert_eq!(prepared.certificate.original_token(), token);
+        assert_eq!(
+            prepared.certificate.projected_token(),
+            expected.trim_end_matches(char::is_whitespace)
+        );
+        assert_eq!(
+            prepared.certificate.replacement_text(),
+            format!("{active_prefix}{expected}")
+        );
+        let decision = prepared
+            .decision
+            .unwrap_or_else(|| panic!("closed exact layout decision for {token:?}"));
+
+        assert_eq!(decision.replacement, expected, "token={token:?}");
+        assert!(decision.action.allow_apply(), "token={token:?}");
+        assert_eq!(
+            decision.action.transition().proof(),
+            Some(crate::text_edit::TransitionProof::Layout),
+            "token={token:?}"
+        );
+        assert_eq!(
+            decision.action.selected_error_class(),
+            Some("wrong_layout"),
+            "token={token:?}"
+        );
+        assert_eq!(
+            decision.action.plan().map(|plan| plan.insert.as_str()),
+            Some(expected),
+            "token={token:?}"
+        );
+    }
+
     #[test]
     fn active_composition_gate_text_preserves_committed_prefix_for_decision_only() {
         let (gate_text, prefix) = active_composition_gate_text("прохоил ", "я прохоил");
@@ -426,76 +505,58 @@ mod tests {
     }
 
     #[test]
-    fn active_composition_decision_returns_only_live_text_replacement() {
-        let cfg = config();
-        let decision =
-            decide_active_composition_autocorrect(super::ActiveCompositionAutocorrectRequest {
-                text: "прохоил ",
-                committed_tail: "я прохоил",
-                config: &cfg,
-                lexical_authority_frame: None,
-                active_layout_is_ru: None,
-            })
-            .expect("decision");
-
-        assert_eq!(decision.replacement, "проходил ");
-        assert_eq!(decision.action.from_text(), "прохоил");
-        assert!(
-            decision.action.allow_apply(),
-            "replacement={:?} action={:?}",
-            decision.replacement,
-            decision.action
-        );
+    fn frameless_composition_does_not_return_unbound_typo_replacement() {
+        assert_frameless_abstains("прохоил ", "я прохоил", None);
     }
 
     #[test]
-    fn active_composition_autocorrect_uses_the_nanda_owner() {
-        assert_replacement("тфтвф ", "", "nanda ");
+    fn frameless_nanda_candidate_does_not_mint_automatic_authority() {
+        assert_frameless_abstains("тфтвф ", "", None);
     }
 
     #[test]
-    fn active_composition_autocorrect_uses_unified_input_gate() {
-        assert_replacement("прохоил ", "я прохоил", "проходил ");
+    fn frameless_typo_candidate_does_not_mint_automatic_authority() {
+        assert_frameless_abstains("прохоил ", "я прохоил", None);
     }
 
     #[test]
-    fn active_composition_context_replacement_keeps_previous_words_out_of_commit() {
-        assert_replacement("ффективная ", "на сколько ффективная", "эффективная ");
+    fn frameless_context_candidate_does_not_mint_automatic_authority() {
+        assert_frameless_abstains("ффективная ", "на сколько ффективная", None);
     }
 
     #[test]
-    fn committed_tail_autocorrect_can_use_tail_context_for_nanda() {
-        assert_replacement("ghjdthrf ", "file ghjdthrf", "проверка ");
+    fn closed_exact_layout_uses_ascii_tail_context() {
+        assert_exact_us_layout_replacement("ghjdthrf", "file ghjdthrf", "проверка ");
     }
 
     #[test]
-    fn committed_tail_autocorrect_handles_ascii_tail_after_russian_context() {
-        assert_replacement("ghjdthrf ", "проверка ghjdthrf", "проверка ");
+    fn closed_exact_layout_uses_russian_tail_context() {
+        assert_exact_us_layout_replacement("ghjdthrf", "проверка ghjdthrf", "проверка ");
     }
 
     #[test]
-    fn committed_tail_autocorrect_handles_autozamena_layout_word() {
-        assert_replacement("fdnjpfvtyf ", "fdnjpfvtyf", "автозамена ");
+    fn closed_exact_layout_handles_autozamena_word() {
+        assert_exact_us_layout_replacement("fdnjpfvtyf", "fdnjpfvtyf", "автозамена ");
     }
 
     #[test]
-    fn committed_tail_autocorrect_repairs_layout_word_with_missing_initial_letter() {
-        assert_replacement("dnjpfvtyf ", "dnjpfvtyf", "автозамена ");
+    fn frameless_missing_initial_layout_letter_remains_unapplied() {
+        assert_frameless_abstains("dnjpfvtyf ", "dnjpfvtyf", None);
     }
 
     #[test]
-    fn committed_tail_autocorrect_repairs_autozamena_mixed_prefix() {
-        assert_replacement("fвтозамена ", "fвтозамена", "автозамена ");
+    fn frameless_mixed_layout_prefix_remains_unapplied() {
+        assert_frameless_abstains("fвтозамена ", "fвтозамена", None);
     }
 
     #[test]
-    fn committed_tail_autocorrect_repairs_duplicate_latin_prefix_before_russian_word() {
-        assert_replacement("fавтозамена ", "fавтозамена", "автозамена ");
+    fn frameless_duplicate_latin_prefix_remains_unapplied() {
+        assert_frameless_abstains("fавтозамена ", "fавтозамена", None);
     }
 
     #[test]
-    fn committed_tail_autocorrect_handles_plain_en_to_ru_layout_words() {
-        assert_replacement("ghbdtn ", "ghbdtn", "привет ");
+    fn closed_exact_layout_handles_plain_us_to_ru_word() {
+        assert_exact_us_layout_replacement("ghbdtn", "ghbdtn", "привет ");
     }
 
     #[test]
@@ -619,66 +680,43 @@ mod tests {
     }
 
     #[test]
-    fn sequential_layout_words_keep_the_same_boundary_authority() {
-        let cfg = config();
+    fn sequential_frameless_layout_words_keep_projection_without_automatic_authority() {
         let mut committed_tail = String::new();
         for (typed, expected) in [
-            ("lfkmit ", "дальше "),
-            ("yt ", "не "),
-            ("gthtdjhfxbdftncz ", "переворачивается "),
+            ("lfkmit", "дальше"),
+            ("yt", "не"),
+            ("gthtdjhfxbdftncz", "переворачивается"),
         ] {
-            let decision =
-                decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
-                    text: typed,
-                    committed_tail: &committed_tail,
-                    config: &cfg,
-                    lexical_authority_frame: None,
-                    active_layout_is_ru: None,
-                })
-                .unwrap_or_else(|| panic!("missing layout transition for {typed:?}"));
-            assert_eq!(decision.replacement, expected);
+            let visible_tail = format!("{committed_tail}{typed}");
+            assert_eq!(
+                crate::dict::convert(typed, crate::dict::Direction::Us2Ru),
+                expected
+            );
+            assert_frameless_abstains(&format!("{typed} "), &visible_tail, Some(false));
             committed_tail.push_str(expected);
+            committed_tail.push(' ');
         }
     }
 
     #[test]
-    fn live_l2_space_route_keeps_short_wrong_layout_function_word_authority() {
-        let cfg = live_l2_phase_config();
-        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
-            text: "yt ",
-            committed_tail: "yt",
-            config: &cfg,
-            lexical_authority_frame: None,
-            active_layout_is_ru: Some(false),
-        })
-        .expect("short wrong-layout function word");
-
-        assert_eq!(decision.replacement, "не ");
-        assert_eq!(decision.action.selected_error_class(), Some("wrong_layout"));
-        assert!(decision.action.allow_apply());
+    fn short_layout_projection_remains_non_authoritative_without_a_closed_certificate() {
+        assert_eq!(
+            crate::dict::convert("yt", crate::dict::Direction::Us2Ru),
+            "не"
+        );
+        assert_frameless_abstains("yt ", "yt", Some(false));
     }
 
     #[test]
-    fn committed_tail_boundary_uses_same_dual_layout_decision_as_cli() {
-        let cfg = config();
-        for (tail, token, expected) in [
-            ("смотрим цусрфе", "цусрфе", "wechat "),
-            ("проверяем вщцутдщфв", "вщцутдщфв", "download "),
-            ("check ghbdtn", "ghbdtn", "привет "),
+    fn mutable_layout_hint_cannot_replace_closed_exact_layout_authority() {
+        for (tail, token) in [
+            ("смотрим цусрфе", "цусрфе"),
+            ("проверяем вщцутдщфв", "вщцутдщфв"),
         ] {
             let text = format!("{token} ");
-            let decision =
-                decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
-                    text: &text,
-                    committed_tail: tail,
-                    config: &cfg,
-                    lexical_authority_frame: None,
-                    active_layout_is_ru: None,
-                })
-                .unwrap_or_else(|| panic!("dual-layout decision for tail={tail:?}"));
-
-            assert_eq!(decision.replacement, expected, "tail={tail:?}");
+            assert_frameless_abstains(&text, tail, Some(true));
         }
+        assert_exact_us_layout_replacement("ghbdtn", "check ghbdtn", "привет ");
     }
 
     #[test]
@@ -713,67 +751,27 @@ mod tests {
     }
 
     #[test]
-    fn active_english_layout_does_not_protect_internal_layout_letter_symbol() {
-        let cfg = live_l2_phase_config();
-        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
-            text: "ye;ty ",
-            committed_tail: "ye;ty",
-            config: &cfg,
-            lexical_authority_frame: None,
-            active_layout_is_ru: Some(false),
-        })
-        .expect("internal layout-letter symbol must remain eligible for projection");
-
-        assert_eq!(decision.replacement, "нужен ");
-        assert_eq!(decision.action.selected_error_class(), Some("wrong_layout"));
-        assert!(decision.action.allow_apply());
+    fn internal_layout_symbol_projection_remains_non_authoritative_without_a_closed_certificate() {
+        assert_eq!(
+            crate::dict::convert("ye;ty", crate::dict::Direction::Us2Ru),
+            "нужен"
+        );
+        assert_frameless_abstains("ye;ty ", "ye;ty", Some(false));
     }
 
     #[test]
-    fn active_russian_layout_allows_unknown_cyrillic_projection_to_known_ascii() {
-        let cfg = config();
-        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
-            text: "зва ",
-            committed_tail: "зва",
-            config: &cfg,
-            lexical_authority_frame: None,
-            active_layout_is_ru: Some(true),
-        })
-        .expect("unknown active-layout surface may project to a known opposite-layout token");
-
-        assert_eq!(decision.replacement, "pdf ");
+    fn mutable_ru_layout_hint_does_not_mint_inverse_layout_authority() {
+        assert_frameless_abstains("зва ", "зва", Some(true));
     }
 
     #[test]
-    fn active_layout_guard_does_not_block_non_layout_typo_repair() {
-        let cfg = config();
-        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
-            text: "прохоил ",
-            committed_tail: "прохоил",
-            config: &cfg,
-            lexical_authority_frame: None,
-            active_layout_is_ru: Some(true),
-        })
-        .expect("ordinary typo correction");
-
-        assert_eq!(decision.replacement, "проходил ");
+    fn mutable_active_layout_hint_does_not_mint_typo_authority() {
+        assert_frameless_abstains("прохоил ", "прохоил", Some(true));
     }
 
     #[test]
-    fn committed_tail_repairs_accidental_final_consonant_after_imperative() {
-        let cfg = config();
-        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
-            text: "читайл ",
-            committed_tail: "читайл",
-            config: &cfg,
-            lexical_authority_frame: None,
-            active_layout_is_ru: Some(true),
-        })
-        .expect("final-consonant extra-letter correction");
-
-        assert_eq!(decision.replacement, "читай ");
-        assert_eq!(decision.action.selected_error_class(), Some("extra-letter"));
-        assert!(decision.action.allow_apply());
+    fn frameless_final_consonant_repair_remains_unapplied() {
+        assert_frameless_abstains("читайл ", "читайл", Some(true));
     }
 
     #[test]
@@ -789,7 +787,10 @@ mod tests {
         .expect("boundary decision");
 
         assert_eq!(decision.replacement, "то есть ");
-        assert_eq!(decision.action.selected_source_id(), Some("glued_phrase"));
+        assert_eq!(
+            decision.action.selected_source_id(),
+            Some("CanonicalL2FieldBoundary")
+        );
         assert!(
             decision.action.allow_apply(),
             "action={:?}",
@@ -855,7 +856,10 @@ mod tests {
         .expect("boundary decision");
 
         assert_eq!(decision.replacement, "то есть ");
-        assert_eq!(decision.action.selected_source_id(), Some("glued_phrase"));
+        assert_eq!(
+            decision.action.selected_source_id(),
+            Some("CanonicalL2FieldBoundary")
+        );
         assert!(
             decision.action.allow_apply(),
             "action={:?}",
@@ -878,7 +882,10 @@ mod tests {
         assert_eq!(decision.replacement, "то есть ");
         assert_eq!(decision.action.from_text(), "тоесть");
         assert_eq!(decision.action.to_text(), "то есть ");
-        assert_eq!(decision.action.selected_source_id(), Some("glued_phrase"));
+        assert_eq!(
+            decision.action.selected_source_id(),
+            Some("CanonicalL2FieldBoundary")
+        );
         assert!(
             decision.action.allow_apply(),
             "action={:?}",
@@ -887,67 +894,39 @@ mod tests {
     }
 
     #[test]
-    fn committed_tail_space_action_matches_physical_token_without_pending_space() {
+    fn frameless_typo_does_not_build_a_physical_edit_plan() {
+        assert_frameless_abstains(
+            "автозаменет ",
+            "блять зайди в лог посмотреть как он автозаменет",
+            None,
+        );
+    }
+
+    #[test]
+    fn frameless_dirty_tokens_preserve_only_structurally_verified_boundary_authority() {
         let cfg = live_l2_phase_config();
-        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
-            text: "автозаменет ",
-            committed_tail: "блять зайди в лог посмотреть как он автозаменет",
+        let boundary = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "ятут ",
+            committed_tail: "ятут",
             config: &cfg,
             lexical_authority_frame: None,
             active_layout_is_ru: None,
         })
-        .expect("autozamena decision");
-
-        assert_eq!(decision.replacement, "автозамена ");
-        assert_eq!(decision.action.from_text(), "автозаменет");
-        assert_eq!(decision.action.to_text(), "автозамена ");
-        let plan = decision.action.plan().expect("edit plan");
-        assert_eq!(plan.move_left, 0);
-        assert_eq!(plan.backspaces, "автозаменет".chars().count() as u32);
-        assert_eq!(plan.insert, "автозамена ");
-        assert_eq!(plan.move_right, 0);
-        assert!(
-            decision.action.allow_apply(),
-            "action={:?}",
-            decision.action
+        .expect("verified boundary decision");
+        assert_eq!(boundary.replacement, "я тут ");
+        assert_eq!(
+            boundary.action.selected_source_id(),
+            Some("CanonicalL2FieldBoundary")
         );
+        assert!(boundary.action.allow_apply());
+
+        assert_frameless_abstains("видешь ", "видешь", None);
+        assert_frameless_abstains("дожь ", "за окном весь вечер идёт дожь", None);
     }
 
     #[test]
-    fn committed_tail_space_route_uses_shared_decision_core_for_dirty_tokens() {
-        let cfg = live_l2_phase_config();
-        for (committed_tail, token, expected) in [
-            ("ятут", "ятут", "я тут "),
-            ("видешь", "видешь", "видишь "),
-            ("за окном весь вечер идёт дожь", "дожь", "дождь "),
-        ] {
-            let text = format!("{token} ");
-            let decision =
-                decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
-                    text: &text,
-                    committed_tail,
-                    config: &cfg,
-                    lexical_authority_frame: None,
-                    active_layout_is_ru: None,
-                })
-                .unwrap_or_else(|| panic!("missing shared decision for {committed_tail:?}"));
-
-            assert_eq!(decision.replacement, expected, "tail={committed_tail:?}");
-            assert!(
-                decision.action.allow_apply(),
-                "tail={committed_tail:?} action={:?}",
-                decision.action
-            );
-        }
-    }
-
-    #[test]
-    fn committed_tail_context_recurrence_restores_unique_one_edit_word() {
-        assert_replacement(
-            "мло ",
-            "сделать ошибку в слове мало и написать мло",
-            "мало ",
-        );
+    fn frameless_context_recurrence_does_not_mint_one_edit_authority() {
+        assert_frameless_abstains("мло ", "сделать ошибку в слове мало и написать мло", None);
     }
 
     #[test]
@@ -979,32 +958,13 @@ mod tests {
     }
 
     #[test]
-    fn committed_tail_space_route_keeps_verified_inverse_length_member_of_l2_tie() {
-        assert_replacement("перхвачу ", "клавиатурой не перхвачу", "перехвачу ");
+    fn unverified_inverse_length_candidate_cannot_fall_back_to_a_weak_split() {
+        assert_frameless_abstains("перхвачу ", "клавиатурой не перхвачу", None);
     }
 
     #[test]
-    fn committed_tail_space_route_defaults_to_canonical_l2_owner_for_l11_seeded_restore() {
-        let cfg = config();
-        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
-            text: "врмея ",
-            committed_tail: "врмея",
-            config: &cfg,
-            lexical_authority_frame: None,
-            active_layout_is_ru: None,
-        })
-        .expect("canonical live-owner decision");
-
-        assert_eq!(decision.replacement, "время ");
-        assert!(
-            decision
-                .action
-                .selected_source_id()
-                .is_some_and(|source_id| source_id.starts_with("CanonicalL2Field")),
-            "selected_source_id={:?} action={:?}",
-            decision.action.selected_source_id(),
-            decision.action
-        );
+    fn frameless_l11_seeded_restore_remains_non_authoritative() {
+        assert_frameless_abstains("врмея ", "врмея", None);
     }
 
     #[test]
@@ -1059,8 +1019,8 @@ mod tests {
     }
 
     #[test]
-    fn committed_tail_autocorrect_keeps_ascii_layout_punctuation_in_token() {
-        assert_replacement("ghj,ktvf ", "ghj,ktvf", "проблема ");
+    fn closed_exact_layout_keeps_ascii_layout_punctuation_in_token() {
+        assert_exact_us_layout_replacement("ghj,ktvf", "ghj,ktvf", "проблема ");
     }
 
     fn assert_replacement(text: &str, committed_tail: &str, expected: &str) {

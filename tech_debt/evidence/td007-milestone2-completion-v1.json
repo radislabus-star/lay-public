@@ -1,0 +1,54 @@
+{
+  "schema": "lay.td007.milestone-completion.v1",
+  "task": "TD-007",
+  "milestone": 2,
+  "verdict": "MILESTONE_2_PASS",
+  "recorded_at_utc": "2026-08-30T00:52:13.063419+00:00",
+  "base_git_head": "447e1d24d49110637ff7f1e671098ef3736c2df6",
+  "source_closure_sha256": "aa6ecabde1a2c17e29ffdcc15abe2e9ab3ce4f3ce616fff0227da9147a7ce09b",
+  "baseline_failure_count": 81,
+  "closed_failure_count": 28,
+  "remaining_failure_count": 53,
+  "partition_overlap_count": 0,
+  "remaining_by_lane": {
+    "correctness": 33,
+    "package": 20
+  },
+  "dispositions": {
+    "NONDETERMINISTIC_TARGET_ASSERTION_REPLACED_BY_FRAME_CONSISTENCY": 1,
+    "SUPERSEDED_FRAMELESS_AUTOMATIC_AUTHORITY_REPLACED": 13,
+    "PROJECTION_PRESERVED_AUTHORITY_WITHHELD": 4,
+    "SUPERSEDED_PRODUCER_ID_REPLACED": 3,
+    "CLOSED_EXACT_AUTHORITY_REPLACEMENT": 6,
+    "SAFETY_REGRESSION_REPAIRED": 1
+  },
+  "evidence": {
+    "ledger": {
+      "path": "tech_debt/evidence/td007-milestone2-ledger-v1.json",
+      "sha256": "0637cde490c16000abd85f74adc2edaa5f532000f5a0a3316795283b0984d86c"
+    },
+    "known_failures": {
+      "path": "tech_debt/evidence/td007-milestone2-known-failures-v1.json",
+      "sha256": "8f11cdc9543f3c035c954d187df56867334666f6becba51a2ce0b7521237128f"
+    },
+    "verification": {
+      "path": "tech_debt/evidence/td007-milestone2-verified-v3.json",
+      "sha256": "94780ddd330a7f69f302f39530e4be9d92da503c59246519dbbc26f760c81014",
+      "verdict": "PASS_WITH_EXACT_KNOWN_FAILURES"
+    },
+    "review": {
+      "path": "tech_debt/evidence/td007-milestone2-independent-review-v2.md",
+      "sha256": "a6ea84ec3ff7d10d810e472a856624c0c0d6e28bf60c71e3204c281216a92152",
+      "allowed_passes_used": 2,
+      "score_at_review_time": 7,
+      "material_findings_repaired": 4
+    }
+  },
+  "source_runtime_semantics_changed": true,
+  "installed_runtime_authority_changed": false,
+  "installed_runtime_mutated": false,
+  "live_desktop_contacted": false,
+  "release_admitted": false,
+  "full_heldout_quality_gate": "DEFERRED_UNTIL_ALL_TD007_RUNTIME_MILESTONES_COMPLETE",
+  "next_action": "TD007_MILESTONE_3"
+}
