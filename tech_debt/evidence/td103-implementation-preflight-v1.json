@@ -1,0 +1,352 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "td103-externalize-research-payload-lifecycle-v1-20260830",
+  "authority_bearing": true,
+  "scientific_future_sensitive": true,
+  "reuses_existing_implementation": false,
+  "baseline_checks": [
+    {
+      "id": "task-contract",
+      "kind": "file",
+      "path": "../103-externalize-research-payloads.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2182,
+        "sha256": "6b03e6d6ad97c033dc95bebdd8d47e19061eac03c19bcc80deef95cb97015ea1"
+      }
+    },
+    {
+      "id": "ignore-policy",
+      "kind": "file",
+      "path": "../../.gitignore",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 1145,
+        "sha256": "27438cb5bfe07298a45e14caf6fc79a63ff83469fec247fd6a6e10cf545202ee"
+      }
+    },
+    {
+      "id": "script-policy",
+      "kind": "file",
+      "path": "../../scripts/README.md",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 1266,
+        "sha256": "2cfe45f919d44fedf9ae56c60cd9306ab0b7cece58fd51015f46c95bc2b0cf18"
+      }
+    },
+    {
+      "id": "historical-controller-ledger",
+      "kind": "file",
+      "path": "../../scripts/research/SHA256SUMS",
+      "expect": {
+        "mode": "0644",
+        "size_bytes": 15029,
+        "sha256": "ca7f8d680848f70c84b3e4cc844e2a46b454519f6025279d21c974fdebd3be54"
+      }
+    },
+    {
+      "id": "payload-inventory",
+      "kind": "file",
+      "path": "td103-payload-inventory-v1.tsv",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 4863,
+        "sha256": "5269e95177f1b180e9b1513ed9a3ee571af0b3ee1bebbf3de904f299f77393db"
+      }
+    },
+    {
+      "id": "parent-mode-inventory",
+      "kind": "file",
+      "path": "td103-parent-mode-inventory-v1.tsv",
+      "expect": {
+        "mode": "0664",
+        "size_bytes": 2127,
+        "sha256": "55c4cc576413b5f4b548c047267996ea475cfc44e9b45412a58d26ee06b44caa"
+      }
+    },
+    {
+      "id": "representative-elf",
+      "kind": "file",
+      "path": "../../docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf",
+      "expect": {
+        "mode": "0555",
+        "size_bytes": 317706232,
+        "sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178"
+      }
+    },
+    {
+      "id": "representative-perf",
+      "kind": "file",
+      "path": "../../docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/perf.data",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 8204266,
+        "sha256": "49bf629491c1c3331b8adee33d25e6d10bd168cd4d153f179ac5b6b3f24cd24e"
+      }
+    },
+    {
+      "id": "representative-source",
+      "kind": "file",
+      "path": "../../docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R1_BUILD_AUDIT_V1_2026-08-27/REMOTE_BUILD/v13_typed_peak.rs",
+      "expect": {
+        "mode": "0444",
+        "size_bytes": 253080,
+        "sha256": "28f87a76fc1996989e980cab51f0443bd95e656fcae3a2ff61f581db9c3a7ee2"
+      }
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-lifecycle-tool", "kind": "source_edit"},
+      {"id": "add-tool-tests", "kind": "test_edit"},
+      {"id": "publish-content-objects", "kind": "filesystem_write"},
+      {"id": "publish-historical-symlinks", "kind": "filesystem_rename"},
+      {"id": "temporary-parent-owner-write", "kind": "filesystem_chmod"},
+      {"id": "write-transaction-journal", "kind": "evidence_write"},
+      {"id": "publish-catalog-and-receipts", "kind": "evidence_write"}
+    ],
+    "forbidden": [
+      "delete_only_payload_copy",
+      "modify_payload_bytes",
+      "modify_tracked_historical_receipt",
+      "modify_historical_controller",
+      "generated_traffic",
+      "synthetic_fixture",
+      "network_request",
+      "cargo_or_rustc",
+      "perf_or_pmu",
+      "install_or_restart",
+      "runtime_authority_change"
+    ]
+  },
+  "source_checks": [],
+  "preserved_artifacts": [
+    {
+      "id": "inventory",
+      "path": "td103-payload-inventory-v1.tsv",
+      "policy": "byte_identical",
+      "rollback_policy": "inventory is immutable after admission",
+      "cursor_policy": "freeze_entire_artifact",
+      "baseline_check_id": "payload-inventory"
+    },
+    {
+      "id": "parent-modes",
+      "path": "td103-parent-mode-inventory-v1.tsv",
+      "policy": "byte_identical",
+      "rollback_policy": "restore every inventoried parent mode from the durable journal",
+      "cursor_policy": "freeze_entire_artifact",
+      "baseline_check_id": "parent-mode-inventory"
+    },
+    {
+      "id": "elf-bytes",
+      "path": "../../docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf",
+      "policy": "byte_identical",
+      "rollback_policy": "restore from verified content object or transaction backup",
+      "cursor_policy": "freeze_entire_artifact",
+      "baseline_check_id": "representative-elf"
+    },
+    {
+      "id": "perf-bytes",
+      "path": "../../docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/perf.data",
+      "policy": "byte_identical",
+      "rollback_policy": "restore from verified content object or transaction backup",
+      "cursor_policy": "freeze_entire_artifact",
+      "baseline_check_id": "representative-perf"
+    },
+    {
+      "id": "source-bytes",
+      "path": "../../docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R1_BUILD_AUDIT_V1_2026-08-27/REMOTE_BUILD/v13_typed_peak.rs",
+      "policy": "byte_identical",
+      "rollback_policy": "restore from verified content object or transaction backup",
+      "cursor_policy": "freeze_entire_artifact",
+      "baseline_check_id": "representative-source"
+    }
+  ],
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "terminal_states": [
+      "TD103_COMPLETE",
+      "BLOCKED_TOOL",
+      "BLOCKED_INVENTORY",
+      "BLOCKED_STAGING_ORIGINALS_INTACT",
+      "BLOCKED_MIGRATION_RECOVERABLE",
+      "BLOCKED_RECOVERY_DRILL"
+    ],
+    "steps": [
+      {
+        "id": "implement-and-self-check-tool",
+        "from": "PREFLIGHT_READY",
+        "to": "TOOL_VERIFIED",
+        "mutates": true,
+        "failure_state": "BLOCKED_TOOL",
+        "cleanup": "retain source and test output; do not touch admitted payload paths",
+        "preserves": ["inventory", "elf-bytes", "perf-bytes", "source-bytes"],
+        "test_id": "tool-faults"
+      },
+      {
+        "id": "verify-inventory-and-capacity",
+        "from": "TOOL_VERIFIED",
+        "to": "INVENTORY_VERIFIED",
+        "mutates": false,
+        "failure_state": "BLOCKED_INVENTORY",
+        "cleanup": "no object or payload path mutation",
+        "preserves": ["inventory", "elf-bytes", "perf-bytes", "source-bytes"],
+        "test_id": "inventory-parity"
+      },
+      {
+        "id": "stage-content-objects",
+        "from": "INVENTORY_VERIFIED",
+        "to": "OBJECTS_VERIFIED",
+        "mutates": true,
+        "failure_state": "BLOCKED_STAGING_ORIGINALS_INTACT",
+        "cleanup": "remove incomplete temporary objects; original receipt paths remain regular and byte-identical",
+        "preserves": ["inventory", "elf-bytes", "perf-bytes", "source-bytes"],
+        "test_id": "object-stage-fault"
+      },
+      {
+        "id": "publish-content-projections",
+        "from": "OBJECTS_VERIFIED",
+        "to": "PROJECTIONS_EXTERNALIZED",
+        "mutates": true,
+        "failure_state": "BLOCKED_MIGRATION_RECOVERABLE",
+        "cleanup": "recover any transaction backup or temporary link, then verify every dereferenced path",
+        "preserves": ["inventory", "elf-bytes", "perf-bytes", "source-bytes"],
+        "test_id": "projection-faults"
+      },
+      {
+        "id": "recovery-drill",
+        "from": "PROJECTIONS_EXTERNALIZED",
+        "to": "RECOVERY_VERIFIED",
+        "mutates": true,
+        "failure_state": "BLOCKED_RECOVERY_DRILL",
+        "cleanup": "retain verified objects and whichever byte-identical regular or symlink projection is present",
+        "preserves": ["inventory", "elf-bytes", "perf-bytes", "source-bytes"],
+        "test_id": "recovery-drill"
+      },
+      {
+        "id": "seal-catalog",
+        "from": "RECOVERY_VERIFIED",
+        "to": "TD103_COMPLETE",
+        "mutates": true,
+        "failure_state": "BLOCKED_MIGRATION_RECOVERABLE",
+        "cleanup": "retain all verified objects, projections, journal, and draft receipt",
+        "preserves": ["inventory", "elf-bytes", "perf-bytes", "source-bytes"],
+        "test_id": "catalog-seal-fault"
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "content-identity",
+      "statement": "every historical path and object dereference to the exact inventoried bytes",
+      "test_id": "payload-parity"
+    },
+    {
+      "id": "no-only-copy-delete",
+      "statement": "an original is renamed only after a complete fsynced object passes SHA-256 and size verification",
+      "test_id": "projection-faults"
+    },
+    {
+      "id": "journal-recovery",
+      "statement": "every crash boundary converges to a byte-identical regular or object-backed projection",
+      "test_id": "tool-faults"
+    },
+    {
+      "id": "parent-mode-restoration",
+      "statement": "every payload parent returns to its inventoried mode after success, handled failure, or journal recovery",
+      "test_id": "parent-mode-fault"
+    },
+    {
+      "id": "tracked-history-unchanged",
+      "statement": "compact receipts and frozen historical controller bytes remain unchanged",
+      "test_id": "historical-ledger-parity"
+    },
+    {
+      "id": "no-runtime-effects",
+      "statement": "the lifecycle performs no build, perf, network, install, restart, or runtime action",
+      "test_id": "command-graph-parity"
+    }
+  ],
+  "identity_contracts": [
+    {
+      "id": "source-to-object",
+      "producer": "inventoried historical receipt payload bytes",
+      "consumer": "content-addressed object",
+      "comparison": "exact size and SHA-256 before source projection changes",
+      "test_id": "payload-parity"
+    },
+    {
+      "id": "object-to-projection",
+      "producer": "verified content object",
+      "consumer": "historical receipt path",
+      "comparison": "exact dereferenced size and SHA-256",
+      "test_id": "payload-parity"
+    },
+    {
+      "id": "inventory-to-catalog",
+      "producer": "sealed TSV inventory",
+      "consumer": "tracked JSON catalog and external transaction receipt",
+      "comparison": "same sorted path, size, mode, SHA-256, and selection",
+      "test_id": "catalog-parity"
+    }
+  ],
+  "runtime_comparisons": [],
+  "tests": [
+    {
+      "id": "tool-faults",
+      "kind": "fault_injection",
+      "expected": "temporary fixture survives failures before object publish, after backup rename, and after link publish with exact bytes"
+    },
+    {
+      "id": "inventory-parity",
+      "kind": "parity",
+      "expected": "18 paths, 3,563,522,494 logical bytes, 15 unique objects, and sufficient store capacity"
+    },
+    {
+      "id": "object-stage-fault",
+      "kind": "fault_injection",
+      "expected": "failed object copy leaves every original regular file untouched"
+    },
+    {
+      "id": "projection-faults",
+      "kind": "fault_injection",
+      "expected": "backup-rename and link-publish failures are idempotently recoverable without byte loss"
+    },
+    {
+      "id": "parent-mode-fault",
+      "kind": "fault_injection",
+      "expected": "handled failure restores parent mode immediately and simulated process loss is repaired from the durable mode journal"
+    },
+    {
+      "id": "recovery-drill",
+      "kind": "fault_injection",
+      "expected": "one ELF, one perf.data, and one source snapshot materialize, verify, and externalize again"
+    },
+    {
+      "id": "payload-parity",
+      "kind": "parity",
+      "expected": "18/18 historical paths and 15/15 objects match sealed size and SHA-256"
+    },
+    {
+      "id": "catalog-parity",
+      "kind": "parity",
+      "expected": "catalog and inventory have identical sorted entry identities"
+    },
+    {
+      "id": "catalog-seal-fault",
+      "kind": "fault_injection",
+      "expected": "interrupted catalog publication retains a recoverable draft and every verified object projection"
+    },
+    {
+      "id": "historical-ledger-parity",
+      "kind": "parity",
+      "expected": "scripts/research/SHA256SUMS passes 122/122 and tracked receipt diff is empty"
+    },
+    {
+      "id": "command-graph-parity",
+      "kind": "unit",
+      "expected": "tool imports only Python standard-library filesystem and hashing modules and exposes no subprocess or network route"
+    }
+  ]
+}

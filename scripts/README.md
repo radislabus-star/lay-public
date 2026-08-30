@@ -37,3 +37,36 @@ sha256sum --check scripts/research/SHA256SUMS
 New one-shot research tooling belongs under `scripts/research/<topic>/` unless
 a frozen paper contract requires an exact top-level path. Active operational
 scripts must not import or dispatch into the historical V10/V11 controllers.
+
+## Large Evidence Payloads
+
+`research-evidence-store.py` owns the ignored large-payload lifecycle. The
+tracked TD-103 inventory and catalog identify the historical receipt paths;
+the bytes live once under
+`/home/ubu/projects/lay-immutable-evidence/content-addressed-v1` and remain
+openable through relative symlinks at their original paths.
+
+Verify every projection and object:
+
+```bash
+scripts/research-evidence-store.py verify --all
+```
+
+Restore a regular file for an external tool, then return it to object-backed
+storage:
+
+```bash
+scripts/research-evidence-store.py materialize --path <inventory-path>
+scripts/research-evidence-store.py externalize --path <inventory-path>
+```
+
+The external root is on the same filesystem and is an ownership boundary, not
+an independent backup. Never remove it as disposable build cache. The tool
+refuses unlisted paths, verifies SHA-256 before every projection change, and
+recovers interrupted parent-mode and source-rename transactions from its
+durable journal.
+
+The frozen v1 object tree is sealed `0555`. Existing objects remain readable
+for verify/materialize/externalize operations; admitting new object hashes
+requires a new inventory and storage transaction rather than silently
+unsealing this tree.

@@ -28710,8 +28710,8 @@
     "semantic_hash": ""
   },
   "scripts/README.md": {
-    "mtime": 1787840154.5003839,
-    "ast_hash": "f119339d73258f7fe98864eec53f31b9",
+    "mtime": 1788098375.0095222,
+    "ast_hash": "d951baa0a6ffb4d8a0fc220b34a11b33",
     "semantic_hash": ""
   },
   "src/typing_transition/proposal_admission/structural_guards.rs": {
@@ -28805,8 +28805,8 @@
     "semantic_hash": ""
   },
   "tech_debt/103-externalize-research-payloads.md": {
-    "mtime": 1787959640.3789105,
-    "ast_hash": "f5a4b39e88e241115ecf7770883019d6",
+    "mtime": 1788099487.9217668,
+    "ast_hash": "1dc0e469e1f829c604224e0f5454ba1b",
     "semantic_hash": ""
   },
   "tech_debt/104-isolate-proof-compiler-build-surface.md": {
@@ -28820,8 +28820,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1788095691.2150226,
-    "ast_hash": "71b658e9b7002bd623cbb8b379b2ab92",
+    "mtime": 1788099283.7645292,
+    "ast_hash": "f9fefd607e74445c5bb68d7d1bab6ec7",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -29727,6 +29727,96 @@
   "tech_debt/evidence/td102-remote-raw-v2/daemon-3.time.txt": {
     "mtime": 1788095300.4849882,
     "ast_hash": "e271a4e7a271b450c167a4f3346621db",
+    "semantic_hash": ""
+  },
+  "scripts/research-evidence-store.py": {
+    "mtime": 1788099118.9158213,
+    "ast_hash": "19b774b6176be8ee93a1f5eee6d834e8",
+    "semantic_hash": ""
+  },
+  "scripts/tests/test_research_evidence_store.py": {
+    "mtime": 1788099169.702336,
+    "ast_hash": "15066d6dac3fca6d76cc227a0a7ccb3a",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-completion-v1.json": {
+    "mtime": 1788099447.9813204,
+    "ast_hash": "f01e6f549a32c7f0d619fd04d6d0fd1b",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-externalize-receipt-v1.json": {
+    "mtime": 1788096928.4105353,
+    "ast_hash": "49db261f403f3e1d7da3b5fa4ca5f769",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-final-verification-v1.json": {
+    "mtime": 1788097431.4602036,
+    "ast_hash": "be1b4b770f5e6b76f3e1dba4c6658896",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-implementation-preflight-receipt-v1.json": {
+    "mtime": 1788096756.4751327,
+    "ast_hash": "610a544b60af87e1b70c9113596dd645",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-implementation-preflight-v1.json": {
+    "mtime": 1788096749.9217165,
+    "ast_hash": "6e67fe0ba3ea85988b151d935fc0a159",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-object-seal-receipt-v1.json": {
+    "mtime": 1788098279.280989,
+    "ast_hash": "fe7afd383706348f2109d5582c4d4f5a",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-payload-catalog-v1.json": {
+    "mtime": 1788098286.0506728,
+    "ast_hash": "e7347b65df8d1b2dbd464d98bad09a3b",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-recovery-externalize-receipt-v1.json": {
+    "mtime": 1788096983.7886105,
+    "ast_hash": "10bb5f7d49e72a127c38eda712f0057a",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-recovery-final-verify-v1.json": {
+    "mtime": 1788096985.4524453,
+    "ast_hash": "8c3dd6ac38d0ff250065b96c69bf1285",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-recovery-materialize-receipt-v1.json": {
+    "mtime": 1788096965.5163438,
+    "ast_hash": "6d57c1600bad04a8c451e97d9985fc43",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-recovery-materialized-verify-v1.json": {
+    "mtime": 1788096979.6105592,
+    "ast_hash": "4fd7df14ed681ab2bcdd1ef44cbfe49c",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-stage-receipt-v1.json": {
+    "mtime": 1788096624.4860218,
+    "ast_hash": "b7fe3964f0b29020088a255373d2459c",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-verify-receipt-v1.json": {
+    "mtime": 1788096950.0388005,
+    "ast_hash": "be1b4b770f5e6b76f3e1dba4c6658896",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-consequence-analysis-v1.md": {
+    "mtime": 1788096749.9207165,
+    "ast_hash": "386256fc1150cb9ff331ebc6c6b4d31f",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-independent-review-v1.md": {
+    "mtime": 1788098375.0095222,
+    "ast_hash": "f9d83ddf3a03f689dd872c380708161d",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td103-independent-review-v2.md": {
+    "mtime": 1788099283.7635293,
+    "ast_hash": "5ca2495acc631f8fdbf3541bdd6ea6b4",
     "semantic_hash": ""
   }
 }

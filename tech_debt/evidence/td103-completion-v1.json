@@ -1,0 +1,70 @@
+{
+  "base_commit": "d9b79fca",
+  "catalog": {
+    "independent_backup_count_after": 0,
+    "logical_bytes": 3563522494,
+    "object_tree_sealed_0555": true,
+    "paths": 18,
+    "same_filesystem_ownership_move": true,
+    "sha256": "bb4b1096fc5b9d226b8e5dd9628e5e1a288b17119c3d99f7052e1a96d995dbf8",
+    "unique_object_bytes": 2604090366,
+    "unique_objects": 15
+  },
+  "effects": {
+    "cargo_invocations": 0,
+    "installations": 0,
+    "perf_invocations": 0,
+    "runtime_authority_changed": false,
+    "service_restarts": 0
+  },
+  "evidence_sha256": {
+    "externalize_receipt": "bc9e17c07efc4041425faff58f5a2e9ae909d222132068a4e79f4de4c371c4c9",
+    "final_verification": "34dd3cf4f2db38f94b4ae081e61246f9fbf8801b81b3b75cb479efd7f91c8eb1",
+    "implementation_preflight_manifest": "5543b145f19dfeaa9db2386b512de6576440b9a96e0086a4e75208d6c700cef6",
+    "implementation_preflight_receipt": "02d775c9f92ff7dd1b0d14af45554b66c51464d483cdd244b388c887e9a4288d",
+    "object_seal_receipt": "8905fc7ea89c77f508071420b2c6ba00e019fc0f186d27691e0f1acec63fe16e",
+    "parent_mode_inventory": "55c4cc576413b5f4b548c047267996ea475cfc44e9b45412a58d26ee06b44caa",
+    "payload_inventory": "5269e95177f1b180e9b1513ed9a3ee571af0b3ee1bebbf3de904f299f77393db",
+    "recovery_externalize_receipt": "35c69789e98d8f81f414a38fce4a94a17f59126a602bbe22a6f9fd39a1d11535",
+    "recovery_materialize_receipt": "b910fea0c29d388b1f2ff84603866e2918003f10b782aa262fa697dd9ac1685d",
+    "review_v1": "11856afd0f10eda6ca1788c1f256a9fc0b3a8f9bc2c712f032b355636fbc0ab2",
+    "review_v2": "712ab7f3f79e23edc60a3f751e34c151960d72b36cf6a98393cd5430d594afe5",
+    "stage_receipt": "8964ba3169d65ffff7801399296eca5638b254d6e6628cfabd913ad18a1e11a9"
+  },
+  "final_state": {
+    "backup_files": 0,
+    "backup_states_pending": 0,
+    "journal_records": 192,
+    "missing_projections": 0,
+    "parent_modes_exact": "13/13",
+    "parent_modes_pending": 0,
+    "regular_projections": 0,
+    "symlink_projections": 18,
+    "temporary_links": 0
+  },
+  "historical_controller_ledger": "122/122 PASS",
+  "implementation": {
+    "script_sha256": "2293f6240dc474b3dcd2c1237349349c9a74ab47a8452d6c570e4aa7cbb7458b",
+    "tests_sha256": "645447d8a1b128fd952d1fbb5b1b8c7fc6d41c6483f005bc5a0d42b983d4fd96"
+  },
+  "post_review_correction": {
+    "findings_covered": "7/7",
+    "third_review_invented": false,
+    "unit_and_fault_tests": "29/29 PASS"
+  },
+  "reviews": [
+    {
+      "agent": "01a052ec-918e-7863-883f-38fc7c561443",
+      "score": "4/10",
+      "verdict": "REVISE"
+    },
+    {
+      "agent": "01a052f8-0f90-7321-ad53-fcde54b88e69",
+      "score": "5/10",
+      "verdict": "REVISE"
+    }
+  ],
+  "schema": "lay.tech-debt-completion.v1",
+  "task": "TD-103",
+  "verdict": "TD103_COMPLETE_WITH_ZERO_INDEPENDENT_BACKUPS"
+}

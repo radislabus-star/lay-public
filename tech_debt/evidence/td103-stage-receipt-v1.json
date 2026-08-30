@@ -1,0 +1,8 @@
+{
+  "action": "stage",
+  "entries_checked": 18,
+  "free_bytes_before": 163954462720,
+  "missing_object_bytes_before": 2604090366,
+  "objects_created": 15,
+  "store_root": "/home/ubu/projects/lay-immutable-evidence/content-addressed-v1"
+}

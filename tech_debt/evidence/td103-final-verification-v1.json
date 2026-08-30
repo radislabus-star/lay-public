@@ -1,0 +1,12 @@
+{
+  "action": "verify",
+  "entries_verified": 18,
+  "logical_bytes_verified": 3563522494,
+  "objects_verified": 15,
+  "projections": {
+    "regular": 0,
+    "symlink": 18
+  },
+  "store_root": "/home/ubu/projects/lay-immutable-evidence/content-addressed-v1",
+  "verdict": "PASS"
+}

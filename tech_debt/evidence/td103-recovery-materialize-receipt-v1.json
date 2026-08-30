@@ -1,0 +1,6 @@
+{
+  "action": "materialize",
+  "entries_checked": 3,
+  "entries_materialized": 3,
+  "store_root": "/home/ubu/projects/lay-immutable-evidence/content-addressed-v1"
+}

@@ -95,7 +95,7 @@ These are intentionally not part of automatic Stage 2 execution:
 |---|---|---|---|
 | [Decompose the IBus engine state owner](101-decompose-ibus-engine-state-owner.md) | P2 | DONE | Five state owners verified remotely; review 9.5/10; runtime behavior unchanged |
 | [Separate Nanda runtime from research tooling](102-separate-nanda-runtime-and-research.md) | P2 | DONE | Three-crate split not admitted: benefit unproven; narrow cold-surface work moves to TD-104 |
-| [Externalize research payload lifecycle](103-externalize-research-payloads.md) | P2 | DISCUSSION_REQUIRED | Storage policy without weakening immutable evidence |
+| [Externalize research payload lifecycle](103-externalize-research-payloads.md) | P2 | DONE | 18 paths externalized to 15 sealed objects; 29/29 fault gates PASS |
 | [Isolate proof/compiler build surfaces](104-isolate-proof-compiler-build-surface.md) | P2 | DISCUSSION_REQUIRED | Is feature gating worth its measured build-surface benefit? |
 
 ## Backlog Review

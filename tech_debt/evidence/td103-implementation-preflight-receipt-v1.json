@@ -1,0 +1,128 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "task-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../103-externalize-research-payloads.md",
+      "sha256": "6b03e6d6ad97c033dc95bebdd8d47e19061eac03c19bcc80deef95cb97015ea1",
+      "size_bytes": 2182
+    },
+    {
+      "exists": true,
+      "id": "ignore-policy",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../.gitignore",
+      "sha256": "27438cb5bfe07298a45e14caf6fc79a63ff83469fec247fd6a6e10cf545202ee",
+      "size_bytes": 1145
+    },
+    {
+      "exists": true,
+      "id": "script-policy",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../scripts/README.md",
+      "sha256": "2cfe45f919d44fedf9ae56c60cd9306ab0b7cece58fd51015f46c95bc2b0cf18",
+      "size_bytes": 1266
+    },
+    {
+      "exists": true,
+      "id": "historical-controller-ledger",
+      "kind": "file",
+      "mode": "0644",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../scripts/research/SHA256SUMS",
+      "sha256": "ca7f8d680848f70c84b3e4cc844e2a46b454519f6025279d21c974fdebd3be54",
+      "size_bytes": 15029
+    },
+    {
+      "exists": true,
+      "id": "payload-inventory",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/td103-payload-inventory-v1.tsv",
+      "sha256": "5269e95177f1b180e9b1513ed9a3ee571af0b3ee1bebbf3de904f299f77393db",
+      "size_bytes": 4863
+    },
+    {
+      "exists": true,
+      "id": "parent-mode-inventory",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/td103-parent-mode-inventory-v1.tsv",
+      "sha256": "55c4cc576413b5f4b548c047267996ea475cfc44e9b45412a58d26ee06b44caa",
+      "size_bytes": 2127
+    },
+    {
+      "exists": true,
+      "id": "representative-elf",
+      "kind": "file",
+      "mode": "0555",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_BUILD_V1_2026-08-25/REMOTE_EVIDENCE/d2-test-elf",
+      "sha256": "bb7c68528ec3fec7074919c3c64cce233d48c26efefe9d9b32735c5f5865a178",
+      "size_bytes": 317706232
+    },
+    {
+      "exists": true,
+      "id": "representative-perf",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_D2_PRIMARY_ONLY_T_SINGLE_V1_2026-08-26/REMOTE_EVIDENCE/perf.data",
+      "sha256": "49bf629491c1c3331b8adee33d25e6d10bd168cd4d153f179ac5b6b3f24cd24e",
+      "size_bytes": 8204266
+    },
+    {
+      "exists": true,
+      "id": "representative-source",
+      "kind": "file",
+      "mode": "0444",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8B_V10_E1_TRAVERSAL_W1_DAFSA_TYPED_VIEW_M3_END_TO_END_V8R1_BUILD_AUDIT_V1_2026-08-27/REMOTE_BUILD/v13_typed_peak.rs",
+      "sha256": "28f87a76fc1996989e980cab51f0443bd95e656fcae3a2ff61f581db9c3a7ee2",
+      "size_bytes": 253080
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 9,
+    "forbidden_side_effect_kinds": [
+      "cargo_or_rustc",
+      "delete_only_payload_copy",
+      "generated_traffic",
+      "install_or_restart",
+      "modify_historical_controller",
+      "modify_payload_bytes",
+      "modify_tracked_historical_receipt",
+      "network_request",
+      "perf_or_pmu",
+      "runtime_authority_change",
+      "synthetic_fixture"
+    ],
+    "identity_contracts": 3,
+    "invariants": 6,
+    "planned_side_effect_kinds": [
+      "evidence_write",
+      "filesystem_chmod",
+      "filesystem_rename",
+      "filesystem_write",
+      "source_edit",
+      "test_edit"
+    ],
+    "preserved_artifacts": 5,
+    "runtime_comparisons": 0,
+    "source_checks": 0,
+    "tests": 11
+  },
+  "manifest_sha256": "d5aedaaabe400b3b54b9a99f74ef6d2306c8b38489cb4e8df88f33c54ff79cbf",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [],
+  "task_id": "td103-externalize-research-payload-lifecycle-v1-20260830",
+  "verdict": "READY_TO_IMPLEMENT"
+}
