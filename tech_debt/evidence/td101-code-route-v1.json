@@ -1,0 +1,139 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "design",
+  "nodes": [
+    {"id": "ibus-event", "role": "interface"},
+    {"id": "daemon-pair-detector", "role": "producer"},
+    {"id": "engine-owner", "role": "orchestrator"},
+    {"id": "composition-state", "role": "evidence_owner"},
+    {"id": "committed-tail-state", "role": "evidence_owner"},
+    {"id": "client-context-state", "role": "evidence_owner"},
+    {"id": "layout-gesture-state", "role": "evidence_owner"},
+    {"id": "atomic-route-state", "role": "evidence_owner"},
+    {"id": "preedit-render", "role": "render_owner"},
+    {"id": "manual-toggle-planner", "role": "authorization_owner"},
+    {"id": "ibus-text-mutation", "role": "mutation_owner"},
+    {"id": "route-observer", "role": "observer"},
+    {"id": "regression-proof", "role": "proof_owner"}
+  ],
+  "edges": [
+    {"id": "composition-entry", "from": "ibus-event", "relation": "calls", "to": "engine-owner", "events": ["composition-input", "focus-reset", "atomic-input"]},
+    {"id": "composition-state-call", "from": "engine-owner", "relation": "delegates", "to": "composition-state", "events": ["composition-input", "focus-reset"]},
+    {"id": "tail-state-call", "from": "engine-owner", "relation": "delegates", "to": "committed-tail-state", "events": ["focus-reset", "double-shift-toggle"]},
+    {"id": "client-state-call", "from": "engine-owner", "relation": "delegates", "to": "client-context-state", "events": ["focus-reset"]},
+    {"id": "gesture-state-call", "from": "engine-owner", "relation": "delegates", "to": "layout-gesture-state", "events": ["focus-reset", "double-shift-toggle"]},
+    {"id": "atomic-state-call", "from": "engine-owner", "relation": "delegates", "to": "atomic-route-state", "events": ["focus-reset", "atomic-input"]},
+    {"id": "composition-to-render", "from": "composition-state", "relation": "passes_to", "to": "preedit-render", "events": ["composition-input"]},
+    {"id": "pair-to-tail", "from": "daemon-pair-detector", "relation": "produces_for", "to": "committed-tail-state", "events": ["double-shift-toggle"]},
+    {"id": "tail-to-planner", "from": "committed-tail-state", "relation": "passes_to", "to": "manual-toggle-planner", "events": ["double-shift-toggle"]},
+    {"id": "planner-to-mutation", "from": "manual-toggle-planner", "relation": "authorizes", "to": "ibus-text-mutation", "events": ["double-shift-toggle"]},
+    {"id": "state-observation", "from": "engine-owner", "relation": "observes", "to": "route-observer", "events": ["route-proof"]},
+    {"id": "observer-proof", "from": "route-observer", "relation": "proves", "to": "regression-proof", "events": ["route-proof"]}
+  ],
+  "routes": [
+    {
+      "id": "composition-execution",
+      "event": "composition-input",
+      "kind": "execution",
+      "entry": "ibus-event",
+      "terminal": "composition-state",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "ibus-event", "to": "composition-state", "min": 1, "max": 1}]
+    },
+    {
+      "id": "composition-render-authority",
+      "event": "composition-input",
+      "kind": "authority",
+      "entry": "composition-state",
+      "terminal": "preedit-render",
+      "required_roles": ["evidence_owner", "render_owner"]
+    },
+    {
+      "id": "focus-composition-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-event",
+      "terminal": "composition-state",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "ibus-event", "to": "composition-state", "min": 1, "max": 1}]
+    },
+    {
+      "id": "focus-tail-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-event",
+      "terminal": "committed-tail-state",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "ibus-event", "to": "committed-tail-state", "min": 1, "max": 1}]
+    },
+    {
+      "id": "focus-client-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-event",
+      "terminal": "client-context-state",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "ibus-event", "to": "client-context-state", "min": 1, "max": 1}]
+    },
+    {
+      "id": "focus-gesture-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-event",
+      "terminal": "layout-gesture-state",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "ibus-event", "to": "layout-gesture-state", "min": 1, "max": 1}]
+    },
+    {
+      "id": "focus-atomic-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-event",
+      "terminal": "atomic-route-state",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "ibus-event", "to": "atomic-route-state", "min": 1, "max": 1}]
+    },
+    {
+      "id": "atomic-execution",
+      "event": "atomic-input",
+      "kind": "execution",
+      "entry": "ibus-event",
+      "terminal": "atomic-route-state",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "ibus-event", "to": "atomic-route-state", "min": 1, "max": 1}]
+    },
+    {
+      "id": "double-shift-engine-execution",
+      "event": "double-shift-toggle",
+      "kind": "execution",
+      "entry": "engine-owner",
+      "terminal": "committed-tail-state",
+      "required_roles": ["orchestrator", "evidence_owner"],
+      "path_cardinality": [{"from": "engine-owner", "to": "committed-tail-state", "min": 1, "max": 1}]
+    },
+    {
+      "id": "double-shift-authority",
+      "event": "double-shift-toggle",
+      "kind": "authority",
+      "entry": "daemon-pair-detector",
+      "terminal": "ibus-text-mutation",
+      "required_roles": ["producer", "evidence_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "route-observation",
+      "event": "route-proof",
+      "kind": "observation",
+      "entry": "engine-owner",
+      "terminal": "route-observer",
+      "required_roles": ["orchestrator", "observer"]
+    },
+    {
+      "id": "route-proof",
+      "event": "route-proof",
+      "kind": "proof",
+      "entry": "route-observer",
+      "terminal": "regression-proof",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

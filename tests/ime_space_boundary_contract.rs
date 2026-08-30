@@ -19,7 +19,7 @@ fn every_ime_space_route_finishes_the_full_precognition_boundary() {
         preedit.contains(".hide_preedit_text()")
             && preedit.contains("pub(super) fn close_precognition_word_boundary")
             && preedit.contains("self.clear_preedit_completion_state();")
-            && preedit.contains("self.preedit_fast.reset();"),
+            && preedit.contains("self.composition.preedit_fast.reset();"),
         "the boundary pair must hide IBus UI and discard all candidate/tail state"
     );
 }

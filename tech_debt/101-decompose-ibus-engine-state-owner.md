@@ -1,10 +1,14 @@
 # TD-101: Decompose The IBus Engine State Owner
 
-Status: `DISCUSSION_REQUIRED`
+Status: `DONE`
 Priority: `P2`
 Class: complex stateful architecture
 Size: `XL`
 Decision dependency: finish TD-001 through TD-008
+
+Admission: `READY_TO_IMPLEMENT` at base
+`23bcd577c58e49f339a27baf1220c9490f07b628`; see
+`evidence/td101-implementation-preflight-receipt-v1.json`.
 
 ## Evidence
 
@@ -54,3 +58,25 @@ move-only and preserve the canonical Double Shift route.
 
 Reject or defer if the proposal is primarily cosmetic, creates wrapper modules,
 or cannot prove lower regression risk without changing behavior.
+
+## Completion Record
+
+- Result: `TD101_VERIFIED`
+- External owner: one `LayIbusEngine`
+- State shape: 47 state fields in five cohesive groups; eight direct engine
+  fields including `path`, `shared`, and `config`
+- Observed route: `PASS`, 35/35 source markers, 11 separated routes
+- Remote engine tests: 276/276 PASS
+- Protected route contracts: 24/24 PASS
+- Remote changed manifest: 2,383 entries, all selected lanes PASS
+- Non-dead lint diagnostics: 0
+- Independent review: `9.5/10`, `ACCEPT`, no findings
+- Installed runtime: unchanged
+
+Evidence:
+
+- `evidence/td101-code-route-observed-v1.json`
+- `evidence/td101-code-route-observed-receipt-v1.json`
+- `evidence/td101-verification-v1.json`
+- `evidence/td101-independent-review-v1.md`
+- `evidence/td101-completion-v1.json`

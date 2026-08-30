@@ -207,7 +207,7 @@ impl LayIbusEngine {
             VisibleTailSource::ImeCommittedTail,
             token.clone(),
             Some(self.path.clone()),
-            self.tail_epoch,
+            self.committed_tail.epoch,
         );
         let replacement_started = Instant::now();
         let handled = self
@@ -264,7 +264,7 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         with_space: bool,
     ) -> fdo::Result<bool> {
-        if self.tail_buffer.trim().is_empty() {
+        if self.committed_tail.buffer.trim().is_empty() {
             return Ok(false);
         }
         if let Some(replacement) = self
@@ -284,7 +284,8 @@ impl LayIbusEngine {
             return Ok(false);
         }
         let context_tail = self
-            .tail_buffer
+            .committed_tail
+            .buffer
             .strip_suffix(&tail_token)
             .unwrap_or_default()
             .trim_end()
@@ -364,7 +365,7 @@ impl LayIbusEngine {
             VisibleTailSource::ImeCommittedTail,
             tail_token.clone(),
             Some(self.path.clone()),
-            self.tail_epoch,
+            self.committed_tail.epoch,
         );
         let handled = self
             .replace_committed_tail(
@@ -378,7 +379,8 @@ impl LayIbusEngine {
             .await?;
         if handled {
             let context_tail = self
-                .tail_buffer
+                .committed_tail
+                .buffer
                 .strip_suffix(&accepted_text)
                 .unwrap_or_default()
                 .trim_end()
@@ -407,11 +409,11 @@ impl LayIbusEngine {
             return Ok(None);
         };
         if emitter.is_legacy()
-            && self.surrounding_text_supported
-            && self.surrounding_text_snapshot.is_none()
+            && self.client_context.surrounding_text_supported
+            && self.client_context.surrounding_text_snapshot.is_none()
         {
-            self.pending_manual_toggle = !self.pending_manual_toggle;
-            let stage = if self.pending_manual_toggle {
+            self.layout_gesture.pending_manual_toggle = !self.layout_gesture.pending_manual_toggle;
+            let stage = if self.layout_gesture.pending_manual_toggle {
                 emitter.require_surrounding_text().await?;
                 "queued_waiting_exact_snapshot"
             } else {
@@ -419,9 +421,9 @@ impl LayIbusEngine {
             };
             trace::record(format!(
                 r#"{{"kind":"ibus_manual_toggle_pending","stage":"{stage}","tail_chars":{}}}"#,
-                self.tail_buffer.chars().count(),
+                self.committed_tail.buffer.chars().count(),
             ));
-            return Ok(Some(self.layout_is_ru));
+            return Ok(Some(self.layout_gesture.layout_is_ru));
         }
         trace::record_manual_toggle_plan(&plan);
         let handled = self
@@ -444,38 +446,39 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<bool> {
-        if !self.pending_manual_toggle {
+        if !self.layout_gesture.pending_manual_toggle {
             return Ok(false);
         }
         let Some(plan) = self.committed_tail_toggle_plan() else {
-            self.pending_manual_toggle = false;
+            self.layout_gesture.pending_manual_toggle = false;
             trace::record(r#"{"kind":"ibus_manual_toggle_pending","stage":"cancelled_no_plan"}"#);
             return Ok(true);
         };
-        let Some(snapshot) = self.surrounding_text_snapshot.as_ref() else {
+        let Some(snapshot) = self.client_context.surrounding_text_snapshot.as_ref() else {
             return Ok(true);
         };
-        if snapshot.text.is_empty() && !self.tail_buffer.is_empty() {
+        if snapshot.text.is_empty() && !self.committed_tail.buffer.is_empty() {
             trace::record(
                 r#"{"kind":"ibus_manual_toggle_pending","stage":"waiting_nonempty_snapshot"}"#,
             );
             return Ok(true);
         }
-        let expected = lay::text_edit::tail_chars(&self.tail_buffer, plan.backspaces as usize);
+        let expected =
+            lay::text_edit::tail_chars(&self.committed_tail.buffer, plan.backspaces as usize);
         if snapshot.has_selection()
             || snapshot
                 .suffix_before_cursor(plan.backspaces as usize)
                 .as_deref()
                 != Some(expected.as_str())
         {
-            self.pending_manual_toggle = false;
+            self.layout_gesture.pending_manual_toggle = false;
             trace::record(
                 r#"{"kind":"ibus_manual_toggle_pending","stage":"cancelled_snapshot_mismatch"}"#,
             );
             return Ok(true);
         }
 
-        self.pending_manual_toggle = false;
+        self.layout_gesture.pending_manual_toggle = false;
         trace::record(r#"{"kind":"ibus_manual_toggle_pending","stage":"released_exact_snapshot"}"#);
         let _ = self.toggle_committed_tail_target(emitter).await?;
         Ok(true)
@@ -491,15 +494,20 @@ impl LayIbusEngine {
         let Some(pending) = self.take_pending_ime_auto_undo() else {
             return Ok(None);
         };
-        let (rejected_context, accepted_context) =
-            ime_auto_undo_contexts(&self.tail_buffer, &pending.original, &pending.replacement);
-        let target_layout_is_ru =
-            lay::keyboard::preferred_layout_for_text(&pending.original, self.layout_is_ru);
+        let (rejected_context, accepted_context) = ime_auto_undo_contexts(
+            &self.committed_tail.buffer,
+            &pending.original,
+            &pending.replacement,
+        );
+        let target_layout_is_ru = lay::keyboard::preferred_layout_for_text(
+            &pending.original,
+            self.layout_gesture.layout_is_ru,
+        );
         let expected_tail = VisibleTailSnapshot::new(
             VisibleTailSource::ImeCommittedTail,
             pending.replacement.clone(),
             Some(self.path.clone()),
-            self.tail_epoch,
+            self.committed_tail.epoch,
         );
         let mut request = CommittedTailReplaceRequest::ime_auto_undo(
             pending.replacement.chars().count() as u32,
@@ -533,8 +541,8 @@ impl LayIbusEngine {
 
     fn committed_tail_toggle_plan(&self) -> Option<lay::manual_toggle::ManualTogglePlan> {
         plan_manual_toggle(ManualToggleRequest {
-            visible_tail: VisibleTail::ime_committed_tail(&self.tail_buffer),
-            current_layout_is_ru: self.layout_is_ru,
+            visible_tail: VisibleTail::ime_committed_tail(&self.committed_tail.buffer),
+            current_layout_is_ru: self.layout_gesture.layout_is_ru,
             preserve_trailing_whitespace: true,
         })
     }
@@ -543,13 +551,14 @@ impl LayIbusEngine {
         let shared_suppression = self.take_autocorrect_suppression_handoff();
         let now = std::time::Instant::now();
         let local_identity_is_live = self
+            .committed_tail
             .exact_manual_toggle_suppression
             .take()
             .is_none_or(|identity| identity.path == self.path && now <= identity.expires_at);
         let local_suppression =
-            local_identity_is_live && self.suppress_next_committed_tail_autocorrect;
+            local_identity_is_live && self.committed_tail.suppress_next_autocorrect;
         let suppress = local_suppression || shared_suppression;
-        self.suppress_next_committed_tail_autocorrect = false;
+        self.committed_tail.suppress_next_autocorrect = false;
         suppress
     }
 }
@@ -649,8 +658,8 @@ mod tests {
 
         engine.sync_tail_after_stuck_completion("ерка ");
 
-        assert_eq!(engine.tail_buffer, "проверка ");
-        assert_eq!(engine.preedit_fast.token(), "");
+        assert_eq!(engine.committed_tail.buffer, "проверка ");
+        assert_eq!(engine.composition.preedit_fast.token(), "");
     }
 
     #[test]
@@ -667,7 +676,7 @@ mod tests {
     #[test]
     fn manual_toggle_suppresses_next_boundary_autocorrect_once() {
         let mut engine = engine();
-        engine.suppress_next_committed_tail_autocorrect = true;
+        engine.committed_tail.suppress_next_autocorrect = true;
 
         assert!(engine.take_manual_toggle_autocorrect_suppression());
         assert!(!engine.take_manual_toggle_autocorrect_suppression());
@@ -718,8 +727,8 @@ mod tests {
             epoch: 7,
             expires_at: Instant::now() - Duration::from_millis(1),
         };
-        engine.suppress_next_committed_tail_autocorrect = true;
-        engine.exact_manual_toggle_suppression = Some(expired.clone());
+        engine.committed_tail.suppress_next_autocorrect = true;
+        engine.committed_tail.exact_manual_toggle_suppression = Some(expired.clone());
         {
             let mut state = shared.lock().expect("lay ime state poisoned");
             state.suppress_next_committed_tail_autocorrect = true;
@@ -727,7 +736,7 @@ mod tests {
         }
 
         assert!(!engine.take_manual_toggle_autocorrect_suppression());
-        assert!(!engine.suppress_next_committed_tail_autocorrect);
+        assert!(!engine.committed_tail.suppress_next_autocorrect);
         let state = shared.lock().expect("lay ime state poisoned");
         assert!(!state.suppress_next_committed_tail_autocorrect);
         assert!(state.exact_manual_toggle_suppression.is_none());
@@ -736,8 +745,8 @@ mod tests {
     #[test]
     fn committed_tail_toggle_plan_uses_visible_ime_tail_not_old_daemon_buffer() {
         let mut engine = engine();
-        engine.tail_buffer.push_str("вот ");
-        engine.layout_is_ru = true;
+        engine.committed_tail.buffer.push_str("вот ");
+        engine.layout_gesture.layout_is_ru = true;
 
         let plan = engine.committed_tail_toggle_plan().expect("toggle plan");
 
@@ -748,10 +757,10 @@ mod tests {
     #[test]
     fn physical_double_shift_owner_committed_tail_waits_for_visible_postcondition() {
         let mut engine = engine();
-        engine.layout_is_ru = false;
-        engine.surrounding_text_supported = true;
-        engine.tail_buffer = "ghjdthrf".to_string();
-        engine.surrounding_text_snapshot =
+        engine.layout_gesture.layout_is_ru = false;
+        engine.client_context.surrounding_text_supported = true;
+        engine.committed_tail.buffer = "ghjdthrf".to_string();
+        engine.client_context.surrounding_text_snapshot =
             Some(SurroundingTextSnapshot::new("ghjdthrf".to_string(), 8, 8));
 
         let mut builder = AtomicEffectBuilder::default();
@@ -761,34 +770,49 @@ mod tests {
 
         assert_eq!(target_is_ru, Some(true));
         assert_eq!(builder.finish(true).0, PROPOSAL_FRAME_READY);
-        assert_eq!(engine.tail_buffer, "проверка");
-        assert!(!engine.layout_is_ru, "layout changed before client ACK");
-        assert!(engine.pending_visible_postcondition.is_some());
+        assert_eq!(engine.committed_tail.buffer, "проверка");
+        assert!(
+            !engine.layout_gesture.layout_is_ru,
+            "layout changed before client ACK"
+        );
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_some());
 
-        engine.surrounding_text_snapshot =
+        engine.client_context.surrounding_text_snapshot =
             Some(SurroundingTextSnapshot::new("ghjdthrf".to_string(), 8, 8));
         engine.observe_visible_postcondition();
-        assert!(!engine.layout_is_ru, "stale client text switched layout");
-        assert!(engine.pending_visible_postcondition.is_some());
+        assert!(
+            !engine.layout_gesture.layout_is_ru,
+            "stale client text switched layout"
+        );
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_some());
 
-        engine.surrounding_text_snapshot =
+        engine.client_context.surrounding_text_snapshot =
             Some(SurroundingTextSnapshot::new("проверка".to_string(), 8, 8));
         engine.observe_visible_postcondition();
         assert!(
-            engine.layout_is_ru,
+            engine.layout_gesture.layout_is_ru,
             "confirmed replacement did not switch layout"
         );
-        assert!(engine.pending_visible_postcondition.is_none());
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_none());
     }
 
     #[test]
     fn pending_double_shift_releases_once_on_exact_new_engine_snapshot() {
         let mut engine = engine();
-        engine.layout_is_ru = false;
-        engine.surrounding_text_supported = true;
-        engine.tail_buffer = "ghbdtn".to_string();
-        engine.pending_manual_toggle = true;
-        engine.surrounding_text_snapshot =
+        engine.layout_gesture.layout_is_ru = false;
+        engine.client_context.surrounding_text_supported = true;
+        engine.committed_tail.buffer = "ghbdtn".to_string();
+        engine.layout_gesture.pending_manual_toggle = true;
+        engine.client_context.surrounding_text_snapshot =
             Some(SurroundingTextSnapshot::new("ghbdtn".to_string(), 6, 6));
         let mut builder = AtomicEffectBuilder::default();
         let mut output = EngineOutput::atomic(&mut builder);
@@ -798,19 +822,19 @@ mod tests {
         )
         .expect("pending toggle"));
 
-        assert!(!engine.pending_manual_toggle);
-        assert_eq!(engine.tail_buffer, "привет");
+        assert!(!engine.layout_gesture.pending_manual_toggle);
+        assert_eq!(engine.committed_tail.buffer, "привет");
         assert_eq!(builder.finish(true).0, PROPOSAL_FRAME_READY);
     }
 
     #[test]
     fn pending_double_shift_cancels_on_unrelated_nonempty_snapshot() {
         let mut engine = engine();
-        engine.layout_is_ru = false;
-        engine.surrounding_text_supported = true;
-        engine.tail_buffer = "ghbdtn".to_string();
-        engine.pending_manual_toggle = true;
-        engine.surrounding_text_snapshot =
+        engine.layout_gesture.layout_is_ru = false;
+        engine.client_context.surrounding_text_supported = true;
+        engine.committed_tail.buffer = "ghbdtn".to_string();
+        engine.layout_gesture.pending_manual_toggle = true;
+        engine.client_context.surrounding_text_snapshot =
             Some(SurroundingTextSnapshot::new("другое".to_string(), 6, 6));
         let mut builder = AtomicEffectBuilder::default();
         let mut output = EngineOutput::atomic(&mut builder);
@@ -820,18 +844,18 @@ mod tests {
         )
         .expect("mismatched pending toggle"));
 
-        assert!(!engine.pending_manual_toggle);
-        assert_eq!(engine.tail_buffer, "ghbdtn");
+        assert!(!engine.layout_gesture.pending_manual_toggle);
+        assert_eq!(engine.committed_tail.buffer, "ghbdtn");
     }
 
     #[test]
     fn focus_reset_cancels_pending_double_shift() {
         let mut engine = engine();
-        engine.pending_manual_toggle = true;
+        engine.layout_gesture.pending_manual_toggle = true;
 
         engine.reset_for_ibus_focus_change();
 
-        assert!(!engine.pending_manual_toggle);
+        assert!(!engine.layout_gesture.pending_manual_toggle);
     }
 
     #[test]

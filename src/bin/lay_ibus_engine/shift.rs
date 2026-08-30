@@ -36,7 +36,7 @@ impl LayIbusEngine {
             }
             // The IME owns the pending rollback. Keep the daemon from replaying
             // a second route while SetSurroundingText confirms the exact tail.
-            return Ok(Some(self.layout_is_ru));
+            return Ok(Some(self.layout_gesture.layout_is_ru));
         }
         if let Some(target_layout_is_ru) = self.undo_last_ime_autocorrect(emitter).await? {
             return Ok(Some(target_layout_is_ru));
@@ -62,14 +62,14 @@ impl LayIbusEngine {
             ManualToggleAuthority::ImeActiveComposition => {}
         }
         let Some(plan) = plan_manual_toggle(ManualToggleRequest {
-            visible_tail: VisibleTail::ime_active_composition(&self.buffer),
-            current_layout_is_ru: self.layout_is_ru,
+            visible_tail: VisibleTail::ime_active_composition(&self.composition.buffer),
+            current_layout_is_ru: self.layout_gesture.layout_is_ru,
             preserve_trailing_whitespace: false,
         }) else {
             return Ok(None);
         };
         trace::record_manual_toggle_plan(&plan);
-        let original = self.buffer.clone();
+        let original = self.composition.buffer.clone();
         let Some(replacement_plan) = plan_text_replacement(&original, &plan.replacement) else {
             return Ok(None);
         };
@@ -87,16 +87,16 @@ impl LayIbusEngine {
         };
         self.commit_verified_active_composition(emitter, authorized_edit)
             .await?;
-        self.suppress_next_committed_tail_autocorrect = plan.suppress_next_autocorrect;
-        self.exact_manual_toggle_suppression = None;
+        self.committed_tail.suppress_next_autocorrect = plan.suppress_next_autocorrect;
+        self.committed_tail.exact_manual_toggle_suppression = None;
         self.sync_layout_after_manual_toggle(&plan.replacement);
         self.trace_key("double_shift_commit", 0, 0, true, None);
         Ok(Some(plan.target_layout_is_ru))
     }
 
     fn defer_committed_tail_manual_toggle_to_daemon(&mut self) {
-        self.suppress_next_committed_tail_autocorrect = true;
-        self.exact_manual_toggle_suppression = None;
+        self.committed_tail.suppress_next_autocorrect = true;
+        self.committed_tail.exact_manual_toggle_suppression = None;
     }
 }
 
@@ -118,7 +118,7 @@ mod tests {
 
         engine.defer_committed_tail_manual_toggle_to_daemon();
 
-        assert!(engine.suppress_next_committed_tail_autocorrect);
+        assert!(engine.committed_tail.suppress_next_autocorrect);
     }
 
     #[test]
@@ -157,7 +157,7 @@ mod tests {
     fn active_composition_toggle_defers_state_mutation_to_commit_owner() {
         let source = include_str!("shift.rs");
         let production = source.split("#[cfg(test)]").next().unwrap();
-        assert!(!production.contains("self.buffer = plan.replacement"));
+        assert!(!production.contains("self.composition.buffer = plan.replacement"));
         assert!(!production.contains("replace_last_tail_token_text(&plan.replacement"));
         assert!(production.contains("commit_verified_active_composition(emitter, authorized_edit)"));
     }

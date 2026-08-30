@@ -1,0 +1,498 @@
+{
+  "schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "nodes": [
+    {
+      "id": "ibus-event",
+      "role": "interface",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/ibus_interface.rs",
+        "line": 19,
+        "contains": "async fn process_key_event("
+      }
+    },
+    {
+      "id": "ibus-focus",
+      "role": "interface",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/ibus_interface.rs",
+        "line": 80,
+        "contains": "fn focus_out(&mut self)"
+      }
+    },
+    {
+      "id": "physical-double-shift",
+      "role": "interface",
+      "evidence": {
+        "path": "src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+        "line": 116,
+        "contains": "fn handle_confirmed_double_shift"
+      }
+    },
+    {
+      "id": "daemon-dispatch",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "src/bin/lay_daemon/manual_trigger_runtime/fire.rs",
+        "line": 9,
+        "contains": "fn fire_configured_manual_trigger"
+      }
+    },
+    {
+      "id": "ime-v3-outcome",
+      "role": "producer",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/bridge_actions.rs",
+        "line": 277,
+        "contains": "async fn manual_toggle_outcome_inner"
+      }
+    },
+    {
+      "id": "engine-owner",
+      "role": "orchestrator",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/engine.rs",
+        "line": 33,
+        "contains": "pub(crate) struct LayIbusEngine"
+      }
+    },
+    {
+      "id": "composition-state",
+      "role": "evidence_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/engine/state_groups.rs",
+        "line": 42,
+        "contains": "pub(crate) struct CompositionState"
+      }
+    },
+    {
+      "id": "committed-tail-state",
+      "role": "evidence_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/engine/state_groups.rs",
+        "line": 13,
+        "contains": "pub(crate) struct CommittedTailState"
+      }
+    },
+    {
+      "id": "client-context-state",
+      "role": "evidence_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/engine/state_groups.rs",
+        "line": 59,
+        "contains": "pub(crate) struct ClientContextState"
+      }
+    },
+    {
+      "id": "layout-gesture-state",
+      "role": "evidence_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/engine/state_groups.rs",
+        "line": 96,
+        "contains": "pub(crate) struct LayoutGestureState"
+      }
+    },
+    {
+      "id": "atomic-route-state",
+      "role": "evidence_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/engine/state_groups.rs",
+        "line": 127,
+        "contains": "pub(crate) struct AtomicRouteState"
+      }
+    },
+    {
+      "id": "preedit-render",
+      "role": "render_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit.rs",
+        "line": 284,
+        "contains": "async fn update_precognition_preedit"
+      }
+    },
+    {
+      "id": "manual-toggle-planner",
+      "role": "authorization_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 542,
+        "contains": "fn committed_tail_toggle_plan"
+      }
+    },
+    {
+      "id": "ibus-text-mutation",
+      "role": "mutation_owner",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/state.rs",
+        "line": 390,
+        "contains": "async fn replace_committed_tail"
+      }
+    },
+    {
+      "id": "route-observer",
+      "role": "observer",
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/trace.rs",
+        "line": 193,
+        "contains": "fn record_manual_toggle_plan"
+      }
+    },
+    {
+      "id": "regression-proof",
+      "role": "proof_owner",
+      "evidence": {
+        "path": "tests/typing_transition_authority_contract.rs",
+        "line": 85,
+        "contains": "fn physical_double_shift_has_one_daemon_to_ime_event_bridge"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "composition-entry",
+      "from": "ibus-event",
+      "relation": "calls",
+      "to": "engine-owner",
+      "events": ["composition-input"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/ibus_interface.rs",
+        "line": 32,
+        "contains": "self.process_key_event_with_output"
+      }
+    },
+    {
+      "id": "composition-state-call",
+      "from": "engine-owner",
+      "relation": "delegates",
+      "to": "composition-state",
+      "events": ["composition-input"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/ibus_interface.rs",
+        "line": 412,
+        "contains": "self.composition.preedit_suffix"
+      }
+    },
+    {
+      "id": "composition-to-render",
+      "from": "composition-state",
+      "relation": "passes_to",
+      "to": "preedit-render",
+      "events": ["composition-input"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/preedit.rs",
+        "line": 291,
+        "contains": "self.refresh_precognition_candidates();"
+      }
+    },
+    {
+      "id": "focus-entry",
+      "from": "ibus-focus",
+      "relation": "calls",
+      "to": "engine-owner",
+      "events": ["focus-reset"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/ibus_interface.rs",
+        "line": 86,
+        "contains": "self.reset_for_ibus_focus_change();"
+      }
+    },
+    {
+      "id": "focus-composition",
+      "from": "engine-owner",
+      "relation": "delegates",
+      "to": "composition-state",
+      "events": ["focus-reset"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/state.rs",
+        "line": 296,
+        "contains": "self.composition.buffer.clear();"
+      }
+    },
+    {
+      "id": "focus-tail",
+      "from": "engine-owner",
+      "relation": "delegates",
+      "to": "committed-tail-state",
+      "events": ["focus-reset"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/state.rs",
+        "line": 293,
+        "contains": "self.committed_tail.pending_completion_learning = None;"
+      }
+    },
+    {
+      "id": "focus-client",
+      "from": "engine-owner",
+      "relation": "delegates",
+      "to": "client-context-state",
+      "events": ["focus-reset"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/state.rs",
+        "line": 328,
+        "contains": "self.client_context.surrounding_text_snapshot = None;"
+      }
+    },
+    {
+      "id": "focus-gesture",
+      "from": "engine-owner",
+      "relation": "delegates",
+      "to": "layout-gesture-state",
+      "events": ["focus-reset"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/state.rs",
+        "line": 308,
+        "contains": "self.layout_gesture.shift_pressed_at = None;"
+      }
+    },
+    {
+      "id": "focus-atomic",
+      "from": "engine-owner",
+      "relation": "delegates",
+      "to": "atomic-route-state",
+      "events": ["focus-reset"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/ibus_interface.rs",
+        "line": 81,
+        "contains": "self.discard_atomic_pending();"
+      }
+    },
+    {
+      "id": "double-shift-entry",
+      "from": "physical-double-shift",
+      "relation": "calls",
+      "to": "daemon-dispatch",
+      "events": ["double-shift-toggle"],
+      "evidence": {
+        "path": "src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+        "line": 130,
+        "contains": "fire_configured_manual_trigger(ctx.fire_context());"
+      }
+    },
+    {
+      "id": "double-shift-ime-dispatch",
+      "from": "daemon-dispatch",
+      "relation": "delegates",
+      "to": "ime-v3-outcome",
+      "events": ["double-shift-toggle"],
+      "evidence": {
+        "path": "src/bin/lay_daemon/manual_trigger_runtime/fire.rs",
+        "line": 10,
+        "contains": "dispatch_ime_manual_toggle(ctx.buffer)"
+      }
+    },
+    {
+      "id": "double-shift-engine",
+      "from": "ime-v3-outcome",
+      "relation": "delegates",
+      "to": "engine-owner",
+      "events": ["double-shift-toggle"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/bridge_actions.rs",
+        "line": 288,
+        "contains": "let mut engine = iface_ref.get_mut().await;"
+      }
+    },
+    {
+      "id": "double-shift-tail",
+      "from": "engine-owner",
+      "relation": "delegates",
+      "to": "committed-tail-state",
+      "events": ["double-shift-toggle"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/bridge_actions.rs",
+        "line": 298,
+        "contains": "let authority = engine.manual_toggle_authority();"
+      }
+    },
+    {
+      "id": "double-shift-plan-call",
+      "from": "committed-tail-state",
+      "relation": "delegates",
+      "to": "manual-toggle-planner",
+      "events": ["double-shift-toggle"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 408,
+        "contains": "self.committed_tail_toggle_plan()"
+      }
+    },
+    {
+      "id": "double-shift-mutation-call",
+      "from": "manual-toggle-planner",
+      "relation": "delegates",
+      "to": "ibus-text-mutation",
+      "events": ["double-shift-toggle"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 430,
+        "contains": ".replace_committed_tail("
+      }
+    },
+    {
+      "id": "tail-to-planner",
+      "from": "committed-tail-state",
+      "relation": "passes_to",
+      "to": "manual-toggle-planner",
+      "events": ["double-shift-toggle"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 544,
+        "contains": "VisibleTail::ime_committed_tail(&self.committed_tail.buffer)"
+      }
+    },
+    {
+      "id": "planner-to-mutation",
+      "from": "manual-toggle-planner",
+      "relation": "authorizes",
+      "to": "ibus-text-mutation",
+      "events": ["double-shift-toggle"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 432,
+        "contains": "CommittedTailReplaceRequest::ime_manual_toggle("
+      }
+    },
+    {
+      "id": "state-observation",
+      "from": "engine-owner",
+      "relation": "observes",
+      "to": "route-observer",
+      "events": ["route-proof"],
+      "evidence": {
+        "path": "src/bin/lay_ibus_engine/committed_tail.rs",
+        "line": 428,
+        "contains": "trace::record_manual_toggle_plan(&plan);"
+      }
+    },
+    {
+      "id": "observer-proof",
+      "from": "route-observer",
+      "relation": "proves",
+      "to": "regression-proof",
+      "events": ["route-proof"],
+      "evidence": {
+        "path": "tests/typing_transition_authority_contract.rs",
+        "line": 94,
+        "contains": "event.contains(\"handle_confirmed_double_shift(ctx, now)\")"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "id": "composition-execution",
+      "event": "composition-input",
+      "kind": "execution",
+      "entry": "ibus-event",
+      "terminal": "composition-state",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [
+        {"from": "ibus-event", "to": "composition-state", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "composition-render-authority",
+      "event": "composition-input",
+      "kind": "authority",
+      "entry": "composition-state",
+      "terminal": "preedit-render",
+      "required_roles": ["evidence_owner", "render_owner"]
+    },
+    {
+      "id": "focus-composition-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-focus",
+      "terminal": "composition-state",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [
+        {"from": "ibus-focus", "to": "composition-state", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "focus-tail-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-focus",
+      "terminal": "committed-tail-state",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [
+        {"from": "ibus-focus", "to": "committed-tail-state", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "focus-client-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-focus",
+      "terminal": "client-context-state",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [
+        {"from": "ibus-focus", "to": "client-context-state", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "focus-gesture-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-focus",
+      "terminal": "layout-gesture-state",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [
+        {"from": "ibus-focus", "to": "layout-gesture-state", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "focus-atomic-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-focus",
+      "terminal": "atomic-route-state",
+      "required_roles": ["interface", "orchestrator", "evidence_owner"],
+      "path_cardinality": [
+        {"from": "ibus-focus", "to": "atomic-route-state", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "double-shift-execution",
+      "event": "double-shift-toggle",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "terminal": "ibus-text-mutation",
+      "required_roles": [
+        "interface",
+        "orchestrator",
+        "producer",
+        "evidence_owner",
+        "authorization_owner",
+        "mutation_owner"
+      ],
+      "path_cardinality": [
+        {"from": "physical-double-shift", "to": "ibus-text-mutation", "min": 1, "max": 1}
+      ]
+    },
+    {
+      "id": "double-shift-authority",
+      "event": "double-shift-toggle",
+      "kind": "authority",
+      "entry": "committed-tail-state",
+      "terminal": "ibus-text-mutation",
+      "required_roles": ["evidence_owner", "authorization_owner", "mutation_owner"]
+    },
+    {
+      "id": "route-observation",
+      "event": "route-proof",
+      "kind": "observation",
+      "entry": "engine-owner",
+      "terminal": "route-observer",
+      "required_roles": ["orchestrator", "observer"]
+    },
+    {
+      "id": "route-proof",
+      "event": "route-proof",
+      "kind": "proof",
+      "entry": "route-observer",
+      "terminal": "regression-proof",
+      "required_roles": ["observer", "proof_owner"]
+    }
+  ]
+}

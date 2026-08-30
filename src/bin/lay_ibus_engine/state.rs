@@ -9,8 +9,8 @@ use std::time::{Duration, Instant};
 use zbus::fdo;
 
 use super::engine::{
-    LayIbusEngine, PendingSystemOutcomeFeedback, RecentCommittedTailReplace,
-    SurroundingTextSnapshot,
+    ClientContextState, CommittedTailState, CompositionState, LayIbusEngine, LayoutGestureState,
+    PendingSystemOutcomeFeedback, RecentCommittedTailReplace, SurroundingTextSnapshot,
 };
 use super::protocol::{Shared, KEY_LEFT, KEY_RIGHT, RELEASE_MASK};
 use super::text::make_ibus_text;
@@ -212,8 +212,8 @@ impl CommittedTailReplaceRequest {
 impl LayIbusEngine {
     pub(crate) fn can_replace_committed_tail(&self, backspaces: u32) -> bool {
         CommittedTailOutputProfile::select(
-            self.cursor_cell_width,
-            self.surrounding_text_supported,
+            self.client_context.cursor_cell_width,
+            self.client_context.surrounding_text_supported,
             backspaces,
         )
         .can_execute()
@@ -270,54 +270,19 @@ impl LayIbusEngine {
         let mut engine = Self {
             path,
             shared,
-            buffer: String::new(),
-            composition_cursor: 0,
-            tail_buffer: handoff_tail_buffer,
-            tail_epoch: handoff_tail_epoch,
-            focus_receipt: handoff_focus_receipt,
-            focus_serial: super::engine::next_input_identity(),
-            runtime_owner_lease_identity: super::engine::next_input_identity(),
-            preedit_visible: false,
-            preedit_suffix: String::new(),
-            preedit_candidates: Vec::new(),
-            preedit_replacement_targets: Vec::new(),
-            preedit_candidate_index: 0,
-            preedit_display_only_pending: false,
-            preedit_fast: Default::default(),
-            preedit_dirty: false,
-            pending_display_frame: None,
-            pending_passthrough_preedit_clear: false,
-            cursor_cell_width: 0,
-            content_purpose: 0,
-            content_hints: 0,
-            surrounding_text_supported: false,
-            surrounding_text_snapshot: None,
-            surrounding_observation_revision: 0,
-            factory_engine_profile,
-            layout_is_ru: factory_engine_profile.initial_layout_is_ru(),
-            layout_generation: super::engine::next_input_identity(),
-            shift_active: false,
-            shift_used_as_modifier: false,
-            shift_pressed_at: None,
-            alt_completion_active: false,
-            alt_used_as_modifier: false,
-            handled_press_keycodes: Default::default(),
-            last_shift_release_at: None,
-            last_commit_at: None,
-            last_tail_input_at: None,
-            recent_committed_tail_replace: None,
-            pending_manual_toggle: false,
-            pending_visible_postcondition: None,
-            pending_ime_completion_learning: None,
-            suppress_next_committed_tail_autocorrect: false,
-            exact_manual_toggle_suppression: None,
-            word_input_mode: None,
-            managed_input,
+            composition: CompositionState::default(),
+            committed_tail: CommittedTailState::new(handoff_tail_buffer, handoff_tail_epoch),
+            client_context: ClientContextState::new(
+                handoff_focus_receipt,
+                factory_engine_profile,
+                managed_input,
+            ),
+            layout_gesture: LayoutGestureState::new(
+                factory_engine_profile.initial_layout_is_ru(),
+                super::engine::next_input_identity(),
+            ),
             config,
-            atomic_route_active: false,
-            atomic_speculation: false,
-            deferred_layout_actions: Vec::new(),
-            deferred_learning_actions: Vec::new(),
+            atomic: Default::default(),
         };
         engine.rebuild_preedit_fast_from_tail();
         engine
@@ -325,51 +290,53 @@ impl LayIbusEngine {
 
     pub(super) fn reset_for_ibus_focus_change(&mut self) {
         self.invalidate_input_frame_background_work();
-        self.pending_ime_completion_learning = None;
+        self.committed_tail.pending_completion_learning = None;
         let preserve_tail =
             self.should_preserve_focus_handoff() || self.shared_active_path_preserved();
-        self.buffer.clear();
-        self.composition_cursor = 0;
-        self.preedit_visible = false;
-        self.preedit_suffix.clear();
-        self.preedit_candidates.clear();
-        self.preedit_replacement_targets.clear();
-        self.preedit_candidate_index = 0;
-        self.preedit_display_only_pending = false;
-        self.preedit_fast.clear_candidate_tracking();
-        self.preedit_dirty = false;
-        self.pending_display_frame = None;
-        self.pending_passthrough_preedit_clear = false;
-        self.shift_pressed_at = None;
-        self.last_shift_release_at = None;
+        self.composition.buffer.clear();
+        self.composition.cursor = 0;
+        self.composition.preedit_visible = false;
+        self.composition.preedit_suffix.clear();
+        self.composition.preedit_candidates.clear();
+        self.composition.preedit_replacement_targets.clear();
+        self.composition.preedit_candidate_index = 0;
+        self.composition.preedit_display_only_pending = false;
+        self.composition.preedit_fast.clear_candidate_tracking();
+        self.composition.preedit_dirty = false;
+        self.composition.pending_display_frame = None;
+        self.composition.pending_passthrough_preedit_clear = false;
+        self.layout_gesture.shift_pressed_at = None;
+        self.layout_gesture.last_shift_release_at = None;
         if !preserve_tail {
-            self.last_tail_input_at = None;
-            self.recent_committed_tail_replace = None;
-            self.word_input_mode = None;
-            self.suppress_next_committed_tail_autocorrect = false;
-            self.exact_manual_toggle_suppression = None;
+            self.committed_tail.last_input_at = None;
+            self.committed_tail.recent_replace = None;
+            self.composition.word_input_mode = None;
+            self.committed_tail.suppress_next_autocorrect = false;
+            self.committed_tail.exact_manual_toggle_suppression = None;
             self.clear_autocorrect_suppression_handoff();
         }
-        self.shift_active = false;
-        self.shift_used_as_modifier = false;
-        self.alt_completion_active = false;
-        self.alt_used_as_modifier = false;
-        self.handled_press_keycodes.clear();
+        self.layout_gesture.shift_active = false;
+        self.layout_gesture.shift_used_as_modifier = false;
+        self.layout_gesture.alt_completion_active = false;
+        self.layout_gesture.alt_used_as_modifier = false;
+        self.layout_gesture.handled_press_keycodes.clear();
         if !preserve_tail {
-            self.tail_buffer.clear();
-            self.preedit_fast.reset();
+            self.committed_tail.buffer.clear();
+            self.composition.preedit_fast.reset();
             self.publish_tail_handoff();
         }
-        self.surrounding_text_snapshot = None;
-        self.pending_manual_toggle = false;
+        self.client_context.surrounding_text_snapshot = None;
+        self.layout_gesture.pending_manual_toggle = false;
     }
 
     pub(super) fn should_preserve_focus_handoff(&self) -> bool {
         let now = Instant::now();
-        self.last_commit_at
+        self.committed_tail
+            .last_commit_at
             .is_some_and(|at| now.duration_since(at) <= Duration::from_millis(700))
             || self
-                .last_tail_input_at
+                .committed_tail
+                .last_input_at
                 .is_some_and(|at| now.duration_since(at) <= Duration::from_millis(700))
     }
 
@@ -379,34 +346,35 @@ impl LayIbusEngine {
         // Backspace. Keep only an edit trajectory that was armed immediately
         // before that Backspace; focus changes still clear it unconditionally.
         if !self
-            .pending_ime_completion_learning
+            .committed_tail
+            .pending_completion_learning
             .as_ref()
             .is_some_and(|pending| pending.editing)
         {
-            self.pending_ime_completion_learning = None;
+            self.committed_tail.pending_completion_learning = None;
         }
-        self.buffer.clear();
-        self.composition_cursor = 0;
-        self.preedit_visible = false;
-        self.preedit_suffix.clear();
-        self.preedit_candidates.clear();
-        self.preedit_replacement_targets.clear();
-        self.preedit_candidate_index = 0;
-        self.preedit_display_only_pending = false;
-        self.preedit_fast.reset();
-        self.preedit_dirty = false;
-        self.pending_display_frame = None;
-        self.pending_passthrough_preedit_clear = false;
-        self.shift_pressed_at = None;
-        self.last_shift_release_at = None;
-        self.recent_committed_tail_replace = None;
-        self.shift_active = false;
-        self.shift_used_as_modifier = false;
-        self.alt_completion_active = false;
-        self.alt_used_as_modifier = false;
-        self.handled_press_keycodes.clear();
-        self.surrounding_text_snapshot = None;
-        self.pending_manual_toggle = false;
+        self.composition.buffer.clear();
+        self.composition.cursor = 0;
+        self.composition.preedit_visible = false;
+        self.composition.preedit_suffix.clear();
+        self.composition.preedit_candidates.clear();
+        self.composition.preedit_replacement_targets.clear();
+        self.composition.preedit_candidate_index = 0;
+        self.composition.preedit_display_only_pending = false;
+        self.composition.preedit_fast.reset();
+        self.composition.preedit_dirty = false;
+        self.composition.pending_display_frame = None;
+        self.composition.pending_passthrough_preedit_clear = false;
+        self.layout_gesture.shift_pressed_at = None;
+        self.layout_gesture.last_shift_release_at = None;
+        self.committed_tail.recent_replace = None;
+        self.layout_gesture.shift_active = false;
+        self.layout_gesture.shift_used_as_modifier = false;
+        self.layout_gesture.alt_completion_active = false;
+        self.layout_gesture.alt_used_as_modifier = false;
+        self.layout_gesture.handled_press_keycodes.clear();
+        self.client_context.surrounding_text_snapshot = None;
+        self.layout_gesture.pending_manual_toggle = false;
         self.rebuild_preedit_fast_from_tail();
         if !self.exact_manual_toggle_handoff_is_live() {
             self.publish_tail_handoff();
@@ -447,14 +415,16 @@ impl LayIbusEngine {
                 .as_ref()
                 .map(|action| PendingSystemOutcomeFeedback::from_winner(source, action))
         });
-        let mut visible_state =
-            VisibleFieldState::committed_tail(self.tail_buffer.clone(), Some(self.path.clone()))
-                .with_epoch(self.tail_epoch);
+        let mut visible_state = VisibleFieldState::committed_tail(
+            self.committed_tail.buffer.clone(),
+            Some(self.path.clone()),
+        )
+        .with_epoch(self.committed_tail.epoch);
         if let Some(observation) = committed_tail_external_observation(
             source,
             intent,
-            self.surrounding_text_snapshot.as_ref(),
-            &self.tail_buffer,
+            self.client_context.surrounding_text_snapshot.as_ref(),
+            &self.committed_tail.buffer,
             backspaces as usize,
             boundary_elided_external_snapshot,
             causal_precondition_external_snapshot.as_deref(),
@@ -556,9 +526,9 @@ impl LayIbusEngine {
             );
             return Ok(false);
         }
-        let surrounding_postcondition_available = self.surrounding_text_supported;
+        let surrounding_postcondition_available = self.client_context.surrounding_text_supported;
         let output_profile = CommittedTailOutputProfile::select(
-            self.cursor_cell_width,
+            self.client_context.cursor_cell_width,
             surrounding_postcondition_available,
             backspaces,
         );
@@ -592,7 +562,7 @@ impl LayIbusEngine {
             && !text.is_empty()
         {
             let Some(snapshot) = surrounding_replacement_final_snapshot(
-                self.surrounding_text_snapshot.as_ref(),
+                self.client_context.surrounding_text_snapshot.as_ref(),
                 authorized_plan.backspaces,
                 &text,
             ) else {
@@ -610,11 +580,11 @@ impl LayIbusEngine {
             None
         };
         let now = Instant::now();
-        self.last_commit_at = Some(now);
+        self.committed_tail.last_commit_at = Some(now);
         self.publish_active_path_preserve_handoff(now + Duration::from_millis(700));
         if suppress_next_autocorrect {
-            self.suppress_next_committed_tail_autocorrect = true;
-            self.exact_manual_toggle_suppression = None;
+            self.committed_tail.suppress_next_autocorrect = true;
+            self.committed_tail.exact_manual_toggle_suppression = None;
             self.publish_autocorrect_suppression_handoff();
         }
         if self.should_skip_duplicate_committed_tail_replace(backspaces, &logical_text, now) {
@@ -665,21 +635,21 @@ impl LayIbusEngine {
         let commit_us = commit_started.elapsed().as_micros();
         let state_started = Instant::now();
         for _ in 0..backspaces {
-            self.tail_buffer.pop();
-            self.preedit_fast.backspace();
+            self.committed_tail.buffer.pop();
+            self.composition.preedit_fast.backspace();
         }
-        self.surrounding_text_snapshot = None;
-        self.tail_buffer.push_str(&logical_text);
-        self.preedit_fast.reset();
+        self.client_context.surrounding_text_snapshot = None;
+        self.committed_tail.buffer.push_str(&logical_text);
+        self.composition.preedit_fast.reset();
         for ch in logical_text.chars() {
-            self.preedit_fast.push(ch);
+            self.composition.preedit_fast.push(ch);
         }
         if logical_text.chars().last().is_some_and(char::is_whitespace) {
-            self.word_input_mode = None;
+            self.composition.word_input_mode = None;
         }
         self.publish_tail_handoff();
-        self.buffer.clear();
-        self.composition_cursor = 0;
+        self.composition.buffer.clear();
+        self.composition.cursor = 0;
         self.clear_preedit_completion_state();
         let deferred_layout_sync_text = (ime_owns_layout_postcondition
             && surrounding_postcondition_available)
@@ -701,7 +671,7 @@ impl LayIbusEngine {
             state_us,
             total_started.elapsed().as_micros(),
         );
-        self.recent_committed_tail_replace = Some(RecentCommittedTailReplace {
+        self.committed_tail.recent_replace = Some(RecentCommittedTailReplace {
             backspaces,
             text: logical_text,
             at: now,
@@ -733,13 +703,14 @@ impl LayIbusEngine {
         now: Instant,
     ) -> bool {
         const DUPLICATE_REPLACE_WINDOW: Duration = Duration::from_millis(900);
-        self.recent_committed_tail_replace
+        self.committed_tail
+            .recent_replace
             .as_ref()
             .is_some_and(|recent| {
                 recent.backspaces == backspaces
                     && recent.text == text
                     && now.duration_since(recent.at) <= DUPLICATE_REPLACE_WINDOW
-                    && self.tail_buffer.ends_with(text)
+                    && self.committed_tail.buffer.ends_with(text)
             })
     }
 }
@@ -1190,8 +1161,8 @@ mod tests {
     #[test]
     fn chromium_style_engine_without_delete_capability_rejects_bridge_preflight() {
         let mut engine = engine();
-        engine.cursor_cell_width = 0;
-        engine.surrounding_text_supported = false;
+        engine.client_context.cursor_cell_width = 0;
+        engine.client_context.surrounding_text_supported = false;
 
         assert!(!engine.can_replace_committed_tail(7));
         assert!(engine.can_replace_committed_tail(0));
@@ -1200,8 +1171,8 @@ mod tests {
     #[test]
     fn surrounding_text_capability_admits_bridge_preflight() {
         let mut engine = engine();
-        engine.cursor_cell_width = 0;
-        engine.surrounding_text_supported = true;
+        engine.client_context.cursor_cell_width = 0;
+        engine.client_context.surrounding_text_supported = true;
 
         assert!(engine.can_replace_committed_tail(7));
     }
@@ -1249,8 +1220,8 @@ mod tests {
     fn duplicate_replace_gate_skips_same_recent_visible_result() {
         let now = Instant::now();
         let mut engine = engine();
-        engine.tail_buffer = "ладно ".to_string();
-        engine.recent_committed_tail_replace = Some(RecentCommittedTailReplace {
+        engine.committed_tail.buffer = "ладно ".to_string();
+        engine.committed_tail.recent_replace = Some(RecentCommittedTailReplace {
             backspaces: 6,
             text: "ладно ".to_string(),
             at: now,
@@ -1263,8 +1234,8 @@ mod tests {
     fn duplicate_replace_gate_allows_same_edit_for_new_original_tail() {
         let now = Instant::now();
         let mut engine = engine();
-        engine.tail_buffer = "ладно kflyj ".to_string();
-        engine.recent_committed_tail_replace = Some(RecentCommittedTailReplace {
+        engine.committed_tail.buffer = "ладно kflyj ".to_string();
+        engine.committed_tail.recent_replace = Some(RecentCommittedTailReplace {
             backspaces: 6,
             text: "ладно ".to_string(),
             at: now,
@@ -1277,8 +1248,8 @@ mod tests {
     fn duplicate_replace_gate_expires_quickly() {
         let now = Instant::now();
         let mut engine = engine();
-        engine.tail_buffer = "ладно ".to_string();
-        engine.recent_committed_tail_replace = Some(RecentCommittedTailReplace {
+        engine.committed_tail.buffer = "ладно ".to_string();
+        engine.committed_tail.recent_replace = Some(RecentCommittedTailReplace {
             backspaces: 6,
             text: "ладно ".to_string(),
             at: now - Duration::from_millis(901),
@@ -1290,16 +1261,16 @@ mod tests {
     #[test]
     fn committed_tail_replace_state_sync_clears_stale_preedit_suffix() {
         let mut engine = engine();
-        engine.preedit_suffix = "а".to_string();
-        engine.preedit_candidates = vec!["а".to_string()];
-        engine.preedit_candidate_index = 0;
-        engine.preedit_dirty = true;
+        engine.composition.preedit_suffix = "а".to_string();
+        engine.composition.preedit_candidates = vec!["а".to_string()];
+        engine.composition.preedit_candidate_index = 0;
+        engine.composition.preedit_dirty = true;
 
         engine.clear_preedit_completion_state();
 
-        assert!(engine.preedit_suffix.is_empty());
-        assert!(engine.preedit_candidates.is_empty());
-        assert_eq!(engine.preedit_candidate_index, 0);
-        assert!(!engine.preedit_dirty);
+        assert!(engine.composition.preedit_suffix.is_empty());
+        assert!(engine.composition.preedit_candidates.is_empty());
+        assert_eq!(engine.composition.preedit_candidate_index, 0);
+        assert!(!engine.composition.preedit_dirty);
     }
 }

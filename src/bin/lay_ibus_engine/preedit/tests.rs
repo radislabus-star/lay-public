@@ -155,14 +155,16 @@ fn replacement_target_is_not_exposed_by_live_preedit() {
 
     assert!(
         engine
+            .composition
             .preedit_candidates
             .iter()
             .all(|candidate| !candidate.starts_with('→')),
         "candidates={:?} replacements={:?}",
-        engine.preedit_candidates,
-        engine.preedit_replacement_targets
+        engine.composition.preedit_candidates,
+        engine.composition.preedit_replacement_targets
     );
     assert!(engine
+        .composition
         .preedit_replacement_targets
         .iter()
         .all(Option::is_none));
@@ -279,41 +281,49 @@ fn space_authority_rejects_complete_frame_identity_faults() {
     assert!(engine.input_frame_authority_matches(&frame));
     assert!(engine.input_frame_identity_matches(&frame));
 
-    engine.focus_receipt = Some("different-focus".to_string());
+    engine.client_context.focus_receipt = Some("different-focus".to_string());
     assert!(!engine.input_frame_authority_matches(&frame));
     assert!(!engine.input_frame_identity_matches(&frame));
-    engine.focus_receipt.clone_from(&frame.focus_receipt);
+    engine
+        .client_context
+        .focus_receipt
+        .clone_from(&frame.focus_receipt);
 
-    engine.tail_buffer.push('x');
+    engine.committed_tail.buffer.push('x');
     assert!(!engine.input_frame_authority_matches(&frame));
     assert!(!engine.input_frame_identity_matches(&frame));
-    engine.tail_buffer.clone_from(&frame.committed_tail);
+    engine
+        .committed_tail
+        .buffer
+        .clone_from(&frame.committed_tail);
 
-    engine.layout_is_ru = !frame.active_layout_is_ru;
+    engine.layout_gesture.layout_is_ru = !frame.active_layout_is_ru;
     assert!(!engine.input_frame_authority_matches(&frame));
     assert!(!engine.input_frame_identity_matches(&frame));
-    engine.layout_is_ru = frame.active_layout_is_ru;
+    engine.layout_gesture.layout_is_ru = frame.active_layout_is_ru;
 
     engine.config.auto_replace = !engine.config.auto_replace;
     assert!(!engine.input_frame_authority_matches(&frame));
     assert!(!engine.input_frame_identity_matches(&frame));
     engine.config.auto_replace = !engine.config.auto_replace;
 
-    engine.factory_engine_profile = lay::exact_layout_authority::FactoryEngineProfile::Unknown;
+    engine.client_context.factory_engine_profile =
+        lay::exact_layout_authority::FactoryEngineProfile::Unknown;
     assert!(!engine.input_frame_authority_matches(&frame));
     assert!(!engine.input_frame_identity_matches(&frame));
-    engine.factory_engine_profile = frame.factory_engine_profile;
+    engine.client_context.factory_engine_profile = frame.factory_engine_profile;
 
-    engine.cursor_cell_width = engine.cursor_cell_width.saturating_add(1);
+    engine.client_context.cursor_cell_width =
+        engine.client_context.cursor_cell_width.saturating_add(1);
     assert!(!engine.input_frame_authority_matches(&frame));
     assert!(!engine.input_frame_identity_matches(&frame));
-    engine.cursor_cell_width = 0;
+    engine.client_context.cursor_cell_width = 0;
 
-    let active_input_at = engine.last_tail_input_at;
-    engine.last_tail_input_at = None;
+    let active_input_at = engine.committed_tail.last_input_at;
+    engine.committed_tail.last_input_at = None;
     assert!(engine.input_frame_authority_matches(&frame));
     assert!(!engine.input_frame_identity_matches(&frame));
-    engine.last_tail_input_at = active_input_at;
+    engine.committed_tail.last_input_at = active_input_at;
     assert!(engine.input_frame_identity_matches(&frame));
 
     let mut stale_fingerprint = frame.clone();
@@ -346,13 +356,13 @@ fn layout_switch_away_and_back_keeps_the_old_frame_stale() {
         .as_ref()
         .expect("initial lexical coordinates")
         .layout_generation();
-    let original_layout = engine.layout_is_ru;
+    let original_layout = engine.layout_gesture.layout_is_ru;
 
     engine.set_layout_is_ru(!original_layout);
     engine.set_layout_is_ru(original_layout);
 
-    assert_eq!(engine.layout_is_ru, original_layout);
-    assert_ne!(engine.layout_generation, old_generation);
+    assert_eq!(engine.layout_gesture.layout_is_ru, original_layout);
+    assert_ne!(engine.layout_gesture.layout_generation, old_generation);
     assert!(!engine.input_frame_authority_matches(&old_frame));
     let current_frame = engine
         .capture_input_frame_identity()
@@ -381,7 +391,11 @@ fn matching_continuation_keeps_the_same_full_target() {
         engine.push_tail_char(ch);
     }
     engine.refresh_precognition_candidates();
-    let previous_target = engine.preedit_fast.target_surface().map(str::to_owned);
+    let previous_target = engine
+        .composition
+        .preedit_fast
+        .target_surface()
+        .map(str::to_owned);
     let previous_target = previous_target.expect("initial completion target");
     let continuation = previous_target
         .strip_prefix(initial_partial)
@@ -390,16 +404,17 @@ fn matching_continuation_keeps_the_same_full_target() {
 
     engine.push_tail_char(continuation);
     assert_eq!(
-        engine.preedit_fast.target_surface(),
+        engine.composition.preedit_fast.target_surface(),
         Some(previous_target.as_str())
     );
     engine.refresh_precognition_candidates();
 
     let partial = format!("{initial_partial}{continuation}");
     let refreshed_targets = engine
+        .composition
         .preedit_candidates
         .iter()
-        .zip(&engine.preedit_replacement_targets)
+        .zip(&engine.composition.preedit_replacement_targets)
         .map(|(suffix, replacement)| {
             replacement
                 .clone()
@@ -410,7 +425,7 @@ fn matching_continuation_keeps_the_same_full_target() {
     assert!(
         !suffix.is_empty(),
         "fresh candidates={:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
     assert!(format!("{partial}{suffix}").starts_with(&partial));
     assert!(
@@ -418,7 +433,7 @@ fn matching_continuation_keeps_the_same_full_target() {
         "stable target={previous_target} refreshed targets={refreshed_targets:?}"
     );
     assert_eq!(
-        engine.preedit_fast.target_surface(),
+        engine.composition.preedit_fast.target_surface(),
         Some(previous_target.as_str())
     );
 }
@@ -459,22 +474,22 @@ fn whitespace_cancels_pending_inactive_preedit_flush() {
     );
 
     engine.push_tail_char('п');
-    engine.preedit_dirty = true;
-    engine.pending_display_frame = engine.capture_input_frame_identity();
-    engine.preedit_suffix = "ривет".to_string();
-    engine.preedit_candidates = vec!["ривет".to_string(), "роект".to_string()];
-    engine.preedit_candidate_index = 1;
+    engine.composition.preedit_dirty = true;
+    engine.composition.pending_display_frame = engine.capture_input_frame_identity();
+    engine.composition.preedit_suffix = "ривет".to_string();
+    engine.composition.preedit_candidates = vec!["ривет".to_string(), "роект".to_string()];
+    engine.composition.preedit_candidate_index = 1;
     engine.push_tail_char(' ');
 
     assert!(
-        !engine.preedit_dirty,
+        !engine.composition.preedit_dirty,
         "word boundary must not resurrect previous word suffix on cursor flush"
     );
-    assert_eq!(engine.preedit_fast.token(), "");
-    assert!(engine.preedit_suffix.is_empty());
-    assert!(engine.preedit_candidates.is_empty());
-    assert_eq!(engine.preedit_candidate_index, 0);
-    assert!(engine.pending_display_frame.is_none());
+    assert_eq!(engine.composition.preedit_fast.token(), "");
+    assert!(engine.composition.preedit_suffix.is_empty());
+    assert!(engine.composition.preedit_candidates.is_empty());
+    assert_eq!(engine.composition.preedit_candidate_index, 0);
+    assert!(engine.composition.pending_display_frame.is_none());
 }
 
 #[test]
@@ -509,8 +524,8 @@ fn ignored_preedit_candidate_does_not_create_learning_feedback() {
     for ch in "ну да".chars() {
         engine.push_tail_char(ch);
     }
-    engine.preedit_suffix = "ша".to_string();
-    engine.preedit_candidates = vec!["ша".to_string()];
+    engine.composition.preedit_suffix = "ша".to_string();
+    engine.composition.preedit_candidates = vec!["ша".to_string()];
     engine.push_tail_char(' ');
 
     std::thread::sleep(std::time::Duration::from_millis(50));
@@ -573,14 +588,15 @@ fn manually_finished_visible_prediction_records_positive_usage() {
     for ch in "н".chars() {
         engine.push_tail_char(ch);
     }
-    engine.preedit_suffix = "у".to_string();
-    engine.preedit_candidates = vec!["у".to_string()];
+    engine.composition.preedit_suffix = "у".to_string();
+    engine.composition.preedit_candidates = vec!["у".to_string()];
     engine
+        .composition
         .preedit_fast
         .observe_prediction_target("н", Some("ну".to_string()));
     engine.push_tail_char('у');
     assert_eq!(
-        engine.preedit_fast.observed_prediction_target(),
+        engine.composition.preedit_fast.observed_prediction_target(),
         Some("ну"),
         "typing through a prediction must preserve its target until Space"
     );
@@ -632,11 +648,12 @@ fn russian_prefixes_delegate_to_shared_candidate_authority() {
 
     assert!(
         engine
+            .composition
             .preedit_candidates
             .iter()
             .all(|suffix| format!("нев{suffix}").starts_with("нев")),
         "shared gate returned a non-prefix completion: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -661,12 +678,12 @@ fn russian_fast_lexical_prior_generates_contextual_suffix() {
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine.preedit_candidates.iter().any(|suffix| {
+        engine.composition.preedit_candidates.iter().any(|suffix| {
             let word = format!("пров{suffix}");
             word.starts_with("провер") || word.starts_with("прове")
         }),
         "expected contextual Russian wave candidates for 'я хочу пров', got {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -691,12 +708,12 @@ fn ime_precognition_projects_only_l2_completion_words_to_suffixes() {
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine.preedit_candidates.iter().all(|suffix| {
+        engine.composition.preedit_candidates.iter().all(|suffix| {
             let projected = format!("звгрузи{suffix}");
             projected != "загрузи" && suffix != "агрузи"
         }),
         "replacement candidates must not leak into IME as suffix fragments: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -722,11 +739,12 @@ fn ambiguous_short_russian_prefix_does_not_emit_dictionary_noise() {
 
     assert!(
         engine
+            .composition
             .preedit_candidates
             .iter()
             .all(|suffix| !format!("за{suffix}").contains("запят")),
         "ambiguous prefix should not suggest project/chat noise: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -751,9 +769,9 @@ fn long_command_tail_does_not_emit_sentence_precognition() {
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine.preedit_candidates.is_empty(),
+        engine.composition.preedit_candidates.is_empty(),
         "command-like uppercase sentence tail must not get noisy IME suffixes: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -779,14 +797,14 @@ fn short_prefixes_do_not_emit_wide_dictionary_noise() {
         engine.refresh_precognition_candidates();
 
         assert!(
-            engine.preedit_candidates.iter().all(|suffix| {
+            engine.composition.preedit_candidates.iter().all(|suffix| {
                 !matches!(
                     suffix.as_str(),
                     "авило" | "ахать" | "алина" | "ббизм" | "арифм"
                 )
             }),
             "short prefix {input:?} must not emit wide dictionary noise: {:?}",
-            engine.preedit_candidates
+            engine.composition.preedit_candidates
         );
     }
 }
@@ -813,11 +831,12 @@ fn three_letter_russian_prefix_does_not_emit_long_lexical_tail_without_l3() {
 
     assert!(
         engine
+            .composition
             .preedit_candidates
             .iter()
             .all(|suffix| suffix != "алия"),
         "short prefix must not leak long dictionary-only tails: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -841,7 +860,7 @@ fn bracketed_mode_is_display_only_and_does_not_create_a_second_candidate_gate() 
             engine.push_tail_char(ch);
         }
         engine.refresh_precognition_candidates();
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     }
 
     lay::nanda_wave::warm_up_l2_for_ime();
@@ -883,13 +902,13 @@ fn settled_known_russian_word_does_not_get_extended_by_precognition() {
     // Managed IME input normally remains active until a boundary. Model the
     // distinct settled-token contract explicitly; active exact forms may still
     // expose morphology continuations while the user is editing the word.
-    engine.last_tail_input_at = None;
+    engine.committed_tail.last_input_at = None;
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine.preedit_candidates.is_empty(),
+        engine.composition.preedit_candidates.is_empty(),
         "known word must not be extended by weak suffixes: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -911,18 +930,18 @@ fn punctuation_closes_inactive_completion_for_previous_word() {
     for ch in "Читал логи".chars() {
         engine.push_tail_char(ch);
     }
-    engine.preedit_suffix = "ка".to_string();
-    engine.preedit_candidates = vec!["ка".to_string()];
+    engine.composition.preedit_suffix = "ка".to_string();
+    engine.composition.preedit_candidates = vec!["ка".to_string()];
     engine.push_tail_char('?');
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine.preedit_candidates.is_empty(),
+        engine.composition.preedit_candidates.is_empty(),
         "punctuation must not revive completion for a closed word: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
-    assert_eq!(engine.preedit_fast.token(), "");
-    assert_eq!(engine.preedit_suffix, "");
+    assert_eq!(engine.composition.preedit_fast.token(), "");
+    assert_eq!(engine.composition.preedit_suffix, "");
 }
 
 #[test]
@@ -949,12 +968,13 @@ fn short_russian_prefix_stays_fast_without_dropping_valid_candidates() {
 
     assert!(
         engine
+            .composition
             .preedit_candidates
             .iter()
             .all(|suffix| suffix.chars().count() != 1
                 || is_allowed_visible_completion_suffix(suffix)),
         "short prefix candidates must keep the single-letter guard: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -978,14 +998,14 @@ fn four_letter_russian_prefix_can_use_wave_lookup() {
     }
     engine.refresh_precognition_candidates();
 
-    for suffix in &engine.preedit_candidates {
+    for suffix in &engine.composition.preedit_candidates {
         if suffix.chars().count() == 1 && !is_allowed_visible_completion_suffix(suffix) {
             let completed = format!("слов{suffix}");
             assert!(
                 lay::lexicon::is_common_ru_word(&completed)
                     || lay::russian_lexicon::is_known_russian_word_or_form(&completed),
                 "a weak one-letter suffix needs an attested completed center: {completed:?} from {:?}",
-                engine.preedit_candidates
+                engine.composition.preedit_candidates
             );
         }
     }
@@ -1073,12 +1093,12 @@ fn long_russian_prefix_only_holds_prefix_preserving_suffix() {
     }
     engine.refresh_precognition_candidates();
     assert!(
-        engine.preedit_candidates.iter().all(|suffix| {
+        engine.composition.preedit_candidates.iter().all(|suffix| {
             let word = format!("следую{suffix}");
             word.starts_with("следую")
         }),
         "long prefix suffixes must be prefix-preserving: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -1100,18 +1120,18 @@ fn normal_composition_preedit_completes_raw_russian_prefix() {
     for ch in "пров".chars() {
         engine.insert_composition_char(ch);
     }
-    engine.composition_cursor = engine.buffer.chars().count();
+    engine.composition.cursor = engine.composition.buffer.chars().count();
     engine.refresh_precognition_candidates();
     let (text, cursor_pos) = engine.composition_preedit_payload();
 
     assert!(
         text.starts_with("пров") && text.chars().count() > "пров".chars().count(),
         "normal IME should show an aggressive completion for raw Russian prefix: text={text:?}, candidates={:?}, replacements={:?}",
-        engine.preedit_candidates,
-        engine.preedit_replacement_targets,
+        engine.composition.preedit_candidates,
+        engine.composition.preedit_replacement_targets,
     );
     assert_eq!(cursor_pos, 4);
-    assert!(!engine.preedit_suffix.is_empty());
+    assert!(!engine.composition.preedit_suffix.is_empty());
 }
 
 #[test]
@@ -1134,9 +1154,9 @@ fn space_boundary_suppresses_inactive_phrase_precognition() {
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine.preedit_candidates.is_empty(),
+        engine.composition.preedit_candidates.is_empty(),
         "word boundary must close visible IME suffixes, got {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -1157,15 +1177,15 @@ fn composition_preedit_keeps_visible_suffix_when_autocorrect_is_pending() {
             ..LayConfig::default()
         },
     );
-    engine.buffer = "ghbdtn".to_string();
-    engine.composition_cursor = engine.buffer.chars().count();
-    engine.preedit_candidates = vec!["ий".to_string()];
-    engine.preedit_replacement_targets = vec![None];
+    engine.composition.buffer = "ghbdtn".to_string();
+    engine.composition.cursor = engine.composition.buffer.chars().count();
+    engine.composition.preedit_candidates = vec!["ий".to_string()];
+    engine.composition.preedit_replacement_targets = vec![None];
     let (text, cursor_pos) = engine.composition_preedit_payload();
 
     assert_eq!(text, "ghbdtnий");
     assert_eq!(cursor_pos, 6);
-    assert_eq!(engine.preedit_suffix, "ий");
+    assert_eq!(engine.composition.preedit_suffix, "ий");
 }
 
 #[test]
@@ -1188,8 +1208,8 @@ fn candidate_installation_defensively_discards_typed_replacements() {
         lay::typing_cpu::ImeCandidateSource::L2Replacement,
     )]);
 
-    assert!(engine.preedit_candidates.is_empty());
-    assert!(engine.preedit_replacement_targets.is_empty());
+    assert!(engine.composition.preedit_candidates.is_empty());
+    assert!(engine.composition.preedit_replacement_targets.is_empty());
     assert_eq!(engine.selected_precognition_replacement(), None);
 }
 
@@ -1206,10 +1226,10 @@ fn visible_active_composition_requires_one_preedit_clear_even_without_suffix() {
             ..LayConfig::default()
         },
     );
-    engine.buffer = "ghbdtn".to_string();
-    engine.preedit_visible = true;
-    engine.preedit_suffix.clear();
-    engine.preedit_candidates.clear();
+    engine.composition.buffer = "ghbdtn".to_string();
+    engine.composition.preedit_visible = true;
+    engine.composition.preedit_suffix.clear();
+    engine.composition.preedit_candidates.clear();
 
     assert!(engine.preedit_clear_needed());
 }
@@ -1244,7 +1264,7 @@ fn experimental_short_russian_prefix_gets_lexical_candidates() {
     engine.refresh_precognition_candidates();
 
     assert!(
-        !engine.preedit_candidates.is_empty(),
+        !engine.composition.preedit_candidates.is_empty(),
         "experimental L2 should not stay silent for contextual prefix 'при'"
     );
 }
@@ -1305,11 +1325,12 @@ fn first_russian_word_prefix_gets_precognition_candidate() {
 
     assert!(
         engine
+            .composition
             .preedit_candidates
             .iter()
             .any(|suffix| suffix == "кий" || suffix == "ких"),
         "first Russian prefix should produce a useful word suffix: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -1334,12 +1355,12 @@ fn quoted_russian_prefix_gets_precognition_candidate() {
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine.preedit_candidates.iter().any(|suffix| {
+        engine.composition.preedit_candidates.iter().any(|suffix| {
             let word = format!("писа{suffix}");
             word == "писать" || word.starts_with("писа")
         }),
         "punctuation before Russian prefix must not silence IME: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -1361,16 +1382,16 @@ fn first_active_russian_word_prefix_gets_precognition_candidate_after_four_chars
     for ch in "пров".chars() {
         engine.insert_composition_char(ch);
     }
-    engine.composition_cursor = engine.buffer.chars().count();
+    engine.composition.cursor = engine.composition.buffer.chars().count();
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine.preedit_candidates.iter().any(|suffix| {
+        engine.composition.preedit_candidates.iter().any(|suffix| {
             let word = format!("пров{suffix}");
             word.starts_with("провер")
         }),
         "first active Russian word should produce a useful suffix after four chars: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -1392,13 +1413,17 @@ fn first_active_word_keeps_authorized_single_letter_completion_visible() {
     for ch in "писат".chars() {
         engine.insert_composition_char(ch);
     }
-    engine.composition_cursor = engine.buffer.chars().count();
+    engine.composition.cursor = engine.composition.buffer.chars().count();
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine.preedit_candidates.iter().any(|suffix| suffix == "ь"),
+        engine
+            .composition
+            .preedit_candidates
+            .iter()
+            .any(|suffix| suffix == "ь"),
         "authorized final-letter completion must stay visible: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -1420,16 +1445,17 @@ fn complete_word_state_can_still_offer_a_stronger_longer_center() {
     for ch in "как".chars() {
         engine.insert_composition_char(ch);
     }
-    engine.composition_cursor = engine.buffer.chars().count();
+    engine.composition.cursor = engine.composition.buffer.chars().count();
     engine.refresh_precognition_candidates();
 
     assert!(
         engine
+            .composition
             .preedit_candidates
             .iter()
             .any(|suffix| matches!(suffix.as_str(), "ой" | "ие")),
         "Keep must compete with longer centers instead of stopping readout: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -1454,12 +1480,12 @@ fn live_ime_prefers_prefix_completion_over_semantic_replacement_noise() {
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine.preedit_candidates.iter().all(|suffix| {
+        engine.composition.preedit_candidates.iter().all(|suffix| {
             let word = format!("кандидат{suffix}");
             word.starts_with("кандидат") && word != "кандидоз"
         }),
         "live IME must not turn a prefix into unrelated semantic replacement: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -1485,11 +1511,12 @@ fn live_ime_does_not_project_typo_replacement_as_suffix() {
 
     assert!(
         engine
+            .composition
             .preedit_candidates
             .iter()
             .all(|suffix| suffix != "агрузи"),
         "word replacement belongs to boundary autocorrect, not IME suffix: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -1511,19 +1538,19 @@ fn active_ime_does_not_render_a_longer_replacement_after_a_single_prefix_typo() 
     for ch in "переспектив".chars() {
         engine.insert_composition_char(ch);
     }
-    engine.composition_cursor = engine.buffer.chars().count();
+    engine.composition.cursor = engine.composition.buffer.chars().count();
     engine.refresh_precognition_candidates();
 
     assert!(
         engine
-            .preedit_replacement_targets
+            .composition.preedit_replacement_targets
             .iter()
             .flatten()
             .next()
             .is_none(),
         "the shared gate retains this family, but live IBus must not replace the visible token: candidates={:?}, replacements={:?}",
-        engine.preedit_candidates,
-        engine.preedit_replacement_targets
+        engine.composition.preedit_candidates,
+        engine.composition.preedit_replacement_targets
     );
 }
 
@@ -1548,10 +1575,10 @@ fn repeated_current_token_does_not_leak_a_full_replacement_into_completion_preed
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine.preedit_replacement_targets.iter().flatten().all(|target| target != "то есть"),
+        engine.composition.preedit_replacement_targets.iter().flatten().all(|target| target != "то есть"),
         "the completion route must not render a boundary replacement: candidates={:?}, replacements={:?}",
-        engine.preedit_candidates,
-        engine.preedit_replacement_targets
+        engine.composition.preedit_candidates,
+        engine.composition.preedit_replacement_targets
     );
 }
 
@@ -1573,11 +1600,11 @@ fn first_active_russian_word_prefix_gets_precognition_candidate_after_three_char
     for ch in "при".chars() {
         engine.insert_composition_char(ch);
     }
-    engine.composition_cursor = engine.buffer.chars().count();
+    engine.composition.cursor = engine.composition.buffer.chars().count();
     engine.refresh_precognition_candidates();
 
     assert!(
-        !engine.preedit_candidates.is_empty(),
+        !engine.composition.preedit_candidates.is_empty(),
         "first active Russian word should produce suffixes after three chars"
     );
 }
@@ -1600,11 +1627,11 @@ fn experimental_first_active_russian_word_prefix_gets_bayes_candidates_after_two
     for ch in "пр".chars() {
         engine.insert_composition_char(ch);
     }
-    engine.composition_cursor = engine.buffer.chars().count();
+    engine.composition.cursor = engine.composition.buffer.chars().count();
     engine.refresh_precognition_candidates();
 
     assert!(
-        !engine.preedit_candidates.is_empty(),
+        !engine.composition.preedit_candidates.is_empty(),
         "experimental Bayes-backed IME should not stay silent after two Russian chars"
     );
 }
@@ -1630,6 +1657,7 @@ fn short_russian_prefix_prefers_informative_suffix_over_tiny_tail() {
     engine.refresh_precognition_candidates();
 
     let first = engine
+        .composition
         .preedit_candidates
         .first()
         .map(String::as_str)
@@ -1637,7 +1665,7 @@ fn short_russian_prefix_prefers_informative_suffix_over_tiny_tail() {
     assert!(
         first.chars().count() > 2,
         "short Russian prefix should not rank tiny suffix first: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -1662,10 +1690,14 @@ fn ime_preserves_shared_gate_rank_after_admission_score_saturates() {
     engine.refresh_precognition_candidates();
 
     assert_eq!(
-        engine.preedit_candidates.first().map(String::as_str),
+        engine
+            .composition
+            .preedit_candidates
+            .first()
+            .map(String::as_str),
         Some("нь"),
         "IBus must render the common completion selected by the shared gate: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -1690,9 +1722,13 @@ fn ime_can_render_a_bound_morphology_surface_from_the_full_l2_field() {
     engine.refresh_precognition_candidates();
 
     assert!(
-        engine.preedit_candidates.iter().any(|suffix| suffix == "ю"),
+        engine
+            .composition
+            .preedit_candidates
+            .iter()
+            .any(|suffix| suffix == "ю"),
         "the attested жуть -> жутью morphology center must remain visible: {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
 }
 
@@ -1852,11 +1888,11 @@ fn experimental_precognition_candidates_can_be_cycled() {
             ..LayConfig::default()
         },
     );
-    engine.preedit_candidates = vec!["ождь".to_string(), "ождик".to_string()];
+    engine.composition.preedit_candidates = vec!["ождь".to_string(), "ождик".to_string()];
     assert!(
-        engine.preedit_candidates.len() >= 2,
+        engine.composition.preedit_candidates.len() >= 2,
         "expected NANDA phrase candidates, got {:?}",
-        engine.preedit_candidates
+        engine.composition.preedit_candidates
     );
     assert_eq!(
         engine.selected_precognition_suffix().as_deref(),
@@ -1887,7 +1923,7 @@ fn ime_backend_without_precognition_does_not_enable_probe_preedit() {
             ..LayConfig::default()
         },
     );
-    engine.tail_buffer = "ab".to_string();
+    engine.committed_tail.buffer = "ab".to_string();
     assert!(!engine.precognition_preedit_enabled());
     assert_eq!(engine.precognition_suffix(), None);
 }
@@ -1907,14 +1943,14 @@ fn ime_backend_with_zero_nanda_weights_does_not_show_precognition() {
             ..LayConfig::default()
         },
     );
-    engine.tail_buffer = "пров".to_string();
+    engine.committed_tail.buffer = "пров".to_string();
     for ch in "пров".chars() {
-        engine.preedit_fast.push(ch);
+        engine.composition.preedit_fast.push(ch);
     }
 
     assert!(!engine.precognition_preedit_enabled());
     engine.refresh_precognition_candidates();
-    assert!(engine.preedit_candidates.is_empty());
+    assert!(engine.composition.preedit_candidates.is_empty());
     assert_eq!(engine.precognition_suffix(), None);
 }
 
@@ -1927,8 +1963,8 @@ fn preedit_for_plain_ime_client_hides_probe_marker() {
         true,
         LayConfig::default(),
     );
-    engine.tail_buffer = "ab".to_string();
-    engine.preedit_suffix = PREEDIT_PROBE_SYMBOL.to_string();
+    engine.committed_tail.buffer = "ab".to_string();
+    engine.composition.preedit_suffix = PREEDIT_PROBE_SYMBOL.to_string();
 
     assert_eq!(engine.preedit_text_for_client(), ("".to_string(), 0));
 }
@@ -1942,8 +1978,8 @@ fn preedit_completion_has_no_visible_debug_marker() {
         true,
         LayConfig::default(),
     );
-    engine.tail_buffer = "при".to_string();
-    engine.preedit_suffix = "вет".to_string();
+    engine.committed_tail.buffer = "при".to_string();
+    engine.composition.preedit_suffix = "вет".to_string();
     assert_eq!(engine.preedit_text_for_client(), ("вет".to_string(), 0));
 }
 
@@ -1962,9 +1998,9 @@ fn bracketed_precognition_is_display_only() {
             ..LayConfig::default()
         },
     );
-    engine.buffer = "хоро".to_string();
-    engine.composition_cursor = 4;
-    engine.preedit_candidates = vec!["шо".to_string()];
+    engine.composition.buffer = "хоро".to_string();
+    engine.composition.cursor = 4;
+    engine.composition.preedit_candidates = vec!["шо".to_string()];
 
     assert_eq!(
         engine.composition_preedit_payload(),
@@ -1995,8 +2031,8 @@ fn preedit_completion_does_not_duplicate_anchor() {
         true,
         LayConfig::default(),
     );
-    engine.tail_buffer = "проверк".to_string();
-    engine.preedit_suffix = "а".to_string();
+    engine.committed_tail.buffer = "проверк".to_string();
+    engine.composition.preedit_suffix = "а".to_string();
 
     assert_eq!(engine.preedit_text_for_client(), ("а".to_string(), 0));
 }
@@ -2063,7 +2099,7 @@ fn precognition_candidate_generation_stays_under_budget() {
                 local_p90,
                 local_p99,
                 local_max,
-                engine.preedit_candidates.len(),
+                engine.composition.preedit_candidates.len(),
                 measured_precognition_stages(&engine)
             );
         sample_max.push((sample, local_max));
@@ -2133,9 +2169,9 @@ fn preedit_for_surrounding_text_client_hides_probe_marker() {
         true,
         LayConfig::default(),
     );
-    engine.surrounding_text_supported = true;
-    engine.tail_buffer = "ab".to_string();
-    engine.preedit_suffix = PREEDIT_PROBE_SYMBOL.to_string();
+    engine.client_context.surrounding_text_supported = true;
+    engine.committed_tail.buffer = "ab".to_string();
+    engine.composition.preedit_suffix = PREEDIT_PROBE_SYMBOL.to_string();
 
     assert_eq!(engine.preedit_text_for_client(), ("".to_string(), 0));
 }
@@ -2159,11 +2195,12 @@ fn pending_refresh_shortens_the_retained_surface_without_accepting_it() {
     for ch in "пров".chars() {
         engine.push_tail_char(ch);
     }
-    engine.preedit_visible = true;
-    engine.preedit_suffix = "ерка".to_string();
-    engine.preedit_candidates = vec!["ерка".to_string()];
-    engine.preedit_replacement_targets = vec![None];
+    engine.composition.preedit_visible = true;
+    engine.composition.preedit_suffix = "ерка".to_string();
+    engine.composition.preedit_candidates = vec!["ерка".to_string()];
+    engine.composition.preedit_replacement_targets = vec![None];
     engine
+        .composition
         .preedit_fast
         .remember_target(Some("проверка".to_string()));
 
@@ -2174,11 +2211,17 @@ fn pending_refresh_shortens_the_retained_surface_without_accepting_it() {
     zbus::block_on(engine.begin_pending_precognition_refresh(&mut output, true))
         .expect("pending retained surface");
 
-    assert!(engine.preedit_visible, "visible surface must not blink");
-    assert_eq!(engine.preedit_suffix, "ерка");
-    assert!(engine.preedit_candidates.is_empty());
-    assert!(engine.preedit_replacement_targets.is_empty());
-    assert_eq!(engine.preedit_fast.target_surface(), Some("проверка"));
+    assert!(
+        engine.composition.preedit_visible,
+        "visible surface must not blink"
+    );
+    assert_eq!(engine.composition.preedit_suffix, "ерка");
+    assert!(engine.composition.preedit_candidates.is_empty());
+    assert!(engine.composition.preedit_replacement_targets.is_empty());
+    assert_eq!(
+        engine.composition.preedit_fast.target_surface(),
+        Some("проверка")
+    );
     assert_eq!(
         engine.selected_precognition_suffix(),
         None,
@@ -2213,10 +2256,11 @@ fn pending_refresh_hides_a_target_that_no_longer_matches_the_partial() {
     for ch in "прод".chars() {
         engine.push_tail_char(ch);
     }
-    engine.preedit_visible = true;
-    engine.preedit_suffix = "ерка".to_string();
-    engine.preedit_candidates = vec!["ерка".to_string()];
+    engine.composition.preedit_visible = true;
+    engine.composition.preedit_suffix = "ерка".to_string();
+    engine.composition.preedit_candidates = vec!["ерка".to_string()];
     engine
+        .composition
         .preedit_fast
         .remember_target(Some("проверка".to_string()));
 
@@ -2225,10 +2269,10 @@ fn pending_refresh_hides_a_target_that_no_longer_matches_the_partial() {
     zbus::block_on(engine.begin_pending_precognition_refresh(&mut output, true))
         .expect("mismatched pending surface");
 
-    assert!(!engine.preedit_visible);
-    assert!(engine.preedit_suffix.is_empty());
-    assert!(engine.preedit_candidates.is_empty());
-    assert_eq!(engine.preedit_fast.target_surface(), None);
+    assert!(!engine.composition.preedit_visible);
+    assert!(engine.composition.preedit_suffix.is_empty());
+    assert!(engine.composition.preedit_candidates.is_empty());
+    assert_eq!(engine.composition.preedit_fast.target_surface(), None);
     assert_eq!(builder.preedit_calls(), ["update-hidden", "hide"]);
     let proposal = builder.finish(false);
     assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
@@ -2252,15 +2296,16 @@ fn terminal_cursor_ack_wait_publishes_the_shortened_surface_first() {
         LayConfig::default(),
     );
     shared.lock().expect("shared state").active_path = Some("/test".to_string());
-    engine.surrounding_text_supported = false;
-    engine.cursor_cell_width = 1;
+    engine.client_context.surrounding_text_supported = false;
+    engine.client_context.cursor_cell_width = 1;
     for ch in "пров".chars() {
         engine.push_tail_char(ch);
     }
-    engine.preedit_visible = true;
-    engine.preedit_suffix = "верка".to_string();
-    engine.preedit_candidates = vec!["верка".to_string()];
+    engine.composition.preedit_visible = true;
+    engine.composition.preedit_suffix = "верка".to_string();
+    engine.composition.preedit_candidates = vec!["верка".to_string()];
     engine
+        .composition
         .preedit_fast
         .remember_target(Some("проверка".to_string()));
     let frame = engine.capture_input_frame_identity();
@@ -2279,9 +2324,9 @@ fn terminal_cursor_ack_wait_publishes_the_shortened_surface_first() {
     assert_eq!(builder.pending_preedit_update(), Some(("ерка", 0, 0)));
     assert_eq!(builder.preedit_calls(), ["update-visible"]);
     assert_eq!(builder.finish(false).0, PROPOSAL_FRAME_READY);
-    assert!(engine.preedit_dirty);
-    assert_eq!(engine.pending_display_frame, frame);
-    assert!(engine.preedit_candidates.is_empty());
+    assert!(engine.composition.preedit_dirty);
+    assert_eq!(engine.composition.pending_display_frame, frame);
+    assert!(engine.composition.preedit_candidates.is_empty());
     assert_eq!(engine.selected_precognition_suffix(), None);
 }
 
@@ -2301,16 +2346,18 @@ fn stale_layout_frame_cannot_publish_a_retained_surface() {
     for ch in "пров".chars() {
         engine.push_tail_char(ch);
     }
-    engine.preedit_visible = true;
-    engine.preedit_suffix = "верка".to_string();
-    engine.preedit_candidates = vec!["верка".to_string()];
+    engine.composition.preedit_visible = true;
+    engine.composition.preedit_suffix = "верка".to_string();
+    engine.composition.preedit_candidates = vec!["верка".to_string()];
     engine
+        .composition
         .preedit_fast
         .remember_target(Some("проверка".to_string()));
     let frame = engine
         .capture_input_frame_identity()
         .expect("current frame");
-    engine.layout_generation = engine.layout_generation.wrapping_add(1);
+    engine.layout_gesture.layout_generation =
+        engine.layout_gesture.layout_generation.wrapping_add(1);
 
     let mut builder = AtomicEffectBuilder::default();
     let mut output = EngineOutput::atomic(&mut builder);
@@ -2323,8 +2370,8 @@ fn stale_layout_frame_cannot_publish_a_retained_surface() {
     )
     .expect("stale frame refusal");
 
-    assert!(!engine.preedit_visible);
-    assert!(!engine.preedit_display_only_pending);
+    assert!(!engine.composition.preedit_visible);
+    assert!(!engine.composition.preedit_display_only_pending);
     assert_eq!(
         builder.preedit_calls(),
         ["update-hidden", "hide"],
@@ -2387,12 +2434,12 @@ fn pending_tab_and_arrow_retire_the_display_without_accepting_it() {
                 ..LayConfig::default()
             },
         );
-        engine.tail_buffer = "пров".to_string();
-        engine.preedit_visible = true;
-        engine.preedit_suffix = "ерка".to_string();
-        engine.preedit_display_only_pending = true;
-        engine.preedit_dirty = true;
-        engine.pending_display_frame = engine.capture_input_frame_identity();
+        engine.committed_tail.buffer = "пров".to_string();
+        engine.composition.preedit_visible = true;
+        engine.composition.preedit_suffix = "ерка".to_string();
+        engine.composition.preedit_display_only_pending = true;
+        engine.composition.preedit_dirty = true;
+        engine.composition.pending_display_frame = engine.capture_input_frame_identity();
 
         let mut builder = AtomicEffectBuilder::default();
         let handled = {
@@ -2402,10 +2449,10 @@ fn pending_tab_and_arrow_retire_the_display_without_accepting_it() {
         };
 
         assert!(!handled);
-        assert!(!engine.preedit_visible);
-        assert!(!engine.preedit_display_only_pending);
-        assert!(!engine.preedit_dirty);
-        assert!(engine.pending_display_frame.is_none());
+        assert!(!engine.composition.preedit_visible);
+        assert!(!engine.composition.preedit_display_only_pending);
+        assert!(!engine.composition.preedit_dirty);
+        assert!(engine.composition.pending_display_frame.is_none());
         assert_eq!(builder.preedit_calls(), ["update-hidden", "hide"]);
 
         let mut cursor_builder = AtomicEffectBuilder::default();
@@ -2428,11 +2475,11 @@ fn pending_active_composition_keeps_its_buffer_visible_and_editable() {
         true,
         LayConfig::default(),
     );
-    tab_engine.buffer = "пров".to_string();
-    tab_engine.composition_cursor = 4;
-    tab_engine.preedit_visible = true;
-    tab_engine.preedit_suffix = "ерка".to_string();
-    tab_engine.preedit_display_only_pending = true;
+    tab_engine.composition.buffer = "пров".to_string();
+    tab_engine.composition.cursor = 4;
+    tab_engine.composition.preedit_visible = true;
+    tab_engine.composition.preedit_suffix = "ерка".to_string();
+    tab_engine.composition.preedit_display_only_pending = true;
 
     let mut tab_builder = AtomicEffectBuilder::default();
     let tab_handled = {
@@ -2442,17 +2489,17 @@ fn pending_active_composition_keeps_its_buffer_visible_and_editable() {
     };
 
     assert!(!tab_handled);
-    assert_eq!(tab_engine.buffer, "пров");
-    assert_eq!(tab_engine.composition_cursor, 4);
-    assert!(tab_engine.preedit_visible);
-    assert!(!tab_engine.preedit_display_only_pending);
+    assert_eq!(tab_engine.composition.buffer, "пров");
+    assert_eq!(tab_engine.composition.cursor, 4);
+    assert!(tab_engine.composition.preedit_visible);
+    assert!(!tab_engine.composition.preedit_display_only_pending);
     assert_eq!(tab_engine.selected_precognition_suffix(), None);
     assert_eq!(tab_builder.pending_preedit_update(), Some(("пров", 4, 0)));
     assert!(!tab_builder.preedit_calls().contains(&"hide"));
 
     let mut cursor_engine = tab_engine;
-    cursor_engine.preedit_display_only_pending = true;
-    cursor_engine.preedit_suffix = "ерка".to_string();
+    cursor_engine.composition.preedit_display_only_pending = true;
+    cursor_engine.composition.preedit_suffix = "ерка".to_string();
     let mut cursor_builder = AtomicEffectBuilder::default();
     let cursor_handled = {
         let mut output = EngineOutput::atomic(&mut cursor_builder);
@@ -2461,10 +2508,10 @@ fn pending_active_composition_keeps_its_buffer_visible_and_editable() {
     };
 
     assert!(cursor_handled);
-    assert_eq!(cursor_engine.buffer, "пров");
-    assert_eq!(cursor_engine.composition_cursor, 3);
-    assert!(cursor_engine.preedit_visible);
-    assert!(!cursor_engine.preedit_display_only_pending);
+    assert_eq!(cursor_engine.composition.buffer, "пров");
+    assert_eq!(cursor_engine.composition.cursor, 3);
+    assert!(cursor_engine.composition.preedit_visible);
+    assert!(!cursor_engine.composition.preedit_display_only_pending);
     assert!(!cursor_builder.preedit_calls().contains(&"hide"));
 }
 
@@ -2487,10 +2534,11 @@ fn pending_alt_gesture_retires_before_release_and_cannot_accept() {
         for ch in "пров".chars() {
             engine.push_tail_char(ch);
         }
-        engine.preedit_visible = true;
-        engine.preedit_suffix = "ерка".to_string();
-        engine.preedit_display_only_pending = true;
+        engine.composition.preedit_visible = true;
+        engine.composition.preedit_suffix = "ерка".to_string();
+        engine.composition.preedit_display_only_pending = true;
         engine
+            .composition
             .preedit_fast
             .remember_target(Some("проверка".to_string()));
 
@@ -2513,7 +2561,7 @@ fn pending_alt_gesture_retires_before_release_and_cannot_accept() {
 
         assert!(!press);
         assert!(!release);
-        assert!(engine.preedit_candidates.is_empty());
+        assert!(engine.composition.preedit_candidates.is_empty());
         assert_eq!(engine.selected_precognition_suffix(), None);
         assert_eq!(builder.preedit_calls(), ["update-hidden", "hide"]);
     }
@@ -2533,9 +2581,9 @@ fn background_candidates_remain_unauthorized_when_publication_fails() {
     for ch in "пров".chars() {
         engine.push_tail_char(ch);
     }
-    engine.preedit_visible = true;
-    engine.preedit_suffix = "ерка".to_string();
-    engine.preedit_display_only_pending = true;
+    engine.composition.preedit_visible = true;
+    engine.composition.preedit_suffix = "ерка".to_string();
+    engine.composition.preedit_display_only_pending = true;
 
     let proposals = vec![ImeCandidateProposal::new(
         "ерка",
@@ -2548,8 +2596,8 @@ fn background_candidates_remain_unauthorized_when_publication_fails() {
     let result = zbus::block_on(engine.apply_background_precognition(&mut output, proposals));
 
     assert!(result.is_err());
-    assert!(engine.preedit_display_only_pending);
-    assert!(engine.preedit_candidates.is_empty());
+    assert!(engine.composition.preedit_display_only_pending);
+    assert!(engine.composition.preedit_candidates.is_empty());
     assert_eq!(engine.selected_precognition_suffix(), None);
 }
 
@@ -2564,9 +2612,9 @@ fn late_worker_retires_the_display_exactly_once() {
         true,
         LayConfig::default(),
     );
-    engine.preedit_visible = true;
-    engine.preedit_suffix = "ерка".to_string();
-    engine.preedit_display_only_pending = true;
+    engine.composition.preedit_visible = true;
+    engine.composition.preedit_suffix = "ерка".to_string();
+    engine.composition.preedit_display_only_pending = true;
 
     let mut builder = AtomicEffectBuilder::default();
     let mut output = EngineOutput::atomic(&mut builder);
@@ -2577,8 +2625,8 @@ fn late_worker_retires_the_display_exactly_once() {
     );
 
     assert_eq!(builder.preedit_calls(), ["update-hidden", "hide"]);
-    assert!(!engine.preedit_visible);
-    assert!(engine.preedit_candidates.is_empty());
+    assert!(!engine.composition.preedit_visible);
+    assert!(engine.composition.preedit_candidates.is_empty());
     assert_eq!(engine.selected_precognition_suffix(), None);
 }
 
@@ -2612,8 +2660,9 @@ fn clearing_an_already_hidden_preedit_emits_no_empty_frame() {
         true,
         LayConfig::default(),
     );
-    engine.tail_buffer = "ghbdtn".to_string();
+    engine.committed_tail.buffer = "ghbdtn".to_string();
     engine
+        .composition
         .preedit_fast
         .remember_target(Some("привет".to_string()));
     let mut builder = AtomicEffectBuilder::default();
@@ -2622,5 +2671,5 @@ fn clearing_an_already_hidden_preedit_emits_no_empty_frame() {
     zbus::block_on(engine.clear_preedit(&mut output)).expect("hidden clear");
 
     assert_eq!(builder.finish(false).0, PROPOSAL_NATIVE_UNHANDLED);
-    assert!(engine.preedit_fast.target_surface().is_none());
+    assert!(engine.composition.preedit_fast.target_surface().is_none());
 }

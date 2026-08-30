@@ -1,0 +1,126 @@
+{
+  "baseline_receipts": [
+    {
+      "exists": true,
+      "id": "agents-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../AGENTS.md",
+      "sha256": "93911c373f7b4be3347231d924edc51223c8ab0f7a28395105e9a920ad4282ab",
+      "size_bytes": 9647
+    },
+    {
+      "exists": true,
+      "id": "td101-task",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../101-decompose-ibus-engine-state-owner.md",
+      "sha256": "6afc908868b5eac0e5ea29132a24752a9d56bb7196371e10aef3bcb1b4e8b8fe",
+      "size_bytes": 2019
+    },
+    {
+      "exists": true,
+      "id": "double-shift-contract",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../docs/double-shift-physical-layout-contract.md",
+      "sha256": "7d728f271b7e1f6f369da6f6525df0ffa8bfc78ec7c418d32cecd412f9f7e6db",
+      "size_bytes": 17521
+    },
+    {
+      "exists": true,
+      "id": "engine-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "92f68e4c3a85ff3ca60389f19fa30452f38fa853b1e9e39f0cf6ad8f224547d9",
+      "size_bytes": 19372
+    },
+    {
+      "exists": true,
+      "id": "state-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/bin/lay_ibus_engine/state.rs",
+      "sha256": "48fadabf8d5920df25cb5b0cb027d454b6e5ea715e230693cc37c0282a7ad648",
+      "size_bytes": 47200
+    },
+    {
+      "exists": true,
+      "id": "ibus-interface-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "cd7a0c8b00206fd33332a079c2daac3e631623a52b721c698d266542f970f038",
+      "size_bytes": 21129
+    },
+    {
+      "exists": true,
+      "id": "daemon-detector-source",
+      "kind": "file",
+      "mode": "0664",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+      "sha256": "18096d6e5ba07a1fb7708f265805b96f5755e6f86d574dca4100bb7b3ee81f71",
+      "size_bytes": 6367
+    }
+  ],
+  "blockers": [],
+  "claim_boundary": {
+    "deployment_authority": false,
+    "design_contract_only": true,
+    "implementation_correctness_proven": false,
+    "post_edit_tests_still_required": true
+  },
+  "coverage": {
+    "baseline_checks": 7,
+    "forbidden_side_effect_kinds": [
+      "daemon_detector_change",
+      "ibus_pair_detection",
+      "installed_runtime_change",
+      "new_async_route",
+      "second_mutation_owner"
+    ],
+    "identity_contracts": 3,
+    "invariants": 5,
+    "planned_side_effect_kinds": [
+      "evidence_write",
+      "remote_test",
+      "source_edit"
+    ],
+    "preserved_artifacts": 2,
+    "runtime_comparisons": 0,
+    "source_checks": 3,
+    "tests": 10
+  },
+  "manifest_sha256": "64c3d9502fdeae4d1e319073d8da591481cba230688b02c717b02b9c5f2d4fb6",
+  "safe_to_implement": true,
+  "schema": "nanda.implementation-preflight.v1",
+  "source_receipts": [
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "engine-owner-vetoes",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "92f68e4c3a85ff3ca60389f19fa30452f38fa853b1e9e39f0cf6ad8f224547d9",
+      "size_bytes": 19372
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "legacy-shift-veto",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "cd7a0c8b00206fd33332a079c2daac3e631623a52b721c698d266542f970f038",
+      "size_bytes": 21129
+    },
+    {
+      "exists": true,
+      "forbidden_matches": [],
+      "id": "daemon-detector-veto",
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/tech_debt/evidence/../../src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+      "sha256": "18096d6e5ba07a1fb7708f265805b96f5755e6f86d574dca4100bb7b3ee81f71",
+      "size_bytes": 6367
+    }
+  ],
+  "task_id": "td101-decompose-ibus-engine-state-owner-v1-20260830",
+  "verdict": "READY_TO_IMPLEMENT"
+}

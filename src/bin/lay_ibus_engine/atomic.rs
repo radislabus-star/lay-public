@@ -64,16 +64,16 @@ impl LayIbusEngine {
             return Ok(native_unhandled());
         }
 
-        self.atomic_route_active = true;
+        self.atomic.active = true;
         if !self.settle_atomic_pending(envelope.3, &prior_receipt) {
             return Ok(native_unhandled());
         }
         self.consume_shift_gesture_handoff();
 
         let mut speculative = self.deep_atomic_clone();
-        speculative.atomic_speculation = true;
-        speculative.deferred_layout_actions.clear();
-        speculative.deferred_learning_actions.clear();
+        speculative.atomic.speculation = true;
+        speculative.atomic.deferred_layout_actions.clear();
+        speculative.atomic.deferred_learning_actions.clear();
 
         let profile = &capability.0;
         let lease = &capability.1;
@@ -149,6 +149,7 @@ impl LayIbusEngine {
                 if pending.event_is_press {
                     pending
                         .speculative
+                        .layout_gesture
                         .handled_press_keycodes
                         .remove(&pending.event_keycode);
                 }
@@ -167,12 +168,15 @@ impl LayIbusEngine {
     }
 
     fn commit_native_observation(&mut self, speculative: &LayIbusEngine) {
-        self.shift_active = speculative.shift_active;
-        self.shift_used_as_modifier = speculative.shift_used_as_modifier;
-        self.shift_pressed_at = speculative.shift_pressed_at;
-        self.last_shift_release_at = speculative.last_shift_release_at;
-        self.alt_completion_active = speculative.alt_completion_active;
-        self.alt_used_as_modifier = speculative.alt_used_as_modifier;
+        self.layout_gesture.shift_active = speculative.layout_gesture.shift_active;
+        self.layout_gesture.shift_used_as_modifier =
+            speculative.layout_gesture.shift_used_as_modifier;
+        self.layout_gesture.shift_pressed_at = speculative.layout_gesture.shift_pressed_at;
+        self.layout_gesture.last_shift_release_at =
+            speculative.layout_gesture.last_shift_release_at;
+        self.layout_gesture.alt_completion_active =
+            speculative.layout_gesture.alt_completion_active;
+        self.layout_gesture.alt_used_as_modifier = speculative.layout_gesture.alt_used_as_modifier;
     }
 
     fn commit_atomic_speculation(
@@ -180,13 +184,13 @@ impl LayIbusEngine {
         mut speculative: LayIbusEngine,
         submitted_atomic_frame: bool,
     ) {
-        let newer_live_surrounding = (self.surrounding_observation_revision
-            > speculative.surrounding_observation_revision)
+        let newer_live_surrounding = (self.client_context.surrounding_observation_revision
+            > speculative.client_context.surrounding_observation_revision)
             .then(|| {
                 (
-                    self.surrounding_text_supported,
-                    self.surrounding_text_snapshot.clone(),
-                    self.surrounding_observation_revision,
+                    self.client_context.surrounding_text_supported,
+                    self.client_context.surrounding_text_snapshot.clone(),
+                    self.client_context.surrounding_observation_revision,
                 )
             });
         let live_shared = Arc::clone(&self.shared);
@@ -196,7 +200,7 @@ impl LayIbusEngine {
             .expect("lay speculative state poisoned")
             .clone();
         speculative.shared = Arc::clone(&live_shared);
-        speculative.atomic_speculation = false;
+        speculative.atomic.speculation = false;
         *live_shared.lock().expect("lay ime state poisoned") = speculative_shared;
         *self = speculative;
         if submitted_atomic_frame {
@@ -207,9 +211,9 @@ impl LayIbusEngine {
             }
         }
         if let Some((supported, snapshot, revision)) = newer_live_surrounding {
-            self.surrounding_text_supported = supported;
-            self.surrounding_text_snapshot = snapshot;
-            self.surrounding_observation_revision = revision;
+            self.client_context.surrounding_text_supported = supported;
+            self.client_context.surrounding_text_snapshot = snapshot;
+            self.client_context.surrounding_observation_revision = revision;
             self.observe_visible_postcondition();
         }
         self.apply_deferred_layout_actions();
@@ -222,13 +226,14 @@ impl LayIbusEngine {
         rejected: &str,
         transition: lay::typing_cpu::ObservedSystemTransition,
     ) {
-        if self.atomic_speculation {
-            self.deferred_learning_actions
-                .push(DeferredLearningAction::RevertedSystemApply {
+        if self.atomic.speculation {
+            self.atomic.deferred_learning_actions.push(
+                DeferredLearningAction::RevertedSystemApply {
                     original: original.to_string(),
                     rejected: rejected.to_string(),
                     transition,
-                });
+                },
+            );
         } else {
             lay::typing_cpu::TypingCpu::record_reverted_system_apply(
                 original, rejected, transition,
@@ -237,7 +242,7 @@ impl LayIbusEngine {
     }
 
     fn apply_deferred_learning_actions(&mut self) {
-        for action in std::mem::take(&mut self.deferred_learning_actions) {
+        for action in std::mem::take(&mut self.atomic.deferred_learning_actions) {
             match action {
                 DeferredLearningAction::RevertedSystemApply {
                     original,
@@ -383,14 +388,14 @@ mod tests {
     fn deep_clone_isolates_shared_and_engine_state() {
         let live = engine();
         let mut speculative = live.deep_atomic_clone();
-        speculative.buffer = "speculative".to_string();
+        speculative.composition.buffer = "speculative".to_string();
         speculative
             .shared
             .lock()
             .expect("speculative state")
             .active_path = Some("/speculative".to_string());
 
-        assert!(live.buffer.is_empty());
+        assert!(live.composition.buffer.is_empty());
         assert!(live
             .shared
             .lock()
@@ -404,7 +409,7 @@ mod tests {
     fn receipt_matrix_commits_only_compatible_success() {
         let mut live = engine();
         let mut accepted = live.deep_atomic_clone();
-        accepted.buffer = "accepted".to_string();
+        accepted.composition.buffer = "accepted".to_string();
         pending_transitions().lock().expect("pending state").insert(
             live.path.clone(),
             PendingAtomicTransition {
@@ -420,10 +425,10 @@ mod tests {
         assert!(
             live.settle_atomic_pending(17, &(RECEIPT_SUBMITTED_ATOMIC, 91, vec![3; DIGEST_BYTES]))
         );
-        assert_eq!(live.buffer, "accepted");
+        assert_eq!(live.composition.buffer, "accepted");
 
         let mut refused = live.deep_atomic_clone();
-        refused.buffer = "must-not-commit".to_string();
+        refused.composition.buffer = "must-not-commit".to_string();
         pending_transitions().lock().expect("pending state").insert(
             live.path.clone(),
             PendingAtomicTransition {
@@ -439,15 +444,15 @@ mod tests {
             17,
             &(RECEIPT_REFUSED_ZERO_EFFECT, 92, vec![4; DIGEST_BYTES])
         ));
-        assert_eq!(live.buffer, "accepted");
+        assert_eq!(live.composition.buffer, "accepted");
     }
 
     #[test]
     fn submitted_press_receipt_clears_only_its_exact_handled_marker() {
         let mut live = engine();
         let mut paired = live.deep_atomic_clone();
-        paired.handled_press_keycodes.insert(30);
-        paired.handled_press_keycodes.insert(31);
+        paired.layout_gesture.handled_press_keycodes.insert(30);
+        paired.layout_gesture.handled_press_keycodes.insert(31);
         pending_transitions().lock().expect("pending state").insert(
             live.path.clone(),
             PendingAtomicTransition {
@@ -463,11 +468,11 @@ mod tests {
         assert!(
             live.settle_atomic_pending(19, &(RECEIPT_SUBMITTED_ATOMIC, 94, vec![6; DIGEST_BYTES]),)
         );
-        assert!(!live.handled_press_keycodes.contains(&30));
-        assert!(live.handled_press_keycodes.contains(&31));
+        assert!(!live.layout_gesture.handled_press_keycodes.contains(&30));
+        assert!(live.layout_gesture.handled_press_keycodes.contains(&31));
 
         let mut release = live.deep_atomic_clone();
-        release.handled_press_keycodes.insert(32);
+        release.layout_gesture.handled_press_keycodes.insert(32);
         pending_transitions().lock().expect("pending state").insert(
             live.path.clone(),
             PendingAtomicTransition {
@@ -482,7 +487,7 @@ mod tests {
         assert!(
             live.settle_atomic_pending(19, &(RECEIPT_SUBMITTED_ATOMIC, 95, vec![7; DIGEST_BYTES]),)
         );
-        assert!(live.handled_press_keycodes.contains(&32));
+        assert!(live.layout_gesture.handled_press_keycodes.contains(&32));
     }
 
     #[test]
@@ -513,31 +518,31 @@ mod tests {
     fn native_unhandled_commits_only_modifier_observation() {
         let mut live = engine();
         let mut speculative = live.deep_atomic_clone();
-        speculative.buffer = "forbidden".to_string();
-        speculative.shift_active = true;
-        speculative.shift_pressed_at = Some(std::time::Instant::now());
-        speculative.alt_completion_active = true;
+        speculative.composition.buffer = "forbidden".to_string();
+        speculative.layout_gesture.shift_active = true;
+        speculative.layout_gesture.shift_pressed_at = Some(std::time::Instant::now());
+        speculative.layout_gesture.alt_completion_active = true;
 
         live.commit_native_observation(&speculative);
 
-        assert!(live.buffer.is_empty());
-        assert!(live.shift_active);
-        assert!(live.shift_pressed_at.is_some());
-        assert!(live.alt_completion_active);
+        assert!(live.composition.buffer.is_empty());
+        assert!(live.layout_gesture.shift_active);
+        assert!(live.layout_gesture.shift_pressed_at.is_some());
+        assert!(live.layout_gesture.alt_completion_active);
     }
 
     #[test]
     fn double_shift_produces_one_speculative_atomic_frame() {
         let mut live = engine();
-        live.layout_is_ru = false;
-        live.buffer = "ghbdtn".to_string();
-        live.composition_cursor = live.buffer.chars().count();
+        live.layout_gesture.layout_is_ru = false;
+        live.composition.buffer = "ghbdtn".to_string();
+        live.composition.cursor = live.composition.buffer.chars().count();
         let key = super::super::protocol::KEY_LEFT_SHIFT;
         let release = super::super::protocol::RELEASE_MASK;
 
         for (transaction, state) in [(101, 0), (102, release), (103, 0)] {
             if state == release {
-                live.shift_pressed_at =
+                live.layout_gesture.shift_pressed_at =
                     Some(std::time::Instant::now() - std::time::Duration::from_secs(2));
             }
             let envelope = (transaction, 2, 12, 41, 5, 13, vec![8; DIGEST_BYTES]);
@@ -553,7 +558,8 @@ mod tests {
             assert_eq!(proposal.0, PROPOSAL_NATIVE_UNHANDLED);
         }
 
-        live.shift_pressed_at = Some(std::time::Instant::now() - std::time::Duration::from_secs(2));
+        live.layout_gesture.shift_pressed_at =
+            Some(std::time::Instant::now() - std::time::Duration::from_secs(2));
 
         let proposal = zbus::block_on(live.process_atomic_key_event(
             key,
@@ -566,16 +572,16 @@ mod tests {
         .expect("atomic double shift");
 
         assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
-        assert_eq!(live.buffer, "ghbdtn");
+        assert_eq!(live.composition.buffer, "ghbdtn");
         live.discard_atomic_pending();
     }
 
     #[test]
     fn mixed_shift_sides_cannot_complete_double_left_shift() {
         let mut live = engine();
-        live.layout_is_ru = false;
-        live.buffer = "ghbdtn".to_string();
-        live.composition_cursor = live.buffer.chars().count();
+        live.layout_gesture.layout_is_ru = false;
+        live.composition.buffer = "ghbdtn".to_string();
+        live.composition.cursor = live.composition.buffer.chars().count();
         let left = super::super::protocol::KEY_LEFT_SHIFT;
         let right = super::super::protocol::KEY_RIGHT_SHIFT;
         let release = super::super::protocol::RELEASE_MASK;
@@ -600,7 +606,7 @@ mod tests {
             assert_eq!(proposal.0, PROPOSAL_NATIVE_UNHANDLED);
         }
 
-        assert_eq!(live.buffer, "ghbdtn");
+        assert_eq!(live.composition.buffer, "ghbdtn");
     }
 }
 

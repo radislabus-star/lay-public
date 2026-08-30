@@ -8,8 +8,8 @@ use lay::typing_cpu::{
 
 impl LayIbusEngine {
     fn live_completion_input_is_active(&self) -> bool {
-        !self.buffer.is_empty()
-            || (self.last_tail_input_at.is_some() && !self.preedit_fast.token.is_empty())
+        !self.composition.buffer.is_empty()
+            || (self.committed_tail.last_input_at.is_some() && !self.composition.preedit_fast.token.is_empty())
     }
 
     #[cfg(test)]
@@ -27,10 +27,10 @@ impl LayIbusEngine {
     }
 
     fn live_word_readout_input<'a>(&self, tail: &'a str) -> Option<(&'a str, &'a str)> {
-        if self.preedit_fast.is_ascii_live_candidate_token()
-            && tail.ends_with(self.preedit_fast.token.as_str())
+        if self.composition.preedit_fast.is_ascii_live_candidate_token()
+            && tail.ends_with(self.composition.preedit_fast.token.as_str())
         {
-            let split = tail.len().saturating_sub(self.preedit_fast.token.len());
+            let split = tail.len().saturating_sub(self.composition.preedit_fast.token.len());
             return Some(tail.split_at(split));
         }
         split_last_alphabetic_token(tail)

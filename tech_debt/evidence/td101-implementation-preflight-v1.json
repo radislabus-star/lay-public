@@ -1,0 +1,99 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "td101-decompose-ibus-engine-state-owner-v1-20260830",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id": "agents-contract", "kind": "file", "path": "../../AGENTS.md", "expect": {"mode": "0664", "size_bytes": 9647, "sha256": "93911c373f7b4be3347231d924edc51223c8ab0f7a28395105e9a920ad4282ab"}},
+    {"id": "td101-task", "kind": "file", "path": "../101-decompose-ibus-engine-state-owner.md", "expect": {"mode": "0664", "size_bytes": 2019, "sha256": "6afc908868b5eac0e5ea29132a24752a9d56bb7196371e10aef3bcb1b4e8b8fe"}},
+    {"id": "double-shift-contract", "kind": "file", "path": "../../docs/double-shift-physical-layout-contract.md", "expect": {"mode": "0664", "size_bytes": 17521, "sha256": "7d728f271b7e1f6f369da6f6525df0ffa8bfc78ec7c418d32cecd412f9f7e6db"}},
+    {"id": "engine-source", "kind": "file", "path": "../../src/bin/lay_ibus_engine/engine.rs", "expect": {"mode": "0664", "size_bytes": 19372, "sha256": "92f68e4c3a85ff3ca60389f19fa30452f38fa853b1e9e39f0cf6ad8f224547d9"}},
+    {"id": "state-source", "kind": "file", "path": "../../src/bin/lay_ibus_engine/state.rs", "expect": {"mode": "0664", "size_bytes": 47200, "sha256": "48fadabf8d5920df25cb5b0cb027d454b6e5ea715e230693cc37c0282a7ad648"}},
+    {"id": "ibus-interface-source", "kind": "file", "path": "../../src/bin/lay_ibus_engine/ibus_interface.rs", "expect": {"mode": "0664", "size_bytes": 21129, "sha256": "cd7a0c8b00206fd33332a079c2daac3e631623a52b721c698d266542f970f038"}},
+    {"id": "daemon-detector-source", "kind": "file", "path": "../../src/bin/lay_daemon/manual_trigger_runtime/event.rs", "expect": {"mode": "0664", "size_bytes": 6367, "sha256": "18096d6e5ba07a1fb7708f265805b96f5755e6f86d574dca4100bb7b3ee81f71"}}
+  ],
+  "side_effects": {
+    "planned": [
+      {"id": "add-internal-state-groups", "kind": "source_edit"},
+      {"id": "move-field-paths", "kind": "source_edit"},
+      {"id": "run-disposable-remote-tests", "kind": "remote_test"},
+      {"id": "record-task-evidence", "kind": "evidence_write"}
+    ],
+    "forbidden": [
+      "new_async_route",
+      "second_mutation_owner",
+      "ibus_pair_detection",
+      "daemon_detector_change",
+      "installed_runtime_change"
+    ]
+  },
+  "source_checks": [
+    {
+      "id": "engine-owner-vetoes",
+      "path": "../../src/bin/lay_ibus_engine/engine.rs",
+      "sha256": "92f68e4c3a85ff3ca60389f19fa30452f38fa853b1e9e39f0cf6ad8f224547d9",
+      "forbidden_effect_patterns": [
+        {"effect": "new_async_route", "regex": "(?:thread::spawn|tokio::spawn|async_std::task::spawn)"},
+        {"effect": "second_mutation_owner", "regex": "struct (?:Second|Alternate)IbusEngine"},
+        {"effect": "installed_runtime_change", "regex": "(?:install\\.sh|\\.local/lib/lay/bin)"}
+      ]
+    },
+    {
+      "id": "legacy-shift-veto",
+      "path": "../../src/bin/lay_ibus_engine/ibus_interface.rs",
+      "sha256": "cd7a0c8b00206fd33332a079c2daac3e631623a52b721c698d266542f970f038",
+      "forbidden_effect_patterns": [
+        {"effect": "ibus_pair_detection", "regex": "fn (?:detect|confirm)_double_shift"}
+      ]
+    },
+    {
+      "id": "daemon-detector-veto",
+      "path": "../../src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+      "sha256": "18096d6e5ba07a1fb7708f265805b96f5755e6f86d574dca4100bb7b3ee81f71",
+      "forbidden_effect_patterns": [
+        {"effect": "daemon_detector_change", "regex": "(?:ime_local_pair_detector|second_pair_detector)"}
+      ]
+    }
+  ],
+  "preserved_artifacts": [
+    {"id": "daemon-pair-detector", "path": "../../src/bin/lay_daemon/manual_trigger_runtime/event.rs", "policy": "byte_identical", "rollback_policy": "TD-101 has no authority to edit the daemon pair detector", "cursor_policy": "freeze_entire_artifact", "baseline_check_id": "daemon-detector-source"},
+    {"id": "double-shift-contract", "path": "../../docs/double-shift-physical-layout-contract.md", "policy": "byte_identical", "rollback_policy": "the deployed Double Shift contract remains unchanged", "cursor_policy": "freeze_entire_artifact", "baseline_check_id": "double-shift-contract"}
+  ],
+  "state_machine": {
+    "initial_state": "PREFLIGHT_READY",
+    "terminal_states": ["TD101_VERIFIED", "BLOCKED_SOURCE_RUNTIME_UNCHANGED"],
+    "steps": [
+      {"id": "extract-gesture-and-atomic-state", "from": "PREFLIGHT_READY", "to": "GESTURE_ATOMIC_VERIFIED", "mutates": true, "failure_state": "BLOCKED_SOURCE_RUNTIME_UNCHANGED", "cleanup": "retain the scoped diff and compiler output; do not install or restart Lay", "preserves": ["daemon-pair-detector", "double-shift-contract"], "test_id": "gesture-atomic-fault"},
+      {"id": "extract-client-context-state", "from": "GESTURE_ATOMIC_VERIFIED", "to": "CLIENT_CONTEXT_VERIFIED", "mutates": true, "failure_state": "BLOCKED_SOURCE_RUNTIME_UNCHANGED", "cleanup": "retain the scoped diff and focus-test output; do not install or restart Lay", "preserves": ["daemon-pair-detector", "double-shift-contract"], "test_id": "client-context-fault"},
+      {"id": "extract-composition-state", "from": "CLIENT_CONTEXT_VERIFIED", "to": "COMPOSITION_VERIFIED", "mutates": true, "failure_state": "BLOCKED_SOURCE_RUNTIME_UNCHANGED", "cleanup": "retain the scoped diff and preedit-test output; do not install or restart Lay", "preserves": ["daemon-pair-detector", "double-shift-contract"], "test_id": "composition-fault"},
+      {"id": "extract-committed-tail-state", "from": "COMPOSITION_VERIFIED", "to": "TAIL_VERIFIED", "mutates": true, "failure_state": "BLOCKED_SOURCE_RUNTIME_UNCHANGED", "cleanup": "retain the scoped diff and committed-tail-test output; do not install or restart Lay", "preserves": ["daemon-pair-detector", "double-shift-contract"], "test_id": "tail-fault"},
+      {"id": "run-final-remote-gates", "from": "TAIL_VERIFIED", "to": "TD101_VERIFIED", "mutates": true, "failure_state": "BLOCKED_SOURCE_RUNTIME_UNCHANGED", "cleanup": "retain complete remote logs and keep installed Lay untouched", "preserves": ["daemon-pair-detector", "double-shift-contract"], "test_id": "final-gate-fault"}
+    ]
+  },
+  "invariants": [
+    {"id": "single-external-owner", "statement": "LayIbusEngine remains the only external mutable IBus engine state owner", "test_id": "owner-shape-parity"},
+    {"id": "double-shift-route-preserved", "statement": "the daemon detects the legacy pair and IBus observation cannot plan or mutate text", "test_id": "double-shift-parity"},
+    {"id": "focus-reset-parity", "statement": "focus reset clears or preserves every nested state group under the existing conditions", "test_id": "focus-reset-parity"},
+    {"id": "atomic-rollback-parity", "statement": "atomic clone commit and rollback retain exact deferred-effect semantics", "test_id": "atomic-parity"},
+    {"id": "no-runtime-mutation", "statement": "all verification runs in a disposable remote checkout without installation or service restart", "test_id": "remote-boundary-parity"}
+  ],
+  "identity_contracts": [
+    {"id": "flat-to-grouped-state", "producer": "the 47-field pre-refactor LayIbusEngine state", "consumer": "five inline state groups under the same LayIbusEngine", "comparison": "every moved field has one destination, one initialization, and unchanged transition tests", "test_id": "owner-shape-parity"},
+    {"id": "double-shift-owner-identity", "producer": "daemon-owned left-Shift pair handoff", "consumer": "existing IBus committed-tail or active-composition mutation route", "comparison": "detector source bytes and protected route tests remain exact", "test_id": "double-shift-parity"},
+    {"id": "local-to-remote-source", "producer": "local candidate diff at one git base", "consumer": "disposable mini-PC checkout used for Cargo verification", "comparison": "git diff and source SHA-256 parity before every remote test", "test_id": "remote-boundary-parity"}
+  ],
+  "runtime_comparisons": [],
+  "tests": [
+    {"id": "gesture-atomic-fault", "kind": "fault_injection", "expected": "compile or route-test failure stops before the next state group and leaves installed runtime unchanged"},
+    {"id": "client-context-fault", "kind": "fault_injection", "expected": "focus-test failure stops before composition extraction and leaves installed runtime unchanged"},
+    {"id": "composition-fault", "kind": "fault_injection", "expected": "preedit-test failure stops before committed-tail extraction and leaves installed runtime unchanged"},
+    {"id": "tail-fault", "kind": "fault_injection", "expected": "committed-tail-test failure stops before final verification and leaves installed runtime unchanged"},
+    {"id": "final-gate-fault", "kind": "fault_injection", "expected": "any changed-check or lint failure blocks completion without installation"},
+    {"id": "owner-shape-parity", "kind": "parity", "expected": "the grouped field inventory is total and LayIbusEngine remains the sole external owner"},
+    {"id": "double-shift-parity", "kind": "parity", "expected": "all physical_double_shift_owner and atomic Double Shift contracts pass with daemon detector bytes unchanged"},
+    {"id": "focus-reset-parity", "kind": "parity", "expected": "focus and soft-reset regression tests pass unchanged"},
+    {"id": "atomic-parity", "kind": "parity", "expected": "atomic clone rollback speculation and deferred-effect tests pass unchanged"},
+    {"id": "remote-boundary-parity", "kind": "parity", "expected": "the remote disposable checkout matches the local candidate and no installed Lay path changes"}
+  ]
+}

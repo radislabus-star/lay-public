@@ -20,12 +20,12 @@ impl LayIbusEngine {
             if sensitive {
                 0
             } else {
-                self.tail_buffer.chars().count()
+                self.committed_tail.buffer.chars().count()
             },
             if sensitive {
                 0
             } else {
-                self.preedit_suffix.chars().count()
+                self.composition.preedit_suffix.chars().count()
             },
         );
     }

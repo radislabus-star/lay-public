@@ -1,0 +1,511 @@
+{
+  "schema": "nanda.code-route-gate.receipt.v2",
+  "verdict": "PASS",
+  "safe_to_edit": false,
+  "ready_for_implementation_preflight": true,
+  "contract": "tech_debt/evidence/td101-code-route-observed-v1.json",
+  "contract_schema": "nanda.code-route-gate.v2",
+  "scope": "observed_source",
+  "source_root": "/home/ubu/projects/lay-l1-exact-peak-search",
+  "node_count": 16,
+  "edge_count": 19,
+  "routes": [
+    {
+      "id": "composition-execution",
+      "event": "composition-input",
+      "kind": "execution",
+      "entry": "ibus-event",
+      "via": [],
+      "terminal": "composition-state",
+      "path_count": 1,
+      "paths": [
+        [
+          "ibus-event",
+          "engine-owner",
+          "composition-state"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "composition-state"
+        ],
+        "orchestrator": [
+          "engine-owner"
+        ],
+        "interface": [
+          "ibus-event"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "ibus-event",
+          "to": "composition-state",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "ibus-event",
+              "engine-owner",
+              "composition-state"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "composition-render-authority",
+      "event": "composition-input",
+      "kind": "authority",
+      "entry": "composition-state",
+      "via": [],
+      "terminal": "preedit-render",
+      "path_count": 1,
+      "paths": [
+        [
+          "composition-state",
+          "preedit-render"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "composition-state"
+        ],
+        "render_owner": [
+          "preedit-render"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "focus-composition-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-focus",
+      "via": [],
+      "terminal": "composition-state",
+      "path_count": 1,
+      "paths": [
+        [
+          "ibus-focus",
+          "engine-owner",
+          "composition-state"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "composition-state"
+        ],
+        "orchestrator": [
+          "engine-owner"
+        ],
+        "interface": [
+          "ibus-focus"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "ibus-focus",
+          "to": "composition-state",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "ibus-focus",
+              "engine-owner",
+              "composition-state"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "focus-tail-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-focus",
+      "via": [],
+      "terminal": "committed-tail-state",
+      "path_count": 1,
+      "paths": [
+        [
+          "ibus-focus",
+          "engine-owner",
+          "committed-tail-state"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "committed-tail-state"
+        ],
+        "orchestrator": [
+          "engine-owner"
+        ],
+        "interface": [
+          "ibus-focus"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "ibus-focus",
+          "to": "committed-tail-state",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "ibus-focus",
+              "engine-owner",
+              "committed-tail-state"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "focus-client-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-focus",
+      "via": [],
+      "terminal": "client-context-state",
+      "path_count": 1,
+      "paths": [
+        [
+          "ibus-focus",
+          "engine-owner",
+          "client-context-state"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "client-context-state"
+        ],
+        "orchestrator": [
+          "engine-owner"
+        ],
+        "interface": [
+          "ibus-focus"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "ibus-focus",
+          "to": "client-context-state",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "ibus-focus",
+              "engine-owner",
+              "client-context-state"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "focus-gesture-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-focus",
+      "via": [],
+      "terminal": "layout-gesture-state",
+      "path_count": 1,
+      "paths": [
+        [
+          "ibus-focus",
+          "engine-owner",
+          "layout-gesture-state"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "engine-owner"
+        ],
+        "interface": [
+          "ibus-focus"
+        ],
+        "evidence_owner": [
+          "layout-gesture-state"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "ibus-focus",
+          "to": "layout-gesture-state",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "ibus-focus",
+              "engine-owner",
+              "layout-gesture-state"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "focus-atomic-reset",
+      "event": "focus-reset",
+      "kind": "execution",
+      "entry": "ibus-focus",
+      "via": [],
+      "terminal": "atomic-route-state",
+      "path_count": 1,
+      "paths": [
+        [
+          "ibus-focus",
+          "engine-owner",
+          "atomic-route-state"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "atomic-route-state"
+        ],
+        "orchestrator": [
+          "engine-owner"
+        ],
+        "interface": [
+          "ibus-focus"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "ibus-focus",
+          "to": "atomic-route-state",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "ibus-focus",
+              "engine-owner",
+              "atomic-route-state"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "double-shift-execution",
+      "event": "double-shift-toggle",
+      "kind": "execution",
+      "entry": "physical-double-shift",
+      "via": [],
+      "terminal": "ibus-text-mutation",
+      "path_count": 1,
+      "paths": [
+        [
+          "physical-double-shift",
+          "daemon-dispatch",
+          "ime-v3-outcome",
+          "engine-owner",
+          "committed-tail-state",
+          "manual-toggle-planner",
+          "ibus-text-mutation"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "committed-tail-state"
+        ],
+        "orchestrator": [
+          "daemon-dispatch",
+          "engine-owner"
+        ],
+        "mutation_owner": [
+          "ibus-text-mutation"
+        ],
+        "producer": [
+          "ime-v3-outcome"
+        ],
+        "authorization_owner": [
+          "manual-toggle-planner"
+        ],
+        "interface": [
+          "physical-double-shift"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": [
+        {
+          "from": "physical-double-shift",
+          "to": "ibus-text-mutation",
+          "via": [],
+          "graph": "execution",
+          "count": 1,
+          "minimum_count": 1,
+          "min": 1,
+          "max": 1,
+          "paths": [
+            [
+              "physical-double-shift",
+              "daemon-dispatch",
+              "ime-v3-outcome",
+              "engine-owner",
+              "committed-tail-state",
+              "manual-toggle-planner",
+              "ibus-text-mutation"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "double-shift-authority",
+      "event": "double-shift-toggle",
+      "kind": "authority",
+      "entry": "committed-tail-state",
+      "via": [],
+      "terminal": "ibus-text-mutation",
+      "path_count": 1,
+      "paths": [
+        [
+          "committed-tail-state",
+          "manual-toggle-planner",
+          "ibus-text-mutation"
+        ]
+      ],
+      "role_owners": {
+        "evidence_owner": [
+          "committed-tail-state"
+        ],
+        "mutation_owner": [
+          "ibus-text-mutation"
+        ],
+        "authorization_owner": [
+          "manual-toggle-planner"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "route-observation",
+      "event": "route-proof",
+      "kind": "observation",
+      "entry": "engine-owner",
+      "via": [],
+      "terminal": "route-observer",
+      "path_count": 1,
+      "paths": [
+        [
+          "engine-owner",
+          "route-observer"
+        ]
+      ],
+      "role_owners": {
+        "orchestrator": [
+          "engine-owner"
+        ],
+        "observer": [
+          "route-observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    },
+    {
+      "id": "route-proof",
+      "event": "route-proof",
+      "kind": "proof",
+      "entry": "route-observer",
+      "via": [],
+      "terminal": "regression-proof",
+      "path_count": 1,
+      "paths": [
+        [
+          "route-observer",
+          "regression-proof"
+        ]
+      ],
+      "role_owners": {
+        "proof_owner": [
+          "regression-proof"
+        ],
+        "observer": [
+          "route-observer"
+        ]
+      },
+      "parallel_edge_groups": [],
+      "path_cardinality": []
+    }
+  ],
+  "cardinality_basis": "static_declared_paths_per_named_event_scenario",
+  "event_authority_owners": {
+    "composition-input": {
+      "display_rank_owner": [],
+      "evidence_owner": [
+        "composition-state"
+      ],
+      "mutation_owner": [],
+      "authorization_owner": [],
+      "candidate_rank_owner": [],
+      "render_owner": [
+        "preedit-render"
+      ]
+    },
+    "double-shift-toggle": {
+      "display_rank_owner": [],
+      "evidence_owner": [
+        "committed-tail-state"
+      ],
+      "mutation_owner": [
+        "ibus-text-mutation"
+      ],
+      "authorization_owner": [
+        "manual-toggle-planner"
+      ],
+      "candidate_rank_owner": [],
+      "render_owner": []
+    }
+  },
+  "source_evidence": {
+    "expected": 35,
+    "verified": 35,
+    "complete": true
+  },
+  "issues": [],
+  "warnings": [],
+  "claim_boundary": {
+    "execution_authority_observation_proof_separated": true,
+    "required_roles_checked_per_path": true,
+    "source_evidence_verified": true,
+    "structural_code_route_only": true,
+    "implementation_correctness_proven": false,
+    "runtime_behavior_proven": false,
+    "implementation_preflight_still_required": true,
+    "post_edit_tests_required": true
+  }
+}

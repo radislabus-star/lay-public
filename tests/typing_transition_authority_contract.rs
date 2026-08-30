@@ -43,7 +43,9 @@ fn visible_tail_bridge_carries_focus_and_epoch_to_the_transition_core() {
         "daemon replacement must preflight and forward the observed epoch/focus"
     );
     assert!(
-        bridge_actions.contains("unwrap_or_else(|| (engine.tail_epoch, path.clone()))"),
+        bridge_actions.contains(
+            "unwrap_or_else(|| (engine.committed_tail.epoch, path.clone()))"
+        ),
         "legacy bridge callers must inherit the current epoch instead of manufacturing revision zero"
     );
     assert!(

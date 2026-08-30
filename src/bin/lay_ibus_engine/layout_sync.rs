@@ -15,14 +15,15 @@ impl LayIbusEngine {
         if !self.config.auto_switch_layout {
             return;
         }
-        let target_is_ru = preferred_layout_for_text(text, self.layout_is_ru);
+        let target_is_ru = preferred_layout_for_text(text, self.layout_gesture.layout_is_ru);
         let target_engine = ime_engine_for_layout(target_is_ru);
-        if self.atomic_speculation {
-            if target_is_ru != self.layout_is_ru {
-                let previous_is_ru = self.layout_is_ru;
+        if self.atomic.speculation {
+            if target_is_ru != self.layout_gesture.layout_is_ru {
+                let previous_is_ru = self.layout_gesture.layout_is_ru;
                 self.set_layout_is_ru(target_is_ru);
                 self.publish_tail_handoff();
-                self.deferred_layout_actions
+                self.atomic
+                    .deferred_layout_actions
                     .push(DeferredLayoutAction::BackgroundSwitch {
                         previous_is_ru,
                         target_is_ru,
@@ -31,7 +32,7 @@ impl LayIbusEngine {
             }
             return;
         }
-        if target_is_ru == self.layout_is_ru {
+        if target_is_ru == self.layout_gesture.layout_is_ru {
             self.publish_tail_handoff();
             trace::record_layout_sync(target_is_ru, target_engine, true);
             return;
@@ -59,14 +60,15 @@ impl LayIbusEngine {
         if !self.config.auto_switch_layout {
             return;
         }
-        let target_is_ru = preferred_layout_for_text(text, self.layout_is_ru);
+        let target_is_ru = preferred_layout_for_text(text, self.layout_gesture.layout_is_ru);
         let target_engine = ime_engine_for_layout(target_is_ru);
-        if self.atomic_speculation {
-            if target_is_ru != self.layout_is_ru {
-                let previous_is_ru = self.layout_is_ru;
+        if self.atomic.speculation {
+            if target_is_ru != self.layout_gesture.layout_is_ru {
+                let previous_is_ru = self.layout_gesture.layout_is_ru;
                 self.set_layout_is_ru(target_is_ru);
                 self.publish_tail_handoff();
-                self.deferred_layout_actions
+                self.atomic
+                    .deferred_layout_actions
                     .push(DeferredLayoutAction::BlockingSwitch {
                         previous_is_ru,
                         target_is_ru,
@@ -77,7 +79,7 @@ impl LayIbusEngine {
             return;
         }
         self.publish_tail_handoff();
-        if target_is_ru == self.layout_is_ru {
+        if target_is_ru == self.layout_gesture.layout_is_ru {
             trace::record_layout_sync(target_is_ru, target_engine, true);
             return;
         }
@@ -92,13 +94,14 @@ impl LayIbusEngine {
         self.invalidate_input_frame_background_work();
         let target_is_ru = current_active_ime_layout_is_ru()
             .map(|current_is_ru| !current_is_ru)
-            .unwrap_or(!self.layout_is_ru);
+            .unwrap_or(!self.layout_gesture.layout_is_ru);
         let target_engine = ime_engine_for_layout(target_is_ru);
-        if self.atomic_speculation {
-            let previous_is_ru = self.layout_is_ru;
+        if self.atomic.speculation {
+            let previous_is_ru = self.layout_gesture.layout_is_ru;
             self.set_layout_is_ru(target_is_ru);
             self.publish_tail_handoff();
-            self.deferred_layout_actions
+            self.atomic
+                .deferred_layout_actions
                 .push(DeferredLayoutAction::BlockingSwitch {
                     previous_is_ru,
                     target_is_ru,
@@ -116,8 +119,8 @@ impl LayIbusEngine {
     }
 
     pub(super) fn apply_deferred_layout_actions(&mut self) {
-        self.atomic_speculation = false;
-        for action in std::mem::take(&mut self.deferred_layout_actions) {
+        self.atomic.speculation = false;
+        for action in std::mem::take(&mut self.atomic.deferred_layout_actions) {
             match action {
                 DeferredLayoutAction::BackgroundSwitch {
                     previous_is_ru,
@@ -345,10 +348,10 @@ mod tests {
         );
 
         engine.sync_layout_after_manual_toggle("привет ");
-        assert!(engine.layout_is_ru);
+        assert!(engine.layout_gesture.layout_is_ru);
 
         engine.sync_layout_after_manual_toggle("hello ");
-        assert!(!engine.layout_is_ru);
+        assert!(!engine.layout_gesture.layout_is_ru);
     }
 
     #[test]
@@ -362,8 +365,8 @@ mod tests {
         );
 
         assert!(engine.toggle_layout_from_modifier_hotkey());
-        assert!(engine.layout_is_ru);
+        assert!(engine.layout_gesture.layout_is_ru);
         assert!(engine.toggle_layout_from_modifier_hotkey());
-        assert!(!engine.layout_is_ru);
+        assert!(!engine.layout_gesture.layout_is_ru);
     }
 }

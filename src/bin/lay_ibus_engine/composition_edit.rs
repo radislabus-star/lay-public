@@ -10,22 +10,22 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<bool> {
         self.invalidate_input_frame_background_work();
-        self.preedit_dirty = false;
-        if !self.buffer.is_empty() {
-            if self.composition_cursor == 0 {
+        self.composition.preedit_dirty = false;
+        if !self.composition.buffer.is_empty() {
+            if self.composition.cursor == 0 {
                 self.clear_preedit(emitter).await?;
-                self.buffer.clear();
-                self.composition_cursor = 0;
-                self.preedit_suffix.clear();
-                self.preedit_candidates.clear();
-                self.preedit_replacement_targets.clear();
-                self.preedit_candidate_index = 0;
-                self.preedit_fast.reset();
+                self.composition.buffer.clear();
+                self.composition.cursor = 0;
+                self.composition.preedit_suffix.clear();
+                self.composition.preedit_candidates.clear();
+                self.composition.preedit_replacement_targets.clear();
+                self.composition.preedit_candidate_index = 0;
+                self.composition.preedit_fast.reset();
                 return Ok(false);
             }
-            let byte_idx = char_to_byte_idx(&self.buffer, self.composition_cursor - 1);
-            self.buffer.remove(byte_idx);
-            self.composition_cursor -= 1;
+            let byte_idx = char_to_byte_idx(&self.composition.buffer, self.composition.cursor - 1);
+            self.composition.buffer.remove(byte_idx);
+            self.composition.cursor -= 1;
             self.sync_tail_from_composition();
             self.update_composition_preedit(emitter).await?;
             return Ok(true);
@@ -42,11 +42,11 @@ impl LayIbusEngine {
     }
 
     pub(super) fn backspace_committed_tail_only(&mut self) {
-        self.tail_buffer.pop();
-        self.preedit_fast.backspace();
+        self.committed_tail.buffer.pop();
+        self.composition.preedit_fast.backspace();
         self.clear_preedit_completion_state();
         if self.last_tail_token_text().is_empty() {
-            self.word_input_mode = None;
+            self.composition.word_input_mode = None;
         }
         self.publish_tail_handoff();
     }
@@ -57,17 +57,17 @@ impl LayIbusEngine {
         keyval: u32,
     ) -> fdo::Result<bool> {
         let retired = self.retire_pending_precognition(emitter).await?;
-        if self.buffer.is_empty() {
+        if self.composition.buffer.is_empty() {
             self.forget_committed_tail_after_passive_cursor_move();
             if !retired {
                 self.clear_preedit(emitter).await?;
             }
             return Ok(false);
         }
-        let len = self.buffer.chars().count();
+        let len = self.composition.buffer.chars().count();
         match keyval {
-            KEY_LEFT if self.composition_cursor > 0 => self.composition_cursor -= 1,
-            KEY_RIGHT if self.composition_cursor < len => self.composition_cursor += 1,
+            KEY_LEFT if self.composition.cursor > 0 => self.composition.cursor -= 1,
+            KEY_RIGHT if self.composition.cursor < len => self.composition.cursor += 1,
             _ => {}
         }
         self.update_composition_preedit(emitter).await?;
@@ -80,13 +80,13 @@ impl LayIbusEngine {
         keyval: u32,
     ) -> fdo::Result<bool> {
         if self.retire_pending_precognition(emitter).await? {
-            if self.buffer.is_empty() {
+            if self.composition.buffer.is_empty() {
                 self.forget_committed_tail_after_passive_cursor_move();
             }
             return Ok(false);
         }
         let step = if keyval == KEY_UP { -1 } else { 1 };
-        if self.buffer.is_empty() {
+        if self.composition.buffer.is_empty() {
             if !self.cycle_precognition_candidate(step) {
                 self.forget_committed_tail_after_passive_cursor_move();
                 return Ok(false);
@@ -106,26 +106,26 @@ impl LayIbusEngine {
     }
 
     pub(super) fn insert_composition_char(&mut self, ch: char) {
-        let len = self.buffer.chars().count();
-        self.composition_cursor = self.composition_cursor.min(len);
-        if self.composition_cursor == len {
-            self.buffer.push(ch);
-            self.composition_cursor += 1;
+        let len = self.composition.buffer.chars().count();
+        self.composition.cursor = self.composition.cursor.min(len);
+        if self.composition.cursor == len {
+            self.composition.buffer.push(ch);
+            self.composition.cursor += 1;
             self.push_tail_char(ch);
             return;
         }
-        let byte_idx = char_to_byte_idx(&self.buffer, self.composition_cursor);
-        self.buffer.insert(byte_idx, ch);
-        self.composition_cursor += 1;
+        let byte_idx = char_to_byte_idx(&self.composition.buffer, self.composition.cursor);
+        self.composition.buffer.insert(byte_idx, ch);
+        self.composition.cursor += 1;
         self.sync_tail_from_composition();
     }
 
     pub(super) fn sync_tail_from_composition(&mut self) {
-        let replacement = self.buffer.clone();
+        let replacement = self.composition.buffer.clone();
         self.replace_last_tail_token_text(&replacement, 0);
-        self.preedit_fast.reset();
-        for ch in self.buffer.chars() {
-            self.preedit_fast.push(ch);
+        self.composition.preedit_fast.reset();
+        for ch in self.composition.buffer.chars() {
+            self.composition.preedit_fast.push(ch);
         }
     }
 }
@@ -159,19 +159,19 @@ mod tests {
         for ch in "abc".chars() {
             engine.insert_composition_char(ch);
         }
-        assert_eq!(engine.buffer, "abc");
-        assert_eq!(engine.composition_cursor, 3);
-        engine.composition_cursor -= 1;
+        assert_eq!(engine.composition.buffer, "abc");
+        assert_eq!(engine.composition.cursor, 3);
+        engine.composition.cursor -= 1;
         engine.insert_composition_char('X');
-        assert_eq!(engine.buffer, "abXc");
-        assert_eq!(engine.composition_cursor, 3);
-        let byte_idx = char_to_byte_idx(&engine.buffer, engine.composition_cursor - 1);
-        engine.buffer.remove(byte_idx);
-        engine.composition_cursor -= 1;
+        assert_eq!(engine.composition.buffer, "abXc");
+        assert_eq!(engine.composition.cursor, 3);
+        let byte_idx = char_to_byte_idx(&engine.composition.buffer, engine.composition.cursor - 1);
+        engine.composition.buffer.remove(byte_idx);
+        engine.composition.cursor -= 1;
         engine.sync_tail_from_composition();
-        assert_eq!(engine.buffer, "abc");
-        assert_eq!(engine.composition_cursor, 2);
-        assert_eq!(engine.tail_buffer, "abc");
+        assert_eq!(engine.composition.buffer, "abc");
+        assert_eq!(engine.composition.cursor, 2);
+        assert_eq!(engine.committed_tail.buffer, "abc");
     }
 
     #[test]
@@ -180,14 +180,14 @@ mod tests {
         for ch in "abcd".chars() {
             engine.insert_composition_char(ch);
         }
-        engine.composition_cursor = 2;
-        let byte_idx = char_to_byte_idx(&engine.buffer, engine.composition_cursor - 1);
-        engine.buffer.remove(byte_idx);
-        engine.composition_cursor -= 1;
+        engine.composition.cursor = 2;
+        let byte_idx = char_to_byte_idx(&engine.composition.buffer, engine.composition.cursor - 1);
+        engine.composition.buffer.remove(byte_idx);
+        engine.composition.cursor -= 1;
         engine.sync_tail_from_composition();
-        assert_eq!(engine.buffer, "acd");
-        assert_eq!(engine.composition_cursor, 1);
-        assert_eq!(engine.tail_buffer, "acd");
+        assert_eq!(engine.composition.buffer, "acd");
+        assert_eq!(engine.composition.cursor, 1);
+        assert_eq!(engine.committed_tail.buffer, "acd");
     }
 
     #[test]
@@ -196,10 +196,10 @@ mod tests {
         for ch in "abc".chars() {
             engine.insert_composition_char(ch);
         }
-        engine.composition_cursor = 0;
+        engine.composition.cursor = 0;
 
-        assert_eq!(engine.buffer, "abc");
-        assert_eq!(engine.composition_cursor, 0);
+        assert_eq!(engine.composition.buffer, "abc");
+        assert_eq!(engine.composition.cursor, 0);
     }
 
     #[test]
@@ -209,9 +209,9 @@ mod tests {
             engine.push_tail_char(ch);
         }
         engine.backspace_committed_tail_only();
-        assert_eq!(engine.buffer, "");
-        assert_eq!(engine.tail_buffer, "тес");
-        assert_eq!(engine.preedit_fast.token(), "тес");
+        assert_eq!(engine.composition.buffer, "");
+        assert_eq!(engine.committed_tail.buffer, "тес");
+        assert_eq!(engine.composition.preedit_fast.token(), "тес");
     }
 
     #[test]
@@ -220,17 +220,17 @@ mod tests {
         for ch in "прек".chars() {
             engine.push_tail_char(ch);
         }
-        engine.preedit_suffix = "расный".to_string();
-        engine.preedit_candidates = vec!["расный".to_string()];
-        engine.preedit_replacement_targets = vec![None];
+        engine.composition.preedit_suffix = "расный".to_string();
+        engine.composition.preedit_candidates = vec!["расный".to_string()];
+        engine.composition.preedit_replacement_targets = vec![None];
 
         engine.backspace_committed_tail_only();
 
-        assert_eq!(engine.tail_buffer, "пре");
-        assert_eq!(engine.preedit_fast.token(), "пре");
-        assert!(engine.preedit_suffix.is_empty());
-        assert!(engine.preedit_candidates.is_empty());
-        assert!(engine.preedit_replacement_targets.is_empty());
+        assert_eq!(engine.committed_tail.buffer, "пре");
+        assert_eq!(engine.composition.preedit_fast.token(), "пре");
+        assert!(engine.composition.preedit_suffix.is_empty());
+        assert!(engine.composition.preedit_candidates.is_empty());
+        assert!(engine.composition.preedit_replacement_targets.is_empty());
     }
 
     #[test]
@@ -242,7 +242,7 @@ mod tests {
 
         engine.forget_committed_tail_after_passive_cursor_move();
 
-        assert!(engine.tail_buffer.is_empty());
-        assert!(engine.preedit_fast.token().is_empty());
+        assert!(engine.committed_tail.buffer.is_empty());
+        assert!(engine.composition.preedit_fast.token().is_empty());
     }
 }

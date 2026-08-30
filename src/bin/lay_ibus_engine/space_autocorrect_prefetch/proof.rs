@@ -72,7 +72,7 @@ fn managed_engine(path: &str, token: &str) -> LayIbusEngine {
         exact_config(),
     );
     assert!(engine.bind_focus_path());
-    engine.surrounding_text_supported = true;
+    engine.client_context.surrounding_text_supported = true;
     for character in token.chars() {
         engine.push_tail_char(character);
     }
@@ -269,8 +269,8 @@ fn v27_race_fault_and_space_effect_matrix() {
         let proposal = render_lookup(&mut engine, &frame, lookup);
         assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
         assert_eq!(committed_texts(&proposal), [" "]);
-        assert!(engine.tail_buffer.ends_with(' '));
-        assert!(!engine.tail_buffer.ends_with("  "));
+        assert!(engine.committed_tail.buffer.ends_with(' '));
+        assert!(!engine.committed_tail.buffer.ends_with("  "));
     }
 
     let mut engine = managed_engine("/engine/exact", "ghbdtn");
@@ -283,7 +283,7 @@ fn v27_race_fault_and_space_effect_matrix() {
         ["\u{43f}\u{440}\u{438}\u{432}\u{435}\u{442} "]
     );
     assert_eq!(
-        engine.tail_buffer,
+        engine.committed_tail.buffer,
         "\u{43f}\u{440}\u{438}\u{432}\u{435}\u{442} "
     );
 

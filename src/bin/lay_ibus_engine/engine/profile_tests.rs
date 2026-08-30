@@ -44,14 +44,14 @@ fn sensitive_content_types_disable_text_assistance_but_terminal_allows_it() {
 fn sensitive_content_never_enters_committed_tail_memory() {
     let mut engine = engine();
     engine.push_tail_char('x');
-    assert_eq!(engine.tail_buffer, "x");
+    assert_eq!(engine.committed_tail.buffer, "x");
 
     engine.set_content_type_state(8, 0);
-    assert!(engine.tail_buffer.is_empty());
+    assert!(engine.committed_tail.buffer.is_empty());
 
     engine.push_tail_char('p');
-    assert!(engine.tail_buffer.is_empty());
-    assert_eq!(engine.preedit_fast.token(), "");
+    assert!(engine.committed_tail.buffer.is_empty());
+    assert_eq!(engine.composition.preedit_fast.token(), "");
 }
 
 #[test]
@@ -62,7 +62,7 @@ fn sensitive_content_discards_surrounding_text_snapshots() {
         7,
         7,
     )));
-    assert!(engine.surrounding_text_snapshot.is_some());
+    assert!(engine.client_context.surrounding_text_snapshot.is_some());
 
     engine.set_content_type_state(8, 0);
     engine.observe_external_surrounding_text(Some(super::SurroundingTextSnapshot::new(
@@ -71,27 +71,27 @@ fn sensitive_content_discards_surrounding_text_snapshots() {
         6,
     )));
 
-    assert!(engine.surrounding_text_snapshot.is_none());
+    assert!(engine.client_context.surrounding_text_snapshot.is_none());
 }
 
 #[test]
 fn entering_sensitive_content_clears_visible_completion_state() {
     let mut engine = engine();
-    engine.preedit_suffix = "ерить".to_string();
-    engine.preedit_candidates = vec!["ерить".to_string()];
-    engine.preedit_replacement_targets = vec![None];
+    engine.composition.preedit_suffix = "ерить".to_string();
+    engine.composition.preedit_candidates = vec!["ерить".to_string()];
+    engine.composition.preedit_replacement_targets = vec![None];
 
     engine.set_content_type_state(8, 0);
 
-    assert!(engine.preedit_suffix.is_empty());
-    assert!(engine.preedit_candidates.is_empty());
-    assert!(engine.preedit_replacement_targets.is_empty());
+    assert!(engine.composition.preedit_suffix.is_empty());
+    assert!(engine.composition.preedit_candidates.is_empty());
+    assert!(engine.composition.preedit_replacement_targets.is_empty());
 }
 
 #[test]
 fn narrow_cursor_uses_terminal_passthrough_profile() {
     let mut engine = engine();
-    engine.cursor_cell_width = 2;
+    engine.client_context.cursor_cell_width = 2;
 
     assert_eq!(
         engine.initial_word_input_mode(),
@@ -102,7 +102,7 @@ fn narrow_cursor_uses_terminal_passthrough_profile() {
 #[test]
 fn wide_text_cursor_uses_managed_commit_profile() {
     let mut engine = engine();
-    engine.cursor_cell_width = 11;
+    engine.client_context.cursor_cell_width = 11;
 
     assert_eq!(
         engine.initial_word_input_mode(),
@@ -113,8 +113,8 @@ fn wide_text_cursor_uses_managed_commit_profile() {
 #[test]
 fn surrounding_text_client_uses_managed_commit_even_with_cursor_width() {
     let mut engine = engine();
-    engine.cursor_cell_width = 2;
-    engine.surrounding_text_supported = true;
+    engine.client_context.cursor_cell_width = 2;
+    engine.client_context.surrounding_text_supported = true;
 
     assert_eq!(
         engine.initial_word_input_mode(),
@@ -125,49 +125,55 @@ fn surrounding_text_client_uses_managed_commit_even_with_cursor_width() {
 #[test]
 fn late_surrounding_text_capability_promotes_current_terminal_word() {
     let mut engine = engine();
-    engine.cursor_cell_width = 2;
-    engine.word_input_mode = Some(WordInputMode::TerminalPassthrough);
-    engine.preedit_suffix = "suffix".to_string();
+    engine.client_context.cursor_cell_width = 2;
+    engine.composition.word_input_mode = Some(WordInputMode::TerminalPassthrough);
+    engine.composition.preedit_suffix = "suffix".to_string();
 
     engine.set_client_capabilities(1 << 5);
 
-    assert_eq!(engine.word_input_mode, Some(WordInputMode::ManagedCommit));
-    assert!(engine.pending_passthrough_preedit_clear);
-    assert_eq!(engine.preedit_suffix, "suffix");
+    assert_eq!(
+        engine.composition.word_input_mode,
+        Some(WordInputMode::ManagedCommit)
+    );
+    assert!(engine.composition.pending_passthrough_preedit_clear);
+    assert_eq!(engine.composition.preedit_suffix, "suffix");
 }
 
 #[test]
 fn capability_loss_does_not_demote_current_managed_word() {
     let mut engine = engine();
-    engine.cursor_cell_width = 2;
-    engine.word_input_mode = Some(WordInputMode::ManagedCommit);
+    engine.client_context.cursor_cell_width = 2;
+    engine.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
     engine.set_client_capabilities(1 << 5);
 
     engine.set_client_capabilities(1 | 1 << 3);
 
-    assert_eq!(engine.word_input_mode, Some(WordInputMode::ManagedCommit));
-    assert!(!engine.pending_passthrough_preedit_clear);
+    assert_eq!(
+        engine.composition.word_input_mode,
+        Some(WordInputMode::ManagedCommit)
+    );
+    assert!(!engine.composition.pending_passthrough_preedit_clear);
 }
 
 #[test]
 fn terminal_profile_stays_passthrough_without_surrounding_capability() {
     let mut engine = engine();
-    engine.cursor_cell_width = 2;
-    engine.word_input_mode = Some(WordInputMode::TerminalPassthrough);
+    engine.client_context.cursor_cell_width = 2;
+    engine.composition.word_input_mode = Some(WordInputMode::TerminalPassthrough);
 
     engine.set_client_capabilities(1 | 1 << 3);
 
     assert_eq!(
-        engine.word_input_mode,
+        engine.composition.word_input_mode,
         Some(WordInputMode::TerminalPassthrough)
     );
-    assert!(!engine.pending_passthrough_preedit_clear);
+    assert!(!engine.composition.pending_passthrough_preedit_clear);
 }
 
 #[test]
 fn cursor_driven_client_defers_preedit_until_cursor_ack() {
     let mut engine = engine();
-    engine.cursor_cell_width = 11;
+    engine.client_context.cursor_cell_width = 11;
 
     assert!(engine.preedit_waits_for_cursor_ack());
 }
@@ -175,8 +181,8 @@ fn cursor_driven_client_defers_preedit_until_cursor_ack() {
 #[test]
 fn surrounding_text_client_publishes_preedit_immediately() {
     let mut engine = engine();
-    engine.cursor_cell_width = 11;
-    engine.surrounding_text_supported = true;
+    engine.client_context.cursor_cell_width = 11;
+    engine.client_context.surrounding_text_supported = true;
 
     assert!(!engine.preedit_waits_for_cursor_ack());
 }
@@ -184,7 +190,7 @@ fn surrounding_text_client_publishes_preedit_immediately() {
 #[test]
 fn identified_focus_publishes_preedit_without_cursor_ack() {
     let mut engine = engine();
-    engine.cursor_cell_width = 11;
+    engine.client_context.cursor_cell_width = 11;
 
     assert!(engine.preedit_waits_for_cursor_ack());
     assert!(engine.bind_focus_receipt("/field/a".to_string(), "client-a".to_string()));
@@ -195,11 +201,11 @@ fn identified_focus_publishes_preedit_without_cursor_ack() {
 fn changed_focus_receipt_quarantines_committed_tail() {
     let mut engine = engine();
     engine.bind_focus_receipt("/field/a".to_string(), "client-a".to_string());
-    engine.tail_buffer = "старый ".to_string();
+    engine.committed_tail.buffer = "старый ".to_string();
     engine.publish_tail_handoff();
 
     assert!(engine.bind_focus_receipt("/field/b".to_string(), "client-b".to_string()));
-    assert!(engine.tail_buffer.is_empty());
+    assert!(engine.committed_tail.buffer.is_empty());
     assert!(engine
         .shared
         .lock()
@@ -219,7 +225,7 @@ fn changed_engine_path_quarantines_handoff_without_focus_in_id() {
         LayConfig::default(),
     );
     assert!(first.bind_focus_path());
-    first.tail_buffer = "старый ".to_string();
+    first.committed_tail.buffer = "старый ".to_string();
     first.publish_tail_handoff();
     first.remember_pending_ime_auto_undo(
         "старое ".to_string(),
@@ -227,8 +233,8 @@ fn changed_engine_path_quarantines_handoff_without_focus_in_id() {
         lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
     );
     first.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(700));
-    first.shift_active = true;
-    first.shift_pressed_at = Some(Instant::now());
+    first.layout_gesture.shift_active = true;
+    first.layout_gesture.shift_pressed_at = Some(Instant::now());
     first.publish_shift_gesture_handoff();
     first
         .shared
@@ -244,7 +250,7 @@ fn changed_engine_path_quarantines_handoff_without_focus_in_id() {
         LayConfig::default(),
     );
     assert!(second.bind_focus_path());
-    assert!(second.tail_buffer.is_empty());
+    assert!(second.committed_tail.buffer.is_empty());
     let state = second.shared.lock().expect("shared state");
     assert!(state.handoff_tail_buffer.is_empty());
     assert!(state.pending_auto_undo.is_none());
@@ -262,7 +268,7 @@ fn shift_gesture_handoff_is_typed_and_one_shot() {
         LayConfig::default(),
     );
     assert!(source.bind_focus_path());
-    source.tail_buffer = "собака ".to_string();
+    source.committed_tail.buffer = "собака ".to_string();
     source.publish_tail_handoff();
     source.remember_pending_ime_auto_undo(
         "cj,frf ".to_string(),
@@ -272,10 +278,10 @@ fn shift_gesture_handoff_is_typed_and_one_shot() {
     source.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(700));
     let pressed_at = Instant::now();
     let previous_release = pressed_at - Duration::from_millis(100);
-    source.shift_active = true;
-    source.shift_pressed_at = Some(pressed_at);
-    source.shift_used_as_modifier = true;
-    source.last_shift_release_at = Some(previous_release);
+    source.layout_gesture.shift_active = true;
+    source.layout_gesture.shift_pressed_at = Some(pressed_at);
+    source.layout_gesture.shift_used_as_modifier = true;
+    source.layout_gesture.last_shift_release_at = Some(previous_release);
     source.publish_shift_gesture_handoff();
 
     let mut target = LayIbusEngine::new(
@@ -288,10 +294,13 @@ fn shift_gesture_handoff_is_typed_and_one_shot() {
     assert!(target.bind_focus_path());
     target.consume_shift_gesture_handoff();
 
-    assert!(target.shift_active);
-    assert_eq!(target.shift_pressed_at, Some(pressed_at));
-    assert!(target.shift_used_as_modifier);
-    assert_eq!(target.last_shift_release_at, Some(previous_release));
+    assert!(target.layout_gesture.shift_active);
+    assert_eq!(target.layout_gesture.shift_pressed_at, Some(pressed_at));
+    assert!(target.layout_gesture.shift_used_as_modifier);
+    assert_eq!(
+        target.layout_gesture.last_shift_release_at,
+        Some(previous_release)
+    );
     assert!(target
         .shared
         .lock()
@@ -299,14 +308,14 @@ fn shift_gesture_handoff_is_typed_and_one_shot() {
         .shift_gesture_handoff
         .is_none());
 
-    target.shift_active = false;
-    target.shift_pressed_at = None;
-    target.shift_used_as_modifier = false;
-    target.last_shift_release_at = None;
+    target.layout_gesture.shift_active = false;
+    target.layout_gesture.shift_pressed_at = None;
+    target.layout_gesture.shift_used_as_modifier = false;
+    target.layout_gesture.last_shift_release_at = None;
     target.consume_shift_gesture_handoff();
-    assert!(!target.shift_active);
-    assert!(target.shift_pressed_at.is_none());
-    assert!(target.last_shift_release_at.is_none());
+    assert!(!target.layout_gesture.shift_active);
+    assert!(target.layout_gesture.shift_pressed_at.is_none());
+    assert!(target.layout_gesture.last_shift_release_at.is_none());
 }
 
 #[test]
@@ -320,7 +329,7 @@ fn layout_switch_path_preserves_fresh_committed_tail_handoff() {
         LayConfig::default(),
     );
     assert!(first.bind_focus_path());
-    first.tail_buffer = "вот ".to_string();
+    first.committed_tail.buffer = "вот ".to_string();
     first.publish_tail_handoff();
     first.remember_pending_ime_auto_undo(
         "djn ".to_string(),
@@ -339,7 +348,7 @@ fn layout_switch_path_preserves_fresh_committed_tail_handoff() {
     second.set_client_capabilities(IBUS_CAP_SURROUNDING_TEXT);
 
     assert!(second.bind_focus_path());
-    assert_eq!(second.tail_buffer, "вот ");
+    assert_eq!(second.committed_tail.buffer, "вот ");
     assert_eq!(
         second.manual_toggle_authority(),
         ManualToggleAuthority::ImeCommittedTail
@@ -362,7 +371,7 @@ fn layout_switch_double_shift_waits_for_exact_surrounding_snapshot() {
         LayConfig::default(),
     );
     assert!(first.bind_focus_path());
-    first.tail_buffer = "собака ".to_string();
+    first.committed_tail.buffer = "собака ".to_string();
     first.publish_tail_handoff();
     first.remember_pending_ime_auto_undo(
         "cj,frf ".to_string(),
@@ -379,8 +388,8 @@ fn layout_switch_double_shift_waits_for_exact_surrounding_snapshot() {
         LayConfig::default(),
     );
     assert!(second.bind_focus_path());
-    second.surrounding_text_supported = true;
-    second.surrounding_text_snapshot =
+    second.client_context.surrounding_text_supported = true;
+    second.client_context.surrounding_text_snapshot =
         Some(super::SurroundingTextSnapshot::new(String::new(), 0, 0));
 
     assert!(second.defer_pending_ime_auto_undo_until_visible());
@@ -405,8 +414,8 @@ fn layout_switch_double_shift_waits_for_exact_surrounding_snapshot() {
         LayConfig::default(),
     );
     assert!(refreshed.bind_focus_path());
-    refreshed.surrounding_text_supported = true;
-    refreshed.surrounding_text_snapshot = Some(super::SurroundingTextSnapshot::new(
+    refreshed.client_context.surrounding_text_supported = true;
+    refreshed.client_context.surrounding_text_snapshot = Some(super::SurroundingTextSnapshot::new(
         "собака ".to_string(),
         7,
         7,
@@ -425,19 +434,19 @@ fn layout_switch_double_shift_waits_for_exact_surrounding_snapshot() {
 fn recorded_undo_accepts_only_a_fresh_full_tail_boundary_elision() {
     let mut engine = engine();
     assert!(engine.bind_focus_path());
-    engine.tail_buffer = "собака ".to_string();
+    engine.committed_tail.buffer = "собака ".to_string();
     engine.publish_tail_handoff();
     engine.remember_pending_ime_auto_undo(
         "cj,frf ".to_string(),
         "собака ".to_string(),
         lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
     );
-    engine.surrounding_text_supported = true;
-    engine.surrounding_text_snapshot =
+    engine.client_context.surrounding_text_supported = true;
+    engine.client_context.surrounding_text_snapshot =
         Some(super::SurroundingTextSnapshot::new(String::new(), 0, 0));
 
     assert!(engine.defer_pending_ime_auto_undo_until_visible());
-    engine.surrounding_text_snapshot = Some(super::SurroundingTextSnapshot::new(
+    engine.client_context.surrounding_text_snapshot = Some(super::SurroundingTextSnapshot::new(
         "собака".to_string(),
         6,
         6,
@@ -449,7 +458,7 @@ fn recorded_undo_accepts_only_a_fresh_full_tail_boundary_elision() {
     );
     assert!(engine.pending_ime_auto_undo_uses_boundary_elided_snapshot());
 
-    engine.tail_buffer = "другая поверхность ".to_string();
+    engine.committed_tail.buffer = "другая поверхность ".to_string();
     assert_eq!(engine.pending_ime_auto_undo_retry_status(), "invalidated");
     assert!(engine.take_pending_ime_auto_undo().is_none());
 }
@@ -458,15 +467,15 @@ fn recorded_undo_accepts_only_a_fresh_full_tail_boundary_elision() {
 fn recorded_undo_uses_an_already_visible_boundary_elision_without_waiting() {
     let mut engine = engine();
     assert!(engine.bind_focus_path());
-    engine.tail_buffer = "собака ".to_string();
+    engine.committed_tail.buffer = "собака ".to_string();
     engine.publish_tail_handoff();
     engine.remember_pending_ime_auto_undo(
         "cj,frf ".to_string(),
         "собака ".to_string(),
         lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
     );
-    engine.surrounding_text_supported = true;
-    engine.surrounding_text_snapshot = Some(super::SurroundingTextSnapshot::new(
+    engine.client_context.surrounding_text_supported = true;
+    engine.client_context.surrounding_text_snapshot = Some(super::SurroundingTextSnapshot::new(
         "собака".to_string(),
         6,
         6,
@@ -483,15 +492,15 @@ fn recorded_undo_uses_an_already_visible_boundary_elision_without_waiting() {
 fn recorded_undo_accepts_boundary_elision_inside_a_sentence_tail() {
     let mut engine = engine();
     assert!(engine.bind_focus_path());
-    engine.tail_buffer = "контекст собака ".to_string();
+    engine.committed_tail.buffer = "контекст собака ".to_string();
     engine.publish_tail_handoff();
     engine.remember_pending_ime_auto_undo(
         "cj,frf ".to_string(),
         "собака ".to_string(),
         lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
     );
-    engine.surrounding_text_supported = true;
-    engine.surrounding_text_snapshot = Some(super::SurroundingTextSnapshot::new(
+    engine.client_context.surrounding_text_supported = true;
+    engine.client_context.surrounding_text_snapshot = Some(super::SurroundingTextSnapshot::new(
         "контекст собака".to_string(),
         15,
         15,
@@ -515,7 +524,7 @@ fn expired_layout_switch_handoff_is_quarantined() {
         LayConfig::default(),
     );
     assert!(first.bind_focus_path());
-    first.tail_buffer = "старый ".to_string();
+    first.committed_tail.buffer = "старый ".to_string();
     first.publish_tail_handoff();
     first.remember_pending_ime_auto_undo(
         "старое ".to_string(),
@@ -523,8 +532,8 @@ fn expired_layout_switch_handoff_is_quarantined() {
         lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
     );
     first.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(700));
-    first.shift_active = true;
-    first.shift_pressed_at = Some(Instant::now());
+    first.layout_gesture.shift_active = true;
+    first.layout_gesture.shift_pressed_at = Some(Instant::now());
     first.publish_shift_gesture_handoff();
     first
         .shared
@@ -541,7 +550,7 @@ fn expired_layout_switch_handoff_is_quarantined() {
     );
 
     assert!(second.bind_focus_path());
-    assert!(second.tail_buffer.is_empty());
+    assert!(second.committed_tail.buffer.is_empty());
     assert_eq!(
         second.manual_toggle_authority(),
         ManualToggleAuthority::DaemonWordBuffer

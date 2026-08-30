@@ -1,0 +1,123 @@
+{
+  "schema": "lay.tech-debt.verification.v1",
+  "task": "TD-101",
+  "date": "2026-08-30",
+  "base_commit": "23bcd577c58e49f339a27baf1220c9490f07b628",
+  "verdict": "PASS",
+  "scope": "move-only internal IBus state-owner decomposition",
+  "source_shape": {
+    "baseline_direct_fields_total": 50,
+    "baseline_groupable_state_fields": 47,
+    "preserved_direct_dependencies": ["path", "shared", "config"],
+    "current_direct_fields_total": 8,
+    "state_group_count": 5,
+    "state_groups": [
+      "CompositionState",
+      "CommittedTailState",
+      "ClientContextState",
+      "LayoutGestureState",
+      "AtomicRouteState"
+    ],
+    "external_mutable_owner_count": 1,
+    "external_mutable_owner": "LayIbusEngine"
+  },
+  "preserved_artifacts": [
+    {
+      "path": "src/bin/lay_daemon/manual_trigger_runtime/event.rs",
+      "sha256": "18096d6e5ba07a1fb7708f265805b96f5755e6f86d574dca4100bb7b3ee81f71",
+      "matches_base": true
+    },
+    {
+      "path": "docs/double-shift-physical-layout-contract.md",
+      "sha256": "7d728f271b7e1f6f369da6f6525df0ffa8bfc78ec7c418d32cecd412f9f7e6db",
+      "matches_base": true
+    }
+  ],
+  "observed_route": {
+    "manifest": "tech_debt/evidence/td101-code-route-observed-v1.json",
+    "manifest_sha256": "2681ffef83cc1d97aa3f4a9f1ccb8dcacd8cbabbecb931c4fd228436d6bb99c0",
+    "receipt": "tech_debt/evidence/td101-code-route-observed-receipt-v1.json",
+    "receipt_sha256": "80565aa8b778cf8e347949dd6b4477b19e229c8f045d5dd915113fd078fd4c26",
+    "verdict": "PASS",
+    "source_evidence_verified": "35/35",
+    "route_count": 11
+  },
+  "remote": {
+    "host": "e-MEGA-MINI-M1-13th",
+    "checkout": "/home/e/codex-worktrees/lay-td101-23bcd577",
+    "checkout_head": "23bcd577c58e49f339a27baf1220c9490f07b628",
+    "disposable": true,
+    "local_ibus_tree_sha256": "36749b4dc6c265f609d0b3436c0ed0bfc622afe5fc509c6d7ff7018de1136b29",
+    "remote_ibus_tree_sha256": "36749b4dc6c265f609d0b3436c0ed0bfc622afe5fc509c6d7ff7018de1136b29",
+    "source_parity": "PASS",
+    "installed_runtime_changed": false,
+    "install_invocations": 0,
+    "service_restarts": 0
+  },
+  "remote_checks": [
+    {
+      "id": "engine-tests",
+      "command": "scripts/cargo-guard.sh test --bin lay-ibus-engine -- --test-threads=1",
+      "result": "276 passed; 0 failed",
+      "log": "/tmp/td101-engine-all.log"
+    },
+    {
+      "id": "typing-transition-authority",
+      "command": "scripts/cargo-guard.sh test --test typing_transition_authority_contract",
+      "result": "21 passed; 0 failed",
+      "log": "/tmp/td101-transition-contract.log"
+    },
+    {
+      "id": "input-gate-operator",
+      "command": "scripts/cargo-guard.sh test --test input_gate_operator_contract",
+      "result": "2 passed; 0 failed",
+      "log": "/tmp/td101-input-contract.log"
+    },
+    {
+      "id": "ime-space-boundary",
+      "command": "scripts/cargo-guard.sh test --test ime_space_boundary_contract",
+      "result": "1 passed; 0 failed",
+      "log": "/tmp/td101-ime-boundary.log"
+    },
+    {
+      "id": "focus-reset-slice",
+      "command": "scripts/cargo-guard.sh test --bin lay-ibus-engine focus -- --test-threads=1",
+      "result": "7 passed; 0 failed",
+      "log": "/tmp/td101-client-focus.log"
+    },
+    {
+      "id": "preedit-slice",
+      "command": "scripts/cargo-guard.sh test --bin lay-ibus-engine preedit -- --test-threads=1",
+      "result": "88 passed; 0 failed",
+      "log": "/tmp/td101-composition-serial.log"
+    },
+    {
+      "id": "committed-tail-slice",
+      "command": "scripts/cargo-guard.sh test --bin lay-ibus-engine tail -- --test-threads=1",
+      "result": "31 passed; 0 failed",
+      "log": "/tmp/td101-tail-tests.log"
+    },
+    {
+      "id": "changed-check-with-clippy",
+      "command": "LAY_CHANGED_CLIPPY=1 scripts/check-lay-changed.sh",
+      "result": "PASS",
+      "manifest": "correctness=2323 ignored=13 package=36 performance=11 targets=35 total=2383",
+      "dead_code_inventory": 366,
+      "non_dead_diagnostics": 0,
+      "log": "/tmp/td101-changed.log"
+    }
+  ],
+  "known_observation": {
+    "event": "one parallel filtered preedit run produced one stale shared-cache/order-sensitive suffix mismatch",
+    "classification": "existing test-order sensitivity, not accepted as TD-101 behavior evidence",
+    "follow_up": "the exact isolated test, serial preedit slice, full serial engine suite, and final changed check all passed",
+    "scientific_claim": false
+  },
+  "claim_boundary": {
+    "behavior_change_claimed": false,
+    "performance_change_claimed": false,
+    "deployment_authority": false,
+    "installed_runtime_tested": false,
+    "source_and_regression_parity_proven": true
+  }
+}

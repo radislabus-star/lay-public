@@ -83,7 +83,7 @@ impl LayIbusEngine {
         if self.retire_pending_precognition(emitter).await? {
             return Ok(false);
         }
-        if self.buffer.is_empty() {
+        if self.composition.buffer.is_empty() {
             if self.accept_stuck_tail(emitter, with_space).await? {
                 return Ok(true);
             }
@@ -98,8 +98,9 @@ impl LayIbusEngine {
             return Ok(false);
         }
 
-        let accepted_word = replacement.unwrap_or_else(|| format!("{}{}", self.buffer, suffix));
-        let typed_prefix = self.buffer.clone();
+        let accepted_word =
+            replacement.unwrap_or_else(|| format!("{}{}", self.composition.buffer, suffix));
+        let typed_prefix = self.composition.buffer.clone();
         let accepted_text = if with_space {
             format!("{accepted_word} ")
         } else {
@@ -108,7 +109,7 @@ impl LayIbusEngine {
         let action = lay::text_edit::plan_ime_candidate_accept_edit(
             "ibus-active-composition-candidate-accept",
             900,
-            self.buffer.clone(),
+            self.composition.buffer.clone(),
             accepted_text.clone(),
         );
         lay::action_log::record_candidate_edit_action_before_apply(
@@ -123,9 +124,10 @@ impl LayIbusEngine {
             return Ok(false);
         };
         let context_tail = self
-            .tail_buffer
+            .committed_tail
+            .buffer
             .strip_suffix(&typed_prefix)
-            .unwrap_or(self.tail_buffer.as_str())
+            .unwrap_or(self.committed_tail.buffer.as_str())
             .trim_end()
             .to_string();
         trace::record_completion_accept(
@@ -133,7 +135,7 @@ impl LayIbusEngine {
             accepted_word
                 .chars()
                 .count()
-                .saturating_sub(self.buffer.chars().count()),
+                .saturating_sub(self.composition.buffer.chars().count()),
             with_space,
         );
         self.commit_authorized_active_composition_text(
@@ -171,7 +173,7 @@ impl LayIbusEngine {
             .commit_text(make_ibus_text(ch.to_string()))
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        self.last_commit_at = Some(Instant::now());
+        self.committed_tail.last_commit_at = Some(Instant::now());
         self.push_tail_char(ch);
         let frame = self.capture_input_frame_identity();
         if !ch.is_whitespace() {
@@ -211,7 +213,7 @@ impl LayIbusEngine {
         autocorrect: bool,
         authority: ActiveCompositionAuthority,
     ) -> fdo::Result<()> {
-        let mut text = self.buffer.clone();
+        let mut text = self.composition.buffer.clone();
         text.push_str(suffix);
         if with_space {
             text.push(' ');
@@ -277,13 +279,13 @@ impl LayIbusEngine {
             self.sync_layout_after_committed_text(&text, "active_composition");
         }
         self.sync_tail_after_active_composition_commit(&text);
-        self.buffer.clear();
-        self.composition_cursor = 0;
+        self.composition.buffer.clear();
+        self.composition.cursor = 0;
         self.arm_visible_postcondition(Instant::now());
         if text.ends_with(char::is_whitespace) {
             self.close_precognition_word_boundary();
         }
-        self.last_commit_at = Some(Instant::now());
+        self.committed_tail.last_commit_at = Some(Instant::now());
         trace::record_ime_commit(
             decision_ms,
             clear_us,
@@ -303,10 +305,10 @@ impl LayIbusEngine {
         lay::ime_correction::decide_active_composition_autocorrect(
             lay::ime_correction::ActiveCompositionAutocorrectRequest {
                 text,
-                committed_tail: &self.tail_buffer,
+                committed_tail: &self.committed_tail.buffer,
                 config: &self.config,
                 lexical_authority_frame: lexical_authority_frame.as_ref(),
-                active_layout_is_ru: Some(self.layout_is_ru),
+                active_layout_is_ru: Some(self.layout_gesture.layout_is_ru),
             },
         )
     }

@@ -5,10 +5,10 @@ use super::engine::LayIbusEngine;
 impl LayIbusEngine {
     pub(super) fn physical_char(&self, keyval: u32, keycode: u32) -> Option<char> {
         let mapped = keycode.try_into().ok().and_then(|keycode| {
-            if self.layout_is_ru {
-                keycode_to_ru_char(keycode, self.shift_active)
+            if self.layout_gesture.layout_is_ru {
+                keycode_to_ru_char(keycode, self.layout_gesture.shift_active)
             } else {
-                keycode_to_us_char(keycode, self.shift_active)
+                keycode_to_us_char(keycode, self.layout_gesture.shift_active)
             }
         });
         mapped
@@ -143,11 +143,11 @@ mod tests {
     fn physical_char_uses_selected_ime_engine_layout_before_client_keyval() {
         let mut engine = engine();
         assert_eq!(engine.physical_char(0x06d7, 32), Some('d'));
-        engine.layout_is_ru = true;
+        engine.layout_gesture.layout_is_ru = true;
         assert_eq!(engine.physical_char('d' as u32, 32), Some('в'));
-        engine.shift_active = true;
+        engine.layout_gesture.shift_active = true;
         assert_eq!(engine.physical_char(0x06f7, 32), Some('В'));
-        engine.shift_active = false;
+        engine.layout_gesture.shift_active = false;
         assert_eq!(engine.physical_char(0x06a3, 0), Some('ё'));
         assert_eq!(engine.physical_char(0x0100_0432, 32), Some('в'));
     }
@@ -155,7 +155,7 @@ mod tests {
     #[test]
     fn passthrough_visible_char_prefers_client_keyval_over_stale_layout() {
         let mut engine = engine();
-        engine.layout_is_ru = true;
+        engine.layout_gesture.layout_is_ru = true;
         assert_eq!(engine.passthrough_visible_char('g' as u32, 34), Some('g'));
         assert_eq!(engine.passthrough_visible_char(0x06d0, 34), Some('п'));
     }
@@ -163,12 +163,12 @@ mod tests {
     #[test]
     fn passthrough_visible_char_keeps_ascii_prefix_for_completion_memory() {
         let mut engine = engine();
-        engine.layout_is_ru = true;
+        engine.layout_gesture.layout_is_ru = true;
         let ch = engine
             .passthrough_visible_char('f' as u32, 33)
             .expect("visible ascii");
         engine.push_tail_char(ch);
         assert_eq!(engine.last_tail_token_text(), "f");
-        assert_eq!(engine.preedit_fast.token(), "f");
+        assert_eq!(engine.composition.preedit_fast.token(), "f");
     }
 }

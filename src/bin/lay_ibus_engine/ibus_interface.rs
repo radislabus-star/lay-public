@@ -50,7 +50,7 @@ impl LayIbusEngine {
     #[zbus(name = "FocusIn")]
     fn focus_in(&mut self) {
         self.discard_atomic_pending();
-        self.atomic_route_active = false;
+        self.atomic.active = false;
         self.invalidate_input_frame_background_work();
         let changed = self.bind_focus_path();
         trace::record(if changed {
@@ -59,7 +59,7 @@ impl LayIbusEngine {
             r#"{"kind":"ibus_focus","stage":"focus_in","receipt":"same_path"}"#
         });
         self.config = lay::config::LayConfig::load();
-        self.surrounding_text_snapshot = None;
+        self.client_context.surrounding_text_snapshot = None;
         if !changed {
             self.refresh_empty_tail_from_handoff();
         }
@@ -79,7 +79,7 @@ impl LayIbusEngine {
     #[zbus(name = "FocusOut")]
     fn focus_out(&mut self) {
         self.discard_atomic_pending();
-        self.atomic_route_active = false;
+        self.atomic.active = false;
         trace::record(r#"{"kind":"ibus_focus","stage":"focus_out"}"#);
         let preserve_active_path =
             self.should_preserve_focus_handoff() || self.shared_active_path_preserved();
@@ -107,9 +107,9 @@ impl LayIbusEngine {
         w: i32,
         h: i32,
     ) -> fdo::Result<()> {
-        self.cursor_cell_width = w;
+        self.client_context.cursor_cell_width = w;
         trace::record_cursor_location(x, y, w, h);
-        if self.atomic_route_active {
+        if self.atomic.active {
             return Ok(());
         }
         let mut output = EngineOutput::legacy(&emitter);
@@ -125,7 +125,7 @@ impl LayIbusEngine {
     #[zbus(name = "SetCapabilities")]
     fn set_capabilities(&mut self, caps: u32) {
         self.set_client_capabilities(caps);
-        trace::record_capabilities(caps, self.surrounding_text_supported);
+        trace::record_capabilities(caps, self.client_context.surrounding_text_supported);
     }
 
     #[zbus(name = "PropertyActivate")]
@@ -161,7 +161,7 @@ impl LayIbusEngine {
     #[zbus(name = "Disable")]
     fn disable(&mut self) {
         self.discard_atomic_pending();
-        self.atomic_route_active = false;
+        self.atomic.active = false;
         trace::record(r#"{"kind":"ibus_focus","stage":"disable"}"#);
         self.reset_for_ibus_soft_reset();
     }
@@ -192,14 +192,15 @@ impl LayIbusEngine {
         let retry_status = self.pending_ime_auto_undo_retry_status();
         let sensitive = self.content_is_sensitive();
         trace::record_surrounding_text_snapshot(
-            self.surrounding_text_snapshot
+            self.client_context
+                .surrounding_text_snapshot
                 .as_ref()
                 .map_or(0, |snapshot| snapshot.text.chars().count()),
             if sensitive { 0 } else { cursor_pos },
             if sensitive { 0 } else { anchor_pos },
             retry_status,
         );
-        if self.atomic_route_active {
+        if self.atomic.active {
             self.observe_visible_postcondition();
             return Ok(());
         }
@@ -281,7 +282,10 @@ impl LayIbusEngine {
 
     #[zbus(property, name = "ContentType")]
     fn content_type(&self) -> (u32, u32) {
-        (self.content_purpose, self.content_hints)
+        (
+            self.client_context.content_purpose,
+            self.client_context.content_hints,
+        )
     }
 
     #[zbus(property, name = "ContentType")]
@@ -309,18 +313,18 @@ impl LayIbusEngine {
 impl LayIbusEngine {
     fn observe_daemon_owned_legacy_shift(&mut self, keyval: u32, keycode: u32, state: u32) -> bool {
         let pressed = is_key_press(state);
-        self.shift_active = pressed;
-        self.shift_pressed_at = None;
-        self.last_shift_release_at = None;
+        self.layout_gesture.shift_active = pressed;
+        self.layout_gesture.shift_pressed_at = None;
+        self.layout_gesture.last_shift_release_at = None;
         if pressed {
-            self.shift_used_as_modifier = false;
-            if self.alt_completion_active {
-                self.alt_used_as_modifier = true;
-                self.shift_used_as_modifier = true;
+            self.layout_gesture.shift_used_as_modifier = false;
+            if self.layout_gesture.alt_completion_active {
+                self.layout_gesture.alt_used_as_modifier = true;
+                self.layout_gesture.shift_used_as_modifier = true;
                 return self.toggle_layout_from_modifier_hotkey();
             }
         } else {
-            self.shift_used_as_modifier = false;
+            self.layout_gesture.shift_used_as_modifier = false;
         }
         trace::record_key(
             "shift_observed_daemon_owner",
@@ -328,8 +332,8 @@ impl LayIbusEngine {
             keycode,
             false,
             None,
-            self.tail_buffer.chars().count(),
-            self.preedit_suffix.chars().count(),
+            self.committed_tail.buffer.chars().count(),
+            self.composition.preedit_suffix.chars().count(),
         );
         false
     }
@@ -340,38 +344,41 @@ impl LayIbusEngine {
         keyval: u32,
         state: u32,
     ) -> fdo::Result<bool> {
-        debug_assert!(self.atomic_speculation);
+        debug_assert!(self.atomic.speculation);
         let pressed = is_key_press(state);
-        self.shift_active = pressed;
+        self.layout_gesture.shift_active = pressed;
         if pressed {
-            self.shift_used_as_modifier = false;
-            if self.alt_completion_active {
-                self.alt_used_as_modifier = true;
-                self.shift_used_as_modifier = true;
+            self.layout_gesture.shift_used_as_modifier = false;
+            if self.layout_gesture.alt_completion_active {
+                self.layout_gesture.alt_used_as_modifier = true;
+                self.layout_gesture.shift_used_as_modifier = true;
                 return Ok(self.toggle_layout_from_modifier_hotkey());
             }
         }
 
         let gesture_key = configured_atomic_double_shift_key(&self.config.trigger, keyval);
         if pressed {
-            self.shift_pressed_at = gesture_key.then(Instant::now);
+            self.layout_gesture.shift_pressed_at = gesture_key.then(Instant::now);
             if !gesture_key {
-                self.last_shift_release_at = None;
+                self.layout_gesture.last_shift_release_at = None;
             }
         } else {
             let now = Instant::now();
             let tapped = gesture_key
-                && self.shift_pressed_at.take().is_some()
-                && !self.shift_used_as_modifier;
+                && self.layout_gesture.shift_pressed_at.take().is_some()
+                && !self.layout_gesture.shift_used_as_modifier;
             let double_tapped = tapped
-                && self.last_shift_release_at.is_some_and(|released_at| {
-                    now.duration_since(released_at)
-                        <= Duration::from_millis(self.config.shift_window_ms)
-                });
-            self.shift_used_as_modifier = false;
-            self.last_shift_release_at = tapped.then_some(now);
+                && self
+                    .layout_gesture
+                    .last_shift_release_at
+                    .is_some_and(|released_at| {
+                        now.duration_since(released_at)
+                            <= Duration::from_millis(self.config.shift_window_ms)
+                    });
+            self.layout_gesture.shift_used_as_modifier = false;
+            self.layout_gesture.last_shift_release_at = tapped.then_some(now);
             if double_tapped {
-                self.last_shift_release_at = None;
+                self.layout_gesture.last_shift_release_at = None;
                 if self
                     .manual_toggle_active_text_target(output)
                     .await?
@@ -391,7 +398,7 @@ impl LayIbusEngine {
         keycode: u32,
         state: u32,
     ) -> fdo::Result<bool> {
-        if !self.managed_input {
+        if !self.client_context.managed_input {
             return Ok(false);
         }
         if !is_key_press(state) && self.consume_handled_release(keycode) {
@@ -401,8 +408,8 @@ impl LayIbusEngine {
                 keycode,
                 true,
                 None,
-                self.tail_buffer.chars().count(),
-                self.preedit_suffix.chars().count(),
+                self.committed_tail.buffer.chars().count(),
+                self.composition.preedit_suffix.chars().count(),
             );
             return Ok(true);
         }
@@ -415,7 +422,7 @@ impl LayIbusEngine {
             return Ok(false);
         }
         if is_shift_key(keyval) {
-            if !self.atomic_speculation {
+            if !self.atomic.speculation {
                 return Ok(self.observe_daemon_owned_legacy_shift(keyval, keycode, state));
             }
             return self
@@ -423,37 +430,40 @@ impl LayIbusEngine {
                 .await;
         }
         if is_key_press(state) {
-            self.last_shift_release_at = None;
+            self.layout_gesture.last_shift_release_at = None;
         }
         if is_accept_completion_with_space_key(keyval) {
             let pressed = is_key_press(state);
             if pressed {
-                self.alt_completion_active = true;
+                self.layout_gesture.alt_completion_active = true;
                 let retired = self.retire_pending_precognition(output).await?;
-                self.alt_used_as_modifier = self.shift_active || retired;
-                if self.shift_active {
-                    self.shift_used_as_modifier = true;
+                self.layout_gesture.alt_used_as_modifier =
+                    self.layout_gesture.shift_active || retired;
+                if self.layout_gesture.shift_active {
+                    self.layout_gesture.shift_used_as_modifier = true;
                     return Ok(self.toggle_layout_from_modifier_hotkey());
                 }
                 return Ok(false);
             }
-            if self.alt_completion_active && !self.alt_used_as_modifier {
-                self.alt_completion_active = false;
+            if self.layout_gesture.alt_completion_active
+                && !self.layout_gesture.alt_used_as_modifier
+            {
+                self.layout_gesture.alt_completion_active = false;
                 return self.accept_completion_with_space(output).await;
             }
-            self.alt_completion_active = false;
-            self.alt_used_as_modifier = false;
+            self.layout_gesture.alt_completion_active = false;
+            self.layout_gesture.alt_used_as_modifier = false;
             return Ok(false);
         }
         if !is_key_press(state) {
             return Ok(false);
         }
-        self.last_shift_release_at = None;
-        if self.shift_active {
-            self.shift_used_as_modifier = true;
+        self.layout_gesture.last_shift_release_at = None;
+        if self.layout_gesture.shift_active {
+            self.layout_gesture.shift_used_as_modifier = true;
         }
-        if self.alt_completion_active {
-            self.alt_used_as_modifier = true;
+        if self.layout_gesture.alt_completion_active {
+            self.layout_gesture.alt_used_as_modifier = true;
         }
         let handled = self
             .process_pressed_key(output, keyval, keycode, state)
@@ -507,9 +517,9 @@ mod causal_precondition_tests {
             true,
             config,
         );
-        engine.buffer = "ghbdtn".to_string();
-        engine.composition_cursor = engine.buffer.chars().count();
-        engine.tail_buffer = "prefix ghbdtn".to_string();
+        engine.composition.buffer = "ghbdtn".to_string();
+        engine.composition.cursor = engine.composition.buffer.chars().count();
+        engine.committed_tail.buffer = "prefix ghbdtn".to_string();
 
         for keyval in [KEY_LEFT_SHIFT, KEY_RIGHT_SHIFT] {
             for _ in 0..4 {
@@ -533,10 +543,10 @@ mod causal_precondition_tests {
             }
         }
 
-        assert_eq!(engine.buffer, "ghbdtn");
-        assert_eq!(engine.tail_buffer, "prefix ghbdtn");
-        assert!(engine.shift_pressed_at.is_none());
-        assert!(engine.last_shift_release_at.is_none());
+        assert_eq!(engine.composition.buffer, "ghbdtn");
+        assert_eq!(engine.committed_tail.buffer, "prefix ghbdtn");
+        assert!(engine.layout_gesture.shift_pressed_at.is_none());
+        assert!(engine.layout_gesture.last_shift_release_at.is_none());
     }
 
     #[test]

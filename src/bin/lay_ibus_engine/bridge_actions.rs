@@ -66,13 +66,21 @@ impl LayImeBridge {
         let mut engine = iface_ref.get_mut().await;
         engine.refresh_empty_tail_from_handoff();
         let source = tail_source_for_authority(engine.manual_toggle_authority());
-        let text = visible_text_for_source(source, &engine.buffer, &engine.tail_buffer);
-        let focus_receipt = engine.focus_receipt.clone().unwrap_or_default();
+        let text = visible_text_for_source(
+            source,
+            &engine.composition.buffer,
+            &engine.committed_tail.buffer,
+        );
+        let focus_receipt = engine
+            .client_context
+            .focus_receipt
+            .clone()
+            .unwrap_or_default();
         Ok((
             source.bridge_state().to_string(),
             text,
-            engine.layout_is_ru,
-            engine.tail_epoch,
+            engine.layout_gesture.layout_is_ru,
+            engine.committed_tail.epoch,
             path,
             focus_receipt,
         ))
@@ -121,8 +129,8 @@ impl LayImeBridge {
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let mut engine = iface_ref.get_mut().await;
         engine.consume_exact_manual_toggle_handoff();
-        engine.suppress_next_committed_tail_autocorrect = true;
-        engine.exact_manual_toggle_suppression = None;
+        engine.committed_tail.suppress_next_autocorrect = true;
+        engine.committed_tail.exact_manual_toggle_suppression = None;
         engine.publish_autocorrect_suppression_handoff();
         super::trace::record(r#"{"kind":"ibus_suppress_next_autocorrect","source":"daemon"}"#);
         Ok(true)
@@ -231,13 +239,13 @@ impl LayImeBridge {
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let emitter = iface_ref.signal_emitter();
         let mut engine = iface_ref.get_mut().await;
-        if engine.atomic_route_active {
+        if engine.atomic.active {
             return Ok(false);
         }
         let expected_tail = expected_original_tail.map(|expected| {
             let (epoch, focus) = expected_revision
                 .clone()
-                .unwrap_or_else(|| (engine.tail_epoch, path.clone()));
+                .unwrap_or_else(|| (engine.committed_tail.epoch, path.clone()));
             VisibleTailSnapshot::new(
                 VisibleTailSource::DaemonWordBuffer,
                 expected,
@@ -278,7 +286,7 @@ impl LayImeBridge {
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let emitter = iface_ref.signal_emitter();
         let mut engine = iface_ref.get_mut().await;
-        let atomic_route_active = engine.atomic_route_active;
+        let atomic_route_active = engine.atomic.active;
         if atomic_route_active {
             return Ok(manual_toggle_outcome_for_authority(
                 atomic_route_active,

@@ -93,7 +93,7 @@ These are intentionally not part of automatic Stage 2 execution:
 
 | Task | Priority | Status | Decision needed |
 |---|---|---|---|
-| [Decompose the IBus engine state owner](101-decompose-ibus-engine-state-owner.md) | P2 | DISCUSSION_REQUIRED | Is state isolation worth the regression risk now? |
+| [Decompose the IBus engine state owner](101-decompose-ibus-engine-state-owner.md) | P2 | DONE | Five state owners verified remotely; review 9.5/10; runtime behavior unchanged |
 | [Separate Nanda runtime from research tooling](102-separate-nanda-runtime-and-research.md) | P2 | DISCUSSION_REQUIRED | Workspace split versus current single-crate convenience |
 | [Externalize research payload lifecycle](103-externalize-research-payloads.md) | P2 | DISCUSSION_REQUIRED | Storage policy without weakening immutable evidence |
 | [Isolate proof/compiler build surfaces](104-isolate-proof-compiler-build-surface.md) | P2 | DISCUSSION_REQUIRED | Is feature gating worth its measured build-surface benefit? |

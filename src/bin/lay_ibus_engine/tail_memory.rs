@@ -39,7 +39,7 @@ impl LayIbusEngine {
         .then_some(PendingImeAutoUndo {
             original,
             replacement,
-            visible_tail: self.tail_buffer.clone(),
+            visible_tail: self.committed_tail.buffer.clone(),
             transition,
             recorded_at: Instant::now(),
             atomic_submission_proven: false,
@@ -106,7 +106,7 @@ impl LayIbusEngine {
     /// may use the recorded transition as authority; unrelated snapshots never
     /// release the undo.
     pub(super) fn defer_pending_ime_auto_undo_until_visible(&self) -> bool {
-        if !self.surrounding_text_supported {
+        if !self.client_context.surrounding_text_supported {
             if let Ok(state) = self.shared.lock() {
                 record_pending_ime_auto_undo_lifecycle(
                     self,
@@ -132,8 +132,10 @@ impl LayIbusEngine {
             state.pending_auto_undo_retry = None;
             return false;
         }
-        let snapshot_match =
-            pending_ime_auto_undo_snapshot_match(self.surrounding_text_snapshot.as_ref(), pending);
+        let snapshot_match = pending_ime_auto_undo_snapshot_match(
+            self.client_context.surrounding_text_snapshot.as_ref(),
+            pending,
+        );
         if matches!(
             snapshot_match,
             SurroundingSnapshotMatch::Exact | SurroundingSnapshotMatch::AtomicSubmission
@@ -214,8 +216,10 @@ impl LayIbusEngine {
             state.pending_auto_undo_retry = None;
             return "invalidated";
         }
-        match pending_ime_auto_undo_snapshot_match(self.surrounding_text_snapshot.as_ref(), pending)
-        {
+        match pending_ime_auto_undo_snapshot_match(
+            self.client_context.surrounding_text_snapshot.as_ref(),
+            pending,
+        ) {
             SurroundingSnapshotMatch::Exact | SurroundingSnapshotMatch::AtomicSubmission => "ready",
             SurroundingSnapshotMatch::TrailingBoundaryElided => "ready_boundary_elided",
             SurroundingSnapshotMatch::CausalPrecondition => "ready_causal_precondition",
@@ -239,7 +243,10 @@ impl LayIbusEngine {
         let Some(pending) = state.pending_auto_undo.as_ref() else {
             return SurroundingSnapshotMatch::Missing;
         };
-        pending_ime_auto_undo_snapshot_match(self.surrounding_text_snapshot.as_ref(), pending)
+        pending_ime_auto_undo_snapshot_match(
+            self.client_context.surrounding_text_snapshot.as_ref(),
+            pending,
+        )
     }
 
     pub(super) fn arm_pending_ime_completion_learning(
@@ -249,26 +256,27 @@ impl LayIbusEngine {
         accepted_word: String,
         with_space: bool,
     ) {
-        self.pending_ime_completion_learning = with_space.then_some(PendingImeCompletionLearning {
-            context_tail,
-            typed_prefix,
-            accepted_word,
-            editing: false,
-        });
+        self.committed_tail.pending_completion_learning =
+            with_space.then_some(PendingImeCompletionLearning {
+                context_tail,
+                typed_prefix,
+                accepted_word,
+                editing: false,
+            });
     }
 
     pub(super) fn begin_pending_ime_completion_edit_before_backspace(&mut self) {
-        let Some(pending) = self.pending_ime_completion_learning.as_mut() else {
+        let Some(pending) = self.committed_tail.pending_completion_learning.as_mut() else {
             return;
         };
         if pending.editing {
             return;
         }
         let accepted_tail = format!("{} ", pending.accepted_word);
-        if self.tail_buffer.ends_with(&accepted_tail) {
+        if self.committed_tail.buffer.ends_with(&accepted_tail) {
             pending.editing = true;
         } else {
-            self.pending_ime_completion_learning = None;
+            self.committed_tail.pending_completion_learning = None;
         }
     }
 
@@ -276,17 +284,18 @@ impl LayIbusEngine {
     /// accepted completion remained useful. This does not alter visible text.
     pub(super) fn confirm_pending_ime_completion_at_stable_boundary(&mut self) {
         if self
-            .pending_ime_completion_learning
+            .committed_tail
+            .pending_completion_learning
             .as_ref()
             .is_some_and(|pending| pending.editing)
         {
             return;
         }
-        let Some(pending) = self.pending_ime_completion_learning.take() else {
+        let Some(pending) = self.committed_tail.pending_completion_learning.take() else {
             return;
         };
         let accepted_tail = format!("{} ", pending.accepted_word);
-        if self.tail_buffer.ends_with(&accepted_tail) {
+        if self.committed_tail.buffer.ends_with(&accepted_tail) {
             lay::typing_cpu::TypingCpu::record_accepted_completion(
                 &pending.context_tail,
                 &pending.accepted_word,
@@ -299,14 +308,16 @@ impl LayIbusEngine {
         tail_before_boundary: &str,
     ) -> bool {
         let is_editing = self
-            .pending_ime_completion_learning
+            .committed_tail
+            .pending_completion_learning
             .as_ref()
             .is_some_and(|pending| pending.editing);
         if !is_editing {
             return false;
         }
         let pending = self
-            .pending_ime_completion_learning
+            .committed_tail
+            .pending_completion_learning
             .take()
             .expect("editing completion must remain pending");
         let final_word = lay::nanda_wave::llmwave::tokenize(tail_before_boundary)
@@ -367,7 +378,7 @@ impl LayIbusEngine {
         feedback: Option<PendingSystemOutcomeFeedback>,
         layout_sync_text: Option<String>,
     ) {
-        if !self.surrounding_text_supported {
+        if !self.client_context.surrounding_text_supported {
             return;
         }
         self.arm_visible_postcondition_from_surrounding_dispatch(
@@ -415,40 +426,45 @@ impl LayIbusEngine {
     ) {
         let snapshot = VisibleTailSnapshot::new(
             VisibleTailSource::ImeCommittedTail,
-            self.tail_buffer.clone(),
+            self.committed_tail.buffer.clone(),
             Some(self.path.clone()),
-            self.tail_epoch,
+            self.committed_tail.epoch,
         )
         .identity();
-        self.pending_visible_postcondition = Some(super::engine::PendingVisiblePostcondition {
-            expected_suffix: self.tail_buffer.clone(),
-            expected_external_snapshot,
-            snapshot,
-            dispatched_epoch: self.tail_epoch,
-            dispatched_at,
-            feedback,
-            layout_sync_text,
-        });
+        self.committed_tail.pending_visible_postcondition =
+            Some(super::engine::PendingVisiblePostcondition {
+                expected_suffix: self.committed_tail.buffer.clone(),
+                expected_external_snapshot,
+                snapshot,
+                dispatched_epoch: self.committed_tail.epoch,
+                dispatched_at,
+                feedback,
+                layout_sync_text,
+            });
     }
 
     pub(super) fn observe_visible_postcondition(&mut self) {
         const OBSERVATION_TIMEOUT_MS: u128 = 1500;
         const SETTLE_GRACE_MS: u128 = 500;
-        let Some(pending) = self.pending_visible_postcondition.take() else {
+        let Some(pending) = self.committed_tail.pending_visible_postcondition.take() else {
             return;
         };
         let elapsed_ms = pending.dispatched_at.elapsed().as_millis();
-        if elapsed_ms > OBSERVATION_TIMEOUT_MS || pending.dispatched_epoch != self.tail_epoch {
-            record_causal_outcome("censored", &pending, self.tail_epoch);
+        if elapsed_ms > OBSERVATION_TIMEOUT_MS
+            || pending.dispatched_epoch != self.committed_tail.epoch
+        {
+            record_causal_outcome("censored", &pending, self.committed_tail.epoch);
             return;
         }
         let observed = match pending.expected_external_snapshot.as_ref() {
-            Some(expected) if self.surrounding_text_snapshot.as_ref() == Some(expected) => {
+            Some(expected)
+                if self.client_context.surrounding_text_snapshot.as_ref() == Some(expected) =>
+            {
                 SurroundingSnapshotMatch::Exact
             }
             Some(_) => SurroundingSnapshotMatch::Missing,
             None => surrounding_snapshot_match(
-                self.surrounding_text_snapshot.as_ref(),
+                self.client_context.surrounding_text_snapshot.as_ref(),
                 &pending.expected_suffix,
             ),
         };
@@ -457,7 +473,7 @@ impl LayIbusEngine {
             SurroundingSnapshotMatch::Exact | SurroundingSnapshotMatch::TrailingBoundaryElided
         ) {
             self.record_observed_system_outcome(pending.feedback.as_ref());
-            record_causal_outcome("confirmed_positive", &pending, self.tail_epoch);
+            record_causal_outcome("confirmed_positive", &pending, self.committed_tail.epoch);
             if let Some(text) = pending.layout_sync_text.as_deref() {
                 self.sync_layout_after_committed_text(text, "visible_postcondition_confirmed");
             }
@@ -467,15 +483,19 @@ impl LayIbusEngine {
                 "observed"
             }
         } else if elapsed_ms <= SETTLE_GRACE_MS {
-            record_causal_outcome("pending_stale_observation", &pending, self.tail_epoch);
-            self.pending_visible_postcondition = Some(pending);
+            record_causal_outcome(
+                "pending_stale_observation",
+                &pending,
+                self.committed_tail.epoch,
+            );
+            self.committed_tail.pending_visible_postcondition = Some(pending);
             "pending"
         } else {
             // The compositor may report the pre-commit surrounding text once
             // before publishing the committed value. Only quarantine after the
             // bounded settle window has elapsed.
             self.quarantine_visible_postcondition_mismatch();
-            record_causal_outcome("censored", &pending, self.tail_epoch);
+            record_causal_outcome("censored", &pending, self.committed_tail.epoch);
             "mismatch"
         };
         super::trace::record(format!(
@@ -513,56 +533,58 @@ impl LayIbusEngine {
     }
 
     pub(super) fn last_tail_token_text(&self) -> String {
-        last_tail_token(&self.tail_buffer)
+        last_tail_token(&self.committed_tail.buffer)
     }
 
     pub(super) fn sync_tail_after_composition_commit(&mut self, text: &str) {
-        self.surrounding_text_snapshot = None;
+        self.client_context.surrounding_text_snapshot = None;
         let trailing_ws = lay::word_reader::trailing_whitespace_char_count(text);
         let committed = text.trim_end_matches(char::is_whitespace);
         if !committed.is_empty() {
-            self.replace_last_tail_token_text(committed, self.buffer.chars().count());
+            self.replace_last_tail_token_text(committed, self.composition.buffer.chars().count());
         }
         for _ in 0..trailing_ws {
-            self.tail_buffer.push(' ');
+            self.committed_tail.buffer.push(' ');
         }
         if trailing_ws > 0 {
-            self.preedit_fast.reset();
+            self.composition.preedit_fast.reset();
         } else {
             self.rebuild_preedit_fast_from_tail();
         }
-        trim_committed_tail_buffer(&mut self.tail_buffer);
+        trim_committed_tail_buffer(&mut self.committed_tail.buffer);
         self.publish_tail_handoff();
     }
 
     pub(super) fn replace_last_tail_token_text(&mut self, replacement: &str, fallback_len: usize) {
-        let Some((start, end)) = last_tail_token_range(&self.tail_buffer) else {
-            self.tail_buffer.push_str(replacement);
+        let Some((start, end)) = last_tail_token_range(&self.committed_tail.buffer) else {
+            self.committed_tail.buffer.push_str(replacement);
             return;
         };
-        let range_len = self.tail_buffer[start..end].chars().count();
+        let range_len = self.committed_tail.buffer[start..end].chars().count();
         if fallback_len > 0 && range_len != fallback_len {
-            self.tail_buffer.push_str(replacement);
+            self.committed_tail.buffer.push_str(replacement);
             return;
         }
-        self.tail_buffer.replace_range(start..end, replacement);
+        self.committed_tail
+            .buffer
+            .replace_range(start..end, replacement);
     }
 
     pub(super) fn rebuild_preedit_fast_from_tail(&mut self) {
-        self.preedit_fast.reset();
+        self.composition.preedit_fast.reset();
         for ch in self.last_tail_token_text().chars() {
-            self.preedit_fast.push(ch);
+            self.composition.preedit_fast.push(ch);
         }
     }
 
     pub(super) fn publish_tail_handoff(&mut self) {
-        self.tail_epoch = self.tail_epoch.wrapping_add(1);
+        self.committed_tail.epoch = self.committed_tail.epoch.wrapping_add(1);
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
-        state.handoff_tail_buffer = self.tail_buffer.clone();
-        state.handoff_tail_epoch = self.tail_epoch;
-        state.handoff_focus_receipt = self.focus_receipt.clone();
+        state.handoff_tail_buffer = self.committed_tail.buffer.clone();
+        state.handoff_tail_epoch = self.committed_tail.epoch;
+        state.handoff_focus_receipt = self.client_context.focus_receipt.clone();
         state.exact_manual_toggle_handoff_epoch = None;
         state.exact_manual_toggle_handoff_path = None;
     }
@@ -573,7 +595,7 @@ impl LayIbusEngine {
             return;
         };
         state.preserve_active_path_until = Some(Instant::now() + IME_LAYOUT_HANDOFF_MAX_AGE);
-        state.exact_manual_toggle_handoff_epoch = Some(self.tail_epoch);
+        state.exact_manual_toggle_handoff_epoch = Some(self.committed_tail.epoch);
         state.exact_manual_toggle_handoff_path = Some(self.path.clone());
     }
 
@@ -585,9 +607,9 @@ impl LayIbusEngine {
         let live = state
             .preserve_active_path_until
             .is_some_and(|until| now <= until)
-            && state.exact_manual_toggle_handoff_epoch == Some(self.tail_epoch)
-            && state.handoff_tail_epoch == self.tail_epoch
-            && state.handoff_tail_buffer == self.tail_buffer;
+            && state.exact_manual_toggle_handoff_epoch == Some(self.committed_tail.epoch)
+            && state.handoff_tail_epoch == self.committed_tail.epoch
+            && state.handoff_tail_buffer == self.committed_tail.buffer;
         if !live {
             state.exact_manual_toggle_handoff_epoch = None;
             state.exact_manual_toggle_handoff_path = None;
@@ -611,14 +633,14 @@ impl LayIbusEngine {
         expected_path: &str,
         expected_layout_is_ru: bool,
     ) -> bool {
-        let exact_tail_suffix =
-            last_tail_token_range(&self.tail_buffer).map(|(start, _)| &self.tail_buffer[start..]);
+        let exact_tail_suffix = last_tail_token_range(&self.committed_tail.buffer)
+            .map(|(start, _)| &self.committed_tail.buffer[start..]);
         if expected_suffix.is_empty()
             || exact_tail_suffix != Some(expected_suffix)
             || self.path != expected_path
-            || self.layout_is_ru != expected_layout_is_ru
-            || self.tail_epoch != expected_epoch
-            || !self.tail_buffer.ends_with(expected_suffix)
+            || self.layout_gesture.layout_is_ru != expected_layout_is_ru
+            || self.committed_tail.epoch != expected_epoch
+            || !self.committed_tail.buffer.ends_with(expected_suffix)
         {
             return false;
         }
@@ -632,7 +654,7 @@ impl LayIbusEngine {
             && state.exact_manual_toggle_handoff_epoch == Some(expected_epoch)
             && state.exact_manual_toggle_handoff_path.is_some()
             && state.handoff_tail_epoch == expected_epoch
-            && state.handoff_tail_buffer == self.tail_buffer;
+            && state.handoff_tail_buffer == self.committed_tail.buffer;
         if !live {
             return false;
         }
@@ -646,8 +668,9 @@ impl LayIbusEngine {
             epoch: expected_epoch,
             expires_at: Instant::now() + IME_LAYOUT_HANDOFF_MAX_AGE,
         });
-        self.suppress_next_committed_tail_autocorrect = true;
-        self.exact_manual_toggle_suppression = state.exact_manual_toggle_suppression.clone();
+        self.committed_tail.suppress_next_autocorrect = true;
+        self.committed_tail.exact_manual_toggle_suppression =
+            state.exact_manual_toggle_suppression.clone();
         true
     }
 
@@ -673,30 +696,30 @@ impl LayIbusEngine {
         }
         state.suppress_next_committed_tail_autocorrect = false;
         state.exact_manual_toggle_suppression = None;
-        self.suppress_next_committed_tail_autocorrect = false;
-        self.exact_manual_toggle_suppression = None;
+        self.committed_tail.suppress_next_autocorrect = false;
+        self.committed_tail.exact_manual_toggle_suppression = None;
         true
     }
 
     pub(super) fn close_committed_tail_field(&mut self) {
-        self.pending_ime_completion_learning = None;
-        self.tail_buffer.clear();
-        self.preedit_fast.reset();
-        self.suppress_next_committed_tail_autocorrect = false;
-        self.exact_manual_toggle_suppression = None;
-        self.word_input_mode = None;
-        self.last_tail_input_at = None;
-        self.last_commit_at = None;
-        self.recent_committed_tail_replace = None;
-        self.pending_manual_toggle = false;
-        self.pending_visible_postcondition = None;
-        self.tail_epoch = self.tail_epoch.wrapping_add(1);
+        self.committed_tail.pending_completion_learning = None;
+        self.committed_tail.buffer.clear();
+        self.composition.preedit_fast.reset();
+        self.committed_tail.suppress_next_autocorrect = false;
+        self.committed_tail.exact_manual_toggle_suppression = None;
+        self.composition.word_input_mode = None;
+        self.committed_tail.last_input_at = None;
+        self.committed_tail.last_commit_at = None;
+        self.committed_tail.recent_replace = None;
+        self.layout_gesture.pending_manual_toggle = false;
+        self.committed_tail.pending_visible_postcondition = None;
+        self.committed_tail.epoch = self.committed_tail.epoch.wrapping_add(1);
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
         record_pending_ime_auto_undo_lifecycle(self, &state, "clear", "close_committed_tail_field");
         state.handoff_tail_buffer.clear();
-        state.handoff_tail_epoch = self.tail_epoch;
+        state.handoff_tail_epoch = self.committed_tail.epoch;
         state.handoff_focus_receipt = None;
         state.suppress_next_committed_tail_autocorrect = false;
         state.exact_manual_toggle_suppression = None;
@@ -710,18 +733,18 @@ impl LayIbusEngine {
 
     fn quarantine_visible_postcondition_mismatch(&mut self) {
         let shared = self.shared.clone();
-        self.buffer.clear();
-        self.composition_cursor = 0;
-        self.tail_buffer.clear();
-        self.preedit_fast.reset();
+        self.composition.buffer.clear();
+        self.composition.cursor = 0;
+        self.committed_tail.buffer.clear();
+        self.composition.preedit_fast.reset();
         self.clear_preedit_completion_state();
-        self.word_input_mode = None;
-        self.last_tail_input_at = None;
-        self.recent_committed_tail_replace = None;
-        self.pending_manual_toggle = false;
-        self.suppress_next_committed_tail_autocorrect = false;
-        self.exact_manual_toggle_suppression = None;
-        self.tail_epoch = self.tail_epoch.wrapping_add(1);
+        self.composition.word_input_mode = None;
+        self.committed_tail.last_input_at = None;
+        self.committed_tail.recent_replace = None;
+        self.layout_gesture.pending_manual_toggle = false;
+        self.committed_tail.suppress_next_autocorrect = false;
+        self.committed_tail.exact_manual_toggle_suppression = None;
+        self.committed_tail.epoch = self.committed_tail.epoch.wrapping_add(1);
         if let Ok(mut state) = shared.lock() {
             record_pending_ime_auto_undo_lifecycle(
                 self,
@@ -730,7 +753,7 @@ impl LayIbusEngine {
                 "visible_postcondition_mismatch",
             );
             state.handoff_tail_buffer.clear();
-            state.handoff_tail_epoch = self.tail_epoch;
+            state.handoff_tail_epoch = self.committed_tail.epoch;
             state.handoff_focus_receipt = None;
             state.suppress_next_committed_tail_autocorrect = false;
             state.exact_manual_toggle_suppression = None;
@@ -744,7 +767,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn refresh_empty_tail_from_handoff(&mut self) {
-        if !self.tail_buffer.is_empty() {
+        if !self.committed_tail.buffer.is_empty() {
             return;
         }
         let Ok(state) = self.shared.lock() else {
@@ -753,8 +776,10 @@ impl LayIbusEngine {
         if state.handoff_tail_buffer.is_empty() {
             return;
         }
-        self.tail_buffer.clone_from(&state.handoff_tail_buffer);
-        self.tail_epoch = state.handoff_tail_epoch;
+        self.committed_tail
+            .buffer
+            .clone_from(&state.handoff_tail_buffer);
+        self.committed_tail.epoch = state.handoff_tail_epoch;
         drop(state);
         self.rebuild_preedit_fast_from_tail();
     }
@@ -831,14 +856,14 @@ impl LayIbusEngine {
         }
         state.shift_gesture_handoff = Some(ShiftGestureHandoff {
             source_path: self.path.clone(),
-            shift_active: self.shift_active,
-            shift_pressed_at: self.shift_pressed_at,
-            shift_used_as_modifier: self.shift_used_as_modifier,
-            last_shift_release_at: self.last_shift_release_at,
+            shift_active: self.layout_gesture.shift_active,
+            shift_pressed_at: self.layout_gesture.shift_pressed_at,
+            shift_used_as_modifier: self.layout_gesture.shift_used_as_modifier,
+            last_shift_release_at: self.layout_gesture.last_shift_release_at,
         });
         super::trace::record(format!(
             r#"{{"kind":"ibus_shift_gesture_handoff","stage":"publish","source":"{}","shift_active":{},"used_as_modifier":{}}}"#,
-            self.path, self.shift_active, self.shift_used_as_modifier,
+            self.path, self.layout_gesture.shift_active, self.layout_gesture.shift_used_as_modifier,
         ));
     }
 
@@ -870,13 +895,16 @@ impl LayIbusEngine {
             return;
         };
         let source_path = handoff.source_path.clone();
-        self.shift_active = handoff.shift_active;
-        self.shift_pressed_at = handoff.shift_pressed_at;
-        self.shift_used_as_modifier = handoff.shift_used_as_modifier;
-        self.last_shift_release_at = handoff.last_shift_release_at;
+        self.layout_gesture.shift_active = handoff.shift_active;
+        self.layout_gesture.shift_pressed_at = handoff.shift_pressed_at;
+        self.layout_gesture.shift_used_as_modifier = handoff.shift_used_as_modifier;
+        self.layout_gesture.last_shift_release_at = handoff.last_shift_release_at;
         super::trace::record(format!(
             r#"{{"kind":"ibus_shift_gesture_handoff","stage":"consume","source":"{}","target":"{}","shift_active":{},"used_as_modifier":{}}}"#,
-            source_path, self.path, self.shift_active, self.shift_used_as_modifier,
+            source_path,
+            self.path,
+            self.layout_gesture.shift_active,
+            self.layout_gesture.shift_used_as_modifier,
         ));
     }
 }
@@ -942,7 +970,7 @@ fn pending_ime_auto_undo_invalid_reason(
     if pending.recorded_at.elapsed() > IME_AUTO_UNDO_MAX_AGE {
         return Some("expired");
     }
-    if pending.visible_tail != engine.tail_buffer {
+    if pending.visible_tail != engine.committed_tail.buffer {
         return Some("visible_tail_changed");
     }
     if !pending.visible_tail.ends_with(&pending.replacement) {
@@ -974,10 +1002,11 @@ fn record_pending_ime_auto_undo_lifecycle(
         state.active_path.as_deref() == Some(engine.path.as_str()),
         state.pending_auto_undo.is_some(),
         state.pending_auto_undo_retry.is_some(),
-        engine.tail_buffer.chars().count(),
+        engine.committed_tail.buffer.chars().count(),
         pending_tail_chars,
         replacement_chars,
         engine
+            .client_context
             .surrounding_text_snapshot
             .as_ref()
             .map_or(0, |snapshot| snapshot.text.chars().count()),
@@ -998,10 +1027,11 @@ fn record_detached_ime_auto_undo_lifecycle(
         state.active_path.as_deref() == Some(engine.path.as_str()),
         true,
         state.pending_auto_undo_retry.is_some(),
-        engine.tail_buffer.chars().count(),
+        engine.committed_tail.buffer.chars().count(),
         pending.visible_tail.chars().count(),
         pending.replacement.chars().count(),
         engine
+            .client_context
             .surrounding_text_snapshot
             .as_ref()
             .map_or(0, |snapshot| snapshot.text.chars().count()),
@@ -1090,20 +1120,23 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.surrounding_text_supported = true;
-        engine.tail_buffer = "проверка ".to_string();
+        engine.client_context.surrounding_text_supported = true;
+        engine.committed_tail.buffer = "проверка ".to_string();
         engine.publish_tail_handoff();
-        let epoch = engine.tail_epoch;
+        let epoch = engine.committed_tail.epoch;
         engine.arm_visible_postcondition(Instant::now());
-        engine.surrounding_text_snapshot = Some(
+        engine.client_context.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("проверка ".to_string(), 9, 9),
         );
 
         engine.observe_visible_postcondition();
 
-        assert!(engine.pending_visible_postcondition.is_none());
-        assert_eq!(engine.tail_buffer, "проверка ");
-        assert_eq!(engine.tail_epoch, epoch);
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_none());
+        assert_eq!(engine.committed_tail.buffer, "проверка ");
+        assert_eq!(engine.committed_tail.epoch, epoch);
         let state = shared.lock().expect("lay ime state poisoned");
         assert_eq!(state.handoff_tail_buffer, "проверка ");
         assert_eq!(state.handoff_tail_epoch, epoch);
@@ -1119,18 +1152,21 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.surrounding_text_supported = true;
-        engine.tail_buffer = "собака ".to_string();
+        engine.client_context.surrounding_text_supported = true;
+        engine.committed_tail.buffer = "собака ".to_string();
         engine.publish_tail_handoff();
         engine.arm_visible_postcondition(Instant::now());
-        engine.surrounding_text_snapshot = Some(
+        engine.client_context.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("собака".to_string(), 6, 6),
         );
 
         engine.observe_visible_postcondition();
 
-        assert!(engine.pending_visible_postcondition.is_none());
-        assert_eq!(engine.tail_buffer, "собака ");
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_none());
+        assert_eq!(engine.committed_tail.buffer, "собака ");
     }
 
     #[test]
@@ -1144,8 +1180,8 @@ mod tests {
         );
         // The output plan captured SurroundingText authority before dispatch;
         // a transient capability update cannot erase that causal receipt.
-        engine.surrounding_text_supported = false;
-        engine.tail_buffer = "собака ".to_string();
+        engine.client_context.surrounding_text_supported = false;
+        engine.committed_tail.buffer = "собака ".to_string();
         engine.publish_tail_handoff();
         engine.arm_visible_postcondition_from_surrounding_dispatch(
             Instant::now(),
@@ -1153,19 +1189,25 @@ mod tests {
             Some("собака ".to_string()),
         );
 
-        engine.surrounding_text_snapshot = Some(
+        engine.client_context.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("cj,frf".to_string(), 6, 6),
         );
         engine.observe_visible_postcondition();
-        assert!(!engine.layout_is_ru);
-        assert!(engine.pending_visible_postcondition.is_some());
+        assert!(!engine.layout_gesture.layout_is_ru);
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_some());
 
-        engine.surrounding_text_snapshot = Some(
+        engine.client_context.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("собака".to_string(), 6, 6),
         );
         engine.observe_visible_postcondition();
-        assert!(engine.layout_is_ru);
-        assert!(engine.pending_visible_postcondition.is_none());
+        assert!(engine.layout_gesture.layout_is_ru);
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_none());
     }
 
     #[test]
@@ -1177,8 +1219,8 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.surrounding_text_supported = true;
-        engine.tail_buffer = "привет".to_string();
+        engine.client_context.surrounding_text_supported = true;
+        engine.committed_tail.buffer = "привет".to_string();
         engine.publish_tail_handoff();
         engine.arm_exact_visible_postcondition_from_surrounding_dispatch(
             Instant::now(),
@@ -1187,21 +1229,27 @@ mod tests {
             super::super::engine::SurroundingTextSnapshot::new("привет".to_string(), 6, 6),
         );
 
-        engine.surrounding_text_snapshot = Some(
+        engine.client_context.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("ghbdtnпривет".to_string(), 12, 12),
         );
         engine.observe_visible_postcondition();
 
-        assert!(!engine.layout_is_ru);
-        assert!(engine.pending_visible_postcondition.is_some());
+        assert!(!engine.layout_gesture.layout_is_ru);
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_some());
 
-        engine.surrounding_text_snapshot = Some(
+        engine.client_context.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("привет".to_string(), 6, 6),
         );
         engine.observe_visible_postcondition();
 
-        assert!(engine.layout_is_ru);
-        assert!(engine.pending_visible_postcondition.is_none());
+        assert!(engine.layout_gesture.layout_is_ru);
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_none());
     }
 
     #[test]
@@ -1213,8 +1261,8 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.surrounding_text_supported = true;
-        engine.tail_buffer = "давай ".to_string();
+        engine.client_context.surrounding_text_supported = true;
+        engine.committed_tail.buffer = "давай ".to_string();
         engine.publish_tail_handoff();
         engine.arm_visible_postcondition_with_feedback(
             Instant::now(),
@@ -1227,6 +1275,7 @@ mod tests {
         );
 
         let pending = engine
+            .committed_tail
             .pending_visible_postcondition
             .as_ref()
             .expect("feedback must wait for observation");
@@ -1238,7 +1287,7 @@ mod tests {
             Some("давай")
         );
         assert_eq!(pending.snapshot.source, VisibleTailSource::ImeCommittedTail);
-        assert_eq!(pending.snapshot.revision, engine.tail_epoch);
+        assert_eq!(pending.snapshot.revision, engine.committed_tail.epoch);
         assert_ne!(pending.snapshot.visible_tail_hash, 0);
     }
 
@@ -1252,37 +1301,40 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.surrounding_text_supported = true;
-        engine.buffer = "stale".to_string();
-        engine.composition_cursor = 5;
-        engine.tail_buffer = "ghbdtn ".to_string();
+        engine.client_context.surrounding_text_supported = true;
+        engine.composition.buffer = "stale".to_string();
+        engine.composition.cursor = 5;
+        engine.committed_tail.buffer = "ghbdtn ".to_string();
         engine.rebuild_preedit_fast_from_tail();
-        engine.word_input_mode = Some(WordInputMode::ManagedCommit);
-        engine.suppress_next_committed_tail_autocorrect = true;
+        engine.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
+        engine.committed_tail.suppress_next_autocorrect = true;
         engine.publish_tail_handoff();
-        let epoch = engine.tail_epoch;
+        let epoch = engine.committed_tail.epoch;
         engine.arm_visible_postcondition(Instant::now() - Duration::from_millis(501));
-        engine.surrounding_text_snapshot = Some(
+        engine.client_context.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("ghjdt! ".to_string(), 7, 7),
         );
 
         engine.observe_visible_postcondition();
 
-        assert!(engine.pending_visible_postcondition.is_none());
-        assert!(engine.buffer.is_empty());
-        assert_eq!(engine.composition_cursor, 0);
-        assert!(engine.tail_buffer.is_empty());
-        assert_eq!(engine.preedit_fast.token(), "");
-        assert_eq!(engine.word_input_mode, None);
-        assert!(!engine.suppress_next_committed_tail_autocorrect);
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_none());
+        assert!(engine.composition.buffer.is_empty());
+        assert_eq!(engine.composition.cursor, 0);
+        assert!(engine.committed_tail.buffer.is_empty());
+        assert_eq!(engine.composition.preedit_fast.token(), "");
+        assert_eq!(engine.composition.word_input_mode, None);
+        assert!(!engine.committed_tail.suppress_next_autocorrect);
         assert_eq!(
             engine.manual_toggle_authority(),
             ManualToggleAuthority::DaemonWordBuffer
         );
-        assert_eq!(engine.tail_epoch, epoch.wrapping_add(1));
+        assert_eq!(engine.committed_tail.epoch, epoch.wrapping_add(1));
         let state = shared.lock().expect("lay ime state poisoned");
         assert!(state.handoff_tail_buffer.is_empty());
-        assert_eq!(state.handoff_tail_epoch, engine.tail_epoch);
+        assert_eq!(state.handoff_tail_epoch, engine.committed_tail.epoch);
         assert!(!state.suppress_next_committed_tail_autocorrect);
     }
 
@@ -1295,22 +1347,22 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.surrounding_text_supported = true;
-        engine.tail_buffer = "ghbdtn ".to_string();
+        engine.client_context.surrounding_text_supported = true;
+        engine.committed_tail.buffer = "ghbdtn ".to_string();
         engine.publish_tail_handoff();
-        let stale_epoch = engine.tail_epoch;
+        let stale_epoch = engine.committed_tail.epoch;
         engine.arm_visible_postcondition(Instant::now() - Duration::from_millis(501));
-        engine.surrounding_text_snapshot = Some(
+        engine.client_context.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("ghjdt! ".to_string(), 7, 7),
         );
 
         engine.observe_visible_postcondition();
 
         let state = VisibleFieldState::committed_tail(
-            engine.tail_buffer.clone(),
+            engine.committed_tail.buffer.clone(),
             Some(engine.path.clone()),
         )
-        .with_epoch(engine.tail_epoch);
+        .with_epoch(engine.committed_tail.epoch);
         let stale_request = LatentTextTransitionCandidate::new(
             VisibleTailSource::ImeCommittedTail,
             7,
@@ -1329,7 +1381,7 @@ mod tests {
             TextTransitionDecision::Reject {
                 rejection: TextTransitionRejection::StaleVisibleRevision { expected, actual },
                 action: None
-            } if expected == stale_epoch && actual == engine.tail_epoch
+            } if expected == stale_epoch && actual == engine.committed_tail.epoch
         ));
     }
 
@@ -1343,20 +1395,23 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.surrounding_text_supported = true;
-        engine.tail_buffer = "вот ".to_string();
+        engine.client_context.surrounding_text_supported = true;
+        engine.committed_tail.buffer = "вот ".to_string();
         engine.publish_tail_handoff();
-        let epoch = engine.tail_epoch;
+        let epoch = engine.committed_tail.epoch;
         engine.arm_visible_postcondition(Instant::now());
-        engine.surrounding_text_snapshot = Some(
+        engine.client_context.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("djn".to_string(), 3, 3),
         );
 
         engine.observe_visible_postcondition();
 
-        assert!(engine.pending_visible_postcondition.is_some());
-        assert_eq!(engine.tail_buffer, "вот ");
-        assert_eq!(engine.tail_epoch, epoch);
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_some());
+        assert_eq!(engine.committed_tail.buffer, "вот ");
+        assert_eq!(engine.committed_tail.epoch, epoch);
         assert_eq!(
             shared
                 .lock()
@@ -1365,14 +1420,17 @@ mod tests {
             "вот "
         );
 
-        engine.surrounding_text_snapshot = Some(
+        engine.client_context.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("вот ".to_string(), 4, 4),
         );
         engine.observe_visible_postcondition();
 
-        assert!(engine.pending_visible_postcondition.is_none());
-        assert_eq!(engine.tail_buffer, "вот ");
-        assert_eq!(engine.tail_epoch, epoch);
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_none());
+        assert_eq!(engine.committed_tail.buffer, "вот ");
+        assert_eq!(engine.committed_tail.epoch, epoch);
     }
 
     #[test]
@@ -1384,7 +1442,7 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.tail_buffer = "проверка ".to_string();
+        engine.committed_tail.buffer = "проверка ".to_string();
         engine.remember_pending_ime_auto_undo(
             "проверрка ".to_string(),
             "проверка ".to_string(),
@@ -1409,15 +1467,15 @@ mod tests {
             LayConfig::default(),
         );
         assert!(engine.bind_focus_path());
-        engine.tail_buffer = "собака ".to_string();
+        engine.committed_tail.buffer = "собака ".to_string();
         engine.publish_tail_handoff();
         engine.remember_pending_ime_auto_undo(
             "cj,frf ".to_string(),
             "собака ".to_string(),
             lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
         );
-        engine.surrounding_text_supported = true;
-        engine.surrounding_text_snapshot = Some(
+        engine.client_context.surrounding_text_supported = true;
+        engine.client_context.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("cj,frf".to_string(), 6, 6),
         );
 
@@ -1439,15 +1497,15 @@ mod tests {
             LayConfig::default(),
         );
         assert!(engine.bind_focus_path());
-        engine.tail_buffer = "собака ".to_string();
+        engine.committed_tail.buffer = "собака ".to_string();
         engine.publish_tail_handoff();
         engine.remember_pending_ime_auto_undo(
             "cj,frf ".to_string(),
             "собака ".to_string(),
             lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
         );
-        engine.surrounding_text_supported = true;
-        engine.surrounding_text_snapshot = Some(
+        engine.client_context.surrounding_text_supported = true;
+        engine.client_context.surrounding_text_snapshot = Some(
             super::super::engine::SurroundingTextSnapshot::new("другой".to_string(), 6, 6),
         );
 
@@ -1468,7 +1526,7 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.tail_buffer = "проверка дальше".to_string();
+        engine.committed_tail.buffer = "проверка дальше".to_string();
         engine.remember_pending_ime_auto_undo(
             "проверрка ".to_string(),
             "проверка ".to_string(),
@@ -1493,8 +1551,8 @@ mod tests {
         engine.sync_tail_after_composition_commit("печатается ");
         engine.insert_composition_char('т');
         engine.insert_composition_char('ы');
-        assert_eq!(engine.tail_buffer, "печатается ты");
-        assert_eq!(engine.preedit_fast.token(), "ты");
+        assert_eq!(engine.committed_tail.buffer, "печатается ты");
+        assert_eq!(engine.composition.preedit_fast.token(), "ты");
     }
 
     #[test]
@@ -1510,8 +1568,8 @@ mod tests {
         engine.push_tail_char('g');
         engine.reset_for_ibus_focus_change();
 
-        assert_eq!(engine.tail_buffer, "g");
-        assert_eq!(engine.preedit_fast.token(), "g");
+        assert_eq!(engine.committed_tail.buffer, "g");
+        assert_eq!(engine.composition.preedit_fast.token(), "g");
     }
 
     #[test]
@@ -1525,11 +1583,11 @@ mod tests {
         );
 
         engine.push_tail_char('g');
-        engine.last_tail_input_at = Some(Instant::now() - Duration::from_millis(900));
+        engine.committed_tail.last_input_at = Some(Instant::now() - Duration::from_millis(900));
         engine.reset_for_ibus_focus_change();
 
-        assert!(engine.tail_buffer.is_empty());
-        assert_eq!(engine.preedit_fast.token(), "");
+        assert!(engine.committed_tail.buffer.is_empty());
+        assert_eq!(engine.composition.preedit_fast.token(), "");
     }
 
     #[test]
@@ -1542,15 +1600,18 @@ mod tests {
             LayConfig::default(),
         );
 
-        engine.word_input_mode = Some(WordInputMode::ManagedCommit);
+        engine.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
         for ch in "ghbdtn".chars() {
             engine.push_tail_char(ch);
         }
         engine.reset_for_ibus_soft_reset();
 
-        assert_eq!(engine.tail_buffer, "ghbdtn");
-        assert_eq!(engine.preedit_fast.token(), "ghbdtn");
-        assert_eq!(engine.word_input_mode, Some(WordInputMode::ManagedCommit));
+        assert_eq!(engine.committed_tail.buffer, "ghbdtn");
+        assert_eq!(engine.composition.preedit_fast.token(), "ghbdtn");
+        assert_eq!(
+            engine.composition.word_input_mode,
+            Some(WordInputMode::ManagedCommit)
+        );
     }
 
     #[test]
@@ -1571,7 +1632,8 @@ mod tests {
         );
 
         let pending = engine
-            .pending_ime_completion_learning
+            .committed_tail
+            .pending_completion_learning
             .as_ref()
             .expect("Tab completion must remain provisional");
         assert_eq!(pending.context_tail, "ну");
@@ -1589,7 +1651,7 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.tail_buffer = "это было прекрасный ".to_string();
+        engine.committed_tail.buffer = "это было прекрасный ".to_string();
         engine.arm_pending_ime_completion_learning(
             "это было".to_string(),
             "прек".to_string(),
@@ -1602,21 +1664,22 @@ mod tests {
         engine.begin_pending_ime_completion_edit_before_backspace();
 
         let pending = engine
-            .pending_ime_completion_learning
+            .committed_tail
+            .pending_completion_learning
             .as_ref()
             .expect("edited completion must survive every Backspace until a boundary");
         assert!(pending.editing);
         assert_eq!(pending.typed_prefix, "прек");
         assert_eq!(pending.accepted_word, "прекрасный");
-        assert_eq!(engine.tail_buffer, "это было прекрасный");
+        assert_eq!(engine.committed_tail.buffer, "это было прекрасный");
 
         engine.backspace_committed_tail_only();
         engine.backspace_committed_tail_only();
         engine.push_tail_char('о');
         engine.push_tail_char(' ');
 
-        assert_eq!(engine.tail_buffer, "это было прекрасно ");
-        assert!(engine.pending_ime_completion_learning.is_none());
+        assert_eq!(engine.committed_tail.buffer, "это было прекрасно ");
+        assert!(engine.committed_tail.pending_completion_learning.is_none());
     }
 
     #[test]
@@ -1628,7 +1691,7 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.tail_buffer = "это было прекрасный ".to_string();
+        engine.committed_tail.buffer = "это было прекрасный ".to_string();
         engine.arm_pending_ime_completion_learning(
             "это было".to_string(),
             "прек".to_string(),
@@ -1637,7 +1700,7 @@ mod tests {
         );
 
         engine.reset_for_ibus_soft_reset();
-        assert!(engine.pending_ime_completion_learning.is_none());
+        assert!(engine.committed_tail.pending_completion_learning.is_none());
 
         engine.arm_pending_ime_completion_learning(
             "это было".to_string(),
@@ -1650,7 +1713,8 @@ mod tests {
             engine.backspace_committed_tail_only();
             engine.reset_for_ibus_soft_reset();
             assert!(engine
-                .pending_ime_completion_learning
+                .committed_tail
+                .pending_completion_learning
                 .as_ref()
                 .is_some_and(|pending| pending.editing));
         }
@@ -1658,8 +1722,8 @@ mod tests {
         engine.push_tail_char('о');
         engine.push_tail_char(' ');
 
-        assert_eq!(engine.tail_buffer, "это было прекрасно ");
-        assert!(engine.pending_ime_completion_learning.is_none());
+        assert_eq!(engine.committed_tail.buffer, "это было прекрасно ");
+        assert!(engine.committed_tail.pending_completion_learning.is_none());
     }
 
     #[test]
@@ -1680,7 +1744,7 @@ mod tests {
 
         engine.reset_for_ibus_focus_change();
 
-        assert!(engine.pending_ime_completion_learning.is_none());
+        assert!(engine.committed_tail.pending_completion_learning.is_none());
     }
 
     #[test]
@@ -1693,10 +1757,10 @@ mod tests {
             LayConfig::default(),
         );
 
-        engine.suppress_next_committed_tail_autocorrect = true;
+        engine.committed_tail.suppress_next_autocorrect = true;
         engine.reset_for_ibus_soft_reset();
 
-        assert!(engine.suppress_next_committed_tail_autocorrect);
+        assert!(engine.committed_tail.suppress_next_autocorrect);
     }
 
     #[test]
@@ -1727,14 +1791,14 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.tail_buffer = "file проверка".to_string();
+        engine.committed_tail.buffer = "file проверка".to_string();
         engine.publish_tail_handoff();
         engine.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(100));
 
         engine.close_committed_tail_field();
 
         let state = shared.lock().expect("lay ime state poisoned");
-        assert!(engine.tail_buffer.is_empty());
+        assert!(engine.committed_tail.buffer.is_empty());
         assert!(state.handoff_tail_buffer.is_empty());
         assert!(state.preserve_active_path_until.is_none());
     }
@@ -1773,11 +1837,11 @@ mod tests {
             LayConfig::default(),
         );
         assert!(source.bind_focus_path());
-        source.tail_buffer = "ghbdtn".to_string();
+        source.committed_tail.buffer = "ghbdtn".to_string();
         source.prepare_exact_manual_toggle_layout_handoff();
-        let leased_epoch = source.tail_epoch;
+        let leased_epoch = source.committed_tail.epoch;
         source.reset_for_ibus_soft_reset();
-        assert_eq!(source.tail_epoch, leased_epoch);
+        assert_eq!(source.committed_tail.epoch, leased_epoch);
 
         let mut target = LayIbusEngine::new(
             "/engine/ru".to_string(),
@@ -1789,9 +1853,9 @@ mod tests {
         assert!(target.bind_focus_path());
         target.reset_for_ibus_soft_reset();
 
-        assert_eq!(target.tail_buffer, "ghbdtn");
-        assert_eq!(target.tail_epoch, leased_epoch);
-        assert!(!target.suppress_next_committed_tail_autocorrect);
+        assert_eq!(target.committed_tail.buffer, "ghbdtn");
+        assert_eq!(target.committed_tail.epoch, leased_epoch);
+        assert!(!target.committed_tail.suppress_next_autocorrect);
         assert!(
             !shared
                 .lock()
@@ -1801,7 +1865,7 @@ mod tests {
 
         target.consume_exact_manual_toggle_handoff();
         target.reset_for_ibus_soft_reset();
-        assert_eq!(target.tail_epoch, leased_epoch.wrapping_add(1));
+        assert_eq!(target.committed_tail.epoch, leased_epoch.wrapping_add(1));
     }
 
     #[test]
@@ -1815,9 +1879,9 @@ mod tests {
             LayConfig::default(),
         );
         assert!(source.bind_focus_path());
-        source.tail_buffer = "ghbdtn".to_string();
+        source.committed_tail.buffer = "ghbdtn".to_string();
         source.prepare_exact_manual_toggle_layout_handoff();
-        let leased_epoch = source.tail_epoch;
+        let leased_epoch = source.committed_tail.epoch;
 
         let mut target = LayIbusEngine::new(
             "/engine/ru".to_string(),
@@ -1861,7 +1925,7 @@ mod tests {
         ));
 
         let state = shared.lock().expect("lay ime state poisoned");
-        assert!(target.suppress_next_committed_tail_autocorrect);
+        assert!(target.committed_tail.suppress_next_autocorrect);
         assert!(state.suppress_next_committed_tail_autocorrect);
         assert!(state.preserve_active_path_until.is_none());
         assert!(state.exact_manual_toggle_handoff_epoch.is_none());
@@ -1884,7 +1948,7 @@ mod tests {
         assert!(
             target.revoke_exact_manual_toggle_autocorrect_suppression(leased_epoch, "/engine/ru",)
         );
-        assert!(!target.suppress_next_committed_tail_autocorrect);
+        assert!(!target.committed_tail.suppress_next_autocorrect);
         let state = shared.lock().expect("lay ime state poisoned");
         assert!(!state.suppress_next_committed_tail_autocorrect);
         assert!(state.exact_manual_toggle_suppression.is_none());
@@ -1900,7 +1964,7 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        publisher.tail_buffer = "вот ".to_string();
+        publisher.committed_tail.buffer = "вот ".to_string();
         publisher.publish_tail_handoff();
         let mut reader = LayIbusEngine::new(
             "/reader".to_string(),
@@ -1909,12 +1973,12 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        reader.tail_buffer.clear();
+        reader.committed_tail.buffer.clear();
 
         reader.refresh_empty_tail_from_handoff();
 
-        assert_eq!(reader.tail_buffer, "вот ");
-        assert_eq!(reader.preedit_fast.token(), "вот");
+        assert_eq!(reader.committed_tail.buffer, "вот ");
+        assert_eq!(reader.composition.preedit_fast.token(), "вот");
     }
 
     #[test]
@@ -1927,7 +1991,7 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        publisher.tail_buffer = "вот ".to_string();
+        publisher.committed_tail.buffer = "вот ".to_string();
         publisher.publish_tail_handoff();
         publisher.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(100));
         let mut empty_engine = LayIbusEngine::new(
@@ -1937,7 +2001,7 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        empty_engine.tail_buffer.clear();
+        empty_engine.committed_tail.buffer.clear();
 
         empty_engine.reset_for_ibus_focus_change();
 
@@ -1955,11 +2019,11 @@ mod tests {
             LayConfig::default(),
         );
 
-        engine.word_input_mode = Some(WordInputMode::ManagedCommit);
+        engine.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
         engine.push_tail_char('a');
         engine.push_tail_char(' ');
 
-        assert_eq!(engine.word_input_mode, None);
+        assert_eq!(engine.composition.word_input_mode, None);
     }
 
     #[test]
@@ -1972,11 +2036,14 @@ mod tests {
             LayConfig::default(),
         );
 
-        engine.word_input_mode = Some(WordInputMode::ManagedCommit);
+        engine.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
         engine.push_tail_char('f');
         engine.reset_for_ibus_focus_change();
 
-        assert_eq!(engine.tail_buffer, "f");
-        assert_eq!(engine.word_input_mode, Some(WordInputMode::ManagedCommit));
+        assert_eq!(engine.committed_tail.buffer, "f");
+        assert_eq!(
+            engine.composition.word_input_mode,
+            Some(WordInputMode::ManagedCommit)
+        );
     }
 }

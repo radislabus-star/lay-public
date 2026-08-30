@@ -18,9 +18,9 @@ impl LayIbusEngine {
         state: u32,
     ) -> fdo::Result<bool> {
         let pressed_started = Instant::now();
-        if self.pending_passthrough_preedit_clear {
+        if self.composition.pending_passthrough_preedit_clear {
             self.clear_preedit(emitter).await?;
-            self.pending_passthrough_preedit_clear = false;
+            self.composition.pending_passthrough_preedit_clear = false;
         }
         self.clear_pending_ime_auto_undo("next_pressed_key");
         if keyval == KEY_BACKSPACE {
@@ -49,13 +49,13 @@ impl LayIbusEngine {
             return Ok(false);
         }
         if keyval == KEY_ENTER || keyval == KEY_KP_ENTER {
-            if !self.buffer.is_empty() {
+            if !self.composition.buffer.is_empty() {
                 self.commit_active_composition(emitter, ActiveCompositionCommit::plain())
                     .await?;
                 self.trace_key("enter_commit_passthrough", keyval, keycode, false, None);
                 return Ok(false);
             }
-            let tail_before_boundary = self.tail_buffer.clone();
+            let tail_before_boundary = self.committed_tail.buffer.clone();
             self.finalize_pending_ime_completion_edit(&tail_before_boundary);
             self.close_committed_tail_field();
             self.clear_preedit(emitter).await?;
@@ -64,9 +64,9 @@ impl LayIbusEngine {
         }
         if keyval == KEY_SPACE {
             let space_started = Instant::now();
-            if self.buffer.is_empty() {
+            if self.composition.buffer.is_empty() {
                 let initial_mode = self.initial_word_input_mode();
-                let mode = *self.word_input_mode.get_or_insert(initial_mode);
+                let mode = *self.composition.word_input_mode.get_or_insert(initial_mode);
                 let setup_us = space_started.elapsed().as_micros();
                 if mode == WordInputMode::ManagedCommit {
                     if self.take_manual_toggle_autocorrect_suppression() {
@@ -178,16 +178,16 @@ impl LayIbusEngine {
             return Ok(handled);
         }
         let Some(ch) = self.physical_char(keyval, keycode) else {
-            if !self.buffer.is_empty() {
+            if !self.composition.buffer.is_empty() {
                 self.commit_active_composition(emitter, ActiveCompositionCommit::plain())
                     .await?;
                 self.trace_key("non_printable_commit", keyval, keycode, false, None);
                 return Ok(false);
             }
-            if !self.preedit_suffix.is_empty() {
+            if !self.composition.preedit_suffix.is_empty() {
                 self.clear_preedit(emitter).await?;
-                self.tail_buffer.clear();
-                self.preedit_fast.reset();
+                self.committed_tail.buffer.clear();
+                self.composition.preedit_fast.reset();
                 self.publish_tail_handoff();
             }
             self.trace_key("non_printable", keyval, keycode, false, None);
@@ -196,9 +196,9 @@ impl LayIbusEngine {
         if ch.is_alphabetic() || is_completion_learning_boundary(ch) {
             self.confirm_pending_ime_completion_at_stable_boundary();
         }
-        if self.buffer.is_empty() {
+        if self.composition.buffer.is_empty() {
             let initial_mode = self.initial_word_input_mode();
-            let mode = *self.word_input_mode.get_or_insert(initial_mode);
+            let mode = *self.composition.word_input_mode.get_or_insert(initial_mode);
             if mode == WordInputMode::TerminalPassthrough {
                 let visible_ch = self.passthrough_visible_char(keyval, keycode).unwrap_or(ch);
                 self.observe_terminal_passthrough_char(emitter, visible_ch)
@@ -237,7 +237,7 @@ impl LayIbusEngine {
     }
 
     async fn commit_space(&mut self, emitter: &mut EngineOutput<'_, '_>) -> fdo::Result<bool> {
-        if self.buffer.is_empty() {
+        if self.composition.buffer.is_empty() {
             return Ok(false);
         }
         self.commit_active_composition(emitter, ActiveCompositionCommit::with_space())

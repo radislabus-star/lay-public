@@ -36,8 +36,8 @@ fn engine_with_shared(
         },
     );
     assert!(engine.bind_focus_path());
-    engine.surrounding_text_supported = true;
-    engine.atomic_route_active = true;
+    engine.client_context.surrounding_text_supported = true;
+    engine.atomic.active = true;
     for character in initial_tail.chars() {
         engine.push_tail_char(character);
     }
@@ -78,7 +78,7 @@ fn v27_cross_engine_shift_gesture_restores_exact_source() {
     ))
     .expect("settle Space and observe first Shift press");
     assert_eq!(first_press.0, PROPOSAL_NATIVE_UNHANDLED);
-    assert!(source.shift_active);
+    assert!(source.layout_gesture.shift_active);
     assert!(shared
         .lock()
         .expect("shared state")
@@ -92,7 +92,7 @@ fn v27_cross_engine_shift_gesture_restores_exact_source() {
         7,
         7,
     )));
-    assert_eq!(target.tail_buffer, "привет ");
+    assert_eq!(target.committed_tail.buffer, "привет ");
 
     for (transaction, state) in [(503, RELEASE_MASK), (504, 0)] {
         let proposal = zbus::block_on(target.process_atomic_key_event(
@@ -121,7 +121,7 @@ fn v27_cross_engine_shift_gesture_restores_exact_source() {
     assert!(
         target.settle_atomic_pending(41, &(RECEIPT_SUBMITTED_ATOMIC, 505, vec![10; DIGEST_BYTES]),)
     );
-    assert_eq!(target.tail_buffer, "ghbdtn ");
+    assert_eq!(target.committed_tail.buffer, "ghbdtn ");
     assert!(target
         .shared
         .lock()
@@ -134,7 +134,7 @@ fn v27_cross_engine_shift_gesture_restores_exact_source() {
 fn v27_cross_engine_modifier_use_cannot_become_a_tap() {
     let shared = Arc::new(Mutex::new(Default::default()));
     let mut source = engine_with_shared("/atomic/modifier-us", Arc::clone(&shared), false, "");
-    source.tail_buffer = "собака ".to_string();
+    source.committed_tail.buffer = "собака ".to_string();
     source.publish_tail_handoff();
     source.remember_pending_ime_auto_undo(
         "cj,frf ".to_string(),
@@ -142,10 +142,10 @@ fn v27_cross_engine_modifier_use_cannot_become_a_tap() {
         lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
     );
     source.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(700));
-    source.shift_active = true;
-    source.shift_pressed_at = Some(Instant::now());
-    source.shift_used_as_modifier = true;
-    source.last_shift_release_at = Some(Instant::now() - Duration::from_millis(100));
+    source.layout_gesture.shift_active = true;
+    source.layout_gesture.shift_pressed_at = Some(Instant::now());
+    source.layout_gesture.shift_used_as_modifier = true;
+    source.layout_gesture.last_shift_release_at = Some(Instant::now() - Duration::from_millis(100));
     source.publish_shift_gesture_handoff();
 
     let mut target = engine_with_shared("/atomic/modifier-ru", shared, true, "");
@@ -160,9 +160,9 @@ fn v27_cross_engine_modifier_use_cannot_become_a_tap() {
     .expect("cross-engine modifier release");
 
     assert_eq!(release.0, PROPOSAL_NATIVE_UNHANDLED);
-    assert!(!target.shift_active);
-    assert!(target.shift_pressed_at.is_none());
-    assert!(target.last_shift_release_at.is_none());
+    assert!(!target.layout_gesture.shift_active);
+    assert!(target.layout_gesture.shift_pressed_at.is_none());
+    assert!(target.layout_gesture.last_shift_release_at.is_none());
     assert!(target
         .shared
         .lock()
@@ -266,7 +266,7 @@ fn atomic_printable_route_materializes_completion_in_its_submitted_frame() {
     assert!(
         live.settle_atomic_pending(41, &(RECEIPT_SUBMITTED_ATOMIC, 71, vec![17; DIGEST_BYTES]),)
     );
-    assert_eq!(live.tail_buffer, "пров");
+    assert_eq!(live.committed_tail.buffer, "пров");
     assert_eq!(
         live.selected_precognition_suffix().as_deref(),
         Some(published_suffix.as_str())
@@ -291,7 +291,7 @@ fn v27_atomic_space_refusal_and_double_shift_round_trip() {
     .expect("refused exact Space");
     assert_eq!(proposal.0, PROPOSAL_NATIVE_UNHANDLED);
     assert!(proposal.1.is_empty());
-    assert_eq!(refused.tail_buffer, "ghbdtn");
+    assert_eq!(refused.committed_tail.buffer, "ghbdtn");
     assert!(!pending_transitions()
         .lock()
         .expect("pending transitions")
@@ -313,13 +313,13 @@ fn v27_atomic_space_refusal_and_double_shift_round_trip() {
         committed_texts(&applied),
         ["\u{43f}\u{440}\u{438}\u{432}\u{435}\u{442} "]
     );
-    assert_eq!(live.tail_buffer, "ghbdtn");
+    assert_eq!(live.committed_tail.buffer, "ghbdtn");
     live.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
         "\u{43f}\u{440}\u{438}\u{432}\u{435}\u{442} ".to_string(),
         7,
         7,
     )));
-    assert_eq!(live.surrounding_observation_revision, 1);
+    assert_eq!(live.client_context.surrounding_observation_revision, 1);
 
     let first_press = zbus::block_on(live.process_atomic_key_event(
         KEY_LEFT_SHIFT,
@@ -332,17 +332,18 @@ fn v27_atomic_space_refusal_and_double_shift_round_trip() {
     .expect("settle exact Space and press Shift");
     assert_eq!(first_press.0, PROPOSAL_NATIVE_UNHANDLED);
     assert_eq!(
-        live.tail_buffer,
+        live.committed_tail.buffer,
         "\u{43f}\u{440}\u{438}\u{432}\u{435}\u{442} "
     );
-    assert_eq!(live.surrounding_observation_revision, 1);
+    assert_eq!(live.client_context.surrounding_observation_revision, 1);
     assert_eq!(
-        live.surrounding_text_snapshot
+        live.client_context
+            .surrounding_text_snapshot
             .as_ref()
             .map(|snapshot| snapshot.text.as_str()),
         Some("\u{43f}\u{440}\u{438}\u{432}\u{435}\u{442} ")
     );
-    assert!(live.pending_visible_postcondition.is_none());
+    assert!(live.committed_tail.pending_visible_postcondition.is_none());
 
     for (transaction, state) in [(203, RELEASE_MASK), (204, 0)] {
         let proposal = zbus::block_on(live.process_atomic_key_event(
@@ -369,13 +370,13 @@ fn v27_atomic_space_refusal_and_double_shift_round_trip() {
     assert_eq!(undo.0, PROPOSAL_FRAME_READY);
     assert_eq!(committed_texts(&undo), ["ghbdtn "]);
     assert_eq!(
-        live.tail_buffer,
+        live.committed_tail.buffer,
         "\u{43f}\u{440}\u{438}\u{432}\u{435}\u{442} "
     );
     assert!(
         live.settle_atomic_pending(41, &(RECEIPT_SUBMITTED_ATOMIC, 205, vec![10; DIGEST_BYTES]),)
     );
-    assert_eq!(live.tail_buffer, "ghbdtn ");
+    assert_eq!(live.committed_tail.buffer, "ghbdtn ");
 
     println!(
         "LAY_V27_ATOMIC_COMPOSITE refusal_zero_effect=PASS exact_space=PASS double_shift_exact_restore=PASS legacy_retry=0"
@@ -393,7 +394,7 @@ fn same_revision_preproposal_snapshot_is_not_resurrected() {
         6,
         6,
     )));
-    assert_eq!(live.surrounding_observation_revision, 1);
+    assert_eq!(live.client_context.surrounding_observation_revision, 1);
     prepare(&live);
 
     let applied = zbus::block_on(live.process_atomic_key_event(
@@ -406,7 +407,7 @@ fn same_revision_preproposal_snapshot_is_not_resurrected() {
     ))
     .expect("exact Space proposal");
     assert_eq!(applied.0, PROPOSAL_FRAME_READY);
-    assert!(live.surrounding_text_snapshot.is_some());
+    assert!(live.client_context.surrounding_text_snapshot.is_some());
 
     let first_press = zbus::block_on(live.process_atomic_key_event(
         KEY_LEFT_SHIFT,
@@ -419,9 +420,9 @@ fn same_revision_preproposal_snapshot_is_not_resurrected() {
     .expect("settle exact Space");
 
     assert_eq!(first_press.0, PROPOSAL_NATIVE_UNHANDLED);
-    assert_eq!(live.surrounding_observation_revision, 1);
-    assert!(live.surrounding_text_snapshot.is_none());
-    assert!(live.pending_visible_postcondition.is_some());
+    assert_eq!(live.client_context.surrounding_observation_revision, 1);
+    assert!(live.client_context.surrounding_text_snapshot.is_none());
+    assert!(live.committed_tail.pending_visible_postcondition.is_some());
 }
 
 #[test]
@@ -449,8 +450,8 @@ fn newer_capability_loss_is_not_overwritten_by_speculation() {
     assert_eq!(applied.0, PROPOSAL_FRAME_READY);
 
     live.set_client_capabilities(0);
-    assert_eq!(live.surrounding_observation_revision, 2);
-    assert!(!live.surrounding_text_supported);
+    assert_eq!(live.client_context.surrounding_observation_revision, 2);
+    assert!(!live.client_context.surrounding_text_supported);
 
     let first_press = zbus::block_on(live.process_atomic_key_event(
         KEY_LEFT_SHIFT,
@@ -463,7 +464,7 @@ fn newer_capability_loss_is_not_overwritten_by_speculation() {
     .expect("settle exact Space after capability loss");
 
     assert_eq!(first_press.0, PROPOSAL_NATIVE_UNHANDLED);
-    assert_eq!(live.surrounding_observation_revision, 2);
-    assert!(!live.surrounding_text_supported);
-    assert!(live.surrounding_text_snapshot.is_none());
+    assert_eq!(live.client_context.surrounding_observation_revision, 2);
+    assert!(!live.client_context.surrounding_text_supported);
+    assert!(live.client_context.surrounding_text_snapshot.is_none());
 }
