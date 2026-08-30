@@ -25,7 +25,10 @@ use crate::ime_correction::{
 };
 
 const ROW_SCHEMA: &str = "lay-v27-exact-layout-oracle-rows-v1";
-const ENGINE_EXACT_GUARD_RSS_BUDGET_KIB: u64 = 14 * 1_024;
+// V28 adds the reverse keyboard map and Cyrillic protection set to the same
+// immutable authority owner. Keep a fixed 1 MiB envelope for that admitted
+// direction instead of treating a few pages of deterministic data as drift.
+const ENGINE_EXACT_GUARD_RSS_BUDGET_KIB: u64 = 15 * 1_024;
 const ACTIVE_LAY_EXACT_GUARD_PSS_BUDGET_KIB: u64 = 16 * 1_024;
 
 #[derive(Clone, Debug)]

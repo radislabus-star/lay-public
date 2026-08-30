@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2323,
+    "correctness": 2333,
     "ignored": 13,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 27,
-    "target": 2356
+    "target": 2366
   },
   "package_fixtures": [
     {
@@ -2112,6 +2112,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "dict::tests::warm_reverse_projection_is_read_only_after_startup",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "dirty_log_collect::tests::broad_user_rewrite_is_review_not_positive_training",
       "target": "bin:lay-nanda-wave-eval"
     },
@@ -2609,6 +2616,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "exact_layout_authority::tests::closed_ru_profile_certifies_known_english_projection_but_not_russian_source",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "exact_layout_authority::tests::exact_snapshot_readout_is_warm_only_and_cannot_initialize_data",
       "target": "lib:lay"
     },
@@ -2617,6 +2631,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "exact_layout_authority::tests::factory_profile_never_treats_unknown_as_us",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "exact_layout_authority::tests::reverse_exact_snapshot_requires_matching_factory_and_decoder",
       "target": "lib:lay"
     },
     {
@@ -2805,6 +2826,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "ime_correction::tests::closed_exact_layout_handles_ru_to_en_word_and_case",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "ime_correction::tests::closed_exact_layout_keeps_ascii_layout_punctuation_in_token",
       "target": "lib:lay"
     },
@@ -2820,6 +2848,27 @@
       "kind": "test",
       "lane": "correctness",
       "name": "ime_correction::tests::closed_exact_layout_uses_russian_tail_context",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::closed_reverse_layout_blocks_all_common_russian_english_collisions",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::closed_reverse_layout_covers_the_existing_ru_to_en_corpus",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::closed_reverse_layout_keeps_known_russian_collision",
       "target": "lib:lay"
     },
     {
@@ -3023,6 +3072,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "ime_correction::tests::repeated_boundary_token_remains_authorized_at_the_next_space",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::reverse_exact_layout_scope_preserves_full_route_authority",
       "target": "lib:lay"
     },
     {
@@ -3933,6 +3989,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "lexical_surface_atoms::tests::four_gram_atoms_cover_long_and_short_words",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "lexicon::tests::exact_cyrillic_protection_is_warmed_before_readout",
       "target": "lib:lay"
     },
     {
@@ -12452,6 +12515,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "space_autocorrect_prefetch::proof::v27_race_fault_and_space_effect_matrix",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_autocorrect_prefetch::proof::v28_ru_to_en_exact_lease_reaches_the_existing_space_mutation_owner",
       "target": "bin:lay-ibus-engine"
     },
     {

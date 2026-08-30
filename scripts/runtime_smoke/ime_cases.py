@@ -53,6 +53,33 @@ def make_ime_cases(Case):
         "ime_autocorrect_en_ru_double_shift_back_layout_enter": Case(
             "ime_autocorrect_en_ru_double_shift_back_layout_enter", "djn file"
         ),
+        "ime_zgyr_space_autoswitch_enter": Case(
+            "ime_zgyr_space_autoswitch_enter",
+            "Push a",
+            start_layout="ru",
+            config_overrides={
+                "auto_replace": True,
+                "auto_switch_layout": True,
+            },
+        ),
+        "ime_zgyr_space_auto_replace_off_enter": Case(
+            "ime_zgyr_space_auto_replace_off_enter",
+            "Згыр ф",
+            start_layout="ru",
+            config_overrides={
+                "auto_replace": False,
+                "auto_switch_layout": True,
+            },
+        ),
+        "ime_zgyr_space_auto_switch_off_enter": Case(
+            "ime_zgyr_space_auto_switch_off_enter",
+            "Згыр ф",
+            start_layout="ru",
+            config_overrides={
+                "auto_replace": True,
+                "auto_switch_layout": False,
+            },
+        ),
         "ime_autocorrect_typo_double_shift_undo_enter": Case(
             "ime_autocorrect_typo_double_shift_undo_enter",
             "доллора",

@@ -1,5 +1,7 @@
 layout	ru	300
-type	ghjd	25
+type	ghj	25
+# Accept the already-proven fresh "про" completion. The separate
+# ime_prefix_prov_pending_alt_enter case owns the late-worker refusal contract.
 sleep	120
 double_alt
 sleep	120

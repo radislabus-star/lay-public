@@ -1,0 +1,64 @@
+{
+  "schema": "lay.ru-en-exact-autoswitch-release-receipt.v1",
+  "recorded_at_utc": "2026-08-30T17:18:31Z",
+  "verdict": "LAY_1_0_55_RU_EN_EXACT_AUTOSWITCH_DEPLOYED_VERIFIED",
+  "version": "1.0.55",
+  "authority_contract": {
+    "source_profile": "Ru/Ru",
+    "target_profile": "UsQwerty/Us",
+    "example": "Згыр + Space -> Push + Space",
+    "auto_replace_required": true,
+    "auto_switch_layout_required": true,
+    "double_shift_independent": true
+  },
+  "ordinary_release_denominator": {
+    "selected": 2369,
+    "semantic_failures": 0,
+    "infrastructure_failures": 0,
+    "evidence": "tech_debt/evidence/v28-ru-en-zero-failure-observation-v1.json",
+    "evidence_sha256": "8048cf822faf8a64928a7fa9131d625331a0ca4a187153588fe7f85da793a384"
+  },
+  "live_smoke": {
+    "receipt": "FINAL_RELEASE_LIVE_SMOKE/RECEIPT.json",
+    "receipt_sha256": "fc459523d460362b6be1a380f40194f7661fe31f2b5b387dd19c73ccbf32c429",
+    "case_results_sha256": "e46666f99c3bd2647bf0d21e71b32b6c00dfdd40028a61061b345d34d491e8bb",
+    "cases_passed": 5,
+    "cases_failed": 0,
+    "desktop_restoration_verified": true,
+    "malformed_trace_records": 0,
+    "concurrent_desktop_policy": "trace-validate each result and repeat any contaminated case"
+  },
+  "release_binaries": {
+    "lay": {
+      "sha256": "eb09a731ac5b813016163a6464b944dcae347780dc1e6e51e9ad351f5ce67c23",
+      "size": 6778616,
+      "installed_sha256_matches": true
+    },
+    "lay_test_input": {
+      "sha256": "e2ccd7672fd0552d166756ed1efae0a3d8594d02ef48417d2357d6748d7547d7",
+      "size": 1838416
+    },
+    "lay_daemon": {
+      "sha256": "749b9c95e541d9c0c8453952f0aecf486bf065b20181fd5729173debd7e97a9b",
+      "size": 8940288,
+      "loaded_proc_sha256_matches": true
+    },
+    "lay_ibus_engine": {
+      "sha256": "8247f8fce94b38da478bf63203dfae7fdf63c828e84c0557bf537b8563fbc19c",
+      "size": 7207872,
+      "loaded_proc_sha256_matches": true
+    }
+  },
+  "loaded_runtime": {
+    "lay_version": "1.0.55",
+    "lay_daemon_version": "1.0.55",
+    "lay_ibus_engine_version": "1.0.55",
+    "gnome_extension_dbus_version": "1.0.55",
+    "active_ibus_engine_after_smoke": "lay-ime-ru",
+    "runtime_authority_changed": true
+  },
+  "paper": {
+    "path": "docs/ime-atomic-exact-layout-lease-ru-to-en-v28-2026-08-30.md",
+    "sha256_before_receipt_seal": "d7f8082733d62ed62f01c7703be24fff71fc41baf709c8bb264e59cc83793b73"
+  }
+}

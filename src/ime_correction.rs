@@ -418,6 +418,22 @@ mod tests {
         }
     }
 
+    fn exact_ru_frame(token: &str) -> ExactLayoutFrame {
+        warm_up_exact_layout_authority_for_ibus().expect("warm exact-layout authority");
+        ExactLayoutFrame {
+            frame_revision: 29,
+            frame_fingerprint: 0x28_10,
+            observed_token: token.to_string(),
+            active_composition: true,
+            factory_engine_profile: FactoryEngineProfile::Ru,
+            active_decoder_layout: ActiveDecoderLayout::Ru,
+            authority_snapshot: exact_authority_snapshot_if_warm(
+                FactoryEngineProfile::Ru,
+                ActiveDecoderLayout::Ru,
+            ),
+        }
+    }
+
     fn assert_frameless_abstains(
         text: &str,
         committed_tail: &str,
@@ -496,6 +512,43 @@ mod tests {
         );
     }
 
+    fn assert_exact_ru_layout_replacement(token: &str, committed_tail: &str, expected: &str) {
+        let cfg = config();
+        let text = format!("{token} ");
+        let (_, active_prefix) = active_composition_gate_text(&text, committed_tail);
+        let prepared = prepare_exact_layout_active_composition_autocorrect_observed(
+            ActiveCompositionAutocorrectRequest {
+                text: &text,
+                committed_tail,
+                config: &cfg,
+                lexical_authority_frame: None,
+                active_layout_is_ru: Some(true),
+            },
+            &exact_ru_frame(token),
+        )
+        .prepared
+        .unwrap_or_else(|| panic!("closed reverse layout certificate for {token:?}"));
+
+        assert_eq!(
+            prepared.certificate.replacement_text(),
+            format!("{active_prefix}{expected}")
+        );
+        let decision = prepared
+            .decision
+            .unwrap_or_else(|| panic!("closed reverse layout decision for {token:?}"));
+        assert_eq!(decision.replacement, expected);
+        assert!(decision.action.allow_apply());
+        assert_eq!(
+            decision.action.transition().proof(),
+            Some(crate::text_edit::TransitionProof::Layout)
+        );
+        assert_eq!(
+            decision.action.selected_source_id(),
+            Some("layout_ru_to_en")
+        );
+        assert_eq!(decision.action.selected_error_class(), Some("wrong_layout"));
+    }
+
     #[test]
     fn active_composition_gate_text_preserves_committed_prefix_for_decision_only() {
         let (gate_text, prefix) = active_composition_gate_text("прохоил ", "я прохоил");
@@ -557,6 +610,113 @@ mod tests {
     #[test]
     fn closed_exact_layout_handles_plain_us_to_ru_word() {
         assert_exact_us_layout_replacement("ghbdtn", "ghbdtn", "привет ");
+    }
+
+    #[test]
+    fn closed_exact_layout_handles_ru_to_en_word_and_case() {
+        for (token, tail, expected) in [
+            ("згыр", "згыр", "push "),
+            ("Згыр", "проверь Згыр", "Push "),
+            ("ЗГЫР", "check ЗГЫР", "PUSH "),
+            ("цщкдв", "цщкдв", "world "),
+        ] {
+            assert_exact_ru_layout_replacement(token, tail, expected);
+        }
+    }
+
+    #[test]
+    fn closed_reverse_layout_covers_the_existing_ru_to_en_corpus() {
+        let targets = crate::typing_assist_test_fixtures::fixture_rows(
+            "typing_assist_ru_to_en_synthetic.txt",
+        );
+        assert!(targets.len() >= 20);
+        for row in targets {
+            let [target] = row.as_slice() else {
+                panic!("RU-to-EN fixture row must contain one target: {row:?}");
+            };
+            let token = crate::dict::convert(target, crate::dict::Direction::Us2Ru);
+            assert_exact_ru_layout_replacement(&token, &token, &format!("{target} "));
+        }
+    }
+
+    #[test]
+    fn closed_reverse_layout_blocks_all_common_russian_english_collisions() {
+        warm_up_exact_layout_authority_for_ibus().expect("warm exact-layout authority");
+        let cfg = config();
+        let mut collisions = 0;
+        for source in crate::data_lines::data_lines(include_str!("../data/lexicon/common_ru.txt")) {
+            let target = crate::dict::convert(source, crate::dict::Direction::Ru2Us);
+            if !crate::word_recognizer::exact_english_word_if_warm(&target).unwrap_or(false) {
+                continue;
+            }
+            collisions += 1;
+            let text = format!("{source} ");
+            let observed = prepare_exact_layout_active_composition_autocorrect_observed(
+                ActiveCompositionAutocorrectRequest {
+                    text: &text,
+                    committed_tail: source,
+                    config: &cfg,
+                    lexical_authority_frame: None,
+                    active_layout_is_ru: Some(true),
+                },
+                &exact_ru_frame(source),
+            );
+            assert!(
+                observed.prepared.is_none(),
+                "known Russian collision must stay unchanged: {source:?} -> {target:?}"
+            );
+        }
+        assert!(collisions >= 5, "collision denominator={collisions}");
+    }
+
+    #[test]
+    fn closed_reverse_layout_keeps_known_russian_collision() {
+        let cfg = config();
+        let observed = prepare_exact_layout_active_composition_autocorrect_observed(
+            ActiveCompositionAutocorrectRequest {
+                text: "не ",
+                committed_tail: "не",
+                config: &cfg,
+                lexical_authority_frame: None,
+                active_layout_is_ru: Some(true),
+            },
+            &exact_ru_frame("не"),
+        );
+        assert!(observed.prepared.is_none());
+    }
+
+    #[test]
+    fn reverse_exact_layout_scope_preserves_full_route_authority() {
+        let cfg = config();
+        let request = || ActiveCompositionAutocorrectRequest {
+            text: "Згыр ",
+            committed_tail: "Згыр",
+            config: &cfg,
+            lexical_authority_frame: None,
+            active_layout_is_ru: Some(true),
+        };
+        let prepared = prepare_exact_layout_active_composition_autocorrect_observed(
+            request(),
+            &exact_ru_frame("Згыр"),
+        )
+        .prepared
+        .expect("reverse exact layout certificate");
+        let full = decide_active_composition_autocorrect_observed_with_exact(
+            request(),
+            &prepared.certificate,
+        )
+        .decision
+        .expect("full reverse layout decision");
+        let exact = prepared.decision.expect("closed reverse layout decision");
+
+        assert_eq!(exact.replacement, "Push ");
+        assert_eq!(full.replacement, exact.replacement);
+        assert!(full.action.allow_apply());
+        assert_eq!(full.action.selected_source_id(), Some("layout_ru_to_en"));
+        assert_eq!(
+            full.action.transition().proof(),
+            Some(crate::text_edit::TransitionProof::Layout)
+        );
     }
 
     #[test]

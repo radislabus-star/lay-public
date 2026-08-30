@@ -28,9 +28,9 @@ The manifest has four disjoint lanes:
 - `ignored`: thirteen externally admitted proof/helper tests, never promoted by
   the ordinary runner.
 
-The current TD-007 milestone-4 manifest contains 2,383 rows: 2,323 correctness,
+The current manifest contains 2,393 rows: 2,333 correctness,
 36 package, 11 performance, and 13 ignored. Twenty-seven rows are
-process-isolated; the other 2,356 use target isolation. The process set is
+process-isolated; the other 2,366 use target isolation. The process set is
 fail-closed: sixteen
 explicit environment/singleton mutators plus all eleven performance routes must
 remain present in the registry.

@@ -124,8 +124,22 @@ pub(crate) fn warm_up_us_to_ru() -> u64 {
     us_to_ru_fingerprint()
 }
 
+pub(crate) fn warm_up_ru_to_us() -> u64 {
+    let _ = ru_to_us().len();
+    ru_to_us_fingerprint()
+}
+
 pub(crate) fn convert_us_to_ru_if_warm(text: &str) -> Option<String> {
     let table = US_TO_RU.get()?;
+    Some(
+        text.chars()
+            .map(|character| table.get(&character).copied().unwrap_or(character))
+            .collect(),
+    )
+}
+
+pub(crate) fn convert_ru_to_us_if_warm(text: &str) -> Option<String> {
+    let table = RU_TO_US.get()?;
     Some(
         text.chars()
             .map(|character| table.get(&character).copied().unwrap_or(character))
@@ -136,6 +150,21 @@ pub(crate) fn convert_us_to_ru_if_warm(text: &str) -> Option<String> {
 pub(crate) fn us_to_ru_fingerprint() -> u64 {
     let mut digest = 0xcbf2_9ce4_8422_2325_u64;
     for (source, target) in PAIRS.iter().chain(SHIFT_PAIRS) {
+        for byte in (*source as u32)
+            .to_le_bytes()
+            .into_iter()
+            .chain((*target as u32).to_le_bytes())
+        {
+            digest ^= u64::from(byte);
+            digest = digest.wrapping_mul(0x100_0000_01b3);
+        }
+    }
+    digest
+}
+
+pub(crate) fn ru_to_us_fingerprint() -> u64 {
+    let mut digest = 0xcbf2_9ce4_8422_2325_u64;
+    for (target, source) in PAIRS.iter().chain(SHIFT_PAIRS) {
         for byte in (*source as u32)
             .to_le_bytes()
             .into_iter()

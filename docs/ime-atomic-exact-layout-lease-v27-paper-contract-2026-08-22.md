@@ -1,5 +1,10 @@
 # Lay IME Atomic Exact-Layout Lease V27: Paper Contract
 
+> Historical scope note (2026-08-30): V27 remains the sealed `EN -> RU`
+> baseline. Its prohibition on `RU -> EN` exact authority is superseded only by
+> the separately reviewed V28 contract in
+> `docs/ime-atomic-exact-layout-lease-ru-to-en-v28-2026-08-30.md`.
+
 Дата: 2026-08-22
 Статус: implemented, proved and deployed as Lay 1.0.34
 Цель: убрать head-of-line blocking полного Space-prefetch для точного

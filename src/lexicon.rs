@@ -42,6 +42,8 @@ const VISUAL_B_DEFAULT_DATA: &str = include_str!("../data/lexicon/visual_b_defau
 const VISUAL_B_AFTER_ASCII_DATA: &str = include_str!("../data/lexicon/visual_b_after_ascii.txt");
 
 static USER_PROTECTED_ASCII_WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+static USER_PROTECTED_WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+static RU_LIVE_PROTECTED_WORDS: OnceLock<HashSet<String>> = OnceLock::new();
 static COMMON_EN_TECHNICAL_WORDS: OnceLock<HashSet<String>> = OnceLock::new();
 
 pub fn warm_up() {
@@ -181,6 +183,31 @@ pub(crate) fn warm_up_exact_ascii_protection() -> (u64, usize, usize) {
     (fingerprint, entries, resident_bytes)
 }
 
+pub(crate) fn warm_up_exact_cyrillic_protection() -> (u64, usize, usize) {
+    let live = ru_live_protected_words();
+    let user = user_protected_words();
+    let fingerprint = fingerprint_word_sets(&[live, user]);
+    let entries = live.len().saturating_add(user.len());
+    let resident_bytes = live
+        .iter()
+        .chain(user)
+        .map(|word| word.capacity())
+        .sum::<usize>()
+        .saturating_add(entries.saturating_mul(std::mem::size_of::<String>()));
+    (fingerprint, entries, resident_bytes)
+}
+
+pub(crate) fn is_exact_cyrillic_protected_word_if_warm(word: &str) -> Option<bool> {
+    let normalized = word.trim().to_lowercase();
+    if normalized.is_empty() {
+        return Some(false);
+    }
+    Some(
+        RU_LIVE_PROTECTED_WORDS.get()?.contains(&normalized)
+            || USER_PROTECTED_WORDS.get()?.contains(&normalized),
+    )
+}
+
 pub(crate) fn is_common_en_technical_word_if_warm(word: &str) -> Option<bool> {
     Some(COMMON_EN_TECHNICAL_WORDS.get()?.contains(word))
 }
@@ -205,8 +232,7 @@ pub fn common_ru_words_iter() -> impl Iterator<Item = &'static str> {
 }
 
 fn user_protected_words() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
-    WORDS.get_or_init(|| {
+    USER_PROTECTED_WORDS.get_or_init(|| {
         let Some(home) = std::env::var_os("HOME") else {
             return HashSet::new();
         };
@@ -273,8 +299,7 @@ fn ru_technical_loanwords() -> &'static HashSet<String> {
 }
 
 fn ru_live_protected_words() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
-    WORDS.get_or_init(|| parse_word_data(RU_LIVE_PROTECTED_WORDS_DATA))
+    RU_LIVE_PROTECTED_WORDS.get_or_init(|| parse_word_data(RU_LIVE_PROTECTED_WORDS_DATA))
 }
 
 fn common_ru_words_ordered() -> &'static Vec<String> {

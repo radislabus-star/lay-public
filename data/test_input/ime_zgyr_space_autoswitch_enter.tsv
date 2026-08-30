@@ -1,0 +1,7 @@
+# Physical Push on the Russian layout produces Згыр. The trailing physical
+# a proves whether the correction also handed the active layout to English.
+layout	ru
+type_space	Push	35
+sleep	850
+type	a	35
+enter

@@ -68,6 +68,10 @@ fn retained_exact_layout_candidate(
     }
     let replacement = certificate.replacement_text().to_string();
     let origin = CandidateOrigin::Layout;
+    let source_id = match certificate.direction() {
+        crate::exact_layout_authority::ExactLayoutDirection::EnToRu => ids::FAST_LAYOUT_EN_TO_RU,
+        crate::exact_layout_authority::ExactLayoutDirection::RuToEn => ids::LAYOUT_RU_TO_EN,
+    };
     let gate = TransitionDecisionCore::admit_candidate_proposal(
         req.text,
         &replacement,
@@ -79,7 +83,7 @@ fn retained_exact_layout_candidate(
             replacement,
             CorrectionDecisionSource::Deterministic,
             origin,
-            ids::FAST_LAYOUT_EN_TO_RU,
+            source_id,
             TypingErrorClass::WrongLayout,
             gate,
         )

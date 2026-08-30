@@ -1,0 +1,462 @@
+{
+  "active_case_at_failure": null,
+  "all_passed": true,
+  "binaries": {
+    "daemon": {
+      "path": "/tmp/lay-1.0.55-release/lay-daemon",
+      "sha256": "749b9c95e541d9c0c8453952f0aecf486bf065b20181fd5729173debd7e97a9b",
+      "size": 8940288
+    },
+    "ibus_engine": {
+      "path": "/tmp/lay-1.0.55-release/lay-ibus-engine",
+      "sha256": "8247f8fce94b38da478bf63203dfae7fdf63c828e84c0557bf537b8563fbc19c",
+      "size": 7207872
+    },
+    "input": {
+      "path": "/home/ubu/projects/lay-l1-exact-peak-search/target/release/lay-test-input",
+      "sha256": "e2ccd7672fd0552d166756ed1efae0a3d8594d02ef48417d2357d6748d7547d7",
+      "size": 1838416
+    }
+  },
+  "case_results_sha256": "e46666f99c3bd2647bf0d21e71b32b6c00dfdd40028a61061b345d34d491e8bb",
+  "cases": [
+    {
+      "case_id": "ime_autocomplete_then_double_shift_enter-ff98a5e1ea32ef5f45aa",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий ime_autocomplete_then_double_shift_enter отправлен\n\nIME case trace: manual_toggles=1/1 malformed=0",
+      "expected": "ghjdthrf",
+      "got": "ghjdthrf",
+      "name": "ime_autocomplete_then_double_shift_enter",
+      "ok": true,
+      "trace": {
+        "kind_counts": {
+          "ibus_auto_undo_lifecycle": 23,
+          "ibus_capabilities": 4,
+          "ibus_completion_accept": 1,
+          "ibus_content_type": 2,
+          "ibus_cursor": 2,
+          "ibus_focus": 21,
+          "ibus_key": 40,
+          "ibus_manual_toggle_delegation": 1,
+          "ibus_precognition_timing": 2,
+          "ibus_precognition_worker": 2,
+          "ibus_prediction_outcome": 2,
+          "ibus_preedit": 3,
+          "ibus_printable_key_timing": 11,
+          "ibus_space_autocorrect": 1,
+          "ibus_space_autocorrect_timing": 1,
+          "ibus_space_key_timing": 1,
+          "ibus_suppress_next_autocorrect": 1,
+          "ibus_surrounding_text": 23,
+          "ibus_token_field_route": 6
+        },
+        "malformed": 0,
+        "managed_commits": [
+          "п",
+          "р",
+          "о",
+          "g",
+          "h",
+          "j",
+          "d",
+          "t",
+          "h",
+          "r",
+          "f"
+        ],
+        "manual_toggles": 1,
+        "pending_shortens": 0,
+        "preedit_clears": 1,
+        "preedit_updates": [
+          "верка"
+        ],
+        "read_error": null,
+        "records": 147,
+        "semantic_kind_counts": {
+          "ibus_auto_undo_lifecycle": 23,
+          "ibus_capabilities": 4,
+          "ibus_completion_accept": 1,
+          "ibus_content_type": 2,
+          "ibus_focus": 21,
+          "ibus_key": 40,
+          "ibus_manual_toggle_delegation": 1,
+          "ibus_precognition_timing": 2,
+          "ibus_precognition_worker": 2,
+          "ibus_prediction_outcome": 2,
+          "ibus_preedit": 3,
+          "ibus_printable_key_timing": 11,
+          "ibus_space_autocorrect": 1,
+          "ibus_space_autocorrect_timing": 1,
+          "ibus_space_key_timing": 1,
+          "ibus_suppress_next_autocorrect": 1,
+          "ibus_surrounding_text": 23,
+          "ibus_token_field_route": 6
+        },
+        "semantic_records": 145,
+        "sha256": "92d35645ce0864b5f8e56c416f6b0e0899f0d496239305f30f34cfb052217df4",
+        "volatile_records": 2
+      }
+    },
+    {
+      "case_id": "ime_zgyr_space_auto_replace_off_enter-88e99edad4aec7a643e3",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий ime_zgyr_space_auto_replace_off_enter отправлен\n",
+      "expected": "Згыр ф",
+      "got": "Згыр ф",
+      "name": "ime_zgyr_space_auto_replace_off_enter",
+      "ok": true,
+      "trace": {
+        "kind_counts": {
+          "ibus_auto_undo_lifecycle": 5,
+          "ibus_capabilities": 3,
+          "ibus_content_type": 2,
+          "ibus_cursor": 2,
+          "ibus_focus": 8,
+          "ibus_key": 12,
+          "ibus_precognition_timing": 2,
+          "ibus_precognition_worker": 2,
+          "ibus_prediction_outcome": 1,
+          "ibus_printable_key_timing": 4,
+          "ibus_space_key_timing": 1,
+          "ibus_surrounding_text": 5,
+          "ibus_token_field_route": 2
+        },
+        "malformed": 0,
+        "managed_commits": [
+          "З",
+          "г",
+          "ы",
+          "р"
+        ],
+        "manual_toggles": 0,
+        "pending_shortens": 0,
+        "preedit_clears": 0,
+        "preedit_updates": [],
+        "read_error": null,
+        "records": 49,
+        "semantic_kind_counts": {
+          "ibus_auto_undo_lifecycle": 5,
+          "ibus_capabilities": 3,
+          "ibus_content_type": 2,
+          "ibus_focus": 8,
+          "ibus_key": 12,
+          "ibus_precognition_timing": 2,
+          "ibus_precognition_worker": 2,
+          "ibus_prediction_outcome": 1,
+          "ibus_printable_key_timing": 4,
+          "ibus_space_key_timing": 1,
+          "ibus_surrounding_text": 5,
+          "ibus_token_field_route": 2
+        },
+        "semantic_records": 47,
+        "sha256": "5e240853db07e3a672809d6de933662b271da12583f9501d5e80dd6537135ee2",
+        "volatile_records": 2
+      }
+    },
+    {
+      "case_id": "ime_zgyr_space_auto_switch_off_enter-d4e3b18254c1cca81810",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий ime_zgyr_space_auto_switch_off_enter отправлен\n",
+      "expected": "Згыр ф",
+      "got": "Згыр ф",
+      "name": "ime_zgyr_space_auto_switch_off_enter",
+      "ok": true,
+      "trace": {
+        "kind_counts": {
+          "ibus_auto_undo_lifecycle": 5,
+          "ibus_capabilities": 4,
+          "ibus_content_type": 3,
+          "ibus_cursor": 3,
+          "ibus_focus": 12,
+          "ibus_key": 12,
+          "ibus_precognition_timing": 2,
+          "ibus_precognition_worker": 2,
+          "ibus_prediction_outcome": 1,
+          "ibus_printable_key_timing": 4,
+          "ibus_space_autocorrect": 1,
+          "ibus_space_autocorrect_timing": 1,
+          "ibus_space_correction_lease": 1,
+          "ibus_space_full_terminal": 1,
+          "ibus_space_key_timing": 1,
+          "ibus_surrounding_text": 5,
+          "ibus_token_field_route": 6
+        },
+        "malformed": 0,
+        "managed_commits": [
+          "З",
+          "г",
+          "ы",
+          "р"
+        ],
+        "manual_toggles": 0,
+        "pending_shortens": 0,
+        "preedit_clears": 0,
+        "preedit_updates": [],
+        "read_error": null,
+        "records": 64,
+        "semantic_kind_counts": {
+          "ibus_auto_undo_lifecycle": 5,
+          "ibus_capabilities": 4,
+          "ibus_content_type": 3,
+          "ibus_focus": 12,
+          "ibus_key": 12,
+          "ibus_precognition_timing": 2,
+          "ibus_precognition_worker": 2,
+          "ibus_prediction_outcome": 1,
+          "ibus_printable_key_timing": 4,
+          "ibus_space_autocorrect": 1,
+          "ibus_space_autocorrect_timing": 1,
+          "ibus_space_correction_lease": 1,
+          "ibus_space_full_terminal": 1,
+          "ibus_space_key_timing": 1,
+          "ibus_surrounding_text": 5,
+          "ibus_token_field_route": 6
+        },
+        "semantic_records": 61,
+        "sha256": "8f5455d1c58de2dc78b15b08d9588f4871cab202517852eb0aa0db2afa28617c",
+        "volatile_records": 3
+      }
+    },
+    {
+      "case_id": "ime_zgyr_space_autoswitch_enter-c5f1bb7d96c51058ba11",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий ime_zgyr_space_autoswitch_enter отправлен\n",
+      "expected": "Push a",
+      "got": "Push a",
+      "name": "ime_zgyr_space_autoswitch_enter",
+      "ok": true,
+      "trace": {
+        "kind_counts": {
+          "ibus_auto_undo_lifecycle": 6,
+          "ibus_capabilities": 5,
+          "ibus_causal_outcome": 1,
+          "ibus_committed_tail_replace": 1,
+          "ibus_committed_tail_replace_timing": 1,
+          "ibus_content_type": 3,
+          "ibus_cursor": 3,
+          "ibus_focus": 16,
+          "ibus_key": 11,
+          "ibus_layout_postcondition_route": 1,
+          "ibus_layout_sync": 1,
+          "ibus_layout_sync_owner": 1,
+          "ibus_layout_sync_requested": 1,
+          "ibus_precognition_timing": 2,
+          "ibus_precognition_worker": 2,
+          "ibus_printable_key_timing": 4,
+          "ibus_space_autocorrect": 1,
+          "ibus_space_autocorrect_timing": 1,
+          "ibus_space_correction_lease": 1,
+          "ibus_space_key_timing": 1,
+          "ibus_surrounding_replace": 1,
+          "ibus_surrounding_text": 6,
+          "ibus_token_field_route": 6,
+          "ibus_visible_postcondition": 1
+        },
+        "malformed": 0,
+        "managed_commits": [
+          "З",
+          "г",
+          "ы",
+          "р"
+        ],
+        "manual_toggles": 0,
+        "pending_shortens": 0,
+        "preedit_clears": 0,
+        "preedit_updates": [],
+        "read_error": null,
+        "records": 77,
+        "semantic_kind_counts": {
+          "ibus_auto_undo_lifecycle": 6,
+          "ibus_capabilities": 5,
+          "ibus_causal_outcome": 1,
+          "ibus_committed_tail_replace": 1,
+          "ibus_committed_tail_replace_timing": 1,
+          "ibus_content_type": 3,
+          "ibus_focus": 16,
+          "ibus_key": 11,
+          "ibus_layout_postcondition_route": 1,
+          "ibus_layout_sync": 1,
+          "ibus_layout_sync_owner": 1,
+          "ibus_layout_sync_requested": 1,
+          "ibus_precognition_timing": 2,
+          "ibus_precognition_worker": 2,
+          "ibus_printable_key_timing": 4,
+          "ibus_space_autocorrect": 1,
+          "ibus_space_autocorrect_timing": 1,
+          "ibus_space_correction_lease": 1,
+          "ibus_space_key_timing": 1,
+          "ibus_surrounding_replace": 1,
+          "ibus_surrounding_text": 6,
+          "ibus_token_field_route": 6,
+          "ibus_visible_postcondition": 1
+        },
+        "semantic_records": 74,
+        "sha256": "b7a5a3be682f3b8d708290dedd5265c7eda72d2e170491e5262db6ac633b276a",
+        "volatile_records": 3
+      }
+    },
+    {
+      "case_id": "slovo_ru_to_us_fast_lshift_enter-dc84f1a9cfbb25671e97",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий slovo_ru_to_us_fast_lshift_enter отправлен\n\nIME case trace: manual_toggles=1/1 malformed=0",
+      "expected": "ckjdj",
+      "got": "ckjdj",
+      "name": "slovo_ru_to_us_fast_lshift_enter",
+      "ok": true,
+      "trace": {
+        "kind_counts": {
+          "ibus_auto_undo_lifecycle": 17,
+          "ibus_capabilities": 5,
+          "ibus_content_type": 3,
+          "ibus_cursor": 3,
+          "ibus_focus": 21,
+          "ibus_key": 30,
+          "ibus_manual_toggle_delegation": 1,
+          "ibus_precognition_display": 1,
+          "ibus_precognition_timing": 3,
+          "ibus_precognition_worker": 3,
+          "ibus_preedit": 4,
+          "ibus_printable_key_timing": 10,
+          "ibus_suppress_next_autocorrect": 1,
+          "ibus_surrounding_text": 16,
+          "ibus_token_field_route": 13
+        },
+        "malformed": 0,
+        "managed_commits": [
+          "с",
+          "л",
+          "о",
+          "в",
+          "о",
+          "c",
+          "k",
+          "j",
+          "d",
+          "j"
+        ],
+        "manual_toggles": 1,
+        "pending_shortens": 1,
+        "preedit_clears": 1,
+        "preedit_updates": [
+          "во",
+          "о"
+        ],
+        "read_error": null,
+        "records": 131,
+        "semantic_kind_counts": {
+          "ibus_auto_undo_lifecycle": 17,
+          "ibus_capabilities": 5,
+          "ibus_content_type": 3,
+          "ibus_focus": 21,
+          "ibus_key": 30,
+          "ibus_manual_toggle_delegation": 1,
+          "ibus_precognition_display": 1,
+          "ibus_precognition_timing": 3,
+          "ibus_precognition_worker": 3,
+          "ibus_preedit": 4,
+          "ibus_printable_key_timing": 10,
+          "ibus_suppress_next_autocorrect": 1,
+          "ibus_surrounding_text": 16,
+          "ibus_token_field_route": 13
+        },
+        "semantic_records": 128,
+        "sha256": "438605401e6e13ab1a98038a5a44544d77c1b719d1bb1de349bb8ca19118edc3",
+        "volatile_records": 3
+      }
+    }
+  ],
+  "desktop_before": {
+    "active_engine": "lay-ime-ru",
+    "active_layout": "lay-ime-ru",
+    "harness_trace_path": null,
+    "ibus_daemons": [
+      {
+        "argv": [
+          "/usr/bin/ibus-daemon",
+          "--panel",
+          "disable"
+        ],
+        "executable": "/usr/bin/ibus-daemon",
+        "pid": 4594,
+        "start_time": 8971
+      }
+    ],
+    "lay_engine_trace_paths": [
+      "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl"
+    ],
+    "lay_engines": [
+      {
+        "argv": [
+          "/home/ubu/.local/bin/lay-ibus-engine",
+          "--ibus",
+          "--managed"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+        "pid": 1433469,
+        "start_time": 37025730
+      }
+    ],
+    "service": {
+      "active_state": "active",
+      "main_pid": 1433458,
+      "main_process": {
+        "argv": [
+          "/home/ubu/.local/bin/lay-daemon"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+        "pid": 1433458,
+        "start_time": 37025722
+      },
+      "sub_state": "running",
+      "unit_file_state": "enabled"
+    }
+  },
+  "desktop_restoration_verified": true,
+  "evidence_root": "/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_1_0_55_RU_EN_EXACT_AUTOSWITCH_2026-08-30/FINAL_RELEASE_LIVE_SMOKE",
+  "execution_order": [
+    "ime_zgyr_space_autoswitch_enter",
+    "ime_zgyr_space_auto_replace_off_enter",
+    "ime_zgyr_space_auto_switch_off_enter",
+    "slovo_ru_to_us_fast_lshift_enter",
+    "ime_autocomplete_then_double_shift_enter"
+  ],
+  "fatal_error": null,
+  "harness_process_group": 1463186,
+  "ibus_sync_mode": "1",
+  "invocation": [
+    "/home/ubu/projects/lay-l1-exact-peak-search/scripts/run_runtime_smoke.py",
+    "--case",
+    "ime_zgyr_space_autoswitch_enter",
+    "--case",
+    "ime_zgyr_space_auto_replace_off_enter",
+    "--case",
+    "ime_zgyr_space_auto_switch_off_enter",
+    "--case",
+    "slovo_ru_to_us_fast_lshift_enter",
+    "--case",
+    "ime_autocomplete_then_double_shift_enter",
+    "--managed-desktop",
+    "--ime-managed",
+    "--ime-engine",
+    "--verify-ime-trace",
+    "--dialog",
+    "gtk-entry-capture",
+    "--input-bin",
+    "target/release/lay-test-input",
+    "--daemon-bin",
+    "/tmp/lay-1.0.55-release/lay-daemon",
+    "--ibus-engine-bin",
+    "/tmp/lay-1.0.55-release/lay-ibus-engine",
+    "--no-build",
+    "--run-id",
+    "lay-1.0.55-v28-final-release-live",
+    "--evidence-dir",
+    "docs/structural_gates/receipts/LAY_1_0_55_RU_EN_EXACT_AUTOSWITCH_2026-08-30/FINAL_RELEASE_LIVE_SMOKE",
+    "--json-out",
+    "docs/structural_gates/receipts/LAY_1_0_55_RU_EN_EXACT_AUTOSWITCH_2026-08-30/FINAL_RELEASE_LIVE_SMOKE.json"
+  ],
+  "run_id": "lay-1.0.55-v28-final-release-live",
+  "schema": "lay.runtime-smoke-receipt.v3",
+  "selected_cases": [
+    "ime_zgyr_space_autoswitch_enter",
+    "ime_zgyr_space_auto_replace_off_enter",
+    "ime_zgyr_space_auto_switch_off_enter",
+    "slovo_ru_to_us_fast_lshift_enter",
+    "ime_autocomplete_then_double_shift_enter"
+  ]
+}

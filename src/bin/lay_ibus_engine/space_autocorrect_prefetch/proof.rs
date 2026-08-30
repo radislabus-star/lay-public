@@ -23,6 +23,17 @@ fn identity(
     tail: &str,
     config: &LayConfig,
 ) -> InputFrameIdentity {
+    identity_for_layout(path, focus, epoch, tail, false, config)
+}
+
+fn identity_for_layout(
+    path: &str,
+    focus: &str,
+    epoch: u64,
+    tail: &str,
+    layout_is_ru: bool,
+    config: &LayConfig,
+) -> InputFrameIdentity {
     let token = tail.split_whitespace().last().unwrap_or_default();
     let context = tail.strip_suffix(token).unwrap_or_default();
     InputFrameIdentity::new(
@@ -33,7 +44,7 @@ fn identity(
         context.to_string(),
         token.to_string(),
         true,
-        false,
+        layout_is_ru,
         config,
     )
 }
@@ -64,10 +75,14 @@ fn worker_with_terminal(identity: InputFrameIdentity, generation: u64) -> Worker
 }
 
 fn managed_engine(path: &str, token: &str) -> LayIbusEngine {
+    managed_engine_with_layout(path, token, false)
+}
+
+fn managed_engine_with_layout(path: &str, token: &str, layout_is_ru: bool) -> LayIbusEngine {
     let mut engine = LayIbusEngine::new(
         path.to_string(),
         Arc::new(Mutex::new(Default::default())),
-        false,
+        layout_is_ru,
         true,
         exact_config(),
     );
@@ -77,6 +92,22 @@ fn managed_engine(path: &str, token: &str) -> LayIbusEngine {
         engine.push_tail_char(character);
     }
     engine
+}
+
+#[test]
+fn v28_ru_to_en_exact_lease_reaches_the_existing_space_mutation_owner() {
+    lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
+        .expect("warm exact-layout authority");
+    let mut engine = managed_engine_with_layout("/engine/reverse-exact", "Згыр", true);
+    let frame = engine
+        .capture_input_frame_identity()
+        .expect("reverse exact frame");
+    let lease = exact_lease(&frame, &engine.config, 81);
+    let proposal = render_lookup(&mut engine, &frame, SpaceAutocorrectLookup::Ready(lease));
+
+    assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
+    assert_eq!(committed_texts(&proposal), ["Push "]);
+    assert_eq!(engine.committed_tail.buffer, "Push ");
 }
 
 fn exact_lease(

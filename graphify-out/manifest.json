@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1787941236.1296918,
-    "ast_hash": "503ec7ec828e4c98296da0855e3a5c8e",
+    "mtime": 1788106868.5946114,
+    "ast_hash": "a3875f457bcab0780ec58b002f64c13f",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1787941236.130692,
-    "ast_hash": "6303117a80e605004e34c67e939ff383",
+    "mtime": 1788106868.5956113,
+    "ast_hash": "ebc5421570d562d21bf8a16a0de2e11c",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -165,8 +165,8 @@
     "semantic_hash": ""
   },
   "scripts/runtime_smoke/ime_cases.py": {
-    "mtime": 1788012794.1859798,
-    "ast_hash": "cdff244c084070e695320053a9fe1b05",
+    "mtime": 1788108782.7219791,
+    "ast_hash": "29112a0179fb4eebd410641397d7e578",
     "semantic_hash": ""
   },
   "src/action_log.rs": {
@@ -1210,13 +1210,13 @@
     "semantic_hash": "275610b53114e7cc147dd13a7b6b8deb"
   },
   "src/dict.rs": {
-    "mtime": 1787368171.6493893,
-    "ast_hash": "1ff46146a72af6c42383cebd52ef5577",
+    "mtime": 1788105154.6264896,
+    "ast_hash": "d8454ba2076dd5c686036fc675c28455",
     "semantic_hash": ""
   },
   "src/dict_tests.rs": {
-    "mtime": 1786677086.6808972,
-    "ast_hash": "84839a6dda2cd86bdd59c85fa3c92ed1",
+    "mtime": 1788105398.5925093,
+    "ast_hash": "26d4dd6f454f7db88741a2ca4d065f70",
     "semantic_hash": ""
   },
   "src/engine.rs": {
@@ -1235,8 +1235,8 @@
     "semantic_hash": "e6fdbc6001da80e49fd905fe306afbac"
   },
   "src/ime_correction.rs": {
-    "mtime": 1788049984.8193922,
-    "ast_hash": "7309a98d6646f43aa14c4ed26e04ccb2",
+    "mtime": 1788105662.0295854,
+    "ast_hash": "466094115c5d9eb82959c25db1d95994",
     "semantic_hash": ""
   },
   "src/input_gate.rs": {
@@ -1395,13 +1395,13 @@
     "semantic_hash": ""
   },
   "src/lexicon.rs": {
-    "mtime": 1787368233.895353,
-    "ast_hash": "62d1dfc53b89d67aa099cc938763bd8a",
+    "mtime": 1788105154.6274898,
+    "ast_hash": "61ad0102688c8720a799ac645d686956",
     "semantic_hash": ""
   },
   "src/lexicon_tests.rs": {
-    "mtime": 1786642120.4246345,
-    "ast_hash": "400836e6b3b1940814e87c51f511e811",
+    "mtime": 1788105398.5925093,
+    "ast_hash": "f8fcc4620fb1d47c194c69d8f8dc3218",
     "semantic_hash": ""
   },
   "src/lib.rs": {
@@ -2500,13 +2500,13 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1788022774.3543897,
-    "ast_hash": "ac8721c8f5d0058c94f7ccb61fc022d9",
+    "mtime": 1788106927.1840146,
+    "ast_hash": "0f3aa4a2bc793b2611c2023ec3215304",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1787941236.1296918,
-    "ast_hash": "7fce354a16a2a82378f349de0f1d8cb7",
+    "mtime": 1788106868.5956113,
+    "ast_hash": "c7bd6be13808fdae735756ae673c5f2b",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3095,8 +3095,8 @@
     "semantic_hash": ""
   },
   "src/correction_core/candidate_sources.rs": {
-    "mtime": 1788068304.849046,
-    "ast_hash": "e88a414bbf6b3bcfc024de6bd6e23d37",
+    "mtime": 1788105366.4026747,
+    "ast_hash": "627f30bf539abef4507466eaf65bd7cf",
     "semantic_hash": ""
   },
   "src/correction_core/tests.rs": {
@@ -3265,8 +3265,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1788020167.2166395,
-    "ast_hash": "a33175df5ce5bca904f382e2b1e6b758",
+    "mtime": 1788107057.8974397,
+    "ast_hash": "ea82d447a0fbb5deb230f58868be61fc",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -14430,8 +14430,8 @@
     "semantic_hash": ""
   },
   "docs/ime-atomic-exact-layout-lease-v27-paper-contract-2026-08-22.md": {
-    "mtime": 1787390260.1167705,
-    "ast_hash": "5a5c531740cb77b2a8efbde90cc3f4e0",
+    "mtime": 1788105529.671683,
+    "ast_hash": "ecbe6e44bf089b1faf4338f6665d9845",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_OBSERVED_ROUTE_V27_2026-08-22.json": {
@@ -14785,18 +14785,18 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs": {
-    "mtime": 1788092993.0845146,
-    "ast_hash": "6f5e7f997517094bda68eae66e052ec8",
+    "mtime": 1788105357.2954342,
+    "ast_hash": "c79c25bbfeb556b7bb80567c093a2756",
     "semantic_hash": ""
   },
   "src/exact_layout_authority.rs": {
-    "mtime": 1788090442.5715325,
-    "ast_hash": "76befc4f644c1780727194c4529f34a2",
+    "mtime": 1788108813.4052184,
+    "ast_hash": "1e60ff72f568f443f2c8a6f05e360fb0",
     "semantic_hash": ""
   },
   "src/exact_layout_authority/proof.rs": {
-    "mtime": 1787518544.3706663,
-    "ast_hash": "58725ca7c8196181413dce9995ce9992",
+    "mtime": 1788106020.8604188,
+    "ast_hash": "9e8a01b6b02db834b244c230805586eb",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/LAY_PUBLIC_ISSUE_41_COMPLETE_UNINSTALL_2026-08-22.json": {
@@ -28810,8 +28810,8 @@
     "semantic_hash": ""
   },
   "tech_debt/104-isolate-proof-compiler-build-surface.md": {
-    "mtime": 1788104136.8733153,
-    "ast_hash": "6c7774cdad6ab9fca5de0e1e6deff43e",
+    "mtime": 1788104505.259436,
+    "ast_hash": "10927f7b1e71a4a3a3c070a788b91112",
     "semantic_hash": ""
   },
   "tech_debt/BASELINE_2026-08-29.md": {
@@ -29225,13 +29225,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1788103950.0063004,
-    "ast_hash": "1d149fc2342b35328c2158447447b0e9",
+    "mtime": 1788106826.146345,
+    "ast_hash": "784dd049a6d38fc34e7e072e9f78be36",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1788101038.7882264,
-    "ast_hash": "720bb10e906bc1c49b835c2028ce9ca3",
+    "mtime": 1788106374.2853181,
+    "ast_hash": "f399ba979a4f961b1507d5acaee907d9",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -29280,8 +29280,8 @@
     "semantic_hash": ""
   },
   "docs/test-lanes.md": {
-    "mtime": 1788087852.2339957,
-    "ast_hash": "49e743a690cdbc71145e6bd617e4e04a",
+    "mtime": 1788106413.0568912,
+    "ast_hash": "8dd86f09d2e1cf3ff9618cdf75c6fb67",
     "semantic_hash": ""
   },
   "scripts/check-td007-package-proof.sh": {
@@ -29885,8 +29885,8 @@
     "semantic_hash": ""
   },
   "tech_debt/evidence/td104-remote-validation-v1/VALIDATION.json": {
-    "mtime": 1788104096.025089,
-    "ast_hash": "8b50681d21471716679f91bbeae2b646",
+    "mtime": 1788104498.175394,
+    "ast_hash": "35852b22df9f83228ebec2640b52ba67",
     "semantic_hash": ""
   },
   "tech_debt/evidence/td104-remote-validation-v1/test-summary.json": {
@@ -29927,6 +29927,21 @@
   "tech_debt/evidence/td104-remote-candidate-v4/source-status.txt": {
     "mtime": 1788101927.1818726,
     "ast_hash": "13de3f361c2ced34e92e91fa97fdf89c",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/v28-ru-en-zero-failure-observation-v1.json": {
+    "mtime": 1788106794.400795,
+    "ast_hash": "3d52952d9c73f620a156041ccdcf487f",
+    "semantic_hash": ""
+  },
+  "docs/ime-atomic-exact-layout-lease-ru-to-en-v28-2026-08-30.md": {
+    "mtime": 1788110296.2670453,
+    "ast_hash": "20827e1bfd328832b05afc6688b83535",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td104-independent-review-v2.md": {
+    "mtime": 1788104459.8901687,
+    "ast_hash": "fd7dfa2d721c38f4ad04f77df6e79904",
     "semantic_hash": ""
   }
 }

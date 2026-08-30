@@ -7,7 +7,7 @@
 `lay` исправляет слово, набранное не в той раскладке: нажмите
 **Shift два раза** и продолжайте писать.
 
-**Текущая версия: 1.0.46. Статус: alpha.**
+**Текущая версия: 1.0.55. Статус: alpha.**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -43,6 +43,21 @@ Daemon локально слушает физические клавиши, хр
 По умолчанию double Shift исправляет одно последнее слово. Автопомощь после
 пробела и автоматическое применение исправлений выключены, пока пользователь
 сам их не включит.
+
+## Что вошло в 1.0.55
+
+- точный автоматический маршрут теперь симметричен: `Згыр -> Push` работает
+  так же, как `ghbdtn -> привет`;
+- автопереворот применяется только когда исходного слова нет в русском
+  словаре и пользовательских исключениях, а клавиатурная проекция является
+  точным английским словом;
+- маршрут отключается настройками `Автозамена` и `Следовать языку
+  исправления`; ручной Double Shift остаётся независимым;
+- сохранены исправления Double Shift, IME preedit и синхронизации раскладки из
+  `1.0.54`, а IBus state owner и runtime/research build surface разделены на
+  более узкие владельцы;
+- герметичный release denominator: `2,369 passed`, без semantic и
+  infrastructure failures.
 
 ## Что исправлено в 1.0.46
 
@@ -205,6 +220,8 @@ Typed owner живёт до завершения процесса. Замена 
 - **Smart** сохраняет уже нормальные соседние слова.
 - **Помощь при наборе** после пробела предлагает только bounded-кандидаты.
 - **Автоподмена** применяет только допущенные общим authority route решения.
+- **Точный автопереворот RU/EN** требует словарного подтверждения целевого
+  слова и отсутствия исходного слова в активном языке.
 - **Неблокирующий Space** не ждёт тяжёлый контекстный расчёт.
 - **IME-подсказки** показывают кандидаты; Tab явно принимает продолжение.
 - **Прямые RU/EN hotkeys** включают конкретную раскладку без toggle.
@@ -292,6 +309,7 @@ bash install.sh --check-platform
 - `Режим ввода`;
 - `Помощь при наборе`;
 - `Автозамена`;
+- `Следовать языку исправления`;
 - `Настройки`;
 - `Диагностика`.
 
@@ -429,7 +447,7 @@ graphify update .
 
 ## English
 
-`lay` 1.0.46 is a local Double Shift RU/EN layout rescue and bounded
+`lay` 1.0.55 is a local Double Shift RU/EN layout rescue and bounded
 typing-correction tool for Linux desktops.
 
 ```text
@@ -444,7 +462,10 @@ L3 context, `TransitionDecisionCore`, and a structural verifier.
 Exact search contributes candidates and certificates but does not bypass final
 authority.
 
-Release 1.0.46 makes Double Shift an exact clean key sequence without a
+Release 1.0.55 adds symmetric exact automatic layout correction: a token such
+as `Згыр` becomes `Push` only when the source is absent from the Russian guard,
+the keyboard projection is an exact English word, and both automatic settings
+are enabled. Release 1.0.46 makes Double Shift an exact clean key sequence without a
 per-press hold-duration limit; any intervening key cancels it. Release 1.0.45
 restored Kitty terminal suggestions and routed terminal Double Shift through
 the proven IME erase-and-commit backend. Release 1.0.44 reduced

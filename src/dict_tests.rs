@@ -12,6 +12,12 @@ fn ru_to_us_basic() {
 }
 
 #[test]
+fn warm_reverse_projection_is_read_only_after_startup() {
+    assert_ne!(warm_up_ru_to_us(), 0);
+    assert_eq!(convert_ru_to_us_if_warm("Згыр").as_deref(), Some("Push"));
+}
+
+#[test]
 fn detect() {
     for row in fixture_rows("dict_detect.tsv") {
         assert_eq!(row.len(), 2, "dict detect fixture must be TSV");

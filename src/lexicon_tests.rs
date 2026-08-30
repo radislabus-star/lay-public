@@ -71,6 +71,18 @@ fn protected_ascii_words_parser_keeps_short_user_tokens() {
 }
 
 #[test]
+fn exact_cyrillic_protection_is_warmed_before_readout() {
+    let (fingerprint, entries, _) = warm_up_exact_cyrillic_protection();
+    assert_ne!(fingerprint, 0);
+    assert!(entries > 0);
+    assert_eq!(is_exact_cyrillic_protected_word_if_warm("гугл"), Some(true));
+    assert_eq!(
+        is_exact_cyrillic_protected_word_if_warm("несуществующийтокен"),
+        Some(false)
+    );
+}
+
+#[test]
 fn hunspell_ru_parser_keeps_common_lowercase_words_without_flags() {
     let words = parse_hunspell_ru_words(
         "6\n\
