@@ -1351,3 +1351,51 @@ The sole full-run failure was the pre-existing TD-006 wall-clock assertion
 sub-gate exceeded its fixed threshold and did not fail IME semantics. What was
 not tested: a production install, package release, or applications outside the
 managed GTK harness. Runtime authority changed: **no**.
+
+## 1.0.56 Pending Candidate Navigation Repair (2026-08-30)
+
+The installed `1.0.55` trace ruled out candidate-field narrowing. Across the
+latest `124` completed readouts, the backend returned up to `12` candidates,
+averaged `6.68`, and returned at least `6` in `76` cases. All `124` workers
+published before the `50 ms` display deadline. The visible regression was in
+the key route: `Up` or `Down` pressed while a display-only refresh was pending
+retired the preedit and escaped unhandled to the client, even though the exact
+current token could produce multiple candidates.
+
+Release `1.0.56` keeps normal printable input asynchronous and changes only
+pending candidate navigation:
+
+```text
+Up / Down while pending
+-> cancel the older background generation
+-> materialize candidates for the exact current input identity once
+-> 2+ candidates: cycle and publish the selected current candidate
+-> 0/1 candidates: retire the display and pass the key through
+```
+
+The synchronous readout is reachable only from an explicit candidate arrow.
+`Tab`, Alt and cursor `Left`/`Right` retain the fail-closed pending behavior and
+cannot accept display-only text. Candidate sources, ranking, the L2/L3 route,
+and `PREEDIT_RU_WAVE_CANDIDATE_LIMIT = 12` are unchanged.
+
+What was tested before release packaging: the regression first failed under
+the old route, then passed after the repair; all `18` pending-state tests and
+all `278` `lay-ibus-engine` tests passed. Runtime authority changed at this
+point: **no**. Final install and live-trace evidence is recorded by the release
+transaction before publication.
+
+The release transaction then built and installed `1.0.56`. In the isolated
+managed-desktop smoke, physical `вариан` followed immediately by `Down`
+produced one handled `candidate_select` event and changed the visible suffix to
+`ты`; therefore the arrow cycled a current list containing at least two
+candidates instead of dismissing it. The same trace contained candidate
+readouts of `9` and `7`, had `0` malformed records, and restored the normal
+desktop afterward. Installed and loaded daemon/engine SHA-256 values matched
+the release artifacts, while the global `ibus-daemon` PID remained `4594`.
+
+Verdict: `LAY_1_0_56_IME_PENDING_CANDIDATE_NAVIGATION_DEPLOYED_VERIFIED`.
+Receipt:
+`docs/structural_gates/receipts/LAY_1_0_56_IME_PENDING_CANDIDATE_NAVIGATION_2026-08-30/RELEASE_RECEIPT.json`
+(SHA-256 `806a704f855b7b5b6254915d3039269dbf00af4ada4c519e1b94cce437943bea`).
+Runtime authority changed: **yes, by the verified `1.0.56` release install**;
+candidate sources, ranking, and the limit of `12` did not change.

@@ -1,0 +1,6 @@
+# Physical input under lay-ime-ru: "вариан", immediate Down, then Enter.
+layout	ru	300
+type	dfhbfy	0
+down
+sleep	120
+enter

@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2333,
+    "correctness": 2334,
     "ignored": 13,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 27,
-    "target": 2366
+    "target": 2367
   },
   "package_fixtures": [
     {
@@ -11870,6 +11870,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "preedit::tests::pending_candidate_arrows_refresh_the_current_list_before_cycling",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "preedit::tests::pending_refresh_hides_a_target_that_no_longer_matches_the_partial",
       "target": "bin:lay-ibus-engine"
     },
@@ -11884,7 +11891,7 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "preedit::tests::pending_tab_and_arrow_retire_the_display_without_accepting_it",
+      "name": "preedit::tests::pending_tab_and_cursor_arrow_retire_the_display_without_accepting_it",
       "target": "bin:lay-ibus-engine"
     },
     {

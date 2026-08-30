@@ -1,0 +1,159 @@
+{
+  "active_case_at_failure": null,
+  "all_passed": true,
+  "binaries": {
+    "daemon": {
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "1af9d2f0d654670258563b7ae03ac24a952b16808509a713258966d4e7af01c5",
+      "size": 8960120
+    },
+    "ibus_engine": {
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "290e9170287d2dbb95d68b780a1dff42e3d927f2d82c8dbcbe756595002aa538",
+      "size": 7217464
+    },
+    "input": {
+      "path": "/home/ubu/.local/lib/lay/bin/lay-test-input",
+      "sha256": "ef6c3108105396f1b80c63ae9b8109cc1f8d1d3dadf4ddddccc461ecf0713151",
+      "size": 1839840
+    }
+  },
+  "case_results_sha256": "c89415104b852d02ed991e2313456427cb0ae1e6470460aa8519eb5363edf7fc",
+  "cases": [
+    {
+      "case_id": "script:.pending-candidate-down-smoke.tsv-d182ad657a79e8eac2a7",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] script-сценарий .pending-candidate-down-smoke.tsv отправлен\n\nIME case trace: ibus_keys=15>=8 malformed=0",
+      "expected": "вариан",
+      "got": "вариан",
+      "name": "script:.pending-candidate-down-smoke.tsv",
+      "ok": true,
+      "trace": {
+        "kind_counts": {
+          "ibus_auto_undo_lifecycle": 9,
+          "ibus_capabilities": 3,
+          "ibus_focus": 15,
+          "ibus_key": 15,
+          "ibus_precognition_timing": 2,
+          "ibus_precognition_worker": 2,
+          "ibus_preedit": 3,
+          "ibus_printable_key_timing": 6,
+          "ibus_surrounding_text": 6,
+          "ibus_token_field_route": 7
+        },
+        "malformed": 0,
+        "managed_commits": [
+          "в",
+          "а",
+          "р",
+          "и",
+          "а",
+          "н"
+        ],
+        "manual_toggles": 0,
+        "pending_shortens": 0,
+        "preedit_clears": 1,
+        "preedit_updates": [
+          "ты"
+        ],
+        "read_error": null,
+        "records": 68,
+        "semantic_kind_counts": {
+          "ibus_auto_undo_lifecycle": 9,
+          "ibus_capabilities": 3,
+          "ibus_focus": 15,
+          "ibus_key": 15,
+          "ibus_precognition_timing": 2,
+          "ibus_precognition_worker": 2,
+          "ibus_preedit": 3,
+          "ibus_printable_key_timing": 6,
+          "ibus_surrounding_text": 6,
+          "ibus_token_field_route": 7
+        },
+        "semantic_records": 68,
+        "sha256": "9388d0d58f6d05ce96b7dc3d1cf8f060076ec3e4f1d66aafc77bfcf8d0c84581",
+        "volatile_records": 0
+      }
+    }
+  ],
+  "desktop_before": {
+    "active_engine": "lay-ime-ru",
+    "active_layout": "lay-ime-ru",
+    "harness_trace_path": null,
+    "ibus_daemons": [
+      {
+        "argv": [
+          "/usr/bin/ibus-daemon",
+          "--panel",
+          "disable"
+        ],
+        "executable": "/usr/bin/ibus-daemon",
+        "pid": 4594,
+        "start_time": 8971
+      }
+    ],
+    "lay_engine_trace_paths": [
+      "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl"
+    ],
+    "lay_engines": [
+      {
+        "argv": [
+          "/home/ubu/.local/bin/lay-ibus-engine",
+          "--ibus",
+          "--managed"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+        "pid": 1981733,
+        "start_time": 37563575
+      }
+    ],
+    "service": {
+      "active_state": "active",
+      "main_pid": 1981650,
+      "main_process": {
+        "argv": [
+          "/home/ubu/.local/bin/lay-daemon"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+        "pid": 1981650,
+        "start_time": 37563547
+      },
+      "sub_state": "running",
+      "unit_file_state": "enabled"
+    }
+  },
+  "desktop_restoration_verified": true,
+  "evidence_root": "/home/ubu/projects/lay-l1-exact-peak-search/target/runtime-smoke-runs/lay-1.0.56-pending-nav-live",
+  "execution_order": [
+    "script:.pending-candidate-down-smoke.tsv"
+  ],
+  "fatal_error": null,
+  "harness_process_group": 1998049,
+  "ibus_sync_mode": "1",
+  "invocation": [
+    "/home/ubu/projects/lay-l1-exact-peak-search/run_runtime_smoke.py",
+    "--case",
+    "script:.pending-candidate-down-smoke.tsv",
+    "--managed-desktop",
+    "--ime-engine",
+    "--ime-managed",
+    "--verify-ime-trace",
+    "--no-build",
+    "--dialog",
+    "gtk-entry-capture",
+    "--input-bin",
+    "/home/ubu/.local/lib/lay/bin/lay-test-input",
+    "--daemon-bin",
+    "/home/ubu/.local/lib/lay/bin/lay-daemon",
+    "--ibus-engine-bin",
+    "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+    "--run-id",
+    "lay-1.0.56-pending-nav-live",
+    "--evidence-dir",
+    "target/runtime-smoke-runs/lay-1.0.56-pending-nav-live"
+  ],
+  "run_id": "lay-1.0.56-pending-nav-live",
+  "schema": "lay.runtime-smoke-receipt.v3",
+  "selected_cases": [
+    "script:.pending-candidate-down-smoke.tsv"
+  ]
+}

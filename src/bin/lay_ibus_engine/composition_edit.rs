@@ -79,25 +79,45 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         keyval: u32,
     ) -> fdo::Result<bool> {
-        if self.retire_pending_precognition(emitter).await? {
-            if self.composition.buffer.is_empty() {
-                self.forget_committed_tail_after_passive_cursor_move();
-            }
-            return Ok(false);
+        let refreshed_pending = self.composition.preedit_display_only_pending;
+        if refreshed_pending {
+            // Up/Down selects but never accepts. Rebuild authority from the
+            // current token, cancel the older worker, and cycle that exact list.
+            self.cancel_precognition_display_generation();
+            self.composition.preedit_display_only_pending = false;
+            self.refresh_precognition_candidates();
         }
         let step = if keyval == KEY_UP { -1 } else { 1 };
         if self.composition.buffer.is_empty() {
             if !self.cycle_precognition_candidate(step) {
+                if refreshed_pending {
+                    self.composition.preedit_display_only_pending = true;
+                    self.retire_pending_precognition(emitter).await?;
+                }
                 self.forget_committed_tail_after_passive_cursor_move();
                 return Ok(false);
             }
-            self.update_precognition_preedit(emitter).await?;
+            if refreshed_pending {
+                self.publish_selected_precognition_candidate(emitter)
+                    .await?;
+            } else {
+                self.update_precognition_preedit(emitter).await?;
+            }
             return Ok(true);
         }
         if !self.cycle_precognition_candidate(step) {
+            if refreshed_pending {
+                self.composition.preedit_display_only_pending = true;
+                self.retire_pending_precognition(emitter).await?;
+            }
             return Ok(false);
         }
-        self.update_composition_preedit(emitter).await?;
+        if refreshed_pending {
+            self.publish_selected_precognition_candidate(emitter)
+                .await?;
+        } else {
+            self.update_composition_preedit(emitter).await?;
+        }
         Ok(true)
     }
 

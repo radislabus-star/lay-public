@@ -289,6 +289,19 @@ impl LayIbusEngine {
             return self.clear_preedit(emitter).await;
         }
         self.refresh_precognition_candidates();
+        self.publish_selected_precognition_candidate(emitter).await
+    }
+
+    pub(super) async fn publish_selected_precognition_candidate(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> fdo::Result<()> {
+        if !self.composition.buffer.is_empty() {
+            let (text, cursor_pos) = self.composition_preedit_payload();
+            return self
+                .publish_preedit_payload(emitter, text, cursor_pos)
+                .await;
+        }
         let Some(suffix) = self
             .composition
             .preedit_candidates

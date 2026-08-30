@@ -7,7 +7,7 @@
 `lay` исправляет слово, набранное не в той раскладке: нажмите
 **Shift два раза** и продолжайте писать.
 
-**Текущая версия: 1.0.55. Статус: alpha.**
+**Текущая версия: 1.0.56. Статус: alpha.**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -43,6 +43,16 @@ Daemon локально слушает физические клавиши, хр
 По умолчанию double Shift исправляет одно последнее слово. Автопомощь после
 пробела и автоматическое применение исправлений выключены, пока пользователь
 сам их не включит.
+
+## Что вошло в 1.0.56
+
+- `↑/↓` больше не теряют список IME-вариантов, если нажаты в коротком
+  интервале между вводом буквы и завершением фонового readout;
+- для стрелки отменяется старый worker и один раз материализуется список для
+  точного текущего префикса; обычный ввод остаётся асинхронным;
+- `Tab`, Alt и курсорные `←/→` по-прежнему не могут принять устаревшую
+  display-only подсказку;
+- источники кандидатов, порядок ранжирования и предел `12` не сужались.
 
 ## Что вошло в 1.0.55
 
@@ -447,7 +457,7 @@ graphify update .
 
 ## English
 
-`lay` 1.0.55 is a local Double Shift RU/EN layout rescue and bounded
+`lay` 1.0.56 is a local Double Shift RU/EN layout rescue and bounded
 typing-correction tool for Linux desktops.
 
 ```text
@@ -462,7 +472,9 @@ L3 context, `TransitionDecisionCore`, and a structural verifier.
 Exact search contributes candidates and certificates but does not bypass final
 authority.
 
-Release 1.0.55 adds symmetric exact automatic layout correction: a token such
+Release 1.0.56 restores `Up`/`Down` candidate cycling during an in-flight IME
+readout without authorizing a stale completion or narrowing the 12-candidate
+field. Release 1.0.55 adds symmetric exact automatic layout correction: a token such
 as `Згыр` becomes `Push` only when the source is absent from the Russian guard,
 the keyboard projection is an exact English word, and both automatic settings
 are enabled. Release 1.0.46 makes Double Shift an exact clean key sequence without a

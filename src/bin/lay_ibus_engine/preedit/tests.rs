@@ -2419,11 +2419,11 @@ fn atomic_output_refresh_materializes_candidates_before_publication() {
 }
 
 #[test]
-fn pending_tab_and_arrow_retire_the_display_without_accepting_it() {
+fn pending_tab_and_cursor_arrow_retire_the_display_without_accepting_it() {
     use crate::output::{AtomicEffectBuilder, EngineOutput};
-    use crate::protocol::{KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_TAB, KEY_UP};
+    use crate::protocol::{KEY_LEFT, KEY_RIGHT, KEY_TAB};
 
-    for keyval in [KEY_TAB, KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT] {
+    for keyval in [KEY_TAB, KEY_LEFT, KEY_RIGHT] {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
             Arc::new(Mutex::new(Default::default())),
@@ -2460,6 +2460,61 @@ fn pending_tab_and_arrow_retire_the_display_without_accepting_it() {
         zbus::block_on(engine.flush_dirty_preedit(&mut cursor_output))
             .expect("retired cursor acknowledgement");
         assert!(cursor_builder.preedit_calls().is_empty());
+    }
+}
+
+#[test]
+fn pending_candidate_arrows_refresh_the_current_list_before_cycling() {
+    use crate::output::{AtomicEffectBuilder, EngineOutput};
+    use crate::protocol::{KEY_DOWN, KEY_UP};
+
+    lay::nanda_wave::warm_up_l2_for_ime();
+    for keyval in [KEY_DOWN, KEY_UP] {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: true,
+                correction_safety: "experimental".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        for ch in "вариан".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.refresh_precognition_candidates();
+        assert!(
+            engine.composition.preedit_candidates.len() >= 2,
+            "test prefix must expose multiple candidates: {:?}",
+            engine.composition.preedit_candidates
+        );
+        engine.composition.preedit_visible = true;
+        engine.composition.preedit_suffix = engine
+            .selected_precognition_suffix()
+            .expect("initial candidate");
+
+        let mut pending_builder = AtomicEffectBuilder::default();
+        let mut pending_output = EngineOutput::atomic(&mut pending_builder);
+        zbus::block_on(engine.begin_pending_precognition_refresh(&mut pending_output, true))
+            .expect("pending display");
+        assert!(engine.composition.preedit_display_only_pending);
+        assert!(engine.composition.preedit_candidates.is_empty());
+
+        let mut builder = AtomicEffectBuilder::default();
+        let handled = {
+            let mut output = EngineOutput::atomic(&mut builder);
+            zbus::block_on(engine.process_pressed_key(&mut output, keyval, 0, 0))
+                .expect("pending candidate arrow")
+        };
+
+        assert!(handled, "candidate arrow must not escape to the client");
+        assert!(!engine.composition.preedit_display_only_pending);
+        assert!(engine.composition.preedit_candidates.len() >= 2);
+        assert_ne!(engine.composition.preedit_candidate_index, 0);
+        assert_eq!(builder.preedit_calls(), ["update-visible"]);
     }
 }
 
