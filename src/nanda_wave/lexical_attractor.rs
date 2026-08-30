@@ -421,7 +421,7 @@ mod tests {
     }
 
     #[test]
-    fn l2_pipeline_exposes_attractor_candidate_and_canonical_layout_l2_owner() {
+    fn l2_pipeline_retains_attractor_and_exact_layout_evidence() {
         let l1 = crate::nanda_wave::l1::run_l1("мы djn ");
         let candidates = crate::nanda_wave::l2::run_l2_with_options(
             "мы djn ",
@@ -429,14 +429,24 @@ mod tests {
             &crate::nanda_wave::WaveOptions::default(),
         );
 
-        assert!(candidates
+        let attractor = candidates
             .iter()
-            .any(|candidate| candidate.source == LEXICAL_ATTRACTOR_CELL
-                && candidate.text == "мы вот"));
-        assert!(candidates
+            .find(|candidate| {
+                candidate.source == LEXICAL_ATTRACTOR_CELL && candidate.text == "мы вот"
+            })
+            .expect("lexical attractor candidate");
+        let layout = candidates
             .iter()
-            .any(|candidate| candidate.source == "layout_then_l2_word_center"
-                && candidate.text == "мы вот"));
+            .find(|candidate| {
+                candidate.origin == CandidateOrigin::Layout && candidate.text == "мы вот"
+            })
+            .expect("exact layout candidate");
+        assert_ne!(attractor.source, layout.source);
+        let (_traces, decision) = crate::nanda_wave::l3::run_l3("мы djn ", &candidates);
+        assert!(matches!(
+            decision,
+            crate::nanda_wave::WaveDecision::Suggest { ref text, .. } if text == "мы вот "
+        ));
     }
 
     #[test]

@@ -119,5 +119,11 @@ literals or weakened gates. Score 1-10.
   `tech_debt/evidence/td007-milestone2-completion-v1.json`
 - Milestone 2 review: `7/10` at the second and final review pass; all four
   material findings repaired and covered by focused plus full-suite proofs.
-- Milestones 3-4: pending
+- Milestone 3: `MILESTONE_3_PASS`
+- Milestone 3 evidence:
+  `tech_debt/evidence/td007-milestone3-completion-v1.json`
+- Milestone 3 review: `7/10` at the second and final scored review pass; all
+  six material findings were repaired and covered by focused plus full-suite
+  proofs.
+- Milestone 4: pending
 - Task commit: pending until all four milestones close

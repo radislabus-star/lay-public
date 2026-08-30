@@ -38,45 +38,57 @@ fn hot_layout_helper_accepts_the_first_word() {
 }
 
 #[test]
-fn first_word_layout_uses_l2_word_center_not_phrase_context() {
+fn first_word_exact_layout_candidate_survives_without_phrase_context() {
     let original = "ckjdf";
     let l1 = run_l1(original);
     let candidates = run_l2(original, &l1);
-    assert!(
-        candidates
-            .iter()
-            .any(|candidate| candidate.source == "layout_then_l2_word_center"
-                && candidate.text == "слова"),
-        "first-word L2 candidates={candidates:?}"
-    );
+    let candidate = candidates
+        .iter()
+        .find(|candidate| candidate.text == "слова")
+        .expect("first-word exact layout candidate");
+    assert_eq!(candidate.origin, CandidateOrigin::Layout);
+    let (_traces, decision) =
+        crate::nanda_wave::l3::run_l3(original, std::slice::from_ref(candidate));
+    assert!(matches!(
+        decision,
+        crate::nanda_wave::WaveDecision::Suggest { ref text, .. } if text == "слова"
+    ));
 }
 
 #[test]
-fn boundary_field_splits_trailing_one_letter_pronoun_from_l2_centers() {
+fn trailing_one_letter_split_evidence_does_not_bypass_whole_word_competition() {
     let original = "когдая";
     let l1 = run_l1(original);
     let candidates = run_l2(original, &l1);
+    assert!(ime_l2_boundary_target_evidence("когдая", "когда я"));
     assert!(
         candidates
             .iter()
-            .any(|candidate| candidate.source == "BoundaryCell32" && candidate.text == "когда я"),
-        "boundary candidates={candidates:?}"
+            .all(|candidate| candidate.text != "когда я"),
+        "structural evidence alone bypassed whole-word competition: {candidates:?}"
     );
 }
 
 #[test]
-fn layout_sequence_is_one_coherent_l2_candidate() {
+fn layout_sequence_is_one_exact_projection_without_a_second_typo_step() {
     let original = "djn nfrjt djn yt gthtdfhfxbdftncz ";
     let l1 = run_l1(original);
     let candidates = run_l2(original, &l1);
 
-    assert!(
-        candidates.iter().any(|candidate| {
+    let candidate = candidates
+        .iter()
+        .find(|candidate| {
             candidate.source == LAYOUT_SEQUENCE_CELL
-                && candidate.text == "вот такое вот не переворачивается"
-        }),
-        "candidates={candidates:?}"
-    );
+                && candidate.text == "вот такое вот не переварачивается"
+        })
+        .unwrap_or_else(|| panic!("missing exact layout sequence: {candidates:?}"));
+    let (_traces, decision) =
+        crate::nanda_wave::l3::run_l3(original, std::slice::from_ref(candidate));
+    assert!(matches!(
+        decision,
+        crate::nanda_wave::WaveDecision::Suggest { ref text, .. }
+            if text == "вот такое вот не переварачивается "
+    ));
 }
 
 #[test]
@@ -160,13 +172,22 @@ fn mixed_ru_en_context_does_not_emit_raw_malformed_layout_candidate() {
 }
 
 #[test]
-fn guard_prefix_blocks_short_layout_argument() {
+fn guard_prefix_withholds_authority_from_born_layout_candidate() {
     let original = "api djn ";
     let l1 = run_l1(original);
     let candidates = run_l2(original, &l1);
-    assert!(candidates
+    let candidate = candidates
         .iter()
-        .all(|candidate| candidate.text != "api вот"));
+        .find(|candidate| candidate.text == "api вот")
+        .expect("exact layout projection remains visible in the lattice");
+    let (_traces, decision) =
+        crate::nanda_wave::l3::run_l3(original, std::slice::from_ref(candidate));
+    assert_eq!(
+        decision,
+        crate::nanda_wave::WaveDecision::Veto {
+            reason: "structural_relation_veto"
+        }
+    );
 }
 
 #[test]
@@ -497,21 +518,36 @@ fn short_left_field_boundary_requires_rank_right_center_and_non_preposition() {
 }
 
 #[test]
-fn ime_boundary_authority_is_bound_to_the_selected_split_target() {
+fn boundary_evidence_is_target_bound_across_direct_and_canonical_routes() {
     for (token, target) in [
         ("Еленапросит", "Елена просит"),
         ("документыдля", "документы для"),
         ("тоесть", "то есть"),
-        ("данорм", "да норм"),
     ] {
         assert!(
             ime_l2_boundary_target_evidence(token, target),
-            "missing target-specific boundary evidence: {token:?} -> {target:?}"
+            "missing exact structural evidence: {token:?} -> {target:?}"
         );
     }
     assert!(
         !ime_l2_boundary_target_evidence("относитться", "относит ться"),
-        "a decoder motif fragment must not become an independent word center"
+        "a decoder motif fragment must not become direct boundary evidence"
+    );
+
+    let readout = crate::nanda_wave::l2_field::bridge::canonical_text_readout("данорм ");
+    let candidate = readout
+        .candidates
+        .iter()
+        .find(|candidate| candidate.replacement == "да норм ")
+        .expect("canonical strong-short boundary candidate");
+    assert_eq!(candidate.origin, CandidateOrigin::Boundary);
+    assert_eq!(
+        candidate.error_class,
+        crate::correction_core::TypingErrorClass::GluedWords
+    );
+    assert_eq!(
+        candidate.gate.action,
+        crate::correction_core::CandidateGateAction::Eligible
     );
 }
 
@@ -1315,21 +1351,22 @@ fn l2_surface_layer_marks_internal_extra_fragment_center() {
 }
 
 #[test]
-fn l2_surface_layer_marks_repeated_letter_collapse_center() {
+fn known_surface_repeated_letter_geometry_does_not_bypass_reference_authority() {
     let original = "исправленно ";
     let l1 = run_l1(original);
     let candidates = run_l2(original, &l1);
-    let candidate = candidates
-        .iter()
-        .find(|candidate| candidate.text == "исправлено")
-        .expect("repeated letter collapse candidate");
-
+    assert_eq!(
+        crate::ru_typo::correct_repeated_letter("исправленно").as_deref(),
+        Some("исправлено")
+    );
+    assert!(crate::russian_lexicon::is_reference_backed_russian_form(
+        "исправленно"
+    ));
     assert!(
-        candidate
-            .support
+        candidates
             .iter()
-            .any(|item| item == "l2-operator:repeated-letter-collapse"),
-        "candidate={candidate:#?}"
+            .all(|candidate| candidate.text != "исправлено"),
+        "known original surface lost its independent-authority guard: {candidates:#?}"
     );
 }
 

@@ -2172,7 +2172,7 @@ mod tests {
     }
 
     #[test]
-    fn repeated_letter_collapse_beats_suffix_expansion_competitors() {
+    fn known_dictionary_surface_blocks_unframed_repeated_collapse() {
         let original = "исправленно ";
         let candidates = [
             WordCandidate {
@@ -2195,8 +2195,12 @@ mod tests {
         let reports = [None, None];
 
         assert_eq!(
+            context_candidate_pre_phrase_blocker(original, &candidates[0]),
+            Some("word_form_authority")
+        );
+        assert_eq!(
             best_context_candidate(original, &candidates, &reports),
-            Some(0)
+            Some(1)
         );
     }
 
@@ -2696,7 +2700,7 @@ mod tests {
     }
 
     #[test]
-    fn typed_damage_operator_coherence_beats_morphological_drift() {
+    fn known_dictionary_surface_withholds_unframed_morphology_and_typed_drift() {
         let original = "исправленно ";
         let candidates = [
             WordCandidate {
@@ -2718,9 +2722,12 @@ mod tests {
         ];
         let reports = [None, None];
 
+        assert!(candidates.iter().all(|candidate| {
+            context_candidate_pre_phrase_blocker(original, candidate) == Some("word_form_authority")
+        }));
         assert_eq!(
             best_context_candidate(original, &candidates, &reports),
-            Some(1)
+            None
         );
     }
 

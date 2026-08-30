@@ -1439,29 +1439,12 @@ fn standalone_surface_field_readout_with_productive_limit(
     })?;
     let seed_count = l11_seeds.len();
     let surface_count = surface_candidates.len();
-    let mut bounded_surface_candidates = surface_candidates
-        .iter()
-        .take(HOT_L2_CANDIDATE_LIMIT)
-        .cloned()
-        .collect::<Vec<_>>();
-    for candidate in surface_candidates
-        .iter()
-        .filter(|candidate| {
-            crate::text_metrics::sparse_internal_omission_count(
-                &normalized_token,
-                &candidate.surface,
-            )
-            .is_some()
-        })
-        .take(SPARSE_OMISSION_RESERVE)
-    {
-        if !bounded_surface_candidates
-            .iter()
-            .any(|existing| existing.surface.eq_ignore_ascii_case(&candidate.surface))
-        {
-            bounded_surface_candidates.push(candidate.clone());
-        }
-    }
+    let mut bounded_surface_candidates = bounded_surface_candidates_with_sparse_reserve(
+        &normalized_token,
+        &surface_candidates,
+        HOT_L2_CANDIDATE_LIMIT,
+        SPARSE_OMISSION_RESERVE,
+    );
     let l11_geometry_candidates = bounded_surface_candidates.clone();
     for candidate in reference_backed_missing_letter_candidates(&normalized_token, 2) {
         if !bounded_surface_candidates
@@ -1520,6 +1503,38 @@ fn standalone_surface_field_readout_with_productive_limit(
         productive_duration,
         prepared_cache_hit,
     })
+}
+
+fn bounded_surface_candidates_with_sparse_reserve(
+    normalized_token: &str,
+    surface_candidates: &[crate::nanda_wave::l2::L2ImeWordCandidate],
+    hot_candidate_limit: usize,
+    sparse_omission_reserve: usize,
+) -> Vec<crate::nanda_wave::l2::L2ImeWordCandidate> {
+    let mut bounded = surface_candidates
+        .iter()
+        .take(hot_candidate_limit)
+        .cloned()
+        .collect::<Vec<_>>();
+    for candidate in surface_candidates
+        .iter()
+        .filter(|candidate| {
+            crate::text_metrics::sparse_internal_omission_count(
+                normalized_token,
+                &candidate.surface,
+            )
+            .is_some()
+        })
+        .take(sparse_omission_reserve)
+    {
+        if !bounded
+            .iter()
+            .any(|existing| existing.surface.eq_ignore_ascii_case(&candidate.surface))
+        {
+            bounded.push(candidate.clone());
+        }
+    }
+    bounded
 }
 
 fn prepare_compositional_field(
@@ -2630,14 +2645,52 @@ mod tests {
     }
 
     #[test]
-    fn canonical_readout_retains_sparse_omission_candidate_below_general_frontier() {
-        let readout = canonical_text_readout("на компанию Хунлу можем подврдить ");
-        let candidate = readout
-            .candidates
+    fn sparse_omission_reserve_survives_below_the_general_frontier() {
+        let surfaces = [
+            "форма",
+            "сигнал",
+            "контур",
+            "слово",
+            "пакет",
+            "дерево",
+            "сцена",
+            "волна",
+            "центр",
+            "подтвердить",
+        ]
+        .into_iter()
+        .map(|surface| lexical_candidate(surface, 1_000, 1, 1, 1))
+        .collect::<Vec<_>>();
+
+        let bounded = bounded_surface_candidates_with_sparse_reserve("подврдить", &surfaces, 8, 2);
+
+        assert_eq!(
+            bounded
+                .iter()
+                .map(|candidate| candidate.surface.as_str())
+                .collect::<Vec<_>>(),
+            [
+                "форма",
+                "сигнал",
+                "контур",
+                "слово",
+                "пакет",
+                "дерево",
+                "сцена",
+                "волна",
+                "подтвердить",
+            ]
+        );
+        let mut unified = l2_surface_unified_candidates(
+            "на компанию Хунлу можем подврдить ",
+            "подврдить",
+            &bounded,
+        );
+        apply_authority_to_candidate_lattice(&mut unified, &L2FieldAuthority::Abstain);
+        let candidate = unified
             .iter()
             .find(|candidate| candidate.replacement.ends_with("подтвердить "))
-            .expect("sparse multi-omission reserve must survive the general top-8 frontier");
-
+            .expect("reserved sparse omission must reach the unified candidate lattice");
         assert_eq!(
             candidate.error_class,
             TypingErrorClass::SparseInternalMultiOmission
@@ -2669,25 +2722,52 @@ mod tests {
     }
 
     #[test]
-    fn reference_backed_short_participle_blocks_false_singleton() {
-        let readout = canonical_text_readout("подлючен ");
-        let correct = readout
-            .candidates
+    fn reference_backed_short_participle_ambiguity_blocks_false_singleton() {
+        let mut surfaces = crate::ru_typo::fuzzy_known_word_candidates("подлючен")
+            .into_iter()
+            .filter(|surface| {
+                crate::russian_lexicon::is_reference_backed_short_passive_participle(surface)
+                    && crate::text_metrics::damerau_levenshtein("подлючен", surface) == 1
+            })
+            .collect::<Vec<_>>();
+        surfaces.sort();
+        surfaces.dedup();
+        assert!(surfaces.iter().any(|surface| surface == "подключен"));
+        assert!(surfaces.iter().any(|surface| surface == "подлечен"));
+        assert!(surfaces.len() >= 2);
+        let candidates = surfaces
             .iter()
-            .find(|candidate| candidate.replacement == "подключен ")
-            .expect("reference-backed missing-letter candidate");
-        let wrong = readout
-            .candidates
-            .iter()
-            .find(|candidate| candidate.replacement == "подлечен ")
-            .expect("competing one-edit candidate");
+            .map(|surface| lexical_candidate(surface, 900, 6, 3, 3))
+            .collect::<Vec<_>>();
 
-        assert_eq!(correct.gate.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(wrong.gate.action, CandidateGateAction::SuggestOnly);
-        assert!(!matches!(
-            readout.authority,
-            L2FieldAuthority::Winner { .. }
-        ));
+        let readout = retain_reference_backed_geometry_ambiguity(
+            "подлючен",
+            CanonicalCohortReadout::Winner {
+                winner_surface: "подключен".to_string(),
+                cohort_surfaces: vec!["подключен".to_string()],
+            },
+            &candidates,
+        );
+        let CanonicalCohortReadout::Tied {
+            mut cohort_surfaces,
+        } = readout
+        else {
+            panic!("reference-backed one-edit ambiguity must not remain a singleton");
+        };
+        cohort_surfaces.sort();
+        assert!(cohort_surfaces.iter().any(|surface| surface == "подключен"));
+        assert!(cohort_surfaces.iter().any(|surface| surface == "подлечен"));
+        assert!(cohort_surfaces.len() >= 2);
+
+        let mut unified = l2_surface_unified_candidates("подлючен ", "подлючен", &candidates);
+        demote_canonical_local_surface_cohort(
+            &mut unified,
+            &CanonicalCohortReadout::Tied { cohort_surfaces },
+        );
+        assert_eq!(unified.len(), candidates.len());
+        assert!(unified
+            .iter()
+            .all(|candidate| candidate.gate.action == CandidateGateAction::SuggestOnly));
     }
 
     fn unified_candidate(

@@ -1530,8 +1530,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l3.rs": {
-    "mtime": 1786642120.4470441,
-    "ast_hash": "32249444e929d75988932562f85d6531",
+    "mtime": 1788052006.7150009,
+    "ast_hash": "5284ef601e605a6be39fcd39ce28cd64",
     "semantic_hash": ""
   },
   "src/nanda_wave/l3_phrase_gate.rs": {
@@ -1555,8 +1555,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_attractor.rs": {
-    "mtime": 1786642120.4500442,
-    "ast_hash": "27b4b10b9ac58ca269cde90f48c4da71",
+    "mtime": 1788054036.0875657,
+    "ast_hash": "716e95d32bf1824e058225e5f35ec813",
     "semantic_hash": ""
   },
   "src/nanda_wave/llmwave.rs": {
@@ -3300,7 +3300,7 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/tail_scan_adapter.rs": {
-    "mtime": 1786839695.1973717,
+    "mtime": 1788053889.459424,
     "ast_hash": "85547f9347fe8eee43bbe7086cb80d41",
     "semantic_hash": ""
   },
@@ -3310,8 +3310,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/tests.rs": {
-    "mtime": 1786840024.4726098,
-    "ast_hash": "1d849508dda3b5adb63378f286f72d85",
+    "mtime": 1788054806.3497586,
+    "ast_hash": "ffe5015dd6c85d583864c71956542272",
     "semantic_hash": ""
   },
   "src/typing_transition/decision/admission.rs": {
@@ -4375,8 +4375,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/bridge.rs": {
-    "mtime": 1788016747.4831872,
-    "ast_hash": "cfeb38e6865c532a3dcee0e36106c5f4",
+    "mtime": 1788054614.279381,
+    "ast_hash": "13d29a6ac5d078ee62ea568fe3c1844c",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/format.rs": {
@@ -15045,8 +15045,8 @@
     "semantic_hash": ""
   },
   "docs/ime-target-authority-slice8-lexical-readout-2026-08-23.md": {
-    "mtime": 1788051209.8356674,
-    "ast_hash": "3f6b00a0412a30d608d4f8bf3ec58328",
+    "mtime": 1788055476.8337471,
+    "ast_hash": "b2dc8df7e562fdaa6c3b887cd60a0ab8",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_EXACT_OBSERVED_TAIL_IMPLEMENTATION_V1_2026-08-24.json": {
@@ -28785,8 +28785,8 @@
     "semantic_hash": ""
   },
   "tech_debt/007-reconcile-semantic-contract-tests.md": {
-    "mtime": 1788051241.9961646,
-    "ast_hash": "212910408608dde56e136170c7c233a5",
+    "mtime": 1788055476.829747,
+    "ast_hash": "a39d8029ebbd5e5d16aa449d8d34a2b1",
     "semantic_hash": ""
   },
   "tech_debt/008-reduce-dead-code-and-proof-surface.md": {
@@ -29225,13 +29225,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1788048231.1165655,
-    "ast_hash": "982bbd465373823ff86b5baa7f69fe5e",
+    "mtime": 1788055395.7700043,
+    "ast_hash": "42cc3ab4f145ae1f59b9f1775ddd8e3d",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1788046257.9834604,
-    "ast_hash": "6f283ec9241d738942a44df50ba237ee",
+    "mtime": 1788054530.6581435,
+    "ast_hash": "562ad909fa2687a1faa2edaf6c167647",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -29382,6 +29382,41 @@
   "tech_debt/evidence/td007-milestone2-independent-review-v2.md": {
     "mtime": 1788051169.5960412,
     "ast_hash": "d568e9435376cdf382f832a523910e91",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td007-milestone3-completion-v1.json": {
+    "mtime": 1788055466.8305395,
+    "ast_hash": "a77943d5af6000fd7f417bdde0fb4543",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td007-milestone3-known-failures-v1.json": {
+    "mtime": 1788052890.4395058,
+    "ast_hash": "87ca03aa1e665e53f71540f6b2bb7258",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td007-milestone3-ledger-v1.json": {
+    "mtime": 1788054220.8841555,
+    "ast_hash": "caccd07107e7e57f31b209dc689068df",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td007-milestone3-verified-v1.json": {
+    "mtime": 1788055310.1109161,
+    "ast_hash": "3f5fa8ea099b3bccb0f003f9519ac262",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td007-milestone3-completion-v1.md": {
+    "mtime": 1788055466.8305395,
+    "ast_hash": "6eb39f9a67249dac097d598ef4665813",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td007-milestone3-consequence-analysis-v1.md": {
+    "mtime": 1788053889.463424,
+    "ast_hash": "1f810d1c9ed2ed37b96ecb8b3fc3135c",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td007-milestone3-independent-review-v2.md": {
+    "mtime": 1788055418.452506,
+    "ast_hash": "57e3d39381fbb7fb04ad1d33cae79b1c",
     "semantic_hash": ""
   }
 }

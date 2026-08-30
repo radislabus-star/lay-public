@@ -6034,3 +6034,50 @@ Evidence:
 This milestone does not promote frameless lexical candidates, change installed
 Lay, or claim the final 13 x 20,000 heldout quality gate. That gate remains due
 after all TD-007 runtime milestones close.
+
+### TD-007 milestone 3: L2/L3 owner and safety reconciliation
+
+The eleven historical `nanda_l2_field` and `nanda_l3_context` failures were
+reconciled without changing runtime authority, candidate birth, ranking, or
+admission. The active contracts are:
+
+- exact layout is one physical projection; lexical typo repair is not silently
+  appended to the same candidate;
+- candidate retention does not imply mutation authority, including inside a
+  guarded technical context;
+- a known original surface is not rewritten by unframed repeated-letter or
+  morphology evidence;
+- boundary evidence remains bound to the exact selected target and owner;
+- sparse-omission reserve and reference-backed ambiguity are proven through
+  their unified candidate gate, not through an ambient installed package.
+
+Two tests that named a retired layout producer now assert semantic origin and
+the L3 readout effect. The sparse-reserve helper extraction preserves the same
+bounded iteration and allocation behavior. Its test reaches
+`SparseInternalMultiOmission` plus authority demotion. The participle ambiguity
+test derives its cohort from the hermetic fuzzy frontier and proves that no
+member remains `Eligible`.
+
+```text
+baseline failures before milestone 3    53
+milestone 3 ledger rows                  11
+remaining exact-known failures           42
+correctness selected                    2309
+package selected                          35
+unexpected failures                        0
+infrastructure failures                    0
+installed runtime authority changed     false
+source runtime semantics changed        false
+```
+
+Evidence:
+
+- `tech_debt/evidence/td007-milestone3-consequence-analysis-v1.md`
+- `tech_debt/evidence/td007-milestone3-ledger-v1.json`
+- `tech_debt/evidence/td007-milestone3-known-failures-v1.json`
+- `tech_debt/evidence/td007-milestone3-verified-v1.json`
+- `tech_debt/evidence/td007-milestone3-independent-review-v2.md`
+- `tech_debt/evidence/td007-milestone3-completion-v1.json`
+
+Milestone 3 does not claim the final fixed heldout gate. That gate remains one
+conjunctive TD-007 completion check after milestone 4.

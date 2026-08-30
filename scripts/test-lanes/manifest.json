@@ -5477,7 +5477,7 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "nanda_wave::l2::tests::boundary_field_splits_trailing_one_letter_pronoun_from_l2_centers",
+      "name": "nanda_wave::l2::tests::boundary_evidence_is_target_bound_across_direct_and_canonical_routes",
       "target": "lib:lay"
     },
     {
@@ -5540,7 +5540,7 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "nanda_wave::l2::tests::first_word_layout_uses_l2_word_center_not_phrase_context",
+      "name": "nanda_wave::l2::tests::first_word_exact_layout_candidate_survives_without_phrase_context",
       "target": "lib:lay"
     },
     {
@@ -5596,7 +5596,7 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "nanda_wave::l2::tests::guard_prefix_blocks_short_layout_argument",
+      "name": "nanda_wave::l2::tests::guard_prefix_withholds_authority_from_born_layout_candidate",
       "target": "lib:lay"
     },
     {
@@ -5604,13 +5604,6 @@
       "kind": "test",
       "lane": "correctness",
       "name": "nanda_wave::l2::tests::hot_layout_helper_accepts_the_first_word",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "nanda_wave::l2::tests::ime_boundary_authority_is_bound_to_the_selected_split_target",
       "target": "lib:lay"
     },
     {
@@ -5639,6 +5632,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "nanda_wave::l2::tests::keeps_known_technical_ascii_token",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::l2::tests::known_surface_repeated_letter_geometry_does_not_bypass_reference_authority",
       "target": "lib:lay"
     },
     {
@@ -5695,13 +5695,6 @@
       "kind": "test",
       "lane": "correctness",
       "name": "nanda_wave::l2::tests::l2_surface_layer_marks_internal_extra_fragment_center",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "nanda_wave::l2::tests::l2_surface_layer_marks_repeated_letter_collapse_center",
       "target": "lib:lay"
     },
     {
@@ -5827,7 +5820,7 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "nanda_wave::l2::tests::layout_sequence_is_one_coherent_l2_candidate",
+      "name": "nanda_wave::l2::tests::layout_sequence_is_one_exact_projection_without_a_second_typo_step",
       "target": "lib:lay"
     },
     {
@@ -5974,6 +5967,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "nanda_wave::l2::tests::trailing_one_letter_split_evidence_does_not_bypass_whole_word_competition",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "nanda_wave::l2_candidate_phase::tests::anti_center_repels_same_operator_near_miss",
       "target": "lib:lay"
     },
@@ -6058,13 +6058,6 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "nanda_wave::l2_field::bridge::tests::canonical_readout_retains_sparse_omission_candidate_below_general_frontier",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
       "name": "nanda_wave::l2_field::bridge::tests::canonical_token_admits_lexically_supported_short_layout_surface",
       "target": "lib:lay"
     },
@@ -6128,7 +6121,14 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "nanda_wave::l2_field::bridge::tests::reference_backed_short_participle_blocks_false_singleton",
+      "name": "nanda_wave::l2_field::bridge::tests::reference_backed_short_participle_ambiguity_blocks_false_singleton",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::l2_field::bridge::tests::sparse_omission_reserve_survives_below_the_general_frontier",
       "target": "lib:lay"
     },
     {
@@ -8032,6 +8032,20 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "nanda_wave::l3::tests::known_dictionary_surface_blocks_unframed_repeated_collapse",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::l3::tests::known_dictionary_surface_withholds_unframed_morphology_and_typed_drift",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "nanda_wave::l3::tests::known_surface_still_allows_verified_internal_missing_letter_repair",
       "target": "lib:lay"
     },
@@ -8172,13 +8186,6 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "nanda_wave::l3::tests::repeated_letter_collapse_beats_suffix_expansion_competitors",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
       "name": "nanda_wave::l3::tests::same_script_l2_repair_beats_cross_script_layout_projection",
       "target": "lib:lay"
     },
@@ -8250,13 +8257,6 @@
       "kind": "test",
       "lane": "correctness",
       "name": "nanda_wave::l3::tests::tracked_l3_context_scores_the_full_real_l2_lattice",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "nanda_wave::l3::tests::typed_damage_operator_coherence_beats_morphological_drift",
       "target": "lib:lay"
     },
     {
@@ -8697,7 +8697,7 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "nanda_wave::lexical_attractor::tests::l2_pipeline_exposes_attractor_candidate_and_canonical_layout_l2_owner",
+      "name": "nanda_wave::lexical_attractor::tests::l2_pipeline_retains_attractor_and_exact_layout_evidence",
       "target": "lib:lay"
     },
     {

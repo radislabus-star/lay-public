@@ -1,5 +1,5 @@
 {
-  "failure_count": 53,
+  "failure_count": 42,
   "failures": [
     {
       "cluster": "typing_assist_surface",
@@ -14,7 +14,7 @@
       "cluster": "typing_assist_surface",
       "lane": "correctness",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: Some(\"исправленно \") | right: Some(\"исправлено \")",
+      "signature_excerpt": "assertion `left == right` failed | left: Some(\"\u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043d\u043e \") | right: Some(\"\u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043e \")",
       "signature_sha256": "168176fadb65422aea524c4502fe91001b3f61e7da9569eeb5b8a28014df3eb0",
       "target": "bin:lay-daemon",
       "test": "tests::typing_assist_rules::exact_layout::typing_assist_auto_replace_pipeline_avoids_risky_deletions"
@@ -23,7 +23,7 @@
       "cluster": "typing_assist_surface",
       "lane": "correctness",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: rule=moved_prefix_pair input=\"расчет ыприблизительные \" | left: None | right: Some(\"расчеты приблизительные \")",
+      "signature_excerpt": "assertion `left == right` failed: rule=moved_prefix_pair input=\"\u0440\u0430\u0441\u0447\u0435\u0442 \u044b\u043f\u0440\u0438\u0431\u043b\u0438\u0437\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \" | left: None | right: Some(\"\u0440\u0430\u0441\u0447\u0435\u0442\u044b \u043f\u0440\u0438\u0431\u043b\u0438\u0437\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \")",
       "signature_sha256": "dd6ecec6f5f63effa8b2b6e8f1f9593a50722682e5d4f7a0a79750de72599e8f",
       "target": "bin:lay-daemon",
       "test": "tests::typing_assist_rules::pipeline::typing_assist_each_default_rule_has_isolated_positive_case"
@@ -32,7 +32,7 @@
       "cluster": "typing_assist_surface",
       "lane": "correctness",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: input=\"исправленно \" | left: None | right: Some(\"исправлено \")",
+      "signature_excerpt": "assertion `left == right` failed: input=\"\u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043d\u043e \" | left: None | right: Some(\"\u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043e \")",
       "signature_sha256": "6ac452efa7bd4f3b251dc325c5b4f7a8a1bfdcf6d5cd84cc01b2a8cb2674e351",
       "target": "bin:lay-daemon",
       "test": "tests::typing_assist_rules::safety_regression::typing_assist_regression_suite_100_cases"
@@ -41,7 +41,7 @@
       "cluster": "typing_assist_surface",
       "lane": "correctness",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: input=\"расчет ыприблизительные \" | left: Some(\"расчет приблизительные \") | right: Some(\"расчеты приблизительные \")",
+      "signature_excerpt": "assertion `left == right` failed: input=\"\u0440\u0430\u0441\u0447\u0435\u0442 \u044b\u043f\u0440\u0438\u0431\u043b\u0438\u0437\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \" | left: Some(\"\u0440\u0430\u0441\u0447\u0435\u0442 \u043f\u0440\u0438\u0431\u043b\u0438\u0437\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \") | right: Some(\"\u0440\u0430\u0441\u0447\u0435\u0442\u044b \u043f\u0440\u0438\u0431\u043b\u0438\u0437\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \")",
       "signature_sha256": "2fbd6a95edaa769a36c82d4eb2035e4bf0c742a9b82061be5db432bd16e9d580",
       "target": "bin:lay-daemon",
       "test": "tests::typing_assist_rules::typo_families::phrase_spacing::typing_assist_moves_letter_from_next_word_back"
@@ -50,7 +50,7 @@
       "cluster": "typing_assist_surface",
       "lane": "correctness",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: None | right: Some(\"исправлено \")",
+      "signature_excerpt": "assertion `left == right` failed | left: None | right: Some(\"\u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043e \")",
       "signature_sha256": "46f0d0e218c9b0c9def6e06a6315c62a0ab17495ae070924f33e00cbbb9f3796",
       "target": "bin:lay-daemon",
       "test": "tests::typing_assist_rules::typo_families::repeated_extra::typing_assist_fixes_extra_repeated_letter"
@@ -77,7 +77,7 @@
       "cluster": "remaining_semantic",
       "lane": "correctness",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: Some(\"вот такое вот не переварачивается\") | right: Some(\"вот такое вот не переворачивается\")",
+      "signature_excerpt": "assertion `left == right` failed | left: Some(\"\u0432\u043e\u0442 \u0442\u0430\u043a\u043e\u0435 \u0432\u043e\u0442 \u043d\u0435 \u043f\u0435\u0440\u0435\u0432\u0430\u0440\u0430\u0447\u0438\u0432\u0430\u0435\u0442\u0441\u044f\") | right: Some(\"\u0432\u043e\u0442 \u0442\u0430\u043a\u043e\u0435 \u0432\u043e\u0442 \u043d\u0435 \u043f\u0435\u0440\u0435\u0432\u043e\u0440\u0430\u0447\u0438\u0432\u0430\u0435\u0442\u0441\u044f\")",
       "signature_sha256": "44c898b83c7ff7c9abea0809fdba61cd40b56c24ea154b67ff4b67de09ff4409",
       "target": "lib:lay",
       "test": "layout_autoswitch::ascii::phrase::tests::whole_phrase_projection_uses_l2_form_centers_for_noisy_words"
@@ -92,105 +92,6 @@
       "test": "nanda_wave::journal_record::tests::trace_record_lists_participating_cells"
     },
     {
-      "cluster": "nanda_l2_field",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "boundary candidates=[]",
-      "signature_sha256": "8eeef93fb72761d22bc1bd3bb086b74344023ffff1dd25d96af74c3197797222",
-      "target": "lib:lay",
-      "test": "nanda_wave::l2::tests::boundary_field_splits_trailing_one_letter_pronoun_from_l2_centers"
-    },
-    {
-      "cluster": "nanda_l2_field",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "first-word L2 candidates=[WordCandidate { text: \"слова\", origin: Layout, source: \"LayoutWordCell32\", energy: 0.9027559, risk: 0.05, support: [\"Utf8Cell32#1401:utf8:0.794\", \"ScriptCell32#2:script:0.903\", \"KeyboardCell32#3:keyboard:0.903\", \"BoundaryCell32#191:boundary:0.805\", \"Utf8Cell32#1250:utf8:0.784\", \"ScriptCell32#8",
-      "signature_sha256": "91785e67444593053e7eb1b6b97fe9f57b464f93475eddf61f1fd2568959e855",
-      "target": "lib:lay",
-      "test": "nanda_wave::l2::tests::first_word_layout_uses_l2_word_center_not_phrase_context"
-    },
-    {
-      "cluster": "nanda_l2_field",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion failed: candidates.iter().all(|candidate| candidate.text != \"api вот\")",
-      "signature_sha256": "71f7adebe877c525de9fed60cf2bf6b81dfe196cfad6809fa030927c094f818c",
-      "target": "lib:lay",
-      "test": "nanda_wave::l2::tests::guard_prefix_blocks_short_layout_argument"
-    },
-    {
-      "cluster": "nanda_l2_field",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "missing target-specific boundary evidence: \"данорм\" -> \"да норм\"",
-      "signature_sha256": "3cfc29d6d7949828495488491df657f4a0aff03420806080e58a55a4654ca2d1",
-      "target": "lib:lay",
-      "test": "nanda_wave::l2::tests::ime_boundary_authority_is_bound_to_the_selected_split_target"
-    },
-    {
-      "cluster": "nanda_l2_field",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "repeated letter collapse candidate",
-      "signature_sha256": "f1023bfbc12b5957c823ef743771ae5fc23e9c02f6a6bdefce4a04c98d04ae6a",
-      "target": "lib:lay",
-      "test": "nanda_wave::l2::tests::l2_surface_layer_marks_repeated_letter_collapse_center"
-    },
-    {
-      "cluster": "nanda_l2_field",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "candidates=[WordCandidate { text: \"вот такое вот не переварачивается\", origin: Layout, source: \"LayoutWordCell32\", energy: 0.99, risk: 0.07, support: [\"Utf8Cell32#285:utf8:0.699\", \"ScriptCell32#755:script:0.797\", \"KeyboardCell32#1197:keyboard:0.781\", \"BoundaryCell32#30:boundary:0.858\", \"Utf8Cell32#1291:utf8:0.810\", \"Sc",
-      "signature_sha256": "ce83741b76dfaff1430254fca2a215eaf56b873f238427a6d92c8ae56209dd5d",
-      "target": "lib:lay",
-      "test": "nanda_wave::l2::tests::layout_sequence_is_one_coherent_l2_candidate"
-    },
-    {
-      "cluster": "nanda_l2_field",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "sparse multi-omission reserve must survive the general top-8 frontier",
-      "signature_sha256": "d0a9528ac2a9a136859125ff6e28ea4d01912ead5235e83972f95a3c3b68983e",
-      "target": "lib:lay",
-      "test": "nanda_wave::l2_field::bridge::tests::canonical_readout_retains_sparse_omission_candidate_below_general_frontier"
-    },
-    {
-      "cluster": "nanda_l2_field",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "reference-backed missing-letter candidate",
-      "signature_sha256": "4c15e374980d4df3ae5b356c6a619f8ccec200ee41676c06fbe4721bc4f10d56",
-      "target": "lib:lay",
-      "test": "nanda_wave::l2_field::bridge::tests::reference_backed_short_participle_blocks_false_singleton"
-    },
-    {
-      "cluster": "nanda_l3_context",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: Some(1) | right: Some(0)",
-      "signature_sha256": "a93c204ab308bfb724e1fe38d23dbd19a973fb0e155a7cae5db7f007e7950f38",
-      "target": "lib:lay",
-      "test": "nanda_wave::l3::tests::repeated_letter_collapse_beats_suffix_expansion_competitors"
-    },
-    {
-      "cluster": "nanda_l3_context",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: None | right: Some(1)",
-      "signature_sha256": "b3ec7c1887bdf985db2270a7b6c7f22bfb683e53c32066b1a0b71ca41ce4c957",
-      "target": "lib:lay",
-      "test": "nanda_wave::l3::tests::typed_damage_operator_coherence_beats_morphological_drift"
-    },
-    {
-      "cluster": "nanda_l2_field",
-      "lane": "correctness",
-      "owner": "TD-007",
-      "signature_excerpt": "assertion failed: candidates.iter().any(|candidate| | candidate.source == \"layout_then_l2_word_center\" && | candidate.text == \"мы вот\")",
-      "signature_sha256": "8934ef6a5e4b74b5eb6af0da69b2a63a361823cfba7a2de152c1611868dde7f2",
-      "target": "lib:lay",
-      "test": "nanda_wave::lexical_attractor::tests::l2_pipeline_exposes_attractor_candidate_and_canonical_layout_l2_owner"
-    },
-    {
       "cluster": "remaining_semantic",
       "lane": "correctness",
       "owner": "TD-007",
@@ -203,7 +104,7 @@
       "cluster": "phrase_boundary",
       "lane": "correctness",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: None | right: Some(\"настройках\")",
+      "signature_excerpt": "assertion `left == right` failed | left: None | right: Some(\"\u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0430\u0445\")",
       "signature_sha256": "94987516de62faa0ef7d408b0cd96f06a03a9630c9cb7779e6469e6e71dfe6f3",
       "target": "lib:lay",
       "test": "phrase_reader::tests::merges_accidental_split_word_but_keeps_normal_pair"
@@ -239,7 +140,7 @@
       "cluster": "remaining_semantic",
       "lane": "correctness",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: Some(\"каторое \") | right: Some(\"которое \")",
+      "signature_excerpt": "assertion `left == right` failed | left: Some(\"\u043a\u0430\u0442\u043e\u0440\u043e\u0435 \") | right: Some(\"\u043a\u043e\u0442\u043e\u0440\u043e\u0435 \")",
       "signature_sha256": "bcd41663747455ed6f4b9d834987f82a50754164f5ab9e2132fb944ea303ba57",
       "target": "lib:lay",
       "test": "typing_pipeline::tests::explain_reports_chosen_candidate"
@@ -266,7 +167,7 @@
       "cluster": "architecture_integration",
       "lane": "correctness",
       "owner": "TD-007",
-      "signature_excerpt": "expected gate replacement for \"читай логии \", got SuggestOnly { best: Some(\"читайл огии \") }",
+      "signature_excerpt": "expected gate replacement for \"\u0447\u0438\u0442\u0430\u0439 \u043b\u043e\u0433\u0438\u0438 \", got SuggestOnly { best: Some(\"\u0447\u0438\u0442\u0430\u0439\u043b \u043e\u0433\u0438\u0438 \") }",
       "signature_sha256": "1642dfc09898d654d6a7eeb62cc7e8206aa2535c57811f2dbd18155c8143be53",
       "target": "test:input_gate_space_contract",
       "test": "daemon_space_and_enter_decoders_share_input_gate_replacement_contract"
@@ -275,7 +176,7 @@
       "cluster": "architecture_integration",
       "lane": "correctness",
       "owner": "TD-007",
-      "signature_excerpt": "expected replacement for \"читай логии \", got SuggestOnly { best: Some(\"читайл огии \") }, trace=Some(InputGateDecisionTrace { stage: WordBoundary, input_class: Some(CompositeTypo), candidate_count: 3, scoreboard: CorrectionScoreboard { total_candidates: 3, apply_candidates: 0, suggest_only_candidates: 3, keep_original_c",
+      "signature_excerpt": "expected replacement for \"\u0447\u0438\u0442\u0430\u0439 \u043b\u043e\u0433\u0438\u0438 \", got SuggestOnly { best: Some(\"\u0447\u0438\u0442\u0430\u0439\u043b \u043e\u0433\u0438\u0438 \") }, trace=Some(InputGateDecisionTrace { stage: WordBoundary, input_class: Some(CompositeTypo), candidate_count: 3, scoreboard: CorrectionScoreboard { total_candidates: 3, apply_candidates: 0, suggest_only_candidates: 3, keep_original_c",
       "signature_sha256": "51c86cc5dc8526b1af22a70f0a2716f4763143f2b608ee644c6a9662614621a2",
       "target": "test:input_gate_space_contract",
       "test": "space_autocorrect_keeps_existing_public_gate_contract"
@@ -293,7 +194,7 @@
       "cluster": "architecture_integration",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: \"врмея\\nработа тет\\nкороче\" | right: \"время\\nработает\\nкороче\"",
+      "signature_excerpt": "assertion `left == right` failed | left: \"\u0432\u0440\u043c\u0435\u044f\\n\u0440\u0430\u0431\u043e\u0442\u0430 \u0442\u0435\u0442\\n\u043a\u043e\u0440\u043e\u0447\u0435\" | right: \"\u0432\u0440\u0435\u043c\u044f\\n\u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442\\n\u043a\u043e\u0440\u043e\u0447\u0435\"",
       "signature_sha256": "60f6acf85c0c158ba75cce92fe2efc873b14c98caf4a6c0dc3a0e48d4b6f3c59",
       "target": "test:restore_word_cli",
       "test": "restore_word_stream_reuses_one_loaded_core"
@@ -302,7 +203,7 @@
       "cluster": "architecture_integration",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: \"врмея\" | right: \"время\"",
+      "signature_excerpt": "assertion `left == right` failed | left: \"\u0432\u0440\u043c\u0435\u044f\" | right: \"\u0432\u0440\u0435\u043c\u044f\"",
       "signature_sha256": "66f7545f20f147509204686e1881552f1c01ee144b0bc53c5a7fd4dc9927be61",
       "target": "test:restore_word_cli",
       "test": "restore_word_uses_the_shared_correction_core"
@@ -329,7 +230,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: class=ru_en_wrong_en input=\"сегодня цщкв потом ашду дальше еукьштфд здесь ыефегы рядом пше згыр \" | left: \"сегодня word потом вашду дальше terminal здесь status рядом git push \" | right: \"сегодня word потом file дальше terminal здесь status рядом git push \"",
+      "signature_excerpt": "assertion `left == right` failed: class=ru_en_wrong_en input=\"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u0446\u0449\u043a\u0432 \u043f\u043e\u0442\u043e\u043c \u0430\u0448\u0434\u0443 \u0434\u0430\u043b\u044c\u0448\u0435 \u0435\u0443\u043a\u044c\u0448\u0442\u0444\u0434 \u0437\u0434\u0435\u0441\u044c \u044b\u0435\u0444\u0435\u0433\u044b \u0440\u044f\u0434\u043e\u043c \u043f\u0448\u0435 \u0437\u0433\u044b\u0440 \" | left: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f word \u043f\u043e\u0442\u043e\u043c \u0432\u0430\u0448\u0434\u0443 \u0434\u0430\u043b\u044c\u0448\u0435 terminal \u0437\u0434\u0435\u0441\u044c status \u0440\u044f\u0434\u043e\u043c git push \" | right: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f word \u043f\u043e\u0442\u043e\u043c file \u0434\u0430\u043b\u044c\u0448\u0435 terminal \u0437\u0434\u0435\u0441\u044c status \u0440\u044f\u0434\u043e\u043c git push \"",
       "signature_sha256": "01390982616dd390f4c096063a4816ceb93497ceb362009fb90b70be3a0a2789",
       "target": "test:typing_assist_alternating_stress",
       "test": "alternating_language_stress_cases_hold_boundaries"
@@ -338,7 +239,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: input=\"сегодня ghbdtn потом ашду дальше ckjdf снова еукьштфд здесь 'nj \" | left: \"сегодня привет потом вашду дальше ckjdf снова terminal здесь 'то \" | right: \"сегодня привет потом file дальше слова снова terminal здесь это \"",
+      "signature_excerpt": "assertion `left == right` failed: input=\"\u0441\u0435\u0433\u043e\u0434\u043d\u044f ghbdtn \u043f\u043e\u0442\u043e\u043c \u0430\u0448\u0434\u0443 \u0434\u0430\u043b\u044c\u0448\u0435 ckjdf \u0441\u043d\u043e\u0432\u0430 \u0435\u0443\u043a\u044c\u0448\u0442\u0444\u0434 \u0437\u0434\u0435\u0441\u044c 'nj \" | left: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u0438\u0432\u0435\u0442 \u043f\u043e\u0442\u043e\u043c \u0432\u0430\u0448\u0434\u0443 \u0434\u0430\u043b\u044c\u0448\u0435 ckjdf \u0441\u043d\u043e\u0432\u0430 terminal \u0437\u0434\u0435\u0441\u044c '\u0442\u043e \" | right: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u0438\u0432\u0435\u0442 \u043f\u043e\u0442\u043e\u043c file \u0434\u0430\u043b\u044c\u0448\u0435 \u0441\u043b\u043e\u0432\u0430 \u0441\u043d\u043e\u0432\u0430 terminal \u0437\u0434\u0435\u0441\u044c \u044d\u0442\u043e \"",
       "signature_sha256": "4408358233b65cbc80ef5274672afbd439acad7de61119c0cd88ce3a1791cd15",
       "target": "test:typing_assist_mixed_corpus",
       "test": "alternating_layout_sentences_fix_every_second_word"
@@ -347,7 +248,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: input=\"я ghbdtn word потом ckjdf file дальше hf,jnftn terminal здесь 'nj status \" | left: \"я привет word потом ckjdf file дальше работает terminal здесь 'то status \" | right: \"я привет word потом слова file дальше работает terminal здесь это status \"",
+      "signature_excerpt": "assertion `left == right` failed: input=\"\u044f ghbdtn word \u043f\u043e\u0442\u043e\u043c ckjdf file \u0434\u0430\u043b\u044c\u0448\u0435 hf,jnftn terminal \u0437\u0434\u0435\u0441\u044c 'nj status \" | left: \"\u044f \u043f\u0440\u0438\u0432\u0435\u0442 word \u043f\u043e\u0442\u043e\u043c ckjdf file \u0434\u0430\u043b\u044c\u0448\u0435 \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442 terminal \u0437\u0434\u0435\u0441\u044c '\u0442\u043e status \" | right: \"\u044f \u043f\u0440\u0438\u0432\u0435\u0442 word \u043f\u043e\u0442\u043e\u043c \u0441\u043b\u043e\u0432\u0430 file \u0434\u0430\u043b\u044c\u0448\u0435 \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442 terminal \u0437\u0434\u0435\u0441\u044c \u044d\u0442\u043e status \"",
       "signature_sha256": "d8c242cae02c15ccabe2055901e7888eaf87a94e6e19c1ad66ec7b1cfd646181",
       "target": "test:typing_assist_mixed_corpus",
       "test": "beta_alternating_layout_sentences_keep_language_boundaries"
@@ -356,7 +257,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: command-like text was changed: \"tar -xf archive.tar && rm archive.tar \" | left: \"tar -xf archive.tar && rm фксршмуюефк \" | right: \"tar -xf archive.tar && rm archive.tar \"",
+      "signature_excerpt": "assertion `left == right` failed: command-like text was changed: \"tar -xf archive.tar && rm archive.tar \" | left: \"tar -xf archive.tar && rm \u0444\u043a\u0441\u0440\u0448\u043c\u0443\u044e\u0435\u0444\u043a \" | right: \"tar -xf archive.tar && rm archive.tar \"",
       "signature_sha256": "afe3f2f68f24610bbaa4f1455f5caad30d5a4d671b625dc04147fe94044e8cab",
       "target": "test:typing_assist_mixed_corpus",
       "test": "clean_shell_like_commands_and_symbols_are_not_rewritten"
@@ -365,7 +266,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: RU-layout CLI command was not restored: \"cd\" typed=\"св\" | left: \"св \" | right: \"cd \"",
+      "signature_excerpt": "assertion `left == right` failed: RU-layout CLI command was not restored: \"cd\" typed=\"\u0441\u0432\" | left: \"\u0441\u0432 \" | right: \"cd \"",
       "signature_sha256": "11e9ee259762e8adc966f70933b9714160bf959aa59291d85fe0e14a36ff1d2f",
       "target": "test:typing_assist_mixed_corpus",
       "test": "cli_commands_stay_ascii_and_recover_from_ru_layout"
@@ -383,7 +284,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed | left: Some(\"пишу 'то \") | right: Some(\"пишу это \")",
+      "signature_excerpt": "assertion `left == right` failed | left: Some(\"\u043f\u0438\u0448\u0443 '\u0442\u043e \") | right: Some(\"\u043f\u0438\u0448\u0443 \u044d\u0442\u043e \")",
       "signature_sha256": "b63fba3af58bbe968d16169752640f06b11176bc8a0b207271167acdcaf72c48",
       "target": "test:typing_assist_mixed_corpus",
       "test": "dynamic_context_allows_ascii_to_ru_in_russian_sentence"
@@ -392,7 +293,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: input=\"тут good test рядом с русским текстом \" | left: \"тут good test рядом с руским текстом \" | right: \"тут good test рядом с русским текстом \"",
+      "signature_excerpt": "assertion `left == right` failed: input=\"\u0442\u0443\u0442 good test \u0440\u044f\u0434\u043e\u043c \u0441 \u0440\u0443\u0441\u0441\u043a\u0438\u043c \u0442\u0435\u043a\u0441\u0442\u043e\u043c \" | left: \"\u0442\u0443\u0442 good test \u0440\u044f\u0434\u043e\u043c \u0441 \u0440\u0443\u0441\u043a\u0438\u043c \u0442\u0435\u043a\u0441\u0442\u043e\u043c \" | right: \"\u0442\u0443\u0442 good test \u0440\u044f\u0434\u043e\u043c \u0441 \u0440\u0443\u0441\u0441\u043a\u0438\u043c \u0442\u0435\u043a\u0441\u0442\u043e\u043c \"",
       "signature_sha256": "0e3becf28b05234e86130aa7fcb668404a77fe7a41e3cf0d730b08244657679a",
       "target": "test:typing_assist_mixed_corpus",
       "test": "forum_like_clean_mixed_sentences_do_not_get_rewritten"
@@ -401,7 +302,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "safe RU->EN layout word was not auto-fixed: input=\"я проверяю git и пишу njkmrj дальше \" got=\"я проверяю git и пишу njkmrj дальше \"",
+      "signature_excerpt": "safe RU->EN layout word was not auto-fixed: input=\"\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git \u0438 \u043f\u0438\u0448\u0443 njkmrj \u0434\u0430\u043b\u044c\u0448\u0435 \" got=\"\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git \u0438 \u043f\u0438\u0448\u0443 njkmrj \u0434\u0430\u043b\u044c\u0448\u0435 \"",
       "signature_sha256": "ead68750a3a312f0b46b57a534ac9add4a4ffc8553c06d899ffa3d38d9d0c133",
       "target": "test:typing_assist_mixed_corpus",
       "test": "forum_like_mixed_matrix_autofixes_contextual_layout_words_and_keeps_boundaries"
@@ -410,7 +311,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: input=\"сегодня проверяю git status и потом njkmrj тест \" | left: \"сегодня проверяю git status и потом njkmrj тест \" | right: \"сегодня проверяю git status и потом только тест \"",
+      "signature_excerpt": "assertion `left == right` failed: input=\"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git status \u0438 \u043f\u043e\u0442\u043e\u043c njkmrj \u0442\u0435\u0441\u0442 \" | left: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git status \u0438 \u043f\u043e\u0442\u043e\u043c njkmrj \u0442\u0435\u0441\u0442 \" | right: \"\u0441\u0435\u0433\u043e\u0434\u043d\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e git status \u0438 \u043f\u043e\u0442\u043e\u043c \u0442\u043e\u043b\u044c\u043a\u043e \u0442\u0435\u0441\u0442 \"",
       "signature_sha256": "6bc889bcdfeb4545ba1d0efb6de130ee12ee3bedc4eda6b15a87742f6f6dde79",
       "target": "test:typing_assist_mixed_corpus",
       "test": "forum_like_mixed_sentences_preserve_spaces_and_terms"
@@ -419,7 +320,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: single-letter substitution must not guess a different dictionary word | left: Some(\"делать \") | right: None",
+      "signature_excerpt": "assertion `left == right` failed: single-letter substitution must not guess a different dictionary word | left: Some(\"\u0434\u0435\u043b\u0430\u0442\u044c \") | right: None",
       "signature_sha256": "140e9fdffcbcce5a43bb83e6a5f3dc4acc861b1d5ffc45809c1be1565db4b3f1",
       "target": "test:typing_assist_mixed_corpus",
       "test": "live_journal_false_positive_candidates_are_rejected"
@@ -428,7 +329,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: input=\"за нас уже по любому и дальше пишем \" | left: \"за нас уже по любому и дальше пившем \" | right: \"за нас уже по любому и дальше пишем \"",
+      "signature_excerpt": "assertion `left == right` failed: input=\"\u0437\u0430 \u043d\u0430\u0441 \u0443\u0436\u0435 \u043f\u043e \u043b\u044e\u0431\u043e\u043c\u0443 \u0438 \u0434\u0430\u043b\u044c\u0448\u0435 \u043f\u0438\u0448\u0435\u043c \" | left: \"\u0437\u0430 \u043d\u0430\u0441 \u0443\u0436\u0435 \u043f\u043e \u043b\u044e\u0431\u043e\u043c\u0443 \u0438 \u0434\u0430\u043b\u044c\u0448\u0435 \u043f\u0438\u0432\u0448\u0435\u043c \" | right: \"\u0437\u0430 \u043d\u0430\u0441 \u0443\u0436\u0435 \u043f\u043e \u043b\u044e\u0431\u043e\u043c\u0443 \u0438 \u0434\u0430\u043b\u044c\u0448\u0435 \u043f\u0438\u0448\u0435\u043c \"",
       "signature_sha256": "dc2b41802fef8ccd539705946bc4fd16fd6ece9a7b3450e3d8edefd81a42e965",
       "target": "test:typing_assist_mixed_corpus",
       "test": "live_user_sentences_keep_spaces_after_typing_assist"
@@ -437,7 +338,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: safe normal autocorrect case failed: \"кторое \" | left: Some(\"каторое \") | right: Some(\"которое \")",
+      "signature_excerpt": "assertion `left == right` failed: safe normal autocorrect case failed: \"\u043a\u0442\u043e\u0440\u043e\u0435 \" | left: Some(\"\u043a\u0430\u0442\u043e\u0440\u043e\u0435 \") | right: Some(\"\u043a\u043e\u0442\u043e\u0440\u043e\u0435 \")",
       "signature_sha256": "ba36ecd3e163e29006f53653768659f3d10a18b067b2fd419f2b35a9acc95b80",
       "target": "test:typing_assist_mixed_corpus",
       "test": "normal_autocorrect_keeps_safe_rules_and_rejects_aggressive_guesses"
@@ -446,7 +347,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: input=\"св \" | left: \"св \" | right: \"cd \"",
+      "signature_excerpt": "assertion `left == right` failed: input=\"\u0441\u0432 \" | left: \"\u0441\u0432 \" | right: \"cd \"",
       "signature_sha256": "ce9d1baeba41f47448d49619a644097c4866b24d728bf7e03b924896f0654e03",
       "target": "test:typing_assist_mixed_corpus",
       "test": "normal_mode_autocorrects_confident_english_typed_in_ru_layout"
@@ -455,7 +356,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: input=\"проверяю в воде дальше \" | left: \"проверяю в водое дальше \" | right: \"проверяю в воде дальше \"",
+      "signature_excerpt": "assertion `left == right` failed: input=\"\u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e \u0432 \u0432\u043e\u0434\u0435 \u0434\u0430\u043b\u044c\u0448\u0435 \" | left: \"\u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e \u0432 \u0432\u043e\u0434\u043e\u0435 \u0434\u0430\u043b\u044c\u0448\u0435 \" | right: \"\u043f\u0440\u043e\u0432\u0435\u0440\u044f\u044e \u0432 \u0432\u043e\u0434\u0435 \u0434\u0430\u043b\u044c\u0448\u0435 \"",
       "signature_sha256": "002b1b61e1fc897100e2a2b1fe1e18e7623adec199f3e2534c2a668f7d670db7",
       "target": "test:typing_assist_mixed_corpus",
       "test": "one_letter_function_words_do_not_steal_next_word_prefix"
@@ -464,7 +365,7 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: input=\"я пше и фзш мы сыы ты сзг он пзг в реьд к оыщт с ддь не дщп на ьв ну зва по кфь за ыйд вот ыыр это мзт да пщ как шт дом гз мир ещ код щт тут щаа там ашду для еуые при згыр ход ифыр \" | left: \"я git и api мы css ты cpu он gpu в html к json с llm не log на md ну pdf по ram за sql ",
+      "signature_excerpt": "assertion `left == right` failed: input=\"\u044f \u043f\u0448\u0435 \u0438 \u0444\u0437\u0448 \u043c\u044b \u0441\u044b\u044b \u0442\u044b \u0441\u0437\u0433 \u043e\u043d \u043f\u0437\u0433 \u0432 \u0440\u0435\u044c\u0434 \u043a \u043e\u044b\u0449\u0442 \u0441 \u0434\u0434\u044c \u043d\u0435 \u0434\u0449\u043f \u043d\u0430 \u044c\u0432 \u043d\u0443 \u0437\u0432\u0430 \u043f\u043e \u043a\u0444\u044c \u0437\u0430 \u044b\u0439\u0434 \u0432\u043e\u0442 \u044b\u044b\u0440 \u044d\u0442\u043e \u043c\u0437\u0442 \u0434\u0430 \u043f\u0449 \u043a\u0430\u043a \u0448\u0442 \u0434\u043e\u043c \u0433\u0437 \u043c\u0438\u0440 \u0435\u0449 \u043a\u043e\u0434 \u0449\u0442 \u0442\u0443\u0442 \u0449\u0430\u0430 \u0442\u0430\u043c \u0430\u0448\u0434\u0443 \u0434\u043b\u044f \u0435\u0443\u044b\u0435 \u043f\u0440\u0438 \u0437\u0433\u044b\u0440 \u0445\u043e\u0434 \u0438\u0444\u044b\u0440 \" | left: \"\u044f git \u0438 api \u043c\u044b css \u0442\u044b cpu \u043e\u043d gpu \u0432 html \u043a json \u0441 llm \u043d\u0435 log \u043d\u0430 md \u043d\u0443 pdf \u043f\u043e ram \u0437\u0430 sql ",
       "signature_sha256": "ff05d9946dc1189d6b6d554c294c40d575cb235eae3b036598b8b8c8996cc195",
       "target": "test:typing_assist_short_alternating",
       "test": "short_english_words_typed_in_ru_layout_are_recovered_between_russian_words"
@@ -473,14 +374,14 @@
       "cluster": "typing_assist_surface",
       "lane": "package",
       "owner": "TD-007",
-      "signature_excerpt": "assertion `left == right` failed: input=\"z git b api vs css ns cpu jy gpu d html r json c llm yt log yf md ye pdf gj ram pf sql djn ssh 'nj vpn lf go rfr in ljv up vbh to rjl on nen off nfv file lkz test ghb push [jl bash \" | left: \"z git b api мы css ты cpu он gpu d html r json c llm не log на md ну pdf по ram за sql ",
+      "signature_excerpt": "assertion `left == right` failed: input=\"z git b api vs css ns cpu jy gpu d html r json c llm yt log yf md ye pdf gj ram pf sql djn ssh 'nj vpn lf go rfr in ljv up vbh to rjl on nen off nfv file lkz test ghb push [jl bash \" | left: \"z git b api \u043c\u044b css \u0442\u044b cpu \u043e\u043d gpu d html r json c llm \u043d\u0435 log \u043d\u0430 md \u043d\u0443 pdf \u043f\u043e ram \u0437\u0430 sql ",
       "signature_sha256": "eda297fc0ee15699d968d89489b00bd7da38d8e4429ba0d8e5c197432d7c748d",
       "target": "test:typing_assist_short_alternating",
       "test": "short_russian_words_typed_in_us_layout_are_recovered_between_english_words_when_not_ambiguous"
     }
   ],
-  "manifest_sha256": "ff16fd9031dc23fe48fedbe4782e42530cbfde7d29da5929fa2fe5f756eee967",
-  "observation_path": "tech_debt/evidence/td007-milestone2-known-failures-v1.json",
-  "observation_sha256": "8f11cdc9543f3c035c954d187df56867334666f6becba51a2ce0b7521237128f",
+  "manifest_sha256": "f70b483eec127654d51ce63e4494cfed5e0c61eb1f5b24b7bf94e1e692734739",
+  "observation_path": "tech_debt/evidence/td007-milestone3-verified-v1.json",
+  "observation_sha256": "5c8fcb3e375fa81ecbc9ea2832687f7388bb52767f63e0250b16bf18e67a88bd",
   "schema": "lay.test-known-failures.v1"
 }

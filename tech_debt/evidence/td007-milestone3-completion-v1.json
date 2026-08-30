@@ -1,0 +1,64 @@
+{
+  "schema": "lay.td007.milestone-completion.v1",
+  "task": "TD-007",
+  "milestone": 3,
+  "verdict": "MILESTONE_3_PASS",
+  "recorded_at_utc": "2026-08-30T02:03:24+00:00",
+  "base_git_head": "b093a6df2328687ee8f569a5c21db47635b95282",
+  "source_closure_sha256": "f2ac1cb4dc6c2cf7415a4f7fa316ab75ded27d4d04c6e3d838de151d106ddfb7",
+  "baseline_failure_count": 53,
+  "closed_failure_count": 11,
+  "remaining_failure_count": 42,
+  "partition_overlap_count": 0,
+  "remaining_by_lane": {
+    "correctness": 22,
+    "package": 20
+  },
+  "dispositions": {
+    "AMBIENT_PACKAGE_DEPENDENCY_REPLACED_BY_HERMETIC_AMBIGUITY_PROOF": 1,
+    "AMBIENT_PACKAGE_DEPENDENCY_REPLACED_BY_HERMETIC_RESERVE_PROOF": 1,
+    "CANDIDATE_RETENTION_SEPARATED_FROM_MUTATION_AUTHORITY": 1,
+    "COMPOUND_MUTATION_EXPECTATION_REPLACED_BY_EXACT_PROJECTION": 1,
+    "KNOWN_SURFACE_SAFETY_CONTRACT_REPLACED": 3,
+    "MIXED_BOUNDARY_EVIDENCE_CONTRACT_SPLIT_BY_OWNER": 1,
+    "SUPERSEDED_PRODUCER_ID_REPLACED": 2,
+    "SUPERSEDED_UNSAFE_BIRTH_REPLACED_BY_TARGET_EVIDENCE_WITHHELD": 1
+  },
+  "evidence": {
+    "consequence_analysis": {
+      "path": "tech_debt/evidence/td007-milestone3-consequence-analysis-v1.md",
+      "sha256": "e237d8f350d2817689207eee9a0c804d290c75b2039d9b61ba46734d897a2bd5"
+    },
+    "ledger": {
+      "path": "tech_debt/evidence/td007-milestone3-ledger-v1.json",
+      "sha256": "a1c4c01b2eb2e3d04a0ac77114417428161acab7b5c9120348a3131c0e8d3edd"
+    },
+    "verification": {
+      "path": "tech_debt/evidence/td007-milestone3-verified-v1.json",
+      "sha256": "5c8fcb3e375fa81ecbc9ea2832687f7388bb52767f63e0250b16bf18e67a88bd",
+      "verdict": "PASS_WITH_EXACT_KNOWN_FAILURES"
+    },
+    "manifest": {
+      "path": "scripts/test-lanes/manifest.json",
+      "sha256": "f70b483eec127654d51ce63e4494cfed5e0c61eb1f5b24b7bf94e1e692734739"
+    },
+    "known_failure_contract": {
+      "path": "scripts/test-lanes/known_failures.json",
+      "sha256": "01fe9e3a4021132c52e6cdd895673b73c52670b52a4542d20c46acf141a02617"
+    },
+    "review": {
+      "path": "tech_debt/evidence/td007-milestone3-independent-review-v2.md",
+      "sha256": "3afa0579c7a029bbce6d0b6e9fd1d8d34dc81683bb78c51bf1d29111b97e86fb",
+      "allowed_passes_used": 2,
+      "score_at_review_time": 7,
+      "material_findings_repaired": 6
+    }
+  },
+  "source_runtime_semantics_changed": false,
+  "installed_runtime_authority_changed": false,
+  "installed_runtime_mutated": false,
+  "live_desktop_contacted": false,
+  "release_admitted": false,
+  "full_heldout_quality_gate": "DEFERRED_UNTIL_MILESTONE_4_CLOSES",
+  "next_action": "TD007_MILESTONE_4"
+}
