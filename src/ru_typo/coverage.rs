@@ -8,7 +8,9 @@ use crate::word_reader::is_cyrillic_word;
 use super::extra::correct_extra_letters;
 use super::hard_sign::correct_hard_sign_typo;
 use super::memo::{memoized_bool, WordMaterialKind};
-use super::missing::{correct_missing_letter, safe_missing_letter_candidates};
+use super::missing::{
+    correct_missing_letter, propose_missing_letter_candidate, safe_missing_letter_candidates,
+};
 use super::repeated::correct_repeated_letter;
 use super::substitution::correct_single_letter_substitution;
 use super::thresholds::{NGRAM_DICT_MISSING_LETTER_MARGIN, NGRAM_EXTRA_LETTER_MARGIN};
@@ -33,6 +35,7 @@ fn has_plausible_russian_typo_candidate_uncached(lower: &str) -> bool {
         || correct_repeated_letter(lower).is_some()
         || correct_adjacent_transposition(lower).is_some()
         || correct_missing_letter(lower).is_some()
+        || propose_missing_letter_candidate(lower).is_some()
         || correct_single_letter_substitution(lower).is_some()
         || correct_vowel_confusion(lower).is_some()
         || correct_extra_letters(lower).is_some()

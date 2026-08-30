@@ -670,8 +670,8 @@ fn verified_operator_consensus_witness(
     let exact_l2_transition = verified_mass_preserving_l2_transition(candidate, evaluation);
     let canonical_local_field_evidence = candidate.has_source_id("CanonicalL2FieldReadout");
     let independent_operator_evidence = (candidate
-        .has_origin(crate::candidate_contract::CandidateOrigin::DeterministicTypo)
-        && candidate.has_origin(crate::candidate_contract::CandidateOrigin::L2Surface))
+        .has_eligible_origin(crate::candidate_contract::CandidateOrigin::DeterministicTypo)
+        && candidate.has_eligible_origin(crate::candidate_contract::CandidateOrigin::L2Surface))
         || canonical_local_field_evidence
         || exact_l2_transition;
     let learned_field_evidence = exact_transposition

@@ -114,11 +114,14 @@ mod tests {
     fn exact_auto_undo_is_reverted_evidence_in_both_live_adapters() {
         let typing_cpu = include_str!("typing_cpu/runtime.rs");
         let ime = include_str!("bin/lay_ibus_engine/committed_tail.rs");
+        let ime_atomic = include_str!("bin/lay_ibus_engine/atomic.rs");
         let daemon = include_str!("bin/lay_daemon/auto_undo_runtime.rs");
 
         assert!(typing_cpu.contains("pub fn record_reverted_system_apply"));
-        assert!(ime.contains("TypingCpu::record_reverted_system_apply"));
+        assert!(ime.contains("self.record_reverted_system_apply("));
+        assert!(ime_atomic.contains("TypingCpu::record_reverted_system_apply"));
         assert!(!ime.contains("TypingCpu::record_user_correction"));
+        assert!(!ime_atomic.contains("TypingCpu::record_user_correction"));
         assert!(daemon.contains("append_reverted_system_apply_learning_log"));
         assert!(!daemon.contains("append_user_correction_learning_log"));
     }

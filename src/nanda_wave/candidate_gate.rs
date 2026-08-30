@@ -1643,14 +1643,9 @@ mod tests {
     #[test]
     fn layout_surfaces_birth_as_typed_replacements_inside_the_shared_gate() {
         super::super::warm_up_l2_for_ime();
-        for (input, expected, source) in [
-            ("ye;ty", "нужен", L2ImeWordCandidateSource::ExactLayoutPhase),
-            (
-                "hf,jfntn",
-                "работает",
-                L2ImeWordCandidateSource::LayoutThenTypoPhase,
-            ),
-        ] {
+        for (input, expected, source) in
+            [("ye;ty", "нужен", L2ImeWordCandidateSource::ExactLayoutPhase)]
+        {
             let material = live_layout_candidates("", input);
             assert!(
                 material.iter().any(|candidate| {
@@ -1671,6 +1666,12 @@ mod tests {
                 "input={input:?} visible={visible:?}"
             );
         }
+    }
+
+    #[test]
+    fn punctuation_shaped_layout_key_requires_physical_key_evidence() {
+        super::super::warm_up_l2_for_ime();
+        assert!(live_layout_candidates("", "hf,jfntn").is_empty());
     }
 
     #[test]

@@ -13,6 +13,7 @@ use super::guards::{
 };
 use super::memo::{memoized_text, WordMaterialKind};
 use super::missing::missing_letter_candidate_exists;
+use super::repeated::correct_repeated_letter;
 
 pub fn correct_extra_letters(word: &str) -> Option<String> {
     memoized_text(WordMaterialKind::ExtraLetters, word, || {
@@ -22,6 +23,9 @@ pub fn correct_extra_letters(word: &str) -> Option<String> {
 
 fn correct_extra_letters_uncached(word: &str) -> Option<String> {
     let lower = unknown_cyrillic_lower(word, 6)?;
+    if correct_repeated_letter(word).is_some() {
+        return None;
+    }
     if reflexive_confusion_sources().any(|suffix| lower.ends_with(suffix))
         || looks_like_short_function_word_glued_to_known_word(&lower)
         || looks_like_plausible_russian_past_tense(&lower)
@@ -70,6 +74,11 @@ mod tests {
     #[test]
     fn does_not_shorten_clean_past_tense_word() {
         assert_eq!(correct_extra_letters("читал"), None);
+    }
+
+    #[test]
+    fn repeated_letter_owner_precedes_generic_extra_letter_repair() {
+        assert_eq!(correct_extra_letters("исправленнно"), None);
     }
 
     #[test]

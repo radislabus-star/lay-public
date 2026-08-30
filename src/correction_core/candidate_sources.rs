@@ -625,8 +625,26 @@ fn current_word_rule_candidate(
 ) -> Option<UnifiedCorrectionCandidate> {
     let current_tail = format!("{current_word} ");
     let explanation = explain_typing_assist_with_pipeline(&current_tail, false, pipeline);
-    let replacement_tail = explanation.output?;
-    let replacement_word = last_text_word(&replacement_tail)?;
+    let (replacement_word, rule_id, family) = if let Some(replacement_tail) = &explanation.output {
+        let replacement_word = last_text_word(replacement_tail)?;
+        let (rule_id, family) = explanation
+            .chosen
+            .as_ref()
+            .map(|candidate| (candidate.rule_id.clone(), candidate.score.family))
+            .unwrap_or_else(|| {
+                (
+                    "current_word_rule".to_string(),
+                    TypingCandidateFamily::Unknown,
+                )
+            });
+        (replacement_word, rule_id, family)
+    } else {
+        (
+            crate::ru_typo::propose_missing_letter_candidate(current_word)?,
+            ids::MISSING_LETTER.to_string(),
+            TypingCandidateFamily::Typo,
+        )
+    };
     if replacement_word == current_word || !is_cyrillic_letters_only(&replacement_word) {
         return None;
     }
@@ -634,12 +652,7 @@ fn current_word_rule_candidate(
     if replacement == req.text || !syntax_allows_candidate(req.text, &replacement) {
         return None;
     }
-    let (rule_id, family) = explanation
-        .chosen
-        .as_ref()
-        .map(|candidate| (candidate.rule_id.as_str(), candidate.score.family))
-        .unwrap_or(("current_word_rule", TypingCandidateFamily::Unknown));
-    let error_class = rule_error_class(rule_id);
+    let error_class = rule_error_class(&rule_id);
     let origin = typing_rule_origin(family, error_class);
     let gate = TransitionDecisionCore::admit_candidate_proposal(
         req.text,
@@ -653,6 +666,44 @@ fn current_word_rule_candidate(
         origin,
         rule_id,
         error_class,
+        gate,
+    ))
+}
+
+fn proposal_only_substitution_competitor(
+    req: &CorrectionRequest<'_>,
+) -> Option<UnifiedCorrectionCandidate> {
+    if !req.typing_assist && !req.auto_replace {
+        return None;
+    }
+    let (_, core, _) = split_edge_whitespace(req.text);
+    let current_word = last_text_word(core)?;
+    let replacement_word =
+        crate::ru_typo::propose_single_letter_substitution_candidate(&current_word)?;
+    let replacement = replace_last_text_word(req.text, &replacement_word)?;
+    if replacement == req.text || !syntax_allows_candidate(req.text, &replacement) {
+        return None;
+    }
+
+    let origin = CandidateOrigin::DeterministicTypo;
+    let mut gate = TransitionDecisionCore::admit_candidate_proposal(
+        req.text,
+        &replacement,
+        TypingErrorClass::LetterSubstitution,
+        origin,
+    );
+    if gate.action == CandidateGateAction::Eligible {
+        gate = CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "proposal_only_substitution_competitor",
+        };
+    }
+    Some(UnifiedCorrectionCandidate::new(
+        replacement,
+        CorrectionDecisionSource::Deterministic,
+        origin,
+        ids::SINGLE_LETTER_SUBSTITUTION,
+        TypingErrorClass::LetterSubstitution,
         gate,
     ))
 }

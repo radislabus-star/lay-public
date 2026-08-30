@@ -85,6 +85,37 @@ fn missing_letter_restores_initial_vowel_for_strong_dictionary_center() {
 }
 
 #[test]
+fn missing_letter_prefers_center_backed_reference_over_reference_only_form() {
+    assert!(crate::russian_lexicon::is_center_backed_russian_form(
+        "которое"
+    ));
+    assert!(!crate::russian_lexicon::is_center_backed_russian_form(
+        "каторое"
+    ));
+    assert!(crate::russian_lexicon::is_reference_backed_russian_form(
+        "каторое"
+    ));
+    assert_eq!(correct_missing_letter("кторое").as_deref(), Some("которое"));
+}
+
+#[test]
+fn missing_letter_keeps_known_surface_and_ambiguous_initial_insertion() {
+    assert_eq!(correct_missing_letter("пишем"), None);
+    assert_eq!(correct_missing_letter("воде"), None);
+    assert_eq!(correct_missing_letter("исправленно"), None);
+    assert_eq!(correct_missing_letter("елать"), None);
+}
+
+#[test]
+fn proposal_only_authority_can_veto_a_destructive_phrase_split() {
+    assert_eq!(correct_missing_letter("отточеная"), None);
+    assert_eq!(
+        propose_missing_letter_candidate("отточеная").as_deref(),
+        Some("отточенная")
+    );
+}
+
+#[test]
 fn missing_letter_does_not_invent_initial_vowel_for_non_adjective_surface() {
     assert!(!safe_missing_letter_candidates("лучшить").any(|candidate| candidate == "улучшить"));
     assert_eq!(correct_missing_letter("лучшить"), None);

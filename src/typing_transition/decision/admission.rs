@@ -65,6 +65,27 @@ pub(super) fn candidate_has_apply_authority(
         signals.l3_phrase_milli,
         signals.l4_signed_milli,
     );
+    if verified_current_token_boundary_merge_split(event, candidate, evaluation)
+        && close_single_token_repair_competes_with_boundary(
+            event,
+            candidate_index,
+            candidates,
+            evaluations,
+        )
+        && !context_state_support
+        && !signals.l3_pairwise_certified
+        && signals.l3_phrase_milli < CURRENT.l3_strong_milli
+        && signals.l4_signed_milli < CURRENT.l4_strong_milli
+        && !exact_positive_transition
+    {
+        debug_decision_reject(
+            candidate,
+            "boundary_competes_with_single_token_repair",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
     let high_precision_boundary_shift =
         hard_structural_veto::high_precision_boundary_shift(event, candidate, evaluation);
     if let Some(reason) = hard_structural_veto::boundary_shift_rejection(
@@ -541,6 +562,52 @@ fn close_unresolved_competitor_exists(
     })
 }
 
+fn close_single_token_repair_competes_with_boundary(
+    event: &TypingErrorEvent,
+    boundary_index: usize,
+    candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &[CandidateDecisionEvaluation],
+) -> bool {
+    candidates.iter().enumerate().any(|(index, candidate)| {
+        if index == boundary_index
+            || !matches!(
+                candidate.origin.source_role(),
+                CorrectionSourceRole::L2Surface | CorrectionSourceRole::DeterministicTypo
+            )
+            || matches!(
+                candidate.gate.action,
+                CandidateGateAction::KeepOriginal | CandidateGateAction::Veto
+            )
+            || !matches!(
+                candidate.error_class,
+                TypingErrorClass::MissingLetter
+                    | TypingErrorClass::LetterSubstitution
+                    | TypingErrorClass::ExtraLetter
+                    | TypingErrorClass::RepeatedLetter
+                    | TypingErrorClass::AdjacentTransposition
+            )
+        {
+            return false;
+        }
+        let evaluation = &evaluations[index];
+        if !evaluation.action.verifier_passed
+            || evaluation.action.left_context_changed
+            || evaluation.action.changed_tokens != 1
+            || evaluation.action.edit_operator
+                != verifier::EditTransitionOperator::ReplaceCurrentWord
+        {
+            return false;
+        }
+        let Some((original, replacement)) = current_and_replacement_words(event, candidate) else {
+            return false;
+        };
+        cyrillic_letters_only(&original)
+            && cyrillic_letters_only(&replacement)
+            && known_lexical_state_or_form(&replacement)
+            && damerau_levenshtein(&original, &replacement) <= 1
+    })
+}
+
 fn original_tail_has_same_script_context(event: &TypingErrorEvent) -> bool {
     let words = crate::correction_core::normalized_correction_words(&event.original);
     let Some((current, left)) = words.split_last() else {
@@ -693,8 +760,7 @@ fn verified_current_token_l2_center_repair(
         || crate::text_metrics::sparse_internal_omission_count(&original, &replacement).is_some()
         || (candidate.error_class == TypingErrorClass::CompositeTypo && distance <= 3);
     typed_geometry
-        && (strong_l2_wave_peak_support(&evaluation.signals)
-            || phase_center_separates_candidate(event, candidate_index, candidates, evaluations))
+        && phase_center_separates_candidate(event, candidate_index, candidates, evaluations)
 }
 
 fn verified_current_token_deterministic_typo_repair(

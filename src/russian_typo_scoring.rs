@@ -103,6 +103,9 @@ pub(crate) fn missing_letter_candidate_bonus(lower: &str, candidate: &str) -> f6
     };
     let center_support = if crate::nanda_wave::l2::l2_surface_foundation_has_authority(candidate)
         || crate::russian_lexicon::is_center_backed_russian_form(candidate)
+    {
+        16.0
+    } else if crate::russian_lexicon::is_exact_reference_russian_word(candidate)
         || is_reference_backed_russian_form(candidate)
     {
         12.0
@@ -121,11 +124,21 @@ pub(crate) fn missing_letter_candidate_bonus(lower: &str, candidate: &str) -> f6
         }
 }
 
+pub(crate) fn has_typo_autocorrect_authority(original: &str, candidate: &str) -> bool {
+    let foundation = crate::nanda_wave::l2::l2_surface_foundation_has_authority(candidate);
+    let center = crate::russian_lexicon::is_center_backed_russian_form(candidate);
+    let exact = crate::russian_lexicon::is_exact_reference_russian_word(candidate);
+    let common = crate::lexicon::is_common_ru_word(candidate);
+    let margin = crate::ngram::ru_candidate_margin(candidate, original);
+    foundation || center || ((exact || common) && margin >= 0.0)
+}
+
 fn is_rankable_russian_candidate(candidate: &str) -> bool {
     is_known_russian_word_or_form(candidate)
         || crate::nanda_wave::l2::l2_surface_foundation_contains(candidate)
         || crate::russian_lexicon::is_exact_reference_russian_word(candidate)
         || is_reference_backed_russian_form(candidate)
+        || crate::russian_lexicon::is_reference_backed_short_passive_participle(candidate)
 }
 
 fn is_reference_only_candidate(candidate: &str) -> bool {

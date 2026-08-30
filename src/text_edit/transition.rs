@@ -776,7 +776,7 @@ mod tests {
                 assert_eq!(
                     rejection,
                     TextTransitionRejection::UnsafeEdit {
-                        reason: "unsafe_multiword_autocorrect_scope"
+                        reason: "non_executable_edit_action"
                     }
                 );
                 assert_eq!(
@@ -807,7 +807,7 @@ mod tests {
                 assert_eq!(
                     rejection,
                     TextTransitionRejection::UnsafeEdit {
-                        reason: "unsafe_multiword_autocorrect_scope"
+                        reason: "non_executable_edit_action"
                     }
                 );
                 let action = action.expect("edit action");

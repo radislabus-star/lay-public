@@ -1,0 +1,387 @@
+{
+  "base_commit": "86eef2f794130cefa00d8ff74b75341a1c1ceddf",
+  "closed_count": 42,
+  "milestone": 4,
+  "rows": [
+    {
+      "authority_source": "src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+      "baseline_test": "manual_trigger_runtime::ime::tests::daemon_pending_auto_undo_keeps_precedence_without_consuming_it",
+      "cluster": "typing_assist_surface",
+      "disposition": "SUPERSEDED_OUTPUT_ROUTE_ID_REPLACED",
+      "first_loss_layer": "OutputRouteOwner",
+      "replacement_proof": "manual_trigger_runtime::ime::tests::daemon_pending_auto_undo_keeps_physical_grab_ownership_without_consuming_it",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "authority_source": "src/ru_typo/repeated.rs",
+      "baseline_test": "tests::typing_assist_rules::exact_layout::typing_assist_auto_replace_pipeline_avoids_risky_deletions",
+      "cluster": "typing_assist_surface",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_REPEATED_LETTER_OWNER",
+      "first_loss_layer": "DeterministicCandidateBirth",
+      "replacement_proof": "tests::typing_assist_rules::exact_layout::typing_assist_auto_replace_pipeline_avoids_risky_deletions",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "authority_source": "src/phrase_reader/moved_prefix.rs",
+      "baseline_test": "tests::typing_assist_rules::pipeline::typing_assist_each_default_rule_has_isolated_positive_case",
+      "cluster": "typing_assist_surface",
+      "disposition": "SUPERSEDED_UNPROVEN_BOUNDARY_AUTOAPPLY_REPLACED_BY_AUTHORITY_SPLIT",
+      "first_loss_layer": "AutomaticApplyAuthority",
+      "replacement_proof": "tests::typing_assist_rules::pipeline::typing_assist_each_default_rule_has_isolated_positive_case",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "authority_source": "src/ru_typo/repeated.rs",
+      "baseline_test": "tests::typing_assist_rules::safety_regression::typing_assist_regression_suite_100_cases",
+      "cluster": "typing_assist_surface",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_REPEATED_LETTER_OWNER",
+      "first_loss_layer": "DeterministicCandidateBirth",
+      "replacement_proof": "tests::typing_assist_rules::safety_regression::typing_assist_regression_suite_100_cases",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "authority_source": "src/phrase_reader/moved_prefix.rs",
+      "baseline_test": "tests::typing_assist_rules::typo_families::phrase_spacing::typing_assist_moves_letter_from_next_word_back",
+      "cluster": "typing_assist_surface",
+      "disposition": "SUPERSEDED_UNPROVEN_BOUNDARY_AUTOAPPLY_REPLACED_BY_AUTHORITY_SPLIT",
+      "first_loss_layer": "AutomaticApplyAuthority",
+      "replacement_proof": "tests::typing_assist_rules::typo_families::phrase_spacing::typing_assist_moves_letter_from_next_word_back",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "authority_source": "src/ru_typo/repeated.rs",
+      "baseline_test": "tests::typing_assist_rules::typo_families::repeated_extra::typing_assist_fixes_extra_repeated_letter",
+      "cluster": "typing_assist_surface",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_REPEATED_LETTER_OWNER",
+      "first_loss_layer": "DeterministicCandidateBirth",
+      "replacement_proof": "tests::typing_assist_rules::typo_families::repeated_extra::typing_assist_fixes_extra_repeated_letter",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "authority_source": "src/bin/lay_nanda_wave_eval/dirty_log_collect.rs",
+      "baseline_test": "dirty_log_collect::tests::suffix_feedback_preserves_review_and_negative_transitions",
+      "cluster": "remaining_semantic",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_RECONSTRUCTED_FEEDBACK_QUARANTINE",
+      "first_loss_layer": "FeedbackLearningRole",
+      "replacement_proof": "dirty_log_collect::tests::suffix_feedback_preserves_review_and_negative_transitions",
+      "target": "bin:lay-nanda-wave-eval"
+    },
+    {
+      "authority_source": "src/architecture_contract.rs",
+      "baseline_test": "architecture_contract::tests::exact_auto_undo_is_reverted_evidence_in_both_live_adapters",
+      "cluster": "architecture_integration",
+      "disposition": "SUPERSEDED_CALL_SITE_ASSERTION_REPLACED",
+      "first_loss_layer": "StaticArchitectureAssertion",
+      "replacement_proof": "architecture_contract::tests::exact_auto_undo_is_reverted_evidence_in_both_live_adapters",
+      "target": "lib:lay"
+    },
+    {
+      "authority_source": "src/layout_autoswitch/ascii/phrase.rs",
+      "baseline_test": "layout_autoswitch::ascii::phrase::tests::whole_phrase_projection_uses_l2_form_centers_for_noisy_words",
+      "cluster": "remaining_semantic",
+      "disposition": "SUPERSEDED_COMPOUND_LAYOUT_EXPECTATION_REPLACED",
+      "first_loss_layer": "CandidateComposition",
+      "replacement_proof": "layout_autoswitch::ascii::phrase::tests::whole_phrase_projection_does_not_append_a_second_typo_repair",
+      "target": "lib:lay"
+    },
+    {
+      "authority_source": "src/nanda_wave/journal_record.rs",
+      "baseline_test": "nanda_wave::journal_record::tests::trace_record_lists_participating_cells",
+      "cluster": "remaining_semantic",
+      "disposition": "SUPERSEDED_CELL_ID_REPLACED",
+      "first_loss_layer": "ProducerIdentity",
+      "replacement_proof": "nanda_wave::journal_record::tests::trace_record_lists_participating_cells",
+      "target": "lib:lay"
+    },
+    {
+      "authority_source": "src/nanda_wave/llmwave.rs",
+      "baseline_test": "nanda_wave::llmwave::tests::phrase_experience_jsonl_loads_training_text",
+      "cluster": "remaining_semantic",
+      "disposition": "HIDDEN_INPUT_DEPENDENCY_REMOVED",
+      "first_loss_layer": "TestFixtureAuthority",
+      "replacement_proof": "nanda_wave::llmwave::tests::phrase_experience_jsonl_loads_training_text",
+      "target": "lib:lay"
+    },
+    {
+      "authority_source": "src/phrase_reader/split_pair.rs",
+      "baseline_test": "phrase_reader::tests::merges_accidental_split_word_but_keeps_normal_pair",
+      "cluster": "phrase_boundary",
+      "disposition": "SUPERSEDED_UNSAFE_SPLIT_EXPECTATION_REPLACED",
+      "first_loss_layer": "CandidateBirthSafety",
+      "replacement_proof": "phrase_reader::tests::merges_accidental_split_word_but_keeps_normal_pair",
+      "target": "lib:lay"
+    },
+    {
+      "authority_source": "src/text_edit/transition.rs",
+      "baseline_test": "text_edit::transition::tests::text_transition_blocks_two_word_cursor_teleport_edit",
+      "cluster": "edit_safety_contract",
+      "disposition": "SUPERSEDED_REJECTION_REASON_REPLACED",
+      "first_loss_layer": "EditRejectionIdentity",
+      "replacement_proof": "text_edit::transition::tests::text_transition_blocks_two_word_cursor_teleport_edit",
+      "target": "lib:lay"
+    },
+    {
+      "authority_source": "src/text_edit/transition.rs",
+      "baseline_test": "text_edit::transition::tests::text_transition_blocks_unsafe_multiword_edit",
+      "cluster": "edit_safety_contract",
+      "disposition": "SUPERSEDED_REJECTION_REASON_REPLACED",
+      "first_loss_layer": "EditRejectionIdentity",
+      "replacement_proof": "text_edit::transition::tests::text_transition_blocks_unsafe_multiword_edit",
+      "target": "lib:lay"
+    },
+    {
+      "authority_source": "src/typing_rule_graph/rules/helpers.rs",
+      "baseline_test": "typing_context::tests::no_context_or_english_context_keeps_ascii_to_ru_disabled",
+      "cluster": "remaining_semantic",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_PHYSICAL_LAYOUT_PREFIX",
+      "first_loss_layer": "ContextualLayoutCandidateBirth",
+      "replacement_proof": "typing_context::tests::no_context_or_english_context_keeps_ascii_to_ru_disabled",
+      "target": "lib:lay"
+    },
+    {
+      "authority_source": "src/ru_typo/missing.rs",
+      "baseline_test": "typing_pipeline::tests::explain_reports_chosen_candidate",
+      "cluster": "remaining_semantic",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_CENTER_BACKED_RANKING",
+      "first_loss_layer": "CandidateRanking",
+      "replacement_proof": "typing_pipeline::tests::explain_reports_chosen_candidate",
+      "target": "lib:lay"
+    },
+    {
+      "authority_source": "src/typing_transition/live_candidate.rs",
+      "baseline_test": "typing_transition::live_candidate::tests::bounded_readout_preserves_exact_and_corrected_prefix_lanes",
+      "cluster": "remaining_semantic",
+      "disposition": "HIDDEN_EVIDENCE_REQUIREMENT_MADE_EXPLICIT",
+      "first_loss_layer": "TestEvidenceIdentity",
+      "replacement_proof": "typing_transition::live_candidate::tests::bounded_readout_preserves_exact_and_corrected_prefix_lanes",
+      "target": "lib:lay"
+    },
+    {
+      "authority_source": "src/bin/lay_ibus_engine/composition_commit.rs",
+      "baseline_test": "every_ime_space_route_finishes_the_full_precognition_boundary",
+      "cluster": "phrase_boundary",
+      "disposition": "SUPERSEDED_STATIC_ROUTE_ASSERTION_REPLACED",
+      "first_loss_layer": "StaticArchitectureAssertion",
+      "replacement_proof": "every_ime_space_route_finishes_the_full_precognition_boundary",
+      "target": "test:ime_space_boundary_contract"
+    },
+    {
+      "authority_source": "src/typing_transition/decision/admission.rs",
+      "baseline_test": "daemon_space_and_enter_decoders_share_input_gate_replacement_contract",
+      "cluster": "architecture_integration",
+      "disposition": "SUPERSEDED_AUTOAPPLY_CASES_SPLIT_BY_AUTHORITY",
+      "first_loss_layer": "AutomaticApplyAuthority",
+      "replacement_proof": "daemon_space_and_enter_decoders_share_input_gate_replacement_contract",
+      "target": "test:input_gate_space_contract"
+    },
+    {
+      "authority_source": "src/typing_transition/decision/admission.rs",
+      "baseline_test": "space_autocorrect_keeps_existing_public_gate_contract",
+      "cluster": "architecture_integration",
+      "disposition": "SUPERSEDED_AUTOAPPLY_CASES_SPLIT_BY_AUTHORITY",
+      "first_loss_layer": "AutomaticApplyAuthority",
+      "replacement_proof": "ambiguous_known_word_drift_is_suggest_only",
+      "target": "test:input_gate_space_contract"
+    },
+    {
+      "authority_source": "src/nanda_wave/context_phase/compiler.rs",
+      "baseline_test": "feedback_overlay_keeps_live_text_out_of_the_compiled_packet",
+      "cluster": "architecture_integration",
+      "disposition": "SUPERSEDED_FEEDBACK_PROMOTION_REPLACED_BY_CENSORING",
+      "first_loss_layer": "FeedbackAdmission",
+      "replacement_proof": "feedback_overlay_keeps_live_text_out_of_the_compiled_packet",
+      "target": "test:l3_context_feedback_overlay_contract"
+    },
+    {
+      "authority_source": "src/correction_core.rs",
+      "baseline_test": "restore_word_stream_reuses_one_loaded_core",
+      "cluster": "architecture_integration",
+      "disposition": "SUPERSEDED_UNFRAMED_CLI_AUTOCORRECT_REPLACED",
+      "first_loss_layer": "CLIAutomaticApplyAuthority",
+      "replacement_proof": "restore_word_stream_reuses_one_loaded_fail_closed_core",
+      "target": "test:restore_word_cli"
+    },
+    {
+      "authority_source": "src/correction_core.rs",
+      "baseline_test": "restore_word_uses_the_shared_correction_core",
+      "cluster": "architecture_integration",
+      "disposition": "SUPERSEDED_UNFRAMED_CLI_AUTOCORRECT_REPLACED",
+      "first_loss_layer": "CLIAutomaticApplyAuthority",
+      "replacement_proof": "restore_word_keeps_unproven_typos_without_a_lexical_authority_frame",
+      "target": "test:restore_word_cli"
+    },
+    {
+      "authority_source": "src/text_edit/transition.rs",
+      "baseline_test": "transition_proof_constructor_and_fields_are_not_public_capabilities",
+      "cluster": "edit_safety_contract",
+      "disposition": "SUPERSEDED_AUTHORITY_VARIANT_NAME_REPLACED",
+      "first_loss_layer": "StaticArchitectureAssertion",
+      "replacement_proof": "transition_proof_constructor_and_fields_are_not_public_capabilities",
+      "target": "test:text_edit_gate_contract"
+    },
+    {
+      "authority_source": "extension/lay@radislabus-star.github.io/lay-impl.js",
+      "baseline_test": "disabled_lay_cannot_be_reactivated_by_input_source_sync",
+      "cluster": "edit_safety_contract",
+      "disposition": "SUPERSEDED_INPUT_SOURCE_OWNER_ASSERTION_REPLACED",
+      "first_loss_layer": "RuntimeEnablementOwner",
+      "replacement_proof": "input_source_observation_cannot_reactivate_disabled_lay",
+      "target": "test:tray_ui_contract"
+    },
+    {
+      "authority_source": "src/typing_rule_graph/rules/helpers.rs",
+      "baseline_test": "alternating_language_stress_cases_hold_boundaries",
+      "cluster": "typing_assist_surface",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_PHYSICAL_LAYOUT_TOKEN",
+      "first_loss_layer": "LayoutCandidateBirth",
+      "replacement_proof": "alternating_language_stress_cases_hold_boundaries",
+      "target": "test:typing_assist_alternating_stress"
+    },
+    {
+      "authority_source": "src/layout_autoswitch/ascii/candidate.rs",
+      "baseline_test": "alternating_layout_sentences_fix_every_second_word",
+      "cluster": "typing_assist_surface",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOAPPLY_REPLACED",
+      "first_loss_layer": "AutomaticApplyAuthority",
+      "replacement_proof": "alternating_layout_sentences_apply_only_admitted_projections",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/layout_autoswitch/ascii/candidate.rs",
+      "baseline_test": "beta_alternating_layout_sentences_keep_language_boundaries",
+      "cluster": "typing_assist_surface",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOAPPLY_REPLACED",
+      "first_loss_layer": "AutomaticApplyAuthority",
+      "replacement_proof": "beta_alternating_layout_sentences_keep_language_boundaries",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/layout_autoswitch/ascii/word.rs",
+      "baseline_test": "clean_shell_like_commands_and_symbols_are_not_rewritten",
+      "cluster": "typing_assist_surface",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_PROTECTED_ASCII_GUARD",
+      "first_loss_layer": "CandidateBirthSafety",
+      "replacement_proof": "clean_shell_like_commands_and_symbols_are_not_rewritten",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/layout_autoswitch/cyrillic.rs",
+      "baseline_test": "cli_commands_stay_ascii_and_recover_from_ru_layout",
+      "cluster": "typing_assist_surface",
+      "disposition": "SUPERSEDED_AMBIGUOUS_SHORT_LAYOUT_REPLACED",
+      "first_loss_layer": "AutomaticApplyAuthority",
+      "replacement_proof": "cli_commands_stay_ascii_and_ru_layout_forms_never_mutate_to_a_third_surface",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/typing_rule_graph/rules.rs",
+      "baseline_test": "confident_en_to_ru_layout_words_use_fast_path_without_rewriting_english",
+      "cluster": "typing_assist_surface",
+      "disposition": "SUPERSEDED_PRODUCER_ID_REPLACED_BY_SEMANTIC_OUTCOME",
+      "first_loss_layer": "ProducerIdentity",
+      "replacement_proof": "confident_en_to_ru_layout_words_use_layout_authority_without_rewriting_english",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/typing_rule_graph/rules/helpers.rs",
+      "baseline_test": "dynamic_context_allows_ascii_to_ru_in_russian_sentence",
+      "cluster": "typing_assist_surface",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_PHYSICAL_LAYOUT_TOKEN",
+      "first_loss_layer": "LayoutCandidateBirth",
+      "replacement_proof": "dynamic_context_allows_ascii_to_ru_in_russian_sentence",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/ru_typo/repeated.rs",
+      "baseline_test": "forum_like_clean_mixed_sentences_do_not_get_rewritten",
+      "cluster": "typing_assist_surface",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_KNOWN_SURFACE_RETENTION",
+      "first_loss_layer": "CandidateBirthSafety",
+      "replacement_proof": "forum_like_clean_mixed_sentences_do_not_get_rewritten",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/layout_autoswitch/ascii/candidate.rs",
+      "baseline_test": "forum_like_mixed_matrix_autofixes_contextual_layout_words_and_keeps_boundaries",
+      "cluster": "typing_assist_surface",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOAPPLY_REPLACED",
+      "first_loss_layer": "AutomaticApplyAuthority",
+      "replacement_proof": "forum_like_mixed_matrix_only_applies_exact_layout_projection_and_keeps_boundaries",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/layout_autoswitch/ascii/candidate.rs",
+      "baseline_test": "forum_like_mixed_sentences_preserve_spaces_and_terms",
+      "cluster": "typing_assist_surface",
+      "disposition": "SUPERSEDED_FRAMELESS_AUTOAPPLY_REPLACED",
+      "first_loss_layer": "AutomaticApplyAuthority",
+      "replacement_proof": "forum_like_mixed_sentences_preserve_spaces_and_terms",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/ru_typo/substitution.rs",
+      "baseline_test": "live_journal_false_positive_candidates_are_rejected",
+      "cluster": "typing_assist_surface",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_PROPOSAL_ONLY_COMPETITOR",
+      "first_loss_layer": "CandidateCompetition",
+      "replacement_proof": "live_journal_false_positive_candidates_are_rejected",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/ru_typo/missing.rs",
+      "baseline_test": "live_user_sentences_keep_spaces_after_typing_assist",
+      "cluster": "typing_assist_surface",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_KNOWN_SURFACE_RETENTION",
+      "first_loss_layer": "CandidateBirthSafety",
+      "replacement_proof": "live_user_sentences_keep_spaces_after_typing_assist",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/ru_typo/missing.rs",
+      "baseline_test": "normal_autocorrect_keeps_safe_rules_and_rejects_aggressive_guesses",
+      "cluster": "typing_assist_surface",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_CENTER_BACKED_RANKING",
+      "first_loss_layer": "CandidateRanking",
+      "replacement_proof": "normal_autocorrect_keeps_safe_rules_and_rejects_aggressive_guesses",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/layout_autoswitch/cyrillic.rs",
+      "baseline_test": "normal_mode_autocorrects_confident_english_typed_in_ru_layout",
+      "cluster": "typing_assist_surface",
+      "disposition": "SUPERSEDED_AMBIGUOUS_SHORT_LAYOUT_REPLACED",
+      "first_loss_layer": "AutomaticApplyAuthority",
+      "replacement_proof": "normal_mode_only_applies_exact_projection_to_english_typed_in_ru_layout",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/ru_typo/missing.rs",
+      "baseline_test": "one_letter_function_words_do_not_steal_next_word_prefix",
+      "cluster": "typing_assist_surface",
+      "disposition": "CURRENT_CONTRACT_RUNTIME_REPAIR_KNOWN_SURFACE_RETENTION",
+      "first_loss_layer": "CandidateBirthSafety",
+      "replacement_proof": "one_letter_function_words_do_not_steal_next_word_prefix",
+      "target": "test:typing_assist_mixed_corpus"
+    },
+    {
+      "authority_source": "src/layout_autoswitch/cyrillic.rs",
+      "baseline_test": "short_english_words_typed_in_ru_layout_are_recovered_between_russian_words",
+      "cluster": "typing_assist_surface",
+      "disposition": "SUPERSEDED_BROAD_SHORT_LAYOUT_EXPECTATION_REPLACED_BY_EXACT_PROJECTION_MATRIX",
+      "first_loss_layer": "AutomaticApplyAuthority",
+      "replacement_proof": "short_english_words_typed_in_ru_layout_are_recovered_between_russian_words",
+      "target": "test:typing_assist_short_alternating"
+    },
+    {
+      "authority_source": "src/layout_autoswitch/ascii/word.rs",
+      "baseline_test": "short_russian_words_typed_in_us_layout_are_recovered_between_english_words_when_not_ambiguous",
+      "cluster": "typing_assist_surface",
+      "disposition": "SUPERSEDED_BROAD_SHORT_LAYOUT_EXPECTATION_REPLACED_BY_EXACT_PROJECTION_MATRIX",
+      "first_loss_layer": "AutomaticApplyAuthority",
+      "replacement_proof": "short_russian_words_typed_in_us_layout_are_recovered_between_english_words_when_not_ambiguous",
+      "target": "test:typing_assist_short_alternating"
+    }
+  ],
+  "schema": "lay.tech-debt.td007.milestone-ledger.v1",
+  "verdict": "MILESTONE_4_LEDGER_CLOSED"
+}

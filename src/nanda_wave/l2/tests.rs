@@ -70,25 +70,17 @@ fn trailing_one_letter_split_evidence_does_not_bypass_whole_word_competition() {
 }
 
 #[test]
-fn layout_sequence_is_one_exact_projection_without_a_second_typo_step() {
+fn noisy_layout_sequence_is_not_born_without_a_second_typo_step() {
     let original = "djn nfrjt djn yt gthtdfhfxbdftncz ";
     let l1 = run_l1(original);
     let candidates = run_l2(original, &l1);
 
-    let candidate = candidates
-        .iter()
-        .find(|candidate| {
-            candidate.source == LAYOUT_SEQUENCE_CELL
-                && candidate.text == "вот такое вот не переварачивается"
-        })
-        .unwrap_or_else(|| panic!("missing exact layout sequence: {candidates:?}"));
-    let (_traces, decision) =
-        crate::nanda_wave::l3::run_l3(original, std::slice::from_ref(candidate));
-    assert!(matches!(
-        decision,
-        crate::nanda_wave::WaveDecision::Suggest { ref text, .. }
-            if text == "вот такое вот не переварачивается "
-    ));
+    assert!(
+        candidates
+            .iter()
+            .all(|candidate| candidate.source != LAYOUT_SEQUENCE_CELL),
+        "noisy raw projection gained sequence authority: {candidates:?}"
+    );
 }
 
 #[test]
@@ -172,21 +164,15 @@ fn mixed_ru_en_context_does_not_emit_raw_malformed_layout_candidate() {
 }
 
 #[test]
-fn guard_prefix_withholds_authority_from_born_layout_candidate() {
+fn guard_prefix_blocks_layout_candidate_before_context_ranking() {
     let original = "api djn ";
     let l1 = run_l1(original);
     let candidates = run_l2(original, &l1);
-    let candidate = candidates
-        .iter()
-        .find(|candidate| candidate.text == "api вот")
-        .expect("exact layout projection remains visible in the lattice");
-    let (_traces, decision) =
-        crate::nanda_wave::l3::run_l3(original, std::slice::from_ref(candidate));
-    assert_eq!(
-        decision,
-        crate::nanda_wave::WaveDecision::Veto {
-            reason: "structural_relation_veto"
-        }
+    assert!(
+        candidates
+            .iter()
+            .all(|candidate| candidate.text != "api вот"),
+        "protected technical context must block layout candidate birth: {candidates:?}"
     );
 }
 

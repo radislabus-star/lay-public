@@ -1,10 +1,10 @@
-# typed	expected
-njkmrj	только
-vjue	могу
-yt	не
-hf,jnftn	работает
-'nj	это
-ашдуы	files
-еукьштфд	terminal
-кгы	rus
-утп	eng
+# typed	expected	disposition
+njkmrj	только	keep
+vjue	могу	convert
+yt	не	convert
+hf,jnftn	работает	convert
+'nj	это	convert
+ашдуы	files	convert
+еукьштфд	terminal	convert
+кгы	rus	convert
+утп	eng	convert

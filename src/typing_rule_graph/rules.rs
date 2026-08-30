@@ -15,8 +15,10 @@ use super::types::TypingRuleContext;
 mod helpers;
 use helpers::TextRule;
 use helpers::{
-    apply_core_then_word_rule, apply_last_two_word_rule, apply_last_word_rule,
+    apply_core_then_word_rule, apply_last_physical_layout_token_rule,
+    apply_last_trailing_layout_token_rule, apply_last_two_word_rule, apply_last_word_rule,
     apply_short_left_word_rule, apply_token_word_rule, cleanup_extra_letters_after_ru_layout,
+    last_token_has_physical_layout_prefix, last_word_has_protected_ascii_context,
     layout_auto_allowed,
 };
 
@@ -57,6 +59,12 @@ pub(crate) fn apply_fast_layout_en_to_ru(ctx: &TypingRuleContext<'_>) -> Option<
         return None;
     }
     apply_core_then_word_rule(ctx, correct_confident_wrong_layout_ascii_word)
+        .or_else(|| {
+            apply_last_trailing_layout_token_rule(ctx, correct_confident_wrong_layout_ascii_word)
+        })
+        .or_else(|| {
+            apply_last_physical_layout_token_rule(ctx, correct_confident_wrong_layout_ascii_word)
+        })
         .map(|replacement| cleanup_extra_letters_after_ru_layout(&replacement))
 }
 
@@ -94,9 +102,18 @@ pub(super) fn apply_layout_en_to_ru(ctx: &TypingRuleContext<'_>) -> Option<Strin
     }
     if let Some(replacement) = correct_wrong_layout_ascii_phrase(ctx.core)
         .or_else(|| correct_wrong_layout_ascii_word(ctx.core))
+        .or_else(|| apply_last_two_word_rule(ctx, correct_wrong_layout_ascii_phrase))
+        .or_else(|| apply_last_trailing_layout_token_rule(ctx, correct_wrong_layout_ascii_word))
     {
         Some(cleanup_extra_letters_after_ru_layout(&replacement))
-    } else if ascii_layout_prefix_can_be_letter(ctx.token_leading) {
+    } else if let Some(replacement) =
+        apply_last_physical_layout_token_rule(ctx, correct_wrong_layout_ascii_word)
+    {
+        Some(cleanup_extra_letters_after_ru_layout(&replacement))
+    } else if last_token_has_physical_layout_prefix(ctx)
+        || ascii_layout_prefix_can_be_letter(ctx.token_leading)
+        || last_word_has_protected_ascii_context(ctx)
+    {
         None
     } else {
         apply_word_rule(ctx, correct_wrong_layout_ascii_word)
@@ -110,9 +127,20 @@ pub(super) fn apply_layout_en_to_ru_experimental(ctx: &TypingRuleContext<'_>) ->
     }
     if let Some(replacement) = correct_wrong_layout_ascii_phrase(ctx.core)
         .or_else(|| correct_wrong_layout_ascii_word_experimental(ctx.core))
+        .or_else(|| apply_last_two_word_rule(ctx, correct_wrong_layout_ascii_phrase))
+        .or_else(|| {
+            apply_last_trailing_layout_token_rule(ctx, correct_wrong_layout_ascii_word_experimental)
+        })
     {
         Some(cleanup_extra_letters_after_ru_layout(&replacement))
-    } else if ascii_layout_prefix_can_be_letter(ctx.token_leading) {
+    } else if let Some(replacement) =
+        apply_last_physical_layout_token_rule(ctx, correct_wrong_layout_ascii_word_experimental)
+    {
+        Some(cleanup_extra_letters_after_ru_layout(&replacement))
+    } else if last_token_has_physical_layout_prefix(ctx)
+        || ascii_layout_prefix_can_be_letter(ctx.token_leading)
+        || last_word_has_protected_ascii_context(ctx)
+    {
         None
     } else {
         apply_word_rule(ctx, correct_wrong_layout_ascii_word_experimental)

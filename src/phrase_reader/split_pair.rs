@@ -3,7 +3,7 @@ use crate::phrase_lexicon::{
     looks_like_short_function_chain_glued, looks_like_short_function_word_glued_to_known_word,
 };
 use crate::phrase_score::NGRAM_SPLIT_REJECT_MARGIN;
-use crate::ru_typo::correct_repeated_letter;
+use crate::ru_typo::propose_repeated_letter_candidate;
 use crate::russian_lexicon::is_known_russian_word_or_form;
 use crate::russian_typo_scoring::ngram_allows_ru_candidate;
 use crate::text_case::apply_word_case;
@@ -30,6 +30,12 @@ pub fn correct_split_word_pair(text: &str) -> Option<String> {
     let lower = glued.to_lowercase();
     (left_lower.chars().count() != 1 || crate::lexicon::is_common_ru_word(&lower)).then_some(())?;
     let direct_glued_is_known = is_known_russian_word_or_form(&lower);
+    let repeats_boundary = left_lower.chars().next_back() == right_lower.chars().next();
+    let exact_glued_has_authority = crate::russian_lexicon::is_exact_reference_russian_word(&lower)
+        || crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower);
+    if repeats_boundary && !exact_glued_has_authority {
+        return None;
+    }
     let glued_candidate = split_word_merge_candidate(&glued, &lower);
     let glued_is_preferable = glued_candidate.as_ref().is_some_and(|(_, lower)| {
         ngram_allows_ru_candidate(lower, text, NGRAM_SPLIT_REJECT_MARGIN)
@@ -91,7 +97,7 @@ pub fn correct_split_word_pair(text: &str) -> Option<String> {
 #[rustfmt::skip]
 fn split_word_merge_candidate(original_glued: &str, lower: &str) -> Option<(String, String)> {
     if is_known_russian_word_or_form(lower) { return Some((apply_word_case(original_glued, lower), lower.to_string())); }
-    let repaired = correct_repeated_letter(original_glued)?;
+    let repaired = propose_repeated_letter_candidate(original_glued)?;
     let repaired_lower = repaired.to_lowercase();
     is_known_russian_word_or_form(&repaired_lower).then_some((repaired, repaired_lower))
 }

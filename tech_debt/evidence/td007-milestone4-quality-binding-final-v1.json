@@ -1,0 +1,108 @@
+{
+  "claim_boundary": {
+    "installed_runtime_changed": false,
+    "local_quality_only": true,
+    "performance_or_latency_claimed": false,
+    "remote_host_used": false,
+    "runtime_authority_changed": false
+  },
+  "execution": {
+    "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)",
+    "cpus": 8,
+    "exit_code": 0,
+    "hostname": "t480",
+    "kernel": "7.0.0-22-generic",
+    "observed_after_utc": "2026-08-30T11:25:54.953995Z",
+    "preflight_recorded_at_utc": "2026-08-30T11:02:28.794772Z",
+    "raw_receipt_mtime_utc": "2026-08-30T11:25:28.947582Z",
+    "rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
+    "rustc_commit": "8bab26f4f68e0e26f0bb7960be334d5b520ea452"
+  },
+  "inputs": {
+    "corpus": {
+      "mode": "0644",
+      "path": "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/corpus-852582.txt",
+      "sha256": "abb9d71495acc27b7619b24621568ea72263f9bd40201aab9fffa1188fbff8f6",
+      "size": 14262280
+    },
+    "package": {
+      "mode": "0644",
+      "path": "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7",
+      "size": 77962328
+    }
+  },
+  "invocation": {
+    "argv": [
+      "target/release/lay-nanda-wave-train",
+      "--prove-l1-typed-basin-quality",
+      "/home/ubu/.cache/lay/l1-peak-search-baseline-2026-08-13/corpus-852582.txt",
+      "--memory",
+      "/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+      "--heldout-per-class",
+      "20000",
+      "--clean-limit",
+      "0",
+      "--workers",
+      "20",
+      "--receipt",
+      "tech_debt/evidence/td007-milestone4-quality-13x20000-final-v1.json"
+    ],
+    "cwd": "/home/ubu/projects/lay-l1-exact-peak-search"
+  },
+  "proof_binary": {
+    "mode": "0775",
+    "mtime_utc": "2026-08-30T11:02:13.964404Z",
+    "path": "target/release/lay-nanda-wave-train",
+    "sha256": "a327ceee90789dba4e413896dfce1d151de7ece31ec9bb310c9d5f02c4e267ee",
+    "size": 12621872
+  },
+  "raw_receipt": {
+    "mode": "0600",
+    "path": "tech_debt/evidence/td007-milestone4-quality-13x20000-final-v1.json",
+    "sha256": "3a9c79c595c3fdda80b208886377a68d1af39813584f9bdb844422e94e29d879",
+    "size": 539662
+  },
+  "result": {
+    "aggregate_unique_top1_percent": 98.94062775507882,
+    "authoritative_false_authority": 0,
+    "authoritative_false_singleton": 0,
+    "clean_cases": 852582,
+    "clean_preservation_percent": 100.0,
+    "compatibility_observer_false_authority": 4,
+    "damaged_cases": 260000,
+    "grounded_legacy_candidate_losses": 0,
+    "minimum_class_lattice_coverage": {
+      "class": "layout_projection",
+      "percent": 99.215
+    },
+    "minimum_class_unique_top1": {
+      "class": "non_adjacent_transposition",
+      "percent": 97.0530771735591
+    },
+    "target_retention_percent": 100.0,
+    "verdict": "PASS_C_QUALITY",
+    "wall_ms_diagnostic_only": 1365339
+  },
+  "schema": "lay.td007.milestone4-quality-binding.v1",
+  "source_closure": {
+    "after": {
+      "files": 1223,
+      "git_head": "86eef2f794130cefa00d8ff74b75341a1c1ceddf",
+      "sha256": "7543609f4be5f321398e2d0d687ddc9dd52642cfa6af1726b616653f214544d9"
+    },
+    "before": {
+      "files": 1223,
+      "git_head": "86eef2f794130cefa00d8ff74b75341a1c1ceddf",
+      "sha256": "7543609f4be5f321398e2d0d687ddc9dd52642cfa6af1726b616653f214544d9"
+    },
+    "changed_during_execution": false
+  },
+  "test_contract": {
+    "known_failures_path": "scripts/test-lanes/known_failures.json",
+    "known_failures_sha256": "54fcc2066d36e00d7782f68a24d23d842b5513af0d725f3be020443b738e7b1d",
+    "manifest_path": "scripts/test-lanes/manifest.json",
+    "manifest_sha256": "75a3aa84240b0e9cf4c5cba52246e06c1a7fc8fa39e6a30638d29cbe23483c29"
+  },
+  "verdict": "PASS_BOUND_QUALITY_EVIDENCE"
+}

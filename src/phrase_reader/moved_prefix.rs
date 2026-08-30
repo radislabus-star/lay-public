@@ -36,6 +36,9 @@ fn boundary_shift_proposal(text: &str) -> Option<BoundaryShiftProposal> {
 
     let original_right = pair.right.to_lowercase();
     let original_left = pair.left.to_lowercase();
+    if has_exact_cyrillic_layout_projection(&original_right) {
+        return None;
+    }
     if original_left.chars().count() == 1
         && crate::phrase_lexicon::is_one_letter_russian_function_word(&original_left)
     {
@@ -68,12 +71,6 @@ fn boundary_shift_proposal(text: &str) -> Option<BoundaryShiftProposal> {
         &left_candidate_lower,
         &right_candidate_lower,
     );
-    if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
-        eprintln!(
-            "boundary-shift original={:?} {:?} candidate={:?} {:?} readout={readout:?}",
-            original_left, original_right, left_candidate_lower, right_candidate_lower
-        );
-    }
     if !readout.candidate_settles() {
         return None;
     }
@@ -81,10 +78,30 @@ fn boundary_shift_proposal(text: &str) -> Option<BoundaryShiftProposal> {
     let clean_left_allows_direct_apply = !original_left_is_clean
         || matches!(moved, 'ы' | 'ь' | 'ъ')
         || readout.candidate_left.exact_center;
+    if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
+        eprintln!(
+            "boundary-shift original={:?} {:?} candidate={:?} {:?} mass_gain={} direct_apply_mass={} clean_left={} clean_left_allows={} readout={readout:?}",
+            original_left,
+            original_right,
+            left_candidate_lower,
+            right_candidate_lower,
+            readout.mass_gain(),
+            readout.has_direct_apply_mass(),
+            original_left_is_clean,
+            clean_left_allows_direct_apply,
+        );
+    }
     Some(BoundaryShiftProposal {
         replacement: format!("{}{}", candidate, pair.right_trailing),
         direct_apply_mass: readout.has_direct_apply_mass() && clean_left_allows_direct_apply,
     })
+}
+
+fn has_exact_cyrillic_layout_projection(word: &str) -> bool {
+    let physical_projection = crate::dict::convert(word, crate::dict::Direction::Ru2Us);
+    crate::layout_autoswitch::correct_wrong_layout_cyrillic_word(word)
+        .or_else(|| crate::layout_autoswitch::correct_wrong_layout_cyrillic_word_experimental(word))
+        .is_some_and(|candidate| candidate.eq_ignore_ascii_case(&physical_projection))
 }
 
 #[cfg(test)]
@@ -142,5 +159,19 @@ mod tests {
         );
         assert_eq!(propose_moved_prefix_letter_pair("ьно коммит"), None);
         assert_eq!(propose_moved_prefix_letter_pair("Проверь Сделай"), None);
+        assert_eq!(propose_moved_prefix_letter_pair("после дштгч"), None);
+        assert_eq!(correct_moved_prefix_letter_pair("после дштгч"), None);
+        assert_eq!(
+            correct_moved_prefix_letter_pair("включена прекогниция"),
+            None
+        );
+        assert_eq!(
+            propose_moved_prefix_letter_pair("расчет ыприблизительные"),
+            Some("расчеты приблизительные".to_string())
+        );
+        assert_eq!(
+            correct_moved_prefix_letter_pair("расчет ыприблизительные"),
+            None
+        );
     }
 }

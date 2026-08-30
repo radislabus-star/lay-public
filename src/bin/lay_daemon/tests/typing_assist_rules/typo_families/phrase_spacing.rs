@@ -72,4 +72,19 @@ fn typing_assist_moves_letter_from_next_word_back() {
         };
         assert_eq!(got, Some(expected.clone()), "input={input:?}");
     }
+
+    for (input, unsafe_boundary_replacement) in [
+        ("расчет ыприблизительные ", "расчеты приблизительные "),
+        (
+            "все расчет ыприблизительные ",
+            "все расчеты приблизительные ",
+        ),
+    ] {
+        let selected = apply_typing_assist_to_text_tail(input);
+        assert_ne!(
+            selected.as_deref(),
+            Some(unsafe_boundary_replacement),
+            "unproven boundary proposal gained automatic authority: input={input:?}"
+        );
+    }
 }

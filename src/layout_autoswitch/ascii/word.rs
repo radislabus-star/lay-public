@@ -12,6 +12,9 @@ use super::symbols::{
 };
 
 pub(crate) fn correct_confident_wrong_layout_ascii_word(token: &str) -> Option<String> {
+    if has_structured_ascii_identity(token) && is_protected_ascii_layout_token(token) {
+        return None;
+    }
     let (_, original_word, _) = split_word_punctuation(token);
     if is_user_protected_ascii_word(original_word) {
         return None;
@@ -30,7 +33,7 @@ pub(crate) fn correct_confident_wrong_layout_ascii_word(token: &str) -> Option<S
     }
 
     let candidate = ascii_to_russian_layout_candidate(token, false)?;
-    if !candidate.known {
+    if !candidate.known || !candidate.raw_projection_stable {
         return None;
     }
     if is_protected_ascii_layout_token(token)
@@ -42,6 +45,10 @@ pub(crate) fn correct_confident_wrong_layout_ascii_word(token: &str) -> Option<S
         return None;
     }
     Some(candidate.replacement)
+}
+
+fn has_structured_ascii_identity(token: &str) -> bool {
+    token.chars().any(|ch| matches!(ch, '.' | '/' | '\\' | '@'))
 }
 
 pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
@@ -71,9 +78,10 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
 
     let strong_shift_layout = is_standalone_all_caps_shift_layout_token(token);
     let candidate = ascii_to_russian_layout_candidate(token, strong_shift_layout)?;
+    if !candidate.raw_projection_stable && !strong_shift_layout {
+        return None;
+    }
     let normalized = candidate.replacement;
-    let normalized_word = candidate.word;
-    let normalized_lower = normalized_word.to_lowercase();
     if strong_shift_layout {
         return Some(normalized);
     }
@@ -86,8 +94,8 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
     if is_protected_ascii_layout_token(token) {
         return None;
     }
-    if allow_short_layout_word(original_word, &normalized_lower)
-        || is_common_ru_word(&normalized_lower)
+    if allow_short_layout_word(original_word, &candidate.word.to_lowercase())
+        || is_common_ru_word(&candidate.word.to_lowercase())
     {
         Some(normalized)
     } else {
@@ -163,7 +171,18 @@ fn allow_short_layout_word(original: &str, converted_lower: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::correct_exact_wrong_layout_ascii_word;
+    use super::{
+        correct_confident_wrong_layout_ascii_word, correct_exact_wrong_layout_ascii_word,
+        correct_wrong_layout_ascii_word,
+    };
+
+    #[test]
+    fn protected_dotted_ascii_token_never_enters_layout_projection() {
+        for token in ["archive.tar", "example.com", "src/main.rs"] {
+            assert_eq!(correct_confident_wrong_layout_ascii_word(token), None);
+            assert_eq!(correct_wrong_layout_ascii_word(token), None);
+        }
+    }
 
     #[test]
     fn exact_scope_accepts_only_raw_known_layout_projection() {

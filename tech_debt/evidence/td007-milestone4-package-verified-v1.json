@@ -1,0 +1,64 @@
+{
+  "elapsed_by_lane_seconds": {
+    "package": 108.19196682493202
+  },
+  "elapsed_by_target_seconds": {
+    "test:decoder_alternating_stress": 1.9482628660043702,
+    "test:l3_context_feedback_overlay_contract": 2.023067000962328,
+    "test:protected_words_runtime": 0.9563241099822335,
+    "test:restore_word_cli": 9.089541911962442,
+    "test:typing_assist_alternating_stress": 8.04166615603026,
+    "test:typing_assist_mixed_corpus": 81.4436467459891,
+    "test:typing_assist_short_alternating": 4.689458034001291
+  },
+  "failures": [],
+  "failures_by_lane": {
+    "package": 0
+  },
+  "installed_runtime_authority_changed": false,
+  "invocation": {
+    "action": "package",
+    "lanes": [
+      "package"
+    ],
+    "results_dir": "/home/ubu/projects/lay-l1-exact-peak-search/target/test-lanes-results",
+    "target_dir": "/home/ubu/projects/lay-l1-exact-peak-search/target/test-lanes"
+  },
+  "known_failure_contract": {
+    "full_failure_count": 0,
+    "lane_failure_count": 0,
+    "path": "scripts/test-lanes/known_failures.json",
+    "sha256": "7e704e5302e1eba8d402ec3ed38de6aae36641b54758719497b1f1a36a55e122"
+  },
+  "lanes": [
+    "package"
+  ],
+  "manifest_sha256": "febb119f3498f319c426fe431b2cb61b4603f8322d7cc385ae1cc5e26b7aefa7",
+  "recorded_at_utc": "2026-08-30T09:15:42.814289+00:00",
+  "runtime_authority_changed": false,
+  "runtime_authority_scope": "installed_live_runtime",
+  "sandbox": {
+    "filesystem": "host and repository read-only; result sandbox writable",
+    "home_xdg": "fresh",
+    "network": "unshared",
+    "run": "empty tmpfs",
+    "test_threads": 1
+  },
+  "schema": "lay.test-failure-observation.v1",
+  "selected_by_lane": {
+    "package": 36
+  },
+  "source_closure": {
+    "files": 1223,
+    "git_head": "86eef2f794130cefa00d8ff74b75341a1c1ceddf",
+    "sha256": "60bde1b0abd93aa2292a49dc0faa1923b68bcd517fc1bf58594a260b31f8a1b9"
+  },
+  "source_closure_changed_during_execution": false,
+  "untested_scope": [
+    "live_desktop_smoke",
+    "correctness",
+    "performance",
+    "ignored"
+  ],
+  "verdict": "PASS"
+}

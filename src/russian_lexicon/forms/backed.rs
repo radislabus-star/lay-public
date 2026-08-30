@@ -21,7 +21,12 @@ pub(crate) fn is_full_reference_backed_russian_form(word: &str) -> bool {
 }
 
 fn is_backed_clean_reference_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+    if has_forbidden_y_spelling(word) {
+        return false;
+    }
     is_backed_short_noun_form(word, contains)
+        || is_backed_regular_a_ya_noun_form(word, contains)
+        || is_backed_regular_o_e_noun_form(word, contains)
         || is_backed_russian_suffix_form(word, contains)
         || is_backed_short_accusative_a_form(word, contains)
         || is_backed_ka_declension_form(word, contains)
@@ -44,6 +49,9 @@ fn is_backed_short_noun_form(word: &str, contains: impl Fn(&str) -> bool + Copy)
 }
 
 pub(super) fn is_backed_russian_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+    if has_forbidden_y_spelling(word) {
+        return false;
+    }
     is_backed_russian_suffix_form(word, contains)
         || is_backed_zero_ending_noun_form(word, contains)
         || is_backed_short_accusative_a_form(word, contains)
@@ -55,6 +63,70 @@ pub(super) fn is_backed_russian_form(word: &str, contains: impl Fn(&str) -> bool
         || is_backed_russian_imperative_i_form(word, contains)
         || is_backed_russian_imperative_y_form(word, contains)
         || is_backed_yts_genitive_plural_form(word, contains)
+}
+
+fn is_backed_regular_a_ya_noun_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+    const INFLECTIONS: &[(&str, &[&str])] = &[
+        ("ами", &["а"]),
+        ("ями", &["я"]),
+        ("ой", &["а"]),
+        ("ою", &["а"]),
+        ("ей", &["я"]),
+        ("ам", &["а"]),
+        ("ям", &["я"]),
+        ("ах", &["а"]),
+        ("ях", &["я"]),
+        ("е", &["а", "я"]),
+        ("ы", &["а"]),
+        ("и", &["я"]),
+        ("у", &["а"]),
+        ("ю", &["я"]),
+    ];
+
+    INFLECTIONS.iter().any(|(ending, lemma_endings)| {
+        let Some(stem) = word.strip_suffix(ending) else {
+            return false;
+        };
+        stem.chars().count() >= 3
+            && lemma_endings.iter().any(|lemma_ending| {
+                !(*ending == "е" && *lemma_ending == "я" && stem.ends_with('и'))
+                    && contains(&format!("{stem}{lemma_ending}"))
+            })
+    })
+}
+
+fn has_forbidden_y_spelling(word: &str) -> bool {
+    let mut chars = word.chars().rev();
+    matches!(chars.next(), Some('ы'))
+        && matches!(chars.next(), Some('г' | 'к' | 'х' | 'ж' | 'ч' | 'ш' | 'щ'))
+}
+
+fn is_backed_regular_o_e_noun_form(word: &str, contains: impl Fn(&str) -> bool + Copy) -> bool {
+    const INFLECTIONS: &[(&str, &[&str])] = &[
+        ("ами", &["о"]),
+        ("ями", &["е"]),
+        ("ом", &["о"]),
+        ("ем", &["е"]),
+        ("ам", &["о"]),
+        ("ям", &["е"]),
+        ("ах", &["о"]),
+        ("ях", &["е"]),
+        ("е", &["о"]),
+        ("а", &["о"]),
+        ("я", &["е"]),
+        ("у", &["о"]),
+        ("ю", &["е"]),
+    ];
+
+    INFLECTIONS.iter().any(|(ending, lemma_endings)| {
+        let Some(stem) = word.strip_suffix(ending) else {
+            return false;
+        };
+        stem.chars().count() >= 3
+            && lemma_endings
+                .iter()
+                .any(|lemma_ending| contains(&format!("{stem}{lemma_ending}")))
+    })
 }
 
 fn is_backed_russian_consonant_alternating_form(

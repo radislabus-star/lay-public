@@ -1,0 +1,27 @@
+{
+  "failure_count": 0,
+  "failures": [],
+  "invocation": "admission-only zero-failure ledger rebind after focused current-source layout authority regressions",
+  "manifest_path": "scripts/test-lanes/manifest.json",
+  "manifest_sha256": "febb119f3498f319c426fe431b2cb61b4603f8322d7cc385ae1cc5e26b7aefa7",
+  "recorded_at_utc": "2026-08-30T09:04:18Z",
+  "results_dir": "target/test-lanes-results",
+  "schema": "lay.test-failure-observation.v1",
+  "selected_by_lane": {
+    "correctness": 2324
+  },
+  "source_closure": {
+    "files": 1223,
+    "git_head": "86eef2f794130cefa00d8ff74b75341a1c1ceddf",
+    "sha256": "60bde1b0abd93aa2292a49dc0faa1923b68bcd517fc1bf58594a260b31f8a1b9"
+  },
+  "test_execution": "ADMISSION_ONLY_PENDING_CURRENT_SOURCE_CANONICAL_REPLAY",
+  "untested_scope": [
+    "live_desktop_smoke",
+    "package",
+    "performance",
+    "ignored",
+    "current_source_full_correctness_replay"
+  ],
+  "verdict": "PASS_ZERO_OBSERVED_FAILURES_FOR_LEDGER_REBIND"
+}

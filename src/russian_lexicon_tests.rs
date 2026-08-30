@@ -34,6 +34,37 @@ fn recognizes_common_noun_forms_for_typo_candidates() {
 }
 
 #[test]
+fn recognizes_regular_a_ya_noun_inflections_from_backed_lemmas() {
+    for word in [
+        "воде",
+        "воды",
+        "воду",
+        "водой",
+        "команде",
+        "команду",
+        "земле",
+        "неделе",
+        "истории",
+        "окне",
+        "дела",
+        "слова",
+    ] {
+        assert!(
+            has_clean_russian_surface_certificate(word),
+            "missing clean regular noun inflection certificate: {word:?}"
+        );
+    }
+
+    for invalid in ["историе", "армие", "станцие", "рукы", "ногы", "дачы"]
+    {
+        assert!(
+            !has_clean_russian_surface_certificate(invalid),
+            "invalid -ия noun form received a clean certificate: {invalid:?}"
+        );
+    }
+}
+
+#[test]
 fn clean_surface_certificate_recognizes_short_noun_forms() {
     assert!(has_clean_russian_surface_certificate("коды"));
     assert!(has_clean_russian_surface_certificate("теорию"));

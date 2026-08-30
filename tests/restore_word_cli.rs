@@ -17,9 +17,9 @@ fn restore(word: &str) -> String {
 }
 
 #[test]
-fn restore_word_uses_the_shared_correction_core() {
-    assert_eq!(restore("врмея"), "время");
-    assert_eq!(restore("рабоатет"), "работает");
+fn restore_word_keeps_unproven_typos_without_a_lexical_authority_frame() {
+    assert_eq!(restore("врмея"), "врмея");
+    assert_eq!(restore("рабоатет"), "рабоатет");
 }
 
 #[test]
@@ -39,7 +39,7 @@ fn restore_word_rejects_phrase_input() {
 }
 
 #[test]
-fn restore_word_stream_reuses_one_loaded_core() {
+fn restore_word_stream_reuses_one_loaded_fail_closed_core() {
     let mut child = Command::new(env!("CARGO_BIN_EXE_lay"))
         .arg("--restore-word")
         .stdin(std::process::Stdio::piped())
@@ -57,6 +57,6 @@ fn restore_word_stream_reuses_one_loaded_core() {
     assert!(output.status.success());
     assert_eq!(
         String::from_utf8(output.stdout).expect("UTF-8 output"),
-        "время\nработает\nкороче"
+        "врмея\nрабоатет\nкороче"
     );
 }

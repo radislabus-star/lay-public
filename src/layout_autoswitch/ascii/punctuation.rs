@@ -25,7 +25,11 @@ pub(super) fn correct_word_preserving_trailing_punctuation(token: &str) -> Optio
     if original_word.is_empty() || is_user_protected_ascii_word(original_word) {
         return None;
     }
-    let normalized = ascii_to_russian_layout_candidate(core, false)?.replacement;
+    let candidate = ascii_to_russian_layout_candidate(core, false)?;
+    if !candidate.raw_projection_stable {
+        return None;
+    }
+    let normalized = candidate.replacement;
     Some(format!("{normalized}{}", converted_trailing(trailing)))
 }
 

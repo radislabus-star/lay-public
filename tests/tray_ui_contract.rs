@@ -190,17 +190,18 @@ fn diagnostics_are_observational_and_enablement_has_one_explicit_owner() {
 }
 
 #[test]
-fn disabled_lay_cannot_be_reactivated_by_input_source_sync() {
+fn input_source_observation_cannot_reactivate_disabled_lay() {
     let tray = read_extension("lay-impl.js");
     let source_change = nearby(&tray, "current-source-changed", 320);
-    assert!(source_change.contains("this._daemonActive === true"));
-    assert!(source_change.contains("this._cfg.text_backend === 'ime'"));
-    assert!(source_change.contains("syncIbusEngineForCurrentLayout()"));
+    assert!(source_change.contains("this._refreshLayout()"));
+    assert!(!source_change.contains("syncIbusEngineForCurrentLayout()"));
+    assert!(!source_change.contains("startDaemon()"));
 
     let enabled = nearby(&tray, "_enabledSwitchItem() {", 750);
     assert!(enabled.contains("this._daemonActive = state;"));
     assert!(enabled.contains("startDaemon();"));
     assert!(enabled.contains("stopDaemon();"));
+    assert!(enabled.contains("syncIbusEngineForCurrentLayout();"));
 }
 
 #[test]

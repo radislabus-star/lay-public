@@ -30,8 +30,10 @@ fn feedback_overlay_keeps_live_text_out_of_the_compiled_packet() {
 
     assert_eq!(report["kind"], "l3_context_phase_feedback_overlay");
     assert_eq!(report["raw_words_stored"], false);
-    assert_eq!(report["positive_admitted"], 1);
-    assert_eq!(report["negative_admitted"], 1);
+    assert_eq!(report["positive_admitted"], 0);
+    assert_eq!(report["negative_admitted"], 0);
+    assert_eq!(report["positive_censored_pending_surface_support"], 1);
+    assert_eq!(report["negative_censored_no_observed_target"], 1);
     assert_eq!(report["source_events"], 2);
     let bytes = std::fs::read(&output).unwrap();
     assert!(!bytes

@@ -1,0 +1,80 @@
+{
+  "elapsed_by_lane_seconds": {
+    "correctness": 528.949458706018
+  },
+  "elapsed_by_target_seconds": {
+    "bin:lay-daemon": 273.7812055280083,
+    "bin:lay-debug-actions": 0.00805415102513507,
+    "bin:lay-ibus-engine": 6.548813109053299,
+    "bin:lay-l11-serve": 0.008571911021135747,
+    "bin:lay-memory-report": 0.007699177018366754,
+    "bin:lay-nanda-dataset": 0.02682454901514575,
+    "bin:lay-nanda-wave-eval": 2.25146490795305,
+    "bin:lay-nanda-wave-train": 0.38456522196065634,
+    "bin:lay-test-input": 0.008343602006789297,
+    "bin:lay_output_transaction_microproof": 0.015443787968251854,
+    "lib:lay": 216.92939265700988,
+    "test:correction_gate_metrics": 3.179016412002966,
+    "test:decoder_transition_regression": 3.7041845159837976,
+    "test:ime_space_boundary_contract": 0.008142952981870621,
+    "test:input_gate_operator_contract": 0.008594624989200383,
+    "test:input_gate_space_contract": 15.407199854031205,
+    "test:l3_context_metrics_contract": 0.00908703199820593,
+    "test:l4_feedback_memory_contract": 0.008615443017333746,
+    "test:live_candidate_gate_metrics": 6.448236182972323,
+    "test:text_edit_gate_contract": 0.0926398960291408,
+    "test:text_mutation_monopoly_contract": 0.06739182799356058,
+    "test:tray_ui_contract": 0.02575714699923992,
+    "test:typing_transition_authority_contract": 0.02021421497920528
+  },
+  "failures": [],
+  "failures_by_lane": {
+    "correctness": 0
+  },
+  "installed_runtime_authority_changed": false,
+  "invocation": {
+    "action": "correctness",
+    "lanes": [
+      "correctness"
+    ],
+    "results_dir": "/home/ubu/projects/lay-l1-exact-peak-search/target/test-lanes-results",
+    "target_dir": "/home/ubu/projects/lay-l1-exact-peak-search/target/test-lanes"
+  },
+  "known_failure_contract": {
+    "full_failure_count": 0,
+    "lane_failure_count": 0,
+    "path": "scripts/test-lanes/known_failures.json",
+    "sha256": "7e704e5302e1eba8d402ec3ed38de6aae36641b54758719497b1f1a36a55e122"
+  },
+  "lanes": [
+    "correctness"
+  ],
+  "manifest_sha256": "febb119f3498f319c426fe431b2cb61b4603f8322d7cc385ae1cc5e26b7aefa7",
+  "recorded_at_utc": "2026-08-30T09:13:43.362905+00:00",
+  "runtime_authority_changed": false,
+  "runtime_authority_scope": "installed_live_runtime",
+  "sandbox": {
+    "filesystem": "host and repository read-only; result sandbox writable",
+    "home_xdg": "fresh",
+    "network": "unshared",
+    "run": "empty tmpfs",
+    "test_threads": 1
+  },
+  "schema": "lay.test-failure-observation.v1",
+  "selected_by_lane": {
+    "correctness": 2324
+  },
+  "source_closure": {
+    "files": 1223,
+    "git_head": "86eef2f794130cefa00d8ff74b75341a1c1ceddf",
+    "sha256": "60bde1b0abd93aa2292a49dc0faa1923b68bcd517fc1bf58594a260b31f8a1b9"
+  },
+  "source_closure_changed_during_execution": false,
+  "untested_scope": [
+    "live_desktop_smoke",
+    "package",
+    "performance",
+    "ignored"
+  ],
+  "verdict": "PASS"
+}

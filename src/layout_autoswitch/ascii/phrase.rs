@@ -33,13 +33,13 @@ pub(crate) fn correct_wrong_layout_ascii_phrase(text: &str) -> Option<String> {
         }
         let candidate = ascii_to_russian_layout_candidate(segment, true)?;
         converted_words += 1;
-        if candidate.known {
+        if candidate.raw_projection_stable {
             known_converted_words += 1;
         }
         if candidate.clean_alpha {
             clean_alpha_words += 1;
         }
-        if candidate.known && is_ascii_layout_letter_surface(segment) {
+        if candidate.raw_projection_stable && is_ascii_layout_letter_surface(segment) {
             known_physical_layout_words += 1;
         }
         if candidate.clean_alpha
@@ -88,13 +88,15 @@ pub(crate) fn is_confident_wrong_layout_ascii_pair(first: &str, second: &str) ->
         return false;
     };
 
-    let known_converted_words =
-        usize::from(first_candidate.known) + usize::from(second_candidate.known);
+    let known_converted_words = usize::from(first_candidate.raw_projection_stable)
+        + usize::from(second_candidate.raw_projection_stable);
     let clean_alpha_words =
         usize::from(first_candidate.clean_alpha) + usize::from(second_candidate.clean_alpha);
     let known_physical_layout_words =
-        usize::from(first_candidate.known && is_ascii_layout_letter_surface(first))
-            + usize::from(second_candidate.known && is_ascii_layout_letter_surface(second));
+        usize::from(first_candidate.raw_projection_stable && is_ascii_layout_letter_surface(first))
+            + usize::from(
+                second_candidate.raw_projection_stable && is_ascii_layout_letter_surface(second),
+            );
     let has_shift_letter_signal =
         first_candidate.shift_letter_signal || second_candidate.shift_letter_signal;
 
@@ -148,10 +150,10 @@ mod tests {
     }
 
     #[test]
-    fn whole_phrase_projection_uses_l2_form_centers_for_noisy_words() {
+    fn whole_phrase_projection_does_not_append_a_second_typo_repair() {
         assert_eq!(
             correct_wrong_layout_ascii_phrase("djn nfrjt djn yt gthtdfhfxbdftncz"),
-            Some("вот такое вот не переворачивается".to_string())
+            None
         );
     }
 }

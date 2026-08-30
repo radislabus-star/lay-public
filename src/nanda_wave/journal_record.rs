@@ -294,7 +294,7 @@ mod tests {
         assert!(record
             .cells
             .iter()
-            .any(|cell| cell.cell == "layout_then_l2_word_center"));
+            .any(|cell| cell.cell == "LayoutWordCell32"));
     }
 
     #[test]

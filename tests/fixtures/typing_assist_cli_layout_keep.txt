@@ -1,0 +1,4 @@
+# RU-layout forms that remain ambiguous instead of receiving automatic CLI authority.
+cd
+jq
+rg

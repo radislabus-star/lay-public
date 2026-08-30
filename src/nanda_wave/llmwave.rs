@@ -1960,7 +1960,7 @@ mod tests {
         let tmp =
             std::env::temp_dir().join(format!("lay-llmwave-exp-{}.jsonl", std::process::id()));
         let first = phrase_experience("space", "я хочу проверить режим").unwrap();
-        let second = phrase_experience("space", "на улице опять идёт дождь").unwrap();
+        let second = phrase_experience("space", "Вообще делай проект рефакторинга").unwrap();
         let text = format!(
             "{}\n{}\nnot-json\n",
             serde_json::to_string(&first).unwrap(),
@@ -1972,7 +1972,7 @@ mod tests {
         let _ = std::fs::remove_file(tmp);
 
         assert!(loaded.contains("я хочу проверить режим"));
-        assert!(loaded.contains("на улице опять идёт дождь"));
+        assert!(loaded.contains("Вообще делай проект рефакторинга"));
         assert!(!loaded.contains("not-json"));
     }
 

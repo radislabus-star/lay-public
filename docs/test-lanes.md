@@ -28,9 +28,9 @@ The manifest has four disjoint lanes:
 - `ignored`: thirteen externally admitted proof/helper tests, never promoted by
   the ordinary runner.
 
-The current TD-007 milestone-1 manifest contains 2,367 rows: 2,308 correctness,
-35 package, 11 performance, and 13 ignored. Twenty-seven rows are
-process-isolated; the other 2,340 use target isolation. The process set is
+The current TD-007 milestone-4 manifest contains 2,383 rows: 2,323 correctness,
+36 package, 11 performance, and 13 ignored. Twenty-seven rows are
+process-isolated; the other 2,356 use target isolation. The process set is
 fail-closed: sixteen
 explicit environment/singleton mutators plus all eleven performance routes must
 remain present in the registry.
@@ -55,14 +55,15 @@ contracts and do not claim latency authority.
 
 The temporary [known-failure contract](../scripts/test-lanes/known_failures.json)
 belongs only to TD-007. Its target/test set and normalized failure signatures
-must match exactly: a new failure, renamed failure, changed outcome, or unexpected
-fix makes the lane fail. Harness thread IDs, source line movement, and the
-standard backtrace note are excluded from the signature. Exact known failures produce
-`PASS_WITH_EXACT_KNOWN_FAILURES`, not a claim that their semantics are correct.
-The sealed TD-006 denominator is 116 failures: 96 correctness and 20 package.
-Two unchanged runs have identical target/test identities and normalized
-signatures. Volatile event timestamps and causal episode IDs are excluded from
-the signature; event kind, payload, outcome, and assertions remain bound.
+must match exactly: a new failure, renamed failure, changed outcome, or
+unexpected fix makes the lane fail. Harness thread IDs, source line movement,
+and the standard backtrace note are excluded from the signature. Exact known
+failures produce `PASS_WITH_EXACT_KNOWN_FAILURES`, not a claim that their
+semantics are correct. The sealed TD-006 denominator was 116 failures: 96
+correctness and 20 package. Milestones 1-4 partition and close that exact set;
+the current contract is empty and is bound to the milestone-4 zero-failure
+observation. Volatile event timestamps and causal episode IDs remain excluded
+from signatures; event kind, payload, outcome, and assertions remain bound.
 
 Performance is explicit:
 
@@ -74,7 +75,7 @@ It uses one test thread, warmup already owned by each test, and enables the IME
 latency assertion. It is not ordinary CI authority because shared-host
 contention can invalidate wall-clock budgets.
 
-The TD-006 closure observation is deliberately red: 8 of 11 performance
+The sealed TD-006 closure observation is deliberately red: 8 of 11 performance
 contracts pass and 3 report `BLOCKED_PERFORMANCE`. The failures are the
 CanonicalL2Field p99 budget, exact-English guard RSS budget, and one unique
 prefix cold-materialization budget. No budget was relaxed, and this opt-in

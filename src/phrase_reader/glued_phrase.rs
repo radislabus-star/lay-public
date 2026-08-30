@@ -55,6 +55,18 @@ pub fn correct_glued_russian_phrase(word: &str) -> Option<String> {
     if let Some(candidate) = correct_multiword_glued_russian_phrase(&lower) {
         return Some(apply_phrase_case(word, &candidate));
     }
+    if !looks_like_word_glued_to_trailing_ya(&lower) {
+        let missing_letter_proposal =
+            crate::ru_typo::propose_missing_letter_candidate(&lower).is_some();
+        let substitution_proposal =
+            crate::ru_typo::propose_single_letter_substitution_candidate(&lower).is_some();
+        let weaker_typo_competitor = (substitution_proposal
+            || crate::ru_typo::has_plausible_russian_typo_candidate(&lower))
+            && !looks_like_short_function_word_glued_to_known_word(&lower);
+        if missing_letter_proposal || weaker_typo_competitor {
+            return None;
+        }
+    }
 
     let mut scored_candidates = Vec::new();
     for split in cyrillic_word_splits(&lower) {

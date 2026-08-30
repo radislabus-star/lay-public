@@ -49,12 +49,9 @@ fn decide_space_deterministic(text_tail: &str) -> lay::input_gate::InputGateDeci
 #[test]
 fn space_autocorrect_keeps_existing_public_gate_contract() {
     let cases = [
-        ("читай логии ", "читай логи "),
         ("звгрузи ", "загрузи "),
         ("ghbdtn ", "привет "),
         ("rfr ", "как "),
-        ("gthtdjhfxbdftncz ", "переворачивается "),
-        ("file ljgecnbv ", "file допустим "),
     ];
 
     for (input, expected) in cases {
@@ -89,12 +86,9 @@ fn space_autocorrect_keeps_existing_public_gate_contract() {
 fn daemon_space_and_enter_decoders_share_input_gate_replacement_contract() {
     let pipeline = default_typing_assist_pipeline();
     let cases = [
-        ("читай логии ", true, "читай логи "),
         ("звгрузи ", true, "загрузи "),
         ("ghbdtn ", false, "привет "),
         ("rfr ", false, "как "),
-        ("gthtdjhfxbdftncz ", false, "переворачивается "),
-        ("file ljgecnbv ", false, "file допустим "),
     ];
 
     for (input, layout_is_ru, expected) in cases {
@@ -128,6 +122,46 @@ fn daemon_space_and_enter_decoders_share_input_gate_replacement_contract() {
             assert!(enter_plan.preserves_committed_separator(), "{input:?}");
         }
     }
+}
+
+#[test]
+fn ambiguous_known_word_drift_is_suggest_only() {
+    let decision = decide_space_deterministic("читай логии ");
+
+    assert!(
+        matches!(decision.action, InputGateAction::SuggestOnly { .. }),
+        "competing plausible replacements must not auto-apply: {:?}",
+        decision.action
+    );
+    let trace = decision.trace.as_ref().expect("trace");
+    assert_eq!(trace.reason, "suggest_only_candidate");
+}
+
+#[test]
+fn frameless_layout_projection_does_not_gain_autocorrect_authority() {
+    let input = "gthtdjhfxbdftncz ";
+    assert_eq!(
+        lay::dict::convert(input.trim(), lay::dict::Direction::Us2Ru),
+        "переворачивается"
+    );
+
+    let decision = decide_space_deterministic(input);
+    assert_eq!(decision.action, InputGateAction::KeepOriginal);
+    assert_eq!(
+        decision.trace.as_ref().expect("trace").reason,
+        "no_candidate"
+    );
+}
+
+#[test]
+fn english_context_does_not_authorize_unknown_layout_projection() {
+    let decision = decide_space_deterministic("file ljgecnbv ");
+
+    assert_eq!(decision.action, InputGateAction::KeepOriginal);
+    assert_eq!(
+        decision.trace.as_ref().expect("trace").reason,
+        "no_candidate"
+    );
 }
 
 #[test]

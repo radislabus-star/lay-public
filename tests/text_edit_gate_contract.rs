@@ -38,7 +38,7 @@ fn transition_proof_constructor_and_fields_are_not_public_capabilities() {
         "AutomaticDecision",
         "ExplicitUserIntent",
         "RecordedUndo",
-        "CompletionAcceptance",
+        "ImeCandidateAcceptance",
         "NativeIntent",
     ] {
         assert!(

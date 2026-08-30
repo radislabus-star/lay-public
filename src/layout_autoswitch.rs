@@ -34,8 +34,8 @@ pub(crate) use ascii::{
     correct_contextual_ascii_conjunction_i, correct_contextual_ascii_preposition_v,
     correct_wrong_layout_ascii_phrase, correct_wrong_layout_ascii_word,
     correct_wrong_layout_ascii_word_experimental, is_ascii_layout_letter_surface,
-    is_ascii_layout_letter_symbol, is_confident_wrong_layout_ascii_pair,
-    is_protected_ascii_layout_token,
+    is_ascii_layout_letter_symbol, is_ascii_layout_token_symbol,
+    is_confident_wrong_layout_ascii_pair, is_protected_ascii_layout_token,
 };
 pub(crate) use cyrillic::{
     correct_wrong_layout_cyrillic_word, correct_wrong_layout_cyrillic_word_experimental,

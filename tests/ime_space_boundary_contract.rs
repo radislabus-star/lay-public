@@ -5,13 +5,18 @@ fn every_ime_space_route_finishes_the_full_precognition_boundary() {
     let preedit = include_str!("../src/bin/lay_ibus_engine/preedit.rs");
 
     assert!(
-        managed.contains("self.clear_preedit(emitter).await?")
-            && managed.contains("self.close_precognition_word_boundary();")
-            && commit.contains("self.close_precognition_word_boundary();"),
-        "empty and active-composition Space routes must close the same preedit state"
+        managed.contains("self.commit_managed_passthrough_char(emitter, ' ').await?")
+            && managed.contains("self.push_tail_char(' ')")
+            && managed.contains("self.commit_space(emitter).await?"),
+        "every managed Space route must end in a shared boundary-owning operation"
     );
     assert!(
-        preedit.contains("Self::hide_preedit_text(emitter)")
+        commit.contains("self.push_tail_char(ch);")
+            && commit.contains("self.close_precognition_word_boundary();"),
+        "passthrough and active-composition Space routes must close the same boundary state"
+    );
+    assert!(
+        preedit.contains(".hide_preedit_text()")
             && preedit.contains("pub(super) fn close_precognition_word_boundary")
             && preedit.contains("self.clear_preedit_completion_state();")
             && preedit.contains("self.preedit_fast.reset();"),

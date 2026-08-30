@@ -417,6 +417,7 @@ mod tests {
             );
             candidate.corrected_prefix_completion = true;
             candidate.lane = LiveCandidateLane::CorrectedPrefixReplacement;
+            candidate.replacement_target_evidence = ReplacementTargetEvidence::VerifiedLexicalEdit;
             proposals.push(candidate);
         }
         proposals.push(completion("exact-continuation", "continuation", 0.40));

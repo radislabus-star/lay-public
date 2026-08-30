@@ -1,5 +1,7 @@
 use crate::ru_typo::repair_extra_letters_after_layout;
-use crate::word_reader::{is_cyrillic_word, split_word_punctuation, split_ws_segments};
+use crate::word_reader::{
+    is_cyrillic_word, previous_non_whitespace_segment, split_word_punctuation, split_ws_segments,
+};
 
 use super::super::types::TypingRuleContext;
 
@@ -13,7 +15,11 @@ pub(super) fn apply_core_then_word_rule(
     ctx: &TypingRuleContext<'_>,
     rule: TextRule,
 ) -> Option<String> {
-    rule(ctx.core).or_else(|| apply_token_word_rule(ctx, rule))
+    rule(ctx.core).or_else(|| {
+        (!last_word_has_protected_ascii_context(ctx))
+            .then(|| apply_token_word_rule(ctx, rule))
+            .flatten()
+    })
 }
 
 pub(super) fn apply_short_left_word_rule(
@@ -120,6 +126,94 @@ pub(super) fn apply_last_word_rule(ctx: &TypingRuleContext<'_>, rule: TextRule) 
         }
     }
     Some(output)
+}
+
+pub(super) fn apply_last_physical_layout_token_rule(
+    ctx: &TypingRuleContext<'_>,
+    rule: TextRule,
+) -> Option<String> {
+    let segments = split_ws_segments(ctx.core);
+    let idx = segments.iter().rposition(|(_, is_ws)| !*is_ws)?;
+    let token = segments[idx].0;
+    if !token_has_physical_layout_prefix(token)
+        || previous_non_whitespace_segment(&segments, idx)
+            .is_some_and(crate::word_recognizer::is_protected_ascii_token)
+    {
+        return None;
+    }
+    let replacement = rule(token)?;
+    if replacement == token {
+        return None;
+    }
+
+    let mut output = String::with_capacity(ctx.core.len().max(replacement.len()));
+    for (segment_idx, (segment, _)) in segments.iter().enumerate() {
+        if segment_idx == idx {
+            output.push_str(&replacement);
+        } else {
+            output.push_str(segment);
+        }
+    }
+    Some(output)
+}
+
+pub(super) fn apply_last_trailing_layout_token_rule(
+    ctx: &TypingRuleContext<'_>,
+    rule: TextRule,
+) -> Option<String> {
+    let segments = split_ws_segments(ctx.core);
+    let idx = segments.iter().rposition(|(_, is_ws)| !*is_ws)?;
+    let token = segments[idx].0;
+    let (leading, word, trailing) = split_word_punctuation(token);
+    if !leading.is_empty()
+        || word.is_empty()
+        || trailing.is_empty()
+        || !trailing
+            .chars()
+            .all(crate::layout_autoswitch::is_ascii_layout_token_symbol)
+    {
+        return None;
+    }
+    let replacement = rule(token)?;
+    if replacement == token {
+        return None;
+    }
+
+    let mut output = String::with_capacity(ctx.core.len().max(replacement.len()));
+    for (segment_idx, (segment, _)) in segments.iter().enumerate() {
+        if segment_idx == idx {
+            output.push_str(&replacement);
+        } else {
+            output.push_str(segment);
+        }
+    }
+    Some(output)
+}
+
+pub(super) fn last_token_has_physical_layout_prefix(ctx: &TypingRuleContext<'_>) -> bool {
+    split_ws_segments(ctx.core)
+        .into_iter()
+        .rev()
+        .find_map(|(segment, is_ws)| (!is_ws).then_some(segment))
+        .is_some_and(token_has_physical_layout_prefix)
+}
+
+pub(super) fn last_word_has_protected_ascii_context(ctx: &TypingRuleContext<'_>) -> bool {
+    let segments = split_ws_segments(ctx.core);
+    let Some(idx) = segments.iter().rposition(|(_, is_ws)| !*is_ws) else {
+        return false;
+    };
+    previous_non_whitespace_segment(&segments, idx)
+        .is_some_and(crate::word_recognizer::is_protected_ascii_token)
+}
+
+fn token_has_physical_layout_prefix(token: &str) -> bool {
+    let (leading, word, _) = split_word_punctuation(token);
+    !leading.is_empty()
+        && !word.is_empty()
+        && leading
+            .chars()
+            .all(crate::layout_autoswitch::is_ascii_layout_letter_symbol)
 }
 
 pub(super) fn cleanup_extra_letters_after_ru_layout(text: &str) -> String {

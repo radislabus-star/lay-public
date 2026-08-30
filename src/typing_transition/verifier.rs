@@ -146,7 +146,9 @@ fn exact_layout_projection(original: &str, replacement: &str) -> bool {
 fn operator_is_verified(operator: TransitionOperator) -> bool {
     !matches!(
         operator,
-        TransitionOperator::Unknown | TransitionOperator::Protected
+        TransitionOperator::Unknown
+            | TransitionOperator::Protected
+            | TransitionOperator::SplitPreviousGluedAndRepairTail
     )
 }
 
@@ -593,7 +595,7 @@ mod tests {
     }
 
     #[test]
-    fn proves_split_previous_glued_plus_current_tail_repair() {
+    fn split_previous_glued_plus_current_tail_repair_is_shape_only() {
         let proof = proof(
             "ее простозальет свтеом ",
             "ее просто зальет светом ",
@@ -605,7 +607,7 @@ mod tests {
             proof.operator,
             TransitionOperator::SplitPreviousGluedAndRepairTail
         );
-        assert!(proof.verified);
+        assert!(!proof.verified);
     }
 
     #[test]

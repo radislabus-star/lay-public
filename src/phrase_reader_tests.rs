@@ -164,6 +164,10 @@ fn boundary_shift_field_replays_clean_and_synthetic_corpus_pairs() {
         proposed.saturating_mul(1_000) / eligible >= 980,
         "proposal recall below 98%: proposed={proposed} eligible={eligible} misses={proposal_misses:?}"
     );
+    assert!(
+        recovered.saturating_mul(1_000) / eligible >= 800,
+        "direct recovery below 80%: recovered={recovered} eligible={eligible}"
+    );
 }
 
 fn boundary_pair_mass(left: &str, right: &str) -> u32 {

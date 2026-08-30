@@ -1,0 +1,64 @@
+{
+  "elapsed_by_lane_seconds": {
+    "package": 102.19913790602004
+  },
+  "elapsed_by_target_seconds": {
+    "test:decoder_alternating_stress": 1.8854932329850271,
+    "test:l3_context_feedback_overlay_contract": 1.9824081180267967,
+    "test:protected_words_runtime": 0.926181324000936,
+    "test:restore_word_cli": 8.58400731801521,
+    "test:typing_assist_alternating_stress": 6.978952108009253,
+    "test:typing_assist_mixed_corpus": 76.67344056500588,
+    "test:typing_assist_short_alternating": 5.1686552399769425
+  },
+  "failures": [],
+  "failures_by_lane": {
+    "package": 0
+  },
+  "installed_runtime_authority_changed": false,
+  "invocation": {
+    "action": "package",
+    "lanes": [
+      "package"
+    ],
+    "results_dir": "/home/ubu/projects/lay-l1-exact-peak-search/target/test-lanes-results-td007-m4-package-final",
+    "target_dir": "/home/ubu/projects/lay-l1-exact-peak-search/target/test-lanes"
+  },
+  "known_failure_contract": {
+    "full_failure_count": 0,
+    "lane_failure_count": 0,
+    "path": "scripts/test-lanes/known_failures.json",
+    "sha256": "54fcc2066d36e00d7782f68a24d23d842b5513af0d725f3be020443b738e7b1d"
+  },
+  "lanes": [
+    "package"
+  ],
+  "manifest_sha256": "75a3aa84240b0e9cf4c5cba52246e06c1a7fc8fa39e6a30638d29cbe23483c29",
+  "recorded_at_utc": "2026-08-30T10:56:39.544986+00:00",
+  "runtime_authority_changed": false,
+  "runtime_authority_scope": "installed_live_runtime",
+  "sandbox": {
+    "filesystem": "host and repository read-only; result sandbox writable",
+    "home_xdg": "fresh",
+    "network": "unshared",
+    "run": "empty tmpfs",
+    "test_threads": 1
+  },
+  "schema": "lay.test-failure-observation.v1",
+  "selected_by_lane": {
+    "package": 36
+  },
+  "source_closure": {
+    "files": 1223,
+    "git_head": "86eef2f794130cefa00d8ff74b75341a1c1ceddf",
+    "sha256": "7543609f4be5f321398e2d0d687ddc9dd52642cfa6af1726b616653f214544d9"
+  },
+  "source_closure_changed_during_execution": false,
+  "untested_scope": [
+    "live_desktop_smoke",
+    "correctness",
+    "performance",
+    "ignored"
+  ],
+  "verdict": "PASS"
+}

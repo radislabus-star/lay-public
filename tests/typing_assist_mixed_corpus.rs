@@ -34,6 +34,7 @@ const MIXED_MATRIX_LAYOUT_WORDS: &str =
     include_str!("fixtures/typing_assist_mixed_matrix_layout_words.tsv");
 const SHELL_KEEP_CASES: &str = include_str!("fixtures/typing_assist_shell_keep.txt");
 const CLI_COMMAND_CASES: &str = include_str!("fixtures/typing_assist_cli_commands.txt");
+const CLI_LAYOUT_KEEP_CASES: &str = include_str!("fixtures/typing_assist_cli_layout_keep.txt");
 const POLICY_CASES: &str = include_str!("fixtures/typing_assist_policy_cases.tsv");
 
 #[derive(Clone, Copy)]
@@ -228,7 +229,7 @@ fn contextual_ru_preposition_v_requires_russian_context_and_technical_anchor() {
 }
 
 #[test]
-fn confident_en_to_ru_layout_words_use_fast_path_without_rewriting_english() {
+fn confident_en_to_ru_layout_words_use_layout_authority_without_rewriting_english() {
     let pipeline = typing_assist_pipeline_for_context(
         true,
         CorrectionSafety::Experimental,
@@ -236,22 +237,30 @@ fn confident_en_to_ru_layout_words_use_fast_path_without_rewriting_english() {
         "",
     );
 
-    for (input, expected) in [("vj;tn ", "может "), ("djn ", "вот "), ("cegth ", "супер ")]
-    {
+    for (input, expected) in [
+        ("vj;tn ", Some("может ")),
+        ("djn ", Some("вот ")),
+        ("cegth ", None),
+    ] {
         let explanation = explain_typing_assist_with_pipeline(input, true, &pipeline);
         assert_eq!(
             explanation.output.as_deref(),
-            Some(expected),
-            "input={input:?}"
+            expected,
+            "layout disposition changed: input={input:?}"
         );
-        assert_eq!(
-            explanation
-                .chosen
-                .as_ref()
-                .map(|candidate| candidate.rule_id.as_str()),
-            Some("fast_layout_en_to_ru"),
-            "input={input:?}"
-        );
+        let rule_id = explanation
+            .chosen
+            .as_ref()
+            .map(|candidate| candidate.rule_id.as_str());
+        if explanation.output.is_some() {
+            assert!(
+                matches!(
+                    rule_id,
+                    Some("fast_layout_en_to_ru" | "experimental_layout_en_to_ru")
+                ),
+                "unexpected EN->RU authority route for input={input:?}: {rule_id:?}"
+            );
+        }
     }
 
     for input in ["word ", "file ", "api ", "git "] {
@@ -300,7 +309,7 @@ fn experimental_context_accepts_plain_cyrillic_to_ascii_layout_words() {
 }
 
 #[test]
-fn alternating_layout_sentences_fix_every_second_word() {
+fn alternating_layout_sentences_apply_only_admitted_projections() {
     for (input, expected) in fixture_cases(ALTERNATING_CASES) {
         assert_eq!(
             simulate_space_triggered_typing_assist(&input, true),
@@ -308,6 +317,19 @@ fn alternating_layout_sentences_fix_every_second_word() {
             "input={input:?}"
         );
     }
+}
+
+#[test]
+fn sequential_layout_repairs_keep_reference_only_projection() {
+    let pipeline = default_typing_assist_pipeline();
+    assert_eq!(
+        apply_typing_assist_to_tail("тут слова и file потом ltkf ", true, &pipeline),
+        None
+    );
+    assert_eq!(
+        simulate_space_triggered_typing_assist("тут ckjdf и ашду потом ltkf ", true),
+        "тут ckjdf и file потом ltkf "
+    );
 }
 
 #[test]
@@ -438,14 +460,16 @@ fn one_letter_function_words_do_not_steal_next_word_prefix() {
 }
 
 #[test]
-fn forum_like_mixed_matrix_autofixes_contextual_layout_words_and_keeps_boundaries() {
+fn forum_like_mixed_matrix_only_applies_exact_layout_projection_and_keeps_boundaries() {
     let prefixes = fixture_lines(MIXED_MATRIX_PREFIXES).collect::<Vec<_>>();
     let english_terms = fixture_lines(MIXED_MATRIX_TERMS).collect::<Vec<_>>();
-    let layout_words = fixture_cases(MIXED_MATRIX_LAYOUT_WORDS).collect::<Vec<_>>();
+    let layout_words = fixture_cols(MIXED_MATRIX_LAYOUT_WORDS);
 
     let mut checked = 0usize;
     for (idx, prefix) in prefixes.iter().enumerate() {
-        for (typed, expected) in &layout_words {
+        for row in &layout_words {
+            let typed = &row[0];
+            let expected = &row[1];
             let term = &english_terms[(idx + checked) % english_terms.len()];
             let input = format!("я {prefix} {term} и пишу {typed} дальше ");
             let got = simulate_space_triggered_typing_assist(&input, true);
@@ -454,9 +478,15 @@ fn forum_like_mixed_matrix_autofixes_contextual_layout_words_and_keeps_boundarie
                 got.contains(&format!(" {term} ")),
                 "english term boundary lost: input={input:?} got={got:?}"
             );
-            assert!(
-                got.contains(&format!(" {expected} ")),
-                "safe RU->EN layout word was not auto-fixed: input={input:?} got={got:?}"
+            let converted_output = format!("я {prefix} {term} и пишу {expected} дальше ");
+            let expected_output = match row[2].as_str() {
+                "convert" => &converted_output,
+                "keep" => &input,
+                disposition => panic!("unknown matrix disposition {disposition:?}"),
+            };
+            assert_eq!(
+                &got, expected_output,
+                "layout disposition changed: input={input:?}"
             );
             assert!(
                 !got.contains(&format!("{term}{expected}")),
@@ -493,14 +523,19 @@ fn normal_mode_does_not_autocorrect_full_opposite_layout_russian_sentence() {
 }
 
 #[test]
-fn normal_mode_autocorrects_confident_english_typed_in_ru_layout() {
-    for expected in fixture_lines(CONFIDENT_EN_CASES) {
+fn normal_mode_only_applies_exact_projection_to_english_typed_in_ru_layout() {
+    for row in fixture_cols(CONFIDENT_EN_CASES) {
+        let disposition = &row[0];
+        let expected = &row[1];
         let input = en_text_typed_in_ru_layout(&expected);
-        assert_eq!(
-            simulate_space_triggered_typing_assist(&input, true),
-            expected,
-            "input={input:?}"
-        );
+        let got = simulate_space_triggered_typing_assist(&input, true);
+        let expected_output = match disposition.as_str() {
+            "convert" => expected,
+            "keep" => &input,
+            disposition => panic!("unknown opposite-layout disposition {disposition:?}"),
+        };
+        assert_eq!(&got, expected_output, "input={input:?}");
+        assert_eq!(got.ends_with(' '), input.ends_with(' '), "input={input:?}");
     }
 }
 
@@ -533,7 +568,9 @@ fn clean_shell_like_commands_and_symbols_are_not_rewritten() {
 }
 
 #[test]
-fn cli_commands_stay_ascii_and_recover_from_ru_layout() {
+fn cli_commands_stay_ascii_and_ru_layout_forms_never_mutate_to_a_third_surface() {
+    let keep_commands =
+        fixture_lines(CLI_LAYOUT_KEEP_CASES).collect::<std::collections::BTreeSet<_>>();
     for command in fixture_lines(CLI_COMMAND_CASES) {
         let ascii = format!("{command} ");
         assert_eq!(
@@ -546,10 +583,16 @@ fn cli_commands_stay_ascii_and_recover_from_ru_layout() {
         if typed_ru == command {
             continue;
         }
+        let typed = format!("{typed_ru} ");
+        let got = simulate_space_triggered_typing_assist(&typed, true);
+        let expected = if keep_commands.contains(&command) {
+            &typed
+        } else {
+            &ascii
+        };
         assert_eq!(
-            simulate_space_triggered_typing_assist(&format!("{typed_ru} "), true),
-            ascii,
-            "RU-layout CLI command was not restored: {command:?} typed={typed_ru:?}"
+            &got, expected,
+            "RU-layout CLI disposition changed: command={command:?} typed={typed_ru:?}"
         );
     }
 }

@@ -40,7 +40,7 @@ pub(super) fn is_ascii_shift_letter_symbol(ch: char) -> bool {
     matches!(ch, '{' | '}' | ':' | '"' | '<' | '>' | '~')
 }
 
-pub(super) fn is_ascii_layout_token_symbol(ch: char) -> bool {
+pub(crate) fn is_ascii_layout_token_symbol(ch: char) -> bool {
     is_ascii_layout_letter_symbol(ch)
         || matches!(
             ch,

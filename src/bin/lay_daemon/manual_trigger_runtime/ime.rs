@@ -18,13 +18,11 @@ pub(crate) enum ImeManualToggleDispatch {
 }
 
 pub(crate) fn dispatch_ime_manual_toggle(buffer: &mut WordBuffer) -> ImeManualToggleDispatch {
-    if !active_text_backend().should_try_ime() {
+    if buffer.pending_auto_undo_ready() {
         return ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::DaemonUinput);
     }
-    if buffer.pending_auto_undo_ready() {
-        return ImeManualToggleDispatch::DelegateDaemon(
-            ManualCorrectionOutputRoute::ConfiguredBackend,
-        );
+    if !active_text_backend().should_try_ime() {
+        return ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::DaemonUinput);
     }
     run_ime_manual_toggle()
 }
@@ -73,14 +71,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn daemon_pending_auto_undo_keeps_precedence_without_consuming_it() {
+    fn daemon_pending_auto_undo_keeps_physical_grab_ownership_without_consuming_it() {
         let mut buffer = WordBuffer::new();
         buffer.remember_pending_auto_undo("typing-assist", "посмотри", "посмотреть", 1, 1);
 
         assert!(buffer.pending_auto_undo_ready());
         assert_eq!(
             dispatch_ime_manual_toggle(&mut buffer),
-            ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::ConfiguredBackend)
+            ImeManualToggleDispatch::DelegateDaemon(ManualCorrectionOutputRoute::DaemonUinput)
         );
         assert!(buffer.take_pending_auto_undo().is_some());
     }

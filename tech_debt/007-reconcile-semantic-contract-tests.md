@@ -1,6 +1,6 @@
 # TD-007: Reconcile Superseded Semantic Contract Tests
 
-Status: `READY`
+Status: `DONE`
 Priority: `P0`
 Class: behavioral proof
 Size: `XL`
@@ -125,5 +125,13 @@ literals or weakened gates. Score 1-10.
 - Milestone 3 review: `7/10` at the second and final scored review pass; all
   six material findings were repaired and covered by focused plus full-suite
   proofs.
-- Milestone 4: pending
-- Task commit: pending until all four milestones close
+- Milestone 4: `MILESTONE_4_PASS`
+- Milestone 4 evidence:
+  `tech_debt/evidence/td007-milestone4-completion-v1.json`
+- Milestone 4 review: `5/10` at the second and final review pass; all five
+  material findings were repaired and covered by focused tests, the full
+  `2,323` correctness lane, the `36` package lane, and a freshly bound
+  `13 x 20,000` plus all-clean quality proof.
+- Task verdict: `TD007_COMPLETE`; all `116 / 116` baseline semantic failures
+  have one closed disposition and executable replacement proof.
+- Task commit: recorded by the enclosing milestone-4 commit

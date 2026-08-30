@@ -11,6 +11,7 @@ pub(super) struct AsciiToRussianLayoutCandidate {
     pub replacement: String,
     pub word: String,
     pub known: bool,
+    pub raw_projection_stable: bool,
     pub clean_alpha: bool,
     pub shift_letter_signal: bool,
 }
@@ -66,18 +67,18 @@ fn ascii_to_russian_layout_candidate_inner(
     let raw_projection_stable = is_known_russian_layout_autoswitch_word(&converted_lower)
         || crate::russian_lexicon::is_known_russian_word_or_form(&converted_lower)
         || crate::russian_lexicon::is_reference_backed_russian_form(&converted_lower)
-        || crate::nanda_wave::l2::l2_surface_foundation_contains(&converted_lower)
-        || l2_phase_covers_raw_projection(&converted_lower)
-        || crate::hot_field::HotFieldSnapshot::current()
-            .layout_projection_has_phase_authority(&converted_lower);
+        || crate::nanda_wave::l2::l2_surface_foundation_contains(&converted_lower);
     if allow_polish && !(raw_projection_stable || allow_shift_fallback && shift_letter_signal) {
-        if let Some(replacement) = polish_converted_russian_layout_token(&converted) {
+        if let Some(replacement) =
+            polish_converted_russian_layout_token(&converted).filter(|value| value != &converted)
+        {
             let (_, replacement_word, _) = split_word_punctuation(&replacement);
             let word = replacement_word.to_string();
             return Some(AsciiToRussianLayoutCandidate {
                 replacement,
                 word,
                 known: true,
+                raw_projection_stable: false,
                 clean_alpha: token.chars().all(|ch| ch.is_ascii_alphabetic()),
                 shift_letter_signal,
             });
@@ -112,14 +113,10 @@ fn ascii_to_russian_layout_candidate_inner(
         replacement,
         word,
         known: replacement_known,
+        raw_projection_stable,
         clean_alpha: token.chars().all(|ch| ch.is_ascii_alphabetic()),
         shift_letter_signal,
     })
-}
-
-fn l2_phase_covers_raw_projection(word: &str) -> bool {
-    let readout = crate::nanda_wave::l2::l2_surface_phase_readout(word);
-    readout.l1_refs >= 12 && readout.residual_l1_refs == 0 && readout.coherence_milli() >= 920
 }
 
 #[cfg(test)]
@@ -134,5 +131,18 @@ mod tests {
         assert_eq!(candidate.replacement, "нужен");
         assert_eq!(candidate.word, "нужен");
         assert!(candidate.known);
+        assert!(candidate.raw_projection_stable);
+    }
+
+    #[test]
+    fn exact_lexical_and_morphological_projections_are_stable() {
+        for token in ["ckjdf", "njkmrj", "ltkf", "dctulf", "jgznm"] {
+            let candidate = ascii_to_russian_layout_candidate(token, false)
+                .unwrap_or_else(|| panic!("missing exact projection for {token:?}"));
+            assert!(
+                candidate.raw_projection_stable,
+                "projection was only plausibility-backed: {token:?} {candidate:?}"
+            );
+        }
     }
 }

@@ -1,0 +1,118 @@
+{
+  "base_commit": "86eef2f794130cefa00d8ff74b75341a1c1ceddf",
+  "claim_boundary": {
+    "deployment_admitted": false,
+    "installed_runtime_authority_changed": false,
+    "performance_or_latency_claimed": false,
+    "runtime_source_semantics_changed": true
+  },
+  "evidence": {
+    "architecture_document": {
+      "path": "docs/ime-target-authority-slice8-lexical-readout-2026-08-23.md",
+      "sha256": "d9bf3ed4232ab2f05d8cdba441847fa51cce8b7a3f31311beba8451b045b534b"
+    },
+    "consequence_analysis": {
+      "path": "tech_debt/evidence/td007-milestone4-consequence-analysis-v1.md",
+      "sha256": "179569df0a40bbca4e3f1dfe1b1aaeb9f400b8430ab09c71b6c1c28486150a17"
+    },
+    "correctness": {
+      "path": "tech_debt/evidence/td007-milestone4-correctness-post-review-v2.json",
+      "sha256": "9e54a517e4f39cf048cf9ef078f0f80352d3a72c42b38c6ffaa57e0d6615a1fd"
+    },
+    "independent_review": {
+      "path": "tech_debt/evidence/td007-milestone4-independent-review-v2.md",
+      "sha256": "66de1285d838d0aaea4e92a30c58b3f05d13ebbe9b40e3532478c250d047ac5f"
+    },
+    "known_failures": {
+      "path": "scripts/test-lanes/known_failures.json",
+      "sha256": "54fcc2066d36e00d7782f68a24d23d842b5513af0d725f3be020443b738e7b1d"
+    },
+    "ledger": {
+      "path": "tech_debt/evidence/td007-milestone4-ledger-v1.json",
+      "sha256": "86ac80f31948090270727731d62debdde86333d366d5c2df0206dce23ded191b"
+    },
+    "manifest": {
+      "path": "scripts/test-lanes/manifest.json",
+      "sha256": "75a3aa84240b0e9cf4c5cba52246e06c1a7fc8fa39e6a30638d29cbe23483c29"
+    },
+    "package": {
+      "path": "tech_debt/evidence/td007-milestone4-package-post-review-v1.json",
+      "sha256": "bfb9b160b41a0a95cddd875893b195ef656d4e615d146a9a6f9bf32674298d3d"
+    },
+    "quality_binding": {
+      "path": "tech_debt/evidence/td007-milestone4-quality-binding-final-v1.json",
+      "sha256": "2c2db9c46baec8bd6ab16db22f969f54cf92242199abd0d644a2a0c5a0cdd43e"
+    },
+    "quality_raw": {
+      "path": "tech_debt/evidence/td007-milestone4-quality-13x20000-final-v1.json",
+      "sha256": "3a9c79c595c3fdda80b208886377a68d1af39813584f9bdb844422e94e29d879"
+    },
+    "test_lanes_document": {
+      "path": "docs/test-lanes.md",
+      "sha256": "bde0610e6a073c440dcdb4a3d6c40f30a1c6bc9837d335860c945573bcb4399e"
+    }
+  },
+  "gates": {
+    "correctness": {
+      "failures": 0,
+      "selected": 2323,
+      "verdict": "PASS"
+    },
+    "ledger": {
+      "baseline_rows": 42,
+      "closed_rows": 42,
+      "missing_replacement_proofs": 0,
+      "verdict": "MILESTONE_4_LEDGER_CLOSED"
+    },
+    "manifest": {
+      "correctness": 2323,
+      "ignored": 13,
+      "package": 36,
+      "performance": 11,
+      "total": 2383,
+      "verdict": "PASS"
+    },
+    "package": {
+      "failures": 0,
+      "selected": 36,
+      "verdict": "PASS"
+    },
+    "quality": {
+      "clean_cases": 852582,
+      "damaged_cases": 260000,
+      "minimum_class_lattice_coverage_percent": 99.215,
+      "minimum_class_unique_top1_percent": 97.0530771735591,
+      "verdict": "PASS_C_QUALITY"
+    },
+    "static": {
+      "cargo_fmt": "PASS",
+      "git_diff_check": "PASS",
+      "json_parse": "PASS",
+      "test_lane_self_tests": "16/16 PASS"
+    }
+  },
+  "milestone": 4,
+  "prior_milestones": {
+    "milestone_1_completion_sha256": "3c246fa55a1e9c4af9edd5a5a4629857c2ed12428acd3a6667ad3af4ba3aedb6",
+    "milestone_2_completion_sha256": "3313215aac9e3de8fcae4d8019aa5767b638ca6dc1a95ba479afa2b52ec0c28b",
+    "milestone_3_completion_sha256": "da738e42a02ee0c2686833cca7acf2f342b9a29f2b7c235570a4cdf2eb468963"
+  },
+  "recorded_at_utc": "2026-08-30T11:30:02Z",
+  "review": {
+    "final_review_pass": 2,
+    "findings_repaired": 5,
+    "no_third_review": true,
+    "score_at_review_time": 5
+  },
+  "schema": "lay.tech-debt.td007.milestone-completion.v1",
+  "source_closure": {
+    "files": 1223,
+    "git_head": "86eef2f794130cefa00d8ff74b75341a1c1ceddf",
+    "sha256": "7543609f4be5f321398e2d0d687ddc9dd52642cfa6af1726b616653f214544d9"
+  },
+  "task": "TD-007",
+  "task_baseline_failures": 116,
+  "task_closed_failures": 116,
+  "task_verdict": "TD007_COMPLETE",
+  "verdict": "MILESTONE_4_PASS"
+}

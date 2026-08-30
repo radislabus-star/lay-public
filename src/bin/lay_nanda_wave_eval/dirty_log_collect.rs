@@ -322,7 +322,17 @@ fn collect_corrections_text(collector: &mut Collector, text: &str, limit: usize)
                 let pair = full_user_target(&value)
                     .and_then(|target| {
                         let lay_from = value.get("lay_from")?.as_str()?;
-                        pair_from_correction_text(&value, "user_accepted_fix", lay_from, &target)
+                        let mut pair = pair_from_correction_text(
+                            &value,
+                            "user_accepted_fix",
+                            lay_from,
+                            &target,
+                        )?;
+                        if value.get("user_target").is_none() {
+                            pair.train_role = "review".to_string();
+                            pair.quarantine_reason = "reconstructed_suffix_feedback".to_string();
+                        }
+                        Some(pair)
                     })
                     .or_else(|| pair_from_correction(&value, "user_accepted_fix", "from", "to"));
                 if let Some(pair) = pair {

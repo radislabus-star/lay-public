@@ -656,7 +656,7 @@ mod tests {
     }
 
     #[test]
-    fn full_wave_selects_noisy_multiword_layout_as_one_verified_transition() {
+    fn full_wave_does_not_append_a_typo_repair_to_layout_projection() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "djn nfrjt djn yt gthtdfhfxbdftncz ",
@@ -664,21 +664,14 @@ mod tests {
             CorrectionMode::NandaOnly,
         ));
 
-        assert_eq!(
+        assert!(resolution.decision.is_none(), "resolution={resolution:#?}");
+        assert!(
             resolution
-                .decision
-                .as_ref()
-                .map(|decision| decision.replacement.as_str()),
-            Some("вот такое вот не переварачивается "),
+                .candidates
+                .iter()
+                .all(|candidate| !candidate.has_source_id("LayoutSequenceCell32")),
             "resolution={resolution:#?}"
         );
-        let selected = resolution.selected.as_ref().expect("selected transition");
-        assert!(selected.has_source_id("LayoutSequenceCell32"));
-        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
-        assert!(resolution
-            .selected_transition
-            .as_ref()
-            .is_some_and(|receipt| receipt.diagnostic_transition().is_verified()));
     }
 
     #[test]
@@ -840,7 +833,7 @@ mod tests {
     }
 
     #[test]
-    fn boundary_preserving_candidate_survives_explanation_gate() {
+    fn composite_label_cannot_substitute_for_boundary_transition_proof() {
         let gate = gate_candidate_with_source(
             "тоесть ",
             "то есть ",
@@ -848,7 +841,8 @@ mod tests {
             ids::PERSONAL_PHRASE,
         );
 
-        assert_eq!(gate.action, CandidateGateAction::Eligible);
+        assert_eq!(gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(gate.reason, "edit_transition_not_verified");
     }
 
     #[test]
@@ -925,11 +919,13 @@ mod tests {
     #[test]
     fn ambiguous_long_l2_surface_drift_from_live_log_is_suggestion_only() {
         let pipeline = default_typing_assist_pipeline();
-        let resolution = resolve_text_correction(request(
+        let mut req = request(
             "самка схема парочинная ",
             &pipeline,
             CorrectionMode::NandaOnly,
-        ));
+        );
+        req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+        let resolution = resolve_text_correction(req);
 
         assert!(resolution.selected.is_none(), "resolution={resolution:#?}");
         assert!(
@@ -937,6 +933,13 @@ mod tests {
                 .candidates
                 .iter()
                 .any(|candidate| candidate.replacement == "самка схема перочинная "),
+            "resolution={resolution:#?}"
+        );
+        assert!(
+            resolution.candidates.iter().any(|candidate| {
+                candidate.replacement == "самка схема перочинная "
+                    && candidate.gate.action == CandidateGateAction::SuggestOnly
+            }),
             "resolution={resolution:#?}"
         );
     }
@@ -1897,7 +1900,7 @@ mod tests {
     }
 
     #[test]
-    fn composite_typo_splits_previous_glued_word_when_fixing_current_typo() {
+    fn composite_typo_split_plus_tail_candidate_stays_suggest_only_without_semantic_proof() {
         let pipeline = default_typing_assist_pipeline();
         let resolution = resolve_text_correction(request(
             "ее простозальет свтеом ",
@@ -1905,14 +1908,25 @@ mod tests {
             CorrectionMode::DeterministicOnly,
         ));
 
-        let selected = resolution.selected.expect("selected candidate");
-        assert_eq!(selected.replacement, "ее просто зальет светом ");
-        assert_eq!(selected.source_id, ids::ADJACENT_TRANSPOSITION);
+        let candidate = resolution
+            .candidates
+            .iter()
+            .find(|candidate| candidate.replacement == "ее просто зальет светом ")
+            .expect("the shape-only candidate must remain observable");
+        assert_eq!(candidate.source_id, ids::ADJACENT_TRANSPOSITION);
         assert_eq!(
-            selected.error_class,
+            candidate.error_class,
             TypingErrorClass::AdjacentTransposition
         );
-        assert_eq!(selected.gate.action, CandidateGateAction::Eligible);
+        assert_eq!(candidate.gate.action, CandidateGateAction::SuggestOnly);
+        assert_ne!(
+            resolution
+                .selected
+                .as_ref()
+                .map(|selected| selected.replacement.as_str()),
+            Some("ее просто зальет светом "),
+            "an unrelated verified typo repair may win, but the shape-only split must not: {resolution:#?}"
+        );
     }
 
     #[test]

@@ -1,4 +1,4 @@
-git status; echo files 100%\s
-terminal files? rus; eng 50%\s
-vpn cli log frontend backend docker\s
-cd\s
+convert	git status; echo files 100%\s
+convert	terminal files? rus; eng 50%\s
+convert	vpn cli log frontend backend docker\s
+keep	cd\s

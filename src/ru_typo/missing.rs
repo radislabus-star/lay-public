@@ -4,7 +4,8 @@ use crate::russian_typo_candidates::{
     generate_missing_letter_candidates, inserted_char_position_for_missing_letter,
 };
 use crate::russian_typo_scoring::{
-    best_ranked_dictionary_candidate, missing_letter_candidate_bonus,
+    best_ranked_dictionary_candidate, has_typo_autocorrect_authority,
+    missing_letter_candidate_bonus,
 };
 
 use super::guards::{
@@ -16,11 +17,24 @@ use super::thresholds::NGRAM_DICT_MISSING_LETTER_MARGIN;
 
 pub fn correct_missing_letter(word: &str) -> Option<String> {
     memoized_text(WordMaterialKind::MissingLetter, word, || {
-        correct_missing_letter_uncached(word)
+        select_missing_letter_candidate(word, MissingLetterAuthority::Autocorrect)
     })
 }
 
-fn correct_missing_letter_uncached(word: &str) -> Option<String> {
+pub(crate) fn propose_missing_letter_candidate(word: &str) -> Option<String> {
+    select_missing_letter_candidate(word, MissingLetterAuthority::ProposalOnly)
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum MissingLetterAuthority {
+    Autocorrect,
+    ProposalOnly,
+}
+
+fn select_missing_letter_candidate(
+    word: &str,
+    authority: MissingLetterAuthority,
+) -> Option<String> {
     if word.contains('-') || word.chars().count() < 4 || !crate::word_reader::is_cyrillic_word(word)
     {
         return None;
@@ -28,19 +42,23 @@ fn correct_missing_letter_uncached(word: &str) -> Option<String> {
     let lower = word.to_lowercase();
     let field_knows_original = crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower)
         || crate::russian_lexicon::is_center_backed_russian_form(&lower);
-    if field_knows_original || crate::russian_lexicon::has_clean_russian_surface_certificate(&lower)
+    if field_knows_original
+        || is_known_russian_word_or_form(&lower)
+        || crate::russian_lexicon::has_clean_russian_surface_certificate(&lower)
     {
         return None;
     }
-    if looks_like_plausible_russian_past_tense(&lower)
-        && !missing_letter_candidate_exists(word, &lower)
-    {
-        return None;
-    }
-    if looks_like_prefix_plus_known_russian_word(&lower)
-        && !vowel_nonverb_missing_letter_candidate_exists(word, &lower)
-    {
-        return None;
+    if authority == MissingLetterAuthority::Autocorrect {
+        if looks_like_plausible_russian_past_tense(&lower)
+            && !missing_letter_candidate_exists(word, &lower)
+        {
+            return None;
+        }
+        if looks_like_prefix_plus_known_russian_word(&lower)
+            && !vowel_nonverb_missing_letter_candidate_exists(word, &lower)
+        {
+            return None;
+        }
     }
 
     if std::env::var_os("LAY_TRACE_RU_TYPO").is_some() {
@@ -58,12 +76,24 @@ fn correct_missing_letter_uncached(word: &str) -> Option<String> {
         eprintln!("missing_letter word={word:?} field_knows_original={field_knows_original} ranked={ranked:?}");
     }
 
-    best_ranked_dictionary_candidate(
+    let mut candidates = safe_missing_letter_candidates(&lower)
+        .filter(|candidate| {
+            authority == MissingLetterAuthority::ProposalOnly
+                || has_typo_autocorrect_authority(&lower, candidate)
+        })
+        .collect::<Vec<_>>();
+    candidates.sort_unstable();
+    candidates.dedup();
+    if authority == MissingLetterAuthority::Autocorrect && candidates.len() != 1 {
+        return None;
+    }
+    let selected = best_ranked_dictionary_candidate(
         word,
-        safe_missing_letter_candidates(&lower),
+        candidates.iter().cloned(),
         NGRAM_DICT_MISSING_LETTER_MARGIN,
         0.40,
-    )
+    )?;
+    Some(selected)
 }
 
 #[cfg(test)]

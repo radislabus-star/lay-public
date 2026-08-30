@@ -6081,3 +6081,96 @@ Evidence:
 
 Milestone 3 does not claim the final fixed heldout gate. That gate remains one
 conjunctive TD-007 completion check after milestone 4.
+
+### TD-007 milestone 4: final semantic reconciliation
+
+The final 42 historical failures were reconciled across typing assist, phrase
+boundaries, edit safety, CLI integration, feedback learning, and static owner
+contracts. The 42-row ledger is an exact partition of the milestone-3 failure
+receipt; every row names an executable replacement proof in the current test
+manifest.
+
+The runtime repairs are systemic:
+
+- protected dotted ASCII is rejected before layout projection;
+- punctuation-shaped physical layout keys retain their key evidence instead of
+  being stripped as generic punctuation;
+- known Russian surfaces and ambiguous initial insertions remain non-mutating;
+- repeated-letter repair owns repeated runs before generic extra-letter logic;
+- center-backed missing-letter targets outrank reference-only alternatives;
+- unresolved one-token repairs compete with boundary shifts rather than being
+  erased by them;
+- reconstructed suffix feedback is quarantined as review evidence;
+- proposal-only substitution evidence may block a destructive boundary choice
+  without gaining automatic apply authority;
+- pending auto-undo preserves daemon physical-grab ownership before backend
+  selection;
+- shape-only multi-token split/repair candidates remain `SuggestOnly` without
+  independent semantic proof;
+- backed morphology rejects orthographically impossible `ы` after
+  `г/к/х/ж/ч/ш/щ` through one shared guard;
+- the unproven 99% boundary-retention authority shortcut is removed.
+
+Frameless layout projection remains available as lexical evidence but does not
+gain automatic mutation authority. Historical corpus expectations that
+auto-applied `ckjdf`, `njkmrj`, `ltkf`, `dctulf`, or `jgznm` solely because the
+projected surface existed in a reference field were replaced by explicit
+`keep` contracts. Exact frame-bound projection, admitted short/common forms,
+and physical key routes remain tested independently.
+
+```text
+baseline failures before milestone 4       42
+milestone 4 ledger rows                     42
+remaining known failures                     0
+manifest total                            2,383
+correctness                             2,323 PASS
+package                                    36 PASS
+unexpected / infrastructure failures        0 / 0
+source closure SHA-256             7543609f4be5f321...
+```
+
+The frozen V8 full-quality command was attempted locally and stopped before
+quality workers because this eight-CPU host exceeded the legacy V8
+implicit-forward maximum-latency prerequisite (`5,630 us` combined and
+`3,573 us` implicit). That receipt is retained as
+`REJECT_C_PREREQUISITE`; it is not interpreted as a quality result.
+
+After the second independent-review repairs, a fresh release proof binary
+executed the complete quality matrix against the already sealed direct V9
+exact-support artifact. This was a real quality run, not an inference from
+format parity. A separate binding receipt seals exact argv, executable SHA,
+source closure before/after, input hashes, timestamps, exit status, and raw
+receipt SHA:
+
+```text
+verdict                                  PASS_C_QUALITY
+damaged cases                           260,000 / 260,000
+clean centers                           852,582 / 852,582
+target retention                        100.0%
+minimum per-class unique top-1           97.0531%
+minimum per-class lattice coverage       99.2150%
+clean preservation                       100.0%
+authoritative false authority/singleton  0 / 0
+grounded legacy candidate loss           0
+V9 checksum/support rebuild parity       PASS / PASS
+```
+
+The separately labelled compatibility observer reports four diagnostic false-
+authority observations; it is not merged into the authoritative exact-field
+denominator. Runtime source semantics changed only for the listed mechanisms.
+Installed binaries, services, desktop state, and runtime authority were not
+changed, and this milestone does not admit a release.
+
+Evidence:
+
+- `tech_debt/evidence/td007-milestone4-consequence-analysis-v1.md`
+- `tech_debt/evidence/td007-milestone4-ledger-v1.json`
+- `tech_debt/evidence/td007-milestone4-correctness-verified-v1.json`
+- `tech_debt/evidence/td007-milestone4-package-verified-v1.json`
+- `tech_debt/evidence/td007-milestone4-quality-v8-local-prerequisite-blocked-v1.json`
+- `tech_debt/evidence/td007-milestone4-quality-13x20000-v9-v1.json`
+- `tech_debt/evidence/td007-milestone4-correctness-post-review-v2.json`
+- `tech_debt/evidence/td007-milestone4-package-post-review-v1.json`
+- `tech_debt/evidence/td007-milestone4-quality-13x20000-final-v1.json`
+- `tech_debt/evidence/td007-milestone4-quality-binding-final-v1.json`
+- `tech_debt/evidence/td007-milestone4-independent-review-v2.md`

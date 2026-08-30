@@ -10,17 +10,31 @@ use super::thresholds::NGRAM_TYPO_REJECT_MARGIN;
 
 pub(crate) fn correct_repeated_letter(word: &str) -> Option<String> {
     memoized_text(WordMaterialKind::RepeatedLetter, word, || {
-        correct_repeated_letter_uncached(word)
+        select_repeated_letter_candidate(word, RepeatedLetterAuthority::Autocorrect)
     })
 }
 
-fn correct_repeated_letter_uncached(word: &str) -> Option<String> {
+pub(crate) fn propose_repeated_letter_candidate(word: &str) -> Option<String> {
+    select_repeated_letter_candidate(word, RepeatedLetterAuthority::ProposalOnly)
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum RepeatedLetterAuthority {
+    Autocorrect,
+    ProposalOnly,
+}
+
+fn select_repeated_letter_candidate(
+    word: &str,
+    authority: RepeatedLetterAuthority,
+) -> Option<String> {
     if !is_cyrillic_word(word) {
         return None;
     }
 
     let lower = word.to_lowercase();
-    if crate::russian_lexicon::is_exact_reference_russian_word(&lower)
+    if crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower)
+        || crate::russian_lexicon::is_exact_reference_russian_word(&lower)
         || crate::lexicon::is_ru_live_protected_word(&lower)
         || crate::lexicon::is_user_protected_word(&lower)
     {
@@ -40,12 +54,58 @@ fn correct_repeated_letter_uncached(word: &str) -> Option<String> {
         return None;
     }
 
-    best_ranked_dictionary_candidate(
-        word,
-        repeated_run_deletion_candidates(&lower),
-        NGRAM_TYPO_REJECT_MARGIN,
-        0.40,
-    )
+    let mut candidates = repeated_run_deletion_candidates(&lower)
+        .into_iter()
+        .filter(|candidate| {
+            authority == RepeatedLetterAuthority::ProposalOnly
+                || repeated_letter_autocorrect_has_authority(candidate)
+        })
+        .collect::<Vec<_>>();
+    candidates.sort_unstable();
+    candidates.dedup();
+    best_ranked_dictionary_candidate(word, candidates, NGRAM_TYPO_REJECT_MARGIN, 0.40)
+}
+
+fn repeated_letter_autocorrect_has_authority(candidate: &str) -> bool {
+    crate::russian_lexicon::is_exact_reference_russian_word(candidate)
+        || crate::russian_lexicon::is_center_backed_russian_form(candidate)
+        || crate::russian_lexicon::is_reference_backed_short_passive_participle(candidate)
+        || crate::lexicon::is_common_ru_word(candidate)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{correct_repeated_letter, propose_repeated_letter_candidate};
+
+    #[test]
+    fn repeated_letter_requires_autocorrect_authority_for_the_replacement() {
+        assert_eq!(correct_repeated_letter("русским"), None);
+        assert_eq!(correct_repeated_letter("медленно"), None);
+        assert_eq!(
+            correct_repeated_letter("исправленно").as_deref(),
+            Some("исправлено")
+        );
+        assert_eq!(
+            correct_repeated_letter("исправленнно").as_deref(),
+            Some("исправлено")
+        );
+        assert_eq!(
+            correct_repeated_letter("ОФФИЦИАЛЬНОМ").as_deref(),
+            Some("ОФИЦИАЛЬНОМ")
+        );
+    }
+
+    #[test]
+    fn repeated_candidate_supports_a_split_word_merge() {
+        assert_eq!(
+            correct_repeated_letter("печатаеттся").as_deref(),
+            Some("печатается")
+        );
+        assert_eq!(
+            propose_repeated_letter_candidate("печатаеттся").as_deref(),
+            Some("печатается")
+        );
+    }
 }
 
 fn correct_short_repeated_function_word(original: &str, lower: &str) -> Option<String> {

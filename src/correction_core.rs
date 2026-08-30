@@ -378,6 +378,12 @@ impl UnifiedCorrectionCandidate {
             .any(|evidence| evidence.origin == origin)
     }
 
+    pub(crate) fn has_eligible_origin(&self, origin: CandidateOrigin) -> bool {
+        self.evidence.iter().any(|evidence| {
+            evidence.origin == origin && evidence.gate.action == CandidateGateAction::Eligible
+        })
+    }
+
     pub(crate) fn has_source_id(&self, source_id: &str) -> bool {
         self.evidence
             .iter()
@@ -640,6 +646,9 @@ fn resolve_text_correction_observed_internal(
                 l2_peak_context.as_ref(),
                 &mut canonical_telemetry,
             );
+        }
+        if req.mode == CorrectionMode::NandaOnly {
+            lattice.push_source(proposal_only_substitution_competitor(&req));
         }
         if L2CandidateSource::for_mode(req.mode).contains(&L2CandidateSource::Deterministic) {
             lattice.push_source(short_cyrillic_layout_suggestion_candidate(&req));
