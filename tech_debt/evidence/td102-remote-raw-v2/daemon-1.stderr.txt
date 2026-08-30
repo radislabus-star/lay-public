@@ -1,0 +1,2157 @@
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.45
+   Compiling unicode-ident v1.0.24
+    Checking cfg-if v1.0.4
+   Compiling serde_core v1.0.228
+   Compiling crossbeam-utils v0.8.21
+   Compiling libc v0.2.185
+   Compiling serde v1.0.228
+    Checking stable_deref_trait v1.2.1
+   Compiling find-msvc-tools v0.1.9
+    Checking pin-project-lite v0.2.17
+   Compiling shlex v1.3.0
+    Checking bitflags v2.11.1
+    Checking parking v2.2.1
+   Compiling autocfg v1.5.0
+   Compiling winnow v1.0.2
+   Compiling equivalent v1.0.2
+   Compiling rustix v1.1.4
+    Checking futures-core v0.3.32
+   Compiling hashbrown v0.17.0
+    Checking linux-raw-sys v0.12.1
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+    Checking litemap v0.8.2
+    Checking futures-io v0.3.32
+    Checking writeable v0.6.3
+    Checking fastrand v2.4.1
+    Checking smallvec v1.15.1
+    Checking simd-adler32 v0.3.9
+   Compiling crc32fast v1.5.0
+   Compiling version_check v0.9.5
+   Compiling icu_properties_data v2.2.0
+    Checking utf8_iter v1.0.4
+   Compiling icu_normalizer_data v2.2.0
+    Checking futures-lite v2.6.1
+    Checking zeroize v1.8.2
+    Checking adler2 v2.0.1
+   Compiling pkg-config v0.3.33
+   Compiling crossbeam-epoch v0.9.20
+    Checking miniz_oxide v0.8.9
+    Checking rustls-pki-types v1.14.0
+   Compiling zmij v1.0.21
+    Checking slab v0.4.12
+   Compiling num-traits v0.2.19
+   Compiling async-io v2.6.0
+    Checking once_cell v1.21.4
+   Compiling generic-array v0.14.7
+    Checking typenum v1.20.1
+   Compiling endi v1.1.1
+   Compiling crossbeam-deque v0.8.7
+   Compiling serde_json v1.0.149
+    Checking async-task v4.7.1
+    Checking concurrent-queue v2.5.0
+    Checking flate2 v1.1.9
+    Checking percent-encoding v2.3.2
+    Checking untrusted v0.9.0
+    Checking syn v2.0.117
+   Compiling radium v0.7.0
+   Compiling indexmap v2.14.0
+    Checking event-listener v5.4.1
+    Checking utf8parse v0.2.2
+   Compiling parking_lot_core v0.9.12
+   Compiling cfg_aliases v0.2.1
+    Checking anstyle-parse v1.0.0
+   Compiling nix v0.29.0
+    Checking event-listener-strategy v0.5.4
+    Checking fdeflate v0.3.7
+    Checking async-channel v2.5.0
+    Checking log v0.4.29
+    Checking anstyle v1.0.14
+   Compiling rustls v0.23.39
+   Compiling jobserver v0.1.34
+    Checking itoa v1.0.18
+    Checking pxfm v0.1.29
+    Checking anstyle-query v1.1.5
+   Compiling rayon-core v1.13.0
+    Checking is_terminal_polyfill v1.70.2
+   Compiling zstd-safe v7.2.4
+    Checking colorchoice v1.0.5
+    Checking memchr v2.8.0
+    Checking scopeguard v1.2.0
+    Checking atomic-waker v1.1.2
+    Checking tap v1.0.1
+    Checking lock_api v0.4.14
+    Checking piper v0.2.5
+    Checking anstream v1.0.0
+    Checking png v0.18.1
+    Checking wyz v0.5.1
+   Compiling cc v1.2.60
+   Compiling toml_parser v1.1.2+spec-1.1.0
+    Checking async-lock v3.4.2
+    Checking webpki-roots v1.0.7
+    Checking form_urlencoded v1.2.2
+    Checking tracing-core v0.1.36
+   Compiling heck v0.5.0
+    Checking subtle v2.6.1
+    Checking strsim v0.11.1
+    Checking crypto-common v0.1.7
+    Checking block-buffer v0.10.4
+    Checking byteorder-lite v0.1.0
+    Checking x11rb-protocol v0.13.2
+    Checking bytemuck v1.25.0
+    Checking clap_lex v1.1.0
+    Checking funty v2.0.0
+   Compiling libm v0.2.16
+    Checking digest v0.10.7
+    Checking webpki-roots v0.26.11
+    Checking clap_builder v4.6.0
+    Checking blocking v1.6.2
+    Checking async-executor v1.14.0
+   Compiling toml_edit v0.25.11+spec-1.1.0
+    Checking async-broadcast v0.7.2
+    Checking ordered-stream v0.2.0
+    Checking either v1.15.0
+   Compiling lay v1.0.54 (/home/e/codex-worktrees/lay-td102-a301b82c)
+    Checking getrandom v0.2.17
+    Checking errno v0.3.14
+    Checking bitvec v1.0.1
+    Checking signal-hook-registry v1.4.8
+    Checking hex v0.4.3
+    Checking cpufeatures v0.2.17
+    Checking base64 v0.22.1
+    Checking parking_lot v0.12.5
+    Checking sha2 v0.10.9
+    Checking rayon v1.10.0
+    Checking uuid v1.23.1
+   Compiling proc-macro-crate v3.5.0
+   Compiling ring v0.17.14
+   Compiling zstd-sys v2.0.16+zstd.1.5.7
+    Checking moxcms v0.8.1
+    Checking polling v3.11.0
+    Checking gethostname v1.1.0
+    Checking async-signal v0.2.14
+    Checking async-process v2.5.0
+    Checking rustls-webpki v0.103.13
+    Checking evdev v0.13.2
+   Compiling synstructure v0.13.2
+   Compiling serde_derive v1.0.228
+   Compiling zerovec-derive v0.11.3
+   Compiling displaydoc v0.2.5
+   Compiling enumflags2_derive v0.7.12
+   Compiling tracing-attributes v0.1.31
+   Compiling clap_derive v4.6.1
+   Compiling async-recursion v1.1.1
+   Compiling serde_repr v0.1.20
+   Compiling async-trait v0.1.89
+   Compiling zerofrom-derive v0.1.7
+   Compiling yoke-derive v0.8.2
+    Checking x11rb v0.13.2
+    Checking image v0.25.10
+    Checking tracing v0.1.44
+    Checking zstd v0.13.3
+    Checking zerofrom v0.1.7
+    Checking yoke v0.8.2
+    Checking zerovec v0.11.6
+    Checking zerotrie v0.2.4
+    Checking clap v4.6.1
+    Checking tinystr v0.8.3
+    Checking potential_utf v0.1.5
+    Checking icu_collections v2.2.0
+    Checking icu_locale_core v2.2.0
+    Checking arboard v3.6.1
+    Checking zvariant_utils v3.3.1
+    Checking enumflags2 v0.7.12
+    Checking niri-ipc v26.4.0
+    Checking icu_provider v2.2.0
+    Checking icu_normalizer v2.2.0
+    Checking icu_properties v2.2.0
+   Compiling zvariant_derive v5.10.1
+   Compiling zvariant v5.10.1
+    Checking idna_adapter v1.2.1
+    Checking idna v1.1.0
+    Checking url v2.5.8
+    Checking ureq v2.12.1
+    Checking zbus_names v4.3.2
+   Compiling zbus_macros v5.15.0
+    Checking zbus v5.15.0
+warning: function `exact_ascii_to_russian_layout_candidate` is never used
+  --> src/layout_autoswitch/ascii/candidate.rs:26:15
+   |
+26 | pub(super) fn exact_ascii_to_russian_layout_candidate(
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `correct_exact_wrong_layout_ascii_word` is never used
+   --> src/layout_autoswitch/ascii/word.rs:106:15
+    |
+106 | pub(crate) fn correct_exact_wrong_layout_ascii_word(token: &str) -> Option<String> {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `pair_debug`, `context_vector`, and `candidate_relation_vector` are never used
+    --> src/nanda_wave/context_phase/mod.rs:913:19
+     |
+ 314 | impl ContextPhasePackage {
+     | ------------------------ methods in this implementation
+...
+ 913 |     pub(crate) fn pair_debug(
+     |                   ^^^^^^^^^^
+...
+1656 |     pub(crate) fn context_vector(
+     |                   ^^^^^^^^^^^^^^
+...
+1694 |     pub(super) fn candidate_relation_vector(
+     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `candidate_l2_signature` is never used
+    --> src/nanda_wave/context_phase/mod.rs:2135:15
+     |
+2135 | pub(super) fn candidate_l2_signature(candidate: &str) -> u64 {
+     |               ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `MAX_PENDING_ANTI_CENTERS` is never used
+  --> src/nanda_wave/context_phase/online.rs:23:7
+   |
+23 | const MAX_PENDING_ANTI_CENTERS: usize = 4;
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated function `new` is never used
+   --> src/nanda_wave/context_phase/online.rs:163:8
+    |
+162 | impl PendingNegativeBuilder {
+    | --------------------------- associated function in this implementation
+163 |     fn new() -> Self {
+    |        ^^^
+
+warning: variant `Negative` is never constructed
+   --> src/nanda_wave/context_phase/online.rs:345:5
+    |
+343 | enum ProfileBank {
+    |      ----------- variant in this enum
+344 |     Positive,
+345 |     Negative,
+    |     ^^^^^^^^
+    |
+    = note: `ProfileBank` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: methods `update_negative_relation`, `update_hard_negative_relation`, and `evict_pending_negative_profile` are never used
+    --> src/nanda_wave/context_phase/online.rs:1185:8
+     |
+ 483 | impl OnlineContextPhaseLearner {
+     | ------------------------------ methods in this implementation
+...
+1185 |     fn update_negative_relation(&mut self, token_hash: u64, vector: &[PhaseCell]) {
+     |        ^^^^^^^^^^^^^^^^^^^^^^^^
+...
+1247 |     fn update_hard_negative_relation(&mut self, token_hash: u64, vector: &[PhaseCell]) {
+     |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+1267 |     fn evict_pending_negative_profile(&mut self) -> bool {
+     |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `l2_lattice_competitors` is never used
+    --> src/nanda_wave/context_phase/online.rs:1588:15
+     |
+1588 | pub(super) fn l2_lattice_competitors(
+     |               ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `common_target_evidence` is never used
+   --> src/nanda_wave/l2.rs:125:19
+    |
+124 | impl L2ImeWordCandidate {
+    | ----------------------- method in this implementation
+125 |     pub(crate) fn common_target_evidence(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `hot_layout_candidate` is never used
+   --> src/nanda_wave/l2.rs:245:15
+    |
+245 | pub(crate) fn hot_layout_candidate(original: &str) -> Option<WordCandidate> {
+    |               ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `hot_layout_candidate_with_noisy_projection` is never used
+   --> src/nanda_wave/l2.rs:256:15
+    |
+256 | pub(crate) fn hot_layout_candidate_with_noisy_projection(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated function `from_bytes` is never used
+   --> src/nanda_wave/l2_field/compact_format.rs:778:19
+    |
+777 | impl CompactPackageView {
+    | ----------------------- associated function in this implementation
+778 |     pub(super) fn from_bytes(bytes: Vec<u8>) -> Result<Self, String> {
+    |                   ^^^^^^^^^^
+
+warning: method `atom_key_count` is never used
+   --> src/nanda_wave/l2_field/compositional.rs:146:19
+    |
+111 | impl RuntimeLemmaWaveIndex {
+    | -------------------------- method in this implementation
+...
+146 |     pub(super) fn atom_key_count(&self) -> usize {
+    |                   ^^^^^^^^^^^^^^
+
+warning: method `rank_lemmas` is never used
+   --> src/nanda_wave/l2_field/compositional.rs:304:19
+    |
+154 | impl LemmaWaveIndex {
+    | ------------------- method in this implementation
+...
+304 |     pub(super) fn rank_lemmas(&self, surface: &str, limit: usize) -> Vec<LemmaWaveMatch> {
+    |                   ^^^^^^^^^^^
+
+warning: function `normalized_similarity_milli` is never used
+    --> src/nanda_wave/l2_field/compositional.rs:1426:15
+     |
+1426 | pub(super) fn normalized_similarity_milli(observed: &str, expected: &str) -> u16 {
+     |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `prepared_similarity_to_normalized_surface_milli` is never used
+    --> src/nanda_wave/l2_field/compositional.rs:1452:15
+     |
+1452 | pub(super) fn prepared_similarity_to_normalized_surface_milli(
+     |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `surface_atom_profile` is never used
+    --> src/nanda_wave/l2_field/compositional.rs:1528:15
+     |
+1528 | pub(super) fn surface_atom_profile(surface: &str) -> SurfaceAtomProfile {
+     |               ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `surface_atom_similarity_milli` is never used
+    --> src/nanda_wave/l2_field/compositional.rs:1541:15
+     |
+1541 | pub(super) fn surface_atom_similarity_milli(observed: &SurfaceAtomProfile, expected: &str) -> u16 {
+     |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `context_evidence_keys` is never used
+  --> src/nanda_wave/l2_field/context.rs:40:15
+   |
+40 | pub(crate) fn context_evidence_keys(context: &str) -> Vec<u32> {
+   |               ^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `train_lemmas` and `train_context_slots` are never used
+   --> src/nanda_wave/l2_field/productive.rs:242:8
+    |
+215 | impl ProductiveMorphologyIndex {
+    | ------------------------------ associated items in this implementation
+...
+242 |     fn train_lemmas(
+    |        ^^^^^^^^^^^^
+...
+402 |     fn train_context_slots(
+    |        ^^^^^^^^^^^^^^^^^^^
+
+warning: function `apply_edge_transform` is never used
+    --> src/nanda_wave/l2_field/productive.rs:1191:15
+     |
+1191 | pub(super) fn apply_edge_transform(
+     |               ^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `recover_anchor` and `recover_anchor_into` are never used
+   --> src/nanda_wave/l2_field/productive_v1/anchor_recovery_package.rs:417:19
+    |
+300 | impl AnchorRecoveryPackageViewV1 {
+    | -------------------------------- methods in this implementation
+...
+417 |     pub(super) fn recover_anchor(
+    |                   ^^^^^^^^^^^^^^
+...
+428 |     pub(super) fn recover_anchor_into(
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: function `calibrated_readout` is never used
+   --> src/nanda_wave/l2_field/productive_v1/calibrate.rs:556:15
+    |
+556 | pub(super) fn calibrated_readout(
+    |               ^^^^^^^^^^^^^^^^^^
+
+warning: variants `CompleteTargetAbsent` and `CompleteUnsupportedIdentity` are never constructed
+  --> src/nanda_wave/l2_field/productive_v1/candidate_state.rs:23:5
+   |
+20 | pub(super) enum TargetNamespaceSettlementV1 {
+   |                 --------------------------- variants in this enum
+...
+23 |     CompleteTargetAbsent,
+   |     ^^^^^^^^^^^^^^^^^^^^
+24 |     CompleteUnsupportedIdentity,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `TargetNamespaceSettlementV1` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: method `common_completeness` is never used
+   --> src/nanda_wave/l2_field/productive_v1/composite.rs:160:19
+    |
+ 66 | impl CompositeL2LatticeV1 {
+    | ------------------------- method in this implementation
+...
+160 |     pub(super) fn common_completeness(&self) -> EnumerationCompletenessV1 {
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: constant `PROMOTION_MAGIC` is never used
+ --> src/nanda_wave/l2_field/productive_v1/delta.rs:5:7
+  |
+5 | const PROMOTION_MAGIC: [u8; 8] = *b"LAYP2PR1";
+  |       ^^^^^^^^^^^^^^^
+
+warning: constant `PROMOTION_VERSION` is never used
+ --> src/nanda_wave/l2_field/productive_v1/delta.rs:6:7
+  |
+6 | const PROMOTION_VERSION: u16 = 1;
+  |       ^^^^^^^^^^^^^^^^^
+
+warning: constant `PROMOTION_BYTES` is never used
+ --> src/nanda_wave/l2_field/productive_v1/delta.rs:7:7
+  |
+7 | const PROMOTION_BYTES: usize = 256;
+  |       ^^^^^^^^^^^^^^^
+
+warning: enum `DeltaRecordKindV1` is never used
+  --> src/nanda_wave/l2_field/productive_v1/delta.rs:11:17
+   |
+11 | pub(super) enum DeltaRecordKindV1 {
+   |                 ^^^^^^^^^^^^^^^^^
+
+warning: struct `DeltaRecordV1` is never constructed
+  --> src/nanda_wave/l2_field/productive_v1/delta.rs:24:19
+   |
+24 | pub(super) struct DeltaRecordV1 {
+   |                   ^^^^^^^^^^^^^
+
+warning: methods `canonical_bytes` and `validate` are never used
+  --> src/nanda_wave/l2_field/productive_v1/delta.rs:33:8
+   |
+32 | impl DeltaRecordV1 {
+   | ------------------ methods in this implementation
+33 |     fn canonical_bytes(&self) -> Vec<u8> {
+   |        ^^^^^^^^^^^^^^^
+...
+50 |     fn validate(&self) -> Result<(), &'static str> {
+   |        ^^^^^^^^
+
+warning: struct `DeltaManifestV1` is never constructed
+  --> src/nanda_wave/l2_field/productive_v1/delta.rs:67:19
+   |
+67 | pub(super) struct DeltaManifestV1 {
+   |                   ^^^^^^^^^^^^^^^
+
+warning: struct `DeltaGenerationV1` is never constructed
+  --> src/nanda_wave/l2_field/productive_v1/delta.rs:81:19
+   |
+81 | pub(super) struct DeltaGenerationV1 {
+   |                   ^^^^^^^^^^^^^^^^^
+
+warning: associated function `build` is never used
+  --> src/nanda_wave/l2_field/productive_v1/delta.rs:88:19
+   |
+87 | impl DeltaGenerationV1 {
+   | ---------------------- associated function in this implementation
+88 |     pub(super) fn build(
+   |                   ^^^^^
+
+warning: struct `DeltaChainStateV1` is never constructed
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:114:19
+    |
+114 | pub(super) struct DeltaChainStateV1 {
+    |                   ^^^^^^^^^^^^^^^^^
+
+warning: function `validate_delta_chain` is never used
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:124:15
+    |
+124 | pub(super) fn validate_delta_chain(
+    |               ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `validate_atomic_model_generation` is never used
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:185:4
+    |
+185 | fn validate_atomic_model_generation(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `verify_compaction_semantic_parity` is never used
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:217:15
+    |
+217 | pub(super) fn verify_compaction_semantic_parity(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `semantic_chain_hash` is never used
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:240:4
+    |
+240 | fn semantic_chain_hash(state: &DeltaChainStateV1) -> [u8; 32] {
+    |    ^^^^^^^^^^^^^^^^^^^
+
+warning: function `canonical_record_payload` is never used
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:256:4
+    |
+256 | fn canonical_record_payload(records: &[DeltaRecordV1]) -> Vec<u8> {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `generation_hash` is never used
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:266:4
+    |
+266 | fn generation_hash(manifest: &DeltaManifestV1, payload: &[u8]) -> [u8; 32] {
+    |    ^^^^^^^^^^^^^^^
+
+warning: enum `AuthorityScopeV1` is never used
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:284:17
+    |
+284 | pub(super) enum AuthorityScopeV1 {
+    |                 ^^^^^^^^^^^^^^^^
+
+warning: struct `PromotionManifestV1` is never constructed
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:293:19
+    |
+293 | pub(super) struct PromotionManifestV1 {
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `encode` and `decode` are never used
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:307:19
+    |
+306 | impl PromotionManifestV1 {
+    | ------------------------ associated items in this implementation
+307 |     pub(super) fn encode(self) -> Result<[u8; PROMOTION_BYTES], &'static str> {
+    |                   ^^^^^^
+...
+330 |     pub(super) fn decode(bytes: &[u8]) -> Result<Self, &'static str> {
+    |                   ^^^^^^
+
+warning: struct `PromotionExpectationV1` is never constructed
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:373:19
+    |
+373 | pub(super) struct PromotionExpectationV1 {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `resolve_authority_scope` is never used
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:382:15
+    |
+382 | pub(super) fn resolve_authority_scope(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `crc32` is never used
+   --> src/nanda_wave/l2_field/productive_v1/delta.rs:410:4
+    |
+410 | fn crc32(bytes: &[u8]) -> u32 {
+    |    ^^^^^
+
+warning: function `sort_and_deduplicate_events` is never used
+   --> src/nanda_wave/l2_field/productive_v1/events.rs:353:15
+    |
+353 | pub(super) fn sort_and_deduplicate_events(events: &mut Vec<EventEnvelopeV1>) {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `read_verified_spool_shard` is never used
+   --> src/nanda_wave/l2_field/productive_v1/events.rs:606:15
+    |
+606 | pub(super) fn read_verified_spool_shard(path: &Path) -> Result<Vec<SpoolRecordV1>, String> {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated function `from_bytes` is never used
+   --> src/nanda_wave/l2_field/productive_v1/format.rs:255:19
+    |
+254 | impl ProductivePackageViewV1 {
+    | ---------------------------- associated function in this implementation
+255 |     pub(super) fn from_bytes(bytes: Vec<u8>) -> Result<Self, String> {
+    |                   ^^^^^^^^^^
+
+warning: method `reset_generated` is never used
+   --> src/nanda_wave/l2_field/productive_v1/geometry.rs:297:19
+    |
+223 | impl GeometryTraversalStateV1 {
+    | ----------------------------- method in this implementation
+...
+297 |     pub(super) fn reset_generated(&mut self) {
+    |                   ^^^^^^^^^^^^^^^
+
+warning: method `reset_generated` is never used
+    --> src/nanda_wave/l2_field/productive_v1/geometry.rs:1002:8
+     |
+ 982 | impl AtomAccumulatorV1 {
+     | ---------------------- method in this implementation
+...
+1002 |     fn reset_generated(&mut self) {
+     |        ^^^^^^^^^^^^^^^
+
+warning: method `source_ranges_valid` is never used
+   --> src/nanda_wave/l2_field/productive_v1/induce.rs:313:19
+    |
+171 | impl EditTemplateV1 {
+    | ------------------- method in this implementation
+...
+313 |     pub(super) fn source_ranges_valid(&self, source_scalar_len: usize) -> bool {
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: method `source_ranges_valid` is never used
+   --> src/nanda_wave/l2_field/productive_v1/induce.rs:720:8
+    |
+708 | impl ParadigmTransitionKeyV1 {
+    | ---------------------------- method in this implementation
+...
+720 |     fn source_ranges_valid(&self, source_scalar_len: usize) -> bool {
+    |        ^^^^^^^^^^^^^^^^^^^
+
+warning: method `semantically_equivalent` is never used
+   --> src/nanda_wave/l2_field/productive_v1/induce.rs:768:19
+    |
+748 | impl ParadigmSignatureV1 {
+    | ------------------------ method in this implementation
+...
+768 |     pub(super) fn semantically_equivalent(&self, other: &Self) -> bool {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `LemmaTransitionObservationV1` is never constructed
+   --> src/nanda_wave/l2_field/productive_v1/induce.rs:774:19
+    |
+774 | pub(super) struct LemmaTransitionObservationV1 {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `apply_transfer_support_gate` is never used
+   --> src/nanda_wave/l2_field/productive_v1/induce.rs:780:15
+    |
+780 | pub(super) fn apply_transfer_support_gate(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `compatible_with_paradigm` is never used
+   --> src/nanda_wave/l2_field/productive_v1/induce.rs:814:15
+    |
+814 | pub(super) fn compatible_with_paradigm(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `common_material_key`, `common_completeness`, and `common_material_target_identity` are never used
+   --> src/nanda_wave/l2_field/productive_v1/live.rs:154:44
+    |
+123 | impl PreparedCanonicalTokenField {
+    | -------------------------------- methods in this implementation
+...
+154 |     pub(in crate::nanda_wave::l2_field) fn common_material_key(&self) -> PreparedMaterialKeyV1 {
+    |                                            ^^^^^^^^^^^^^^^^^^^
+...
+167 |     pub(in crate::nanda_wave::l2_field) fn common_completeness(&self) -> EnumerationCompletenessV1 {
+    |                                            ^^^^^^^^^^^^^^^^^^^
+...
+262 |     pub(in crate::nanda_wave::l2_field) fn common_material_target_identity(
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `prepare_live_productive_v1_field` is never used
+   --> src/nanda_wave/l2_field/productive_v1/live.rs:283:40
+    |
+283 | pub(in crate::nanda_wave::l2_field) fn prepare_live_productive_v1_field(
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `prepare_context_neutral_productive_material` is never used
+   --> src/nanda_wave/l2_field/productive_v1/material_frame.rs:531:15
+    |
+531 | pub(super) fn prepare_context_neutral_productive_material(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `from_bytes`, `derive_cold_lemma_bindings_with_semantic_shadow`, and `instantiate_paradigm_surfaces` are never used
+    --> src/nanda_wave/l2_field/productive_v1/packaged_runtime.rs:1053:19
+     |
+ 981 | impl PackagedProductiveRuntimeV1 {
+     | -------------------------------- associated items in this implementation
+...
+1053 |     pub(super) fn from_bytes(
+     |                   ^^^^^^^^^^
+...
+1382 |     pub(super) fn derive_cold_lemma_bindings_with_semantic_shadow(
+     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+2314 |     fn instantiate_paradigm_surfaces(
+     |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `PHASE_CENTER_SUPPORT_SATURATED` is never used
+  --> src/nanda_wave/l2_field/productive_v1/phase.rs:11:7
+   |
+11 | const PHASE_CENTER_SUPPORT_SATURATED: u8 = 1 << 0;
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: enum `PhaseBankKindV1` is never used
+  --> src/nanda_wave/l2_field/productive_v1/phase.rs:15:17
+   |
+15 | pub(super) enum PhaseBankKindV1 {
+   |                 ^^^^^^^^^^^^^^^
+
+warning: method `limit` is never used
+  --> src/nanda_wave/l2_field/productive_v1/phase.rs:23:14
+   |
+22 | impl PhaseBankKindV1 {
+   | -------------------- method in this implementation
+23 |     const fn limit(self) -> usize {
+   |              ^^^^^
+
+warning: struct `PhaseObservationV1` is never constructed
+  --> src/nanda_wave/l2_field/productive_v1/phase.rs:34:19
+   |
+34 | pub(super) struct PhaseObservationV1 {
+   |                   ^^^^^^^^^^^^^^^^^^
+
+warning: struct `PhaseRankingSelectionGroupV1` is never constructed
+  --> src/nanda_wave/l2_field/productive_v1/phase.rs:59:19
+   |
+59 | pub(super) struct PhaseRankingSelectionGroupV1 {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `AmbiguityPhaseMemberV1` is never constructed
+  --> src/nanda_wave/l2_field/productive_v1/phase.rs:67:19
+   |
+67 | pub(super) struct AmbiguityPhaseMemberV1 {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `AmbiguityPhaseSelectionGroupV1` is never constructed
+  --> src/nanda_wave/l2_field/productive_v1/phase.rs:73:19
+   |
+73 | pub(super) struct AmbiguityPhaseSelectionGroupV1 {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `RawPhaseClusterV1` is never constructed
+  --> src/nanda_wave/l2_field/productive_v1/phase.rs:80:8
+   |
+80 | struct RawPhaseClusterV1 {
+   |        ^^^^^^^^^^^^^^^^^
+
+warning: function `maximum_phase_coherence` is never used
+   --> src/nanda_wave/l2_field/productive_v1/phase.rs:104:15
+    |
+104 | pub(super) fn maximum_phase_coherence(wave: &SceneWaveV1, centers: &[FittedPhaseCenterV1]) -> i64 {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `fit_ranking_phase_bank` is never used
+   --> src/nanda_wave/l2_field/productive_v1/phase.rs:112:15
+    |
+112 | pub(super) fn fit_ranking_phase_bank(
+    |               ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `fit_ambiguity_phase_banks` is never used
+   --> src/nanda_wave/l2_field/productive_v1/phase.rs:168:15
+    |
+168 | pub(super) fn fit_ambiguity_phase_banks(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `validated_observations` is never used
+   --> src/nanda_wave/l2_field/productive_v1/phase.rs:287:4
+    |
+287 | fn validated_observations(
+    |    ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `validated_ranking_groups` is never used
+   --> src/nanda_wave/l2_field/productive_v1/phase.rs:307:4
+    |
+307 | fn validated_ranking_groups(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `validated_ambiguity_groups` is never used
+   --> src/nanda_wave/l2_field/productive_v1/phase.rs:328:4
+    |
+328 | fn validated_ambiguity_groups(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `ranking_fold_losses` is never used
+   --> src/nanda_wave/l2_field/productive_v1/phase.rs:347:4
+    |
+347 | fn ranking_fold_losses(
+    |    ^^^^^^^^^^^^^^^^^^^
+
+warning: function `cluster_phase_waves` is never used
+   --> src/nanda_wave/l2_field/productive_v1/phase.rs:383:4
+    |
+383 | fn cluster_phase_waves(
+    |    ^^^^^^^^^^^^^^^^^^^
+
+warning: function `normalize_mean` is never used
+   --> src/nanda_wave/l2_field/productive_v1/phase.rs:484:4
+    |
+484 | fn normalize_mean(
+    |    ^^^^^^^^^^^^^^
+
+warning: function `package_centers` is never used
+   --> src/nanda_wave/l2_field/productive_v1/phase.rs:510:4
+    |
+510 | fn package_centers(
+    |    ^^^^^^^^^^^^^^^
+
+warning: function `maximum_raw_coherence` is never used
+   --> src/nanda_wave/l2_field/productive_v1/phase.rs:546:4
+    |
+546 | fn maximum_raw_coherence(wave: &SceneWaveV1, centers: &[RawPhaseClusterV1]) -> i64 {
+    |    ^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `mean_loss` is never used
+   --> src/nanda_wave/l2_field/productive_v1/phase.rs:554:4
+    |
+554 | fn mean_loss(losses: &[f64; PRODUCTIVE_V1_INNER_FOLDS as usize]) -> f64 {
+    |    ^^^^^^^^^
+
+warning: field `workers` is never read
+   --> src/nanda_wave/l2_field/productive_v1/proof.rs:219:16
+    |
+215 | pub(super) struct FixedSharedReplayAuditCorpusV1 {
+    |                   ------------------------------ field in this struct
+...
+219 |     pub(super) workers: usize,
+    |                ^^^^^^^
+    |
+    = note: `FixedSharedReplayAuditCorpusV1` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: function `decode_records` is never used
+  --> src/nanda_wave/l2_field/productive_v1/records.rs:21:15
+   |
+21 | pub(super) fn decode_records<T: FixedRecordV1>(bytes: &[u8]) -> Result<Vec<T>, &'static str> {
+   |               ^^^^^^^^^^^^^^
+
+warning: struct `DeltaRecordHeaderRecordV1` is never constructed
+   --> src/nanda_wave/l2_field/productive_v1/records.rs:418:19
+    |
+418 | pub(super) struct DeltaRecordHeaderRecordV1 {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `PendingFormV1` is never constructed
+   --> src/nanda_wave/l2_field/productive_v1/reduce.rs:226:8
+    |
+226 | struct PendingFormV1 {
+    |        ^^^^^^^^^^^^^
+
+warning: function `reduce_train_morphology` is never used
+   --> src/nanda_wave/l2_field/productive_v1/reduce.rs:239:15
+    |
+239 | pub(super) fn reduce_train_morphology(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `flush_lemma` is never used
+   --> src/nanda_wave/l2_field/productive_v1/reduce.rs:570:4
+    |
+570 | fn flush_lemma(
+    |    ^^^^^^^^^^^
+
+warning: struct `SpeedParityEvidenceV1` is never constructed
+  --> src/nanda_wave/l2_field/productive_v1/runtime.rs:16:19
+   |
+16 | pub(super) struct SpeedParityEvidenceV1 {
+   |                   ^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `SpeedParityCandidateV1` is never constructed
+  --> src/nanda_wave/l2_field/productive_v1/runtime.rs:24:19
+   |
+24 | pub(super) struct SpeedParityCandidateV1 {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: field `exact_allomorph` is never read
+   --> src/nanda_wave/l2_field/productive_v1/runtime.rs:102:16
+    |
+ 97 | pub(super) struct TraversalFrameV1 {
+    |                   ---------------- field in this struct
+...
+102 |     pub(super) exact_allomorph: bool,
+    |                ^^^^^^^^^^^^^^^
+    |
+    = note: `TraversalFrameV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: struct `BoundedCandidateV1` is never constructed
+   --> src/nanda_wave/l2_field/productive_v1/runtime.rs:106:8
+    |
+106 | struct BoundedCandidateV1 {
+    |        ^^^^^^^^^^^^^^^^^^
+
+warning: function `traverse_speed_parity` is never used
+   --> src/nanda_wave/l2_field/productive_v1/runtime.rs:113:15
+    |
+113 | pub(super) fn traverse_speed_parity(
+    |               ^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `retain_bounded_candidate` is never used
+   --> src/nanda_wave/l2_field/productive_v1/runtime.rs:200:4
+    |
+200 | fn retain_bounded_candidate(selected: &mut Vec<BoundedCandidateV1>, candidate: BoundedCandidateV1) {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `candidate_order` is never used
+   --> src/nanda_wave/l2_field/productive_v1/runtime.rs:225:4
+    |
+225 | fn candidate_order(left: &BoundedCandidateV1, right: &BoundedCandidateV1) -> Ordering {
+    |    ^^^^^^^^^^^^^^^
+
+warning: function `advance_arc` is never used
+   --> src/nanda_wave/l2_field/productive_v1/runtime.rs:249:4
+    |
+249 | fn advance_arc(
+    |    ^^^^^^^^^^^
+
+warning: method `common_normalization_layout_profile_id` is never used
+  --> src/nanda_wave/l2_field/productive_v1/scene.rs:78:25
+   |
+77 | impl L2LocalSceneV1 {
+   | ------------------- method in this implementation
+78 |     pub(super) const fn common_normalization_layout_profile_id(
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `external_sort_verified_spool` is never used
+  --> src/nanda_wave/l2_field/productive_v1/spool_sort.rs:67:15
+   |
+67 | pub(super) fn external_sort_verified_spool(
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `InstantiatedProductiveTerminalV1` is never constructed
+   --> src/nanda_wave/l2_field/productive_v1/trie.rs:115:19
+    |
+115 | pub(super) struct InstantiatedProductiveTerminalV1 {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `exact_allomorph_surface` and `instantiate` are never used
+   --> src/nanda_wave/l2_field/productive_v1/trie.rs:513:19
+    |
+512 | impl ProductiveTrieForestV1 {
+    | --------------------------- methods in this implementation
+513 |     pub(super) fn exact_allomorph_surface(&self, form_ref: u32) -> Option<&str> {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+...
+565 |     pub(super) fn instantiate(
+    |                   ^^^^^^^^^^^
+
+warning: function `apply_arc` is never used
+   --> src/nanda_wave/l2_field/productive_v1/trie.rs:621:4
+    |
+621 | fn apply_arc(
+    |    ^^^^^^^^^
+
+warning: method `validate_for_count` is never used
+  --> src/nanda_wave/l2_field/productive_v1/types.rs:13:19
+   |
+12 | impl ImportedCanonicalL2LemmaRefV1 {
+   | ---------------------------------- method in this implementation
+13 |     pub(super) fn validate_for_count(self, count: usize) -> Result<(), &'static str> {
+   |                   ^^^^^^^^^^^^^^^^^^
+
+warning: method `validate_for_count` is never used
+  --> src/nanda_wave/l2_field/productive_v1/types.rs:26:19
+   |
+25 | impl ImportedCanonicalL2FormRefV1 {
+   | --------------------------------- method in this implementation
+26 |     pub(super) fn validate_for_count(self, count: usize) -> Result<(), &'static str> {
+   |                   ^^^^^^^^^^^^^^^^^^
+
+warning: struct `FormIdentityV1` is never constructed
+   --> src/nanda_wave/l2_field/productive_v1/types.rs:222:19
+    |
+222 | pub(super) struct FormIdentityV1 {
+    |                   ^^^^^^^^^^^^^^
+
+warning: method `validate` is never used
+   --> src/nanda_wave/l2_field/productive_v1/types.rs:230:19
+    |
+229 | impl FormIdentityV1 {
+    | ------------------- method in this implementation
+230 |     pub(super) fn validate(self) -> Result<(), &'static str> {
+    |                   ^^^^^^^^
+
+warning: variants `ExplicitFeedback`, `StructurallyImpossibleAgreement`, and `LocalContextAntiCenter` are never constructed
+   --> src/nanda_wave/l2_field/productive_v1/types.rs:266:5
+    |
+265 | pub(super) enum IndependentEvidenceSourceKindV1 {
+    |                 ------------------------------- variants in this enum
+266 |     ExplicitFeedback = 1,
+    |     ^^^^^^^^^^^^^^^^
+267 |     StructurallyImpossibleAgreement = 2,
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+268 |     LocalContextAntiCenter = 3,
+    |     ^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `IndependentEvidenceSourceKindV1` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: associated items `from_bytes`, `from_package`, `from_owned_bytes`, and `compositional_form_births` are never used
+   --> src/nanda_wave/l2_field/runtime.rs:347:19
+    |
+342 | impl StandaloneL2Field {
+    | ---------------------- associated items in this implementation
+...
+347 |     pub(crate) fn from_bytes(bytes: &[u8]) -> Result<Self, String> {
+    |                   ^^^^^^^^^^
+...
+351 |     pub(crate) fn from_package(package: L2FieldPackage) -> Result<Self, String> {
+    |                   ^^^^^^^^^^^^
+...
+355 |     fn from_owned_bytes(bytes: Vec<u8>) -> Result<Self, String> {
+    |        ^^^^^^^^^^^^^^^^
+...
+499 |     pub(crate) fn compositional_form_births(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated functions `from_bytes` and `from_reference` are never used
+  --> src/nanda_wave/l2_field/runtime_storage.rs:33:19
+   |
+23 | impl RuntimeL2Package {
+   | --------------------- associated functions in this implementation
+...
+33 |     pub(super) fn from_bytes(bytes: Vec<u8>) -> Result<Self, String> {
+   |                   ^^^^^^^^^^
+...
+41 |     pub(super) fn from_reference(package: L2FieldPackage) -> Self {
+   |                   ^^^^^^^^^^^^^^
+
+warning: constant `MAX_SIDECAR_BYTES` is never used
+  --> src/nanda_wave/l2_field/v13_typed_peak.rs:30:7
+   |
+30 | const MAX_SIDECAR_BYTES: usize = 32 * 1024 * 1024;
+   |       ^^^^^^^^^^^^^^^^^
+
+warning: constant `MAX_LOADER_METADATA_BYTES` is never used
+  --> src/nanda_wave/l2_field/v13_typed_peak.rs:31:7
+   |
+31 | const MAX_LOADER_METADATA_BYTES: usize = 4 * 1024 * 1024;
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `DEAD_DLA_STATE` is never used
+  --> src/nanda_wave/l2_field/v13_typed_peak.rs:36:7
+   |
+36 | const DEAD_DLA_STATE: u16 = u16::MAX;
+   |       ^^^^^^^^^^^^^^
+
+warning: constant `DLA_HASH_BUCKET_BYTES` is never used
+  --> src/nanda_wave/l2_field/v13_typed_peak.rs:37:7
+   |
+37 | const DLA_HASH_BUCKET_BYTES: usize = 24;
+   |       ^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `compile_test_sidecar` is never used
+   --> src/nanda_wave/l2_field/v13_typed_peak.rs:448:4
+    |
+448 | fn compile_test_sidecar(surfaces: &[String]) -> Result<(Vec<u8>, V13Identity), String> {
+    |    ^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `exact_form_ref`, `mmap_backed`, and `owned_metadata_bytes` are never used
+   --> src/nanda_wave/l2_field/v13_typed_peak.rs:734:8
+    |
+551 | impl V13DafsaView {
+    | ----------------- methods in this implementation
+...
+734 |     fn exact_form_ref(&self, symbols: &[u32]) -> Result<Option<u32>, String> {
+    |        ^^^^^^^^^^^^^^
+...
+765 |     fn mmap_backed(&self) -> bool {
+    |        ^^^^^^^^^^^
+...
+769 |     fn owned_metadata_bytes(&self) -> usize {
+    |        ^^^^^^^^^^^^^^^^^^^^
+
+warning: enum `SearchCompleteness` is never used
+   --> src/nanda_wave/l2_field/v13_typed_peak.rs:794:6
+    |
+794 | enum SearchCompleteness {
+    |      ^^^^^^^^^^^^^^^^^^
+
+warning: struct `V13TypedPeak` is never constructed
+   --> src/nanda_wave/l2_field/v13_typed_peak.rs:800:8
+    |
+800 | struct V13TypedPeak {
+    |        ^^^^^^^^^^^^
+
+warning: struct `SearchResult` is never constructed
+   --> src/nanda_wave/l2_field/v13_typed_peak.rs:806:8
+    |
+806 | struct SearchResult {
+    |        ^^^^^^^^^^^^
+
+warning: enum `SearchKernel` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1009:6
+     |
+1009 | enum SearchKernel {
+     |      ^^^^^^^^^^^^
+
+warning: struct `SearchNode` is never constructed
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1022:8
+     |
+1022 | struct SearchNode<Row> {
+     |        ^^^^^^^^^^
+
+warning: method `identity_key` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1037:8
+     |
+1036 | impl BandedLevenshteinRow {
+     | ------------------------- method in this implementation
+1037 |     fn identity_key(self) -> u64 {
+     |        ^^^^^^^^^^^^
+
+warning: struct `DlaBuildFailure` is never constructed
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1122:8
+     |
+1122 | struct DlaBuildFailure {
+     |        ^^^^^^^^^^^^^^^
+
+warning: struct `QueryLocalDla` is never constructed
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1130:8
+     |
+1130 | struct QueryLocalDla {
+     |        ^^^^^^^^^^^^^
+
+warning: associated items `build`, `transition`, `terminal_distance`, and `state_count` are never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1141:8
+     |
+1140 | impl QueryLocalDla {
+     | ------------------ associated items in this implementation
+1141 |     fn build(
+     |        ^^^^^
+...
+1293 |     fn transition(&self, state_id: u16, symbol_ref: u16) -> Result<Option<u16>, String> {
+     |        ^^^^^^^^^^
+...
+1306 |     fn terminal_distance(&self, state_id: u16) -> Result<u8, String> {
+     |        ^^^^^^^^^^^^^^^^^
+...
+1313 |     fn state_count(&self) -> usize {
+     |        ^^^^^^^^^^^
+
+warning: function `dla_builder_scratch_bytes` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1318:4
+     |
+1318 | fn dla_builder_scratch_bytes(
+     |    ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: trait `TraversalKernel` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1334:7
+     |
+1334 | trait TraversalKernel {
+     |       ^^^^^^^^^^^^^^^
+
+warning: struct `RowTraversalKernel` is never constructed
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1355:8
+     |
+1355 | struct RowTraversalKernel<Row>(std::marker::PhantomData<Row>);
+     |        ^^^^^^^^^^^^^^^^^^
+
+warning: struct `DlaTraversalKernel` is never constructed
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1399:8
+     |
+1399 | struct DlaTraversalKernel<'a>(&'a QueryLocalDla);
+     |        ^^^^^^^^^^^^^^^^^^
+
+warning: struct `FullLevenshteinRow` is never constructed
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1437:8
+     |
+1437 | struct FullLevenshteinRow {
+     |        ^^^^^^^^^^^^^^^^^^
+
+warning: function `search_typed_peaks` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1474:4
+     |
+1474 | fn search_typed_peaks(
+     |    ^^^^^^^^^^^^^^^^^^
+
+warning: function `search_typed_peaks_with_schedule` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1483:4
+     |
+1483 | fn search_typed_peaks_with_schedule(
+     |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `search_typed_peaks_banded_oracle` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1500:4
+     |
+1500 | fn search_typed_peaks_banded_oracle(
+     |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `search_typed_peaks_full_row` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1516:4
+     |
+1516 | fn search_typed_peaks_full_row(
+     |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `search_typed_peaks_with_kernel` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1532:4
+     |
+1532 | fn search_typed_peaks_with_kernel(
+     |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `LaneOutcome` is never constructed
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1647:8
+     |
+1647 | struct LaneOutcome {
+     |        ^^^^^^^^^^^
+
+warning: associated function `unresolved` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1660:8
+     |
+1659 | impl LaneOutcome {
+     | ---------------- associated function in this implementation
+1660 |     fn unresolved(reason: &'static str, maximum_scratch: usize) -> Self {
+     |        ^^^^^^^^^^
+
+warning: function `enumerate_dla_lane` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1685:4
+     |
+1685 | fn enumerate_dla_lane(
+     |    ^^^^^^^^^^^^^^^^^^
+
+warning: function `enumerate_row_lane` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1741:4
+     |
+1741 | fn enumerate_row_lane<Row: LevenshteinRow + Copy>(
+     |    ^^^^^^^^^^^^^^^^^^
+
+warning: function `enumerate_lane_with_kernel` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1761:4
+     |
+1761 | fn enumerate_lane_with_kernel<Kernel: TraversalKernel>(
+     |    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `search_child` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1888:4
+     |
+1888 | fn search_child<Kernel: TraversalKernel>(
+     |    ^^^^^^^^^^^^
+
+warning: function `levenshtein_row` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1905:4
+     |
+1905 | fn levenshtein_row(previous: &[u8], query: &[u32], symbol: u32) -> [u8; MAX_QUERY_SYMBOLS + 1] {
+     |    ^^^^^^^^^^^^^^^
+
+warning: function `search_scratch_bytes` is never used
+    --> src/nanda_wave/l2_field/v13_typed_peak.rs:1918:4
+     |
+1918 | fn search_scratch_bytes<Row>(
+     |    ^^^^^^^^^^^^^^^^^^^^
+
+warning: methods `state_count`, `edge_count`, `root_state`, `identity`, and `symbol_digest` are never used
+  --> src/nanda_wave/l2_field/v13_typed_peak/typed_exact.rs:63:19
+   |
+43 | impl TypedExactView {
+   | ------------------- methods in this implementation
+...
+63 |     pub(super) fn state_count(&self) -> usize {
+   |                   ^^^^^^^^^^^
+...
+67 |     pub(super) fn edge_count(&self) -> usize {
+   |                   ^^^^^^^^^^
+...
+71 |     pub(super) fn root_state(&self) -> u32 {
+   |                   ^^^^^^^^^^
+...
+75 |     pub(super) fn identity(&self) -> V13Identity {
+   |                   ^^^^^^^^
+...
+79 |     pub(super) fn symbol_digest(&self) -> [u8; 32] {
+   |                   ^^^^^^^^^^^^^
+
+warning: fields `states_checked` and `edges_checked` are never read
+  --> src/nanda_wave/l2_field/v13_typed_peak/typed_exact.rs:87:5
+   |
+84 | pub(super) struct TypedMaterialization {
+   |                   -------------------- fields in this struct
+...
+87 |     states_checked: usize,
+   |     ^^^^^^^^^^^^^^
+88 |     edges_checked: usize,
+   |     ^^^^^^^^^^^^^
+
+warning: methods `states_checked` and `edges_checked` are never used
+   --> src/nanda_wave/l2_field/v13_typed_peak/typed_exact.rs:200:19
+    |
+ 91 | impl TypedMaterialization {
+    | ------------------------- methods in this implementation
+...
+200 |     pub(super) fn states_checked(&self) -> usize {
+    |                   ^^^^^^^^^^^^^^
+...
+204 |     pub(super) fn edges_checked(&self) -> usize {
+    |                   ^^^^^^^^^^^^^
+
+warning: multiple fields are never read
+   --> src/nanda_wave/l2_field/v13_typed_peak/typed_exact.rs:235:16
+    |
+232 | pub(super) struct ExactObservation {
+    |                   ---------------- fields in this struct
+...
+235 |     pub(super) expanded_product_states: usize,
+    |                ^^^^^^^^^^^^^^^^^^^^^^^
+236 |     pub(super) maximum_scratch_bytes: usize,
+    |                ^^^^^^^^^^^^^^^^^^^^^
+237 |     pub(super) work: StructuralWork,
+    |                ^^^^
+238 |     pub(super) rank_prefixes: Vec<u32>,
+    |                ^^^^^^^^^^^^^
+239 |     pub(super) terminal_ranks: Vec<u32>,
+    |                ^^^^^^^^^^^^^^
+240 |     pub(super) transition_checks: usize,
+    |                ^^^^^^^^^^^^^^^^^
+241 |     pub(super) terminal_distance_checks: usize,
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `seal_episode_at` is never used
+   --> src/nanda_wave/l4_cross_scene/segments.rs:124:15
+    |
+124 | pub(super) fn seal_episode_at(
+    |               ^^^^^^^^^^^^^^^
+
+warning: struct `RoundtripStats` is never constructed
+  --> src/nanda_wave/lexical_grokking/forward_decoder_index.rs:33:8
+   |
+33 | struct RoundtripStats {
+   |        ^^^^^^^^^^^^^^
+
+warning: methods `traverse`, `validate_roundtrip`, `maximum_children_per_node`, and `fingerprint` are never used
+   --> src/nanda_wave/lexical_grokking/forward_decoder_index.rs:146:8
+    |
+ 42 | impl ForwardDecoderIndex {
+    | ------------------------ methods in this implementation
+...
+146 |     fn traverse(&self, surface: &str) -> Option<u32> {
+    |        ^^^^^^^^
+...
+167 |     fn validate_roundtrip(
+    |        ^^^^^^^^^^^^^^^^^^
+...
+230 |     fn maximum_children_per_node(&self) -> usize {
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+238 |     pub(super) fn fingerprint(&self) -> String {
+    |                   ^^^^^^^^^^^
+
+warning: function `prove_l1_forward_decoder_index` is never used
+   --> src/nanda_wave/lexical_grokking/forward_decoder_index.rs:251:8
+    |
+251 | pub fn prove_l1_forward_decoder_index(package_path: &Path) -> io::Result<serde_json::Value> {
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `hash_u32_slice` is never used
+   --> src/nanda_wave/lexical_grokking/forward_decoder_index.rs:372:4
+    |
+372 | fn hash_u32_slice(hasher: &mut Sha256, values: &[u32]) {
+    |    ^^^^^^^^^^^^^^
+
+warning: function `file_sha256` is never used
+   --> src/nanda_wave/lexical_grokking/forward_decoder_index.rs:379:15
+    |
+379 | pub(super) fn file_sha256(path: &Path) -> io::Result<String> {
+    |               ^^^^^^^^^^^
+
+warning: function `current_rss_bytes` is never used
+   --> src/nanda_wave/lexical_grokking/forward_decoder_index.rs:393:4
+    |
+393 | fn current_rss_bytes() -> Option<u64> {
+    |    ^^^^^^^^^^^^^^^^^
+
+warning: field `completeness` is never read
+  --> src/nanda_wave/lexical_grokking/peak_search/mod.rs:35:16
+   |
+33 | pub(super) struct PeakSearchResult {
+   |                   ---------------- field in this struct
+34 |     pub(super) candidates: Vec<GrokkingCandidate>,
+35 |     pub(super) completeness: SearchCompleteness,
+   |                ^^^^^^^^^^^^
+
+warning: method `typed_basin_support` is never used
+   --> src/nanda_wave/lexical_grokking/runtime.rs:396:52
+    |
+191 | impl LexicalGrokkingMemory {
+    | -------------------------- method in this implementation
+...
+396 |     pub(in crate::nanda_wave::lexical_grokking) fn typed_basin_support(
+    |                                                    ^^^^^^^^^^^^^^^^^^^
+
+warning: associated functions `exact` and `build` are never used
+  --> src/nanda_wave/lexical_grokking/typed_basin/exact_reverse.rs:64:19
+   |
+44 | impl ReverseBank {
+   | ---------------- associated functions in this implementation
+...
+64 |     pub(super) fn exact(
+   |                   ^^^^^
+...
+95 |     fn build(
+   |        ^^^^^
+
+warning: function `reconstruct_exact_reverse` is never used
+   --> src/nanda_wave/lexical_grokking/typed_basin/exact_reverse.rs:205:4
+    |
+205 | fn reconstruct_exact_reverse(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: field `channel` is never read
+  --> src/nanda_wave/lexical_grokking/typed_basin/implicit_forward.rs:13:16
+   |
+11 | pub(super) struct ImplicitForwardRelation {
+   |                   ----------------------- field in this struct
+12 |     pub(super) atom_id: u32,
+13 |     pub(super) channel: AtomChannel,
+   |                ^^^^^^^
+   |
+   = note: `ImplicitForwardRelation` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: field `relations` is never read
+  --> src/nanda_wave/lexical_grokking/typed_basin/implicit_forward.rs:20:16
+   |
+18 | pub(super) struct ImplicitCandidate {
+   |                   ----------------- field in this struct
+19 |     pub(super) terminal_id: u32,
+20 |     pub(super) relations: Vec<ImplicitForwardRelation>,
+   |                ^^^^^^^^^
+   |
+   = note: `ImplicitCandidate` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: function `activation_equal` is never used
+   --> src/nanda_wave/lexical_grokking/typed_basin/implicit_forward.rs:109:15
+    |
+109 | pub(super) fn activation_equal(left: ForwardActivation, right: ForwardActivation) -> bool {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: function `candidates_equal` is never used
+   --> src/nanda_wave/lexical_grokking/typed_basin/implicit_forward.rs:116:15
+    |
+116 | pub(super) fn candidates_equal(left: &[ImplicitCandidate], right: &[ImplicitCandidate]) -> bool {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: method `support` is never used
+  --> src/nanda_wave/lexical_grokking/typed_basin/runtime.rs:94:52
+   |
+25 | impl TypedBasinRuntime {
+   | ---------------------- method in this implementation
+...
+94 |     pub(in crate::nanda_wave::lexical_grokking) fn support(&self) -> &ExactSupportField {
+   |                                                    ^^^^^^^
+
+warning: field `elapsed_us` is never read
+  --> src/nanda_wave/lexical_grokking/typed_basin/settlement.rs:82:5
+   |
+78 | struct SettlementFingerprint {
+   |        --------------------- field in this struct
+...
+82 |     elapsed_us: u64,
+   |     ^^^^^^^^^^
+
+warning: fields `phase_noop`, `reverse_terminals`, `reverse_relations`, and `elapsed_us` are never read
+  --> src/nanda_wave/lexical_grokking/typed_basin/settlement.rs:89:16
+   |
+86 | pub(super) struct ExactSettlementResult {
+   |                   --------------------- fields in this struct
+...
+89 |     pub(super) phase_noop: bool,
+   |                ^^^^^^^^^^
+90 |     pub(super) reverse_terminals: usize,
+   |                ^^^^^^^^^^^^^^^^^
+91 |     pub(super) reverse_relations: usize,
+   |                ^^^^^^^^^^^^^^^^^
+92 |     pub(super) elapsed_us: u64,
+   |                ^^^^^^^^^^
+   |
+   = note: `ExactSettlementResult` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: fields `centers_decoded`, `corpus_surface_mismatches`, and `encoded_atom_occurrences` are never read
+  --> src/nanda_wave/lexical_grokking/typed_basin/support.rs:18:49
+   |
+17 | pub(in crate::nanda_wave::lexical_grokking) struct ExactSupportMetrics {
+   |                                                    ------------------- fields in this struct
+18 |     pub(in crate::nanda_wave::lexical_grokking) centers_decoded: usize,
+   |                                                 ^^^^^^^^^^^^^^^
+19 |     pub(in crate::nanda_wave::lexical_grokking) corpus_surface_mismatches: usize,
+   |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+20 |     pub(in crate::nanda_wave::lexical_grokking) encoded_atom_occurrences: u64,
+   |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `ExactSupportMetrics` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: associated function `rebuild` is never used
+  --> src/nanda_wave/lexical_grokking/typed_basin/support.rs:37:52
+   |
+36 | impl ExactSupportField {
+   | ---------------------- associated function in this implementation
+37 |     pub(in crate::nanda_wave::lexical_grokking) fn rebuild(
+   |                                                    ^^^^^^^
+
+warning: variants `Phase7A`, `Phase7B`, and `Phase7C` are never constructed
+   --> src/nanda_wave/lexical_grokking/typed_edit_traversal.rs:106:5
+    |
+105 | enum TraversalScope {
+    |      -------------- variants in this enum
+106 |     Phase7A,
+    |     ^^^^^^^
+107 |     Phase7B,
+    |     ^^^^^^^
+108 |     Phase7C,
+    |     ^^^^^^^
+    |
+    = note: `TraversalScope` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: method `class` is never used
+   --> src/nanda_wave/lexical_grokking/typed_edit_traversal.rs:231:8
+    |
+230 | impl TypedCertificate {
+    | --------------------- method in this implementation
+231 |     fn class(&self) -> &'static str {
+    |        ^^^^^
+
+warning: methods `certificate_keys` and `certificate_keys_for_symbols` are never used
+   --> src/nanda_wave/lexical_grokking/typed_edit_traversal.rs:353:34
+    |
+316 | impl Phase7dCertificateOracle {
+    | ----------------------------- methods in this implementation
+...
+353 |     pub(in crate::nanda_wave) fn certificate_keys(
+    |                                  ^^^^^^^^^^^^^^^^
+...
+376 |     pub(in crate::nanda_wave) fn certificate_keys_for_symbols(
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variants `Reverse` and `Permuted` are never constructed
+   --> src/nanda_wave/lexical_grokking/typed_edit_traversal.rs:497:5
+    |
+495 | enum TraversalSchedule {
+    |      ----------------- variants in this enum
+496 |     Forward,
+497 |     Reverse,
+    |     ^^^^^^^
+498 |     Permuted(u64),
+    |     ^^^^^^^^
+    |
+    = note: `TraversalSchedule` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: struct `Phase7dTerminalDiagnosticEvidence` is never constructed
+   --> src/nanda_wave/lexical_grokking/typed_edit_traversal.rs:529:19
+    |
+529 | pub(super) struct Phase7dTerminalDiagnosticEvidence {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `phase7d_terminal_diagnostic_evidence` is never used
+    --> src/nanda_wave/lexical_grokking/typed_edit_traversal.rs:1226:15
+     |
+1226 | pub(super) fn phase7d_terminal_diagnostic_evidence(
+     |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `read_file_header` is never used
+  --> src/nanda_wave/lexical_grokking/v9.rs:47:15
+   |
+47 | pub(super) fn read_file_header(path: &Path) -> Result<V9Header, String> {
+   |               ^^^^^^^^^^^^^^^^
+
+warning: function `surface_phase_and_atom_center_keys` is never used
+   --> src/nanda_wave/lexical_phase/format.rs:148:15
+    |
+148 | pub(super) fn surface_phase_and_atom_center_keys(text: &str) -> ([i8; PHASE_CELLS], u16, Vec<u64>) {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `snapshot` is never used
+   --> src/nanda_wave/lexical_phase/format.rs:187:19
+    |
+165 | impl SurfaceFeatureAccumulator {
+    | ------------------------------ method in this implementation
+...
+187 |     pub(super) fn snapshot(&self) -> ([i8; PHASE_CELLS], u16, Vec<u64>) {
+    |                   ^^^^^^^^
+
+warning: method `hot_prefix_frontier` is never used
+   --> src/nanda_wave/lexical_phase/runtime.rs:271:19
+    |
+151 | impl LexicalPhaseMemory {
+    | ----------------------- method in this implementation
+...
+271 |     pub(crate) fn hot_prefix_frontier(&self, prefix_lens: &[usize], limit: usize) -> Vec<String> {
+    |                   ^^^^^^^^^^^^^^^^^^^
+
+warning: field `form_ids_by_surface` is never read
+  --> src/nanda_wave/morphology_phase/field.rs:29:5
+   |
+24 | pub(super) struct MorphologyField {
+   |                   --------------- field in this struct
+...
+29 |     form_ids_by_surface: BTreeMap<String, Vec<u32>>,
+   |     ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `MorphologyField` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: constant `OUTPUT_TRANSACTION_RECORD_BYTES` is never used
+  --> src/text_edit/output_transaction.rs:13:18
+   |
+13 | pub(crate) const OUTPUT_TRANSACTION_RECORD_BYTES: usize = 256;
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `OUTPUT_TRANSACTION_SLOT_BYTES` is never used
+  --> src/text_edit/output_transaction.rs:14:18
+   |
+14 | pub(crate) const OUTPUT_TRANSACTION_SLOT_BYTES: usize = 4096;
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `OUTPUT_TRANSACTION_QUEUE_CAPACITY` is never used
+  --> src/text_edit/output_transaction.rs:15:18
+   |
+15 | pub(crate) const OUTPUT_TRANSACTION_QUEUE_CAPACITY: usize = 32;
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `OUTPUT_TRANSACTION_JOURNAL_CAPACITY_BYTES` is never used
+  --> src/text_edit/output_transaction.rs:16:18
+   |
+16 | pub(crate) const OUTPUT_TRANSACTION_JOURNAL_CAPACITY_BYTES: usize = 8 * 1024 * 1024;
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `OUTPUT_TRANSACTION_SLOT_CAPACITY` is never used
+  --> src/text_edit/output_transaction.rs:17:18
+   |
+17 | pub(crate) const OUTPUT_TRANSACTION_SLOT_CAPACITY: usize =
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `RECORD_MAGIC` is never used
+  --> src/text_edit/output_transaction.rs:19:7
+   |
+19 | const RECORD_MAGIC: [u8; 8] = *b"LAYOTX01";
+   |       ^^^^^^^^^^^^
+
+warning: constant `RECORD_SCHEMA` is never used
+  --> src/text_edit/output_transaction.rs:20:7
+   |
+20 | const RECORD_SCHEMA: u16 = 1;
+   |       ^^^^^^^^^^^^^
+
+warning: constant `CHECKSUM_OFFSET` is never used
+  --> src/text_edit/output_transaction.rs:21:7
+   |
+21 | const CHECKSUM_OFFSET: usize = OUTPUT_TRANSACTION_RECORD_BYTES - 32;
+   |       ^^^^^^^^^^^^^^^
+
+warning: constant `SLOT_MAGIC` is never used
+  --> src/text_edit/output_transaction.rs:22:7
+   |
+22 | const SLOT_MAGIC: [u8; 8] = *b"LAYOTS02";
+   |       ^^^^^^^^^^
+
+warning: constant `SLOT_SCHEMA` is never used
+  --> src/text_edit/output_transaction.rs:23:7
+   |
+23 | const SLOT_SCHEMA: u16 = 2;
+   |       ^^^^^^^^^^^
+
+warning: constant `SLOT_RECORD_COUNT_OFFSET` is never used
+  --> src/text_edit/output_transaction.rs:24:7
+   |
+24 | const SLOT_RECORD_COUNT_OFFSET: usize = 10;
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `SLOT_SEQUENCE_OFFSET` is never used
+  --> src/text_edit/output_transaction.rs:25:7
+   |
+25 | const SLOT_SEQUENCE_OFFSET: usize = 16;
+   |       ^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `SLOT_GENERATION_OFFSET` is never used
+  --> src/text_edit/output_transaction.rs:26:7
+   |
+26 | const SLOT_GENERATION_OFFSET: usize = 24;
+   |       ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `SLOT_PREVIOUS_DIGEST_OFFSET` is never used
+  --> src/text_edit/output_transaction.rs:27:7
+   |
+27 | const SLOT_PREVIOUS_DIGEST_OFFSET: usize = 56;
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `SLOT_RECORDS_OFFSET` is never used
+  --> src/text_edit/output_transaction.rs:28:7
+   |
+28 | const SLOT_RECORDS_OFFSET: usize = 96;
+   |       ^^^^^^^^^^^^^^^^^^^
+
+warning: constant `SLOT_CHECKSUM_OFFSET` is never used
+  --> src/text_edit/output_transaction.rs:29:7
+   |
+29 | const SLOT_CHECKSUM_OFFSET: usize = OUTPUT_TRANSACTION_SLOT_BYTES - 32;
+   |       ^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `SLOT_MAX_RECORDS` is never used
+  --> src/text_edit/output_transaction.rs:30:7
+   |
+30 | const SLOT_MAX_RECORDS: usize = 2;
+   |       ^^^^^^^^^^^^^^^^
+
+warning: enum `OutputTransactionRecordKindV1` is never used
+  --> src/text_edit/output_transaction.rs:34:17
+   |
+34 | pub(crate) enum OutputTransactionRecordKindV1 {
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `tag`, `from_tag`, and `is_terminal` are never used
+  --> src/text_edit/output_transaction.rs:42:14
+   |
+41 | impl OutputTransactionRecordKindV1 {
+   | ---------------------------------- associated items in this implementation
+42 |     const fn tag(self) -> u8 {
+   |              ^^^
+...
+51 |     fn from_tag(tag: u8) -> Result<Self, OutputTransactionErrorV1> {
+   |        ^^^^^^^^
+...
+61 |     const fn is_terminal(self) -> bool {
+   |              ^^^^^^^^^^^
+
+warning: struct `OutputTransactionIntentV1` is never constructed
+  --> src/text_edit/output_transaction.rs:67:19
+   |
+67 | pub(crate) struct OutputTransactionIntentV1 {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `OutputTransactionTerminalV1` is never constructed
+  --> src/text_edit/output_transaction.rs:75:19
+   |
+75 | pub(crate) struct OutputTransactionTerminalV1 {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated function `new` is never used
+  --> src/text_edit/output_transaction.rs:81:19
+   |
+80 | impl OutputTransactionTerminalV1 {
+   | -------------------------------- associated function in this implementation
+81 |     pub(crate) fn new(
+   |                   ^^^
+
+warning: struct `OutputTransactionRecordV1` is never constructed
+  --> src/text_edit/output_transaction.rs:96:8
+   |
+96 | struct OutputTransactionRecordV1 {
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `encode` and `decode` are never used
+   --> src/text_edit/output_transaction.rs:108:8
+    |
+107 | impl OutputTransactionRecordV1 {
+    | ------------------------------ associated items in this implementation
+108 |     fn encode(self) -> [u8; OUTPUT_TRANSACTION_RECORD_BYTES] {
+    |        ^^^^^^
+...
+125 |     fn decode(bytes: &[u8]) -> Result<(Self, [u8; 32]), OutputTransactionErrorV1> {
+    |        ^^^^^^
+
+warning: enum `OutputTransactionStateV1` is never used
+   --> src/text_edit/output_transaction.rs:170:17
+    |
+170 | pub(crate) enum OutputTransactionStateV1 {
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: enum `OutputTransactionErrorV1` is never used
+   --> src/text_edit/output_transaction.rs:182:17
+    |
+182 | pub(crate) enum OutputTransactionErrorV1 {
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `JournalSyncIoReceiptV1` is never constructed
+   --> src/text_edit/output_transaction.rs:202:8
+    |
+202 | struct JournalSyncIoReceiptV1 {
+    |        ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: trait `JournalIoV1` is never used
+   --> src/text_edit/output_transaction.rs:208:7
+    |
+208 | trait JournalIoV1: Send + 'static {
+    |       ^^^^^^^^^^^
+
+warning: struct `AlignedJournalSlotV1` is never constructed
+   --> src/text_edit/output_transaction.rs:214:8
+    |
+214 | struct AlignedJournalSlotV1([u8; OUTPUT_TRANSACTION_SLOT_BYTES]);
+    |        ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `encode_direct_journal_slot` is never used
+   --> src/text_edit/output_transaction.rs:216:4
+    |
+216 | fn encode_direct_journal_slot(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `DirectFileJournalIoV1` is never constructed
+   --> src/text_edit/output_transaction.rs:246:8
+    |
+246 | struct DirectFileJournalIoV1 {
+    |        ^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated function `create` is never used
+   --> src/text_edit/output_transaction.rs:256:8
+    |
+255 | impl DirectFileJournalIoV1 {
+    | -------------------------- associated function in this implementation
+256 |     fn create(path: &Path) -> io::Result<Self> {
+    |        ^^^^^^
+
+warning: struct `OutputTransactionJournalStatsV1` is never constructed
+   --> src/text_edit/output_transaction.rs:359:19
+    |
+359 | pub(crate) struct OutputTransactionJournalStatsV1 {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `OutputTransactionFaultMatrixV1` is never constructed
+   --> src/text_edit/output_transaction.rs:374:19
+    |
+374 | pub(crate) struct OutputTransactionFaultMatrixV1 {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `passes` is never used
+   --> src/text_edit/output_transaction.rs:386:25
+    |
+385 | impl OutputTransactionFaultMatrixV1 {
+    | ----------------------------------- method in this implementation
+386 |     pub(crate) const fn passes(self) -> bool {
+    |                         ^^^^^^
+
+warning: struct `PrepareCommitReceiptV1` is never constructed
+   --> src/text_edit/output_transaction.rs:399:19
+    |
+399 | pub(crate) struct PrepareCommitReceiptV1 {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `TerminalCommitReceiptV1` is never constructed
+   --> src/text_edit/output_transaction.rs:407:19
+    |
+407 | pub(crate) struct TerminalCommitReceiptV1 {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `OrderedJournalV1` is never constructed
+   --> src/text_edit/output_transaction.rs:412:8
+    |
+412 | struct OrderedJournalV1<I: JournalIoV1> {
+    |        ^^^^^^^^^^^^^^^^
+
+warning: multiple associated items are never used
+   --> src/text_edit/output_transaction.rs:423:8
+    |
+422 | impl<I: JournalIoV1> OrderedJournalV1<I> {
+    | ---------------------------------------- associated items in this implementation
+423 |     fn new(io: I) -> Self {
+    |        ^^^
+...
+435 |     fn append_record(
+    |        ^^^^^^^^^^^^^
+...
+463 |     fn sync(&mut self, foreground: bool) -> Result<u64, OutputTransactionErrorV1> {
+    |        ^^^^
+...
+486 |     fn prepare(
+    |        ^^^^^^^
+...
+538 |     fn begin_effect(&mut self, event_id: [u8; 32]) -> Result<(), OutputTransactionErrorV1> {
+    |        ^^^^^^^^^^^^
+...
+549 |     fn finish(
+    |        ^^^^^^
+...
+575 |     fn flush_terminal(
+    |        ^^^^^^^^^^^^^^
+...
+605 |     fn stats(&self) -> OutputTransactionJournalStatsV1 {
+    |        ^^^^^
+...
+609 |     fn state(&self) -> OutputTransactionStateV1 {
+    |        ^^^^^
+
+warning: enum `JournalCommandV1` is never used
+   --> src/text_edit/output_transaction.rs:614:6
+    |
+614 | enum JournalCommandV1 {
+    |      ^^^^^^^^^^^^^^^^
+
+warning: struct `OrderedJournalOwnerV1` is never constructed
+   --> src/text_edit/output_transaction.rs:633:19
+    |
+633 | pub(crate) struct OrderedJournalOwnerV1 {
+    |                   ^^^^^^^^^^^^^^^^^^^^^
+
+warning: multiple associated items are never used
+   --> src/text_edit/output_transaction.rs:639:19
+    |
+638 | impl OrderedJournalOwnerV1 {
+    | -------------------------- associated items in this implementation
+639 |     pub(crate) fn start(
+    |                   ^^^^^
+...
+655 |     fn enqueue(&self, command: JournalCommandV1) -> Result<(), OutputTransactionErrorV1> {
+    |        ^^^^^^^
+...
+663 |     pub(crate) fn prepare(
+    |                   ^^^^^^^
+...
+673 |     pub(crate) fn begin_effect(&self, event_id: [u8; 32]) -> Result<(), OutputTransactionErrorV1> {
+    |                   ^^^^^^^^^^^^
+...
+680 |     pub(crate) fn finish(
+    |                   ^^^^^^
+...
+691 |     pub(crate) fn flush_terminal(
+    |                   ^^^^^^^^^^^^^^
+...
+700 |     pub(crate) fn wait_before_native_state_change(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+709 |     pub(crate) fn snapshot(
+    |                   ^^^^^^^^
+...
+719 |     pub(crate) fn stop(mut self) -> Result<(), OutputTransactionErrorV1> {
+    |                   ^^^^
+
+warning: function `run_owner` is never used
+   --> src/text_edit/output_transaction.rs:731:4
+    |
+731 | fn run_owner<I: JournalIoV1>(
+    |    ^^^^^^^^^
+
+warning: struct `FaultJournalIoV1` is never constructed
+   --> src/text_edit/output_transaction.rs:782:8
+    |
+782 | struct FaultJournalIoV1 {
+    |        ^^^^^^^^^^^^^^^^
+
+warning: function `run_output_transaction_fault_matrix` is never used
+   --> src/text_edit/output_transaction.rs:809:15
+    |
+809 | pub(crate) fn run_output_transaction_fault_matrix() -> OutputTransactionFaultMatrixV1 {
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `DecodedJournalSlotV1` is never constructed
+   --> src/text_edit/output_transaction.rs:946:8
+    |
+946 | struct DecodedJournalSlotV1 {
+    |        ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `decode_direct_journal_slot` is never used
+   --> src/text_edit/output_transaction.rs:954:4
+    |
+954 | fn decode_direct_journal_slot(
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `validate_decoded_slot_chain` is never used
+    --> src/text_edit/output_transaction.rs:1010:4
+     |
+1010 | fn validate_decoded_slot_chain(
+     |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `scan_output_transaction_journal` is never used
+    --> src/text_edit/output_transaction.rs:1060:15
+     |
+1060 | pub(crate) fn scan_output_transaction_journal(
+     |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `transition_state_id` is never used
+  --> src/transition_relation.rs:18:15
+   |
+18 | pub(crate) fn transition_state_id(text: &str) -> String {
+   |               ^^^^^^^^^^^^^^^^^^^
+
+warning: function `transition_target_id` is never used
+  --> src/transition_relation.rs:67:15
+   |
+67 | pub(crate) fn transition_target_id(text: &str) -> String {
+   |               ^^^^^^^^^^^^^^^^^^^^
+
+warning: associated function `edited_ime` is never used
+   --> src/typing_memory.rs:538:19
+    |
+426 | impl TypingMemoryEvent {
+    | ---------------------- associated function in this implementation
+...
+538 |     pub(crate) fn edited_ime(
+    |                   ^^^^^^^^^^
+
+warning: function `completion_edit_geometry_is_linked` is never used
+   --> src/typing_memory.rs:659:15
+    |
+659 | pub(crate) fn completion_edit_geometry_is_linked(
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `transition_target_text` is never used
+   --> src/typing_memory.rs:820:15
+    |
+820 | pub(crate) fn transition_target_text(from: &str, to: &str) -> String {
+    |               ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: fields `state_before`, `corrected_prefix_completion`, and `l3_relation_class` are never read
+  --> src/typing_transition/live_candidate.rs:24:16
+   |
+23 | pub(crate) struct LiveCompletionProposal {
+   |                   ---------------------- fields in this struct
+24 |     pub(crate) state_before: u64,
+   |                ^^^^^^^^^^^^
+...
+57 |     pub(crate) corrected_prefix_completion: bool,
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+58 |     pub(crate) l3_relation_class: u64,
+   |                ^^^^^^^^^^^^^^^^^
+   |
+   = note: `LiveCompletionProposal` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: method `common_target_evidence` is never used
+  --> src/typing_transition/live_candidate.rs:65:19
+   |
+64 | impl LiveCompletionProposal {
+   | --------------------------- method in this implementation
+65 |     pub(crate) fn common_target_evidence(&self) -> super::target_evidence::TargetEvidenceSetV1 {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `LEGACY_L2_OPERATOR_BASE` is never used
+  --> src/typing_transition/target_evidence.rs:58:7
+   |
+58 | const LEGACY_L2_OPERATOR_BASE: u32 = 0x4c32_0000;
+   |       ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `LEGACY_LIVE_OPERATOR_BASE` is never used
+  --> src/typing_transition/target_evidence.rs:59:7
+   |
+59 | const LEGACY_LIVE_OPERATOR_BASE: u32 = 0x4c56_0000;
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variants `ComposedSurface`, `LegacyL2Ime`, and `LegacyLiveReplacement` are never constructed
+  --> src/typing_transition/target_evidence.rs:91:5
+   |
+85 | pub(crate) enum GroundingNamespaceV1 {
+   |                 -------------------- variants in this enum
+...
+91 |     ComposedSurface = 4,
+   |     ^^^^^^^^^^^^^^^
+92 |     CompositeBoundary = 5,
+93 |     LegacyL2Ime = 6,
+   |     ^^^^^^^^^^^
+94 |     LegacyLiveReplacement = 7,
+   |     ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `GroundingNamespaceV1` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: variants `EditFootprintPartition` and `RelationPartition` are never constructed
+   --> src/typing_transition/target_evidence.rs:244:5
+    |
+241 | pub(crate) enum CompletenessScopeV1 {
+    |                 ------------------- variants in this enum
+...
+244 |     EditFootprintPartition {
+    |     ^^^^^^^^^^^^^^^^^^^^^^
+...
+247 |     RelationPartition {
+    |     ^^^^^^^^^^^^^^^^^
+    |
+    = note: `CompletenessScopeV1` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: associated functions `edit_footprint_partition` and `relation_partition` are never used
+   --> src/typing_transition/target_evidence.rs:253:19
+    |
+252 | impl CompletenessScopeV1 {
+    | ------------------------ associated functions in this implementation
+253 |     pub(crate) fn edit_footprint_partition(exhaustive_partition_proof_ref: u32) -> Option<Self> {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^
+...
+259 |     pub(crate) fn relation_partition(exhaustive_partition_proof_ref: u32) -> Option<Self> {
+    |                   ^^^^^^^^^^^^^^^^^^
+
+warning: associated items `failed`, `with_exhaustive_scope`, `all_seen_digest`, and `try_single_complete_witness` are never used
+   --> src/typing_transition/target_evidence.rs:352:19
+    |
+318 | impl TargetEvidenceSetV1 {
+    | ------------------------ associated items in this implementation
+...
+352 |     pub(crate) fn failed(reason: IncompletenessReasonV1) -> Self {
+    |                   ^^^^^^
+...
+422 |     pub(crate) fn with_exhaustive_scope(mut self, scope: CompletenessScopeV1) -> Self {
+    |                   ^^^^^^^^^^^^^^^^^^^^^
+...
+435 |     pub(crate) const fn all_seen_digest(&self) -> [u64; 2] {
+    |                         ^^^^^^^^^^^^^^^
+...
+439 |     pub(crate) fn try_single_complete_witness(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: enum `LegacyProjectionErrorV1` is never used
+   --> src/typing_transition/target_evidence.rs:538:17
+    |
+538 | pub(crate) enum LegacyProjectionErrorV1 {
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `to_common`, `try_from_common`, and `common_parts` are never used
+   --> src/typing_transition/target_evidence.rs:559:19
+    |
+558 | impl L2ImeTargetEvidence {
+    | ------------------------ associated items in this implementation
+559 |     pub(crate) fn to_common(self) -> TargetEvidenceSetV1 {
+    |                   ^^^^^^^^^
+...
+576 |     pub(crate) fn try_from_common(
+    |                   ^^^^^^^^^^^^^^^
+...
+597 |     fn common_parts(self) -> Option<(TargetRelationV1, u32)> {
+    |        ^^^^^^^^^^^^
+
+warning: associated items `to_common`, `try_from_common`, and `common_parts` are never used
+   --> src/typing_transition/target_evidence.rs:625:19
+    |
+620 | impl ReplacementTargetEvidence {
+    | ------------------------------ associated items in this implementation
+...
+625 |     pub(crate) fn to_common(self) -> TargetEvidenceSetV1 {
+    |                   ^^^^^^^^^
+...
+642 |     pub(crate) fn try_from_common(
+    |                   ^^^^^^^^^^^^^^^
+...
+661 |     fn common_parts(self) -> Option<(TargetRelationV1, u32)> {
+    |        ^^^^^^^^^^^^
+
+warning: variant `Protected` is never constructed
+   --> src/typing_transition/target_evidence.rs:720:5
+    |
+715 | pub(crate) enum PreparedOriginalLexicalStatusV1 {
+    |                 ------------------------------- variant in this enum
+...
+720 |     Protected = 3,
+    |     ^^^^^^^^^
+    |
+    = note: `PreparedOriginalLexicalStatusV1` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: variant `Protected` is never constructed
+   --> src/typing_transition/target_evidence.rs:738:5
+    |
+734 | pub(crate) enum PreparedOriginalPunctuationStatusV1 {
+    |                 ----------------------------------- variant in this enum
+...
+738 |     Protected = 2,
+    |     ^^^^^^^^^
+    |
+    = note: `PreparedOriginalPunctuationStatusV1` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: variant `EventPlan` is never constructed
+   --> src/typing_transition/target_evidence.rs:916:5
+    |
+912 | pub(crate) enum LeaseConsumerStateV1 {
+    |                 -------------------- variant in this enum
+...
+916 |     EventPlan = 2,
+    |     ^^^^^^^^^
+    |
+    = note: `LeaseConsumerStateV1` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: variants `GroundingRefMismatch`, `GeometryReplayMismatch`, and `StaleWitnessGeneration` are never constructed
+    --> src/typing_transition/target_evidence.rs:1052:5
+     |
+1051 | pub(crate) enum WitnessRejectionReasonV1 {
+     |                 ------------------------ variants in this enum
+1052 |     GroundingRefMismatch = 1,
+     |     ^^^^^^^^^^^^^^^^^^^^
+1053 |     GeometryReplayMismatch = 2,
+     |     ^^^^^^^^^^^^^^^^^^^^^^
+1054 |     MalformedEvidenceRoot = 3,
+1055 |     StaleWitnessGeneration = 4,
+     |     ^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: `WitnessRejectionReasonV1` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: variants `WitnessOverflow` and `MultipleEditComponents` are never constructed
+    --> src/typing_transition/target_evidence.rs:1069:5
+     |
+1068 | pub(crate) enum AbsoluteAuthorityBlockerV1 {
+     |                 -------------------------- variants in this enum
+1069 |     WitnessOverflow = 1,
+     |     ^^^^^^^^^^^^^^^
+...
+1073 |     MultipleEditComponents = 5,
+     |     ^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: `AbsoluteAuthorityBlockerV1` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: struct `AuthorityCertificateCoreV1` is never constructed
+    --> src/typing_transition/target_evidence.rs:1118:19
+     |
+1118 | pub(crate) struct AuthorityCertificateCoreV1 {
+     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: enum `AuthorityCertificateV1` is never used
+    --> src/typing_transition/target_evidence.rs:1136:17
+     |
+1136 | pub(crate) enum AuthorityCertificateV1 {
+     |                 ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `lay` (lib) generated 249 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 20.01s

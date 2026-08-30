@@ -1,0 +1,85 @@
+{
+  "schema": "lay.tech-debt.build-surface-measurement.v2",
+  "task": "TD-102",
+  "date": "2026-08-30",
+  "verdict": "MEASUREMENT_COMPLETE_REPEATED",
+  "commit": "a301b82c45098279625631f1c02e2c425710db47",
+  "host": "e-MEGA-MINI-M1-13th",
+  "checkout": "/home/e/codex-worktrees/lay-td102-a301b82c",
+  "method": {
+    "repeats": 3,
+    "clean_target_per_lane_and_repeat": true,
+    "execution_order_per_repeat": ["runtime-daemon", "all-targets"],
+    "cargo_wrapper": "scripts/cargo-guard.sh",
+    "profile": "dev",
+    "locked": true,
+    "raw_evidence": "tech_debt/evidence/td102-remote-raw-v2",
+    "raw_sha256sums_sha256": "908dfba3d3bda3339beb60c72fe40cf5de545f3f23dd61194a7ae7ef9d6cd405"
+  },
+  "source_surface": {
+    "cargo_packages": 1,
+    "workspace_declared": false,
+    "binary_targets": 13,
+    "nanda_wave_rust_files": 193,
+    "nanda_wave_rust_lines": 164071,
+    "nanda_wave_rust_bytes": 6114413,
+    "nanda_wave_public_root_modules": 22,
+    "nanda_wave_pub_crate_root_modules": 12,
+    "nanda_wave_private_runtime_root_modules": 9,
+    "nanda_wave_test_only_private_root_modules": 1
+  },
+  "lanes": [
+    {
+      "id": "runtime-daemon",
+      "command": "scripts/cargo-guard.sh check --locked --bin lay-daemon",
+      "wall_seconds": [20.11, 20.23, 20.07],
+      "wall_median_seconds": 20.11,
+      "wall_range_seconds": 0.16,
+      "maximum_rss_kib": [1295144, 1295044, 1296140],
+      "reported_compile_units": [176, 176, 176],
+      "target_files": [1618, 1618, 1618],
+      "target_bytes": [300406378, 300406378, 300406378],
+      "exit_status": [0, 0, 0]
+    },
+    {
+      "id": "all-targets",
+      "command": "scripts/cargo-guard.sh check --locked --all-targets",
+      "wall_seconds": [24.02, 24.44, 24.48],
+      "wall_median_seconds": 24.44,
+      "wall_range_seconds": 0.46,
+      "maximum_rss_kib": [1654204, 1653700, 1653580],
+      "reported_compile_units": [176, 176, 176],
+      "target_files": [1912, 1912, 1912],
+      "target_bytes": [300909602, 300909602, 300909602],
+      "exit_status": [0, 0, 0]
+    }
+  ],
+  "paired_delta_all_targets_minus_daemon": {
+    "wall_seconds": [3.91, 4.21, 4.41],
+    "wall_median_seconds": 4.21,
+    "median_pair_percent_of_daemon": 20.8107,
+    "reported_compile_units": [0, 0, 0],
+    "target_files": [294, 294, 294],
+    "target_bytes": [503224, 503224, 503224]
+  },
+  "interpretation": {
+    "workspace_split_benefit_proven": false,
+    "workspace_split_harm_proven": false,
+    "target_selection_overhead_measured": true,
+    "runtime_lane_still_compiles_mixed_library_surface": true,
+    "decision": "Do not admit a three-crate migration without an isolated prototype that measures clean, incremental, binary-size, and test-lane effects."
+  },
+  "unmeasured": [
+    "incremental workspace split benefit",
+    "release binary size after a workspace split",
+    "test-lane time after a workspace split",
+    "prototype cross-crate API and cycle cost"
+  ],
+  "authority_boundary": {
+    "source_changes": 0,
+    "release_builds": 0,
+    "installations": 0,
+    "service_restarts": 0,
+    "installed_runtime_changed": false
+  }
+}

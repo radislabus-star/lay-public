@@ -1,0 +1,75 @@
+{
+  "schema": "lay.tech-debt.completion.v1",
+  "task": "TD-102",
+  "date": "2026-08-30",
+  "verdict": "WORKSPACE_SPLIT_NOT_ADMITTED_BENEFIT_UNPROVEN",
+  "commit_measured": "a301b82c45098279625631f1c02e2c425710db47",
+  "decision": {
+    "workspace_split_implemented": false,
+    "workspace_split_benefit_proven": false,
+    "workspace_split_harm_proven": false,
+    "single_crate_retained": true,
+    "package_schema_changed": false,
+    "public_command_changed": false,
+    "next_boundary": "TD-104 same-crate cold compiler/proof/eval isolation"
+  },
+  "measurement": {
+    "remote_host": "e-MEGA-MINI-M1-13th",
+    "repeats_per_lane": 3,
+    "runtime_daemon_median_seconds": 20.11,
+    "all_targets_median_seconds": 24.44,
+    "paired_overhead_seconds": [3.91, 4.21, 4.41],
+    "reported_compile_units_each_lane": 176,
+    "raw_sha256_entries": 25,
+    "raw_sha256_verdict": "PASS"
+  },
+  "reviews": [
+    {
+      "pass": 1,
+      "score": "6/10",
+      "verdict": "ACCEPT_WITH_FIXES",
+      "findings": 5,
+      "resolved": 5
+    },
+    {
+      "pass": 2,
+      "score": "8/10",
+      "verdict": "CHANGES_REQUESTED",
+      "findings": 2,
+      "resolved": 2
+    }
+  ],
+  "evidence": [
+    {
+      "path": "tech_debt/evidence/td102-build-surface-measurement-v1.json",
+      "sha256": "21e1168294c2c9dc8e5b293331fcc4d81d95980cb94a7a10355361c57de720ab"
+    },
+    {
+      "path": "tech_debt/evidence/td102-build-surface-measurement-v2.json",
+      "sha256": "b08382ec25298ae78a67b45b83932f85d50e86ad4f77d0ad0626d5609e72ecc3"
+    },
+    {
+      "path": "tech_debt/evidence/td102-remote-raw-v2/SHA256SUMS",
+      "sha256": "908dfba3d3bda3339beb60c72fe40cf5de545f3f23dd61194a7ae7ef9d6cd405"
+    },
+    {
+      "path": "tech_debt/evidence/td102-boundary-decision-v1.md",
+      "sha256": "bdfd07161f8b4bdde44f6ef46fbc2a25e583b0cbb7b29668d3f941e32c624ef5"
+    },
+    {
+      "path": "tech_debt/evidence/td102-independent-review-v1.md",
+      "sha256": "ebab5db8194963c6b489693ba2518eb828f2fdb9efbb144482845227122f14e4"
+    },
+    {
+      "path": "tech_debt/evidence/td102-independent-review-v2.md",
+      "sha256": "882c360425bfa5302e9f1f1dc3266a5867a7559ebea506ac542812fd54a2d4e6"
+    }
+  ],
+  "authority_boundary": {
+    "source_changes": 0,
+    "release_builds": 0,
+    "installations": 0,
+    "service_restarts": 0,
+    "installed_runtime_changed": false
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "lay.tech-debt.build-surface-measurement.v1",
+  "task": "TD-102",
+  "date": "2026-08-30",
+  "verdict": "MEASUREMENT_COMPLETE",
+  "commit": "a301b82c45098279625631f1c02e2c425710db47",
+  "host": "e-MEGA-MINI-M1-13th",
+  "checkout": "/home/e/codex-worktrees/lay-td102-a301b82c",
+  "method": {
+    "clean_target_per_lane": true,
+    "cargo_wrapper": "scripts/cargo-guard.sh",
+    "profile": "dev",
+    "locked": true,
+    "raw_evidence_root": "/tmp/lay-td102-measurement-v1"
+  },
+  "source_surface": {
+    "cargo_packages": 1,
+    "workspace_declared": false,
+    "binary_targets": 13,
+    "nanda_wave_rust_files": 193,
+    "nanda_wave_rust_lines": 164071,
+    "nanda_wave_rust_bytes": 6114413,
+    "nanda_wave_public_root_modules": 22,
+    "nanda_wave_pub_crate_root_modules": 12,
+    "nanda_wave_private_runtime_root_modules": 9,
+    "nanda_wave_test_only_private_root_modules": 1
+  },
+  "lanes": [
+    {
+      "id": "runtime-daemon",
+      "command": "CARGO_TARGET_DIR=/tmp/lay-td102-measurement-v1/target-daemon scripts/cargo-guard.sh check --locked --bin lay-daemon",
+      "wall_seconds": 19.87,
+      "maximum_rss_kib": 1295436,
+      "reported_compile_units": 176,
+      "target_files": 1618,
+      "target_bytes": 300405316,
+      "exit_status": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6f8f4af0b7b20eec634d9cee4213e5dba312429afd9354a01b36a89a5dd1df30",
+      "time_sha256": "ef9c51c8efb49ecd9c47974abd1f1bc4cf922a29b24a403e35f93ad131d5c10d",
+      "target_size_sha256": "a5a2d61a74f08208add7496aa49f32c61f4d88bf41ffe64ffa64acdc1a4fe109"
+    },
+    {
+      "id": "all-targets",
+      "command": "CARGO_TARGET_DIR=/tmp/lay-td102-measurement-v1/target-all-targets scripts/cargo-guard.sh check --locked --all-targets",
+      "wall_seconds": 24.30,
+      "maximum_rss_kib": 1653216,
+      "reported_compile_units": 176,
+      "target_files": 1912,
+      "target_bytes": 300908340,
+      "exit_status": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "5024b2c07033e38907e02ae5cbd601154925ff0aa4974159958f130bc6b2930c",
+      "time_sha256": "d9e771103241d0edd2b7e0ce12bf6ec1bbbddd9f84b34ac410b451aa269b5dfa",
+      "target_size_sha256": "b116e72550254eeb3daff4d9ac784fefca476fd921cc73a577ef01f1d10d898c"
+    }
+  ],
+  "delta_all_targets_minus_daemon": {
+    "wall_seconds": 4.43,
+    "wall_percent_of_daemon": 22.2949,
+    "maximum_rss_kib": 357780,
+    "reported_compile_units": 0,
+    "target_files": 294,
+    "target_bytes": 503024
+  },
+  "interpretation": {
+    "single_run": true,
+    "superseded_by": "tech_debt/evidence/td102-build-surface-measurement-v2.json",
+    "workspace_split_benefit_proven": false,
+    "target_selection_benefit_measured": true,
+    "runtime_lane_still_compiles_mixed_library_surface": true,
+    "reason": "The clean runtime target already shares the full library compilation graph; all-target selection adds 4.43 seconds but no additional reported dependency units. This does not establish that a three-crate migration would repay its contract and schema cost."
+  },
+  "authority_boundary": {
+    "source_changes": 0,
+    "release_builds": 0,
+    "installations": 0,
+    "service_restarts": 0,
+    "installed_runtime_changed": false
+  }
+}

@@ -28800,8 +28800,8 @@
     "semantic_hash": ""
   },
   "tech_debt/102-separate-nanda-runtime-and-research.md": {
-    "mtime": 1787959142.2258906,
-    "ast_hash": "1d339b74a989ad101ae3a62e169886ce",
+    "mtime": 1788095691.2140226,
+    "ast_hash": "486a1c3337200a4e7f6bea7a1b265f68",
     "semantic_hash": ""
   },
   "tech_debt/103-externalize-research-payloads.md": {
@@ -28810,8 +28810,8 @@
     "semantic_hash": ""
   },
   "tech_debt/104-isolate-proof-compiler-build-surface.md": {
-    "mtime": 1787959142.226102,
-    "ast_hash": "c318933a022813f1e80879b2484c26ea",
+    "mtime": 1788095691.2150226,
+    "ast_hash": "89d086146947d08b8b417c5bdbf737e6",
     "semantic_hash": ""
   },
   "tech_debt/BASELINE_2026-08-29.md": {
@@ -28820,8 +28820,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1788094579.5997834,
-    "ast_hash": "76464fe9e04213b069e77e9f71117e9f",
+    "mtime": 1788095691.2150226,
+    "ast_hash": "71b658e9b7002bd623cbb8b379b2ab92",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -29577,6 +29577,156 @@
   "tech_debt/evidence/td101-independent-review-v1.md": {
     "mtime": 1788094579.5987835,
     "ast_hash": "44f1ed1eba97974ef8f0d0a0a68623a1",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-build-surface-measurement-v1.json": {
+    "mtime": 1788095415.819288,
+    "ast_hash": "bdb7bc7e8bc2fc5f5d8b1d9048ac607d",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-build-surface-measurement-v2.json": {
+    "mtime": 1788095415.819288,
+    "ast_hash": "2009ba740db807855a1ec0f249aef0da",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-completion-v1.json": {
+    "mtime": 1788095727.556727,
+    "ast_hash": "2a22751c6325ddc7f742b0c954e16296",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-boundary-decision-v1.md": {
+    "mtime": 1788095415.819288,
+    "ast_hash": "2348d1ffe3c7ec993dbd34c1d4c99364",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-independent-review-v1.md": {
+    "mtime": 1788095451.4120765,
+    "ast_hash": "d2ad2b317ff4f4dc11732a4bc8cb88ca",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-independent-review-v2.md": {
+    "mtime": 1788095691.2140226,
+    "ast_hash": "da989557f9c711e6e82238b902bc9616",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/all-targets-1.stderr.txt": {
+    "mtime": 1788095235.4324481,
+    "ast_hash": "4d38856ebbdd236377820a4f6a0c0142",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/all-targets-1.stdout.txt": {
+    "mtime": 1788095211.4792488,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/all-targets-1.target-size.txt": {
+    "mtime": 1788095235.5094488,
+    "ast_hash": "36ddb5a1f3b1441f43c04b33e2cc55e6",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/all-targets-1.time.txt": {
+    "mtime": 1788095235.5004487,
+    "ast_hash": "e42dcda3fcc118d2f78903625e3d6947",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/all-targets-2.stderr.txt": {
+    "mtime": 1788095280.2658207,
+    "ast_hash": "b6566e75805273251374d07f0972a243",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/all-targets-2.stdout.txt": {
+    "mtime": 1788095255.8836184,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/all-targets-2.target-size.txt": {
+    "mtime": 1788095280.3428214,
+    "ast_hash": "36ddb5a1f3b1441f43c04b33e2cc55e6",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/all-targets-2.time.txt": {
+    "mtime": 1788095280.3328211,
+    "ast_hash": "e259a1c08ffa95358b5763f8129c0712",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/all-targets-3.stderr.txt": {
+    "mtime": 1788095324.9661908,
+    "ast_hash": "bbcf3a6e358dec44ffdc53931511b653",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/all-targets-3.stdout.txt": {
+    "mtime": 1788095300.5439887,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/all-targets-3.target-size.txt": {
+    "mtime": 1788095325.0381916,
+    "ast_hash": "36ddb5a1f3b1441f43c04b33e2cc55e6",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/all-targets-3.time.txt": {
+    "mtime": 1788095325.0301914,
+    "ast_hash": "3dd0f252885886bb9be108ce04dd8f6c",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/daemon-1.stderr.txt": {
+    "mtime": 1788095211.401248,
+    "ast_hash": "db07e3b8a29cc158da1d5a4c371ba414",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/daemon-1.stdout.txt": {
+    "mtime": 1788095191.3050804,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/daemon-1.target-size.txt": {
+    "mtime": 1788095211.4292483,
+    "ast_hash": "a3a5d4e98681f0bc77a1fd0de8de0e34",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/daemon-1.time.txt": {
+    "mtime": 1788095211.4232483,
+    "ast_hash": "cc037df5547573cad6810a60f6afe487",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/daemon-2.stderr.txt": {
+    "mtime": 1788095255.7886174,
+    "ast_hash": "20a694de820a2cd9163d8d283ed3e8fe",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/daemon-2.stdout.txt": {
+    "mtime": 1788095235.5754495,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/daemon-2.target-size.txt": {
+    "mtime": 1788095255.8256178,
+    "ast_hash": "a3a5d4e98681f0bc77a1fd0de8de0e34",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/daemon-2.time.txt": {
+    "mtime": 1788095255.8136177,
+    "ast_hash": "2f9d32f04fcfabaa0bfd751e06ca9238",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/daemon-3.stderr.txt": {
+    "mtime": 1788095300.459988,
+    "ast_hash": "e9508950aab144642fea60b39358e2d1",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/daemon-3.stdout.txt": {
+    "mtime": 1788095280.4058218,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/daemon-3.target-size.txt": {
+    "mtime": 1788095300.4929883,
+    "ast_hash": "a3a5d4e98681f0bc77a1fd0de8de0e34",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td102-remote-raw-v2/daemon-3.time.txt": {
+    "mtime": 1788095300.4849882,
+    "ast_hash": "e271a4e7a271b450c167a4f3346621db",
     "semantic_hash": ""
   }
 }
