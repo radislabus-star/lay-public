@@ -1571,3 +1571,64 @@ installation, limited to terminal committed-tail execution**. Evidence:
 `docs/structural_gates/receipts/LAY_1_0_58_TERMINAL_DOUBLE_SHIFT_SINGLE_COMMIT_2026-08-31/`;
 receipt SHA-256
 `8c426fd6e096ed7b89677f805bbf31729f42439191f4ab8e364f07d264b8977c`.
+
+## 1.0.59 Per-Character IME Suggestion Scheduling (2026-08-31)
+
+The installed `1.0.58` trace separated two previously conflated causes of a
+missing suggestion. Current-generation Russian completion results for the
+observed `доп...` sequence arrived in `1.716-1.990 ms` with `12` candidates and
+updated the visible suffix on each character after the old three-character
+threshold. A separate `ghjdthrf` sequence completed in `3.081-93.612 ms` but
+returned zero suffix candidates. Raising the display deadline cannot create a
+candidate in the latter case.
+
+`PRECOGNITION_DISPLAY_DEADLINE = 150 ms` is only a freshness ceiling for an
+already calculated result. Printable input is committed immediately and the
+readout remains asynchronous. Before publication, the worker generation and
+the complete input-frame identity must still match; an older token, focus,
+layout, configuration, or tail cannot publish merely because it is younger
+than `150 ms`.
+
+The actual onset defect was the independent
+`PREEDIT_VISIBLE_PREFIX_MIN_CHARS = 3` UI admission gate. The shared candidate
+engine already accepts one-character lexical prefixes. Release `1.0.59`
+changes only that display-scheduling threshold to `1`. Every non-empty live
+alphabetic prefix now schedules its own current-generation readout. Existing
+matching-target retention continues to shorten a compatible visible suffix
+immediately between worker completions.
+
+Local evidence before installation:
+
+```text
+one-letter L2/L3 producer test       PASS, 12 prefix-preserving candidates
+per-character display-ready test    PASS for п -> пр -> про
+candidate readout warm p90           44 us
+candidate readout warm max           55 us
+lay-ibus-engine regression class     280 / 280 PASS
+display deadline                     unchanged at 150 ms
+candidate sources/ranking/limit      unchanged
+whole-token replacement preedit      still forbidden
+```
+
+Scope: this guarantees a readout attempt and exact-generation publication
+semantics for every non-empty live prefix. It does not fabricate a completion
+for an arbitrary string whose admitted suffix set is genuinely empty. That
+distinction is observable as `candidates=0` in the worker trace. Runtime
+authority changed: **yes, by the verified `1.0.59` installation, limited to
+first-character visible pre-cognition scheduling**. Shared candidate sources,
+ranking, limits, and replacement policy remain unchanged.
+
+Two isolated installed-runtime GTK scenarios passed. `п -> пр -> про`
+published the exact visible suffix sequence `овод -> ивет -> верка`, then
+accepted `проверка`. Continuing through `пров` published
+`овод -> ивет -> верка -> ерка` without accepting a completion. The matching
+worker generations returned `12`, `11`, and `11` candidates in the first case.
+The working `lay-ime-ru` engine was restored with the exact installed engine
+SHA-256
+`a4b357fc58750c3fb21ba36008e89c8223bedf6ae8ec70bc23d3f85300262926`;
+global `ibus-daemon` retained PID `4594`.
+
+Evidence:
+`docs/structural_gates/receipts/LAY_1_0_59_IME_FIRST_CHARACTER_SCHEDULING_2026-08-31/`;
+release receipt SHA-256
+`982fcc4c35cacf718f8653df21a38b63fc0fd12c22d29d5e219f60a054ea87b6`.

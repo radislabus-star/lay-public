@@ -368,7 +368,9 @@ class RuntimeSmokeIsolationTest(unittest.TestCase):
 
         self.assertFalse(ok)
         self.assertIn("ibus_keys=0>=8", detail)
-        self.assertIn("preedit_updates=()/('верка', 'ерка')", detail)
+        self.assertIn(
+            "preedit_updates=()/('овод', 'ивет', 'верка', 'ерка')", detail
+        )
 
     def test_case_trace_contract_accepts_exact_pending_refresh_route(self) -> None:
         case = CASE_MODULE.CASES["ime_prefix_prov_pending_alt_enter"]
@@ -377,7 +379,7 @@ class RuntimeSmokeIsolationTest(unittest.TestCase):
             {
                 "read_error": None,
                 "kind_counts": {"ibus_key": 8, "ibus_preedit": 4},
-                "preedit_updates": ["верка", "ерка"],
+                "preedit_updates": ["овод", "ивет", "верка", "ерка"],
                 "preedit_clears": 1,
                 "managed_commits": ["п", "р", "о", "в"],
                 "pending_shortens": 1,

@@ -1,0 +1,167 @@
+{
+  "active_case_at_failure": null,
+  "all_passed": true,
+  "binaries": {
+    "daemon": {
+      "path": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+      "sha256": "51ed877c12ff03eb734f582d152b13d76ebe1505d9b7b08b2a6979b435e2858c",
+      "size": 8960120
+    },
+    "ibus_engine": {
+      "path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+      "sha256": "a4b357fc58750c3fb21ba36008e89c8223bedf6ae8ec70bc23d3f85300262926",
+      "size": 7219512
+    },
+    "input": {
+      "path": "/home/ubu/.local/lib/lay/bin/lay-test-input",
+      "sha256": "487065b8d5436aea5cebde2da659d8cb51040fa051704638452ff53b5d4f0de0",
+      "size": 1839840
+    }
+  },
+  "case_results_sha256": "24ab81f3da6dcb4b7d2c350ab34ac73f7f53a71ac2068799109c7520b6362a5e",
+  "cases": [
+    {
+      "case_id": "ime_prefix_prov_pending_alt_enter-6195bb5eafe699de4aab",
+      "detail": "device: /dev/input/event21\nsender stderr:\n[test] virtual keyboard создана\n[test] сценарий ime_prefix_prov_pending_alt_enter отправлен\n\nIME case trace: preedit_updates=('овод', 'ивет', 'верка', 'ерка')/('овод', 'ивет', 'верка', 'ерка') managed_commits=('п', 'р', 'о', 'в')/('п', 'р', 'о', 'в') pending_shortens=1/1 completion_accepts=0/0 ibus_keys=10>=8 preedit_clears=3>=1 malformed=0",
+      "expected": "пров",
+      "got": "пров",
+      "name": "ime_prefix_prov_pending_alt_enter",
+      "ok": true,
+      "trace": {
+        "kind_counts": {
+          "ibus_auto_undo_lifecycle": 4,
+          "ibus_capabilities": 3,
+          "ibus_content_type": 2,
+          "ibus_cursor": 2,
+          "ibus_focus": 8,
+          "ibus_key": 10,
+          "ibus_precognition_display": 1,
+          "ibus_precognition_timing": 4,
+          "ibus_precognition_worker": 4,
+          "ibus_preedit": 10,
+          "ibus_printable_key_timing": 4,
+          "ibus_surrounding_text": 4,
+          "ibus_token_field_route": 8
+        },
+        "malformed": 0,
+        "managed_commits": [
+          "п",
+          "р",
+          "о",
+          "в"
+        ],
+        "manual_toggles": 0,
+        "pending_shortens": 1,
+        "preedit_clears": 3,
+        "preedit_updates": [
+          "овод",
+          "ивет",
+          "верка",
+          "ерка"
+        ],
+        "read_error": null,
+        "records": 64,
+        "semantic_kind_counts": {
+          "ibus_auto_undo_lifecycle": 4,
+          "ibus_capabilities": 3,
+          "ibus_content_type": 2,
+          "ibus_focus": 8,
+          "ibus_key": 10,
+          "ibus_precognition_display": 1,
+          "ibus_precognition_timing": 4,
+          "ibus_precognition_worker": 4,
+          "ibus_preedit": 10,
+          "ibus_printable_key_timing": 4,
+          "ibus_surrounding_text": 4,
+          "ibus_token_field_route": 8
+        },
+        "semantic_records": 62,
+        "sha256": "6b4920c6cb19f0ca17beaf142004d96a6a28fd91d7f0490d8c86b8436d02b4f8",
+        "volatile_records": 2
+      }
+    }
+  ],
+  "desktop_before": {
+    "active_engine": "lay-ime-ru",
+    "active_layout": "lay-ime-us",
+    "harness_trace_path": null,
+    "ibus_daemons": [
+      {
+        "argv": [
+          "/usr/bin/ibus-daemon",
+          "--panel",
+          "disable"
+        ],
+        "executable": "/usr/bin/ibus-daemon",
+        "pid": 4594,
+        "start_time": 8971
+      }
+    ],
+    "lay_engine_trace_paths": [
+      "/home/ubu/.local/share/lay/ibus_engine_debug.jsonl"
+    ],
+    "lay_engines": [
+      {
+        "argv": [
+          "/home/ubu/.local/bin/lay-ibus-engine",
+          "--ibus",
+          "--managed"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+        "pid": 97970,
+        "start_time": 39796835
+      }
+    ],
+    "service": {
+      "active_state": "active",
+      "main_pid": 97959,
+      "main_process": {
+        "argv": [
+          "/home/ubu/.local/bin/lay-daemon"
+        ],
+        "executable": "/home/ubu/.local/lib/lay/bin/lay-daemon",
+        "pid": 97959,
+        "start_time": 39796827
+      },
+      "sub_state": "running",
+      "unit_file_state": "enabled"
+    }
+  },
+  "desktop_restoration_verified": true,
+  "evidence_root": "/home/ubu/projects/lay-l1-exact-peak-search/target/runtime-smoke-runs/lay-1.0.59-first-char-prov-v1",
+  "execution_order": [
+    "ime_prefix_prov_pending_alt_enter"
+  ],
+  "fatal_error": null,
+  "harness_process_group": 99255,
+  "ibus_sync_mode": "1",
+  "invocation": [
+    "/home/ubu/projects/lay-l1-exact-peak-search/scripts/run_runtime_smoke.py",
+    "--case",
+    "ime_prefix_prov_pending_alt_enter",
+    "--managed-desktop",
+    "--ime-engine",
+    "--ime-managed",
+    "--verify-ime-trace",
+    "--no-build",
+    "--dialog",
+    "gtk-entry-capture",
+    "--input-bin",
+    "/home/ubu/.local/lib/lay/bin/lay-test-input",
+    "--daemon-bin",
+    "/home/ubu/.local/lib/lay/bin/lay-daemon",
+    "--ibus-engine-bin",
+    "/home/ubu/.local/lib/lay/bin/lay-ibus-engine",
+    "--run-id",
+    "lay-1.0.59-first-char-prov-v1",
+    "--evidence-dir",
+    "target/runtime-smoke-runs/lay-1.0.59-first-char-prov-v1",
+    "--json-out",
+    "/tmp/lay-1.0.59-first-char-smoke-prov.json"
+  ],
+  "run_id": "lay-1.0.59-first-char-prov-v1",
+  "schema": "lay.runtime-smoke-receipt.v3",
+  "selected_cases": [
+    "ime_prefix_prov_pending_alt_enter"
+  ]
+}

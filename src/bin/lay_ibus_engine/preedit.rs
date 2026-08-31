@@ -22,7 +22,7 @@ const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
 const PREEDIT_RU_WAVE_CANDIDATE_LIMIT: usize = 12;
 const PREEDIT_RU_PREFIX_MIN_CHARS: usize = 1;
-const PREEDIT_VISIBLE_PREFIX_MIN_CHARS: usize = 3;
+const PREEDIT_VISIBLE_PREFIX_MIN_CHARS: usize = 1;
 #[cfg(test)]
 const PREEDIT_PROBE_SYMBOL: &str = "*";
 const PREEDIT_MODE_CLEAR: u32 = 0;

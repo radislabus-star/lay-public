@@ -12087,7 +12087,7 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "preedit::tests::visible_precognition_waits_for_three_letter_prefix",
+      "name": "preedit::tests::visible_precognition_starts_with_first_letter_and_remains_ready",
       "target": "bin:lay-ibus-engine"
     },
     {

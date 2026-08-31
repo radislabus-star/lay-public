@@ -1,0 +1,9 @@
+version=1.0.59
+ibus_engine=lay-ime-ru
+ibus_daemon_pid=4594
+lay_ibus_engine_pid=100216
+lay_ibus_engine_sha256=a4b357fc58750c3fb21ba36008e89c8223bedf6ae8ec70bc23d3f85300262926
+lay_daemon_active=true
+gnome_extension_version=1.0.59
+live_pro_smoke=PASS
+live_prov_smoke=PASS

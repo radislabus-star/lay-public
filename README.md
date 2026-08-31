@@ -7,7 +7,7 @@
 `lay` исправляет слово, набранное не в той раскладке: нажмите
 **Shift два раза** и продолжайте писать.
 
-**Текущая версия: 1.0.58. Статус: alpha.**
+**Текущая версия: 1.0.59. Статус: alpha.**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -43,6 +43,18 @@ Daemon локально слушает физические клавиши, хр
 По умолчанию double Shift исправляет одно последнее слово. Автопомощь после
 пробела и автоматическое применение исправлений выключены, пока пользователь
 сам их не включит.
+
+## Что вошло в 1.0.59
+
+- IME запускает актуальный фоновый readout с первой буквы, а не ждёт жёсткого
+  порога в три символа;
+- каждый следующий печатный символ получает новое поколение результата; если
+  выбранное слово всё ещё совпадает с префиксом, видимый хвост сокращается сразу,
+  пока фоновый результат обновляется;
+- `150 ms` остаётся только верхним сроком годности точного результата, а не
+  задержкой ввода или ожиданием перед показом;
+- настоящий пустой набор кандидатов по-прежнему ничего не выдумывает; источники,
+  ранжирование, предел `12` и запрет фоновой замены целого слова не менялись.
 
 ## Что вошло в 1.0.58
 
@@ -481,7 +493,7 @@ graphify update .
 
 ## English
 
-`lay` 1.0.58 is a local Double Shift RU/EN layout rescue and bounded
+`lay` 1.0.59 is a local Double Shift RU/EN layout rescue and bounded
 typing-correction tool for Linux desktops.
 
 ```text
@@ -496,7 +508,11 @@ L3 context, `TransitionDecisionCore`, and a structural verifier.
 Exact search contributes candidates and certificates but does not bypass final
 authority.
 
-Release 1.0.58 routes proven terminal committed-tail Double Shift through one
+Release 1.0.59 schedules an exact-current IME completion readout from the first
+alphabetic character and keeps the matching visible suffix continuous across
+subsequent characters. The `150 ms` bound is a result freshness ceiling, not an
+input delay; a genuinely empty candidate set still displays nothing. Release
+1.0.58 routes proven terminal committed-tail Double Shift through one
 IME erase-and-commit frame instead of physical Backspace and per-character key
 replay. The exact `rjvvbn -> коммит -> rjvvbn` round trip preserves its trailing
 boundary and performs one layout synchronization per gesture. Release 1.0.57

@@ -1,0 +1,89 @@
+{
+  "schema": "lay.release.ime-first-character-scheduling.v1",
+  "recorded_at_utc": "2026-08-31T00:55:28Z",
+  "version": "1.0.59",
+  "base_commit": "6648a4841549910cfd59d52774a98eb1bf9d966b",
+  "verdict": "LAY_1_0_59_IME_FIRST_CHARACTER_SCHEDULING_PASS",
+  "defect": {
+    "cause": "PREEDIT_VISIBLE_PREFIX_MIN_CHARS was 3, so one- and two-character prefixes were not admitted to visible pre-cognition scheduling",
+    "not_cause": "PRECOGNITION_DISPLAY_DEADLINE",
+    "observed_old_behavior": "the first visible completion was scheduled only at the third character"
+  },
+  "repair": {
+    "preedit_visible_prefix_min_chars_before": 3,
+    "preedit_visible_prefix_min_chars_after": 1,
+    "display_deadline_ms": 150,
+    "display_deadline_semantics": "freshness ceiling for an already completed exact-generation worker result; it is not an input delay or a wait-before-display timer",
+    "empty_candidate_behavior": "no completion is fabricated when the admitted candidate set is empty",
+    "candidate_sources_changed": false,
+    "candidate_ranking_changed": false,
+    "candidate_limit_changed": false
+  },
+  "source": {
+    "cargo_toml_sha256": "558e39087d68bf4c85edb933583265776742ab7399320b72287710343dc7a4f9",
+    "preedit_sha256": "98982a85457a39da7236951eff0acde68108132b12f0202cf823fdeb8c2acdd8",
+    "preedit_tests_sha256": "9e75b40861b4a644e3fad681c1910cd7d411b9de4790506efe4439ba2d638b50",
+    "runtime_smoke_cases_sha256": "19c60c3fd04d658147d2c52253d38a5d309f5cfc30722ca30a21160e5642695d",
+    "runtime_smoke_tests_sha256": "7783a3ba2c4facf2fe50d1b499816f9ab7e4cdfd5e7e20fa5584ec3caadb9f4c",
+    "test_manifest_sha256": "d3989cbb5f66459f15dc563d935404c988e1e8ac27f04f78b0711073afd6ef54",
+    "known_failures_sha256": "da000b3c47e0936b30d9ad41bad407a67703addd3e7904b08021465f69c32328"
+  },
+  "tests": {
+    "one_letter_candidate_producer": "PASS, 12 prefix-preserving candidates",
+    "per_character_display_ready": "PASS for p, pr, pro in the Russian-layout regression fixture",
+    "candidate_readout_warm_p90_us": 44,
+    "candidate_readout_warm_max_us": 55,
+    "lay_ibus_engine": "280/280 PASS",
+    "changed_correctness_and_package": "2372/2372 executable tests PASS; 2396 manifest entries, including 11 performance and 13 ignored entries outside this run",
+    "known_failure_binding": "PASS, 0 active known failures",
+    "runtime_smoke_isolation": "43/43 PASS",
+    "transition_replay": "PASS-shadow, 0 false applies, 0 missed good candidates, 0 unverified transitions",
+    "unsafe_gate": "PASS, 0 gate failures",
+    "cargo_check_lib_bins": "PASS",
+    "release_build": "PASS"
+  },
+  "live_smoke": {
+    "pro_case": {
+      "receipt_sha256": "2fb991bea79ad8048f0b7a3051e83941bad2f9ee9c80256d3354a339793677ee",
+      "trace_sha256": "dedbf2ed7d6904022ef9baead1dc2880780f7eee2077d03c26c3bba76ad25a5b",
+      "typed_prefixes": ["п", "пр", "про"],
+      "preedit_updates": ["овод", "ивет", "верка"],
+      "worker_candidate_counts": [12, 11, 11],
+      "accepted_surface": "проверка",
+      "verdict": "PASS"
+    },
+    "prov_case": {
+      "receipt_sha256": "d08dd30943103364848b1d82e773b994c3f7b18a8b5e7135a333a9bc5e05af18",
+      "trace_sha256": "6b4920c6cb19f0ca17beaf142004d96a6a28fd91d7f0490d8c86b8436d02b4f8",
+      "typed_prefixes": ["п", "пр", "про", "пров"],
+      "preedit_updates": ["овод", "ивет", "верка", "ерка"],
+      "pending_suffix_shortens": 1,
+      "completion_accepts": 0,
+      "verdict": "PASS"
+    }
+  },
+  "installed": {
+    "lay": {
+      "sha256": "5e3edac4fee0e2de6d38ac9213324f0bfa62ef3401bdb89cff4dd7e334ee1185",
+      "size": 6796768,
+      "mode": "0755"
+    },
+    "lay_daemon": {
+      "sha256": "51ed877c12ff03eb734f582d152b13d76ebe1505d9b7b08b2a6979b435e2858c",
+      "size": 8960120,
+      "mode": "0755"
+    },
+    "lay_ibus_engine": {
+      "sha256": "a4b357fc58750c3fb21ba36008e89c8223bedf6ae8ec70bc23d3f85300262926",
+      "size": 7219512,
+      "mode": "0755",
+      "loaded_process_sha256_exact": true
+    },
+    "gnome_extension_version": "1.0.59",
+    "lay_daemon_active": true,
+    "ibus_engine": "lay-ime-ru",
+    "global_ibus_daemon_pid_before_and_after": 4594
+  },
+  "runtime_authority_changed": true,
+  "runtime_authority_scope": "installed Lay binaries and extension version only; shared candidate production and ranking authority are unchanged"
+}

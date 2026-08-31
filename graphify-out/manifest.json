@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1788132095.5285175,
-    "ast_hash": "e5ca17aabddd0b2e6417c7ca34ff5273",
+    "mtime": 1788135866.2109408,
+    "ast_hash": "ddd981af0e12db8beaca4c1311730852",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1788132095.6883457,
-    "ast_hash": "e7fa48b7753680b2a7af612913579d9b",
+    "mtime": 1788135866.2148988,
+    "ast_hash": "46687bf65317442d1028bbabe0aa6e88",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -165,8 +165,8 @@
     "semantic_hash": ""
   },
   "scripts/runtime_smoke/ime_cases.py": {
-    "mtime": 1788108782.7219791,
-    "ast_hash": "29112a0179fb4eebd410641397d7e578",
+    "mtime": 1788137606.6534672,
+    "ast_hash": "df042f64bae78f54fe1b093ea5d18a41",
     "semantic_hash": ""
   },
   "src/action_log.rs": {
@@ -920,8 +920,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit.rs": {
-    "mtime": 1788112495.8653078,
-    "ast_hash": "33215f2630a7d72240debaf67c7a24a8",
+    "mtime": 1788135499.4021385,
+    "ast_hash": "bb84e2ca80c08d3a403911e9c1647fd8",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol.rs": {
@@ -2485,8 +2485,8 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1787975758.8061614,
-    "ast_hash": "836c0e7a854b650859bad6c610d2e4bf",
+    "mtime": 1788134117.0658724,
+    "ast_hash": "78051396d50ce5d854342cb9c6eef275",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -2500,13 +2500,13 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1788132131.566092,
-    "ast_hash": "9df4fbacc3908b4891291ddf5c3290d2",
+    "mtime": 1788135942.1784458,
+    "ast_hash": "976768d7557fdc1d070c5aa23efb079c",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1788132095.691015,
-    "ast_hash": "4962e4c1758979ae608b6eb5a090c1a0",
+    "mtime": 1788135866.2167916,
+    "ast_hash": "e167ea73d33937b8ad7b79b16b05abe3",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2675,8 +2675,8 @@
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
-    "mtime": 1788131657.156808,
-    "ast_hash": "ca7416245a5e2586a367097bbff766bc",
+    "mtime": 1788137806.4392302,
+    "ast_hash": "990dbac6d80297e7bf46a1a3f37bc078",
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
@@ -3280,8 +3280,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit/tests.rs": {
-    "mtime": 1788112334.1532676,
-    "ast_hash": "b2fde0a3acb81abf583dc88daad9f713",
+    "mtime": 1788135499.4171386,
+    "ast_hash": "e613b75d3adcd9df5fc6fdf93daf1999",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/grammar_adapter.rs": {
@@ -14965,8 +14965,8 @@
     "semantic_hash": ""
   },
   "docs/double-shift-physical-layout-contract.md": {
-    "mtime": 1788132052.506207,
-    "ast_hash": "e915619595461d77563c0ba2b47e98f3",
+    "mtime": 1788135067.866862,
+    "ast_hash": "e7f1781519e8f373b797ad93e4a32064",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_ORDERED_AUTHORITY_V2_2026-08-23.json": {
@@ -28870,8 +28870,8 @@
     "semantic_hash": ""
   },
   "tests/test_runtime_smoke_isolation.py": {
-    "mtime": 1788012460.7801857,
-    "ast_hash": "8d855aad452d519d392a63a9743e64f8",
+    "mtime": 1788137625.6951938,
+    "ast_hash": "77b14c7f6eec4f827e6599924905d460",
     "semantic_hash": ""
   },
   "tech_debt/009-fix-manual-toggle-visible-postcondition-race.md": {
@@ -29225,13 +29225,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1788133469.977529,
-    "ast_hash": "4c31662bf6879438569b32c50ece10cb",
+    "mtime": 1788136799.5875535,
+    "ast_hash": "6e8b617cf1223e669f4590e58c02d726",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1788132710.2816288,
-    "ast_hash": "b68d208fa2cecc7702e7253b686bf720",
+    "mtime": 1788136055.3466609,
+    "ast_hash": "88d333af87e6968a3134f5dd834adef5",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {

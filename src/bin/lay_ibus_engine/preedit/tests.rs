@@ -2686,7 +2686,7 @@ fn late_worker_retires_the_display_exactly_once() {
 }
 
 #[test]
-fn visible_precognition_waits_for_three_letter_prefix() {
+fn visible_precognition_starts_with_first_letter_and_remains_ready() {
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
         Arc::new(Mutex::new(Default::default())),
@@ -2695,13 +2695,13 @@ fn visible_precognition_waits_for_three_letter_prefix() {
         LayConfig::default(),
     );
 
-    for ch in "пр".chars() {
+    for ch in "про".chars() {
         engine.push_tail_char(ch);
+        assert!(
+            engine.precognition_display_ready(),
+            "every non-empty live prefix must schedule a current-generation suggestion readout"
+        );
     }
-    assert!(!engine.precognition_display_ready());
-
-    engine.push_tail_char('о');
-    assert!(engine.precognition_display_ready());
 }
 
 #[test]
