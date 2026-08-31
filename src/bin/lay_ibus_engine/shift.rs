@@ -44,6 +44,12 @@ impl LayIbusEngine {
         let authority = self.manual_toggle_authority();
         match authority {
             ManualToggleAuthority::ImeCommittedTail => {
+                if self.terminal_committed_tail_executor_available() {
+                    trace::record(
+                        r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"terminal_erase_commit"}"#,
+                    );
+                    return self.toggle_committed_tail_target(emitter).await;
+                }
                 self.prepare_exact_manual_toggle_layout_handoff();
                 trace::record(
                     r#"{"kind":"ibus_manual_toggle_delegation","source":"ime_committed_tail"}"#,
@@ -103,6 +109,7 @@ impl LayIbusEngine {
 #[cfg(test)]
 mod tests {
     use super::LayIbusEngine;
+    use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY};
     use lay::config::LayConfig;
     use std::sync::{Arc, Mutex};
 
@@ -136,7 +143,7 @@ mod tests {
     }
 
     #[test]
-    fn physical_double_shift_delegates_committed_tail_without_legacy_ibus_mutation() {
+    fn physical_double_shift_splits_terminal_commit_from_surrounding_text_replay() {
         let source = include_str!("shift.rs");
         let production = source.split("#[cfg(test)]").next().unwrap();
         let committed_tail_arm = production
@@ -147,10 +154,76 @@ mod tests {
             .next()
             .expect("daemon authority arm follows committed-tail arm");
 
+        assert!(committed_tail_arm.contains("terminal_committed_tail_executor_available"));
+        assert!(committed_tail_arm.contains("toggle_committed_tail_target(emitter).await"));
         assert!(committed_tail_arm.contains("prepare_exact_manual_toggle_layout_handoff"));
         assert!(!committed_tail_arm.contains("defer_committed_tail_manual_toggle_to_daemon"));
         assert!(committed_tail_arm.contains("ime_committed_tail"));
-        assert!(!committed_tail_arm.contains("toggle_committed_tail_target(emitter).await"));
+    }
+
+    #[test]
+    fn terminal_committed_tail_double_shift_uses_one_ime_output_frame() {
+        let mut engine = LayIbusEngine::new(
+            "/test/terminal".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        engine.client_context.content_purpose = 10;
+        engine.client_context.cursor_cell_width = 11;
+        engine.client_context.surrounding_text_supported = false;
+        engine.committed_tail.buffer = "rjvvbn".to_string();
+
+        let mut builder = AtomicEffectBuilder::default();
+        let mut output = EngineOutput::atomic(&mut builder);
+        let target_is_ru = zbus::block_on(engine.manual_toggle_active_text_target(&mut output))
+            .expect("terminal Double Shift");
+        let (status, effects) = builder.finish(true);
+
+        assert_eq!(target_is_ru, Some(true));
+        assert_eq!(status, PROPOSAL_FRAME_READY);
+        assert_eq!(
+            effects.len(),
+            1,
+            "terminal replacement must be one commit frame"
+        );
+        assert_eq!(engine.committed_tail.buffer, "коммит");
+        assert!(engine.layout_gesture.layout_is_ru);
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_none());
+    }
+
+    #[test]
+    fn terminal_committed_tail_double_shift_round_trips_and_preserves_boundary() {
+        let mut engine = LayIbusEngine::new(
+            "/test/terminal-round-trip".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        engine.client_context.content_purpose = 10;
+        engine.client_context.cursor_cell_width = 11;
+        engine.client_context.surrounding_text_supported = false;
+        engine.committed_tail.buffer = "rjvvbn ".to_string();
+
+        for (expected_text, expected_layout_is_ru) in [("коммит ", true), ("rjvvbn ", false)]
+        {
+            let mut builder = AtomicEffectBuilder::default();
+            let mut output = EngineOutput::atomic(&mut builder);
+            let target_is_ru = zbus::block_on(engine.manual_toggle_active_text_target(&mut output))
+                .expect("terminal Double Shift round trip");
+            let (status, effects) = builder.finish(true);
+
+            assert_eq!(target_is_ru, Some(expected_layout_is_ru));
+            assert_eq!(status, PROPOSAL_FRAME_READY);
+            assert_eq!(effects.len(), 1);
+            assert_eq!(engine.committed_tail.buffer, expected_text);
+            assert_eq!(engine.layout_gesture.layout_is_ru, expected_layout_is_ru);
+        }
     }
 
     #[test]

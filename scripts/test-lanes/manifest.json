@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2334,
+    "correctness": 2336,
     "ignored": 13,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 27,
-    "target": 2367
+    "target": 2369
   },
   "package_fixtures": [
     {
@@ -12514,7 +12514,21 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "shift::tests::physical_double_shift_delegates_committed_tail_without_legacy_ibus_mutation",
+      "name": "shift::tests::physical_double_shift_splits_terminal_commit_from_surrounding_text_replay",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "shift::tests::terminal_committed_tail_double_shift_round_trips_and_preserves_boundary",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "shift::tests::terminal_committed_tail_double_shift_uses_one_ime_output_frame",
       "target": "bin:lay-ibus-engine"
     },
     {

@@ -1,0 +1,132 @@
+{
+  "schema": "lay.terminal-double-shift-single-commit-release.v1",
+  "version": "1.0.58",
+  "verdict": "LAY_1_0_58_TERMINAL_DOUBLE_SHIFT_SINGLE_COMMIT_DEPLOYED_VERIFIED",
+  "recorded_at_utc": "2026-08-31T00:09:29Z",
+  "base_commit": "6bb81c1ed1212df59927d210c823cc1908e7100e",
+  "defect": {
+    "reported_input": "rjvvbn",
+    "expected_output": "коммит",
+    "observed_output_before_repair": "оммт",
+    "planner_projection_before_repair": "коммит",
+    "cause": "the terminal committed tail was delegated to daemon physical Backspace and per-character replay after the layout switch, so replacement keys re-entered ordinary IME processing"
+  },
+  "repair": {
+    "authority": "ManualToggleV3/ImeCommittedTail",
+    "admission": [
+      "terminal input purpose",
+      "SurroundingText absent",
+      "terminal erase geometry executable"
+    ],
+    "executor": "terminal_erase_commit",
+    "output_frames_per_gesture": 1,
+    "layout_synchronizations_per_gesture": 1,
+    "daemon_physical_replay": false,
+    "gtk_surrounding_text_route_changed": false,
+    "daemon_word_buffer_fallback_changed": false,
+    "planner_or_mapping_changed": false
+  },
+  "implementation": {
+    "engine_source_sha256": "3f43e198f11192b7e4137176f4d5bb9c7d6873bbc2f1888fcb75741b851a4827",
+    "shift_source_sha256": "4dcfb9947c94efc38a214d4381f6bd0d5ce000ca4815c53a84f9ebba3fa0cecc",
+    "protected_route_contract_sha256": "ed52bf0cbcd7794b176da096e57ba04b83d8347d2eede6f29d99f15692ed8a1a",
+    "test_manifest_sha256": "da6cb31492fde7645e1011b5e6fd70229e06fa177699b27957a9131eb34f859c",
+    "known_failure_ledger_sha256": "c5ad01e70d7e754a346bd3a12abf98b055ecf2936c3d14e8ec3fc936c83ef1d2"
+  },
+  "tests": {
+    "tdd_red_before_repair": "expected Some(true), observed None",
+    "targeted_shift": "6/6 PASS",
+    "terminal_round_trip": "2/2 PASS",
+    "typing_transition_authority_contract": "21/21 PASS",
+    "input_gate_operator_contract": "2/2 PASS",
+    "changed_gate": {
+      "verdict": "PASS",
+      "selected": 2372,
+      "correctness": 2336,
+      "package": 36,
+      "known_semantic_failures": 0,
+      "infrastructure_failures": 0,
+      "lay_daemon": "229/229 PASS",
+      "lay_ibus_engine": "277/277 PASS",
+      "lay_library": "1636/1636 PASS"
+    },
+    "cargo_check_lib_and_bins": "PASS",
+    "transition_replay": {
+      "verdict": "PASS-shadow",
+      "false_apply_candidates": 0,
+      "missed_good_candidates": 0,
+      "unverified_transitions": 0
+    },
+    "unsafe_edit_gate": {
+      "verdict": "PASS",
+      "gate_failures": 0,
+      "blocked_unsafe": 0
+    },
+    "git_diff_check": "PASS",
+    "separate_full_engine_observation": {
+      "functional_passes": 279,
+      "timing_only_failures": 1,
+      "failure": "pre-existing TD-006 v27_component_latency_denominators wall-clock assertion",
+      "release_effect": "not a semantic or changed-route failure"
+    }
+  },
+  "live_kitty": {
+    "controlled_input": true,
+    "isolated_window": true,
+    "isolated_virtual_keyboard": true,
+    "cases_passed": 5,
+    "cases_total": 5,
+    "client_visible_lines": [
+      "коммит",
+      "rjvvbn",
+      "rjvvbn",
+      "коммит ",
+      "привет"
+    ],
+    "case_meanings": [
+      "rjvvbn -> коммит",
+      "коммит -> rjvvbn",
+      "two Double Shift gestures round-trip to rjvvbn",
+      "trailing space preserved by rjvvbn -> коммит",
+      "ghbdtn -> привет"
+    ],
+    "gestures": 6,
+    "terminal_dispatches": 6,
+    "terminal_replacements": 6,
+    "layout_sync_requested": 6,
+    "layout_sync_succeeded": 6,
+    "forbidden_exact_tail_delegations": 0,
+    "daemon_backspace_or_printable_replay_matches": 0,
+    "post_case_enodev": "expected after each disposable uinput device was removed",
+    "human_keyboard_timing": "NOT_CLAIMED"
+  },
+  "release": {
+    "release_build": "PASS",
+    "installed_binary_parity": "10/10 PASS",
+    "lay_sha256": "9049e1b1ac2e8544ecc43d8e416d3d3e8d8b0ef69e329494873553bfc0834b95",
+    "lay_daemon_sha256": "3dcb9b3ed9fb6a8063afb77cea3b40b3e6ae269c02911c7853918c8f0297823f",
+    "lay_ibus_engine_sha256": "b4bbdfff9fa9d2a4cd4066497413466443c56afbf6296f78030bc9087263ba55",
+    "loaded_daemon_pid": 3895984,
+    "loaded_engine_pid": 3865750,
+    "global_ibus_pid_before": 4594,
+    "global_ibus_pid_after": 4594,
+    "global_ibus_restarted": false,
+    "active_layout_after": "lay-ime-ru",
+    "active_engine_after": "lay-ime-ru",
+    "loaded_extension_version": "1.0.58"
+  },
+  "preserved": {
+    "canonical_l2_sha256": "cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b",
+    "exact_v13_sidecar_sha256": "f116a230fc05a04c375bcddf1c85169276c6d149295eed8ccf93e37672a907b9",
+    "candidate_production_changed": false,
+    "candidate_ranking_changed": false,
+    "correction_policy_changed": false,
+    "physical_pair_detector_changed": false
+  },
+  "rollback": {
+    "path": "/home/ubu/.local/lib/lay/rollback/1.0.57-before-1.0.58-20260830T234849Z",
+    "sha256sums_sha256": "b8cd1d67e5a3f06b6b26830f527f68cd8a8e7b865b59bfc334c1f0193f4d218f",
+    "manifest_verification": "PASS"
+  },
+  "runtime_authority_changed": true
+}

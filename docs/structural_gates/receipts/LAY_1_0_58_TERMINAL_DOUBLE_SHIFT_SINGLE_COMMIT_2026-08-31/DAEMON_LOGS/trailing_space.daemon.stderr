@@ -1,0 +1,29 @@
+[1788134007] ► старт, устройства: ["/dev/input/event21"]
+[1788134007] ► режим: LIVE (DBus + uinput)
+[1788134007] ► layout backend: gnome (config=auto)
+[1788134007] ► text backend: ime
+[1788134007] ► extension: pong from lay-extension
+[1788134007] ► IME bridge: lay-ibus-engine-rs focused /io/github/radislabus_star/LayIme/engine/lay_ime_us/12
+[1788134007] ► uinput virtual keyboard создан и очищен
+[1788134007] ► слушаю pointer: "/dev/input/event23" имя="mouce-library-fake-mouse"
+[1788134007] ► слушаю pointer: "/dev/input/event15" имя="TPPS/2 IBM TrackPoint"
+[1788134007] ► слушаю pointer: "/dev/input/event22" имя="RustDesk UInput Keyboard"
+[1788134007] ► слушаю pointer: "/dev/input/event13" имя="Synaptics TM3276-022"
+[1788134007] ► слушаю pointer: "/dev/input/event6" имя="2.4G Mouse"
+[1788134007] ► слушаю: "/dev/input/event21" имя="lay-test-virtual-keyboard"
+[1788134007] ► config: mode=simple backend=gnome replace_words=1 auto_replace=true typing_assist=true enter_autocorrect=false auto_switch_layout=true trigger=double-lshift force_layout=true ru_key=single-rctrl en_key=single-ralt multi_tap=false max_taps=4 tap=500ms window=800ms debounce=50ms
+[1788134007] ► focused window changed: switched text tail buffer
+[1788134010] · key 19 v=1 shift=false → current=1 events=1
+[1788134011] · key 36 v=1 shift=false → current=2 events=2
+[1788134011] · key 47 v=1 shift=false → current=3 events=3
+[1788134011] · key 47 v=1 shift=false → current=4 events=4
+[1788134011] · key 48 v=1 shift=false → current=5 events=5
+[1788134011] · key 49 v=1 shift=false → current=6 events=6
+[1788134011] · space, history=1, current=0
+[1788134011] · FSM: Idle → FirstPress
+[1788134011] · FSM: WaitingSecond { first_release: Instant { tv_sec: 394333, tv_nsec: 670405042 } } → SecondPress
+[1788134011] ═ CROSS-CHECK: buffer.current=0 events_since_word_start=0 ✓
+[1788134011] · physical manual trigger handled by focused IME engine
+[1788134011] · FSM: DOUBLE! (p→r→p→r)
+[1788134012] · reset (граница: KEY_ENTER)
+[1788134012] ⚠ thread keyboard: No such device (os error 19)

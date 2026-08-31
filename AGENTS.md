@@ -45,14 +45,21 @@ Rules:
 - Legacy sequential `DeleteSurroundingText` plus `CommitText` is not the GTK
   committed-tail route: two sealed attempts proved that
   `RequireSurroundingText` does not produce a deterministic callback there.
-- Exact committed-tail replay requires an active physical-input grab, two
-  validations of the same source/focus/epoch/tail lease, one no-fallback GNOME
-  `ActivateLayout`, exact shell and IBus readback, checked autocorrect
-  suppression, and one bounded zero-pace uinput delete-plus-replay. No polling,
-  sleep, retry, second mutation, or generic layout reconciliation is admitted.
-- Do not arm committed-tail suppression merely when `ManualToggleV3` delegates.
-  Arm it only after exact capture, both lease checks, and target-layout handoff
-  succeed, immediately before the first Backspace.
+- Exact SurroundingText committed-tail replay requires an active physical-input
+  grab, two validations of the same source/focus/epoch/tail lease, one
+  no-fallback GNOME `ActivateLayout`, exact shell and IBus readback, checked
+  autocorrect suppression, and one bounded uinput delete-plus-replay. No
+  polling, retry, second mutation, or generic layout reconciliation is admitted.
+- An `ImeCommittedTail` with terminal purpose, no SurroundingText, and proven
+  terminal erase geometry must execute inside `ManualToggleV3` as exactly one
+  `terminal_erase_commit` output frame followed by one IME-owned layout sync.
+  It must never delegate to daemon physical input, emit physical Backspace, or
+  replay replacement characters through ordinary IME key processing. Preserve
+  exact round trips such as `rjvvbn <-> коммит`, including a trailing boundary.
+- Do not arm committed-tail suppression merely when `ManualToggleV3` delegates
+  to the SurroundingText route. Arm it only after exact capture, both lease
+  checks, and target-layout handoff succeed, immediately before the first
+  Backspace. The terminal single-commit route does not use this suppression.
 - The GNOME extension activates the target Lay input source exactly once.
   GNOME's input-source manager owns the resulting IBus transition; do not run a
   second `ibus engine` command from `activateLayoutId` or its

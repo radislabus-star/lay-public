@@ -1,0 +1,56 @@
+{
+  "elapsed_by_lane_seconds": {
+    "correctness": 597.2642010327545,
+    "package": 124.80240633588983
+  },
+  "elapsed_by_target_seconds": {
+    "bin:lay-daemon": 315.0507882539532,
+    "bin:lay-debug-actions": 0.0086767110042274,
+    "bin:lay-ibus-engine": 6.9155807989882305,
+    "bin:lay-l11-serve": 0.009003062965348363,
+    "bin:lay-memory-report": 0.009160691988654435,
+    "bin:lay-nanda-dataset": 0.028175548010040075,
+    "bin:lay-nanda-wave-eval": 2.1295906730229035,
+    "bin:lay-nanda-wave-train": 0.38944120897212997,
+    "bin:lay-test-input": 0.008240507973823696,
+    "bin:lay_output_transaction_microproof": 0.01258303498616442,
+    "lib:lay": 244.57479063986102,
+    "test:correction_gate_metrics": 3.5706690999795683,
+    "test:decoder_alternating_stress": 2.4459167839959264,
+    "test:decoder_transition_regression": 3.4130435349652544,
+    "test:ime_space_boundary_contract": 0.007770328025799245,
+    "test:input_gate_operator_contract": 0.00784981600008905,
+    "test:input_gate_space_contract": 14.60615507105831,
+    "test:l3_context_feedback_overlay_contract": 2.074583356967196,
+    "test:l3_context_metrics_contract": 0.008063026005402207,
+    "test:l4_feedback_memory_contract": 0.008021864981856197,
+    "test:live_candidate_gate_metrics": 6.28491456899792,
+    "test:protected_words_runtime": 1.0825227889581583,
+    "test:restore_word_cli": 9.141410804993939,
+    "test:text_edit_gate_contract": 0.10679898195667192,
+    "test:text_mutation_monopoly_contract": 0.06897083099465817,
+    "test:tray_ui_contract": 0.013988001039251685,
+    "test:typing_assist_alternating_stress": 7.9094114159815945,
+    "test:typing_assist_mixed_corpus": 93.74473045900231,
+    "test:typing_assist_short_alternating": 8.403830725990701,
+    "test:typing_transition_authority_contract": 0.031924777023959905
+  },
+  "elapsed_seconds": 727.6257914390299,
+  "infrastructure_failures": 0,
+  "known_semantic_failures": 0,
+  "known_semantic_failures_by_lane": {
+    "correctness": 0,
+    "package": 0
+  },
+  "lanes": [
+    "correctness",
+    "package"
+  ],
+  "schema": "lay.test-lane-run.v1",
+  "selected": 2372,
+  "selected_by_lane": {
+    "correctness": 2336,
+    "package": 36
+  },
+  "verdict": "PASS"
+}

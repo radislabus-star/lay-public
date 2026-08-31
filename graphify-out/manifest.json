@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1788129526.54399,
-    "ast_hash": "a77ea950bf2ca63387780d34c8aaf910",
+    "mtime": 1788132095.5285175,
+    "ast_hash": "e5ca17aabddd0b2e6417c7ca34ff5273",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1788129526.6347191,
-    "ast_hash": "99178fd19ed115583b99469381275da8",
+    "mtime": 1788132095.6883457,
+    "ast_hash": "e7fa48b7753680b2a7af612913579d9b",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -880,8 +880,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine.rs": {
-    "mtime": 1788093037.4318757,
-    "ast_hash": "2348ddc533e8c2ece054c69b9457c848",
+    "mtime": 1788131805.5914533,
+    "ast_hash": "54a5a4a19aacf6179c027df5229aa3c6",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine/profile_tests.rs": {
@@ -950,8 +950,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/shift.rs": {
-    "mtime": 1788092993.0842314,
-    "ast_hash": "fc3e5af60453e7a49b86ddb2d8411468",
+    "mtime": 1788131881.2552953,
+    "ast_hash": "b73276c2d1001a05c2a838d5d3cf6a9c",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/state.rs": {
@@ -2500,13 +2500,13 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1788129560.4020727,
-    "ast_hash": "fff20d6e32ba69d00e07b1b4bf138a96",
+    "mtime": 1788132131.566092,
+    "ast_hash": "9df4fbacc3908b4891291ddf5c3290d2",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1788129526.637026,
-    "ast_hash": "4f6613cd13d172247ce4aa976632aafc",
+    "mtime": 1788132095.691015,
+    "ast_hash": "4962e4c1758979ae608b6eb5a090c1a0",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2675,8 +2675,8 @@
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
-    "mtime": 1788131022.3558376,
-    "ast_hash": "797fc4784947f4e05104c9fa99d7504d",
+    "mtime": 1788131657.156808,
+    "ast_hash": "ca7416245a5e2586a367097bbff766bc",
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
@@ -14965,8 +14965,8 @@
     "semantic_hash": ""
   },
   "docs/double-shift-physical-layout-contract.md": {
-    "mtime": 1787997613.396233,
-    "ast_hash": "d38be09ba284cb80cb40ffcc8771e0aa",
+    "mtime": 1788132052.506207,
+    "ast_hash": "e915619595461d77563c0ba2b47e98f3",
     "semantic_hash": ""
   },
   "docs/structural_gates/preflights/LAY_DOUBLE_SHIFT_ORDERED_AUTHORITY_V2_2026-08-23.json": {
@@ -29225,13 +29225,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1788113746.7419562,
-    "ast_hash": "16845f8f26b5b0bfee886d931ab31e00",
+    "mtime": 1788133469.977529,
+    "ast_hash": "4c31662bf6879438569b32c50ece10cb",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1788112913.7845285,
-    "ast_hash": "162b7ab8a0a156419e44025aae9995dc",
+    "mtime": 1788132710.2816288,
+    "ast_hash": "b68d208fa2cecc7702e7253b686bf720",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {

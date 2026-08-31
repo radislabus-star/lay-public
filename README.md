@@ -7,7 +7,7 @@
 `lay` исправляет слово, набранное не в той раскладке: нажмите
 **Shift два раза** и продолжайте писать.
 
-**Текущая версия: 1.0.57. Статус: alpha.**
+**Текущая версия: 1.0.58. Статус: alpha.**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -43,6 +43,19 @@ Daemon локально слушает физические клавиши, хр
 По умолчанию double Shift исправляет одно последнее слово. Автопомощь после
 пробела и автоматическое применение исправлений выключены, пока пользователь
 сам их не включит.
+
+## Что вошло в 1.0.58
+
+- Double Shift в Kitty и других доказанных terminal-клиентах снова выполняет
+  замену одним IME commit-frame, а не серией физических Backspace и посимвольных
+  key events;
+- точная проекция сохраняет все символы: `rjvvbn -> коммит`, обратное
+  `коммит -> rjvvbn` и две последовательные пары Shift используют один и тот же
+  маршрут;
+- terminal-route сохраняет пробел после слова и синхронизирует раскладку один
+  раз; GTK/SurroundingText и daemon fallback остаются отдельными маршрутами;
+- словари, кандидаты, ранжирование, автокоррекция и физический детектор Double
+  Shift не изменялись.
 
 ## Что вошло в 1.0.57
 
@@ -468,7 +481,7 @@ graphify update .
 
 ## English
 
-`lay` 1.0.57 is a local Double Shift RU/EN layout rescue and bounded
+`lay` 1.0.58 is a local Double Shift RU/EN layout rescue and bounded
 typing-correction tool for Linux desktops.
 
 ```text
@@ -483,7 +496,11 @@ L3 context, `TransitionDecisionCore`, and a structural verifier.
 Exact search contributes candidates and certificates but does not bypass final
 authority.
 
-Release 1.0.57 admits an exact-current three-character IME completion for up
+Release 1.0.58 routes proven terminal committed-tail Double Shift through one
+IME erase-and-commit frame instead of physical Backspace and per-character key
+replay. The exact `rjvvbn -> коммит -> rjvvbn` round trip preserves its trailing
+boundary and performs one layout synchronization per gesture. Release 1.0.57
+admits an exact-current three-character IME completion for up
 to 150 ms while retaining full input-identity checks and the existing
 12-candidate field. A genuine zero-candidate prefix still displays nothing.
 Release 1.0.56 restores `Up`/`Down` candidate cycling during an in-flight IME

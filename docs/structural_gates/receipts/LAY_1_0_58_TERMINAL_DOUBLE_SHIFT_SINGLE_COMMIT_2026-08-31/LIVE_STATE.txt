@@ -1,0 +1,11 @@
+recorded_at_utc=2026-08-30T23:56:57Z
+lay_version=1.0.58
+extension_version=1.0.58
+daemon_pid=3895984
+engine_pid=3865750
+global_ibus_pid=4594
+gnome_layout=lay-ime-ru
+ibus_engine=lay-ime-ru
+canonical_l2_sha256=cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b
+exact_v13_sidecar_sha256=f116a230fc05a04c375bcddf1c85169276c6d149295eed8ccf93e37672a907b9
+rollback=/home/ubu/.local/lib/lay/rollback/1.0.57-before-1.0.58-20260830T234849Z

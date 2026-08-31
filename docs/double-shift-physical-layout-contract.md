@@ -244,7 +244,9 @@ Double Shift
 │   └── snapshot not available -> preserve undo and request/await observation
 └── no valid pending autocorrect undo
     ├── active IME composition -> IME projection
-    ├── exact IME committed tail -> leased daemon isolated replay
+    ├── exact IME committed tail
+    │   ├── proven terminal erase -> one IME terminal commit frame
+    │   └── SurroundingText       -> leased daemon isolated replay
     └── otherwise -> daemon physical replay
 ```
 
@@ -320,15 +322,20 @@ hide the production race and is not acceptance evidence.
 
 1. No Backspace is emitted until the target layout stack is ready.
 2. A layout-readiness failure leaves the original visible text untouched.
-3. The exact committed-tail lane uses the existing bounded paced replay while
-   physical input is grabbed. Delete and insert are each limited to 32 events;
-   any invalid or unrepresentable plan fails before layout or text mutation.
-   A grab isolates physical input but does not acknowledge that GTK consumed a
-   zero-delay uinput burst.
-4. Every emitted key tap is a closed key-down/key-up frame.
-5. Replay failure after deletion is an explicit partial-output failure. It must
+3. The SurroundingText committed-tail lane uses the existing bounded paced
+   replay while physical input is grabbed. Delete and insert are each limited
+   to 32 events; any invalid or unrepresentable plan fails before layout or text
+   mutation. A grab isolates physical input but does not acknowledge that GTK
+   consumed a zero-delay uinput burst.
+4. A committed tail with terminal purpose, no SurroundingText, and proven
+   terminal cursor geometry uses one `terminal_erase_commit` frame. It must not
+   activate daemon physical replay or feed replacement characters back through
+   ordinary IME key handling.
+5. Every emitted key tap on an admitted replay route is a closed
+   key-down/key-up frame.
+6. Replay failure after deletion is an explicit partial-output failure. It must
    release all virtual keys and must never trigger a second mutation route.
-6. Global `ibus-daemon` is never restarted by this operation.
+7. Global `ibus-daemon` is never restarted by this operation.
 
 ## Acceptance evidence
 
@@ -397,3 +404,45 @@ autocorrect lease.
 The failed implementation attempts and selected-route receipts are recorded in
 `tech_debt/009-fix-manual-toggle-visible-postcondition-race.md`. Installed
 runtime authority remained unchanged throughout candidate review.
+
+## 2026-08-31 terminal single-commit correction
+
+TD-009 remains effective for the GTK/SurroundingText lane, but it is not the
+terminal executor. The installed `1.0.57` trace showed `rjvvbn -> коммит` was
+planned correctly and then corrupted to `оммт` while the daemon switched the
+engine and replayed six Backspaces plus six printable keys. Each printable key
+re-entered ordinary IME processing, producing the visible intermediate work.
+
+The effective capability split is now:
+
+```text
+terminal purpose + no SurroundingText + executable terminal erase
+-> ManualToggleV3
+-> ImeCommittedTail
+-> one terminal_erase_commit frame: DEL x N + exact projected text
+-> one IME-owned layout sync
+
+SurroundingText committed tail
+-> retained TD-009 exact observed-tail replay
+
+DaemonWordBuffer
+-> retained daemon/uinput fallback
+```
+
+The terminal branch is accepted only after the same capability check that
+grants `ImeCommittedTail` authority. It does not broaden terminal detection or
+restore the rejected GTK legacy transaction. Unit proof requires exact
+`rjvvbn -> коммит -> rjvvbn`, a preserved trailing boundary, one output frame
+per direction, and no pending visible postcondition. Installed proof must also
+show `executor=terminal_erase_commit`, no exact-tail delegation, no daemon
+Backspace/printable replay, and one layout synchronization.
+
+Installed `1.0.58` satisfies that contract. Five isolated Kitty cases passed,
+including exact `rjvvbn -> коммит -> rjvvbn`, two consecutive gestures, a
+preserved trailing space, and `ghbdtn -> привет`. Six gestures produced six
+single commit frames and six successful layout synchronizations; exact-tail
+delegation and daemon physical replay were both absent. The global
+`ibus-daemon` PID remained `4594`. The immutable evidence packet is
+`docs/structural_gates/receipts/LAY_1_0_58_TERMINAL_DOUBLE_SHIFT_SINGLE_COMMIT_2026-08-31/`;
+receipt SHA-256
+`8c426fd6e096ed7b89677f805bbf31729f42439191f4ab8e364f07d264b8977c`.

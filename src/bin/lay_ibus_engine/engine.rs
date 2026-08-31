@@ -166,15 +166,21 @@ impl LayIbusEngine {
         // characters can delete client text. An explicit terminal purpose plus
         // an executable terminal-erase profile is such proof for terminals
         // that do not expose SurroundingText (notably Kitty).
-        let terminal_erase_supported = self.client_context.content_purpose
-            == IBUS_INPUT_PURPOSE_TERMINAL
-            && self.can_replace_committed_tail(committed_tail_chars);
+        let terminal_erase_supported = self.terminal_committed_tail_executor_available();
         if committed_tail_chars > 0
             && (self.client_context.surrounding_text_supported || terminal_erase_supported)
         {
             return ManualToggleAuthority::ImeCommittedTail;
         }
         ManualToggleAuthority::DaemonWordBuffer
+    }
+
+    pub(super) fn terminal_committed_tail_executor_available(&self) -> bool {
+        let committed_tail_chars = self.last_tail_token_text().chars().count() as u32;
+        committed_tail_chars > 0
+            && self.client_context.content_purpose == IBUS_INPUT_PURPOSE_TERMINAL
+            && !self.client_context.surrounding_text_supported
+            && self.can_replace_committed_tail(committed_tail_chars)
     }
 
     pub(super) fn live_composition_enabled(&self) -> bool {

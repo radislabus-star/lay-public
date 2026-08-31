@@ -1480,3 +1480,94 @@ the limit of `12`, cache ownership, and printable-key scheduling were not
 changed. Runtime authority changed: **yes, by the verified `1.0.57` release
 install**, limited to the longer exact-current presentation window. Evidence:
 `docs/structural_gates/receipts/LAY_1_0_57_IME_THREE_CHAR_ONSET_2026-08-31/`.
+
+## 1.0.58 Terminal Double Shift Single-Commit Preflight (2026-08-31)
+
+The installed `1.0.57` trace proves that the shared planner selected the exact
+projection `rjvvbn -> коммит`, but the terminal committed-tail route did not use
+the existing IME terminal executor. It switched from `lay-ime-us` to
+`lay-ime-ru` first and then emitted six physical Backspace taps followed by six
+ordinary printable key taps. Those printable taps re-entered normal IME input,
+focus, preedit, and worker processing. The observed partial result `оммт` and
+the visible intermediate activity are therefore output-route failures, not a
+mapping, detector, or candidate-selection failure.
+
+The repair is capability-scoped:
+
+```text
+ImeCommittedTail
++ no SurroundingText
++ proven terminal cursor geometry
+-> one terminal_erase_commit frame (DEL x N + exact projected text)
+-> one immediate IME-owned layout synchronization
+-> no daemon physical grab, Backspace replay, or printable-key replay
+
+ImeCommittedTail + SurroundingText
+-> retain the selected TD-009 exact observed-tail GTK route
+
+DaemonWordBuffer
+-> retain the explicit daemon/uinput fallback
+```
+
+This does not restore the rejected GTK legacy delete-plus-commit transaction.
+The terminal executor is already a separate `CommittedTailOutputProfile` and
+does not depend on a missing `SetSurroundingText` acknowledgement. The planner,
+literal RU/US key mapping, physical Double Shift detector, candidate/ranking
+authority, and autocomplete behavior remain unchanged.
+
+Required regression proof before installation:
+
+```text
+rjvvbn -> коммит                         exact first/middle/last characters
+коммит -> rjvvbn                         exact inverse
+four Shift taps                          two inverse toggles
+trailing boundary                        preserved once
+terminal capability                      IME terminal executor selected
+terminal daemon physical replay          unreachable
+layout synchronization                   exactly once
+GTK SurroundingText route                still exact observed-tail replay
+global ibus-daemon restart                forbidden
+```
+
+Runtime authority changed at preflight: **no**. Rollback is the terminal-only
+dispatch branch; no planner or shared correction data changes are admitted.
+
+### 1.0.58 Result
+
+The repair routes only the proven terminal `ImeCommittedTail` capability to
+the existing `terminal_erase_commit` executor. The new regression was red
+before the dispatch change (`Some(true)` expected, `None` observed) and green
+after it. Targeted engine tests passed `6/6`; the terminal round-trip tests
+passed `2/2`; transition-authority and input-gate contracts passed `21/21` and
+`2/2`. The hermetic correctness/package lane passed all selected tests after
+the test manifest was updated to `2,396` entries. The separate old TD-006
+wall-clock performance assertion remains outside this semantic release gate.
+
+An isolated installed-Kitty matrix then produced these exact client-visible
+lines:
+
+```text
+rjvvbn + Double Shift                  -> коммит
+коммит + Double Shift                  -> rjvvbn
+rjvvbn + two Double Shift gestures     -> rjvvbn
+rjvvbn<space> + Double Shift           -> коммит<space>
+ghbdtn + Double Shift                  -> привет
+```
+
+The fresh engine trace contains six
+`ibus_manual_toggle_dispatch(executor=terminal_erase_commit)` records, six
+matching `ibus_committed_tail_replace` records, six requested and six
+successful layout synchronizations, and zero committed-tail delegations. The
+isolated daemon logs contain no physical Backspace or printable replay route.
+The source, installed file, and loaded `/proc` engine SHA-256 are all
+`b4bbdfff9fa9d2a4cd4066497413466443c56afbf6296f78030bc9087263ba55`.
+Global `ibus-daemon` retained PID `4594`; only Lay-managed processes were
+restarted.
+
+What was not changed: the physical pair detector, key projection, candidate
+production/ranking, correction policy, GTK/SurroundingText replay, package, and
+V13 sidecar. Runtime authority changed: **yes, by the verified `1.0.58`
+installation, limited to terminal committed-tail execution**. Evidence:
+`docs/structural_gates/receipts/LAY_1_0_58_TERMINAL_DOUBLE_SHIFT_SINGLE_COMMIT_2026-08-31/`;
+receipt SHA-256
+`8c426fd6e096ed7b89677f805bbf31729f42439191f4ab8e364f07d264b8977c`.
