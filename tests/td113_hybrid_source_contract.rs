@@ -3,6 +3,9 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 
 const ROOT: &str = env!("CARGO_MANIFEST_DIR");
+// Git checkouts do not preserve the snapshot's read/write permission bits.
+// Keep executable and special-mode protections in addition to exact byte pins.
+const PROTECTED_MODE_BITS: u32 = 0o7111;
 
 fn read(relative: &str) -> String {
     std::fs::read_to_string(Path::new(ROOT).join(relative)).expect("runtime source")
@@ -359,7 +362,7 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
                     .expect("TD-121 successor metadata")
                     .permissions()
                     .mode()
-                    & 0o7777,
+                    & PROTECTED_MODE_BITS,
                 u32::from_str_radix(
                     td121_successor["mode"]
                         .as_str()
@@ -367,6 +370,7 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
                     8,
                 )
                 .expect("octal TD-121 successor mode")
+                    & PROTECTED_MODE_BITS
             );
             let review = &td121_binding["review"];
             assert_eq!(review["state"].as_str(), Some("PASS"));
@@ -440,8 +444,8 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
                 .expect("protected metadata")
                 .permissions()
                 .mode()
-                & 0o7777,
-            expected_mode,
+                & PROTECTED_MODE_BITS,
+            expected_mode & PROTECTED_MODE_BITS,
             "protected mode: {path:?}"
         );
     }

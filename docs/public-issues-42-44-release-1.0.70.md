@@ -336,3 +336,45 @@ model, binary, installation or runtime authority. The published release tag
 continues to identify the original release commit; the CI repair is a forward
 commit on main. Fresh public CI must establish the repaired workflow result;
 the previous Ubuntu 24.04 failure remains recorded as infrastructure evidence.
+
+The forward workflow commit `1a92bde4858fabb8492032c14242d844a3a58210` removes
+the Bubblewrap setup failure. Public run
+[`34426449994`](https://github.com/radislabus-star/lay-public/actions/runs/34426449994)
+discovers all 2752 manifest rows and executes the selected targets, including
+242 daemon and 461 IME target-batch tests without failures. One source-contract
+test fails: `td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline`.
+This contract does not pin the CI workflow. It compares protected Rust source
+hashes and full local permission modes against a historical `0664` snapshot.
+Git stores these non-executable sources as `100644`; a checkout can have `0644`
+instead of the development snapshot's `0664`. The source-byte pins are unchanged.
+Log: `github-issues-70-3ps08xs0/github-ci-followup-failed.log`.
+
+The next bounded experiment reuses the existing contract executable and actual
+hermetic runner on the private worker: compare original permissions with Git
+checkout permissions, restoring every mode afterward. A causal permission
+failure warrants comparing executable/special permission bits while retaining
+all exact source hashes, historical evidence, successor bindings and test
+selection. Rewriting the historical byte hashes or skipping the contract is
+rejected. This is test portability work; no runtime source, installed binary,
+model or runtime authority changes. The corrected contract must also reject
+an executable protected source and changed protected bytes.
+
+The causal baseline completes in 0.024 s: the unchanged contract executable
+passes with the worker's original `0664` files and fails with `left: 420,
+right: 436` when the same eight file bytes are privately overlaid as `0644`.
+All source bytes and host modes remain unchanged; only private read-only bind
+mounts differ. Receipt: `github-issues-70-3ps08xs0/ci-permission-baseline/receipt.json`.
+The correction applies one shared executable/special-bit mask to both the
+historical and successor mode checks. Every exact byte hash, binding/review
+assertion and test identity stays in place. This accepts checkout umask
+differences without accepting changed content or executable/special bits.
+
+The focused route `run-ai4vvcp5` / remote `run-Slj0qI` passes all seven source
+contracts in 3.787 s including formatting. The corrected executable then passes
+both original and `0644` overlays and rejects executable bits, special bits and
+changed bytes separately for the historical and successor branches: eight
+controlled checks in 0.110 s. Receipt:
+`github-issues-70-3ps08xs0/ci-permission-candidate/receipt.json`.
+No protected host file is modified; the negative inputs are private read-only
+overlays. This establishes contract portability, not a new runtime quality or
+Ubuntu installation result. Public CI must still complete the remaining gates.

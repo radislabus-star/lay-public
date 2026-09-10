@@ -2480,7 +2480,7 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1789004124.6065834,
+    "mtime": 1789005695.7700589,
     "ast_hash": "82ee48235229c849663d00c54be21b0b",
     "semantic_hash": ""
   },
@@ -2500,7 +2500,7 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1789003200.2659464,
+    "mtime": 1789002752.1676514,
     "ast_hash": "7789259373da13c33c2c1e0d7b1a7851",
     "semantic_hash": ""
   },
@@ -2670,7 +2670,7 @@
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
-    "mtime": 1789003200.2659464,
+    "mtime": 1789003165.4661329,
     "ast_hash": "1017522d60cef6d7bca4ba4ddb539eec",
     "semantic_hash": ""
   },
@@ -3235,8 +3235,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1789003227.3401196,
-    "ast_hash": "5c38a9f7055018f4680403ec2e5445fa",
+    "mtime": 1789004369.8141406,
+    "ast_hash": "c63fbbcfe8c309879ef2ea18e5d83cc8",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5195,8 +5195,8 @@
     "semantic_hash": ""
   },
   "tests/td113_hybrid_source_contract.rs": {
-    "mtime": 1788964182.0106075,
-    "ast_hash": "efa1b50f8653c12db40936dcc110d8a8",
+    "mtime": 1789005695.7710588,
+    "ast_hash": "7266d29fc45db4a2116fb1be491f91cb",
     "semantic_hash": ""
   },
   "tech_debt/113-restore-hybrid-nanda-autocorrect.md": {
@@ -5305,7 +5305,7 @@
     "semantic_hash": ""
   },
   "tech_debt/123-improve-wave-restoration-quality-for-1.0.67.md": {
-    "mtime": 1789003200.2659464,
+    "mtime": 1789002752.1676514,
     "ast_hash": "8414fbf865d7a7de59d0e0fa95fabce3",
     "semantic_hash": ""
   },
@@ -5670,7 +5670,7 @@
     "semantic_hash": ""
   },
   "tech_debt/CONTINUE.md": {
-    "mtime": 1789003200.2659464,
+    "mtime": 1789002752.1676514,
     "ast_hash": "6971316bda522ebb7384ddc5da43dd48",
     "semantic_hash": ""
   },
@@ -5680,7 +5680,7 @@
     "semantic_hash": ""
   },
   "tech_debt/evidence/td123-live-autocorrect-2026-09-08.md": {
-    "mtime": 1789003200.2659464,
+    "mtime": 1789002752.1686513,
     "ast_hash": "56fd6ef12b5239e6d8e5d16da9e6a76f",
     "semantic_hash": ""
   },
@@ -5690,7 +5690,7 @@
     "semantic_hash": ""
   },
   "CONTINUE.md": {
-    "mtime": 1789003200.2659464,
+    "mtime": 1789002752.1666512,
     "ast_hash": "5513ac01a7f526b037845ac25382d9ad",
     "semantic_hash": ""
   },
@@ -5730,8 +5730,8 @@
     "semantic_hash": ""
   },
   "docs/public-issues-42-44-release-1.0.70.md": {
-    "mtime": 1789004124.6065834,
-    "ast_hash": "89a63203b0cf50b78d9955db54009a5a",
+    "mtime": 1789005695.7710588,
+    "ast_hash": "8e442478f4caa96129df18a60fe20783",
     "semantic_hash": ""
   }
 }

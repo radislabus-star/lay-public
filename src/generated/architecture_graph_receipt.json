@@ -123,11 +123,11 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_binding_fingerprint": "bc48e878042958aa69a909affd610b785cb79e717e1dfba77853b23d2a82c500",
-  "graph_fingerprint": "9a6a8d27573409873e4e083fc46c6908c53f37f54090e1ca17c46e38374daa6a",
+  "graph_binding_fingerprint": "4edfa0612950de620d7edb40baa4178d3b18101921fa5cd93b96c58d0c5ede48",
+  "graph_fingerprint": "780c6a5de7f05a5598fcd9898170cd0c0328087bc0feb31b996f011b0fe91091",
   "graph_links": 58631,
   "graph_nodes": 22100,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "09796251793e6e7fd847b0a72e8bf71b9818b2d11753cc0e9831d62f8cbd9963",
+  "source_fingerprint": "f4cc8e0092852cfa69a13d47e6e6688335ea301bee37af9397ce5b656819321a",
   "verdict": "PASS"
 }
