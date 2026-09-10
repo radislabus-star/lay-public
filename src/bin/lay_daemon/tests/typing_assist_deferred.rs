@@ -67,7 +67,6 @@ fn hard_boundary_drops_pending_typing_assist_without_unsafe_output() {
     let correction =
         find_typing_assist_correction(&buffer, true, 1).expect("prepared completed word");
     let mut pending = Some(PendingTypingAssist::new(correction, test_text_context()));
-    let mut ignore_current_token_until_space = false;
     let mut events_since_word_start = 3;
 
     assert!(handle_hard_boundary_if_needed(
@@ -76,7 +75,6 @@ fn hard_boundary_drops_pending_typing_assist_without_unsafe_output() {
         HardBoundaryContext {
             buffer: &mut buffer,
             pending_typing_assist_after_space: &mut pending,
-            ignore_current_token_until_space: &mut ignore_current_token_until_space,
             events_since_word_start: &mut events_since_word_start,
             verbose: false,
         },
@@ -85,7 +83,6 @@ fn hard_boundary_drops_pending_typing_assist_without_unsafe_output() {
     assert!(pending.is_none());
     assert!(buffer.is_empty());
     assert_eq!(events_since_word_start, 0);
-    assert!(!ignore_current_token_until_space);
 }
 
 #[test]

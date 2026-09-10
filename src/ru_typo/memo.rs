@@ -4,7 +4,7 @@ use std::sync::{Mutex, OnceLock};
 const WORD_MATERIAL_CACHE_CAPACITY: usize = 512;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(super) enum WordMaterialKind {
+pub(crate) enum WordMaterialKind {
     Plausible,
     VerbEnding,
     HardSign,
@@ -12,9 +12,11 @@ pub(super) enum WordMaterialKind {
     AdjacentTransposition,
     MissingLetter,
     SingleLetterSubstitution,
+    SingleLetterSubstitutionProposal,
     VowelConfusion,
     ContextualVowelConfusion,
     ExtraLetters,
+    GluedPhrase,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -109,7 +111,7 @@ fn cacheable_word_material_input(input: &str) -> bool {
     crate::word_reader::is_cyrillic_word(input)
 }
 
-pub(super) fn memoized_text(
+pub(crate) fn memoized_text(
     kind: WordMaterialKind,
     input: &str,
     compute: impl FnOnce() -> Option<String>,
@@ -222,6 +224,36 @@ mod tests {
             Some(false)
         );
         assert_eq!(cache.boolean(3, WordMaterialKind::Plausible, "форма"), None);
+    }
+
+    #[test]
+    fn proposal_and_automatic_substitution_material_have_distinct_keys() {
+        let mut cache = WordMaterialCache::new(4);
+        cache.insert(
+            5,
+            WordMaterialKind::SingleLetterSubstitution,
+            "форма",
+            WordMaterialValue::Text(None),
+        );
+        cache.insert(
+            5,
+            WordMaterialKind::SingleLetterSubstitutionProposal,
+            "форма",
+            WordMaterialValue::Text(Some("ферма".to_string())),
+        );
+
+        assert_eq!(
+            cache.text(5, WordMaterialKind::SingleLetterSubstitution, "форма"),
+            Some(None)
+        );
+        assert_eq!(
+            cache.text(
+                5,
+                WordMaterialKind::SingleLetterSubstitutionProposal,
+                "форма"
+            ),
+            Some(Some("ферма".to_string()))
+        );
     }
 
     #[test]

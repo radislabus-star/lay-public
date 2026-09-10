@@ -5,6 +5,7 @@ pub(crate) mod context_phase;
 #[cfg(any(test, feature = "research-tools"))]
 pub mod eval;
 pub mod feedback;
+mod ime_runtime_lifecycle;
 pub mod journal;
 mod journal_record;
 pub mod l1;
@@ -47,6 +48,7 @@ pub(crate) mod usage_prior;
 
 #[cfg(any(test, feature = "research-tools"))]
 pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEvalStats};
+pub use ime_runtime_lifecycle::ensure_ime_runtime_warmup_started;
 pub use l2_candidate_phase::L2PhaseTrainingEntry;
 pub(crate) use l2_candidate_phase::{PhaseReadout, PhaseVerdict};
 pub use l2_field::{

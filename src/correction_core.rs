@@ -53,6 +53,15 @@ use crate::typing_transition::proposal_admission::{
 pub enum CorrectionMode {
     DeterministicOnly,
     NandaOnly,
+    DeterministicAndNanda,
+}
+
+pub const fn live_correction_mode(nanda_autocorrect: bool) -> CorrectionMode {
+    if nanda_autocorrect {
+        CorrectionMode::DeterministicAndNanda
+    } else {
+        CorrectionMode::DeterministicOnly
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -129,12 +138,15 @@ pub struct UnifiedCorrectionCandidate {
     pub(crate) evidence: Vec<CandidateEvidence>,
     pub(crate) morphology_slot_evidence: Vec<MorphologySlotEvidence>,
     pub(crate) authority_evidence: CandidateAuthorityEvidence,
+    pub(crate) l2_boundary_grounded_replacement: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum CandidateAuthorityEvidence {
     None,
     ClosedExactLayout(crate::exact_layout_authority::ExactLayoutContourCertificate),
+    FrameBoundLexical(crate::nanda_wave::l2_field::FrameBoundLexicalCapabilityV1),
+    FrameBoundLexicalConflict,
     Conflict,
 }
 
@@ -142,12 +154,30 @@ impl CandidateAuthorityEvidence {
     fn merge(self, incoming: Self) -> Self {
         match (self, incoming) {
             (Self::Conflict, _) | (_, Self::Conflict) => Self::Conflict,
+            (Self::FrameBoundLexicalConflict, Self::ClosedExactLayout(certificate))
+            | (Self::FrameBoundLexical(_), Self::ClosedExactLayout(certificate)) => {
+                Self::ClosedExactLayout(certificate)
+            }
+            (Self::ClosedExactLayout(certificate), Self::FrameBoundLexicalConflict)
+            | (Self::ClosedExactLayout(certificate), Self::FrameBoundLexical(_)) => {
+                Self::ClosedExactLayout(certificate)
+            }
+            (Self::FrameBoundLexicalConflict, _) | (_, Self::FrameBoundLexicalConflict) => {
+                Self::FrameBoundLexicalConflict
+            }
             (Self::None, evidence) | (evidence, Self::None) => evidence,
             (Self::ClosedExactLayout(left), Self::ClosedExactLayout(right)) => {
                 if left == right {
                     Self::ClosedExactLayout(left)
                 } else {
                     Self::Conflict
+                }
+            }
+            (Self::FrameBoundLexical(left), Self::FrameBoundLexical(right)) => {
+                if left.same_event_binding(&right) {
+                    Self::FrameBoundLexical(left)
+                } else {
+                    Self::FrameBoundLexicalConflict
                 }
             }
         }
@@ -187,6 +217,13 @@ pub(crate) struct MorphologySlotEvidence {
     pub(crate) generated: bool,
 }
 
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(crate) enum CanonicalL2PartitionMembershipV1 {
+    #[default]
+    None,
+    Exact,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct CandidateEvidence {
     pub(crate) source: CorrectionDecisionSource,
@@ -194,6 +231,59 @@ pub(crate) struct CandidateEvidence {
     pub(crate) source_id: String,
     pub(crate) error_class: TypingErrorClass,
     pub(crate) gate: CandidateGateDecision,
+    pub(crate) canonical_l2_partition: CanonicalL2PartitionMembershipV1,
+}
+
+impl CandidateEvidence {
+    pub(crate) fn belongs_to_canonical_l2_field(&self) -> bool {
+        self.source == CorrectionDecisionSource::Nanda
+            && self.origin.source_role() == CorrectionSourceRole::L2Surface
+            && (self.canonical_l2_partition == CanonicalL2PartitionMembershipV1::Exact
+                || matches!(
+                    self.source_id.as_str(),
+                    crate::nanda_wave::l2_field::CANONICAL_L2_SURFACE_SOURCE_ID
+                        | crate::nanda_wave::l2_field::CANONICAL_L2_READOUT_SOURCE_ID
+                        | crate::nanda_wave::l2_field::CANONICAL_L2_PRODUCTIVE_SOURCE_ID
+                ))
+    }
+
+    fn belongs_to_canonical_l2_exact_partition(&self) -> bool {
+        self.source == CorrectionDecisionSource::Nanda
+            && self.origin.source_role() == CorrectionSourceRole::L2Surface
+            && self.canonical_l2_partition == CanonicalL2PartitionMembershipV1::Exact
+    }
+
+    pub(crate) fn authority_lane_identity(&self) -> CandidateAuthorityLaneIdentityV1 {
+        CandidateAuthorityLaneIdentityV1 {
+            source: self.source,
+            origin: self.origin,
+            source_id: self.source_id.clone(),
+            error_class: self.error_class,
+            canonical_l2_partition: self.canonical_l2_partition,
+        }
+    }
+}
+
+/// Immutable producer identity for one authority lane. The mutable proposal
+/// gate is deliberately excluded: ranking/policy may update a gate, but that
+/// must neither transfer nor invalidate the capability's producer ownership.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct CandidateAuthorityLaneIdentityV1 {
+    source: CorrectionDecisionSource,
+    origin: CandidateOrigin,
+    source_id: String,
+    error_class: TypingErrorClass,
+    canonical_l2_partition: CanonicalL2PartitionMembershipV1,
+}
+
+impl CandidateAuthorityLaneIdentityV1 {
+    fn matches(&self, evidence: &CandidateEvidence) -> bool {
+        self.source == evidence.source
+            && self.origin == evidence.origin
+            && self.source_id == evidence.source_id
+            && self.error_class == evidence.error_class
+            && self.canonical_l2_partition == evidence.canonical_l2_partition
+    }
 }
 
 fn common_correction_target_evidence(
@@ -256,10 +346,32 @@ impl UnifiedCorrectionCandidate {
                 source_id,
                 error_class,
                 gate,
+                canonical_l2_partition: CanonicalL2PartitionMembershipV1::None,
             }],
             morphology_slot_evidence: Vec::new(),
             authority_evidence: CandidateAuthorityEvidence::None,
+            l2_boundary_grounded_replacement: None,
         }
+    }
+
+    pub(crate) fn with_canonical_l2_exact_partition_membership(mut self) -> Self {
+        if self.source == CorrectionDecisionSource::Nanda
+            && self.origin.source_role() == CorrectionSourceRole::L2Surface
+        {
+            if let Some(producer_evidence) = self.evidence.first_mut() {
+                producer_evidence.canonical_l2_partition = CanonicalL2PartitionMembershipV1::Exact;
+            }
+        }
+        self
+    }
+
+    pub(crate) fn with_l2_boundary_target_grounding(mut self) -> Self {
+        self.l2_boundary_grounded_replacement = Some(self.replacement.clone());
+        self
+    }
+
+    pub(crate) fn has_l2_boundary_target_grounding(&self) -> bool {
+        self.l2_boundary_grounded_replacement.as_deref() == Some(self.replacement.as_str())
     }
 
     pub(crate) fn with_closed_exact_layout_authority(
@@ -270,8 +382,27 @@ impl UnifiedCorrectionCandidate {
         self
     }
 
+    pub(crate) fn attach_frame_bound_lexical_capability(
+        &mut self,
+        capability: crate::nanda_wave::l2_field::FrameBoundLexicalCapabilityV1,
+    ) {
+        self.authority_evidence = std::mem::replace(
+            &mut self.authority_evidence,
+            CandidateAuthorityEvidence::None,
+        )
+        .merge(CandidateAuthorityEvidence::FrameBoundLexical(capability));
+    }
+
     pub(crate) fn merge_evidence(&mut self, candidate: Self) {
-        let retains_closed_exact_identity = self.closed_exact_layout_certificate().is_some();
+        // Closed-layout authority is the ranked retained candidate itself.
+        // Frame-bound lexical authority instead pins its producer alias inside
+        // the capability, so it must not freeze the surface-level ranking
+        // representative when an ordinary same-surface alias is merged.
+        let retains_bound_authority_identity = self.closed_exact_layout_certificate().is_some();
+        if candidate.has_l2_boundary_target_grounding() && self.replacement == candidate.replacement
+        {
+            self.l2_boundary_grounded_replacement = Some(self.replacement.clone());
+        }
         self.authority_evidence = std::mem::replace(
             &mut self.authority_evidence,
             CandidateAuthorityEvidence::None,
@@ -316,7 +447,7 @@ impl UnifiedCorrectionCandidate {
                 self.gate.action,
                 CandidateGateAction::KeepOriginal | CandidateGateAction::Veto
             );
-        if !retains_closed_exact_identity
+        if !retains_bound_authority_identity
             && (promote_verified_same_replacement
                 || promote_verified_layout
                 || promote_wave_layout_owner
@@ -336,6 +467,7 @@ impl UnifiedCorrectionCandidate {
                     && existing.source_id == evidence.source_id
                     && existing.error_class == evidence.error_class
                     && existing.gate == evidence.gate
+                    && existing.canonical_l2_partition == evidence.canonical_l2_partition
             });
             if !already_present {
                 self.evidence.push(evidence);
@@ -349,12 +481,121 @@ impl UnifiedCorrectionCandidate {
     ) -> Option<&crate::exact_layout_authority::ExactLayoutContourCertificate> {
         match &self.authority_evidence {
             CandidateAuthorityEvidence::ClosedExactLayout(certificate) => Some(certificate),
-            CandidateAuthorityEvidence::None | CandidateAuthorityEvidence::Conflict => None,
+            CandidateAuthorityEvidence::None
+            | CandidateAuthorityEvidence::FrameBoundLexical(_)
+            | CandidateAuthorityEvidence::FrameBoundLexicalConflict
+            | CandidateAuthorityEvidence::Conflict => None,
+        }
+    }
+
+    pub(crate) fn frame_bound_lexical_capability(
+        &self,
+    ) -> Option<&crate::nanda_wave::l2_field::FrameBoundLexicalCapabilityV1> {
+        match &self.authority_evidence {
+            CandidateAuthorityEvidence::FrameBoundLexical(capability) => Some(capability),
+            CandidateAuthorityEvidence::None
+            | CandidateAuthorityEvidence::ClosedExactLayout(_)
+            | CandidateAuthorityEvidence::FrameBoundLexicalConflict
+            | CandidateAuthorityEvidence::Conflict => None,
         }
     }
 
     pub(crate) fn has_authority_conflict(&self) -> bool {
-        self.authority_evidence == CandidateAuthorityEvidence::Conflict
+        matches!(
+            self.authority_evidence,
+            CandidateAuthorityEvidence::FrameBoundLexicalConflict
+                | CandidateAuthorityEvidence::Conflict
+        )
+    }
+
+    pub(crate) fn belongs_to_canonical_l2_field(&self) -> bool {
+        self.evidence
+            .iter()
+            .any(CandidateEvidence::belongs_to_canonical_l2_field)
+    }
+
+    pub(crate) fn belongs_to_canonical_l2_exact_partition(&self) -> bool {
+        self.evidence
+            .iter()
+            .any(CandidateEvidence::belongs_to_canonical_l2_exact_partition)
+    }
+
+    pub(crate) fn canonical_l2_exact_partition_evidence(&self) -> Option<&CandidateEvidence> {
+        self.evidence
+            .iter()
+            .find(|evidence| evidence.belongs_to_canonical_l2_exact_partition())
+    }
+
+    pub(crate) fn contains_authority_lane(
+        &self,
+        expected: &CandidateAuthorityLaneIdentityV1,
+    ) -> bool {
+        self.evidence
+            .iter()
+            .any(|evidence| expected.matches(evidence))
+    }
+
+    pub(crate) fn frame_bound_lexical_lane_view(&self) -> Option<Self> {
+        let capability = self.frame_bound_lexical_capability()?.clone();
+        let owner = capability.canonical_owner_identity();
+        let evidence = self
+            .evidence
+            .iter()
+            .find(|evidence| owner.matches(evidence))?;
+        if !evidence.belongs_to_canonical_l2_exact_partition() {
+            return None;
+        }
+        let mut lane = self.authority_lane_view(evidence);
+        lane.attach_frame_bound_lexical_capability(capability);
+        (!lane.has_authority_conflict()).then_some(lane)
+    }
+
+    pub(crate) fn ordinary_authority_lane_views(&self) -> Vec<Self> {
+        self.evidence
+            .iter()
+            .filter(|evidence| !evidence.belongs_to_canonical_l2_field())
+            .chain(
+                self.evidence
+                    .iter()
+                    .filter(|evidence| evidence.belongs_to_canonical_l2_field()),
+            )
+            .map(|evidence| {
+                let mut lane = self.authority_lane_view(evidence);
+                if evidence.belongs_to_canonical_l2_field()
+                    && evidence.gate.action == CandidateGateAction::Eligible
+                {
+                    // Without a live capability the canonical producer keeps
+                    // its historical L3/L4 corroboration route, but not its
+                    // bare Eligible privilege.
+                    lane.gate = CandidateGateDecision {
+                        action: CandidateGateAction::SuggestOnly,
+                        reason: "canonical_l2_requires_independent_authority",
+                    };
+                }
+                lane
+            })
+            .collect()
+    }
+
+    fn authority_lane_view(&self, evidence: &CandidateEvidence) -> Self {
+        let mut lane = Self::new(
+            self.replacement.clone(),
+            evidence.source,
+            evidence.origin,
+            evidence.source_id.clone(),
+            evidence.error_class,
+            evidence.gate.clone(),
+        );
+        // Ranking and corroboration remain surface-scoped. Only the producer
+        // metadata and authority proof are lane-scoped, so preserve the merged
+        // evidence/morphology set while deliberately dropping any capability.
+        lane.evidence.clone_from(&self.evidence);
+        lane.morphology_slot_evidence
+            .clone_from(&self.morphology_slot_evidence);
+        if self.has_l2_boundary_target_grounding() {
+            lane.l2_boundary_grounded_replacement = Some(self.replacement.clone());
+        }
+        lane
     }
 
     pub(crate) fn common_target_evidence(
@@ -624,6 +865,7 @@ fn resolve_text_correction_observed_internal(
     let mut lattice = L2CandidateLattice::with_options(
         TypingErrorEvent::from_text(req.text),
         &req.nanda_wave_options,
+        req.correction_safety,
     );
     let mut canonical_telemetry = crate::nanda_wave::l2_field::CanonicalFieldTelemetry::default();
 
@@ -639,7 +881,8 @@ fn resolve_text_correction_observed_internal(
     }
 
     if matches!(scope, CorrectionEvidenceScope::FullField(_)) {
-        for source in L2CandidateSource::for_mode(req.mode) {
+        let candidate_sources = L2CandidateSource::for_mode(req.mode);
+        for source in candidate_sources {
             source.push_candidates(
                 &req,
                 &mut lattice,
@@ -647,10 +890,10 @@ fn resolve_text_correction_observed_internal(
                 &mut canonical_telemetry,
             );
         }
-        if req.mode == CorrectionMode::NandaOnly {
+        if candidate_sources.contains(&L2CandidateSource::Nanda) {
             lattice.push_source(proposal_only_substitution_competitor(&req));
         }
-        if L2CandidateSource::for_mode(req.mode).contains(&L2CandidateSource::Deterministic) {
+        if candidate_sources.contains(&L2CandidateSource::Deterministic) {
             lattice.push_source(short_cyrillic_layout_suggestion_candidate(&req));
         }
     }
@@ -800,23 +1043,21 @@ impl CorrectionScoreboard {
         candidates: &[UnifiedCorrectionCandidate],
         decision_batch: &CandidateDecisionBatch,
     ) -> Self {
-        let selected = decision_batch
-            .selected_index
-            .and_then(|index| candidates.get(index));
         let mut scoreboard = Self {
             total_candidates: candidates.len(),
             ..Self::default()
         };
 
-        for candidate in candidates {
-            match candidate.gate.action {
-                CandidateGateAction::Eligible if selected == Some(candidate) => {
-                    scoreboard.apply_candidates += 1;
+        for (index, candidate) in candidates.iter().enumerate() {
+            if decision_batch.selected_index == Some(index) {
+                scoreboard.apply_candidates += 1;
+            } else {
+                match candidate.gate.action {
+                    CandidateGateAction::Eligible => scoreboard.suggest_only_candidates += 1,
+                    CandidateGateAction::SuggestOnly => scoreboard.suggest_only_candidates += 1,
+                    CandidateGateAction::KeepOriginal => scoreboard.keep_original_candidates += 1,
+                    CandidateGateAction::Veto => scoreboard.veto_candidates += 1,
                 }
-                CandidateGateAction::Eligible => scoreboard.suggest_only_candidates += 1,
-                CandidateGateAction::SuggestOnly => scoreboard.suggest_only_candidates += 1,
-                CandidateGateAction::KeepOriginal => scoreboard.keep_original_candidates += 1,
-                CandidateGateAction::Veto => scoreboard.veto_candidates += 1,
             }
             for evidence in &candidate.evidence {
                 match evidence.source {
@@ -934,6 +1175,17 @@ impl CorrectionCandidateScoreTrace {
             .zip(&batch.evaluations)
             .enumerate()
             .map(|(index, (candidate, evaluation))| {
+                let selected = batch.selected_index == Some(index);
+                let candidate = if selected {
+                    batch.selected_candidate.as_ref().unwrap_or(candidate)
+                } else {
+                    candidate
+                };
+                let evaluation = if selected {
+                    batch.selected_evaluation.as_ref().unwrap_or(evaluation)
+                } else {
+                    evaluation
+                };
                 let score = &evaluation.bayes;
                 let explanation = evaluation.explanation;
                 let action = evaluation.action;
@@ -1049,7 +1301,7 @@ impl CorrectionCandidateScoreTrace {
                     risk_milli: crate::text_metrics::score_to_milli(score.risk),
                     posterior_milli: crate::text_metrics::score_to_milli(score.posterior),
                     decision_rank_milli: decision_signals.rank_milli,
-                    selected: batch.selected_index == Some(index),
+                    selected,
                 }
             })
             .collect()
@@ -1113,6 +1365,164 @@ mod target_evidence_adapter_tests {
             GroundingNamespaceV1::LegacyCorrectionCandidate
         );
         assert_eq!(witness.provenance_annotations, (1 << 4) | (1 << 5));
+    }
+
+    #[test]
+    fn l2_boundary_grounding_cannot_move_to_a_different_replacement() {
+        let gate = CandidateGateDecision {
+            action: CandidateGateAction::Eligible,
+            reason: "adapter-test",
+        };
+        let grounded = UnifiedCorrectionCandidate::new(
+            "да норм ",
+            CorrectionDecisionSource::Nanda,
+            CandidateOrigin::Boundary,
+            "canonical-boundary",
+            TypingErrorClass::GluedWords,
+            gate.clone(),
+        )
+        .with_l2_boundary_target_grounding();
+        let mut other = UnifiedCorrectionCandidate::new(
+            "автор ручка ",
+            CorrectionDecisionSource::Nanda,
+            CandidateOrigin::Boundary,
+            "other-boundary",
+            TypingErrorClass::GluedWords,
+            gate,
+        );
+
+        other.merge_evidence(grounded);
+
+        assert!(!other.has_l2_boundary_target_grounding());
+    }
+
+    #[test]
+    fn td117_ordinary_lane_views_preserve_every_gate_and_precede_canonical_fallback() {
+        let mut merged = UnifiedCorrectionCandidate::new(
+            "плохо ",
+            CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
+            crate::nanda_wave::l2_field::CANONICAL_L2_SURFACE_SOURCE_ID,
+            TypingErrorClass::CompositeTypo,
+            CandidateGateDecision {
+                action: CandidateGateAction::Eligible,
+                reason: "canonical_requires_capability",
+            },
+        );
+        for (source_id, action) in [
+            ("ordinary_eligible", CandidateGateAction::Eligible),
+            ("ordinary_suggest", CandidateGateAction::SuggestOnly),
+            ("ordinary_keep", CandidateGateAction::KeepOriginal),
+            ("ordinary_veto", CandidateGateAction::Veto),
+        ] {
+            merged.merge_evidence(UnifiedCorrectionCandidate::new(
+                "плохо ",
+                CorrectionDecisionSource::Deterministic,
+                CandidateOrigin::DeterministicTypo,
+                source_id,
+                TypingErrorClass::CompositeTypo,
+                CandidateGateDecision {
+                    action,
+                    reason: source_id,
+                },
+            ));
+        }
+
+        let lanes = merged.ordinary_authority_lane_views();
+        let observed = lanes
+            .iter()
+            .map(|lane| (lane.source_id.as_str(), lane.gate.action, lane.gate.reason))
+            .collect::<Vec<_>>();
+
+        assert_eq!(
+            observed,
+            vec![
+                (
+                    "ordinary_eligible",
+                    CandidateGateAction::Eligible,
+                    "ordinary_eligible"
+                ),
+                (
+                    "ordinary_suggest",
+                    CandidateGateAction::SuggestOnly,
+                    "ordinary_suggest"
+                ),
+                (
+                    "ordinary_keep",
+                    CandidateGateAction::KeepOriginal,
+                    "ordinary_keep"
+                ),
+                ("ordinary_veto", CandidateGateAction::Veto, "ordinary_veto"),
+                (
+                    crate::nanda_wave::l2_field::CANONICAL_L2_SURFACE_SOURCE_ID,
+                    CandidateGateAction::SuggestOnly,
+                    "canonical_l2_requires_independent_authority",
+                ),
+            ]
+        );
+    }
+
+    #[test]
+    fn td117_exact_partition_membership_is_typed_source_neutral_and_lane_bound() {
+        let gate = CandidateGateDecision {
+            action: CandidateGateAction::SuggestOnly,
+            reason: "typed_exact_requires_capability",
+        };
+        let diagnostic_only = UnifiedCorrectionCandidate::new(
+            "плохо ",
+            CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
+            "ProductiveL2V90TypedExact",
+            TypingErrorClass::CompositeTypo,
+            gate.clone(),
+        );
+        assert!(!diagnostic_only.belongs_to_canonical_l2_field());
+        assert!(!diagnostic_only.belongs_to_canonical_l2_exact_partition());
+
+        let typed = UnifiedCorrectionCandidate::new(
+            "плохо ",
+            CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
+            "renamed_exact_partition_producer",
+            TypingErrorClass::CompositeTypo,
+            gate.clone(),
+        )
+        .with_canonical_l2_exact_partition_membership();
+        assert!(typed.belongs_to_canonical_l2_field());
+        assert!(typed.belongs_to_canonical_l2_exact_partition());
+        let typed_identity = typed
+            .canonical_l2_exact_partition_evidence()
+            .expect("typed exact producer evidence")
+            .authority_lane_identity();
+        assert!(typed.contains_authority_lane(&typed_identity));
+
+        let legacy = UnifiedCorrectionCandidate::new(
+            "плохо ",
+            CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
+            crate::nanda_wave::l2_field::CANONICAL_L2_SURFACE_SOURCE_ID,
+            TypingErrorClass::CompositeTypo,
+            gate.clone(),
+        );
+        assert!(legacy.belongs_to_canonical_l2_field());
+        assert!(!legacy.belongs_to_canonical_l2_exact_partition());
+
+        let wrong_role = UnifiedCorrectionCandidate::new(
+            "плохо ",
+            CorrectionDecisionSource::Deterministic,
+            CandidateOrigin::DeterministicTypo,
+            "renamed_exact_partition_producer",
+            TypingErrorClass::CompositeTypo,
+            gate,
+        )
+        .with_canonical_l2_exact_partition_membership();
+        assert!(!wrong_role.belongs_to_canonical_l2_field());
+        assert!(!wrong_role.belongs_to_canonical_l2_exact_partition());
+
+        let mut merged = diagnostic_only;
+        merged.merge_evidence(typed);
+        assert_eq!(merged.evidence_count(), 2);
+        assert!(merged.belongs_to_canonical_l2_exact_partition());
     }
 }
 

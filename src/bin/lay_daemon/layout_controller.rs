@@ -383,12 +383,49 @@ pub(super) fn suppress_next_ime_autocorrect() {
 }
 
 pub(super) fn suppress_next_ime_autocorrect_checked() -> Result<(), String> {
-    if !active_text_backend().should_try_ime() {
-        return Err("IME autocorrect suppression requires the IBus text backend".to_string());
+    dispatch_ime_autocorrect_suppression_with(
+        active_text_backend().should_try_ime(),
+        ImeAutocorrectSuppressionRequest::LegacyV1,
+        |request| match request {
+            ImeAutocorrectSuppressionRequest::LegacyV1 => ime_bridge::suppress_next_autocorrect(),
+            ImeAutocorrectSuppressionRequest::ExactV2 { .. } => {
+                unreachable!("legacy suppression selected an exact request")
+            }
+        },
+    )
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum ImeAutocorrectSuppressionRequest<'a> {
+    LegacyV1,
+    ExactV2 {
+        expected_suffix: &'a str,
+        expected_epoch: u64,
+        expected_path: &'a str,
+        expected_layout_is_ru: bool,
+    },
+}
+
+fn dispatch_ime_autocorrect_suppression_with(
+    ime_backend_enabled: bool,
+    request: ImeAutocorrectSuppressionRequest<'_>,
+    rpc: impl FnOnce(ImeAutocorrectSuppressionRequest<'_>) -> Result<bool, String>,
+) -> Result<(), String> {
+    let exact = matches!(&request, ImeAutocorrectSuppressionRequest::ExactV2 { .. });
+    if !ime_backend_enabled {
+        return Err(if exact {
+            "exact IME replay suppression requires the IBus text backend".to_string()
+        } else {
+            "IME autocorrect suppression requires the IBus text backend".to_string()
+        });
     }
-    match ime_bridge::suppress_next_autocorrect()? {
+    match rpc(request)? {
         true => Ok(()),
-        false => Err("focused IME rejected autocorrect suppression".to_string()),
+        false => Err(if exact {
+            "focused IME rejected exact autocorrect suppression".to_string()
+        } else {
+            "focused IME rejected autocorrect suppression".to_string()
+        }),
     }
 }
 
@@ -398,18 +435,31 @@ pub(super) fn suppress_next_ime_autocorrect_for_exact_replay(
     expected_path: &str,
     expected_layout_is_ru: bool,
 ) -> Result<(), String> {
-    if !active_text_backend().should_try_ime() {
-        return Err("exact IME replay suppression requires the IBus text backend".to_string());
-    }
-    match ime_bridge::suppress_next_autocorrect_v2(
-        expected_suffix,
-        expected_epoch,
-        expected_path,
-        expected_layout_is_ru,
-    )? {
-        true => Ok(()),
-        false => Err("focused IME rejected exact autocorrect suppression".to_string()),
-    }
+    dispatch_ime_autocorrect_suppression_with(
+        active_text_backend().should_try_ime(),
+        ImeAutocorrectSuppressionRequest::ExactV2 {
+            expected_suffix,
+            expected_epoch,
+            expected_path,
+            expected_layout_is_ru,
+        },
+        |request| match request {
+            ImeAutocorrectSuppressionRequest::ExactV2 {
+                expected_suffix,
+                expected_epoch,
+                expected_path,
+                expected_layout_is_ru,
+            } => ime_bridge::suppress_next_autocorrect_v2(
+                expected_suffix,
+                expected_epoch,
+                expected_path,
+                expected_layout_is_ru,
+            ),
+            ImeAutocorrectSuppressionRequest::LegacyV1 => {
+                unreachable!("exact suppression selected a legacy request")
+            }
+        },
+    )
 }
 
 pub(super) fn cancel_exact_ime_manual_toggle_handoff_v2(
@@ -435,6 +485,84 @@ pub(super) fn cancel_exact_ime_autocorrect_suppression(
 pub(super) fn try_ime_manual_toggle() -> Result<lay::manual_toggle::ImeManualToggleOutcome, String>
 {
     ime_manual_toggle::try_manual_toggle(active_text_backend().should_try_ime())
+}
+
+#[cfg(test)]
+mod td120_suppression_backend_tests {
+    use super::{dispatch_ime_autocorrect_suppression_with, ImeAutocorrectSuppressionRequest};
+    use std::cell::Cell;
+
+    #[test]
+    fn td120_v1_suppression_backend_gate_counts_only_actual_rpc_selection() {
+        let calls = Cell::new(0usize);
+        let disabled = dispatch_ime_autocorrect_suppression_with(
+            false,
+            ImeAutocorrectSuppressionRequest::LegacyV1,
+            |_| {
+                calls.set(calls.get() + 1);
+                Ok(true)
+            },
+        );
+        assert!(disabled.is_err());
+        assert_eq!(calls.get(), 0, "non-IBus path must issue zero V1 RPCs");
+
+        let enabled = dispatch_ime_autocorrect_suppression_with(
+            true,
+            ImeAutocorrectSuppressionRequest::LegacyV1,
+            |request| {
+                assert_eq!(request, ImeAutocorrectSuppressionRequest::LegacyV1);
+                calls.set(calls.get() + 1);
+                Ok(true)
+            },
+        );
+        assert!(enabled.is_ok());
+        assert_eq!(calls.get(), 1, "IBus path must issue exactly one V1 RPC");
+    }
+
+    #[test]
+    fn td120_exact_delegation_selects_one_v2_rpc_and_zero_v1_rpcs() {
+        let v1_calls = Cell::new(0usize);
+        let v2_calls = Cell::new(0usize);
+        let exact = ImeAutocorrectSuppressionRequest::ExactV2 {
+            expected_suffix: "ghbdtn",
+            expected_epoch: 17,
+            expected_path: "/td120/exact",
+            expected_layout_is_ru: true,
+        };
+        let selected = dispatch_ime_autocorrect_suppression_with(true, exact, |request| {
+            match request {
+                ImeAutocorrectSuppressionRequest::LegacyV1 => v1_calls.set(v1_calls.get() + 1),
+                ImeAutocorrectSuppressionRequest::ExactV2 {
+                    expected_suffix,
+                    expected_epoch,
+                    expected_path,
+                    expected_layout_is_ru,
+                } => {
+                    v2_calls.set(v2_calls.get() + 1);
+                    assert_eq!(expected_suffix, "ghbdtn");
+                    assert_eq!(expected_epoch, 17);
+                    assert_eq!(expected_path, "/td120/exact");
+                    assert!(expected_layout_is_ru);
+                }
+            }
+            Ok(true)
+        });
+        assert!(selected.is_ok());
+        assert_eq!(v2_calls.get(), 1);
+        assert_eq!(v1_calls.get(), 0);
+
+        let disabled = dispatch_ime_autocorrect_suppression_with(false, exact, |request| {
+            match request {
+                ImeAutocorrectSuppressionRequest::LegacyV1 => v1_calls.set(v1_calls.get() + 1),
+                ImeAutocorrectSuppressionRequest::ExactV2 { .. } => {
+                    v2_calls.set(v2_calls.get() + 1)
+                }
+            }
+            Ok(true)
+        });
+        assert!(disabled.is_err());
+        assert_eq!(v2_calls.get(), 1, "disabled exact route must issue no RPC");
+    }
 }
 
 pub(super) fn detect_auto_layout_backend_hint() -> Option<LayoutBackend> {

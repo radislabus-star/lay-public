@@ -2,6 +2,7 @@ use super::decision::{
     CandidateDecisionBatch, CandidateDecisionTiming, DecisionEvidenceMode, TransitionDecisionCore,
     TransitionDecisionPolicy,
 };
+use crate::config::CorrectionSafety;
 use crate::correction_core::{
     CorrectionCandidateScoreTrace, CorrectionDecision, CorrectionResolution, CorrectionScoreboard,
     TypingErrorEvent, UnifiedCorrectionCandidate,
@@ -19,6 +20,7 @@ pub(crate) struct L2CandidateLattice {
     // Some(Unavailable) means that canonical L2 was requested but failed to
     // produce a field; that distinction is part of the apply-authority contract.
     l2_field_authority: Option<crate::nanda_wave::l2_field::L2FieldAuthority>,
+    lexical_authority_context: crate::nanda_wave::l2_field::LexicalAuthorityEvaluationContextV1,
 }
 
 #[expect(
@@ -40,18 +42,27 @@ impl L2CandidateLattice {
             candidates: Vec::new(),
             policy: TransitionDecisionPolicy::default(),
             l2_field_authority: None,
+            lexical_authority_context:
+                crate::nanda_wave::l2_field::LexicalAuthorityEvaluationContextV1::NotConsulted,
         }
     }
 
-    pub(crate) fn with_options(event: TypingErrorEvent, options: &WaveOptions) -> Self {
+    pub(crate) fn with_options(
+        event: TypingErrorEvent,
+        options: &WaveOptions,
+        correction_safety: CorrectionSafety,
+    ) -> Self {
         Self {
             event,
             retained_exact: RetainedExactSlot::Empty,
             candidates: Vec::new(),
             policy: TransitionDecisionPolicy {
                 l2_phase_apply: options.l2_phase_apply(),
+                correction_safety,
             },
             l2_field_authority: None,
+            lexical_authority_context:
+                crate::nanda_wave::l2_field::LexicalAuthorityEvaluationContextV1::NotConsulted,
         }
     }
 
@@ -117,6 +128,13 @@ impl L2CandidateLattice {
         authority: crate::nanda_wave::l2_field::L2FieldAuthority,
     ) {
         self.l2_field_authority = Some(authority);
+    }
+
+    pub(crate) fn set_lexical_authority_context(
+        &mut self,
+        context: crate::nanda_wave::l2_field::LexicalAuthorityEvaluationContextV1,
+    ) {
+        self.lexical_authority_context = context;
     }
 
     fn push(&mut self, candidate: UnifiedCorrectionCandidate) {
@@ -236,6 +254,19 @@ mod retained_exact_tests {
         })
     }
 
+    fn lattice_with_profile(correction_safety: CorrectionSafety) -> L2CandidateLattice {
+        L2CandidateLattice::with_options(
+            TypingErrorEvent {
+                original: "ghbdtn ".to_string(),
+                core: "ghbdtn".to_string(),
+                current_word: "ghbdtn".to_string(),
+                input_class: TypingErrorClass::WrongLayout,
+            },
+            &WaveOptions::default(),
+            correction_safety,
+        )
+    }
+
     fn retained(lattice: &L2CandidateLattice) -> &UnifiedCorrectionCandidate {
         let RetainedExactSlot::Candidate(candidate) = &lattice.retained_exact else {
             panic!("expected retained exact candidate")
@@ -277,6 +308,60 @@ mod retained_exact_tests {
     }
 
     #[test]
+    fn td112_closed_exact_valid_absent_and_conflict_are_profile_invariant() {
+        let mut observations = 0usize;
+        for correction_safety in [
+            CorrectionSafety::Strict,
+            CorrectionSafety::Normal,
+            CorrectionSafety::Experimental,
+        ] {
+            let valid_certificate = certificate(0x2710);
+            let expected_replacement = valid_certificate.replacement_text().to_string();
+            let mut valid = lattice_with_profile(correction_safety);
+            valid.retain_exact(exact_candidate(valid_certificate.clone()));
+            let (valid_resolution, _) =
+                valid.into_closed_exact_resolution(Some(&valid_certificate));
+            observations += 1;
+            assert_eq!(
+                valid_resolution
+                    .selected
+                    .as_ref()
+                    .map(|candidate| candidate.replacement.as_str()),
+                Some(expected_replacement.as_str()),
+                "E01 profile={correction_safety:?}: {valid_resolution:#?}"
+            );
+            assert!(valid_resolution.selected_transition.is_some());
+
+            let absent = lattice_with_profile(correction_safety);
+            let (absent_resolution, _) = absent.into_closed_exact_resolution(None);
+            observations += 1;
+            assert!(
+                absent_resolution.selected.is_none(),
+                "E02 profile={correction_safety:?}: {absent_resolution:#?}"
+            );
+            assert!(absent_resolution.selected_transition.is_none());
+
+            let conflicting_certificate = certificate(0x2711);
+            let mut conflict = lattice_with_profile(correction_safety);
+            conflict.retain_exact(exact_candidate(valid_certificate.clone()));
+            conflict.retain_exact(exact_candidate(conflicting_certificate));
+            assert!(matches!(
+                conflict.retained_exact,
+                RetainedExactSlot::Conflict
+            ));
+            let (conflict_resolution, _) =
+                conflict.into_closed_exact_resolution(Some(&valid_certificate));
+            observations += 1;
+            assert!(
+                conflict_resolution.selected.is_none(),
+                "E03 profile={correction_safety:?}: {conflict_resolution:#?}"
+            );
+            assert!(conflict_resolution.selected_transition.is_none());
+        }
+        assert_eq!(observations, 9);
+    }
+
+    #[test]
     fn ordinary_competitor_count_cannot_evict_retained_exact_candidate() {
         let certificate = certificate(0x2710);
         let replacement = certificate.replacement_text().to_string();
@@ -291,6 +376,42 @@ mod retained_exact_tests {
 
         assert_eq!(retained(&lattice).replacement, replacement);
         assert_eq!(lattice.candidates.len(), 128);
+    }
+
+    #[test]
+    fn td117_retained_exact_keeps_its_candidate_and_receipt_across_canonical_alias_merge() {
+        let certificate = certificate(0x2712);
+        let replacement = certificate.replacement_text().to_string();
+        let mut lattice = lattice();
+        lattice.retain_exact(exact_candidate(certificate));
+        lattice.push_source(Some(alias(
+            &replacement,
+            crate::nanda_wave::l2_field::CANONICAL_L2_SURFACE_SOURCE_ID,
+        )));
+
+        let resolution = lattice.into_resolution();
+        let selected = resolution
+            .selected
+            .as_ref()
+            .expect("retained exact selected");
+        let transition = resolution
+            .selected_transition
+            .as_ref()
+            .expect("retained exact receipt")
+            .diagnostic_transition();
+
+        assert_eq!(selected.source, CorrectionDecisionSource::Deterministic);
+        assert_eq!(selected.origin, CandidateOrigin::Layout);
+        assert_eq!(selected.source_id, "exact-layout-test");
+        assert_eq!(selected.error_class, TypingErrorClass::WrongLayout);
+        assert_eq!(
+            transition.operator(),
+            Some(crate::text_edit::TransitionOperator::LayoutProjection),
+        );
+        assert_eq!(
+            transition.proof(),
+            Some(crate::text_edit::TransitionProof::Layout),
+        );
     }
 }
 

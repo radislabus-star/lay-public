@@ -1,8 +1,9 @@
 //! Shared bounded target-evidence vocabulary.
 //!
-//! Slice 1 introduces data types and compatibility projections only. None of
-//! these values grants display or mutation authority until later migration
-//! slices bind exact prepared material, an input frame, and a conflict cohort.
+//! These values describe bounded evidence, identity, and proof state. A value
+//! alone grants no display or mutation authority: runtime must bind exact
+//! prepared material to the current input frame, validate the conflict cohort,
+//! and pass the result through DecisionCore and the edit verifier.
 
 use std::cmp::Ordering;
 use std::num::NonZeroU32;
@@ -94,6 +95,112 @@ pub(crate) enum GroundingNamespaceV1 {
     LegacyLiveReplacement = 7,
     LegacyCorrectionCandidate = 8,
     ReferenceSurface = 9,
+    /// A compact reference into the prepared material's exact canonical L1
+    /// anchor-proof table. The referenced full record, not this u32 alone,
+    /// carries authority identity.
+    CanonicalL1Anchor = 10,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[repr(u8)]
+pub(crate) enum CanonicalL1AnchorKindV1 {
+    Direct = 1,
+    SameLemma = 2,
+}
+
+/// Full, material-owned identity behind one compact canonical L1 anchor root.
+///
+/// `proof_ref` is only a bounded accelerator. Producers and consumers must
+/// retain, digest, and replay every other field before granting authority.
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct CanonicalL1AnchorProofV1 {
+    pub(crate) proof_ref: u32,
+    pub(crate) exact_target_bytes: String,
+    pub(crate) target_form_ref: u32,
+    pub(crate) anchor_form_ref: u32,
+    pub(crate) lemma_id: Option<u32>,
+    pub(crate) terminal_id: u32,
+    pub(crate) kind: CanonicalL1AnchorKindV1,
+    pub(crate) l11_sha256: [u8; 32],
+    pub(crate) canonical_l2_sha256: [u8; 32],
+}
+
+impl CanonicalL1AnchorProofV1 {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the full anchor identity must remain explicit"
+    )]
+    pub(crate) fn new(
+        exact_target_bytes: String,
+        target_form_ref: u32,
+        anchor_form_ref: u32,
+        lemma_id: Option<u32>,
+        terminal_id: u32,
+        kind: CanonicalL1AnchorKindV1,
+        l11_sha256: [u8; 32],
+        canonical_l2_sha256: [u8; 32],
+    ) -> Option<Self> {
+        if exact_target_bytes.is_empty()
+            || l11_sha256 == [0; 32]
+            || canonical_l2_sha256 == [0; 32]
+            || (kind == CanonicalL1AnchorKindV1::Direct && target_form_ref != anchor_form_ref)
+            || (kind == CanonicalL1AnchorKindV1::SameLemma
+                && (lemma_id.is_none() || target_form_ref == anchor_form_ref))
+        {
+            return None;
+        }
+        let mut proof = Self {
+            proof_ref: 0,
+            exact_target_bytes,
+            target_form_ref,
+            anchor_form_ref,
+            lemma_id,
+            terminal_id,
+            kind,
+            l11_sha256,
+            canonical_l2_sha256,
+        };
+        proof.proof_ref = stable_bytes_ref(&proof.canonical_identity_bytes());
+        (proof.proof_ref != 0).then_some(proof)
+    }
+
+    pub(crate) fn has_canonical_ref(&self) -> bool {
+        !self.exact_target_bytes.is_empty()
+            && self.l11_sha256 != [0; 32]
+            && self.canonical_l2_sha256 != [0; 32]
+            && match self.kind {
+                CanonicalL1AnchorKindV1::Direct => self.target_form_ref == self.anchor_form_ref,
+                CanonicalL1AnchorKindV1::SameLemma => {
+                    self.lemma_id.is_some() && self.target_form_ref != self.anchor_form_ref
+                }
+            }
+            && self.proof_ref != 0
+            && self.proof_ref == stable_bytes_ref(&self.canonical_identity_bytes())
+    }
+
+    pub(crate) fn canonical_identity_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::with_capacity(self.exact_target_bytes.len() + 96);
+        bytes.extend_from_slice(b"lay-canonical-l1-anchor-proof-v1\0");
+        bytes.extend_from_slice(&(self.exact_target_bytes.len() as u64).to_le_bytes());
+        bytes.extend_from_slice(self.exact_target_bytes.as_bytes());
+        bytes.extend_from_slice(&self.target_form_ref.to_le_bytes());
+        bytes.extend_from_slice(&self.anchor_form_ref.to_le_bytes());
+        match self.lemma_id {
+            Some(lemma_id) => {
+                bytes.push(1);
+                bytes.extend_from_slice(&lemma_id.to_le_bytes());
+            }
+            None => {
+                bytes.push(0);
+                bytes.extend_from_slice(&0_u32.to_le_bytes());
+            }
+        }
+        bytes.extend_from_slice(&self.terminal_id.to_le_bytes());
+        bytes.push(self.kind as u8);
+        bytes.extend_from_slice(&self.l11_sha256);
+        bytes.extend_from_slice(&self.canonical_l2_sha256);
+        bytes
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -241,6 +348,13 @@ pub(crate) enum CompletenessScopeKindV1 {
 pub(crate) enum CompletenessScopeV1 {
     #[default]
     WholePreparedField,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "reserved narrow-scope contract; live authority currently uses relation partitions"
+        )
+    )]
     EditFootprintPartition {
         exhaustive_partition_proof_ref: NonZeroU32,
     },
@@ -250,6 +364,7 @@ pub(crate) enum CompletenessScopeV1 {
 }
 
 impl CompletenessScopeV1 {
+    #[cfg(test)]
     pub(crate) fn edit_footprint_partition(exhaustive_partition_proof_ref: u32) -> Option<Self> {
         Some(Self::EditFootprintPartition {
             exhaustive_partition_proof_ref: NonZeroU32::new(exhaustive_partition_proof_ref)?,
@@ -883,12 +998,59 @@ impl BoundedTargetSetV1 {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) struct TargetSetOverflowV1;
 
+/// Complete identity of the exact Phase-7D relation partition retained by one
+/// prepared authority material. A non-zero reference is only an accelerator:
+/// consumers must compare this entire record and the owned exact target/root
+/// set before treating the narrow completeness scope as authority-bearing.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[repr(C)]
+pub(crate) struct ExactRelationPartitionProofV1 {
+    pub(crate) proof_ref: u32,
+    pub(crate) policy_version: u32,
+    pub(crate) policy_identity: [u64; 2],
+    pub(crate) exact_search_proof_digest: [u64; 2],
+    pub(crate) target_root_set_digest: [u64; 2],
+    pub(crate) logical_target_count: u16,
+    pub(crate) retained_target_count: u16,
+    pub(crate) logical_certificate_count: u16,
+    pub(crate) retained_certificate_count: u16,
+    pub(crate) per_target_root_counts: [u8; MAX_TARGETS_PER_FIELD],
+}
+
+impl Default for ExactRelationPartitionProofV1 {
+    fn default() -> Self {
+        Self {
+            proof_ref: 0,
+            policy_version: 0,
+            policy_identity: [0; 2],
+            exact_search_proof_digest: [0; 2],
+            target_root_set_digest: [0; 2],
+            logical_target_count: 0,
+            retained_target_count: 0,
+            logical_certificate_count: 0,
+            retained_certificate_count: 0,
+            per_target_root_counts: [0; MAX_TARGETS_PER_FIELD],
+        }
+    }
+}
+
+impl ExactRelationPartitionProofV1 {
+    pub(crate) fn is_present(self) -> bool {
+        self.proof_ref != 0
+            && self.policy_version != 0
+            && self.policy_identity != [0; 2]
+            && self.exact_search_proof_digest != [0; 2]
+            && self.target_root_set_digest != [0; 2]
+    }
+}
+
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 #[repr(C)]
 pub(crate) struct PreparedEvidenceTablesV1 {
     pub(crate) relation_table_identity: u64,
     pub(crate) grounding_table_identity: u64,
     pub(crate) derivation_table_identity: u64,
+    pub(crate) exact_relation_partition: ExactRelationPartitionProofV1,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -1135,6 +1297,10 @@ pub(crate) struct AuthorityCertificateCoreV1 {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum AuthorityCertificateV1 {
     L2Certified(AuthorityCertificateCoreV1),
+    #[expect(
+        dead_code,
+        reason = "type contract retained for separately gated context authority; live emission is disabled"
+    )]
     ContextCertified {
         core: AuthorityCertificateCoreV1,
         context_hash: [u64; 2],

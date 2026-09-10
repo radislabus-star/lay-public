@@ -1,12 +1,14 @@
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::sync::{Arc, Mutex};
 
+use sha2::{Digest, Sha256};
+
 use super::format::{self, Cursor};
 use super::model::{
     CompetitionEdge, FormCenterRef, L2FieldPackage, LemmaCenter, LocalContextMode, MorphBinding,
     NeighborCoupling, SlotPhaseCenter, TieCalibration,
 };
-use super::package_bytes::PackageBytes;
+use super::package_bytes::{LoadedPackageIdentity, PackageBytes};
 use super::{
     compositional::{CompactLemmaWaveIndexView, LemmaWaveIndex, RuntimeLemmaWaveIndex},
     compositional_format,
@@ -27,6 +29,7 @@ const SLOT_CENTER_BYTES: usize = 76;
 const NEIGHBOR_COUPLING_BYTES: usize = 24;
 const COMPETITION_EDGE_BYTES: usize = 24;
 const CALIBRATION_BYTES: usize = 24;
+const IDENTITY_CHUNK_BYTES: usize = 64 * 1024;
 
 pub(super) fn is_compact_package(bytes: &[u8]) -> bool {
     bytes.get(..MAGIC.len()) == Some(MAGIC)
@@ -734,6 +737,7 @@ struct HeaderCounts {
 #[derive(Clone, Debug)]
 pub(super) struct CompactPackageView {
     bytes: PackageBytes,
+    package_identity: LoadedPackageIdentity,
     version: u32,
     l1_package_fingerprint: u64,
     counts: HeaderCounts,
@@ -805,9 +809,15 @@ impl CompactPackageView {
         let l1_package_fingerprint = header.u64()?;
         let counts = read_header_counts(&mut header, version)?;
         validate_header_counts(version, counts)?;
-        if format::checksum64(&data[HEADER_BYTES..]) != expected_checksum {
+        let (actual_checksum, package_sha256) = checksum_and_sha256(data);
+        if actual_checksum != expected_checksum {
             return Err("compact L2 package checksum mismatch".to_string());
         }
+        let package_identity = LoadedPackageIdentity::new(
+            u64::try_from(data.len())
+                .map_err(|_| "compact L2 package size does not fit u64".to_string())?,
+            package_sha256,
+        );
 
         let mut next = HEADER_BYTES;
         let form_start = take_section(
@@ -991,6 +1001,7 @@ impl CompactPackageView {
 
         let mut view = Self {
             bytes,
+            package_identity,
             version,
             l1_package_fingerprint,
             counts,
@@ -1016,6 +1027,10 @@ impl CompactPackageView {
 
     pub(super) fn backing_bytes(&self) -> usize {
         self.bytes.len()
+    }
+
+    pub(super) const fn package_identity(&self) -> LoadedPackageIdentity {
+        self.package_identity
     }
 
     pub(super) fn mmap_backed(&self) -> bool {
@@ -1343,6 +1358,17 @@ impl CompactPackageView {
     }
 }
 
+fn checksum_and_sha256(data: &[u8]) -> (u64, [u8; 32]) {
+    let mut sha256 = Sha256::new();
+    sha256.update(&data[..HEADER_BYTES]);
+    let mut checksum = format::CHECKSUM64_INITIAL;
+    for chunk in data[HEADER_BYTES..].chunks(IDENTITY_CHUNK_BYTES) {
+        checksum = format::checksum64_update(checksum, chunk);
+        sha256.update(chunk);
+    }
+    (checksum, sha256.finalize().into())
+}
+
 fn validate_header_counts(version: u32, counts: HeaderCounts) -> Result<(), String> {
     if counts.decoder_block_forms != DECODER_BLOCK_FORMS {
         return Err(format!(
@@ -1434,6 +1460,8 @@ fn read_section<T>(
 
 #[cfg(test)]
 mod tests {
+    use sha2::Digest;
+
     use super::super::model::{
         CompetitionEdge, LemmaCenter, LocalContextMode, NeighborCoupling, SlotPhaseCenter,
         TieCalibration, L2_PHASE_CELLS,
@@ -1556,6 +1584,7 @@ mod tests {
         let package = fixture();
         let (first, stats) = encode_package(&package).expect("compact encode");
         let (second, _) = encode_package(&package).expect("deterministic compact encode");
+        let expected_sha256: [u8; 32] = sha2::Sha256::digest(&first).into();
 
         assert_eq!(first, second);
         assert_eq!(decode_package(&first), Ok(package));
@@ -1570,6 +1599,8 @@ mod tests {
         assert!(stats.atom_postings > 0);
 
         let mut direct = CompactPackageView::from_bytes(first).expect("compact direct view");
+        assert_eq!(direct.package_identity().bytes(), stats.total_bytes as u64);
+        assert_eq!(direct.package_identity().sha256(), expected_sha256);
         assert_eq!(direct.storage_kind(), "compact_v2_compositional");
         assert_eq!(
             direct
@@ -1578,6 +1609,19 @@ mod tests {
                 .atom_key_count(),
             stats.atom_keys
         );
+    }
+
+    #[test]
+    fn checksum_and_sha256_cover_multiple_identity_chunks() {
+        let mut bytes = vec![0_u8; HEADER_BYTES + IDENTITY_CHUNK_BYTES * 2 + 17];
+        for (index, byte) in bytes.iter_mut().enumerate() {
+            *byte = (index % 251) as u8;
+        }
+
+        let (checksum, sha256) = checksum_and_sha256(&bytes);
+
+        assert_eq!(checksum, format::checksum64(&bytes[HEADER_BYTES..]));
+        assert_eq!(sha256, <[u8; 32]>::from(sha2::Sha256::digest(&bytes)));
     }
 
     #[test]

@@ -3,6 +3,11 @@
 use crate::lexicon::is_common_en_technical_word;
 use crate::word_recognizer::{recognize_token, WordScript};
 
+pub(crate) fn english_layout_target_requires_context(word: &str) -> bool {
+    word.chars().filter(|ch| ch.is_ascii_alphabetic()).count() <= 3
+        && !is_common_en_technical_word(&word.to_ascii_lowercase())
+}
+
 pub(crate) fn is_known_english_layout_autoswitch_word(word: &str) -> bool {
     if is_common_en_technical_word(&word.to_ascii_lowercase()) {
         return true;

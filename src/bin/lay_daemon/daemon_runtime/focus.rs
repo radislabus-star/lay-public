@@ -128,7 +128,6 @@ fn apply_focus_state(
         state.buffer.reset_all();
         state.events_since_word_start = 0;
         state.pending_typing_assist_after_space.take();
-        state.ignore_current_token_until_space = false;
     }
     state.focus_ignored = focus.ignored;
 }

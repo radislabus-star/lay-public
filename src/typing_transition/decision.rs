@@ -5,6 +5,7 @@ use super::{
 };
 use crate::candidate_contract::{CandidateOrigin, CandidateReadoutRoute, CorrectionSourceRole};
 use crate::candidate_explanation::CandidateExplanation;
+use crate::config::CorrectionSafety;
 use crate::correction_bayes::BayesCandidateScore;
 use crate::correction_core::{
     explanation_for_candidate, CorrectionDecisionSource, TypingErrorClass, TypingErrorEvent,
@@ -24,6 +25,39 @@ use crate::word_reader::split_word_punctuation;
 use rayon::prelude::*;
 use std::cmp::Ordering;
 
+#[cfg(test)]
+thread_local! {
+    static TD117_SURFACE_STAGE_SETTLEMENTS: std::cell::Cell<Td117SurfaceStageSettlements> = const {
+        std::cell::Cell::new(Td117SurfaceStageSettlements {
+            morphology: 0,
+            interference: 0,
+            l4_hidden: 0,
+        })
+    };
+}
+
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct Td117SurfaceStageSettlements {
+    morphology: usize,
+    interference: usize,
+    l4_hidden: usize,
+}
+
+#[cfg(test)]
+fn td117_surface_stage_settlements() -> Td117SurfaceStageSettlements {
+    TD117_SURFACE_STAGE_SETTLEMENTS.with(std::cell::Cell::get)
+}
+
+#[cfg(test)]
+fn td117_record_surface_stage(settle: impl FnOnce(&mut Td117SurfaceStageSettlements)) {
+    TD117_SURFACE_STAGE_SETTLEMENTS.with(|counter| {
+        let mut current = counter.get();
+        settle(&mut current);
+        counter.set(current);
+    });
+}
+
 pub(crate) struct TransitionDecisionCore;
 
 #[derive(Clone, Copy)]
@@ -33,9 +67,19 @@ pub(crate) enum DecisionEvidenceMode<'a> {
     ClosedExactAbsent,
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct TransitionDecisionPolicy {
     pub(crate) l2_phase_apply: bool,
+    pub(crate) correction_safety: CorrectionSafety,
+}
+
+impl Default for TransitionDecisionPolicy {
+    fn default() -> Self {
+        Self {
+            l2_phase_apply: false,
+            correction_safety: CorrectionSafety::Experimental,
+        }
+    }
 }
 
 impl TransitionDecisionCore {
@@ -55,11 +99,28 @@ impl TransitionDecisionCore {
         proposal_admission::gate_candidate_with_origin(original, replacement, error_class, origin)
     }
 
+    #[cfg(test)]
     pub(crate) fn evaluate_candidates(
         event: &TypingErrorEvent,
         candidates: &[UnifiedCorrectionCandidate],
         policy: TransitionDecisionPolicy,
         mode: DecisionEvidenceMode<'_>,
+    ) -> CandidateDecisionBatch {
+        Self::evaluate_candidates_with_authority_context(
+            event,
+            candidates,
+            policy,
+            mode,
+            &crate::nanda_wave::l2_field::LexicalAuthorityEvaluationContextV1::NotConsulted,
+        )
+    }
+
+    pub(crate) fn evaluate_candidates_with_authority_context(
+        event: &TypingErrorEvent,
+        candidates: &[UnifiedCorrectionCandidate],
+        policy: TransitionDecisionPolicy,
+        mode: DecisionEvidenceMode<'_>,
+        lexical_authority_context: &crate::nanda_wave::l2_field::LexicalAuthorityEvaluationContextV1,
     ) -> CandidateDecisionBatch {
         let timing_enabled = std::env::var_os("LAY_DECISION_CORE_TIMING").is_some();
         let started = std::time::Instant::now();
@@ -177,41 +238,110 @@ impl TransitionDecisionCore {
                 );
             }
         }
+        let frame_bound_lexical_admissions =
+            lexical_authority_context.admissions_for_event(event, candidates);
+        let surface_authority_admissions = candidates
+            .iter()
+            .enumerate()
+            .map(|(index, candidate)| {
+                if matches!(
+                    candidate.gate.action,
+                    CandidateGateAction::KeepOriginal | CandidateGateAction::Veto
+                ) {
+                    return None;
+                }
+                if candidate.belongs_to_canonical_l2_field()
+                    || candidate.frame_bound_lexical_capability().is_some()
+                    || candidate.has_authority_conflict()
+                {
+                    let ordinary_admission = candidate
+                        .ordinary_authority_lane_views()
+                        .into_iter()
+                        .find_map(|lane| {
+                            authority_lane_allows_apply(
+                                event,
+                                index,
+                                candidates,
+                                &evaluations,
+                                policy,
+                                lane,
+                                false,
+                            )
+                        });
+                    let canonical_admission = frame_bound_lexical_admissions[index]
+                        .then(|| candidate.frame_bound_lexical_lane_view())
+                        .flatten()
+                        .and_then(|lane| {
+                            authority_lane_allows_apply(
+                                event,
+                                index,
+                                candidates,
+                                &evaluations,
+                                policy,
+                                lane,
+                                true,
+                            )
+                        });
+                    // When both lanes are valid, preserve independent producer
+                    // provenance in the transition receipt. Ranking still uses
+                    // the single surface evaluation below.
+                    ordinary_admission.or(canonical_admission)
+                } else {
+                    (ordinary_producer_allows_authority_evaluation(
+                        event,
+                        candidate,
+                        &evaluations[index],
+                    ) && candidate_has_apply_authority(
+                        event,
+                        index,
+                        candidates,
+                        &evaluations,
+                        policy,
+                        false,
+                    ))
+                    .then(|| AuthorityLaneAdmission {
+                        candidate: candidate.clone(),
+                        evaluation: evaluations[index].clone(),
+                    })
+                }
+            })
+            .collect::<Vec<_>>();
         let ranked_selected_index = candidates
             .iter()
             .enumerate()
-            .filter(|(index, candidate)| {
-                apply_policy::producer_allows_authority_evaluation(
-                    candidate.gate.action,
-                    evaluations[*index].signals.l3_pairwise_certified,
-                    evaluations[*index].transition.l4_signed_signal,
-                ) || admission::suggest_boundary_allows_authority_evaluation(
-                    event,
-                    candidate,
-                    &evaluations[*index],
-                )
-            })
-            .filter(|(index, _)| {
-                candidate_has_apply_authority(event, *index, candidates, &evaluations, policy)
-            })
+            .filter(|(index, _)| surface_authority_admissions[*index].is_some())
             .max_by(|(left, _), (right, _)| {
                 compare_candidate_decision_order(*left, *right, candidates, &evaluations)
             })
             .map(|(index, _)| index);
-        let selected_index = match retained_exact_disposition(event, candidates, &evaluations) {
+        let retained_exact = retained_exact_disposition(event, candidates, &evaluations);
+        let selected_index = match retained_exact {
             RetainedExactDisposition::Absent => ranked_selected_index,
             RetainedExactDisposition::Valid(index) => Some(index),
             RetainedExactDisposition::Invalid => None,
         };
         let selection_ready = std::time::Instant::now();
-
-        let selected_transition = selected_index.map(|index| {
+        let selected_authority_lane = match retained_exact {
+            RetainedExactDisposition::Absent => {
+                ranked_selected_index.and_then(|index| surface_authority_admissions[index].clone())
+            }
+            RetainedExactDisposition::Valid(index) => Some(AuthorityLaneAdmission {
+                candidate: candidates[index].clone(),
+                evaluation: evaluations[index].clone(),
+            }),
+            RetainedExactDisposition::Invalid => None,
+        };
+        let selected_transition = selected_authority_lane.as_ref().map(|admission| {
             DecisionTransitionReceipt::from_selected_candidate(
                 event,
-                &candidates[index],
-                &evaluations[index],
+                &admission.candidate,
+                &admission.evaluation,
             )
         });
+        let (selected_candidate, selected_evaluation) = selected_authority_lane
+            .map_or((None, None), |admission| {
+                (Some(admission.candidate), Some(admission.evaluation))
+            });
         let finished = std::time::Instant::now();
         if timing_enabled {
             eprintln!(
@@ -233,6 +363,8 @@ impl TransitionDecisionCore {
         CandidateDecisionBatch {
             evaluations,
             selected_index,
+            selected_candidate,
+            selected_evaluation,
             selected_transition,
             timing: CandidateDecisionTiming {
                 l3_us: elapsed_us(l3_ready.duration_since(morphology_ready)),
@@ -242,6 +374,88 @@ impl TransitionDecisionCore {
     }
 }
 
+fn ordinary_producer_allows_authority_evaluation(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+    evaluation: &CandidateDecisionEvaluation,
+) -> bool {
+    apply_policy::producer_allows_authority_evaluation(
+        candidate.gate.action,
+        evaluation.signals.l3_pairwise_certified,
+        evaluation.transition.l4_signed_signal,
+    ) || admission::suggest_boundary_allows_authority_evaluation(event, candidate, evaluation)
+}
+
+#[derive(Clone)]
+struct AuthorityLaneAdmission {
+    candidate: UnifiedCorrectionCandidate,
+    evaluation: CandidateDecisionEvaluation,
+}
+
+fn authority_lane_allows_apply(
+    event: &TypingErrorEvent,
+    candidate_index: usize,
+    candidates: &[UnifiedCorrectionCandidate],
+    surface_evaluations: &[CandidateDecisionEvaluation],
+    policy: TransitionDecisionPolicy,
+    lane: UnifiedCorrectionCandidate,
+    frame_bound_lexical_authority: bool,
+) -> Option<AuthorityLaneAdmission> {
+    let mut lane_candidates = candidates.to_vec();
+    lane_candidates[candidate_index] = lane;
+    let mut lane_evaluations = surface_evaluations.to_vec();
+    let candidate = &lane_candidates[candidate_index];
+    let surface_evaluation = &surface_evaluations[candidate_index];
+    let action = action::verify_action_operator(
+        &event.original,
+        &candidate.replacement,
+        candidate.error_class,
+        candidate.origin,
+    );
+    let mut lane_evaluation = surface_evaluation.clone();
+    lane_evaluation.action = action;
+    lane_evaluation.transition =
+        TypingTransition::from_evaluated_candidate(super::EvaluatedTransitionInput {
+            original: &event.original,
+            replacement: &candidate.replacement,
+            error_class: candidate.error_class,
+            origin: candidate.origin,
+            source_id: &candidate.source_id,
+            candidate_count: candidates.len(),
+            action,
+            l4_signed_signal: surface_evaluation.transition.l4_signed_signal,
+        });
+    lane_evaluations[candidate_index] = lane_evaluation;
+
+    let producer_admitted = if frame_bound_lexical_authority {
+        matches!(
+            lane_candidates[candidate_index].gate.action,
+            proposal_admission::CandidateGateAction::Eligible
+                | proposal_admission::CandidateGateAction::SuggestOnly
+        )
+    } else {
+        ordinary_producer_allows_authority_evaluation(
+            event,
+            &lane_candidates[candidate_index],
+            &lane_evaluations[candidate_index],
+        )
+    };
+    (producer_admitted
+        && candidate_has_apply_authority(
+            event,
+            candidate_index,
+            &lane_candidates,
+            &lane_evaluations,
+            policy,
+            frame_bound_lexical_authority,
+        ))
+    .then(|| AuthorityLaneAdmission {
+        candidate: lane_candidates.remove(candidate_index),
+        evaluation: lane_evaluations.remove(candidate_index),
+    })
+}
+
+#[derive(Clone, Copy)]
 enum RetainedExactDisposition {
     Absent,
     Valid(usize),
@@ -256,7 +470,9 @@ fn retained_exact_disposition(
     let mut retained = None;
     for (index, candidate) in candidates.iter().enumerate() {
         match &candidate.authority_evidence {
-            crate::correction_core::CandidateAuthorityEvidence::None => {}
+            crate::correction_core::CandidateAuthorityEvidence::None
+            | crate::correction_core::CandidateAuthorityEvidence::FrameBoundLexical(_)
+            | crate::correction_core::CandidateAuthorityEvidence::FrameBoundLexicalConflict => {}
             crate::correction_core::CandidateAuthorityEvidence::Conflict => {
                 return RetainedExactDisposition::Invalid;
             }
@@ -305,6 +521,8 @@ fn evaluate_closed_exact(
     CandidateDecisionBatch {
         evaluations: Vec::new(),
         selected_index: Some(0),
+        selected_candidate: Some(candidate.clone()),
+        selected_evaluation: None,
         selected_transition: Some(DecisionTransitionReceipt::from_verified_action(
             event, candidate, action,
         )),
@@ -361,6 +579,8 @@ fn exact_candidate_authority(
     match authority {
         crate::correction_core::CandidateAuthorityEvidence::ClosedExactLayout(_) => true,
         crate::correction_core::CandidateAuthorityEvidence::None
+        | crate::correction_core::CandidateAuthorityEvidence::FrameBoundLexical(_)
+        | crate::correction_core::CandidateAuthorityEvidence::FrameBoundLexicalConflict
         | crate::correction_core::CandidateAuthorityEvidence::Conflict => false,
     }
 }
@@ -433,9 +653,12 @@ fn replacement_target_evidence_for_candidate(
         CandidateAuthorityEvidence::ClosedExactLayout(_) => {
             ReplacementTargetEvidence::ExactLayoutProjection
         }
-        CandidateAuthorityEvidence::None | CandidateAuthorityEvidence::Conflict => {
-            ReplacementTargetEvidence::None
+        CandidateAuthorityEvidence::FrameBoundLexical(_) => {
+            ReplacementTargetEvidence::VerifiedLexicalEdit
         }
+        CandidateAuthorityEvidence::None
+        | CandidateAuthorityEvidence::FrameBoundLexicalConflict
+        | CandidateAuthorityEvidence::Conflict => ReplacementTargetEvidence::None,
     }
 }
 
@@ -798,6 +1021,11 @@ impl CandidateDecisionEvaluation {
 pub(crate) struct CandidateDecisionBatch {
     pub(crate) evaluations: Vec<CandidateDecisionEvaluation>,
     pub(crate) selected_index: Option<usize>,
+    /// Exact producer lane admitted for mutation. `selected_index` continues
+    /// to address the single ranked surface; this value carries lane-local
+    /// provenance and safety metadata beyond that surface boundary.
+    pub(crate) selected_candidate: Option<UnifiedCorrectionCandidate>,
+    pub(crate) selected_evaluation: Option<CandidateDecisionEvaluation>,
     pub(crate) selected_transition: Option<DecisionTransitionReceipt>,
     pub(crate) timing: CandidateDecisionTiming,
 }
@@ -807,6 +1035,8 @@ impl CandidateDecisionBatch {
         Self {
             evaluations: Vec::new(),
             selected_index: None,
+            selected_candidate: None,
+            selected_evaluation: None,
             selected_transition: None,
             timing: CandidateDecisionTiming::default(),
         }
@@ -923,13 +1153,23 @@ pub(crate) struct CandidateDecisionSignals {
 }
 
 impl CandidateDecisionSignals {
-    fn l4_transition_signal(&self) -> super::L4SignedTransitionSignal {
+    fn l4_owner_precedence_rejected(&self) -> bool {
+        // Preserve preference pressure in owner competition independently of
+        // whether that preference proves a rejected transition.
         let exact_positive = self.l4_transition_state_specific
             && self.l4_transition_attract_count > self.l4_transition_repel_count;
         let exact_negative = self.l4_transition_state_specific
             && self.l4_transition_repel_count > self.l4_transition_attract_count;
+        exact_negative || (!exact_positive && self.l4_signed_milli <= -450)
+    }
+
+    fn l4_transition_signal(&self) -> super::L4SignedTransitionSignal {
+        // Word/context priors still affect ranking, but only rejected
+        // transition experience can supply a negative transition witness.
+        let transition_repels = self.l4_transition_repel_count > self.l4_transition_attract_count;
         super::L4SignedTransitionSignal {
-            negative: exact_negative || (!exact_positive && self.l4_signed_milli <= -450),
+            negative: transition_repels
+                && (self.l4_transition_state_specific || self.l4_signed_milli <= -450),
             state_specific: self.l4_transition_state_specific,
             attract_count: self.l4_transition_attract_count,
             repel_count: self.l4_transition_repel_count,

@@ -57,8 +57,9 @@ fn evaluate_candidates_with_phase(
     reports
 }
 
-/// Certifies a one-edit restoration when the exact target already occurred in
-/// the current sentence and no competing candidate has the same witness.
+/// Certifies a restoration when the exact target already occurred in the current
+/// sentence. Two-edit evidence additionally requires an unattested source and a
+/// unique nearby word across the complete current context, including noncandidates.
 /// This is bounded current-input evidence, not a phrase-specific rewrite.
 fn apply_context_recurrence_certificate(
     original: &str,
@@ -101,6 +102,55 @@ fn apply_context_recurrence_certificate(
         witnessed.entry(candidate).or_default().push(index);
     }
 
+    if witnessed.is_empty() {
+        // The preservation reader's exact dictionary covers sources of length5+.
+        // Keep the existing one-edit branch first; do not widen short/other-script
+        // authority or infer damage merely from a missing reference entry.
+        if damaged.chars().count() < 5 || !damaged.chars().all(crate::keyboard::is_cyrillic_letter)
+        {
+            return;
+        }
+        let nearby = sentence_context
+            .iter()
+            .flat_map(|word| word.split(|ch| !crate::keyboard::is_cyrillic_letter(ch)))
+            .filter(|word| {
+                !word.is_empty()
+                    && crate::text_metrics::damerau_levenshtein_bounded(damaged, word, 2).is_some()
+            })
+            .collect::<std::collections::BTreeSet<_>>();
+        let Some(target) = (nearby.len() == 1)
+            .then(|| nearby.into_iter().next())
+            .flatten()
+        else {
+            return;
+        };
+        if crate::text_metrics::damerau_levenshtein_bounded(damaged, target, 2) != Some(2)
+            || !sentence_context.iter().any(|word| word == target)
+        {
+            return;
+        }
+        for (index, replacement) in replacements.iter().enumerate() {
+            if context_preserving_next_token(&original_tokens, replacement)
+                .is_some_and(|candidate| candidate == target)
+            {
+                if reports[index]
+                    .as_ref()
+                    .is_some_and(|report| report.decision == L3PhraseGateDecision::Suppress)
+                {
+                    return;
+                }
+                witnessed.entry(target.to_owned()).or_default().push(index);
+            }
+        }
+        // This can initialize process reference snapshots; defer its single call
+        // until an otherwise issuable retained recurrence actually exists.
+        if witnessed.is_empty()
+            || crate::russian_lexicon::has_clean_russian_surface_certificate(damaged)
+        {
+            return;
+        }
+    }
+
     let Some((target, indices)) = (witnessed.len() == 1)
         .then(|| witnessed.into_iter().next())
         .flatten()
@@ -133,7 +183,7 @@ fn current_sentence_context_tokens(original: &str) -> Vec<String> {
     if current_start == 0 {
         return Vec::new();
     }
-    let before_current = trimmed[..current_start].trim_end_matches(char::is_whitespace);
+    let before_current = &trimmed[..current_start];
     let sentence_start = before_current
         .char_indices()
         .rev()
@@ -581,13 +631,93 @@ mod tests {
     }
 
     #[test]
+    fn two_edit_recurrence_shares_surface_evidence_across_aliases_and_order() {
+        for (observed, target, rival) in [
+            ("рфрма", "форма", "ферма"),
+            ("ткртина", "картина", "картона"),
+        ] {
+            let prefix = format!("{target} {target} нужна ");
+            let original = format!("{prefix}{observed} ");
+            let replacement = format!("{prefix}{target} ");
+            let rival = format!("{prefix}{rival} ");
+            let surfaces = [&replacement, &replacement, &rival];
+            for order in [[0, 1, 2], [2, 0, 1], [1, 2, 0]] {
+                let replacements = order.map(|index| surfaces[index].as_str());
+                let mut reports = vec![None; replacements.len()];
+                apply_context_recurrence_certificate(&original, &replacements, &mut reports);
+                for (surface, report) in replacements.iter().zip(&reports) {
+                    if *surface == replacement {
+                        let report = report.as_ref().expect("unique retained context target");
+                        assert_eq!(report.decision, L3PhraseGateDecision::Support);
+                        assert!(report.pairwise_certified);
+                        assert_eq!(report.support, 2);
+                    } else {
+                        assert!(report.is_none());
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn two_edit_recurrence_requires_complete_context_and_source_preservation() {
+        assert!(crate::lexicon::is_ru_live_protected_word("грокинг"));
+        for (prefix, observed, target) in [
+            ("нужна ", "ткртина", "картина"),
+            ("картина ткртина нужна ", "ткртина", "картина"),
+            ("картина кртина нужна ", "ткртина", "картина"),
+            ("картина кортина нужна ", "ткртина", "картина"),
+            ("форма ферма нужна ", "рфрма", "форма"),
+            ("форма ферма,дом ", "рфрма", "форма"),
+            ("форма ферма—дом ", "рфрма", "форма"),
+            ("картина,дом нужна ", "ткртина", "картина"),
+            ("комета нужна ", "комната", "комета"),
+            ("обложка нужна ", "облака", "обложка"),
+            ("брокинт нужна ", "грокинг", "брокинт"),
+            ("сырье и ", "сыр", "сырье"),
+            ("угроза и ", "роза", "угроза"),
+            ("картина нужна ", "tкртина", "картина"),
+            ("картина нужна ", "тгрцина", "картина"),
+        ] {
+            let original = format!("{prefix}{observed} ");
+            let replacement = format!("{prefix}{target} ");
+            let mut reports = vec![None];
+            apply_context_recurrence_certificate(&original, &[&replacement], &mut reports);
+            assert!(reports[0].is_none(), "{original:?}: {reports:?}");
+        }
+    }
+
+    #[test]
+    fn two_edit_recurrence_never_overrides_target_suppression_on_any_alias() {
+        let original = "картина нужна ткртина ";
+        let replacement = "картина нужна картина ";
+        let mut suppressed = context_recurrence_report(None, 1, 2);
+        suppressed.decision = L3PhraseGateDecision::Suppress;
+        for suppression_index in [0, 1] {
+            let replacements = [replacement, replacement];
+            let mut reports = vec![None, None];
+            reports[suppression_index] = Some(suppressed.clone());
+            let before = reports.clone();
+            apply_context_recurrence_certificate(original, &replacements, &mut reports);
+            assert_eq!(reports, before);
+        }
+    }
+
+    #[test]
     fn recurrence_before_sentence_boundary_does_not_grant_authority() {
-        let original = "это мало. теперь написать мло ";
-        let replacements = ["это мало. теперь написать мало "];
-        let mut reports = vec![None];
+        for (observed, target) in [("мло", "мало"), ("ткртина", "картина")] {
+            for delimiter in [". ", "! ", "? ", "\n", "\r", "\r\n", " \n  "] {
+                for current_context in ["", "теперь написать "] {
+                    let prefix = format!("{target}{delimiter}{current_context}");
+                    let original = format!("{prefix}{observed} ");
+                    let replacement = format!("{prefix}{target} ");
+                    let mut reports = vec![None];
 
-        apply_context_recurrence_certificate(original, &replacements, &mut reports);
+                    apply_context_recurrence_certificate(&original, &[&replacement], &mut reports);
 
-        assert!(reports[0].is_none());
+                    assert!(reports[0].is_none(), "{original:?}: {reports:?}");
+                }
+            }
+        }
     }
 }

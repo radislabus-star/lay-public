@@ -151,6 +151,12 @@ fn structural_context_gate(
     if admission_trace_bool!(
         StructuralKnownWordDifferentKnown,
         origin != CandidateOrigin::L3Context
+            && !l2_surface_center_repair_proposal(
+                original,
+                replacement,
+                error_class,
+                origin,
+            )
             && admission_fact_call!(
                 lexical_facts,
                 known_russian_word_rewritten_to_different_known_word_with_facts,
@@ -302,6 +308,14 @@ fn known_current_word_gets_unproven_surface_drift(
 
     let original_lower = original_word.to_lowercase();
     let replacement_lower = replacement_word.to_lowercase();
+    if l2_surface_center_repair_proposal_words(
+        &original_lower,
+        &replacement_lower,
+        error_class,
+        origin,
+    ) {
+        return false;
+    }
     if verified_surface_to_lexical_center_repair(&original_lower, &replacement_lower, error_class) {
         return false;
     }
@@ -364,6 +378,14 @@ fn known_current_word_gets_unproven_surface_drift_with_facts(
         return false;
     };
     if !original_word.is_cyrillic_letters_only() || !replacement_word.is_cyrillic_letters_only() {
+        return false;
+    }
+    if l2_surface_center_repair_proposal_words(
+        original_word.lower(),
+        replacement_word.lower(),
+        error_class,
+        origin,
+    ) {
         return false;
     }
     if verified_surface_to_lexical_center_repair_with_facts(
@@ -641,14 +663,9 @@ fn verified_surface_to_lexical_center_repair(
             | TypingErrorClass::ExtraLetter
             | TypingErrorClass::RepeatedLetter
             | TypingErrorClass::AdjacentTransposition
-    ) && !known_russian_autocorrect_token(original_lower)
-        && known_russian_autocorrect_token(replacement_lower)
-        && (damerau_levenshtein(original_lower, replacement_lower) <= 1
-            || crate::text_metrics::sparse_internal_omission_count(
-                original_lower,
-                replacement_lower,
-            )
-            .is_some())
+    ) && crate::russian_lexicon::has_clean_russian_surface_certificate(replacement_lower)
+        && crate::ru_typo::correct_hard_sign_typo(original_lower).as_deref()
+            == Some(replacement_lower)
 }
 
 fn verified_surface_to_lexical_center_repair_with_facts(
@@ -664,12 +681,47 @@ fn verified_surface_to_lexical_center_repair_with_facts(
             | TypingErrorClass::ExtraLetter
             | TypingErrorClass::RepeatedLetter
             | TypingErrorClass::AdjacentTransposition
-    ) && !original.is_known_russian()
-        && replacement.is_known_russian()
-        && (damerau_levenshtein(original.lower(), replacement.lower()) <= 1
+    ) && replacement.has_clean_surface_certificate()
+        && crate::ru_typo::correct_hard_sign_typo(original.lower()).as_deref()
+            == Some(replacement.lower())
+}
+
+fn l2_surface_center_repair_proposal(
+    original: &str,
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+) -> bool {
+    let Some(original_word) = last_text_word(original) else {
+        return false;
+    };
+    let Some(replacement_word) = last_text_word(replacement) else {
+        return false;
+    };
+    l2_surface_center_repair_proposal_words(
+        &original_word.to_lowercase(),
+        &replacement_word.to_lowercase(),
+        error_class,
+        origin,
+    )
+}
+
+fn l2_surface_center_repair_proposal_words(
+    original_lower: &str,
+    replacement_lower: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+) -> bool {
+    origin == CandidateOrigin::L2Surface
+        && matches!(
+            error_class,
+            TypingErrorClass::LetterSubstitution
+        )
+        && crate::russian_lexicon::has_clean_russian_surface_certificate(replacement_lower)
+        && (damerau_levenshtein(original_lower, replacement_lower) <= 1
             || crate::text_metrics::sparse_internal_omission_count(
-                original.lower(),
-                replacement.lower(),
+                original_lower,
+                replacement_lower,
             )
             .is_some())
 }
@@ -719,6 +771,14 @@ fn unproven_stable_surface_shape_drift(
 
     let original_lower = original_word.to_lowercase();
     let replacement_lower = replacement_word.to_lowercase();
+    if l2_surface_center_repair_proposal_words(
+        &original_lower,
+        &replacement_lower,
+        error_class,
+        origin,
+    ) {
+        return false;
+    }
     if verified_surface_to_lexical_center_repair(&original_lower, &replacement_lower, error_class) {
         return false;
     }
@@ -726,7 +786,10 @@ fn unproven_stable_surface_shape_drift(
         return false;
     }
 
-    unproven_internal_vowel_insertion(&original_lower, &replacement_lower)
+    crate::russian_typo_candidates::missing_letter_inserts_adjacent_duplicate_consonant(
+        &original_lower,
+        &replacement_lower,
+    ) || unproven_internal_vowel_insertion(&original_lower, &replacement_lower)
         || unproven_soft_sign_tail_insertion(&original_lower, &replacement_lower)
         || unproven_short_vowel_substitution(&original_lower, &replacement_lower)
         || unproven_tail_vowel_substitution(&original_lower, &replacement_lower)
@@ -780,6 +843,14 @@ fn unproven_stable_surface_shape_drift_with_facts(
     if !original_word.is_cyrillic_letters_only() || !replacement_word.is_cyrillic_letters_only() {
         return false;
     }
+    if l2_surface_center_repair_proposal_words(
+        original_word.lower(),
+        replacement_word.lower(),
+        error_class,
+        origin,
+    ) {
+        return false;
+    }
     if verified_surface_to_lexical_center_repair_with_facts(
         original_word,
         replacement_word,
@@ -790,7 +861,10 @@ fn unproven_stable_surface_shape_drift_with_facts(
     if original_word.lower() == replacement_word.lower() {
         return false;
     }
-    unproven_internal_vowel_insertion(original_word.lower(), replacement_word.lower())
+    crate::russian_typo_candidates::missing_letter_inserts_adjacent_duplicate_consonant(
+        original_word.lower(),
+        replacement_word.lower(),
+    ) || unproven_internal_vowel_insertion(original_word.lower(), replacement_word.lower())
         || unproven_soft_sign_tail_insertion(original_word.lower(), replacement_word.lower())
         || unproven_short_vowel_substitution(original_word.lower(), replacement_word.lower())
         || unproven_tail_vowel_substitution(original_word.lower(), replacement_word.lower())

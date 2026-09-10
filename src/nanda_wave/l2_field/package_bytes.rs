@@ -1,6 +1,26 @@
 use std::path::Path;
 use std::sync::Arc;
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(super) struct LoadedPackageIdentity {
+    bytes: u64,
+    sha256: [u8; 32],
+}
+
+impl LoadedPackageIdentity {
+    pub(super) const fn new(bytes: u64, sha256: [u8; 32]) -> Self {
+        Self { bytes, sha256 }
+    }
+
+    pub(super) const fn bytes(self) -> u64 {
+        self.bytes
+    }
+
+    pub(super) const fn sha256(self) -> [u8; 32] {
+        self.sha256
+    }
+}
+
 #[derive(Clone)]
 pub(super) struct PackageBytes {
     inner: Arc<PackageBytesInner>,

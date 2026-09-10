@@ -46,6 +46,35 @@ pub(crate) fn record_key(
     ));
 }
 
+pub(crate) fn record_context_admission(
+    stage: &str,
+    member: &str,
+    serial: u32,
+    disposition: &str,
+    owner_generation: Option<u64>,
+    activation_generation: Option<u64>,
+    completeness: Option<&str>,
+) {
+    if !enabled() {
+        return;
+    }
+    let stage = json_string(stage);
+    let member = json_string(member);
+    let disposition = json_string(disposition);
+    let owner_generation = owner_generation
+        .map(|generation| generation.to_string())
+        .unwrap_or_else(|| "null".to_string());
+    let activation_generation = activation_generation
+        .map(|generation| generation.to_string())
+        .unwrap_or_else(|| "null".to_string());
+    let completeness = completeness
+        .map(json_string)
+        .unwrap_or_else(|| "null".to_string());
+    write_record(format!(
+        r#"{{"kind":"ibus_context_admission","stage":{stage},"member":{member},"serial":{serial},"disposition":{disposition},"owner_generation":{owner_generation},"activation_generation":{activation_generation},"completeness":{completeness}}}"#
+    ));
+}
+
 pub(crate) fn record_preedit(
     stage: &str,
     visible: bool,
@@ -370,6 +399,57 @@ pub(crate) fn record_correction_projection_timing(
     }));
 }
 
+pub(crate) fn record_correction_prefetch_timing(
+    outcome: &str,
+    worker_generation: u64,
+    identity: &InputFrameIdentity,
+    enqueued_at: Option<Instant>,
+    started_at: Instant,
+    evaluated_at: Instant,
+    publication_observed_at: Instant,
+) {
+    if !enabled() {
+        return;
+    }
+    if let Some(line) = correction_prefetch_timing_line(
+        outcome,
+        worker_generation,
+        identity,
+        enqueued_at,
+        started_at,
+        evaluated_at,
+        publication_observed_at,
+    ) {
+        write_record(line);
+    }
+}
+
+fn correction_prefetch_timing_line(
+    outcome: &str,
+    worker_generation: u64,
+    identity: &InputFrameIdentity,
+    enqueued_at: Option<Instant>,
+    started_at: Instant,
+    evaluated_at: Instant,
+    publication_observed_at: Instant,
+) -> Option<String> {
+    let enqueued_at = enqueued_at?;
+    let outcome = json_string(outcome);
+    let path = json_string(&identity.path);
+    Some(format!(
+        r#"{{"kind":"ibus_space_prefetch_timing","outcome":{outcome},"worker_generation":{worker_generation},"tail_epoch":{},"engine_path":{path},"queue_us":{},"evaluation_us":{},"publication_us":{},"total_us":{}}}"#,
+        identity.tail_epoch,
+        started_at.duration_since(enqueued_at).as_micros(),
+        evaluated_at.duration_since(started_at).as_micros(),
+        publication_observed_at
+            .duration_since(evaluated_at)
+            .as_micros(),
+        publication_observed_at
+            .duration_since(enqueued_at)
+            .as_micros(),
+    ))
+}
+
 struct TokenFieldRouteRecord<'a> {
     projection: &'static str,
     outcome: &'a str,
@@ -568,6 +648,52 @@ mod tests {
 
     fn parse(line: &str) -> Value {
         serde_json::from_str(line).expect("trace line must be valid JSON")
+    }
+
+    #[test]
+    fn correction_prefetch_trace_separates_intervals_without_text() {
+        let frame = identity();
+        let enqueued_at = Instant::now();
+        let started_at = enqueued_at + Duration::from_micros(7);
+        let evaluated_at = started_at + Duration::from_micros(11);
+        let publication_observed_at = evaluated_at + Duration::from_micros(13);
+        for outcome in ["prepared", "superseded"] {
+            let line = correction_prefetch_timing_line(
+                outcome,
+                7,
+                &frame,
+                Some(enqueued_at),
+                started_at,
+                evaluated_at,
+                publication_observed_at,
+            )
+            .expect("observed enqueue timestamp");
+            assert_eq!(
+                parse(&line),
+                serde_json::json!({
+                    "kind": "ibus_space_prefetch_timing",
+                    "outcome": outcome,
+                    "worker_generation": 7,
+                    "tail_epoch": 41,
+                    "engine_path": "/engine/test",
+                    "queue_us": 7,
+                    "evaluation_us": 11,
+                    "publication_us": 13,
+                    "total_us": 31,
+                }),
+            );
+            assert!(!line.contains("token") && !line.contains("context"));
+        }
+        assert!(correction_prefetch_timing_line(
+            "prepared",
+            7,
+            &frame,
+            None,
+            started_at,
+            evaluated_at,
+            publication_observed_at,
+        )
+        .is_none());
     }
 
     #[test]

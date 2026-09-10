@@ -1,2 +1,0 @@
-test precognition_worker::tests::result_identity_binds_every_visible_input_dimension ... ok
-

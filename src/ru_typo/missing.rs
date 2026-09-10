@@ -2,6 +2,7 @@ use crate::russian_chars::is_russian_vowel;
 use crate::russian_lexicon::is_known_russian_word_or_form;
 use crate::russian_typo_candidates::{
     generate_missing_letter_candidates, inserted_char_position_for_missing_letter,
+    missing_letter_inserts_adjacent_duplicate_consonant,
 };
 use crate::russian_typo_scoring::{
     best_ranked_dictionary_candidate, has_typo_autocorrect_authority,
@@ -93,6 +94,11 @@ fn select_missing_letter_candidate(
         NGRAM_DICT_MISSING_LETTER_MARGIN,
         0.40,
     )?;
+    if authority == MissingLetterAuthority::Autocorrect
+        && missing_letter_inserts_adjacent_duplicate_consonant(&lower, &selected)
+    {
+        return None;
+    }
     Some(selected)
 }
 

@@ -196,6 +196,13 @@ fn known_russian_word_rewritten_to_different_known_word(
     if original_lower == replacement_lower {
         return false;
     }
+    if verified_surface_to_lexical_center_repair(
+        &original_lower,
+        &replacement_lower,
+        error_class,
+    ) {
+        return false;
+    }
 
     known_russian_autocorrect_token(&original_lower)
         && known_russian_autocorrect_token(&replacement_lower)
@@ -239,6 +246,13 @@ fn known_russian_word_rewritten_to_different_known_word_with_facts(
         return false;
     }
     if original_word.lower() == replacement_word.lower() {
+        return false;
+    }
+    if verified_surface_to_lexical_center_repair_with_facts(
+        original_word,
+        replacement_word,
+        error_class,
+    ) {
         return false;
     }
     original_word.is_known_russian() && replacement_word.is_known_russian()

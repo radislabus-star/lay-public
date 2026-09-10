@@ -509,6 +509,7 @@ fn boundary_evidence_is_target_bound_across_direct_and_canonical_routes() {
         ("Еленапросит", "Елена просит"),
         ("документыдля", "документы для"),
         ("тоесть", "то есть"),
+        ("данорм", "да норм"),
     ] {
         assert!(
             ime_l2_boundary_target_evidence(token, target),
@@ -518,6 +519,20 @@ fn boundary_evidence_is_target_bound_across_direct_and_canonical_routes() {
     assert!(
         !ime_l2_boundary_target_evidence("относитться", "относит ться"),
         "a decoder motif fragment must not become direct boundary evidence"
+    );
+    assert!(
+        crate::ru_typo::fuzzy_known_word_candidates("авторручка")
+            .iter()
+            .any(|candidate| {
+                candidate == "авторучка"
+                    && crate::text_metrics::damerau_levenshtein("авторручка", candidate) == 1
+                    && crate::russian_lexicon::has_clean_russian_surface_certificate(candidate)
+            }),
+        "the one-edit known whole-word competitor must be observable"
+    );
+    assert!(
+        ime_l2_boundary_target_evidence("авторручка", "автор ручка"),
+        "exact structural evidence must remain observable independently of apply authority"
     );
 
     let readout = crate::nanda_wave::l2_field::bridge::canonical_text_readout("данорм ");
@@ -534,6 +549,18 @@ fn boundary_evidence_is_target_bound_across_direct_and_canonical_routes() {
     assert_eq!(
         candidate.gate.action,
         crate::correction_core::CandidateGateAction::Eligible
+    );
+}
+
+#[test]
+fn content_boundary_evidence_survives_a_complete_one_edit_competitor() {
+    assert!(
+        crate::russian_typo_candidates::has_clean_single_damerau_edit_candidate("авторручка"),
+        "a clean one-word repair must be found without relying on the bounded L2 readout"
+    );
+    assert!(
+        ime_l2_boundary_target_evidence("авторручка", "автор ручка"),
+        "semantic competition must not erase exact target-bound structural evidence"
     );
 }
 

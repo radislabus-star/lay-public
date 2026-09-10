@@ -16,6 +16,7 @@ use super::engine::InputFrameIdentity;
 use super::trace;
 
 // Leave room inside the 4 ms product deadline for lock and wake-up overhead.
+#[cfg(test)]
 const SPACE_FULL_WAIT_BUDGET: Duration = Duration::from_micros(3_500);
 const MAX_PREFETCH_PATH_LANES: usize = 8;
 
@@ -108,6 +109,7 @@ struct DesiredWork {
     material_generation: u64,
     work: SpaceAutocorrectWork,
     exact_certificate: Option<lay::exact_layout_authority::ExactLayoutContourCertificate>,
+    enqueued_at: Option<Instant>,
 }
 
 #[derive(Default)]
@@ -167,6 +169,17 @@ impl Worker {
         let exact_started = Instant::now();
         let exact = prepare_inline_exact(&work);
         let exact_us = exact_started.elapsed().as_micros();
+        if trace::enabled() {
+            trace::record(format!(
+                r#"{{"kind":"ibus_exact_layout_preparation","worker_generation":{worker_generation},"tail_epoch":{},"authority_snapshot_present":{},"certificate_present":{},"decision_present":{},"exact_us":{exact_us}}}"#,
+                work.identity.tail_epoch,
+                work.identity.exact_authority_snapshot.is_some(),
+                exact.is_some(),
+                exact
+                    .as_ref()
+                    .is_some_and(|prepared| prepared.decision.is_some()),
+            ));
+        }
         let (exact_decision, exact_certificate) = match exact {
             Some(prepared) => (prepared.decision, Some(prepared.certificate)),
             None => (None, None),
@@ -219,6 +232,8 @@ impl Worker {
         exact_certificate: Option<lay::exact_layout_authority::ExactLayoutContourCertificate>,
         exact_us: u128,
     ) -> bool {
+        // Trace configuration may refresh from disk; keep it outside worker state.
+        let record_timing = trace::enabled();
         if self.latest_request_generation.load(Ordering::Acquire) != worker_generation {
             return false;
         }
@@ -259,12 +274,22 @@ impl Worker {
             material_generation,
             work,
             exact_certificate,
+            enqueued_at: record_timing.then(Instant::now),
         });
         wake.notify_one();
         true
     }
 
+    #[cfg(test)]
     fn take(&self, identity: &InputFrameIdentity) -> SpaceAutocorrectLookupReceipt {
+        self.take_with_budget(identity, SPACE_FULL_WAIT_BUDGET)
+    }
+
+    fn take_with_budget(
+        &self,
+        identity: &InputFrameIdentity,
+        wait_budget: Duration,
+    ) -> SpaceAutocorrectLookupReceipt {
         let started = Instant::now();
         let (lock, wake) = &*self.state;
         let Ok(mut state) = lock.lock() else {
@@ -324,7 +349,7 @@ impl Worker {
                 return lookup_receipt(SpaceAutocorrectLookup::Ready(lease), started, generation);
             }
 
-            let remaining = SPACE_FULL_WAIT_BUDGET.saturating_sub(started.elapsed());
+            let remaining = wait_budget.saturating_sub(started.elapsed());
             if remaining.is_zero() {
                 let generation = state.generation;
                 retire_slot(&mut state, &self.latest_request_generation, generation);
@@ -448,12 +473,13 @@ fn prepare_inline_exact(
     if !work.identity.config_matches(&work.config) {
         return None;
     }
-    let boundary_text = work.identity.boundary_text()?;
+    work.identity.boundary_text()?;
+    let active_token_text = format!("{} ", work.identity.observed_token);
     let frame = work.identity.exact_layout_frame();
     let lexical_authority_frame = work.identity.lexical_authority_frame();
     prepare_exact_layout_active_composition_autocorrect_observed(
         ActiveCompositionAutocorrectRequest {
-            text: &boundary_text,
+            text: &active_token_text,
             committed_tail: &work.identity.committed_tail,
             config: &work.config,
             lexical_authority_frame: Some(&lexical_authority_frame),
@@ -489,6 +515,7 @@ fn run_worker(
 
         let started = Instant::now();
         let (outcome, telemetry) = evaluate_full(&desired, started);
+        let evaluated_at = desired.enqueued_at.map(|_| Instant::now());
         let trace_identity = desired.work.identity.clone();
         let current_material_generation = lay::nanda_wave::candidate_material_generation();
 
@@ -509,12 +536,27 @@ fn run_worker(
             wake.notify_all();
         }
         drop(state);
+        // This observes publication after unlocking; descheduling may be included.
+        let publication_observed_at = evaluated_at.map(|_| Instant::now());
         trace::record_correction_projection_timing(
             if published { "prepared" } else { "superseded" },
             desired.worker_generation,
             &trace_identity,
             telemetry,
         );
+        if let (Some(evaluated_at), Some(publication_observed_at)) =
+            (evaluated_at, publication_observed_at)
+        {
+            trace::record_correction_prefetch_timing(
+                if published { "prepared" } else { "superseded" },
+                desired.worker_generation,
+                &trace_identity,
+                desired.enqueued_at,
+                started,
+                evaluated_at,
+                publication_observed_at,
+            );
+        }
     }
 }
 
@@ -531,7 +573,7 @@ fn evaluate_full(
             ActiveCompositionAutocorrectTelemetry::default(),
         );
     }
-    let Some(boundary_text) = desired.work.identity.boundary_text() else {
+    if desired.work.identity.boundary_text().is_none() {
         return (
             PreparedFullOutcome::NoApply {
                 stage: PreparedNoApplyStage::Infrastructure,
@@ -539,10 +581,11 @@ fn evaluate_full(
             },
             ActiveCompositionAutocorrectTelemetry::default(),
         );
-    };
+    }
+    let active_token_text = format!("{} ", desired.work.identity.observed_token);
     let lexical_authority_frame = desired.work.identity.lexical_authority_frame();
     let request = ActiveCompositionAutocorrectRequest {
-        text: &boundary_text,
+        text: &active_token_text,
         committed_tail: &desired.work.identity.committed_tail,
         config: &desired.work.config,
         lexical_authority_frame: Some(&lexical_authority_frame),
@@ -652,7 +695,10 @@ pub(crate) fn schedule(work: SpaceAutocorrectWork) {
     worker.schedule(work);
 }
 
-pub(crate) fn take(identity: &InputFrameIdentity) -> SpaceAutocorrectLookupReceipt {
+pub(crate) fn take_with_budget(
+    identity: &InputFrameIdentity,
+    wait_budget: Duration,
+) -> SpaceAutocorrectLookupReceipt {
     let Some(worker) = existing_worker(&identity.path) else {
         return SpaceAutocorrectLookupReceipt {
             lookup: SpaceAutocorrectLookup::NotReady,
@@ -660,7 +706,7 @@ pub(crate) fn take(identity: &InputFrameIdentity) -> SpaceAutocorrectLookupRecei
             worker_generation: 0,
         };
     };
-    worker.take(identity)
+    worker.take_with_budget(identity, wait_budget)
 }
 
 pub(crate) fn invalidate(identity: &InputFrameIdentity) {
@@ -736,6 +782,20 @@ mod tests {
         }
     }
 
+    fn live_autocorrect_config() -> LayConfig {
+        LayConfig {
+            text_backend: "ime".to_string(),
+            auto_replace: true,
+            typing_assist: true,
+            auto_switch_layout: true,
+            correction_safety: "experimental".to_string(),
+            nanda_autocorrect: true,
+            nanda_precognition: true,
+            nanda_l2_phase_apply: false,
+            ..LayConfig::default()
+        }
+    }
+
     fn worker_with_state(state: WorkerState) -> Worker {
         let generation = state.generation;
         Worker {
@@ -743,6 +803,138 @@ mod tests {
             latest_request_generation: Arc::new(AtomicU64::new(generation)),
             stop: Arc::new(AtomicBool::new(false)),
         }
+    }
+
+    #[test]
+    fn contextual_full_prefetch_scopes_physical_edit_to_observed_token() {
+        let config = live_autocorrect_config();
+        let context_prefix = "функция ";
+        let observed_token = "рабоает";
+        let committed_tail = format!("{context_prefix}{observed_token}");
+        let config_identity =
+            lay::lexical_authority_frame::LexicalAuthorityConfigIdentityV1::from_config(&config);
+        let cursor =
+            u32::try_from(observed_token.chars().count()).expect("test token scalar count");
+        let coordinates = lay::lexical_authority_frame::LexicalAuthorityCoordinatesV1::new(
+            17,
+            [19, 23],
+            29,
+            observed_token.to_string(),
+            context_prefix.to_string(),
+            cursor,
+            (cursor, cursor),
+            observed_token.to_string(),
+            cursor,
+            31,
+            config_identity.identity_fingerprint(),
+        );
+        let identity = InputFrameIdentity::new(
+            "/engine/contextual-autocorrect".to_string(),
+            Some("focus-contextual-autocorrect".to_string()),
+            7,
+            committed_tail.clone(),
+            context_prefix.to_string(),
+            observed_token.to_string(),
+            true,
+            true,
+            &config,
+        )
+        .with_lexical_coordinates(coordinates);
+        let desired = DesiredWork {
+            worker_generation: 11,
+            material_generation: lay::nanda_wave::candidate_material_generation(),
+            work: SpaceAutocorrectWork { identity, config },
+            exact_certificate: None,
+            enqueued_at: None,
+        };
+
+        let (outcome, _) = evaluate_full(&desired, Instant::now());
+        let PreparedFullOutcome::Apply(lease) = outcome else {
+            panic!("contextual deterministic typo must produce one prepared correction")
+        };
+
+        assert_eq!(lease.decision.replacement, "работает ");
+        assert_eq!(lease.decision.action.from_text(), observed_token);
+        assert_eq!(lease.decision.action.to_text(), "работает ");
+        assert!(lease.decision.action.allow_apply());
+        assert_eq!(
+            lease.decision.action.transition().operator(),
+            Some(lay::text_edit::TransitionOperator::ReplaceCurrentWord)
+        );
+        assert_eq!(lease.decision.action.transition().changed_tokens(), Some(1));
+        assert_eq!(
+            lease.decision.action.transition().left_context_changed(),
+            Some(false)
+        );
+        let plan = lease
+            .decision
+            .action
+            .plan()
+            .expect("current-token physical edit plan");
+        assert_eq!(
+            plan.backspaces,
+            u32::try_from(observed_token.chars().count()).expect("test token scalar count")
+        );
+        assert_eq!(plan.insert, "работает ");
+        assert_eq!(
+            format!("{context_prefix}{}", lease.decision.replacement),
+            "функция работает "
+        );
+    }
+
+    #[test]
+    fn contextual_exact_prefetch_scopes_physical_edit_to_observed_token() {
+        lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
+            .expect("warm exact-layout authority");
+        let config = exact_config();
+        let observed_token = "ghbdtn";
+        let context_prefix = "проверь ";
+        let frame = identity_with_config(
+            "/engine/contextual-exact",
+            "focus-contextual-exact",
+            13,
+            "проверь ghbdtn",
+            &config,
+        );
+
+        let prepared = prepare_inline_exact(&SpaceAutocorrectWork {
+            identity: frame,
+            config,
+        })
+        .expect("contextual exact-layout preparation");
+        assert_eq!(prepared.certificate.replacement_text(), "проверь привет ");
+        let decision = prepared.decision.expect("contextual exact-layout decision");
+
+        assert_eq!(decision.replacement, "привет ");
+        assert_eq!(decision.action.from_text(), observed_token);
+        assert_eq!(decision.action.to_text(), "привет ");
+        assert!(decision.action.allow_apply());
+        assert_eq!(
+            decision.action.transition().operator(),
+            Some(lay::text_edit::TransitionOperator::LayoutProjection)
+        );
+        assert_eq!(decision.action.transition().changed_tokens(), Some(1));
+        assert_eq!(
+            decision.action.transition().left_context_changed(),
+            Some(false)
+        );
+        assert_eq!(
+            decision.action.transition().proof(),
+            Some(lay::text_edit::TransitionProof::Layout)
+        );
+        let plan = decision
+            .action
+            .plan()
+            .expect("exact current-token physical edit plan");
+        assert_eq!(
+            plan.backspaces,
+            u32::try_from(observed_token.chars().count()).expect("test token scalar count")
+        );
+        assert_eq!(plan.insert, "привет ");
+        assert_eq!(
+            format!("{context_prefix}{}", decision.replacement),
+            "проверь привет "
+        );
     }
 
     fn exact_lease(
@@ -913,6 +1105,7 @@ mod tests {
                 config,
             },
             exact_certificate: None,
+            enqueued_at: None,
         };
         let state = WorkerState {
             generation: 14,

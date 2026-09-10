@@ -543,10 +543,13 @@ fn live_l2_word_candidates_with_availability(
         Vec::new()
     };
     let canonical_needed =
-        plain_lexical_surface && live_canonical_morphology_needed(&normalized, &candidates, limit);
+        plain_lexical_surface && live_exact_prefix_field_is_thin(&normalized, &candidates, limit);
     if canonical_needed && material_limit > limit {
         candidates = l2::ime_l2_word_candidates(context_prefix, &normalized, material_limit);
     }
+    // Exact-prefix completion and one-deletion repair are distinct operations:
+    // a token may validly belong to both lanes. Existing surface merging keeps
+    // duplicate material bounded without erasing the replacement witness.
     merge_live_candidate_material(
         &mut candidates,
         live_single_deletion_repair_candidates(&normalized),
@@ -740,7 +743,7 @@ fn live_exact_form_state_is_known(surface: &str) -> bool {
         || crate::russian_lexicon::is_reference_backed_russian_form(surface)
 }
 
-fn live_canonical_morphology_needed(
+fn live_exact_prefix_field_is_thin(
     token: &str,
     lexical: &[l2::L2ImeWordCandidate],
     display_limit: usize,
@@ -1997,7 +2000,7 @@ mod tests {
     }
 
     #[test]
-    fn complete_exact_prefix_reserve_skips_redundant_morphology_readout() {
+    fn complete_exact_prefix_reserve_skips_redundant_replacement_readout() {
         let completion = |surface: String| l2::L2ImeWordCandidate {
             surface,
             kind: L2ImeWordCandidateKind::Completion,
@@ -2016,8 +2019,8 @@ mod tests {
             .map(|index| completion(format!("prefix{index}")))
             .collect::<Vec<_>>();
 
-        assert!(!live_canonical_morphology_needed("prefix", &exact, 12));
-        assert!(live_canonical_morphology_needed(
+        assert!(!live_exact_prefix_field_is_thin("prefix", &exact, 12));
+        assert!(live_exact_prefix_field_is_thin(
             "prefix",
             &exact[..MIN_EXACT_PREFIX_COMPETITORS - 1],
             12
@@ -2025,7 +2028,43 @@ mod tests {
 
         let mut damaged = exact;
         damaged[0].kind = L2ImeWordCandidateKind::Replacement;
-        assert!(live_canonical_morphology_needed("prefix", &damaged, 12));
+        assert!(live_exact_prefix_field_is_thin("prefix", &damaged, 12));
+    }
+
+    #[test]
+    fn td113_review_red_dense_exact_prefix_field_retains_distinct_deletion_repair() {
+        super::super::warm_up_l2_for_ime();
+        clear_live_completion_cache();
+
+        let candidates = live_completion_candidates(request("", "кандидатс"));
+        let exact_prefix_count = candidates
+            .iter()
+            .filter(|candidate| {
+                !candidate.replacement && candidate.surface.starts_with("кандидатс")
+            })
+            .count();
+
+        assert!(
+            exact_prefix_count >= MIN_EXACT_PREFIX_COMPETITORS,
+            "fixture must exercise a dense exact-prefix field: {candidates:?}"
+        );
+        assert!(
+            candidates.iter().any(|candidate| {
+                candidate.surface == "кандидат"
+                    && candidate.replacement
+                    && candidate.suffix.is_empty()
+            }),
+            "a dense completion field must not erase the distinct deletion repair кандидатс -> кандидат: {candidates:?}"
+        );
+        assert_eq!(
+            candidates
+                .iter()
+                .map(|candidate| candidate.surface.as_str())
+                .collect::<HashSet<_>>()
+                .len(),
+            candidates.len(),
+            "public readout must remain surface-deduplicated: {candidates:?}"
+        );
     }
 
     #[test]

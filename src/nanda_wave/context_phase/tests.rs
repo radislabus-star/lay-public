@@ -1,6 +1,207 @@
 use super::*;
 use std::time::Instant;
 
+thread_local! {
+    static SIGNATURE_READS: std::cell::Cell<Option<usize>> = const { std::cell::Cell::new(None) };
+}
+
+pub(super) fn record_candidate_signature() {
+    SIGNATURE_READS.with(|count| count.set(count.get().map(|value| value + 1)));
+}
+
+fn measure_signatures<T>(read: impl FnOnce() -> T) -> (T, usize) {
+    struct Reset;
+    impl Drop for Reset {
+        fn drop(&mut self) {
+            SIGNATURE_READS.with(|count| count.set(None));
+        }
+    }
+    SIGNATURE_READS.with(|count| assert_eq!(count.replace(Some(0)), None));
+    let _reset = Reset;
+    let result = read();
+    let calls = SIGNATURE_READS.with(|count| count.get().unwrap());
+    (result, calls)
+}
+
+fn readout_digest(readouts: &[ContextPhaseReadout]) -> String {
+    use sha2::{Digest, Sha256};
+    format!("{:x}", Sha256::digest(format!("{readouts:?}")))
+}
+
+#[test]
+fn sentence_pair_signature_work_scales_with_candidates_without_authority() {
+    let package = ContextPhasePackage {
+        signature_schema: SIGNATURE_SCHEMA_MORPHOLOGY_PHASE,
+        profiles: vec![ContextCandidateProfile {
+            token_hash: hash_text("seed"),
+            positive_examples: 2,
+            negative_examples: 0,
+            threshold_micro: 1,
+            positive: Vec::new(),
+            negative: Vec::new(),
+            hard_negative: Vec::new(),
+        }],
+        pair_profiles: vec![ContextPairPhaseProfile::default()],
+        ..ContextPhasePackage::default()
+    };
+    let context = vec!["сцена".to_string(), "контекста".to_string()];
+    let views = vec![context.clone(); sentence::PAIR_VIEW_RIGHT_EXACT + 1];
+    let direct = [
+        sentence::PAIR_VIEW_LEFT_EXACT,
+        sentence::PAIR_VIEW_RIGHT_EXACT,
+    ];
+    let mut measurements = Vec::new();
+    for size in [0, 1, 8, 16, 32, 64] {
+        let surfaces = (0..size)
+            .map(|index| {
+                format!(
+                    "контур{}{}",
+                    char::from_u32('а' as u32 + index / 32).unwrap(),
+                    char::from_u32('а' as u32 + index % 32).unwrap()
+                )
+            })
+            .collect::<Vec<_>>();
+        let candidates = surfaces.iter().map(String::as_str).collect::<Vec<_>>();
+        let (readouts, calls) = measure_signatures(|| {
+            package.score_candidates_with_mode_and_pair_views(
+                &context,
+                &candidates,
+                ContextPhaseMode::Full,
+                Some(&views),
+                Some(&direct),
+            )
+        });
+        assert_eq!(readouts.len(), candidates.len());
+        assert!(readouts.iter().all(|readout| {
+            readout.package_loaded
+                && !readout.profile_present
+                && readout.disposition == ContextPhaseDisposition::Neutral
+                && !readout.pairwise_certified
+        }));
+        eprintln!(
+            "L3_PAIR_SIGNATURE_WORK {}",
+            serde_json::json!({"candidates": size, "calls": calls, "readout_sha256": readout_digest(&readouts)})
+        );
+        measurements.push((candidates.len(), calls));
+    }
+    assert!(
+        measurements.iter().all(|(size, calls)| *calls <= 3 * size),
+        "pair features must be reused within one scoring call: {measurements:?}"
+    );
+}
+
+#[test]
+fn sentence_pair_scoring_preserves_all_fields_across_modes_order_and_duplicates() {
+    let (mut package, _) = compile_context_phase(ContextPhaseCompileInput {
+        corpus_text: concat!(
+            "на улице опять идет дождь. ",
+            "вечером на улице идет дождь. ",
+            "утром на улице идет дождь. ",
+            "в комнате вечером горит свет."
+        ),
+        max_fragments: 0,
+        min_profile_support: 2,
+    });
+    let context = super::super::llmwave::tokenize("вечером на улице идет");
+    let views = vec![context.clone(); sentence::PAIR_VIEW_RIGHT_EXACT + 1];
+    let direct = [
+        sentence::PAIR_VIEW_LEFT_EXACT,
+        sentence::PAIR_VIEW_RIGHT_EXACT,
+    ];
+    let candidates = ["дождь", "свет", "домик", "дождь"];
+    let reverse = candidates.iter().rev().copied().collect::<Vec<_>>();
+    let compiled_pairs = package.pair_profiles.clone();
+    for pair_case in ["compiled", "early_exact", "cycle"] {
+        package.pair_profiles = if pair_case == "compiled" {
+            compiled_pairs.clone()
+        } else {
+            let scene = package.context_vector(&context, ContextPhaseMode::Full);
+            let pairs = if pair_case == "cycle" {
+                vec![(0, 1), (1, 2), (2, 0)]
+            } else {
+                vec![(0, 1)]
+            };
+            let mut profiles = Vec::new();
+            for view in direct {
+                for (winner, loser) in &pairs {
+                    profiles.push(pair_profile_for_scene(
+                        &scene,
+                        pair_view_hash(candidate_token_hash(candidates[*winner]), view),
+                        pair_view_hash(candidate_token_hash(candidates[*loser]), view),
+                    ));
+                }
+            }
+            profiles
+        };
+        package
+            .pair_profiles
+            .sort_by_key(|profile| (profile.low_hash, profile.high_hash));
+        for schema in SIGNATURE_SCHEMA_LEGACY..=SIGNATURE_SCHEMA_RELATION_ROLES {
+            package.signature_schema = schema;
+            for mode in [
+                ContextPhaseMode::Full,
+                ContextPhaseMode::NoPhase,
+                ContextPhaseMode::NoAnti,
+                ContextPhaseMode::NoSemanticState,
+                ContextPhaseMode::NoSignatureProfile,
+                ContextPhaseMode::NoPairwise,
+                ContextPhaseMode::NoHardPairwise,
+                ContextPhaseMode::ShuffledPairDirection,
+                ContextPhaseMode::ShuffledPairScene,
+                ContextPhaseMode::MagnitudeOnlyPairwise,
+            ] {
+                let score = |items: &[&str]| {
+                    package.score_candidates_with_mode_and_pair_views(
+                        &context,
+                        items,
+                        mode,
+                        Some(&views),
+                        Some(&direct),
+                    )
+                };
+                let (forward, calls) = measure_signatures(|| score(&candidates));
+                let (backward, repeated_calls) = measure_signatures(|| score(&reverse));
+                assert_eq!(forward, backward.into_iter().rev().collect::<Vec<_>>());
+                assert_eq!(forward[0], forward[3]);
+                assert!(
+                    calls > 0 && repeated_calls > 0,
+                    "each call reads its package"
+                );
+                if mode == ContextPhaseMode::NoPhase {
+                    assert!(forward.iter().all(|readout| {
+                        readout.disposition == ContextPhaseDisposition::Unavailable
+                            && !readout.pairwise_certified
+                    }));
+                }
+                if pair_case == "cycle" && mode == ContextPhaseMode::Full {
+                    assert_eq!(forward[0].pairwise_cycle_members, 3);
+                    assert!(forward.iter().all(|readout| {
+                        !readout.pairwise_certified
+                            && readout.disposition != ContextPhaseDisposition::Support
+                    }));
+                }
+                eprintln!(
+                    "L3_PAIR_SEMANTIC_PARITY {}",
+                    serde_json::json!({"pairs": pair_case, "schema": schema, "mode": format!("{mode:?}"), "readout_sha256": readout_digest(&forward)})
+                );
+            }
+        }
+    }
+    let empty = ContextPhasePackage::default();
+    let (readouts, calls) = measure_signatures(|| empty.score_candidates(&context, &candidates));
+    assert_eq!(
+        readouts,
+        vec![ContextPhaseReadout::default(); candidates.len()]
+    );
+    assert_eq!(calls, 0);
+    let (readouts, calls) = measure_signatures(|| package.score_candidates(&[], &candidates));
+    assert_eq!(
+        readouts,
+        vec![ContextPhaseReadout::default(); candidates.len()]
+    );
+    assert_eq!(calls, 0);
+}
+
 #[test]
 fn semantic_relation_is_an_additive_channel_and_never_erases_surface() {
     assert_eq!(semantic_relation_weights(1), (1.0, 0.0));

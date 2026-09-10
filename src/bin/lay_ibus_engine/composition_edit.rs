@@ -48,6 +48,7 @@ impl LayIbusEngine {
         if self.last_tail_token_text().is_empty() {
             self.composition.word_input_mode = None;
         }
+        self.backspace_current_word_autocorrect_suppression();
         self.publish_tail_handoff();
     }
 
@@ -147,6 +148,7 @@ impl LayIbusEngine {
         for ch in self.composition.buffer.chars() {
             self.composition.preedit_fast.push(ch);
         }
+        self.refresh_current_word_autocorrect_suppression();
     }
 }
 

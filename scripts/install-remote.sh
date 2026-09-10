@@ -44,6 +44,7 @@ apt_qdbus_package() {
 rpm_ostree_dependencies_available() {
     command -v git >/dev/null 2>&1 \
         && command -v curl >/dev/null 2>&1 \
+        && command -v jq >/dev/null 2>&1 \
         && command -v gcc >/dev/null 2>&1 \
         && command -v make >/dev/null 2>&1 \
         && { command -v pkg-config >/dev/null 2>&1 || command -v pkgconf >/dev/null 2>&1; } \
@@ -64,25 +65,25 @@ install_system_packages() {
     local packages=()
     case "$pm" in
         apt)
-            packages=(git curl ca-certificates build-essential pkg-config libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip)
+            packages=(git curl ca-certificates jq build-essential pkg-config libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip)
             if kde_available; then
                 packages+=("$(apt_qdbus_package)" python3-pyqt6 libxcb-cursor0)
             fi
             ;;
         pacman)
-            packages=(git curl base-devel pkgconf libxcb wl-clipboard xclip)
+            packages=(git curl jq base-devel pkgconf libxcb wl-clipboard xclip)
             if kde_available; then
                 packages+=(qt6-tools python-pyqt6 xcb-util-cursor)
             fi
             ;;
         rpm-ostree)
-            packages=(git curl gcc gcc-c++ make pkgconf-pkg-config libxcb wl-clipboard xclip ibus python3-gobject)
+            packages=(git curl jq gcc gcc-c++ make pkgconf-pkg-config libxcb wl-clipboard xclip ibus python3-gobject)
             if kde_available; then
                 packages+=(qt6-qttools python3-qt6 xcb-util-cursor)
             fi
             ;;
         dnf|yum)
-            packages=(git curl gcc gcc-c++ make pkgconf-pkg-config libxcb wl-clipboard xclip)
+            packages=(git curl jq gcc gcc-c++ make pkgconf-pkg-config libxcb wl-clipboard xclip)
             if kde_available; then
                 packages+=(qt6-qttools python3-qt6 xcb-util-cursor)
             fi

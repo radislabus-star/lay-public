@@ -1,9 +1,14 @@
 # The knowledge graph models active architecture, not immutable execution
-# evidence. Receipts remain available on disk and compact receipts remain in Git.
+# evidence. Current inputs remain here; historical receipts live in the archive.
 /docs/structural_gates/receipts/
 
-# V10/V11 controllers are reproducibility tools for completed experiments.
-# Keep their stable paths, but do not let them dominate active code queries.
+# V10/V11 controllers are archived. Keep the exclusion if an old experiment
+# is temporarily restored; it must not dominate active code queries.
 /scripts/lay-v10-*
 /scripts/lay-v11-*
 /scripts/lay_v10_*.rs.inc
+
+# Graphify outputs and its local query/reflection memory are generated consumers
+# of the source graph. Indexing them back into the corpus creates a recursive
+# graph and can leak untracked service-only artifacts into tracked reports.
+/graphify-out/

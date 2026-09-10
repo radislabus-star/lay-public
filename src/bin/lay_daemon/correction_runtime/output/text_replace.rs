@@ -14,17 +14,66 @@ use super::super::super::{
 };
 use super::context::{ManualOutputCommon, OutputFlow};
 
+struct ManualTextExecution {
+    layout_is_ru: bool,
+    layout_already_set: bool,
+}
+
 pub(crate) fn try_manual_text_replacement(
     ctx: &mut ManualOutputCommon<'_>,
     kbd: &mut VirtualDevice,
     input_gate: Option<RecentActionGateTrace>,
 ) -> OutputFlow {
-    let DecoderAction::ReplaceText {
-        replacement: text,
-        source,
-    } = &ctx.decision.action
-    else {
-        return OutputFlow::ContinueReplay;
+    execute_manual_text_replacement_with_effects(
+        ctx,
+        input_gate,
+        |ctx, authorized_edit, kind| {
+            let preflight = ctx.text_observation.explicit_manual_preflight(
+                ctx.buf,
+                ctx.mapped_orig.to_string(),
+                ctx.input_isolated,
+            );
+            match apply_text_replacement_pipeline(
+                kbd,
+                authorized_edit,
+                ctx.target_is_ru,
+                None,
+                kind,
+                ctx.input_isolated,
+                preflight,
+            ) {
+                Ok(outcome) => Ok(ManualTextExecution {
+                    layout_is_ru: outcome.layout_is_ru,
+                    layout_already_set: outcome.layout_already_set,
+                }),
+                Err(error) => {
+                    error.log(kind, "minimal replace failed");
+                    Err(())
+                }
+            }
+        },
+        switch_to_target_layout,
+    )
+}
+
+fn execute_manual_text_replacement_with_effects(
+    ctx: &mut ManualOutputCommon<'_>,
+    input_gate: Option<RecentActionGateTrace>,
+    execute: impl FnOnce(
+        &mut ManualOutputCommon<'_>,
+        lay::text_edit::AuthorizedEdit,
+        &'static str,
+    ) -> Result<ManualTextExecution, ()>,
+    switch_layout: impl FnOnce(bool) -> Result<&'static str, String>,
+) -> OutputFlow {
+    let (text, source) = match &ctx.decision.action {
+        DecoderAction::ReplaceText {
+            replacement,
+            source,
+        } => (replacement.clone(), *source),
+        DecoderAction::KeepOriginal | DecoderAction::ReplayAll => {
+            return OutputFlow::ContinueReplay;
+        }
     };
     let kind = source.log_kind();
     if text.trim().is_empty() || text == ctx.mapped_target {
@@ -32,7 +81,7 @@ pub(crate) fn try_manual_text_replacement(
         return OutputFlow::ContinueReplay;
     }
 
-    let plan = manual_text_replacement_plan(ctx, text, kind);
+    let plan = manual_text_replacement_plan(ctx, &text, kind);
     let edit_action = lay::text_edit::plan_manual_edit(
         kind,
         0,
@@ -70,33 +119,17 @@ pub(crate) fn try_manual_text_replacement(
             return OutputFlow::Return(None);
         }
     }
-    let preflight = ctx.text_observation.explicit_manual_preflight(
-        ctx.buf,
-        ctx.mapped_orig.to_string(),
-        ctx.input_isolated,
-    );
-    let insert_outcome = match apply_text_replacement_pipeline(
-        kbd,
-        authorized_edit,
-        ctx.target_is_ru,
-        None,
-        kind,
-        ctx.input_isolated,
-        preflight,
-    ) {
+    let insert_outcome = match execute(ctx, authorized_edit, kind) {
         Ok(outcome) => outcome,
-        Err(e) => {
-            e.log(kind, "minimal replace failed");
-            return OutputFlow::Return(None);
-        }
+        Err(()) => return OutputFlow::Return(None),
     };
     let insert_target_is_ru = insert_outcome.layout_is_ru;
     let layout_result = if insert_outcome.layout_already_set {
         Ok("already-set")
     } else {
-        switch_to_target_layout(insert_target_is_ru)
+        switch_layout(insert_target_is_ru)
     };
-    remember_text_replacement(ctx, &plan, text, kind, insert_target_is_ru, input_gate);
+    remember_text_replacement(ctx, &plan, &text, kind, insert_target_is_ru, input_gate);
     log(&format!(
         "  1. minimal replace: left={} bs={} insert={:?} right={}",
         plan.move_left, plan.backspaces, plan.insert, plan.move_right
@@ -202,4 +235,109 @@ fn manual_text_replacement_plan(
         };
     }
     plan
+}
+
+#[cfg(test)]
+mod td120_replace_text_branch_tests {
+    use super::*;
+    use crate::{DaemonTextContext, DaemonTextContextObserver, DaemonTextObservation};
+    use lay::decoder::{CorrectionSource, DecoderAction};
+    use lay::engine::ManualCorrectionDecision;
+    use lay::text_edit::TextEditBackend;
+    use lay::word_buffer::WordBuffer;
+    use std::sync::atomic::AtomicU64;
+
+    fn with_common<T>(run: impl FnOnce(&mut ManualOutputCommon<'_>) -> T) -> T {
+        let mut buffer = WordBuffer::new();
+        let epoch = AtomicU64::new(11);
+        let observation = DaemonTextObservation::new(
+            DaemonTextContext::new(Some("td120-replace-field".to_string()), 11),
+            DaemonTextContextObserver::new(Some("td120-replace-field"), &epoch),
+        );
+        let decision = ManualCorrectionDecision {
+            action: DecoderAction::ReplaceText {
+                replacement: "почитай".to_string(),
+                source: CorrectionSource::SmartText,
+            },
+            edit: None,
+            replay_target_is_ru: true,
+            replay_mixed_layouts: false,
+            output_text: "почитай".to_string(),
+            output_target_is_ru: true,
+        };
+        let mut common = ManualOutputCommon {
+            buf: &mut buffer,
+            events: &[],
+            mapped_orig: "gjxbnfq",
+            mapped_target: "привет",
+            target_is_ru: true,
+            n_backspaces: 7,
+            replace_words: 1,
+            words_orig: 1,
+            force_replay_toggle: false,
+            started_at: std::time::Instant::now(),
+            decision: &decision,
+            input_isolated: true,
+            text_observation: observation,
+            output_route: super::super::super::ManualCorrectionOutputRoute::DaemonUinput,
+            delegated_tail_lease: None,
+        };
+        run(&mut common)
+    }
+
+    fn execute(success: bool) -> (Option<bool>, usize, usize, usize, usize) {
+        with_common(|common| {
+            let mut v1_calls = 0usize;
+            let mut pipeline_calls = 0usize;
+            let mut switch_calls = 0usize;
+            let mut replay_calls = 0usize;
+            let result = super::super::run_uinput_output_branch(|effect| match effect {
+                super::super::UinputOutputEffect::SuppressBeforeOutput => {
+                    v1_calls += 1;
+                    super::super::UinputOutputEffectResult::Applied
+                }
+                super::super::UinputOutputEffect::Prepare => {
+                    super::super::UinputOutputEffectResult::Applied
+                }
+                super::super::UinputOutputEffect::TryTextReplacement => {
+                    super::super::UinputOutputEffectResult::TextFlow(
+                        execute_manual_text_replacement_with_effects(
+                            common,
+                            None,
+                            |_, authorized, kind| {
+                                pipeline_calls += 1;
+                                assert_eq!(authorized.backend(), TextEditBackend::Daemon);
+                                assert_eq!(authorized.action().to_text(), "почитай");
+                                assert_eq!(kind, "smart-text");
+                                if success {
+                                    Ok(ManualTextExecution {
+                                        layout_is_ru: true,
+                                        layout_already_set: false,
+                                    })
+                                } else {
+                                    Err(())
+                                }
+                            },
+                            |target_is_ru| {
+                                switch_calls += 1;
+                                assert!(target_is_ru);
+                                Ok("ru")
+                            },
+                        ),
+                    )
+                }
+                super::super::UinputOutputEffect::Replay => {
+                    replay_calls += 1;
+                    super::super::UinputOutputEffectResult::ReplayResult(Some(false))
+                }
+            });
+            (result, v1_calls, pipeline_calls, switch_calls, replay_calls)
+        })
+    }
+
+    #[test]
+    fn td120_replace_text_executes_real_decoder_branch_before_only_without_replay() {
+        assert_eq!(execute(true), (Some(true), 1, 1, 1, 0));
+        assert_eq!(execute(false), (None, 1, 1, 0, 0));
+    }
 }

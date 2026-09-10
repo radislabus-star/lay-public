@@ -321,6 +321,135 @@ fn l2_cannot_rewrite_known_russian_surfaces_from_live_log() {
 }
 
 #[test]
+fn td113_broad_l2_coverage_is_not_a_clean_surface_certificate() {
+    let original = "обьяснить";
+    let replacement = "объяснить";
+
+    assert!(crate::nanda_wave::l2::l2_surface_foundation_contains(
+        original
+    ));
+    assert!(!crate::russian_lexicon::has_clean_russian_surface_certificate(original));
+    assert!(crate::russian_lexicon::has_clean_russian_surface_certificate(replacement));
+
+    for reuse_facts in [false, true] {
+        let gate = with_admission_fact_reuse(reuse_facts, || {
+            candidate_admission(
+                "обьяснить ",
+                "объяснить ",
+                TypingErrorClass::LetterSubstitution,
+                CandidateOrigin::DeterministicTypo,
+            )
+        });
+        assert_eq!(
+            gate.action,
+            CandidateGateAction::Eligible,
+            "reuse_facts={reuse_facts}: {gate:?}"
+        );
+    }
+}
+
+#[test]
+fn td113_clean_original_surface_remains_protected_from_neighbor_rewrite() {
+    assert!(crate::russian_lexicon::has_clean_russian_surface_certificate("можем"));
+    assert!(crate::russian_lexicon::has_clean_russian_surface_certificate("модем"));
+
+    for reuse_facts in [false, true] {
+        let gate = with_admission_fact_reuse(reuse_facts, || {
+            candidate_admission(
+                "мы можем ",
+                "мы модем ",
+                TypingErrorClass::LetterSubstitution,
+                CandidateOrigin::L2Surface,
+            )
+        });
+        assert_ne!(
+            gate.action,
+            CandidateGateAction::Eligible,
+            "reuse_facts={reuse_facts}: {gate:?}"
+        );
+    }
+}
+
+#[test]
+fn td113_absent_clean_certificate_is_not_positive_damage_authority() {
+    for (original, replacement, error_class) in [
+        ("нужен ", "ножен ", TypingErrorClass::LetterSubstitution),
+        ("сбирать ", "собирать ", TypingErrorClass::MissingLetter),
+        ("руских ", "русских ", TypingErrorClass::MissingLetter),
+        ("не мение ", "не мерние ", TypingErrorClass::MissingLetter),
+        ("читай логии ", "читай логи ", TypingErrorClass::ExtraLetter),
+    ] {
+        assert!(
+            !crate::russian_lexicon::has_clean_russian_surface_certificate(
+                crate::word_reader::last_text_word(original)
+                    .as_deref()
+                    .expect("original word")
+            ),
+            "the contract needs an uncertified original: {original:?}"
+        );
+        let gate = candidate_admission(
+            original,
+            replacement,
+            error_class,
+            CandidateOrigin::DeterministicTypo,
+        );
+        assert_eq!(
+            gate.action,
+            CandidateGateAction::SuggestOnly,
+            "absence of a clean certificate is neutral, not damage evidence: {original:?} -> {replacement:?}: {gate:?}"
+        );
+    }
+}
+
+#[test]
+fn td113_unproven_repeated_consonant_insertion_is_suggestion_only() {
+    for reuse_facts in [false, true] {
+        let gate = with_admission_fact_reuse(reuse_facts, || {
+            candidate_admission(
+                "руских ",
+                "русских ",
+                TypingErrorClass::MissingLetter,
+                CandidateOrigin::DeterministicTypo,
+            )
+        });
+        assert_eq!(
+            gate.action,
+            CandidateGateAction::SuggestOnly,
+            "reuse_facts={reuse_facts}: {gate:?}"
+        );
+        assert_eq!(
+            gate.reason, "unproven_stable_surface_shape_drift",
+            "reuse_facts={reuse_facts}: {gate:?}"
+        );
+    }
+}
+
+#[test]
+fn td113_nonduplicate_missing_insertions_keep_existing_admission() {
+    for (original, replacement) in [
+        ("протколах ", "протоколах "),
+        ("дейстия ", "действия "),
+        ("лушее ", "лучшее "),
+    ] {
+        for reuse_facts in [false, true] {
+            let gate = with_admission_fact_reuse(reuse_facts, || {
+                candidate_admission(
+                    original,
+                    replacement,
+                    TypingErrorClass::MissingLetter,
+                    CandidateOrigin::DeterministicTypo,
+                )
+            });
+            assert_eq!(
+                gate.action,
+                CandidateGateAction::Eligible,
+                "reuse_facts={reuse_facts}: {original:?} -> {replacement:?}: {gate:?}"
+            );
+        }
+    }
+}
+
+#[test]
 fn boundary_shift_tail_pair_full_text_is_eligible() {
     for (original, replacement) in [
         ("допусти мнабираю ", "допустим набираю "),

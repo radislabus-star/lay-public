@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component>
+  <name>org.freedesktop.IBus.Simple</name>
+  <description>Private foreign bootstrap seed using the real system simple engine</description>
+  <exec>/usr/libexec/ibus-engine-simple</exec>
+  <version>remote-system-version-recorded-at-run</version>
+  <author>IBus</author>
+  <license>GPL</license>
+  <homepage>private-proof</homepage>
+  <textdomain>ibus</textdomain>
+  <engines>
+    <engine>
+      <name>xkb:us::eng</name>
+      <language>en</language>
+      <license>GPL</license>
+      <author>IBus</author>
+      <icon>ibus-keyboard</icon>
+      <layout>us</layout>
+      <longname>Private bootstrap US</longname>
+      <description>Foreign global-engine seed only</description>
+      <rank>1</rank>
+    </engine>
+  </engines>
+</component>

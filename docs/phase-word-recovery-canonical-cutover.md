@@ -178,9 +178,14 @@ failures. These checks prove structure and evidence freshness only. They do not
 prove language quality, and TD-001 changed no runtime authority.
 
 The canonical graph refresh is `scripts/update-architecture-graph.sh`. It runs
-Graphify and then writes `graphify-out/source_graph_binding.json`, binding the
-exact graph and manifest bytes to the SHA-256 of every current Rust source.
-Writing an architecture receipt without that matching binding fails closed.
+Graphify, writes `graphify-out/source_graph_binding.json`, computes the
+architecture verdict, atomically publishes
+`src/generated/architecture_graph_receipt.json` only for `PASS`, and then runs
+the mandatory architecture check. The binding covers the exact graph and
+manifest bytes plus the SHA-256 of every current Rust source. Any failed step
+stops the route; a `WATCH` calculation leaves the previous receipt byte-intact.
+CI consumes committed evidence and never regenerates it. A bare
+`graphify update .` is therefore only a partial refresh, not a completion path.
 
 ## 4. Layer Truth
 
@@ -889,7 +894,7 @@ At a route checkpoint:
 ```text
 scripts/check-lay-changed.sh
 scripts/check-architecture.sh
-graphify update .
+scripts/update-architecture-graph.sh
 nanda-guard-diff for the selected route
 ```
 

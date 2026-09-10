@@ -2,15 +2,40 @@ use super::engine::{
     LayIbusEngine, PendingImeCompletionLearning, PendingSystemOutcomeFeedback, SystemOutcomeKind,
 };
 use super::protocol::{
-    ExactManualToggleSuppression, PendingImeAutoUndo, PendingImeAutoUndoRetry, SharedState,
-    ShiftGestureHandoff,
+    AutocorrectSuppression, CurrentWordSuppression, ExactManualToggleSuppression,
+    PendingImeAutoUndo, PendingImeAutoUndoRetry, SharedState, ShiftGestureHandoff,
 };
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 use std::time::{Duration, Instant};
 
+#[cfg(test)]
+std::thread_local! {
+    static ACCEPTED_COMPLETION_FEEDBACK: std::cell::RefCell<Vec<(String, String)>> =
+        const { std::cell::RefCell::new(Vec::new()) };
+}
+
+fn publish_accepted_completion_feedback(context_tail: &str, accepted_word: &str) {
+    lay::typing_cpu::TypingCpu::record_accepted_completion(context_tail, accepted_word);
+    #[cfg(test)]
+    ACCEPTED_COMPLETION_FEEDBACK.with(|feedback| {
+        feedback
+            .borrow_mut()
+            .push((context_tail.to_string(), accepted_word.to_string()));
+    });
+}
+
+#[cfg(test)]
+pub(crate) fn take_accepted_completion_feedback() -> Vec<(String, String)> {
+    ACCEPTED_COMPLETION_FEEDBACK.with(|feedback| std::mem::take(&mut *feedback.borrow_mut()))
+}
+
 const IME_AUTO_UNDO_MAX_AGE: Duration = Duration::from_secs(30);
 const IME_AUTO_UNDO_RETRY_MAX_AGE: Duration = Duration::from_secs(5);
 const IME_LAYOUT_HANDOFF_MAX_AGE: Duration = Duration::from_millis(700);
+
+fn advance_suppression_revision(state: &mut SharedState) {
+    state.suppression_revision = state.suppression_revision.wrapping_add(1);
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum SurroundingSnapshotMatch {
@@ -22,6 +47,15 @@ enum SurroundingSnapshotMatch {
 }
 
 impl LayIbusEngine {
+    fn owns_shared_context_state(&self, state: &SharedState) -> bool {
+        !self.context_admission_required
+            || state.active_path.as_deref() == Some(self.path.as_str())
+                && match self.context_owner.as_ref() {
+                    Some(owner) => state.context_owner_generation == Some(owner.generation.0),
+                    None => state.context_owner_generation.is_none(),
+                }
+    }
+
     pub(super) fn remember_pending_ime_auto_undo(
         &self,
         original: String,
@@ -256,6 +290,10 @@ impl LayIbusEngine {
         accepted_word: String,
         with_space: bool,
     ) {
+        if !self.context_word_is_known() {
+            self.committed_tail.pending_completion_learning = None;
+            return;
+        }
         self.committed_tail.pending_completion_learning =
             with_space.then_some(PendingImeCompletionLearning {
                 context_tail,
@@ -283,6 +321,10 @@ impl LayIbusEngine {
     /// A later word or terminal punctuation confirms that the explicitly
     /// accepted completion remained useful. This does not alter visible text.
     pub(super) fn confirm_pending_ime_completion_at_stable_boundary(&mut self) {
+        if !self.context_word_is_known() {
+            self.committed_tail.pending_completion_learning = None;
+            return;
+        }
         if self
             .committed_tail
             .pending_completion_learning
@@ -296,10 +338,7 @@ impl LayIbusEngine {
         };
         let accepted_tail = format!("{} ", pending.accepted_word);
         if self.committed_tail.buffer.ends_with(&accepted_tail) {
-            lay::typing_cpu::TypingCpu::record_accepted_completion(
-                &pending.context_tail,
-                &pending.accepted_word,
-            );
+            publish_accepted_completion_feedback(&pending.context_tail, &pending.accepted_word);
         }
     }
 
@@ -307,6 +346,10 @@ impl LayIbusEngine {
         &mut self,
         tail_before_boundary: &str,
     ) -> bool {
+        if !self.context_word_is_known() {
+            self.committed_tail.pending_completion_learning = None;
+            return false;
+        }
         let is_editing = self
             .committed_tail
             .pending_completion_learning
@@ -325,10 +368,7 @@ impl LayIbusEngine {
             .next_back();
         match final_word {
             Some(final_word) if final_word == pending.accepted_word => {
-                lay::typing_cpu::TypingCpu::record_accepted_completion(
-                    &pending.context_tail,
-                    &pending.accepted_word,
-                );
+                publish_accepted_completion_feedback(&pending.context_tail, &pending.accepted_word);
                 super::trace::record(
                     r#"{"kind":"ibus_completion_edit","status":"accepted_unchanged"}"#,
                 );
@@ -504,6 +544,9 @@ impl LayIbusEngine {
     }
 
     fn record_observed_system_outcome(&self, feedback: Option<&PendingSystemOutcomeFeedback>) {
+        if !self.context_word_is_known() {
+            return;
+        }
         let Some(feedback) = feedback else {
             return;
         };
@@ -577,32 +620,49 @@ impl LayIbusEngine {
         }
     }
 
-    pub(super) fn publish_tail_handoff(&mut self) {
-        self.committed_tail.epoch = self.committed_tail.epoch.wrapping_add(1);
+    pub(super) fn publish_tail_handoff(&mut self) -> bool {
         let Ok(mut state) = self.shared.lock() else {
-            return;
+            return false;
         };
+        if !self.owns_shared_context_state(&state) {
+            return false;
+        }
+        self.committed_tail.epoch = self.committed_tail.epoch.wrapping_add(1);
         state.handoff_tail_buffer = self.committed_tail.buffer.clone();
         state.handoff_tail_epoch = self.committed_tail.epoch;
         state.handoff_focus_receipt = self.client_context.focus_receipt.clone();
-        state.exact_manual_toggle_handoff_epoch = None;
-        state.exact_manual_toggle_handoff_path = None;
+        let had_exact_epoch = state.exact_manual_toggle_handoff_epoch.take().is_some();
+        let had_exact_path = state.exact_manual_toggle_handoff_path.take().is_some();
+        if had_exact_epoch || had_exact_path {
+            advance_suppression_revision(&mut state);
+        }
+        drop(state);
+        self.settle_context_bridge_output()
     }
 
     pub(super) fn prepare_exact_manual_toggle_layout_handoff(&mut self) {
-        self.publish_tail_handoff();
+        if !self.publish_tail_handoff() {
+            return;
+        }
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
+        if !self.owns_shared_context_state(&state) {
+            return;
+        }
         state.preserve_active_path_until = Some(Instant::now() + IME_LAYOUT_HANDOFF_MAX_AGE);
         state.exact_manual_toggle_handoff_epoch = Some(self.committed_tail.epoch);
         state.exact_manual_toggle_handoff_path = Some(self.path.clone());
+        advance_suppression_revision(&mut state);
     }
 
     pub(super) fn exact_manual_toggle_handoff_is_live(&self) -> bool {
         let Ok(mut state) = self.shared.lock() else {
             return false;
         };
+        if !self.owns_shared_context_state(&state) {
+            return false;
+        }
         let now = Instant::now();
         let live = state
             .preserve_active_path_until
@@ -611,8 +671,11 @@ impl LayIbusEngine {
             && state.handoff_tail_epoch == self.committed_tail.epoch
             && state.handoff_tail_buffer == self.committed_tail.buffer;
         if !live {
-            state.exact_manual_toggle_handoff_epoch = None;
-            state.exact_manual_toggle_handoff_path = None;
+            let had_exact_epoch = state.exact_manual_toggle_handoff_epoch.take().is_some();
+            let had_exact_path = state.exact_manual_toggle_handoff_path.take().is_some();
+            if had_exact_epoch || had_exact_path {
+                advance_suppression_revision(&mut state);
+            }
         }
         live
     }
@@ -621,9 +684,12 @@ impl LayIbusEngine {
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
-        state.preserve_active_path_until = None;
-        state.exact_manual_toggle_handoff_epoch = None;
-        state.exact_manual_toggle_handoff_path = None;
+        let had_preserve = state.preserve_active_path_until.take().is_some();
+        let had_exact_epoch = state.exact_manual_toggle_handoff_epoch.take().is_some();
+        let had_exact_path = state.exact_manual_toggle_handoff_path.take().is_some();
+        if had_preserve || had_exact_epoch || had_exact_path {
+            advance_suppression_revision(&mut state);
+        }
     }
 
     pub(super) fn arm_exact_manual_toggle_autocorrect_suppression(
@@ -662,15 +728,14 @@ impl LayIbusEngine {
         state.preserve_active_path_until = None;
         state.exact_manual_toggle_handoff_epoch = None;
         state.exact_manual_toggle_handoff_path = None;
-        state.suppress_next_committed_tail_autocorrect = true;
-        state.exact_manual_toggle_suppression = Some(ExactManualToggleSuppression {
+        let suppression = AutocorrectSuppression::ExactReplay(ExactManualToggleSuppression {
             path: expected_path.to_string(),
             epoch: expected_epoch,
             expires_at: Instant::now() + IME_LAYOUT_HANDOFF_MAX_AGE,
         });
-        self.committed_tail.suppress_next_autocorrect = true;
-        self.committed_tail.exact_manual_toggle_suppression =
-            state.exact_manual_toggle_suppression.clone();
+        state.autocorrect_suppression = Some(suppression.clone());
+        advance_suppression_revision(&mut state);
+        self.committed_tail.autocorrect_suppression = Some(suppression);
         true
     }
 
@@ -685,28 +750,158 @@ impl LayIbusEngine {
         let Ok(mut state) = self.shared.lock() else {
             return false;
         };
-        let matches = state
-            .exact_manual_toggle_suppression
-            .as_ref()
-            .is_some_and(|identity| {
+        let matches = state.autocorrect_suppression.as_ref().is_some_and(|scope| {
+            matches!(scope, AutocorrectSuppression::ExactReplay(identity) if
                 identity.path == expected_path && identity.epoch == expected_epoch
-            });
+            )
+        });
         if !matches {
             return false;
         }
-        state.suppress_next_committed_tail_autocorrect = false;
-        state.exact_manual_toggle_suppression = None;
-        self.committed_tail.suppress_next_autocorrect = false;
-        self.committed_tail.exact_manual_toggle_suppression = None;
+        state.autocorrect_suppression = None;
+        advance_suppression_revision(&mut state);
+        self.committed_tail.autocorrect_suppression = None;
         true
+    }
+
+    pub(super) fn arm_current_word_autocorrect_suppression(&mut self) -> bool {
+        let open_token_chars = self.current_open_token_chars();
+        if open_token_chars == 0 {
+            self.retire_current_word_autocorrect_suppression();
+            return false;
+        }
+        let suppression = AutocorrectSuppression::CurrentWord(CurrentWordSuppression {
+            incarnation: super::engine::next_input_identity(),
+            owner_lease_identity: self.client_context.runtime_owner_lease_identity,
+            open_token_chars,
+        });
+        let Ok(mut state) = self.shared.lock() else {
+            return false;
+        };
+        if state.active_path.as_deref() != Some(self.path.as_str()) {
+            return false;
+        }
+        state.autocorrect_suppression = Some(suppression.clone());
+        advance_suppression_revision(&mut state);
+        self.committed_tail.autocorrect_suppression = Some(suppression);
+        true
+    }
+
+    pub(super) fn arm_legacy_replay_autocorrect_suppression(&mut self) -> bool {
+        let Ok(mut state) = self.shared.lock() else {
+            return false;
+        };
+        if state.active_path.as_deref() != Some(self.path.as_str()) {
+            return false;
+        }
+        state.autocorrect_suppression = Some(AutocorrectSuppression::LegacyReplayV1);
+        advance_suppression_revision(&mut state);
+        self.committed_tail.autocorrect_suppression = Some(AutocorrectSuppression::LegacyReplayV1);
+        true
+    }
+
+    pub(super) fn arm_local_legacy_replay_autocorrect_suppression(&mut self) {
+        self.committed_tail.autocorrect_suppression = Some(AutocorrectSuppression::LegacyReplayV1);
+        if let Ok(mut state) = self.shared.lock() {
+            if state.active_path.as_deref() == Some(self.path.as_str()) {
+                advance_suppression_revision(&mut state);
+            }
+        }
+    }
+
+    pub(super) fn refresh_current_word_autocorrect_suppression(&mut self) {
+        let open_token_chars = self.current_open_token_chars();
+        if open_token_chars == 0 {
+            self.retire_current_word_autocorrect_suppression();
+            return;
+        }
+        let Some(AutocorrectSuppression::CurrentWord(mut local)) =
+            self.committed_tail.autocorrect_suppression.clone()
+        else {
+            return;
+        };
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        if state.autocorrect_suppression.as_ref()
+            != Some(&AutocorrectSuppression::CurrentWord(local))
+        {
+            self.committed_tail.autocorrect_suppression = None;
+            return;
+        }
+        if local.owner_lease_identity != self.client_context.runtime_owner_lease_identity {
+            self.committed_tail.autocorrect_suppression = None;
+            return;
+        }
+        if local.open_token_chars != open_token_chars {
+            local.open_token_chars = open_token_chars;
+            let suppression = AutocorrectSuppression::CurrentWord(local);
+            state.autocorrect_suppression = Some(suppression.clone());
+            advance_suppression_revision(&mut state);
+            self.committed_tail.autocorrect_suppression = Some(suppression);
+        }
+    }
+
+    pub(super) fn backspace_current_word_autocorrect_suppression(&mut self) {
+        let Some(AutocorrectSuppression::CurrentWord(mut local)) =
+            self.committed_tail.autocorrect_suppression.clone()
+        else {
+            return;
+        };
+        if local.open_token_chars <= 1 {
+            self.retire_current_word_autocorrect_suppression();
+            return;
+        }
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        if state.autocorrect_suppression.as_ref()
+            != Some(&AutocorrectSuppression::CurrentWord(local))
+            || local.owner_lease_identity != self.client_context.runtime_owner_lease_identity
+        {
+            self.committed_tail.autocorrect_suppression = None;
+            return;
+        }
+        local.open_token_chars -= 1;
+        let suppression = AutocorrectSuppression::CurrentWord(local);
+        state.autocorrect_suppression = Some(suppression.clone());
+        advance_suppression_revision(&mut state);
+        self.committed_tail.autocorrect_suppression = Some(suppression);
+    }
+
+    pub(super) fn retire_current_word_autocorrect_suppression(&mut self) {
+        if !matches!(
+            self.committed_tail.autocorrect_suppression.as_ref(),
+            Some(AutocorrectSuppression::CurrentWord(_))
+        ) {
+            return;
+        }
+        let local = self
+            .committed_tail
+            .autocorrect_suppression
+            .take()
+            .expect("CurrentWord checked above");
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        if state.autocorrect_suppression.as_ref() == Some(&local) {
+            state.autocorrect_suppression = None;
+            advance_suppression_revision(&mut state);
+        }
+    }
+
+    fn current_open_token_chars(&self) -> usize {
+        if !self.composition.preedit_fast.has_open_token() {
+            return 0;
+        }
+        super::preedit::uncapped_open_token_chars(&self.committed_tail.buffer)
     }
 
     pub(super) fn close_committed_tail_field(&mut self) {
         self.committed_tail.pending_completion_learning = None;
         self.committed_tail.buffer.clear();
         self.composition.preedit_fast.reset();
-        self.committed_tail.suppress_next_autocorrect = false;
-        self.committed_tail.exact_manual_toggle_suppression = None;
+        let local_suppression = self.committed_tail.autocorrect_suppression.take();
         self.composition.word_input_mode = None;
         self.committed_tail.last_input_at = None;
         self.committed_tail.last_commit_at = None;
@@ -717,12 +912,21 @@ impl LayIbusEngine {
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
+        if !self.owns_shared_context_state(&state) {
+            return;
+        }
         record_pending_ime_auto_undo_lifecycle(self, &state, "clear", "close_committed_tail_field");
         state.handoff_tail_buffer.clear();
         state.handoff_tail_epoch = self.committed_tail.epoch;
         state.handoff_focus_receipt = None;
-        state.suppress_next_committed_tail_autocorrect = false;
-        state.exact_manual_toggle_suppression = None;
+        let active_owner = state.active_path.as_deref() == Some(self.path.as_str());
+        let cleared_shared = active_owner
+            && (local_suppression.is_none()
+                || state.autocorrect_suppression.as_ref() == local_suppression.as_ref())
+            && state.autocorrect_suppression.take().is_some();
+        if cleared_shared || active_owner && local_suppression.is_some() {
+            advance_suppression_revision(&mut state);
+        }
         state.preserve_active_path_until = None;
         state.exact_manual_toggle_handoff_epoch = None;
         state.exact_manual_toggle_handoff_path = None;
@@ -742,10 +946,12 @@ impl LayIbusEngine {
         self.committed_tail.last_input_at = None;
         self.committed_tail.recent_replace = None;
         self.layout_gesture.pending_manual_toggle = false;
-        self.committed_tail.suppress_next_autocorrect = false;
-        self.committed_tail.exact_manual_toggle_suppression = None;
+        let local_suppression = self.committed_tail.autocorrect_suppression.take();
         self.committed_tail.epoch = self.committed_tail.epoch.wrapping_add(1);
         if let Ok(mut state) = shared.lock() {
+            if !self.owns_shared_context_state(&state) {
+                return;
+            }
             record_pending_ime_auto_undo_lifecycle(
                 self,
                 &state,
@@ -755,8 +961,14 @@ impl LayIbusEngine {
             state.handoff_tail_buffer.clear();
             state.handoff_tail_epoch = self.committed_tail.epoch;
             state.handoff_focus_receipt = None;
-            state.suppress_next_committed_tail_autocorrect = false;
-            state.exact_manual_toggle_suppression = None;
+            let active_owner = state.active_path.as_deref() == Some(self.path.as_str());
+            let cleared_shared = active_owner
+                && (local_suppression.is_none()
+                    || state.autocorrect_suppression.as_ref() == local_suppression.as_ref())
+                && state.autocorrect_suppression.take().is_some();
+            if cleared_shared || active_owner && local_suppression.is_some() {
+                advance_suppression_revision(&mut state);
+            }
             state.preserve_active_path_until = None;
             state.exact_manual_toggle_handoff_epoch = None;
             state.exact_manual_toggle_handoff_path = None;
@@ -784,35 +996,22 @@ impl LayIbusEngine {
         self.rebuild_preedit_fast_from_tail();
     }
 
-    pub(super) fn publish_autocorrect_suppression_handoff(&self) {
+    pub(super) fn clear_autocorrect_suppression_handoff(&mut self) {
+        let local_suppression = self.committed_tail.autocorrect_suppression.take();
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
-        state.suppress_next_committed_tail_autocorrect = true;
-        state.exact_manual_toggle_suppression = None;
-    }
-
-    pub(super) fn take_autocorrect_suppression_handoff(&self) -> bool {
-        let Ok(mut state) = self.shared.lock() else {
-            return false;
-        };
-        let now = Instant::now();
-        let exact_path_matches = state
-            .exact_manual_toggle_suppression
-            .as_ref()
-            .is_none_or(|identity| identity.path == self.path && now <= identity.expires_at);
-        let suppress = state.suppress_next_committed_tail_autocorrect && exact_path_matches;
-        state.suppress_next_committed_tail_autocorrect = false;
-        state.exact_manual_toggle_suppression = None;
-        suppress
-    }
-
-    pub(super) fn clear_autocorrect_suppression_handoff(&self) {
-        let Ok(mut state) = self.shared.lock() else {
+        if !self.owns_shared_context_state(&state) {
             return;
-        };
-        state.suppress_next_committed_tail_autocorrect = false;
-        state.exact_manual_toggle_suppression = None;
+        }
+        let active_owner = state.active_path.as_deref() == Some(self.path.as_str());
+        let cleared_shared = active_owner
+            && (local_suppression.is_none()
+                || state.autocorrect_suppression.as_ref() == local_suppression.as_ref())
+            && state.autocorrect_suppression.take().is_some();
+        if cleared_shared || active_owner && local_suppression.is_some() {
+            advance_suppression_revision(&mut state);
+        }
     }
 
     pub(super) fn publish_active_path_preserve_handoff(&self, until: Instant) {
@@ -820,6 +1019,7 @@ impl LayIbusEngine {
             return;
         };
         state.preserve_active_path_until = Some(until);
+        advance_suppression_revision(&mut state);
     }
 
     pub(super) fn shared_active_path_preserved(&self) -> bool {
@@ -836,6 +1036,7 @@ impl LayIbusEngine {
         state.exact_manual_toggle_handoff_epoch = None;
         state.exact_manual_toggle_handoff_path = None;
         state.shift_gesture_handoff = None;
+        advance_suppression_revision(&mut state);
         false
     }
 
@@ -1093,6 +1294,7 @@ mod tests {
     use crate::engine::{
         ManualToggleAuthority, PendingSystemOutcomeFeedback, SystemOutcomeKind, WordInputMode,
     };
+    use crate::protocol::AutocorrectSuppression;
     use lay::config::LayConfig;
     use lay::text_edit::{
         decide_text_transition, LatentTextTransitionCandidate, TextTransitionDecision,
@@ -1120,6 +1322,7 @@ mod tests {
             true,
             LayConfig::default(),
         );
+        assert!(engine.bind_focus_path());
         engine.client_context.surrounding_text_supported = true;
         engine.committed_tail.buffer = "проверка ".to_string();
         engine.publish_tail_handoff();
@@ -1152,6 +1355,7 @@ mod tests {
             true,
             LayConfig::default(),
         );
+        assert!(engine.bind_focus_path());
         engine.client_context.surrounding_text_supported = true;
         engine.committed_tail.buffer = "собака ".to_string();
         engine.publish_tail_handoff();
@@ -1301,14 +1505,15 @@ mod tests {
             true,
             LayConfig::default(),
         );
+        assert!(engine.bind_focus_path());
         engine.client_context.surrounding_text_supported = true;
         engine.composition.buffer = "stale".to_string();
         engine.composition.cursor = 5;
-        engine.committed_tail.buffer = "ghbdtn ".to_string();
+        engine.committed_tail.buffer = "ghbdtn".to_string();
         engine.rebuild_preedit_fast_from_tail();
         engine.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
-        engine.committed_tail.suppress_next_autocorrect = true;
         engine.publish_tail_handoff();
+        assert!(engine.arm_current_word_autocorrect_suppression());
         let epoch = engine.committed_tail.epoch;
         engine.arm_visible_postcondition(Instant::now() - Duration::from_millis(501));
         engine.client_context.surrounding_text_snapshot = Some(
@@ -1326,7 +1531,7 @@ mod tests {
         assert!(engine.committed_tail.buffer.is_empty());
         assert_eq!(engine.composition.preedit_fast.token(), "");
         assert_eq!(engine.composition.word_input_mode, None);
-        assert!(!engine.committed_tail.suppress_next_autocorrect);
+        assert!(engine.committed_tail.autocorrect_suppression.is_none());
         assert_eq!(
             engine.manual_toggle_authority(),
             ManualToggleAuthority::DaemonWordBuffer
@@ -1335,7 +1540,7 @@ mod tests {
         let state = shared.lock().expect("lay ime state poisoned");
         assert!(state.handoff_tail_buffer.is_empty());
         assert_eq!(state.handoff_tail_epoch, engine.committed_tail.epoch);
-        assert!(!state.suppress_next_committed_tail_autocorrect);
+        assert!(state.autocorrect_suppression.is_none());
     }
 
     #[test]
@@ -1756,11 +1961,15 @@ mod tests {
             true,
             LayConfig::default(),
         );
-
-        engine.committed_tail.suppress_next_autocorrect = true;
+        assert!(engine.bind_focus_path());
+        engine.push_tail_char('x');
+        assert!(engine.arm_current_word_autocorrect_suppression());
         engine.reset_for_ibus_soft_reset();
 
-        assert!(engine.committed_tail.suppress_next_autocorrect);
+        assert!(matches!(
+            engine.committed_tail.autocorrect_suppression.as_ref(),
+            Some(AutocorrectSuppression::CurrentWord(_))
+        ));
     }
 
     #[test]
@@ -1773,12 +1982,16 @@ mod tests {
             true,
             LayConfig::default(),
         );
-        engine.publish_autocorrect_suppression_handoff();
+        assert!(engine.bind_focus_path());
+        engine.push_tail_char('x');
+        assert!(engine.arm_current_word_autocorrect_suppression());
+        engine.committed_tail.last_input_at = None;
+        engine.committed_tail.last_commit_at = None;
 
         engine.reset_for_ibus_focus_change();
 
         let state = shared.lock().expect("lay ime state poisoned");
-        assert!(!state.suppress_next_committed_tail_autocorrect);
+        assert!(state.autocorrect_suppression.is_none());
     }
 
     #[test]
@@ -1855,13 +2068,12 @@ mod tests {
 
         assert_eq!(target.committed_tail.buffer, "ghbdtn");
         assert_eq!(target.committed_tail.epoch, leased_epoch);
-        assert!(!target.committed_tail.suppress_next_autocorrect);
-        assert!(
-            !shared
-                .lock()
-                .expect("lay ime state poisoned")
-                .suppress_next_committed_tail_autocorrect
-        );
+        assert!(target.committed_tail.autocorrect_suppression.is_none());
+        assert!(shared
+            .lock()
+            .expect("lay ime state poisoned")
+            .autocorrect_suppression
+            .is_none());
 
         target.consume_exact_manual_toggle_handoff();
         target.reset_for_ibus_soft_reset();
@@ -1925,14 +2137,21 @@ mod tests {
         ));
 
         let state = shared.lock().expect("lay ime state poisoned");
-        assert!(target.committed_tail.suppress_next_autocorrect);
-        assert!(state.suppress_next_committed_tail_autocorrect);
+        assert!(matches!(
+            target.committed_tail.autocorrect_suppression.as_ref(),
+            Some(AutocorrectSuppression::ExactReplay(_))
+        ));
+        assert!(matches!(
+            state.autocorrect_suppression.as_ref(),
+            Some(AutocorrectSuppression::ExactReplay(_))
+        ));
         assert!(state.preserve_active_path_until.is_none());
         assert!(state.exact_manual_toggle_handoff_epoch.is_none());
-        let suppression = state
-            .exact_manual_toggle_suppression
-            .as_ref()
-            .expect("exact suppression");
+        let Some(AutocorrectSuppression::ExactReplay(suppression)) =
+            state.autocorrect_suppression.as_ref()
+        else {
+            panic!("expected exact suppression");
+        };
         assert_eq!(suppression.path, "/engine/ru");
         assert_eq!(suppression.epoch, leased_epoch);
         assert!(suppression.expires_at > Instant::now());
@@ -1948,10 +2167,9 @@ mod tests {
         assert!(
             target.revoke_exact_manual_toggle_autocorrect_suppression(leased_epoch, "/engine/ru",)
         );
-        assert!(!target.committed_tail.suppress_next_autocorrect);
+        assert!(target.committed_tail.autocorrect_suppression.is_none());
         let state = shared.lock().expect("lay ime state poisoned");
-        assert!(!state.suppress_next_committed_tail_autocorrect);
-        assert!(state.exact_manual_toggle_suppression.is_none());
+        assert!(state.autocorrect_suppression.is_none());
     }
 
     #[test]

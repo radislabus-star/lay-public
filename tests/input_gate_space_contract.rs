@@ -24,10 +24,17 @@ fn isolate_live_usage_memory() {
 }
 
 fn decide_space(text_tail: &str) -> lay::input_gate::InputGateDecision {
-    decide_space_deterministic(text_tail)
+    decide_space_deterministic_with_safety(text_tail, CorrectionSafety::Experimental)
 }
 
 fn decide_space_deterministic(text_tail: &str) -> lay::input_gate::InputGateDecision {
+    decide_space_deterministic_with_safety(text_tail, CorrectionSafety::Normal)
+}
+
+fn decide_space_deterministic_with_safety(
+    text_tail: &str,
+    correction_safety: CorrectionSafety,
+) -> lay::input_gate::InputGateDecision {
     isolate_live_usage_memory();
     let pipeline = default_typing_assist_pipeline();
     decide_input_gate(InputGateRequest {
@@ -37,7 +44,7 @@ fn decide_space_deterministic(text_tail: &str) -> lay::input_gate::InputGateDeci
         auto_replace: true,
         typing_assist: true,
         auto_switch_layout: true,
-        correction_safety: CorrectionSafety::Normal,
+        correction_safety,
         typing_assist_pipeline: &pipeline,
         nanda_autocorrect: false,
         nanda_candidate_route: lay::correction_core::CandidateReadoutRoute::FullWave,
@@ -86,13 +93,37 @@ fn space_autocorrect_keeps_existing_public_gate_contract() {
 fn daemon_space_and_enter_decoders_share_input_gate_replacement_contract() {
     let pipeline = default_typing_assist_pipeline();
     let cases = [
-        ("звгрузи ", true, "загрузи "),
-        ("ghbdtn ", false, "привет "),
-        ("rfr ", false, "как "),
+        ("звгрузи ", true, None),
+        ("автозаена ", true, Some("автозамена ")),
+        ("ghbdtn ", false, Some("привет ")),
+        ("rfr ", false, Some("как ")),
     ];
 
     for (input, layout_is_ru, expected) in cases {
+        // The legacy decoder is explicitly Normal. Compare its action with a
+        // Normal InputGate decision; Experimental compatibility is covered by
+        // space_autocorrect_keeps_existing_public_gate_contract above.
         let gate = decide_space_deterministic(input);
+        let events = text_to_key_events(input, layout_is_ru)
+            .unwrap_or_else(|| panic!("fixture must map to key events: {input:?}"));
+        let space_plan =
+            decode_typing_assist_tail(&events, true, &pipeline, CorrectionSource::TypingAssist);
+
+        let enter_plan = layout_is_ru
+            .then(|| decode_enter_autocorrect_tail(&events, true, true, &pipeline))
+            .flatten();
+
+        let Some(expected) = expected else {
+            assert!(
+                !matches!(gate.action, InputGateAction::ApplyReplacement { .. }),
+                "Normal gate must not apply an uncorroborated composite typo: {input:?} {:?}",
+                gate.action
+            );
+            assert!(space_plan.is_none(), "{input:?}");
+            assert!(enter_plan.is_none(), "{input:?}");
+            continue;
+        };
+
         let InputGateAction::ApplyReplacement {
             replacement: gate_replacement,
             ..
@@ -105,17 +136,14 @@ fn daemon_space_and_enter_decoders_share_input_gate_replacement_contract() {
         };
         assert_eq!(gate_replacement, expected, "{input:?}");
 
-        let events = text_to_key_events(input, layout_is_ru)
-            .unwrap_or_else(|| panic!("fixture must map to key events: {input:?}"));
-        let space_plan =
-            decode_typing_assist_tail(&events, true, &pipeline, CorrectionSource::TypingAssist)
-                .unwrap_or_else(|| panic!("expected daemon space decoder plan for {input:?}"));
+        let space_plan = space_plan
+            .unwrap_or_else(|| panic!("expected daemon space decoder plan for {input:?}"));
         assert_eq!(space_plan.replacement, gate_replacement, "{input:?}");
         assert!(space_plan.plan_matches_replacement(), "{input:?}");
         assert!(space_plan.preserves_committed_separator(), "{input:?}");
 
         if layout_is_ru {
-            let enter_plan = decode_enter_autocorrect_tail(&events, true, true, &pipeline)
+            let enter_plan = enter_plan
                 .unwrap_or_else(|| panic!("expected daemon enter decoder plan for {input:?}"));
             assert_eq!(enter_plan.replacement, gate_replacement, "{input:?}");
             assert!(enter_plan.plan_matches_replacement(), "{input:?}");

@@ -1,2 +1,0 @@
-test ime_auto_undo_restores_pending_snapshot_on_backend_error ... ok
-

@@ -581,11 +581,7 @@ fn print_correction_core_explanation(
         nanda_autocorrect: cfg.nanda_autocorrect,
         nanda_candidate_route: route,
         nanda_wave_options: cfg.active_nanda_wave_options(),
-        mode: if cfg.nanda_autocorrect {
-            correction_core::CorrectionMode::NandaOnly
-        } else {
-            correction_core::CorrectionMode::DeterministicOnly
-        },
+        mode: correction_core::live_correction_mode(cfg.nanda_autocorrect),
     });
 
     println!("correction_core:");

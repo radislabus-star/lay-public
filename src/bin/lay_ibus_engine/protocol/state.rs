@@ -33,14 +33,31 @@ pub(crate) struct ExactManualToggleSuppression {
     pub(crate) expires_at: Instant,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct CurrentWordSuppression {
+    pub(crate) incarnation: u64,
+    pub(crate) owner_lease_identity: u64,
+    pub(crate) open_token_chars: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum AutocorrectSuppression {
+    CurrentWord(CurrentWordSuppression),
+    LegacyReplayV1,
+    ExactReplay(ExactManualToggleSuppression),
+}
+
 #[derive(Debug, Clone, Default)]
 pub(crate) struct SharedState {
     pub(crate) active_path: Option<String>,
+    /// TD-121 admission owner generation for `active_path`. Legacy engines
+    /// leave this unset and retain their existing path-only behavior.
+    pub(crate) context_owner_generation: Option<u64>,
     pub(crate) handoff_tail_buffer: String,
     pub(crate) handoff_tail_epoch: u64,
     pub(crate) handoff_focus_receipt: Option<String>,
-    pub(crate) suppress_next_committed_tail_autocorrect: bool,
-    pub(crate) exact_manual_toggle_suppression: Option<ExactManualToggleSuppression>,
+    pub(crate) autocorrect_suppression: Option<AutocorrectSuppression>,
+    pub(crate) suppression_revision: u64,
     pub(crate) preserve_active_path_until: Option<Instant>,
     pub(crate) exact_manual_toggle_handoff_epoch: Option<u64>,
     pub(crate) exact_manual_toggle_handoff_path: Option<String>,

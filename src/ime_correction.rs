@@ -89,11 +89,8 @@ pub fn decide_active_composition_autocorrect(
 pub fn decide_active_composition_autocorrect_observed(
     request: ActiveCompositionAutocorrectRequest<'_>,
 ) -> ObservedActiveCompositionAutocorrect {
-    let correction_mode =
-        ActiveCompositionGateConfig::from_config(request.config).correction_mode();
     decide_active_composition_autocorrect_with_evidence(
         request,
-        correction_mode,
         ActiveCompositionEvidence::FullField(None),
     )
 }
@@ -102,11 +99,8 @@ pub fn decide_active_composition_autocorrect_observed_with_exact(
     request: ActiveCompositionAutocorrectRequest<'_>,
     certificate: &crate::exact_layout_authority::ExactLayoutContourCertificate,
 ) -> ObservedActiveCompositionAutocorrect {
-    let correction_mode =
-        ActiveCompositionGateConfig::from_config(request.config).correction_mode();
     decide_active_composition_autocorrect_with_evidence(
         request,
-        correction_mode,
         ActiveCompositionEvidence::FullField(Some(certificate)),
     )
 }
@@ -125,7 +119,6 @@ pub fn prepare_exact_layout_active_composition_autocorrect_observed(
     );
     let observed = decide_active_composition_autocorrect_with_evidence(
         request,
-        gate_config.correction_mode(),
         ActiveCompositionEvidence::ClosedExact(certificate.as_ref()),
     );
     let prepared = certificate.map(|certificate| PreparedExactLayoutAutocorrect {
@@ -144,14 +137,55 @@ enum ActiveCompositionEvidence<'a> {
     ClosedExact(Option<&'a crate::exact_layout_authority::ExactLayoutContourCertificate>),
 }
 
+impl ActiveCompositionEvidence<'_> {
+    fn has_bound_authority(self, gate_text: &str) -> bool {
+        match self {
+            Self::FullField(Some(certificate)) | Self::ClosedExact(Some(certificate)) => {
+                certificate.matches_candidate(gate_text, certificate.replacement_text())
+            }
+            Self::FullField(None) | Self::ClosedExact(None) => false,
+        }
+    }
+}
+
+fn lexical_frame_matches_active_request(
+    frame: &crate::lexical_authority_frame::LexicalAuthorityFrameV1,
+    request: &ActiveCompositionAutocorrectRequest<'_>,
+    gate_text: &str,
+) -> bool {
+    let visible_tail = request.committed_tail.trim_end_matches(char::is_whitespace);
+    let framed_tail = format!("{}{}", frame.context_prefix(), frame.observed_token());
+    let Some(active_layout_is_ru) = request.active_layout_is_ru else {
+        return false;
+    };
+    if frame.committed_tail().as_bytes() != request.committed_tail.as_bytes()
+        || gate_text.trim_end_matches(char::is_whitespace).as_bytes() != visible_tail.as_bytes()
+        || framed_tail.as_bytes() != visible_tail.as_bytes()
+        || frame.active_layout_is_ru() != active_layout_is_ru
+        || !frame.config().matches_config(request.config)
+    {
+        return false;
+    }
+    frame.coordinates().is_some_and(|coordinates| {
+        coordinates.source_window().as_bytes() == frame.observed_token().as_bytes()
+            && coordinates.left_context().as_bytes() == frame.context_prefix().as_bytes()
+            && coordinates.config_generation() == frame.config().identity_fingerprint()
+            && (coordinates.preedit().is_empty()
+                || coordinates.preedit().as_bytes() == frame.observed_token().as_bytes())
+    })
+}
+
 fn decide_active_composition_autocorrect_with_evidence(
     request: ActiveCompositionAutocorrectRequest<'_>,
-    correction_mode: CorrectionMode,
     evidence: ActiveCompositionEvidence<'_>,
 ) -> ObservedActiveCompositionAutocorrect {
     let (gate_text, active_prefix) =
         active_composition_gate_text(request.text, request.committed_tail);
     let gate_config = ActiveCompositionGateConfig::from_config(request.config);
+    let has_bound_authority = request
+        .lexical_authority_frame
+        .is_some_and(|frame| lexical_frame_matches_active_request(frame, &request, &gate_text))
+        || evidence.has_bound_authority(&gate_text);
     let gate_request = InputGateRequest {
         trigger: InputGateTrigger::Space,
         text_tail: &gate_text,
@@ -164,7 +198,7 @@ fn decide_active_composition_autocorrect_with_evidence(
         nanda_autocorrect: gate_config.nanda_autocorrect,
         nanda_candidate_route: crate::correction_core::CandidateReadoutRoute::live_default(),
         nanda_wave_options: request.config.active_nanda_wave_options(),
-        correction_mode,
+        correction_mode: gate_config.correction_mode(),
     };
     let observed = match evidence {
         ActiveCompositionEvidence::FullField(None) => decide_input_gate_observed(gate_request),
@@ -229,6 +263,9 @@ fn decide_active_composition_autocorrect_with_evidence(
             plan,
             &decision,
         );
+        if !has_bound_authority && !frameless_boundary_action_is_authorized(&action) {
+            return None;
+        }
         if matches!(evidence, ActiveCompositionEvidence::FullField(_))
             && active_layout_preserves_known_token(
                 action.from_text(),
@@ -258,6 +295,19 @@ fn decide_active_composition_autocorrect_with_evidence(
         no_apply_stage,
         telemetry,
     }
+}
+
+fn frameless_boundary_action_is_authorized(action: &EditAction) -> bool {
+    action.allow_apply()
+        && action.transition().is_verified()
+        && action.transition().proof() == Some(TransitionProof::Boundary)
+        && matches!(
+            action.transition().operator(),
+            Some(
+                crate::text_edit::TransitionOperator::BoundaryShift
+                    | crate::text_edit::TransitionOperator::BoundaryMergeSplit
+            )
+        )
 }
 
 /// Prevents automatic layout evidence from overturning an independently known
@@ -354,11 +404,7 @@ impl ActiveCompositionGateConfig {
     }
 
     fn correction_mode(self) -> CorrectionMode {
-        if self.nanda_autocorrect {
-            CorrectionMode::NandaOnly
-        } else {
-            CorrectionMode::DeterministicOnly
-        }
+        crate::correction_core::live_correction_mode(self.nanda_autocorrect)
     }
 }
 
@@ -368,6 +414,7 @@ mod tests {
         active_composition_gate_text, decide_active_composition_autocorrect,
         decide_active_composition_autocorrect_observed,
         decide_active_composition_autocorrect_observed_with_exact,
+        lexical_frame_matches_active_request,
         prepare_exact_layout_active_composition_autocorrect_observed,
         ActiveCompositionAutocorrectRequest, AutocorrectNoApplyStage,
     };
@@ -400,6 +447,51 @@ mod tests {
             nanda_l2_phase_apply: true,
             ..config()
         }
+    }
+
+    fn bound_lexical_frame(
+        config: &LayConfig,
+        committed_tail: &str,
+        context_prefix: &str,
+        observed_token: &str,
+        active_layout_is_ru: bool,
+    ) -> crate::lexical_authority_frame::LexicalAuthorityFrameV1 {
+        let config_identity =
+            crate::lexical_authority_frame::LexicalAuthorityConfigIdentityV1::from_config(config);
+        let cursor = u32::try_from(observed_token.chars().count()).expect("test token length");
+        let coordinates = crate::lexical_authority_frame::LexicalAuthorityCoordinatesV1::new(
+            11,
+            [11, 19],
+            23,
+            observed_token.to_string(),
+            context_prefix.to_string(),
+            cursor,
+            (cursor, cursor),
+            observed_token.to_string(),
+            cursor,
+            29,
+            config_identity.identity_fingerprint(),
+        );
+        crate::lexical_authority_frame::LexicalAuthorityFrameV1::from_exact_parts(
+            "/td113/ime".to_string(),
+            Some("td113-focus".to_string()),
+            31,
+            committed_tail.to_string(),
+            context_prefix.to_string(),
+            observed_token.to_string(),
+            true,
+            active_layout_is_ru,
+            if active_layout_is_ru {
+                FactoryEngineProfile::Ru
+            } else {
+                FactoryEngineProfile::UsQwerty
+            },
+            None,
+            37,
+            41,
+            config_identity,
+        )
+        .with_coordinates(coordinates)
     }
 
     fn exact_us_frame(token: &str) -> ExactLayoutFrame {
@@ -555,6 +647,219 @@ mod tests {
 
         assert_eq!(gate_text, "я прохоил ");
         assert_eq!(prefix, "я ");
+    }
+
+    #[test]
+    fn td113_live_nanda_config_retains_deterministic_typo_correction() {
+        let cfg = config();
+        let frame = bound_lexical_frame(&cfg, "плозо", "", "плозо", true);
+        let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            text: "плозо ",
+            committed_tail: "плозо",
+            config: &cfg,
+            lexical_authority_frame: Some(&frame),
+            active_layout_is_ru: Some(true),
+        })
+        .expect("live nanda_autocorrect must retain the deterministic typo source");
+
+        assert_eq!(decision.replacement, "плохо ");
+        assert!(decision.action.allow_apply());
+    }
+
+    #[test]
+    #[ignore = "requires pinned installed L1.1, Canonical L2, V13, and Productive packages"]
+    fn td117_frame_bound_wave_winner_reaches_verified_current_token_transition() {
+        crate::nanda_wave::ensure_l11_service_started()
+            .expect("canonical L1.1 service must be available for the live-route proof");
+        let cfg = config();
+        for (observed, expected) in [("плозо", "плохо"), ("рабоает", "работает")]
+        {
+            let frame = bound_lexical_frame(&cfg, observed, "", observed, true);
+            let text = format!("{observed} ");
+            let replacement = format!("{expected} ");
+            let resolution = crate::correction_core::resolve_text_correction(
+                crate::correction_core::CorrectionRequest {
+                    text: &text,
+                    lexical_authority_frame: Some(&frame),
+                    auto_replace: cfg.auto_replace,
+                    typing_assist: cfg.typing_assist,
+                    auto_switch_layout: cfg.auto_switch_layout,
+                    correction_safety: cfg.active_correction_safety(),
+                    typing_assist_pipeline: &cfg.typing_assist_pipeline,
+                    nanda_autocorrect: true,
+                    nanda_candidate_route:
+                        crate::correction_core::CandidateReadoutRoute::live_default(),
+                    nanda_wave_options: cfg.active_nanda_wave_options(),
+                    mode: crate::correction_core::CorrectionMode::NandaOnly,
+                },
+            );
+
+            let target = resolution
+                .candidates
+                .iter()
+                .find(|candidate| candidate.replacement == replacement)
+                .unwrap_or_else(|| panic!("canonical field must retain {replacement:?}"));
+            assert!(
+                target.frame_bound_lexical_capability().is_some(),
+                "exact target {replacement:?} must own the one event-bound capability"
+            );
+            assert_eq!(
+                resolution
+                    .selected
+                    .as_ref()
+                    .map(|candidate| candidate.replacement.as_str()),
+                Some(replacement.as_str()),
+                "observed={observed:?} candidate_count={}",
+                resolution.candidates.len()
+            );
+            let transition = resolution
+                .selected_transition
+                .as_ref()
+                .expect("DecisionCore must issue a selected transition")
+                .diagnostic_transition();
+            assert!(transition.is_verified());
+            assert_eq!(
+                transition.operator(),
+                Some(crate::text_edit::TransitionOperator::ReplaceCurrentWord)
+            );
+            assert_eq!(transition.left_context_changed(), Some(false));
+            assert_eq!(transition.changed_tokens(), Some(1));
+        }
+
+        let context = "волна должна классно ";
+        let observed = "востанавливать";
+        let frame = bound_lexical_frame(&cfg, observed, context, observed, true);
+        let text = format!("{context}{observed} ");
+        let resolution = crate::correction_core::resolve_text_correction(
+            crate::correction_core::CorrectionRequest {
+                text: &text,
+                lexical_authority_frame: Some(&frame),
+                auto_replace: cfg.auto_replace,
+                typing_assist: cfg.typing_assist,
+                auto_switch_layout: cfg.auto_switch_layout,
+                correction_safety: cfg.active_correction_safety(),
+                typing_assist_pipeline: &cfg.typing_assist_pipeline,
+                nanda_autocorrect: true,
+                nanda_candidate_route: crate::correction_core::CandidateReadoutRoute::live_default(
+                ),
+                nanda_wave_options: cfg.active_nanda_wave_options(),
+                mode: crate::correction_core::CorrectionMode::NandaOnly,
+            },
+        );
+        for target in ["восстанавливать", "останавливать"] {
+            let replacement = format!("{context}{target} ");
+            let candidate = resolution
+                .candidates
+                .iter()
+                .find(|candidate| candidate.replacement == replacement)
+                .unwrap_or_else(|| panic!("complete partition must retain {replacement:?}"));
+            assert!(candidate.frame_bound_lexical_capability().is_none());
+        }
+        assert!(resolution.selected.is_none());
+        assert!(resolution.selected_transition.is_none());
+    }
+
+    #[test]
+    fn stale_lexical_frame_does_not_unlock_deterministic_typo_authority() {
+        let cfg = config();
+        let stale_frame = bound_lexical_frame(&cfg, "другой", "", "другой", true);
+        let observed =
+            decide_active_composition_autocorrect_observed(ActiveCompositionAutocorrectRequest {
+                text: "плозо ",
+                committed_tail: "плозо",
+                config: &cfg,
+                lexical_authority_frame: Some(&stale_frame),
+                active_layout_is_ru: Some(true),
+            });
+
+        assert!(observed.decision.is_none());
+        assert_eq!(
+            observed.no_apply_stage,
+            Some(AutocorrectNoApplyStage::Verifier)
+        );
+    }
+
+    #[test]
+    fn lexical_frame_binding_rejects_missing_or_mismatched_current_fields() {
+        let cfg = config();
+        let valid = bound_lexical_frame(&cfg, "я плозо", "я ", "плозо", true);
+        let valid_request = ActiveCompositionAutocorrectRequest {
+            text: "плозо ",
+            committed_tail: "я плозо",
+            config: &cfg,
+            lexical_authority_frame: Some(&valid),
+            active_layout_is_ru: Some(true),
+        };
+        let (gate_text, _) =
+            active_composition_gate_text(valid_request.text, valid_request.committed_tail);
+        assert!(lexical_frame_matches_active_request(
+            &valid,
+            &valid_request,
+            &gate_text
+        ));
+
+        let missing_coordinates =
+            crate::lexical_authority_frame::LexicalAuthorityFrameV1::from_exact_parts(
+                "/td113/ime".to_string(),
+                Some("td113-focus".to_string()),
+                31,
+                "я плозо".to_string(),
+                "я ".to_string(),
+                "плозо".to_string(),
+                true,
+                true,
+                FactoryEngineProfile::Ru,
+                None,
+                37,
+                41,
+                crate::lexical_authority_frame::LexicalAuthorityConfigIdentityV1::from_config(&cfg),
+            );
+        assert!(!lexical_frame_matches_active_request(
+            &missing_coordinates,
+            &valid_request,
+            &gate_text
+        ));
+
+        let stale_tail_request = ActiveCompositionAutocorrectRequest {
+            text: "плозо ",
+            committed_tail: "ты плозо",
+            config: &cfg,
+            lexical_authority_frame: Some(&valid),
+            active_layout_is_ru: Some(true),
+        };
+        assert!(!lexical_frame_matches_active_request(
+            &valid,
+            &stale_tail_request,
+            "ты плозо "
+        ));
+
+        let mut changed_cfg = cfg.clone();
+        changed_cfg.correction_safety = "normal".to_string();
+        let stale_config_request = ActiveCompositionAutocorrectRequest {
+            text: "плозо ",
+            committed_tail: "я плозо",
+            config: &changed_cfg,
+            lexical_authority_frame: Some(&valid),
+            active_layout_is_ru: Some(true),
+        };
+        assert!(!lexical_frame_matches_active_request(
+            &valid,
+            &stale_config_request,
+            &gate_text
+        ));
+
+        let stale_layout_request = ActiveCompositionAutocorrectRequest {
+            text: "плозо ",
+            committed_tail: "я плозо",
+            config: &cfg,
+            lexical_authority_frame: Some(&valid),
+            active_layout_is_ru: Some(false),
+        };
+        assert!(!lexical_frame_matches_active_request(
+            &valid,
+            &stale_layout_request,
+            &gate_text
+        ));
     }
 
     #[test]
@@ -894,6 +1199,125 @@ mod tests {
     }
 
     #[test]
+    fn td112_committed_tail_profiles_preserve_boundary_and_unproven_typo_contracts() {
+        for correction_safety in ["strict", "normal", "experimental"] {
+            let mut cfg = config();
+            cfg.correction_safety = correction_safety.to_string();
+
+            let boundary = decide_active_composition_autocorrect_observed(
+                ActiveCompositionAutocorrectRequest {
+                    text: "тоесть ",
+                    committed_tail: "тоесть",
+                    config: &cfg,
+                    lexical_authority_frame: None,
+                    active_layout_is_ru: Some(true),
+                },
+            );
+            if correction_safety == "strict" {
+                assert!(boundary.decision.is_none());
+                assert_eq!(boundary.no_apply_stage, Some(AutocorrectNoApplyStage::Rank));
+            } else {
+                let boundary_decision = boundary
+                    .decision
+                    .as_ref()
+                    .unwrap_or_else(|| panic!("profile={correction_safety}: boundary decision"));
+                assert_eq!(boundary_decision.replacement, "то есть ");
+                assert!(boundary_decision.action.allow_apply());
+                assert_eq!(
+                    boundary_decision.action.transition().proof(),
+                    Some(crate::text_edit::TransitionProof::Boundary)
+                );
+                assert_eq!(boundary.no_apply_stage, None);
+            }
+
+            let frame = bound_lexical_frame(&cfg, "звгрузи", "", "звгрузи", true);
+            let unproven_typo = decide_active_composition_autocorrect_observed(
+                ActiveCompositionAutocorrectRequest {
+                    text: "звгрузи ",
+                    committed_tail: "звгрузи",
+                    config: &cfg,
+                    lexical_authority_frame: Some(&frame),
+                    active_layout_is_ru: Some(true),
+                },
+            );
+            if correction_safety == "experimental" {
+                let decision = unproven_typo
+                    .decision
+                    .as_ref()
+                    .expect("Experimental preserves deterministic baseline authority");
+                assert_eq!(decision.replacement, "загрузи ");
+                assert!(decision.action.allow_apply());
+                assert_eq!(unproven_typo.no_apply_stage, None);
+            } else {
+                assert!(
+                    unproven_typo.decision.is_none(),
+                    "profile={correction_safety} replacement={:?}",
+                    unproven_typo
+                        .decision
+                        .as_ref()
+                        .map(|decision| decision.replacement.as_str())
+                );
+                assert_eq!(
+                    unproven_typo.no_apply_stage,
+                    Some(AutocorrectNoApplyStage::Rank)
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn td112_committed_tail_negative_profile_matrix_has_zero_false_accepts() {
+        let mut observations = 0usize;
+        let mut false_accepts = 0usize;
+        for (case_id, text, committed_tail) in [
+            ("N01", "новости ", "новости"),
+            ("N02", "cargo ", "cargo"),
+            ("N03", "rustc-1.97.1 ", "rustc-1.97.1"),
+            ("N04", "https://example.org ", "https://example.org"),
+            ("N05", "... ", "..."),
+            ("N06", "пку ", "пку"),
+            ("N07", "fвтозамена ", "fвтозамена"),
+            ("N08", "читайл ", "читайл"),
+        ] {
+            for correction_safety in ["strict", "normal", "experimental"] {
+                let mut cfg = config();
+                cfg.correction_safety = correction_safety.to_string();
+                let observed = decide_active_composition_autocorrect_observed(
+                    ActiveCompositionAutocorrectRequest {
+                        text,
+                        committed_tail,
+                        config: &cfg,
+                        lexical_authority_frame: None,
+                        active_layout_is_ru: None,
+                    },
+                );
+                observations += 1;
+                if observed.decision.is_some() {
+                    false_accepts += 1;
+                }
+                assert!(
+                    observed.decision.is_none(),
+                    "case_id={case_id} profile={correction_safety} replacement={:?}",
+                    observed
+                        .decision
+                        .as_ref()
+                        .map(|decision| decision.replacement.as_str())
+                );
+                assert!(
+                    matches!(
+                        observed.no_apply_stage,
+                        Some(AutocorrectNoApplyStage::Rank | AutocorrectNoApplyStage::Verifier)
+                    ),
+                    "case_id={case_id} profile={correction_safety} stage={:?}",
+                    observed.no_apply_stage
+                );
+            }
+        }
+        assert_eq!(observations, 24);
+        assert_eq!(false_accepts, 0);
+    }
+
+    #[test]
     fn active_english_layout_preserves_known_ascii_token_from_layout_projection() {
         let cfg = config();
         let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
@@ -1148,7 +1572,7 @@ mod tests {
     }
 
     #[test]
-    fn committed_tail_space_route_does_not_extend_known_imperative_to_infinitive() {
+    fn td112_committed_tail_i03_does_not_extend_known_imperative_to_infinitive() {
         let previous_policy = crate::hot_field::process_policy();
         crate::hot_field::set_process_policy(
             crate::hot_field::HotFieldPolicy::daemon_for_text_backend(
@@ -1156,22 +1580,31 @@ mod tests {
             ),
         );
 
-        for correction_safety in ["normal", "experimental"] {
+        for correction_safety in ["strict", "normal", "experimental"] {
             let mut cfg = live_l2_phase_config();
             cfg.correction_safety = correction_safety.to_string();
-            let decision =
-                decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
+            let observed = decide_active_composition_autocorrect_observed(
+                ActiveCompositionAutocorrectRequest {
                     text: "посмотри ",
                     committed_tail: "давай там посмотри",
                     config: &cfg,
                     lexical_authority_frame: None,
                     active_layout_is_ru: None,
-                });
+                },
+            );
 
             assert!(
-                decision.is_none(),
+                observed.decision.is_none(),
                 "known imperative must not auto-grow into infinitive on Space: safety={correction_safety} replacement={:?}",
-                decision.as_ref().map(|value| value.replacement.as_str())
+                observed
+                    .decision
+                    .as_ref()
+                    .map(|value| value.replacement.as_str())
+            );
+            assert_eq!(
+                observed.no_apply_stage,
+                Some(AutocorrectNoApplyStage::Rank),
+                "I03 safety={correction_safety}"
             );
         }
 

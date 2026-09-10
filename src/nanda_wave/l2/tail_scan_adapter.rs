@@ -61,9 +61,13 @@ pub(super) fn boundary_split_target_has_structural_evidence(token: &str, surface
         || crate::lexicon::is_ru_short_pronoun(left)
         || crate::phrase_lexicon::is_short_russian_function_word(left);
     let right_function = trailing_short_function_center(right);
+    let short_left_field = strong_short_left_field_boundary(left, right);
+    let two_content_centers =
+        independent_boundary_center(left) && independent_boundary_center(right);
     (left_function && independent_boundary_center(right))
         || (right_function && independent_boundary_center(left))
-        || (independent_boundary_center(left) && independent_boundary_center(right))
+        || short_left_field
+        || two_content_centers
 }
 
 fn independent_boundary_center(word: &str) -> bool {

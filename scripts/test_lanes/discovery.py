@@ -264,7 +264,18 @@ def isolation(target: str, name: str, lane: str) -> str:
     return "target"
 
 
-def discover_from_artifacts(artifacts: list[dict[str, str]]) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
+def discover_from_artifacts(
+    artifacts: list[dict[str, str]],
+    expected_targets: set[str] | None = None,
+) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
+    if expected_targets is not None:
+        discovered = {artifact["target"] for artifact in artifacts}
+        if discovered != expected_targets:
+            raise DiscoveryError(
+                "focused target discovery mismatch: "
+                f"missing={sorted(expected_targets - discovered)} "
+                f"unexpected={sorted(discovered - expected_targets)}"
+            )
     tests: list[dict[str, str]] = []
     targets: list[dict[str, str]] = []
     seen: set[tuple[str, str]] = set()
@@ -291,10 +302,26 @@ def discover_from_artifacts(artifacts: list[dict[str, str]]) -> tuple[list[dict[
                     "isolation": isolation(target, name, lane),
                 }
             )
-    missing_performance = sorted(PERFORMANCE_TESTS - seen)
-    missing_isolated = sorted(PROCESS_ISOLATED_TESTS - seen)
+    registry_targets = expected_targets
+    expected_performance = {
+        identity
+        for identity in PERFORMANCE_TESTS
+        if registry_targets is None or identity[0] in registry_targets
+    }
+    expected_isolated = {
+        identity
+        for identity in PROCESS_ISOLATED_TESTS
+        if registry_targets is None or identity[0] in registry_targets
+    }
+    expected_package_targets = {
+        target
+        for target in PACKAGE_TARGETS
+        if registry_targets is None or target in registry_targets
+    }
+    missing_performance = sorted(expected_performance - seen)
+    missing_isolated = sorted(expected_isolated - seen)
     discovered_targets = {row["target"] for row in targets}
-    missing_package_targets = sorted(PACKAGE_TARGETS - discovered_targets)
+    missing_package_targets = sorted(expected_package_targets - discovered_targets)
     if missing_performance or missing_isolated or missing_package_targets:
         raise DiscoveryError(
             "test registry drift: "
@@ -375,7 +402,11 @@ def cargo_configuration_closure(
     return {"external": "ABSENT", "project": project}
 
 
-def manifest_payload(tests: list[dict[str, str]], targets: list[dict[str, str]]) -> dict[str, Any]:
+def manifest_payload(
+    tests: list[dict[str, str]],
+    targets: list[dict[str, str]],
+    cargo_args: list[str] | None = None,
+) -> dict[str, Any]:
     counts = {lane: 0 for lane in ("correctness", "package", "performance", "ignored")}
     isolation_counts = {kind: 0 for kind in ("process", "target")}
     for row in tests:
@@ -383,7 +414,7 @@ def manifest_payload(tests: list[dict[str, str]], targets: list[dict[str, str]])
         isolation_counts[row["isolation"]] += 1
     return {
         "schema": SCHEMA,
-        "cargo_args": CARGO_ARGS,
+        "cargo_args": CARGO_ARGS if cargo_args is None else cargo_args,
         "cargo_configuration": cargo_configuration_closure(),
         "toolchain": toolchain_identity(),
         "counts": counts,
@@ -412,7 +443,7 @@ def cargo_build_environment(target_dir: pathlib.Path) -> dict[str, str]:
     real_home = pathlib.Path(os.environ.get("HOME", str(pathlib.Path.home())))
     cargo_home = pathlib.Path(os.environ.get("CARGO_HOME", real_home / ".cargo"))
     cargo_configuration_closure(cargo_home=cargo_home)
-    return {
+    environment = {
         "PATH": f"{sysroot}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
         "HOME": str(home),
         "XDG_CONFIG_HOME": str(home / "config"),
@@ -430,6 +461,16 @@ def cargo_build_environment(target_dir: pathlib.Path) -> dict[str, str]:
         "TZ": "UTC",
         "TMPDIR": "/tmp",
     }
+    for name in (
+        "CARGO_BUILD_JOBS",
+        "RUST_TEST_THREADS",
+        "LAY_RESOURCE_GUARD_ACTIVE",
+        "LAY_RESOURCE_LEASE_HELD",
+        "LAY_RESOURCE_PROFILE",
+    ):
+        if name in os.environ:
+            environment[name] = os.environ[name]
+    return environment
 
 
 def cargo_sandbox_command(command: list[str], target_dir: pathlib.Path) -> list[str]:
@@ -463,13 +504,58 @@ def cargo_sandbox_command(command: list[str], target_dir: pathlib.Path) -> list[
     ]
 
 
-def cargo_discovery(target_dir: pathlib.Path) -> tuple[dict[str, Any], list[dict[str, str]]]:
+def focused_cargo_args(requested_targets: set[str]) -> list[str]:
+    if not requested_targets:
+        raise DiscoveryError("focused discovery requires at least one target")
+    args = [
+        "test",
+        "--locked",
+        "--offline",
+        "--features",
+        "research-tools",
+        "--no-run",
+    ]
+    selectors = {
+        "bin": "--bin",
+        "test": "--test",
+        "example": "--example",
+        "bench": "--bench",
+    }
+    for identity in sorted(requested_targets):
+        kind, separator, name = identity.partition(":")
+        if not separator or not name:
+            raise DiscoveryError(f"invalid Cargo target identity: {identity!r}")
+        if kind == "lib":
+            if identity != "lib:lay":
+                raise DiscoveryError(f"unexpected library target: {identity!r}")
+            args.append("--lib")
+            continue
+        selector = selectors.get(kind)
+        if selector is None:
+            raise DiscoveryError(f"unsupported focused target kind: {identity!r}")
+        if name.startswith("-") or not all(
+            character.isalnum() or character in "_-" for character in name
+        ):
+            raise DiscoveryError(f"invalid Cargo target identity: {identity!r}")
+        args.extend((selector, name))
+    return args
+
+
+def cargo_discovery(
+    target_dir: pathlib.Path,
+    requested_targets: set[str] | None = None,
+) -> tuple[dict[str, Any], list[dict[str, str]]]:
+    cargo_args = (
+        CARGO_ARGS
+        if requested_targets is None
+        else focused_cargo_args(requested_targets)
+    )
     target_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile(prefix="lay-test-discovery-", suffix=".jsonl") as output:
         environment = cargo_build_environment(target_dir)
         command = [
             str(ROOT / "scripts" / "cargo-guard.sh"),
-            *CARGO_ARGS,
+            *cargo_args,
             "--message-format=json",
         ]
         completed = subprocess.run(
@@ -483,5 +569,5 @@ def cargo_discovery(target_dir: pathlib.Path) -> tuple[dict[str, Any], list[dict
         if completed.returncode != 0:
             raise DiscoveryError(f"Cargo test discovery exited {completed.returncode}")
         artifacts = parse_cargo_artifacts(pathlib.Path(output.name))
-    tests, targets = discover_from_artifacts(artifacts)
-    return manifest_payload(tests, targets), artifacts
+    tests, targets = discover_from_artifacts(artifacts, requested_targets)
+    return manifest_payload(tests, targets, cargo_args), artifacts

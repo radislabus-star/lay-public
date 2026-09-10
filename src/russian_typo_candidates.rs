@@ -12,6 +12,82 @@ pub(crate) const RU_ALPHABET: [char; 33] = [
     'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я',
 ];
 
+/// Visits every lowercase-Russian surface at exact Damerau distance one.
+///
+/// This is a complete candidate frontier, not a ranker: there is no top-k
+/// cutoff and the caller decides what evidence, if any, a generated surface
+/// carries. The order favors cheap deletion/transposition matches before the
+/// wider substitution and insertion frontiers.
+pub(crate) fn any_single_damerau_edit_candidate(
+    lower: &str,
+    mut predicate: impl FnMut(&str) -> bool,
+) -> bool {
+    let chars = lower.chars().collect::<Vec<_>>();
+    let mut candidate = String::with_capacity(lower.len() + 2);
+
+    for removed in 0..chars.len() {
+        candidate.clear();
+        candidate.extend(chars[..removed].iter());
+        candidate.extend(chars[removed + 1..].iter());
+        if predicate(&candidate) {
+            return true;
+        }
+    }
+
+    let mut transposed = chars.clone();
+    for left in 0..transposed.len().saturating_sub(1) {
+        if transposed[left] == transposed[left + 1] {
+            continue;
+        }
+        transposed.swap(left, left + 1);
+        candidate.clear();
+        candidate.extend(transposed.iter());
+        transposed.swap(left, left + 1);
+        if predicate(&candidate) {
+            return true;
+        }
+    }
+
+    for replaced in 0..chars.len() {
+        for replacement in RU_ALPHABET {
+            if replacement == chars[replaced] {
+                continue;
+            }
+            candidate.clear();
+            candidate.extend(chars[..replaced].iter());
+            candidate.push(replacement);
+            candidate.extend(chars[replaced + 1..].iter());
+            if predicate(&candidate) {
+                return true;
+            }
+        }
+    }
+
+    for inserted_at in 0..=chars.len() {
+        for inserted in RU_ALPHABET {
+            candidate.clear();
+            candidate.extend(chars[..inserted_at].iter());
+            candidate.push(inserted);
+            candidate.extend(chars[inserted_at..].iter());
+            if predicate(&candidate) {
+                return true;
+            }
+        }
+    }
+
+    false
+}
+
+pub(crate) fn has_clean_single_damerau_edit_candidate(lower: &str) -> bool {
+    any_single_damerau_edit_candidate(lower, |candidate| {
+        // The shared clean certificate accepts attested and lexicon-backed
+        // morphology surfaces, but excludes unconstrained generated material.
+        // That makes it suitable as contradictory one-word evidence without
+        // coupling the veto to a bounded candidate ranking.
+        crate::russian_lexicon::has_clean_russian_surface_certificate(candidate)
+    })
+}
+
 pub(crate) fn repeated_run_deletion_candidates(lower: &str) -> Vec<String> {
     let chars: Vec<char> = lower.chars().collect();
     let mut seen = HashSet::new();
@@ -166,6 +242,35 @@ pub(crate) fn inserted_char_position_for_missing_letter(
     inserted
 }
 
+/// Returns true when a one-letter insertion creates an adjacent run of the
+/// same Russian consonant.
+///
+/// This is transition geometry only. It can lower automatic authority when no
+/// independent evidence proves that the input omitted a repeated consonant;
+/// it must not generate, rank, or positively authorize a candidate.
+pub(crate) fn missing_letter_inserts_adjacent_duplicate_consonant(
+    lower: &str,
+    candidate: &str,
+) -> bool {
+    let Some((idx, inserted)) = inserted_char_position_for_missing_letter(lower, candidate) else {
+        return false;
+    };
+    if !crate::keyboard::is_cyrillic_letter(inserted)
+        || crate::russian_chars::is_russian_vowel(inserted)
+        || matches!(inserted, 'ь' | 'Ь' | 'ъ' | 'Ъ')
+    {
+        return false;
+    }
+
+    let candidate_chars = candidate.chars().collect::<Vec<_>>();
+    idx.checked_sub(1)
+        .and_then(|left| candidate_chars.get(left))
+        .is_some_and(|left| *left == inserted)
+        || candidate_chars
+            .get(idx + 1)
+            .is_some_and(|right| *right == inserted)
+}
+
 fn ru_vowel_confusion_replacements(ch: char) -> &'static [char] {
     match ch {
         'а' => &['о'],
@@ -175,5 +280,73 @@ fn ru_vowel_confusion_replacements(ch: char) -> &'static [char] {
         'у' => &['о'],
         'ё' => &['е'],
         _ => &[],
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        any_single_damerau_edit_candidate, has_clean_single_damerau_edit_candidate,
+        missing_letter_inserts_adjacent_duplicate_consonant,
+    };
+
+    #[test]
+    fn complete_one_edit_frontier_covers_every_geometry_without_top_k() {
+        for (original, expected) in [
+            ("коот", "кот"),
+            ("кто", "кот"),
+            ("кит", "кот"),
+            ("кт", "кот"),
+        ] {
+            assert!(
+                any_single_damerau_edit_candidate(original, |candidate| candidate == expected),
+                "missing exact one-edit surface: {original:?} -> {expected:?}"
+            );
+        }
+
+        assert!(!any_single_damerau_edit_candidate("кот", |candidate| {
+            candidate == "кот"
+        }));
+        assert!(!any_single_damerau_edit_candidate("кот", |candidate| {
+            crate::text_metrics::damerau_levenshtein("кот", candidate) != 1
+        }));
+    }
+
+    #[test]
+    fn boundary_conflict_requires_an_attested_one_word_surface() {
+        assert!(crate::russian_lexicon::has_clean_russian_surface_certificate("воротами"));
+        assert!(has_clean_single_damerau_edit_candidate("воротаим"));
+
+        assert!(!has_clean_single_damerau_edit_candidate("документыим"));
+        assert!(!crate::russian_lexicon::has_clean_russian_surface_certificate("документним"));
+        assert!(!crate::russian_lexicon::is_exact_reference_russian_word(
+            "документним"
+        ));
+    }
+
+    #[test]
+    fn duplicate_consonant_insertion_geometry_is_source_neutral() {
+        for (original, candidate) in [
+            ("руских", "русских"),
+            ("отточеная", "отточенная"),
+            ("тон", "тонн"),
+            ("тона", "тонна"),
+        ] {
+            assert!(missing_letter_inserts_adjacent_duplicate_consonant(
+                original, candidate
+            ));
+        }
+
+        for (original, candidate) in [
+            ("протколах", "протоколах"),
+            ("дейстия", "действия"),
+            ("лушее", "лучшее"),
+            ("тона", "торна"),
+            ("тон", "тонны"),
+        ] {
+            assert!(!missing_letter_inserts_adjacent_duplicate_consonant(
+                original, candidate
+            ));
+        }
     }
 }

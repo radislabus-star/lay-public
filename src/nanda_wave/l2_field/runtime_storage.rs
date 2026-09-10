@@ -8,7 +8,7 @@ use super::model::{
     CompetitionEdge, FormCenterRef, L2FieldPackage, LemmaCenter, LocalContextMode, MorphBinding,
     NeighborCoupling, SlotPhaseCenter, TieCalibration,
 };
-use super::package_bytes::PackageBytes;
+use super::package_bytes::{LoadedPackageIdentity, PackageBytes};
 
 #[derive(Clone, Debug)]
 #[expect(
@@ -77,6 +77,13 @@ impl RuntimeL2Package {
                     + 24
             }
             Self::Compact(package) => package.backing_bytes(),
+        }
+    }
+
+    pub(super) fn package_identity(&self) -> Option<LoadedPackageIdentity> {
+        match self {
+            Self::Reference(_) => None,
+            Self::Compact(package) => Some(package.package_identity()),
         }
     }
 

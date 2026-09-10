@@ -181,31 +181,8 @@ pub(super) fn is_hard_boundary(key: KeyCode) -> bool {
     )
 }
 
-pub(super) fn should_ignore_buffer_key(
-    key: KeyCode,
-    modifiers: &ShiftState,
-    current_empty: bool,
-) -> bool {
-    if modifiers.shortcut_active()
-        && (key == KeyCode::KEY_SPACE
-            || is_typing_key(key)
-            || is_leading_non_word_symbol_key(key, modifiers.any()))
-    {
-        return true;
-    }
-
-    should_start_ignored_buffer_token(key, modifiers, current_empty)
-}
-
-pub(super) fn should_start_ignored_buffer_token(
-    key: KeyCode,
-    modifiers: &ShiftState,
-    current_empty: bool,
-) -> bool {
-    if modifiers.shortcut_active() {
-        return false;
-    }
-    current_empty && is_leading_non_word_symbol_key(key, modifiers.any())
+pub(super) fn should_ignore_buffer_key(key: KeyCode, modifiers: &ShiftState) -> bool {
+    modifiers.shortcut_active() && is_typing_key(key)
 }
 
 pub(super) fn should_schedule_typing_assist_after_space(
@@ -237,8 +214,4 @@ pub(super) fn should_run_deferred_typing_assist_after_space(
     shift_active: bool,
 ) -> bool {
     pending && active && !shift_active
-}
-
-fn is_leading_non_word_symbol_key(key: KeyCode, _shift: bool) -> bool {
-    matches!(key, KeyCode::KEY_EQUAL | KeyCode::KEY_MINUS)
 }

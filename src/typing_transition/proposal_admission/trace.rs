@@ -171,6 +171,77 @@ impl Default for AdmissionTraceCounters {
 std::thread_local! {
     static ADMISSION_TRACE: std::cell::RefCell<Option<AdmissionTraceCounters>> =
         const { std::cell::RefCell::new(None) };
+    static ADMISSION_EVALUATION_COUNT: std::cell::RefCell<Option<AdmissionEvaluationCounter>> =
+        const { std::cell::RefCell::new(None) };
+}
+
+#[cfg(test)]
+struct AdmissionEvaluationCounter {
+    replacement: String,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+    count: usize,
+}
+
+#[cfg(test)]
+struct AdmissionEvaluationCountGuard;
+
+#[cfg(test)]
+impl Drop for AdmissionEvaluationCountGuard {
+    fn drop(&mut self) {
+        ADMISSION_EVALUATION_COUNT.with(|count| count.borrow_mut().take());
+    }
+}
+
+#[cfg(test)]
+pub(crate) fn with_admission_evaluation_count<T>(
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+    run: impl FnOnce() -> T,
+) -> (T, usize) {
+    ADMISSION_EVALUATION_COUNT.with(|count| {
+        let mut count = count.borrow_mut();
+        assert!(
+            count.is_none(),
+            "candidate-admission evaluation counter is already active"
+        );
+        *count = Some(AdmissionEvaluationCounter {
+            replacement: replacement.to_string(),
+            error_class,
+            origin,
+            count: 0,
+        });
+    });
+    let _guard = AdmissionEvaluationCountGuard;
+    let output = run();
+    let count = ADMISSION_EVALUATION_COUNT.with(|count| {
+        count
+            .borrow()
+            .as_ref()
+            .map(|counter| counter.count)
+            .expect("candidate-admission evaluation counter disappeared")
+    });
+    (output, count)
+}
+
+#[cfg(test)]
+fn record_admission_evaluation(
+    replacement: &str,
+    error_class: TypingErrorClass,
+    origin: CandidateOrigin,
+) {
+    ADMISSION_EVALUATION_COUNT.with(|count| {
+        let mut count = count.borrow_mut();
+        if let Some(counter) = count.as_mut() {
+            if counter.replacement == replacement
+                && counter.error_class == error_class
+                && counter.origin == origin
+            {
+                counter.count = counter.count.saturating_add(1);
+            }
+        }
+    });
 }
 
 #[cfg(test)]

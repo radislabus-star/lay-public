@@ -1,0 +1,177 @@
+{
+  "schema": "nanda.implementation-preflight.v1",
+  "task_id": "td113-cross-class-authority-v4-20260902",
+  "authority_bearing": true,
+  "scientific_future_sensitive": false,
+  "reuses_existing_implementation": true,
+  "baseline_checks": [
+    {"id":"task-contract","kind":"file","path":"../113-restore-hybrid-nanda-autocorrect.md","expect":{"mode":"0664","size_bytes":28071,"sha256":"300d444fd1b4abda1dc3463c458da9109c358cc98a36e08ae51b1f4b3ada6a7d"}},
+    {"id":"proposal-structural-guards","kind":"file","path":"../../src/typing_transition/proposal_admission/structural_guards.rs","expect":{"mode":"0664","size_bytes":43522,"sha256":"5fb6207a35bd33c8c71d7c5596940e4fff5a995786c06ba2da1d83f6a7b89e76"}},
+    {"id":"decision-admission","kind":"file","path":"../../src/typing_transition/decision/admission.rs","expect":{"mode":"0664","size_bytes":68330,"sha256":"6f7939b4683287d0661dd7dccc3dbd038892d8b28997d31dd60ac1d295b3ec12"}},
+    {"id":"proposal-tests","kind":"file","path":"../../src/typing_transition/proposal_admission/tests.rs","expect":{"mode":"0664","size_bytes":11739,"sha256":"36a50426b21376ffaf065f804b791c20a16e7fcc30c9d6afa63c1c4d46c339f8"}},
+    {"id":"decision-tests","kind":"file","path":"../../src/typing_transition/decision/tests.rs","expect":{"mode":"0664","size_bytes":33464,"sha256":"ee8f8d8c00765e7892da711b6bc82547be140ed6eefb06b071670b8134b8ecb2"}},
+    {"id":"matrix-tests","kind":"file","path":"../../src/correction_core/tests.rs","expect":{"mode":"0664","size_bytes":107936,"sha256":"1effdae25806dd1d6d1c2cdb65b59e5a2c54aaf3cd20afabd1fdcbd756217216"}},
+    {"id":"transition-verifier","kind":"file","path":"../../src/typing_transition/verifier.rs","expect":{"mode":"0664","size_bytes":20636,"sha256":"3a93402b73cfcba2f6b4eee8edc8a98c2d3d12d3aab1a86b64209ce7f450aaf6"}},
+    {"id":"text-edit-safety","kind":"file","path":"../../src/text_edit/safety.rs","expect":{"mode":"0664","size_bytes":12009,"sha256":"941b0f4345a2b57e2a4edfc4cd0b1badfc3d4e02bfa41c7b1c1237ec974348f9"}},
+    {"id":"text-edit-gate","kind":"file","path":"../../src/text_edit/gate.rs","expect":{"mode":"0664","size_bytes":12515,"sha256":"2de4d3b67a0a075ceadbe05ce66feb6c4e6755501672780f3d441fe631aaefb4"}},
+    {"id":"exact-authority","kind":"file","path":"../../src/exact_layout_authority.rs","expect":{"mode":"0664","size_bytes":19091,"sha256":"3fcc4ef59763afc02c5feee4bc9428501c10bf4eef991ab13f1b19dbfec81110"}},
+    {"id":"decoder-edit-plan","kind":"file","path":"../../src/decoder/edit_plan.rs","expect":{"mode":"0664","size_bytes":6331,"sha256":"7716bfa242b862560742c0d3a8395488f6270571c1044178e69bcf1ce4aee8f2"}},
+    {"id":"space-prefetch","kind":"file","path":"../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs","expect":{"mode":"0664","size_bytes":36260,"sha256":"18150f40fee9043087874c37a7684612f6a40f7070cf4b65d82d4213e9d392a3"}},
+    {"id":"ime-mutation","kind":"file","path":"../../src/bin/lay_ibus_engine/composition_commit.rs","expect":{"mode":"0664","size_bytes":14647,"sha256":"98aa92b4c8939db948d876bf3cc362aa5c659d5d820008d8ae3757c258014f34"}},
+    {"id":"daemon-mutation","kind":"file","path":"../../src/bin/lay_daemon/typing_assist_runtime/output/ime.rs","expect":{"mode":"0664","size_bytes":5124,"sha256":"3d32776b5c13ac7cb15471b697c6d70ffd25dc3320cc09e00b3ccb9119f24793"}}
+  ],
+  "source_checks": [
+    {
+      "id": "proposal-authority-vetoes",
+      "path": "../../src/typing_transition/proposal_admission/structural_guards.rs",
+      "sha256": "5fb6207a35bd33c8c71d7c5596940e4fff5a995786c06ba2da1d83f6a7b89e76",
+      "forbidden_effect_patterns": [
+        {"effect":"literal_fixture_authority","regex":"(?:обьяснить|объяснить|текст е|т ыпочитай)"},
+        {"effect":"broad_known_word_veto_disable","regex":"TD113_DISABLE_KNOWN_WORD_VETO"},
+        {"effect":"source_id_exception","regex":"(?:hard_sign|split_word_pair|moved_prefix_pair).*TD113"}
+      ]
+    },
+    {
+      "id": "decision-authority-vetoes",
+      "path": "../../src/typing_transition/decision/admission.rs",
+      "sha256": "6f7939b4683287d0661dd7dccc3dbd038892d8b28997d31dd60ac1d295b3ec12",
+      "forbidden_effect_patterns": [
+        {"effect":"literal_fixture_authority","regex":"(?:обьяснить|объяснить|текст е|т ыпочитай)"},
+        {"effect":"unverified_boundary_bypass","regex":"TD113_ALLOW_UNVERIFIED_BOUNDARY"},
+        {"effect":"global_rank_weight_tuning","regex":"TD113_BOUNDARY_RANK_BONUS"},
+        {"effect":"exact_negative_bypass","regex":"TD113_IGNORE_EXACT_NEGATIVE"},
+        {"effect":"new_shared_mutable_state","regex":"static\\s+mut\\s+"},
+        {"effect":"installed_runtime_change","regex":"TD113_INSTALL_RUNTIME"},
+        {"effect":"user_config_change","regex":"TD113_USER_CONFIG_CHANGE"},
+        {"effect":"global_ibus_restart","regex":"TD113_RESTART_GLOBAL_IBUS"},
+        {"effect":"raw_user_text_commit","regex":"TD113_RAW_USER_TEXT"},
+        {"effect":"dependency_change","regex":"TD113_ADD_DEPENDENCY"}
+      ]
+    },
+    {
+      "id":"verifier-vetoes",
+      "path":"../../src/typing_transition/verifier.rs",
+      "sha256":"3a93402b73cfcba2f6b4eee8edc8a98c2d3d12d3aab1a86b64209ce7f450aaf6",
+      "forbidden_effect_patterns":[
+        {"effect":"verifier_weakening","regex":"TD113_(?:SKIP|BYPASS|ALLOW_UNVERIFIED)_VERIFIER"}
+      ]
+    },
+    {
+      "id":"edit-safety-vetoes",
+      "path":"../../src/text_edit/safety.rs",
+      "sha256":"941b0f4345a2b57e2a4edfc4cd0b1badfc3d4e02bfa41c7b1c1237ec974348f9",
+      "forbidden_effect_patterns":[
+        {"effect":"edit_safety_weakening","regex":"TD113_(?:SKIP|BYPASS|FORCE)_EDIT_SAFETY"}
+      ]
+    },
+    {
+      "id":"mutation-backend-vetoes",
+      "path":"../../src/bin/lay_ibus_engine/composition_commit.rs",
+      "sha256":"98aa92b4c8939db948d876bf3cc362aa5c659d5d820008d8ae3757c258014f34",
+      "forbidden_effect_patterns":[
+        {"effect":"mutation_backend_change","regex":"TD113_MUTATION_BACKEND_CHANGE"}
+      ]
+    },
+    {
+      "id":"space-prefetch-vetoes",
+      "path":"../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+      "sha256":"18150f40fee9043087874c37a7684612f6a40f7070cf4b65d82d4213e9d392a3",
+      "forbidden_effect_patterns":[
+        {"effect":"space_prefetch_change","regex":"TD113_SPACE_PREFETCH_CHANGE"}
+      ]
+    }
+  ],
+  "side_effects": {
+    "planned": [
+      {"id":"add-cross-class-unit-contracts","kind":"test_edit"},
+      {"id":"separate-clean-certificate-from-coverage","kind":"source_edit"},
+      {"id":"preserve-verified-boundary-authority","kind":"source_edit"},
+      {"id":"run-guarded-verification","kind":"process_spawn"},
+      {"id":"record-v4-receipt","kind":"evidence_write"}
+    ],
+    "forbidden": [
+      "literal_fixture_authority",
+      "source_id_exception",
+      "broad_known_word_veto_disable",
+      "unverified_boundary_bypass",
+      "global_rank_weight_tuning",
+      "exact_negative_bypass",
+      "verifier_weakening",
+      "edit_safety_weakening",
+      "mutation_backend_change",
+      "space_prefetch_change",
+      "installed_runtime_change",
+      "user_config_change",
+      "global_ibus_restart",
+      "raw_user_text_commit",
+      "dependency_change",
+      "new_shared_mutable_state"
+    ]
+  },
+  "state_machine": {
+    "initial_state": "CROSS_CLASS_RED_RECORDED",
+    "steps": [
+      {
+        "id":"add-cross-class-unit-contracts","from":"CROSS_CLASS_RED_RECORDED","to":"UNIT_CONTRACTS_WRITTEN","mutates":true,"failure_state":"UNIT_TEST_EDIT_FAILED","cleanup":"retain the scoped red tests and diagnostics; do not deploy","preserves":["transition-verifier","text-edit-safety","text-edit-gate","exact-authority","decoder-edit-plan","space-prefetch","ime-mutation","daemon-mutation"],"test_id":"unit-test-edit-fault"
+      },
+      {
+        "id":"separate-clean-certificate-from-coverage","from":"UNIT_CONTRACTS_WRITTEN","to":"CLEAN_AUTHORITY_EDITED","mutates":true,"failure_state":"CLEAN_AUTHORITY_EDIT_FAILED","cleanup":"retain the failing test and source diff for review; do not weaken the clean certificate or deploy","preserves":["transition-verifier","text-edit-safety","text-edit-gate","exact-authority","decoder-edit-plan","space-prefetch","ime-mutation","daemon-mutation"],"test_id":"clean-authority-edit-fault"
+      },
+      {
+        "id":"preserve-verified-boundary-authority","from":"CLEAN_AUTHORITY_EDITED","to":"BOUNDARY_AUTHORITY_EDITED","mutates":true,"failure_state":"BOUNDARY_AUTHORITY_EDIT_FAILED","cleanup":"retain the scoped diff and reject any unverified or lossy bypass; do not deploy","preserves":["transition-verifier","text-edit-safety","text-edit-gate","exact-authority","decoder-edit-plan","space-prefetch","ime-mutation","daemon-mutation"],"test_id":"boundary-authority-edit-fault"
+      },
+      {
+        "id":"run-guarded-verification","from":"BOUNDARY_AUTHORITY_EDITED","to":"PASS","mutates":false,"failure_state":"VERIFICATION_FAILED","cleanup":"leave evidence visible, keep runtime uninstalled, and report the first shared failing mechanism","preserves":["transition-verifier","text-edit-safety","text-edit-gate","exact-authority","decoder-edit-plan","space-prefetch","ime-mutation","daemon-mutation"],"test_id":"cross-class-matrix"
+      }
+    ],
+    "terminal_states":["PASS","UNIT_TEST_EDIT_FAILED","CLEAN_AUTHORITY_EDIT_FAILED","BOUNDARY_AUTHORITY_EDIT_FAILED","VERIFICATION_FAILED"]
+  },
+  "preserved_artifacts": [
+    {"id":"transition-verifier","path":"../../src/typing_transition/verifier.rs","policy":"byte_identical","rollback_policy":"TD-113 never weakens transition verification","cursor_policy":"freeze_entire_artifact","baseline_check_id":"transition-verifier"},
+    {"id":"text-edit-safety","path":"../../src/text_edit/safety.rs","policy":"byte_identical","rollback_policy":"TD-113 never weakens edit safety","cursor_policy":"freeze_entire_artifact","baseline_check_id":"text-edit-safety"},
+    {"id":"text-edit-gate","path":"../../src/text_edit/gate.rs","policy":"byte_identical","rollback_policy":"TD-113 never changes the mutation gate","cursor_policy":"freeze_entire_artifact","baseline_check_id":"text-edit-gate"},
+    {"id":"exact-authority","path":"../../src/exact_layout_authority.rs","policy":"byte_identical","rollback_policy":"closed exact authority remains unchanged","cursor_policy":"freeze_entire_artifact","baseline_check_id":"exact-authority"},
+    {"id":"decoder-edit-plan","path":"../../src/decoder/edit_plan.rs","policy":"byte_identical","rollback_policy":"one edit-plan owner remains unchanged","cursor_policy":"freeze_entire_artifact","baseline_check_id":"decoder-edit-plan"},
+    {"id":"space-prefetch","path":"../../src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs","policy":"byte_identical","rollback_policy":"the 3.5 ms Space owner remains unchanged","cursor_policy":"freeze_entire_artifact","baseline_check_id":"space-prefetch"},
+    {"id":"ime-mutation","path":"../../src/bin/lay_ibus_engine/composition_commit.rs","policy":"byte_identical","rollback_policy":"IME mutation backend remains unchanged","cursor_policy":"freeze_entire_artifact","baseline_check_id":"ime-mutation"},
+    {"id":"daemon-mutation","path":"../../src/bin/lay_daemon/typing_assist_runtime/output/ime.rs","policy":"byte_identical","rollback_policy":"daemon mutation backend remains unchanged","cursor_policy":"freeze_entire_artifact","baseline_check_id":"daemon-mutation"}
+  ],
+  "identity_contracts": [
+    {"id":"clean-authority-identity","producer":"has_clean_russian_surface_certificate","consumer":"verified one-edit proposal admission","comparison":"broad L2 coverage cannot substitute for a clean certificate on the original; the replacement requires a clean certificate","test_id":"clean-certificate-authority"},
+    {"id":"boundary-verifier-identity","producer":"existing transition verifier","consumer":"latent known-word drift admission","comparison":"only a verifier-passed typed BoundaryMergeSplit or BoundaryShift may avoid single-token lexical-drift interpretation","test_id":"verified-boundary-latent-state"},
+    {"id":"structural-dominance-identity","producer":"verified zero-loss structural candidate","consumer":"existing stronger-unresolved-candidate gate","comparison":"inside the existing overlap and close-rank bounds, zero-loss structural proof dominates a lossy candidate without changing global weights","test_id":"zero-loss-structural-dominance"},
+    {"id":"protected-artifact-identity","producer":"pre-edit protected hashes","consumer":"post-edit verification","comparison":"all protected bytes and modes remain identical","test_id":"protected-artifact-parity"}
+  ],
+  "runtime_comparisons": [
+    {
+      "id":"cross-class-authority-matrix",
+      "source":"the compiling six-case hybrid red test and its compact first-loss diagnostics",
+      "comparison":"exact_stable_projection",
+      "reason":"the change must repair the two shared mechanisms without changing unrelated safety or mutation owners",
+      "stable_fields":["input","required_surface","forbidden_surface","correction_profile","candidate_origin","verifier_result","edit_operator","exact_negative_result","mutation_owner"],
+      "expected_to_change_fields":["proposal_gate_for_unknown_to_clean_surface","latent_boundary_admission","selected_close_structural_candidate"],
+      "observed_not_compared_fields":["elapsed_time_ns","raw_candidate_order","non_selected_absolute_score"],
+      "test_id":"cross-class-matrix"
+    }
+  ],
+  "invariants": [
+    {"id":"coverage-is-not-clean-authority","statement":"broad L2 surface membership alone never proves that the original input is clean","test_id":"clean-certificate-authority"},
+    {"id":"clean-and-user-surfaces-remain-protected","statement":"clean, user, live, technical, and exact-negative protections remain effective","test_id":"negative-matrix"},
+    {"id":"boundary-relief-requires-verifier","statement":"only an existing verifier-passed typed boundary transition avoids the generic lexical-drift interpretation","test_id":"verified-boundary-latent-state"},
+    {"id":"structural-dominance-is-bounded","statement":"zero-loss structural dominance requires overlap, close rank, no greater risk, verifier success, and a lossy competing candidate","test_id":"zero-loss-structural-dominance"},
+    {"id":"no-runtime-fixtures","statement":"runtime code contains no TD-113 fixture text or source-id exception","test_id":"runtime-source-contract"},
+    {"id":"protected-owners-unchanged","statement":"verifier, edit safety, edit plan, prefetch, exact authority, and mutation backends remain byte-identical","test_id":"protected-artifact-parity"}
+  ],
+  "tests": [
+    {"id":"unit-test-edit-fault","kind":"fault_injection","expected":"a compiling red or test-edit failure terminates in UNIT_TEST_EDIT_FAILED with no runtime deployment"},
+    {"id":"clean-authority-edit-fault","kind":"fault_injection","expected":"any clean-certificate parity failure terminates in CLEAN_AUTHORITY_EDIT_FAILED and preserves all protected artifacts"},
+    {"id":"boundary-authority-edit-fault","kind":"fault_injection","expected":"any verifier, overlap, rank-bound, or loss-precondition failure terminates in BOUNDARY_AUTHORITY_EDIT_FAILED without broadening authority"},
+    {"id":"clean-certificate-authority","kind":"parity","expected":"an original known only by broad coverage may receive a typed one-edit repair only to a clean-certified target; clean original surfaces remain protected"},
+    {"id":"verified-boundary-latent-state","kind":"parity","expected":"a verified BoundaryMergeSplit is not rejected as lexical drift, while an unverified boundary and ordinary known-word rewrite remain blocked"},
+    {"id":"zero-loss-structural-dominance","kind":"parity","expected":"a close verified zero-loss structural candidate prevents selection of an overlapping lossy candidate without changing rank weights"},
+    {"id":"cross-class-matrix","kind":"parity","expected":"all six Experimental hybrid cases select the required surface and the forbidden boundary competitor never wins"},
+    {"id":"negative-matrix","kind":"parity","expected":"existing clean, protected, technical, URL, known-word drift, exact-layout, verifier-negative, and exact-negative fixtures gain zero new Apply decisions"},
+    {"id":"runtime-source-contract","kind":"parity","expected":"runtime-only inspection rejects fixture strings, source-id exceptions, second resolution paths, verifier weakening, and mutation or prefetch edits"},
+    {"id":"protected-artifact-parity","kind":"parity","expected":"all preserved artifact SHA-256 values and modes match their V4 baselines"}
+  ]
+}

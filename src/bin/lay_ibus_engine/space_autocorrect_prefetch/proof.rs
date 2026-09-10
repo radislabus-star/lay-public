@@ -372,6 +372,7 @@ fn v27_component_latency_denominators() {
             config: config.clone(),
         },
         exact_certificate: None,
+        enqueued_at: None,
     };
     let _ = evaluate_full(&stale, Instant::now());
 

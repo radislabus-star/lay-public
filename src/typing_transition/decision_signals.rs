@@ -170,6 +170,8 @@ fn settle_l2_morphology_competition(
     candidates: &[UnifiedCorrectionCandidate],
     evaluations: &mut [CandidateDecisionEvaluation],
 ) {
+    #[cfg(test)]
+    td117_record_surface_stage(|counts| counts.morphology += 1);
     use std::collections::{BTreeMap, BTreeSet};
 
     let mut winning_features = BTreeMap::<u32, BTreeSet<u32>>::new();
@@ -536,6 +538,8 @@ fn settle_transition_interference(
     evaluations: &mut [CandidateDecisionEvaluation],
     policy: TransitionDecisionPolicy,
 ) {
+    #[cfg(test)]
+    td117_record_surface_stage(|counts| counts.interference += 1);
     // Phase evidence is a contrastive field over the complete eligible lattice.
     // It only redistributes existing L2 energy; admission remains independent.
     let strengths = candidates
@@ -590,6 +594,8 @@ fn settle_l4_hidden_state(
     candidates: &[UnifiedCorrectionCandidate],
     evaluations: &mut [CandidateDecisionEvaluation],
 ) {
+    #[cfg(test)]
+    td117_record_surface_stage(|counts| counts.l4_hidden += 1);
     let inputs = candidates
         .iter()
         .zip(evaluations.iter())

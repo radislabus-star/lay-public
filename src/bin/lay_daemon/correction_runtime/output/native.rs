@@ -31,7 +31,25 @@ pub(crate) fn try_ime_replace_output(
     ctx: &mut ManualOutputCommon<'_>,
     input_gate: Option<RecentActionGateTrace>,
 ) -> NativeReplaceAttempt {
-    if !should_try_ime_text_backend() {
+    execute_native_output_with_effects(
+        ctx,
+        input_gate,
+        should_try_ime_text_backend(),
+        try_ime_replace_tail,
+        switch_to_target_layout,
+        read_current_layout_is_ru,
+    )
+}
+
+fn execute_native_output_with_effects(
+    ctx: &mut ManualOutputCommon<'_>,
+    input_gate: Option<RecentActionGateTrace>,
+    should_try_ime: bool,
+    dispatch: impl FnOnce(AuthorizedEdit, &str) -> lay::text_edit::BackendDispatchReceipt,
+    switch_layout: impl FnOnce(bool) -> Result<&'static str, String>,
+    read_current_layout: impl Fn() -> Result<bool, String>,
+) -> NativeReplaceAttempt {
+    if !should_try_ime {
         return NativeReplaceAttempt::NotSelected;
     }
     let (replace_text, replace_kind, is_replay) = text_for_native_replace(ctx, "ime-replay");
@@ -44,9 +62,12 @@ pub(crate) fn try_ime_replace_output(
         lay::text_edit::TextEditBackend::Ime,
         input_gate.clone(),
     ) else {
-        return NativeReplaceAttempt::Finished(failed_native_output(ctx));
+        return NativeReplaceAttempt::Finished(failed_native_output_with(
+            ctx,
+            &read_current_layout,
+        ));
     };
-    let dispatch = try_ime_replace_tail(authorized_edit, replace_kind);
+    let dispatch = dispatch(authorized_edit, replace_kind);
     if !dispatch.was_dispatched() {
         if dispatch.permits_backend_reselection() {
             return NativeReplaceAttempt::NotSelected;
@@ -55,7 +76,10 @@ pub(crate) fn try_ime_replace_output(
             "⚠ {replace_kind} IME dispatch ended without apply: {}; secondary backend blocked",
             dispatch.reason()
         ));
-        return NativeReplaceAttempt::Finished(failed_native_output(ctx));
+        return NativeReplaceAttempt::Finished(failed_native_output_with(
+            ctx,
+            &read_current_layout,
+        ));
     }
 
     remember_native_replace(
@@ -66,7 +90,7 @@ pub(crate) fn try_ime_replace_output(
         is_replay,
         input_gate,
     );
-    let result = match switch_to_target_layout(replace_target_is_ru) {
+    let result = match switch_layout(replace_target_is_ru) {
         Ok(layout_id) => {
             log(&format!("  layout → {layout_id}"));
             log(&format!(
@@ -148,9 +172,16 @@ pub(crate) fn try_gnome_native_replace_output(
 }
 
 fn failed_native_output(ctx: &ManualOutputCommon<'_>) -> NativeReplaceOutput {
+    failed_native_output_with(ctx, &read_current_layout_is_ru)
+}
+
+fn failed_native_output_with(
+    ctx: &ManualOutputCommon<'_>,
+    read_current_layout: &impl Fn() -> Result<bool, String>,
+) -> NativeReplaceOutput {
     NativeReplaceOutput {
         result: None,
-        layout_is_ru: read_current_layout_is_ru().unwrap_or(ctx.target_is_ru),
+        layout_is_ru: read_current_layout().unwrap_or(ctx.target_is_ru),
         trailing_spaces: 0,
     }
 }
@@ -264,4 +295,166 @@ fn authorize_native_text_edit(
         replace_text
     ));
     None
+}
+
+#[cfg(test)]
+mod td120_native_selection_tests {
+    use super::*;
+    use crate::{DaemonTextContext, DaemonTextContextObserver, DaemonTextObservation};
+    use lay::decoder::DecoderAction;
+    use lay::engine::ManualCorrectionDecision;
+    use lay::text_edit::{BackendDispatchReceipt, TextEditBackend};
+    use lay::word_buffer::WordBuffer;
+    use std::cell::Cell;
+    use std::sync::atomic::AtomicU64;
+
+    fn with_common<T>(
+        action: DecoderAction,
+        run: impl FnOnce(&mut ManualOutputCommon<'_>) -> T,
+    ) -> T {
+        let mut buffer = WordBuffer::new();
+        let epoch = AtomicU64::new(7);
+        let observation = DaemonTextObservation::new(
+            DaemonTextContext::new(Some("td120-native-field".to_string()), 7),
+            DaemonTextContextObserver::new(Some("td120-native-field"), &epoch),
+        );
+        let decision = ManualCorrectionDecision {
+            action,
+            edit: None,
+            replay_target_is_ru: true,
+            replay_mixed_layouts: false,
+            output_text: "привет".to_string(),
+            output_target_is_ru: true,
+        };
+        let mut common = ManualOutputCommon {
+            buf: &mut buffer,
+            events: &[],
+            mapped_orig: "ghbdtn",
+            mapped_target: "привет",
+            target_is_ru: true,
+            n_backspaces: 6,
+            replace_words: 1,
+            words_orig: 1,
+            force_replay_toggle: true,
+            started_at: std::time::Instant::now(),
+            decision: &decision,
+            input_isolated: true,
+            text_observation: observation,
+            output_route: super::super::super::ManualCorrectionOutputRoute::ConfiguredBackend,
+            delegated_tail_lease: None,
+        };
+        run(&mut common)
+    }
+
+    fn v1_transitions_after_native(native_result: Option<Option<bool>>) -> usize {
+        let mut v1_calls = 0usize;
+        let result = super::super::run_after_native_output(native_result, || {
+            super::super::run_uinput_output_branch(|effect| match effect {
+                super::super::UinputOutputEffect::SuppressBeforeOutput => {
+                    v1_calls += 1;
+                    super::super::UinputOutputEffectResult::Applied
+                }
+                super::super::UinputOutputEffect::Prepare => {
+                    super::super::UinputOutputEffectResult::Applied
+                }
+                super::super::UinputOutputEffect::TryTextReplacement => {
+                    super::super::UinputOutputEffectResult::TextFlow(
+                        super::super::OutputFlow::ContinueReplay,
+                    )
+                }
+                super::super::UinputOutputEffect::Replay => {
+                    super::super::UinputOutputEffectResult::ReplayResult(Some(true))
+                }
+            })
+        });
+        assert!(matches!(result, Some(true) | None));
+        v1_calls
+    }
+
+    fn run_receipt(receipt: BackendDispatchReceipt) -> (Option<Option<bool>>, usize, usize, usize) {
+        with_common(DecoderAction::ReplayAll, |common| {
+            let dispatch_calls = Cell::new(0usize);
+            let switch_calls = Cell::new(0usize);
+            let gnome_calls = Cell::new(0usize);
+            let selected = super::super::native_stage::select_native_output_stage_with(
+                common,
+                None,
+                |common, input_gate| {
+                    execute_native_output_with_effects(
+                        common,
+                        input_gate,
+                        true,
+                        |authorized, kind| {
+                            dispatch_calls.set(dispatch_calls.get() + 1);
+                            assert_eq!(authorized.backend(), TextEditBackend::Ime);
+                            assert_eq!(kind, "ime-replay");
+                            receipt
+                        },
+                        |target_is_ru| {
+                            switch_calls.set(switch_calls.get() + 1);
+                            assert!(target_is_ru);
+                            Ok("ru")
+                        },
+                        || Ok(false),
+                    )
+                },
+                |_, _| {
+                    gnome_calls.set(gnome_calls.get() + 1);
+                    NativeReplaceAttempt::NotSelected
+                },
+            );
+            (
+                selected.map(|(output, _)| output.result),
+                dispatch_calls.get(),
+                switch_calls.get(),
+                gnome_calls.get(),
+            )
+        })
+    }
+
+    #[test]
+    fn td120_native_receipts_drive_real_reselection_and_v1_transition() {
+        let (applied, dispatches, switches, gnome) =
+            run_receipt(BackendDispatchReceipt::dispatched(TextEditBackend::Ime));
+        assert_eq!(applied, Some(Some(true)));
+        assert_eq!((dispatches, switches, gnome), (1, 1, 0));
+        assert_eq!(v1_transitions_after_native(applied), 0);
+
+        let (reselect, dispatches, switches, gnome) = run_receipt(
+            BackendDispatchReceipt::not_dispatched(TextEditBackend::Ime, "preflight"),
+        );
+        assert_eq!(reselect, None);
+        assert_eq!((dispatches, switches, gnome), (1, 0, 1));
+        assert_eq!(v1_transitions_after_native(reselect), 1);
+
+        for blocked in [
+            BackendDispatchReceipt::rejected(TextEditBackend::Ime, "rejected"),
+            BackendDispatchReceipt::indeterminate(TextEditBackend::Ime, "indeterminate"),
+        ] {
+            let (blocked_result, dispatches, switches, gnome) = run_receipt(blocked);
+            assert_eq!(blocked_result, Some(None));
+            assert_eq!((dispatches, switches, gnome), (1, 0, 0));
+            assert_eq!(v1_transitions_after_native(blocked_result), 0);
+        }
+    }
+
+    #[test]
+    fn td120_disabled_ime_stage_skips_dispatch_and_reselects_without_native_output() {
+        with_common(DecoderAction::ReplayAll, |common| {
+            let dispatch_calls = Cell::new(0usize);
+            let attempt = execute_native_output_with_effects(
+                common,
+                None,
+                false,
+                |_, _| {
+                    dispatch_calls.set(dispatch_calls.get() + 1);
+                    BackendDispatchReceipt::dispatched(TextEditBackend::Ime)
+                },
+                |_| panic!("disabled IME stage must not switch layout"),
+                || panic!("disabled IME stage must not read layout"),
+            );
+            assert!(matches!(attempt, NativeReplaceAttempt::NotSelected));
+            assert_eq!(dispatch_calls.get(), 0);
+        });
+    }
 }

@@ -107,11 +107,54 @@ fn missing_letter_keeps_known_surface_and_ambiguous_initial_insertion() {
 }
 
 #[test]
-fn proposal_only_authority_can_veto_a_destructive_phrase_split() {
-    assert_eq!(correct_missing_letter("отточеная"), None);
+fn repeated_consonant_insertions_remain_proposals_without_direct_authority() {
+    for (damaged, expected) in [("отточеная", "отточенная"), ("руских", "русских")]
+    {
+        assert_eq!(
+            correct_missing_letter(damaged),
+            None,
+            "target validity alone must not prove an omitted repeated consonant: {damaged:?}"
+        );
+        assert_eq!(
+            propose_missing_letter_candidate(damaged).as_deref(),
+            Some(expected),
+            "authority must be lowered without deleting proposal material: {damaged:?}"
+        );
+    }
+}
+
+#[test]
+fn nonduplicate_missing_letter_controls_keep_direct_authority() {
+    for (damaged, expected) in [
+        ("протколах", "протоколах"),
+        ("дейстия", "действия"),
+        ("лушее", "лучшее"),
+    ] {
+        assert_eq!(
+            correct_missing_letter(damaged).as_deref(),
+            Some(expected),
+            "the repeated-consonant guard must not weaken other insertion geometries: {damaged:?}"
+        );
+    }
+}
+
+#[test]
+fn removing_duplicate_authority_does_not_collapse_ambiguity_to_another_target() {
+    let authoritative = safe_missing_letter_candidates("балон")
+        .filter(|candidate| has_typo_autocorrect_authority("балон", candidate))
+        .collect::<Vec<_>>();
+    assert!(
+        authoritative.iter().any(|candidate| candidate == "балкон"),
+        "missing nonduplicate ambiguity branch: {authoritative:?}"
+    );
+    assert!(
+        authoritative.iter().any(|candidate| candidate == "баллон"),
+        "missing duplicate ambiguity branch: {authoritative:?}"
+    );
     assert_eq!(
-        propose_missing_letter_candidate("отточеная").as_deref(),
-        Some("отточенная")
+        correct_missing_letter("балон"),
+        None,
+        "lowering one candidate's authority must not mint authority for its competitor"
     );
 }
 

@@ -12,12 +12,13 @@ use lay::text_edit::{EditAction, SnapshotIdentity, TransitionOperator, VisibleTa
 
 #[derive(Debug, Clone)]
 pub(crate) enum DeferredLayoutAction {
-    BackgroundSwitch {
+    Background {
         previous_is_ru: bool,
         target_is_ru: bool,
         engine: &'static str,
     },
-    BlockingSwitch {
+    CancelBackground,
+    Blocking {
         previous_is_ru: bool,
         target_is_ru: bool,
         engine: &'static str,
@@ -56,6 +57,9 @@ pub(crate) struct InputFrameIdentity {
     pub(crate) frame_fingerprint: u64,
     pub(crate) config: InputConfigIdentity,
     pub(crate) lexical_coordinates: Option<LexicalAuthorityCoordinatesV1>,
+    /// Display of a locally observed suffix is distinct from a complete-word
+    /// frame. Its original admission token also prevents equal-text ABA reuse.
+    pub(crate) display_suffix_token: Option<crate::context_admission::AdmissionToken>,
 }
 
 impl InputFrameIdentity {
@@ -151,6 +155,7 @@ impl InputFrameIdentity {
             frame_fingerprint,
             config,
             lexical_coordinates: None,
+            display_suffix_token: None,
         }
     }
 

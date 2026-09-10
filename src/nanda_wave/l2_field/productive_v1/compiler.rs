@@ -2003,6 +2003,13 @@ mod tests {
             [2; 32],
         )
         .is_err());
+        let canonical_mismatch = PackagedProductiveRuntimeV1::from_bytes(
+            fs::read(&first.path).expect("runtime owned package"),
+            [1; 32],
+            [9; 32],
+        )
+        .expect_err("canonical identity mismatch must fail closed");
+        assert!(canonical_mismatch.contains("fingerprint"));
         let scene = L2LocalSceneV1 {
             current_token: runtime_target.clone(),
             current_normalized_scalars: runtime_target.chars().map(u32::from).collect(),

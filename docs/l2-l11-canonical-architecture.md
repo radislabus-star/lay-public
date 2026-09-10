@@ -8162,3 +8162,2597 @@ Receipt:
 `/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE4_CONFLICT_COHORT_2026-08-20/final-receipt.json`
 
 Next gate: Slice 5 missing-target birth and retention shadow.
+
+## TD-118 Process-Cold Package Identity Reuse, 2026-09-05
+
+### What Was Tested
+
+TD-118 measured the optimized installed-package TD-117 test route in fresh
+processes, then removed only duplicate full-file identity scans admitted by the
+baseline. The test host retained the installed Lay 1.0.63 package tuple. Seven
+baseline and seven candidate processes were paired and interleaved, with the
+order reversed in alternating pairs. Page-cache state was uncontrolled and
+warmable; every process began with empty Rust generation cells.
+
+The implemented admission route is:
+
+```text
+validated L1.1 receipt
+-> retain verified artifact bytes + SHA-256
+
+compact Canonical mmap
+-> one combined checksum + full-backing SHA-256 traversal
+-> retain LoadedPackageIdentity
+-> existing V13 identity validation
+-> existing Productive L1.1 + Canonical identity validation
+```
+
+Reference/non-compact Canonical packages still use pathname metadata and
+SHA-256. The service-side L1.1 admission remains independent. No digest is
+claimed for the separate service process's loaded backing.
+
+Focused loader, corruption, cache, lifecycle, and prefetch verification passed
+`46/46`. Exact witness replay passed `7/7`; TD-117 passed `28` with one intended
+ignore; TD-007 passed `10` with two intended ignores. The optimized installed-
+package E2E passed in every one of the `14/14` paired processes with unchanged
+semantic results:
+
+```text
+плозо          -> плохо       complete Winner, capability 1, one verified edit
+рабоает        -> работает    complete Winner, capability 1, one verified edit
+востанавливать -> two targets complete Tied, capability 0, no edit
+```
+
+### Measured Facts
+
+```text
+metric                              baseline       candidate       delta
+process-cold Wave median          3,707,823 us    2,841,853 us    -23.355%
+process-cold Wave max             4,221,946 us    3,222,062 us    improved
+process wall median                    7.40 s          6.58 s    improved
+warm Wave median                    32,873.5 us      27,912.5 us  -15.091%
+warm Wave max                       55,411 us        34,425 us    -37.873%
+peak RSS median                    515,112 KiB      516,524 KiB    +0.274%
+peak RSS max                       516,644 KiB      516,772 KiB    +0.025%
+```
+
+All seven paired cold deltas favored the candidate. All paired runs recorded
+zero major faults. The stage attribution moved rather than disappeared:
+Canonical median rose from `1,098,217 us` to `1,814,327 us` because it now owns
+the cryptographic traversal of its retained mmap; V13 fell from `674,215 us` to
+`32,177 us`; Productive fell from `1,791,988 us` to `879,893 us`.
+
+Paired `openat` traces established the intended mechanism:
+
+```text
+artifact / owner                         baseline opens   candidate opens
+Canonical package, complete process                   3                 1
+L1.1, independent service/ensure process              2                 2
+L1.1, Productive process                              2                 1
+Productive P2M / P2R                                1 / 1             1 / 1
+```
+
+The final candidate release-test ELF is `21,913,768 B`, SHA-256
+`3085371ebbcaa1c00bae973855ed18b272160174a4aa77c55baf403df01ec549`.
+It was compiled with Rust `1.97.1` under the guarded 20-CPU profile. No candidate
+binary was installed. Installed Lay remained `1.0.63`, the existing L1.1 PID
+remained `2201795`, and no Lay or global IBus process was restarted.
+
+### What Was Not Tested
+
+- physical preedit rendering or user-perceived first-Space latency;
+- process-start-to-ready publication;
+- storage-cold behavior after dropping host caches;
+- population p95/p99 guarantees from seven pairs;
+- a service-loaded backing digest handshake;
+- a 1.0.64 build, installation, or rollback transaction.
+
+### Verdict Scope
+
+The process-cold performance gate passes: median admission improved by
+`865,970 us` (`23.355%`), warm median/max improved, and peak-RSS median/max stayed
+within the 5% ceiling. Candidate generation, lattice retention, ranking,
+authority, verifier, SafetyGate, mutation, learning, lifecycle, package format,
+and public protocol are unchanged. Runtime authority changed: `false`.
+Deployment actions: `0`.
+
+Exact receipt:
+
+`tech_debt/evidence/td118-process-cold-admission-verification-v1.json`
+
+## TD-123 cold V90 admission: implementation preflight, 2026-09-08
+
+Measured: exact installed IME with correctly routed nine dependencies computes
+the complete cold lexical frame, field generation2, then marks its correction
+superseded with no newer input. `actual-ime-v90` retains the2500ms prepared
+timeout FAIL. The separate `actual-ime-v90-evaluated` matrix completes seven
+cases: damaged2/6 and clean1/1; known first full computation is superseded,
+later complete frames are prepared. Tied/Abstain versus Winner separates the
+remaining authority refusals. These diagnostic examples are not heldout quality.
+
+Source fact: scheduling captures cache epoch1; the first successful V90 loader
+clears all dependent caches and advances it to2. The publishing predicate
+requires exact epoch equality. Initial admission is mutex-cached and no V90
+field can exist before that sole loader returns. Unavailable results are not
+cached as lexical truth. The exact concurrent first-loader thread is unknown;
+causal before/after proof must retain the same client order and package bytes.
+
+Selected design (9/10, design assessment): initial admission fills the existing
+epoch, matching the documented contract. Remove only the first-success clear.
+Explicit reload still replaces the cached success/error and invalidates all
+dependents. No new owner, timer, cache, fallback, retry or public API.
+Alternative (5/10): clear inside admission mutex closes the peer-read window
+but still invalidates the already stamped request. Alternative (4/10): preload
+before stamping moves model IO onto input handling, or background warmup merely
+hides the race. Restamping a result after evaluation is rejected: it would
+assert an unproven material identity.
+
+Consequence analysis: candidate lattice, ranking, cohort evidence, L3/L4,
+DecisionCore, SafetyGate and verifier are unchanged. Initial cache retention
+cannot retain an earlier V90 field because none exists before the sole load;
+all model hashes remain in the cache key. Explicit successful or failed reload
+continues epoch invalidation, including in-flight work; publication, Space
+lookup and apply mismatch guards stay exact. No new package/delta discovery or
+learning/feedback path. A previously discarded eligible cold correction may
+now be applied through the existing verifier, so this is a behavioral fix and
+requires actual-client proof, not a claim of changed model quality.
+
+Expected CPU/RSS/allocation effect is removal of one initial clear; no search
+expansion, allocation budget or deadline change. Cold admission IO remains in
+its current worker/warmup paths. Warm latencies and candidate projections must
+be compared separately; the key-before-ready failure is not closed by a
+key-after-ready PASS. UnknownStart automatic-edit refusal remains an explicit
+limit, and model Tied/Abstain failures remain open. Other consumers still see
+the same generation on first admission and a new one on explicit replacement.
+The existing epoch controller is retained; maintenance removes an unnecessary
+transition. Rollback is this small source hunk plus rebuilt verified IME; no
+model or desktop state migration.
+
+Proof plan: preserve actual old-binary cold FAIL; run the same client/order
+after rebuild with all dependency identities and V90 consumption checked;
+retain all seven matrix outcomes. Run focused lib/IME contracts, independent
+review, mandatory changed/full release gates and architecture refresh before
+installation. Quality dimensions remain conjunctive and no aggregate/per-class
+restoration, clean, false-certainty, lattice, package/RSS or latency gate is
+waived. This patch claims only initial publication repair, not >95% actionable
+restoration or the completion of TD-123. Runtime authority is unchanged until
+a separately evidenced installation within the user's existing repair scope.
+
+## TD-123 generic L4 feedback versus current authority: superseded narrow preflight2026-09-08
+
+Measured first refusal on exact candidate c0be96cd plus9 admitted files,12
+persisted model/usage/config inputs and5 exact system dictionaries: the supplied
+phrase retains and ranks the final target first, L3=720/support/pairwise=true,
+posterior0.752,risk0.286. Both ordinary lanes refuse it with
+`latent_l4_negative_transition_memory`: signed=-577, state_specific=false,
+transition attract/repel counts0. Model-only input parity is proven by consumer
+maps, L3 loaded statistics and a separate file-read trace. The strace run's
+cleanup failed because the tracer became the parent; its enclosing private
+unit terminated all processes. It is read-set evidence, not client acceptance.
+
+A diagnostic ablation removes ALL generic rejected-word/context maps from a
+private copied feedback snapshot, preserving every transition map and every
+other input. The same five-token client changes from dirty0/2,clean3/3 to
+dirty1/2,clean3/3. No production feedback was edited. Causal paths:
+`autocorrect-live-ojoasco5/phrase-inputs-candidate/` and
+`phrase-generic-feedback-neutral-candidate/`; this does not establish general
+quality improvement or authorize dropping learned data.
+
+Source facts: DecisionCore already admits a SuggestOnly candidate with actual
+L3 directional pair certification; valid frame-bound lexical admissions form
+another independent existing route. Signed-memory readout combines generic
+word feedback into a negative signal. Final generic-negative veto protects
+operator consensus and verified layout only; it never receives the current
+L3 pair certificate or validated lexical admission. Numeric context support
+is not that certificate and must remain insufficient. Slice9 ContextCertified
+emission is still absent and is not needed to repair this existing route.
+
+Selected design9/10: repair the existing signed-memory-to-transition adapter.
+A negative transition requires repel_count > attract_count. Exact state-specific
+negative retains its existing veto; actual generic transition fallback retains
+the existing -450 calibration. Word/context-only negative continues to influence
+ranking/Bayes but cannot manufacture transition evidence. This follows the L4
+contract in `l4-causal-transition-memory-plan.md`: absence of transition evidence
+is not negative evidence. `add_rejected_fix_sources` intentionally records word
+rejection with record_transition=false; no learned data is corrupt merely
+because this consumer promoted its scope incorrectly.
+
+Alternative6/10: propagate L3/frame-bound authority to bypass generic veto;
+rejected for this patch because it changes handling of genuine nonzero generic
+transition evidence and repairs later than the first scope error. Alternative
+2/10: erase negative feedback; loses valid history and does not fix its consumer.
+No new authority bit, argument, producer, source label, threshold or owner is
+needed. SafetyGate, verifier and all admissions remain byte-identical.
+
+Consequence check: bounded lattice, rank scores, positive/negative priors and
+model evidence remain unchanged. The corrected negative flag also restores a deterministic Eligible contender
+to the existing owner-gravity competition if its action is verified, distance
+is no greater and rank is close enough. Thus the selected surface or abstention
+may change despite unchanged numeric scores; this needs a separate semantic
+competition control and a fixed before/after replay. Candidates still need
+existing producer/L3/lexical authority and every later
+policy/structural/safety/verifier check. No evidence or equal/positive transition
+counts cannot assert negative experience even if generic word prior is negative.
+Exact negative dominates unrelated positive word priors as before. False-apply
+risk is accidental weakening of real negative transition history, so test
+state-specific negatives and genuine generic fallback separately. No new owner,
+cache, queue, timer, allocation or package format; CPU/RSS change is one scalar
+comparison. Deadlines, publication/apply epochs, delta reload and stale-result
+rules stay byte-identical. Learning writers, feedback files and usage snapshots
+are unchanged; future updates supply the same separately typed count fields.
+IME and daemon share this adapter. Rollback is the source hunk and verified
+binary; no data rollback or desktop migration.
+
+Proof plan: semantic regression uses an existing real common-L3 report plus
+controlled word-only/exact/generic-transition negative signals. Baseline must
+fail the word-only case. Assert target, independently obtained L3 certification,
+action proof, final admission and retained negative controls. Numeric support
+alone stays insufficient; existing Strict/verifier contracts rerun unchanged.
+Then replay the native phrase with ORIGINAL feedback bytes and all other inputs
+unchanged, plus original seven-case matrix and affected fixed proof. Reuse L1
+quality proof only for unchanged L1 algorithm/package identities, reporting all
+aggregate/per-class dimensions and scope separately from DecisionCore admission.
+L4 historical negative replay must preserve negative_false_apply=0. Focused
+remote checks, independent review, mandatory changed/full/client gates and
+architecture refresh remain required before install. Missing targets, isolated
+ties, immediate Space and UnknownStart remain separate. Preflight changed no
+installed runtime or model authority.
+
+## TD-123 L4 evidence domains: revised consequence check2026-09-08
+
+The narrow adapter revision above is REJECTED, not accepted by its passing
+tests. Independent review pass2 is7/10,H0/M1/L0. Its new competition control
+(`run-mVVxki`, local `run-5totqn_r`, lib1758 PASS,153.252s) proves that restoring
+a word-only-negative deterministic contender to owner gravity can exclude a
+real L3-certified target. The target, lattice, verifier and controlled equal
+ranks stay fixed. This is a semantic authority regression; no production
+false-apply or final competing surface is inferred from that control. No
+installation occurred. This starts an explicit revised design, not a third
+repair of an allegedly accepted narrow patch.
+
+Selected9/10: distinguish the two existing consumers. Typed transition-negative
+evidence requires actual net rejected transition counts, as above. The existing
+owner-precedence check separately consumes generic preference rejection: its
+predicate must remain exactly the old `exact_negative OR (!exact_positive AND
+signed<=-450)`, with exact_positive/negative derived from state specificity and
+the respective net attract/repel balance. The initial shorthand here omitted
+the exact-positive exemption; independent design review caught this BEFORE
+implementation. Frozen baseline `run-v6szovnz/request.json` binds decision.rs
+SHA05527a928596828c8a499093802697f20ab4aefdaedd2a271b5c4763110ca3d5,
+identical to HEAD source. The full expression above is the required parity
+contract. This withdraws a competitor's automatic source precedence;
+it neither grants nor refuses that competitor's independent final admission.
+The candidate remains in the lattice and may win ordinary admitted ranking.
+Generic word/context weights thus preserve their prior ranking/competition
+effect while losing only their invalid promotion into hard transition evidence.
+Use one named signal projection in CandidateDecisionSignals and the existing
+owner-gravity consumer; do not add an owner, stage, type or fallback.
+
+Alternative6/10: remove producer-based owner gravity and rank all independently
+admitted candidates. This is a viable broader policy redesign but changes
+competition for every L2/L3 candidate, needs a new full calibration comparison
+and cannot be attributed to the demonstrated negative-domain bug. Alternative
+5/10: require successful final admission of the deterministic rival before it
+may suppress another candidate. Direct recursion is invalid; a nonrecursive
+two-stage resolution would need a separately specified cycle/tie policy. The
+selected route preserves the existing competition predicate for all signal
+tuples and bounds this fix to the incorrectly promoted negative witness.
+
+Consequence check: target birth/retention, all numeric ranks/Bayes/word priors,
+positive L3/L4/lexical evidence, producer permissions, SafetyGate, edit planning
+and verifier stay unchanged. Exact negative and genuine generic transition
+negative still refuse the target. Positive or equal transition counts cannot
+be relabeled as net rejected experience. Owner competition must match baseline
+at the -450 boundary, both specificity states, and negative/equal/positive
+count balances. A wrong signal projection at that second consumer could again
+exclude the certified target; a real negative mislabeled as word-only could
+increase false applies. These are separate semantic controls, followed by a
+fixed actual-client before/after comparison with original feedback bytes.
+
+No model/delta format, learning writer, history, config, cache generation,
+publication race, deadline, queue, lock, timer or allocation changes. CPU/RSS
+effects are bounded scalar comparisons; latency gain is not inferred. Future
+model or online updates retain distinct counts and preference scalar and must
+not collapse their domains. Both IME and daemon use the shared DecisionCore.
+Rollback removes the two signal projections and restores the verified baseline
+binary without data conversion. The cold V90 publication fix is independent.
+Revised target-preservation invariant RED: remote run-XzEA6D/local
+run-2qtegy9g,1758 selected, sole expected word_only_competitor failure,152.968s.
+
+Proof before installation: change the rejected competition expectation into
+the required target-preservation invariant and record its RED on the narrow
+revision; GREEN must preserve the exact target and verifier receipt under
+word-only preference, and retain genuine-negative refusal. Check the old
+competition predicate's full piecewise boundary domain independently. Repeat
+the original phrase and seven-case actual-IME matrices, plus a frozen set of
+existing correction/clean fixtures with aggregate and per-class results; do
+not label those existing/training fixtures as unseen heldout quality. Historical
+2466 L4 replay inputs are absent; their old result cannot become a fresh PASS.
+Relevant existing full contracts, independent review of this revised design,
+changed/full release gates, exact client smoke and architecture refresh remain
+mandatory. L1 package/algorithm quality dimensions are unchanged and remain a
+separate conjunctive contract. No production runtime authority changed here.
+
+Revised implementation review pass1:9/10,H0/M0/L0; focused2206 PASS
+(448IME+1758lib),162.798s, remote run-UgV9rU/localrun-c1abdlhw. Runtime source
+frozen after review. The exact old precedence expression is preserved, and
+the semantic test covers its exact-positive exception as well as the separate
+hard-negative domain. Final native selection/false applies are not inferred
+from target admission receipts. Fixed client comparison manifest ae1bf941
+contains89 existing rows (47dirty/42clean), selected before build by a stated
+lowercase Cyrillic/space route;33 excluded rows and every source hash are
+recorded. It is not an unseen heldout or full-profile quality proof. The first
+16-case baseline pilot stopped at the existing byte-tail JSONL rotation; its
+product outcomes remain evidence. The corrected diagnostic parser skips only
+the partial first record at the512000byte cap, without extending deadlines or
+retrying Space. Runtime code and installed authority did not change for it.
+
+## TD-123 revised L4 candidate: measured build and client comparison2026-09-08
+
+Tested candidate SHA995b609343aa7b3bc9fad628cc80df09ea1b2125753c4d62c42b3b0790d50fb0,
+7,728,288 bytes, contains the cold V90 publication fix and revised L4 signal
+projection. Exact697 Rust source hashes match both local owning checkout and
+remote build mirror; aggregate7024f54c663004a7e05822651a368aa54d6a1baf137dcb768158c1f5927ba7c8.
+The independent source projection proof preserves the COMPLETE old owner
+precedence predicate, including the exact-positive exemption, for all scalar
+inputs. This is predicate parity, not a quality measurement.
+
+All preflight shell/build checks passed; Rust release build2m55s, target
+9,397,616,640/12,884,901,888 bytes. The subsequent metadata recorder FAILED:
+it incorrectly required the entire generated architecture receipt JSON inside
+the optimized IME. That receipt is used only by test callers and LTO removes
+it. The failed assertion remains recorded; no rebuild or runtime workaround
+was used. candidate-identity.json instead binds every Rust file and labels the
+receipt generated_source_architecture_receipt, architecture_receipt_embedded_in_ime=false.
+Mandatory source architecture and release gates remain required separately.
+Exact build evidence: /home/ubu/.cache/lay/development/run-c1abdlhw/{preflight.json,preflight.log,candidate-identity.json};
+remote /home/e/projects/lay-development-runner/run-UgV9rU/.
+
+Actual private IBus/GNU Readline uses original feedback, all9 core roles,
+12 persisted inputs,5 system dictionary/ngram inputs and verified loaded
+V90/L3 identities. Supplied phrase: dirty0/2 ->1/2; clean3/3 ->3/3. The final
+missing-letter token restores; the composite token still abstains. Original
+seven-case matrix: dirty2/6 ->2/6,clean1/1 ->1/1. These are key-after-preparation
+observations, not physical-keyboard or immediate-Space latency acceptance.
+
+Fixed89 existing fixtures,47dirty/42clean, retain manifest ae1bf941 and original
+source-row denominators. Before/after actual outputs:
+
+| Source class | Count | Before correct/preserved | After correct/preserved |
+|---|---:|---:|---:|
+| restoration_regressions |24dirty|9/24 (37.50%)|9/24 (37.50%)|
+| missing_letter |8dirty|5/8 (62.50%)|5/8 (62.50%)|
+| repeated_letter |4dirty|0/4 (0%)|0/4 (0%)|
+| transposition |5dirty|5/5 (100%)|5/5 (100%)|
+| context_fixture |6dirty|0/6 (0%)|0/6 (0%)|
+| clean_missing_letter_control |4clean|3/4 (75%)|3/4 (75%)|
+| clean_repeated_letter_control |4clean|3/4 (75%)|4/4 (100%)|
+| clean_valid_word |34clean|32/34 (94.12%)|32/34 (94.12%)|
+
+Aggregate correct restoration19/47 (40.43%),abstention25/47 (53.19%),wrong
+output3/47 (6.38%) are unchanged. Clean preservation38/42 (90.48%) ->39/42
+(92.86%);3 clean changes remain. Verdict NO_REGRESSION_OBSERVED is limited to
+this ordered native comparison. Learning remains enabled within each of five
+fresh shards initialized from identical bytes. Auto-layout state can persist
+after Reset; one next-case pre-Space surface differs because prior native
+behavior differs, while physical key scripts and final correct surface agree.
+This is a closed-loop comparison, not stateless or unseen heldout quality.
+
+Two failed parser pilots remain evidence: each stopped at a partial first
+JSON record after existing512000-byte log compaction. Final reader skips only
+that partial non-object prefix, checks every complete record and still requires
+current engine+epoch within unchanged deadlines. All10 final shards completed
+with candidate/input/cleanup parity. No runtime tracing code changed.
+
+Residual composite refusal first lacks independent authority: L1.1 does not
+retain the target; L2 adds it; common L3 receives it but exact learned profile
+is absent. Existing sentence-recurrence certification requires distance1;
+composite distance2 is outside that contract. Missing-letter final L3 support
+comes from the current-sentence recurrence certificate, not a new learned
+phase profile. No demonstrated L3 class filter or permission to widen this
+certificate follows from these observations.
+
+Not tested: all-profile heldout improvement, general >95% per-class quality,
+new L1 quality/package/RSS/latency gates, physical input or immediate-Space
+restoration, and fresh historical2466 L4 replay (original inputs absent).
+L1 algorithm/package/calibration remain unchanged; all conjunctive dimensions
+retain their previous scope. No model training, feedback editing, new owner,
+SafetyGate/verifier weakening or production installation occurred. Candidate
+runtime source remains frozen after review. Mandatory release gates are next.
+Exact native evidence: /home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/phrase-domain-after/receipt.json,
+/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/matrix-domain-paired-summary.json,
+/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/fixed-fixtures-v3-comparison.json and fixed-fixtures-v3-{before,after}-0..4/.
+
+## TD-123 candidate995b6093 installed2026-09-08
+
+Mandatory gates for the exact reviewed candidate passed: changed2684/2684
+(2648correctness+36package),414.006s; full2684/2684,651.982s. The13 actual
+private client cases passed (first-word US1/RU1,manual3,lifecycle3,restoration5),
+with exact candidate/dependency/driver identities and completed cleanup. Four
+physical_double_shift_owner_ tests passed; this is code evidence, not a new
+physical-keyboard observation. Before/after697-file Rust identity is unchanged.
+Target9,397,526,528/12,884,901,888 bytes. Source architecture gate passed42.929s.
+Exact receipts: /home/ubu/.cache/lay/development/run-c1abdlhw/{gates.json,changed-test-summary.json,full-test-summary.json,
+physical-owner-test-identities.json,client-proof-validation.json,budget-after.log}.
+
+Installed the SAME tested file at 2026-09-08T12:28:55.649410+00:00; file and running
+/proc executable SHA995b609343aa7b3bc9fad628cc80df09ea1b2125753c4d62c42b3b0790d50fb0.
+IME PID3983217/start49187106,unitlay-ime-release-995b6093.service. The previous
+6dc95148 binary is saved at /home/ubu/.local/state/lay/release-backups/ime-autocorrect-20260908-71oibez0/lay-ibus-engine.
+Selected Lay RU and the two configured input sources were restored/verified.
+IBus4715,daemon3757261,L1.1service271400 retained exact process start identities.
+Only the IME process was replaced. D-Bus Ping proves liveness only (no focus
+at installation). Physical normal-tempo phrase confirmation was requested
+and remains PENDING. Exact installation receipt: /home/ubu/.cache/lay/development/run-c1abdlhw/installation.json.
+
+Installed runtime authority changed=true, bounded to cold V90 publication
+and corrected L4 transition-negative interpretation in the IME. Package/model
+permissions, learning data, SafetyGate and verifier remain unchanged; daemon
+binary is unchanged. The private89-fixture result remains19/47 dirty correct
+and39/42 clean preserved, with3 wrong dirty outputs and3 clean changes.
+General Wave quality, immediate-Space behavior, all safety profiles and the
+historical combined two-field/profile failure remain OPEN. This installation
+does not close TD-123 or establish release1.0.67 quality/commit/push acceptance.
+
+Read-only follow-up: current compiler::calibrate_l11 samples every fifth
+resolved surface against its first anchor and takes a geometry quantile.
+The admitted package still carries geometry0/positive990/backward663. Current
+source inspection does not prove the historical compiler inputs that created
+those values. Any recalibration must separately measure target retention,
+readout authority, false certainty, clean preservation, per-class quality,
+package/RSS and latency on frozen independent inputs; blindly increasing the
+geometry limit is not an admitted repair. No further runtime/model edit made.
+
+
+## Sep8 continuation after cleanup — timed native input diagnosis
+
+The user requested that autocorrection continue after the new-branch cleanup.
+The cleanup is complete at `ce064fa51a4d42c4b85e0e9e2c33710cebd5366c`; all697
+Rust sources match the installed995b candidate. The current product baseline
+is unchanged: fixed existing native fixtures19/47 dirty correct and39/42 clean
+preserved; physical normal-tempo confirmation is pending.
+
+The next diagnostic changes only the private input schedule. Existing
+`autocorrect-phrase-domain-runner.py` and the real private IBus/GNUReadline
+consumer retain candidate995b, nine dependency roles, additional persisted
+L3/feedback inputs, exact system dictionaries, fixture text/order, startup
+control, cleanup and resource envelopes. Three fresh runs use requested key
+cadences0,80,150ms. They observe actual start/RPC timings and send Space at the
+same scripted cadence as other characters, without awaiting a prepared
+correction or retrying a failed token. Initial `post-exact-ready` startup is
+still separately labelled; this does not prove immediate cold startup or
+physical GNOME/Kitty input. Frozen initial persisted inputs are the earlier
+private snapshot, not a clone of production's current in-memory learning.
+
+Alternatives: (A) repeat only the after-prepared control, low diagnostic value
+because it excludes arrival-before-ready; (B) fixed timed native input plus
+existing trace identity/outcome, chosen9/10 for distinguishing remaining
+readiness from completed refusal; (C) change runtime wait/deadline or widen
+model authority before measurement, rejected because the mechanism is not
+established. Timing is a scenario input, not causal proof of a race: any later
+concurrent repair still requires controlled event-order proof in real owners.
+
+Proof denominators remain separate: five phrase words/run, dirty2,clean3;
+UnknownStart versus known-tail; field-request/producer/publication state;
+Space ready/not-ready/stale/no-apply; actual visible correct/unchanged/wrong
+outputs. An executed diagnostic is not product PASS or unseen heldout quality.
+The baseline after-prepared phrase result is dirty1/2,clean3/3. No expected
+output, old failed receipt or fixed89 denominator is changed.
+
+Consequence boundary: no runtime/candidate lattice, ranking, verifier,
+SafetyGate, model/package/calibration, reload, feedback rule or ownership
+change. Learning occurs only within each fresh private process from the same
+frozen inputs. No new production timer/cache/queue/fallback or stale-result
+route. Script cadence can mask or expose timing sensitivity, so report actual
+intervals and retain0ms and150ms outcomes together; do not promote a slower
+success into a deadline or authority relaxation. CPU/RSS remain the existing
+private CPU200%/1536M/90s envelope inside the remote dedicated20CPU guard.
+Rollback is deletion of the private diagnostic output; installed IME and
+production input sources remain unchanged. Independent source review examines
+the existing readiness/publication/refusal evidence before any runtime edit.
+
+Exact private outputs will be `autocorrect-ojoasco5/phrase-cadence-{0,80,150}/`
+on the remote worker; copied receipts belong under the existing private
+`autocorrect-live-ojoasco5` cache. No runtime code has been edited in this step.
+
+Measured results: all three fresh native runs completed all five words and
+reaped their private processes. Dirty restoration was 0/2,0/2,1/2 at requested
+0,80,150ms respectively; clean preservation was 3/3 in each run. Actual median
+key intervals were 5,304/81,420/151,890us. First-word UnknownStart remains
+distinct from the four known-tail frames. Candidate, nine dependencies,
+private configuration, driver, launcher, additional persisted inputs and
+resource envelope identities matched across all runs. The full fixed89
+denominator was not rerun: runtime and model bytes have not changed.
+
+The composite frame completed at both80ms and150ms and returned rank NoApply;
+readiness does not explain that refusal. For the final missing-letter frame,
+80ms Space returned NotReady after3,525us; its later correction:superseded
+is consistent with the lookup retiring that generation. At150ms the same
+frame prepared and applied, with8us lookup wait. Source order takes the
+correction lease BEFORE cancelling display work; display cancellation is not
+evidence of a correction-generation race. Existing traces lack enqueue/start
+timestamps, so queue delay and the exact pending state at lookup remain
+unmeasured. Timing alone is not a controlled concurrency proof.
+
+Final-frame core timing, in microseconds:
+
+| Cadence | Full core | Candidates | Deterministic | L1.1 + V90 | Outer decision | Inner decision |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+|80ms|83,349|54,833|41,655|12,751|28,514|19,442|
+|150ms|85,965|59,076|51,418|7,322|26,886|18,926|
+
+These are nested timers, not additive columns. Deterministic typing rules
+took27,362/35,650us and composite generation13,865/14,554us. Substitution took
+16,060/22,431us within typing. Outer decision includes preparation of legacy
+L2 peak context before the inner DecisionCore timer. These diagnostic runs
+enabled verbose field/decision output (roughly0.8MiB stderr at80/150ms), so
+they cannot establish ordinary-runtime latency or production tail percentiles.
+
+Next discriminating control is exactly one fresh run per0/80/150ms with the
+five optional stderr debug/timing variables absent. Keep native bounded
+trace, identical driver/startup/input/material and all failed outcomes. This
+changes observation cost only; candidate authority, deadlines, learning and
+production runtime are unchanged. No retry-until-green or performance PASS
+is permitted. Outputs: `phrase-cadence-quiet-{0,80,150}/` under the same cache
+and remote run root. Independent review is inspecting semantic-preserving
+ways to remove repeated candidate work before any production implementation.
+
+Exact evidence: `/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/cadence-summary-v1.json`
+and `phrase-cadence-{0,80,150}/{receipt.json,run-metadata.json,ibus-engine-trace.jsonl,engine.stderr}`.
+The initial stdin batch transport executed no scenario; its retained record
+is `cadence-batch-stdin-not-executed.json`, not a PASS or product failure.
+Runtime authority changed=false for this diagnostic milestone. Physical
+keyboard, unseen quality, all safety profiles and cold-start acceptance were
+not tested. The95%-per-damage-class conjunctive L1 gate remains unchanged.
+
+Quiet control results: the first `phrase-cadence-quiet-*` attempt removed the
+three timing flags but the derived driver re-enabled the two verbose flags.
+All15 executed outcomes are retained; `cadence-quiet-control-v1-rejected.json`
+labels that observation control NOT_ESTABLISHED. The corrected private driver
+removes only those two assignments; input text, ordering and schedules match.
+`phrase-cadence-quiet-v2-{0,80,150}/engine-environment.json` proves all five
+flags absent in the actual executable. Stderr fell to344/509/509bytes; all15
+words and cleanup completed. Outcomes remain dirty0/2,0/2,1/2 and clean3/3
+each. Exact evidence is `cadence-quiet-v2-summary.json` in the same cache.
+
+At quiet80ms, final-frame core time was76,007us, yet Space still returned
+NotReady after3,654us and the result later reported superseded. At quiet150ms
+core82,480us prepared and applied. Thus stderr cost does not explain the
+failure; core elapsed alone does not measure time from scheduling to ready.
+Queue/start and publication intervals are the first remaining timing gap.
+The canonical `productive_v90_us` also includes grounding/materialization;
+a ready_hit does not mean a second V90 field production. No fixed89 or
+per-class quality result changed in these source-identical diagnostics.
+
+## TD-123 preflight: observe the existing correction worker queue
+
+Selected next step is bounded observation, before a performance patch. Add
+an optional enqueue Instant to existing DesiredWork only when tracing is on.
+At the existing worker's evaluation and publication boundaries, record queue,
+evaluation and publication intervals in one metadata event with the existing
+engine path, epoch and generation. Keep this outside the locked publication
+section and omit all token/context text. No new worker, owner, queue, cache,
+deadline, polling or RPC. The timestamp is not consumed by any decision.
+
+Alternatives: (A) continue interpreting core time as end-to-end, rejected by
+quiet80ms; (B) add these missing intervals to the existing bounded opt-in trace,
+chosen9/10 for discriminating the next mechanism; (C) optimize exact bounded
+geometry first, viable for semantic parity but its fraction of total delay is
+unmeasured; (D) share raw lexical lanes before separate limit-dependent
+reserves, viable and potentially larger work removal but much broader risk.
+Neither C nor D is authorized as an implementation conclusion by timing alone.
+
+Consequence check: candidate/lattice/rank/authority, calibration, packages,
+reload and learning/feedback expressions are unchanged. Store no material or
+outcome in the new timestamp; stale generations keep the existing retirement
+and publication predicates. Opt-out work carries None. Opt-in work adds one
+Instant to the existing bounded desired slot and a constant-size metadata row
+per evaluated generation; the current bounded writer/rotation stays owner.
+Small clock/formatting cost can perturb timing, so this is diagnosis rather
+than a performance claim. Do not log under the worker state lock. Allocation
+is only existing enabled trace formatting, with no retained per-token history.
+IME and daemon protocols and single Double Shift owner remain unchanged.
+Rollback removes timestamp and event together; no data migration or new
+consumer requirement. Future package/online-update timing remains observable
+without allowing the observation to affect stale-result acceptance.
+
+Verification: existing IME worker identity/material/publication/timeout and
+trace contracts, plus a metadata timing-boundary assertion without user text;
+build a private candidate through the remote guarded development route, then
+repeat the fixed three quiet native schedules once. Record source/binary and
+input parity; no install or general quality promotion in this diagnostic
+step. Any later concurrent repair still requires controlled event-order proof
+through the actual owners. Independent review precedes production edits.
+
+Design review9/10,H0/M0/L1. Resolved the low timing-description issue:
+publication_us ends at the observation immediately AFTER dropping the state
+lock; it can include descheduling and is not the exact instant the lease
+became available. queue_us excludes admission and inline exact preparation.
+Check trace configuration before acquiring worker state. Off-to-on requests
+without an enqueue timestamp emit no row; on-to-off may suppress the row.
+Missing rows and superseded-before-dequeue work mean UNKNOWN, never zero.
+Formatting may slightly delay the next dequeue. The pure metadata test uses
+7/11/13us intervals,31us total, None and superseded generation identity. Real
+rounded component sums may differ from total by at most2us.
+
+Implementation review pass1:9/10,H0/M0/L0. First explicit IME development
+check stopped at rustfmt only (2.619s), before test compilation/execution:
+`/home/ubu/.cache/lay/development/run-c5qnf70s/RESULT.json`, remote run-0249bu.
+Applied exactly its two expression-wrapping changes; no semantic repair.
+The next fresh focused check retains this failed formatting receipt.
+
+Queue observation completed. Focused449/449 passed in14.390s; the new
+`trace::tests::correction_prefetch_trace_separates_intervals_without_text`
+is present in discovered, selected and executed manifests. Fresh-context
+independent implementation review9/10,H0/M0/L0. Architecture refresh41.201s
+PASS; private release build59.023s PASS. Candidate
+`9f8e99e0fa3836485a785344e06b02d816812b0c936b65919f4f224d32453361`
+is at remote `/home/e/projects/lay-development-runner/run-YMQqMd/lay-ibus-engine-timing`.
+Source697 hashes match the reviewed snapshot. This file is NOT installed.
+Receipts: `/home/ubu/.cache/lay/development/run-by567ovy/queue-candidate-identity.json`,
+`queue-focused-summary.json`, `queue-focused-discovered.json` and
+`queue-graph-copy.json`; source architecture receipt was copied and verified.
+
+The three quiet native schedules completed15/15 words, private cleanup and
+candidate/input identity checks. Outcomes remain dirty0/2,0/2,1/2 and clean3/3
+each at0/80/150ms. New timing events7/27/28 match existing correction records
+by engine path, epoch, generation and outcome. Exact evidence:
+`/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/cadence-queue-summary-v1.json`
+and `phrase-cadence-queue-{0,80,150}/`.
+
+At80ms the previous prefix (epoch35,generation6) computed for127,614us and
+finished superseded. The final frame (epoch36,generation7) waited46,778us,
+computed73,615us, observed publication in<1us: total120,394us. Space returned
+NotReady after3,535us. At150ms the final queue was76us, computation94,583us,
+publication2us,total94,662us; the lease applied. The completed composite frame
+remains rank NoApply at both cadences. These source-bound observations prove
+that existing serial evaluation of the older request contributes the queue
+delay. They do not prove a stale-result authority race or guarantee current
+computation below80ms even after removing the queue. No controlled cancellation
+or scheduling change was tested. Opt-in overhead, trace on/off transitions,
+writer saturation, production physical input and release gates were not tested.
+
+Next repair alternatives (design scores, not measured speedups): (A) cancel
+already superseded work using the existing request generation,8/10; removes
+obsolete work but94.6ms current computation gives no guarantee of meeting80ms
+through cancellation alone; its sufficiency has not been tested; (B) remove
+repeated exact lexical/context computation while preserving
+all candidate surfaces, ordering, scores, proof and authority,9/10 and the
+recommended first direction; (C) add concurrent workers,4/10 because it adds
+resource/synchronization cost and may worsen the existing CPU envelope.
+The specific operation removed by B still needs measured attribution before
+production implementation. The obsolete prefix spends32,565us in L3 and
+59,498us in inner DecisionCore; these are nested parts of127,550us core.
+Candidate preparation, shared-context recomputation and geometry are the next
+bounded source inspection, not permission to prune the lattice or bypass L3.
+Runtime authority changed=false for all queue diagnosis work.
+
+### Sep 8 TD123: repeated L3 pair features — preflight
+
+Measured boundary: the quiet native 80ms run spends46.8ms queued behind a
+superseded127.6ms calculation; L3 inside that calculation takes32.6ms.
+Source inspection finds `score_candidates_with_mode_and_pair_views` calculating
+the same token hash and L2/morphology signature for both candidates on every
+anchored pair, then again while building the pair lattice. The unary scene is
+already shared and is not the proposed repair. Attribution to the repeated
+signature calculation is still a hypothesis until the operation count and
+private native before/after timing are measured.
+
+Alternatives, design scores rather than measured speedups:
+
+- Baseline: preserve repeated reads; correct semantics but quadratic expensive
+  signature work when no anchored pair is found.
+- A,9/10,recommended: remember each exact pair feature only for this scoring
+  invocation, indexed by the unchanged candidate position and calculated on
+  first use. Preserve the existing pair search and short circuit. Prefer a
+  local optional vector and ordinary mutable closure if that is sufficient;
+  no persistent cache or new owner is justified.
+- B,8/10: eagerly calculate the same feature for every candidate once. This is
+  simpler but can add signature work to early-hit/disabled/empty pair routes.
+- C,4/10: persist a surface-feature cache across calls. Broader identity,
+  invalidation and memory policy would be required without evidence of need.
+
+Consequence analysis before production edits: retain every candidate and every
+pair, the existing MAX_PAIR_CANDIDATES boundary, stable sorting, all scores,
+hard/soft evidence and authority predicates. No spelling literal or fixture
+identifier becomes runtime logic. The exact feature depends on the candidate,
+the borrowed package's signature schema, and the existing immutable L2 surface
+memory; verify that lifetime before changing reads. Memo entries die on return:
+package/delta reload and feedback between calls must get new calculations.
+No shared lock, worker, generation, deadline, timer, cancellation or fallback
+is introduced. Publication and stale-result rejection remain the same owners.
+Expected CPU benefit is fewer identical calculations, not a promised Space
+deadline. Temporary allocation grows linearly with the input frontier; two
+u64 values plus an Option tag are about24bytes per candidate on this64-bit
+target (about1.5KiB for64); do not cap the frontier to bound this allocation.
+Initialize storage only on first pair use if possible, so skipped routes keep
+their allocation behavior. Check early anchor hits and all ablation modes.
+Future mutable L2 readout would invalidate the constancy argument and require
+an explicit snapshot; no current reload mechanism is to be changed here.
+IME, daemon, learning and serialized package protocols remain unchanged.
+Rollback removes only this call-local reuse and its diagnostic-only test hook;
+there is no data migration or compatibility route to retain.
+
+Verification order: independent design review; test-only scoped thread-local
+signature counter around the real scoring entrypoint; fixed generated Cyrillic
+cohorts with two exact views and no matching profiles. Collect all cohort counts
+before asserting a linear ceiling, so the unoptimized code must fail for the
+actual repeated-work defect. Record complete readouts and candidate order for
+before/after equality, all ten modes, empty/early-return and duplicate/order
+contracts; existing pair tie/cycle/authority tests remain required. No test-only
+counter is compiled into a release. Then the smallest production change, the
+explicit library/IME checks, private release and matching three quiet native
+schedules, and the entire fixed89 client fixture set including per-class and
+clean preservation. Mandatory changed/full release gates and fresh-context
+review precede installation. Counts/parity alone do not prove restoration
+quality or physical input acceptance. Retain failed measurements and report
+their scope separately. Owning task remains TD123, not general tech debt.
+
+Design review completed9/10,H0/M0/L0. Confirmed immutable L2
+DEFAULT_MEMORY OnceLock and the borrowed L3 package lifetime. Selected ordinary
+FnMut with a lazy optional vector, preserving lookups inside the old inner
+pair loop and preserving anchored probes in NoPhase/NoPairwise modes.
+First check run-vhob4qvs/run-HzTf6s stopped at rustfmt (2.675s); fixed only
+wrapping. Baseline run-g0ojw_ge/run-bkIYLX selected/executed1760 library tests:
+1759 passed, exactly the new scaling test failed (154.642s total). Actual
+signature calls for N=0,1,8,16,32,64 were0,3,136,528,2080,8256, matching
+2N^2+N for N>=2. This is a real unoptimized failure, not a injected violation.
+The second new test passed all fields across40 schema/mode combinations and
+three pair banks (compiled,early exact hit,cycle), reversed input and duplicates.
+An exact two-test observation using the existing discovery and sandbox runners
+with --show-output recorded all126 readout digests in2.361s; expected RED, not
+quality PASS. Receipt: remote
+`/home/e/projects/lay-development-runner/run-bkIYLX/pair-memo-exact-baseline/receipt.json`;
+focused summary: local run-g0ojw_ge/pair-memo-baseline-summary.json.
+These results authorize the selected minimal implementation under the written
+preflight; they do not yet establish native latency or restoration improvement.
+
+Implementation result: focused library1760 + IME449 =2209/2209 PASS in161.114s
+(`run-xwqqoymn`, remote `run-Nvm8AU`). Exact two-test observation1.031s:
+all126 baseline/candidate readout digests match; calls for N=0,1,8,16,32,64
+are now0,3,24,48,96,192. Fresh-context code review9/10,H0/M0/L0,pass1/2,
+no repair required. These are component parity and operation-count results.
+Receipts: local run-xwqqoymn `pair-memo-focused-summary.json`,
+`pair-memo-exact-candidate.json`, `pair-memo-component-comparison.json`;
+baseline exact receipt copied to run-g0ojw_ge/pair-memo-exact-baseline.json.
+
+Private candidate3707394809f35920728415fa008db9c97d375099d833534a01409eeeb7eecc8c
+is remote run-Nvm8AU/lay-ibus-engine-pair-memo. Architecture41.373s and
+release176.122s PASS; all697 Rust file hashes match the reviewed source, Cargo
+budget PASS. Six generated graph artifacts were copied and hash verified.
+Identity/command logs and `pair-memo-graph-copy.json` are in local run-xwqqoymn.
+The installed engine remains995b6093; no production installation occurred.
+
+Native outcome: all15 words executed, clean3/3 at each schedule; dirty0/2 at0ms,
+0/2 at80ms and1/2 at150ms. Optional stderr diagnostics absent, driver/config,
+nine dependencies, additional inputs and resource envelopes match the earlier
+queue candidate. Private processes reaped. Every new queue timing row matches
+the correction row's engine/epoch/generation/outcome; no trace truncation.
+At80ms old-prefix L3 fell32,565→2,193us and old evaluation127,614→100,314us.
+The final request queued20,680us and evaluated71,290us,total91,971us,still
+NotReady at Space. At150ms final queue30us,evaluation65,890us,total65,922us;
+the correction applied. These single schedules show reduced work but do NOT
+close the80ms deadline or establish production percentiles/physical typing.
+Private evidence: autocorrect-live-ojoasco5/cadence-pair-memo-summary-v1.json
+and phrase-cadence-pair-memo-{0,80,150}/.
+
+Whole fixed89 verdict: REJECT_CANDIDATE_FOR_PROMOTION. All five shards completed
+with matching initial inputs, candidate identity and cleanup. Dirty results
+remain19/47 correct(40.43%),25 abstentions,3 wrong outputs. Clean preservation
+falls39/42(92.86%)→36/42(85.71%). Every source class is retained below; these are
+existing regression/training fixtures, not an unseen heldout acceptance proof.
+
+| Fixed source/error class | Before | Candidate |
+| --- | --- | --- |
+| missing_letter, restored | 5/8,62.50% | 5/8,62.50% |
+| repeated_letter, restored | 0/4,0% | 0/4,0% |
+| transposition, restored | 5/5,100% | 5/5,100% |
+| restoration_regressions, restored | 9/24,37.50% | 9/24,37.50% |
+| context_fixture, restored | 0/6,0% | 0/6,0% |
+| clean_missing_letter_control, preserved | 3/4,75% | 3/4,75% |
+| clean_repeated_letter_control, preserved | 4/4,100% | 1/4,25% |
+| clean_valid_word, preserved | 32/34,94.12% | 32/34,94.12% |
+
+The three newly changed clean strings are exact keyboard-layout projections.
+All are failures, even though these small fixtures are not ordinary words.
+Initial read-only review found baseline L1.1 query failures and smaller candidate
+cohorts in two of these cases; baseline preservation therefore is not evidence
+of a settled full-field refusal. Do not infer a ranking change from output
+differences before comparing actually admitted fields. The third case already
+differs before the final Space, so its prior layout/context transition must be
+traced separately. Further performance/cancellation code is paused while the
+shared false-authority boundary is identified. Runtime production authority
+changed=false; the private candidate remains unaccepted and is not installed.
+
+Correct comparison: private
+`autocorrect-live-ojoasco5/fixed-fixtures-v4-pair-memo-comparison-v2.json` and
+`fixed-fixtures-v4-pair-memo-{0..4}/`. The first local comparison incorrectly
+read this driver's `observed` fixture-input field as output; it is sealed as
+`fixed-fixtures-v4-pair-memo-comparison.rejected-input-field.json` with
+REJECTED_ANALYZER. V2 reads actual `after.visible` and independently recomputes
+and checks all89 recorded verdicts on both candidates. No scenario was retried
+or discarded to obtain this result.
+
+### Sep 8 TD123: shared short-layout authority rule — preflight
+
+First shared defect: deterministic English autoswitch already rejects targets
+with at most3 ASCII letters unless the existing technical-word dictionary gives
+independent support. ProductiveL2 Layout proposals use a broader known_en test
+and then receive live authority solely from their origin, even when the field
+is Tied/Abstain. Exact physical projection proves how to change the text, not
+that a short dictionary abbreviation was the intended language. The frozen
+English dictionaries contain BB/DD/dd; lowercasing is confirmed, not guessed.
+These are valid lexical centers and must not be deleted from the dictionary.
+The old baseline's query failures hid two false applications; the third clean
+change was a retained decoder layout after an earlier apply. Full source/trace,
+dictionary and178 actual-status checks: private
+fixed89-v3-v4-layout-authority-evidence.json, SHA256
+2b84d4dfe65a5e82539e8380c9ff844bc46eb3fb78a0bde957b5fb71ed5e78df.
+
+Options: A,9/10,recommended, extract the existing short-target predicate and
+reuse it at the current productive live-authority override as well as in the
+deterministic generator. B,7/10, put a stronger guard in common proposal
+admission; viable only with explicit grounded-winner/context exceptions and
+wider proof because a hard KeepOriginal can erase valid evidence. C,4/10,
+filter dictionary abbreviations; loses legitimate centers and still fails to
+distinguish valid lowercase short words. Scores are design judgments.
+
+Consequences before code: A adds no threshold, word/suffix/source-id exception,
+owner, candidate-generation path, cache, deadline, queue or calibration change.
+Preserve the exact existing ASCII-alphabetic count and case-normalized technical
+lookup, including digits/hyphens not increasing the count. Apply the ordinary
+layout restriction only to ASCII targets. A protected grounded L1.1 Winner or
+a matching actual L2 Winner retains authority before this ordinary allowance;
+the generic short-target uncertainty cannot downgrade either. Keep all lattice
+surfaces and scores. Uncertain nontechnical short Layout candidates become
+SuggestOnly through the existing override, retaining independent positive L3
+pair/exact L4 and frame-bound admission routes. No change to SafetyGate,
+edit-plan validation, verifier, ClosedExact or daemon/manual Double Shift.
+
+What may worsen: fewer immediate short-word autoswitches without context;
+alias merging must not restore authority from a provider that bypasses the
+same rule. Check duplicate ordinary/canonical lanes and unrelated winners.
+Existing legitimate technical short words and longer English targets must keep
+their route; Cyrillic targets are outside this extracted English predicate.
+No package/delta identity changes; a future technical dictionary update affects
+both consumers equally. No new feedback event or learning condition, though
+preventing a wrong apply also prevents its downstream layout/learning cascade.
+CPU adds one bounded target scan/technical lookup only to ordinary Layout
+authority; reuse the existing lowercased target where possible, with no extra
+correction-generator call. No retained allocation/RSS or synchronization.
+Stale-result publication and IME/daemon protocol ownership stay unchanged.
+Rollback restores the two call sites and removes the extracted predicate;
+there is no migration or permanent compatibility wrapper.
+
+Proof before promotion: baseline RED through real materialize_live_candidates,
+retain surfaces/provenance and verifier proof, reject automatic apply without
+positive context, preserve explicit grounded/actual winners and independent
+context support. Cover actual Tied/Abstain and overflow; Unavailable is not
+produced by live_authority and needs only the existing helper's enum coverage.
+Use general short dictionary/technical/long/Cyrillic controls, not a runtime
+fixture list. Then the minimal patch, affected library/IME tests, fresh-context
+review, all fixed89 actual outputs/per-class/clean results and real native
+layout/manual controls. Repeat timing only after quality regression is resolved.
+No full release, model-quality or physical acceptance follows from helper PASS.
+Independent fresh-context design review: 9/10, H0/M0/L0, first pass. The ordinary
+short-target restriction also covers Winner(other surface); matching Winner
+and protected grounded Winner take precedence. Unavailable is covered only at
+the existing helper because live_authority does not return it. No production
+authority code changed at this preflight stage.
+
+RED proved the actual old defect: remote run-R64JF0, local
+`/home/ubu/.cache/lay/development/run-djbc5viq/short-layout-baseline-summary.json`
+and `short-layout-baseline-lib.log`. Exactly1762 selected/executed:1760 passed,
+only the two new authority regressions failed. The materialization test reached
+the real DecisionCore: `ии → bb`, L2 Abstain, valid physical edit proof, no L3
+pair certificate or exact-positive L4, selected_index=0 and a transition receipt.
+The helper separately exposed unconditional Layout authority for Unavailable.
+Remote check153.806s, including discovery/compilation and existing isolated tests.
+
+The private patch now extracts `english_layout_target_requires_context` and
+reuses it in deterministic generation and productive ordinary Layout authority.
+It removes the two superseded local length predicates; explicit winners still
+precede the ordinary rule. Tests cover30 real materialization combinations and
+the helper's case/ASCII-letter-count/Unavailable controls. Full-field verifier,
+L3-pair/L4/frame-bound contracts are included in the affected library check.
+Actual results follow; production authority changed=false.
+
+### Sep 8 TD123: short-layout implementation and whole-proof result
+
+GREEN2211/2211 (lib1762,IME449), no failures,160.673s remote check. Exact
+baseline RED above and fresh-context implementation review9/10,H0/M0/L0,
+pass1, confirm the authority distinction rather than a fixture-only workaround.
+All30 real materialization combinations pass; existing L3 pair, exact-positive
+L4 and frame-bound admission/alias contracts pass in the same library run.
+Canonical manifest drift explicitly reports5 added tests; it was not rewritten.
+
+Private candidatefa15601fe2289adcd168e553a0b8ef1afa6d720179caf32bddf376fbc331fdf4:
+architecture41.343s,release176.313s,budget PASS,total217.925s. All697 Rust files
+match the reviewed local tree. No runtime install, package/delta/config or
+daemon/manual source change. Build and focused/native receipts are in
+`/home/ubu/.cache/lay/development/run-xqb_96ka/`, notably
+`short-layout-candidate-identity.json`, `short-layout-focused-summary.json`,
+`short-layout-native-controls.json` and its five client directories.
+The unchanged versioned native driver passes13/13: US first-word1,RU first-word1,
+manual3,lifecycle3,restoration5. Every private daemon was reaped and no candidate
+process remained. These are private IBus/Readline cases, not physical key proof.
+
+Whole fixed89: all outputs match installed995b's frozen baseline. Compared with
+rejected37073948, only the three new clean errors disappear, including the
+retained-US-layout cascade. Dirty19/47=40.43%,25 abstentions,3 wrong; clean
+39/42=92.86%,3 changed. Per-source classes on the new candidate:
+
+| Class | Correct/total | Percent |
+|---|---:|---:|
+|missing_letter|5/8|62.50%|
+|repeated_letter|0/4|0.00%|
+|transposition|5/5|100.00%|
+|restoration_regressions|9/24|37.50%|
+|context_fixture|0/6|0.00%|
+|clean_missing_letter_control|3/4|75.00%|
+|clean_repeated_letter_control|4/4|100.00%|
+|clean_valid_word|32/34|94.12%|
+
+Every class equals995b; no aggregate or per-case regression in this scope.
+Actual `after.visible` independently recomputes267 statuses across995b,
+37073948 andfa15601f. Driver, dependency/content hashes, profile, initial learned
+inputs, resource envelope and loaded L3 content/counts match. The initial
+comparison stopped on different copied-file manifest_stamp values; normalization
+excludes only that mtime/length-derived field, retaining content SHA checks.
+No case or product run was retried. Exact comparison:
+`/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/fixed-fixtures-v5-short-layout-comparison.json`
+and five `fixed-fixtures-v5-short-layout-{0..4}/` directories.
+
+Verdict: the demonstrated short-layout authority bypass is repaired and the
+previous whole-proof clean regression is resolved. Fixed89 is an existing,
+experimental, ordered, key-after-preparation set with learning inside each
+shard; it does not establish heldout/general restoration quality, all safety
+profiles, physical input, the conjunctive L1 gate or normal-tempo readiness.
+Resume timing work now; three unchanged quiet cadence scenarios onfa15601f
+are running before any further performance change. TD123 remains ACTIVE.
+
+Quiet fa15601f result: dirty0/2,1/2,1/2 at0/80/150ms; clean3/3 each,15/15 words
+executed and private cleanup complete. At80ms the previous prefix evaluated
+in73,473us and finished before the next request; the final request queued29us,
+evaluated62,759us,total62,792us and applied. At150ms its total was84,590us.
+This single80ms success follows an earlier37073948 miss at91,971us and cannot
+establish timing stability or attribute the difference to the authority patch.
+Exact fresh inputs/driver: private `phrase-cadence-short-layout-{0,80,150}/`.
+
+Next timing preflight, no production code: exactly8 paired fresh80ms runs of
+queue baseline9f8e99e0 and currentfa15601f. Reuse the identical five-word quiet
+driver, frozen dependencies/config/initial learning/dictionaries and two-client
+maximum under the same guarded envelope. Fixed denominator:40 words per
+candidate (24 clean,8 missing-letter,8 composite); no retries or discarded
+failures. Verify real input intervals, candidate/input identities, all output
+statuses, queue/evaluation/publication and cleanup. A bounded readiness result
+requires8/8 missing-letter restores and24/24 clean preservation on the new
+candidate; report composite refusal separately. Even that result is limited to
+this native matrix and does not replace physical or general-quality acceptance.
+
+### Sep 8 TD123: fixed eight-pair readiness result
+
+All16 predefined fresh native runs completed in47.484s without retries or
+discarded cases. Protocol completion is PASS; the current candidate's predefined
+readiness gate is FAIL. Each candidate executed40 words:24 clean controls,
+eight repeats of the same missing-letter word and eight composite refusals.
+
+| Native80ms denominator | Baseline9f8e99e0 | Currentfa15601f |
+|---|---:|---:|
+| Missing-letter correction delivered by Space |0/8|7/8|
+| Composite correction, separately ready-NoApply |0/8|0/8|
+| Clean words preserved |24/24|24/24|
+
+This7/8 measures timely delivery on repeated identical input, not recognition
+accuracy on eight independent words. Final-frame total median108,251.5us became
+74,705.5us; current totals65,555..102,853us. In current iteration2 the final
+frame queued22,262us, evaluated80,589us and published in1us; trace total102,853us
+includes clock-boundary rounding. Space lease was NotReady after3,534us; the
+late result was superseded. The same calculation reports L1.1 readout2,533us,
+V90 readout7,289us and DecisionCore10,886us (L3's1,716us is inside DecisionCore).
+Do not infer what the discarded final decision would have selected.
+
+Actual press intervals are comparable: baseline77,215..86,554us, median81,586.5;
+current77,378..85,619us, median81,443. Driver/config/content identities, initial
+learning, resource envelopes and all80 output statuses verified. All five
+optional stderr diagnostic flags absent. Every private process was reaped.
+Exact receipt:
+`/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/cadence-stability-summary-v1.json`;
+raw evidence in `phrase-cadence-stability-{queue,short-layout}-{0..7}/`, including
+each receipt, actual-input, trace, run metadata and actual engine environment.
+
+Architecture implication: FullField live IME still runs deterministic candidate
+generation, canonical Wave readout and common DecisionCore in sequence. A
+crystallized lexical package does not remove other work or the publication
+deadline. This timing experiment neither proves a crystallizer quality failure
+nor establishes its quality. Existing fixed89 per-class/clean results above
+remain the latest separate output comparison; the conjunctive L1 contract,
+physical keyboard acceptance and general heldout quality are not tested here.
+Installed runtime authority changed=false; no model/package/config change.
+Currentfa15601f is not accepted for installation. Continue measured latency
+repair, then the separate ready-result authority path; TD123 remains ACTIVE.
+
+Next diagnostic preflight: one fresh five-word80ms run of unchangedfa15601f,
+same frozen quiet driver/inputs/envelope, enabling only the existing
+LAY_DETERMINISTIC_CANDIDATE_TIMING flag. This attributes rule costs; stderr
+instrumentation makes it ineligible as quiet timing acceptance. No source,
+cache, worker, candidate-generation or authority change. Existing near-surface
+cache keys include query limit, and raw lane reserves depend on that limit;
+cross-limit reuse must not be implemented by truncating a larger final result.
+
+Rule-profile result: all five words executed, three clean controls preserved,
+missing-letter applied, composite refused; these instrumented outputs are not
+a replacement for the failed quiet gate. The last two deterministic batches
+took37,027/37,190us; their substitution rules19,016/11,561us and composite
+steps9,700/13,572us. Ten frozen input metadata fields equal the quiet baseline;
+only the requested existing stderr flag is present, cleanup complete. Exact
+local evidence: private `phrase-cadence-rule-profile/`, including
+`rule-cost-summary.json`, raw stderr, trace, receipt and engine environment.
+The stderr records lack frame identities, so these are last-batch costs, not
+independently joined per-frame subspans.
+
+Next bounded diagnostic: separate near-surface retrieval from substitution
+filter/rank under that same existing opt-in flag. Options: direct two-span
+measurement9/10; infer from rule totals4/10; general profiler6/10 because the
+available release is stripped and remote perf access restricted. Scores are
+diagnostic judgments. Use a private instrumented build, one identical80ms run,
+then remove this temporary attribution code before implementing a repair.
+No candidate order/limits/predicates or model/learning changes; this private
+experiment cannot authorize runtime promotion or quiet timing acceptance.
+
+Substitution-cost diagnostic completed. Privatebbcff164f195dcc78978adf6e23eb47a1dab879d4188f00b8952c340cc12a12c
+has697 Rust source hashes verified; IME check PASS31.316s, architecture41.125s,
+release176.120s, Cargo budget PASS. The one native80ms diagnostic executed all
+five words: clean3/3, dirty0/2; cleanup and ten frozen input metadata fields
+verified. Nineteen cost records separate retrieval from filter/rank. The last
+two autocorrect calls spend27,607/20,621us retrieving64 near surfaces versus
+252/410us filtering/ranking them. Their same-limit proposal-only calls retrieve
+the cached surfaces in6/5us. This identifies retrieval as the dominant measured
+substitution cost. It does not measure the internal share of each retrieval
+lane. Exact local build identity: `run-sppzlrbv/substitution-cost-candidate-identity.json`;
+private `phrase-cadence-substitution-cost/substitution-cost-summary.json`, raw
+stderr/trace/input/receipt/environment; exact attribution patch retained as
+`substitution-cost-private-instrumentation.patch`. Temporary attribution code
+was then removed and substitution.rs restored byte-for-byte to its baseline.
+Installed authority/model/packages unchanged; no promotion verdict.
+
+### Sep 8 TD123: repeated decoder reconstruction — preflight
+
+Mechanism: near-surface requests use64 and32 final slots, calling the lexical
+surface reader with512 and256. That reader repeats decoder reconstruction for
+the same surface and derivational bases. Existing near-surface caches separate
+limits correctly; each raw reconstruction performs its complete bounded DAFSA
+walk, scores and sorts candidates, and only then truncates to the caller limit.
+The walk/result before truncation depends solely on immutable LexicalPhaseMemory
+bytes, exact input text and fixed code constants. Encoder, scoring and sorting
+have no layout, learning, safety-profile or runtime-authority input. The
+percentage of retrieval cost in this lane remains to be measured by the RED
+component observation; total native benefit is not yet established.
+
+Options, design judgments: A9/10, recommended, bounded per-memory reuse of that
+complete sorted reconstruction before truncation; B7/10, cooperative cancellation
+of obsolete work, reduces queue but leaves current retrieval cost and spans more
+layers; C3/10, remove candidates/legacy rules, changes restoration behavior before
+independent quality acceptance. Shared final-result truncation across near-surface
+limits remains invalid because surface-reader lane reserves differ by limit.
+
+Consequences before code for A: keep the existing reconstruction function's
+order, limits, DAFSA visit cap, phase scores and all candidate fields. Store only
+the raw sorted reconstruction, never a selected winner, authority, context or
+edit plan. Bind reuse to the immutable memory instance and exact query bytes;
+different packages have separate stores. Each caller still truncates its own
+raw lane and executes unchanged prefix/lane reserve selection. All L1.1/L2/L3/L4,
+DecisionCore, SafetyGate/verifier, exact/manual/daemon and stale-publication
+contracts remain unchanged. No new word/suffix/fixture/source-id condition,
+model threshold, package-format change, learning event or feedback condition.
+
+Use a maximum16 retained entries and a2MiB accounted payload budget per memory
+instance. Charge candidate Vec capacity times element size, every word String
+capacity, and the owned query-key capacity; container/Arc metadata is separately
+bounded by16 entries. Compute this accounting and allocate the query key outside
+the mutex. This is a resident-store bound: evicted Arcs held by readers and cold
+computations/cloned outputs consume additional transient memory. Measure RSS
+separately; never label the2MiB store budget a total RSS bound. Oversized results
+bypass reuse without dropping candidates. Eviction loses saved work only.
+Share immutable candidate storage through Arc; clone just the requested prefix
+outside the mutex. Under the mutex, clone only the Arc, recheck an existing key
+after concurrent misses, and detach evictions into storage prepared outside
+the lock. Destroy detached values after unlocking. Never hold the cache mutex
+during reconstruction, size accounting or caller work. Poisoned access falls
+back to normal computation. Concurrent first readers may duplicate computation;
+this design adds no single-flight wait protocol. Artifact binding relies on the
+existing immutable mapped-package contract, rather than copying package bytes.
+Cold misses allocate retained raw material and return a cloned prefix; measure
+this cost and retained bytes instead of assuming every workload improves.
+Rollback removes the per-instance store and returns the current truncate path;
+no persistent migration or compatibility wrapper.
+
+Proof plan: baseline RED must observe repeated real decoder work across limits
+and retain a complete before-change candidate-field digest matrix. Cover several
+damage classes, clean/unknown/short/prefixed surfaces and limits, including full
+surface_candidates reserve behavior. Candidate fields, order and counts must
+match exactly after reuse. Test eviction, oversized bypass, package separation,
+poisoned access and concurrent consumers holding evicted Arcs through the real
+reader; do not make runtime fixture
+conditions. Then affected library/IME checks, fresh-context review, whole fixed89
+actual-output/per-class/clean comparison and the fixed eight-pair quiet native
+gate. No installation on component-only PASS; TD123 and its later ready-refusal
+work remain ACTIVE. Fresh-context design review pass1:8/10,H0/M2/L0. Both medium
+contract gaps are addressed above: exact allocation accounting versus transient
+RSS, and accounting/destruction outside the mutex with insertion recheck and
+poison coverage. The review found no smaller demonstrated equivalent boundary.
+Design review pass2/2:9/10,H0/M0/L0, accepted within this scope.
+
+Baseline RED: remote run-mH0NZT, local run-r164go50,162.120s. Exactly1764 library
+tests selected/executed;1763 PASS and only the new repeated-work invariant FAIL.
+Across caller limits, three fixture queries perform8 raw reconstructions rather
+than1; the prefixed query16 rather than2. No production cache implementation yet.
+The exact two-test observation independently records4 work rows and224 complete
+candidate-field/count/order hashes plus source identity; EXPECTED_RED,9.806s.
+Raw reconstruction consumes5,515,208us of8,045,188us over that component matrix.
+These are unoptimized test timings, not native latency percentiles. The package
+SHA3ff9de4d785aed1b547c56da67dd3cf27644af8968bd0e3bb55a252074cf0268,
+245,116 source words, matches the native frozen62,424,748-byte dependency exactly.
+Evidence: `/home/ubu/.cache/lay/development/run-r164go50/reconstruction-baseline-summary.json`
+and `reconstruction-exact-baseline.json`; canonical manifest drift reported,
+not rewritten. Added counters are per-instance and cfg(test) only.
+
+Implementation result: a per-instance ReconstructionCache owns full sorted raw
+decoder material; surface/prefix readers retain all existing limit/reserve logic.
+Resident payload accounting uses actual capacities; metadata storage is reserved
+in the constructor. Size accounting, query/eviction storage allocation, result
+cloning and detached Arc destruction occur outside the mutex. Replaced concurrent
+entries and oversized/poisoned accesses preserve the same raw readout.
+
+Initial GREEN:2217/2217 (lib1768,IME449), remote run-Lerbmg/local run-pgepa9wm,
+144.733s. This snapshot predates only constructor metadata preallocation and
+the subsequently strengthened byte-pressure test. Final-source verification:
+IME scope PASS31.004s in run-l9zRRP/local run-bcgsiu73, followed by six exact
+library reader/resource tests PASS27.986s including compilation. Fresh-context
+code review pass1:9/10,H0/M0/L1; the missing byte-pressure test was added. Final
+review pass2/2:9/10,H0/M0/L0, runtime.rs SHA
+9b1bdf23b84f1be22f75dd085912210b6f13112db74d985ca9564195973f6d5d.
+The final controls cover count/byte eviction, held retired Arcs, actual retained
+allocation accounting, key uniqueness, oversized bypass, poisoned fallback,
+separate packages and concurrent real surface readers. No source-ID assertions.
+
+Exact comparison: all224 candidate-field/order/count digests and package identity
+match baseline. Raw evaluations147→21; raw computation5,515,208→798,736us;
+whole component8,045,188→3,326,151us. Four work controls are1/1,1/1,2/2,1/1
+first/final computations across changing limits. Peak retained store16 entries,
+342,518 accounted payload bytes. This is component allocation accounting, not
+whole-process RSS. Timings are unoptimized test observations, not native IME
+percentiles or a recognition-quality percentage.
+Exact final receipts:
+`/home/ubu/.cache/lay/development/run-bcgsiu73/reconstruction-exact-candidate.json`
+and `reconstruction-component-comparison.json`; initial broad summary is
+`run-pgepa9wm/reconstruction-first-green-summary.json`.
+
+Installed runtime authority changed=false; no package/model/configuration or
+learning mutation. Private release build is in progress. Before any promotion,
+run all fixed89 outputs/per-class/clean controls,13 existing native lifecycle/
+manual/restoration cases, then exactly eight quiet80ms pairs of parentfa15601f
+and the cache candidate. Reuse the same frozen five-word driver, inputs and
+envelope, at most two simultaneous clients; no retries/discards. Require8/8
+timely missing-letter delivery and24/24 clean preservation on the new candidate,
+report composite ready-NoApply separately. This does not close the later TD123
+authority/quality, general heldout, resource or physical-keyboard gates.
+
+Private releaseeea32f44be9ab8f2ea6b2c06101af5ae3a881676235b69312500c5a768dd16ee
+completed: architecture40.906s, release176.157s, budget PASS,total217.320s.
+All697 final Rust file hashes match the reviewed local tree. Exact identity and
+three stage logs: local run-bcgsiu73/reconstruction-cache-candidate-identity.json
+and reconstruction-cache-{architecture,release,budget}.log. The fixed89 matrix
+has started with this exact binary. No installation or model/authority promotion.
+
+Whole fixed89 result on eea32f44: NO_REGRESSION_ON_FIXED89. All89 actual outputs
+equal parentfa15601f and installed995b's frozen baseline. Dirty19/47=40.43%,
+25 abstentions,3 wrong outputs; clean39/42=92.86%,3 changed. Every source class:
+
+| Class | Correct/total | Percent |
+|---|---:|---:|
+|missing_letter|5/8|62.50%|
+|repeated_letter|0/4|0.00%|
+|transposition|5/5|100.00%|
+|restoration_regressions|9/24|37.50%|
+|context_fixture|0/6|0.00%|
+|clean_missing_letter_control|3/4|75.00%|
+|clean_repeated_letter_control|4/4|100.00%|
+|clean_valid_word|32/34|94.12%|
+
+All five fixed shards completed18/18/18/18/17 cases, with frozen driver/content,
+initial learning, authority inputs and resource envelopes equal across versions.
+All267 statuses independently recomputed from actual after.visible; no changed
+output or regression against either comparison version. Only the already
+documented mtime-derived L3 manifest_stamp is excluded from identity comparison;
+content identities stay checked. Private processes reaped. Exact local evidence:
+`autocorrect-live-ojoasco5/fixed-fixtures-v6-reconstruction-cache-comparison.json`
+and five `fixed-fixtures-v6-reconstruction-cache-{0..4}/` raw directories.
+This existing experimental ordered post-ready set proves bounded non-regression,
+not general/heldout/all-profile quality, the conjunctive L1 gate or physical input.
+
+All13 unchanged native controls PASS: US first-word1,RU first-word1,manual3,
+lifecycle3,restoration5. Timings2.188/2.186/3.633/1.961/2.999s; all candidate/
+697-source/driver identities verified before/after, private cleanup complete.
+Exact local report: run-bcgsiu73/reconstruction-cache-native-controls.json and
+five native directories containing each receipt, run metadata and run.log.
+Manual cases are private client protocol proof, not physical Double Shift.
+The predefined eight quiet80ms pairs are now running. Installed authority=false
+for this work; remaining restoration and physical acceptance stay OPEN.
+
+The predefined eight-pair quiet80ms gate completed in47.609s: all16 runs,
+80 words, zero retries/discards, exact input/content/envelope parity, all five
+optional stderr flags absent and complete private cleanup. Bounded readiness
+verdict PASS on the cache candidate; protocol completion is recorded separately.
+
+| Native80ms denominator | Parentfa15601f, this new series | Cacheeea32f44 |
+|---|---:|---:|
+| Missing-letter delivery by Space |5/8|8/8|
+| Composite correction, separately ready-NoApply |0/8|0/8|
+| Clean words preserved |24/24|24/24|
+
+Final-frame totals on the cache candidate52,725..64,536us, median55,154.5us;
+queue2..479us. Parent totals65,899..114,318us, median68,439us; queue3..31,268us.
+Actual press intervals: parent78,655..85,036us, median81,651; cache78,328..84,476us,
+median81,543.5. Parent5/8 belongs to this new paired series; the historical7/8
+series above remains unchanged. Neither denominator is independent-word accuracy.
+The eight-pair80ms delivery criterion is satisfied; this does not establish
+latency percentiles, physical-keyboard behavior, other cadences or model quality.
+
+Exact local evidence:
+`autocorrect-live-ojoasco5/cadence-reconstruction-stability-summary-v1.json`,
+`cadence-reconstruction-stability-gate-v1.json` and all16 raw
+`phrase-cadence-reconstruction-stability-{parent,cache}-{0..7}/` directories.
+All160 known raw artifacts were copied. Full fixed89 output/per-class results
+and13 native controls above remain the separate non-regression evidence.
+No installation/model/authority promotion. Continue TD123 with ready-result
+refusals through the complete L1.1→L2→L3→L4→DecisionCore→verifier path.
+
+### Sep 8 TD123: ready-result first-loss audit and bounded authority preflight
+
+Measured source: private reconstruction candidateeea32f44, unchanged fixed89
+and its exact 9 dependencies, 12 additional inputs, configuration and driver.
+No new production code, package, installation or authority change in this audit.
+The 89 native outputs remain19/47 dirty correct and39/42 clean preserved.
+Of25 dirty ready-NoApply rows,23 retain the **full expected replacement** in
+DecisionCore:21 are SuggestOnly without L3 directional or exact L4 support;
+two are Eligible but rejected by an authoritative hidden-state ambiguity.
+Two boundary targets never reach DecisionCore. Each evaluated row was joined
+to one stderr decision using its prepared decision/l3 timing tuple and full
+replacement bytes, including the actual retained context.88 joins succeeded;
+the remaining clean row has explicitly zero decision work and preserves input.
+The original ordered-shard/native learning semantics are unchanged.
+
+An independent private service run queried all89 final lexical tokens plus the
+two supplied phrase tokens, with the identical L1.1 service1cedb27c, V9 artifact
+bf5a1619, proof49839304 and dependency manifest75a0a693. A second run queried
+all65 distinct clean expected targets. Both completed and reaped their private
+service;1.522s and1.363s, inside the existing CPU200%/1536MiB/no-swap envelope.
+These are service observations, not a new IME run or a full heldout proof.
+Four boundary edits are excluded from the one-token dirty denominator43.
+
+| Original fixture group, one-token scope | Cases | Target in L1.1 lattice | Target authority |
+|---|---:|---:|---:|
+|restoration regressions|20|8/20,40.00%|0/20,0%|
+|missing letter|8|6/8,75.00%|0/8,0%|
+|repeated letter|4|0/4,0%|0/4,0%|
+|transposition|5|3/5,60.00%|0/5,0%|
+|context fixtures, final token only|6|6/6,100%|0/6,0%|
+|dirty aggregate|43|23/43,53.49%|0/43,0%|
+|clean missing-letter controls|4|0/4,0%|0/4,0%|
+|clean repeated-letter controls|4|3/4,75.00%|1/4,25.00%|
+|other clean controls|34|20/34,58.82%|18/34,52.94%|
+|clean aggregate|42|23/42,54.76%|19/42,45.24%|
+
+The43 dirty readouts are40 ABSTAIN plus3 Winners preserving the observed token,
+with zero target Winners. Of43 expected targets,28 survive their separate clean
+service query;15 do not. Of those28, five disappear for the damaged query and23
+remain without authority. A missing clean-query target is an observed service
+result, **not** independently decoded proof of absence from the package's
+terminal table. For the42 clean queries, readouts are19 Winner,4 Tied,19 ABSTAIN;
+this does not change the separately measured native clean preservation39/42.
+The supplied missing-letter target survives without authority; the composite
+target is absent from L1.1 but is generated and retained by later layers.
+
+The installed full V9 receipt's SHA matches the frozen dependency. Its
+`unique_top1=208739/210974=98.9406%` uses the **objective-unique** denominator;
+its total260000 damaged readouts separately contain32063 Winner,302 Tied and
+227635 ABSTAIN. Per-class rank/retention data remain in that exact proof and
+in the audit packet. This is the existing ranking gate, not an automatic-edit
+rate. The receipt verifies calibration geometry0/positive990/backward663;
+`typed_basin/settlement.rs` still passes that calibration to restoration
+classification. This audit has not established the historical compiler inputs
+that produced it. No arbitrary threshold increase or package rebuilding follows
+from a ranking PASS. All L1 conjunctive proof dimensions remain required.
+
+First demonstrated authority-transfer defect: one current frame has a complete
+canonical exact-partition lexical Winner and both ordinary and canonical target
+lanes are subsequently rejected as `ambiguous`. The competing operation changes
+a token boundary. There are no exact L4 transition counts or directional L3
+certificate for either choice in this recorded frame. Current
+`L4PhaseWitnessReadout.supported` means that the bank contains any center;
+`estimate_hidden_typing_state` lets that presence make an unresolved choice
+blocking. `candidate_has_apply_authority` receives the validated frame capability
+but its early hidden-state rejection ignores it. This is different from the21
+retained SuggestOnly targets, for which sufficient authority was never present.
+The other native ambiguity has a Tied lexical frame and cannot receive the same
+repair merely because its expected fixture output is known.
+
+Alternatives before edits, scores are engineering judgments:
+
+1. **9/10, selected:** in the existing authority adapter, let a currently validated
+   frame-bound lexical capability survive **only advisory L4 ambiguity**. The
+   exception is unavailable in the presence of independent L3 Support/Suppress,
+   an exact L4 transition observation, or a verified operator-consensus witness
+   in the evaluated lattice. Explicit rejection, a selected witnessed rival,
+   malformed certificates, missing/expired/wrong-frame capabilities and the
+   existing downstream safety/edit-verifier checks remain effective. Generic
+   phase pressure continues to rank candidates and does not become a new veto.
+2. **8/10:** carry the capability as a new typed lexical witness through the L4
+   active-hypothesis certificate protocol. Semantically reasonable, but requires
+   changes to probe identities, certificate replay and more data structures.
+   No need for that larger protocol migration to repair this bounded transfer.
+3. **4/10, rejected:** disable hidden ambiguity generally. This could admit
+   unrelated boundary or lexical alternatives without a valid lexical winner.
+
+Consequence check: no changes to L1.1/L2 candidate generation, bounded retention,
+raw scores, model files, calibration, common L3, learned feedback, profiles,
+SafetyGate, edit-plan validation, final verifier, ClosedExact or manual Shift
+ownership. The positive exception requires the issuer/projector/consumer's
+existing event-specific capability validation, not source names or candidate
+rank. No word, suffix, fixture ID or manually weighted exception is allowed.
+Expected native benefit is a hypothesis until the complete fixed89 rerun;
+the21 missing-authority cases, two missing boundary targets and the composite
+phrase are not claimed fixed by this step.
+
+Operational consequences and removal boundary, before production edits:
+
+- The extra evidence check scans the already evaluated, bounded lattice only
+  when the current candidate has a validated frame capability and the refusal
+  is `ambiguous`. It performs no allocation, reconstruction, field traversal,
+  model access or locking. CPU cost is linear in that lattice per qualifying
+  candidate; no additional resident state or cache is introduced. A negligible
+  deadline/tail effect is an estimate, to be checked by the same native cadence
+  protocol; bounded scans and the existing memory envelope are not RSS proof.
+- Existing capability validation still binds query, event, owner, epoch,
+  generation, configuration, package identity and lease. The worker's publish
+  and stale-result checks remain authoritative. No new generation, timer,
+  cache key, invalidation rule or concurrent writer is introduced. Package or
+  delta reloads retain their current invalidation path. A mismatched or expired
+  capability cannot enter the exception; failure remains a refusal.
+- Ranking and candidate retention stay unchanged, but admitting a previously
+  blocked edit can change subsequent learned history. This is a second-order
+  behavior change even though learning code is untouched. Preserve ordered
+  fixture shards and compare their complete outputs. Future L3 directional
+  observations, exact L4 transition observations or verified operator witnesses
+  anywhere in the lattice disable the exception; future packages do not inherit
+  authority from an old frame. False acceptance or any required error-group
+  regression rejects the patch rather than relaxing a gate.
+- IME and daemon consumers keep their existing typed receipt, verifier,
+  SafetyGate and edit-application contracts. There is no new execution route,
+  fallback, public protocol or owner. Strict-profile refusal, invalid-certificate
+  refusal and selection of a witnessed rival remain explicit regression checks.
+- Rollback removes this one adapter exception; before installation it has no
+  production effect. If later installed and rejected by physical acceptance,
+  restore the last verified installed artifact through the existing procedure.
+  A future typed lexical witness in L4 should replace and remove this adapter
+  exception, with the same proof obligations, rather than become a second
+  authority owner beside it. Until then the bounded evidence predicate and its
+  cross-candidate negative controls are the maintenance obligation.
+
+TDD/proof plan: obtain a real issuer→projection→consumer capability using existing
+test fixtures; preserve that field and vary L4 evidence. Reproduce advisory
+ambiguity refusal, then require the exact surface, authorized transition receipt
+and verifier effects to survive. Cover missing/expired/mismatched capability,
+exact negative and rival positive evidence, L3 evidence, invalid resolution
+certificate and all three safety profiles. Do not inject a bare true authority
+boolean as the sole proof. Run scoped lib/IME checks, fresh-context design/code
+reviews, unchanged native fixed89 with per-group results,13 native controls and
+the frozen eight-pair80ms readiness gate. Reject any required-group regression.
+Full release, RSS and physical ordinary-keyboard acceptance remain later gates.
+
+Independent design review completed in two passes: final 9/10, H0/M0/L0,
+accepted. The first regression reuses the real lexical issuer/projection and
+DecisionCore evaluations, then supplies an unresolved domain through the real
+L4 resolver. It is a controlled authority-adapter probe, separate from the
+recorded native first-loss evidence; it does not recreate the evaluator.
+Production code is still unchanged at the RED snapshot.
+
+RED completed on the unchanged adapter: 1,769 selected/executed library tests,
+1,768 passed and only `frame_bound_lexical_authority_survives_only_advisory_l4_ambiguity`
+failed. All 12 profile/phase observations were evaluated. The no-phase control
+admits Normal/Experimental and refuses Strict; adding zero, negative or equally
+positive phase pressure incorrectly refuses both permitted profiles, while
+Strict remains refused. Source snapshot86816729705633803c5e3d237ba72845c99937c065f9c9eb37c1d4446ac24538;
+remote run-nONUHN, local `~/.cache/lay/development/run-dy6ahi11/` contains
+`authority-adapter-red-{test-summary.json,discovered-manifest.json,lib.log}` and
+`RESULT.json`. Guarded check136.331s, focused harness109.767s. An earlier 2.611s
+format failure executed no tests and is not the RED behavior proof. The canonical
+manifest reports additions without mutation. Implementation additionally requires
+a valid L4 certificate and no selected witnessed rival before the exception.
+
+First GREEN: library1,772/1,772 plus IME449/449, total2,221/2,221, no failures;
+guarded check145.036s, discovery25.362s and execution116.495s. Exact local
+`~/.cache/lay/development/run-72639mlo/ready-authority-test-summary.json` and
+`RESULT.json`, remote run-E5hXNy. Code review pass1:9/10,H0/M0/L1. The sole
+test-evidence issue was that a tampered replacement invalidates both the frame
+and the edit, so it cannot isolate the verifier. The same test now also obtains
+a real capability for a protected-token candidate: frame validation must remain
+true, the real action verifier must fail, and advisory ambiguity must not yield
+an authorized transition under Experimental. No production code changed during
+that review repair. Final scoped verification and review closure are pending;
+the first GREEN does not claim execution of the strengthened control.
+
+Final scoped check includes that strengthened control:2,221 selected/executed,
+2,221 passed,0 failed (library1,772 and IME449),141.998s guarded total;
+discovery23.719s, execution115.090s. Code review pass2:9/10,H0/M0/L0, accepted.
+Exact local `~/.cache/lay/development/run-i4ruo2vh/{RESULT.json,ready-authority-final-test-summary.json}`,
+remote run-1E8BoD. All697 Rust source hashes match the reviewed checkout;
+admission SHA553c9a17cddb626cee037357d653705672953cf6195a601375f4ad161c357b23,
+test SHA c7e70fc822993acb6b6c5dc7540ec3f8dff5c23a39b6808ebb13ded2cb3d074a.
+The canonical manifest's added identities are explicit drift, not silently
+updated release acceptance. A private candidate build and graph refresh are
+running from that exact snapshot. Native benefit, cadence, RSS, full release
+and physical acceptance remain unmeasured for this adapter. Installed runtime
+authority changed=false; the candidate's authority change is the bounded
+adapter exception described above.
+
+Resource observation protocol for the next13 native controls: an external
+private observer will match only the candidate executable's device/inode and
+PID/start-time, sample kernel VmRSS/VmHWM and its private client cgroup memory
+peak every20ms, and retain sample counts and coverage. It will not alter the
+versioned driver, engine flags, client limits, model inputs or application
+deadlines. These are sampled process/cgroup high-water observations; unobserved
+exit intervals are not a claim of exact final process peak. The separate quiet
+eight-pair timing gate has no resource sampler. The enforced1536MiB client
+memory envelope and cache-accounted payload remain separate measurements.
+
+Exact private artifacts under `/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/`:
+`fixed89-ready-path-audit-v1.json`, `l11-and-native-first-loss-v1.json`,
+`l11-fixed-audit/{l11-fixed-audit-results.json,run-metadata.json,run.log}`,
+`l11-known-target/{l11-known-target-results.json,run-metadata.json,run.log}`,
+their frozen input manifests and private helper source. The installed package
+proof is the exact4983930495e793c1d28c7558fe006ddf8097ee575bebb1afd3f1dba4ddb1d01d
+receipt under `~/.local/share/lay/nanda_wave/l1.1/`. Runtime authority changed=false.
+
+### Sep 8 TD123: bounded authority transfer native result
+
+Private candidate7a58535c9b1e9e00e4e79918b5d58b3cd70103f526c8948167389b76dc13d663
+was built from the reviewed697-file Rust snapshot: architecture41.407s,
+release176.187s, total217.846s, Cargo budget PASS. All six generated graph
+artifacts were copied back with SHA/size verification. Later owning-document
+updates still require the final architecture refresh. There is no installation.
+
+The unchanged five ordered shards executed all89 fixed fixtures and cleaned up.
+All267 before/parent/candidate statuses were recomputed from complete visible
+outputs. Driver, nine dependencies, additional/system inputs, initial learned
+data, configuration and authority identities match; only the previously justified
+mtime-derived L3 manifest_stamp is excluded. Correct dirty restoration increases
+19/47→20/47; clean preservation stays39/42. One actual output changes from a
+retained typo to the exact expected lexical correction. No previously correct
+case is lost, no new WRONG_OUTPUT appears, and no required group's correct or
+false-output count regresses. Remaining dirty outcomes are24 refusals and3
+wrong outputs; clean has3 wrong outputs.
+
+| Fixed fixture group | Parent correct | Candidate correct |
+|---|---:|---:|
+|Restoration regressions|9/24,37.50%|10/24,41.67%|
+|Missing letter|5/8,62.50%|5/8,62.50%|
+|Repeated letter|0/4,0%|0/4,0%|
+|Transposition|5/5,100%|5/5,100%|
+|Context fixtures|0/6,0%|0/6,0%|
+|Dirty aggregate|19/47,40.43%|20/47,42.55%|
+|Clean missing-letter controls|3/4,75%|3/4,75%|
+|Clean repeated-letter controls|4/4,100%|4/4,100%|
+|Other clean controls|32/34,94.12%|32/34,94.12%|
+|Clean aggregate|39/42,92.86%|39/42,92.86%|
+
+All13 unchanged native controls pass: US1/RU1/manual3/lifecycle3/restoration5,
+with exact driver/source/candidate validation and cleanup. The external resource
+observer saw all five engine processes and client cgroups,413 samples total.
+Largest observed process VmHWM/VmRSS is360,992KiB,352.53MiB; largest observed
+cgroup memory.peak is363,495,424B,346.66MiB. These kernel accounting domains differ
+and are not summed or substituted for each other. All sampled client limits
+are1,610,612,736B/no swap; observed swap/oom/oom_kill counts are0. Sampling does
+not establish an exact final peak after the last observation or physical RSS.
+It is distinct from the cache's accounted payload and the enforced envelope.
+
+The frozen quiet eight-pair80ms protocol also passes on these bytes. Both parent
+and candidate restore the missing-letter token8/8 and preserve clean24/24;
+both leave the composite token ready-NoApply0/8. All16 runs/80 outcomes and
+absence of all five optional stderr flags were independently checked after
+copying raw artifacts; no resource sampler, retries or discarded runs.
+Series time47.623s. Candidate final-input-to-publication totals are59.554–75.144ms,
+median66.788ms; parent50.149–66.449ms, median53.030ms. The observed total median
+is higher, so no cost-neutrality or speedup claim follows from the gate PASS.
+DecisionCore medians are8.866ms candidate and9.098ms parent; the measured total
+difference is not localized to the edited adapter by these stage observations.
+Candidate queue peaks at8.840ms. Eight runs do not establish p99 or other cadences.
+
+Verdict: the demonstrated lexical-capability transfer defect is repaired without
+fixed-set regression, and the bounded readiness/control checks pass. This does
+not complete TD-123, establish full heldout/all-profile quality, explain every
+remaining refusal, or constitute release/physical acceptance. A fresh audit of
+the89 candidate traces now finds24 dirty refusals,22 retained targets:21
+SuggestOnly and one Eligible ambiguity, plus two absent boundary targets.
+The91 independent L1.1 query inputs are byte-for-byte unchanged, so their frozen
+service/package observations remain reusable; no new L1 authority was created.
+Further work must identify the first shared missing authority mechanism before
+another patch. Model/package/installed runtime authority changed=false.
+
+Exact private receipts under `~/.cache/lay/development/autocorrect-live-ojoasco5/`:
+`fixed-fixtures-v7-ready-authority-comparison.json`, all five corresponding raw
+shards, `fixed89-after-ready-authority-path-audit-v1.json`,
+`cadence-ready-authority-stability-{summary,gate}-v1.json`, all16 raw cadence
+directories and `ready-authority-cadence-stage-observations.json`.
+Build/source/reviewed-test/native/resource receipts are under local
+`~/.cache/lay/development/run-i4ruo2vh/`, remote run-1E8BoD, including
+`ready-authority-{candidate-identity,native-controls,native-resources,graph-copy}.json`.
+
+### Sep 8 TD123: remaining exact-field refusal diagnostic preflight
+
+The current89-case audit contains24 dirty refusals. Some retained targets have
+an L2 IntegrityFailure before L3, while other fields are complete with a real
+multi-target tie. The existing error merges raw storage overflow and invalid
+structural-work proof. Source inspection shows that raw Phase-7D certificates
+are capacity-checked before the supported authority partition is replayed.
+It is a hypothesis, not a measured cause, that unsupported roots consume this
+capacity. Neither a larger limit nor wider authority is authorized by that fact.
+
+The smallest discriminating observation will call the existing exact V13
+generation on all91 frozen token inputs (the89 fixtures plus the two cadence
+tokens), with the same canonical package and sidecar. A temporary cfg(test)
+observation immediately before the completed-proof guards will record raw and
+supported target/root counts, certificate replay errors, the actual capacity
+and work-budget predicates, and the unchanged producer result. Expected targets
+are joined only after execution. This measures an earlier package/query stage;
+it does not itself prove frame grounding, ranking, edit authority or native
+output quality. Genuine supported ties and unsupported relation classes remain
+separate from capacity failures.
+
+Consequence check: only the private frozen remote test snapshot is instrumented;
+release runtime code, candidate generation, limits, ranking, verifier, cache
+identity, leases, learning, package reloads and IME/daemon ownership stay on the
+reviewed candidate. Diagnostic replay/JSON allocation increases test CPU/RSS and
+latency, so these timings are not native performance evidence. The existing
+remote resource/Cargo guard owns the sole heavy lease. The harness remains
+filesystem/network sandboxed. Exact source/dependency/test identities and91
+actual observations are required; no retries or example selection. The two
+temporary source edits will be saved as a private patch and restored byte for
+byte after execution, including failure. No installed process or model changes.
+Production repair options and their consequences will be assessed only after
+this observation distinguishes raw capacity, supported capacity and work limits.
+
+#### Measured diagnostic result and capacity-scope repair preflight
+
+The guarded private observation executed exactly91/91 inputs in14.713s
+(compile23.54s,total38.921s). The nine dependencies and input bytes match, all697
+Rust sources were restored byte for byte, and all original runtime control flow
+was retained. There are55 raw-complete and36 raw-storage-overflow queries;
+all91 pass the existing structural-work predicate and certificate replay. Raw
+target counts range0–364, max3 roots/target. Every supported partition fits the
+existing limits: max19 targets and2 roots/target, versus limits74 and4. The36
+overflow records are15 dirty and21 clean. Among the24 native dirty refusals,
+exactly14 have this earlier overflow; the other10 have raw-complete fields.
+Nine of those complete native fields are actual supported ties and one has no
+supported target. The cadence composite token likewise has one raw candidate
+and zero supported candidates. Capacity repair is not a solution for an
+unsupported relation or independently unresolved competition.
+
+Root cause is the completeness scope: `from_candidates` marks the untruncated
+raw set over capacity; `with_completed_search_proof` rejects that marker before
+replaying the supported partition. `authority_partition` repeats the same
+blanket rejection. Search work was complete in all measured overflow cases.
+However, merely removing these checks is insufficient: common material and
+the display lattice require all exact births to be mandatory and would then
+reject the raw74+ set downstream. Both consumers must keep their original bound.
+
+Options, scored for this task:
+
+1. **9/10, selected:** keep the existing raw enumeration and completed search
+   proof; validate the supported74/4 partition independently. Feed the common
+   material/lattice a bounded, explicitly incomplete view only when raw storage
+   overflow occurs. It includes every supported exact target, keeps the raw
+   count/digest/overflow, and cannot carry a completed authority proof itself.
+   The original untruncated enumeration alone owns the authority partition.
+2. **7/10:** introduce separate raw-search and bounded-partition container types
+   through the producer/bridge/live/diagnostic APIs. The type distinction is
+   clearer, but widens this repair into an API migration and duplicated stored
+   material when the existing proof/scope boundary can express the invariant.
+3. **3/10, rejected:** increase the common74-target or4-root limit. It consumes
+   more memory/work, still conflates scopes, and future packages can exceed it.
+   Filtering raw candidates at the search producer is also rejected because it
+   would silently narrow complete search/display evidence for ordinary queries.
+
+The selected change must allow a completed search proof past raw StorageCapacity
+only; every other incompleteness, invalid work proof, wrong package/observed/
+sidecar/semantics binding, missing retrieved form, or unreplayable certificate
+still fails closed. A supported set over either74 targets or4 roots/target
+must remain non-authoritative with no truncation before certification. Existing
+counts/digests include all supported competitors. Raw diagnostics stay raw and
+overfull. The common-field view is made only after the original authority
+material is prepared: on raw overflow it carries the complete bounded supported
+subset but preserves raw logical count/digest and StorageCapacity, with no
+search proof. Whole-field completeness therefore never becomes a substitute
+for the independent relation-partition proof. Grounded L1.1 candidates retain
+their mandatory lane; supported targets enter the existing exact lane. If the
+union of mandatory grounded and supported targets exceeds74, the existing
+capacity refusal remains; this patch does not invent a truncation preference.
+
+Consequences and boundaries:
+
+- **Retention/rank/false authority:** previously lost supported roots become
+  available, including rivals. No score, tie rule, relation class, acceptance
+  threshold, SafetyGate, edit verifier or consumer capability check changes.
+  The larger valid field may turn an apparent singleton into a tie and must
+  never certify from a truncated prefix. Common display candidates can change
+  in the36 previously failed queries; whole fixed89 target retention, complete
+  visible outputs, false outputs and each error class must not regress.
+- **Latency/CPU/RSS/allocation:** measured supported sizes are small but future
+  packages may reach the existing limits. Raw search already materializes the
+  full set; successful replay and common material now add work where an early
+  error used to stop it. BTree count/replay/cloning work is bounded by existing
+  search limits and74/4 partition limits, not estimated as free. No new hot-path
+  tracing or second package lookup is added. Native13 sampled RSS and the quiet
+  eight-pair80ms gate must be repeated after the full fixed set; no p99 claim.
+- **Cache/reload/concurrency:** use only the immutable per-query enumeration and
+  current package tuple. No new cache, owner, fallback route, memoization or
+  mutable state. Existing generation invalidation, lease checks, result discard,
+  package/delta reloads and frame/epoch binding remain. Current raw checksums and
+  supported replay are required again after a changed package; future capacity
+  overflow stays closed. The diagnostic patch is already removed.
+- **Learning/feedback:** no learning rule changes, but any additional accepted
+  output can change later history. Preserve frozen initial learned bytes,
+  ordered fixture shards and complete metadata checks; report changed output
+  and downstream evidence separately. Newly learned rivalry is not waived.
+- **Failure/compatibility/rollback/removal:** IME and daemon consume the same
+  prepared-field APIs; no format, package schema, installed service or source
+  migration. Invalid common material still refuses; a valid authority view does
+  not bypass final frame/target verification. Roll back this scoped capacity
+  separation without reverting the accepted timing/authority adapter work.
+  Keep raw/common/authority handling within the existing enumeration/live
+  owners; a future explicit container-type migration replaces this view method
+  rather than adding a parallel authority owner.
+
+Meaningful TDD must first reproduce failure on raw>74 but supported singleton
+through the real issuer/projector/consumer fixture, then test supported ties,
+true supported target/root overflow, missing/stale/corrupt proof, wrong frame,
+and retention of raw overflow in common material. A repeat of the full91 query
+observation must preserve every raw candidate/certificate count and supported
+set; only eligibility of the completed bounded partition may change. These
+component observations are not quality proof. Final native89 percentages and
+new false outputs remain separate from field completeness and admission counts.
+Fresh-context design/code review follows the requested two-pass maximum.
+
+Exact private diagnostic receipt:
+`~/.cache/lay/development/autocorrect-live-ojoasco5/exact-authority-capacity-probe-v1/receipt.json`,
+with raw `probe.log`, `test-only-observation.patch`, discovered manifest and
+`compact-summary.json`. Installed runtime authority changed=false. The selected
+production repair and its TDD are pending at this preflight.
+
+Design review pass1:8/10,H0/M2/L1. Before implementation the selected route is
+made explicit at three downstream boundaries. The lattice carries a distinct
+exact-storage-overflow marker with its raw target lower bound and digest; root
+overflow must be representable even if target count is at most74. Common
+completeness combines this marker without relabelling it productive overflow.
+Its presence also requires common L3 settlement even if the retained view has
+zero or one surface, preventing an apparent productive singleton from gaining
+eligibility. `live_authority` still checks a grounded L1.1 Winner first; no generic
+incompleteness downgrades that Winner or removes its candidate.
+
+An empty supported view of a nonempty raw enumeration must still contribute the
+raw digest to common material. A held empty birth list is not evidence that no
+exact enumeration occurred. Both production and test completeness must retain
+the raw lower bound, StorageCapacity and digest for this observed empty shape.
+The completed-proof issuer and authority partition will validate the raw count
+and raw digest against the held untruncated births, in addition to their existing
+bindings and replay. A bounded view with raw metadata therefore cannot attach
+or reuse a completed proof. This uses the existing immutable identities and
+avoids a new ownership flag or another authority container.
+
+Add discriminating regressions for productive-singleton deferral, grounded
+Winner preservation, the supported-empty overflow/digest/no-proof shape,
+attempted proof reattachment, mandatory grounded-plus-exact target overflow,
+and supported-plus-anchor witness-root overflow. Neither separate lane fitting
+nor absence of a proof at construction time is sufficient evidence for the union
+or for non-issuability. No SafetyGate, final verifier or L1.1 contradiction rule
+is changed to satisfy these tests. Production code is still unchanged pending
+design pass2 and the recorded TDD RED.
+
+Design pass2 closed at9/10,H0/M0/L0. TDD RED then selected and executed1773
+library tests:1772 passed and only the new
+`raw_exact_overflow_preserves_bounded_partition_and_common_incompleteness`
+failed at the old completed-proof rejection. Its fixture generates75 distinct
+unsupported double-substitution surfaces using the real Phase-7D oracle, adds
+the actual canonical singleton, and reaches the intended StorageCapacity failure;
+this is a behavioral RED, not compilation or formatting failure. Total135.770s,
+discovery23.432s, execution109.135s. Local evidence:
+`~/.cache/lay/development/run-aa87o1gr/exact-capacity-red-{test-summary.json,discovered-manifest.json,lib.log}`;
+remote run-BFvwsr has the original `tests/{SUMMARY.json,DISCOVERED_MANIFEST.json,logs/lib-lay.log}`.
+Canonical test manifest reports only additive drift and was not rewritten.
+
+The scoped capacity repair is implemented in the existing material, composite
+and live-field owners. Raw count/digest validation prevents a bounded common
+view from receiving or reattaching a completed search proof. The original raw
+enumeration can prove a complete supported partition under the unchanged74/4
+bounds. Common material retains the raw StorageCapacity marker and digest,
+including an empty supported view. That marker requires common L3 settlement;
+the grounded L1.1 Winner route remains first. Mandatory grounded/exact target
+unions and supported/anchor witness-root unions still fail closed on overflow.
+There is no new owner, cache, threshold, package change or verifier bypass.
+
+The first scoped run executed2227 tests with2226 passing. Its sole failure was
+an invalid new test expectation: a different frame supplied at issuance defines
+a fresh context. The corrected test issues and projects once, retains the same
+settlement/capability, then replaces the current frame. It proves positive
+admission, stale-use denial, expiry denial and final no-edit with a passing edit
+verifier. No production change was needed for that test correction.
+
+The final scoped run passed2227/2227 (1778 library,449 IME), including all six new
+capacity regressions. Total142.392s; discovery23.639s, execution115.549s. All697
+Rust files match the frozen checked snapshot. Source review closed after two
+passes at9/10,H0/M0/L0. The canonical manifest has21 additions only and remains
+unmodified; its normal refresh and full release gates are still required.
+Exact receipts: `~/.cache/lay/development/run-q5pd3id5/` contains the first
+scoped FAIL; `~/.cache/lay/development/run-vx8clfk5/{RESULT.json,exact-capacity-final-test-summary.json,exact-capacity-final-discovered-manifest.json}`
+contains the final PASS, remote run-X9Migg. The private source delta and identities
+are `~/.cache/lay/development/autocorrect-live-ojoasco5/exact-capacity-code-v2.patch`
+and `exact-capacity-code-v2-identities.json` in the same directory; the corrected,
+formatted frame-test SHA is5a070bc3c227a6080a34bfd844be1d1c7cadda8a5e2630f7ae8095de12ec7a40.
+
+Native89 quality, the same91 raw/supported query observation, sampled native13
+resources and eight quiet80ms pairs remain pending. Component correctness and
+review do not establish those results. Installed runtime authority changed=false.
+
+The private candidate is now1bceb86970f44c38e1eb39457f88efd2acac962570a5a2db3b2737b6aa942fca,
+remote run-X9Migg/lay-ibus-engine-exact-capacity. Architecture41.124s and
+release176.312s passed, total217.706s including the Cargo budget check. All697
+Rust hashes match the reviewed/checked sources. Six generated graph artifacts
+were copied with exact SHA/size validation; later local result documentation
+still requires the final graph refresh. Local identity/graph/build receipts
+are under run-vx8clfk5 with the `exact-capacity-` prefix.
+
+The same91-query private observation passed again: every raw count, supported
+surface/root set, replay outcome and recorded structural-work counter matches
+the baseline. All91 completed producer calls return the original raw diagnostic
+scope, and the real post-issuer authority partition validates in91/91, including
+empty partitions. A valid empty partition grants no target capability. This
+comparison records raw counts, not all raw surface/certificate content. No query
+producer, package or search lane changed. Test15.320s, compile23.43s, total39.408s;
+all temporary test instrumentation was removed with697/697 source hashes
+restored and all dependencies/input bytes unchanged. This is component proof,
+not native latency or output quality. Exact local receipt and raw observation:
+`~/.cache/lay/development/autocorrect-live-ojoasco5/exact-authority-capacity-probe-v2/`.
+Native89, native13 resource sampling and quiet80ms measurements follow.
+
+#### Exact capacity native verdict and next missing mechanism
+
+All89 fixed fixtures completed under the same Experimental profile, frozen
+inputs, ordered learning shards and key-after-ready schedule. The comparison
+independently recomputed267 full visible outputs against installed-baseline995b,
+parent7a58535c and candidate1bceb869. No previously correct case, required group
+or false-output count regressed. The only change against the parent preserves
+the clean input `важно`, which previously became `важна`.
+
+| Fixed group | Parent correct | Capacity candidate correct | Candidate wrong outputs |
+| --- | ---: | ---: | ---: |
+| All damaged |20/47 (42.55%)|20/47 (42.55%)|3/47 (6.38%)|
+| All clean |39/42 (92.86%)|40/42 (95.24%)|2/42 (4.76%)|
+| Restoration regressions |10/24 (41.67%)|10/24 (41.67%)|2/24 (8.33%)|
+| Missing letter |5/8 (62.50%)|5/8 (62.50%)|0/8|
+| Repeated letter |0/4 (0%)|0/4 (0%)|1/4 (25%)|
+| Transposition |5/5 (100%)|5/5 (100%)|0/5|
+| Context fixtures |0/6 (0%)|0/6 (0%)|0/6|
+| Clean missing-letter controls |3/4 (75%)|3/4 (75%)|1/4 (25%)|
+| Clean repeated-letter controls |4/4 (100%)|4/4 (100%)|0/4|
+| Other clean words |32/34 (94.12%)|33/34 (97.06%)|1/34 (2.94%)|
+
+The complete first-layer audit joins88 actual decision traces and the single
+zero-evaluation clean control. All24 dirty refusals now have a complete final
+L2 relation partition:20 Tied and4 Abstain, compared with9 Tied,14 Failed and
+one complete Abstain before this repair. This removes the measured earlier
+capacity failure, but does not independently resolve those competitions.
+Final target gates remain21 SuggestOnly, one Eligible and two absent whole-word
+boundary targets. All91 lexical query identities are unchanged, so the existing
+independent L1.1 readouts remain applicable. Display/request errors within a
+trace window are not relabelled as final-frame failures.
+
+The unchanged13 native controls passed. Read-only resource sampling observed
+five candidate processes and five private-client cgroups in414 samples. Maximum
+observed VmHWM358340KiB (349.94MiB); maximum sampled cgroup memory.peak361132032B
+(344.40MiB). These are different accounting domains, not additive measurements.
+All cgroups retained1536MiB memory.max and zero swap.max; sampled swap, OOM and
+OOM-kill counts were zero. Final process-exit intervals can be unobserved.
+
+The first cadence attempt is an incomplete harness run, not a candidate timing
+result: the derived launcher admitted a `ready` label while its batch passed
+`capacity`, so all eight candidate starts failed before engine initialization.
+Eight parent runs and all eight failure logs are preserved in series-v1. Only
+the private mode contract and distinct output names were repaired; binary,
+driver, inputs, flags and80ms cadence stayed unchanged. The new fixed series-v2
+completed all16 runs/80 words in47.601s, with no within-series retry or discard.
+Both variants restored the missing-letter case8/8, preserved clean text24/24,
+and had zero wrong outputs. Composite restoration remains0/8 ready-NoApply.
+All five optional stderr flags were absent. Candidate final preparation ranged
+56.797–66.989ms, median61.794ms; parent52.880–73.162ms, median65.237ms. Actual
+input-interval medians were81.562ms and81.553ms respectively. This is a bounded
+readiness PASS, not a p99, faster-cadence or causal speedup claim.
+
+Exact native evidence in `~/.cache/lay/development/autocorrect-live-ojoasco5/`:
+`fixed-fixtures-v8-exact-capacity-comparison.json`, five complete raw shards,
+`fixed89-after-exact-capacity-path-audit-v1.json`,
+`exact-capacity-final-refusal-field-summary.json`,
+`cadence-exact-capacity-stability-{summary,gate}-v2.json` and all16 raw directories.
+The original incomplete series is `cadence-exact-capacity-stability-summary-v1.json`
+with eight parent directories and eight candidate launcher logs. Native13 and
+resource receipts are `~/.cache/lay/development/run-vx8clfk5/exact-capacity-native-{controls,resources}.json`
+with five raw control directories. Installed runtime authority changed=false.
+General heldout quality, all-profile release acceptance, installation and the
+physical keyboard remain open. Next analysis separates missing supported edit
+geometry from independent context evidence needed to settle complete ties.
+
+### TD123 next analysis: geometry and independent context
+
+Source facts: the shared Phase-7D authority predicate admits only single
+substitution, adjacent transposition, layout and missing/extra-letter relations;
+other enumerated certificate families remain display evidence. Current-sentence
+recurrence independently certifies only Damerau distance1. Neither observation
+alone authorizes wider geometry or a lower safety threshold. None of the fixed89
+failures has its expected word repeated in the current sentence according to
+the preliminary text audit; the supplied cadence sequence does. These are
+different proof scopes and must not be conflated.
+
+The next minimal diagnostic retains the same frozen91 queries but records the
+existing raw `diagnostic_json` candidate/certificate contents on disk. Expected
+targets are joined only afterwards to classify absence, unsupported geometry
+and real supported competition across the complete denominator. No production
+change, package change or promotion is proposed yet. A private cfg(test) patch
+uses the reviewed immutable snapshot and is restored byte for byte on exit,
+under the same sole remote resource/Cargo guard and sandbox. Additional JSON
+and replay work is observation overhead, not native performance evidence.
+This creates no runtime owner, cache, route, reload, learning or authority change.
+
+The full geometry observation completed91/91 and restored all697 sources
+(test15.355s, total39.175s). Expected-token shapes:38 supported,23 absent and
+30 raw-only. All30 raw-only expected tokens are clean controls; no damaged
+expected target is present merely behind the supported-geometry filter.
+Ten fixed damaged cases plus the supplied composite have no expected token in
+the raw exact field. Therefore widening that filter alone cannot repair these
+measured missing targets. The supplied composite retrieves a different raw
+double-substitution surface, while its intended target needs a deletion plus
+insertion. Its exact-field competitor must not be promoted merely because it
+is the only raw surface. Exact receipt and complete post-execution join:
+`autocorrect-live-ojoasco5/exact-authority-geometry-probe-v1/{receipt.json,target-geometry-summary.json}`.
+
+Next, rerun the existing five-word post-ready native diagnostic on the same
+private candidate and frozen inputs, with its unchanged detailed trace flags.
+This locates the retained intended target and the current context/authority
+path in the actual consumer. It is a bounded causal observation, not a latency
+measurement, new fixture denominator, or permission to widen authority.
+
+#### Bounded current-context recurrence: implementation preflight
+
+The unchanged five-word post-ready native diagnostic completed5/5, with4/5
+expected outputs and verified cleanup. Four actual known frames join uniquely
+to DecisionCore timing. The composite's intended full replacement remains in
+the outer bounded lattice as SuggestOnly (rank0.970, L3 NotApplicable, no
+pairwise witness). Its final canonical relation partition is complete/empty,
+not an invalid frame. In the same sentence, the one-edit control gets the
+existing L3 recurrence certificate (support720, pairwise=true) and is restored.
+Full raw provenance: `autocorrect-live-ojoasco5/phrase-domain-exact-capacity/`
+and `supplied-phrase-after-exact-capacity-path-audit.json`. Detailed tracing
+makes these preparation timings unsuitable for the quiet performance gate.
+
+Options relative to the private1bceb869 baseline:
+
+1. **9/10, selected for bounded implementation/proof:** extend the existing L3
+   current-sentence recurrence issuer to a conservative two-edit RU case. Keep
+   its one-edit behavior first and unchanged. Two-edit issuance requires an
+   already-retained candidate, the exact target in the current sentence, the
+   same Cyrillic script, an observed length of at least five letters, no
+   clean/protected source certificate, no target L3
+   suppression, and one unique matching surface across the complete nearby
+  current-sentence vocabulary, including identity and nearer alternatives.
+   The current canonical field is not fabricated or promoted by this evidence.
+2. **7/10, viable but deferred:** represent that same recurrence evidence with
+   a new typed certificate carried through L3/L4/DecisionCore. This makes its
+   geometry explicit at additional interfaces but expands the producer/consumer
+   migration. The existing event-local report and final verified transition can
+   carry the bounded evidence without introducing another owner or route.
+3. **3/10, rejected for this measured gap:** broaden the supported Phase-7D
+   predicate. No damaged expected target in this91-query observation is merely
+   hidden behind that predicate; it would admit different competitors while
+   leaving the measured missing candidates absent. A full primary-geometry and
+   package extension is separate research, not a small version of this fix.
+   A bare global distance1-to2 change is also rejected: it lacks clean-source
+   preservation and complete current-context competitor checks.
+
+Chosen invariants and consequences, to be reviewed before production edits:
+
+- **Candidate retention and ranking:** no generation, removal, lattice cap,
+  lexical score or source-ID exception. Existing one-edit witness success/tie
+  behavior within a real current sentence is evaluated first. The shared
+  sentence parser must find delimiters before trimming preceding whitespace:
+  review found that an immediately preceding newline currently disappears.
+  Fix this boundary for both one- and two-edit evidence, with explicit controls.
+  Only when the one-edit branch has no witness may a retained
+  two-edit candidate obtain the existing positive recurrence report. Every
+  distinct same-script sentence token at edit distance0,1 or2 competes for
+  this new certificate, even if missing from the candidate lattice. Identity
+  or a different nearer/tied context surface prevents new issuance. Duplicate
+  aliases of one target share evidence; they are not separate competitors.
+  For this new branch, enumerate Cyrillic competitor runs also behind internal
+  punctuation, which the existing whitespace tokenizer retains inside tokens.
+  A comma-joined rival missing from the lattice must block apparent uniqueness.
+  Positive recurrence still requires an exact whole target token in the current
+  sentence and a retained replacement; a split fragment cannot supply it.
+- **False authority and safety:** reject a two-edit source attested by the
+  existing `has_clean_russian_surface_certificate`, whose purpose is input
+  preservation and which includes dictionary, morphology and protected words.
+  Its exact dictionary starts at length5 and does not cover every bare short
+  noun. Therefore the new branch requires observed length>=5; shorter input
+  never obtains this new certificate. This covers the reader's exact-source
+  range without adding another direct short-dictionary lookup. Existing form
+  checks inside the preservation reader can still cold-load that dictionary.
+  Short damaged restoration
+  is outside this extension, and independent short clean nouns must stay clean.
+  Absence of that certificate alone is never positive evidence. The exact
+  current-sentence target supplies the independent positive observation.
+  This does not prove every unknown input is damaged: clean confusables,
+  unprotected names, competing recurrences and missing dictionary coverage
+  remain material risks to measure. Existing Suppress, technical/protected
+  class filtering, SafetyGate, edit-plan validation, posterior/margin checks,
+  exact negative transition evidence and frame/lease verification stay intact.
+  Strict still requires its separate evidence domains; no profile is weakened.
+- **Latency, CPU and RSS:** reuse the existing issuer and lookup, with one
+  source-preservation check only if the new two-edit branch is actually needed.
+  Use the existing bounded edit-distance(max2) for its additional comparisons.
+  Current sentence and candidate arrays remain bounded by the existing event
+  and lattice. The added distinct-context scan and distance work allocate only
+  within this call; there is no new persistent cache or background work.
+  Existing dictionary/form caches may be cold and their first-use cost is not
+  claimed free. Scoped checks, native13 resources and the unchanged quiet80ms
+  eight-pair gate must establish the practical bound before acceptance. No
+  deadline or resource limit will be raised to pass that gate.
+- **Cache, reload and concurrency:** no new cache identity, state, lease, owner
+  or synchronization. Certificate inputs are the current immutable event and
+  full candidate array; final editing uses the existing bound transition.
+  Dictionary/protected-word queries use existing OnceLock process snapshots,
+  not live reloadable readers. Changed vocabulary takes effect in a new process;
+  an in-process reload does not invalidate those snapshots. This is an existing
+  lifetime limit, not a newly implemented refresh guarantee. Future data is not
+  assumed equivalent to the frozen proof; current package/worker generations
+  and stale-result rejection retain their existing, separate scope. No new
+  cache or reload owner is introduced to claim broader protection.
+- **Learning and compatibility:** the learning algorithms and data formats
+  stay unchanged, but an additional accepted output can affect later in-session
+  history. Preserve ordered fixed shards and compare complete outputs, not
+  isolated suffixes. Both existing L3 callers use the same issuer, including
+  IME/daemon consumers. Current sentence boundaries and script constraints
+  remain; nothing is learned from a rejected or stale proposed certificate.
+- **Failure, rollback and maintenance:** no certificate means the existing
+  decision path continues. No fallback edit or second mutation is introduced.
+  Roll back this small issuer extension independently of the accepted timing,
+  authority-transfer and capacity repairs. If a later typed recurrence
+  certificate replaces it, replace this issuer behavior rather than layering
+  another authority route beside it.
+
+TDD must first fail on the old issuer through an actual final consumer result,
+then cover no recurrence, prior-sentence recurrence, two witnessed rivals,
+nearer/identity context competitors absent from the lattice, clean/protected
+source, suppressed target, mixed scripts, more than two edits, alias/order
+invariance, all three profiles and actual verifier failure. Also record an
+independent bounded family of damaged and clean-confusable context controls;
+the supplied example alone is insufficient. The whole fixed89, all existing
+scope tests, native13/resource and quiet80ms gates must not regress. Native
+composite gains, clean preservation, per-class percentages and unmeasured
+generalization remain separate. Fresh-context design/code review follows the
+requested maximum of two passes. Production code is unchanged at this preflight.
+
+Design review closed after two passes:8/10,H0/M1/L1 then9/10,H0/M0/L0.
+The complete-vocabulary and lookup concerns are resolved in the preflight
+above; that review does not establish runtime quality or performance.
+Behavioral RED:1779 selected/executed lib tests,1777 PASS and exactly two
+failures on the old issuer. The new final-consumer test refuses the intended
+two-edit replacement under Normal despite a valid edit verifier; the expanded
+boundary test incorrectly issues a positive one-edit certificate across an
+immediately preceding LF. This is a behavior failure, not a compile/fmt failure.
+Total137.100s, discovery/build23.40s, execution110.254s. Exact raw receipts:
+`~/.cache/lay/development/run-6ueix8ux/context-recurrence-red-{summary,discovery}.json`
+and `context-recurrence-red-lib.log`; remote snapshot `run-MWB3LK`, archive
+`09fddac71e39ed2adba5d87b6736d692e5c63060e5f0f684b06246ca6624c022`.
+No installed runtime authority changed. The following implementation remains
+subject to the declared scope, whole-proof, native and resource gates.
+
+The bounded implementation is confined to the existing L3 recurrence issuer
+and shared sentence parser. The old one-edit branch runs first; the new branch
+requires the reviewed complete context and preserved-input conditions, with
+one deferred source check. Suppression on any alias of the proposed two-edit
+target prevents the new certificate on all aliases. No report is modified
+until every new issuance condition passes. The existing report strengths and
+all downstream authority/verifier code are unchanged.
+
+Verification additions cover two independent damaged surfaces under all three
+profiles, exact selected surfaces and bound receipts; aliases/order;15 negative
+context/source controls;28 sentence-boundary combinations; and suppression on
+either alias. Actual final-consumer negative controls include clean sources
+and absent-lattice competitors. Separate adversarial prefix edits preserve
+normalized tokens (and receive the real L3 certificate) but fail the actual
+edit verifier and must never produce a final transition. A ProtectedToken
+control also retains the actual verifier veto. These scoped checks are pending
+execution; they do not replace the frozen native or heldout proof.
+
+Scoped GREEN completed2233/2233 (lib1784,IME449), exactly2233 selected and
+executed,2257 discovered,0 failures. All697 Rust source hashes match the frozen
+request. Total143.965s, discovery25.177s, execution115.590s. Exact raw evidence:
+`~/.cache/lay/development/run-lsqh9s6e/context-recurrence-final-{summary,discovery}.json`
+and `context-recurrence-final-lib.log`, remote `run-SJ5HuB`. Canonical manifest
+drift is27 additive identities,0 changed/removed; it has not been silently
+rewritten. Fresh-context code review9/10,H0/M0/L0 closed in one pass, with no
+source repair required. Native and release/heldout acceptance remain open.
+
+Before native execution, a separate16-case context family was frozen:8
+predeclared two-operation long-word damages (five construction families) and8
+clean context-confusable sources, including short and protected input. Each
+variant gets the same complete ordered list, same initial packages/config,
+and the same actual terminal/key-after-Ready driver mechanics. Only its fixture
+binding/count/scope metadata are adapted; original fixed89 and drivers remain
+unchanged. Receipt: `autocorrect-live-ojoasco5/context-recurrence-family-v1.json`,
+SHA256 `616bd78fd4f8117225f0ca6e7728a3423d54e4772b30093577d55a1654dd9421`.
+Compare all32 outcomes, candidate retention and target certificates against
+private1bceb869. Report damage and clean denominators separately; no lost
+correct result or new wrong output is acceptable. This family is prospective
+bounded evidence, not an unseen heldout or a substitute for fixed89.
+An external observer will record candidate process/cgroup memory across its
+fresh process and subsequent cases, separately from native13 and quiet80ms.
+First-use versus later process execution is observable; reference-reader cache
+coldness is not inferred without evidence. No production installation occurs.
+
+#### Bounded recurrence native verdict
+
+Private candidate `1dc3a28315824360d503babeb0e7125317b9f97832463e6caa619a550eaea9d4`
+was built from the reviewed697-source snapshot, with architecture41.380s,
+release176.553s, budget PASS and total218.206s. All six generated graph artifacts
+were copied and SHA/size verified. Later owning-document changes still require
+the final architecture refresh. No package, config, driver, deadline or installed
+runtime authority changed. Scoped2233 tests and fresh code review9/10 passed.
+
+The complete frozen89 native outputs are byte-for-byte identical to private
+1bceb869. All267 status classifications across baseline995b, parent1b and new1dc
+were independently recomputed, with full dependency/config/driver identity
+parity; only copied L3 manifest mtime is excluded as before. No lost correct
+output, new wrong output or class regression occurred. Current measured classes:
+
+| Fixed89 group | Correct / denominator | Percent | Wrong outputs |
+|---|---:|---:|---:|
+| all damaged |20/47|42.55%|3|
+| all clean |40/42|95.24%|2|
+| restoration regressions |10/24|41.67%|2|
+| missing letter |5/8|62.50%|0|
+| repeated letter |0/4|0.00%|1|
+| transposition |5/5|100.00%|0|
+| context fixtures |0/6|0.00%|0|
+| clean missing-letter controls |3/4|75.00%|1|
+| clean repeated-letter controls |4/4|100.00%|0|
+| clean valid words |33/34|97.06%|1|
+
+The separately predeclared16-case context family improves damaged restoration
+0/8→6/8 (0→75%) while clean preservation remains8/8 (100%); wrong outputs0
+and lost correct results0. By construction class: deletion+insertion0/2→2/2,
+double deletion0/2→2/2, double substitution0/1→1/1, transposition+deletion0/1→1/1,
+double insertion0/2→0/2. These tiny denominators are bounded controls, not
+generalization or L1 heldout percentages. All16 candidate frames were audited:
+the six restored targets were retained as SuggestOnly and received actual L3
+support720/pairwise=true. The two remaining failures have prepared candidates0,
+field producers0, correction-L3 time0 and DecisionCore time0. Thus no final
+decision over a retained target occurred there; upstream birth/retention needs
+its own full-path diagnosis before any further change.
+
+All13 unchanged native controls pass:US1,RU1,manual3,lifecycle3,restoration5.
+The external observer saw all5 processes/cgroups with414 samples, maximum
+VmHWM354316KiB (346.01MiB) and cgroup peak356438016B (339.93MiB). The separate
+family observer saw the candidate process/cgroup with736 samples, maximum
+VmHWM431788KiB (421.67MiB) and cgroup peak449478656B (428.66MiB). These are
+different accounting domains and workloads, not additive values or a memory
+growth diagnosis. The1536MiB client limit and zero swap remain; sampled swap,
+OOM and OOM-kill counters are0. Final exit intervals can be unobserved. Fresh
+process and later cases are covered; exact reference-cache coldness and isolated
+CPU cost of the new branch remain unmeasured. No observer ran during quiet80.
+
+The unchanged eight-pair80ms cadence completed16 runs/80 words in47.551s,
+without retries, discarded runs or any of the five optional stderr trace flags.
+Both versions restore the missing-letter case8/8 and preserve clean24/24.
+The supplied composite changes0/8→8/8; new candidate therefore restores both
+damaged words in every repetition. Full visible outputs were independently
+rechecked against raw receipts; wrong outputs0 for both variants. The existing
+readiness/preservation gate and separate composite8/8 gate both PASS.
+Missing-letter final preparation median61.964→63.909ms; new range49.900–71.433ms,
+queue2–3344us. Actual requested80ms intervals for new candidate were
+77.013/81.582/85.553ms (min/median/max). This establishes only the fixed native
+cadence gate, not p99, a speedup, or physical-keyboard acceptance.
+
+Exact receipts under `~/.cache/lay/development/autocorrect-live-ojoasco5/`:
+`fixed-fixtures-v9-context-recurrence-comparison.json`, all five raw shards;
+`context-recurrence-family-comparison-v1.json`, both raw family directories and
+`context-family-recurrence-authority-audit-v1.json`;
+`cadence-context-recurrence-stability-{summary,gate}-v1.json`, all16 raw runs.
+Build/tests/native/resource receipts are under `run-lsqh9s6e/context-recurrence-*`.
+The bounded recurrence change is accepted for further validation. General
+quality, complete heldout/per-class L1 gates, full release, installation,
+physical typing and TD123 DONE remain OPEN. The next task is the remaining
+shared failure mechanisms; neither this phrase gain nor its cadence repeats
+can replace those proof dimensions.
+
+#### Remaining quality: terminal coverage diagnostic preflight
+
+The next read-only observation separates target availability from search and
+authority. Existing91 service queries are insufficient to call a missing clean
+target absent from the package. The pinned service already exposes `Decode`
+over terminal IDs; no Rust patch, alternate decoder or model rebuild is needed.
+Use one fresh private instance of the same service/package and its existing
+CPU200%/1536MiB/zero-swap/90s envelope, inside the sole guarded remote execution
+lease. Query all91 original tokens plus all16 predeclared family tokens with
+the existing lattice/restore calls, then enumerate the complete health-reported
+terminal-ID range in fixed512-ID Decode batches. Bound the scan by80s and keep
+the existing cleanup deadline; no retries or resource increases.
+
+Record every requested range, returned/missing ID count, response hash and
+complete decoded stream privately on disk. Join expected/observed surfaces only
+after exact Decode responses. Record host stats so tombstones/overlays, if any,
+cannot be mislabeled as raw package absence. Verify all frozen source/config/
+service/package identities and cleanup. Recheck old91 readout parity because
+the new coverage observation broadens the diagnosis; classify all107 cases,
+not only failures. This adds no candidate, rank, certificate, cache, owner,
+learning or runtime authority. Decode/JSON work is observation overhead, not a
+typing latency result. A missing terminal and a calibrated abstention require
+different fixes; no threshold change is authorized by this diagnostic alone.
+
+
+#### Complete loaded L1.1 terminal coverage: measured result
+
+The pinned private service decoded every ID in its health-reported domain:
+852582/852582 nonempty surfaces,1666 fixed512-ID batches,0 missing IDs.
+Independent local streaming verification checked consecutive IDs, every batch
+hash, the complete decoded-stream SHA and every expected-surface membership.
+Host stats report852582 exact surfaces,0 overlays,0 tombstones and0 query
+failures; absence here is therefore absence from the loaded base terminal table,
+not a tombstone or overlay effect. Package77962328 bytes, manifest generation0.
+The107 lattice/restore queries complete; original91 responses are unchanged,
+with identical frozen service/package/config/resource dependencies. New16 inputs
+are the previously frozen context family. Cleanup reaped the private service.
+
+| Lexical scope | Cases | Expected in decoder | Expected in damaged/clean query lattice | Target Winner authority |
+|---|---:|---:|---:|---:|
+| fixed single-token damaged |43|28/43,65.12%|23/43,53.49%|0/43,0%|
+| restoration regressions, single token |20|10/20,50%|8/20,40%|0/20,0%|
+| missing letter |8|7/8,87.50%|6/8,75%|0/8,0%|
+| repeated letter |4|2/4,50%|0/4,0%|0/4,0%|
+| transposition |5|3/5,60%|3/5,60%|0/5,0%|
+| context fixtures, final token |6|6/6,100%|6/6,100%|0/6,0%|
+| fixed clean |42|23/42,54.76%|23/42,54.76%|19/42,45.24%|
+| separate context family damaged |8|8/8,100%|6/8,75%|0/8,0%|
+| separate context family clean |8|8/8,100%|8/8,100%|7/8,87.50%|
+
+The43-token damaged denominator excludes the same four boundary fixtures from
+fixed47. It contains15 targets absent from this decoder,5 present but missing
+from the damaged-query lattice, and23 retained without target authority. Three
+damaged readouts are Winners for their observed surface; they are not correct
+target Winners. The two family double-insertion targets exist in the decoder
+but have empty damaged-query lattices. These disjoint lexical observations do
+not prove the first failure in the full IME path: L2 and personal material can
+already supply a target missing from L1.1. Match the current fixed89 consumer
+frames before selecting a systemic fix. No word-list supplementation or
+calibration increase follows automatically from these measurements.
+
+Driver elapsed19.339s (scope19.417s, CPU19.359s); these include observation work,
+not typing latency. Same CPU200%/1536MiB/zero-swap/90s envelope, with80s scan
+bound, no retries. No new RSS measurement or full heldout proof is claimed.
+Exact local receipts under `~/.cache/lay/development/autocorrect-live-ojoasco5/`:
+`l11-terminal-membership-v1/{l11-terminal-membership-v1-results.json,decoded-terminal-rows.jsonl.gz,decode-batches.jsonl,run-metadata.json,run.log,l11-service.log}`,
+`l11-terminal-membership-v1-analysis.json` and the pinned input/helper identities.
+All source, model, configuration and installed runtime authority are unchanged.
+This closes the bounded membership diagnostic; general quality remains OPEN.
+
+
+#### Current fixed89 consumer audit and full acceptance preflight
+
+All89 current1dc3a283 native cases were joined anew against their own raw
+receipts/traces:88 uniquely identified DecisionCore frames and one prepared
+zero-evaluation clean case. Of24 damaged refusals,22 retain the exact complete
+expected replacement:21 are SuggestOnly without directional L3/exact L4
+permission; one Eligible target is rejected by an ambiguous operation choice.
+Two boundary-merge targets are absent as full edits, despite related lexical
+surfaces. The three damaged wrong outputs retain their expected alternatives
+as SuggestOnly. Two clean wrong outputs remain. Cached field observations can
+omit a new frame line; a nearby diagnostic line is not independently sufficient
+to certify the current cached frame. The consumer audit does not relabel generic
+uncertainty as contradictory evidence or complete ties as lexical Winners.
+Exact receipts: `autocorrect-live-ojoasco5/fixed89-after-context-recurrence-path-audit-v1.json`
+and `audit-fixed-after-context-recurrence-path.py`, with all five source receipt,
+trace and candidate hashes. Actual outputs equal the earlier fixed89 comparison.
+
+The work now enters the original full-proof stage. No new production algorithm
+or model change is selected from these residual examples. Retained ambiguity,
+lexical coverage and missing independent contextual evidence remain explicit
+quality limitations; two-operation birth and boundary merges are separate
+mechanisms. This stage may validate or reject the accumulated bounded fixes;
+it does not silently declare all remaining restoration debt solved.
+
+First refresh the canonical test inventory through its existing guarded
+write-manifest command. Compare against the frozen canonical file and the last
+scoped discovery: precisely27 already-reviewed additions, no removed/changed
+identity or fixture/toolchain/command drift is allowed. Then create a fresh
+remote-only development snapshot, run the mandatory full release script with
+its serialized performance lane, and preserve exact binaries/source/graph and
+all executed test identities. The Cargo target limit remains12GiB; check it
+before and after broad builds. All execution retains the sole dedicated20CPU
+remote lease; private native clients retain their previous two-client envelope.
+No production install, service restart or input-source mutation is part of
+this preflight.
+
+Full quality requires all fixed13 L1 damage classes and clean/coverage/false
+certainty/package/RSS/latency dimensions, not only rank or format parity.
+Recover exact frozen proof inputs/parameters and compare all required class
+metrics. Existing accepted L2 semantic13x100x2 evidence has a separately scoped
+historical latency exception; do not convert its formal5.000ms FAIL into PASS
+or silently apply that exception to new measurements. Native fixed89 must also
+be measured separately across the three existing correction-safety profiles;
+only that profile may differ within each paired comparison. The native
+Experimental89, independent context16,13 transport/manual controls and quiet80ms
+remain distinct denominators. Final release bytes require their own identity
+binding to applicable native proof. Physical typing and TD123 DONE stay OPEN.
+
+
+Full acceptance attempt1 used remote `run-laoCUH`, local `run-x14za786`.
+Its architecture refresh passed and all32 nonempty correctness/package targets
+completed2711 selected tests with0 failures (2675 correctness,36 package).
+The release script nevertheless exited1: the empty TD007 known-failure ledger
+still referenced the previous canonical test-manifest SHA. This is a test
+metadata contract failure, not a passing full release and not a failed Rust
+assertion. Exact raw evidence remains in the remote run's
+`td123-full-acceptance-full.log`, `full-test-lanes/` and
+`td123-full-acceptance-candidate-identity.json`; total404.974s.
+The repair changes only the ledger's manifest SHA. Its0 exclusions and original
+historical zero-failure observation are preserved; no new exception is admitted.
+A fresh snapshot must pass the mandatory full release route after this repair.
+
+The existing test-lane contract explicitly separates the opt-in performance
+lane from ordinary release authority and records historical8/11 PASS,3 blocked
+performance assertions. Execute that unchanged lane separately so its full
+results remain visible without preventing mandatory lint/build checks. Keep
+all thresholds unchanged and never convert performance FAIL to PASS. Any
+product/L1-specific budget still requires its own applicable evidence.
+
+The original L1 corpus was recovered locally at
+`~/.cache/lay/l1-peak-search-baseline-2026-08-13/corpus-852582.txt`:
+14262280 bytes, SHA256
+`abb9d71495acc27b7619b24621568ea72263f9bd40201aab9fffa1188fbff8f6`.
+All852582 lines match the independently captured pinned-service decoder stream
+in exact ID order,0 differences. Use this original corpus for full Gate C;
+there is no need to reconstruct, extend or retrain the model inputs.
+Final fresh-context combined code review closed in one pass:9/10,H0/M0/L0,
+all19 changed Rust files, diff SHA256
+`5a214c187c1ac7627d6b115778285b364ef27b9ae01af8d1f523a0ec26ec7028`.
+Source review alone does not close heldout/resource/release/physical acceptance.
+
+
+Final TD123 acceptance now binds the source version1.0.67 before building.
+Only Cargo package/lock, extension version/date and VERSIONING publication
+metadata change; all697 Rust source hashes and the closed19-file code review
+remain unchanged. State is `SOURCE_BUMPED_RUNTIME_STALE`: installed995b remains
+the rollback baseline, and no release or runtime authority is claimed. The
+mandatory full route uses its default performance opt-out; all11 performance
+assertions will run separately with unchanged thresholds. Private source-bump
+receipt: `autocorrect-live-ojoasco5/td123-source-version-bump-v1.json`.
+
+
+### TD123 final 1.0.67 mandatory build acceptance, 2026-09-09
+
+The final immutable IME is `13db86237314df92458259ee439baa0a906e55af8c7657e28c1028ce8f06241e`.
+All 697 Rust files match the reviewed implementation; only release metadata
+was bumped to 1.0.67. The complete ten-binary release set is saved under remote
+`run-tovK3y/release-binaries/` with a SHA-256 manifest. Its CLI reports
+`lay 1.0.67`; installation and physical acceptance remain pending.
+
+All 2,711 correctness/package tests passed in the original full invocation.
+That invocation exited 1 at the dead-code inventory: nine existing default
+diagnostics had moved byte locations, with no change to their messages,
+subjects or targets. Both default and research inventories were refreshed
+using the existing lint command and independently compared after removing
+only byte locations; their 535/359 entries and every other field are unchanged.
+No warning, failure exclusion, threshold or production gate was added.
+
+Mandatory acceptance was completed in two evidence segments. The original
+prefix contains fmt, architecture, harness self-tests, manifest validation
+and the complete 2,711-test PASS. A private continuation executes the exact
+unchanged suffix of `scripts/check-lay-full.sh` from its lint stage: both lint
+scopes, extension and helper syntax, CLI smoke, all release binaries and diff
+check passed. A final default-feature IME build also passed. The failed original
+full invocation remains preserved; it is not relabelled as exit 0. Test reuse
+is limited to the identical Rust, Cargo, test-manifest, fixture, toolchain and
+environment identities after the byte-location-only inventory repair.
+
+Exact evidence: local `~/.cache/lay/development/run-o0dqrl5c/`, remote
+`/home/e/projects/lay-development-runner/run-tovK3y/`: `full-test-lanes/SUMMARY.json`,
+`td123-full-acceptance-candidate-identity.json` (original FAIL),
+`full-acceptance-continuation/` and
+`td123-full-acceptance-completed-identity.json` (completed mandatory gates).
+Original attempt 426.506 s; continuation including both release builds
+472.561 s. Neither is an IME latency measurement. Runtime authority changed:
+false. Full heldout, separate performance, three safety profiles, final native
+client and physical acceptance are still open.
+
+
+### TD123 full fixed model and performance evidence, 2026-09-09
+
+Current source: 1.0.67, immutable IME `13db8623`, all 697 reviewed Rust files.
+The private proof CLI was built with `lexical-compiler`; no model was trained or
+rewritten. All 13 frozen input hashes were verified before and after execution.
+The original corpus contains 852,582 exact decoder surfaces; Gate C uses
+20,000 damaged cases per class plus every clean surface.
+
+L1 verdict: **PASS_C_QUALITY**, exact quality parity in every one of 13 classes.
+Unique top-1 is 208739/210974 (98.940628%)
+within the independently unique objective subset. Across all 260,000 damaged
+cases the same numerator is 80.284231%; this is a separate denominator.
+Complete target retention is 100%; bounded-lattice coverage is
+99.868077%. Typed readout: 32,063 Winner,
+302 Tied, 227,635 ABSTAIN. Typed false authority and
+false singleton are both zero. The legacy compatibility observer separately
+reports four false-authority observations; these are not typed terminal or IME
+application counts. Clean preservation is 852,582/852,582 (100%),
+with zero mutating Winners. The false legacy-V8/A2 flag is inapplicable to this
+direct V9 artifact; the overall conjunctive V9 Gate C verdict is PASS.
+
+| L1 damage class | Cases | Unique objective | Unique top-1 | Top-1 % on unique objective | Lattice % | False authority |
+|---|---:|---:|---:|---:|---:|---:|
+| adjacent_transposition | 20000 | 16786 | 16781 | 99.970213 | 99.970000 | 0 |
+| double_substitution | 20000 | 19093 | 18679 | 97.831666 | 100.000000 | 0 |
+| extra_letter | 20000 | 19335 | 19190 | 99.250065 | 99.990000 | 0 |
+| layout_projection | 20000 | 19196 | 19118 | 99.593665 | 99.215000 | 0 |
+| letter_substitution | 20000 | 18304 | 18295 | 99.950830 | 99.980000 | 0 |
+| missing_letter | 20000 | 14269 | 14187 | 99.425328 | 99.695000 | 0 |
+| non_adjacent_transposition | 20000 | 18426 | 17883 | 97.053077 | 100.000000 | 0 |
+| omission_transposition | 20000 | 15107 | 14889 | 98.556960 | 99.620000 | 0 |
+| prefix_truncation | 20000 | 12684 | 12492 | 98.486282 | 99.995000 | 0 |
+| punctuation_suffix | 20000 | 19998 | 19998 | 100.000000 | 100.000000 | 0 |
+| repeated_fragment | 20000 | 19714 | 19507 | 98.949985 | 100.000000 | 0 |
+| sparse_multi_omission | 20000 | 14097 | 13777 | 97.730013 | 99.830000 | 0 |
+| suffix_truncation | 20000 | 3965 | 3943 | 99.445145 | 99.990000 | 0 |
+
+All class numerators, objective denominators, full retention and terminal
+readout counts equal the admitted `49839304...` proof. This proves preserved
+packaged lexical quality; it does not assert improved IME Apply rate.
+
+L2: all 2,600 fixed cases, 26 cohort/class groups, one worker. All shared
+non-latency class metrics exactly match the accepted semantic V90 baseline.
+H/B/S0 remain 1280/1280/1280, raw top-1 1109/2600 (42.653846%),
+base raw top-1 267/2600 (10.269231%). All 2,600 independently executed
+probed/unprobed readouts match; false singleton, integrity, base-projection
+failures and H-to-B/B-to-S0 losses are zero. This is the conditional packaged
+productive proof with grounded target/competitor identities, not live IME
+accuracy. Formal verdict remains **FAIL_measured_shadow_gates**: maximum class
+p99 is 5.276 ms versus the unchanged 5.000 ms threshold. The dated baseline
+was 5.286 ms; no new waiver or stronger latency claim is introduced.
+
+| L2 cohort / damage class | Cases | Top-1 % | Top-16 % | False singleton | p99 us |
+|---|---:|---:|---:|---:|---:|
+| LEMMA_HELDOUT::adjacent_transposition | 100 | 89.00 | 98.00 | 0 | 4360 |
+| LEMMA_HELDOUT::double_substitution | 100 | 83.00 | 100.00 | 0 | 4382 |
+| LEMMA_HELDOUT::extra_letter | 100 | 98.00 | 98.00 | 0 | 4400 |
+| LEMMA_HELDOUT::layout_projection | 100 | 99.00 | 99.00 | 0 | 4224 |
+| LEMMA_HELDOUT::letter_substitution | 100 | 90.00 | 98.00 | 0 | 4352 |
+| LEMMA_HELDOUT::missing_letter | 100 | 77.00 | 98.00 | 0 | 4284 |
+| LEMMA_HELDOUT::non_adjacent_transposition | 100 | 93.00 | 99.00 | 0 | 4334 |
+| LEMMA_HELDOUT::omission_transposition | 100 | 82.00 | 99.00 | 0 | 4950 |
+| LEMMA_HELDOUT::prefix_truncation | 100 | 99.00 | 99.00 | 0 | 4368 |
+| LEMMA_HELDOUT::punctuation_suffix | 100 | 98.00 | 98.00 | 0 | 4710 |
+| LEMMA_HELDOUT::repeated_fragment | 100 | 96.00 | 98.00 | 0 | 5276 |
+| LEMMA_HELDOUT::sparse_multi_omission | 100 | 78.00 | 100.00 | 0 | 4317 |
+| LEMMA_HELDOUT::suffix_truncation | 100 | 27.00 | 97.00 | 0 | 4109 |
+| SEEN_EXACT::adjacent_transposition | 100 | 90.00 | 100.00 | 0 | 706 |
+| SEEN_EXACT::double_substitution | 100 | 95.00 | 100.00 | 0 | 611 |
+| SEEN_EXACT::extra_letter | 100 | 100.00 | 100.00 | 0 | 702 |
+| SEEN_EXACT::layout_projection | 100 | 98.00 | 99.00 | 0 | 717 |
+| SEEN_EXACT::letter_substitution | 100 | 97.00 | 100.00 | 0 | 719 |
+| SEEN_EXACT::missing_letter | 100 | 92.00 | 100.00 | 0 | 704 |
+| SEEN_EXACT::non_adjacent_transposition | 100 | 97.00 | 100.00 | 0 | 751 |
+| SEEN_EXACT::omission_transposition | 100 | 95.00 | 100.00 | 0 | 531 |
+| SEEN_EXACT::prefix_truncation | 100 | 100.00 | 100.00 | 0 | 644 |
+| SEEN_EXACT::punctuation_suffix | 100 | 100.00 | 100.00 | 0 | 535 |
+| SEEN_EXACT::repeated_fragment | 100 | 100.00 | 100.00 | 0 | 742 |
+| SEEN_EXACT::sparse_multi_omission | 100 | 88.00 | 99.00 | 0 | 550 |
+| SEEN_EXACT::suffix_truncation | 100 | 33.00 | 99.00 | 0 | 654 |
+
+The separate performance lane executed all 11 contracts: **10 PASS, 1 FAIL**.
+The remaining unique-prefix cold-materialization test measured 301.738 ms
+against its debug-build 50.000 ms bound; its release bound is 1.500 ms and
+was not measured by this debug test. No retry or threshold change was used.
+The other ten contracts, including canonical L2 p99 (2.050 ms), exact-English
+RSS, L3 hot context, preedit and nonblocking key-thread submission, passed.
+The existing test-lane document already records this cold-prefix route as
+blocked performance debt and separates the lane from ordinary release
+authority. This result remains red and is not converted into a full performance
+PASS. The actual final native80ms gate and physical typing remain separate.
+
+Package: 77,962,328 bytes (74.351 MiB),
+unchanged SHA `bf5a1619...`; all package/dependency gates applicable to V9 pass.
+The proof process, not serving runtime, measured L1 peak RSS 768,440 KiB and
+L2 peak RSS 285,968 KiB. Proof CPU averages were 1643% (20-worker L1) and 99%
+(one-worker L2). Wall times were 418.50 s and 69.21 s; these are throughput
+measurements, not per-keystroke latency. Cargo target ended at 11,354,185,728
+bytes below its 12,884,901,888-byte limit. Final native process/cgroup measurements
+are still pending. Runtime authority changed: false; no package or receipt
+was installed or modified.
+
+Exact local evidence: `~/.cache/lay/development/run-o0dqrl5c/`:
+`td123-full-model-proof-comparison-v1.json`, `full-model-proof/receipt.json`,
+`full-model-proof/l1-full.json`, `full-model-proof/l2-semantic-full.json`,
+the corresponding `.time.txt` files and `full-model-proof/performance-test-lanes/`.
+Remote owner: `/home/e/projects/lay-development-runner/run-tovK3y/`.
+
+
+### TD123 final native profiles and installed runtime, 2026-09-09
+
+The final acceptance candidate is IME SHA256
+`13db86237314df92458259ee439baa0a906e55af8c7657e28c1028ce8f06241e`, version
+1.0.67. It matches all 697 reviewed Rust source hashes and the completed
+mandatory build identity recorded above. All native runs retain the frozen
+fixtures, driver inputs, resource envelopes, package identities, key deadlines
+and learning order. The final service binary changes from frozen `1ced...` to
+`db825d2f...`; all other eight dependency identities are byte-identical.
+`td123-final-candidate-inputs-v1.json` binds the two service manifests explicitly.
+
+**Fixed89 profiles.** Each paired profile compares installed baseline `995b6093`
+with final `13db8623` using the same frozen L1.1 service. Only the selected
+`correction_safety` differs across profiles. The 89 fixtures contain 47 dirty
+and 42 clean cases. The independent comparator recomputed 178 statuses per
+profile, 534 total, and found no lost correct output, new false output or fixture
+group regression. Fixture-manifest SHA256:
+`ae1bf941a5fa3126fc3548bc9de613977f074a8c438d0c498bcbba800607532e`.
+Actual per-engine configuration hashes were also read back from the launched
+sandbox; a profile label alone was not accepted as configuration proof.
+
+These are ordered native Cyrillic fixtures with Space after the prepared
+result, not the L1 heldout damage-class population, Latin/mixed-input coverage
+or an ordinary-cadence proof. The aggregate rows below overlap the group rows;
+do not sum them into a larger denominator. Existing wrong outputs remain
+visible. A class-level no-regression verdict is not universal correctness.
+
+| Profile | Fixture group | Cases | Baseline correct % | Final correct % | Final correct | Final wrong output |
+|---|---|---:|---:|---:|---:|---:|
+| strict | all_dirty | 47 | 31.914894 | 31.914894 | 15 | 0 |
+| strict | all_clean | 42 | 97.619048 | 97.619048 | 41 | 1 |
+| strict | clean_missing_letter_control | 4 | 75.000000 | 75.000000 | 3 | 1 |
+| strict | clean_repeated_letter_control | 4 | 100.000000 | 100.000000 | 4 | 0 |
+| strict | clean_valid_word | 34 | 100.000000 | 100.000000 | 34 | 0 |
+| strict | context_fixture | 6 | 0.000000 | 0.000000 | 0 | 0 |
+| strict | missing_letter | 8 | 37.500000 | 37.500000 | 3 | 0 |
+| strict | repeated_letter | 4 | 0.000000 | 0.000000 | 0 | 0 |
+| strict | restoration_regressions | 24 | 29.166667 | 29.166667 | 7 | 0 |
+| strict | transposition | 5 | 100.000000 | 100.000000 | 5 | 0 |
+| normal | all_dirty | 47 | 40.425532 | 40.425532 | 19 | 3 |
+| normal | all_clean | 42 | 92.857143 | 97.619048 | 41 | 1 |
+| normal | clean_missing_letter_control | 4 | 75.000000 | 75.000000 | 3 | 1 |
+| normal | clean_repeated_letter_control | 4 | 75.000000 | 100.000000 | 4 | 0 |
+| normal | clean_valid_word | 34 | 97.058824 | 100.000000 | 34 | 0 |
+| normal | context_fixture | 6 | 0.000000 | 0.000000 | 0 | 0 |
+| normal | missing_letter | 8 | 62.500000 | 62.500000 | 5 | 0 |
+| normal | repeated_letter | 4 | 0.000000 | 0.000000 | 0 | 1 |
+| normal | restoration_regressions | 24 | 37.500000 | 37.500000 | 9 | 2 |
+| normal | transposition | 5 | 100.000000 | 100.000000 | 5 | 0 |
+| experimental | all_dirty | 47 | 40.425532 | 42.553191 | 20 | 3 |
+| experimental | all_clean | 42 | 92.857143 | 95.238095 | 40 | 2 |
+| experimental | clean_missing_letter_control | 4 | 75.000000 | 75.000000 | 3 | 1 |
+| experimental | clean_repeated_letter_control | 4 | 100.000000 | 100.000000 | 4 | 0 |
+| experimental | clean_valid_word | 34 | 94.117647 | 97.058824 | 33 | 1 |
+| experimental | context_fixture | 6 | 0.000000 | 0.000000 | 0 | 0 |
+| experimental | missing_letter | 8 | 62.500000 | 62.500000 | 5 | 0 |
+| experimental | repeated_letter | 4 | 0.000000 | 0.000000 | 0 | 1 |
+| experimental | restoration_regressions | 24 | 37.500000 | 41.666667 | 10 | 2 |
+| experimental | transposition | 5 | 100.000000 | 100.000000 | 5 | 0 |
+
+**Retained harness failure and bounded repair.** The original final batch is
+`EXECUTED_WITH_FAILURES`, not PASS: experimental candidate shard 1 stopped after
+12 of 18 cases when its concurrent JSONL snapshot ended inside a UTF-8 codepoint.
+The other 24 shards completed. The driver already discarded incomplete final
+JSONL records, but decoded the bytes too early. This was a reader failure,
+not an observed runtime restoration regression.
+
+Before editing the private reader, two options were compared: discard bytes
+only after the last newline before strict decoding (9/10, selected) or retry
+a full snapshot (5/10, timing-dependent). No production or original driver was
+changed. The new private driver reconstructs its predecessor byte-for-byte
+when the helper and two call-site changes are reversed. The remote proof
+checked 103 byte cuts, reproduced 12 old-reader failures, preserved every
+complete record, and still rejected complete invalid UTF-8 and invalid JSON.
+Only the incomplete 18-case shard was executed again, once. The replacement
+comparator admits this proven reader normalization and the pre-existing
+mtime-only L3 manifest stamp normalization; fixtures, handlers, learning and
+all behavior-affecting identities remain unchanged. The original failed
+receipt and partial observations are retained; no retry-until-green occurred.
+A preceding shell/guard stdin attempt executed no child and produced no receipt;
+it was verified empty before the file-based recovery executed the proof.
+
+**Final native transport and cadence.** All 13 unchanged private IBus controls
+passed against the final IME and final L1.1 service: first-word US 1, RU 1,
+manual toggle 3, lifecycle 3, restoration 5. All private-client cleanup checks
+passed. This proves those client paths; real keyboard Double Shift remains a
+separate acceptance item.
+
+The quiet 80 ms experiment used eight paired runs with the same final IME and
+frozen versus final L1.1 service. Each service variant restored the two supplied
+dirty fixtures 8/8 each and preserved the three clean fixtures 24/24. All 80
+case outputs exactly equal expected surfaces. The ordered phrase and learning
+state are fixed; these are repeated executions, not 16 distinct error words.
+The original key cadence, post-exact-ready startup, all additional inputs and
+absence of all five detailed stderr flags were verified. Native13 and quiet
+cadence elapsed 13.086 s and 47.744 s in the pipeline; these are run durations,
+not individual correction latency. The native phase did not retrain models.
+
+**Resources.** Only the separate 13-control run was sampled every 20 ms.
+Five IME process identities and five client cgroups were observed. Maximum
+process VmHWM was 359504 KiB (351.078 MiB); maximum cgroup memory.peak was
+362614784 bytes. The sum of observed cumulative cgroup CPU usage was
+14781445 microseconds; these cgroups also contain client work and are not an
+IME-only CPU denominator. Observed swap, OOM and OOM-kill counters were zero.
+The observer can miss final exit intervals; these are observed high-water
+marks, not an upper-bound guarantee. The quiet cadence run had no observer
+sampling overhead. The two earlier red performance measurements remain red.
+
+**Verified local installation.** At 2026-09-08T23:27:24.228290+00:00 (local
+2026-09-09), the complete ten-binary set from remote `run-tovK3y/release-binaries/`
+was installed from its identical local copy, without rebuilding. The existing
+installer verified the already canonical L2 package; it copied the same bytes.
+The transaction backed up all ten old binaries and extension/cache files,
+verified a temporary native-RU handoff, restarted only the four Lay-owned
+processes and restored the selected `lay-ime-ru` source. It preserved global
+ibus-daemon PID 4715 and start ticks 2261. Input sources remain exactly
+`[('ibus', 'lay-ime-us'), ('ibus', 'lay-ime-ru')]`.
+
+| Loaded component | PID | Start ticks | SHA256 prefix |
+|---|---:|---:|---|
+| IME | 3291789 | 53137705 | 13db8623 |
+| L1.1 service | 3291614 | 53137510 | db825d2f |
+| Daemon | 3291774 | 53137703 | 4e01703e |
+| L3 watcher | 3291775 | 53137704 | c75f0944 |
+
+All ten installed files and four `/proc/PID/exe` hashes match the release
+manifest. Source/CLI/loaded GNOME extension report 1.0.67. Config SHA256 remains
+`5887b077e716357cd0a622d16feda7147ff50c1f5ad2bee136f970fa095a9479`;
+Experimental and precognition settings were preserved. All eight immutable
+model/admission dependencies remain unchanged. Service health reports ready,
+852582 terminals and 77962328 package bytes. Ping/Focused/InputState are recorded
+as liveness only and do not prove the physical behavior.
+
+Runtime authority changed: **true for this installation**; the preceding
+private proofs and final graph refresh do not themselves change authority.
+Rollback is the complete snapshot at
+`/home/ubu/.local/state/lay/release-backups/1.0.67-td123-1p1e47xu/`.
+Status is **INSTALLED_VERIFIED_PHYSICAL_PENDING**. The user has already been
+asked to type the ordinary-tempo phrase and confirm physical Double Shift;
+no response has been received. Do not repeat the installation or promote this
+bounded improvement to general TD-123 quality/DONE/publication acceptance.
+General unseen-word restoration, full native Latin/mixed-input coverage,
+physical behavior and the two red performance obligations remain unproven or
+open as specified above. No blanket waiver is introduced.
+
+Exact evidence, local root `~/.cache/lay/development/`:
+
+- `autocorrect-live-ojoasco5/td123-final-candidate-inputs-v1.json` and
+  `td123-fixed-profile-{strict,normal,experimental}-comparison-v2.json`;
+- `autocorrect-live-ojoasco5/td123-reader-repair-inputs-v1.json`,
+  `td123-reader-repair-proof-v1.json`, `autocorrect-fixed-driver-v11.py` and
+  `fixed-fixtures-v11-profiles-candidate-experimental-1/`;
+- `run-o0dqrl5c/final-native-acceptance/receipt.json` (original failed batch),
+  `run-o0dqrl5c/td123-release-native-controls.json`,
+  `run-o0dqrl5c/td123-release-native-resources.json` and
+  `autocorrect-live-ojoasco5/td123-release-cadence-summary-v1.json`;
+- `run-o0dqrl5c/installation-1.0.67.json` and `release-binaries/`.
+
+The corresponding remote roots are
+`/home/e/projects/lay-development-runner/run-tovK3y/` and
+`/home/e/projects/lay-development-runner/autocorrect-ojoasco5/`.
+Raw typing logs stay private. Source documentation and the architecture graph
+are updated after these measurements; accepted binaries are not rebuilt for
+prose-only changes.

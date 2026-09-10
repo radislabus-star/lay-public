@@ -33,8 +33,14 @@ mod transition_reduce;
 mod trie;
 mod types;
 
+#[cfg(test)]
+pub(crate) use cohort_compare::test_bound_lexical_pipeline;
 pub(in crate::nanda_wave::l2_field) use cohort_compare::{
-    compare_shared_canonical_cohort, LexicalCohortCompareV1,
+    project_frame_bound_lexical_capability, settle_shared_canonical_cohort,
+    CanonicalL1AnchorReplayContextV1, LexicalCohortCompareV1,
+};
+pub(crate) use cohort_compare::{
+    FrameBoundLexicalCapabilityV1, LexicalAuthorityEvaluationContextV1,
 };
 pub(in crate::nanda_wave::l2_field) use live::{
     canonical_live_scene_bytes, materialize_live_productive_v1_field,
@@ -48,7 +54,9 @@ pub(in crate::nanda_wave::l2_field) use live::{
     PRODUCTIVE_V90_TYPED_EXACT_SOURCE_ID,
 };
 pub(in crate::nanda_wave::l2_field) use material_frame::{
-    ExactPeakBirthEnumerationV1, ExactPeakCandidateInputV1,
+    ExactPeakBirthEnumerationV1, ExactPeakCandidateInputV1, ExactSearchStructuralWorkV1,
+    EXACT_RELATION_SEARCH_MAX_PRODUCT_STATES, EXACT_RELATION_SEARCH_MAX_SCRATCH_BYTES,
+    EXACT_RELATION_SEARCH_MAX_TERMINALS,
 };
 pub(super) use orchestrator::{
     audit_productive_anchor_recovery_v1, compile_productive_paradigm_field_v1,

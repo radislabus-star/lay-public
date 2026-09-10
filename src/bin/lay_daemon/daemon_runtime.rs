@@ -164,7 +164,6 @@ pub(super) fn listen_keyboard(
             state.dshift_state = DShiftState::Idle;
             state.pending_multi_tap = None;
             state.pending_typing_assist_after_space.take();
-            state.ignore_current_token_until_space = false;
             continue;
         }
 
@@ -294,10 +293,6 @@ pub(super) fn listen_keyboard(
                 key,
                 code,
                 shift_state: &state.shift_state,
-                current_empty: state.buffer.current_is_empty(),
-                ignore_current_token_until_space: &mut state.ignore_current_token_until_space,
-                events_since_word_start: &mut state.events_since_word_start,
-                pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
                 verbose,
             }) {
                 continue;
@@ -340,7 +335,6 @@ pub(super) fn listen_keyboard(
                     current_layout_is_ru: &mut state.current_layout_is_ru,
                     last_layout_poll: &mut state.last_layout_poll,
                     pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
-                    ignore_current_token_until_space: &mut state.ignore_current_token_until_space,
                     events_since_word_start: &mut state.events_since_word_start,
                     clear_on_next_typing: &mut state.clear_on_next_typing,
                     text_observation: DaemonTextObservation::new(text_context, text_observer),
@@ -354,7 +348,6 @@ pub(super) fn listen_keyboard(
                 HardBoundaryContext {
                     buffer: &mut state.buffer,
                     pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
-                    ignore_current_token_until_space: &mut state.ignore_current_token_until_space,
                     events_since_word_start: &mut state.events_since_word_start,
                     verbose,
                 },
@@ -374,8 +367,6 @@ pub(super) fn listen_keyboard(
                         last_layout_poll: &mut state.last_layout_poll,
                         events_since_word_start: &mut state.events_since_word_start,
                         clear_on_next_typing: &mut state.clear_on_next_typing,
-                        ignore_current_token_until_space: &mut state
-                            .ignore_current_token_until_space,
                         suppress_next_typing_assist_after_manual_replay: &mut state
                             .suppress_next_typing_assist_after_manual_replay,
                         pending_typing_assist_after_space: &mut state

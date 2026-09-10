@@ -46,6 +46,13 @@ pub(crate) fn canonical_text_readout_observed_with_frame(
         || canonical_owned_text_candidates_observed(original, lexical_frame),
         || boundary_text_candidates(original),
     );
+    // The frame-bound capability belongs to the exact Canonical L2 producer
+    // lane. Project it before same-surface Boundary aliases are merged so a
+    // noncanonical alias can neither acquire nor become its owner.
+    super::productive_v1::project_frame_bound_lexical_capability(
+        &mut observed.readout.candidates,
+        &mut observed.authority_context,
+    );
     for candidate in boundary_candidates {
         if let Some(existing) = observed
             .readout
@@ -195,6 +202,8 @@ fn boundary_text_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
     )
     .into_iter()
     .filter_map(|candidate| {
+        let target_grounded =
+            candidate.target_evidence == crate::nanda_wave::l2::L2ImeTargetEvidence::Boundary;
         let replacement = replace_last_text_word(original, &candidate.surface)?;
         let origin = CandidateOrigin::Boundary;
         let error_class = action_operator::classify_token_transition(
@@ -209,14 +218,19 @@ fn boundary_text_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
             error_class,
             origin,
         );
-        Some(UnifiedCorrectionCandidate::new(
+        let candidate = UnifiedCorrectionCandidate::new(
             replacement,
             CorrectionDecisionSource::Nanda,
             origin,
             CANONICAL_L2_BOUNDARY_SOURCE_ID,
             error_class,
             gate,
-        ))
+        );
+        Some(if target_grounded {
+            candidate.with_l2_boundary_target_grounding()
+        } else {
+            candidate
+        })
     })
     .collect()
 }
@@ -456,10 +470,11 @@ fn live_l11_contour_results(
     contours
         .par_iter()
         .map(|contour| {
+            let request_limit = material_limit.max(1);
             let seeds = crate::nanda_wave::request_l11_seed_surfaces(
                 &socket_path,
                 &contour.surface,
-                material_limit.max(1),
+                request_limit,
                 l11_service_timeout(),
             )?
             .into_iter()
@@ -794,14 +809,17 @@ fn canonical_owned_text_candidates_observed(
         super::super::lexical_grokking::L11_LIVE_LATTICE_LIMIT,
     ) {
         Ok(results) => results,
-        Err(_) => {
+        Err(error) => {
+            if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+                eprintln!("l2_field_trace l11_contour_query_error={error:?}");
+            }
             return observed_field_readout(
                 CanonicalL2FieldReadout::unavailable(L2FieldAvailability::L11ServiceUnavailable),
                 started,
                 elapsed_us(seed_started.elapsed()),
                 CanonicalFieldCacheDisposition::NotRequested,
                 0,
-            )
+            );
         }
     };
     let contour_seeds = merge_contour_seeds(&query_results);
@@ -810,10 +828,25 @@ fn canonical_owned_text_candidates_observed(
         .map(|evidence| evidence.seed.clone())
         .collect::<Vec<_>>();
     let seed_duration = seed_started.elapsed();
+    let trace_stages = std::env::var_os("LAY_L2_FIELD_TRACE").is_some();
+    let canonical_load_started = trace_stages.then(std::time::Instant::now);
+    let canonical_index = super::installed_l2_field();
+    let canonical_load_us = canonical_load_started
+        .map(|started| elapsed_us(started.elapsed()))
+        .unwrap_or_default();
+    let mut grounding_us = 0_u64;
+    let mut exact_v13_load_us = 0_u64;
+    let mut productive_runtime_load_us = 0_u64;
+    let mut cache_key_us = 0_u64;
+    let mut cache_prepare_us = 0_u64;
+    let mut exact_peak_query_us = 0_u64;
+    let mut field_prepare_us = 0_u64;
+    let mut materialize_us = 0_u64;
+    let mut settle_us = 0_u64;
     // Productive V90 consumes one typed contour field. Canonical inverse forms
     // ground that field but never become independent L1.1 authority.
-    let (readout, cache_disposition, field_generation, cohort_compare) =
-        match super::installed_l2_field() {
+    let (readout, cache_disposition, field_generation, cohort_compare, authority_context) =
+        match canonical_index {
             Err(_) => (
                 CanonicalL2FieldReadout::unavailable(
                     L2FieldAvailability::CanonicalPackageUnavailable,
@@ -821,11 +854,17 @@ fn canonical_owned_text_candidates_observed(
                 CanonicalFieldCacheDisposition::NotRequested,
                 0,
                 None,
+                super::LexicalAuthorityEvaluationContextV1::NotConsulted,
             ),
             Ok(canonical_index) => {
+                let grounding_started = trace_stages.then(std::time::Instant::now);
                 let form_groundings = canonical_form_groundings(canonical_index, &query_results);
                 let surface_groundings =
                     canonical_surface_groundings(canonical_index, &query_results);
+                grounding_us = grounding_started
+                    .map(|started| elapsed_us(started.elapsed()))
+                    .unwrap_or_default();
+                let exact_v13_load_started = trace_stages.then(std::time::Instant::now);
                 let exact_generation = match super::installed_exact_v13(canonical_index) {
                     Ok(generation) => generation,
                     Err(error) => {
@@ -835,6 +874,9 @@ fn canonical_owned_text_candidates_observed(
                         None
                     }
                 };
+                exact_v13_load_us = exact_v13_load_started
+                    .map(|started| elapsed_us(started.elapsed()))
+                    .unwrap_or_default();
                 if contour_seeds.is_empty()
                     && form_groundings.is_empty()
                     && surface_groundings.is_empty()
@@ -845,9 +887,16 @@ fn canonical_owned_text_candidates_observed(
                         CanonicalFieldCacheDisposition::NotRequested,
                         0,
                         None,
+                        super::LexicalAuthorityEvaluationContextV1::NotConsulted,
                     )
                 } else {
-                    match super::installed_productive_l2_v1() {
+                    let productive_runtime_load_started =
+                        trace_stages.then(std::time::Instant::now);
+                    let productive_runtime = super::installed_productive_l2_v1();
+                    productive_runtime_load_us = productive_runtime_load_started
+                        .map(|started| elapsed_us(started.elapsed()))
+                        .unwrap_or_default();
+                    match productive_runtime {
                         Err(error) => {
                             if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
                                 eprintln!("l2_field_trace productive_admission_error={error:?}");
@@ -859,9 +908,11 @@ fn canonical_owned_text_candidates_observed(
                                 CanonicalFieldCacheDisposition::NotRequested,
                                 0,
                                 None,
+                                super::LexicalAuthorityEvaluationContextV1::NotConsulted,
                             )
                         }
                         Ok(runtime) => {
+                            let cache_key_started = trace_stages.then(std::time::Instant::now);
                             let contour_identity = canonical_contour_identity_bytes(
                                 &query_results,
                                 &contour_seeds,
@@ -884,7 +935,13 @@ fn canonical_owned_text_candidates_observed(
                                     .map(|generation| generation.sidecar_sha256())
                                     .unwrap_or([0; 32]),
                             );
-                            match super::cache::get_or_prepare(key, || {
+                            cache_key_us = cache_key_started
+                                .map(|started| elapsed_us(started.elapsed()))
+                                .unwrap_or_default();
+                            let cache_prepare_started = trace_stages.then(std::time::Instant::now);
+                            let prepared = super::cache::get_or_prepare(key, || {
+                                let exact_peak_query_started =
+                                    trace_stages.then(std::time::Instant::now);
                                 let exact_peaks = exact_generation
                                     .as_ref()
                                     .map_or_else(
@@ -905,7 +962,12 @@ fn canonical_owned_text_candidates_observed(
                                             crate::typing_transition::target_evidence::IncompletenessReasonV1::IntegrityFailure,
                                         )
                                     });
-                                super::productive_v1::prepare_live_productive_v1_field_with_exact_peaks(
+                                exact_peak_query_us = exact_peak_query_started
+                                    .map(|started| elapsed_us(started.elapsed()))
+                                    .unwrap_or_default();
+                                let field_prepare_started =
+                                    trace_stages.then(std::time::Instant::now);
+                                let field = super::productive_v1::prepare_live_productive_v1_field_with_exact_peaks(
                                     input.context_prefix,
                                     token,
                                     canonical_index,
@@ -914,8 +976,16 @@ fn canonical_owned_text_candidates_observed(
                                     &form_groundings,
                                     &surface_groundings,
                                     exact_peaks,
-                                )
-                            }) {
+                                );
+                                field_prepare_us = field_prepare_started
+                                    .map(|started| elapsed_us(started.elapsed()))
+                                    .unwrap_or_default();
+                                field
+                            });
+                            cache_prepare_us = cache_prepare_started
+                                .map(|started| elapsed_us(started.elapsed()))
+                                .unwrap_or_default();
+                            match prepared {
                                 Ok(prepared) => {
                                     let disposition = match prepared.disposition {
                                         super::cache::FieldCacheDisposition::Produced => {
@@ -937,30 +1007,67 @@ fn canonical_owned_text_candidates_observed(
                                             L2FieldAvailability::ProductiveReadoutError,
                                         )
                                     } else {
-                                        super::productive_v1::materialize_live_productive_v1_field(
-                                        original,
-                                        token,
-                                        &prepared.field,
-                                    )
-                                    .unwrap_or_else(|error| {
-                                        if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
-                                            eprintln!(
-                                                "l2_field_trace productive_materialization_error={error:?}"
-                                            );
-                                        }
-                                        CanonicalL2FieldReadout::unavailable(
-                                            L2FieldAvailability::ProductiveReadoutError,
-                                        )
-                                    })
-                                    };
-                                    let cohort_compare = current.then(|| {
-                                        super::productive_v1::compare_shared_canonical_cohort(
+                                        let materialize_started =
+                                            trace_stages.then(std::time::Instant::now);
+                                        let readout = super::productive_v1::materialize_live_productive_v1_field(
+                                            original,
+                                            token,
                                             &prepared.field,
+                                        )
+                                        .unwrap_or_else(|error| {
+                                            if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+                                                eprintln!(
+                                                    "l2_field_trace productive_materialization_error={error:?}"
+                                                );
+                                            }
+                                            CanonicalL2FieldReadout::unavailable(
+                                                L2FieldAvailability::ProductiveReadoutError,
+                                            )
+                                        });
+                                        materialize_us = materialize_started
+                                            .map(|started| elapsed_us(started.elapsed()))
+                                            .unwrap_or_default();
+                                        readout
+                                    };
+                                    let settle_started = trace_stages.then(std::time::Instant::now);
+                                    let settled = current.then(|| {
+                                        let anchor_replay = super::productive_v1::CanonicalL1AnchorReplayContextV1::new(
+                                            canonical_index,
+                                            runtime.l11_package_sha256(),
+                                            runtime.canonical_l2_package_sha256(),
+                                        );
+                                        super::productive_v1::settle_shared_canonical_cohort(
+                                            std::sync::Arc::clone(&prepared.field),
                                             lexical_frame,
                                             prepared.generation,
+                                            original,
+                                            anchor_replay,
                                         )
                                     });
-                                    (readout, disposition, prepared.generation, cohort_compare)
+                                    settle_us = settle_started
+                                        .map(|started| elapsed_us(started.elapsed()))
+                                        .unwrap_or_default();
+                                    let (cohort_compare, authority_context) = settled.map_or_else(
+                                        || {
+                                            (
+                                                None,
+                                                super::LexicalAuthorityEvaluationContextV1::NotConsulted,
+                                            )
+                                        },
+                                        |settled| {
+                                            (
+                                                Some(settled.compare),
+                                                settled.authority_context,
+                                            )
+                                        },
+                                    );
+                                    (
+                                        readout,
+                                        disposition,
+                                        prepared.generation,
+                                        cohort_compare,
+                                        authority_context,
+                                    )
                                 }
                                 Err(error) => {
                                     if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
@@ -973,6 +1080,7 @@ fn canonical_owned_text_candidates_observed(
                                         CanonicalFieldCacheDisposition::Failed,
                                         0,
                                         None,
+                                        super::LexicalAuthorityEvaluationContextV1::NotConsulted,
                                     )
                                 }
                             }
@@ -989,7 +1097,22 @@ fn canonical_owned_text_candidates_observed(
         field_generation,
     );
     observed.cohort_compare = cohort_compare;
-    if std::env::var_os("LAY_L2_FIELD_TRACE").is_some() {
+    observed.authority_context = authority_context;
+    if trace_stages {
+        eprintln!(
+            "l2_cold_admission_trace canonical_load_us={} grounding_us={} exact_v13_load_us={} productive_runtime_load_us={} cache_key_us={} cache_prepare_us={} exact_peak_query_us={} field_prepare_us={} materialize_us={} settle_us={} cache_disposition={:?}",
+            canonical_load_us,
+            grounding_us,
+            exact_v13_load_us,
+            productive_runtime_load_us,
+            cache_key_us,
+            cache_prepare_us,
+            exact_peak_query_us,
+            field_prepare_us,
+            materialize_us,
+            settle_us,
+            observed.telemetry.cache_disposition,
+        );
         eprintln!(
             "l2_field_trace owner=productive_v90 seeds_us={} productive_us={} total_us={} contours={} seeds={} candidates={} field_cache={:?} field_generation={}",
             observed.telemetry.l11_us,
@@ -1039,6 +1162,7 @@ fn observed_field_readout(
             field_generation,
         },
         cohort_compare: None,
+        authority_context: super::LexicalAuthorityEvaluationContextV1::NotConsulted,
     }
 }
 
@@ -2386,6 +2510,8 @@ fn promote_canonical_local_readout(
                 source_id,
                 error_class: candidate.error_class,
                 gate: candidate.gate.clone(),
+                canonical_l2_partition:
+                    crate::correction_core::CanonicalL2PartitionMembershipV1::None,
             });
         }
         break;
@@ -2452,6 +2578,38 @@ pub(crate) fn apply_authority_to_candidate_lattice(
         {
             continue;
         }
+        if matches!(
+            authority,
+            L2FieldAuthority::Abstain | L2FieldAuthority::Unavailable
+        ) && candidate.gate.action == CandidateGateAction::Eligible
+        {
+            let deterministic_gate = candidate
+                .evidence
+                .iter()
+                .find(|evidence| {
+                    evidence.origin.source_role() == CorrectionSourceRole::DeterministicTypo
+                        && evidence.gate.action == CandidateGateAction::Eligible
+                })
+                .map(|evidence| evidence.gate.clone());
+            if let Some(deterministic_gate) = deterministic_gate {
+                // Absence of a canonical field result is not contradictory
+                // evidence against an independently admitted deterministic
+                // repair. Keep that existing authority, but do not let an
+                // L2-only alias inherit it from the merged surface.
+                candidate.gate = deterministic_gate;
+                for evidence in &mut candidate.evidence {
+                    if evidence.origin.source_role() == CorrectionSourceRole::L2Surface
+                        && evidence.gate.action == CandidateGateAction::Eligible
+                    {
+                        evidence.gate = CandidateGateDecision {
+                            action: CandidateGateAction::SuggestOnly,
+                            reason,
+                        };
+                    }
+                }
+                continue;
+            }
+        }
         if winner_surface
             .is_some_and(|winner| candidate_last_word_lower(candidate).as_deref() == Some(winner))
         {
@@ -2514,507 +2672,4 @@ fn candidate_last_word_lower(candidate: &UnifiedCorrectionCandidate) -> Option<S
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn canonical_token_preserves_complete_physical_layout_surface() {
-        assert_eq!(
-            canonical_input_token("введи cj,frf "),
-            Some(CanonicalInputToken {
-                context_prefix: "введи ",
-                surface: "cj,frf",
-                kind: CanonicalInputTokenKind::PhysicalLayout,
-            })
-        );
-        assert_eq!(
-            canonical_input_token("ytn "),
-            Some(CanonicalInputToken {
-                context_prefix: "",
-                surface: "ytn",
-                kind: CanonicalInputTokenKind::PhysicalLayout,
-            })
-        );
-    }
-
-    #[test]
-    fn canonical_token_admits_lexically_supported_short_layout_surface() {
-        assert_eq!(
-            crate::dict::convert("yt", crate::dict::Direction::Us2Ru),
-            "не"
-        );
-        assert_eq!(
-            canonical_input_token("yt "),
-            Some(CanonicalInputToken {
-                context_prefix: "",
-                surface: "yt",
-                kind: CanonicalInputTokenKind::PhysicalLayout,
-            })
-        );
-    }
-
-    #[test]
-    fn canonical_token_preserves_cyrillic_context_identity() {
-        assert_eq!(
-            canonical_input_token("проверь врмея, "),
-            Some(CanonicalInputToken {
-                context_prefix: "проверь ",
-                surface: "врмея",
-                kind: CanonicalInputTokenKind::Cyrillic,
-            })
-        );
-        assert_eq!(
-            canonical_input_lexical_parts("проверь врмея, "),
-            Some(("проверь ", "врмея"))
-        );
-    }
-
-    #[test]
-    fn canonical_token_rejects_protected_ascii_classes() {
-        for text in [
-            "https://example.com ",
-            "--help ",
-            "release-build ",
-            "PDF ",
-            "Apple ",
-        ] {
-            assert_eq!(
-                canonical_input_token(text),
-                None,
-                "protected ASCII token reached L1.1: {text:?}"
-            );
-        }
-    }
-
-    #[test]
-    fn canonical_token_rejects_known_english_plain_words() {
-        assert!(crate::layout_autoswitch::is_known_english_layout_autoswitch_word("hello"));
-        assert_eq!(canonical_input_token("hello "), None);
-    }
-
-    fn lexical_candidate(
-        surface: &str,
-        score: u32,
-        l1_overlap: usize,
-        l2_overlap: usize,
-        motif_overlap: usize,
-    ) -> crate::nanda_wave::l2::L2ImeWordCandidate {
-        crate::nanda_wave::l2::L2ImeWordCandidate {
-            surface: surface.to_string(),
-            kind: crate::nanda_wave::l2::L2ImeWordCandidateKind::Replacement,
-            source: crate::nanda_wave::l2::L2ImeWordCandidateSource::LexicalPhase,
-            score,
-            l1_overlap,
-            l2_overlap,
-            motif_overlap,
-            usage_prior: 0.0,
-            context_prior: 0.0,
-            accepted_count: 0,
-            target_evidence: crate::nanda_wave::l2::L2ImeTargetEvidence::None,
-            morphology_slots: Vec::new(),
-        }
-    }
-
-    #[test]
-    fn canonical_readout_reserves_a_verified_two_content_boundary_candidate() {
-        let readout = canonical_text_readout("Еленапросит ");
-        let candidate = readout
-            .candidates
-            .iter()
-            .find(|candidate| candidate.replacement == "Елена просит ")
-            .expect("bounded boundary reserve");
-
-        assert_eq!(candidate.origin, CandidateOrigin::Boundary);
-        assert_eq!(candidate.source_id, "CanonicalL2FieldBoundary");
-        assert_eq!(candidate.error_class, TypingErrorClass::GluedWords);
-    }
-
-    #[test]
-    fn canonical_readout_reserves_a_strong_short_left_boundary_candidate() {
-        let readout = canonical_text_readout("данорм ");
-        let candidate = readout
-            .candidates
-            .iter()
-            .find(|candidate| candidate.replacement == "да норм ")
-            .expect("bounded short-left boundary reserve");
-
-        assert_eq!(candidate.origin, CandidateOrigin::Boundary);
-        assert_eq!(candidate.source_id, "CanonicalL2FieldBoundary");
-        assert_eq!(candidate.error_class, TypingErrorClass::GluedWords);
-        assert_eq!(candidate.gate.action, CandidateGateAction::Eligible);
-    }
-
-    #[test]
-    fn sparse_omission_reserve_survives_below_the_general_frontier() {
-        let surfaces = [
-            "форма",
-            "сигнал",
-            "контур",
-            "слово",
-            "пакет",
-            "дерево",
-            "сцена",
-            "волна",
-            "центр",
-            "подтвердить",
-        ]
-        .into_iter()
-        .map(|surface| lexical_candidate(surface, 1_000, 1, 1, 1))
-        .collect::<Vec<_>>();
-
-        let bounded = bounded_surface_candidates_with_sparse_reserve("подврдить", &surfaces, 8, 2);
-
-        assert_eq!(
-            bounded
-                .iter()
-                .map(|candidate| candidate.surface.as_str())
-                .collect::<Vec<_>>(),
-            [
-                "форма",
-                "сигнал",
-                "контур",
-                "слово",
-                "пакет",
-                "дерево",
-                "сцена",
-                "волна",
-                "подтвердить",
-            ]
-        );
-        let mut unified = l2_surface_unified_candidates(
-            "на компанию Хунлу можем подврдить ",
-            "подврдить",
-            &bounded,
-        );
-        apply_authority_to_candidate_lattice(&mut unified, &L2FieldAuthority::Abstain);
-        let candidate = unified
-            .iter()
-            .find(|candidate| candidate.replacement.ends_with("подтвердить "))
-            .expect("reserved sparse omission must reach the unified candidate lattice");
-        assert_eq!(
-            candidate.error_class,
-            TypingErrorClass::SparseInternalMultiOmission
-        );
-        assert_eq!(candidate.gate.action, CandidateGateAction::SuggestOnly);
-    }
-
-    #[test]
-    fn composition_only_lattice_cannot_gain_authority() {
-        assert_eq!(
-            compositional_evidence_milli(Some(800), 750),
-            600,
-            "composition evidence must scale with the observed L1 peak"
-        );
-    }
-
-    #[test]
-    fn non_l11_births_cannot_enter_the_l1_geometry_fallback() {
-        let l11 = vec![lexical_candidate("форма", 1_000, 4, 0, 2)];
-        let mut materialized = vec![
-            lexical_candidate("форма", 1_000, 4, 0, 2),
-            lexical_candidate("сигнал", 900, 5, 2, 3),
-        ];
-
-        assert_eq!(
-            settle_unique_l1_geometry("сигна", &l11, &mut materialized, false),
-            None
-        );
-    }
-
-    #[test]
-    fn reference_backed_short_participle_ambiguity_blocks_false_singleton() {
-        let mut surfaces = crate::ru_typo::fuzzy_known_word_candidates("подлючен")
-            .into_iter()
-            .filter(|surface| {
-                crate::russian_lexicon::is_reference_backed_short_passive_participle(surface)
-                    && crate::text_metrics::damerau_levenshtein("подлючен", surface) == 1
-            })
-            .collect::<Vec<_>>();
-        surfaces.sort();
-        surfaces.dedup();
-        assert!(surfaces.iter().any(|surface| surface == "подключен"));
-        assert!(surfaces.iter().any(|surface| surface == "подлечен"));
-        assert!(surfaces.len() >= 2);
-        let candidates = surfaces
-            .iter()
-            .map(|surface| lexical_candidate(surface, 900, 6, 3, 3))
-            .collect::<Vec<_>>();
-
-        let readout = retain_reference_backed_geometry_ambiguity(
-            "подлючен",
-            CanonicalCohortReadout::Winner {
-                winner_surface: "подключен".to_string(),
-                cohort_surfaces: vec!["подключен".to_string()],
-            },
-            &candidates,
-        );
-        let CanonicalCohortReadout::Tied {
-            mut cohort_surfaces,
-        } = readout
-        else {
-            panic!("reference-backed one-edit ambiguity must not remain a singleton");
-        };
-        cohort_surfaces.sort();
-        assert!(cohort_surfaces.iter().any(|surface| surface == "подключен"));
-        assert!(cohort_surfaces.iter().any(|surface| surface == "подлечен"));
-        assert!(cohort_surfaces.len() >= 2);
-
-        let mut unified = l2_surface_unified_candidates("подлючен ", "подлючен", &candidates);
-        demote_canonical_local_surface_cohort(
-            &mut unified,
-            &CanonicalCohortReadout::Tied { cohort_surfaces },
-        );
-        assert_eq!(unified.len(), candidates.len());
-        assert!(unified
-            .iter()
-            .all(|candidate| candidate.gate.action == CandidateGateAction::SuggestOnly));
-    }
-
-    fn unified_candidate(
-        replacement: &str,
-        origin: CandidateOrigin,
-        source_id: &str,
-    ) -> UnifiedCorrectionCandidate {
-        UnifiedCorrectionCandidate::new(
-            replacement,
-            CorrectionDecisionSource::Deterministic,
-            origin,
-            source_id,
-            TypingErrorClass::CompositeTypo,
-            CandidateGateDecision {
-                action: CandidateGateAction::Eligible,
-                reason: "test",
-            },
-        )
-    }
-
-    fn morphology_evidence(
-        lemma_id: u32,
-        target_feature_mask: u32,
-        generated: bool,
-    ) -> MorphologySlotEvidence {
-        MorphologySlotEvidence {
-            lemma_id,
-            source_feature_mask: 1,
-            target_feature_mask,
-            context_positive_support: 4,
-            context_alternative_support: 1,
-            context_posterior_milli: 800,
-            slot_evidence_milli: 600,
-            joint_evidence_milli: 900,
-            generated,
-        }
-    }
-
-    #[test]
-    fn typed_morphology_evidence_reaches_exact_and_generated_surfaces() {
-        let mut candidates = vec![
-            unified_candidate(
-                "вы принуждаете ",
-                CandidateOrigin::L2Surface,
-                CANONICAL_L2_SURFACE_SOURCE_ID,
-            ),
-            unified_candidate(
-                "вы принуждаетеся ",
-                CandidateOrigin::L2Surface,
-                CANONICAL_L2_SURFACE_SOURCE_ID,
-            ),
-        ];
-        let productive_surfaces = ["принуждаетеся".to_string()].into_iter().collect();
-        let evidence_by_surface = [
-            (
-                "принуждаете".to_string(),
-                vec![morphology_evidence(17, 10, false)],
-            ),
-            (
-                "принуждаетеся".to_string(),
-                vec![morphology_evidence(17, 11, true)],
-            ),
-        ]
-        .into_iter()
-        .collect();
-
-        mark_productive_surface_candidates(
-            &mut candidates,
-            &productive_surfaces,
-            &evidence_by_surface,
-        );
-
-        assert_eq!(candidates[0].source_id, CANONICAL_L2_SURFACE_SOURCE_ID);
-        assert_eq!(candidates[0].morphology_slot_evidence.len(), 1);
-        assert!(!candidates[0].morphology_slot_evidence[0].generated);
-        assert_eq!(candidates[1].source_id, CANONICAL_L2_PRODUCTIVE_SOURCE_ID);
-        assert_eq!(candidates[1].gate.action, CandidateGateAction::SuggestOnly);
-        assert!(candidates[1].morphology_slot_evidence[0].generated);
-    }
-
-    #[test]
-    fn l1_geometry_settles_one_single_edit_peak() {
-        let lexical = vec![
-            lexical_candidate("время", 1889, 5, 0, 3),
-            lexical_candidate("змея", 1782, 3, 0, 2),
-        ];
-        let mut materialized = lexical.clone();
-
-        let readout = settle_unique_l1_geometry("врмея", &lexical, &mut materialized, true);
-
-        assert_eq!(
-            readout,
-            Some(CanonicalCohortReadout::Winner {
-                winner_surface: "время".to_string(),
-                cohort_surfaces: vec!["время".to_string()],
-            })
-        );
-        assert_eq!(materialized.len(), 1);
-        assert_eq!(materialized[0].surface, "время");
-    }
-
-    #[test]
-    fn l1_geometry_keeps_multiple_single_edit_peaks_tied() {
-        let lexical = vec![
-            lexical_candidate("мзс", 1757, 2, 0, 3),
-            lexical_candidate("мзд", 1743, 2, 0, 3),
-        ];
-        let mut materialized = lexical.clone();
-
-        let readout = settle_unique_l1_geometry("мзт", &lexical, &mut materialized, true);
-
-        assert_eq!(
-            readout,
-            Some(CanonicalCohortReadout::Tied {
-                cohort_surfaces: vec!["мзд".to_string(), "мзс".to_string()],
-            })
-        );
-        assert_eq!(materialized.len(), 2);
-    }
-
-    #[test]
-    fn abstain_demotes_all_owned_surface_candidates_not_only_reported_cohort() {
-        let mut candidates = vec![
-            unified_candidate(
-                "проверка ",
-                CandidateOrigin::L2Surface,
-                CANONICAL_L2_SURFACE_SOURCE_ID,
-            ),
-            unified_candidate(
-                "проварка ",
-                CandidateOrigin::L2Surface,
-                CANONICAL_L2_SURFACE_SOURCE_ID,
-            ),
-        ];
-        let readout = CanonicalCohortReadout::Abstain {
-            cohort_surfaces: vec!["проверка".to_string()],
-        };
-
-        demote_canonical_local_surface_cohort(&mut candidates, &readout);
-
-        assert!(candidates
-            .iter()
-            .all(|candidate| candidate.gate.action == CandidateGateAction::SuggestOnly));
-    }
-
-    #[test]
-    fn abstain_demotes_lexical_authority_but_preserves_independent_layout() {
-        let mut candidates = vec![
-            unified_candidate(
-                "понимаешь ",
-                CandidateOrigin::DeterministicTypo,
-                "composite_ru_typo",
-            ),
-            unified_candidate("vpn ", CandidateOrigin::Layout, "layout_ru_to_en"),
-        ];
-
-        apply_authority_to_candidate_lattice(&mut candidates, &L2FieldAuthority::Abstain);
-
-        assert_eq!(candidates[0].gate.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(candidates[1].gate.action, CandidateGateAction::Eligible);
-    }
-
-    #[test]
-    fn unavailable_requested_field_fails_closed_for_lexical_edits() {
-        let mut candidates = vec![
-            unified_candidate(
-                "Приши ",
-                CandidateOrigin::DeterministicTypo,
-                "missing_letter",
-            ),
-            unified_candidate("pdf ", CandidateOrigin::Layout, "layout_ru_to_en"),
-        ];
-
-        apply_authority_to_candidate_lattice(&mut candidates, &L2FieldAuthority::Unavailable);
-
-        assert_eq!(candidates[0].gate.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(
-            candidates[0].gate.reason,
-            "l2_field_unavailable_requires_suggestion"
-        );
-        assert_eq!(candidates[1].gate.action, CandidateGateAction::Eligible);
-    }
-
-    #[test]
-    fn winner_owns_lexical_authority_case_insensitively() {
-        let mut candidates = vec![
-            unified_candidate(
-                "Посмотри ",
-                CandidateOrigin::DeterministicTypo,
-                "missing_letter",
-            ),
-            unified_candidate(
-                "Посмотреть ",
-                CandidateOrigin::DeterministicTypo,
-                "missing_letter",
-            ),
-        ];
-
-        apply_authority_to_candidate_lattice(
-            &mut candidates,
-            &L2FieldAuthority::Winner {
-                surface: "посмотри".to_string(),
-            },
-        );
-
-        assert_eq!(candidates[0].gate.action, CandidateGateAction::Eligible);
-        assert_eq!(candidates[1].gate.action, CandidateGateAction::SuggestOnly);
-    }
-
-    #[test]
-    fn tie_demotes_ambiguous_length_change_but_preserves_other_verified_member() {
-        let mut candidates = vec![
-            unified_candidate(
-                "перехвачу ",
-                CandidateOrigin::DeterministicTypo,
-                "missing_letter",
-            ),
-            unified_candidate(
-                "передачу ",
-                CandidateOrigin::DeterministicTypo,
-                "composite_ru_typo",
-            ),
-        ];
-        candidates[0].error_class = TypingErrorClass::MissingLetter;
-        candidates[1].error_class = TypingErrorClass::LetterSubstitution;
-        candidates.push(unified_candidate(
-            "перехвачу ",
-            CandidateOrigin::DeterministicTypo,
-            "vowel_confusion",
-        ));
-        candidates[2].error_class = TypingErrorClass::LetterSubstitution;
-        candidates.push(unified_candidate(
-            "перехват ",
-            CandidateOrigin::DeterministicTypo,
-            "missing_letter",
-        ));
-
-        apply_authority_to_candidate_lattice(
-            &mut candidates,
-            &L2FieldAuthority::Tied {
-                surfaces: vec!["первачу".to_string(), "перехвачу".to_string()],
-            },
-        );
-
-        assert_eq!(candidates[0].gate.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(candidates[1].gate.action, CandidateGateAction::SuggestOnly);
-        assert_eq!(candidates[2].gate.action, CandidateGateAction::Eligible);
-        assert_eq!(candidates[3].gate.action, CandidateGateAction::SuggestOnly);
-    }
-}
+mod tests;

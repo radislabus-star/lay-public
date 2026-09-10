@@ -35,6 +35,659 @@ mod tests {
             L2CandidateSource::for_mode(CorrectionMode::NandaOnly),
             &[L2CandidateSource::Nanda]
         );
+        assert_eq!(
+            L2CandidateSource::for_mode(CorrectionMode::DeterministicAndNanda),
+            &[L2CandidateSource::Deterministic, L2CandidateSource::Nanda]
+        );
+        assert_eq!(live_correction_mode(false), CorrectionMode::DeterministicOnly);
+        assert_eq!(
+            live_correction_mode(true),
+            CorrectionMode::DeterministicAndNanda
+        );
+    }
+
+    #[test]
+    fn td113_live_hybrid_experimental_repairs_fixed_cross_class_matrix() {
+        let pipeline = default_typing_assist_pipeline();
+        let mut failures = Vec::new();
+        for (case_id, input, target, forbidden) in [
+            ("surface_typo", "плозо ", "плохо ", None),
+            ("single_character", "обьяснить ", "объяснить ", None),
+            ("transposition", "верменно ", "временно ", None),
+            ("split_boundary", "текст е ", "тексте ", None),
+            ("shifted_boundary", "т ыпочитай ", "ты почитай ", None),
+            (
+                "missing_character_with_boundary_competitor",
+                "протколах ",
+                "протоколах ",
+                Some("пр отколах "),
+            ),
+        ] {
+            let mut hybrid = request(input, &pipeline, CorrectionMode::DeterministicAndNanda);
+            hybrid.nanda_candidate_route = CandidateReadoutRoute::live_default();
+            hybrid.correction_safety = CorrectionSafety::Experimental;
+
+            let resolution = resolve_text_correction(hybrid);
+            let selected = resolution
+                .selected
+                .as_ref()
+                .map(|candidate| candidate.replacement.as_str());
+            if selected != Some(target) {
+                let candidates = resolution
+                    .candidates
+                    .iter()
+                    .map(|candidate| {
+                        format!(
+                            "{:?}|{:?}|{}|{}|{}",
+                            candidate.replacement,
+                            candidate.gate.action,
+                            candidate.gate.reason,
+                            candidate.source_id,
+                            candidate.error_class.as_str(),
+                        )
+                    })
+                    .collect::<Vec<_>>();
+                failures.push(format!(
+                    "case_id={case_id} selected={selected:?} target={target:?} candidates={candidates:?}"
+                ));
+            }
+            if let Some(forbidden) = forbidden {
+                if selected == Some(forbidden) {
+                    failures.push(format!(
+                        "case_id={case_id} selected forbidden boundary competitor {forbidden:?}"
+                    ));
+                }
+            }
+        }
+        assert!(failures.is_empty(), "{}", failures.join("\n"));
+    }
+
+    #[test]
+    fn td113_hybrid_admits_each_repeated_deterministic_target_once() {
+        let pipeline = default_typing_assist_pipeline();
+        for (input, target, error_class, origin) in [
+            (
+                "плозо ",
+                "плохо ",
+                TypingErrorClass::LetterSubstitution,
+                CandidateOrigin::DeterministicTypo,
+            ),
+            (
+                "обьяснить ",
+                "объяснить ",
+                TypingErrorClass::LetterSubstitution,
+                CandidateOrigin::DeterministicTypo,
+            ),
+            (
+                "верменно ",
+                "временно ",
+                TypingErrorClass::AdjacentTransposition,
+                CandidateOrigin::DeterministicTypo,
+            ),
+            (
+                "т ыпочитай ",
+                "ты почитай ",
+                TypingErrorClass::BoundaryShift,
+                CandidateOrigin::Boundary,
+            ),
+            (
+                "протколах ",
+                "протоколах ",
+                TypingErrorClass::MissingLetter,
+                CandidateOrigin::DeterministicTypo,
+            ),
+        ] {
+            let mut hybrid = request(input, &pipeline, CorrectionMode::DeterministicAndNanda);
+            hybrid.nanda_candidate_route = CandidateReadoutRoute::live_default();
+            let (resolution, admission_count) =
+                crate::typing_transition::proposal_admission::with_admission_evaluation_count(
+                    target,
+                    error_class,
+                    origin,
+                    || resolve_text_correction(hybrid),
+                );
+
+            assert_eq!(
+                resolution
+                    .selected
+                    .as_ref()
+                    .map(|candidate| candidate.replacement.as_str()),
+                Some(target),
+                "input={input:?}: {resolution:#?}"
+            );
+            assert_eq!(
+                admission_count, 1,
+                "input={input:?} target={target:?} must pass proposal admission exactly once"
+            );
+        }
+    }
+
+    #[test]
+    fn td113_fullwave_same_surface_consensus_survives_surface_drift_guard() {
+        let pipeline = default_typing_assist_pipeline();
+        let mut hybrid = request(
+            "плозо ",
+            &pipeline,
+            CorrectionMode::DeterministicAndNanda,
+        );
+        hybrid.nanda_candidate_route = CandidateReadoutRoute::FullWave;
+        hybrid.correction_safety = CorrectionSafety::Experimental;
+
+        let resolution = resolve_text_correction(hybrid);
+        let target = resolution
+            .candidates
+            .iter()
+            .find(|candidate| candidate.replacement == "плохо ")
+            .expect("same-surface target must remain in the hybrid lattice");
+
+        assert_eq!(target.gate.action, CandidateGateAction::Eligible);
+        assert!(target.has_eligible_origin(CandidateOrigin::DeterministicTypo));
+        assert!(target.has_eligible_origin(CandidateOrigin::L2Surface));
+        assert_eq!(
+            resolution
+                .selected
+                .as_ref()
+                .map(|candidate| candidate.replacement.as_str()),
+            Some("плохо "),
+            "a certified same-surface consensus must not be rejected only because the merged primary owner is L2Surface: {resolution:#?}"
+        );
+
+        let mut nanda_only = request("плозо ", &pipeline, CorrectionMode::NandaOnly);
+        nanda_only.nanda_candidate_route = CandidateReadoutRoute::FullWave;
+        nanda_only.correction_safety = CorrectionSafety::Experimental;
+        assert!(
+            resolve_text_correction(nanda_only).selected.is_none(),
+            "an uncorroborated Nanda surface must not inherit hybrid authority"
+        );
+    }
+
+    #[test]
+    fn td113_hybrid_profiles_preserve_td112_apply_thresholds() {
+        let pipeline = default_typing_assist_pipeline();
+        for (case_id, input, target) in [
+            ("experimental_typo", "плозо ", "плохо "),
+            (
+                "strict_hard_sign",
+                "обьяснить ",
+                "объяснить ",
+            ),
+            ("normal_boundary_merge", "текст е ", "тексте "),
+        ] {
+            for correction_safety in [
+                CorrectionSafety::Strict,
+                CorrectionSafety::Normal,
+                CorrectionSafety::Experimental,
+            ] {
+                let mut deterministic =
+                    request(input, &pipeline, CorrectionMode::DeterministicOnly);
+                deterministic.nanda_candidate_route = CandidateReadoutRoute::live_default();
+                deterministic.correction_safety = correction_safety;
+                let deterministic = resolve_text_correction(deterministic);
+
+                let mut hybrid =
+                    request(input, &pipeline, CorrectionMode::DeterministicAndNanda);
+                hybrid.nanda_candidate_route = CandidateReadoutRoute::live_default();
+                hybrid.correction_safety = correction_safety;
+                let resolution = resolve_text_correction(hybrid);
+                let retained = resolution
+                    .candidates
+                    .iter()
+                    .find(|candidate| candidate.replacement == target)
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "case_id={case_id} profile={correction_safety:?}: {resolution:#?}"
+                        )
+                    });
+
+                assert_eq!(retained.gate.action, CandidateGateAction::Eligible);
+                assert_eq!(
+                    resolution
+                        .selected
+                        .as_ref()
+                        .map(|candidate| candidate.replacement.as_str()),
+                    deterministic
+                        .selected
+                        .as_ref()
+                        .map(|candidate| candidate.replacement.as_str()),
+                    "case_id={case_id} profile={correction_safety:?}: deterministic={deterministic:#?} hybrid={resolution:#?}"
+                );
+                assert_eq!(
+                    resolution.selected_transition.is_some(),
+                    deterministic.selected_transition.is_some(),
+                    "case_id={case_id} profile={correction_safety:?}: deterministic={deterministic:#?} hybrid={resolution:#?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn td113_hybrid_preserves_verified_mixed_layout_apply() {
+        let pipeline = default_typing_assist_pipeline();
+        for correction_safety in [
+            CorrectionSafety::Strict,
+            CorrectionSafety::Normal,
+            CorrectionSafety::Experimental,
+        ] {
+            let mut hybrid = request(
+                "fвтозамена ",
+                &pipeline,
+                CorrectionMode::DeterministicAndNanda,
+            );
+            hybrid.nanda_candidate_route = CandidateReadoutRoute::live_default();
+            hybrid.correction_safety = correction_safety;
+            let resolution = resolve_text_correction(hybrid);
+
+            assert_eq!(
+                resolution
+                    .selected
+                    .as_ref()
+                    .map(|candidate| candidate.replacement.as_str()),
+                Some("автозамена "),
+                "profile={correction_safety:?}: {resolution:#?}"
+            );
+            let transition = resolution
+                .candidate_scores
+                .iter()
+                .find(|candidate| candidate.selected)
+                .expect("mixed-layout Apply must carry a selected score trace");
+            assert_eq!(
+                transition.edit_transition_operator_kind,
+                crate::text_edit::TransitionOperator::LayoutProjection
+            );
+            assert!(transition.edit_transition_verified);
+        }
+    }
+
+    #[test]
+    fn td113_hybrid_negative_matrix_has_zero_false_accepts() {
+        let pipeline = default_typing_assist_pipeline();
+        let mut observations = 0usize;
+        let mut false_accepts = 0usize;
+        for (case_id, input) in [
+            ("clean_known_form", "новости "),
+            ("ascii_technical", "cargo "),
+            ("versioned_technical", "rustc-1.97.1 "),
+            ("url", "https://example.org "),
+            ("punctuation", "... "),
+            ("short_ambiguous", "пку "),
+            ("completed_form", "давай там посмотри "),
+            ("live_protected", "блять "),
+            ("russian_technical", "грокать "),
+        ] {
+            for correction_safety in [
+                CorrectionSafety::Strict,
+                CorrectionSafety::Normal,
+                CorrectionSafety::Experimental,
+            ] {
+                let mut hybrid =
+                    request(input, &pipeline, CorrectionMode::DeterministicAndNanda);
+                hybrid.nanda_candidate_route = CandidateReadoutRoute::live_default();
+                hybrid.correction_safety = correction_safety;
+                let resolution = resolve_text_correction(hybrid);
+                observations += 1;
+                false_accepts += usize::from(resolution.selected.is_some());
+
+                assert!(
+                    resolution.selected.is_none(),
+                    "case_id={case_id} profile={correction_safety:?}: {resolution:#?}"
+                );
+                assert!(resolution.selected_transition.is_none());
+            }
+        }
+
+        assert_eq!(observations, 27);
+        assert_eq!(false_accepts, 0);
+    }
+
+    #[test]
+    #[ignore = "TD-113 paired performance proof; run explicitly with at least 60 samples per mode"]
+    fn td113_hybrid_paired_performance_budget() {
+        use std::time::Instant;
+
+        fn process_cpu_us() -> u64 {
+            let mut value = std::mem::MaybeUninit::<libc::timespec>::uninit();
+            let status = unsafe {
+                libc::clock_gettime(libc::CLOCK_PROCESS_CPUTIME_ID, value.as_mut_ptr())
+            };
+            assert_eq!(status, 0, "CLOCK_PROCESS_CPUTIME_ID must be available");
+            let value = unsafe { value.assume_init() };
+            (value.tv_sec as u64)
+                .saturating_mul(1_000_000)
+                .saturating_add((value.tv_nsec as u64) / 1_000)
+        }
+
+        fn resident_rss_kib() -> u64 {
+            std::fs::read_to_string("/proc/self/status")
+                .expect("read /proc/self/status")
+                .lines()
+                .find_map(|line| line.strip_prefix("VmRSS:"))
+                .and_then(|value| value.split_whitespace().next())
+                .and_then(|value| value.parse::<u64>().ok())
+                .expect("VmRSS in /proc/self/status")
+        }
+
+        fn percentile(values: &mut [u64], percentile: usize) -> u64 {
+            values.sort_unstable();
+            values[(values.len() - 1) * percentile / 100]
+        }
+
+        let sample_count = std::env::var("LAY_TD113_PERFORMANCE_SAMPLES")
+            .ok()
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(60)
+            .max(60);
+        let inputs = [
+            "плозо ",
+            "обьяснить ",
+            "верменно ",
+            "текст е ",
+            "т ыпочитай ",
+            "протколах ",
+        ];
+        let pipeline = default_typing_assist_pipeline();
+
+        for mode in [
+            CorrectionMode::NandaOnly,
+            CorrectionMode::DeterministicAndNanda,
+        ] {
+            for input in inputs {
+                let mut req = request(input, &pipeline, mode);
+                req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+                let _ = resolve_text_correction(req);
+            }
+        }
+
+        let mut nanda_wall_us = Vec::with_capacity(sample_count);
+        let mut hybrid_wall_us = Vec::with_capacity(sample_count);
+        let mut nanda_cpu_us = Vec::with_capacity(sample_count);
+        let mut hybrid_cpu_us = Vec::with_capacity(sample_count);
+        for index in 0..sample_count {
+            let input = inputs[index % inputs.len()];
+            let order = if index % 2 == 0 {
+                [
+                    CorrectionMode::NandaOnly,
+                    CorrectionMode::DeterministicAndNanda,
+                ]
+            } else {
+                [
+                    CorrectionMode::DeterministicAndNanda,
+                    CorrectionMode::NandaOnly,
+                ]
+            };
+            for mode in order {
+                let mut req = request(input, &pipeline, mode);
+                req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+                let cpu_started = process_cpu_us();
+                let wall_started = Instant::now();
+                let _ = resolve_text_correction(req);
+                let wall_us = wall_started.elapsed().as_micros() as u64;
+                let cpu_us = process_cpu_us().saturating_sub(cpu_started);
+                match mode {
+                    CorrectionMode::NandaOnly => {
+                        nanda_wall_us.push(wall_us);
+                        nanda_cpu_us.push(cpu_us);
+                    }
+                    CorrectionMode::DeterministicAndNanda => {
+                        hybrid_wall_us.push(wall_us);
+                        hybrid_cpu_us.push(cpu_us);
+                    }
+                    CorrectionMode::DeterministicOnly => unreachable!("paired modes are fixed"),
+                }
+            }
+        }
+
+        let rss_before_hybrid_kib = resident_rss_kib();
+        for index in 0..sample_count {
+            let input = inputs[index % inputs.len()];
+            let mut req = request(input, &pipeline, CorrectionMode::DeterministicAndNanda);
+            req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+            let _ = resolve_text_correction(req);
+        }
+        let rss_after_hybrid_kib = resident_rss_kib();
+        let rss_delta_kib = rss_after_hybrid_kib.saturating_sub(rss_before_hybrid_kib);
+
+        let nanda_p50_us = percentile(&mut nanda_wall_us.clone(), 50);
+        let nanda_p99_us = percentile(&mut nanda_wall_us, 99);
+        let hybrid_p50_us = percentile(&mut hybrid_wall_us.clone(), 50);
+        let hybrid_p99_us = percentile(&mut hybrid_wall_us, 99);
+        let nanda_mean_cpu_us = nanda_cpu_us.iter().sum::<u64>() / sample_count as u64;
+        let hybrid_mean_cpu_us = hybrid_cpu_us.iter().sum::<u64>() / sample_count as u64;
+
+        eprintln!(
+            "TD113_PAIRED_PERFORMANCE samples_per_mode={sample_count} nanda_p50_us={nanda_p50_us} hybrid_p50_us={hybrid_p50_us} nanda_p99_us={nanda_p99_us} hybrid_p99_us={hybrid_p99_us} nanda_mean_cpu_us={nanda_mean_cpu_us} hybrid_mean_cpu_us={hybrid_mean_cpu_us} rss_before_hybrid_kib={rss_before_hybrid_kib} rss_after_hybrid_kib={rss_after_hybrid_kib} rss_delta_kib={rss_delta_kib}"
+        );
+        assert!(
+            hybrid_p50_us <= nanda_p50_us.saturating_add(5_000),
+            "hybrid p50 regression: {hybrid_p50_us}us vs {nanda_p50_us}us"
+        );
+        assert!(
+            hybrid_p99_us <= nanda_p99_us.saturating_add(10_000),
+            "hybrid p99 regression: {hybrid_p99_us}us vs {nanda_p99_us}us"
+        );
+        assert!(
+            hybrid_mean_cpu_us <= nanda_mean_cpu_us.saturating_add(10_000),
+            "hybrid CPU regression: {hybrid_mean_cpu_us}us vs {nanda_mean_cpu_us}us"
+        );
+        assert!(
+            rss_delta_kib <= 16 * 1024,
+            "hybrid retained RSS regression: {rss_delta_kib} KiB"
+        );
+    }
+
+    #[test]
+    fn td112_profile_matrix_differentiates_fullwave_apply() {
+        let pipeline = default_typing_assist_pipeline();
+        let resolve = |correction_safety| {
+            let mut request = request("звгрузи ", &pipeline, CorrectionMode::NandaOnly);
+            request.correction_safety = correction_safety;
+            resolve_text_correction(request)
+        };
+
+        let strict = resolve(CorrectionSafety::Strict);
+        let normal = resolve(CorrectionSafety::Normal);
+        let experimental = resolve(CorrectionSafety::Experimental);
+        let target = "загрузи ";
+        let target_metadata = |resolution: &CorrectionResolution| {
+            let candidate = resolution
+                .candidates
+                .iter()
+                .find(|candidate| candidate.replacement == target)
+                .expect("fixed fallback target must remain in the lattice");
+            (
+                candidate.source,
+                candidate.origin,
+                candidate.source_id.clone(),
+                candidate.error_class,
+                candidate.gate.clone(),
+                candidate.evidence_count(),
+            )
+        };
+
+        assert_eq!(target_metadata(&strict), target_metadata(&experimental));
+        assert_eq!(target_metadata(&normal), target_metadata(&experimental));
+        assert_eq!(
+            experimental
+                .selected
+                .as_ref()
+                .map(|candidate| candidate.replacement.as_str()),
+            Some(target),
+            "Experimental is the accepted 1.0.60 compatibility baseline"
+        );
+        assert_eq!(
+            normal
+                .selected
+                .as_ref()
+                .map(|candidate| candidate.replacement.as_str()),
+            Some(target),
+            "Normal admits a FullWave candidate with one independent evidence domain"
+        );
+        assert!(
+            strict.selected.is_none(),
+            "Strict must retain the candidate but deny a one-domain FullWave Apply: {:#?}",
+            strict.selected
+        );
+        assert!(strict.selected_transition.is_none());
+    }
+
+    #[test]
+    fn td112_registered_and_fallback_deterministic_routes_match_r01_r02() {
+        let pipeline = default_typing_assist_pipeline();
+        for (case_id, text, target, expected_apply) in [
+            ("R01", "автозаена ", "автозамена ", [false, true, true]),
+            ("R02", "плозо ", "плохо ", [false, false, true]),
+        ] {
+            for (correction_safety, should_apply) in [
+                CorrectionSafety::Strict,
+                CorrectionSafety::Normal,
+                CorrectionSafety::Experimental,
+            ]
+            .into_iter()
+            .zip(expected_apply)
+            {
+                let mut req = request(text, &pipeline, CorrectionMode::DeterministicOnly);
+                req.correction_safety = correction_safety;
+                let resolution = resolve_text_correction(req);
+                let retained = resolution
+                    .candidates
+                    .iter()
+                    .find(|candidate| candidate.replacement == target)
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "case_id={case_id} profile={correction_safety:?}: {resolution:#?}"
+                        )
+                    });
+                assert_eq!(retained.source, CorrectionDecisionSource::Deterministic);
+                assert_eq!(retained.origin, CandidateOrigin::DeterministicTypo);
+                assert_eq!(retained.gate.action, CandidateGateAction::Eligible);
+                assert_eq!(
+                    resolution
+                        .selected
+                        .as_ref()
+                        .map(|candidate| candidate.replacement.as_str()),
+                    should_apply.then_some(target),
+                    "case_id={case_id} profile={correction_safety:?} retained={retained:#?}"
+                );
+                assert_eq!(resolution.selected_transition.is_some(), should_apply);
+            }
+        }
+    }
+
+    #[test]
+    fn td112_merged_deterministic_and_nanda_aliases_match_r05() {
+        let mut observed_metadata = None;
+        for correction_safety in [
+            CorrectionSafety::Strict,
+            CorrectionSafety::Normal,
+            CorrectionSafety::Experimental,
+        ] {
+            let mut lattice = L2CandidateLattice::with_options(
+                TypingErrorEvent::from_text("автозаена "),
+                &WaveOptions::default(),
+                correction_safety,
+            );
+            lattice.push_source(Some(UnifiedCorrectionCandidate::new(
+                "автозамена ",
+                CorrectionDecisionSource::Nanda,
+                CandidateOrigin::L2Surface,
+                "L2SurfaceMotifCell32",
+                TypingErrorClass::MissingLetter,
+                CandidateGateDecision {
+                    action: CandidateGateAction::Eligible,
+                    reason: "td112_r05_nanda",
+                },
+            )));
+            lattice.push_source(Some(UnifiedCorrectionCandidate::new(
+                "автозамена ",
+                CorrectionDecisionSource::Deterministic,
+                CandidateOrigin::DeterministicTypo,
+                ids::MISSING_LETTER,
+                TypingErrorClass::MissingLetter,
+                CandidateGateDecision {
+                    action: CandidateGateAction::Eligible,
+                    reason: "td112_r05_deterministic",
+                },
+            )));
+
+            let resolution = lattice.into_resolution();
+            let retained = resolution
+                .candidates
+                .iter()
+                .find(|candidate| candidate.replacement == "автозамена ")
+                .expect("R05 merged candidate remains in the lattice");
+            let metadata = (
+                retained.source,
+                retained.origin,
+                retained.error_class,
+                retained.gate.action,
+                retained.evidence_count(),
+            );
+            if let Some(expected) = observed_metadata {
+                assert_eq!(metadata, expected, "profile={correction_safety:?}");
+            } else {
+                observed_metadata = Some(metadata);
+            }
+            assert_eq!(retained.evidence_count(), 2);
+            assert_eq!(
+                resolution
+                    .selected
+                    .as_ref()
+                    .map(|candidate| candidate.replacement.as_str()),
+                Some("автозамена "),
+                "R05 profile={correction_safety:?}: {resolution:#?}"
+            );
+            assert!(resolution.selected_transition.is_some());
+        }
+    }
+
+    #[test]
+    fn td112_canonical_and_high_precision_boundary_profiles_match_corpus() {
+        let pipeline = default_typing_assist_pipeline();
+        for (text, target, route, expected_apply) in [
+            (
+                "данорм ",
+                "да норм ",
+                CandidateReadoutRoute::CanonicalL2Field,
+                [false, true, true],
+            ),
+            (
+                "я думаю допусти мнабираю ",
+                "я думаю допустим набираю ",
+                CandidateReadoutRoute::FullWave,
+                [true, true, true],
+            ),
+        ] {
+            for (correction_safety, should_apply) in [
+                CorrectionSafety::Strict,
+                CorrectionSafety::Normal,
+                CorrectionSafety::Experimental,
+            ]
+            .into_iter()
+            .zip(expected_apply)
+            {
+                let mut req = request(text, &pipeline, CorrectionMode::NandaOnly);
+                req.correction_safety = correction_safety;
+                req.nanda_candidate_route = route;
+                let resolution = resolve_text_correction(req);
+                let retained = resolution
+                    .candidates
+                    .iter()
+                    .find(|candidate| candidate.replacement == target)
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "profile={correction_safety:?} route={route:?}: {resolution:#?}"
+                        )
+                    });
+                assert_eq!(
+                    resolution
+                        .selected
+                        .as_ref()
+                        .map(|candidate| candidate.replacement.as_str()),
+                    should_apply.then_some(target),
+                    "profile={correction_safety:?} route={route:?} retained={retained:#?}"
+                );
+                assert_eq!(resolution.selected_transition.is_some(), should_apply);
+            }
+        }
     }
 
     #[test]
@@ -540,6 +1193,93 @@ mod tests {
             transition.proof(),
             Some(crate::text_edit::TransitionProof::Boundary)
         );
+    }
+
+    #[test]
+    fn live_canonical_l2_field_retains_split_evidence_without_applying_over_close_repair() {
+        let pipeline = default_typing_assist_pipeline();
+        for correction_safety in [CorrectionSafety::Normal, CorrectionSafety::Experimental] {
+            let mut req = request("авторручка ", &pipeline, CorrectionMode::NandaOnly);
+            req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+            req.correction_safety = correction_safety;
+
+            let resolution = resolve_text_correction(req);
+            let boundary = resolution
+                .candidates
+                .iter()
+                .find(|candidate| candidate.replacement == "автор ручка ")
+                .expect("producer-routed two-content boundary candidate");
+
+            assert!(
+                boundary.has_l2_boundary_target_grounding(),
+                "DecisionCore competition must not erase target-bound L2 evidence"
+            );
+            assert_ne!(
+                resolution
+                    .selected
+                    .as_ref()
+                    .map(|candidate| candidate.replacement.as_str()),
+                Some("автор ручка "),
+                "a plausible one-word repair must keep a two-content split from auto-apply under {correction_safety:?}: {resolution:#?}"
+            );
+        }
+    }
+
+    #[test]
+    fn td113_live_modes_do_not_apply_ambiguous_function_word_split() {
+        let pipeline = default_typing_assist_pipeline();
+        for mode in [
+            CorrectionMode::NandaOnly,
+            CorrectionMode::DeterministicAndNanda,
+        ] {
+            for correction_safety in [CorrectionSafety::Normal, CorrectionSafety::Experimental] {
+                let mut req = request("воротаим ", &pipeline, mode);
+                req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+                req.correction_safety = correction_safety;
+
+                let resolution = resolve_text_correction(req);
+                assert_ne!(
+                    resolution
+                        .selected
+                        .as_ref()
+                        .map(|candidate| candidate.replacement.as_str()),
+                    Some("ворота им "),
+                    "surface-only ambiguity must remain non-authoritative for {mode:?}/{correction_safety:?}: {resolution:#?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn td113_live_modes_preserve_grounded_boundary_positives() {
+        let pipeline = default_typing_assist_pipeline();
+        for mode in [
+            CorrectionMode::NandaOnly,
+            CorrectionMode::DeterministicAndNanda,
+        ] {
+            for correction_safety in [CorrectionSafety::Normal, CorrectionSafety::Experimental] {
+                for (input, expected) in [
+                    ("Какие документыим ", "Какие документы им "),
+                    ("Готовь документыдля ", "Готовь документы для "),
+                    ("Еленапросит ", "Елена просит "),
+                    ("данорм ", "да норм "),
+                ] {
+                    let mut req = request(input, &pipeline, mode);
+                    req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+                    req.correction_safety = correction_safety;
+
+                    let resolution = resolve_text_correction(req);
+                    assert_eq!(
+                        resolution
+                            .selected
+                            .as_ref()
+                            .map(|candidate| candidate.replacement.as_str()),
+                        Some(expected),
+                        "grounded boundary regression for {mode:?}/{correction_safety:?}, input={input:?}: {resolution:#?}"
+                    );
+                }
+            }
+        }
     }
 
     #[test]
@@ -1501,16 +2241,26 @@ mod tests {
     #[test]
     fn local_typo_cases_follow_current_source_authority() {
         let pipeline = default_typing_assist_pipeline();
-        for (input, expected, should_apply) in [
-            ("длеай ", Some("делай "), true),
-            ("тарфик ", Some("трафик "), true),
-            ("рабоатешь ", Some("работаешь "), true),
-            ("агресивнее ", Some("агрессивнее "), true),
-            ("дейстия ", Some("действия "), true),
-            ("кнал ", Some("канал "), true),
-            ("сбирать ", Some("собирать "), false),
-            ("переспективнее ", None, false),
-            ("отвликайся ", Some("отвлекайся "), true),
+        for (input, expected, should_apply, suggest_reason) in [
+            ("длеай ", Some("делай "), true, None),
+            ("тарфик ", Some("трафик "), true, None),
+            ("рабоатешь ", Some("работаешь "), true, None),
+            (
+                "агресивнее ",
+                Some("агрессивнее "),
+                false,
+                Some("unproven_stable_surface_shape_drift"),
+            ),
+            ("дейстия ", Some("действия "), true, None),
+            ("кнал ", Some("канал "), true, None),
+            (
+                "сбирать ",
+                Some("собирать "),
+                false,
+                Some("known_current_word_surface_drift"),
+            ),
+            ("переспективнее ", None, false, None),
+            ("отвликайся ", Some("отвлекайся "), true, None),
         ] {
             let resolution = resolve_text_correction(request(
                 input,
@@ -1540,7 +2290,7 @@ mod tests {
             } else {
                 assert!(resolution.selected.is_none(), "input={input:?}: {resolution:?}");
                 assert_eq!(retained.gate.action, CandidateGateAction::SuggestOnly);
-                assert_eq!(retained.gate.reason, "known_current_word_surface_drift");
+                assert_eq!(retained.gate.reason, suggest_reason.expect("suggest reason"));
             }
         }
     }
@@ -1696,7 +2446,10 @@ mod tests {
             } else {
                 assert!(resolution.selected.is_none());
                 assert_eq!(retained.gate.action, CandidateGateAction::SuggestOnly);
-                assert_eq!(retained.gate.reason, "known_current_word_surface_drift");
+                assert_eq!(
+                    retained.gate.reason,
+                    "unproven_stable_surface_shape_drift"
+                );
             }
         }
     }

@@ -207,12 +207,15 @@ fn manual_replay_paths_are_edit_action_gated() {
     let authorization = replay
         .find("manual_replay_action(ctx, input_gate)?")
         .expect("manual replay must obtain AuthorizedEdit");
+    let effect_sequence = replay
+        .find("run_replay_effects(|effect| match effect {")
+        .expect("manual replay must start the ordered effect sequence");
     let first_backspace = replay
-        .find("let backspace_result =")
+        .find("emit_backspaces(kbd, ctx.n_backspaces)")
         .expect("manual replay must emit backspaces");
     assert!(
-        authorization < first_backspace,
-        "manual replay must obtain AuthorizedEdit before its first physical mutation"
+        authorization < effect_sequence && effect_sequence < first_backspace,
+        "manual replay must obtain AuthorizedEdit before starting effects and its first physical mutation"
     );
 
     let native = read("src/bin/lay_daemon/correction_runtime/output/native.rs");
@@ -228,8 +231,15 @@ fn manual_replay_paths_are_edit_action_gated() {
     );
 
     let output = read("src/bin/lay_daemon/correction_runtime/output.rs");
+    let replay_effect = output
+        .split_once("UinputOutputEffect::Replay =>")
+        .expect("uinput Replay effect must exist")
+        .1
+        .split_once("        })")
+        .expect("uinput Replay effect must be bounded")
+        .0;
     assert!(
-        output.contains("apply_layout_replay(&mut common, kbd, input_gate)"),
+        replay_effect.contains("apply_layout_replay(&mut common, kbd, input_gate.clone())"),
         "manual replay must preserve the input_gate trace into the EditAction log"
     );
 }
@@ -349,9 +359,65 @@ fn live_text_mutation_outputs_use_executor_contract() {
     );
     assert_before(
         &replay,
+        "manual_replay_action(ctx, input_gate)?",
+        "run_replay_effects(|effect| match effect {",
+        "manual replay must obtain AuthorizedEdit before starting ordered effects",
+    );
+    let effect_schedule = replay
+        .split_once("for effect in [")
+        .expect("replay effect schedule start")
+        .1
+        .split_once("] {")
+        .expect("replay effect schedule end")
+        .0;
+    assert_before(
+        effect_schedule,
+        "ReplayEffect::Preflight,",
+        "ReplayEffect::Backspaces,",
+        "manual replay must schedule Preflight before Backspaces",
+    );
+    assert_before(
+        effect_schedule,
+        "ReplayEffect::Backspaces,",
+        "ReplayEffect::Replay,",
+        "manual replay must schedule Backspaces before Replay",
+    );
+    assert_before(
+        effect_schedule,
+        "ReplayEffect::Replay,",
+        "ReplayEffect::SuppressAfterSuccess,",
+        "manual replay must schedule Replay before after-success suppression",
+    );
+    let effect_execution = replay
+        .split_once("run_replay_effects(|effect| match effect {")
+        .expect("replay effect execution start")
+        .1
+        .split_once("    }) {")
+        .expect("replay effect execution end")
+        .0;
+    assert_before(
+        effect_execution,
+        "ReplayEffect::Preflight =>",
         "preflight_manual_replay(ctx)",
-        "let backspace_started",
-        "manual replay must finish layout and mutation preflight before Backspace",
+        "Preflight must execute the real replay preflight",
+    );
+    assert_before(
+        effect_execution,
+        "ReplayEffect::Backspaces =>",
+        "emit_backspaces(kbd, ctx.n_backspaces)",
+        "Backspaces must execute the real deletion effect",
+    );
+    assert_before(
+        effect_execution,
+        "ReplayEffect::Replay =>",
+        "replay_keycodes(kbd, ctx.events)",
+        "Replay must execute the real key replay effect",
+    );
+    assert_before(
+        effect_execution,
+        "ReplayEffect::SuppressAfterSuccess =>",
+        "suppress_next_ime_autocorrect()",
+        "after-success must execute the real suppression effect",
     );
     assert_before(
         &daemon_pipeline,

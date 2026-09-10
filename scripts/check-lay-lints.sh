@@ -2,7 +2,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BASELINE="$ROOT/scripts/lint-baseline/dead_code.json"
+DEFAULT_BASELINE="$ROOT/scripts/lint-baseline/dead_code.default.json"
+RESEARCH_BASELINE="$ROOT/scripts/lint-baseline/dead_code.json"
 MODE="${1:-check}"
 
 case "$MODE" in
@@ -31,6 +32,17 @@ if ! scripts/cargo-guard.sh check --locked --all-targets --message-format=json \
   exit 1
 fi
 
+if [[ "$MODE" == "--write-baseline" ]]; then
+  default_candidate_baseline="$stage/dead_code.default.json"
+  python3 scripts/lint_inventory.py inventory \
+    --input "$default_check_json" --baseline "$DEFAULT_BASELINE" \
+    --feature-scope default --write-to "$default_candidate_baseline"
+else
+  python3 scripts/lint_inventory.py inventory \
+    --input "$default_check_json" --baseline "$DEFAULT_BASELINE" \
+    --feature-scope default
+fi
+
 default_clippy_json="$stage/default-clippy.jsonl"
 default_clippy_stderr="$stage/default-clippy.stderr"
 if ! scripts/cargo-guard.sh clippy --locked --all-targets --message-format=json \
@@ -52,12 +64,14 @@ if ! scripts/cargo-guard.sh check --locked --all-targets --features research-too
 fi
 
 if [[ "$MODE" == "--write-baseline" ]]; then
-  candidate_baseline="$stage/dead_code.json"
+  research_candidate_baseline="$stage/dead_code.json"
   python3 scripts/lint_inventory.py inventory \
-    --input "$check_json" --baseline "$BASELINE" --write-to "$candidate_baseline"
+    --input "$check_json" --baseline "$RESEARCH_BASELINE" \
+    --feature-scope research-tools --write-to "$research_candidate_baseline"
 else
   python3 scripts/lint_inventory.py inventory \
-    --input "$check_json" --baseline "$BASELINE"
+    --input "$check_json" --baseline "$RESEARCH_BASELINE" \
+    --feature-scope research-tools
 fi
 
 clippy_json="$stage/clippy.jsonl"
@@ -72,8 +86,9 @@ fi
 python3 scripts/lint_inventory.py clean --input "$clippy_json"
 
 if [[ "$MODE" == "--write-baseline" ]]; then
-  mkdir -p "$(dirname "$BASELINE")"
-  mv "$candidate_baseline" "$BASELINE"
+  mkdir -p "$(dirname "$RESEARCH_BASELINE")"
+  mv "$default_candidate_baseline" "$DEFAULT_BASELINE"
+  mv "$research_candidate_baseline" "$RESEARCH_BASELINE"
   echo "dead_code_baseline=COMMITTED"
 fi
 

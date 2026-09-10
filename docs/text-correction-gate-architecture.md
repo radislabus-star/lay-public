@@ -926,3 +926,524 @@ mutation is made closed per visible evdev frame, with fail-closed cleanup.
 
 Receipt:
 `/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_UINPUT_STUCK_KEY_RECOVERY_2026-08-12.json`.
+
+### 2026-09-01 correction-safety Apply authority: PASS_CODE_REVIEWED
+
+The user-visible `strict` (`Осторожно`), `normal` (`Норма`), and
+`experimental` (`Смелее`) profiles previously reached deterministic rule
+filtering but were lost before the common non-exact Apply owner. The repaired
+source route is:
+
+```text
+CorrectionSafety
+-> CorrectionRequest
+-> L2CandidateLattice
+-> TransitionDecisionPolicy
+-> candidate_has_apply_authority()
+-> Apply | retained NoApply
+```
+
+`TransitionDecisionCore` remains the only automatic authorization owner. The
+profile check executes after existing signal evaluation and structural/verifier
+vetoes, and before the ranked candidate may enter the selectable Apply set. A
+profile denial does not remove or rescore the candidate, change its surface,
+rewrite producer evidence, or create an alternate mutation path. Closed exact
+authority still bypasses ordinary profile tiering only through its existing
+valid certificate route.
+
+The policy counts a four-bit set of independent domains rather than raw
+signals: `LEXICAL_FIELD`, `L3_DIRECTIONAL_PAIR`, `L4_EXACT_STATE`, and
+`BOUNDARY_FIELD`. Correlated lexical alternatives collapse into one bit;
+boundary evidence is mutually exclusive with lexical-field evidence. Typed
+source/origin/error-class metadata and registered rule safety metadata assign
+the candidate tier. No word, phrase, suffix, fixture ID, test name, or literal
+source ID is used as runtime authority.
+
+Tested and measured:
+
+- fixed task-local corpus SHA-256
+  `4f08436caaa040a44b052e1431196a0a4f5b852887b44b081306835d69be7aed`;
+- `26/26` logical cases and `78/78` profile observations: `18` pure-policy
+  and `60` routed-runtime observations;
+- routed class denominators: missing-letter `6/6`, composite-typo `3/3`,
+  letter-substitution `6/6`, boundary `9/9`, completion-suggest-only `3/3`,
+  wrong-layout exact `9/9`, and clean/protected negatives `24/24` with
+  `false_accepts=0`;
+- Experimental compatibility observations `20/20`; closed-exact observations
+  `9/9`; profile-differentiating routed observations `15/15`;
+- focused TD-112 test functions `12/12`, policy tests `8/8`, pinned live
+  preedit preservation `3/3`, and public `input_gate_space_contract` `6/6`;
+- changed correctness/package lanes selected `2,388` tests with zero known
+  semantic and zero infrastructure failures;
+- observed-source code-route gate: `PASS`, 21 nodes, 33 edges, 27 named
+  routes, 54/54 source markers, zero issues/warnings, and one authorization
+  owner;
+- post-edit implementation preflight: `READY_TO_IMPLEMENT`,
+  `safe_to_implement=true`, zero blockers, manifest SHA-256
+  `f03c1c842f2e52cc6a433ccc0fb89266cb82ddf35bd6557a9a71b28d7d2db052`;
+- final reviewed architecture refresh: `21,328` nodes, `53,129` edges, `971`
+  communities, `678` Rust sources, all 11 ownership checks `PASS`; its exact
+  `611` zero-AST limitation and artifact bindings are preserved in the task
+  receipt;
+- final post-review full wrapper: exit `0`, `2,388` correctness/package checks,
+  zero known semantic and infrastructure failures, lint/syntax/CLI/release
+  checks `PASS`, and terminal line `== lay full check OK ==`;
+- Cargo target usage after the final wrapper was
+  `6,377,787,392 / 12,884,901,888` bytes.
+
+The first historical wrapper attempt completed formatting and then stopped at a
+stale architecture receipt before Cargo tests; its separately executed tail is
+preserved as diagnostic evidence only. After review and the final architecture
+refresh, a new wrapper invocation reran from the first step, exited `0`, and
+printed its terminal success line. Only that final invocation owns the full-gate
+acceptance claim.
+
+Not tested by this checkpoint:
+
+- a routed DecisionCore fixture that naturally supplies an exact-positive L4
+  signed state; the pure extraction/deduplication contract for
+  `L4_EXACT_STATE` is covered, but routed L4 contribution remains unproved;
+- broad Russian/English language quality outside the fixed regression corpus;
+- physical typing in a focused desktop application or visual comparison of all
+  three profiles;
+- a new isolated p99/RSS benchmark attributable only to this small policy
+  helper.
+
+Fresh-context code review V1 returned `ACCEPT`, `9.0/10`, with no High or
+Medium findings. Its only Low finding was stale task-completion wording, closed
+in the same documentation finalization. No production correction pass was
+required.
+
+Verdict scope: `PASS_SOURCE_FINAL`. Source Apply-authority semantics changed:
+`yes`, only for ordinary non-exact automatic replacement under Strict and
+Normal. Ranking, lattice retention, exact authority, verifier, SafetyGate,
+edit-plan validation, and mutation ownership are unchanged. Installed runtime
+authority changed: `no`; the installed 1.0.60 binaries, services,
+configuration, and selected IME were not modified or restarted.
+
+Task evidence:
+
+- `tech_debt/evidence/td112-fixture-correction-v1.json`;
+- `tech_debt/evidence/td112-red-green-tdd-v1.json`;
+- `tech_debt/evidence/td112-code-route-observed-receipt-v1.json`;
+- `tech_debt/evidence/td112-implementation-preflight-post-edit-receipt-v1.json`;
+- `tech_debt/evidence/td112-code-review-v1.md`;
+- `tech_debt/evidence/td112-verification-v1.json`;
+- `tech_debt/evidence/td112-architecture-refresh-v1.md`.
+
+### 2026-09-03 hybrid Nanda autocorrect restoration: PASS_FINAL_SOURCE_GATES_RELEASE_PENDING
+
+The live `nanda_autocorrect=true` route previously selected `NandaOnly` and
+therefore removed deterministic typo candidates before the common lattice and
+DecisionCore could compare them. The repaired source-composition route is:
+
+```text
+nanda_autocorrect=false
+-> DeterministicOnly
+
+nanda_autocorrect=true
+-> DeterministicAndNanda
+-> deterministic candidates + Nanda candidates
+-> one L2CandidateLattice
+-> one TransitionDecisionCore rank and authorization pass
+-> one event-specific edit plan and mutation backend
+
+explicit diagnostics
+-> NandaOnly remains available and isolated
+```
+
+The implementation reuses the existing candidate, verifier, rank,
+authorization, edit-plan, and mutation owners. Identical unmerged
+deterministic evidence may be reused within one request to avoid repeated
+admission, but merged, morphology-bearing, or authority-bearing evidence is
+never reused as the original producer record. The bounded L2 readout caches
+immutable candidate material only; request-time authority remains outside the
+cache.
+
+The final boundary contract separates verified geometry from semantic Apply
+authority:
+
+```text
+BoundaryShift + verifier proof
+-> retains structural Apply authority
+
+BoundaryMergeSplit reducing word count + verifier proof
+-> retains merge authority
+-> example: текст е -> тексте
+
+BoundaryMergeSplit increasing word count + verifier proof
+-> candidate remains in the lattice
+-> Apply requires exact function-word split, measured context support,
+   pairwise L3 authority, exact L4 authority, or target-bound BoundaryCell32
+   evidence whose exact split reconstructs the current token
+-> function-word and L2 target-grounded surface-lexical split authority share
+   one complete exact-one-edit conflict predicate over all 33 lowercase
+   Russian letters; any clean certified one-word competitor withholds only
+   that surface authority while retaining the split candidate and independent
+   context/L3/L4 authority
+-> the L2 producer reports target-bound structural grounding only; the complete
+   clean-one-word competitor predicate is consumed at DecisionCore Apply
+   authority rather than erasing producer evidence
+-> the clean-surface certificate validates morphology relations: true soft
+   inflections cannot use incompatible hard lemmas; synthetic comparative
+   `-ее` from `-ый` requires exact Hunspell `E` membership, while a regular
+   non-velar `-ий` independently retains neuter `-ее`; `-ой`, unknown, or
+   unavailable class data grants no comparative authority
+-> bounded L2 top-k absence and candidate-material generation turnover never
+   count as negative evidence
+-> content-content and repaired splits without that evidence remain NoApply
+
+boundary material cache hit
+-> generation is captured before lookup
+-> generation is read again after the hit
+-> turnover before return yields empty material rather than stale candidates
+```
+
+This direction check prevents structural verification from being promoted
+into a semantic certificate. It introduces no literal word, phrase, fixture,
+test-name, or source-ID branch; the only added suffix condition is the general
+comparative `-ее` relation. Verifier, SafetyGate, edit-plan validation, and
+mutation ownership are unchanged.
+
+The previously recorded focused/performance checkpoint preceded one final
+repository-wide RED. Both wrappers found exactly three regressions: structural
+evidence was erased for `тоесть -> то есть` and `когдая -> когда я`, while the
+known state `точнее` published unrelated corrected-prefix replacements. The
+systemic repair separates structure from Apply competition and comparative
+`-ее` from true soft inflections.
+
+Tested on the repaired source before restarting the final repository wrappers:
+
+- compile-once gate: `PASS` in `26.705 s`;
+- all three former repository reds: `3/3 PASS`;
+- TD-113 unit filter: `23 PASS`, `0 FAIL`, `1` ignored;
+- close boundary negatives `3/3`, clean-prefix negative `1/1`, live safety
+  matrix `6/6`;
+- executable runtime-source contract: `7/7 PASS`;
+- observed-source code-route gate: `PASS`, 16 nodes, 41 edges, 15 routes,
+  `57/57` source markers, zero issues and zero warnings;
+- remote verification host: `e-MEGA-MINI-M1-13th`, 20 logical CPUs;
+- regenerated test-lane manifest after the test-ownership correction: `2,467`
+  total = `2,406` correctness + `36` package + `11` performance + `14`
+  ignored, 36 targets, SHA-256
+  `64511fec25873ab76fc43152787bacf5e673d0ae530751b0f82343fa3bc46e25`;
+- first post-repair full attempt: architecture unit suites `22/22 + 2/2`
+  passed, then the wrapper stopped on the expected stale source fingerprint;
+  test lanes and performance were not run or claimed;
+- architecture-refreshed full attempt: architecture unit suites `22/22 + 2/2`
+  and all `11/11` named ownership checks passed, then the correctness/package
+  lanes held at `2,439/2,441` on exactly two stale test-ownership assertions;
+  log SHA-256
+  `306edac33bd8419e63382f4c0dfe1950e023bc2279e96637f65f33cc5a8e3291`,
+  unchanged `1,239`-file source closure
+  `585fb665ea1e432f2f86519bb18e21e620ceed243ccbf017393371f0f71485bf`,
+  unchanged Cargo target usage `2,884,943,872` bytes; performance and runtime
+  smoke were not run;
+- exact ownership contract V2 after the test-only correction: `6/6 PASS`; it
+  proves that L2 retains exact target-bound structural evidence, genuinely
+  unproven fragment splits remain ungrounded, and DecisionCore still withholds
+  surface-only Apply over a clean single-token competitor; log SHA-256
+  `8d5c099ce017ebad047b6368ce094809c058e71bd54077ae0fb71d78136865f6`;
+- independent code review pass 2: `HOLD`, `7/10`, with one blocking High
+  finding: the intermediate `-ее` branch treated every attested `-ый` lemma as
+  gradable without independent Hunspell `E` evidence. The review limit is
+  exhausted, so no third score is manufactured; objective closure is recorded
+  separately from the historical review verdict.
+
+Subsequent full-wrapper chronology preserves each terminal boundary:
+
+- V3: `2,442/2,442` Rust correctness/package `PASS`, then default Clippy
+  `HOLD` on `let_and_return` and `single_element_loop`; full-log SHA-256
+  `017f7d3d4c583cbbf290925739c7c773f9426fb26cf7707e301fd4b6b262456d`;
+- mechanical repair: default and research-tools Clippy `PASS`, and the exact
+  contract remains `7/7 PASS`;
+- V4: `2,441/2,442`, with every runtime test clean and only the brittle
+  `td113_boundary_competitor_veto_is_complete_and_generation_independent`
+  source-shape assertion failing; full-log SHA-256
+  `d5a8c0be8c8b1e190e695442d188ff8a825bb16c23431dde2e640236b742f8e1`;
+- behavior-bound contract repair: source SHA-256
+  `32df43279fd1de46b9d0265f817a0394b5f15cf2ef4f63e19dfb5534f97c6942`,
+  integration `7/7 PASS`, default and research-tools Clippy `PASS`;
+- V5: `2,442/2,442` Rust correctness/package and lint `PASS`, then
+  infrastructure `HOLD` with exit `127` at `node --check`; the installed
+  `/home/e/.local/bin/node` reports `v24.18.1`, but the non-login `PATH` omitted
+  that directory. No install or system mutation occurred, and performance did
+  not run. Full-log SHA-256:
+  `a7198aa7f50b35d5254d32e62818adc9405d57490d046e94db9af4018259b7cf`;
+- V6: `2,442/2,442` Rust correctness/package, lint, Node, Python, and shell
+  syntax `PASS`; the CLI exited `0` with `chosen: none` and no `confidence:`,
+  so the proof `grep` exited `1` before the release build. The full wrapper
+  exited `1`; duration and the full unchanged source-closure digest were not
+  authoritatively captured. Full-log SHA-256:
+  `898e9a69b505643bb73a76f5a2dca9724b494281b917238311b0577921671435`.
+
+V6 exposed a proof-owner defect: a repository assertion inherited mutable
+per-user `HOME` configuration. The repair options were:
+
+| Option | Score | Decision |
+|---|---:|---|
+| Repository-owned proof config | **9/10** | Selected; hermetic and does not change CLI semantics or user state. |
+| Change CLI default or semantics | 5/10 | Rejected; product semantics must not be changed to satisfy the gate. |
+| Provision remote `HOME` config | 2/10 | Rejected; retains a machine-specific hidden dependency. |
+
+The full-gate script now binds only the CLI smoke to
+`scripts/proof/autocorrect-proof-config.json`; script SHA-256
+`ba6ddf988f26796847ca078b0797e93c78bec945fc67e88a724c189b85875214`.
+An empty-`HOME` preflight passed with log SHA-256
+`cb316767842bdd9dd843127c57de1c602418a447ac013f11d92dbeaddc1fff9c`.
+No runtime CLI semantics or remote user configuration changed.
+
+Strict full V7 then exited `0` in `459 s`. Architecture, `2,442/2,442` Rust
+correctness/package tests, lint, Node/Python/shell syntax, the hermetic CLI
+smoke, release build, and `git diff --check` passed. The source closure was
+unchanged at
+`edc6f8d9ba4836e04a6f388ac7bf0a2cff7bd861137fdabcdc8ac898f3c5c2f7`;
+target usage was `3,540,627,813` bytes before and after. Full-log SHA-256:
+`b0f8b41e05e09a97bfebf22c304a54945003514fe37e90e034243ffc4d49f816`.
+
+V7 and any performance evidence bound to its source closure are historical
+pre-morphology checkpoints. The next fixed proof found that adjective
+certificate ownership was still too coarse:
+
+```text
+surface suffix family
+-> attested lemma ending
+-> velar / sibilant / restricted stem class
+-> clean morphology certificate
+```
+
+The prior binary soft/hard classification rejected valid mixed-spelling
+paradigms, first `русский -> русского`. The exact test
+`adjective_surface_certificate_respects_lemma_paradigm_and_stem_spelling`
+failed with exit `101`.
+
+| Option | Score | Decision |
+|---|---:|---|
+| Typed suffix-family × lemma-ending × stem-class mapping | **9/10** | Selected; represents the paradigm and preserves negative spellings. |
+| Broad soft/hard expansion | 4/10 | Rejected; admits invalid cross-paradigm forms. |
+| Literal exceptions | 1/10 | Rejected; fixture surfaces cannot become runtime authority. |
+
+Preflight V26 returned `BLOCKED_BEFORE_CODE`, `safe_to_implement=false`, on the
+unknown preservation reference `morphology-form-owner`. V27 pinned that owner
+and returned `READY_TO_IMPLEMENT`, `safe_to_implement=true`, with zero blockers.
+The typed repair is bound to source SHA-256
+`555dfe8f8f2c25f90b12bf968f522d99d0d4b3628f90951b526a9d63ebde10a4`
+and test SHA-256
+`72a692fc32dbf6ba81d6077659c9a33e88af19843e741fef2851871274f2bc07`.
+
+Focused results are exact regression `1/1 PASS` (log
+`942e33929735983081f7b31e0bb81b583b6f16fc1662eb121b086357d4fa321b`),
+lexicon `14/14 PASS` (log
+`866ef0b10f9824a88c06a0c7ed4c05837bff571c6f8b59339e6f7588b9dd81ae`),
+DecisionCore `33/33 PASS` (log
+`db49b48f40d227f608583f47127a94c78ff0d78b4ed7cf3f19ac66cc535c4656`),
+and executable source contract `7/7 PASS` (log
+`caaec3644a06b4419bda1f40206575d255898e6e9f6202c856b8a30d2795db29`).
+These focused results change morphology certification but grant no final full,
+performance, Graphify, installation, or release authority.
+
+The final review-pass-2 High concerns false comparative certainty, not the
+mixed-spelling paradigm above. Its RED matrix returned `0/1`, exit `101`, first
+on `почтовее`, and also covers `атомнее`, `даннее`, and `школьнее`; `точнее`,
+`синее`, and `хорошее` are required preserved positives. RED log SHA-256:
+`fe866cc16259d63b3e7655636553c1349f77418a79c6611392eddb91aec2b99c`.
+
+V28 remains historical. Append-only V29 returned `READY_TO_IMPLEMENT`,
+`safe_to_implement=true`, zero blockers, with canonical manifest SHA-256
+`0267f17d184a3cda741f69d9fc012924175deec28a957382b50c103450b2f3c9`.
+The admitted route is:
+
+```text
+Hunspell dictionary word/flags
+-> A: regular -ий projection
+-> O: possessive -ий projection
+-> E: exact comparative-capable lemma projection, no -ий filter
+-> Russian adjective class cache
+-> russian_adjective_has_comparative_ee()
+-> -ый + ее requires E
+
+regular non-velar -ий + ее
+-> existing regular-A neuter certificate
+
+missing E / unknown lemma / loader failure
+-> false; no comparative certificate
+```
+
+Final source SHA-256 values are
+`2c982e16a21544232779075fbbb42ca8401929680768df2b35143603161eef23`
+for `forms/backed.rs`,
+`cd8c2cd53a06345e49c7a7c7d3782469adc40eb087a469ee88dc2706b720db78`
+for `russian_lexicon_tests.rs`,
+`659cc4a059c128c28a01643fa9a9b91f95800b4a3574fb3dbbcc930ce02939e7`
+for the facade, and
+`aefc384c73936d83d27f88003ac0e7880f465a059c26737999d912b036b53eed`
+for the Hunspell loader.
+
+Focused GREEN is exact regression `1/1` (log
+`b840fc182a7dc47ea85b360b207fb497b0e674a904095e87dca53afbfd956f48`),
+Hunspell `2/2` (log
+`c65e4cbc0b9b134a0b5116d6f34c275c1240da04652f50197fd923f08e4eb789`),
+Russian lexicon `17/17` (log
+`98dbe0d1f350d2d9dcea6c9955f4090351123af36acd85387ec86dc5ac52abdd`),
+DecisionCore `33/33` (log
+`eafff142f5e241877ff14b0d738c6564c08edd2b3d6400e1876622113c795284`),
+and source contract `7/7` (log
+`fdd1bb02218e0d9c6c3a26d0de8470a697727dc638eab66ea50de71f229c122e`).
+Clippy exited `0` with zero non-dead-code diagnostics and `366` dead-code
+warnings; log SHA-256
+`0a3bd17532d6d87b7cdb05e095f6dc684d091262cb29cfd589155d9eceaa10be`.
+
+Cross-host projection parity is `PASS` after identical `awk` word/flag
+projection, `LC_ALL=C sort -u`, and newline-terminated hashing. Regular
+`A -ий` is `24,723` rows with SHA-256
+`4d734e5fd62e10a2817246fdb76bb4a12ad67f740da0d524a93d9bb9309b8693`;
+possessive `O -ий` is `170` rows with SHA-256
+`101d65585a282daac494a3bc0216c5e240bd0d28d1eb4761e87983ff44c85f3f`;
+all `E` is `1,054` rows with SHA-256
+`dc3f1550cbb9f4856801e74cd9d1b684f2479522f8c5c101bdd633e2e723c102`.
+The full dictionaries intentionally differ and are outside this parity claim.
+Receipt:
+`tech_debt/evidence/td113-hunspell-projection-parity-v1.json`.
+
+The current manifest contains `2,474` tests: `2,413` correctness, `36`
+package, `11` performance, and `14` ignored across 36 targets; SHA-256
+`bd38e606f68117929f491465fba0b377eb19a9ad676bc0a5bafa6ffc221f85aa`.
+This conjunction objectively closes the High finding in focused scope. It does
+not rewrite the historical `7/10 HOLD` or grant final repository authority.
+
+Final-byte performance used unchanged source closure
+`0062b6b55c6e0f9ec6d86619ea754d6693ab12ff4d25e626a259fbb40191aae9`.
+Canonical V30 completed `500/500` samples, exit `0`, with p50/p90/p99/max
+`1,841/1,944/2,971/3,701 us`; log SHA-256
+`a5705197d3db6e607ecd2a968c3c359f8bd383b57cae9786d8096ac7c9c24f8d`.
+The earlier `500`-requested/`120`-actual harness run is retained as
+`NOT_FINAL`, log SHA-256
+`1f7085954bf4460931d18495ff1b32ed5766b75b17dc37e042a03054d7b64a69`.
+The final paired release proof passed `60` samples per mode: Nanda p50/p99
+`97/446 us`, CPU `286 us`; Hybrid p50/p99 `804/1,692 us`, CPU `1,170 us`;
+RSS `246,280 -> 246,284 KiB`, delta `4 KiB`. It exited `0` in about `286 s`
+including LTO; log SHA-256
+`8e928454ccf4c6cba82b755d123a63f6a741b1cc948130a05262a2a4b62ed2b7`.
+Verdict is `PASS_FINAL_BYTES` for performance only.
+
+The historical `2,439/2,441` result is a repository `HOLD`, not an architecture
+failure and not a quality PASS. Its two tests encoded the obsolete ownership
+assumption that semantic whole-word competition must erase producer evidence;
+they did not expose a runtime behavior failure. The focused `6/6` result closes
+only those assertion contracts. V7 proved its exact pre-morphology source
+closure, but the later typed morphology repair requires every final-byte gate
+to run again.
+
+| Scope | Current evidence boundary |
+|---|---|
+| Earlier morphology focused proof | `1/1`, `14/14`, `33/33`, `7/7 PASS` |
+| E-comparative focused proof | `1/1`, `2/2`, `17/17`, `33/33`, `7/7`, Clippy `PASS` |
+| Hunspell A/O/E cross-host projection | exact counts and newline-normalized SHA-256 parity `PASS`; full dictionaries differ |
+| Test inventory | current V30 bytes: `2,474` total, manifest SHA-256 `bd38e606...f85aa` |
+| Runtime correctness/package | final source closure `2,449/2,449 PASS` |
+| Lint, syntax, CLI smoke, release build, diff | final full wrapper `PASS` |
+| Changed/full repository wrappers | final `PASS`; log SHA-256 `2819e85a...8a199` / `75966f28...41a` |
+| Performance | final-byte canonical `500/500` and paired `60/mode` `PASS`; source closure unchanged |
+| Observed-source route | fresh final-byte rerun `PASS`: 15 routes, 16 nodes, 41 edges, `57/57` markers, zero issues/warnings; one rank/authorization/mutation owner per event |
+| Graphify/architecture freshness | final frozen-byte wrapper `PASS`: 21,559 nodes, 53,638 links, 1,001 communities, 678 bound Rust sources, `11/11` ownership checks and `22/22 + 2/2` deterministic suites |
+| Release/install/live authority | `false`; 1.0.62 not built or installed |
+
+The 1.0.62 build, rollback-safe installation, and live runtime checks remain separate
+authority and are recorded only when executed. This checkpoint does not prove broad
+Russian/English quality, physical focused-application typing, long-window
+learning quality, or visual IME stability. IME suggestion flicker is explicitly
+outside TD-113.
+
+Verdict scope at this checkpoint:
+
+`PASS_FINAL_SOURCE_GATES_RELEASE_PENDING`.
+
+Source composition and bounded boundary Apply authority changed: `yes`.
+Objective post-review repair tests are tracked separately from the historical
+review score. Installed runtime authority changed: `no`; installed 1.0.61
+binaries, services, configuration, and selected IME have not been modified by
+TD-113 yet.
+
+### V30: target validity is not input-damage authority
+
+The post-V29 changed gate exposed one shared pre-existing fail-open mechanism,
+not an adjective-classification regression. After strict Hunspell A/O/E
+classification correctly stopped treating malformed broad-L2 centers as clean
+morphology, `руских -> русских` lost an accidental preserve-current veto. A
+clean replacement, `MissingLetter` geometry, and center support then fell
+through to `class_allows_apply`; none of those observations independently
+proves that the input omitted a repeated consonant.
+
+Three general repairs were evaluated. A preservation-only permissive
+morphology predicate scored `6/10` because it would again couple safety to
+noisy broad-L2 membership. A new typed positive input-damage certificate scored
+`8/10` architecturally but `5/10` for this release because it widens the
+authority model. The selected `9/10` repair is one source-neutral transition
+predicate: a one-letter insertion that duplicates an adjacent Russian
+consonant remains proposal material but cannot receive Apply without separate
+positive damage evidence. Literal exceptions and global center-authority
+removal scored `1/10` and `3/10` respectively and were rejected.
+
+The predicate has two consumers and adds no producer, rank, verifier, or
+mutation owner:
+
+```text
+direct correct_missing_letter
+-> build the complete authoritative candidate pool
+-> preserve the existing exactly-one-candidate ambiguity gate
+-> lower a sole duplicated-consonant insertion to no direct autocorrect
+
+hybrid deterministic proposal
+-> retain the candidate in the bounded lattice
+-> classify the same geometry as unproven_stable_surface_shape_drift
+-> SuggestOnly before DecisionCore Apply
+```
+
+The ordering is contractual. An initial implementation filtered the duplicate
+candidate before the uniqueness check; fresh review found that this could turn
+the ambiguous `балон -> {балкон, баллон}` pool into a false singleton. The
+repair now checks the full pool first. Fresh-context review after that change
+returned `ACCEPT 9/10`, with zero blockers.
+
+The design route gate passed with `9` nodes, `14` edges, and `4` routes.
+Implementation preflight V30 returned `READY_TO_IMPLEMENT`,
+`safe_to_implement=true`, zero blockers. Remote TDD used
+`CARGO_BUILD_JOBS=20`: the bound RED was `0/2`; final focused results were the
+ambiguity regression `1/1`, consonant matrix `9/9`, nonduplicate controls
+`2/2`, composite regression `1/1`, and the earlier TD-113 filter `25/25` with
+one ignored performance proof. Guarded format and diff checks passed. The
+current inventory is `2,474 = 2,413 + 36 + 11 + 14`.
+
+Final changed/full wrappers and final-byte performance passed against unchanged
+source closure
+`0062b6b55c6e0f9ec6d86619ea754d6693ab12ff4d25e626a259fbb40191aae9`.
+Not tested at this checkpoint: physical focused-application typing, IME visual
+stability, or the 1.0.62 build/install/rollback/live route. Installed runtime
+authority remains unchanged at 1.0.61. Exact receipt:
+`tech_debt/evidence/td113-missing-duplicate-authority-repair-v1.json`.
+
+Task evidence:
+
+- `tech_debt/evidence/td113-red-green-tdd-v1.json`;
+- `tech_debt/evidence/td113-performance-v1.json`;
+- `tech_debt/evidence/td113-code-route-observed-receipt-v1.json`;
+- `tech_debt/evidence/td113-boundary-authority-implementation-preflight-receipt-v22.json`;
+- `tech_debt/evidence/td113-final-review-repair-implementation-preflight-receipt-v24.json`;
+- `tech_debt/evidence/td113-morphology-certificate-implementation-preflight-receipt-v25.json`;
+- `tech_debt/evidence/td113-adjective-paradigm-implementation-preflight-receipt-v26.json`;
+- `tech_debt/evidence/td113-adjective-paradigm-implementation-preflight-receipt-v27.json`;
+- `tech_debt/evidence/td113-adjective-classification-review-repair-implementation-preflight-v28.json`;
+- `tech_debt/evidence/td113-adjective-classification-review-repair-implementation-preflight-receipt-v28.json`;
+- `tech_debt/evidence/td113-e-comparative-review-repair-implementation-preflight-v29.json`;
+- `tech_debt/evidence/td113-e-comparative-review-repair-implementation-preflight-receipt-v29.json`;
+- `tech_debt/evidence/td113-missing-duplicate-authority-code-route-design-v1.json`;
+- `tech_debt/evidence/td113-missing-duplicate-authority-code-route-design-receipt-v1.json`;
+- `tech_debt/evidence/td113-missing-duplicate-authority-implementation-preflight-v30.json`;
+- `tech_debt/evidence/td113-missing-duplicate-authority-implementation-preflight-receipt-v30.json`;
+- `tech_debt/evidence/td113-missing-duplicate-authority-repair-v1.json`;
+- `tech_debt/evidence/td113-architecture-refresh-v2.md`;
+- `tech_debt/evidence/td113-hunspell-projection-parity-v1.json`;
+- `tech_debt/evidence/td113-code-review-v1.md`;
+- `tech_debt/evidence/td113-verification-v1.json`;
+- `tech_debt/evidence/td113-architecture-refresh-v1.md`;
+- `tech_debt/evidence/td113-repository-gate-red-v1.json`.

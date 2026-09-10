@@ -1,3 +1,56 @@
+## Accepted development simplification — 2026-09-07
+
+- The user subsequently prioritized TD-124 maintenance tooling before further
+  release work. Follow DEVELOPMENT.md: scripts/dev-check.py is the remote-only
+  development entrypoint. Its explicit focused PASS is not release acceptance;
+  canonical full gates remain unchanged. No new runtime migration is implied.
+- Keep release 1.0.66 scoped to TD-120/TD-121 and verified delivery. Wave
+  quality is TD-123 / 1.0.67. Broad ownership migrations, research/runtime
+  separation and removal of hot-upgrade compatibility are separate decisions,
+  not new prerequisites silently added to 1.0.66.
+- Start from the actual failing entrypoint and visible effect, then make the
+  smallest justified change, rerun that scenario and its affected contracts,
+  obtain independent review, and execute the mandatory release gates. A helper
+  or atomic-path PASS cannot establish legacy-client or physical-input PASS.
+- Reproduce concurrent failures with controlled event order and bounded waits
+  using existing production reducers/adapters. Distinguish key-before-ready
+  from key-after-ready. Do not substitute sleeps, retries-until-green, or a
+  second simulated implementation for a causal proof; retain real IBus smoke.
+- Targeted verification must establish the exact expected test identities,
+  nonzero selection, actual entrypoint and asserted effects. Use the existing
+  test manifest/discovery machinery. Prove a new regression detects the old
+  failure or a narrowly controlled violation; record which kind was tested.
+- Use existing guarded explicit --lib/--bin or test-lane routes for the inner
+  loop. check-lay-changed.sh currently runs all correctness/package lanes for
+  Rust changes; do not call it a component-only check. Keep full final gates,
+  and use broader checks whenever the affected dependency closure is unknown.
+- Reuse proof only when relevant source, dependencies, configuration, toolchain
+  and environment identities still match. Do not rebuild accepted artifacts
+  during installation or rerun unchanged evidence just to generate a receipt.
+- Give one implementation owner a connected runtime change and one owner the
+  remote heavy-execution lease. Other agents may independently review or work
+  on disjoint files. Retain the two-pass review/repair limit; unresolved issues
+  require explicit replanning, never weakened assertions or an unreported pass.
+- Before adding an owner, generation, timer, cache, queue or fallback, identify
+  the demonstrated failure, why existing mechanisms cannot suffice, and the
+  replacement/removal boundary. File/line counts are warning signals, not
+  arbitrary quotas. Reuse ContextAdmissionReducer rather than add another
+  authority controller; preserve distinct GTK, terminal and atomic transports.
+- Extend existing opt-in bounded diagnostics with causal refusal reasons and
+  event/owner identities where needed. Avoid user text in new metadata traces;
+  diagnostics must not grant authority, add polling/RPCs, or change deadlines.
+- Keep one current owning task with exact log/receipt links; preserve historical
+  evidence as historical. Measure reproduction time, focused-check time and
+  repair rounds separately; do not claim speedup from test count or estimates.
+- All builds, tests, training and architecture refreshes run only on the remote
+  host under the existing resource/Cargo guards: dedicated-20cpu, build jobs 20,
+  Rust test threads 1, CPU 2000%, MemoryHigh 24G, MemoryMax 28G, swap 1G,
+  TasksMax 512, target <=12 GiB. Reading/editing sources locally is allowed.
+- Never use the nanda-structural-gate skill or any of its bundled commands.
+  Consequence analysis is ordinary owning-document text. Do not restart global
+  IBus, change engine names or migrate user input sources without explicit
+  separate user approval; accepting simplification is not that approval.
+
 ## graphify
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
@@ -9,7 +62,7 @@ Rules:
 - Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+- After modifying code or architecture documentation, run `scripts/update-architecture-graph.sh`. It performs the AST-only Graphify update, refreshes the source binding, publishes a receipt only for a `PASS` verdict, and runs the mandatory architecture check. A bare `graphify update .` is not a completed refresh.
 
 ## Cargo disk budget
 
@@ -90,7 +143,7 @@ Rules:
 - Compare the current baseline with at least two viable designs for a nontrivial change. Record why the selected design wins and why the rejected designs fail. A fast local result is not sufficient if it narrows the candidate field, weakens competition, changes authority, or increases future route count.
 - Keep facts, hypotheses, estimates, and unverified assumptions separate. If a required consequence cannot yet be bounded, remain in analysis and gather evidence; do not start production implementation.
 - Before code starts, record the chosen route, invariants, expected regressions, rollback boundary, proof denominators, and removal/replacement plan in the owning architecture document or implementation preflight. A preflight without an explicit consequence analysis is incomplete.
-- Prefer spending a substantial analysis budget, including roughly 20k tokens when the risk warrants it, over repeated speculative compile/test/deploy cycles. Implementation speed is measured by accepted systemic results, not by how quickly the first patch is produced.
+- Scale analysis to demonstrated risk and missing evidence, not a fixed token target. State the first unresolved mechanism and gather the smallest discriminating proof before another patch. Implementation speed is measured by accepted systemic results, not by how quickly the first patch is produced.
 
 ## Systemic wave-contour fixes
 

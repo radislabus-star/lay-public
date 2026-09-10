@@ -617,6 +617,18 @@ impl ContextPhasePackage {
         // otherwise tied pair. Keep its unary ranking, but defer pairwise
         // authority until the scene has at least two tokens.
         let sentence_pair_views = pair_views.is_some();
+        // Pair comparisons revisit the same immutable L2 feature many times.
+        // Reuse it only within this call; skipped pair routes allocate nothing.
+        let mut pair_features: Option<Vec<Option<(u64, u64)>>> = None;
+        let mut pair_feature = |index: usize| {
+            let features = pair_features.get_or_insert_with(|| vec![None; candidates.len()]);
+            *features[index].get_or_insert_with(|| {
+                (
+                    candidate_token_hash(candidates[index]),
+                    self.candidate_signature(candidates[index]),
+                )
+            })
+        };
         let anchored_sentence_competition = sentence_pair_views
             && direct_pair_view_indices.is_some_and(|indices| {
                 indices
@@ -631,11 +643,13 @@ impl ContextPhasePackage {
                     .any(|view_index| {
                         (0..candidates.len()).any(|left| {
                             (left + 1..candidates.len()).any(|right| {
+                                let (left_hash, left_signature) = pair_feature(left);
+                                let (right_hash, right_signature) = pair_feature(right);
                                 self.pair_view_profile_exists(
-                                    candidate_token_hash(candidates[left]),
-                                    candidate_token_hash(candidates[right]),
-                                    self.candidate_signature(candidates[left]),
-                                    self.candidate_signature(candidates[right]),
+                                    left_hash,
+                                    right_hash,
+                                    left_signature,
+                                    right_signature,
                                     view_index,
                                 )
                             })
@@ -678,9 +692,8 @@ impl ContextPhasePackage {
             PairwiseDominance::default()
         } else {
             let mut pair_candidates = std::collections::BTreeMap::<u64, (i64, u64)>::new();
-            for (candidate, readout) in candidates.iter().zip(&readouts) {
-                let hash = candidate_token_hash(candidate);
-                let signature = self.candidate_signature(candidate);
+            for (index, readout) in readouts.iter().enumerate() {
+                let (hash, signature) = pair_feature(index);
                 pair_candidates
                     .entry(hash)
                     .and_modify(|entry| entry.0 = entry.0.max(readout.margin_micro))
@@ -1760,6 +1773,8 @@ impl ContextPhasePackage {
     }
 
     fn candidate_signature(&self, candidate: &str) -> u64 {
+        #[cfg(test)]
+        tests::record_candidate_signature();
         candidate_l2_signature_for_schema(candidate, self.signature_schema)
     }
 

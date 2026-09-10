@@ -274,7 +274,6 @@ fn edit_navigation_boundaries_reset_word_buffer_before_next_autocorrect() {
         assert!(!buffer.is_empty(), "precondition key={key:?}");
 
         let mut pending_typing_assist_after_space = None;
-        let mut ignore_current_token_until_space = false;
         let mut events_since_word_start = 0;
 
         assert!(handle_hard_boundary_if_needed(
@@ -283,7 +282,6 @@ fn edit_navigation_boundaries_reset_word_buffer_before_next_autocorrect() {
             HardBoundaryContext {
                 buffer: &mut buffer,
                 pending_typing_assist_after_space: &mut pending_typing_assist_after_space,
-                ignore_current_token_until_space: &mut ignore_current_token_until_space,
                 events_since_word_start: &mut events_since_word_start,
                 verbose: false,
             },
@@ -291,36 +289,31 @@ fn edit_navigation_boundaries_reset_word_buffer_before_next_autocorrect() {
 
         assert!(buffer.is_empty(), "buffer survived key={key:?}");
         assert!(pending_typing_assist_after_space.is_none());
-        assert!(!ignore_current_token_until_space);
         assert_eq!(events_since_word_start, 0);
     }
 }
 
 #[test]
-fn leading_cli_option_token_is_ignored_until_space() {
-    for (leader, leader_shift, token_key, next_word) in [
-        (KeyCode::KEY_MINUS, false, KeyCode::KEY_B, "feature"),
-        (KeyCode::KEY_EQUAL, true, KeyCode::KEY_X, "script"),
+fn leading_cli_option_token_is_retained_through_space() {
+    for (leader, leader_shift, token_key, option, next_word) in [
+        (KeyCode::KEY_MINUS, false, KeyCode::KEY_B, "-b", "feature"),
+        (KeyCode::KEY_EQUAL, true, KeyCode::KEY_X, "+x", "script"),
     ] {
         let mut modifiers = ShiftState::default();
         modifiers.update(KeyCode::KEY_LEFTSHIFT, i32::from(leader_shift));
         let mut buffer = WordBuffer::new();
-        let mut ignore_token =
-            should_start_ignored_buffer_token(leader, &modifiers, buffer.current_is_empty());
-        assert!(ignore_token);
+        assert!(!should_ignore_buffer_key(leader, &modifiers));
+        buffer.push(key_event_with_shift(leader, leader_shift, false));
+        buffer.push(key_event(token_key, false));
+        let (events, erase) = buffer.what_to_replay(1).expect("option");
+        assert_eq!(map_original_events(&events), option);
+        assert_eq!(erase, 2);
 
-        if !ignore_token {
-            buffer.push(key_event(token_key, false));
-        }
-        assert!(buffer.current_is_empty());
-
-        if ignore_token {
-            ignore_token = false;
-        } else {
-            buffer.handle_space();
-        }
-        assert!(!ignore_token);
-        assert!(!buffer.prev_had_trailing_space());
+        buffer.handle_space();
+        assert!(buffer.prev_had_trailing_space());
+        let (events, erase) = buffer.what_to_replay(1).expect("completed option");
+        assert_eq!(map_original_events(&events), format!("{option} "));
+        assert_eq!(erase, 3);
 
         push_text_as_layout(&mut buffer, next_word, false);
         let (events, _) = buffer.what_to_replay(1).expect("word");

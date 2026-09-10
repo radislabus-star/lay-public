@@ -607,6 +607,83 @@ mod tests {
     }
 
     #[test]
+    fn td112_space_profiles_preserve_lattice_and_change_apply_action() {
+        let pipeline = default_typing_assist_pipeline();
+        let decide = |correction_safety| {
+            decide_input_gate(InputGateRequest {
+                trigger: InputGateTrigger::Space,
+                text_tail: "звгрузи ",
+                lexical_authority_frame: None,
+                auto_replace: true,
+                typing_assist: true,
+                auto_switch_layout: true,
+                correction_safety,
+                typing_assist_pipeline: &pipeline,
+                nanda_autocorrect: true,
+                nanda_candidate_route: CandidateReadoutRoute::FullWave,
+                nanda_wave_options: WaveOptions::default(),
+                correction_mode: CorrectionMode::NandaOnly,
+            })
+        };
+
+        let strict = decide(CorrectionSafety::Strict);
+        let normal = decide(CorrectionSafety::Normal);
+        let experimental = decide(CorrectionSafety::Experimental);
+        let target = "загрузи ";
+        let target_metadata = |decision: &InputGateDecision| {
+            let candidate = decision
+                .correction
+                .as_ref()
+                .expect("correction resolution")
+                .candidates
+                .iter()
+                .find(|candidate| candidate.replacement == target)
+                .expect("retained FullWave candidate");
+            (
+                candidate.source,
+                candidate.origin,
+                candidate.source_id.clone(),
+                candidate.error_class,
+                candidate.gate.clone(),
+                candidate.evidence_count(),
+            )
+        };
+
+        assert_eq!(target_metadata(&strict), target_metadata(&normal));
+        assert_eq!(target_metadata(&strict), target_metadata(&experimental));
+        assert_eq!(
+            strict.action,
+            InputGateAction::SuggestOnly {
+                best: Some(target.to_string())
+            }
+        );
+        for decision in [&normal, &experimental] {
+            assert_eq!(
+                decision.action,
+                InputGateAction::ApplyReplacement {
+                    replacement: target.to_string(),
+                    source: CorrectionDecisionSource::Nanda,
+                }
+            );
+        }
+        let strict_resolution = strict.correction.as_ref().expect("strict resolution");
+        assert!(strict_resolution.selected.is_none());
+        assert!(strict_resolution.selected_transition.is_none());
+        assert_eq!(
+            strict.trace.as_ref().map(|trace| trace.outcome),
+            Some(InputGateOutcome::SuggestOnly)
+        );
+        assert_eq!(
+            normal.trace.as_ref().map(|trace| trace.outcome),
+            Some(InputGateOutcome::Apply)
+        );
+        assert_eq!(
+            experimental.trace.as_ref().map(|trace| trace.outcome),
+            Some(InputGateOutcome::Apply)
+        );
+    }
+
+    #[test]
     fn word_boundary_does_not_apply_after_safety_gate() {
         let pipeline = default_typing_assist_pipeline();
         let decision = decide_input_gate(request_with_pipeline(

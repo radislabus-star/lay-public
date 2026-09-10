@@ -1,0 +1,23 @@
+--- a/glfw/wl_text_input.c
++++ b/glfw/wl_text_input.c
+@@ -107,4 +107,11 @@
+     // but send nothing back to the compositor, aka no cursor position update.
+     // See https://github.com/kovidgoyal/kitty/pull/7283 for discussion
++    if (pending_commit) {
++        send_text(pending_commit, GLFW_IME_COMMIT_TEXT);
++        free(pending_commit); pending_commit = NULL;
++        // Commit clears the displayed preedit. Invalidate its cache so an
++        // identical pending preedit is restored after the committed text.
++        free(current_pre_edit); current_pre_edit = NULL;
++    }
+     if ((pending_pre_edit == NULL && current_pre_edit == NULL) ||
+         (pending_pre_edit && current_pre_edit && strcmp(pending_pre_edit, current_pre_edit) == 0)) {
+@@ -120,8 +127,4 @@
+             send_text(NULL, GLFW_IME_WAYLAND_DONE_EVENT);
+         }
+-    }
+-    if (pending_commit) {
+-        send_text(pending_commit, GLFW_IME_COMMIT_TEXT);
+-        free(pending_commit); pending_commit = NULL;
+     }
+ }

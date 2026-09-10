@@ -1,8 +1,10 @@
 use std::collections::BTreeSet;
+#[cfg(test)]
+use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
 use super::super::preedit::PreeditFastState;
-use super::super::protocol::ExactManualToggleSuppression;
+use super::super::protocol::AutocorrectSuppression;
 use super::types::{DeferredLayoutAction, DeferredLearningAction, SurroundingTextSnapshot};
 use super::types::{
     InputFrameIdentity, PendingImeCompletionLearning, PendingVisiblePostcondition,
@@ -18,8 +20,7 @@ pub(crate) struct CommittedTailState {
     pub(crate) recent_replace: Option<RecentCommittedTailReplace>,
     pub(crate) pending_visible_postcondition: Option<PendingVisiblePostcondition>,
     pub(crate) pending_completion_learning: Option<PendingImeCompletionLearning>,
-    pub(crate) suppress_next_autocorrect: bool,
-    pub(crate) exact_manual_toggle_suppression: Option<ExactManualToggleSuppression>,
+    pub(crate) autocorrect_suppression: Option<AutocorrectSuppression>,
 }
 
 impl CommittedTailState {
@@ -32,8 +33,7 @@ impl CommittedTailState {
             recent_replace: None,
             pending_visible_postcondition: None,
             pending_completion_learning: None,
-            suppress_next_autocorrect: false,
-            exact_manual_toggle_suppression: None,
+            autocorrect_suppression: None,
         }
     }
 }
@@ -129,4 +129,8 @@ pub(crate) struct AtomicRouteState {
     pub(crate) speculation: bool,
     pub(crate) deferred_layout_actions: Vec<DeferredLayoutAction>,
     pub(crate) deferred_learning_actions: Vec<DeferredLearningAction>,
+    #[cfg(test)]
+    pub(crate) before_capture: Option<Arc<dyn Fn() + Send + Sync>>,
+    #[cfg(test)]
+    pub(crate) settlement_feedback_events: Arc<Mutex<Vec<&'static str>>>,
 }

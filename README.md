@@ -7,7 +7,10 @@
 `lay` исправляет слово, набранное не в той раскладке: нажмите
 **Shift два раза** и продолжайте писать.
 
-**Текущая версия: 1.0.59. Статус: alpha.**
+**Версия исходников: 1.0.66. Статус: alpha.**
+
+Состояние установленного IME и незавершённые проверки описаны в
+[точке продолжения](CONTINUE.md).
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -44,158 +47,19 @@ Daemon локально слушает физические клавиши, хр
 пробела и автоматическое применение исправлений выключены, пока пользователь
 сам их не включит.
 
-## Что вошло в 1.0.59
+## Текущая работа
 
-- IME запускает актуальный фоновый readout с первой буквы, а не ждёт жёсткого
-  порога в три символа;
-- каждый следующий печатный символ получает новое поколение результата; если
-  выбранное слово всё ещё совпадает с префиксом, видимый хвост сокращается сразу,
-  пока фоновый результат обновляется;
-- `150 ms` остаётся только верхним сроком годности точного результата, а не
-  задержкой ввода или ожиданием перед показом;
-- настоящий пустой набор кандидатов по-прежнему ничего не выдумывает; источники,
-  ранжирование, предел `12` и запрет фоновой замены целого слова не менялись.
+Ветка `codex/cleanup-20260908` содержит исходники 1.0.66 и сохранённые
+исправления IME. Очистка проекта не является новым релизом. Автокоррекция
+остаётся незавершённой: текущая выборка существующих native fixtures даёт
+19/47 правильных восстановлений и 39/42 сохранённых clean строк; обычный темп
+физического ввода ещё не подтверждён.
 
-## Что вошло в 1.0.58
+[Точка продолжения](CONTINUE.md) · [Текущая очередь](tech_debt/README.md) ·
+[Документация](docs/README.md) · [Сохранённая история](ARCHIVE.md).
 
-- Double Shift в Kitty и других доказанных terminal-клиентах снова выполняет
-  замену одним IME commit-frame, а не серией физических Backspace и посимвольных
-  key events;
-- точная проекция сохраняет все символы: `rjvvbn -> коммит`, обратное
-  `коммит -> rjvvbn` и две последовательные пары Shift используют один и тот же
-  маршрут;
-- terminal-route сохраняет пробел после слова и синхронизирует раскладку один
-  раз; GTK/SurroundingText и daemon fallback остаются отдельными маршрутами;
-- словари, кандидаты, ранжирование, автокоррекция и физический детектор Double
-  Shift не изменялись.
-
-## Что вошло в 1.0.57
-
-- IME-подсказка допускается уже на точном префиксе из трёх символов, даже
-  если фоновый readout занял больше прежних `50 ms`;
-- окно публикации точного актуального результата расширено до `150 ms`, при
-  этом проверки текста, фокуса, раскладки, конфигурации и поколения сохранены;
-- устаревший результат по-прежнему не показывается, а настоящий пустой набор
-  кандидатов остаётся без подсказки;
-- источники кандидатов, их ранжирование, предел `12` и асинхронная обработка
-  обычных клавиш не изменились.
-
-## Что вошло в 1.0.56
-
-- `↑/↓` больше не теряют список IME-вариантов, если нажаты в коротком
-  интервале между вводом буквы и завершением фонового readout;
-- для стрелки отменяется старый worker и один раз материализуется список для
-  точного текущего префикса; обычный ввод остаётся асинхронным;
-- `Tab`, Alt и курсорные `←/→` по-прежнему не могут принять устаревшую
-  display-only подсказку;
-- источники кандидатов, порядок ранжирования и предел `12` не сужались.
-
-## Что вошло в 1.0.55
-
-- точный автоматический маршрут теперь симметричен: `Згыр -> Push` работает
-  так же, как `ghbdtn -> привет`;
-- автопереворот применяется только когда исходного слова нет в русском
-  словаре и пользовательских исключениях, а клавиатурная проекция является
-  точным английским словом;
-- маршрут отключается настройками `Автозамена` и `Следовать языку
-  исправления`; ручной Double Shift остаётся независимым;
-- сохранены исправления Double Shift, IME preedit и синхронизации раскладки из
-  `1.0.54`, а IBus state owner и runtime/research build surface разделены на
-  более узкие владельцы;
-- герметичный release denominator: `2,369 passed`, без semantic и
-  infrastructure failures.
-
-## Что исправлено в 1.0.46
-
-- Double Shift теперь определяется по точной последовательности
-  `левый Shift press/release` два раза, а не по силе или длительности
-  удержания;
-- команда подтверждается на втором отпускании, а любая другая нажатая клавиша
-  отменяет незавершённую последовательность, поэтому `Shift+буква` не считается
-  ручным переключением;
-- правый Shift и смешанная пара Shift не завершают настроенный
-  `double-lshift`;
-- `tap_max_ms` сохранён только для одиночных горячих клавиш; правила выбора
-  исправления и маршруты изменения текста не менялись.
-
-## Что исправлено в 1.0.45
-
-- IME-подсказки снова работают в Kitty и других клиентах с IBus
-  `ContentType=TERMINAL`; терминал больше не ошибочно считается sensitive-полем;
-- password, PIN, PRIVATE и HIDDEN_TEXT по-прежнему полностью отключают
-  подсказки и очищают IME tail;
-- Double Shift в Kitty заменяет последнее слово через уже проверенный
-  IME-маршрут `terminal_erase_commit`, а не через daemon-uinput fallback;
-- неизвестные GUI-клиенты без SurroundingText и без явного terminal purpose
-  по-прежнему не получают terminal-erase authority.
-
-Проверка релиза:
-
-```text
-lay-ibus-engine                    245 passed, 0 failed
-changed-file gate                  PASS
-release binary parity              PASS
-Kitty suffix                       пров + ерить -> проверить
-Kitty Double Shift                 ghbdtn -> привет
-global ibus-daemon                 не перезапускался
-```
-
-## Что вошло в 1.0.44
-
-- exact V13 DAFSA загружается один раз на процесс из проверенного sidecar;
-- безопасный typed view переиспользуется запросами без повторного byte-slice
-  decode;
-- immutable lexical facts вычисляются один раз внутри обработки кандидата и
-  переиспользуются всеми admission-предикатами;
-- exact, grounded и contour-кандидаты входят в один bounded L2 material;
-- при переполнении сначала удаляется худший productive-only tail, а exact и
-  grounded цели сохраняются;
-- exact-кандидат не получает самостоятельного права на автозамену: решение
-  всё равно проходит L3, `TransitionDecisionCore` и verifier;
-- canonical V13 package, exact sidecar и десять release-бинарников
-  устанавливаются как одна проверенная версия;
-- GNOME extension, daemon, IME и CLI показывают версию `1.0.44`.
-
-Проверка релиза:
-
-```text
-productive_v1                       153 passed, 0 failed, 1 ignored
-V13 generation                       12 passed, 0 failed, 7 ignored
-field cache                            5 passed, 0 failed
-InputGate                              7 passed, 0 failed
-authority contracts                   40 passed, 0 failed
-tray UI contracts                     17 passed, 0 failed
-installed GTK/IBus smoke               2 passed, 0 failed
-```
-
-Старый широкий набор `correction_core` одинаково даёт
-`80 passed / 31 failed / 1 ignored` на исходниках `1.0.43`
-и `1.0.44`. Результат `31 failed` — унаследованный долг, а не регрессия
-V13.
-
-## Скорость 1.0.44
-
-Два механизма, вошедшие в релиз, измерены раздельно на фиксированном
-single-worker маршруте:
-
-| Участок | До | После | Изменение |
-|---|---:|---:|---:|
-| V13 traversal CPU | 26.032 ns/edge | 22.962 ns/edge | -11.80% |
-| final materialization p99 | 5.947 ms | 2.546 ms | -57.19% |
-| полный measured route p99 | 7.986 ms | 5.354 ms | -32.96% |
-
-Набор кандидатов и exact-сертификатов в парных измерениях совпал. Ускорение не
-получено отключением источников или сужением candidate language.
-
-Это target-host benchmark внутренних владельцев, а не queue-inclusive desktop
-key-to-text p99. Холодное построение process-lifetime owner также не является
-задержкой каждого нажатия. Поэтому README не превращает эти числа в
-неизмеренное обещание общей GUI latency.
-
-Исследованный штраф около `+18.77 ns/edge` при двадцати workers
-оказался следствием SMT и package/topology contention диагностического
-эксперимента. Production `TypingAssistWorker` использует один worker,
-поэтому этот многопоточный штраф не является production-регрессией.
+История изменений 1.0.44–1.0.65 сохранена в исходном Git snapshot по пути
+`README.md`; точные команды восстановления находятся в `ARCHIVE.md`.
 
 ## Текущая архитектура
 
@@ -453,47 +317,27 @@ identities и процедура обновления описаны в
 Единый локальный и CI lint-контракт описан в
 [Rust Lint Policy](docs/lint-policy.md).
 
-Обычная локальная проверка:
+Разработка и проверки выполняются на удалённом worker через
+[DEVELOPMENT.md](DEVELOPMENT.md):
 
 ```bash
-scripts/check-lay-changed.sh
+python3 scripts/dev-check.py plan
+python3 scripts/dev-check.py check
 ```
 
-Полный герметичный correctness/package denominator:
+Этот development PASS не заменяет обязательные changed/full release gates.
+Cargo-команды на worker проходят через `scripts/cargo-guard.sh`; budget
+`target/` — 12 GiB. Установленные бинарники лежат отдельно в
+`~/.local/lib/lay/bin`.
 
-```bash
-scripts/check-lay-tests.sh all
-```
-
-Timing budgets запускаются отдельно через
-`scripts/check-lay-tests.sh performance`; live desktop smoke всегда opt-in.
-
-Cargo-команды выполняются через disk guard:
-
-```bash
-scripts/cargo-guard.sh --status
-scripts/cargo-guard.sh build --release --bins
-```
-
-Полный release gate:
-
-```bash
-scripts/check-lay-full.sh
-```
-
-Default `target/` budget — 12 GiB. Установленные release-бинарники
-лежат в `~/.local/lib/lay/bin`, поэтому `target/` остаётся
-удаляемым build cache.
-
-После изменения кода или документации обновите knowledge graph:
-
-```bash
-graphify update .
-```
+После изменения кода или архитектурной документации на worker выполняется
+`scripts/update-architecture-graph.sh`: AST-only update, source binding,
+PASS receipt и обязательная architecture-проверка. Production desktop smoke
+и установка имеют отдельную область приёмки.
 
 ## English
 
-`lay` 1.0.59 is a local Double Shift RU/EN layout rescue and bounded
+`lay` 1.0.66 is a local Double Shift RU/EN layout rescue and bounded
 typing-correction tool for Linux desktops.
 
 ```text
@@ -508,30 +352,8 @@ L3 context, `TransitionDecisionCore`, and a structural verifier.
 Exact search contributes candidates and certificates but does not bypass final
 authority.
 
-Release 1.0.59 schedules an exact-current IME completion readout from the first
-alphabetic character and keeps the matching visible suffix continuous across
-subsequent characters. The `150 ms` bound is a result freshness ceiling, not an
-input delay; a genuinely empty candidate set still displays nothing. Release
-1.0.58 routes proven terminal committed-tail Double Shift through one
-IME erase-and-commit frame instead of physical Backspace and per-character key
-replay. The exact `rjvvbn -> коммит -> rjvvbn` round trip preserves its trailing
-boundary and performs one layout synchronization per gesture. Release 1.0.57
-admits an exact-current three-character IME completion for up
-to 150 ms while retaining full input-identity checks and the existing
-12-candidate field. A genuine zero-candidate prefix still displays nothing.
-Release 1.0.56 restores `Up`/`Down` candidate cycling during an in-flight IME
-readout without authorizing a stale completion or narrowing the 12-candidate
-field. Release 1.0.55 adds symmetric exact automatic layout correction: a token such
-as `Згыр` becomes `Push` only when the source is absent from the Russian guard,
-the keyboard projection is an exact English word, and both automatic settings
-are enabled. Release 1.0.46 makes Double Shift an exact clean key sequence without a
-per-press hold-duration limit; any intervening key cancels it. Release 1.0.45
-restored Kitty terminal suggestions and routed terminal Double Shift through
-the proven IME erase-and-commit backend. Release 1.0.44 reduced
-the measured V13 traversal CPU cost by 11.8% and the
-paired internal end-to-end p99 by 33.0%, without narrowing the candidate set.
-These are fixed target-host internal benchmarks, not a desktop key-to-text
-latency claim.
+Current development state and archived release history are linked from
+[CONTINUE.md](CONTINUE.md) and [ARCHIVE.md](ARCHIVE.md).
 
 Quick install:
 

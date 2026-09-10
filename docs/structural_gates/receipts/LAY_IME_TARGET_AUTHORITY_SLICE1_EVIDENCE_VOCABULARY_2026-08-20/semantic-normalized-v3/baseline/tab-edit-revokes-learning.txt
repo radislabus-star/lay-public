@@ -1,2 +1,0 @@
-test tail_memory::tests::backspace_turns_tab_completion_into_an_edit_trajectory ... ok
-

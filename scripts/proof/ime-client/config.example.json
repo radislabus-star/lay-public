@@ -1,0 +1,16 @@
+{
+  "schema": "lay.ime-client-harness.v1",
+  "origin_machine_id_sha256": "REPLACE_WITH_SHA256SUM_OF_ORIGIN_MACHINE_ID",
+  "execution_lease_id": "td124-ime-client-example",
+  "candidate": {
+    "path": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
+    "sha256": "6c480f399c62e0979b409c031c7669d74296a4c78be94082904d3cc163154ba3"
+  },
+  "deployed_ibus_root": "/home/e/.cache/lay/td121-remote-deployed-ibus.qFnUzG",
+  "dependencies": {
+    "root": "/home/e/.cache/lay/td121-authority-deps.d9pohv",
+    "manifest_path": "/home/e/.cache/lay/td121-authority-deps.d9pohv/dependency-manifest.json",
+    "manifest_sha256": "7f7343b6b3ffa8b7cfc924fd5c556e86f1073b677f6bc1fcd87b79e97b0b51d5",
+    "receipt_embedded_mount_path": "/home/ubu/.local/share/lay/nanda_wave/l1.1"
+  }
+}

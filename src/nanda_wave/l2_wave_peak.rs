@@ -24,7 +24,7 @@ pub(crate) struct L2WavePeakScore {
 pub(crate) struct L2CorrectionPeakContext {
     context: Vec<String>,
     original_word: String,
-    center_candidates: Vec<l2::L2ImeWordCandidate>,
+    center_candidates: Vec<l2::L2CorrectionPeakCandidate>,
 }
 
 pub(crate) fn prepare_correction_peak_context(original: &str) -> L2CorrectionPeakContext {
@@ -42,7 +42,7 @@ pub(crate) fn prepare_correction_peak_context(original: &str) -> L2CorrectionPea
         };
         // Correction and completion are different operators; prefix futures
         // must not compete inside a replacement-state phase peak.
-        l2::correction_l2_word_candidates(&context_prefix, &original_word, 16)
+        l2::correction_l2_peak_candidates(&context_prefix, &original_word, 16)
     } else {
         Vec::new()
     };

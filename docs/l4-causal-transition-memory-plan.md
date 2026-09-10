@@ -868,3 +868,98 @@ Exact receipt:
 ```text
 /home/ubu/projects/lay/docs/structural_gates/receipts/L3_PROCESS_REFRESH_L4_ROLLBACK_FEEDBACK_1_0_19_2026-08-10.json
 ```
+
+## TD-123 live scope regression preflight —2026-09-08
+
+The actual IME receives word/context-only rejection (signed=-577) with zero
+transition attract/repel counts and no state-specific evidence. The adapter
+incorrectly turns that scalar into transition.negative; it vetoes a target
+already certified by L3 pairwise. The private supplied-phrase control is0/2
+dirty,3/3clean; neutralizing all generic word/context reject maps only makes
+it1/2dirty,3/3clean. No production history changed. Full provenance and scaled
+consequence analysis are in the TD-123 subsection of
+[l2-l11-canonical-architecture.md](l2-l11-canonical-architecture.md).
+
+Selected boundary: retain all generic weights for ranking; negative transition
+evidence requires repel_count > attract_count. Preserve exact-state negative
+and existing calibrated generic-transition behavior. Do not change SafetyGate,
+verifier, authority policy, writers, datasets or installed models. Baseline RED,
+semantic negative controls, original-feedback native replay and fixed negative
+proof remain pending at this preflight.
+
+The narrow2026-09-08 revision is superseded after review pass2 exposed a
+competition regression. The revised owning preflight in
+`l2-l11-canonical-architecture.md` preserves generic preference pressure at
+the owner-precedence consumer using its exact old predicate, while the typed
+transition-negative projection requires actual net rejected transitions.
+Generic prior is neither a transition witness nor automatic apply authority.
+No history, writer, package, SafetyGate or verifier change is proposed.
+
+## TD-123 revised signal-domain result2026-09-08
+
+Candidate995b6093 implements separate transition-negative and unchanged
+owner-precedence projections. Exact source predicate parity and semantic
+review9/10,H0/M0/L0 passed; focused2206/2206 passed. Original-feedback native
+phrase improves dirty0/2 ->1/2,clean3/3 unchanged. Fixed89 native comparison:
+dirty19/47 correct and3/47 wrong unchanged;clean38/42 ->39/42 preserved.
+No observed final-output regression in this existing-fixture experimental
+profile scope; neither unseen quality nor all-profile safety is established.
+Historical2466 L4 replay is not rerun because original inputs are absent.
+
+Build checks passed, but postbuild recorder's incorrect embedded-receipt
+assertion failed and remains explicit. Per-file Rust identity supplements it;
+mandatory source architecture/release gates remain separate. Exact facts,
+all per-class denominators, failure records and untested scope are in the
+2026-09-08 measured-candidate section of l2-l11-canonical-architecture.md.
+Receipt: /home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/fixed-fixtures-v3-comparison.json;
+build identity: /home/ubu/.cache/lay/development/run-c1abdlhw/candidate-identity.json.
+Production runtime authority changed=false; model, history, learning writers,
+SafetyGate and verifier unchanged. Candidate is not installed yet.
+
+TD-123 installation follow-up2026-09-08: candidate995b6093 passed changed/full
+2684/2684 each and13 actual private client cases, then was installed as the
+identical file/process (PID3983217,unitlay-ime-release-995b6093.service). Receipt
+/home/ubu/.cache/lay/development/run-c1abdlhw/installation.json; gates at /home/ubu/.cache/lay/development/run-c1abdlhw/gates.json.
+Installed IME runtime authority changed=true for the corrected negative-domain
+projection; model/package permissions, history writers and verifier unchanged.
+Normal-tempo physical confirmation remains pending. Fixed89-fixture scope,
+3 wrong dirty outputs,3 changed clean rows and broader TD-123 quality remain
+open; no all-profile or model-quality promotion follows from this installation.
+
+### TD123 advisory ambiguity versus a validated lexical capability, Sep 8
+
+Read-only native fixed89 audit on privateeea32f44 identifies two ready target
+rejections by hidden ambiguity. One follows an independently complete canonical
+lexical Winner; the other has a Tied lexical frame. A phase bank's mere presence
+sets `phase_witness_supported` and can make unresolved classes blocking even
+without directional L3 or exact L4 transition observations. The early consumer
+rejection currently ignores its validated frame-bound lexical capability.
+
+The selected preflight is a narrowly scoped transfer repair in the existing
+adapter. A current validated capability may survive advisory ambiguity only
+when independent L3 Support/Suppress, exact L4 observations and verified operator
+consensus are absent from the evaluated lattice. Explicit negative evidence,
+selected witnessed rivals, invalid certificates, safety profiles and final
+edit verification retain their existing effect. A Tied/no-certificate lexical
+field receives no new authority. Broader L4 protocol redesign is not selected.
+
+The last TD123 section in docs/l2-l11-canonical-architecture.md owns the full
+9/8/4 alternatives, consequence/TDD/review/gate plan and measured denominators.
+Exact current receipts: private autocorrect-live-ojoasco5/fixed89-ready-path-audit-v1.json
+and l11-and-native-first-loss-v1.json. No production code or installed authority
+change in this audit;21 missing-authority cases and general quality remain open.
+
+Implementation update: the bounded adapter passed causal RED→GREEN and both
+fresh reviews9/10,H0/M0/L0. Final scoped2,221/2,221 PASS includes actual valid
+capability plus failed action-verifier control, all profiles and rival-only
+independent evidence. Exact local run-i4ruo2vh, remote run-1E8BoD. Private
+candidate/native comparison is next; installation and the other21 authority
+gaps remain open. The existing L4 resolver/certificate protocol is unchanged.
+
+Native result on private7a58535c: fixed89 dirty19/47→20/47, clean39/42 unchanged,
+no new false outputs or per-group regression;13 native controls PASS and the
+eight-pair80ms readiness gate remains8/8, clean24/24. The composite still refuses.
+This closes the bounded transfer defect only. Current21 SuggestOnly targets,
+the other ambiguity, missing boundary targets and full product gates remain
+open. The final owning-architecture section records all per-class, timing and
+sampled RSS results and the exact local run-i4ruo2vh/private fixed-v7 receipts.

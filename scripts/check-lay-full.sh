@@ -2,6 +2,10 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [[ "${LAY_RESOURCE_GUARD_ACTIVE:-0}" != "1" ]]; then
+  exec "$ROOT/scripts/lay-resource-guard.sh" -- \
+    "$ROOT/scripts/check-lay-full.sh" "$@"
+fi
 cd "$ROOT"
 
 cargo() {
@@ -42,7 +46,8 @@ python3 -m py_compile scripts/*.py
 bash -n install.sh update.sh dev-reload.sh scripts/*.sh
 
 echo "== CLI explain smoke =="
-cargo run --quiet --bin lay -- --explain-correct 'кторое ' | grep -F 'confidence:' >/dev/null
+LAY_CONFIG_PATH="$ROOT/scripts/proof/autocorrect-proof-config.json" \
+  cargo run --quiet --bin lay -- --explain-correct 'кторое ' | grep -F 'confidence:' >/dev/null
 
 echo "== cargo build --release --bins --features research-tools =="
 cargo build --release --bins --features research-tools

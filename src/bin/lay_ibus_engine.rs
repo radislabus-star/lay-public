@@ -16,6 +16,10 @@ mod committed_tail;
 mod composition_commit;
 #[path = "lay_ibus_engine/composition_edit.rs"]
 mod composition_edit;
+#[path = "lay_ibus_engine/context_admission.rs"]
+mod context_admission;
+#[path = "lay_ibus_engine/context_runtime.rs"]
+mod context_runtime;
 #[path = "lay_ibus_engine/engine.rs"]
 mod engine;
 #[path = "lay_ibus_engine/factory.rs"]
@@ -50,6 +54,19 @@ mod space_autocorrect_prefetch;
 mod state;
 #[path = "lay_ibus_engine/tail_memory.rs"]
 mod tail_memory;
+#[cfg(test)]
+#[path = "lay_ibus_engine/td120_bridge_atomic_tests.rs"]
+mod td120_bridge_atomic_tests;
+#[cfg(test)]
+#[path = "lay_ibus_engine/td120_full_frame_tests.rs"]
+mod td120_full_frame_tests;
+#[cfg(test)]
+#[path = "lay_ibus_engine/td120_word_lifecycle_tests.rs"]
+mod td120_word_lifecycle_tests;
+
+#[cfg(test)]
+#[path = "lay_ibus_engine/td125_terminal_edit_tests.rs"]
+mod td125_terminal_edit_tests;
 #[path = "lay_ibus_engine/text.rs"]
 mod text;
 #[path = "lay_ibus_engine/trace.rs"]

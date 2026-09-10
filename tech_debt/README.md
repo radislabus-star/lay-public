@@ -1,19 +1,47 @@
-# Lay Tech-Debt Queue
+# Lay — текущая очередь
 
-Audit baseline: 2026-08-29, commit
-`a2ace675230a92c902a13c2f254c6a8d1c8c81c1`. Reproduction commands,
-toolchain identities, output hashes, and limits are recorded in
-[`BASELINE_2026-08-29.md`](BASELINE_2026-08-29.md).
+[Очистка новой ветки](../docs/project-cleanup-2026-09-08.md) завершена.
+Текущий приоритет пользователя: продолжить автокоррекцию с сохранённого состояния.
+[Точка продолжения](CONTINUE.md) · [История и восстановление](../ARCHIVE.md).
 
-This directory is the executable debt queue. A task is not complete when code
-merely compiles: its acceptance gates, independent review, completion record,
-commit, and push must all be present.
+## Текущее состояние
+
+IME `995b6093` установлен 2026-09-08; исправлены сброс первого cold V90
+результата и ложный L4 negative transition из word prior. Для этих bytes
+changed/full code gates прошли 2 684/2 684 каждый, 13 private client scenarios
+прошли. Это не общий quality PASS.
+
+На фиксированных 89 существующих native fixtures: 19/47 правильных
+восстановлений, 25/47 abstain, 3/47 неверных; clean сохранены 39/42.
+Проверка обычного физического темпа остаётся PENDING. Полные ограничения
+сравнения, per-class результаты и exact receipts — в
+[журнале TD-123](evidence/td123-live-autocorrect-2026-09-08.md).
+
+## Очередь после очистки
+
+| Задача | Статус | Следующий доказуемый результат |
+|---|---|---|
+| [TD-123: качество восстановления Wave](123-improve-wave-restoration-quality-for-1.0.67.md) | OPEN, текущая работа | Обычный темп клиента; общий механизм отказов по полной цепочке L1.1 → L2 → L3 → L4 → DecisionCore → verifier; весь fixed proof и каждый класс |
+| [TD-121: целое слово при IME handoff](121-preserve-word-across-ime-layout-handoff.md) | IN_PROGRESS | Сохранить исправленный первый terminal token; combined two-field/profile gap и GTK/cold-preedit не закрыты |
+| [TD-125: левая граница автозамены](125-preserve-autocorrection-left-boundary.md) | IN_PROGRESS | Физическое подтверждение variable-length замены; не терять предыдущее слово и разделитель |
+| [TD-120: lifetime suppression](120-scope-autocorrect-suppression-to-word-lifetime.md) | DONE в scoped source acceptance | Сохранить contract; это не завершение всего релиза 1.0.66 |
+| [TD-122: legacy replay request](122-bind-legacy-replay-suppression-request.md) | DECISION_REQUIRED | Отдельное решение протокола, не текущая очистка |
+| [TD-124: воспроизводимый maintenance loop](124-reproducible-maintenance-loop.md) | DONE для tooling | Использовать [DEVELOPMENT.md](../DEVELOPMENT.md); focused PASS не заменяет release gates |
+
+[TD-113: hybrid source contract](113-restore-hybrid-nanda-autocorrect.md)
+сохраняется как владелец принятой композиции источников. Все production tests,
+актуальные evidence 120–125, release 1.0.66 и обязательные contract inputs
+остаются в рабочем дереве. Старые задачи не потеряны: полная очередь
+восстановима из snapshot по пути `tech_debt/README.md`.
 
 ## Operating Rules
 
-1. Execute the table order below unless a task discovers a higher-priority
-   regression. `TD-009` was inserted after `TD-002` because the isolated live
-   proof exposed a user-visible Double Shift race that blocks later IME gates.
+The user-accepted [development simplification rules](../AGENTS.md#accepted-development-simplification--2026-09-07)
+apply to this queue. They constrain the work loop; they do not waive release
+gates or add a broad architecture migration to the 1.0.66 scope.
+
+1. Follow the latest user priority and the current queue above. Historical
+   completed tasks and their old execution order are preserved in the archive.
 2. Start with a failing test or a frozen baseline. Do not mix behavior changes
    with move-only refactors.
 3. Before edits, record the base commit, exact command, environment/toolchain,
@@ -31,82 +59,7 @@ commit, and push must all be present.
 7. Preserve the Lay 1.0.54 Double Shift ownership contract. IME work must also
    recheck candidate visibility, layout synchronization, and terminal
    passthrough.
-8. Tasks `101` through `104` are decision proposals, not admitted edits. They
-   require a separate cost/risk decision after the near-term queue is complete.
 
-## Scoreboard
-
-| Signal | Measured baseline | Meaning |
-|---|---:|---|
-| Rust source | about 245k lines | Large single-package build surface |
-| `src/nanda_wave` | 163,770 lines / 193 files | Runtime, compiler, proof, and research code share one crate |
-| `src/bin` | 50,562 lines / 216 files | Many binaries plus substantial adapter state |
-| Static Rust tests | 2,336 `#[test]` declarations | High raw count, but authority and determinism are uneven |
-| Full test run | 1,539 pass / 88 fail / 11 ignored | `cargo test --all-targets` is not a usable release signal |
-| Hermetic manifest | 2,315 correctness / 35 package / 11 performance / 11 ignored | Exact 2,372-row lane union |
-| Hermetic semantic denominator | 116 exact failures: 96 correctness / 20 package | Temporary TD-007 ledger; two stable runs |
-| `cargo check --all-targets` | 385 warnings / 0 errors | 348 unique diagnostics; warning ownership is not controlled |
-| Warning classes | 377 dead code / 6 unused imports / 2 dropping-copy | Research/proof surface dominates, with some live-route residue |
-| CI clippy | exit 101, 5,097 stderr lines | Declared `-D warnings` gate is currently red |
-| Architecture receipt | stale and fresh verdict `WATCH` | Six violations require explicit disposition before resealing |
-| 50-pass audit | 49 checks executed, several false-scope failures | Name and expected denominator are incorrect |
-| Claimed MSRV | Rust 1.75 | Source uses APIs newer than 1.75; CI tests only floating stable |
-| One-shot experiment scripts | 112 files / 99,664 lines | Reproducibility code dominates active `scripts/` navigation |
-| Tracked receipt files | 3,072 / about 89 MB | Compact evidence is substantial but manageable |
-| Local ignored receipt payloads | about 3.6 GB; 16 files over 10 MB | Checkout doubles as an artifact store |
-| Cargo target | about 2.2 GB of 12 GB budget at audit start | Within budget |
-
-## Failure Clusters
-
-The sealed 116-failure denominator must not become 116 example-specific patches:
-
-| Cluster | Failures | First shared issue |
-|---|---:|---|
-| `correction_ranking_admission` | 30 | Old selection and admission expectations |
-| `ime_authority` | 28 | Mixed current and historical IME authority |
-| `typing_assist_surface` | 23 | Superseded surface expectations |
-| `nanda_l2_field` | 9 | L2 field ownership/retention drift |
-| `remaining_semantic` | 7 | Residual contracts requiring first-loss classification |
-| `architecture_integration` | 6 | Stale cross-owner integration assertions |
-| `edit_safety_contract` | 5 | Old edit admission or safety expectations |
-| `candidate_birth` | 3 | Candidate creation/retention disagreement |
-| `nanda_l3_context` | 3 | Context authority disagreement |
-| `phrase_boundary` | 2 | Boundary route disagreement |
-
-## Execution Queue
-
-| Order | Task | Priority | Size | Status | Product value |
-|---:|---|---|---|---|---|
-| 001 | [Repair architecture and audit gates](001-repair-architecture-and-audit-gates.md) | P0 | M | DONE | Makes structural checks truthful again |
-| 002 | [Isolate live runtime smoke cases](002-isolate-live-runtime-smoke.md) | P0 | M | DONE | Makes user-visible proof safe and case-independent |
-| 003 | [Converge the manual-toggle visible postcondition](009-fix-manual-toggle-visible-postcondition-race.md) | P0 | M | DONE | Removes the isolated Double Shift commit race without timing sleeps |
-| 004 | [Fix pending preedit refresh convergence](003-fix-preedit-refresh-convergence.md) | P0 | S | DONE | Removes visible stale/duplicated IME suffix |
-| 005 | [Enforce the real MSRV and pinned lint toolchain](004-enforce-real-msrv.md) | P0 | S | DONE | Replaces false and floating compiler contracts |
-| 006 | [Make the lint gate truthful](005-make-lint-gate-truthful.md) | P0 | M | DONE | Restores an enforceable green CI contract |
-| 007 | [Build hermetic test lanes](006-build-hermetic-test-lanes.md) | P0 | L | DONE | Separates correctness, environment, and timing failures |
-| 008 | [Reconcile superseded semantic tests](007-reconcile-semantic-contract-tests.md) | P0 | XL | READY | Converts the full suite into current authority evidence |
-| 009 | [Classify and remove obvious dead code](008-reduce-dead-code-and-proof-surface.md) | P1 | L | READY | Removes proven residue without a workspace rewrite |
-
-## Decision Queue
-
-These are intentionally not part of automatic Stage 2 execution:
-
-| Task | Priority | Status | Decision needed |
-|---|---|---|---|
-| [Decompose the IBus engine state owner](101-decompose-ibus-engine-state-owner.md) | P2 | DONE | Five state owners verified remotely; review 9.5/10; runtime behavior unchanged |
-| [Separate Nanda runtime from research tooling](102-separate-nanda-runtime-and-research.md) | P2 | DONE | Three-crate split not admitted: benefit unproven; narrow cold-surface work moves to TD-104 |
-| [Externalize research payload lifecycle](103-externalize-research-payloads.md) | P2 | DONE | 18 paths externalized to 15 sealed objects; 29/29 fault gates PASS |
-| [Isolate proof/compiler build surfaces](104-isolate-proof-compiler-build-surface.md) | P2 | DISCUSSION_REQUIRED | Is feature gating worth its measured build-surface benefit? |
-
-## Backlog Review
-
-- Independent reviewer: fresh-context agent `01a04a99-29db-73f3-8133-c5e65940b10a`
-- Initial score: `6/10`
-- Initial findings: eight; four high and four medium
-- Corrective passes: `1/2`
-- Corrections: graph `WATCH` disposition and deletion freshness; route order;
-  exact baseline provenance; smoke ownership; pinned toolchains; exhaustive lane
-  and failure manifests; semantic milestone ledger; bounded dead-code scope.
-- Final reviewer: fresh-context agent `01a04aab-a529-7112-8276-b6b1eb403437`
-- Final score: `9/10`; no high or medium findings
-- Stage 1 verdict: `TECH_DEBT_BACKLOG_REVIEWED_READY`
+Historical task completions, audit baselines, Stage 1/2 tables and reviews
+are preserved at their original paths in the [snapshot](../ARCHIVE.md).
+A historical DONE or PASS is not a new product-acceptance result.

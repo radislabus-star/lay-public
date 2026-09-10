@@ -38,6 +38,7 @@ pub(crate) use fuzzy::fuzzy_known_word_candidates;
 pub(crate) use guards::rewrites_protected_pattern_term_stem;
 pub(crate) use hard_sign::correct_hard_sign_typo;
 pub use keyboard::are_ru_keyboard_neighbors;
+pub(crate) use memo::{memoized_text, WordMaterialKind};
 pub use missing::correct_missing_letter;
 pub(crate) use missing::{propose_missing_letter_candidate, safe_missing_letter_candidates};
 pub(crate) use repeated::correct_repeated_letter;

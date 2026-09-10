@@ -7,7 +7,9 @@ use zbus::zvariant::Value;
 
 use super::atomic::{AtomicCapability, AtomicEnvelope, AtomicPriorReceipt};
 use super::engine::{LayIbusEngine, SurroundingTextSnapshot};
-use super::output::{AtomicProposal, EngineOutput};
+use super::output::{
+    AtomicProposal, EngineOutput, PROPOSAL_CONSUMED_NO_EFFECT, PROPOSAL_FRAME_READY,
+};
 use super::protocol::{
     is_accept_completion_with_space_key, is_key_press, is_shift_key, KEY_LEFT_SHIFT,
 };
@@ -16,8 +18,9 @@ use super::trace;
 #[interface(name = "org.freedesktop.IBus.Engine")]
 impl LayIbusEngine {
     #[zbus(name = "ProcessKeyEvent")]
-    async fn process_key_event(
+    pub(crate) async fn process_key_event(
         &mut self,
+        #[zbus(header)] header: zbus::message::Header<'_>,
         #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
         keyval: u32,
         keycode: u32,
@@ -27,15 +30,88 @@ impl LayIbusEngine {
             trace::record(r#"{"kind":"ibus_legacy_key_blocked","owner":"atomic"}"#);
             return Ok(false);
         }
+        let callback_entered = Instant::now();
+        let callback_serial = header.primary().serial_num().get();
+        if trace::enabled() {
+            let owner_generation = self
+                .context_admission
+                .as_ref()
+                .and_then(|admission| admission.current_owner())
+                .map(|owner| owner.generation.0);
+            let activation_generation = self
+                .context_admission
+                .as_ref()
+                .and_then(|admission| admission.current_activation_generation());
+            trace::record_context_admission(
+                "legacy_callback_enter",
+                "ProcessKeyEvent",
+                callback_serial,
+                if is_key_press(state) {
+                    "press"
+                } else {
+                    "release"
+                },
+                owner_generation,
+                activation_generation,
+                None,
+            );
+        }
+        let callback = self
+            .begin_context_key_callback(&header, callback_entered, false)
+            .await;
+        if trace::enabled() {
+            trace::record_context_admission(
+                "legacy_callback_admission",
+                "ProcessKeyEvent",
+                callback_serial,
+                if callback.is_some() {
+                    "accepted"
+                } else {
+                    "refused"
+                },
+                self.context_owner.as_ref().map(|owner| owner.generation.0),
+                self.context_admission
+                    .as_ref()
+                    .and_then(|admission| admission.current_activation_generation()),
+                None,
+            );
+        }
+        let tail_before = self.committed_tail.buffer.clone();
+        self.context_callback_entered = Some(callback_entered);
         self.consume_shift_gesture_handoff();
         let mut output = EngineOutput::legacy(&emitter);
-        self.process_key_event_with_output(&mut output, keyval, keycode, state)
-            .await
+        let result = self
+            .process_key_event_with_output(&mut output, keyval, keycode, state)
+            .await;
+        self.context_callback_entered = None;
+        if result.is_ok() {
+            let handled = result.as_ref().is_ok_and(|handled| *handled);
+            self.settle_context_key_callback(
+                callback.as_ref(),
+                keyval,
+                keycode,
+                state,
+                &tail_before,
+                handled,
+            );
+            if is_key_press(state) && tail_before != self.committed_tail.buffer {
+                self.refresh_observed_suffix_precognition(&mut output)
+                    .await?;
+            }
+        } else {
+            self.revoke_context_word();
+        }
+        result
     }
 
     #[zbus(name = "ProcessKeyEventAtomicV1")]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "fixed AtomicV1 wire arguments plus the authenticated message header"
+    )]
     async fn process_key_event_atomic_v1(
         &mut self,
+        #[zbus(header)] header: zbus::message::Header<'_>,
         keyval: u32,
         keycode: u32,
         state: u32,
@@ -43,16 +119,36 @@ impl LayIbusEngine {
         capability: AtomicCapability,
         prior_receipt: AtomicPriorReceipt,
     ) -> fdo::Result<AtomicProposal> {
-        self.process_atomic_key_event(keyval, keycode, state, envelope, capability, prior_receipt)
-            .await
+        self.process_key_event_atomic_callback(
+            &header,
+            keyval,
+            keycode,
+            state,
+            envelope,
+            capability,
+            prior_receipt,
+        )
+        .await
     }
 
     #[zbus(name = "FocusIn")]
-    fn focus_in(&mut self) {
+    pub(crate) async fn focus_in_callback(
+        &mut self,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) {
+        let changed = if self.context_admission_required {
+            self.activate_context_from_header(&header, Instant::now(), None)
+                .await
+        } else {
+            self.bind_focus_path()
+        };
+        self.finish_focus_in(changed);
+    }
+
+    fn finish_focus_in(&mut self, changed: bool) {
         self.discard_atomic_pending();
         self.atomic.active = false;
         self.invalidate_input_frame_background_work();
-        let changed = self.bind_focus_path();
         trace::record(if changed {
             r#"{"kind":"ibus_focus","stage":"focus_in","receipt":"new_path"}"#
         } else {
@@ -60,42 +156,85 @@ impl LayIbusEngine {
         });
         self.config = lay::config::LayConfig::load();
         self.client_context.surrounding_text_snapshot = None;
-        if !changed {
+        if !changed && !self.context_admission_required {
             self.refresh_empty_tail_from_handoff();
         }
     }
 
     #[zbus(name = "FocusInId")]
-    fn focus_in_id(&mut self, object_path: String, client: String) {
+    pub(crate) async fn focus_in_id(
+        &mut self,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+        object_path: String,
+        client: String,
+    ) {
         let changed = self.bind_focus_receipt(object_path, client);
         trace::record(if changed {
             r#"{"kind":"ibus_focus","stage":"focus_in_id","receipt":"new"}"#
         } else {
             r#"{"kind":"ibus_focus","stage":"focus_in_id","receipt":"same"}"#
         });
-        self.focus_in();
+        let activated = if self.context_admission_required {
+            let native_path = self
+                .client_context
+                .focus_receipt
+                .as_deref()
+                .and_then(|receipt| receipt.split('\u{1f}').next())
+                .map(str::to_owned);
+            self.activate_context_from_header(&header, Instant::now(), native_path.as_deref())
+                .await
+        } else {
+            self.bind_focus_path()
+        };
+        self.finish_focus_in(changed || activated);
     }
 
     #[zbus(name = "FocusOut")]
-    fn focus_out(&mut self) {
+    pub(crate) async fn focus_out(&mut self, #[zbus(header)] header: zbus::message::Header<'_>) {
+        if self
+            .observe_context_focus_out(&header, Instant::now())
+            .await
+        {
+            self.finish_focus_out();
+        }
+    }
+
+    fn finish_focus_out(&mut self) {
         self.discard_atomic_pending();
         self.atomic.active = false;
         trace::record(r#"{"kind":"ibus_focus","stage":"focus_out"}"#);
-        let preserve_active_path =
-            self.should_preserve_focus_handoff() || self.shared_active_path_preserved();
+        let preserve_active_path = self.context_handoff_sealed
+            || !self.context_admission_required
+                && (self.should_preserve_focus_handoff() || self.shared_active_path_preserved());
         self.reset_for_ibus_focus_change();
         if preserve_active_path {
             return;
         }
         let mut state = self.shared.lock().expect("lay ime state poisoned");
-        if state.active_path.as_deref() == Some(self.path.as_str()) {
+        if state.active_path.as_deref() == Some(self.path.as_str())
+            && (!self.context_admission_required
+                || match self.context_owner.as_ref() {
+                    Some(owner) => state.context_owner_generation == Some(owner.generation.0),
+                    None => state.context_owner_generation.is_none(),
+                })
+        {
             state.active_path = None;
+            state.context_owner_generation = None;
         }
     }
 
     #[zbus(name = "FocusOutId")]
-    fn focus_out_id(&mut self, _object_path: String) {
-        self.focus_out();
+    async fn focus_out_id(
+        &mut self,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+        _object_path: String,
+    ) {
+        if self
+            .observe_context_focus_out(&header, Instant::now())
+            .await
+        {
+            self.finish_focus_out();
+        }
     }
 
     #[zbus(name = "SetCursorLocation")]
@@ -141,10 +280,27 @@ impl LayIbusEngine {
     fn candidate_clicked(&mut self, _index: u32, _button: u32, _state: u32) {}
 
     #[zbus(name = "Reset")]
-    fn reset(&mut self) {
-        self.discard_atomic_pending();
-        trace::record(r#"{"kind":"ibus_focus","stage":"reset"}"#);
-        self.reset_for_ibus_soft_reset();
+    pub(crate) async fn reset(
+        &mut self,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+        #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+    ) -> fdo::Result<()> {
+        if self
+            .observe_context_revocation(&header, Instant::now())
+            .await
+        {
+            self.discard_atomic_pending();
+            trace::record(r#"{"kind":"ibus_focus","stage":"reset"}"#);
+            let cleared = if self.atomic.active {
+                Ok(())
+            } else {
+                self.clear_preedit(&mut EngineOutput::legacy(&emitter))
+                    .await
+            };
+            self.reset_for_ibus_soft_reset();
+            cleared?;
+        }
+        Ok(())
     }
 
     #[zbus(name = "Enable")]
@@ -159,11 +315,13 @@ impl LayIbusEngine {
     }
 
     #[zbus(name = "Disable")]
-    fn disable(&mut self) {
-        self.discard_atomic_pending();
-        self.atomic.active = false;
-        trace::record(r#"{"kind":"ibus_focus","stage":"disable"}"#);
-        self.reset_for_ibus_soft_reset();
+    pub(crate) async fn disable(&mut self, #[zbus(header)] header: zbus::message::Header<'_>) {
+        if self.observe_context_disable(&header, Instant::now()).await {
+            self.discard_atomic_pending();
+            self.atomic.active = false;
+            trace::record(r#"{"kind":"ibus_focus","stage":"disable"}"#);
+            self.reset_for_ibus_soft_reset();
+        }
     }
 
     #[zbus(name = "PageUp")]
@@ -179,7 +337,7 @@ impl LayIbusEngine {
     fn cursor_down(&mut self) {}
 
     #[zbus(name = "SetSurroundingText")]
-    async fn set_surrounding_text(
+    pub(crate) async fn set_surrounding_text(
         &mut self,
         #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
         text: Value<'_>,
@@ -188,6 +346,14 @@ impl LayIbusEngine {
     ) -> fdo::Result<()> {
         let snapshot = ibus_text_value_to_string(&text)
             .map(|text| SurroundingTextSnapshot::new(text, cursor_pos, anchor_pos));
+        let suffix_snapshot_changed = self
+            .client_context
+            .surrounding_text_snapshot
+            .as_ref()
+            .map(|snapshot| (&snapshot.text, snapshot.cursor_pos, snapshot.anchor_pos))
+            != snapshot
+                .as_ref()
+                .map(|snapshot| (&snapshot.text, snapshot.cursor_pos, snapshot.anchor_pos));
         self.observe_external_surrounding_text(snapshot);
         let retry_status = self.pending_ime_auto_undo_retry_status();
         let sensitive = self.content_is_sensitive();
@@ -231,6 +397,10 @@ impl LayIbusEngine {
                 "snapshot_apply_failed"
             };
             trace::record_auto_undo_retry(status);
+        }
+        if suffix_snapshot_changed {
+            self.refresh_observed_suffix_precognition(&mut output)
+                .await?;
         }
         Ok(())
     }
@@ -289,7 +459,32 @@ impl LayIbusEngine {
     }
 
     #[zbus(property, name = "ContentType")]
-    fn set_content_type(&mut self, value: (u32, u32)) {
+    pub(crate) async fn set_content_type(
+        &mut self,
+        value: (u32, u32),
+        #[zbus(header)] header: Option<zbus::message::Header<'_>>,
+    ) {
+        let unchanged = if let (Some(admission), Some(path), Some(header)) = (
+            self.context_admission.clone(),
+            super::context_admission::EnginePath::new(self.path.clone()),
+            header.as_ref(),
+        ) {
+            match admission
+                .observe_content_type_callback(&path, value, header, Instant::now())
+                .await
+            {
+                Ok(Some(unchanged)) => unchanged,
+                Ok(None) => return,
+                // Failed rendezvous cannot preserve word authority, but the
+                // property still owns sensitive-field protection.
+                Err(_) => false,
+            }
+        } else {
+            false
+        };
+        if !unchanged {
+            self.revoke_context_word();
+        }
         self.set_content_type_state(value.0, value.1);
         trace::record(format!(
             r#"{{"kind":"ibus_content_type","purpose":{},"hints":{},"text_assistance":{}}}"#,
@@ -301,12 +496,416 @@ impl LayIbusEngine {
 
     #[zbus(property, name = "FocusId")]
     fn focus_id(&self) -> bool {
-        false
+        self.context_admission.is_some()
     }
 
     #[zbus(property, name = "ActiveSurroundingText")]
     fn active_surrounding_text(&self) -> bool {
         true
+    }
+}
+
+impl LayIbusEngine {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "preserve one-to-one forwarding of authenticated AtomicV1 wire arguments"
+    )]
+    pub(super) async fn process_key_event_atomic_callback(
+        &mut self,
+        header: &zbus::message::Header<'_>,
+        keyval: u32,
+        keycode: u32,
+        state: u32,
+        envelope: AtomicEnvelope,
+        capability: AtomicCapability,
+        prior_receipt: AtomicPriorReceipt,
+    ) -> fdo::Result<AtomicProposal> {
+        let callback_entered = Instant::now();
+        let callback = self
+            .begin_context_key_callback(header, callback_entered, true)
+            .await;
+        self.context_callback_entered = Some(callback_entered);
+        let result = self
+            .process_atomic_key_event_with_context_tail(
+                keyval,
+                keycode,
+                state,
+                envelope,
+                capability,
+                prior_receipt,
+            )
+            .await;
+        self.context_callback_entered = None;
+        match result.as_ref() {
+            Ok((proposal, _))
+                if matches!(
+                    proposal.0,
+                    PROPOSAL_FRAME_READY | PROPOSAL_CONSUMED_NO_EFFECT
+                ) =>
+            {
+                if !self.bind_atomic_context_callback(callback) {
+                    self.revoke_context_word();
+                }
+            }
+            Ok((_, tail_before)) => {
+                // Native-unhandled means the client, rather than Lay, applies
+                // this exact key. It is still an observed input/boundary and
+                // must advance completeness through the ordinary key path.
+                self.settle_context_key_callback(
+                    callback.as_ref(),
+                    keyval,
+                    keycode,
+                    state,
+                    tail_before,
+                    false,
+                );
+            }
+            Err(_) => self.revoke_context_word(),
+        }
+        result.map(|(proposal, _)| proposal)
+    }
+}
+
+#[cfg(test)]
+impl LayIbusEngine {
+    fn focus_in(&mut self) {
+        let changed = self.bind_focus_path();
+        self.finish_focus_in(changed);
+    }
+}
+
+#[cfg(test)]
+mod td121_content_type_tests {
+    use super::*;
+    use crate::context_admission::{ActivationOutcome, ContextAdmissionAdapter, WordCompleteness};
+    use lay::config::LayConfig;
+    use std::sync::{Arc, Mutex};
+    use std::time::Instant;
+
+    fn unavailable_engine(path: &str, shared: crate::protocol::Shared) -> LayIbusEngine {
+        LayIbusEngine::new_from_component(
+            path.to_string(),
+            shared,
+            None,
+            "lay-ime-us",
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                ..LayConfig::default()
+            },
+        )
+    }
+
+    #[test]
+    fn td121_actual_properties_set_content_type_revokes_known_start() {
+        let path = "/io/github/radislabus_star/LayIme/engine/td121_content_type";
+        let (adapter, grant, _peer) = ContextAdmissionAdapter::test_established(
+            path,
+            "/org/freedesktop/IBus/InputContext_td121_content_type",
+            WordCompleteness::KnownStart,
+            23,
+        );
+        let mut engine = LayIbusEngine::new_from_component(
+            path.to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            Some(adapter),
+            "lay-ime-us",
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                ..LayConfig::default()
+            },
+        );
+        assert!(engine.install_context_activation(ActivationOutcome::SourceFree(grant)));
+        engine.committed_tail.buffer = "known".to_string();
+        engine.rebuild_preedit_fast_from_tail();
+        assert!(engine.context_word_is_known());
+        assert!(engine.capture_input_frame_identity().is_some());
+
+        zbus::block_on(engine.set_content_type((0, 1), None));
+
+        assert!(!engine.context_word_is_known());
+        assert!(engine.capture_input_frame_identity().is_none());
+        assert!(engine.committed_tail.pending_completion_learning.is_none());
+    }
+
+    #[test]
+    fn td121_missing_content_type_stamp_still_applies_sensitive_metadata() {
+        for value in [(8u32, 0u32), (9, 0), (0, 1 << 11), (0, 1 << 12)] {
+            let path = "/io/github/radislabus_star/LayIme/engine/td121_sensitive";
+            let (adapter, grant, _peer) = ContextAdmissionAdapter::test_established(
+                path,
+                "/org/freedesktop/IBus/InputContext_td121_sensitive",
+                WordCompleteness::KnownStart,
+                23,
+            );
+            let mut engine = LayIbusEngine::new_from_component(
+                path.to_string(),
+                Arc::new(Mutex::new(Default::default())),
+                Some(adapter),
+                "lay-ime-us",
+                true,
+                LayConfig {
+                    text_backend: "ime".to_string(),
+                    ..LayConfig::default()
+                },
+            );
+            assert!(engine.install_context_activation(ActivationOutcome::SourceFree(grant)));
+            engine.committed_tail.buffer = "retained".to_string();
+            engine.rebuild_preedit_fast_from_tail();
+            assert!(engine.context_word_is_known());
+            assert!(engine.capture_input_frame_identity().is_some());
+            assert!(!engine.content_is_sensitive());
+
+            // A genuine setter/header with no observer stamp: the bounded
+            // rendezvous expires, but the property still must protect text.
+            let set = zbus::Message::method_call(path, "Set")
+                .unwrap()
+                .interface("org.freedesktop.DBus.Properties")
+                .unwrap()
+                .sender(":1.2")
+                .unwrap()
+                .build(&(
+                    "org.freedesktop.IBus.Engine",
+                    "ContentType",
+                    zbus::zvariant::Value::from(value),
+                ))
+                .unwrap();
+            zbus::block_on(engine.set_content_type(value, Some(set.header())));
+
+            assert_eq!(engine.content_type(), value);
+            assert!(engine.content_is_sensitive());
+            assert!(!engine.content_allows_text_assistance());
+            assert!(engine.committed_tail.buffer.is_empty());
+            assert!(engine.composition.buffer.is_empty());
+            assert!(engine.client_context.surrounding_text_snapshot.is_none());
+            assert!(!engine.context_word_is_known());
+            assert!(engine.capture_input_frame_identity().is_none());
+        }
+    }
+
+    #[test]
+    fn td121_required_mode_without_admission_cannot_inherit_shared_tail() {
+        let shared: crate::protocol::Shared = Arc::new(Mutex::new(Default::default()));
+        {
+            let mut state = shared.lock().expect("TD-121 unavailable shared state");
+            state.handoff_tail_buffer = "foreign-field-tail".to_string();
+            state.handoff_tail_epoch = 31;
+            state.handoff_focus_receipt = Some("foreign-field".to_string());
+        }
+
+        let engine = unavailable_engine(
+            "/io/github/radislabus_star/LayIme/engine/td121_unavailable",
+            shared,
+        );
+
+        assert!(engine.committed_tail.buffer.is_empty());
+        assert!(!engine.context_word_is_known());
+        assert!(engine.capture_input_frame_identity().is_none());
+    }
+
+    #[test]
+    fn td121_unsealed_focus_out_ignores_legacy_700ms_handoff() {
+        let path = "/io/github/radislabus_star/LayIme/engine/td121_unsealed_focus_out";
+        let shared: crate::protocol::Shared = Arc::new(Mutex::new(Default::default()));
+        let mut engine = unavailable_engine(path, shared.clone());
+        engine.committed_tail.buffer = "literal".to_string();
+        engine.committed_tail.last_input_at = Some(Instant::now());
+        {
+            let mut state = shared.lock().expect("TD-121 unsealed shared state");
+            state.active_path = Some(path.to_string());
+            state.handoff_tail_buffer = "literal".to_string();
+            state.handoff_tail_epoch = engine.committed_tail.epoch;
+        }
+
+        engine.finish_focus_out();
+
+        assert!(engine.committed_tail.buffer.is_empty());
+        let state = shared.lock().expect("TD-121 cleared shared state");
+        assert!(state.active_path.is_none());
+        assert!(state.handoff_tail_buffer.is_empty());
+    }
+}
+
+#[cfg(test)]
+mod td120_atomic_owner_tests {
+    use super::*;
+    use lay::config::LayConfig;
+    use std::sync::{Arc, Barrier, Mutex};
+
+    fn config() -> LayConfig {
+        LayConfig {
+            auto_replace: false,
+            auto_switch_layout: false,
+            text_backend: "ime".to_string(),
+            ..LayConfig::default()
+        }
+    }
+
+    fn engine(path: &str, shared: super::super::protocol::Shared) -> LayIbusEngine {
+        LayIbusEngine::new(path.to_string(), shared, false, true, config())
+    }
+
+    fn envelope(transaction: u64, focus_epoch: u64) -> AtomicEnvelope {
+        (transaction, 2, 12, focus_epoch, 5, 13, vec![8; 32])
+    }
+
+    fn prepare_atomic_space(engine: &mut LayIbusEngine, transaction: u64, focus_epoch: u64) {
+        // FocusIn reloads the installed configuration. Restore this isolated
+        // fixture's deterministic IME settings before exercising the producer.
+        engine.config = config();
+        let proposal = zbus::block_on(engine.process_atomic_key_event(
+            super::super::protocol::KEY_SPACE,
+            65,
+            0,
+            envelope(transaction, focus_epoch),
+            super::super::atomic::td120_test_atomic_capability(),
+            (0, 0, Vec::new()),
+        ))
+        .expect("real atomic Space proposal");
+        assert_eq!(proposal.0, super::super::output::PROPOSAL_FRAME_READY);
+        assert_eq!(proposal.1.iter().filter(|(tag, _)| *tag == 1).count(), 1);
+    }
+
+    #[test]
+    fn td120_atomic_foreign_owner_and_real_aba_callbacks_reject_stale_settlement() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut engine_a = engine("/td120/atomic/a", shared.clone());
+        let mut engine_b = engine("/td120/atomic/b", shared.clone());
+        engine_a.focus_in();
+        engine_a.push_tail_char('x');
+        prepare_atomic_space(&mut engine_a, 401, 71);
+        super::super::atomic::td120_test_defer_reverted_feedback_on_pending(&engine_a);
+
+        engine_b.focus_in();
+        engine_b.push_tail_char('b');
+        assert!(engine_b.arm_current_word_autocorrect_suppression());
+        let foreign_owner = zbus::block_on(engine_a.process_atomic_key_event(
+            super::super::protocol::KEY_LEFT_SHIFT,
+            42,
+            0,
+            envelope(402, 71),
+            super::super::atomic::td120_test_atomic_capability(),
+            (2, 401, vec![9; 32]),
+        ))
+        .expect("foreign-owner receipt");
+        assert_eq!(
+            foreign_owner.0,
+            super::super::output::PROPOSAL_NATIVE_UNHANDLED
+        );
+        assert_eq!(
+            shared.lock().expect("shared state").active_path.as_deref(),
+            Some("/td120/atomic/b")
+        );
+        let shared_guard = shared
+            .lock()
+            .expect("shared state")
+            .autocorrect_suppression
+            .clone();
+        assert!(matches!(
+            shared_guard,
+            Some(super::super::protocol::AutocorrectSuppression::CurrentWord(
+                current_word
+            )) if current_word.owner_lease_identity
+                == engine_b.client_context.runtime_owner_lease_identity
+        ));
+        assert_eq!(
+            *engine_a
+                .atomic
+                .settlement_feedback_events
+                .lock()
+                .expect("atomic feedback events"),
+            ["censored"]
+        );
+        assert!(engine_a.atomic.deferred_learning_actions.is_empty());
+
+        engine_a.focus_in();
+        engine_a.push_tail_char('y');
+        prepare_atomic_space(&mut engine_a, 403, 72);
+        engine_b.focus_in();
+        engine_a.focus_in();
+
+        let aba = zbus::block_on(engine_a.process_atomic_key_event(
+            super::super::protocol::KEY_LEFT_SHIFT,
+            42,
+            0,
+            envelope(404, 72),
+            super::super::atomic::td120_test_atomic_capability(),
+            (2, 403, vec![9; 32]),
+        ))
+        .expect("ABA receipt");
+        assert_eq!(aba.0, super::super::output::PROPOSAL_NATIVE_UNHANDLED);
+        assert!(aba.1.is_empty());
+        assert!(!engine_a.committed_tail.buffer.ends_with(' '));
+    }
+
+    #[test]
+    fn td120_atomic_capture_refuses_owner_changed_by_focus_in_before_snapshot() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut engine_a = engine("/td120/atomic/admission-a", shared.clone());
+        let mut engine_b = engine("/td120/atomic/admission-b", shared.clone());
+        engine_a.focus_in();
+        engine_a.push_tail_char('a');
+
+        let start = Arc::new(Barrier::new(2));
+        let finished = Arc::new(Barrier::new(2));
+        let hook_start = start.clone();
+        let hook_finished = finished.clone();
+        engine_a.atomic.before_capture = Some(Arc::new(move || {
+            hook_start.wait();
+            hook_finished.wait();
+        }));
+        let callback = std::thread::spawn(move || {
+            start.wait();
+            engine_b.focus_in();
+            engine_b.push_tail_char('b');
+            assert!(engine_b.arm_current_word_autocorrect_suppression());
+            finished.wait();
+            engine_b
+        });
+
+        let proposal = zbus::block_on(engine_a.process_atomic_key_event(
+            super::super::protocol::KEY_SPACE,
+            65,
+            0,
+            envelope(405, 73),
+            super::super::atomic::td120_test_atomic_capability(),
+            (0, 0, Vec::new()),
+        ))
+        .expect("owner-checked atomic admission");
+        let engine_b = callback.join().expect("FocusIn callback");
+
+        assert_eq!(proposal.0, super::super::output::PROPOSAL_NATIVE_UNHANDLED);
+        assert!(proposal.1.is_empty());
+        let state = shared.lock().expect("shared state");
+        assert_eq!(state.active_path.as_deref(), Some(engine_b.path.as_str()));
+        assert_eq!(state.handoff_tail_buffer, "b");
+        assert!(matches!(
+            state.autocorrect_suppression.as_ref(),
+            Some(super::super::protocol::AutocorrectSuppression::CurrentWord(
+                current_word
+            )) if current_word.owner_lease_identity
+                == engine_b.client_context.runtime_owner_lease_identity
+        ));
+        drop(state);
+
+        let stale_receipt = zbus::block_on(engine_a.process_atomic_key_event(
+            super::super::protocol::KEY_LEFT_SHIFT,
+            42,
+            0,
+            envelope(406, 73),
+            super::super::atomic::td120_test_atomic_capability(),
+            (2, 405, vec![9; 32]),
+        ))
+        .expect("receipt for refused admission");
+        assert_eq!(
+            stale_receipt.0,
+            super::super::output::PROPOSAL_NATIVE_UNHANDLED
+        );
+        assert_eq!(
+            shared.lock().expect("shared state").handoff_tail_buffer,
+            "b"
+        );
     }
 }
 

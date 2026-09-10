@@ -431,6 +431,7 @@ fn l4_memory_owns_complete_transition_targets_and_cold_initialization() {
     let memory = read("src/typing_memory.rs");
     let relation = read("src/transition_relation.rs");
     let usage = read("src/nanda_wave/usage_prior.rs");
+    let usage_tests = read("src/nanda_wave/usage_prior_tests.rs");
     let decision_signals = read("src/typing_transition/decision_signals.rs");
 
     assert!(
@@ -445,7 +446,7 @@ fn l4_memory_owns_complete_transition_targets_and_cold_initialization() {
     );
     assert!(
         usage.contains("ensure_usage_cache_initialized(&mut cache, load_usage_counts)")
-            && usage.contains("first_hot_readout_initializes_persisted_usage_memory_once"),
+            && usage_tests.contains("first_hot_readout_initializes_persisted_usage_memory_once"),
         "the first hot readout must load persisted memory without a foreign warmup route"
     );
 }

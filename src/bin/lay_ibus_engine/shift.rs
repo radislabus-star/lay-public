@@ -15,6 +15,18 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<Option<bool>> {
+        if !self.context_word_is_known() {
+            self.clear_preedit_completion_state();
+            if self.context_allows_manual_toggle() {
+                // Explicit terminal projection only. Incomplete words cannot
+                // enter auto-undo, active composition or daemon delegation.
+                trace::record(
+                    r#"{"kind":"ibus_manual_toggle_dispatch","source":"observed_terminal_suffix","executor":"terminal_erase_commit"}"#,
+                );
+                return self.toggle_committed_tail_target(emitter).await;
+            }
+            return Ok(None);
+        }
         // PROTECTED USER CONTRACT: an immediate double Shift after autocorrect
         // restores the exact recorded input before any layout/manual toggle.
         // Keep this first; typing_transition_authority_contract enforces order.
@@ -91,18 +103,19 @@ impl LayIbusEngine {
             trace::record(r#"{"kind":"ibus_manual_toggle_authorization_blocked"}"#);
             return Ok(None);
         };
-        self.commit_verified_active_composition(emitter, authorized_edit)
-            .await?;
-        self.committed_tail.suppress_next_autocorrect = plan.suppress_next_autocorrect;
-        self.committed_tail.exact_manual_toggle_suppression = None;
+        self.commit_verified_active_composition(
+            emitter,
+            authorized_edit,
+            plan.suppress_next_autocorrect,
+        )
+        .await?;
         self.sync_layout_after_manual_toggle(&plan.replacement);
         self.trace_key("double_shift_commit", 0, 0, true, None);
         Ok(Some(plan.target_layout_is_ru))
     }
 
     fn defer_committed_tail_manual_toggle_to_daemon(&mut self) {
-        self.committed_tail.suppress_next_autocorrect = true;
-        self.committed_tail.exact_manual_toggle_suppression = None;
+        self.arm_local_legacy_replay_autocorrect_suppression();
     }
 }
 
@@ -125,7 +138,10 @@ mod tests {
 
         engine.defer_committed_tail_manual_toggle_to_daemon();
 
-        assert!(engine.committed_tail.suppress_next_autocorrect);
+        assert!(matches!(
+            engine.committed_tail.autocorrect_suppression.as_ref(),
+            Some(crate::protocol::AutocorrectSuppression::LegacyReplayV1)
+        ));
     }
 
     #[test]
@@ -232,7 +248,7 @@ mod tests {
         let production = source.split("#[cfg(test)]").next().unwrap();
         assert!(!production.contains("self.composition.buffer = plan.replacement"));
         assert!(!production.contains("replace_last_tail_token_text(&plan.replacement"));
-        assert!(production.contains("commit_verified_active_composition(emitter, authorized_edit)"));
+        assert!(production.contains("commit_verified_active_composition("));
     }
 
     #[test]

@@ -1,3 +1,10 @@
+// The measurement harness is selected only by its documented one-off rustc
+// invocation; keep the custom cfg local to this test module and out of Cargo.
+#![allow(unexpected_cfgs)]
+
+#[cfg(td108_measurement)]
+mod td108_query_measurement;
+
 use super::atoms::{encode_wave_surface, physical_key_sequence, AtomChannel};
 use super::compiler::{
     compile, compile_training_corpus_with_policy, compile_with_policy, ForwardPostingPolicy,

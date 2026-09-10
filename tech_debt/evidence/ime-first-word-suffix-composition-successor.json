@@ -1,0 +1,33 @@
+{
+  "schema": "lay.tech-debt.successor-binding.v1",
+  "task": "IME-first-word-suffix-1.0.69",
+  "status": "ACCEPTED",
+  "checkpoint": {
+    "state": "frozen-at-source-review",
+    "scope": "Reviewed explicit append-only successor; release, installed runtime and physical acceptance remain separate."
+  },
+  "predecessor": {
+    "task": "TD-121",
+    "binding": "tech_debt/evidence/td121-composition-mutation-successor.json",
+    "binding_sha256": "3f378db41861a3fad3c970243b5b09063fc3834e75ad1bbe2378dbc6e1a4c9c2",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "33739ccb18d07fd7206f4b98e605f5e45ec5fe3041e6033f4f70190397f01d5f",
+    "mode": "0664"
+  },
+  "successor": {
+    "task": "docs/ime-daemon-route-map-2026-06-20.md",
+    "section": "First-word display repair preflight, 2026-09-09 13:33 UTC",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "2dceda04efa40c9b95f3d4ee00a9dea28c5692e7c87901890e4e84a3e1b4dc3b",
+    "mode": "0664"
+  },
+  "review": {
+    "state": "PASS",
+    "report": "tech_debt/evidence/ime-first-word-suffix-source-review.md",
+    "report_sha256": "820275c2bd052c92d2dff2e9bf521aaaf93c26e8d4ba8ff77fd842d674429e02",
+    "score": "9/10",
+    "high_findings": 0,
+    "medium_findings": 0
+  },
+  "runtime_authority_changed": false
+}

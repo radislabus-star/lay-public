@@ -13,6 +13,6 @@ mod state;
 pub(crate) use keys::*;
 pub(crate) use modifiers::has_command_modifier;
 pub(crate) use state::{
-    ExactManualToggleSuppression, PendingImeAutoUndo, PendingImeAutoUndoRetry, Shared, SharedState,
-    ShiftGestureHandoff,
+    AutocorrectSuppression, CurrentWordSuppression, ExactManualToggleSuppression,
+    PendingImeAutoUndo, PendingImeAutoUndoRetry, Shared, SharedState, ShiftGestureHandoff,
 };

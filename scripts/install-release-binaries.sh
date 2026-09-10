@@ -24,6 +24,14 @@ binaries=(
   lay-memory-report
 )
 
+if [[ "$#" == 1 && "$1" == --list-source-binaries ]]; then
+  printf '%s\n' "${binaries[@]}" lay-l11-restore lay-l11-serve
+  exit 0
+elif [[ "$#" != 0 ]]; then
+  echo "usage: scripts/install-release-binaries.sh [--list-source-binaries]" >&2
+  exit 2
+fi
+
 L2_PACKAGE_SOURCE="$("$ROOT/scripts/resolve-l2-package.sh")"
 
 mkdir -p "$INSTALL_DIR" "$LINK_DIR"

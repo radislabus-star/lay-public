@@ -26,6 +26,7 @@ struct AdmissionWordFacts {
     cyrillic_letters_only: std::cell::OnceCell<bool>,
     char_len: std::cell::OnceCell<usize>,
     known_russian: std::cell::OnceCell<bool>,
+    clean_surface_certificate: std::cell::OnceCell<bool>,
     protected_current: std::cell::OnceCell<bool>,
 }
 
@@ -37,6 +38,7 @@ impl AdmissionWordFacts {
             cyrillic_letters_only: std::cell::OnceCell::new(),
             char_len: std::cell::OnceCell::new(),
             known_russian: std::cell::OnceCell::new(),
+            clean_surface_certificate: std::cell::OnceCell::new(),
             protected_current: std::cell::OnceCell::new(),
         }
     }
@@ -63,6 +65,12 @@ impl AdmissionWordFacts {
         *self
             .known_russian
             .get_or_init(|| known_russian_autocorrect_token(self.lower()))
+    }
+
+    fn has_clean_surface_certificate(&self) -> bool {
+        *self.clean_surface_certificate.get_or_init(|| {
+            crate::russian_lexicon::has_clean_russian_surface_certificate(self.lower())
+        })
     }
 
     fn is_protected_current(&self) -> bool {
@@ -278,6 +286,8 @@ fn candidate_admission(
     error_class: TypingErrorClass,
     origin: CandidateOrigin,
 ) -> CandidateGateDecision {
+    #[cfg(test)]
+    record_admission_evaluation(replacement, error_class, origin);
     let lexical_facts = AdmissionLexicalFacts::new(original, replacement);
     candidate_admission_with_facts(original, replacement, error_class, origin, &lexical_facts)
 }

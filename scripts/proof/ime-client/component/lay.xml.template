@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component>
+  <name>org.freedesktop.IBus.Lay</name>
+  <description>Private TD-121 actual Lay candidate</description>
+  <exec></exec>
+  <version>candidate-hash-bound-at-run</version>
+  <author>radislabus</author>
+  <license>MIT</license>
+  <homepage>private-proof</homepage>
+  <textdomain>lay</textdomain>
+  <engines>
+    <engine>
+      <name>lay-ime-us</name>
+      <language>en</language>
+      <license>MIT</license>
+      <author>radislabus</author>
+      <icon>input-keyboard</icon>
+      <layout>us</layout>
+      <longname>Lay IME US private proof</longname>
+      <description>Actual candidate US factory route</description>
+      <rank>50</rank>
+    </engine>
+    <engine>
+      <name>lay-ime-ru</name>
+      <language>ru</language>
+      <license>MIT</license>
+      <author>radislabus</author>
+      <icon>input-keyboard</icon>
+      <layout>ru</layout>
+      <longname>Lay IME RU private proof</longname>
+      <description>Actual candidate RU factory route</description>
+      <rank>50</rank>
+    </engine>
+  </engines>
+</component>

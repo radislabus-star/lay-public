@@ -38,7 +38,6 @@ pub(super) struct DaemonLoopState {
     pub(super) field_context_epoch: u64,
     pub(super) active_window_identity: Option<String>,
     pub(super) window_states: HashMap<String, WindowInputState>,
-    pub(super) ignore_current_token_until_space: bool,
     pub(super) last_focus_ignore_poll: Instant,
 }
 
@@ -46,7 +45,6 @@ pub(super) struct WindowInputState {
     buffer: WordBuffer,
     events_since_word_start: u32,
     pending_typing_assist_after_space: Option<PendingTypingAssist>,
-    ignore_current_token_until_space: bool,
     clear_on_next_typing: bool,
     suppress_next_typing_assist_after_manual_replay: bool,
     saved_at: Instant,
@@ -58,7 +56,6 @@ impl WindowInputState {
             buffer: std::mem::take(&mut state.buffer),
             events_since_word_start: state.events_since_word_start,
             pending_typing_assist_after_space: state.pending_typing_assist_after_space.take(),
-            ignore_current_token_until_space: state.ignore_current_token_until_space,
             clear_on_next_typing: state.clear_on_next_typing,
             suppress_next_typing_assist_after_manual_replay: state
                 .suppress_next_typing_assist_after_manual_replay,
@@ -70,7 +67,6 @@ impl WindowInputState {
         state.buffer = self.buffer;
         state.events_since_word_start = self.events_since_word_start;
         state.pending_typing_assist_after_space = self.pending_typing_assist_after_space;
-        state.ignore_current_token_until_space = self.ignore_current_token_until_space;
         state.clear_on_next_typing = self.clear_on_next_typing;
         state.suppress_next_typing_assist_after_manual_replay =
             self.suppress_next_typing_assist_after_manual_replay;
@@ -108,7 +104,6 @@ impl DaemonLoopState {
             field_context_epoch: 0,
             active_window_identity: None,
             window_states: HashMap::new(),
-            ignore_current_token_until_space: false,
             last_focus_ignore_poll: now - Duration::from_millis(FOCUS_IGNORE_POLL_INTERVAL_MS),
         }
     }
@@ -145,7 +140,6 @@ impl DaemonLoopState {
                 self.buffer = WordBuffer::new();
                 self.events_since_word_start = 0;
                 self.pending_typing_assist_after_space = None;
-                self.ignore_current_token_until_space = false;
                 self.clear_on_next_typing = false;
                 self.suppress_next_typing_assist_after_manual_replay = false;
             }
@@ -173,7 +167,6 @@ impl DaemonLoopState {
         !self.buffer.current_is_empty()
             || self.events_since_word_start > 0
             || self.pending_typing_assist_after_space.is_some()
-            || self.ignore_current_token_until_space
             || self.clear_on_next_typing
             || self.suppress_next_typing_assist_after_manual_replay
     }

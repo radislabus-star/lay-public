@@ -1,6 +1,7 @@
-//! Complete frame-bound conflict cohort shadow.
+//! Complete frame-bound conflict cohort derivation.
 //!
-//! This module owns no live rank, display, certificate, admission or mutation.
+//! Its result participates in capability settlement, but this module owns no
+//! live rank, display, certificate issuance, admission or mutation.
 
 use std::cmp::Ordering;
 
@@ -153,7 +154,7 @@ fn settle_conflict_members(
         .filter(|member| member.state == CandidateStateV1::Born)
         .count();
     let component_count = conflict_component_count(&active);
-    let blocker_present = active
+    let blocker_present = members
         .iter()
         .any(|member| !member.authority_blockers.is_empty());
     let complete_for_authority = completeness.state() == EnumerationStateV1::Complete
@@ -643,6 +644,29 @@ mod tests {
         );
         assert_eq!(result.verdict, CohortVerdictV1::Winner(1));
         assert_eq!(result.rejected_member_count, 1);
+    }
+
+    #[test]
+    fn rejected_target_integrity_blocker_invalidates_the_whole_cohort() {
+        let grounded = member(1, CandidateStateV1::Grounded, 0, 4, "word");
+        let mut rejected = member(
+            2,
+            CandidateStateV1::Rejected(TargetRejectionReasonV1::CompleteNoValidGeometry),
+            0,
+            4,
+            "ward",
+        );
+        rejected
+            .authority_blockers
+            .push(AbsoluteAuthorityBlockerV1::EvidenceIntegrityIncomplete);
+
+        let result = settle(vec![grounded, rejected], complete(2));
+
+        assert!(!result.complete_for_authority);
+        assert_eq!(
+            result.verdict,
+            CohortVerdictV1::Abstain(CohortAbstainReasonV1::IncompleteEnumeration)
+        );
     }
 
     #[test]

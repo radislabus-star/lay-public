@@ -232,12 +232,13 @@ impl LayIbusEngine {
         } else {
             lay::exact_layout_authority::FactoryEngineProfile::UsQwerty
         };
-        Self::new_with_factory_profile(path, shared, profile, managed_input, config)
+        Self::new_with_factory_profile(path, shared, false, None, profile, managed_input, config)
     }
 
     pub(crate) fn new_from_component(
         path: String,
         shared: Shared,
+        admission: Option<super::context_admission::ContextAdmissionAdapter>,
         component_name: &str,
         managed_input: bool,
         config: LayConfig,
@@ -245,6 +246,8 @@ impl LayIbusEngine {
         Self::new_with_factory_profile(
             path,
             shared,
+            true,
+            admission,
             lay::exact_layout_authority::FactoryEngineProfile::from_component_name(component_name),
             managed_input,
             config,
@@ -254,12 +257,14 @@ impl LayIbusEngine {
     fn new_with_factory_profile(
         path: String,
         shared: Shared,
+        context_admission_required: bool,
+        context_admission: Option<super::context_admission::ContextAdmissionAdapter>,
         factory_engine_profile: lay::exact_layout_authority::FactoryEngineProfile,
         managed_input: bool,
         config: LayConfig,
     ) -> Self {
         warm_runtime(&config);
-        let (handoff_tail_buffer, handoff_tail_epoch, handoff_focus_receipt) = {
+        let (mut handoff_tail_buffer, handoff_tail_epoch, handoff_focus_receipt) = {
             let state = shared.lock().expect("lay ime state poisoned");
             (
                 state.handoff_tail_buffer.clone(),
@@ -267,9 +272,20 @@ impl LayIbusEngine {
                 state.handoff_focus_receipt.clone(),
             )
         };
+        if context_admission_required {
+            handoff_tail_buffer.clear();
+        }
         let mut engine = Self {
             path,
             shared,
+            context_admission_required,
+            context_admission,
+            context_owner: None,
+            context_word_scope: None,
+            context_token: None,
+            context_callback_entered: None,
+            context_bridge_token: None,
+            context_handoff_sealed: false,
             composition: CompositionState::default(),
             committed_tail: CommittedTailState::new(handoff_tail_buffer, handoff_tail_epoch),
             client_context: ClientContextState::new(
@@ -291,8 +307,9 @@ impl LayIbusEngine {
     pub(super) fn reset_for_ibus_focus_change(&mut self) {
         self.invalidate_input_frame_background_work();
         self.committed_tail.pending_completion_learning = None;
-        let preserve_tail =
-            self.should_preserve_focus_handoff() || self.shared_active_path_preserved();
+        let preserve_tail = self.context_handoff_sealed
+            || !self.context_admission_required
+                && (self.should_preserve_focus_handoff() || self.shared_active_path_preserved());
         self.composition.buffer.clear();
         self.composition.cursor = 0;
         self.composition.preedit_visible = false;
@@ -311,8 +328,6 @@ impl LayIbusEngine {
             self.committed_tail.last_input_at = None;
             self.committed_tail.recent_replace = None;
             self.composition.word_input_mode = None;
-            self.committed_tail.suppress_next_autocorrect = false;
-            self.committed_tail.exact_manual_toggle_suppression = None;
             self.clear_autocorrect_suppression_handoff();
         }
         self.layout_gesture.shift_active = false;
@@ -376,7 +391,12 @@ impl LayIbusEngine {
         self.client_context.surrounding_text_snapshot = None;
         self.layout_gesture.pending_manual_toggle = false;
         self.rebuild_preedit_fast_from_tail();
-        if !self.exact_manual_toggle_handoff_is_live() {
+        // A verified FocusOut already sealed this exact tail epoch in the
+        // admission reducer. The ordinary following Disable is cleanup only;
+        // republishing here would advance the epoch and invalidate the seal.
+        let preserves_admission_seal =
+            self.context_admission_required && self.context_handoff_sealed;
+        if !preserves_admission_seal && !self.exact_manual_toggle_handoff_is_live() {
             self.publish_tail_handoff();
         }
     }
@@ -582,11 +602,6 @@ impl LayIbusEngine {
         let now = Instant::now();
         self.committed_tail.last_commit_at = Some(now);
         self.publish_active_path_preserve_handoff(now + Duration::from_millis(700));
-        if suppress_next_autocorrect {
-            self.committed_tail.suppress_next_autocorrect = true;
-            self.committed_tail.exact_manual_toggle_suppression = None;
-            self.publish_autocorrect_suppression_handoff();
-        }
         if self.should_skip_duplicate_committed_tail_replace(backspaces, &logical_text, now) {
             trace::record_committed_tail_replace(
                 source,
@@ -605,10 +620,16 @@ impl LayIbusEngine {
         } else {
             output_profile.output_route()
         };
-        trace::record_committed_tail_replace(source, output_route, backspaces, &logical_text);
+        trace::record_committed_tail_replace(
+            source,
+            output_route,
+            authorized_plan.backspaces,
+            &logical_text,
+        );
         let mut delete_us = 0;
         let commit_text = if output_profile.uses_terminal_erase() {
-            terminal_erase_prefix(backspaces) + &text
+            // The request covers the logical old token; execute only the verified physical edit.
+            terminal_erase_prefix(authorized_plan.backspaces) + &text
         } else {
             forward_cursor_steps(emitter, KEY_LEFT, authorized_plan.move_left).await?;
             let delete_started = Instant::now();
@@ -676,6 +697,9 @@ impl LayIbusEngine {
             text: logical_text,
             at: now,
         });
+        if suppress_next_autocorrect {
+            self.arm_current_word_autocorrect_suppression();
+        }
         if let Some(expected_final_snapshot) = exact_final_snapshot {
             self.arm_exact_visible_postcondition_from_surrounding_dispatch(
                 now,

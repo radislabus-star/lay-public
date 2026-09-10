@@ -1,20 +1,27 @@
-//! Slice 2 context-neutral material and exact frame binding.
+//! Context-neutral target material and exact frame binding.
 //!
-//! This module is shadow/proof-only. It has no daemon, IBus, display,
-//! authorization, mutation, cache, or package-writing entrypoint.
+//! It owns immutable material/proof construction and replay used by the live
+//! capability issuer. It has no daemon, IBus, display, mutation, cache, or
+//! package-writing entrypoint and grants no authority by itself.
 
 use std::collections::{BTreeMap, BTreeSet};
 
 use sha2::{Digest, Sha256};
 
-use crate::nanda_wave::lexical_grokking::{Phase7dCertificateClass, Phase7dCertificateEvidence};
+use crate::nanda_wave::lexical_grokking::{
+    phase7d_semantics_digest, Phase7dCertificateClass, Phase7dCertificateEvidence,
+    Phase7dCertificateOracle, Phase7dRetrievalLane,
+};
 use crate::text_case::apply_word_case;
+#[cfg(test)]
+use crate::typing_transition::target_evidence::CanonicalL1AnchorKindV1;
 use crate::typing_transition::target_evidence::{
-    stable_bytes_ref, BoundedTargetSetV1, EnumerationCompletenessV1, EnumerationWorkBudgetV1,
-    EnumerationWorkCountersV1, FrameInvalidationReasonV1, FrameTargetIdentityV1,
-    GroundingNamespaceV1, IncompletenessReasonV1, InputFrameIdentityV1, LeaseConsumerStateV1,
-    MaterialTargetIdentityV1, NormalizationLayoutProfileIdV1, PreparedEvidenceTablesV1,
-    PreparedIntegrityV1, PreparedMaterialKeyV1, PreparedMaterialLeaseV1,
+    stable_bytes_ref, BoundedTargetSetV1, CanonicalL1AnchorProofV1, CompletenessScopeV1,
+    EnumerationCompletenessV1, EnumerationStateV1, EnumerationWorkBudgetV1,
+    EnumerationWorkCountersV1, ExactRelationPartitionProofV1, FrameInvalidationReasonV1,
+    FrameTargetIdentityV1, GroundingNamespaceV1, IncompletenessReasonV1, InputFrameIdentityV1,
+    LeaseConsumerStateV1, MaterialTargetIdentityV1, NormalizationLayoutProfileIdV1,
+    PreparedEvidenceTablesV1, PreparedIntegrityV1, PreparedMaterialKeyV1, PreparedMaterialLeaseV1,
     PreparedOriginalLexicalStatusV1, PreparedOriginalMaterialV1,
     PreparedOriginalPunctuationStatusV1, PreparedOriginalScriptTokenStatusV1,
     PreparedTargetMaterialV1, PreparedTargetV1, ReplacementSpanV1, SeparatorProfileIdV1,
@@ -35,6 +42,13 @@ use super::packaged_runtime::{
 const MAX_CONTOUR_TARGETS_PER_FIELD: usize = 8;
 const MAX_BOUNDARY_TARGETS_PER_FIELD: usize = 2;
 const EXACT_PEAK_OPERATOR_BASE: u32 = 0x5631_0000;
+const RELATION_PARTITION_POLICY_VERSION_V1: u32 = 2;
+
+pub(in crate::nanda_wave::l2_field) const EXACT_RELATION_SEARCH_MAX_PRODUCT_STATES: usize = 100_000;
+pub(in crate::nanda_wave::l2_field) const EXACT_RELATION_SEARCH_MAX_TERMINALS: usize = 16_384;
+pub(in crate::nanda_wave::l2_field) const EXACT_RELATION_SEARCH_MAX_SCRATCH_BYTES: usize =
+    512 * 1024;
+pub(in crate::nanda_wave::l2_field) const EXACT_RELATION_SEARCH_MAX_LANES: usize = 2;
 
 pub(super) const FROZEN_V90_ENUMERATION_WORK_BUDGET: EnumerationWorkBudgetV1 =
     EnumerationWorkBudgetV1 {
@@ -133,6 +147,24 @@ impl ExactPeakCertificateClassV1 {
     const fn operator_ref(self) -> u32 {
         EXACT_PEAK_OPERATOR_BASE | self as u32
     }
+
+    const fn phase7d_class(self) -> Phase7dCertificateClass {
+        match self {
+            Self::Identity => Phase7dCertificateClass::Identity,
+            Self::PunctuationSuffix => Phase7dCertificateClass::PunctuationSuffix,
+            Self::PrefixTruncation => Phase7dCertificateClass::PrefixTruncation,
+            Self::SuffixTruncation => Phase7dCertificateClass::SuffixTruncation,
+            Self::MissingLetter => Phase7dCertificateClass::MissingLetter,
+            Self::ExtraLetter => Phase7dCertificateClass::ExtraLetter,
+            Self::Substitution => Phase7dCertificateClass::Substitution,
+            Self::KeyboardLayout => Phase7dCertificateClass::KeyboardLayout,
+            Self::AdjacentTransposition => Phase7dCertificateClass::AdjacentTransposition,
+            Self::NonAdjacentTransposition => Phase7dCertificateClass::NonAdjacentTransposition,
+            Self::RepeatedFragment => Phase7dCertificateClass::RepeatedFragment,
+            Self::SparseMultiOmission => Phase7dCertificateClass::SparseMultiOmission,
+            Self::OmissionTransposition => Phase7dCertificateClass::OmissionTransposition,
+        }
+    }
 }
 
 impl From<Phase7dCertificateClass> for ExactPeakCertificateClassV1 {
@@ -162,6 +194,148 @@ pub(in crate::nanda_wave::l2_field) struct ExactPeakCandidateInputV1 {
     pub(in crate::nanda_wave::l2_field) certificates: Vec<Phase7dCertificateEvidence>,
 }
 
+/// The only Phase-7D geometries admitted into the TD-117 authority partition.
+/// Both exact-search materialization and frame-time witness replay call this
+/// predicate, so the producer and consumer cannot silently drift.
+pub(super) fn supported_phase7d_relation(
+    evidence: &Phase7dCertificateEvidence,
+) -> Option<TargetRelationV1> {
+    match evidence.class {
+        Phase7dCertificateClass::PrefixTruncation
+        | Phase7dCertificateClass::SuffixTruncation
+        | Phase7dCertificateClass::MissingLetter => Some(TargetRelationV1::MissingLetter),
+        Phase7dCertificateClass::ExtraLetter => Some(TargetRelationV1::ExtraLetter),
+        Phase7dCertificateClass::Substitution
+            if evidence
+                .canonical_key
+                .contains("\"kind\":\"single_substitution\"") =>
+        {
+            Some(TargetRelationV1::Substitution)
+        }
+        Phase7dCertificateClass::KeyboardLayout => Some(TargetRelationV1::ExactLayout),
+        Phase7dCertificateClass::AdjacentTransposition => {
+            Some(TargetRelationV1::AdjacentTransposition)
+        }
+        Phase7dCertificateClass::Identity
+        | Phase7dCertificateClass::PunctuationSuffix
+        | Phase7dCertificateClass::Substitution
+        | Phase7dCertificateClass::NonAdjacentTransposition
+        | Phase7dCertificateClass::RepeatedFragment
+        | Phase7dCertificateClass::SparseMultiOmission
+        | Phase7dCertificateClass::OmissionTransposition => None,
+    }
+}
+
+pub(in crate::nanda_wave::l2_field) fn exact_relation_search_budget_identity() -> [u8; 32] {
+    let mut hasher = Sha256::new();
+    hasher.update(b"lay-td117-exact-relation-search-budget-v2\0");
+    hasher.update((EXACT_RELATION_SEARCH_MAX_LANES as u64).to_le_bytes());
+    hasher.update((EXACT_RELATION_SEARCH_MAX_PRODUCT_STATES as u64).to_le_bytes());
+    hasher.update((EXACT_RELATION_SEARCH_MAX_TERMINALS as u64).to_le_bytes());
+    hasher.update((EXACT_RELATION_SEARCH_MAX_SCRATCH_BYTES as u64).to_le_bytes());
+    // Proof search has no elapsed deadline and uses the canonical forward,
+    // non-verification traversal schedule.
+    hasher.update([0, 0, 0]);
+    hasher.finalize().into()
+}
+
+fn exact_search_work_within_budget(
+    work: ExactSearchStructuralWorkV1,
+    expected_lane_count: usize,
+    retrieved_form_count: usize,
+) -> bool {
+    let Some(expected_lane_count) = u64::try_from(expected_lane_count).ok() else {
+        return false;
+    };
+    let Some(retrieved_form_count) = u64::try_from(retrieved_form_count).ok() else {
+        return false;
+    };
+    let Some(maximum_expanded_product_states) = work
+        .maximum_lane_product_states
+        .checked_mul(expected_lane_count)
+    else {
+        return false;
+    };
+    let Some(maximum_retrieved_forms) =
+        work.maximum_lane_terminals.checked_mul(expected_lane_count)
+    else {
+        return false;
+    };
+    work.lane_count == expected_lane_count
+        && work.lane_count <= EXACT_RELATION_SEARCH_MAX_LANES as u64
+        && work.maximum_lane_product_states <= EXACT_RELATION_SEARCH_MAX_PRODUCT_STATES as u64
+        && work.maximum_lane_terminals <= EXACT_RELATION_SEARCH_MAX_TERMINALS as u64
+        && work.maximum_lane_product_states <= work.expanded_product_states
+        && work.expanded_product_states <= maximum_expanded_product_states
+        && work.maximum_lane_terminals <= retrieved_form_count
+        && retrieved_form_count <= maximum_retrieved_forms
+        && work.maximum_scratch_bytes <= EXACT_RELATION_SEARCH_MAX_SCRATCH_BYTES as u64
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub(in crate::nanda_wave::l2_field) struct ExactSearchStructuralWorkV1 {
+    pub(in crate::nanda_wave::l2_field) lane_count: u64,
+    pub(in crate::nanda_wave::l2_field) maximum_lane_product_states: u64,
+    pub(in crate::nanda_wave::l2_field) maximum_lane_terminals: u64,
+    pub(in crate::nanda_wave::l2_field) expanded_product_states: u64,
+    pub(in crate::nanda_wave::l2_field) maximum_scratch_bytes: u64,
+    pub(in crate::nanda_wave::l2_field) expanded_states: u64,
+    pub(in crate::nanda_wave::l2_field) examined_edges: u64,
+    pub(in crate::nanda_wave::l2_field) surviving_edges: u64,
+    pub(in crate::nanda_wave::l2_field) pruned_edges: u64,
+    pub(in crate::nanda_wave::l2_field) stack_pushes: u64,
+    pub(in crate::nanda_wave::l2_field) stack_pops: u64,
+    pub(in crate::nanda_wave::l2_field) terminal_hits: u64,
+    pub(in crate::nanda_wave::l2_field) transition_checks: u64,
+    pub(in crate::nanda_wave::l2_field) terminal_distance_checks: u64,
+    pub(in crate::nanda_wave::l2_field) rank_prefix_count: u64,
+    pub(in crate::nanda_wave::l2_field) terminal_rank_count: u64,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(in crate::nanda_wave::l2_field) struct ExactPeakSearchProofV1 {
+    exact_observed_sha256: [u8; 32],
+    query_lanes_sha256: [u8; 32],
+    canonical_l2_sha256: [u8; 32],
+    sidecar_sha256: [u8; 32],
+    phase7d_semantics_sha256: [u8; 32],
+    search_budget_sha256: [u8; 32],
+    retrieved_form_refs_sha256: [u8; 32],
+    supported_births_sha256: [u8; 32],
+    structural_trace_sha256: [u8; 32],
+    retrieved_form_count: u32,
+    supported_target_count: u16,
+    supported_certificate_count: u16,
+    work: ExactSearchStructuralWorkV1,
+}
+
+impl ExactPeakSearchProofV1 {
+    fn canonical_digest(&self) -> [u64; 2] {
+        let mut hasher = Sha256::new();
+        hasher.update(b"lay-td117-exact-peak-search-proof-v2\0");
+        for digest in [
+            self.exact_observed_sha256,
+            self.query_lanes_sha256,
+            self.canonical_l2_sha256,
+            self.sidecar_sha256,
+            self.phase7d_semantics_sha256,
+            self.search_budget_sha256,
+            self.retrieved_form_refs_sha256,
+            self.supported_births_sha256,
+            self.structural_trace_sha256,
+        ] {
+            hasher.update(digest);
+        }
+        hasher.update(self.retrieved_form_count.to_le_bytes());
+        hasher.update(self.supported_target_count.to_le_bytes());
+        hasher.update(self.supported_certificate_count.to_le_bytes());
+        for value in exact_search_work_values(self.work) {
+            hasher.update(value.to_le_bytes());
+        }
+        digest128(hasher.finalize().into())
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 struct ExactPeakBirthV1 {
     form_ref: u32,
@@ -174,6 +348,8 @@ struct ExactPeakBirthV1 {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(in crate::nanda_wave::l2_field) struct ExactPeakBirthEnumerationV1 {
     births: Vec<ExactPeakBirthV1>,
+    retrieved_form_refs: Vec<u32>,
+    search_proof: Option<ExactPeakSearchProofV1>,
     work: EnumerationWorkCountersV1,
     logical_match_count: usize,
     all_seen_digest: [u64; 2],
@@ -184,6 +360,8 @@ impl ExactPeakBirthEnumerationV1 {
     pub(in crate::nanda_wave::l2_field) fn complete_empty() -> Self {
         Self {
             births: Vec::new(),
+            retrieved_form_refs: Vec::new(),
+            search_proof: None,
             work: EnumerationWorkCountersV1::default(),
             logical_match_count: 0,
             all_seen_digest: digest128(Sha256::digest(b"lay-exact-peak-birth-v1\0").into()),
@@ -195,6 +373,8 @@ impl ExactPeakBirthEnumerationV1 {
         debug_assert!(reason != IncompletenessReasonV1::None);
         Self {
             births: Vec::new(),
+            retrieved_form_refs: Vec::new(),
+            search_proof: None,
             work: EnumerationWorkCountersV1::default(),
             logical_match_count: 0,
             all_seen_digest: digest128(
@@ -212,10 +392,59 @@ impl ExactPeakBirthEnumerationV1 {
         self.overflow_reason == Some(IncompletenessReasonV1::StorageCapacity)
     }
 
+    pub(super) fn common_field_projection(
+        self,
+        observed: &str,
+        canonical_l2_sha256: [u8; 32],
+    ) -> (Self, Option<EnumerationCompletenessV1>) {
+        if !self.capacity_exceeded() {
+            return (self, None);
+        }
+        let mut projection = self
+            .authority_partition(observed, canonical_l2_sha256)
+            .unwrap_or_else(|| Self::incomplete(IncompletenessReasonV1::StorageCapacity));
+        let incompleteness = EnumerationCompletenessV1::overflow(
+            projection.logical_match_count,
+            self.logical_match_count,
+            IncompletenessReasonV1::StorageCapacity,
+            self.all_seen_digest,
+        );
+        // The common field retains a bounded view, not another search proof.
+        // Raw identities keep its incompleteness visible and prevent reissuance.
+        projection.search_proof = None;
+        projection.logical_match_count = self.logical_match_count;
+        projection.all_seen_digest = self.all_seen_digest;
+        projection.work = self.work;
+        projection.overflow_reason = Some(IncompletenessReasonV1::StorageCapacity);
+        (projection, Some(incompleteness))
+    }
+
+    fn raw_identity_matches_held_births(&self) -> bool {
+        self.logical_match_count == exact_peak_root_counts(&self.births).len()
+            && self.all_seen_digest == exact_peak_set_digest(&self.births)
+    }
+
     pub(super) fn normalized_surfaces(&self) -> impl Iterator<Item = &str> {
         self.births
             .iter()
             .map(|birth| birth.normalized_surface.as_str())
+    }
+
+    pub(super) fn validated_authority_target_rows(
+        &self,
+        observed: &str,
+        canonical_l2_sha256: [u8; 32],
+    ) -> Option<Vec<(u32, String)>> {
+        let partition = self.authority_partition(observed, canonical_l2_sha256)?;
+        let rows = partition
+            .births
+            .into_iter()
+            .map(|birth| (birth.form_ref, birth.normalized_surface))
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect::<Vec<_>>();
+        let maximum_rows = MAX_TARGETS_PER_FIELD.checked_mul(MAX_TARGET_WITNESSES_PER_TARGET)?;
+        (rows.len() <= maximum_rows).then_some(rows)
     }
 
     pub(in crate::nanda_wave::l2_field) fn diagnostic_json(&self) -> serde_json::Value {
@@ -269,6 +498,7 @@ impl ExactPeakBirthEnumerationV1 {
         let mut form_surfaces = BTreeMap::<u32, String>::new();
         let mut certificate_refs = BTreeMap::<u32, String>::new();
         let mut births = BTreeSet::<ExactPeakBirthV1>::new();
+        let mut retrieved_form_refs = BTreeSet::<u32>::new();
         for candidate in candidates {
             let normalized_surface =
                 super::super::compositional::normalize_surface(&candidate.normalized_surface);
@@ -281,6 +511,7 @@ impl ExactPeakBirthEnumerationV1 {
             {
                 return Err("exact peak form_ref maps to multiple normalized surfaces".into());
             }
+            retrieved_form_refs.insert(candidate.form_ref);
             for certificate in candidate.certificates {
                 if certificate.canonical_key.is_empty() {
                     return Err("exact peak certificate has an empty canonical key".into());
@@ -302,12 +533,7 @@ impl ExactPeakBirthEnumerationV1 {
             }
         }
         let births = births.into_iter().collect::<Vec<_>>();
-        let mut roots_by_surface = BTreeMap::<&str, usize>::new();
-        for birth in &births {
-            *roots_by_surface
-                .entry(birth.normalized_surface.as_str())
-                .or_default() += 1;
-        }
+        let roots_by_surface = exact_peak_root_counts(&births);
         let logical_match_count = roots_by_surface.len();
         let capacity_exceeded = logical_match_count > MAX_TARGETS_PER_FIELD
             || roots_by_surface
@@ -323,9 +549,266 @@ impl ExactPeakBirthEnumerationV1 {
             all_seen_digest: exact_peak_set_digest(&births),
             overflow_reason: capacity_exceeded.then_some(IncompletenessReasonV1::StorageCapacity),
             births,
+            retrieved_form_refs: retrieved_form_refs.into_iter().collect(),
+            search_proof: None,
             logical_match_count,
         })
     }
+
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the exact search proof keeps every producer identity explicit"
+    )]
+    pub(in crate::nanda_wave::l2_field) fn with_completed_search_proof(
+        mut self,
+        observed: &str,
+        canonical_l2_sha256: [u8; 32],
+        sidecar_sha256: [u8; 32],
+        query_lanes: &[Phase7dRetrievalLane],
+        mut retrieved_form_refs: Vec<u32>,
+        work: ExactSearchStructuralWorkV1,
+        rank_prefixes: &[u32],
+        terminal_ranks: &[u32],
+    ) -> Result<Self, String> {
+        if (self.overflow_reason.is_some() && !self.capacity_exceeded())
+            || sidecar_sha256 == [0; 32]
+            || !self.raw_identity_matches_held_births()
+        {
+            return Err("incomplete exact peaks cannot own a completed search proof".to_string());
+        }
+        retrieved_form_refs.sort_unstable();
+        retrieved_form_refs.dedup();
+        if !exact_search_work_within_budget(work, query_lanes.len(), retrieved_form_refs.len()) {
+            return Err("incomplete exact peaks cannot own a completed search proof".to_string());
+        }
+        if self
+            .births
+            .iter()
+            .any(|birth| retrieved_form_refs.binary_search(&birth.form_ref).is_err())
+        {
+            return Err("exact peak birth is absent from the exhaustive terminal set".to_string());
+        }
+        let supported_births = replayed_supported_births(observed, &self.births)?;
+        let supported_roots = exact_peak_root_counts(&supported_births);
+        let supported_target_count = supported_roots.len();
+        if supported_target_count > MAX_TARGETS_PER_FIELD
+            || supported_roots
+                .values()
+                .any(|count| *count > MAX_TARGET_WITNESSES_PER_TARGET)
+        {
+            return Err("supported exact partition exceeds storage capacity".to_string());
+        }
+        let proof = ExactPeakSearchProofV1 {
+            exact_observed_sha256: Sha256::digest(observed.as_bytes()).into(),
+            query_lanes_sha256: query_lanes_digest(query_lanes),
+            canonical_l2_sha256,
+            sidecar_sha256,
+            phase7d_semantics_sha256: phase7d_semantics_digest(),
+            search_budget_sha256: exact_relation_search_budget_identity(),
+            retrieved_form_refs_sha256: u32_sequence_digest(
+                b"lay-td117-retrieved-form-refs-v1\0",
+                &retrieved_form_refs,
+            ),
+            supported_births_sha256: exact_peak_set_sha256(&supported_births),
+            structural_trace_sha256: structural_trace_digest(rank_prefixes, terminal_ranks),
+            retrieved_form_count: u32::try_from(retrieved_form_refs.len())
+                .map_err(|_| "exact search terminal count exceeds u32".to_string())?,
+            supported_target_count: u16::try_from(supported_target_count)
+                .map_err(|_| "supported exact target count exceeds u16".to_string())?,
+            supported_certificate_count: u16::try_from(supported_births.len())
+                .map_err(|_| "supported exact certificate count exceeds u16".to_string())?,
+            work,
+        };
+        self.retrieved_form_refs = retrieved_form_refs;
+        self.search_proof = Some(proof);
+        Ok(self)
+    }
+
+    #[cfg(test)]
+    pub(in crate::nanda_wave::l2_field) fn with_test_search_proof(
+        self,
+        observed: &str,
+        canonical_l2_sha256: [u8; 32],
+    ) -> Result<Self, String> {
+        let lanes = Phase7dCertificateOracle::new(observed)?.retrieval_lanes();
+        let retrieved_form_refs = self.retrieved_form_refs.clone();
+        let work = ExactSearchStructuralWorkV1 {
+            lane_count: u64::try_from(lanes.len())
+                .map_err(|_| "test exact search lane count exceeds u64")?,
+            maximum_lane_terminals: u64::try_from(retrieved_form_refs.len())
+                .map_err(|_| "test exact search terminal count exceeds u64")?,
+            ..ExactSearchStructuralWorkV1::default()
+        };
+        self.with_completed_search_proof(
+            observed,
+            canonical_l2_sha256,
+            [0x5a; 32],
+            &lanes,
+            retrieved_form_refs,
+            work,
+            &[],
+            &[],
+        )
+    }
+
+    #[cfg(test)]
+    pub(in crate::nanda_wave::l2_field) fn with_corrupted_first_class_for_test(
+        mut self,
+        class: Phase7dCertificateClass,
+    ) -> Self {
+        if let Some(birth) = self.births.first_mut() {
+            birth.class = class.into();
+        }
+        self
+    }
+
+    fn authority_partition(&self, observed: &str, canonical_l2_sha256: [u8; 32]) -> Option<Self> {
+        let proof = self.search_proof.as_ref()?;
+        let lanes = Phase7dCertificateOracle::new(observed)
+            .ok()?
+            .retrieval_lanes();
+        let supported_births = replayed_supported_births(observed, &self.births).ok()?;
+        let supported_roots = exact_peak_root_counts(&supported_births);
+        let supported_target_count = supported_roots.len();
+        if (self.overflow_reason.is_some() && !self.capacity_exceeded())
+            || !self.raw_identity_matches_held_births()
+            || supported_target_count > MAX_TARGETS_PER_FIELD
+            || supported_roots
+                .values()
+                .any(|count| *count > MAX_TARGET_WITNESSES_PER_TARGET)
+            || proof.exact_observed_sha256 != <[u8; 32]>::from(Sha256::digest(observed.as_bytes()))
+            || proof.query_lanes_sha256 != query_lanes_digest(&lanes)
+            || proof.canonical_l2_sha256 != canonical_l2_sha256
+            || proof.sidecar_sha256 == [0; 32]
+            || proof.phase7d_semantics_sha256 != phase7d_semantics_digest()
+            || proof.search_budget_sha256 != exact_relation_search_budget_identity()
+            || proof.retrieved_form_refs_sha256
+                != u32_sequence_digest(
+                    b"lay-td117-retrieved-form-refs-v1\0",
+                    &self.retrieved_form_refs,
+                )
+            || usize::try_from(proof.retrieved_form_count).ok()
+                != Some(self.retrieved_form_refs.len())
+            || proof.supported_births_sha256 != exact_peak_set_sha256(&supported_births)
+            || usize::from(proof.supported_target_count) != supported_target_count
+            || usize::from(proof.supported_certificate_count) != supported_births.len()
+            || proof.structural_trace_sha256 == [0; 32]
+            || !exact_search_work_within_budget(
+                proof.work,
+                lanes.len(),
+                self.retrieved_form_refs.len(),
+            )
+        {
+            return None;
+        }
+        Some(Self {
+            logical_match_count: supported_target_count,
+            all_seen_digest: exact_peak_set_digest(&supported_births),
+            births: supported_births,
+            retrieved_form_refs: self.retrieved_form_refs.clone(),
+            search_proof: Some(proof.clone()),
+            work: self.work,
+            overflow_reason: None,
+        })
+    }
+}
+
+fn exact_peak_root_counts(births: &[ExactPeakBirthV1]) -> BTreeMap<&str, usize> {
+    let mut roots = BTreeMap::new();
+    for birth in births {
+        *roots.entry(birth.normalized_surface.as_str()).or_default() += 1;
+    }
+    roots
+}
+
+fn replayed_supported_births(
+    observed: &str,
+    births: &[ExactPeakBirthV1],
+) -> Result<Vec<ExactPeakBirthV1>, String> {
+    let oracle = Phase7dCertificateOracle::new(observed)?;
+    let mut actual_by_surface = BTreeMap::<&str, Vec<Phase7dCertificateEvidence>>::new();
+    let mut supported = Vec::new();
+    for birth in births {
+        let evidence = Phase7dCertificateEvidence {
+            class: birth.class.phase7d_class(),
+            canonical_key: birth.canonical_key.clone(),
+        };
+        let Some(relation) = supported_phase7d_relation(&evidence) else {
+            continue;
+        };
+        let actual = match actual_by_surface.entry(birth.normalized_surface.as_str()) {
+            std::collections::btree_map::Entry::Occupied(entry) => entry.into_mut(),
+            std::collections::btree_map::Entry::Vacant(entry) => {
+                entry.insert(oracle.certificate_evidence(&birth.normalized_surface)?)
+            }
+        };
+        if relation != birth.class.relation()
+            || birth.derivation_ref != stable_bytes_ref(birth.canonical_key.as_bytes())
+            || !actual.contains(&evidence)
+        {
+            return Err(
+                "exact peak certificate does not replay under current Phase-7D semantics"
+                    .to_string(),
+            );
+        }
+        supported.push(birth.clone());
+    }
+    supported.sort();
+    supported.dedup();
+    Ok(supported)
+}
+
+fn query_lanes_digest(lanes: &[Phase7dRetrievalLane]) -> [u8; 32] {
+    let mut hasher = Sha256::new();
+    hasher.update(b"lay-td117-phase7d-query-lanes-v1\0");
+    hasher.update((lanes.len() as u64).to_le_bytes());
+    for lane in lanes {
+        hasher.update([lane.maximum_levenshtein_distance]);
+        hasher.update((lane.symbols.len() as u64).to_le_bytes());
+        for symbol in lane.symbols.iter() {
+            hasher.update(symbol.to_le_bytes());
+        }
+    }
+    hasher.finalize().into()
+}
+
+fn u32_sequence_digest(domain: &[u8], values: &[u32]) -> [u8; 32] {
+    let mut hasher = Sha256::new();
+    hasher.update(domain);
+    hasher.update((values.len() as u64).to_le_bytes());
+    for value in values {
+        hasher.update(value.to_le_bytes());
+    }
+    hasher.finalize().into()
+}
+
+fn structural_trace_digest(rank_prefixes: &[u32], terminal_ranks: &[u32]) -> [u8; 32] {
+    let mut hasher = Sha256::new();
+    hasher.update(b"lay-td117-exact-search-structural-trace-v1\0");
+    hasher.update(u32_sequence_digest(b"rank-prefixes\0", rank_prefixes));
+    hasher.update(u32_sequence_digest(b"terminal-ranks\0", terminal_ranks));
+    hasher.finalize().into()
+}
+
+const fn exact_search_work_values(work: ExactSearchStructuralWorkV1) -> [u64; 16] {
+    [
+        work.lane_count,
+        work.maximum_lane_product_states,
+        work.maximum_lane_terminals,
+        work.expanded_product_states,
+        work.maximum_scratch_bytes,
+        work.expanded_states,
+        work.examined_edges,
+        work.surviving_edges,
+        work.pruned_edges,
+        work.stack_pushes,
+        work.stack_pops,
+        work.terminal_hits,
+        work.transition_checks,
+        work.terminal_distance_checks,
+        work.rank_prefix_count,
+        work.terminal_rank_count,
+    ]
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -380,9 +863,37 @@ pub(in crate::nanda_wave::l2_field) struct PreparedTargetMaterialShadowV1 {
     package_tuple: ExactPackageTupleV1,
     exact_original: Option<ExactMaterialTargetV1>,
     exact_targets: Vec<ExactMaterialTargetV1>,
+    canonical_l1_anchor_proofs: Vec<CanonicalL1AnchorProofV1>,
     exact_peak_births: Vec<ExactPeakBirthV1>,
+    exact_retrieved_form_refs: Vec<u32>,
+    exact_search_proof: Option<ExactPeakSearchProofV1>,
     boundary_groundings: Vec<CompositeBoundaryGroundingV1>,
     work: EnumerationWorkCountersV1,
+}
+
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(in crate::nanda_wave::l2_field) enum ExactSearchProofFaultV1 {
+    CanonicalPackage,
+    Sidecar,
+    Semantics,
+}
+
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(in crate::nanda_wave::l2_field) enum CanonicalL1AnchorProofFaultV1 {
+    TargetBytes,
+    TargetForm,
+    AnchorForm,
+    Lemma,
+    Terminal,
+    Kind,
+    L11Package,
+    CanonicalL2Package,
+    Missing,
+    Extra,
+    Ambiguous,
+    RawTerminalSubstitution,
 }
 
 impl PreparedTargetMaterialShadowV1 {
@@ -402,12 +913,338 @@ impl PreparedTargetMaterialShadowV1 {
             .map(|target| target.normalized_scalars.as_str())
     }
 
+    pub(super) fn exact_witness_root_matches(
+        &self,
+        target_ref: usize,
+        witness_ref: usize,
+        witness: TargetWitnessV1,
+    ) -> bool {
+        let Some(exact_target) = self.exact_targets.get(target_ref) else {
+            return false;
+        };
+        let Some(compact_target) = self.compact.targets.as_slice().get(target_ref) else {
+            return false;
+        };
+        if exact_target.compact != *compact_target
+            || stable_bytes_ref(exact_target.normalized_scalars.as_bytes())
+                != compact_target.identity.normalized_scalars_ref
+            || stable_bytes_ref(&exact_target.canonical_bytes)
+                != compact_target.identity.canonical_bytes_ref
+            || exact_target.normalized_scalars.as_bytes() != exact_target.canonical_bytes
+        {
+            return false;
+        }
+        let Some(compact_witness) = compact_target.witnesses.witnesses().get(witness_ref) else {
+            return false;
+        };
+        let Some(exact_root) = exact_target.witness_roots.get(witness_ref) else {
+            return false;
+        };
+        *compact_witness == witness
+            && exact_root.compact(
+                compact_witness.support_milli,
+                compact_witness.provenance_annotations,
+            ) == witness
+    }
+
+    pub(super) fn canonical_l1_anchor_proof_for_target_witness(
+        &self,
+        target_ref: usize,
+        witness_ref: usize,
+        witness: TargetWitnessV1,
+    ) -> Option<&CanonicalL1AnchorProofV1> {
+        if witness.grounding_namespace != GroundingNamespaceV1::CanonicalL1Anchor
+            || !self.exact_witness_root_matches(target_ref, witness_ref, witness)
+            || !self.canonical_l1_anchor_proof_table_is_valid()
+        {
+            return None;
+        }
+        let mut matching = self
+            .canonical_l1_anchor_proofs
+            .iter()
+            .filter(|proof| proof.proof_ref == witness.grounding_ref);
+        let proof = matching.next()?;
+        matching.next().is_none().then_some(proof)
+    }
+
+    pub(super) fn original_canonical_l1_anchor_proof(&self) -> Option<&CanonicalL1AnchorProofV1> {
+        if !self.canonical_l1_anchor_proof_table_is_valid() {
+            return None;
+        }
+        let original = self.exact_original.as_ref()?;
+        if original.canonical_bytes.as_slice() != self.exact_observed.as_bytes()
+            || original.compact.witnesses.witnesses().len() != original.witness_roots.len()
+        {
+            return None;
+        }
+        let mut proof = None;
+        for (root, witness) in original
+            .witness_roots
+            .iter()
+            .zip(original.compact.witnesses.witnesses())
+        {
+            if root.grounding_namespace != GroundingNamespaceV1::CanonicalL1Anchor
+                || !is_grounded_membership(root.verdict_membership)
+            {
+                continue;
+            }
+            if root.compact(witness.support_milli, witness.provenance_annotations) != *witness
+                || proof.is_some()
+            {
+                return None;
+            }
+            let retained = self
+                .canonical_l1_anchor_proofs
+                .iter()
+                .find(|candidate| candidate.proof_ref == root.grounding_ref)?;
+            proof = Some(retained);
+        }
+        proof
+    }
+
+    fn canonical_l1_anchor_proof_table_is_valid(&self) -> bool {
+        let roots = self
+            .exact_original
+            .iter()
+            .chain(&self.exact_targets)
+            .flat_map(|target| {
+                target
+                    .witness_roots
+                    .iter()
+                    .filter(|root| {
+                        root.grounding_namespace == GroundingNamespaceV1::CanonicalL1Anchor
+                    })
+                    .map(|root| (root.grounding_ref, target.canonical_bytes.as_slice()))
+            })
+            .collect::<Vec<_>>();
+        if roots.len() != self.canonical_l1_anchor_proofs.len()
+            || self
+                .canonical_l1_anchor_proofs
+                .windows(2)
+                .any(|pair| pair[0].proof_ref >= pair[1].proof_ref)
+        {
+            return false;
+        }
+        for proof in &self.canonical_l1_anchor_proofs {
+            if !proof.has_canonical_ref()
+                || proof.l11_sha256 != self.package_tuple.l11_sha256
+                || proof.canonical_l2_sha256 != self.package_tuple.canonical_l2_sha256
+            {
+                return false;
+            }
+            let matching = roots
+                .iter()
+                .filter(|(proof_ref, target_bytes)| {
+                    *proof_ref == proof.proof_ref
+                        && *target_bytes == proof.exact_target_bytes.as_bytes()
+                })
+                .count();
+            if matching != 1 {
+                return false;
+            }
+        }
+        roots.iter().all(|(proof_ref, target_bytes)| {
+            self.canonical_l1_anchor_proofs
+                .iter()
+                .filter(|proof| {
+                    proof.proof_ref == *proof_ref
+                        && proof.exact_target_bytes.as_bytes() == *target_bytes
+                })
+                .count()
+                == 1
+        })
+    }
+
     pub(super) fn exact_digest(&self) -> [u64; 2] {
         self.compact.integrity.exact_digest
     }
 
     pub(super) fn completeness(&self) -> EnumerationCompletenessV1 {
         self.compact.completeness
+    }
+
+    pub(super) fn validates_relation_partition_proof(&self) -> bool {
+        let retained = self.compact.evidence_tables.exact_relation_partition;
+        let Some(expected) = build_relation_partition_proof(self) else {
+            return false;
+        };
+        let Some(scope_ref) = self
+            .compact
+            .completeness
+            .scope()
+            .exhaustive_partition_proof_ref()
+        else {
+            return false;
+        };
+        self.compact.completeness.state() == EnumerationStateV1::Complete
+            && self.compact.completeness.scope().kind()
+                == crate::typing_transition::target_evidence::CompletenessScopeKindV1::RelationPartition
+            && scope_ref.get() == retained.proof_ref
+            && self.compact.completeness.retained_count()
+                == retained.retained_target_count
+            && self.compact.completeness.logical_count_lower_bound()
+                == retained.logical_target_count
+            && self.compact.completeness.all_seen_digest()
+                == retained.target_root_set_digest
+            && retained.is_present()
+            && retained == expected
+    }
+
+    #[cfg(test)]
+    pub(in crate::nanda_wave::l2_field) fn corrupt_exact_search_proof_for_test(
+        &mut self,
+        fault: ExactSearchProofFaultV1,
+    ) {
+        let proof = self
+            .exact_search_proof
+            .as_mut()
+            .expect("test fault requires a completed exact search proof");
+        match fault {
+            ExactSearchProofFaultV1::CanonicalPackage => {
+                proof.canonical_l2_sha256[0] ^= u8::MAX;
+            }
+            ExactSearchProofFaultV1::Sidecar => {
+                proof.sidecar_sha256[0] ^= u8::MAX;
+            }
+            ExactSearchProofFaultV1::Semantics => {
+                proof.phase7d_semantics_sha256[0] ^= u8::MAX;
+            }
+        }
+    }
+
+    #[cfg(test)]
+    pub(in crate::nanda_wave::l2_field) fn corrupt_canonical_l1_anchor_proof_for_test(
+        &mut self,
+        fault: CanonicalL1AnchorProofFaultV1,
+    ) {
+        let original_relation_proof = self.compact.evidence_tables.exact_relation_partition;
+        match fault {
+            CanonicalL1AnchorProofFaultV1::Missing => {
+                self.canonical_l1_anchor_proofs.remove(0);
+            }
+            CanonicalL1AnchorProofFaultV1::Extra => {
+                let retained = self.canonical_l1_anchor_proofs[0].clone();
+                let mut extra = CanonicalL1AnchorProofV1::new(
+                    format!("{}-extra", retained.exact_target_bytes),
+                    retained.target_form_ref.wrapping_add(101),
+                    retained.target_form_ref.wrapping_add(101),
+                    retained.lemma_id,
+                    retained.terminal_id.wrapping_add(101),
+                    CanonicalL1AnchorKindV1::Direct,
+                    retained.l11_sha256,
+                    retained.canonical_l2_sha256,
+                )
+                .expect("test extra proof");
+                while self
+                    .canonical_l1_anchor_proofs
+                    .iter()
+                    .any(|proof| proof.proof_ref == extra.proof_ref)
+                {
+                    extra.terminal_id = extra.terminal_id.wrapping_add(1);
+                    extra.proof_ref = stable_bytes_ref(&extra.canonical_identity_bytes());
+                }
+                self.canonical_l1_anchor_proofs.push(extra);
+                self.canonical_l1_anchor_proofs
+                    .sort_by_key(|proof| proof.proof_ref);
+            }
+            CanonicalL1AnchorProofFaultV1::Ambiguous => {
+                let duplicate = self.canonical_l1_anchor_proofs[0].clone();
+                self.canonical_l1_anchor_proofs.push(duplicate);
+                self.canonical_l1_anchor_proofs
+                    .sort_by_key(|proof| proof.proof_ref);
+            }
+            CanonicalL1AnchorProofFaultV1::RawTerminalSubstitution => {
+                let proof = self.canonical_l1_anchor_proofs.remove(0);
+                rewrite_anchor_roots(
+                    self,
+                    proof.proof_ref,
+                    proof.terminal_id,
+                    GroundingNamespaceV1::L11Terminal,
+                );
+            }
+            fault => {
+                let proof = &mut self.canonical_l1_anchor_proofs[0];
+                let old_ref = proof.proof_ref;
+                match fault {
+                    CanonicalL1AnchorProofFaultV1::TargetBytes => {
+                        proof.exact_target_bytes.push('!');
+                    }
+                    CanonicalL1AnchorProofFaultV1::TargetForm => {
+                        proof.target_form_ref = proof.target_form_ref.wrapping_add(7);
+                    }
+                    CanonicalL1AnchorProofFaultV1::AnchorForm => {
+                        proof.anchor_form_ref = proof.anchor_form_ref.wrapping_add(7);
+                    }
+                    CanonicalL1AnchorProofFaultV1::Lemma => {
+                        proof.lemma_id = Some(proof.lemma_id.unwrap_or_default().wrapping_add(7));
+                    }
+                    CanonicalL1AnchorProofFaultV1::Terminal => {
+                        proof.terminal_id = proof.terminal_id.wrapping_add(7);
+                    }
+                    CanonicalL1AnchorProofFaultV1::Kind => {
+                        proof.kind = match proof.kind {
+                            CanonicalL1AnchorKindV1::Direct => CanonicalL1AnchorKindV1::SameLemma,
+                            CanonicalL1AnchorKindV1::SameLemma => CanonicalL1AnchorKindV1::Direct,
+                        };
+                    }
+                    CanonicalL1AnchorProofFaultV1::L11Package => {
+                        proof.l11_sha256[0] ^= u8::MAX;
+                    }
+                    CanonicalL1AnchorProofFaultV1::CanonicalL2Package => {
+                        proof.canonical_l2_sha256[0] ^= u8::MAX;
+                    }
+                    CanonicalL1AnchorProofFaultV1::Missing
+                    | CanonicalL1AnchorProofFaultV1::Extra
+                    | CanonicalL1AnchorProofFaultV1::Ambiguous
+                    | CanonicalL1AnchorProofFaultV1::RawTerminalSubstitution => unreachable!(),
+                }
+                proof.proof_ref = stable_bytes_ref(&proof.canonical_identity_bytes());
+                let new_ref = proof.proof_ref;
+                rewrite_anchor_roots(
+                    self,
+                    old_ref,
+                    new_ref,
+                    GroundingNamespaceV1::CanonicalL1Anchor,
+                );
+                self.canonical_l1_anchor_proofs
+                    .sort_by_key(|proof| proof.proof_ref);
+            }
+        }
+        reseal_anchor_fault_material(self, original_relation_proof);
+    }
+
+    #[cfg(test)]
+    pub(in crate::nanda_wave::l2_field) fn corrupt_observed_canonical_l1_anchor_for_test(
+        &mut self,
+    ) {
+        let original_relation_proof = self.compact.evidence_tables.exact_relation_partition;
+        let old_ref = self
+            .exact_original
+            .as_ref()
+            .and_then(|original| {
+                original.witness_roots.iter().find_map(|root| {
+                    (root.grounding_namespace == GroundingNamespaceV1::CanonicalL1Anchor)
+                        .then_some(root.grounding_ref)
+                })
+            })
+            .expect("test observed anchor root");
+        let proof = self
+            .canonical_l1_anchor_proofs
+            .iter_mut()
+            .find(|proof| proof.proof_ref == old_ref)
+            .expect("test observed anchor proof");
+        proof.terminal_id = proof.terminal_id.wrapping_add(7);
+        proof.proof_ref = stable_bytes_ref(&proof.canonical_identity_bytes());
+        let new_ref = proof.proof_ref;
+        rewrite_anchor_roots(
+            self,
+            old_ref,
+            new_ref,
+            GroundingNamespaceV1::CanonicalL1Anchor,
+        );
+        self.canonical_l1_anchor_proofs
+            .sort_by_key(|proof| proof.proof_ref);
+        reseal_anchor_fault_material(self, original_relation_proof);
     }
 
     pub(super) fn work(&self) -> EnumerationWorkCountersV1 {
@@ -421,8 +1258,10 @@ impl PreparedTargetMaterialShadowV1 {
     pub(super) fn original_has_grounded_l11_evidence(&self) -> bool {
         self.exact_original.as_ref().is_some_and(|original| {
             original.witness_roots.iter().any(|root| {
-                root.grounding_namespace == GroundingNamespaceV1::L11Terminal
-                    && is_grounded_membership(root.verdict_membership)
+                matches!(
+                    root.grounding_namespace,
+                    GroundingNamespaceV1::L11Terminal | GroundingNamespaceV1::CanonicalL1Anchor
+                ) && is_grounded_membership(root.verdict_membership)
             })
         })
     }
@@ -465,6 +1304,93 @@ impl PreparedTargetMaterialShadowV1 {
             .map(|birth| birth.normalized_surface.clone())
             .collect()
     }
+}
+
+#[cfg(test)]
+fn rewrite_anchor_roots(
+    material: &mut PreparedTargetMaterialShadowV1,
+    old_ref: u32,
+    new_ref: u32,
+    namespace: GroundingNamespaceV1,
+) {
+    fn rewrite_target(
+        target: &mut ExactMaterialTargetV1,
+        old_ref: u32,
+        new_ref: u32,
+        namespace: GroundingNamespaceV1,
+    ) {
+        let mut roots = target
+            .witness_roots
+            .iter()
+            .cloned()
+            .zip(target.compact.witnesses.witnesses().iter().copied())
+            .map(|(mut root, witness)| {
+                if root.grounding_namespace == GroundingNamespaceV1::CanonicalL1Anchor
+                    && root.grounding_ref == old_ref
+                {
+                    root.grounding_namespace = namespace;
+                    root.grounding_ref = new_ref;
+                }
+                (
+                    root,
+                    (witness.support_milli, witness.provenance_annotations),
+                )
+            })
+            .collect::<Vec<_>>();
+        roots.sort_by(|left, right| left.0.cmp(&right.0));
+        target.witness_roots = roots.iter().map(|(root, _)| root.clone()).collect();
+        target.compact.witnesses = roots.into_iter().fold(
+            TargetEvidenceSetV1::complete_empty(),
+            |evidence, (root, (support, annotations))| {
+                evidence.merge(TargetEvidenceSetV1::from_one(
+                    root.compact(support, annotations),
+                ))
+            },
+        );
+    }
+
+    if let Some(original) = material.exact_original.as_mut() {
+        rewrite_target(original, old_ref, new_ref, namespace);
+    }
+    for target in &mut material.exact_targets {
+        rewrite_target(target, old_ref, new_ref, namespace);
+    }
+    let mut bounded = BoundedTargetSetV1::default();
+    for target in &material.exact_targets {
+        bounded
+            .push(target.compact)
+            .expect("test anchor rewrite remains within bounded targets");
+    }
+    material.compact.targets = bounded;
+}
+
+#[cfg(test)]
+fn reseal_anchor_fault_material(
+    material: &mut PreparedTargetMaterialShadowV1,
+    original_relation_proof: ExactRelationPartitionProofV1,
+) {
+    material.compact.evidence_tables = evidence_table_identities(
+        material.exact_original.as_ref(),
+        &material.exact_targets,
+        &material.canonical_l1_anchor_proofs,
+    );
+    material.compact.evidence_tables.exact_relation_partition = original_relation_proof;
+    if let Some(proof) = build_relation_partition_proof(material) {
+        material.compact.evidence_tables.exact_relation_partition = proof;
+        material.compact.completeness = EnumerationCompletenessV1::complete_in_scope(
+            material.exact_targets.len(),
+            proof.target_root_set_digest,
+            CompletenessScopeV1::relation_partition(proof.proof_ref)
+                .expect("test relation proof ref"),
+        );
+        material.compact.original = prepared_relation_partition_original(
+            &material.exact_observed,
+            material.exact_original.as_ref(),
+            &material.exact_targets,
+            true,
+        );
+    }
+    refresh_material_integrity(material);
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -573,6 +1499,115 @@ pub(super) fn prepare_context_neutral_productive_material_with_contours_and_exac
     )
 }
 
+pub(super) fn prepare_frame_bound_lexical_authority_material(
+    observed: &str,
+    package_tuple: ExactPackageTupleV1,
+    mut enumeration: ContextNeutralProductiveEnumerationV1,
+    mut contour_births: TypedContourBirthEnumerationV1,
+    exact_peaks: ExactPeakBirthEnumerationV1,
+) -> Result<PreparedTargetMaterialShadowV1, String> {
+    // Productive remains the honest whole-field display/ranking diagnostic. It
+    // cannot widen this narrow authority membership partition.
+    enumeration.readout.candidates.clear();
+    enumeration.readout.logical_terminal_count = 0;
+    enumeration.readout.logical_surface_basin_count = 0;
+    enumeration.readout.integrity_error = None;
+    enumeration.productive_work = EnumerationWorkCountersV1::default();
+    enumeration.aggregate_work = EnumerationWorkCountersV1::default();
+    enumeration.work_budget_exceeded = false;
+
+    let contour_surface_count = contour_births
+        .births
+        .iter()
+        .map(|birth| super::super::compositional::normalize_surface(&birth.normalized_surface))
+        .collect::<BTreeSet<_>>()
+        .len();
+    let grounding_complete = contour_births.overflow_reason.is_none()
+        && contour_surface_count == contour_births.logical_match_count;
+    let authority_peaks =
+        exact_peaks.authority_partition(observed, package_tuple.canonical_l2_sha256);
+    let partition_ready = grounding_complete && authority_peaks.is_some();
+    let authority_peaks = authority_peaks.unwrap_or_else(|| {
+        ExactPeakBirthEnumerationV1::incomplete(IncompletenessReasonV1::IntegrityFailure)
+    });
+    let partition_surfaces = authority_peaks
+        .births
+        .iter()
+        .map(|birth| birth.normalized_surface.as_bytes().to_vec())
+        .collect::<BTreeSet<_>>();
+
+    // L1.1 owns grounding only. Retain a grounded original for preservation and
+    // grounded roots whose surface is already a member of the exact partition.
+    contour_births.births.retain(|birth| {
+        let normalized = super::super::compositional::normalize_surface(&birth.normalized_surface);
+        birth.grounding_namespace == GroundingNamespaceV1::CanonicalL1Anchor
+            && is_grounded_membership(birth.verdict_membership)
+            && (normalized.as_bytes() == observed.as_bytes()
+                || partition_surfaces.contains(normalized.as_bytes()))
+    });
+    let retained_anchor_refs = contour_births
+        .births
+        .iter()
+        .map(|birth| birth.grounding_ref)
+        .collect::<BTreeSet<_>>();
+    contour_births
+        .canonical_l1_anchor_proofs
+        .retain(|proof| retained_anchor_refs.contains(&proof.proof_ref));
+    contour_births.logical_match_count = contour_births
+        .births
+        .iter()
+        .map(|birth| birth.normalized_surface.as_str())
+        .collect::<BTreeSet<_>>()
+        .len();
+    contour_births.overflow_reason = None;
+
+    let mut material = prepare_context_neutral_productive_material_all(
+        observed,
+        package_tuple,
+        enumeration,
+        if partition_ready {
+            contour_births
+        } else {
+            TypedContourBirthEnumerationV1::complete_empty()
+        },
+        TypedBoundaryBirthEnumerationV1::complete_empty(),
+        authority_peaks,
+    )?;
+
+    let relation_proof = partition_ready
+        .then(|| build_relation_partition_proof(&material))
+        .flatten();
+    if let Some(proof) = relation_proof {
+        let scope = CompletenessScopeV1::relation_partition(proof.proof_ref)
+            .expect("relation proof references are canonical and non-zero");
+        material.compact.completeness = EnumerationCompletenessV1::complete_in_scope(
+            material.exact_targets.len(),
+            proof.target_root_set_digest,
+            scope,
+        );
+        material.compact.evidence_tables.exact_relation_partition = proof;
+        material.compact.original = prepared_relation_partition_original(
+            observed,
+            material.exact_original.as_ref(),
+            &material.exact_targets,
+            true,
+        );
+    } else {
+        material.compact.completeness =
+            EnumerationCompletenessV1::failed(IncompletenessReasonV1::IntegrityFailure);
+        material.compact.evidence_tables.exact_relation_partition =
+            ExactRelationPartitionProofV1::default();
+        material.compact.original = prepared_relation_partition_original(
+            observed,
+            material.exact_original.as_ref(),
+            &material.exact_targets,
+            false,
+        );
+    }
+    refresh_material_integrity(&mut material);
+    Ok(material)
+}
+
 pub(super) fn prepare_context_neutral_productive_material_with_contours_and_boundaries(
     observed: &str,
     package_tuple: ExactPackageTupleV1,
@@ -598,6 +1633,7 @@ fn prepare_context_neutral_productive_material_all(
     boundary_births: TypedBoundaryBirthEnumerationV1,
     exact_peaks: ExactPeakBirthEnumerationV1,
 ) -> Result<PreparedTargetMaterialShadowV1, String> {
+    validate_contour_anchor_proof_inputs(&contour_births, package_tuple)?;
     let mut targets = BTreeMap::<Vec<u8>, MaterialTargetAccumulatorV1>::new();
     let mut productive_surface_rank = BTreeMap::<Vec<u8>, usize>::new();
     for (rank, candidate) in enumeration.readout.candidates.iter().enumerate() {
@@ -657,7 +1693,7 @@ fn prepare_context_neutral_productive_material_all(
         contour_births.all_seen_digest,
         boundary_births.all_seen_digest,
     );
-    let all_seen_digest = if exact_peaks.is_empty() {
+    let all_seen_digest = if exact_peaks.is_empty() && !exact_peaks.capacity_exceeded() {
         base_all_seen_digest
     } else {
         combined_target_set_digest_with_exact_peaks(
@@ -672,13 +1708,15 @@ fn prepare_context_neutral_productive_material_all(
     let mut boundary_only_targets = Vec::new();
     for target in all_exact_targets {
         let grounded_l11_target = target.witness_roots.iter().any(|root| {
-            root.grounding_namespace == GroundingNamespaceV1::L11Terminal
-                && matches!(
-                    root.verdict_membership,
-                    VerdictMembershipV1::Grounded
-                        | VerdictMembershipV1::L11Winner
-                        | VerdictMembershipV1::L11Tied
-                )
+            matches!(
+                root.grounding_namespace,
+                GroundingNamespaceV1::L11Terminal | GroundingNamespaceV1::CanonicalL1Anchor
+            ) && matches!(
+                root.verdict_membership,
+                VerdictMembershipV1::Grounded
+                    | VerdictMembershipV1::L11Winner
+                    | VerdictMembershipV1::L11Tied
+            )
         });
         if exact_peak_surfaces.contains(&target.canonical_bytes) || grounded_l11_target {
             mandatory_targets.push(target);
@@ -803,8 +1841,32 @@ fn prepare_context_neutral_productive_material_all(
         package_generation,
         exact_package_digest_prefix,
     };
+    let retained_anchor_refs = exact_original
+        .iter()
+        .chain(&exact_targets)
+        .flat_map(|target| {
+            target
+                .witness_roots
+                .iter()
+                .filter(|root| root.grounding_namespace == GroundingNamespaceV1::CanonicalL1Anchor)
+                .map(|root| root.grounding_ref)
+        })
+        .collect::<BTreeSet<_>>();
+    let canonical_l1_anchor_proofs = contour_births
+        .canonical_l1_anchor_proofs
+        .iter()
+        .filter(|proof| retained_anchor_refs.contains(&proof.proof_ref))
+        .cloned()
+        .collect::<Vec<_>>();
+    if canonical_l1_anchor_proofs.len() != retained_anchor_refs.len() {
+        return Err("retained canonical L1 anchor proof table is incomplete".to_string());
+    }
     let original = prepared_original_material(observed, exact_original.as_ref(), completeness);
-    let evidence_tables = evidence_table_identities(exact_original.as_ref(), &exact_targets);
+    let evidence_tables = evidence_table_identities(
+        exact_original.as_ref(),
+        &exact_targets,
+        &canonical_l1_anchor_proofs,
+    );
     let aggregate_work = enumeration
         .aggregate_work
         .checked_add(contour_births.work)
@@ -833,8 +1895,10 @@ fn prepare_context_neutral_productive_material_all(
         original,
         exact_original.as_ref(),
         &exact_targets,
+        &canonical_l1_anchor_proofs,
         &boundary_groundings,
         completeness,
+        evidence_tables,
         aggregate_work,
     );
     Ok(PreparedTargetMaterialShadowV1 {
@@ -852,10 +1916,70 @@ fn prepare_context_neutral_productive_material_all(
         package_tuple,
         exact_original,
         exact_targets,
+        canonical_l1_anchor_proofs,
         exact_peak_births: exact_peaks.births,
+        exact_retrieved_form_refs: exact_peaks.retrieved_form_refs,
+        exact_search_proof: exact_peaks.search_proof,
         boundary_groundings,
         work: aggregate_work,
     })
+}
+
+fn validate_contour_anchor_proof_inputs(
+    contour_births: &TypedContourBirthEnumerationV1,
+    package_tuple: ExactPackageTupleV1,
+) -> Result<(), String> {
+    let anchor_births = contour_births
+        .births
+        .iter()
+        .filter(|birth| birth.grounding_namespace == GroundingNamespaceV1::CanonicalL1Anchor)
+        .collect::<Vec<_>>();
+    if anchor_births.len() != contour_births.canonical_l1_anchor_proofs.len() {
+        return Err("canonical L1 anchor proof table cardinality mismatch".to_string());
+    }
+    let mut previous_ref = None;
+    for proof in &contour_births.canonical_l1_anchor_proofs {
+        if previous_ref.is_some_and(|previous| previous >= proof.proof_ref)
+            || !proof.has_canonical_ref()
+            || proof.l11_sha256 != package_tuple.l11_sha256
+            || proof.canonical_l2_sha256 != package_tuple.canonical_l2_sha256
+        {
+            return Err("canonical L1 anchor proof table is malformed or ambiguous".to_string());
+        }
+        previous_ref = Some(proof.proof_ref);
+        if anchor_births
+            .iter()
+            .filter(|birth| {
+                birth.grounding_ref == proof.proof_ref
+                    && super::super::compositional::normalize_surface(&birth.normalized_surface)
+                        .as_bytes()
+                        == proof.exact_target_bytes.as_bytes()
+            })
+            .count()
+            != 1
+        {
+            return Err("canonical L1 anchor proof does not own one exact birth".to_string());
+        }
+    }
+    if anchor_births.iter().any(|birth| {
+        !is_grounded_membership(birth.verdict_membership)
+            || contour_births
+                .canonical_l1_anchor_proofs
+                .iter()
+                .filter(|proof| {
+                    proof.proof_ref == birth.grounding_ref
+                        && proof.exact_target_bytes.as_bytes()
+                            == super::super::compositional::normalize_surface(
+                                &birth.normalized_surface,
+                            )
+                            .as_bytes()
+                })
+                .count()
+                != 1
+    }) {
+        return Err("canonical L1 anchor birth has no unique full proof".to_string());
+    }
+    Ok(())
 }
 
 fn sort_exact_targets(targets: &mut [ExactMaterialTargetV1]) {
@@ -956,6 +2080,41 @@ fn prepared_original_material(
         punctuation_status,
         reserved: 0,
     }
+}
+
+fn prepared_relation_partition_original(
+    observed: &str,
+    original: Option<&ExactMaterialTargetV1>,
+    targets: &[ExactMaterialTargetV1],
+    partition_valid: bool,
+) -> PreparedOriginalMaterialV1 {
+    let mut prepared = prepared_original_material(
+        observed,
+        original,
+        EnumerationCompletenessV1::complete(0, [0; 2]),
+    );
+    let original_grounded = original.is_some_and(|target| {
+        target.canonical_bytes.as_slice() == observed.as_bytes()
+            && target.witness_roots.iter().any(|root| {
+                root.grounding_namespace == GroundingNamespaceV1::CanonicalL1Anchor
+                    && is_grounded_membership(root.verdict_membership)
+            })
+    });
+    let partition_target_grounded = partition_valid
+        && targets.iter().any(|target| {
+            target.witness_roots.iter().any(|root| {
+                root.grounding_namespace == GroundingNamespaceV1::CanonicalL1Anchor
+                    && is_grounded_membership(root.verdict_membership)
+            })
+        });
+    prepared.lexical_status = if original_grounded {
+        PreparedOriginalLexicalStatusV1::Clean
+    } else if partition_target_grounded {
+        PreparedOriginalLexicalStatusV1::Damaged
+    } else {
+        PreparedOriginalLexicalStatusV1::Unknown
+    };
+    prepared
 }
 
 const fn is_grounded_membership(membership: VerdictMembershipV1) -> bool {
@@ -1099,6 +2258,225 @@ fn target_set_digest(targets: &[ExactMaterialTargetV1]) -> [u64; 2] {
     digest128(hasher.finalize().into())
 }
 
+fn relation_partition_policy_identity() -> [u64; 2] {
+    digest128(
+        Sha256::digest(
+            b"lay-td117-relation-partition-policy-v2\0missing-letter\0extra-letter\0single-substitution\0exact-layout\0adjacent-transposition\0canonical-l1-anchor-proof\0",
+        )
+        .into(),
+    )
+}
+
+fn relation_partition_target_root_digest(
+    targets: &[ExactMaterialTargetV1],
+    canonical_l1_anchor_proofs: &[CanonicalL1AnchorProofV1],
+) -> [u64; 2] {
+    let mut hasher = Sha256::new();
+    hasher.update(b"lay-td117-relation-partition-target-roots-v2\0");
+    hasher.update((targets.len() as u64).to_le_bytes());
+    for target in targets {
+        hash_len_bytes(&mut hasher, &target.canonical_bytes);
+        hasher.update((target.witness_roots.len() as u64).to_le_bytes());
+        for root in &target.witness_roots {
+            hasher.update(root.canonical_bytes());
+        }
+    }
+    hasher.update((canonical_l1_anchor_proofs.len() as u64).to_le_bytes());
+    for proof in canonical_l1_anchor_proofs {
+        hasher.update(proof.proof_ref.to_le_bytes());
+        hash_len_bytes(&mut hasher, &proof.canonical_identity_bytes());
+    }
+    digest128(hasher.finalize().into())
+}
+
+fn search_proof_matches_material(material: &PreparedTargetMaterialShadowV1) -> bool {
+    let Some(proof) = material.exact_search_proof.as_ref() else {
+        return false;
+    };
+    let Ok(oracle) = Phase7dCertificateOracle::new(&material.exact_observed) else {
+        return false;
+    };
+    let lanes = oracle.retrieval_lanes();
+    let Ok(supported_births) =
+        replayed_supported_births(&material.exact_observed, &material.exact_peak_births)
+    else {
+        return false;
+    };
+    let supported_target_count = supported_births
+        .iter()
+        .map(|birth| birth.normalized_surface.as_str())
+        .collect::<BTreeSet<_>>()
+        .len();
+    let mut canonical_refs = material.exact_retrieved_form_refs.clone();
+    canonical_refs.sort_unstable();
+    canonical_refs.dedup();
+    canonical_refs == material.exact_retrieved_form_refs
+        && material
+            .exact_peak_births
+            .iter()
+            .all(|birth| canonical_refs.binary_search(&birth.form_ref).is_ok())
+        && proof.exact_observed_sha256
+            == <[u8; 32]>::from(Sha256::digest(material.exact_observed.as_bytes()))
+        && proof.query_lanes_sha256 == query_lanes_digest(&lanes)
+        && proof.canonical_l2_sha256 == material.package_tuple.canonical_l2_sha256
+        && proof.sidecar_sha256 != [0; 32]
+        && proof.phase7d_semantics_sha256 == phase7d_semantics_digest()
+        && proof.search_budget_sha256 == exact_relation_search_budget_identity()
+        && proof.retrieved_form_refs_sha256
+            == u32_sequence_digest(
+                b"lay-td117-retrieved-form-refs-v1\0",
+                &material.exact_retrieved_form_refs,
+            )
+        && usize::try_from(proof.retrieved_form_count).ok()
+            == Some(material.exact_retrieved_form_refs.len())
+        && proof.supported_births_sha256 == exact_peak_set_sha256(&supported_births)
+        && usize::from(proof.supported_target_count) == supported_target_count
+        && usize::from(proof.supported_certificate_count) == supported_births.len()
+        && proof.structural_trace_sha256 != [0; 32]
+        && exact_search_work_within_budget(
+            proof.work,
+            lanes.len(),
+            material.exact_retrieved_form_refs.len(),
+        )
+}
+
+fn build_relation_partition_proof(
+    material: &PreparedTargetMaterialShadowV1,
+) -> Option<ExactRelationPartitionProofV1> {
+    if !search_proof_matches_material(material)
+        || !material.canonical_l1_anchor_proof_table_is_valid()
+        || material.exact_targets.len() > MAX_TARGETS_PER_FIELD
+    {
+        return None;
+    }
+    let proof = material.exact_search_proof.as_ref()?;
+    let mut expected_surfaces = material
+        .exact_peak_births
+        .iter()
+        .map(|birth| birth.normalized_surface.as_bytes().to_vec())
+        .collect::<BTreeSet<_>>();
+    expected_surfaces.remove(material.exact_observed.as_bytes());
+    let actual_surfaces = material
+        .exact_targets
+        .iter()
+        .map(|target| target.canonical_bytes.clone())
+        .collect::<BTreeSet<_>>();
+    if expected_surfaces != actual_surfaces {
+        return None;
+    }
+
+    let mut per_target_root_counts = [0_u8; MAX_TARGETS_PER_FIELD];
+    let mut logical_certificate_count = 0_usize;
+    let mut retained_certificate_count = 0_usize;
+    for (index, target) in material.exact_targets.iter().enumerate() {
+        if target.canonical_bytes.as_slice() != target.normalized_scalars.as_bytes()
+            || target.compact != material.compact.targets.as_slice()[index]
+            || target.witness_roots.is_empty()
+            || target.witness_roots.len() > MAX_TARGET_WITNESSES_PER_TARGET
+            || target.compact.witnesses.state() != EnumerationStateV1::Complete
+            || target.compact.witnesses.logical_count() as usize != target.witness_roots.len()
+            || target.compact.witnesses.retained_count() as usize != target.witness_roots.len()
+            || target.compact.witnesses.witnesses().len() != target.witness_roots.len()
+        {
+            return None;
+        }
+        let mut owns_exact_membership = false;
+        for (root_index, root) in target.witness_roots.iter().enumerate() {
+            if root.compact(
+                target.compact.witnesses.witnesses()[root_index].support_milli,
+                target.compact.witnesses.witnesses()[root_index].provenance_annotations,
+            ) != target.compact.witnesses.witnesses()[root_index]
+            {
+                return None;
+            }
+            if root.grounding_namespace == GroundingNamespaceV1::CanonicalForm
+                && root.verdict_membership == VerdictMembershipV1::Born
+            {
+                let matches_birth = material.exact_peak_births.iter().any(|birth| {
+                    birth.normalized_surface.as_bytes() == target.canonical_bytes
+                        && birth.form_ref == root.grounding_ref
+                        && birth.class.relation() == root.relation
+                        && birth.class.operator_ref() == root.operator_ref
+                        && birth.derivation_ref == root.derivation_ref
+                });
+                if !matches_birth {
+                    return None;
+                }
+                owns_exact_membership = true;
+            } else if root.grounding_namespace != GroundingNamespaceV1::CanonicalL1Anchor
+                || !is_grounded_membership(root.verdict_membership)
+                || material
+                    .canonical_l1_anchor_proofs
+                    .iter()
+                    .filter(|proof| {
+                        proof.proof_ref == root.grounding_ref
+                            && proof.exact_target_bytes.as_bytes() == target.canonical_bytes
+                    })
+                    .count()
+                    != 1
+            {
+                return None;
+            }
+        }
+        if !owns_exact_membership {
+            return None;
+        }
+        per_target_root_counts[index] = u8::try_from(target.witness_roots.len()).ok()?;
+        logical_certificate_count =
+            logical_certificate_count.checked_add(target.witness_roots.len())?;
+        retained_certificate_count =
+            retained_certificate_count.checked_add(target.compact.witnesses.witnesses().len())?;
+    }
+    if logical_certificate_count != retained_certificate_count {
+        return None;
+    }
+
+    let target_root_set_digest = relation_partition_target_root_digest(
+        &material.exact_targets,
+        &material.canonical_l1_anchor_proofs,
+    );
+    let mut relation_proof = ExactRelationPartitionProofV1 {
+        proof_ref: 1,
+        policy_version: RELATION_PARTITION_POLICY_VERSION_V1,
+        policy_identity: relation_partition_policy_identity(),
+        exact_search_proof_digest: proof.canonical_digest(),
+        target_root_set_digest,
+        logical_target_count: u16::try_from(material.exact_targets.len()).ok()?,
+        retained_target_count: u16::try_from(material.compact.targets.len()).ok()?,
+        logical_certificate_count: u16::try_from(logical_certificate_count).ok()?,
+        retained_certificate_count: u16::try_from(retained_certificate_count).ok()?,
+        per_target_root_counts,
+    };
+    let digest = relation_partition_proof_digest(relation_proof);
+    relation_proof.proof_ref = u32::from_le_bytes(
+        digest[..4]
+            .try_into()
+            .expect("SHA-256 prefix has four bytes"),
+    )
+    .max(1);
+    Some(relation_proof)
+}
+
+fn relation_partition_proof_digest(proof: ExactRelationPartitionProofV1) -> [u8; 32] {
+    let mut hasher = Sha256::new();
+    hasher.update(b"lay-td117-relation-partition-proof-v2\0");
+    hasher.update(proof.policy_version.to_le_bytes());
+    for digest in [
+        proof.policy_identity,
+        proof.exact_search_proof_digest,
+        proof.target_root_set_digest,
+    ] {
+        hasher.update(digest[0].to_le_bytes());
+        hasher.update(digest[1].to_le_bytes());
+    }
+    hasher.update(proof.logical_target_count.to_le_bytes());
+    hasher.update(proof.retained_target_count.to_le_bytes());
+    hasher.update(proof.logical_certificate_count.to_le_bytes());
+    hasher.update(proof.retained_certificate_count.to_le_bytes());
+    hasher.update(proof.per_target_root_counts);
+    hasher.finalize().into()
+}
+
 fn combined_target_set_digest(
     targets: &[ExactMaterialTargetV1],
     contour_digest: [u64; 2],
@@ -1117,6 +2495,10 @@ fn combined_target_set_digest(
 }
 
 fn exact_peak_set_digest(births: &[ExactPeakBirthV1]) -> [u64; 2] {
+    digest128(exact_peak_set_sha256(births))
+}
+
+fn exact_peak_set_sha256(births: &[ExactPeakBirthV1]) -> [u8; 32] {
     let mut hasher = Sha256::new();
     hasher.update(b"lay-exact-peak-birth-v1\0");
     for birth in births {
@@ -1126,7 +2508,7 @@ fn exact_peak_set_digest(births: &[ExactPeakBirthV1]) -> [u64; 2] {
         hash_len_bytes(&mut hasher, birth.canonical_key.as_bytes());
         hasher.update(birth.derivation_ref.to_le_bytes());
     }
-    digest128(hasher.finalize().into())
+    hasher.finalize().into()
 }
 
 fn combined_target_set_digest_with_exact_peaks(
@@ -1145,6 +2527,7 @@ fn combined_target_set_digest_with_exact_peaks(
 fn evidence_table_identities(
     original: Option<&ExactMaterialTargetV1>,
     targets: &[ExactMaterialTargetV1],
+    canonical_l1_anchor_proofs: &[CanonicalL1AnchorProofV1],
 ) -> PreparedEvidenceTablesV1 {
     let mut relations = Sha256::new();
     let mut groundings = Sha256::new();
@@ -1158,10 +2541,15 @@ fn evidence_table_identities(
             derivations.update(root.derivation_ref.to_le_bytes());
         }
     }
+    for proof in canonical_l1_anchor_proofs {
+        groundings.update(proof.proof_ref.to_le_bytes());
+        groundings.update(proof.canonical_identity_bytes());
+    }
     PreparedEvidenceTablesV1 {
         relation_table_identity: digest64(relations.finalize().into()),
         grounding_table_identity: digest64(groundings.finalize().into()),
         derivation_table_identity: digest64(derivations.finalize().into()),
+        exact_relation_partition: ExactRelationPartitionProofV1::default(),
     }
 }
 
@@ -1175,12 +2563,14 @@ fn material_integrity_digest(
     original: PreparedOriginalMaterialV1,
     exact_original: Option<&ExactMaterialTargetV1>,
     targets: &[ExactMaterialTargetV1],
+    canonical_l1_anchor_proofs: &[CanonicalL1AnchorProofV1],
     boundary_groundings: &[CompositeBoundaryGroundingV1],
     completeness: EnumerationCompletenessV1,
+    evidence_tables: PreparedEvidenceTablesV1,
     work: EnumerationWorkCountersV1,
 ) -> [u64; 2] {
     let mut hasher = Sha256::new();
-    hasher.update(b"lay-prepared-target-material-v1\0");
+    hasher.update(b"lay-prepared-target-material-v2\0");
     hash_len_bytes(&mut hasher, observed.as_bytes());
     hasher.update(package_tuple.l11_sha256);
     hasher.update(package_tuple.canonical_l2_sha256);
@@ -1206,10 +2596,29 @@ fn material_integrity_digest(
             hasher.update(root.canonical_bytes());
         }
     }
+    hasher.update((canonical_l1_anchor_proofs.len() as u64).to_le_bytes());
+    for proof in canonical_l1_anchor_proofs {
+        hasher.update(proof.proof_ref.to_le_bytes());
+        hash_len_bytes(&mut hasher, &proof.canonical_identity_bytes());
+    }
     for grounding in boundary_groundings {
         hash_len_bytes(&mut hasher, &grounding.exact_bytes());
     }
     hasher.update([completeness.state() as u8, completeness.reason() as u8]);
+    hasher.update([completeness.scope().kind() as u8]);
+    hasher.update(
+        completeness
+            .scope()
+            .exhaustive_partition_proof_ref()
+            .map(std::num::NonZeroU32::get)
+            .unwrap_or_default()
+            .to_le_bytes(),
+    );
+    hasher.update(completeness.retained_count().to_le_bytes());
+    hasher.update(completeness.logical_count_lower_bound().to_le_bytes());
+    hasher.update(completeness.all_seen_digest()[0].to_le_bytes());
+    hasher.update(completeness.all_seen_digest()[1].to_le_bytes());
+    hash_evidence_tables(&mut hasher, evidence_tables);
     for value in [
         work.posting_visits,
         work.relation_replays,
@@ -1220,6 +2629,30 @@ fn material_integrity_digest(
         hasher.update(value.to_le_bytes());
     }
     digest128(hasher.finalize().into())
+}
+
+fn hash_evidence_tables(hasher: &mut Sha256, tables: PreparedEvidenceTablesV1) {
+    hasher.update(tables.relation_table_identity.to_le_bytes());
+    hasher.update(tables.grounding_table_identity.to_le_bytes());
+    hasher.update(tables.derivation_table_identity.to_le_bytes());
+    let proof = tables.exact_relation_partition;
+    hasher.update(proof.proof_ref.to_le_bytes());
+    hasher.update(relation_partition_proof_digest(proof));
+}
+
+fn refresh_material_integrity(material: &mut PreparedTargetMaterialShadowV1) {
+    material.compact.integrity.exact_digest = material_integrity_digest(
+        &material.exact_observed,
+        material.package_tuple,
+        material.compact.original,
+        material.exact_original.as_ref(),
+        &material.exact_targets,
+        &material.canonical_l1_anchor_proofs,
+        &material.boundary_groundings,
+        material.compact.completeness,
+        material.compact.evidence_tables,
+        material.work,
+    );
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -1490,6 +2923,7 @@ struct LeaseFieldStateV1 {
 #[derive(Clone, Debug, Default)]
 pub(super) struct PreparedMaterialLeaseArenaV1 {
     fields: Vec<LeaseFieldStateV1>,
+    issued_leases: Vec<PreparedMaterialLeaseV1>,
     next_allocation_identity: u64,
     next_lease_identity: u64,
 }
@@ -1531,7 +2965,7 @@ impl PreparedMaterialLeaseArenaV1 {
         }
         field.consumers += 1;
         self.next_lease_identity = self.next_lease_identity.wrapping_add(1).max(1);
-        PreparedMaterialLeaseV1::new(
+        let lease = PreparedMaterialLeaseV1::new(
             field.material_key,
             field.integrity_digest,
             field.field_generation,
@@ -1541,7 +2975,13 @@ impl PreparedMaterialLeaseArenaV1 {
             expires_at_monotonic_ns,
             self.next_lease_identity,
             consumer,
-        )
+        )?;
+        self.issued_leases.push(lease);
+        Some(lease)
+    }
+
+    pub(super) fn contains(&self, lease: PreparedMaterialLeaseV1) -> bool {
+        self.issued_leases.contains(&lease)
     }
 }
 
@@ -1661,8 +3101,48 @@ mod tests {
         TypedContourBirthEnumerationV1 {
             logical_match_count: births.len(),
             births,
+            canonical_l1_anchor_proofs: Vec::new(),
             work: EnumerationWorkCountersV1::default(),
             all_seen_digest: [17, 19],
+            overflow_reason: None,
+        }
+    }
+
+    fn canonical_anchor_contour_enumeration(
+        surface: &str,
+        target_form_ref: u32,
+        anchor_form_ref: u32,
+        lemma_id: Option<u32>,
+        terminal_id: u32,
+        kind: CanonicalL1AnchorKindV1,
+        membership: VerdictMembershipV1,
+    ) -> TypedContourBirthEnumerationV1 {
+        let proof = CanonicalL1AnchorProofV1::new(
+            surface.to_string(),
+            target_form_ref,
+            anchor_form_ref,
+            lemma_id,
+            terminal_id,
+            kind,
+            package_tuple().l11_sha256,
+            package_tuple().canonical_l2_sha256,
+        )
+        .expect("test anchor proof");
+        TypedContourBirthEnumerationV1 {
+            births: vec![TypedContourBirthV1 {
+                normalized_surface: surface.to_string(),
+                grounding_namespace: GroundingNamespaceV1::CanonicalL1Anchor,
+                grounding_ref: proof.proof_ref,
+                relation: TargetRelationV1::L11Restoration,
+                operator_ref: 0x5348_0000 | u32::from(TargetRelationV1::L11Restoration as u8),
+                derivation_ref: stable_bytes_ref(surface.as_bytes()),
+                verdict_membership: membership,
+                support_milli: 1_000,
+            }],
+            canonical_l1_anchor_proofs: vec![proof],
+            work: EnumerationWorkCountersV1::default(),
+            logical_match_count: 1,
+            all_seen_digest: [31, 37],
             overflow_reason: None,
         }
     }
@@ -1722,6 +3202,25 @@ mod tests {
         .expect("valid exact peak")
     }
 
+    fn certified_exact_peak_enumeration(
+        observed: &str,
+        surface: &str,
+        form_ref: u32,
+    ) -> ExactPeakBirthEnumerationV1 {
+        let certificates = Phase7dCertificateOracle::new(observed)
+            .expect("test oracle")
+            .certificate_evidence(surface)
+            .expect("test certificate");
+        ExactPeakBirthEnumerationV1::from_candidates(vec![ExactPeakCandidateInputV1 {
+            form_ref,
+            normalized_surface: surface.to_string(),
+            certificates,
+        }])
+        .expect("valid exact peak")
+        .with_test_search_proof(observed, package_tuple().canonical_l2_sha256)
+        .expect("completed test exact search")
+    }
+
     fn material() -> PreparedTargetMaterialShadowV1 {
         prepare_context_neutral_productive_material(
             "слово",
@@ -1729,6 +3228,284 @@ mod tests {
             enumeration(vec![candidate("форма", 1)]),
         )
         .expect("material")
+    }
+
+    fn insertion_surfaces(observed: &str) -> Vec<String> {
+        let original = observed.chars().collect::<Vec<_>>();
+        let mut surfaces = BTreeSet::new();
+        for position in 0..=original.len() {
+            for symbol in 'а'..='я' {
+                let mut target = original.clone();
+                target.insert(position, symbol);
+                surfaces.insert(target.iter().collect::<String>());
+            }
+        }
+        surfaces.into_iter().collect()
+    }
+
+    #[test]
+    fn bounded_common_exact_view_preserves_raw_identity_without_proof_authority() {
+        use super::super::cohort_compare::test_raw_peaks_with_unsupported_overflow;
+
+        for targets in [vec!["форма"], Vec::new()] {
+            let raw = test_raw_peaks_with_unsupported_overflow("форм", &targets)
+                .with_test_search_proof("форм", package_tuple().canonical_l2_sha256)
+                .expect("complete search over an overfull raw set");
+            let raw_count = raw.logical_match_count;
+            let raw_digest = raw.all_seen_digest;
+            let (view, incomplete) = raw
+                .clone()
+                .common_field_projection("форм", package_tuple().canonical_l2_sha256);
+            let incomplete = incomplete.expect("raw overflow remains visible");
+            assert_eq!(view.normalized_surfaces().collect::<Vec<_>>(), targets);
+            assert!(view.search_proof.is_none());
+            assert_eq!(view.logical_match_count, raw_count);
+            assert_eq!(view.all_seen_digest, raw_digest);
+            assert_eq!(incomplete.all_seen_digest(), raw_digest);
+            assert_eq!(
+                usize::from(incomplete.logical_count_lower_bound()),
+                raw_count
+            );
+            assert!(view
+                .clone()
+                .with_test_search_proof("форм", package_tuple().canonical_l2_sha256)
+                .is_err());
+            let mut reattached = view.clone();
+            reattached.search_proof = raw.search_proof.clone();
+            assert!(reattached
+                .authority_partition("форм", package_tuple().canonical_l2_sha256)
+                .is_none());
+
+            let common = prepare_context_neutral_productive_material_with_contours_and_exact_peaks(
+                "форм",
+                package_tuple(),
+                enumeration(Vec::new()),
+                TypedContourBirthEnumerationV1::complete_empty(),
+                view,
+            )
+            .expect("bounded common material");
+            assert_eq!(common.completeness().state(), EnumerationStateV1::Overflow);
+            assert_eq!(
+                common.completeness().reason(),
+                IncompletenessReasonV1::StorageCapacity
+            );
+            assert_eq!(common.exact_target_surfaces().collect::<Vec<_>>(), targets);
+            assert_eq!(
+                usize::from(common.completeness().logical_count_lower_bound()),
+                raw_count
+            );
+            assert!(common.exact_search_proof.is_none());
+            assert!(!common.validates_relation_partition_proof());
+            if targets.is_empty() {
+                let empty =
+                    prepare_context_neutral_productive_material_with_contours_and_exact_peaks(
+                        "форм",
+                        package_tuple(),
+                        enumeration(Vec::new()),
+                        TypedContourBirthEnumerationV1::complete_empty(),
+                        ExactPeakBirthEnumerationV1::complete_empty(),
+                    )
+                    .expect("no exact enumeration");
+                assert_ne!(
+                    common.completeness().all_seen_digest(),
+                    empty.completeness().all_seen_digest()
+                );
+                assert_eq!(
+                    common.completeness().all_seen_digest(),
+                    combined_target_set_digest_with_exact_peaks(
+                        empty.completeness().all_seen_digest(),
+                        raw_digest
+                    )
+                );
+            }
+
+            for mutation in 0..3 {
+                let mut broken = raw.clone();
+                match mutation {
+                    0 => broken.logical_match_count -= 1,
+                    1 => broken.all_seen_digest[0] ^= 1,
+                    _ => {
+                        broken.births.pop();
+                    }
+                }
+                assert!(broken
+                    .authority_partition("форм", package_tuple().canonical_l2_sha256)
+                    .is_none());
+                assert!(broken
+                    .with_test_search_proof("форм", package_tuple().canonical_l2_sha256)
+                    .is_err());
+            }
+            for reason in [
+                IncompletenessReasonV1::WorkBudgetExceeded,
+                IncompletenessReasonV1::UpstreamIncomplete,
+                IncompletenessReasonV1::IntegrityFailure,
+            ] {
+                let mut incomplete = raw.clone();
+                incomplete.overflow_reason = Some(reason);
+                assert!(incomplete
+                    .authority_partition("форм", package_tuple().canonical_l2_sha256)
+                    .is_none());
+                assert!(incomplete
+                    .with_test_search_proof("форм", package_tuple().canonical_l2_sha256)
+                    .is_err());
+            }
+        }
+    }
+
+    #[test]
+    fn completed_exact_partition_refuses_supported_target_and_root_overflow() {
+        use super::super::cohort_compare::test_raw_peaks_with_unsupported_overflow;
+
+        let surfaces = insertion_surfaces("форм");
+        assert!(surfaces.len() > MAX_TARGETS_PER_FIELD);
+        let targets = surfaces
+            .iter()
+            .take(MAX_TARGETS_PER_FIELD + 1)
+            .map(String::as_str)
+            .collect::<Vec<_>>();
+        let target_overflow = test_raw_peaks_with_unsupported_overflow("форм", &targets);
+        let root_overflow = test_raw_peaks_with_unsupported_overflow("аааа", &["ааааа"]);
+        for (observed, raw, target_count, root_count) in [
+            ("форм", target_overflow, MAX_TARGETS_PER_FIELD + 1, None),
+            (
+                "аааа",
+                root_overflow,
+                1,
+                Some(MAX_TARGET_WITNESSES_PER_TARGET + 1),
+            ),
+        ] {
+            let supported = replayed_supported_births(observed, &raw.births)
+                .expect("actual certificate replay");
+            let roots = exact_peak_root_counts(&supported);
+            assert_eq!(roots.len(), target_count);
+            if let Some(root_count) = root_count {
+                assert_eq!(roots.values().copied().max(), Some(root_count));
+            }
+            assert!(raw.capacity_exceeded());
+            let error = raw
+                .clone()
+                .with_test_search_proof(observed, package_tuple().canonical_l2_sha256)
+                .expect_err("no authority from a truncated supported partition");
+            assert!(
+                error.contains("supported exact partition exceeds storage capacity"),
+                "{error}"
+            );
+            let (view, marker) =
+                raw.common_field_projection(observed, package_tuple().canonical_l2_sha256);
+            assert!(view.is_empty());
+            assert!(view.search_proof.is_none());
+            assert!(marker.is_some());
+            assert!(view
+                .authority_partition(observed, package_tuple().canonical_l2_sha256)
+                .is_none());
+        }
+    }
+
+    #[test]
+    fn exact_projection_preserves_combined_target_and_anchor_root_capacity() {
+        use super::super::cohort_compare::test_raw_peaks_with_unsupported_overflow;
+
+        let surfaces = insertion_surfaces("форм");
+        let exact_count = MAX_TARGETS_PER_FIELD - 4;
+        let targets = surfaces
+            .iter()
+            .take(exact_count)
+            .map(String::as_str)
+            .collect::<Vec<_>>();
+        let raw = test_raw_peaks_with_unsupported_overflow("форм", &targets)
+            .with_test_search_proof("форм", package_tuple().canonical_l2_sha256)
+            .expect("supported lane alone fits");
+        for grounded_count in [4, 5] {
+            let (view, _) = raw
+                .clone()
+                .common_field_projection("форм", package_tuple().canonical_l2_sha256);
+            let grounded = (0..grounded_count)
+                .map(|id| {
+                    let mut birth = contour_birth(
+                        &format!("grounded-{id}"),
+                        TargetRelationV1::L11Restoration,
+                        id,
+                    );
+                    birth.verdict_membership = VerdictMembershipV1::L11Tied;
+                    birth
+                })
+                .collect();
+            let result = prepare_context_neutral_productive_material_with_contours_and_exact_peaks(
+                "форм",
+                package_tuple(),
+                enumeration(Vec::new()),
+                contour_enumeration(grounded),
+                view,
+            );
+            if grounded_count == 4 {
+                let material = result.expect("mandatory union at capacity");
+                let retained = material.exact_target_surfaces().collect::<BTreeSet<_>>();
+                assert_eq!(retained.len(), MAX_TARGETS_PER_FIELD);
+                assert!(targets.iter().all(|target| retained.contains(target)));
+                for id in 0..grounded_count {
+                    assert!(retained.contains(format!("grounded-{id}").as_str()));
+                }
+                assert_eq!(
+                    material.completeness().state(),
+                    EnumerationStateV1::Overflow
+                );
+            } else {
+                assert!(result
+                    .expect_err("mandatory union cannot be silently truncated")
+                    .contains("74-target capacity"));
+            }
+        }
+
+        let raw = test_raw_peaks_with_unsupported_overflow("ааа", &["аааа"])
+            .with_test_search_proof("ааа", package_tuple().canonical_l2_sha256)
+            .expect("four supported roots fit before grounding");
+        let supported = raw
+            .authority_partition("ааа", package_tuple().canonical_l2_sha256)
+            .expect("bounded supported roots");
+        assert_eq!(supported.births.len(), MAX_TARGET_WITNESSES_PER_TARGET);
+        let form_ref = supported.births[0].form_ref;
+        let material = prepare_frame_bound_lexical_authority_material(
+            "ааа",
+            package_tuple(),
+            enumeration(Vec::new()),
+            canonical_anchor_contour_enumeration(
+                "аааа",
+                form_ref,
+                form_ref,
+                Some(7),
+                71,
+                CanonicalL1AnchorKindV1::Direct,
+                VerdictMembershipV1::Grounded,
+            ),
+            raw,
+        )
+        .expect("root overflow remains an explicit failed material");
+        assert_eq!(material.exact_targets.len(), 1);
+        assert_eq!(
+            material.exact_targets[0].witness_roots.len(),
+            MAX_TARGET_WITNESSES_PER_TARGET + 1
+        );
+        assert!(!material.validates_relation_partition_proof());
+        assert_eq!(material.completeness().state(), EnumerationStateV1::Failed);
+    }
+
+    fn grounded_relation_partition_material() -> PreparedTargetMaterialShadowV1 {
+        prepare_frame_bound_lexical_authority_material(
+            "targe",
+            package_tuple(),
+            enumeration(Vec::new()),
+            canonical_anchor_contour_enumeration(
+                "target",
+                41,
+                41,
+                Some(7),
+                71,
+                CanonicalL1AnchorKindV1::Direct,
+                VerdictMembershipV1::L11Winner,
+            ),
+            certified_exact_peak_enumeration("targe", "target", 41),
+        )
+        .expect("grounded exact relation partition")
     }
 
     fn frame(material: &PreparedTargetMaterialShadowV1) -> ExactInputFrameV1 {
@@ -1749,6 +3526,106 @@ mod tests {
         .expect("frame")
     }
 
+    fn completed_empty_search_with_work(
+        observed: &str,
+        work: ExactSearchStructuralWorkV1,
+        retrieved_form_count: usize,
+    ) -> Result<ExactPeakBirthEnumerationV1, String> {
+        let lanes = Phase7dCertificateOracle::new(observed)
+            .expect("test oracle")
+            .retrieval_lanes();
+        let retrieved_form_refs = (0..retrieved_form_count)
+            .map(|form_ref| u32::try_from(form_ref).expect("test form ref fits u32"))
+            .collect();
+        ExactPeakBirthEnumerationV1::complete_empty().with_completed_search_proof(
+            observed,
+            package_tuple().canonical_l2_sha256,
+            [0x5a; 32],
+            &lanes,
+            retrieved_form_refs,
+            work,
+            &[],
+            &[],
+        )
+    }
+
+    #[test]
+    fn td117_completed_exact_search_replays_every_lane_local_budget() {
+        let lanes = Phase7dCertificateOracle::new("ghbdtn")
+            .expect("layout oracle")
+            .retrieval_lanes();
+        assert_eq!(lanes.len(), EXACT_RELATION_SEARCH_MAX_LANES);
+        let aggregate_terminal_limit = EXACT_RELATION_SEARCH_MAX_TERMINALS
+            .checked_mul(lanes.len())
+            .expect("test aggregate terminal limit");
+        let at_limit = ExactSearchStructuralWorkV1 {
+            lane_count: lanes.len() as u64,
+            maximum_lane_product_states: EXACT_RELATION_SEARCH_MAX_PRODUCT_STATES as u64,
+            maximum_lane_terminals: EXACT_RELATION_SEARCH_MAX_TERMINALS as u64,
+            expanded_product_states: (EXACT_RELATION_SEARCH_MAX_PRODUCT_STATES * lanes.len())
+                as u64,
+            maximum_scratch_bytes: EXACT_RELATION_SEARCH_MAX_SCRATCH_BYTES as u64,
+            ..ExactSearchStructuralWorkV1::default()
+        };
+        assert!(
+            completed_empty_search_with_work("ghbdtn", at_limit, aggregate_terminal_limit,).is_ok()
+        );
+
+        for (dimension, forged, retrieved_form_count) in [
+            (
+                "product-states",
+                ExactSearchStructuralWorkV1 {
+                    maximum_lane_product_states: (EXACT_RELATION_SEARCH_MAX_PRODUCT_STATES + 1)
+                        as u64,
+                    ..at_limit
+                },
+                aggregate_terminal_limit,
+            ),
+            (
+                "expanded-product-states",
+                ExactSearchStructuralWorkV1 {
+                    expanded_product_states: at_limit.expanded_product_states + 1,
+                    ..at_limit
+                },
+                aggregate_terminal_limit,
+            ),
+            (
+                "terminals",
+                ExactSearchStructuralWorkV1 {
+                    maximum_lane_terminals: (EXACT_RELATION_SEARCH_MAX_TERMINALS + 1) as u64,
+                    ..at_limit
+                },
+                aggregate_terminal_limit,
+            ),
+            (
+                "retrieved-terminal-population",
+                at_limit,
+                aggregate_terminal_limit + 1,
+            ),
+            (
+                "scratch",
+                ExactSearchStructuralWorkV1 {
+                    maximum_scratch_bytes: (EXACT_RELATION_SEARCH_MAX_SCRATCH_BYTES + 1) as u64,
+                    ..at_limit
+                },
+                aggregate_terminal_limit,
+            ),
+            (
+                "lane-count",
+                ExactSearchStructuralWorkV1 {
+                    lane_count: (EXACT_RELATION_SEARCH_MAX_LANES + 1) as u64,
+                    ..at_limit
+                },
+                aggregate_terminal_limit,
+            ),
+        ] {
+            assert!(
+                completed_empty_search_with_work("ghbdtn", forged, retrieved_form_count).is_err(),
+                "over-budget {dimension} proof was accepted"
+            );
+        }
+    }
+
     #[test]
     fn prepared_material_is_exact_and_order_independent() {
         let left = prepare_context_neutral_productive_material(
@@ -1765,6 +3642,187 @@ mod tests {
         .unwrap();
         assert_eq!(left, right);
         assert_eq!(left.completeness().state(), EnumerationStateV1::Complete);
+    }
+
+    #[test]
+    fn owned_witness_root_match_rejects_mismatched_or_stale_compact_projection() {
+        let material = prepare_context_neutral_productive_material_with_contours(
+            "source",
+            package_tuple(),
+            enumeration(Vec::new()),
+            contour_enumeration(vec![contour_birth(
+                "target",
+                TargetRelationV1::MissingLetter,
+                17,
+            )]),
+        )
+        .unwrap();
+        let witness = material.compact().targets.as_slice()[0]
+            .witnesses
+            .witnesses()[0];
+
+        assert!(material.exact_witness_root_matches(0, 0, witness));
+
+        let wrong_grounding = TargetWitnessV1::new(
+            witness.relation,
+            witness.grounding_namespace,
+            witness.verdict_membership,
+            witness.flags,
+            witness.operator_ref,
+            witness.grounding_ref.wrapping_add(1),
+            witness.derivation_ref,
+            witness.support_milli,
+            witness.provenance_annotations,
+        );
+        assert!(!material.exact_witness_root_matches(0, 0, wrong_grounding));
+
+        let mut stale = witness;
+        stale.semantic_root_accelerator ^= u32::MAX;
+        assert!(!material.exact_witness_root_matches(0, 0, stale));
+    }
+
+    #[test]
+    fn frame_bound_authority_material_uses_complete_exact_relation_partition() {
+        let mut l11_only = contour_birth("l11-only", TargetRelationV1::L11Restoration, 77);
+        l11_only.verdict_membership = VerdictMembershipV1::L11Winner;
+        let material = prepare_frame_bound_lexical_authority_material(
+            "targe",
+            package_tuple(),
+            enumeration(vec![candidate("neutral-target", 1)]),
+            contour_enumeration(vec![l11_only]),
+            certified_exact_peak_enumeration("targe", "target", 41),
+        )
+        .unwrap();
+
+        assert_eq!(
+            material.exact_target_surfaces().collect::<Vec<_>>(),
+            vec!["target"]
+        );
+        assert_eq!(
+            material.completeness().state(),
+            EnumerationStateV1::Complete
+        );
+        assert_eq!(
+            material.completeness().scope().kind(),
+            crate::typing_transition::target_evidence::CompletenessScopeKindV1::RelationPartition
+        );
+        assert!(material
+            .completeness()
+            .scope()
+            .exhaustive_partition_proof_ref()
+            .is_some());
+        assert!(material.validates_relation_partition_proof());
+    }
+
+    #[test]
+    fn td117_relation_partition_rejects_proof_ref_without_full_proof() {
+        let valid = grounded_relation_partition_material();
+        assert!(valid.validates_relation_partition_proof());
+        let proof_ref = valid
+            .compact
+            .evidence_tables
+            .exact_relation_partition
+            .proof_ref;
+
+        let mut forged = valid;
+        forged.compact.evidence_tables.exact_relation_partition = ExactRelationPartitionProofV1 {
+            proof_ref,
+            ..ExactRelationPartitionProofV1::default()
+        };
+        refresh_material_integrity(&mut forged);
+
+        assert!(!forged.validates_relation_partition_proof());
+    }
+
+    #[test]
+    fn td117_relation_partition_rejects_every_bound_proof_dimension_tamper() {
+        let valid = grounded_relation_partition_material();
+        assert!(valid.validates_relation_partition_proof());
+        let base = valid.compact.evidence_tables.exact_relation_partition;
+        let mut mutations = Vec::new();
+
+        let mut proof = base;
+        proof.policy_version = proof.policy_version.wrapping_add(1);
+        mutations.push(("policy-version", proof));
+        let mut proof = base;
+        proof.policy_identity[0] ^= u64::MAX;
+        mutations.push(("policy-identity", proof));
+        let mut proof = base;
+        proof.exact_search_proof_digest[0] ^= u64::MAX;
+        mutations.push(("search-proof-digest", proof));
+        let mut proof = base;
+        proof.target_root_set_digest[0] ^= u64::MAX;
+        mutations.push(("target-root-digest", proof));
+        let mut proof = base;
+        proof.logical_target_count = proof.logical_target_count.wrapping_add(1);
+        mutations.push(("logical-target-count", proof));
+        let mut proof = base;
+        proof.retained_target_count = proof.retained_target_count.wrapping_add(1);
+        mutations.push(("retained-target-count", proof));
+        let mut proof = base;
+        proof.logical_certificate_count = proof.logical_certificate_count.wrapping_add(1);
+        mutations.push(("logical-certificate-count", proof));
+        let mut proof = base;
+        proof.retained_certificate_count = proof.retained_certificate_count.wrapping_add(1);
+        mutations.push(("retained-certificate-count", proof));
+        let mut proof = base;
+        proof.per_target_root_counts[0] = proof.per_target_root_counts[0].wrapping_add(1);
+        mutations.push(("per-target-root-count", proof));
+
+        for (dimension, proof) in mutations {
+            let mut forged = valid.clone();
+            forged.compact.evidence_tables.exact_relation_partition = proof;
+            refresh_material_integrity(&mut forged);
+            assert!(
+                !forged.validates_relation_partition_proof(),
+                "tampered {dimension} was accepted"
+            );
+        }
+    }
+
+    #[test]
+    fn td117_relation_partition_original_is_clean_damaged_or_unknown_from_grounding() {
+        let clean = prepare_frame_bound_lexical_authority_material(
+            "targe",
+            package_tuple(),
+            enumeration(Vec::new()),
+            canonical_anchor_contour_enumeration(
+                "targe",
+                40,
+                40,
+                Some(7),
+                70,
+                CanonicalL1AnchorKindV1::Direct,
+                VerdictMembershipV1::L11Winner,
+            ),
+            certified_exact_peak_enumeration("targe", "target", 41),
+        )
+        .expect("clean-original partition");
+        let damaged = grounded_relation_partition_material();
+        let unknown = prepare_frame_bound_lexical_authority_material(
+            "targe",
+            package_tuple(),
+            enumeration(Vec::new()),
+            TypedContourBirthEnumerationV1::complete_empty(),
+            certified_exact_peak_enumeration("targe", "target", 41),
+        )
+        .expect("ungrounded partition");
+
+        assert!(clean.validates_relation_partition_proof());
+        assert!(damaged.validates_relation_partition_proof());
+        assert!(unknown.validates_relation_partition_proof());
+        assert_eq!(
+            clean.compact.original.lexical_status,
+            PreparedOriginalLexicalStatusV1::Clean
+        );
+        assert_eq!(
+            damaged.compact.original.lexical_status,
+            PreparedOriginalLexicalStatusV1::Damaged
+        );
+        assert_eq!(
+            unknown.compact.original.lexical_status,
+            PreparedOriginalLexicalStatusV1::Unknown
+        );
     }
 
     #[test]
@@ -2237,5 +4295,34 @@ mod tests {
                 LeaseConsumerStateV1::FrameSettlement,
             )
             .is_none());
+    }
+
+    #[test]
+    fn td117_lease_arena_rejects_same_id_with_modified_expiry_owner_or_consumer() {
+        let material = material();
+        let mut arena = PreparedMaterialLeaseArenaV1::default();
+        let lease = arena
+            .pin(
+                &material,
+                9,
+                17,
+                [19, 23],
+                1_000,
+                LeaseConsumerStateV1::FrameSettlement,
+            )
+            .expect("issued lease");
+        assert!(arena.contains(lease));
+
+        let mut changed_expiry = lease;
+        changed_expiry.expires_at_monotonic_ns = 1_001;
+        let mut changed_owner = lease;
+        changed_owner.runtime_owner_lease_identity = 18;
+        let mut changed_consumer = lease;
+        changed_consumer.consumer = LeaseConsumerStateV1::EventPlan;
+
+        for forged in [changed_expiry, changed_owner, changed_consumer] {
+            assert_eq!(forged.lease_identity, lease.lease_identity);
+            assert!(!arena.contains(forged));
+        }
     }
 }

@@ -1,7 +1,7 @@
 # Script Ownership
 
-The top-level script directory contains two different classes of tools. Their
-paths are intentionally stable because receipts refer to them directly.
+Active scripts remain here. Completed V10/V11 experiments are preserved in
+the [pre-cleanup snapshot](../ARCHIVE.md).
 
 ## Active Operations
 
@@ -18,25 +18,14 @@ Changes to these files can affect current development or runtime operations.
 
 ## Historical Research
 
-The following patterns are immutable or append-only reproducibility tools for
-completed Slice 8B experiments:
+The 112 `lay-v10-*` / `lay-v11-*` controllers, ten `lay_v10_*.rs.inc`
+fragments and their `research/SHA256SUMS` are archived together at commit
+`cb40ef29f6c78c97757dd0059c0ba798cb1f0789`, under their original paths.
+Restore the complete snapshot to reproduce those experiments; historical
+receipts often also require their separately preserved ignored payloads.
 
-- `lay-v10-*`
-- `lay-v11-*`
-- `lay_v10_*.rs.inc`
-
-They are not active runtime entrypoints. They stay at their recorded paths so
-old receipts remain intelligible, but `.graphifyignore` excludes them from the
-active architecture graph. Their current 122-file identity is pinned in
-`research/SHA256SUMS` and verified with:
-
-```bash
-sha256sum --check scripts/research/SHA256SUMS
-```
-
-New one-shot research tooling belongs under `scripts/research/<topic>/` unless
-a frozen paper contract requires an exact top-level path. Active operational
-scripts must not import or dispatch into the historical V10/V11 controllers.
+New one-shot research tooling belongs under `scripts/research/<topic>/`.
+Current product operations must not dispatch into archived controllers.
 
 ## Large Evidence Payloads
 
@@ -44,7 +33,9 @@ scripts must not import or dispatch into the historical V10/V11 controllers.
 tracked TD-103 inventory and catalog identify the historical receipt paths;
 the bytes live once under
 `/home/ubu/projects/lay-immutable-evidence/content-addressed-v1` and remain
-openable through relative symlinks at their original paths.
+openable through relative symlinks at their original paths in the preserved
+source checkout. The new clean worktree does not contain those ignored
+projections; run historical lifecycle commands in that source checkout.
 
 Verify every projection and object:
 

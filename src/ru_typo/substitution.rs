@@ -12,7 +12,11 @@ pub(crate) fn correct_single_letter_substitution(word: &str) -> Option<String> {
 }
 
 pub(crate) fn propose_single_letter_substitution_candidate(word: &str) -> Option<String> {
-    select_single_letter_substitution(word, SubstitutionAuthority::ProposalOnly)
+    memoized_text(
+        WordMaterialKind::SingleLetterSubstitutionProposal,
+        word,
+        || select_single_letter_substitution(word, SubstitutionAuthority::ProposalOnly),
+    )
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]

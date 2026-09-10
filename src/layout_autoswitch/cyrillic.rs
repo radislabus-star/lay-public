@@ -8,7 +8,10 @@ use crate::text_case::apply_word_case;
 use crate::word_reader::split_word_punctuation;
 use crate::word_recognizer::{recognize_token, WordScript};
 
-use super::english::{is_known_english_layout_autoswitch_word, is_plain_ascii_word_candidate};
+use super::english::{
+    english_layout_target_requires_context, is_known_english_layout_autoswitch_word,
+    is_plain_ascii_word_candidate,
+};
 use super::is_known_russian_layout_autoswitch_word;
 
 pub(crate) fn correct_wrong_layout_cyrillic_word(token: &str) -> Option<String> {
@@ -115,10 +118,7 @@ fn english_layout_autoswitch_candidates(
 ) -> Vec<String> {
     let lower = converted.to_ascii_lowercase();
     let mut out = Vec::new();
-    if is_short_ascii_layout_token(&lower) && !is_common_en_technical_word(&lower) {
-        return out;
-    }
-    if is_short_plain_dictionary_fragment(&lower) && !is_common_en_technical_word(&lower) {
+    if english_layout_target_requires_context(&lower) {
         return out;
     }
     if is_known_english_layout_autoswitch_word(&lower)
@@ -139,14 +139,6 @@ fn english_layout_autoswitch_candidates(
     }
 
     out
-}
-
-fn is_short_ascii_layout_token(word: &str) -> bool {
-    word.chars().filter(|ch| ch.is_ascii_alphabetic()).count() <= 2
-}
-
-fn is_short_plain_dictionary_fragment(word: &str) -> bool {
-    word.chars().filter(|ch| ch.is_ascii_alphabetic()).count() == 3
 }
 
 fn is_known_english_word_for_experimental_layout(word: &str) -> bool {

@@ -208,4 +208,40 @@ mod tests {
         assert_eq!(decision.output_text, converted);
         assert!(!decision.output_target_is_ru);
     }
+
+    #[test]
+    fn td120_v1_caller_source_ledger_freezes_replay_and_latent_text_branches() {
+        let output = include_str!("correction_runtime/output.rs");
+        let replay = include_str!("correction_runtime/output/replay.rs");
+        let text_replace = include_str!("correction_runtime/output/text_replace.rs");
+
+        assert_eq!(
+            output.matches("suppress_next_ime_autocorrect();").count(),
+            1,
+            "the current caller issues one identity-free V1 request before output preflight"
+        );
+        assert_eq!(
+            replay.matches("suppress_next_ime_autocorrect();").count(),
+            1,
+            "ReplayAll issues its second identity-free V1 request only after replay succeeds"
+        );
+        let before_suppression = output
+            .find("suppress_next_ime_autocorrect();")
+            .expect("before suppression call");
+        let prepare = output
+            .find("prepare_uinput_output(kbd")
+            .expect("uinput preparation");
+        assert!(before_suppression < prepare);
+        assert!(text_replace.contains("DecoderAction::ReplaceText"));
+        assert_eq!(
+            text_replace
+                .matches("suppress_next_ime_autocorrect();")
+                .count(),
+            0,
+            "the latent ReplaceText branch has before-only V1 behavior"
+        );
+        // This is a source-bound caller ledger, deliberately not native/uinput
+        // execution. The p2p receiver schedule is executed in the IME test bin;
+        // V1 request/phase identity remains the TD-122 KNOWN_RESIDUAL.
+    }
 }

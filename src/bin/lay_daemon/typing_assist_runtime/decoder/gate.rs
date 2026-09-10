@@ -24,7 +24,9 @@ fn decode_input_gate_tail(
         nanda_autocorrect: gate_config.nanda_autocorrect,
         nanda_candidate_route: lay::correction_core::CandidateReadoutRoute::live_default(),
         nanda_wave_options: super::super::super::active_nanda_wave_options(),
-        correction_mode: word_boundary_correction_mode(gate_config.nanda_autocorrect),
+        correction_mode: lay::correction_core::live_correction_mode(
+            gate_config.nanda_autocorrect,
+        ),
     });
     let lay::input_gate::InputGateAction::ApplyReplacement { replacement, .. } = &decision.action
     else {
@@ -65,14 +67,6 @@ fn decode_input_gate_tail(
         replacement_tail,
         active_layout_is_ru,
     )
-}
-
-fn word_boundary_correction_mode(nanda_autocorrect: bool) -> lay::correction_core::CorrectionMode {
-    if nanda_autocorrect {
-        lay::correction_core::CorrectionMode::NandaOnly
-    } else {
-        lay::correction_core::CorrectionMode::DeterministicOnly
-    }
 }
 
 fn build_input_gate_decoded_tail(

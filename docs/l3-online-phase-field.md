@@ -32,6 +32,76 @@ CLI orchestration         src/nanda_wave/context_phase/compiler.rs
 surface evidence field    src/nanda_wave/context_phase/surface_field.rs
 ```
 
+## Local Proof Resource Budget (TD-119, 2026-09-05)
+
+The continuously enabled T480 online learner keeps the complete proof route but
+has a workstation-specific execution budget:
+
+```text
+systemd/lay-l3-online.service
+-> LAY_L3_PROOF_WORKERS=2
+-> proof_worker_count() = min(2, visible parallelism)
+-> CPUQuota=150% bounds the complete service cgroup
+```
+
+This is a resource boundary, not a proof shortcut. The fixed corpus cap,
+heldout partition, lattice transitions, baseline/candidate comparisons,
+targeted-before-full ordering, PASS conditions, admission and compaction are
+unchanged. Invalid explicit worker values resolve to one worker rather than
+expanding to all CPUs. With no explicit value, proof commands retain visible
+parallelism; the dedicated 20-CPU verification route therefore remains 20-way.
+
+Measured before the change on installed Lay 1.0.64:
+
+```text
+T480 visible CPUs                                      8
+live service CPU quota                          infinity
+generation 53 full-proof wall                    196.38 s
+generation 54 full-proof wall                    170.92 s
+heldout fragments                                  15,704
+lattice transitions                                50,592
+baseline/candidate comparisons                     41,064
+both verdicts                                        PASS
+both runtime_authority                              false
+instantaneous idle sample                           0.00%
+```
+
+The approximately `400%` CPU peak was observed interactively, not captured as
+a complete time series. Focused resolver and service-contract tests and the
+complete gate ran on the 20-CPU host without the workstation environment
+override; `2,504/2,504` correctness/package tests passed. The pure resolver
+case proved that `20` visible CPUs with no override resolve to `20`; Rust test
+builds themselves intentionally retain the existing one-worker default.
+
+Measured after installing Lay 1.0.65:
+
+```text
+live service state                              active/running
+live service PID                                     3,453,057
+CPUQuotaPerSecUSec                                  1.500000s
+unit environment                       LAY_L3_PROOF_WORKERS=2
+process environment                    LAY_L3_PROOF_WORKERS=2
+TasksCurrent                                                  1
+final instantaneous CPU sample                            0.0%
+tracked/installed unit SHA-256        baa1f7ba...d289021 (equal)
+global IBus PID before/after                              4,715
+```
+
+The first installation attempt exercised the rollback route after a controller
+assertion expected `1.5s` instead of systemd's canonical `1.500000s`; rollback
+restored 1.0.64 and preserved IBus. The corrected controller then completed
+`FORWARD_INSTALL_1_0_65=PASS`.
+
+What this release does not yet test:
+
+- one naturally triggered post-install full proof under the new cgroup;
+- its wall time, throttling time, energy use, or complete CPU trace;
+- relation batching, cooldown, or idle scheduling.
+
+Those missing measurements do not change runtime authority. The proof receipt
+continues to report `runtime_authority=false`; only a targeted PASS plus full
+differential PASS may reach the existing admission step.
+
 ## Learned Surface-Transition Field
 
 L3 must observe the same type of damaged surface that reaches L2. The former

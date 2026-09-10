@@ -7,11 +7,13 @@ enum L2CandidateSource {
 impl L2CandidateSource {
     const DETERMINISTIC_ONLY: [Self; 1] = [Self::Deterministic];
     const NANDA_ONLY: [Self; 1] = [Self::Nanda];
+    const DETERMINISTIC_AND_NANDA: [Self; 2] = [Self::Deterministic, Self::Nanda];
 
     fn for_mode(mode: CorrectionMode) -> &'static [Self] {
         match mode {
             CorrectionMode::DeterministicOnly => &Self::DETERMINISTIC_ONLY,
             CorrectionMode::NandaOnly => &Self::NANDA_ONLY,
+            CorrectionMode::DeterministicAndNanda => &Self::DETERMINISTIC_AND_NANDA,
         }
     }
 
@@ -35,6 +37,7 @@ impl L2CandidateSource {
                                 req.lexical_authority_frame,
                             );
                         *canonical_telemetry = observed.telemetry;
+                        lattice.set_lexical_authority_context(observed.authority_context);
                         lattice.set_l2_field_authority(observed.readout.authority);
                         observed.readout.candidates
                     } else {
@@ -135,6 +138,16 @@ fn deterministic_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorr
             origin,
             declared_error_class,
         );
+        if let Some(existing) = exact_existing_deterministic_candidate(
+            &candidates,
+            &replacement,
+            origin,
+            &candidate.rule_id,
+            error_class,
+        ) {
+            candidates.push(existing);
+            continue;
+        }
         let gate = TransitionDecisionCore::admit_candidate_proposal(
             req.text,
             &replacement,
@@ -152,7 +165,9 @@ fn deterministic_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorr
     }
     let typing_us = typing_started.elapsed().as_micros();
     let composite_started = std::time::Instant::now();
-    candidates.extend(deterministic_composite_text_candidates(req, &pipeline));
+    let composite_candidates =
+        deterministic_composite_text_candidates(req, &pipeline, &candidates);
+    candidates.extend(composite_candidates);
     let composite_us = composite_started.elapsed().as_micros();
     if timing_enabled {
         eprintln!(
@@ -254,11 +269,12 @@ fn multiword_layout_projection_candidate(
 fn deterministic_composite_text_candidates(
     req: &CorrectionRequest<'_>,
     pipeline: &[TypingAssistRuleConfig],
+    existing: &[UnifiedCorrectionCandidate],
 ) -> Vec<UnifiedCorrectionCandidate> {
     [
         layout_then_typo_candidate(req, pipeline),
-        repeated_letter_fallback_candidate(req),
-        composite_russian_typo_candidate(req, pipeline),
+        repeated_letter_fallback_candidate(req, existing),
+        composite_russian_typo_candidate(req, pipeline, existing),
     ]
     .into_iter()
     .flatten()
@@ -311,6 +327,7 @@ fn short_cyrillic_layout_suggestion_candidate(
 
 fn repeated_letter_fallback_candidate(
     req: &CorrectionRequest<'_>,
+    existing: &[UnifiedCorrectionCandidate],
 ) -> Option<UnifiedCorrectionCandidate> {
     if !req.typing_assist && !req.auto_replace {
         return None;
@@ -326,6 +343,15 @@ fn repeated_letter_fallback_candidate(
 
     let source_id = ids::REPEATED_LETTER;
     let origin = CandidateOrigin::DeterministicTypo;
+    if let Some(existing) = exact_existing_deterministic_candidate(
+        existing,
+        &replacement,
+        origin,
+        source_id,
+        TypingErrorClass::RepeatedLetter,
+    ) {
+        return Some(existing);
+    }
     let gate = TransitionDecisionCore::admit_candidate_proposal(
         req.text,
         &replacement,
@@ -435,6 +461,7 @@ fn is_known_english_layout_word(word: &str) -> bool {
 fn composite_russian_typo_candidate(
     req: &CorrectionRequest<'_>,
     pipeline: &[TypingAssistRuleConfig],
+    existing: &[UnifiedCorrectionCandidate],
 ) -> Option<UnifiedCorrectionCandidate> {
     if !req.typing_assist && !req.auto_replace {
         return None;
@@ -455,6 +482,15 @@ fn composite_russian_typo_candidate(
         if replacement != req.text && syntax_allows_candidate(req.text, &replacement) {
             let source_id = ids::ADJACENT_TRANSPOSITION;
             let origin = CandidateOrigin::DeterministicTypo;
+            if let Some(existing) = exact_existing_deterministic_candidate(
+                existing,
+                &replacement,
+                origin,
+                source_id,
+                TypingErrorClass::AdjacentTransposition,
+            ) {
+                return Some(existing);
+            }
             let gate = TransitionDecisionCore::admit_candidate_proposal(
                 req.text,
                 &replacement,
@@ -489,6 +525,15 @@ fn composite_russian_typo_candidate(
                 origin,
                 TypingErrorClass::CompositeTypo,
             );
+            if let Some(existing) = exact_existing_deterministic_candidate(
+                existing,
+                &replacement,
+                origin,
+                source_id,
+                error_class,
+            ) {
+                return Some(existing);
+            }
             let gate = TransitionDecisionCore::admit_candidate_proposal(
                 req.text,
                 &replacement,
@@ -506,7 +551,7 @@ fn composite_russian_typo_candidate(
         }
     }
 
-    let single_step = current_word_rule_candidate(req, pipeline, &current_word);
+    let single_step = current_word_rule_candidate(req, pipeline, &current_word, existing);
     let Some((candidate, _)) = crate::candidate_ranker::choose_best_with_gap(
         crate::ru_typo::fuzzy_known_word_candidates(&lower),
         0.85,
@@ -596,36 +641,45 @@ fn composite_russian_typo_candidate(
         origin,
         TypingErrorClass::CompositeTypo,
     );
+    if let Some(single_step) = &single_step {
+        if !should_prefer_composite_after_repeated_repair(
+            req.text,
+            &single_step.replacement,
+            &replacement,
+        ) {
+            return Some(single_step.clone());
+        }
+    }
+    if let Some(existing) = exact_existing_deterministic_candidate(
+        existing,
+        &replacement,
+        origin,
+        source_id,
+        error_class,
+    ) {
+        return Some(existing);
+    }
     let gate = TransitionDecisionCore::admit_candidate_proposal(
         req.text,
         &replacement,
         error_class,
         origin,
     );
-    let composite = UnifiedCorrectionCandidate::new(
+    Some(UnifiedCorrectionCandidate::new(
         replacement,
         CorrectionDecisionSource::Deterministic,
         origin,
         source_id,
         error_class,
         gate,
-    );
-    if let Some(single_step) = single_step {
-        if !should_prefer_composite_after_repeated_repair(
-            req.text,
-            &single_step.replacement,
-            &composite.replacement,
-        ) {
-            return Some(single_step);
-        }
-    }
-    Some(composite)
+    ))
 }
 
 fn current_word_rule_candidate(
     req: &CorrectionRequest<'_>,
     pipeline: &[TypingAssistRuleConfig],
     current_word: &str,
+    existing: &[UnifiedCorrectionCandidate],
 ) -> Option<UnifiedCorrectionCandidate> {
     let current_tail = format!("{current_word} ");
     let explanation = explain_typing_assist_with_pipeline(&current_tail, false, pipeline);
@@ -658,6 +712,15 @@ fn current_word_rule_candidate(
     }
     let error_class = rule_error_class(&rule_id);
     let origin = typing_rule_origin(family, error_class);
+    if let Some(existing) = exact_existing_deterministic_candidate(
+        existing,
+        &replacement,
+        origin,
+        &rule_id,
+        error_class,
+    ) {
+        return Some(existing);
+    }
     let gate = TransitionDecisionCore::admit_candidate_proposal(
         req.text,
         &replacement,
@@ -672,6 +735,39 @@ fn current_word_rule_candidate(
         error_class,
         gate,
     ))
+}
+
+fn exact_existing_deterministic_candidate(
+    existing: &[UnifiedCorrectionCandidate],
+    replacement: &str,
+    origin: CandidateOrigin,
+    source_id: &str,
+    error_class: TypingErrorClass,
+) -> Option<UnifiedCorrectionCandidate> {
+    existing
+        .iter()
+        .find(|candidate| {
+            if candidate.replacement != replacement
+                || candidate.source != CorrectionDecisionSource::Deterministic
+                || candidate.origin != origin
+                || candidate.source_id != source_id
+                || candidate.error_class != error_class
+                || !candidate.morphology_slot_evidence.is_empty()
+                || candidate.authority_evidence != CandidateAuthorityEvidence::None
+                || candidate.has_l2_boundary_target_grounding()
+            {
+                return false;
+            }
+            let [evidence] = candidate.evidence.as_slice() else {
+                return false;
+            };
+            evidence.source == candidate.source
+                && evidence.origin == candidate.origin
+                && evidence.source_id == candidate.source_id
+                && evidence.error_class == candidate.error_class
+                && evidence.gate == candidate.gate
+        })
+        .cloned()
 }
 
 fn proposal_only_substitution_competitor(
@@ -690,18 +786,13 @@ fn proposal_only_substitution_competitor(
     }
 
     let origin = CandidateOrigin::DeterministicTypo;
-    let mut gate = TransitionDecisionCore::admit_candidate_proposal(
-        req.text,
-        &replacement,
-        TypingErrorClass::LetterSubstitution,
-        origin,
-    );
-    if gate.action == CandidateGateAction::Eligible {
-        gate = CandidateGateDecision {
-            action: CandidateGateAction::SuggestOnly,
-            reason: "proposal_only_substitution_competitor",
-        };
-    }
+    // This producer exists only to keep a plausible competing surface in the
+    // lattice. Its typed upper bound is SuggestOnly, so Apply-oriented lexical
+    // admission cannot change its authority and must not run on the hot path.
+    let gate = CandidateGateDecision {
+        action: CandidateGateAction::SuggestOnly,
+        reason: "proposal_only_substitution_competitor",
+    };
     Some(UnifiedCorrectionCandidate::new(
         replacement,
         CorrectionDecisionSource::Deterministic,
@@ -872,6 +963,99 @@ mod candidate_sources_tests {
         let reused = deterministic_text_candidates(&req);
 
         assert_eq!(reused, first);
+    }
+
+    #[test]
+    fn deterministic_reuse_requires_the_complete_unmerged_evidence_identity() {
+        let gate = CandidateGateDecision {
+            action: CandidateGateAction::Eligible,
+            reason: "test_exact_identity",
+        };
+        let candidate = UnifiedCorrectionCandidate::new(
+            "плохо ",
+            CorrectionDecisionSource::Deterministic,
+            CandidateOrigin::DeterministicTypo,
+            ids::SINGLE_LETTER_SUBSTITUTION,
+            TypingErrorClass::LetterSubstitution,
+            gate,
+        );
+
+        assert_eq!(
+            exact_existing_deterministic_candidate(
+                std::slice::from_ref(&candidate),
+                "плохо ",
+                CandidateOrigin::DeterministicTypo,
+                ids::SINGLE_LETTER_SUBSTITUTION,
+                TypingErrorClass::LetterSubstitution,
+            ),
+            Some(candidate.clone())
+        );
+        assert!(exact_existing_deterministic_candidate(
+            std::slice::from_ref(&candidate),
+            "плохо ",
+            CandidateOrigin::DeterministicTypo,
+            "composite_ru_typo",
+            TypingErrorClass::LetterSubstitution,
+        )
+        .is_none());
+        assert!(exact_existing_deterministic_candidate(
+            std::slice::from_ref(&candidate),
+            "плохо ",
+            CandidateOrigin::L2Surface,
+            ids::SINGLE_LETTER_SUBSTITUTION,
+            TypingErrorClass::LetterSubstitution,
+        )
+        .is_none());
+
+        let mut merged = candidate.clone();
+        merged.merge_evidence(UnifiedCorrectionCandidate::new(
+            "плохо ",
+            CorrectionDecisionSource::Deterministic,
+            CandidateOrigin::DeterministicTypo,
+            "second_producer",
+            TypingErrorClass::LetterSubstitution,
+            CandidateGateDecision {
+                action: CandidateGateAction::Eligible,
+                reason: "test_second_producer",
+            },
+        ));
+        assert!(exact_existing_deterministic_candidate(
+            &[merged],
+            "плохо ",
+            CandidateOrigin::DeterministicTypo,
+            ids::SINGLE_LETTER_SUBSTITUTION,
+            TypingErrorClass::LetterSubstitution,
+        )
+        .is_none());
+
+        let grounded = candidate.clone().with_l2_boundary_target_grounding();
+        assert!(exact_existing_deterministic_candidate(
+            &[grounded],
+            "плохо ",
+            CandidateOrigin::DeterministicTypo,
+            ids::SINGLE_LETTER_SUBSTITUTION,
+            TypingErrorClass::LetterSubstitution,
+        )
+        .is_none());
+    }
+
+    #[test]
+    fn proposal_only_substitution_retains_identity_without_apply_authority() {
+        let pipeline = default_typing_assist_pipeline();
+        let req = request("самка схема парочинная ", &pipeline);
+        let candidate = proposal_only_substitution_competitor(&req)
+            .expect("proposal-only substitution competitor");
+
+        assert_eq!(candidate.replacement, "самка схема перочинная ");
+        assert_eq!(candidate.source, CorrectionDecisionSource::Deterministic);
+        assert_eq!(candidate.origin, CandidateOrigin::DeterministicTypo);
+        assert_eq!(candidate.source_id, ids::SINGLE_LETTER_SUBSTITUTION);
+        assert_eq!(candidate.error_class, TypingErrorClass::LetterSubstitution);
+        assert_eq!(candidate.gate.action, CandidateGateAction::SuggestOnly);
+        assert_eq!(
+            candidate.gate.reason,
+            "proposal_only_substitution_competitor"
+        );
     }
 
     #[test]

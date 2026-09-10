@@ -1,0 +1,28 @@
+{
+  "schema": "lay.tech-debt.successor-binding.v1",
+  "task": "TD-120",
+  "predecessor": {
+    "task": "TD-113",
+    "manifest": "tech_debt/evidence/td113-implementation-preflight-v4.json",
+    "baseline_id": "ime-mutation",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "98aa92b4c8939db948d876bf3cc362aa5c659d5d820008d8ae3757c258014f34",
+    "mode": "0664"
+  },
+  "successor": {
+    "task": "tech_debt/120-scope-autocorrect-suppression-to-word-lifetime.md",
+    "review": "tech_debt/evidence/td120-code-review-pass2.md",
+    "review_score": "8/10",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "bfee6bdabc148de1cccf44558d176e3d78c101f42b8912e4ffa25b9de131f713",
+    "mode": "0664"
+  },
+  "functional_acceptance": {
+    "tests": [
+      "td120_active_manual_and_candidate_open_results_arm_current_word",
+      "td120_accepted_candidate_with_trailing_boundary_does_not_protect_next_word",
+      "td120_accepted_completion_edit_boundary_publishes_feedback_once_with_attribution"
+    ],
+    "note": "This provenance binding and source review do not substitute for canonical test execution."
+  }
+}

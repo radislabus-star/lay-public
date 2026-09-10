@@ -1,12 +1,15 @@
 use zbus::fdo;
 use zbus::{interface, Connection};
 
+use super::context_admission::ContextAdmissionAdapter;
 use super::protocol::Shared;
 use crate::bridge_policy::should_suppress_next_autocorrect;
 
 pub(crate) struct LayImeBridge {
     pub(crate) ibus_connection: Connection,
     pub(crate) shared: Shared,
+    pub(crate) context_admission_required: bool,
+    pub(crate) admission: Option<ContextAdmissionAdapter>,
 }
 
 #[interface(name = "io.github.radislabus_star.LayIme")]
@@ -92,12 +95,13 @@ impl LayImeBridge {
     }
 
     #[zbus(name = "CancelExactManualToggleHandoffV2")]
-    fn cancel_exact_manual_toggle_handoff_v2(
+    async fn cancel_exact_manual_toggle_handoff_v2(
         &self,
         expected_epoch: u64,
         expected_path: String,
     ) -> bool {
         self.cancel_exact_manual_toggle_handoff_v2_inner(expected_epoch, expected_path)
+            .await
     }
 
     #[zbus(name = "ManualToggle")]

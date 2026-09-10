@@ -232,6 +232,9 @@ impl StructuralWork {
 pub(super) struct ExactObservation {
     pub(super) retrieved_form_refs: Vec<u32>,
     pub(super) unresolved: Option<&'static str>,
+    pub(super) lane_count: usize,
+    pub(super) maximum_lane_product_states: usize,
+    pub(super) maximum_lane_terminals: usize,
     pub(super) expanded_product_states: usize,
     pub(super) maximum_scratch_bytes: usize,
     pub(super) work: StructuralWork,
@@ -283,6 +286,9 @@ where
     let mut terminal_ranks = Vec::new();
     let mut transition_checks = 0_usize;
     let mut terminal_distance_checks = 0_usize;
+    let lane_count = lanes.len();
+    let mut maximum_lane_product_states = 0_usize;
+    let mut maximum_lane_terminals = 0_usize;
 
     for lane in lanes {
         let masks = equality_masks(lane.symbols.as_ref());
@@ -303,10 +309,15 @@ where
         transition_checks = transition_checks.saturating_add(outcome.transition_checks);
         terminal_distance_checks =
             terminal_distance_checks.saturating_add(outcome.terminal_distance_checks);
+        maximum_lane_product_states = maximum_lane_product_states.max(outcome.expanded);
+        maximum_lane_terminals = maximum_lane_terminals.max(outcome.form_refs.len());
         if let Some(reason) = outcome.unresolved {
             return Ok(ExactObservation {
                 retrieved_form_refs: Vec::new(),
                 unresolved: Some(reason),
+                lane_count,
+                maximum_lane_product_states,
+                maximum_lane_terminals,
                 expanded_product_states: expanded,
                 maximum_scratch_bytes: maximum_scratch,
                 work,
@@ -324,6 +335,9 @@ where
     Ok(ExactObservation {
         retrieved_form_refs: terminal_refs,
         unresolved: None,
+        lane_count,
+        maximum_lane_product_states,
+        maximum_lane_terminals,
         expanded_product_states: expanded,
         maximum_scratch_bytes: maximum_scratch,
         work,

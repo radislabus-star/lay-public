@@ -2,9 +2,9 @@
   "checks": [
     {
       "evidence": [
-        "src/typing_transition/candidate.rs:L11:L2CandidateLattice",
-        "src/typing_transition/decision.rs:L27:TransitionDecisionCore",
-        "src/typing_transition/decision.rs:L58:.evaluate_candidates()",
+        "src/typing_transition/candidate.rs:L12:L2CandidateLattice",
+        "src/typing_transition/decision.rs:L103:.evaluate_candidates()",
+        "src/typing_transition/decision.rs:L61:TransitionDecisionCore",
         "src/typing_transition/decision/live_field.rs:L44:TransitionDecisionCore",
         "src/typing_transition/live_candidate.rs:L176:.select_ime_readout()",
         "src/typing_transition/live_candidate.rs:L80:TransitionDecisionCore",
@@ -17,7 +17,7 @@
     {
       "evidence": [
         "src/bin/lay_ibus_engine/state.rs:L190:.with_winner_action()",
-        "src/bin/lay_ibus_engine/state.rs:L390:.replace_committed_tail()",
+        "src/bin/lay_ibus_engine/state.rs:L410:.replace_committed_tail()",
         "src/text_edit/structural_verifier.rs:L20:verify_visible_text_transition()",
         "src/text_edit/visible_tail.rs:L100:VisibleTailSnapshot",
         "src/text_edit/visible_tail.rs:L65:SnapshotIdentity"
@@ -60,9 +60,9 @@
     },
     {
       "evidence": [
-        "src/bin/lay_ibus_engine/engine/types.rs:L384:PendingSystemOutcomeFeedback",
-        "src/bin/lay_ibus_engine/tail_memory.rs:L367:.arm_visible_postcondition_with_feedback()",
-        "src/bin/lay_ibus_engine/tail_memory.rs:L446:.observe_visible_postcondition()"
+        "src/bin/lay_ibus_engine/engine/types.rs:L389:PendingSystemOutcomeFeedback",
+        "src/bin/lay_ibus_engine/tail_memory.rs:L407:.arm_visible_postcondition_with_feedback()",
+        "src/bin/lay_ibus_engine/tail_memory.rs:L486:.observe_visible_postcondition()"
       ],
       "id": "observed-outcome-feedback",
       "status": "PASS",
@@ -70,8 +70,8 @@
     },
     {
       "evidence": [
-        "src/nanda_wave/lexical_phase/runtime.rs:L68:LexicalPhaseMemory",
-        "src/typing_transition/candidate.rs:L11:L2CandidateLattice"
+        "src/nanda_wave/lexical_phase/runtime.rs:L70:LexicalPhaseMemory",
+        "src/typing_transition/candidate.rs:L12:L2CandidateLattice"
       ],
       "id": "hot-field-memory",
       "status": "PASS",
@@ -108,8 +108,8 @@
     },
     {
       "evidence": [
-        "graph_links:52670",
-        "graph_nodes:20804"
+        "graph_links:58630",
+        "graph_nodes:22099"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -123,11 +123,11 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_binding_fingerprint": "dc454833467d3c32d905285772a4fdbc7edc2e2c53f97978a11791b1ee554985",
-  "graph_fingerprint": "ccccfeb3c18eaf45951cff27c0525737fd0561188c93dcac25ec520452dd6283",
-  "graph_links": 52670,
-  "graph_nodes": 20804,
+  "graph_binding_fingerprint": "f9647b444d15e1180a5112dad5456e2835b6c58c6eafe5a74e5c2b1b4c8766d8",
+  "graph_fingerprint": "6f317a21ab1ff8c049fe5af893f906825b93f89d7dbd1d9712f7147c6a51ab40",
+  "graph_links": 58630,
+  "graph_nodes": 22099,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "4e5f05df6d3106ed6ce0e5cd8760796142c67af3f1578cb51e9a829e77b36f33",
+  "source_fingerprint": "e77014c6ba326bdb047721f4cd8f8f3e058ed95691a02ce52a08f1d86272784f",
   "verdict": "PASS"
 }

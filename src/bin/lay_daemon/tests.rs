@@ -42,6 +42,8 @@ mod enter_autocorrect;
 mod field_context;
 #[path = "tests/layout_backend.rs"]
 mod layout_backend;
+#[path = "tests/leading_symbol_admission.rs"]
+mod leading_symbol_admission;
 #[path = "tests/learning.rs"]
 mod learning;
 #[path = "tests/learning_log.rs"]

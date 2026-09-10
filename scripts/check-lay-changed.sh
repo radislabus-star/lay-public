@@ -2,6 +2,10 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [[ "${LAY_RESOURCE_GUARD_ACTIVE:-0}" != "1" ]]; then
+  exec "$ROOT/scripts/lay-resource-guard.sh" -- \
+    "$ROOT/scripts/check-lay-changed.sh" "$@"
+fi
 cd "$ROOT"
 
 cargo() {
@@ -60,12 +64,19 @@ if [[ "${#python_files[@]}" -gt 0 ]]; then
   python3 -m py_compile "${python_files[@]}"
 fi
 
+if has_file_matching '(^scripts/install-live-release-[0-9.]+\.sh$|^scripts/lay-release-l11-guard\.py$|^tests/test_release_(live_install_controller|l11_process_guard)\.py$)'; then
+  echo "== live release controller regressions =="
+  python3 -m unittest \
+    tests.test_release_live_install_controller \
+    tests.test_release_l11_process_guard
+fi
+
 if has_file_matching '^extension/.*\.json$'; then
   echo "== json check changed GNOME metadata =="
   python3 -m json.tool extension/lay@radislabus-star.github.io/metadata.json >/dev/null
 fi
 
-if has_file_matching '(^install\.sh$|^update\.sh$|^uninstall\.sh$|^scripts/install-remote\.sh$|^scripts/test-public-issues\.sh$)'; then
+if has_file_matching '(^install\.sh$|^update\.sh$|^uninstall\.sh$|^scripts/(install-remote|build-release-binaries|test-public-issues)\.sh$|^tests/test_public_release_build\.py$)'; then
   echo "== public install/update/uninstall issue regressions =="
   scripts/test-public-issues.sh
 fi
@@ -93,9 +104,13 @@ if has_file_matching '^extension/.*\.js$'; then
   done
 fi
 
-if has_file_matching '(^scripts/test_lanes/|^scripts/test-lanes/|^scripts/test-lanes\.py$|^scripts/check-lay-tests\.sh$|^tests/test_test_lanes\.py$)'; then
+if has_file_matching '(^scripts/(lay-resource-guard|cargo-guard|check-lay-tests)\.sh$|^scripts/test_lanes/|^scripts/test-lanes/|^scripts/test-lanes\.py$|^scripts/dev-check\.py$|^scripts/proof/ime-client/|^tests/test_(test_lanes|resource_guard|focused_lanes|dev_check|ime_client_harness)\.py$)'; then
   echo "== hermetic test-lane self-check =="
   scripts/check-lay-tests.sh self-test
+fi
+
+if has_file_matching '(^scripts/test_lanes/|^scripts/test-lanes/|^scripts/test-lanes\.py$|^tests/test_test_lanes\.py$)'; then
+  echo "== hermetic test-lane manifest =="
   scripts/check-lay-tests.sh manifest
 fi
 

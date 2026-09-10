@@ -20,7 +20,8 @@ pub(crate) use forms::{
     looks_like_russian_adjective_lemma,
 };
 use hunspell::{
-    load_hunspell_generated_forms_min_len, load_hunspell_words_min_len, load_word_list,
+    load_hunspell_adjective_classes, load_hunspell_generated_forms_min_len,
+    load_hunspell_words_min_len, load_word_list,
 };
 pub(crate) use word_set::WordSet;
 
@@ -28,13 +29,58 @@ static RUSSIAN_DICTIONARY: OnceLock<WordSet> = OnceLock::new();
 static RUSSIAN_SHORT_DICTIONARY: OnceLock<WordSet> = OnceLock::new();
 static RUSSIAN_TINY_DICTIONARY: OnceLock<WordSet> = OnceLock::new();
 static RUSSIAN_GENERATED_FORMS: OnceLock<WordSet> = OnceLock::new();
+static RUSSIAN_ADJECTIVE_CLASSES: OnceLock<Option<RussianAdjectiveClasses>> = OnceLock::new();
 static EMPTY_WORD_SET: OnceLock<WordSet> = OnceLock::new();
 static EMPTY_GENERATED_FORMS: OnceLock<WordSet> = OnceLock::new();
+
+struct RussianAdjectiveClasses {
+    regular_iy: WordSet,
+    possessive_iy: WordSet,
+    comparative_ee: WordSet,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(super) enum RussianAdjectiveIyClass {
+    Regular,
+    Possessive,
+    Unknown,
+}
 
 pub fn warm_up() {
     let _ = russian_dictionary().len();
     let _ = russian_short_dictionary().len();
     let _ = russian_tiny_dictionary().len();
+    let _ = russian_adjective_classes();
+}
+
+fn russian_adjective_classes() -> Option<&'static RussianAdjectiveClasses> {
+    RUSSIAN_ADJECTIVE_CLASSES
+        .get_or_init(|| {
+            let classes = load_hunspell_adjective_classes(RU_HUNSPELL).ok()?;
+            Some(RussianAdjectiveClasses {
+                regular_iy: WordSet::from_words(classes.regular_iy),
+                possessive_iy: WordSet::from_words(classes.possessive_iy),
+                comparative_ee: WordSet::from_words(classes.comparative_ee),
+            })
+        })
+        .as_ref()
+}
+
+pub(super) fn russian_adjective_iy_class(lemma: &str) -> RussianAdjectiveIyClass {
+    let Some(classes) = russian_adjective_classes() else {
+        return RussianAdjectiveIyClass::Unknown;
+    };
+    if classes.possessive_iy.contains(lemma) {
+        RussianAdjectiveIyClass::Possessive
+    } else if classes.regular_iy.contains(lemma) {
+        RussianAdjectiveIyClass::Regular
+    } else {
+        RussianAdjectiveIyClass::Unknown
+    }
+}
+
+pub(super) fn russian_adjective_has_comparative_ee(lemma: &str) -> bool {
+    russian_adjective_classes().is_some_and(|classes| classes.comparative_ee.contains(lemma))
 }
 
 pub fn russian_dictionary() -> &'static WordSet {

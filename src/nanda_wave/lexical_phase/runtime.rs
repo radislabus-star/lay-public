@@ -1,8 +1,8 @@
 use std::cmp::Ordering;
-use std::collections::{BTreeSet, BinaryHeap, HashMap, HashSet};
+use std::collections::{BTreeSet, BinaryHeap, HashMap, HashSet, VecDeque};
 use std::fs::File;
 use std::path::{Path, PathBuf};
-use std::sync::OnceLock;
+use std::sync::{Arc, Mutex, OnceLock};
 
 use crate::lexical_surface_atoms::SurfaceFieldEncoder;
 use crate::lexical_surface_atoms::{
@@ -29,6 +29,8 @@ const MAX_DECODED_COMPLETION_SUFFIX_CHARS: usize = 8;
 const RECONSTRUCTION_LANE_RESERVE: usize = 4;
 const PREFIX_COMPOSITION_FRONTIER_PER_PREFIX: usize = 16;
 const SINGLE_INSERTION_RECONSTRUCTION_RESERVE: usize = 6;
+const RECONSTRUCTION_CACHE_ENTRY_LIMIT: usize = 16;
+const RECONSTRUCTION_CACHE_PAYLOAD_LIMIT: usize = 2 * 1024 * 1024;
 const RUSSIAN_INSERTION_FRONTIER: &[char] = &[
     'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с',
     'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я',
@@ -69,6 +71,112 @@ pub(crate) struct LexicalPhaseMemory {
     bytes: ArtifactBytes,
     header: ArtifactHeader,
     path: PathBuf,
+    reconstruction_cache: ReconstructionCache,
+    #[cfg(test)]
+    reconstruction_evaluations: std::sync::atomic::AtomicUsize,
+    #[cfg(test)]
+    reconstruction_material_us: std::sync::atomic::AtomicU64,
+}
+
+struct CachedReconstruction {
+    surface: String,
+    candidates: Arc<Vec<LexicalPhaseCandidate>>,
+    payload_bytes: usize,
+}
+
+struct ReconstructionCacheState {
+    entries: VecDeque<CachedReconstruction>,
+    payload_bytes: usize,
+}
+
+// This stores only complete, sorted decoder material from one immutable
+// package. Caller limits, lane reserves and mutation authority stay outside.
+struct ReconstructionCache {
+    state: Mutex<ReconstructionCacheState>,
+    entry_limit: usize,
+    payload_limit: usize,
+}
+
+impl Default for ReconstructionCache {
+    fn default() -> Self {
+        Self::new(
+            RECONSTRUCTION_CACHE_ENTRY_LIMIT,
+            RECONSTRUCTION_CACHE_PAYLOAD_LIMIT,
+        )
+    }
+}
+
+impl ReconstructionCache {
+    fn new(entry_limit: usize, payload_limit: usize) -> Self {
+        assert!((1..=RECONSTRUCTION_CACHE_ENTRY_LIMIT).contains(&entry_limit));
+        assert!((1..=RECONSTRUCTION_CACHE_PAYLOAD_LIMIT).contains(&payload_limit));
+        Self {
+            state: Mutex::new(ReconstructionCacheState {
+                entries: VecDeque::with_capacity(entry_limit),
+                payload_bytes: 0,
+            }),
+            entry_limit,
+            payload_limit,
+        }
+    }
+
+    fn get(&self, surface: &str) -> Option<Arc<Vec<LexicalPhaseCandidate>>> {
+        let mut state = self.state.lock().ok()?;
+        let index = state
+            .entries
+            .iter()
+            .position(|entry| entry.surface == surface)?;
+        let entry = state.entries.remove(index)?;
+        let candidates = Arc::clone(&entry.candidates);
+        state.entries.push_back(entry);
+        Some(candidates)
+    }
+
+    fn store(&self, surface: &str, candidates: Arc<Vec<LexicalPhaseCandidate>>) {
+        let surface = surface.to_owned();
+        let payload_bytes = candidates.iter().fold(
+            candidates
+                .capacity()
+                .saturating_mul(std::mem::size_of::<LexicalPhaseCandidate>())
+                .saturating_add(surface.capacity()),
+            |bytes, candidate| bytes.saturating_add(candidate.word.capacity()),
+        );
+        if payload_bytes > self.payload_limit {
+            return;
+        }
+        let entry = CachedReconstruction {
+            surface,
+            candidates,
+            payload_bytes,
+        };
+        // Allocation, payload accounting and destruction stay outside the lock.
+        let mut evicted = Vec::with_capacity(self.entry_limit);
+        if let Ok(mut state) = self.state.lock() {
+            // Concurrent first readers may finish the same immutable query.
+            if let Some(index) = state
+                .entries
+                .iter()
+                .position(|old| old.surface == entry.surface)
+            {
+                if let Some(old) = state.entries.remove(index) {
+                    state.payload_bytes -= old.payload_bytes;
+                    evicted.push(old);
+                }
+            }
+            while state.entries.len() >= self.entry_limit
+                || state.payload_bytes + payload_bytes > self.payload_limit
+            {
+                let Some(old) = state.entries.pop_front() else {
+                    break;
+                };
+                state.payload_bytes -= old.payload_bytes;
+                evicted.push(old);
+            }
+            state.payload_bytes += payload_bytes;
+            state.entries.push_back(entry);
+        }
+        drop(evicted);
+    }
 }
 
 impl std::fmt::Debug for LexicalPhaseMemory {
@@ -156,6 +264,11 @@ impl LexicalPhaseMemory {
             bytes,
             header,
             path: path.to_path_buf(),
+            reconstruction_cache: ReconstructionCache::default(),
+            #[cfg(test)]
+            reconstruction_evaluations: std::sync::atomic::AtomicUsize::new(0),
+            #[cfg(test)]
+            reconstruction_material_us: std::sync::atomic::AtomicU64::new(0),
         })
     }
 
@@ -166,6 +279,11 @@ impl LexicalPhaseMemory {
             bytes,
             header,
             path: PathBuf::from("<memory>"),
+            reconstruction_cache: ReconstructionCache::default(),
+            #[cfg(test)]
+            reconstruction_evaluations: std::sync::atomic::AtomicUsize::new(0),
+            #[cfg(test)]
+            reconstruction_material_us: std::sync::atomic::AtomicU64::new(0),
         })
     }
 
@@ -1155,6 +1273,21 @@ impl LexicalPhaseMemory {
         if limit == 0 || self.header.decoder_state_count == 0 {
             return Vec::new();
         }
+        let candidates = self.reconstruction_cache.get(surface).unwrap_or_else(|| {
+            let candidates = Arc::new(self.reconstruction_material(surface));
+            self.reconstruction_cache
+                .store(surface, Arc::clone(&candidates));
+            candidates
+        });
+        candidates.iter().take(limit).cloned().collect()
+    }
+
+    fn reconstruction_material(&self, surface: &str) -> Vec<LexicalPhaseCandidate> {
+        #[cfg(test)]
+        let reconstruction_started = std::time::Instant::now();
+        #[cfg(test)]
+        self.reconstruction_evaluations
+            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         let input = surface.chars().collect::<Vec<_>>();
         let max_edits = if input.len() >= 6 {
             MAX_DECODE_EDITS
@@ -1231,7 +1364,11 @@ impl LexicalPhaseMemory {
             })
             .collect::<Vec<_>>();
         sort_candidates(&mut candidates);
-        candidates.truncate(limit);
+        #[cfg(test)]
+        self.reconstruction_material_us.fetch_add(
+            reconstruction_started.elapsed().as_micros() as u64,
+            std::sync::atomic::Ordering::Relaxed,
+        );
         candidates
     }
 
@@ -1931,6 +2068,333 @@ mod tests {
         ])
         .expect("fixture compiles");
         LexicalPhaseMemory::from_bytes(bytes).expect("fixture loads")
+    }
+
+    fn reconstruction_count(memory: &LexicalPhaseMemory) -> usize {
+        memory
+            .reconstruction_evaluations
+            .load(std::sync::atomic::Ordering::Relaxed)
+    }
+
+    fn reconstruction_us(memory: &LexicalPhaseMemory) -> u64 {
+        memory
+            .reconstruction_material_us
+            .load(std::sync::atomic::Ordering::Relaxed)
+    }
+
+    fn assert_reconstruction_cache_bounds(memory: &LexicalPhaseMemory) -> (usize, usize) {
+        let cache = &memory.reconstruction_cache;
+        let state = cache.state.lock().expect("cache is not poisoned");
+        assert!(state.entries.len() <= cache.entry_limit);
+        assert!(state.entries.capacity() <= RECONSTRUCTION_CACHE_ENTRY_LIMIT);
+        assert!(state.payload_bytes <= cache.payload_limit);
+        assert_eq!(
+            state.payload_bytes,
+            state
+                .entries
+                .iter()
+                .map(|entry| entry.payload_bytes)
+                .sum::<usize>()
+        );
+        let retained_allocations = state
+            .entries
+            .iter()
+            .map(|entry| {
+                entry.surface.capacity()
+                    + entry.candidates.capacity() * std::mem::size_of::<LexicalPhaseCandidate>()
+                    + entry
+                        .candidates
+                        .iter()
+                        .map(|candidate| candidate.word.capacity())
+                        .sum::<usize>()
+            })
+            .sum::<usize>();
+        assert_eq!(state.payload_bytes, retained_allocations);
+        assert_eq!(
+            state
+                .entries
+                .iter()
+                .map(|entry| entry.surface.as_str())
+                .collect::<HashSet<_>>()
+                .len(),
+            state.entries.len()
+        );
+        (state.entries.len(), state.payload_bytes)
+    }
+
+    #[test]
+    fn reconstruction_cache_eviction_keeps_held_material_and_reader_results() {
+        let mut memory = memory();
+        memory.reconstruction_cache =
+            ReconstructionCache::new(2, RECONSTRUCTION_CACHE_PAYLOAD_LIMIT);
+        let initial = memory.reconstructed_surface_candidates("прверка", usize::MAX);
+        let held = memory
+            .reconstruction_cache
+            .get("прверка")
+            .expect("stored material");
+        for surface in ["загрзить", "пукнт"] {
+            memory.reconstructed_surface_candidates(surface, usize::MAX);
+            assert_reconstruction_cache_bounds(&memory);
+        }
+        assert!(memory.reconstruction_cache.get("прверка").is_none());
+        assert_eq!(held.as_ref(), &initial);
+        let before = reconstruction_count(&memory);
+        assert_eq!(
+            memory.reconstructed_surface_candidates("прверка", usize::MAX),
+            initial
+        );
+        assert_eq!(reconstruction_count(&memory), before + 1);
+        assert_eq!(held.as_ref(), &initial);
+        assert_reconstruction_cache_bounds(&memory);
+
+        let inventory = self::memory();
+        inventory.reconstructed_surface_candidates("прверка", usize::MAX);
+        let second = inventory.reconstructed_surface_candidates("загрзить", usize::MAX);
+        let byte_limit = inventory
+            .reconstruction_cache
+            .state
+            .lock()
+            .unwrap()
+            .entries
+            .iter()
+            .map(|entry| entry.payload_bytes)
+            .max()
+            .unwrap();
+        let mut byte_limited = self::memory();
+        byte_limited.reconstruction_cache = ReconstructionCache::new(16, byte_limit);
+        assert_eq!(
+            byte_limited.reconstructed_surface_candidates("прверка", usize::MAX),
+            initial
+        );
+        let held_by_reader = byte_limited.reconstruction_cache.get("прверка").unwrap();
+        assert_eq!(
+            byte_limited.reconstructed_surface_candidates("загрзить", usize::MAX),
+            second
+        );
+        assert!(byte_limited.reconstruction_cache.get("прверка").is_none());
+        assert_eq!(assert_reconstruction_cache_bounds(&byte_limited).0, 1);
+        assert_eq!(held_by_reader.as_ref(), &initial);
+        let before = reconstruction_count(&byte_limited);
+        assert_eq!(
+            byte_limited.reconstructed_surface_candidates("прверка", usize::MAX),
+            initial
+        );
+        assert_eq!(reconstruction_count(&byte_limited), before + 1);
+        assert_eq!(assert_reconstruction_cache_bounds(&byte_limited).0, 1);
+        assert_eq!(held_by_reader.as_ref(), &initial);
+    }
+
+    #[test]
+    fn reconstruction_cache_oversized_and_poisoned_stores_preserve_readouts() {
+        let oracle = memory();
+        let expected = oracle.reconstructed_surface_candidates("прверка", usize::MAX);
+        assert!(!expected.is_empty());
+        let mut oversized = memory();
+        oversized.reconstruction_cache = ReconstructionCache::new(2, 1);
+        for limit in [usize::MAX, 1, 0, usize::MAX] {
+            let actual = oversized.reconstructed_surface_candidates("прверка", limit);
+            assert_eq!(
+                actual,
+                expected.iter().take(limit).cloned().collect::<Vec<_>>()
+            );
+            assert_eq!(assert_reconstruction_cache_bounds(&oversized), (0, 0));
+        }
+        assert_eq!(reconstruction_count(&oversized), 3);
+
+        let poisoned = memory();
+        assert_eq!(
+            poisoned.reconstructed_surface_candidates("прверка", usize::MAX),
+            expected
+        );
+        let before = reconstruction_count(&poisoned);
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            let _guard = poisoned.reconstruction_cache.state.lock().unwrap();
+            panic!("poison only this fixture's cache");
+        }));
+        assert!(result.is_err());
+        assert!(poisoned.reconstruction_cache.state.is_poisoned());
+        assert_eq!(
+            poisoned.reconstructed_surface_candidates("прверка", usize::MAX),
+            expected
+        );
+        assert_eq!(reconstruction_count(&poisoned), before + 1);
+    }
+
+    #[test]
+    fn reconstruction_cache_is_owned_by_its_immutable_package() {
+        let first = memory();
+        let second = LexicalPhaseMemory::from_bytes(compile_words(["проварка"]).unwrap()).unwrap();
+        let first_material = first.reconstructed_surface_candidates("прверка", usize::MAX);
+        let second_material = second.reconstructed_surface_candidates("прверка", usize::MAX);
+        assert!(first_material
+            .iter()
+            .any(|candidate| candidate.word == "проверка"));
+        assert!(second_material
+            .iter()
+            .any(|candidate| candidate.word == "проварка"));
+        assert!(!second_material
+            .iter()
+            .any(|candidate| candidate.word == "проверка"));
+        assert_eq!(
+            first.reconstructed_surface_candidates("прверка", usize::MAX),
+            first_material
+        );
+        assert_eq!(
+            second.reconstructed_surface_candidates("прверка", usize::MAX),
+            second_material
+        );
+        assert_eq!(reconstruction_count(&first), 1);
+        assert_eq!(reconstruction_count(&second), 1);
+    }
+
+    #[test]
+    fn concurrent_surface_readers_preserve_fields_during_reconstruction_eviction() {
+        let oracle = memory();
+        let expected = ["загрзить", "пукнт", "проврка"].map(|surface| {
+            (
+                surface,
+                [1, 8, 48].map(|limit| (limit, oracle.surface_candidates(surface, limit))),
+            )
+        });
+        let mut memory = memory();
+        memory.reconstruction_cache =
+            ReconstructionCache::new(2, RECONSTRUCTION_CACHE_PAYLOAD_LIMIT);
+        memory.reconstructed_surface_candidates("прверка", usize::MAX);
+        let held = memory
+            .reconstruction_cache
+            .get("прверка")
+            .expect("stored material");
+        let held_before = held.as_ref().clone();
+        std::thread::scope(|scope| {
+            for _ in 0..4 {
+                let expected = &expected;
+                let memory = &memory;
+                scope.spawn(move || {
+                    for _ in 0..2 {
+                        for (surface, limits) in expected {
+                            for (limit, expected) in limits {
+                                assert_eq!(&memory.surface_candidates(surface, *limit), expected);
+                                assert_reconstruction_cache_bounds(memory);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        assert!(memory.reconstruction_cache.get("прверка").is_none());
+        assert_eq!(held.as_ref(), &held_before);
+        assert_reconstruction_cache_bounds(&memory);
+    }
+
+    #[test]
+    fn decoder_reconstruction_work_is_shared_across_surface_limits() {
+        let mut repeated_work = Vec::new();
+        for surface in ["прверка", "загрзить", "перепрверка", "пукнт"]
+        {
+            let memory = memory();
+            let initial = memory.surface_candidates(surface, 512);
+            assert!(!initial.is_empty(), "fixture has reconstruction material");
+            let first_count = reconstruction_count(&memory);
+            assert!(first_count > 0);
+            for limit in [256, 48, 16, 8, 1, 0, 256] {
+                let candidates = memory.surface_candidates(surface, limit);
+                assert!(candidates.len() <= limit);
+            }
+            assert_eq!(memory.surface_candidates(surface, 512), initial);
+            let final_count = reconstruction_count(&memory);
+            println!(
+                "TD123_RECONSTRUCTION_WORK {}",
+                serde_json::json!({
+                    "surface": surface, "first_evaluations": first_count,
+                    "final_evaluations": final_count,
+                    "raw_material_us": reconstruction_us(&memory),
+                }),
+            );
+            if final_count != first_count {
+                repeated_work.push((surface, first_count, final_count));
+            }
+        }
+        assert!(
+            repeated_work.is_empty(),
+            "immutable reconstruction repeated across caller limits: {repeated_work:?}"
+        );
+    }
+
+    #[test]
+    fn surface_readout_preserves_complete_fields_across_limits_and_damage_classes() {
+        use sha2::{Digest, Sha256};
+
+        let source = default_memory().expect("production lexical phase memory loads");
+        let memory = LexicalPhaseMemory::load(&source.path).expect("isolated memory loads");
+        println!(
+            "TD123_RECONSTRUCTION_SOURCE {}",
+            serde_json::json!({
+                "sha256": format!("{:x}", Sha256::digest(memory.bytes())),
+                "source_words": memory.stats().source_words,
+            }),
+        );
+        let mut surfaces = Vec::new();
+        for word in [
+            "проверка",
+            "загрузить",
+            "пункт",
+            "работает",
+            "перспектива",
+            "исправление",
+        ] {
+            let chars = word.chars().collect::<Vec<_>>();
+            let middle = chars.len() / 2;
+            surfaces.push(("clean", word.to_string()));
+            let mut missing = chars.clone();
+            missing.remove(middle);
+            surfaces.push(("missing", missing.iter().collect::<String>()));
+            let mut repeated = chars.clone();
+            repeated.insert(middle, chars[middle]);
+            surfaces.push(("repeated", repeated.iter().collect::<String>()));
+            let mut transposed = chars;
+            transposed.swap(middle, middle + 1);
+            surfaces.push(("transposed", transposed.iter().collect::<String>()));
+        }
+        surfaces.extend([
+            ("prefixed", "перепрверка".to_string()),
+            ("unknown", "фжцщйъ".to_string()),
+            ("short", "я".to_string()),
+            ("non_cyrillic", "keyboard".to_string()),
+        ]);
+
+        for (class, surface) in surfaces {
+            let mut initial = None;
+            for limit in [512, 256, 48, 16, 8, 1, 0, 512] {
+                let before_count = reconstruction_count(&memory);
+                let before_us = reconstruction_us(&memory);
+                let started = std::time::Instant::now();
+                let candidates = memory.surface_candidates(&surface, limit);
+                let elapsed_us = started.elapsed().as_micros();
+                let (cache_entries, cache_payload_bytes) =
+                    assert_reconstruction_cache_bounds(&memory);
+                assert!(candidates.len() <= limit);
+                if limit == 512 {
+                    if let Some(expected) = &initial {
+                        assert_eq!(&candidates, expected);
+                    } else {
+                        initial = Some(candidates.clone());
+                    }
+                }
+                println!(
+                    "TD123_RECONSTRUCTION_READOUT {}",
+                    serde_json::json!({
+                        "class": class, "surface": surface, "limit": limit,
+                        "count": candidates.len(),
+                        "sha256": format!("{:x}", Sha256::digest(format!("{candidates:?}").as_bytes())),
+                        "elapsed_us": elapsed_us,
+                        "raw_evaluations": reconstruction_count(&memory) - before_count,
+                        "raw_material_us": reconstruction_us(&memory) - before_us,
+                        "cache_entries": cache_entries,
+                        "cache_payload_bytes": cache_payload_bytes,
+                    }),
+                );
+            }
+        }
     }
 
     #[test]

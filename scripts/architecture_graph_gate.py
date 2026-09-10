@@ -6,8 +6,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import sys
+import tempfile
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -236,6 +238,73 @@ def source_location_line(source_file: str, source_location: str) -> str:
     return lines[index].strip() if 0 <= index < len(lines) else ""
 
 
+def split_top_level_use_branches(use_tree: str) -> list[str]:
+    tree = use_tree.strip()
+    if not (tree.startswith("{") and tree.endswith("}")):
+        return [tree] if tree else []
+    branches: list[str] = []
+    depth = 0
+    start = 1
+    for index, char in enumerate(tree[1:-1], 1):
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+        elif char == "," and depth == 0:
+            branch = tree[start:index].strip()
+            if branch:
+                branches.append(branch)
+            start = index + 1
+    branch = tree[start:-1].strip()
+    if branch:
+        branches.append(branch)
+    return branches
+
+
+def use_statement_is_external_only(statement: str) -> bool:
+    use_tree = re.sub(
+        r"^(?:pub(?:\s*\([^)]*\))?\s+)?use\s+",
+        "",
+        statement.strip(),
+        count=1,
+    )
+    use_tree = use_tree.removesuffix(";").strip()
+    branches = split_top_level_use_branches(use_tree)
+    if not branches:
+        return False
+    for branch in branches:
+        branch = branch.strip()
+        if branch.startswith("::"):
+            branch = branch[2:].lstrip()
+        if re.match(r"^(?:std|core|alloc)(?:::|\s+as\b|$)", branch) is None:
+            return False
+    return True
+
+
+def source_location_imports_are_external_only(
+    source_file: str, source_location: str
+) -> bool:
+    line_match = re.fullmatch(r"L(\d+)", source_location)
+    path = ROOT / source_file
+    if line_match is None or not path.is_file():
+        return False
+    line_number = int(line_match.group(1))
+    projection = rust_code_projection(path.read_text(encoding="utf-8"))
+    statement_pattern = re.compile(
+        r"(?<![A-Za-z0-9_])(?:pub(?:\s*\([^)]*\))?\s+)?use\s+[^;]+;",
+        re.MULTILINE,
+    )
+    statements = []
+    for match in statement_pattern.finditer(projection):
+        start_line = projection.count("\n", 0, match.start()) + 1
+        end_line = projection.count("\n", 0, match.end() - 1) + 1
+        if start_line <= line_number <= end_line:
+            statements.append(match.group(0))
+    return bool(statements) and all(
+        use_statement_is_external_only(statement) for statement in statements
+    )
+
+
 def struct_body(path: Path, struct_name: str) -> str:
     lines = path.read_text(encoding="utf-8").splitlines()
     code_lines = rust_code_projection("\n".join(lines)).splitlines()
@@ -320,10 +389,9 @@ class ArchitectureGraph:
             if source_file.startswith(prefix) and any(
                 fragment in target for fragment in forbidden_target_fragments
             ):
-                source_line = source_location_line(
+                if source_location_imports_are_external_only(
                     source_file, str(edge.get("source_location", ""))
-                )
-                if re.search(r"\b(?:std|core|alloc)::", source_line):
+                ):
                     continue
                 violations.append(
                     f"forbidden_import:{source_file}:{edge.get('source_location')}:{target}"
@@ -703,6 +771,31 @@ def canonical_json(payload: dict[str, Any]) -> str:
     return json.dumps(payload, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
 
 
+def write_text_atomically(path: Path, rendered: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    mode = path.stat().st_mode & 0o777 if path.exists() else 0o664
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{path.name}.", suffix=".tmp", dir=path.parent
+    )
+    temporary_path = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as temporary_file:
+            temporary_file.write(rendered)
+            temporary_file.flush()
+            os.fsync(temporary_file.fileno())
+        os.chmod(temporary_path, mode)
+        os.replace(temporary_path, path)
+    finally:
+        temporary_path.unlink(missing_ok=True)
+
+
+def publish_receipt(path: Path, receipt: dict[str, Any]) -> bool:
+    if receipt.get("verdict") != "PASS":
+        return False
+    write_text_atomically(path, canonical_json(receipt))
+    return True
+
+
 def freshness_comparable_receipt(payload: dict[str, Any]) -> dict[str, Any]:
     return {
         key: value
@@ -761,8 +854,18 @@ def main() -> int:
 
     rendered = canonical_json(receipt)
     if args.write_receipt:
-        RECEIPT_PATH.parent.mkdir(parents=True, exist_ok=True)
-        RECEIPT_PATH.write_text(rendered, encoding="utf-8")
+        try:
+            published = publish_receipt(RECEIPT_PATH, receipt)
+        except OSError as error:
+            print(f"architecture receipt write error: {error}", file=sys.stderr)
+            return 2
+        if not published:
+            print(
+                "architecture receipt not written: calculated verdict is not PASS; "
+                "the existing receipt is unchanged",
+                file=sys.stderr,
+            )
+            return 1
 
     if args.check_receipt:
         try:
@@ -773,9 +876,9 @@ def main() -> int:
         stale_violations = receipt_staleness_violations(existing, receipt)
         if stale_violations:
             print(
-                "architecture receipt is stale; refresh the graph when graph "
-                "proof inputs changed, then run "
-                "scripts/architecture_graph_gate.py --write-receipt",
+                "architecture receipt is stale; run "
+                "scripts/update-architecture-graph.sh to refresh the graph, "
+                "source binding, PASS-only receipt, and final architecture check",
                 file=sys.stderr,
             )
             for violation in stale_violations:

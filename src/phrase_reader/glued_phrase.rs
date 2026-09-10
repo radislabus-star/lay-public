@@ -25,6 +25,12 @@ use super::preposition_guard::{
 use super::verb_guard::looks_like_single_prefixed_verb;
 
 pub fn correct_glued_russian_phrase(word: &str) -> Option<String> {
+    crate::ru_typo::memoized_text(crate::ru_typo::WordMaterialKind::GluedPhrase, word, || {
+        correct_glued_russian_phrase_uncached(word)
+    })
+}
+
+fn correct_glued_russian_phrase_uncached(word: &str) -> Option<String> {
     let char_len = word.chars().count();
     if !(4..=24).contains(&char_len) || !word.chars().all(is_cyrillic_letter) {
         return None;

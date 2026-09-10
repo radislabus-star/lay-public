@@ -47,6 +47,7 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
         authorized_edit: AuthorizedEdit,
+        protect_current_word: bool,
     ) -> fdo::Result<()> {
         let text = authorized_edit.action().to_text().to_string();
         self.commit_authorized_active_composition_text(
@@ -54,6 +55,7 @@ impl LayIbusEngine {
             text,
             false,
             false,
+            protect_current_word,
             ActiveCompositionAuthority::VerifiedEdit(Box::new(authorized_edit)),
         )
         .await
@@ -70,6 +72,7 @@ impl LayIbusEngine {
             &request.suffix,
             request.sync_layout,
             request.autocorrect,
+            false,
             ActiveCompositionAuthority::UserInput,
         )
         .await
@@ -80,6 +83,14 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         with_space: bool,
     ) -> fdo::Result<bool> {
+        if !self.context_word_is_known()
+            && !(self.context_observed_suffix_is_current()
+                && self.composition.preedit_visible
+                && self.selected_precognition_replacement().is_none())
+        {
+            self.clear_preedit_completion_state();
+            return Ok(false);
+        }
         if self.retire_pending_precognition(emitter).await? {
             return Ok(false);
         }
@@ -143,6 +154,7 @@ impl LayIbusEngine {
             accepted_text,
             false,
             false,
+            !with_space,
             ActiveCompositionAuthority::VerifiedEdit(Box::new(authorized_edit)),
         )
         .await?;
@@ -204,6 +216,10 @@ impl LayIbusEngine {
     /// This is intentionally separate from `replace_committed_tail()`: this
     /// path commits text that the client still treats as live preedit, while
     /// committed-tail replacement edits text that is already in the widget.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "keep the reviewed composition options and explicit word authority separate"
+    )]
     async fn commit_active_composition_with_suffix(
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
@@ -211,6 +227,7 @@ impl LayIbusEngine {
         suffix: &str,
         sync_layout: bool,
         autocorrect: bool,
+        protect_current_word: bool,
         authority: ActiveCompositionAuthority,
     ) -> fdo::Result<()> {
         let mut text = self.composition.buffer.clone();
@@ -223,6 +240,7 @@ impl LayIbusEngine {
             text,
             sync_layout,
             autocorrect,
+            protect_current_word,
             authority,
         )
         .await
@@ -234,6 +252,7 @@ impl LayIbusEngine {
         mut text: String,
         sync_layout: bool,
         autocorrect: bool,
+        protect_current_word: bool,
         mut authority: ActiveCompositionAuthority,
     ) -> fdo::Result<()> {
         let started_at = Instant::now();
@@ -281,9 +300,13 @@ impl LayIbusEngine {
         self.sync_tail_after_active_composition_commit(&text);
         self.composition.buffer.clear();
         self.composition.cursor = 0;
+        if protect_current_word {
+            self.arm_current_word_autocorrect_suppression();
+        }
         self.arm_visible_postcondition(Instant::now());
         if text.ends_with(char::is_whitespace) {
             self.close_precognition_word_boundary();
+            self.retire_current_word_autocorrect_suppression();
         }
         self.committed_tail.last_commit_at = Some(Instant::now());
         trace::record_ime_commit(

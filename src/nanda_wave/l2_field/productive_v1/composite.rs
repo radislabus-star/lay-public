@@ -61,6 +61,7 @@ pub(super) struct CompositeL2LatticeV1 {
     pub(super) contradiction_certificate: Option<ContradictionCertificateV1>,
     pub(super) productive_overflow: bool,
     pub(super) productive_integrity_error: Option<String>,
+    pub(super) exact_peak_incompleteness: Option<EnumerationCompletenessV1>,
 }
 
 impl CompositeL2LatticeV1 {
@@ -145,6 +146,7 @@ impl CompositeL2LatticeV1 {
             contradiction_certificate,
             productive_overflow,
             productive_integrity_error: productive.integrity_error,
+            exact_peak_incompleteness: None,
         })
     }
 
@@ -176,7 +178,21 @@ impl CompositeL2LatticeV1 {
                 logical_count_lower_bound.max(self.surface_groups.len().saturating_add(1));
         }
 
-        let digest = self
+        let reason = if let Some(exact) = self.exact_peak_incompleteness {
+            logical_count_lower_bound =
+                logical_count_lower_bound.max(usize::from(exact.logical_count_lower_bound()));
+            let reason = if overflow {
+                IncompletenessReasonV1::UpstreamIncomplete
+            } else {
+                exact.reason()
+            };
+            overflow = true;
+            reason
+        } else {
+            IncompletenessReasonV1::UpstreamIncomplete
+        };
+
+        let mut digest = self
             .surface_groups
             .iter()
             .fold([0_u64; 2], |mut digest, group| {
@@ -185,11 +201,15 @@ impl CompositeL2LatticeV1 {
                 digest[1] = digest[1].wrapping_add(surface);
                 digest
             });
+        if let Some(exact) = self.exact_peak_incompleteness {
+            digest[0] ^= exact.all_seen_digest()[0];
+            digest[1] = digest[1].wrapping_add(exact.all_seen_digest()[1]);
+        }
         if overflow {
             EnumerationCompletenessV1::overflow(
                 self.surface_groups.len(),
                 logical_count_lower_bound,
-                IncompletenessReasonV1::UpstreamIncomplete,
+                reason,
                 digest,
             )
         } else {
@@ -236,7 +256,9 @@ impl CompositeL2LatticeV1 {
     pub(super) fn merge_exact_peak_surfaces(
         &mut self,
         surfaces: impl IntoIterator<Item = String>,
+        incompleteness: Option<EnumerationCompletenessV1>,
     ) -> Result<(), String> {
+        self.exact_peak_incompleteness = incompleteness;
         let normalized = surfaces
             .into_iter()
             .map(|surface| super::super::compositional::normalize_surface(&surface))
@@ -646,7 +668,7 @@ mod tests {
             .merge_contour_surfaces((1..=3).map(|index| format!("contour-{index:02}")))
             .expect("contours");
         lattice
-            .merge_exact_peak_surfaces((1..=56).map(|index| format!("exact-{index:02}")))
+            .merge_exact_peak_surfaces((1..=56).map(|index| format!("exact-{index:02}")), None)
             .expect("bounded exact merge");
 
         assert_eq!(lattice.surface_groups.len(), MAX_TARGETS_PER_FIELD);

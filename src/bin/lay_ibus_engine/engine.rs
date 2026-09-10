@@ -2,7 +2,8 @@ use lay::config::LayConfig;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
 
-use super::protocol::Shared;
+use super::context_admission::{AdmissionToken, ContextAdmissionAdapter, EngineOwner, WordScope};
+use super::protocol::{AutocorrectSuppression, Shared};
 
 const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
 const IBUS_INPUT_PURPOSE_PASSWORD: u32 = 8;
@@ -33,6 +34,14 @@ pub(super) use types::{
 pub(crate) struct LayIbusEngine {
     pub(super) path: String,
     pub(super) shared: Shared,
+    pub(super) context_admission_required: bool,
+    pub(super) context_admission: Option<ContextAdmissionAdapter>,
+    pub(super) context_owner: Option<EngineOwner>,
+    pub(super) context_word_scope: Option<WordScope>,
+    pub(super) context_token: Option<AdmissionToken>,
+    pub(super) context_bridge_token: Option<AdmissionToken>,
+    pub(super) context_callback_entered: Option<Instant>,
+    pub(super) context_handoff_sealed: bool,
     pub(super) composition: CompositionState,
     pub(super) committed_tail: CommittedTailState,
     pub(super) client_context: ClientContextState,
@@ -61,7 +70,10 @@ impl LayIbusEngine {
     }
 
     pub(super) fn preedit_waits_for_cursor_ack(&self) -> bool {
-        self.client_context.focus_receipt.is_none()
+        // Admitted display frames already bind the live owner and word.
+        // Cursor notifications are optional presentation updates, not receipts.
+        !self.context_admission_required
+            && self.client_context.focus_receipt.is_none()
             && !self.client_context.surrounding_text_supported
             && self.client_context.cursor_cell_width > 0
     }
@@ -89,6 +101,7 @@ impl LayIbusEngine {
     /// that never send FocusInId. A different path cannot inherit a tail.
     pub(super) fn bind_focus_path(&mut self) -> bool {
         let next_epoch = self.committed_tail.epoch.wrapping_add(1);
+        let next_owner_lease_identity = next_input_identity();
         let (changed, preserved_handoff) = {
             let mut state = self.shared.lock().expect("lay ime state poisoned");
             if state.active_path.as_deref() == Some(self.path.as_str()) {
@@ -105,18 +118,30 @@ impl LayIbusEngine {
                 }
                 state.active_path = Some(self.path.clone());
                 let handoff = preserve_handoff.then(|| {
+                    let rebound_current_word = match state.autocorrect_suppression.clone() {
+                        Some(AutocorrectSuppression::CurrentWord(mut current_word)) => {
+                            current_word.owner_lease_identity = next_owner_lease_identity;
+                            let suppression = AutocorrectSuppression::CurrentWord(current_word);
+                            state.autocorrect_suppression = Some(suppression.clone());
+                            state.suppression_revision = state.suppression_revision.wrapping_add(1);
+                            Some(suppression)
+                        }
+                        _ => None,
+                    };
                     (
                         state.handoff_tail_buffer.clone(),
                         state.handoff_tail_epoch,
                         state.handoff_focus_receipt.clone(),
+                        rebound_current_word,
                     )
                 });
                 if !preserve_handoff {
                     state.handoff_tail_buffer.clear();
                     state.handoff_tail_epoch = next_epoch;
                     state.handoff_focus_receipt = None;
-                    state.suppress_next_committed_tail_autocorrect = false;
-                    state.exact_manual_toggle_suppression = None;
+                    if state.autocorrect_suppression.take().is_some() {
+                        state.suppression_revision = state.suppression_revision.wrapping_add(1);
+                    }
                     state.pending_auto_undo = None;
                     state.pending_auto_undo_retry = None;
                     state.shift_gesture_handoff = None;
@@ -129,16 +154,17 @@ impl LayIbusEngine {
         }
 
         self.client_context.focus_serial = next_input_identity();
-        self.client_context.runtime_owner_lease_identity = next_input_identity();
+        self.client_context.runtime_owner_lease_identity = next_owner_lease_identity;
 
         self.composition.buffer.clear();
         self.composition.cursor = 0;
         self.clear_preedit_completion_state();
         self.composition.pending_passthrough_preedit_clear = false;
-        if let Some((tail, epoch, focus_receipt)) = preserved_handoff {
+        if let Some((tail, epoch, focus_receipt, current_word_suppression)) = preserved_handoff {
             self.committed_tail.buffer = tail;
             self.committed_tail.epoch = epoch;
             self.client_context.focus_receipt = focus_receipt;
+            self.committed_tail.autocorrect_suppression = current_word_suppression;
             self.rebuild_preedit_fast_from_tail();
         } else {
             self.committed_tail.buffer.clear();
@@ -148,8 +174,7 @@ impl LayIbusEngine {
             self.committed_tail.last_input_at = None;
             self.committed_tail.recent_replace = None;
             self.committed_tail.pending_completion_learning = None;
-            self.committed_tail.suppress_next_autocorrect = false;
-            self.committed_tail.exact_manual_toggle_suppression = None;
+            self.committed_tail.autocorrect_suppression = None;
             self.client_context
                 .focus_receipt
                 .get_or_insert_with(|| format!("engine:{}", self.path));

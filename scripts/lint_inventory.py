@@ -12,16 +12,23 @@ import tempfile
 from typing import Any
 
 
-SCHEMA = "lay.dead-code-baseline.v3"
-SCOPE = {
-    "cargo_args": [
-        "check",
-        "--locked",
-        "--all-targets",
-        "--features",
-        "research-tools",
-    ],
-    "features": "research-tools",
+SCHEMA = "lay.dead-code-baseline.v4"
+LEGACY_SCHEMA = "lay.dead-code-baseline.v3"
+SCOPES = {
+    "default": {
+        "cargo_args": ["check", "--locked", "--all-targets"],
+        "features": "default",
+    },
+    "research-tools": {
+        "cargo_args": [
+            "check",
+            "--locked",
+            "--all-targets",
+            "--features",
+            "research-tools",
+        ],
+        "features": "research-tools",
+    },
 }
 
 
@@ -81,7 +88,7 @@ def diagnostic_subjects(diagnostic: dict[str, Any]) -> list[dict[str, Any]]:
     return [subjects[key] for key in sorted(subjects)]
 
 
-def diagnostic_location(diagnostic: dict[str, Any]) -> str:
+def diagnostic_locations(diagnostic: dict[str, Any]) -> list[dict[str, Any]]:
     spans = []
     for span in diagnostic.get("spans", []):
         if not span.get("is_primary"):
@@ -99,7 +106,11 @@ def diagnostic_location(diagnostic: dict[str, Any]) -> str:
         )
     if not spans:
         raise ValueError("dead_code diagnostic lacks a primary source location")
-    return canonical(sorted(spans, key=canonical))
+    return sorted(spans, key=canonical)
+
+
+def diagnostic_location(diagnostic: dict[str, Any]) -> str:
+    return canonical(diagnostic_locations(diagnostic))
 
 
 def diagnostic_code(diagnostic: dict[str, Any]) -> str:
@@ -112,6 +123,7 @@ def normalized_dead_entry(message: dict[str, Any]) -> dict[str, Any]:
     return {
         "code": "dead_code",
         "message": diagnostic.get("message", ""),
+        "locations": diagnostic_locations(diagnostic),
         "subjects": diagnostic_subjects(diagnostic),
         "target": {
             "crate_types": sorted(target.get("crate_types") or []),
@@ -183,9 +195,12 @@ def print_violations(violations: list[dict[str, Any]]) -> None:
         print(f"... {len(violations) - 80} more diagnostics", file=sys.stderr)
 
 
-def load_baseline(path: pathlib.Path) -> dict[str, Any]:
+def load_baseline(
+    path: pathlib.Path, *, allow_legacy: bool = False
+) -> dict[str, Any]:
     payload = json.loads(path.read_text())
-    if payload.get("schema") != SCHEMA:
+    accepted_schemas = {SCHEMA, LEGACY_SCHEMA} if allow_legacy else {SCHEMA}
+    if payload.get("schema") not in accepted_schemas:
         raise ValueError(f"{path}: unexpected schema {payload.get('schema')!r}")
     entries = payload.get("entries")
     if not isinstance(entries, list):
@@ -206,8 +221,28 @@ def compare_inventory(
     return added, removed
 
 
-def validate_baseline_contract(baseline: dict[str, Any]) -> None:
-    if baseline.get("scope") != SCOPE:
+def logical_inventory(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Project exact-span rows onto stable logical identities for baseline writes."""
+    grouped: dict[str, tuple[dict[str, Any], int]] = {}
+    for entry in entries:
+        logical = {
+            key: value
+            for key, value in entry.items()
+            if key not in {"locations", "occurrence"}
+        }
+        key = canonical(logical)
+        stored, count = grouped.get(key, (logical, 0))
+        grouped[key] = (stored, count + 1)
+    projected = []
+    for key in sorted(grouped):
+        entry, count = grouped[key]
+        for occurrence in range(1, count + 1):
+            projected.append({**entry, "occurrence": occurrence})
+    return sorted(projected, key=canonical)
+
+
+def validate_baseline_contract(baseline: dict[str, Any], feature_scope: str) -> None:
+    if baseline.get("scope") != SCOPES[feature_scope]:
         raise ValueError("dead-code baseline scope drift")
     if baseline.get("toolchain") != toolchain_identity():
         raise ValueError("dead-code baseline toolchain drift")
@@ -216,7 +251,11 @@ def validate_baseline_contract(baseline: dict[str, Any]) -> None:
 def require_monotonic_reduction(
     current: list[dict[str, Any]], baseline: dict[str, Any]
 ) -> list[dict[str, Any]]:
-    added, removed = compare_inventory(current, baseline)
+    current_logical = logical_inventory(current)
+    baseline_logical = logical_inventory(baseline["entries"])
+    added, removed = compare_inventory(
+        current_logical, {"entries": baseline_logical}
+    )
     if added:
         preview = "\n".join(f"dead_code ADDED: {canonical(row)}" for row in added[:40])
         raise ValueError(
@@ -225,10 +264,12 @@ def require_monotonic_reduction(
     return removed
 
 
-def write_baseline(path: pathlib.Path, entries: list[dict[str, Any]]) -> None:
+def write_baseline(
+    path: pathlib.Path, entries: list[dict[str, Any]], feature_scope: str
+) -> None:
     payload = {
         "schema": SCHEMA,
-        "scope": SCOPE,
+        "scope": SCOPES[feature_scope],
         "toolchain": toolchain_identity(),
         "entries": entries,
     }
@@ -236,13 +277,15 @@ def write_baseline(path: pathlib.Path, entries: list[dict[str, Any]]) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
 
 
-def verify_inventory(input_path: pathlib.Path, baseline_path: pathlib.Path) -> int:
+def verify_inventory(
+    input_path: pathlib.Path, baseline_path: pathlib.Path, feature_scope: str
+) -> int:
     current, violations = read_diagnostics(input_path)
     if violations:
         print_violations(violations)
         return 1
     baseline = load_baseline(baseline_path)
-    validate_baseline_contract(baseline)
+    validate_baseline_contract(baseline, feature_scope)
     added, removed = compare_inventory(current, baseline)
     if added or removed:
         for label, rows in (("ADDED", added), ("REMOVED", removed)):
@@ -373,7 +416,8 @@ def self_test() -> None:
         )
         repeated_shape_current, _ = read_diagnostics(path)
         assert len(repeated_shape_current) == 2
-        assert [row["occurrence"] for row in repeated_shape_current] == [1, 2]
+        assert [row["occurrence"] for row in repeated_shape_current] == [1, 1]
+        assert repeated_shape_current[0]["locations"] != repeated_shape_current[1]["locations"]
 
         path.write_text(stream(message("unused_imports", "unused import: `Old`")))
         _, violations = read_diagnostics(path)
@@ -416,6 +460,38 @@ def self_test() -> None:
             assert "may only decrease" in str(error)
         else:
             raise AssertionError("baseline writer accepted a dead-code addition")
+
+        other_path = pathlib.Path(directory) / "other.jsonl"
+        path.write_text(
+            stream(
+                message(
+                    "dead_code",
+                    "function `same` is never used",
+                    subject="fn same() {}",
+                    byte_start=10,
+                )
+            )
+        )
+        other_path.write_text(
+            stream(
+                message(
+                    "dead_code",
+                    "function `same` is never used",
+                    subject="fn same() {}",
+                    byte_start=30,
+                )
+            )
+        )
+        old_location, _ = read_diagnostics(path)
+        new_location, _ = read_diagnostics(other_path)
+        added_rows, removed_rows = compare_inventory(
+            new_location, {"entries": old_location}
+        )
+        assert len(added_rows) == 1 and len(removed_rows) == 1
+        assert require_monotonic_reduction(
+            new_location, {"entries": old_location}
+        ) == []
+
     print("lint_inventory_self_test=PASS")
 
 
@@ -425,6 +501,9 @@ def main() -> int:
     inventory = subparsers.add_parser("inventory")
     inventory.add_argument("--input", type=pathlib.Path, required=True)
     inventory.add_argument("--baseline", type=pathlib.Path, required=True)
+    inventory.add_argument(
+        "--feature-scope", choices=sorted(SCOPES), required=True
+    )
     inventory.add_argument("--write-to", type=pathlib.Path)
     clean = subparsers.add_parser("clean")
     clean.add_argument("--input", type=pathlib.Path, required=True)
@@ -437,22 +516,21 @@ def main() -> int:
             return 0
         if args.command == "clean":
             return verify_clean(args.input)
-
         entries, violations = read_diagnostics(args.input)
         if violations:
             print_violations(violations)
             return 1
         if args.write_to is not None:
-            baseline = load_baseline(args.baseline)
-            validate_baseline_contract(baseline)
+            baseline = load_baseline(args.baseline, allow_legacy=True)
+            validate_baseline_contract(baseline, args.feature_scope)
             removed = require_monotonic_reduction(entries, baseline)
-            write_baseline(args.write_to, entries)
+            write_baseline(args.write_to, entries, args.feature_scope)
             print(
                 f"dead_code_inventory={len(entries)} baseline=WRITTEN "
                 f"removed={len(removed)}"
             )
             return 0
-        return verify_inventory(args.input, args.baseline)
+        return verify_inventory(args.input, args.baseline, args.feature_scope)
     except (OSError, ValueError) as error:
         print(f"lint inventory error: {error}", file=sys.stderr)
         return 1

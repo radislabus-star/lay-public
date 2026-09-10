@@ -121,6 +121,16 @@ pub struct L2ImeWordCandidate {
     pub(crate) morphology_slots: Vec<crate::correction_core::MorphologySlotIdentity>,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct L2CorrectionPeakCandidate {
+    pub(crate) surface: String,
+    pub(crate) kind: L2ImeWordCandidateKind,
+    pub(crate) score: u32,
+    pub(crate) l1_overlap: usize,
+    pub(crate) l2_overlap: usize,
+    pub(crate) motif_overlap: usize,
+}
+
 impl L2ImeWordCandidate {
     pub(crate) fn common_target_evidence(
         &self,
@@ -147,7 +157,6 @@ pub fn ime_l2_boundary_candidates(
     token: &str,
     limit: usize,
 ) -> Vec<L2ImeWordCandidate> {
-    let started = std::time::Instant::now();
     if limit == 0 {
         return Vec::new();
     }
@@ -157,6 +166,18 @@ pub fn ime_l2_boundary_candidates(
     {
         return Vec::new();
     }
+    ime_readout::cached_boundary_candidates(context_prefix, token, limit, || {
+        ime_l2_boundary_candidates_uncached(context_prefix, token, limit, &normalized)
+    })
+}
+
+fn ime_l2_boundary_candidates_uncached(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+    normalized: &str,
+) -> Vec<L2ImeWordCandidate> {
+    let started = std::time::Instant::now();
     let mut tail = context_prefix.trim_end().to_string();
     if !tail.is_empty() {
         tail.push(' ');
@@ -167,21 +188,32 @@ pub fn ime_l2_boundary_candidates(
     let l1 = super::l1::run_l1(token);
     let mut candidates = boundary_split_candidates("", token, &l1, &context)
         .into_iter()
-        .map(|candidate| L2ImeWordCandidate {
-            surface: candidate.text,
-            kind: L2ImeWordCandidateKind::Replacement,
-            source: L2ImeWordCandidateSource::BoundaryPhase,
-            // BoundaryCell32 has already proved two lexical centers.  Keep
-            // its field strength explicit for common live arbitration.
-            score: (candidate.energy * 1_600.0).round() as u32,
-            l1_overlap: normalized.chars().count().min(10),
-            l2_overlap: 4,
-            motif_overlap: 2,
-            usage_prior: 0.0,
-            context_prior: 0.0,
-            accepted_count: 0,
-            target_evidence: L2ImeTargetEvidence::Boundary,
-            morphology_slots: Vec::new(),
+        .map(|candidate| {
+            let target_evidence =
+                if tail_scan_adapter::boundary_split_target_has_structural_evidence(
+                    normalized,
+                    &candidate.text,
+                ) {
+                    L2ImeTargetEvidence::Boundary
+                } else {
+                    L2ImeTargetEvidence::None
+                };
+            L2ImeWordCandidate {
+                surface: candidate.text,
+                kind: L2ImeWordCandidateKind::Replacement,
+                source: L2ImeWordCandidateSource::BoundaryPhase,
+                // BoundaryCell32 has already proved two lexical centers. Keep
+                // its field strength explicit for common live arbitration.
+                score: (candidate.energy * 1_600.0).round() as u32,
+                l1_overlap: normalized.chars().count().min(10),
+                l2_overlap: 4,
+                motif_overlap: 2,
+                usage_prior: 0.0,
+                context_prior: 0.0,
+                accepted_count: 0,
+                target_evidence,
+                morphology_slots: Vec::new(),
+            }
         })
         .collect::<Vec<_>>();
     let split_ready = std::time::Instant::now();
@@ -220,6 +252,14 @@ pub fn correction_l2_word_candidates(
     limit: usize,
 ) -> Vec<L2ImeWordCandidate> {
     ime_readout::correction_l2_word_candidates_impl(context_prefix, token, limit)
+}
+
+pub(crate) fn correction_l2_peak_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<L2CorrectionPeakCandidate> {
+    ime_readout::correction_l2_peak_candidates_impl(context_prefix, token, limit)
 }
 
 /// Settles one projected Cyrillic surface into the strongest admitted L2 form center.

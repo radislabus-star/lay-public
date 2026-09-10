@@ -64,6 +64,10 @@ impl TypingCpu {
         crate::nanda_wave::ensure_l2_ime_warmup_started();
     }
 
+    pub fn ensure_ime_runtime_warmup_started(nanda_autocorrect: bool) {
+        crate::nanda_wave::ensure_ime_runtime_warmup_started(nanda_autocorrect);
+    }
+
     pub fn warm_l2_for_ime() {
         crate::nanda_wave::warm_up_l2_for_ime();
     }

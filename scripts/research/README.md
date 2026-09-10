@@ -1,15 +1,10 @@
-# Historical Research Controllers
+# Research controllers
 
-`SHA256SUMS` pins the completed V10/V11 one-shot controllers and injected test
-modules that remain at the top level for receipt compatibility.
+Completed V10/V11 controllers, their ten injected fragments and
+`SHA256SUMS` were archived together at
+`cb40ef29f6c78c97757dd0059c0ba798cb1f0789`, under their original paths.
+See [restore instructions](../../ARCHIVE.md). After restoring that snapshot,
+its original SHA manifest can verify all 122 controller/fragment files.
 
-Verify the archive from the repository root:
-
-```bash
-sha256sum --check scripts/research/SHA256SUMS
-```
-
-These files are reproducibility evidence, not active runtime entrypoints. Do
-not edit or dispatch them from operational scripts. New research controllers
-belong in a topic subdirectory unless a preregistered contract freezes another
-path.
+New one-shot research controllers belong in a topic subdirectory here.
+Active product operations must not dispatch into archived scripts.

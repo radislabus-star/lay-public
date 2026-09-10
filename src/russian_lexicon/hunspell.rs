@@ -19,6 +19,48 @@ pub(super) fn load_hunspell_words_min_len(
     Ok(words)
 }
 
+pub(super) struct HunspellAdjectiveClasses {
+    pub(super) regular_iy: HashSet<String>,
+    pub(super) possessive_iy: HashSet<String>,
+    pub(super) comparative_ee: HashSet<String>,
+}
+
+pub(super) fn load_hunspell_adjective_classes(
+    path: &str,
+) -> std::io::Result<HunspellAdjectiveClasses> {
+    let text = std::fs::read_to_string(path)?;
+    Ok(hunspell_adjective_classes(&text))
+}
+
+fn hunspell_adjective_classes(text: &str) -> HunspellAdjectiveClasses {
+    let mut regular_iy = HashSet::new();
+    let mut possessive_iy = HashSet::new();
+    let mut comparative_ee = HashSet::new();
+
+    for (word, flags) in hunspell_dic_entries(text) {
+        let lower = word.to_lowercase();
+        let flags = flags.unwrap_or_default();
+        if flags.contains('E') {
+            comparative_ee.insert(lower.clone());
+        }
+        if !lower.ends_with("ий") {
+            continue;
+        }
+        if flags.contains('A') {
+            regular_iy.insert(lower.clone());
+        }
+        if flags.contains('O') {
+            possessive_iy.insert(lower);
+        }
+    }
+
+    HunspellAdjectiveClasses {
+        regular_iy,
+        possessive_iy,
+        comparative_ee,
+    }
+}
+
 struct HunspellSuffixRule {
     strip: String,
     add: String,
@@ -198,7 +240,10 @@ pub(super) fn load_word_list(path: &Path) -> std::io::Result<HashSet<String>> {
 
 #[cfg(test)]
 mod tests {
-    use super::hunspell_dic_entries;
+    use super::{
+        hunspell_adjective_classes, hunspell_dic_entries, load_hunspell_adjective_classes,
+    };
+    use std::collections::HashSet;
 
     #[test]
     fn hunspell_entries_skip_count_header_and_extract_optional_flags() {
@@ -209,5 +254,26 @@ mod tests {
             entries,
             vec![("слово", Some("AB")), ("тест", None), ("дом", Some("CD"))]
         );
+    }
+
+    #[test]
+    fn adjective_iy_classes_follow_hunspell_inflection_flags() {
+        let classes = hunspell_adjective_classes(
+            "7\n синий/A\n русский/AZ\n лисий/O\n точный/E\n почтовый/A\n слово/O\n неизвестный\n",
+        );
+
+        assert_eq!(
+            classes.regular_iy,
+            HashSet::from(["синий".to_string(), "русский".to_string()])
+        );
+        assert_eq!(classes.possessive_iy, HashSet::from(["лисий".to_string()]));
+        assert_eq!(
+            classes.comparative_ee,
+            HashSet::from(["точный".to_string()])
+        );
+        assert!(load_hunspell_adjective_classes(
+            "/definitely/missing/lay-hunspell-adjective-classes.dic"
+        )
+        .is_err());
     }
 }

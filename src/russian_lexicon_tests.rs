@@ -74,6 +74,132 @@ fn clean_surface_certificate_recognizes_short_noun_forms() {
 }
 
 #[test]
+fn clean_surface_certificate_respects_adjective_inflection_spelling() {
+    assert!(has_clean_russian_surface_certificate("фактическим"));
+    assert!(has_clean_russian_surface_certificate("точнее"));
+    assert!(has_clean_russian_surface_certificate("воротами"));
+    assert!(!has_clean_russian_surface_certificate("документним"));
+    assert!(!has_clean_russian_surface_certificate("точние"));
+}
+
+#[test]
+fn adjective_surface_certificate_respects_encoded_suffix_and_lemma_classes() {
+    let valid = [
+        // Hard -ый paradigm and its regular comparative.
+        "точного",
+        "точным",
+        "точные",
+        "точнее",
+        // Soft -ий paradigm.
+        "синего",
+        "синим",
+        "синяя",
+        "синее",
+        // Velar -ий stems use hard singular endings and и in the remaining forms.
+        "русского",
+        "русскому",
+        "русском",
+        "русской",
+        "русская",
+        "русское",
+        "русским",
+        "русскими",
+        "русские",
+        "русских",
+        "тихого",
+        "легкого",
+        "фактического",
+        // Sibilant -ий stems keep -его/-ему but use -ая.
+        "хорошего",
+        "хорошая",
+        "хорошее",
+        "свежего",
+        "свежая",
+        "свежее",
+        // Restricted-stem -ой lemmas mix hard singular and и-spelled forms.
+        "плохого",
+        "плохим",
+        "чужого",
+        "чужим",
+        // Hunspell class O marks the soft-sign possessive -ий paradigm.
+        "птичьего",
+        "птичья",
+        "птичье",
+        "птичьи",
+        "птичьим",
+        "птичьими",
+        "птичьих",
+        "волчьего",
+        "медвежьего",
+    ];
+    for word in valid {
+        assert!(
+            is_reference_backed_russian_form(word),
+            "valid adjective form is not reference-backed: {word:?}"
+        );
+        assert!(
+            has_clean_russian_surface_certificate(word),
+            "valid adjective form lacks a clean certificate: {word:?}"
+        );
+    }
+
+    let invalid = [
+        // A velar -ий stem cannot take soft singular endings.
+        "тихего",
+        "русскего",
+        "русскему",
+        "русскем",
+        "русскей",
+        "русскяя",
+        "русскее",
+        "тихее",
+        "легкее",
+        "фактическее",
+        // A regular -ый lemma needs Hunspell class E before -ее may be
+        // treated as its synthetic comparative.
+        "почтовее",
+        "атомнее",
+        "даннее",
+        "школьнее",
+        // A restricted-stem -ой lemma cannot take ы-spelled plural endings.
+        "плохым",
+        "плохыми",
+        "плохые",
+        "плохых",
+        // Nor can it take the soft singular endings of an -ий lemma.
+        "чужего",
+        "чужему",
+        "чужем",
+        "чужей",
+        "чужяя",
+        // Class O lemmas cannot use the no-soft-sign class A surfaces.
+        "птичего",
+        "птичая",
+        "птичее",
+        "птичие",
+        "волчего",
+        "медвежего",
+        "медвежая",
+        // Existing mixed-paradigm regressions remain rejected.
+        "фактическыми",
+        "русскыми",
+        "хорошяя",
+        "точние",
+        "документним",
+    ];
+    for word in invalid {
+        assert!(
+            !is_reference_backed_russian_form(word),
+            "invalid adjective form became reference-backed: {word:?}"
+        );
+        assert!(
+            !has_clean_russian_surface_certificate(word),
+            "invalid adjective form received a clean certificate: {word:?}"
+        );
+    }
+}
+
+#[test]
 fn recognizes_russian_technical_loanword_forms() {
     for word in [
         "грокать",

@@ -1,5 +1,5 @@
 use super::output::EngineOutput;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 use zbus::fdo;
 
 use super::engine::{
@@ -37,7 +37,12 @@ impl LayIbusEngine {
         &self,
         identity: &InputFrameIdentity,
     ) -> SpaceAutocorrectLookupReceipt {
-        space_autocorrect_prefetch::take(identity)
+        let budget = self
+            .context_callback_entered
+            .map_or(Duration::from_micros(3_500), |entered| {
+                super::context_admission::remaining_space_wait_budget(entered.elapsed())
+            });
+        space_autocorrect_prefetch::take_with_budget(identity, budget)
     }
 
     pub(super) fn invalidate_space_autocorrect_lease(&self, identity: &InputFrameIdentity) {
@@ -264,6 +269,7 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         with_space: bool,
     ) -> fdo::Result<bool> {
+        let complete_word = self.context_word_is_known();
         if self.committed_tail.buffer.trim().is_empty() {
             return Ok(false);
         }
@@ -336,13 +342,16 @@ impl LayIbusEngine {
             .commit_text(make_ibus_text(authorized_plan.insert.clone()))
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        self.arm_pending_ime_completion_learning(
-            context_tail,
-            typed_prefix,
-            accepted_text.trim().to_string(),
-            with_space,
-        );
+        if complete_word {
+            self.arm_pending_ime_completion_learning(
+                context_tail,
+                typed_prefix,
+                accepted_text.trim().to_string(),
+                with_space,
+            );
+        }
         self.sync_tail_after_stuck_completion(&committed_suffix);
+        self.arm_current_word_autocorrect_suppression();
         Ok(true)
     }
 
@@ -548,17 +557,52 @@ impl LayIbusEngine {
     }
 
     pub(super) fn take_manual_toggle_autocorrect_suppression(&mut self) -> bool {
-        let shared_suppression = self.take_autocorrect_suppression_handoff();
+        use super::protocol::AutocorrectSuppression;
+
+        let local = self.committed_tail.autocorrect_suppression.take();
+        let Ok(mut state) = self.shared.lock() else {
+            return false;
+        };
+        let active_owner = state.active_path.as_deref() == Some(self.path.as_str());
         let now = std::time::Instant::now();
-        let local_identity_is_live = self
-            .committed_tail
-            .exact_manual_toggle_suppression
-            .take()
-            .is_none_or(|identity| identity.path == self.path && now <= identity.expires_at);
-        let local_suppression =
-            local_identity_is_live && self.committed_tail.suppress_next_autocorrect;
-        let suppress = local_suppression || shared_suppression;
-        self.committed_tail.suppress_next_autocorrect = false;
+        let shared = state.autocorrect_suppression.clone();
+        let suppress = match shared.as_ref() {
+            Some(AutocorrectSuppression::CurrentWord(current_word)) => {
+                let exact_local_match = local.as_ref() == shared.as_ref();
+                active_owner
+                    && exact_local_match
+                    && current_word.owner_lease_identity
+                        == self.client_context.runtime_owner_lease_identity
+            }
+            Some(AutocorrectSuppression::LegacyReplayV1) => active_owner,
+            Some(AutocorrectSuppression::ExactReplay(identity)) => {
+                active_owner && identity.path == self.path && now <= identity.expires_at
+            }
+            None => {
+                active_owner
+                    && matches!(local.as_ref(), Some(AutocorrectSuppression::LegacyReplayV1))
+                    || active_owner
+                        && matches!(
+                            local.as_ref(),
+                            Some(AutocorrectSuppression::ExactReplay(identity))
+                                if identity.path == self.path && now <= identity.expires_at
+                        )
+            }
+        };
+        let must_clear_shared = match shared.as_ref() {
+            Some(AutocorrectSuppression::CurrentWord(_)) => suppress,
+            Some(AutocorrectSuppression::LegacyReplayV1) => active_owner,
+            Some(AutocorrectSuppression::ExactReplay(identity)) => {
+                active_owner && identity.path == self.path
+            }
+            None => false,
+        };
+        if must_clear_shared {
+            state.autocorrect_suppression = None;
+            state.suppression_revision = state.suppression_revision.wrapping_add(1);
+        } else if suppress {
+            state.suppression_revision = state.suppression_revision.wrapping_add(1);
+        }
         suppress
     }
 }
@@ -610,7 +654,7 @@ mod tests {
     };
     use crate::engine::SurroundingTextSnapshot;
     use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY};
-    use crate::protocol::ExactManualToggleSuppression;
+    use crate::protocol::{AutocorrectSuppression, ExactManualToggleSuppression};
     use lay::config::LayConfig;
     use lay::ime_correction::{
         decide_active_composition_autocorrect, ActiveCompositionAutocorrectRequest,
@@ -619,7 +663,7 @@ mod tests {
     use std::time::{Duration, Instant};
 
     fn engine() -> LayIbusEngine {
-        LayIbusEngine::new(
+        let mut engine = LayIbusEngine::new(
             "/test".to_string(),
             Arc::new(Mutex::new(Default::default())),
             true,
@@ -634,7 +678,9 @@ mod tests {
                 nanda_precognition: true,
                 ..LayConfig::default()
             },
-        )
+        );
+        assert!(engine.bind_focus_path());
+        engine
     }
 
     #[test]
@@ -676,7 +722,8 @@ mod tests {
     #[test]
     fn manual_toggle_suppresses_next_boundary_autocorrect_once() {
         let mut engine = engine();
-        engine.committed_tail.suppress_next_autocorrect = true;
+        engine.push_tail_char('x');
+        assert!(engine.arm_current_word_autocorrect_suppression());
 
         assert!(engine.take_manual_toggle_autocorrect_suppression());
         assert!(!engine.take_manual_toggle_autocorrect_suppression());
@@ -685,7 +732,7 @@ mod tests {
     #[test]
     fn manual_toggle_suppression_survives_engine_handoff() {
         let shared = Arc::new(Mutex::new(Default::default()));
-        let engine_a = LayIbusEngine::new(
+        let mut engine_a = LayIbusEngine::new(
             "/test/a".to_string(),
             Arc::clone(&shared),
             true,
@@ -695,7 +742,10 @@ mod tests {
                 ..LayConfig::default()
             },
         );
-        engine_a.publish_autocorrect_suppression_handoff();
+        assert!(engine_a.bind_focus_path());
+        engine_a.push_tail_char('x');
+        engine_a.publish_active_path_preserve_handoff(Instant::now() + Duration::from_millis(700));
+        assert!(engine_a.arm_current_word_autocorrect_suppression());
 
         let mut engine_b = LayIbusEngine::new(
             "/test/b".to_string(),
@@ -707,6 +757,7 @@ mod tests {
                 ..LayConfig::default()
             },
         );
+        assert!(engine_b.bind_focus_path());
 
         assert!(engine_b.take_manual_toggle_autocorrect_suppression());
         assert!(!engine_b.take_manual_toggle_autocorrect_suppression());
@@ -722,24 +773,24 @@ mod tests {
             true,
             LayConfig::default(),
         );
+        assert!(engine.bind_focus_path());
         let expired = ExactManualToggleSuppression {
             path: engine.path.clone(),
             epoch: 7,
             expires_at: Instant::now() - Duration::from_millis(1),
         };
-        engine.committed_tail.suppress_next_autocorrect = true;
-        engine.committed_tail.exact_manual_toggle_suppression = Some(expired.clone());
+        engine.committed_tail.autocorrect_suppression =
+            Some(AutocorrectSuppression::ExactReplay(expired.clone()));
         {
             let mut state = shared.lock().expect("lay ime state poisoned");
-            state.suppress_next_committed_tail_autocorrect = true;
-            state.exact_manual_toggle_suppression = Some(expired);
+            state.autocorrect_suppression = Some(AutocorrectSuppression::ExactReplay(expired));
+            state.suppression_revision = state.suppression_revision.wrapping_add(1);
         }
 
         assert!(!engine.take_manual_toggle_autocorrect_suppression());
-        assert!(!engine.committed_tail.suppress_next_autocorrect);
+        assert!(engine.committed_tail.autocorrect_suppression.is_none());
         let state = shared.lock().expect("lay ime state poisoned");
-        assert!(!state.suppress_next_committed_tail_autocorrect);
-        assert!(state.exact_manual_toggle_suppression.is_none());
+        assert!(state.autocorrect_suppression.is_none());
     }
 
     #[test]
@@ -884,18 +935,61 @@ mod tests {
             nanda_l2_phase_apply: false,
             ..LayConfig::default()
         };
+        let config_identity =
+            lay::lexical_authority_frame::LexicalAuthorityConfigIdentityV1::from_config(&cfg);
+        let cursor = u32::try_from("прохоил".chars().count()).expect("test token length");
+        let coordinates = lay::lexical_authority_frame::LexicalAuthorityCoordinatesV1::new(
+            17,
+            [19, 23],
+            29,
+            "прохоил".to_string(),
+            String::new(),
+            cursor,
+            (cursor, cursor),
+            "прохоил".to_string(),
+            cursor,
+            31,
+            config_identity.identity_fingerprint(),
+        );
+        let frame = lay::lexical_authority_frame::LexicalAuthorityFrameV1::from_exact_parts(
+            "/test".to_string(),
+            Some("committed-tail-authority".to_string()),
+            7,
+            "прохоил".to_string(),
+            String::new(),
+            "прохоил".to_string(),
+            true,
+            true,
+            lay::exact_layout_authority::FactoryEngineProfile::Ru,
+            None,
+            11,
+            13,
+            config_identity,
+        )
+        .with_coordinates(coordinates);
         let decision = decide_active_composition_autocorrect(ActiveCompositionAutocorrectRequest {
             text: "прохоил ",
             committed_tail: "прохоил",
             config: &cfg,
-            lexical_authority_frame: None,
-            active_layout_is_ru: None,
+            lexical_authority_frame: Some(&frame),
+            active_layout_is_ru: Some(true),
         })
         .expect("shared decision");
 
+        assert_eq!(decision.replacement, "проходил ");
         assert!(
             committed_tail_autocorrect_decision_is_authorized(&decision),
             "Space autocorrect must not locally narrow DecisionCore authority to boundary/layout only"
+        );
+        assert_eq!(
+            decision.action.transition().operator(),
+            Some(lay::text_edit::TransitionOperator::ReplaceCurrentWord)
+        );
+        assert_eq!(decision.action.transition().verified(), Some(true));
+        assert_eq!(decision.action.transition().changed_tokens(), Some(1));
+        assert_eq!(
+            decision.action.transition().left_context_changed(),
+            Some(false)
         );
     }
 }

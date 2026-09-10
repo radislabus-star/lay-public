@@ -1,3 +1,4 @@
+use std::ffi::OsStr;
 #[cfg(test)]
 use std::io::Cursor;
 use std::io::{self, Read};
@@ -19,6 +20,7 @@ const HELDOUT_MODULUS: usize = 5;
 const HELDOUT_REMAINDER: usize = 4;
 const MIN_SUPPORT_COVERAGE_PPM: u32 = 100_000;
 const MAX_COUNTEREXAMPLES: usize = 64;
+const PROOF_WORKERS_ENV: &str = "LAY_L3_PROOF_WORKERS";
 
 /// Cold-proof evidence only. Hashes identify a repeated phase conflict without
 /// putting corpus text or lexical strings into the hot package.
@@ -727,13 +729,25 @@ fn evaluate_heldout_stream<R: Read>(
 }
 
 fn proof_worker_count() -> usize {
-    if cfg!(test) {
-        return 1;
-    }
-    thread::available_parallelism()
-        .map(|workers| workers.get())
-        .unwrap_or(1)
-        .max(1)
+    let available = if cfg!(test) {
+        1
+    } else {
+        thread::available_parallelism()
+            .map(|workers| workers.get())
+            .unwrap_or(1)
+    };
+    let configured = std::env::var_os(PROOF_WORKERS_ENV);
+    resolve_proof_worker_count(available, configured.as_deref())
+}
+
+fn resolve_proof_worker_count(available: usize, configured: Option<&OsStr>) -> usize {
+    let available = available.max(1);
+    configured
+        .and_then(OsStr::to_str)
+        .and_then(|value| value.parse::<usize>().ok())
+        .filter(|workers| *workers > 0)
+        .map(|workers| workers.min(available))
+        .unwrap_or_else(|| configured.map_or(available, |_| 1))
 }
 
 fn is_heldout(ordinal: usize) -> bool {
@@ -1389,6 +1403,41 @@ fn unique_support_winner(readouts: &[super::ContextPhaseReadout]) -> Option<usiz
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn proof_worker_budget_preserves_or_bounds_visible_parallelism() {
+        assert_eq!(resolve_proof_worker_count(8, None), 8);
+        assert_eq!(resolve_proof_worker_count(20, None), 20);
+        assert_eq!(resolve_proof_worker_count(8, Some(OsStr::new("2"))), 2);
+        assert_eq!(resolve_proof_worker_count(1, Some(OsStr::new("2"))), 1);
+        assert_eq!(resolve_proof_worker_count(20, Some(OsStr::new("20"))), 20);
+        assert_eq!(resolve_proof_worker_count(8, Some(OsStr::new("99"))), 8);
+    }
+
+    #[test]
+    fn invalid_proof_worker_budget_falls_back_to_one() {
+        for value in ["", "0", "-1", "two", "184467440737095516160"] {
+            assert_eq!(
+                resolve_proof_worker_count(8, Some(OsStr::new(value))),
+                1,
+                "value={value:?}"
+            );
+        }
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn non_unicode_proof_worker_budget_falls_back_to_one() {
+        use std::os::unix::ffi::OsStringExt;
+
+        let value = std::ffi::OsString::from_vec(vec![0xff]);
+        assert_eq!(resolve_proof_worker_count(8, Some(value.as_os_str())), 1);
+    }
+
+    #[test]
+    fn proof_worker_count_remains_one_in_test_builds() {
+        assert_eq!(proof_worker_count(), 1);
+    }
 
     #[test]
     fn frozen_partition_is_stable() {

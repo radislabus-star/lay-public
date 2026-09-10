@@ -6,10 +6,12 @@ Wants=lay-daemon.service
 [Service]
 Type=simple
 Environment=MALLOC_ARENA_MAX=2
+Environment=LAY_L3_PROOF_WORKERS=2
 ExecStart=%h/.local/bin/lay-nanda-wave-train --watch-l3-context-online --poll-ms 5000
 Restart=on-failure
 RestartSec=5
 Nice=10
+CPUQuota=150%
 CPUWeight=20
 IOWeight=20
 

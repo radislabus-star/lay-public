@@ -1,6 +1,7 @@
 use zbus::fdo;
 
 use super::bridge::LayImeBridge;
+use super::context_admission::AdmissionToken;
 use super::engine::{LayIbusEngine, ManualToggleAuthority};
 use super::output::EngineOutput;
 use super::state::CommittedTailReplaceRequest;
@@ -8,6 +9,43 @@ use lay::manual_toggle::ImeManualToggleOutcome;
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 
 impl LayImeBridge {
+    async fn bridge_admission_token(&self) -> fdo::Result<Option<AdmissionToken>> {
+        if !self.context_admission_required {
+            return Ok(None);
+        }
+        let admission = self
+            .admission
+            .as_ref()
+            .ok_or_else(|| fdo::Error::Failed("context admission unavailable".to_string()))?;
+        let fence = admission
+            .begin_bridge_fence()
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+        admission
+            .complete_bridge_fence(fence)
+            .await
+            .map(Some)
+            .map_err(|error| fdo::Error::Failed(error.to_string()))
+    }
+
+    pub(crate) fn bridge_token_is_live(
+        &self,
+        engine: &LayIbusEngine,
+        token: Option<&AdmissionToken>,
+    ) -> bool {
+        if !self.context_admission_required {
+            return true;
+        }
+        let (Some(admission), Some(token)) = (self.admission.as_ref(), token) else {
+            return false;
+        };
+        admission.revalidate_bridge(token)
+            && engine
+                .live_context_token()
+                .as_ref()
+                .is_some_and(|live| live == token)
+    }
+
     pub(super) fn active_path(&self) -> Option<String> {
         self.shared
             .lock()
@@ -17,6 +55,7 @@ impl LayImeBridge {
     }
 
     pub(super) async fn input_state_inner(&self) -> fdo::Result<String> {
+        let token = self.bridge_admission_token().await?;
         let Some(path) = self.active_path() else {
             return Ok("passive:no-focus".to_string());
         };
@@ -27,6 +66,9 @@ impl LayImeBridge {
             .await
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let engine = iface_ref.get().await;
+        if !self.bridge_token_is_live(&engine, token.as_ref()) {
+            return Ok("passive:unknown-context".to_string());
+        }
         Ok(tail_source_for_authority(engine.manual_toggle_authority())
             .bridge_state()
             .to_string())
@@ -47,6 +89,7 @@ impl LayImeBridge {
     pub(super) async fn visible_tail_v3_inner(
         &self,
     ) -> fdo::Result<(String, String, bool, u64, String, String)> {
+        let token = self.bridge_admission_token().await?;
         let Some(path) = self.active_path() else {
             return Ok((
                 "passive:no-focus".to_string(),
@@ -64,6 +107,16 @@ impl LayImeBridge {
             .await
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let mut engine = iface_ref.get_mut().await;
+        if !self.bridge_token_is_live(&engine, token.as_ref()) || !engine.context_word_is_known() {
+            return Ok((
+                "passive:unknown-context".to_string(),
+                String::new(),
+                engine.layout_gesture.layout_is_ru,
+                engine.committed_tail.epoch,
+                path,
+                String::new(),
+            ));
+        }
         engine.refresh_empty_tail_from_handoff();
         let source = tail_source_for_authority(engine.manual_toggle_authority());
         let text = visible_text_for_source(
@@ -87,6 +140,7 @@ impl LayImeBridge {
     }
 
     pub(super) async fn owns_active_text_inner(&self) -> fdo::Result<bool> {
+        let token = self.bridge_admission_token().await?;
         let Some(path) = self.active_path() else {
             return Ok(false);
         };
@@ -97,6 +151,9 @@ impl LayImeBridge {
             .await
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let engine = iface_ref.get().await;
+        if !self.bridge_token_is_live(&engine, token.as_ref()) {
+            return Ok(false);
+        }
         Ok(engine.manual_toggle_authority() == ManualToggleAuthority::ImeActiveComposition)
     }
 
@@ -104,6 +161,7 @@ impl LayImeBridge {
         &self,
         backspaces: u32,
     ) -> fdo::Result<bool> {
+        let token = self.bridge_admission_token().await?;
         let Some(path) = self.active_path() else {
             return Ok(false);
         };
@@ -114,10 +172,14 @@ impl LayImeBridge {
             .await
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let engine = iface_ref.get().await;
+        if !self.bridge_token_is_live(&engine, token.as_ref()) || !engine.context_word_is_known() {
+            return Ok(false);
+        }
         Ok(engine.can_replace_committed_tail(backspaces))
     }
 
     pub(super) async fn suppress_next_autocorrect_inner(&self) -> fdo::Result<bool> {
+        let token = self.bridge_admission_token().await?;
         let Some(path) = self.active_path() else {
             return Ok(false);
         };
@@ -128,10 +190,13 @@ impl LayImeBridge {
             .await
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let mut engine = iface_ref.get_mut().await;
+        if !self.bridge_token_is_live(&engine, token.as_ref()) || !engine.context_word_is_known() {
+            return Ok(false);
+        }
         engine.consume_exact_manual_toggle_handoff();
-        engine.committed_tail.suppress_next_autocorrect = true;
-        engine.committed_tail.exact_manual_toggle_suppression = None;
-        engine.publish_autocorrect_suppression_handoff();
+        if !engine.arm_legacy_replay_autocorrect_suppression() {
+            return Ok(false);
+        }
         super::trace::record(r#"{"kind":"ibus_suppress_next_autocorrect","source":"daemon"}"#);
         Ok(true)
     }
@@ -143,6 +208,7 @@ impl LayImeBridge {
         expected_path: String,
         expected_layout_is_ru: bool,
     ) -> fdo::Result<bool> {
+        let token = self.bridge_admission_token().await?;
         if expected_path.is_empty() || self.active_path().as_deref() != Some(expected_path.as_str())
         {
             return Ok(false);
@@ -154,6 +220,9 @@ impl LayImeBridge {
             .await
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let mut engine = iface_ref.get_mut().await;
+        if !self.bridge_token_is_live(&engine, token.as_ref()) || !engine.context_word_is_known() {
+            return Ok(false);
+        }
         let accepted = engine.arm_exact_manual_toggle_autocorrect_suppression(
             &expected_suffix,
             expected_epoch,
@@ -169,11 +238,31 @@ impl LayImeBridge {
         Ok(accepted)
     }
 
-    pub(super) fn cancel_exact_manual_toggle_handoff_v2_inner(
+    pub(super) async fn cancel_exact_manual_toggle_handoff_v2_inner(
         &self,
         expected_epoch: u64,
         expected_path: String,
     ) -> bool {
+        let Ok(token) = self.bridge_admission_token().await else {
+            return false;
+        };
+        if self.context_admission_required {
+            let Some(path) = self.active_path() else {
+                return false;
+            };
+            let Ok(iface_ref) = self
+                .ibus_connection
+                .object_server()
+                .interface::<_, LayIbusEngine>(path.as_str())
+                .await
+            else {
+                return false;
+            };
+            let engine = iface_ref.get().await;
+            if !self.bridge_token_is_live(&engine, token.as_ref()) {
+                return false;
+            }
+        }
         let Ok(mut state) = self.shared.lock() else {
             return false;
         };
@@ -192,6 +281,7 @@ impl LayImeBridge {
         expected_epoch: u64,
         expected_path: String,
     ) -> fdo::Result<bool> {
+        let token = self.bridge_admission_token().await?;
         if expected_path.is_empty() {
             return Ok(false);
         }
@@ -202,6 +292,9 @@ impl LayImeBridge {
             .await
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let mut engine = iface_ref.get_mut().await;
+        if !self.bridge_token_is_live(&engine, token.as_ref()) {
+            return Ok(false);
+        }
         let cancelled = engine
             .revoke_exact_manual_toggle_autocorrect_suppression(expected_epoch, &expected_path);
         super::trace::record(format!(
@@ -225,6 +318,7 @@ impl LayImeBridge {
         expected_original_tail: Option<String>,
         expected_revision: Option<(u64, String)>,
     ) -> fdo::Result<bool> {
+        let token = self.bridge_admission_token().await?;
         if backspaces == 0 && text.is_empty() {
             return Ok(false);
         }
@@ -239,6 +333,9 @@ impl LayImeBridge {
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let emitter = iface_ref.signal_emitter();
         let mut engine = iface_ref.get_mut().await;
+        if !self.bridge_token_is_live(&engine, token.as_ref()) || !engine.context_word_is_known() {
+            return Ok(false);
+        }
         if engine.atomic.active {
             return Ok(false);
         }
@@ -258,8 +355,11 @@ impl LayImeBridge {
         if let Some(expected_tail) = expected_tail {
             request = request.with_expected_tail(expected_tail);
         }
+        let mut engine = engine.begin_context_bridge_output(token.as_ref());
         let mut output = EngineOutput::legacy(emitter);
-        engine.replace_committed_tail(&mut output, request).await
+        let result = engine.replace_committed_tail(&mut output, request).await?;
+        engine.complete();
+        Ok(result)
     }
 
     pub(super) async fn manual_toggle_inner(&self) -> fdo::Result<bool> {
@@ -275,6 +375,7 @@ impl LayImeBridge {
     }
 
     async fn manual_toggle_outcome_inner(&self) -> fdo::Result<ImeManualToggleOutcome> {
+        let token = self.bridge_admission_token().await?;
         let Some(path) = self.active_path() else {
             return Ok(ImeManualToggleOutcome::NotHandled);
         };
@@ -286,6 +387,11 @@ impl LayImeBridge {
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let emitter = iface_ref.signal_emitter();
         let mut engine = iface_ref.get_mut().await;
+        if !self.bridge_token_is_live(&engine, token.as_ref())
+            || !engine.context_allows_manual_toggle()
+        {
+            return Ok(ImeManualToggleOutcome::NotHandled);
+        }
         let atomic_route_active = engine.atomic.active;
         if atomic_route_active {
             return Ok(manual_toggle_outcome_for_authority(
@@ -294,18 +400,25 @@ impl LayImeBridge {
                 None,
             ));
         }
+        let mut engine = engine.begin_context_bridge_output(token.as_ref());
         engine.refresh_empty_tail_from_handoff();
         let authority = engine.manual_toggle_authority();
+        let complete_word = engine.context_word_is_known();
         let mut output = EngineOutput::legacy(emitter);
+        let target_layout_is_ru = engine.manual_toggle_active_text_target(&mut output).await?;
+        engine.complete();
+        if !complete_word && target_layout_is_ru.is_none() {
+            return Ok(ImeManualToggleOutcome::NotHandled);
+        }
         Ok(manual_toggle_outcome_for_authority(
             atomic_route_active,
             authority,
-            engine.manual_toggle_active_text_target(&mut output).await?,
+            target_layout_is_ru,
         ))
     }
 }
 
-fn cancel_exact_manual_toggle_handoff_state(
+pub(crate) fn cancel_exact_manual_toggle_handoff_state(
     state: &mut super::protocol::SharedState,
     expected_epoch: u64,
     expected_path: &str,
@@ -320,6 +433,7 @@ fn cancel_exact_manual_toggle_handoff_state(
     state.exact_manual_toggle_handoff_path = None;
     state.handoff_tail_buffer.clear();
     state.handoff_focus_receipt = None;
+    state.suppression_revision = state.suppression_revision.wrapping_add(1);
     true
 }
 

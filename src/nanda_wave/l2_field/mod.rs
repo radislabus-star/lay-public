@@ -24,9 +24,18 @@ pub(crate) use bridge::{
     canonical_ime_candidates_observed, canonical_text_candidates,
     canonical_text_readout_observed_with_frame, cold_probe_surfaces,
 };
+#[cfg(test)]
+pub(crate) use productive_v1::test_bound_lexical_pipeline;
+pub(crate) use productive_v1::{
+    FrameBoundLexicalCapabilityV1, LexicalAuthorityEvaluationContextV1,
+};
 pub(crate) use runtime::CanonicalFieldTelemetry;
 pub(crate) use runtime::L2FieldAuthority;
 pub(crate) use runtime::L2FieldAvailability;
+pub(crate) use runtime::{
+    CANONICAL_L2_PRODUCTIVE_SOURCE_ID, CANONICAL_L2_READOUT_SOURCE_ID,
+    CANONICAL_L2_SURFACE_SOURCE_ID,
+};
 
 pub const CANONICAL_L2_LEMMA_FRONTIER: usize = 256;
 pub const CANONICAL_L2_ACTIVE_LEMMA_LIMIT: usize = 256;
@@ -178,18 +187,12 @@ fn load_exact_v13(canonical_index: &runtime::StandaloneL2Field) -> ExactV13LoadR
     else {
         return Ok(None);
     };
-    let canonical_path = discover_installed_l2_package()
-        .map_err(|error| error.to_string())?
-        .ok_or_else(|| "canonical L2 package is not installed".to_string())?;
-    let canonical_bytes = std::fs::metadata(&canonical_path)
-        .map_err(|error| format!("{}: {error}", canonical_path.display()))?
-        .len();
-    let canonical_sha256 = sha256_file(&canonical_path)?;
+    let canonical_identity = installed_canonical_l2_identity(canonical_index)?;
     let (forms, _, _, bindings, _, _) = canonical_index.package_counts();
     v13_typed_peak::ExactV13Generation::load(
         &sidecar_path,
-        canonical_sha256,
-        canonical_bytes,
+        canonical_identity.sha256(),
+        canonical_identity.bytes(),
         forms,
         bindings,
     )
@@ -202,11 +205,10 @@ fn installed_productive_l2_v1(
     // A package admission failure is a stable generation result, not a reason
     // to re-read and re-hash every model file on each keystroke. Explicit
     // reload replaces this cached result after package installation or repair.
-    let (loaded, loaded_now) = load_cached_generation(productive_v1_state(), load_productive_l2_v1)
+    let (loaded, _) = load_cached_generation(productive_v1_state(), load_productive_l2_v1)
         .map_err(|_| "productive V1 runtime lock poisoned")?;
-    if loaded_now && loaded.is_ok() {
-        clear_productive_runtime_dependents();
-    }
+    // First admission fills this epoch; only explicit reload replaces material.
+    // Invalidating here would retire the cold request that caused admission.
     loaded
 }
 
@@ -225,23 +227,35 @@ fn load_productive_l2_v1(
     let productive_path = discover_installed_productive_l2_v1_package()
         .map_err(|error| error.to_string())?
         .ok_or_else(|| "productive L2 V1 package is not installed".to_string())?;
-    let l11_path = crate::nanda_wave::discover_installed_l11_package()
+    let l11_package = crate::nanda_wave::discover_installed_l11_package()
         .map_err(|error| error.to_string())?
-        .ok_or_else(|| "L1.1 package is not installed".to_string())?
-        .artifact_path;
-    let canonical_l2_path = discover_installed_l2_package()
-        .map_err(|error| error.to_string())?
-        .ok_or_else(|| "canonical L2 package is not installed".to_string())?;
-    let l11_sha256 = sha256_file(&l11_path)?;
-    let canonical_l2_sha256 = sha256_file(&canonical_l2_path)?;
+        .ok_or_else(|| "L1.1 package is not installed".to_string())?;
+    let canonical_index = installed_l2_field().map_err(str::to_string)?;
+    let canonical_identity = installed_canonical_l2_identity(canonical_index)?;
     let runtime = std::sync::Arc::new(
         productive_v1::PackagedProductiveRuntimeV1::load_with_semantic_transducer(
             &productive_path,
-            l11_sha256,
-            canonical_l2_sha256,
+            l11_package.artifact_sha256,
+            canonical_identity.sha256(),
         )?,
     );
     Ok(runtime)
+}
+
+fn installed_canonical_l2_identity(
+    canonical_index: &runtime::StandaloneL2Field,
+) -> Result<package_bytes::LoadedPackageIdentity, String> {
+    if let Some(identity) = canonical_index.package_identity() {
+        return Ok(identity);
+    }
+    let canonical_path = discover_installed_l2_package()
+        .map_err(|error| error.to_string())?
+        .ok_or_else(|| "canonical L2 package is not installed".to_string())?;
+    let bytes = std::fs::metadata(&canonical_path)
+        .map_err(|error| format!("{}: {error}", canonical_path.display()))?
+        .len();
+    let sha256 = sha256_file(&canonical_path)?;
+    Ok(package_bytes::LoadedPackageIdentity::new(bytes, sha256))
 }
 
 fn clear_productive_runtime_dependents() {

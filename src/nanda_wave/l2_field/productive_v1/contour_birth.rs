@@ -1,4 +1,4 @@
-//! Bounded context-neutral contour birth for Slice 5 shadow proof.
+//! Bounded context-neutral contour birth.
 //!
 //! Canonical vocabulary membership establishes target identity only. Every
 //! output remains `Born` until a separate grounding stage supplies evidence.
@@ -9,8 +9,8 @@ use sha2::{Digest, Sha256};
 
 use crate::nanda_wave::lexical_grokking::ExactL11SurfaceIndexV1;
 use crate::typing_transition::target_evidence::{
-    stable_bytes_ref, EnumerationWorkCountersV1, GroundingNamespaceV1, IncompletenessReasonV1,
-    TargetRelationV1, VerdictMembershipV1,
+    stable_bytes_ref, CanonicalL1AnchorProofV1, EnumerationWorkCountersV1, GroundingNamespaceV1,
+    IncompletenessReasonV1, TargetRelationV1, VerdictMembershipV1,
 };
 
 use super::super::runtime::StandaloneL2Field;
@@ -54,6 +54,7 @@ pub(super) struct TypedContourBirthV1 {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct TypedContourBirthEnumerationV1 {
     pub(super) births: Vec<TypedContourBirthV1>,
+    pub(super) canonical_l1_anchor_proofs: Vec<CanonicalL1AnchorProofV1>,
     pub(super) work: EnumerationWorkCountersV1,
     pub(super) logical_match_count: usize,
     pub(super) all_seen_digest: [u64; 2],
@@ -64,6 +65,7 @@ impl TypedContourBirthEnumerationV1 {
     pub(super) fn complete_empty() -> Self {
         Self {
             births: Vec::new(),
+            canonical_l1_anchor_proofs: Vec::new(),
             work: EnumerationWorkCountersV1::default(),
             logical_match_count: 0,
             all_seen_digest: digest128(Sha256::digest(b"lay-contour-birth-v1\0").into()),
@@ -281,6 +283,7 @@ impl EnumerationStateV1 {
         }
         TypedContourBirthEnumerationV1 {
             births,
+            canonical_l1_anchor_proofs: Vec::new(),
             work: self.work,
             logical_match_count: self.logical_match_count,
             all_seen_digest: digest128(hasher.finalize().into()),

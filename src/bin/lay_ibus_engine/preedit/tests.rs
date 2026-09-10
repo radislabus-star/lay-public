@@ -605,7 +605,11 @@ fn manually_finished_visible_prediction_records_positive_usage() {
     let deadline = std::time::Instant::now() + std::time::Duration::from_millis(1300);
     let text = loop {
         if let Ok(text) = std::fs::read_to_string(&events_path) {
-            break text;
+            // The asynchronous writer creates the file before appending its
+            // newline-terminated event; existence alone is not completion.
+            if text.ends_with('\n') {
+                break text;
+            }
         }
         assert!(
             std::time::Instant::now() < deadline,

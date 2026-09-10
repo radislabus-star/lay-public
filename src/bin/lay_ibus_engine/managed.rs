@@ -52,6 +52,7 @@ impl LayIbusEngine {
             if !self.composition.buffer.is_empty() {
                 self.commit_active_composition(emitter, ActiveCompositionCommit::plain())
                     .await?;
+                self.retire_current_word_autocorrect_suppression();
                 self.trace_key("enter_commit_passthrough", keyval, keycode, false, None);
                 return Ok(false);
             }

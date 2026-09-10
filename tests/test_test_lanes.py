@@ -5,11 +5,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import pathlib
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -19,6 +21,24 @@ from test_lanes import cli, contracts, discovery, execution
 
 
 class DiscoveryTests(unittest.TestCase):
+    def test_cargo_environment_preserves_only_resource_owner_contract(self) -> None:
+        selected = {
+            "CARGO_BUILD_JOBS": "20",
+            "RUST_TEST_THREADS": "1",
+            "LAY_RESOURCE_GUARD_ACTIVE": "1",
+            "LAY_RESOURCE_LEASE_HELD": "1",
+            "LAY_RESOURCE_PROFILE": "dedicated-20cpu",
+        }
+        with mock.patch.dict(
+            os.environ,
+            {**selected, "LAY_RESOURCE_UNRELATED": "must-not-cross"},
+            clear=False,
+        ):
+            with tempfile.TemporaryDirectory() as directory:
+                environment = discovery.cargo_build_environment(pathlib.Path(directory))
+        self.assertEqual(selected, {name: environment.get(name) for name in selected})
+        self.assertNotIn("LAY_RESOURCE_UNRELATED", environment)
+
     def test_cargo_stream_requires_terminal_success(self) -> None:
         artifact = {
             "reason": "compiler-artifact",
@@ -319,7 +339,7 @@ class ExecutionTests(unittest.TestCase):
     def test_bubblewrap_masks_seeded_real_lay_state_and_network(self) -> None:
         if not pathlib.Path("/usr/bin/bwrap").is_file():
             self.skipTest("bubblewrap unavailable")
-        with tempfile.TemporaryDirectory(dir=ROOT / "target") as directory:
+        with tempfile.TemporaryDirectory() as directory:
             sandbox = pathlib.Path(directory) / "sandbox"
             real_home = pathlib.Path(directory) / "real-home"
             live = real_home / ".local" / "share" / "lay"
@@ -340,6 +360,10 @@ class ExecutionTests(unittest.TestCase):
                 sandbox,
                 real_home=real_home,
             )
+            self.assertIn(
+                ["--ro-bind", str(sandbox / "masked"), str(live)],
+                [command[index : index + 3] for index in range(len(command) - 2)],
+            )
             completed = subprocess.run(
                 command,
                 env=execution.clean_environment(sandbox, {"PATH": "/usr/bin"}),
@@ -351,7 +375,7 @@ class ExecutionTests(unittest.TestCase):
     def test_cargo_discovery_is_networkless_with_only_target_writable(self) -> None:
         if not pathlib.Path("/usr/bin/bwrap").is_file():
             self.skipTest("bubblewrap unavailable")
-        with tempfile.TemporaryDirectory(dir=ROOT / "target") as directory:
+        with tempfile.TemporaryDirectory() as directory:
             target = pathlib.Path(directory)
             command = discovery.cargo_sandbox_command(["/bin/true"], target)
             self.assertIn("--unshare-net", command)

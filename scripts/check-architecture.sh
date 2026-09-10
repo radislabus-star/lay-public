@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+python3 tests/test_architecture_graph_gate.py
+python3 tests/test_architecture_refresh_wrapper.py
 python3 scripts/architecture_graph_gate.py --check-receipt --format text
 
 fail=0

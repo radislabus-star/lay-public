@@ -153,6 +153,71 @@ docs/structural_gates/receipts/LAY_IME_DECLINED_TARGET_PREFLIGHT_V2_2026-08-13.j
 docs/structural_gates/receipts/LAY_IME_DECLINED_TARGET_SOFTWARE_PROOF_2026-08-13.json
 ```
 
+### IME canonical L1.1 lifecycle ownership (2026-09-03)
+
+Tested: the source-level IBus startup route that makes the already admitted
+L1.1 sidecar available to Canonical L2 without moving package, socket, health,
+or process ownership into IBus event handlers.
+
+The scoped route is:
+
+```text
+publish IBus factory/name and session bridge/name
+-> load one startup LayConfig snapshot
+-> TypingCpu::ensure_ime_runtime_warmup_started(nanda_autocorrect)
+   +-- disabled -> observe disabled -> existing L2 memory warmup
+   `-- enabled first signal -> distinct once gate -> background thread
+       -> existing ensure_l11_service_started()
+       -> observe absent/error/spawned/ready/warming/reloaded
+       -> existing L2 memory warmup
+
+preedit miss / engine-state warmup / direct proof warmup
+-> existing L2 memory warmup only
+-X-> L1.1 process lifecycle
+```
+
+Measured facts:
+
+```text
+format check                                                        PASS
+library + lay-ibus-engine compile check                              PASS
+new lifecycle contract tests                                         8/8 PASS
+existing L1.1 service-owner tests                                    13/13 PASS
+Canonical L2 bridge tests                                            24/24 PASS
+focused IBus ownership contracts                                      2/2 PASS
+observed-source route evidence                                       39/39 PASS
+observed execution / authority / observation / proof routes          PASS
+protected state, preedit, service, gate, DecisionCore, Cargo bytes   exact
+```
+
+The thread-start failure branch is explicit: if the operating system cannot
+create the background thread, no L1.1 ensure call occurs, one `error` is
+observed, and L2 still warms. There is no synchronous process fallback and the
+single startup dispatch remains consumed. A successfully created background
+orchestration calls the existing ensure owner exactly once.
+
+What was not tested: no release binary was built or installed, no running IBus
+engine was replaced, no global IBus daemon was restarted, and no live socket,
+health, process-count, package-parity, physical typing, or fixed heldout quality
+claim was measured. `Spawned` and `warming` are not readiness. Post-lifecycle
+candidate retention, ranking, and Apply behavior remain a separate TD-117
+diagnosis.
+
+Verdict scope: source-backed lifecycle ownership and focused software proof.
+The change makes IBus startup the sole production lifecycle signal while
+leaving Canonical L2, DecisionCore, SafetyGate/verifier, and mutation ownership
+unchanged. Installed runtime authority remains unchanged until the single
+1.0.63 release/install gate.
+
+Receipts:
+
+```text
+tech_debt/evidence/td116-ime-l11-lifecycle-code-route-design-receipt-v1.json
+tech_debt/evidence/td116-ime-l11-lifecycle-implementation-preflight-receipt-v2.json
+tech_debt/evidence/td116-ime-l11-lifecycle-code-route-receipt-v2.json
+tech_debt/evidence/td116-ime-l11-lifecycle-verification-v1.md
+```
+
 ## L3 Self Teacher Route
 
 L3 learns context only through an offline teacher/proof loop:

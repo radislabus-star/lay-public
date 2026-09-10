@@ -1,6 +1,6 @@
 use super::{
-    form_attractor_has_authority, surface_motif_memory, L2ImeWordCandidate, L2ImeWordCandidateKind,
-    L2ImeWordCandidateSource,
+    form_attractor_has_authority, surface_motif_memory, L2CorrectionPeakCandidate,
+    L2ImeWordCandidate, L2ImeWordCandidateKind, L2ImeWordCandidateSource,
 };
 use crate::keyboard::is_cyrillic_letter;
 use crate::text_metrics::damerau_levenshtein;
@@ -9,6 +9,7 @@ use std::sync::{Arc, Mutex, OnceLock};
 
 const LEXICAL_READOUT_CACHE_CAPACITY: usize = 128;
 const NEAR_SURFACE_CACHE_CAPACITY: usize = 128;
+const BOUNDARY_READOUT_CACHE_CAPACITY: usize = 128;
 // The gate asks L2 for a bounded material lattice and then applies phase
 // competition. Four candidates per requested display slot leave enough
 // competitors for interference while avoiding a 192-node DAFSA walk per key.
@@ -21,7 +22,7 @@ type CachedLexicalCandidates = Arc<Vec<super::super::lexical_phase::LexicalPhase
 type LexicalReadoutCache = VecDeque<(String, usize, LexicalReadoutMode, CachedLexicalCandidates)>;
 
 static LEXICAL_READOUT_CACHE: OnceLock<Mutex<LexicalReadoutCache>> = OnceLock::new();
-static NEAR_SURFACE_CACHE: OnceLock<Mutex<NearSurfaceCache>> = OnceLock::new();
+static READOUT_MATERIAL_CACHE: OnceLock<Mutex<ReadoutMaterialCache>> = OnceLock::new();
 
 #[derive(Clone)]
 struct NearSurfaceCacheEntry {
@@ -31,58 +32,188 @@ struct NearSurfaceCacheEntry {
     surfaces: Arc<Vec<String>>,
 }
 
-struct NearSurfaceCache {
-    capacity: usize,
-    entries: VecDeque<NearSurfaceCacheEntry>,
+#[derive(Clone)]
+struct BoundaryReadoutCacheEntry {
+    generation: u64,
+    context_prefix: String,
+    token: String,
+    limit: usize,
+    candidates: Arc<Vec<L2ImeWordCandidate>>,
 }
 
-impl NearSurfaceCache {
-    fn new(capacity: usize) -> Self {
-        assert!(capacity > 0);
+struct ReadoutMaterialCache {
+    near_surface_capacity: usize,
+    boundary_capacity: usize,
+    near_surfaces: VecDeque<NearSurfaceCacheEntry>,
+    boundary_candidates: VecDeque<BoundaryReadoutCacheEntry>,
+}
+
+impl ReadoutMaterialCache {
+    fn new(near_surface_capacity: usize, boundary_capacity: usize) -> Self {
+        assert!(near_surface_capacity > 0);
+        assert!(boundary_capacity > 0);
         Self {
-            capacity,
-            entries: VecDeque::new(),
+            near_surface_capacity,
+            boundary_capacity,
+            near_surfaces: VecDeque::new(),
+            boundary_candidates: VecDeque::new(),
         }
     }
 
-    fn get(&mut self, generation: u64, normalized: &str, limit: usize) -> Option<Arc<Vec<String>>> {
-        let index = self.entries.iter().position(|entry| {
+    fn get_near_surfaces(
+        &mut self,
+        generation: u64,
+        normalized: &str,
+        limit: usize,
+    ) -> Option<Arc<Vec<String>>> {
+        let index = self.near_surfaces.iter().position(|entry| {
             entry.generation == generation && entry.normalized == normalized && entry.limit == limit
         })?;
-        let entry = self.entries.remove(index)?;
+        let entry = self.near_surfaces.remove(index)?;
         let surfaces = Arc::clone(&entry.surfaces);
-        self.entries.push_back(entry);
+        self.near_surfaces.push_back(entry);
         Some(surfaces)
     }
 
-    fn insert(
+    fn insert_near_surfaces(
         &mut self,
         generation: u64,
         normalized: &str,
         limit: usize,
         surfaces: Arc<Vec<String>>,
     ) {
-        self.entries.retain(|entry| entry.generation == generation);
-        if let Some(index) = self.entries.iter().position(|entry| {
+        self.near_surfaces
+            .retain(|entry| entry.generation == generation);
+        if let Some(index) = self.near_surfaces.iter().position(|entry| {
             entry.generation == generation && entry.normalized == normalized && entry.limit == limit
         }) {
-            self.entries.remove(index);
+            self.near_surfaces.remove(index);
         }
-        self.entries.push_back(NearSurfaceCacheEntry {
+        self.near_surfaces.push_back(NearSurfaceCacheEntry {
             generation,
             normalized: normalized.to_string(),
             limit,
             surfaces,
         });
-        while self.entries.len() > self.capacity {
-            self.entries.pop_front();
+        while self.near_surfaces.len() > self.near_surface_capacity {
+            self.near_surfaces.pop_front();
+        }
+    }
+
+    fn get_boundary_candidates(
+        &mut self,
+        generation: u64,
+        context_prefix: &str,
+        token: &str,
+        limit: usize,
+    ) -> Option<Arc<Vec<L2ImeWordCandidate>>> {
+        let index = self.boundary_candidates.iter().position(|entry| {
+            entry.generation == generation
+                && entry.context_prefix == context_prefix
+                && entry.token == token
+                && entry.limit == limit
+        })?;
+        let entry = self.boundary_candidates.remove(index)?;
+        let candidates = Arc::clone(&entry.candidates);
+        self.boundary_candidates.push_back(entry);
+        Some(candidates)
+    }
+
+    fn insert_boundary_candidates(
+        &mut self,
+        generation: u64,
+        context_prefix: &str,
+        token: &str,
+        limit: usize,
+        candidates: Arc<Vec<L2ImeWordCandidate>>,
+    ) {
+        self.boundary_candidates
+            .retain(|entry| entry.generation == generation);
+        if let Some(index) = self.boundary_candidates.iter().position(|entry| {
+            entry.generation == generation
+                && entry.context_prefix == context_prefix
+                && entry.token == token
+                && entry.limit == limit
+        }) {
+            self.boundary_candidates.remove(index);
+        }
+        self.boundary_candidates
+            .push_back(BoundaryReadoutCacheEntry {
+                generation,
+                context_prefix: context_prefix.to_string(),
+                token: token.to_string(),
+                limit,
+                candidates,
+            });
+        while self.boundary_candidates.len() > self.boundary_capacity {
+            self.boundary_candidates.pop_front();
         }
     }
 }
 
-fn near_surface_cache() -> &'static Mutex<NearSurfaceCache> {
-    NEAR_SURFACE_CACHE
-        .get_or_init(|| Mutex::new(NearSurfaceCache::new(NEAR_SURFACE_CACHE_CAPACITY)))
+fn readout_material_cache() -> &'static Mutex<ReadoutMaterialCache> {
+    READOUT_MATERIAL_CACHE.get_or_init(|| {
+        Mutex::new(ReadoutMaterialCache::new(
+            NEAR_SURFACE_CACHE_CAPACITY,
+            BOUNDARY_READOUT_CACHE_CAPACITY,
+        ))
+    })
+}
+
+pub(super) fn cached_boundary_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+    compute: impl FnOnce() -> Vec<L2ImeWordCandidate>,
+) -> Vec<L2ImeWordCandidate> {
+    cached_boundary_candidates_with_generation(
+        readout_material_cache(),
+        context_prefix,
+        token,
+        limit,
+        super::super::l2_field::candidate_material_generation,
+        compute,
+    )
+}
+
+fn cached_boundary_candidates_with_generation(
+    cache_owner: &Mutex<ReadoutMaterialCache>,
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+    generation_now: impl Fn() -> u64,
+    compute: impl FnOnce() -> Vec<L2ImeWordCandidate>,
+) -> Vec<L2ImeWordCandidate> {
+    let generation = generation_now();
+    if let Some(candidates) = cache_owner.lock().ok().and_then(|mut cache| {
+        cache.get_boundary_candidates(generation, context_prefix, token, limit)
+    }) {
+        if generation_now() != generation {
+            return Vec::new();
+        }
+        return candidates.as_ref().clone();
+    }
+
+    let candidates = compute();
+    if generation_now() != generation {
+        return Vec::new();
+    }
+    if let Ok(mut cache) = cache_owner.lock() {
+        if generation_now() != generation {
+            return Vec::new();
+        }
+        cache.insert_boundary_candidates(
+            generation,
+            context_prefix,
+            token,
+            limit,
+            Arc::new(candidates.clone()),
+        );
+    }
+    if generation_now() != generation {
+        return Vec::new();
+    }
+    candidates
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -113,12 +244,48 @@ pub(super) fn correction_l2_word_candidates_impl(
     l2_word_candidates_impl(context_prefix, token, limit, LexicalReadoutMode::Correction)
 }
 
+pub(super) fn correction_l2_peak_candidates_impl(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<L2CorrectionPeakCandidate> {
+    ranked_correction_candidates(context_prefix, token, limit)
+        .into_iter()
+        .map(|candidate| candidate.peak)
+        .collect()
+}
+
 fn l2_word_candidates_impl(
     context_prefix: &str,
     token: &str,
     limit: usize,
     mode: LexicalReadoutMode,
 ) -> Vec<L2ImeWordCandidate> {
+    if mode == LexicalReadoutMode::Correction {
+        return ranked_correction_candidates(context_prefix, token, limit)
+            .into_iter()
+            .map(|candidate| {
+                let morphology_slots =
+                    super::super::l2_field::morphology_slot_identities_for_surface(
+                        &candidate.peak.surface,
+                    );
+                L2ImeWordCandidate {
+                    surface: candidate.peak.surface,
+                    kind: candidate.peak.kind,
+                    source: L2ImeWordCandidateSource::LexicalPhase,
+                    score: candidate.peak.score,
+                    l1_overlap: candidate.peak.l1_overlap,
+                    l2_overlap: candidate.peak.l2_overlap,
+                    motif_overlap: candidate.peak.motif_overlap,
+                    usage_prior: candidate.usage_prior,
+                    context_prior: candidate.context_prior,
+                    accepted_count: candidate.accepted_count,
+                    target_evidence: Default::default(),
+                    morphology_slots,
+                }
+            })
+            .collect();
+    }
     if limit == 0 {
         return Vec::new();
     }
@@ -189,6 +356,111 @@ fn l2_word_candidates_impl(
     candidates
 }
 
+struct RankedCorrectionCandidate {
+    peak: L2CorrectionPeakCandidate,
+    usage_prior: f32,
+    context_prior: f32,
+    accepted_count: u32,
+    geometry_priority: u8,
+    rank_score: u32,
+    surface_char_len: usize,
+}
+
+fn ranked_correction_candidates(
+    context_prefix: &str,
+    token: &str,
+    limit: usize,
+) -> Vec<RankedCorrectionCandidate> {
+    if limit == 0 {
+        return Vec::new();
+    }
+    let normalized = token.to_lowercase();
+    let token_len = normalized.chars().count();
+    if !(1..=18).contains(&token_len) || !is_supported_lexical_surface(&normalized) {
+        return Vec::new();
+    }
+    let context_tokens = super::super::llmwave::tokenize(context_prefix);
+    let usage = super::super::usage_prior::cached_usage_prior_snapshot();
+    let usage_context = usage.prepare_hot_context(&context_tokens);
+    let material_limit = limit.saturating_mul(IME_L2_MATERIAL_FACTOR).max(limit);
+    let lexical = cached_lexical_candidates(
+        surface_motif_memory(),
+        &normalized,
+        material_limit,
+        LexicalReadoutMode::Correction,
+    );
+    let mut candidates = lexical
+        .iter()
+        .filter(|candidate| same_lexical_script(&normalized, &candidate.word))
+        // Completion is a separate operator and cannot enter a correction peak.
+        .filter(|candidate| {
+            !candidate.word.starts_with(&normalized) || candidate.word.chars().count() <= token_len
+        })
+        .map(|candidate| {
+            let geometry_priority =
+                crate::text_metrics::typed_damage_geometry_priority(&normalized, &candidate.word);
+            let surface_char_len = candidate.word.chars().count();
+            let kind =
+                if crate::text_metrics::is_adjacent_transposition(&normalized, &candidate.word) {
+                    L2ImeWordCandidateKind::AdjacentTransposition
+                } else {
+                    L2ImeWordCandidateKind::Replacement
+                };
+            let prior = usage.candidate_prior_prepared(&usage_context, &candidate.word);
+            let rank_score = correction_candidate_rank_score(
+                candidate.score,
+                prior.word_prior,
+                prior.context_prior,
+                prior.accepted_count,
+            );
+            RankedCorrectionCandidate {
+                peak: L2CorrectionPeakCandidate {
+                    surface: candidate.word.clone(),
+                    kind,
+                    score: candidate.score,
+                    l1_overlap: candidate.l1_overlap,
+                    l2_overlap: candidate.l2_overlap,
+                    motif_overlap: candidate.motif_overlap,
+                },
+                usage_prior: prior.word_prior,
+                context_prior: prior.context_prior,
+                accepted_count: prior.accepted_count,
+                geometry_priority,
+                rank_score,
+                surface_char_len,
+            }
+        })
+        .collect::<Vec<_>>();
+    candidates.sort_by(|left, right| {
+        right
+            .geometry_priority
+            .cmp(&left.geometry_priority)
+            .then_with(|| right.rank_score.cmp(&left.rank_score))
+            .then_with(|| right.peak.motif_overlap.cmp(&left.peak.motif_overlap))
+            .then_with(|| right.peak.l2_overlap.cmp(&left.peak.l2_overlap))
+            .then_with(|| right.peak.l1_overlap.cmp(&left.peak.l1_overlap))
+            .then_with(|| left.surface_char_len.cmp(&right.surface_char_len))
+            .then_with(|| left.peak.surface.cmp(&right.peak.surface))
+    });
+    let mut seen = HashSet::new();
+    candidates.retain(|candidate| seen.insert(candidate.peak.surface.clone()));
+    candidates.truncate(limit);
+    candidates
+}
+
+fn correction_candidate_rank_score(
+    structural_score: u32,
+    usage_prior: f32,
+    context_prior: f32,
+    accepted_count: u32,
+) -> u32 {
+    let prior = ((usage_prior * 1600.0 + context_prior * 2600.0)
+        .round()
+        .clamp(0.0, 820.0) as u32)
+        .saturating_add(accepted_count.min(40) * 18);
+    structural_score.saturating_add(prior)
+}
+
 fn cached_lexical_candidates(
     memory: &super::super::lexical_phase::LexicalPhaseMemory,
     normalized: &str,
@@ -229,10 +501,7 @@ fn cached_lexical_candidates(
             candidates.extend(memory.adjacent_transposition_candidates(normalized));
             candidates.extend(memory.surface_candidates(normalized, material_limit));
         }
-        if exact_prefix_field_is_thin
-            && normalized.chars().count() >= TYPO_TOLERANT_PREFIX_MIN_CHARS
-            && normalized.chars().all(is_cyrillic_letter)
-        {
+        if should_probe_typo_tolerant_prefix(normalized, exact_prefix_count) {
             let fuzzy = projected_fuzzy_lexical_candidates(cache, normalized, material_limit, mode)
                 .map(|candidates| candidates.as_ref().clone())
                 .unwrap_or_else(|| {
@@ -284,6 +553,12 @@ fn cached_lexical_candidates(
         Arc::clone(&candidates),
     );
     candidates
+}
+
+fn should_probe_typo_tolerant_prefix(normalized: &str, exact_prefix_count: usize) -> bool {
+    exact_prefix_count == 0
+        && normalized.chars().count() >= TYPO_TOLERANT_PREFIX_MIN_CHARS
+        && normalized.chars().all(is_cyrillic_letter)
 }
 
 fn typo_tolerant_completion_candidates(
@@ -437,10 +712,10 @@ pub(crate) fn l2_center_near_surfaces(text: &str, limit: usize) -> Vec<String> {
         return Vec::new();
     }
     let generation = super::super::l2_field::candidate_material_generation();
-    if let Some(surfaces) = near_surface_cache()
+    if let Some(surfaces) = readout_material_cache()
         .lock()
         .ok()
-        .and_then(|mut cache| cache.get(generation, &normalized, limit))
+        .and_then(|mut cache| cache.get_near_surfaces(generation, &normalized, limit))
     {
         return surfaces.as_ref().clone();
     }
@@ -465,8 +740,8 @@ pub(crate) fn l2_center_near_surfaces(text: &str, limit: usize) -> Vec<String> {
     if super::super::l2_field::candidate_material_generation() != generation {
         return Vec::new();
     }
-    if let Ok(mut cache) = near_surface_cache().lock() {
-        cache.insert(generation, &normalized, limit, Arc::new(surfaces.clone()));
+    if let Ok(mut cache) = readout_material_cache().lock() {
+        cache.insert_near_surfaces(generation, &normalized, limit, Arc::new(surfaces.clone()));
     }
     surfaces
 }
@@ -729,6 +1004,77 @@ mod tests {
         }
     }
 
+    #[test]
+    fn compact_correction_peak_material_matches_the_full_readout() {
+        super::super::super::warm_up_l2_for_ime();
+        for (context, token) in [
+            ("", "звгрузи"),
+            ("", "плозо"),
+            ("нужно ", "обьяснить"),
+            ("в ", "протколах"),
+        ] {
+            let compact = correction_l2_peak_candidates_impl(context, token, 16);
+            let full = correction_l2_word_candidates_impl(context, token, 16);
+            let compact_projection = compact
+                .iter()
+                .map(|candidate| {
+                    (
+                        candidate.surface.as_str(),
+                        candidate.kind,
+                        candidate.score,
+                        candidate.l1_overlap,
+                        candidate.l2_overlap,
+                        candidate.motif_overlap,
+                    )
+                })
+                .collect::<Vec<_>>();
+            let full_projection = full
+                .iter()
+                .map(|candidate| {
+                    (
+                        candidate.surface.as_str(),
+                        candidate.kind,
+                        candidate.score,
+                        candidate.l1_overlap,
+                        candidate.l2_overlap,
+                        candidate.motif_overlap,
+                    )
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(compact_projection, full_projection, "token={token:?}");
+        }
+    }
+
+    #[test]
+    fn correction_rank_keys_match_the_original_direct_calculations() {
+        super::super::super::warm_up_l2_for_ime();
+        let normalized = "звгрузи";
+        let candidates = ranked_correction_candidates("", normalized, 16);
+        assert!(!candidates.is_empty());
+        for candidate in candidates {
+            assert_eq!(
+                candidate.geometry_priority,
+                crate::text_metrics::typed_damage_geometry_priority(
+                    normalized,
+                    &candidate.peak.surface,
+                )
+            );
+            assert_eq!(
+                candidate.rank_score,
+                correction_candidate_rank_score(
+                    candidate.peak.score,
+                    candidate.usage_prior,
+                    candidate.context_prior,
+                    candidate.accepted_count,
+                )
+            );
+            assert_eq!(
+                candidate.surface_char_len,
+                candidate.peak.surface.chars().count()
+            );
+        }
+    }
+
     fn ime_candidate(
         surface: String,
         source: L2ImeWordCandidateSource,
@@ -752,6 +1098,145 @@ mod tests {
             target_evidence: Default::default(),
             morphology_slots: Vec::new(),
         }
+    }
+
+    #[test]
+    fn boundary_readout_cache_reuses_positive_and_empty_material() {
+        let mut cache = ReadoutMaterialCache::new(2, 2);
+        let positive = vec![ime_candidate(
+            "ты почитай".to_string(),
+            L2ImeWordCandidateSource::BoundaryPhase,
+            1_584,
+        )];
+        cache.insert_boundary_candidates(7, "", "тыпочитай", 2, Arc::new(positive.clone()));
+        assert_eq!(
+            cache
+                .get_boundary_candidates(7, "", "тыпочитай", 2)
+                .expect("positive boundary cache hit")
+                .as_ref(),
+            &positive
+        );
+
+        cache.insert_boundary_candidates(7, "", "безграницы", 2, Arc::new(Vec::new()));
+        assert!(cache
+            .get_boundary_candidates(7, "", "безграницы", 2)
+            .expect("empty boundary cache hit")
+            .is_empty());
+    }
+
+    #[test]
+    fn boundary_readout_cache_key_binds_context_token_case_and_limit() {
+        let mut cache = ReadoutMaterialCache::new(2, 4);
+        cache.insert_boundary_candidates(
+            11,
+            "перед ",
+            "Словами",
+            2,
+            Arc::new(vec![ime_candidate(
+                "С ловами".to_string(),
+                L2ImeWordCandidateSource::BoundaryPhase,
+                1_500,
+            )]),
+        );
+
+        assert!(cache
+            .get_boundary_candidates(11, "другой ", "Словами", 2)
+            .is_none());
+        assert!(cache
+            .get_boundary_candidates(11, "перед ", "словами", 2)
+            .is_none());
+        assert!(cache
+            .get_boundary_candidates(11, "перед ", "Словами", 1)
+            .is_none());
+        assert!(cache
+            .get_boundary_candidates(11, "перед ", "Словами", 2)
+            .is_some());
+    }
+
+    #[test]
+    fn boundary_readout_cache_is_lru_bounded_and_generation_scoped() {
+        let mut cache = ReadoutMaterialCache::new(1, 2);
+        for token in ["первый", "второй"] {
+            cache.insert_boundary_candidates(3, "", token, 2, Arc::new(Vec::new()));
+        }
+        assert!(cache.get_boundary_candidates(3, "", "первый", 2).is_some());
+        cache.insert_boundary_candidates(3, "", "третий", 2, Arc::new(Vec::new()));
+        assert_eq!(cache.boundary_candidates.len(), 2);
+        assert!(cache.get_boundary_candidates(3, "", "второй", 2).is_none());
+        assert!(cache.get_boundary_candidates(3, "", "первый", 2).is_some());
+
+        cache.insert_boundary_candidates(4, "", "новый", 2, Arc::new(Vec::new()));
+        assert_eq!(cache.boundary_candidates.len(), 1);
+        assert!(cache.get_boundary_candidates(3, "", "первый", 2).is_none());
+        assert!(cache.get_boundary_candidates(4, "", "новый", 2).is_some());
+    }
+
+    #[test]
+    fn boundary_readout_cache_hit_rejects_generation_turnover() {
+        use std::cell::Cell;
+
+        let cache = Mutex::new(ReadoutMaterialCache::new(1, 1));
+        cache
+            .lock()
+            .expect("local cache")
+            .insert_boundary_candidates(
+                7,
+                "",
+                "generation-turnover",
+                2,
+                Arc::new(vec![ime_candidate(
+                    "stale".to_string(),
+                    L2ImeWordCandidateSource::BoundaryPhase,
+                    1_000,
+                )]),
+            );
+        let generation_reads = Cell::new(0usize);
+        let candidates = cached_boundary_candidates_with_generation(
+            &cache,
+            "",
+            "generation-turnover",
+            2,
+            || {
+                let read = generation_reads.get();
+                generation_reads.set(read + 1);
+                if read == 0 {
+                    7
+                } else {
+                    8
+                }
+            },
+            || panic!("a cache hit must not recompute material"),
+        );
+
+        assert_eq!(generation_reads.get(), 2);
+        assert!(
+            candidates.is_empty(),
+            "a generation change between hit lookup and return must fail closed"
+        );
+    }
+
+    #[test]
+    fn live_boundary_readout_reuses_one_material_computation() {
+        use std::cell::Cell;
+
+        let calls = Cell::new(0usize);
+        let first =
+            cached_boundary_candidates("td113-cache-context", "TD113-cache-token", 2, || {
+                calls.set(calls.get() + 1);
+                vec![ime_candidate(
+                    "cached".to_string(),
+                    L2ImeWordCandidateSource::BoundaryPhase,
+                    1_000,
+                )]
+            });
+        let second =
+            cached_boundary_candidates("td113-cache-context", "TD113-cache-token", 2, || {
+                calls.set(calls.get() + 1);
+                Vec::new()
+            });
+
+        assert_eq!(calls.get(), 1);
+        assert_eq!(second, first);
     }
 
     #[test]
@@ -801,6 +1286,14 @@ mod tests {
                 .any(|candidate| candidate.word.starts_with("предсказ")),
             "candidates={candidates:?}"
         );
+    }
+
+    #[test]
+    fn exact_prefix_field_suppresses_only_the_redundant_fuzzy_fallback() {
+        assert!(!should_probe_typo_tolerant_prefix("оста", 1));
+        assert!(should_probe_typo_tolerant_prefix("предскз", 0));
+        assert!(!should_probe_typo_tolerant_prefix("пр", 0));
+        assert!(!should_probe_typo_tolerant_prefix("abc", 0));
     }
 
     #[test]
@@ -867,28 +1360,28 @@ mod tests {
 
     #[test]
     fn near_surface_material_cache_is_lru_bounded() {
-        let mut cache = NearSurfaceCache::new(2);
-        cache.insert(7, "один", 32, Arc::new(vec!["одна".to_string()]));
-        cache.insert(7, "два", 32, Arc::new(vec!["две".to_string()]));
-        assert!(cache.get(7, "один", 32).is_some());
-        cache.insert(7, "три", 32, Arc::new(Vec::new()));
+        let mut cache = ReadoutMaterialCache::new(2, 1);
+        cache.insert_near_surfaces(7, "один", 32, Arc::new(vec!["одна".to_string()]));
+        cache.insert_near_surfaces(7, "два", 32, Arc::new(vec!["две".to_string()]));
+        assert!(cache.get_near_surfaces(7, "один", 32).is_some());
+        cache.insert_near_surfaces(7, "три", 32, Arc::new(Vec::new()));
 
-        assert_eq!(cache.entries.len(), 2);
-        assert!(cache.get(7, "один", 32).is_some());
-        assert!(cache.get(7, "два", 32).is_none());
-        assert!(cache.get(7, "три", 32).is_some());
+        assert_eq!(cache.near_surfaces.len(), 2);
+        assert!(cache.get_near_surfaces(7, "один", 32).is_some());
+        assert!(cache.get_near_surfaces(7, "два", 32).is_none());
+        assert!(cache.get_near_surfaces(7, "три", 32).is_some());
     }
 
     #[test]
     fn near_surface_material_cache_drops_previous_generation() {
-        let mut cache = NearSurfaceCache::new(4);
-        cache.insert(3, "форма", 32, Arc::new(vec!["формы".to_string()]));
-        cache.insert(4, "форма", 32, Arc::new(Vec::new()));
+        let mut cache = ReadoutMaterialCache::new(4, 1);
+        cache.insert_near_surfaces(3, "форма", 32, Arc::new(vec!["формы".to_string()]));
+        cache.insert_near_surfaces(4, "форма", 32, Arc::new(Vec::new()));
 
-        assert_eq!(cache.entries.len(), 1);
-        assert!(cache.get(3, "форма", 32).is_none());
+        assert_eq!(cache.near_surfaces.len(), 1);
+        assert!(cache.get_near_surfaces(3, "форма", 32).is_none());
         assert!(cache
-            .get(4, "форма", 32)
+            .get_near_surfaces(4, "форма", 32)
             .is_some_and(|surfaces| surfaces.is_empty()));
     }
 }

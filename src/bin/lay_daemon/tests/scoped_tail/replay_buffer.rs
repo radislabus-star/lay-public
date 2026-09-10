@@ -80,29 +80,17 @@ fn shortcut_modified_text_keys_do_not_enter_word_buffer() {
     let mut modifiers = ShiftState::default();
 
     modifiers.update(KeyCode::KEY_LEFTCTRL, 1);
-    assert!(should_ignore_buffer_key(
-        KeyCode::KEY_EQUAL,
-        &modifiers,
-        true
-    ));
-    assert!(should_ignore_buffer_key(
-        KeyCode::KEY_MINUS,
-        &modifiers,
-        true
-    ));
-    assert!(should_ignore_buffer_key(
-        KeyCode::KEY_SPACE,
-        &modifiers,
-        true
-    ));
-    assert!(should_ignore_buffer_key(KeyCode::KEY_A, &modifiers, true));
+    assert!(should_ignore_buffer_key(KeyCode::KEY_EQUAL, &modifiers));
+    assert!(should_ignore_buffer_key(KeyCode::KEY_MINUS, &modifiers));
+    assert!(should_ignore_buffer_key(KeyCode::KEY_SPACE, &modifiers));
+    assert!(should_ignore_buffer_key(KeyCode::KEY_A, &modifiers));
 
     modifiers.update(KeyCode::KEY_LEFTCTRL, 0);
-    assert!(!should_ignore_buffer_key(KeyCode::KEY_A, &modifiers, true));
+    assert!(!should_ignore_buffer_key(KeyCode::KEY_A, &modifiers));
 }
 
 #[test]
-fn leading_plus_minus_symbols_do_not_attach_to_next_word() {
+fn leading_plus_minus_symbols_preserve_the_current_token() {
     let mut buffer = WordBuffer::new();
 
     for (key, shift) in [
@@ -113,16 +101,16 @@ fn leading_plus_minus_symbols_do_not_attach_to_next_word() {
     ] {
         let mut modifiers = ShiftState::default();
         modifiers.update(KeyCode::KEY_LEFTSHIFT, i32::from(shift));
-        if !should_ignore_buffer_key(key, &modifiers, buffer.current_is_empty()) {
-            buffer.push(key_event(key, shift));
+        if !should_ignore_buffer_key(key, &modifiers) {
+            buffer.push(key_event_with_shift(key, shift, true));
         }
     }
     push_text_as_layout(&mut buffer, "есть", true);
 
     let (events, backspaces) = buffer.what_to_replay(1).expect("word tail");
 
-    assert_eq!(map_original_events(&events), "есть");
-    assert_eq!(backspaces, 4);
+    assert_eq!(map_original_events(&events), "+=_-есть");
+    assert_eq!(backspaces, 8);
 }
 
 #[test]

@@ -18,7 +18,7 @@ use super::precognition_worker::PrecognitionWork;
 use super::text::{make_ibus_text, make_preedit_ibus_text};
 use super::trace;
 
-const PREEDIT_TAIL_LIMIT: usize = 160;
+pub(super) const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
 const PREEDIT_RU_WAVE_CANDIDATE_LIMIT: usize = 12;
 const PREEDIT_RU_PREFIX_MIN_CHARS: usize = 1;
@@ -114,9 +114,11 @@ impl PreeditFastState {
     }
 
     pub(crate) fn push(&mut self, ch: char) {
-        if ch.is_whitespace()
-            || ch.is_ascii_punctuation() && !self.ascii_layout_symbol_continues_token(ch)
-        {
+        if fast_token_boundary(
+            ch,
+            self.token.is_empty(),
+            self.token.chars().all(is_ascii_layout_token_char),
+        ) {
             self.reset();
             return;
         }
@@ -149,6 +151,10 @@ impl PreeditFastState {
 
     pub(crate) fn backspace(&mut self) {
         self.token.pop();
+    }
+
+    pub(crate) fn has_open_token(&self) -> bool {
+        !self.token.is_empty()
     }
 
     fn target_surface(&self) -> Option<&str> {
@@ -184,21 +190,20 @@ impl PreeditFastState {
         self.target_surface = None;
     }
 
-    fn ascii_layout_symbol_continues_token(&self, ch: char) -> bool {
-        lay::typing_cpu::is_ascii_layout_letter_symbol(ch)
-            && (self.token.is_empty()
-                || self.token.chars().all(|current| {
-                    current.is_ascii_alphabetic()
-                        || lay::typing_cpu::is_ascii_layout_letter_symbol(current)
-                }))
-    }
-
     fn is_ascii_live_candidate_token(&self) -> bool {
         !self.token.is_empty()
             && self.token.chars().any(|ch| ch.is_ascii_alphabetic())
             && self.token.chars().all(|ch| {
                 ch.is_ascii_alphabetic() || lay::typing_cpu::is_ascii_layout_letter_symbol(ch)
             })
+    }
+
+    fn ascii_layout_symbol_continues_token(&self, ch: char) -> bool {
+        ascii_layout_symbol_continues_token(
+            ch,
+            self.token.is_empty(),
+            self.token.chars().all(is_ascii_layout_token_char),
+        )
     }
 
     pub(crate) fn clear_candidate_tracking(&mut self) {
@@ -211,6 +216,49 @@ impl PreeditFastState {
     pub(crate) fn token(&self) -> &str {
         &self.token
     }
+}
+
+fn is_ascii_layout_token_char(ch: char) -> bool {
+    ch.is_ascii_alphabetic() || lay::typing_cpu::is_ascii_layout_letter_symbol(ch)
+}
+
+fn ascii_layout_symbol_continues_token(
+    ch: char,
+    token_is_empty: bool,
+    token_is_ascii_layout: bool,
+) -> bool {
+    lay::typing_cpu::is_ascii_layout_letter_symbol(ch) && (token_is_empty || token_is_ascii_layout)
+}
+
+fn fast_token_boundary(ch: char, token_is_empty: bool, token_is_ascii_layout: bool) -> bool {
+    ch.is_whitespace()
+        || ch.is_ascii_punctuation()
+            && !ascii_layout_symbol_continues_token(ch, token_is_empty, token_is_ascii_layout)
+}
+
+pub(super) fn is_observed_word_boundary(ch: char) -> bool {
+    fast_token_boundary(ch, true, false)
+}
+
+pub(crate) fn uncapped_open_token_chars(tail: &str) -> usize {
+    let mut open_chars = 0usize;
+    let mut ascii_layout_run = 0usize;
+    for ch in tail.chars() {
+        let token_is_ascii_layout = ascii_layout_run >= open_chars.min(PREEDIT_TOKEN_LIMIT);
+        let is_boundary = fast_token_boundary(ch, open_chars == 0, token_is_ascii_layout);
+        if is_boundary {
+            open_chars = 0;
+            ascii_layout_run = 0;
+        } else {
+            open_chars += 1;
+            if is_ascii_layout_token_char(ch) {
+                ascii_layout_run = (ascii_layout_run + 1).min(PREEDIT_TOKEN_LIMIT);
+            } else {
+                ascii_layout_run = 0;
+            }
+        }
+    }
+    open_chars
 }
 
 impl LayIbusEngine {
@@ -236,7 +284,7 @@ impl LayIbusEngine {
     ) -> fdo::Result<()> {
         if !frame
             .as_ref()
-            .is_some_and(|identity| self.input_frame_identity_matches(identity))
+            .is_some_and(|identity| self.precognition_identity_matches(identity))
         {
             self.cancel_precognition_display_generation();
             return self.clear_preedit(emitter).await;
@@ -583,7 +631,7 @@ impl LayIbusEngine {
             super::precognition_worker::cancel();
             return false;
         };
-        if !self.input_frame_identity_matches(&identity) {
+        if !self.precognition_identity_matches(&identity) {
             super::precognition_worker::cancel();
             return false;
         }
@@ -613,10 +661,44 @@ impl LayIbusEngine {
     }
 
     pub(crate) fn precognition_identity_matches(&self, expected: &InputFrameIdentity) -> bool {
-        self.input_frame_identity_matches(expected)
+        if expected.display_suffix_token.is_some() {
+            self.input_frame_authority_matches(expected)
+                && self.capture_observed_suffix_display_frame().as_ref() == Some(expected)
+        } else {
+            self.input_frame_identity_matches(expected)
+        }
+    }
+
+    pub(super) fn capture_observed_suffix_display_frame(&self) -> Option<InputFrameIdentity> {
+        if !self.context_observed_suffix_is_current() {
+            return None;
+        }
+        let mut identity = self.capture_word_frame_identity()?;
+        identity.display_suffix_token = Some(self.live_context_token()?);
+        Some(identity)
+    }
+
+    pub(super) async fn refresh_observed_suffix_precognition(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> fdo::Result<()> {
+        if self.context_word_is_known() || self.atomic.active || !self.composition.buffer.is_empty()
+        {
+            return Ok(());
+        }
+        let frame = self.capture_observed_suffix_display_frame();
+        self.refresh_precognition_after_visible_input(emitter, frame)
+            .await
     }
 
     pub(super) fn capture_input_frame_identity(&self) -> Option<InputFrameIdentity> {
+        if !self.context_word_is_known() {
+            return None;
+        }
+        self.capture_word_frame_identity()
+    }
+
+    fn capture_word_frame_identity(&self) -> Option<InputFrameIdentity> {
         let committed_tail = self.committed_tail.buffer.clone();
         let trimmed_tail = committed_tail.trim_end();
         if trimmed_tail.is_empty() {
@@ -739,6 +821,7 @@ impl LayIbusEngine {
         proposals: Vec<ImeCandidateProposal>,
     ) -> fdo::Result<()> {
         let mut projected = self.clone();
+        projected.context_bridge_token = None;
         projected.install_precognition_candidates(proposals);
         let publication = if projected.composition.buffer.is_empty() {
             let Some(candidate) = projected
@@ -970,7 +1053,15 @@ impl LayIbusEngine {
                 self.composition.word_input_mode = None;
             }
         }
+        // The ordinary-word length must describe the bounded tail that will
+        // actually be published. Refreshing before this trim can leave a guard
+        // one character longer than the retained token at the limit.
         trim_tail_buffer(&mut self.committed_tail.buffer);
+        if is_boundary {
+            self.retire_current_word_autocorrect_suppression();
+        } else {
+            self.refresh_current_word_autocorrect_suppression();
+        }
         self.publish_tail_handoff();
     }
 
@@ -979,6 +1070,9 @@ impl LayIbusEngine {
         tail_before_boundary: &str,
         prediction_before_boundary: Option<&ObservedPrediction>,
     ) {
+        if !self.context_word_is_known() {
+            return;
+        }
         let Some((prefix, observed_word)) = split_last_alphabetic_token(tail_before_boundary)
         else {
             return;

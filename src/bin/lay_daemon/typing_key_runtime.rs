@@ -15,7 +15,6 @@ pub(super) struct TypingKeyContext<'a> {
     pub(super) last_layout_poll: &'a mut Instant,
     pub(super) events_since_word_start: &'a mut u32,
     pub(super) clear_on_next_typing: &'a mut bool,
-    pub(super) ignore_current_token_until_space: &'a mut bool,
     pub(super) suppress_next_typing_assist_after_manual_replay: &'a mut bool,
     pub(super) pending_typing_assist_after_space: &'a mut Option<PendingTypingAssist>,
     pub(super) verbose: bool,
@@ -26,7 +25,6 @@ pub(super) fn handle_typing_key_press(code: u16, value: i32, ctx: TypingKeyConte
         ctx.buffer.reset_all();
         *ctx.events_since_word_start = 0;
         *ctx.clear_on_next_typing = false;
-        *ctx.ignore_current_token_until_space = false;
         *ctx.suppress_next_typing_assist_after_manual_replay = false;
     }
     let starts_new_word = ctx.buffer.current_is_empty();

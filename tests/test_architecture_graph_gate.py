@@ -3,11 +3,14 @@
 
 from __future__ import annotations
 
+import io
 import importlib.util
 import os
 import tempfile
 import unittest
+from contextlib import redirect_stderr
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -186,6 +189,74 @@ class ArchitectureReceiptFreshnessTest(unittest.TestCase):
             gate.receipt_staleness_violations(existing, expected),
         )
 
+    def test_watch_receipt_does_not_replace_existing_bytes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "receipt.json"
+            original = b"last valid receipt\n"
+            path.write_bytes(original)
+            payload = receipt("source-a")
+            payload["verdict"] = "WATCH"
+
+            self.assertFalse(gate.publish_receipt(path, payload))
+            self.assertEqual(original, path.read_bytes())
+
+    def test_pass_receipt_is_published_as_complete_canonical_json(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "receipt.json"
+            path.write_text("old\n", encoding="utf-8")
+            path.chmod(0o664)
+            payload = receipt("source-current")
+
+            self.assertTrue(gate.publish_receipt(path, payload))
+            self.assertEqual(gate.canonical_json(payload), path.read_text(encoding="utf-8"))
+            self.assertEqual(0o664, path.stat().st_mode & 0o777)
+
+    def test_replace_failure_preserves_existing_receipt_and_removes_temp(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "receipt.json"
+            original = b"last valid receipt\n"
+            path.write_bytes(original)
+
+            with mock.patch.object(
+                gate.os, "replace", side_effect=OSError("injected replace failure")
+            ):
+                with self.assertRaisesRegex(OSError, "injected replace failure"):
+                    gate.publish_receipt(path, receipt("source-current"))
+
+            self.assertEqual(original, path.read_bytes())
+            self.assertEqual([], list(root.glob(".receipt.json.*.tmp")))
+
+    def test_fsync_failure_returns_error_and_removes_temporary_receipt(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "receipt.json"
+            original = b"last valid receipt\n"
+            path.write_bytes(original)
+            error_output = io.StringIO()
+
+            with (
+                mock.patch.object(gate, "RECEIPT_PATH", path),
+                mock.patch.object(
+                    gate, "build_receipt", return_value=receipt("source-current")
+                ),
+                mock.patch.object(
+                    gate.os, "fsync", side_effect=OSError("injected fsync failure")
+                ),
+                mock.patch.object(
+                    gate.sys,
+                    "argv",
+                    ["architecture_graph_gate.py", "--write-receipt"],
+                ),
+                redirect_stderr(error_output),
+            ):
+                status = gate.main()
+
+            self.assertEqual(2, status)
+            self.assertIn("architecture receipt write error", error_output.getvalue())
+            self.assertEqual(original, path.read_bytes())
+            self.assertEqual([], list(root.glob(".receipt.json.*.tmp")))
+
     def test_external_import_with_ambiguous_graph_target_is_not_forbidden(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -200,6 +271,141 @@ class ArchitectureReceiptFreshnessTest(unittest.TestCase):
                             "relation": "imports_from",
                             "source_file": "src/nanda_wave/example.rs",
                             "source_location": "L1",
+                            "target": "src_text_edit_cursor",
+                        }
+                    ],
+                }
+            )
+            previous_root = gate.ROOT
+            gate.ROOT = root
+            try:
+                self.assertEqual(
+                    [],
+                    graph.source_imports("src/nanda_wave", ("src_text_edit",)),
+                )
+            finally:
+                gate.ROOT = previous_root
+
+    def test_mixed_external_and_internal_forbidden_import_still_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "src/nanda_wave/example.rs"
+            path.parent.mkdir(parents=True)
+            path.write_text(
+                "use {crate::text_edit::cursor::Cursor, std::io};\n",
+                encoding="utf-8",
+            )
+            graph = gate.ArchitectureGraph(
+                {
+                    "nodes": [],
+                    "links": [
+                        {
+                            "relation": "imports_from",
+                            "source_file": "src/nanda_wave/example.rs",
+                            "source_location": "L1",
+                            "target": "src_text_edit_cursor",
+                        }
+                    ],
+                }
+            )
+            previous_root = gate.ROOT
+            gate.ROOT = root
+            try:
+                self.assertEqual(
+                    [
+                        "forbidden_import:src/nanda_wave/example.rs:L1:src_text_edit_cursor"
+                    ],
+                    graph.source_imports("src/nanda_wave", ("src_text_edit",)),
+                )
+            finally:
+                gate.ROOT = previous_root
+
+    def test_external_use_before_internal_use_on_same_line_still_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "src/nanda_wave/example.rs"
+            path.parent.mkdir(parents=True)
+            path.write_text(
+                "use std::io; use crate::text_edit::cursor::Cursor;\n",
+                encoding="utf-8",
+            )
+            graph = gate.ArchitectureGraph(
+                {
+                    "nodes": [],
+                    "links": [
+                        {
+                            "relation": "imports_from",
+                            "source_file": "src/nanda_wave/example.rs",
+                            "source_location": "L1",
+                            "target": "src_text_edit_cursor",
+                        }
+                    ],
+                }
+            )
+            previous_root = gate.ROOT
+            gate.ROOT = root
+            try:
+                self.assertEqual(
+                    [
+                        "forbidden_import:src/nanda_wave/example.rs:L1:src_text_edit_cursor"
+                    ],
+                    graph.source_imports("src/nanda_wave", ("src_text_edit",)),
+                )
+            finally:
+                gate.ROOT = previous_root
+
+    def test_external_only_root_group_with_visibility_is_not_forbidden(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "src/nanda_wave/example.rs"
+            path.parent.mkdir(parents=True)
+            path.write_text(
+                "pub use {alloc::vec::Vec, core::fmt};\n",
+                encoding="utf-8",
+            )
+            graph = gate.ArchitectureGraph(
+                {
+                    "nodes": [],
+                    "links": [
+                        {
+                            "relation": "imports_from",
+                            "source_file": "src/nanda_wave/example.rs",
+                            "source_location": "L1",
+                            "target": "src_text_edit_cursor",
+                        }
+                    ],
+                }
+            )
+            previous_root = gate.ROOT
+            gate.ROOT = root
+            try:
+                self.assertEqual(
+                    [],
+                    graph.source_imports("src/nanda_wave", ("src_text_edit",)),
+                )
+            finally:
+                gate.ROOT = previous_root
+
+    def test_multiline_external_only_group_is_not_forbidden_from_child_line(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "src/nanda_wave/example.rs"
+            path.parent.mkdir(parents=True)
+            path.write_text(
+                "pub(crate) use {\n"
+                "    std::io::Cursor,\n"
+                "    core::fmt,\n"
+                "};\n",
+                encoding="utf-8",
+            )
+            graph = gate.ArchitectureGraph(
+                {
+                    "nodes": [],
+                    "links": [
+                        {
+                            "relation": "imports_from",
+                            "source_file": "src/nanda_wave/example.rs",
+                            "source_location": "L3",
                             "target": "src_text_edit_cursor",
                         }
                     ],

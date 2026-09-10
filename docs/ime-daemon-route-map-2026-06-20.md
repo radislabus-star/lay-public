@@ -1632,3 +1632,1803 @@ Evidence:
 `docs/structural_gates/receipts/LAY_1_0_59_IME_FIRST_CHARACTER_SCHEDULING_2026-08-31/`;
 release receipt SHA-256
 `982fcc4c35cacf718f8653df21a38b63fc0fd12c22d29d5e219f60a054ea87b6`.
+
+## 1.0.60 Technical-Debt Closure Release (2026-08-31)
+
+Release `1.0.60` packages the completed `tech_debt/` queue without adding a
+new user-visible runtime route. The exact task glob contains `20` files and
+all `20` declare status `DONE`. The release binds their already-reviewed
+implementation and decision evidence to the Cargo, GNOME metadata, tray,
+README, and versioning surfaces for `1.0.60`. Candidate sources, candidate
+ranking, verifier authority, text-output authority, the selected engine, and
+the canonical L2 package are unchanged relative to `1.0.59`.
+
+Pre-install evidence was kept separate by denominator:
+
+```text
+changed correctness/package gate     2372 / 2372 PASS
+semantic failures                    0
+infrastructure failures              0
+full release gate                     lay full check OK
+lint non-dead diagnostics            0
+release build                         PASS, 442 s
+pre-install architecture refresh     PASS, 21,228 nodes
+```
+
+The first forward transaction was not accepted. Its verifier treated target
+artifact names `lay-l11-restore` and `lay-l11-serve` as installed names even
+though the installer contract maps them to `lay-l1.1-restore` and
+`lay-l1.1-serve`. The initial rollback controller then attempted direct `cp`
+over executing ELF destinations and received `Text file busy`. The briefly
+mixed state was therefore quarantined rather than reported as a release.
+
+Recovery V3 stopped only Lay-managed processes, restored every protected file
+through a sibling temporary file plus atomic `mv`, and proved byte/tree and
+live `/proc` parity with the retained `1.0.59` snapshot. The verified backup
+contains `19` binary-tree files, `9` extension files, and `7` L2 files. Global
+`ibus-daemon` PID `4594` was not restarted.
+
+The second transaction used the corrected name mapping and an explicit
+return-code path with the same full atomic rollback available on every
+failure. All ten installed binaries match the release build by SHA-256 and are
+mode `0755`; the nine-file installed extension exactly matches the source
+tree. The canonical V13 package retained SHA-256
+`cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b`,
+and a fresh sidecar compilation matched the installed DAFSA SHA-256
+`f116a230fc05a04c375bcddf1c85169276c6d149295eed8ccf93e37672a907b9`.
+
+Installed and observed runtime projection:
+
+```text
+CLI / GNOME DBus version             1.0.60 / 1.0.60
+GNOME DBus Ping                      pong from lay-extension
+lay-daemon                           active, build/install/proc hash equal
+lay-l3-online                        active, build/install/proc hash equal
+managed lay-ibus-engine              exactly 1, build/install/proc hash equal
+selected engine                      lay-ime-ru
+global ibus-daemon PID               4594, unchanged
+```
+
+What was not tested: a new behavioral live-input scenario, because this
+release adds no user-visible behavior over the already verified `1.0.59`;
+installation on other GNOME versions; and the `public/main` publication route.
+No new candidate-quality denominator or broader quality claim is introduced.
+
+Verdict: `LAY_1_0_60_TECH_DEBT_CLOSURE_INSTALLED_VERIFIED`. Runtime authority
+changed **yes**, limited to the newly installed Lay binary bytes and loaded
+extension version. Runtime behavior authority did **not** change: candidate
+production/ranking, verifier, text-output route, L2 package/sidecar semantics,
+selected engine, and global IBus ownership remain as in `1.0.59`. Exact
+evidence:
+`docs/structural_gates/receipts/LAY_1_0_60_TECH_DEBT_CLOSURE_2026-08-31/RELEASE_RECEIPT.json`
+(SHA-256
+`08648fe12f1c3d7633690a05f4eb0393aa391b783c49aed08cefafb9b5c7088d`).
+
+## 1.0.61 Correction-Safety Authority Release (2026-09-01)
+
+Release `1.0.61` publishes TD-112 after the installed `1.0.60` runtime exposed
+that the visible `Осторожно`, `Норма`, and `Смелее` setting stopped affecting
+ordinary NANDA/fallback candidates before the final Apply owner. The setting
+loaded correctly and already filtered registered deterministic rules, but the
+active IME Space route used `CorrectionMode::NandaOnly`; the request-local
+`TransitionDecisionPolicy` did not carry `CorrectionSafety`, and
+`candidate_has_apply_authority()` did not consume it.
+
+The selected minimal repair carries the existing profile value into the
+existing request-local lattice policy and applies one pure corroboration rule
+inside the existing DecisionCore authorization path. It adds no producer,
+ranker, cache, service, verifier, edit plan, mutation route, package format, or
+persisted migration. Grounded candidates remain in the bounded lattice when a
+profile denies automatic Apply. Ranking, replacement surfaces, producer gates,
+closed exact/L1.1 certificates, structural verification, `SafetyGate`, edit
+validation, and the one text-output owner remain unchanged.
+
+Task-local measured evidence before release preparation:
+
+```text
+TD-112 focused tests                  12 / 12 PASS
+correction_safety focused tests        8 / 8 PASS
+pinned IME preedit tests               3 / 3 PASS
+InputGate public contract              6 / 6 PASS
+changed correctness/package gate    2388 / 2388 PASS
+known semantic failures                    0
+infrastructure failures                    0
+fresh-context code review             9.0 / 10 ACCEPT
+task final full gate                  lay full check OK
+```
+
+This is a task-local authority and regression proof, not broad Russian/English
+quality proof. Physical desktop correction behavior and the routed L4
+exact-positive case were not established by TD-112. The fixed corpus separately
+reports its pure-policy and routed denominators; aggregate success does not
+promote an unmeasured language-quality claim.
+
+Release-route options were evaluated as follows: publish the changed behavior
+as `1.0.61` (**10/10**, selected); silently replace installed `1.0.60` bytes
+without a version change (**1/10**, rejected because provenance and rollback
+would become ambiguous); or defer the already-reviewed fix (**4/10**, rejected
+because the user-visible control would remain weak).
+
+The live pre-edit baseline was source/installed/DBus `1.0.60`, one managed IME,
+selected engine `lay-ime-ru`, and global `ibus-daemon` PID dynamically observed
+as `5126` at that audit instant. Installation
+is a bounded transaction over the ten release binaries, nine extension files,
+canonical V13 package and sidecar. Before any live mutation it must preserve a
+complete byte-and-mode snapshot. A failed step stops only Lay-managed daemon,
+L3 trainer, and IME processes; restoration uses sibling temporary files plus
+atomic `mv`, reloads only the Lay extension, and must prove complete tree parity
+before returning to `lay-ime-ru`. Global IBus must never be restarted.
+
+The final release wrapper was run once from its first step after review. It
+selected `2,388/2,388` correctness/package checks with zero semantic and zero
+infrastructure failures, completed the optimized release build in `5m53s`,
+and exited `0` with terminal line `== lay full check OK ==`. The resulting ten
+binary SHA-256 values, controller bytes, extension ZIP, source version, and
+retained `1.0.60` rollback bytes were pinned in the install preflight. Historical
+V1 remained `BLOCKED_BEFORE_CODE` because its intermediate failure state was
+not terminal; V2 closed that paper-contract defect and returned
+`READY_TO_IMPLEMENT`, `safe_to_implement=true`, blockers `0` over `24` baseline
+checks and `7` forbidden side-effect classes.
+
+The accepted live transaction retained
+`/home/ubu/.local/state/lay/release-backups/1.0.61-preinstall-R9xslOXQ` with
+exactly `19` binary-tree, `9` extension, and `7` L2 files. The controller exited
+`0` with `FORWARD_INSTALL_1_0_61=PASS`. All ten installed files match the pinned
+release build by SHA-256 and mode `0755`, including explicit
+`lay-l11-restore -> lay-l1.1-restore` and
+`lay-l11-serve -> lay-l1.1-serve` mapping. The installed nine-file extension
+matches the source tree. The canonical V13 package stayed at SHA-256
+`cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b`,
+and a fresh exact-sidecar compilation byte-matched installed SHA-256
+`f116a230fc05a04c375bcddf1c85169276c6d149295eed8ccf93e37672a907b9`.
+
+Independent post-install observation, separate from the controller's own
+verifier, produced:
+
+```text
+CLI / GNOME DBus version             1.0.61 / 1.0.61
+GNOME DBus Ping                      pong from lay-extension
+lay-daemon                           active, PID 2117405, installed/proc hash equal
+lay-l3-online                        active, PID 2117342, installed/proc hash equal
+managed lay-ibus-engine              exactly 1, PID 2117674, installed/proc hash equal
+selected engine                      lay-ime-ru
+global ibus-daemon PID               5126, unchanged
+```
+
+The independent controller correction review returned `ACCEPT`, `9/10`, with
+no High or Medium findings. Its one Low item is optional finer-grained test
+pinning of every check before the already-correct rollback reactivation
+barrier; it is not a release correctness blocker.
+
+Verdict: `LAY_1_0_61_CORRECTION_SAFETY_INSTALLED_VERIFIED`. Runtime authority
+changed **yes**: the installed binary bytes and loaded extension now carry the
+reviewed TD-112 Apply policy. The intended behavior change is limited to
+ordinary non-exact automatic replacement under `Осторожно` and `Норма`;
+`Смелее` preserves the accepted `1.0.60` non-exact baseline. Candidate
+generation, ranking, lattice retention, closed-exact authority, verifier,
+`SafetyGate`, edit-plan validation, mutation ownership, package/sidecar
+semantics, selected engine, and global IBus ownership remain unchanged.
+
+Not tested by the live release transaction: physical typing comparisons of all
+three profiles in a focused desktop application, other GNOME versions, broad
+Russian/English language quality, and the routed L4 exact-positive case. Those
+limits remain separate from the passed task-local policy/routed corpus and the
+verified installed-runtime identity. Exact release evidence:
+`docs/structural_gates/receipts/LAY_RELEASE_1_0_61_2026-09-01/RELEASE_RECEIPT.json`.
+
+## Cross-app spontaneous input — 2026-09-09
+
+<a id="cross-app-spontaneous-input-2026-09-09"></a>
+
+Current verdict: `SENDER_ATTRIBUTED_ROOT_CAUSE_UNKNOWN_PHYSICAL_ACCEPTANCE_OPEN`. The user
+reported that IME assistance fails in Kitty, some terminal windows, Tor Browser
+and WeChat, and clarified that periods appear one at a time without typing;
+deleting them creates a pause before they return. The user explicitly identified
+this as an old fault, not the latest changes, and instructed work on 1.0.67.
+
+The initial rollback to 1.0.66 was an incorrect response to that report. It was
+reversed by reinstalling the same ten verified 1.0.67 binaries, without rebuilding
+or changing the model packages/configuration. This correction does not fix or
+disprove the reported behavior. Global IBus PID 4715/start ticks 2261 and the
+two Lay input sources were preserved through both transactions. Current receipt:
+`/home/ubu/.cache/lay/development/ime-cross-app-failure-_ul2eo18/reinstallation-1.0.67.json`.
+The earlier `rollback.json` is retained as historical evidence, not rewritten.
+
+Measured installation identity after restoration: IME `13db8623`, PID 3787313;
+L1.1 `db825d2f`, PID 3787090; daemon `4e01703e`, PID 3787309; L3 watcher
+`c75f0944`, PID 3787310. All ten file hashes, the four running executable
+hashes, CLI version and loaded extension version matched the checked 1.0.67
+artifacts. These prove installation and liveness only. Earlier fixed89, native13
+and quiet-cadence proofs retain their original scope and do not establish
+physical compatibility with the reported application windows.
+
+Read-only diagnosis through 2026-09-09 01:34 UTC:
+
+- A private existing trace snapshot has 2,882 valid records, 343 key records,
+  117 `printable_managed_commit` period presses and 116 `managed_release`
+  records, all with keysym 46/keycode 53. That key maps to a period in the RU
+  physical layout. No other physical letter key was observed becoming a period
+  in this snapshot. The clipped final press is not proof of a missing release.
+- This trace has no event timestamps or application identity. Its period run
+  cannot be attributed to the user's spontaneous episode; it may contain
+  ordinary user input. One incomplete initial record is expected from its
+  bounded file truncation. Raw user text remains in the private diagnostic
+  directory, not in project documentation or new metadata.
+- Separate passive observations of the physical keyboard, Lay virtual keyboard
+  and RustDesk virtual keyboard did not capture spontaneous periods. The last
+  simultaneous 60-second observation and a subsequent 180-second observation
+  were entirely quiet. The latter IBus monitor fell back from unsupported
+  `BecomeMonitor` to eavesdropping and had no positive traffic control; its
+  empty output alone cannot establish delivery coverage. No grab or synthetic
+  input was used; observers closed their devices and child processes on exit.
+- Loaded libraries confirm both Kitty processes use Wayland; WeChat has an X11
+  window. `XIM_SERVERS` on the active X display advertises `@server=ibus`.
+  The different DISPLAY inherited by ibus-x11 does not by itself prove a broken
+  bridge. Tor Browser was not independently identified in the running processes.
+- The observed content-purpose values 0/10 permit assistance in current Lay;
+  the historical terminal-purpose-sensitive refusal is not demonstrated here.
+  Background prefetch, key release ownership, lost client release and an
+  external injected event remain hypotheses, not established causes.
+
+The release-consumption hypothesis was checked against the installed Kitty
+version, 0.48.2. Its upstream `keyboardHandleKey` cancels the repeat timer on a
+Wayland release independently of the asynchronous IBus reply. Merely changing
+Lay's release return value is therefore not a demonstrated fix. Missing
+delivery of the release to the client remains untested. Primary source:
+https://github.com/kovidgoyal/kitty/blob/v0.48.2/glfw/wl_init.c#L415-L449.
+The inspected upstream files and hashes are stored alongside the diagnostic
+summary; upstream source inspection is not a reproduction of the live failure.
+
+Next discriminating evidence is one actual spontaneous episode with coincident
+kernel/device origin, IBus numeric event metadata and focused application
+identity. A request to leave focus in an affected field is already pending;
+do not repeat the request or treat elapsed quiet time as a negative reproduction.
+Then trace the first layer that invents or retains the key, compare fixes before
+editing production behavior, and add the smallest causal regression through
+the real affected adapter. A literal period filter, debounce, blind release
+policy reversal or model retraining is not an admitted repair. No runtime
+behavior patch or new authority mechanism was selected during this diagnosis.
+
+Evidence directory:
+`/home/ubu/.cache/lay/development/ime-cross-app-failure-_ul2eo18/`.
+Compact metadata: `diagnosis-summary.json`, `device-key-state.json`,
+`passive-dot-source-counts.json`, `passive-dot-source-counts-v2.json`,
+`passive-xinput-source-counts.json`, `simultaneous-input-origin-v1.json`,
+`simultaneous-input-origin-v2.json`; bounded observer: `passive-input-origin.py`.
+Runtime authority changed only in the documented rollback/restoration
+transactions; the final runtime is the previously verified 1.0.67. This
+read-only diagnostic phase changed neither code nor runtime authority. The
+cross-app behavior, root cause, repair and physical acceptance remain OPEN.
+
+### User-confirmed episode and sender attribution — 2026-09-09 01:46 UTC
+
+The user reported “точки есть” while the bounded 15-minute observer was active.
+It captured 96 period presses and 96 corresponding releases at the IBus
+InputContext boundary, with the same events forwarded once to the engine.
+The capture interval was approximately 01:45:50.315–01:45:53.186 UTC. All
+periods had keysym 46/keycode 53; median spacing was 30.2 ms (range 28.0–32.3
+ms). There were zero period key events on the physical keyboard or the two
+observed virtual keyboards during that episode. Ordinary physical key events
+were visible on both kernel and IBus layers, establishing a positive traffic
+control absent from the earlier quiet observation. Do not count the two IBus
+boundaries as separate user-visible characters.
+
+The InputContext sender was `:1.1961`. IBus's private bus does not implement
+GetConnectionUnixProcessID or GetConnectionCredentials. Instead, three harmless
+Peer.Ping calls were correlated with bounded, payload-free syscall FD metadata:
+`:1.1961 -> fd 14`, control `:1.3 -> fd 13`, `:1.1961 -> fd 14`. All three
+returned empty successful replies. The independent Unix socket peer lookup
+mapped IBus PID 4715/fd 14/inode 352547512 to WeChat PID 3734978/fd 99/inode
+352544591, executable `/opt/wechat/wechat`. The tracer's timeout status 124 is
+its declared four-second bound; it detached without restarting either process.
+This establishes the process sending the periods into IBus, not the origin of
+events before that process.
+
+IBus modifier bit 30 distinguishes releases; three press/release pairs also
+carried mouse Button1 bit 8. Counting only state==0 would incorrectly drop those
+three presses. The complete count is 96. The subsequent final observer receipt
+also includes one later ordinary physical period press/release; it is separate
+from the captured 96-event spontaneous burst and must not be added to it.
+
+Current X11 repeat rate is 33/s with 500 ms delay; GNOME's repeat interval is
+30 ms and delay 500 ms. The cadence is consistent with X11 auto-repeat, but this
+is still a hypothesis. A later XQueryKeymap was empty after focus had returned
+to Kitty, so it cannot establish the X11 key state during the burst. The captured
+focus query was also after the burst; it does not prove that WeChat was sending
+into a different foreground application. A focused-app clarification is pending.
+
+Next observation collects XInput events alongside numeric IBus event paths and
+focus lifecycle metadata. The first IBus period of each burst triggers one
+read-only focused-window query; no periodic focus RPC is added. This distinguishes
+X11-delivered repeats from a client-local source and captures the actual affected
+application at the event. No literal period filter, changed release policy,
+process restart or production code patch has been applied on this evidence alone.
+
+Exact private evidence, relative to the diagnostic directory above:
+`incident-user-confirmed-0146.json`, `incident-attribution-summary.json`,
+`ibus-connection-fd-attribution.json`, `ibus-connection-fd-attribution.txt`,
+`x11-current-keymap.json`, final `simultaneous-input-origin-v3.json`.
+Bounded follow-up observers: `passive-x11-period-origin.py` and
+`passive-input-origin-v4.py`; outputs `x11-period-origin-live.json` and
+`simultaneous-input-origin-v4.json`. This diagnostic milestone changes no
+runtime authority and does not close the requested fix or physical acceptance.
+
+### Coverage correction — additional receiver keyboard endpoint
+
+The initial three-device observer did **not** cover every keyboard-capable
+endpoint. Inventory of `/proc/bus/input/devices` found a fourth device advertising
+KEY_DOT/KEY_SLASH: `2.4G Mouse`, event5, USB vendor/product `1ea7:0066`,
+interface 00, `ID_INPUT_KEYBOARD=1`. Thus the statement that the captured periods
+did not originate from any input device was premature. The actual established
+negative is limited to event3 (built-in keyboard), event21 (Lay) and event22
+(RustDesk). The IBus sender-to-WeChat attribution remains valid.
+
+An event5 key-state read at 02:03:51 UTC was empty outside the incident; it does
+not exclude receiver events during the burst. The corrected observer enumerates
+every endpoint whose current KEY capability mask includes keycode 52 or 53,
+records that inventory and monitors all four read-only. It is
+`passive-input-origin-v5.py`, output `simultaneous-input-origin-v5.json`; XInput
+companion `passive-x11-period-origin-v2.py` writes
+`x11-period-origin-live-v2.json`. The earlier v4 observer was stopped after v5
+started, and its receipt is preserved. The first XInput observation completed
+quietly and is not an incident reproduction.
+
+The source of repeated requests before WeChat remains UNKNOWN: receiver/device,
+X11 or client-local. Neither the receiver nor WeChat is yet established as the
+root fault. No device was disabled and no production behavior was changed on
+the basis of the incomplete first coverage.
+## Rare IME suggestions after the spontaneous-input report (2026-09-09)
+
+The user reports that the periods stopped and explicitly requested that the
+counter be stopped. Both transient counter units are inactive with MainPID 0;
+their final v7 kernel/IBus and v5 X11 reports are FINISHED. No production input
+policy was changed by the counters. Their stopping or the disappearance of
+periods is not a causal repair verdict. The remaining requested behavior is
+visible IME suggestions and ordinary Space autocorrection.
+
+Current runtime observation: installed IME SHA `13db8623` is loaded by PID
+123803 under the IBus session; daemon PID 123777 loads `4e01703e`. These are
+the same 1.0.67 bytes. The daemon journal records three restarts at
+02:47:44–02:47:48 UTC; the actor is unknown and these restarts were not part
+of the counter commands. The selected engine is lay-ime-ru; suggestion and
+auto_replace settings are true, safety profile experimental.
+
+Preserved evidence lives in
+`~/.cache/lay/development/ime-cross-app-failure-_ul2eo18/`:
+`ime-no-hints-existing-trace.jsonl` is a private snapshot of the existing opt-in
+trace, modified 02:49:51 UTC, 2690 valid rows plus one clipped initial fragment.
+The focused application readback is Kitty PID 272166. This trace has no
+per-row timestamps or application identities, so that readback does not label
+every historical row. It contains 98 managed printable presses, 43 correction
+preparations, and three completed display calculations. At rows 1730–1859,
+eight letters and their releases complete with KnownStart, but no cursor
+notification occurs. SetCursorLocation at row 1866 is followed by a visible
+preedit and its completed worker at rows 1867–1869. Geometry is 11×24.
+
+The current source puts a matching display frame in pending_display_frame
+instead of scheduling it when FocusInId is absent, SurroundingText is absent,
+and a cursor width exists. Only a later SetCursorLocation flushes that frame.
+This is a candidate causal mechanism for rare hints; the controlled proof
+must first reproduce it with the installed bytes. The raw trace does not
+prove this is every client's only failure.
+
+Autocorrection is a separate denominator. Nine recorded attempts contain
+four rank refusals, one infrastructure refusal, and four not-ready outcomes.
+All four not-ready outcomes have generation zero, including repeated spaces
+and boundaries after editing. They must not be described as four measured
+deadline overruns or nine failed typo restorations. Current fixed89 and
+known-phrase quality receipts retain their original scope.
+
+Preflight before any production edit: reuse the existing remote guarded
+actual-IBus harness, immutable 1.0.67 candidate and nine-role dependencies.
+Match the observed client capabilities (no SurroundingText, FREE_FORM,
+11×24 geometry), suppress only subsequent cursor-location notifications,
+then issue one explicit cursor notification for the same unchanged prefix.
+Record the display before/after within the existing 150 ms product deadline,
+the current owner/tail identities, real preedit signals and consumer effects.
+Also run the fixed five-word cadence sequence with FREE_FORM to distinguish
+delivery from model verdicts. This is a transport reproduction, not GUI or
+physical-keyboard acceptance and not a heldout quality proof.
+
+Provisional designs, ranked as engineering estimates before reproduction:
+
+1. **9/10:** let an already admitted live word/frame schedule its worker
+   without the extra cursor gate; retain legacy behavior without admission.
+   Reuse ContextAdmission and existing result identity checks. No new owner,
+   timer, cache, fallback or authority source.
+2. **7/10:** remove cursor gating and its deferred state for every legacy
+   consumer. Less state, but a wider compatibility change without current
+   evidence for all clients.
+3. **3/10:** add a cursor-ack timeout. Adds another timer and cancellation
+   boundary, keeps the unnecessary dependency and delays hints.
+
+The selected implementation remains pending the causal reproduction. Any
+change must keep lexical candidate generation, ranking, false-authority and
+SafetyGate/verifier rules unchanged; a display signal never authorizes Tab
+unless current worker publication succeeds. Scheduling more admitted prefixes
+can increase CPU/allocation work, so retain the bounded replacing worker and
+150 ms age limit and measure completed/superseded jobs and RSS. Existing
+package/config identities, reload invalidation, focus/epoch checks and online
+feedback ownership stay binding. Test focus/layout changes and stale deferred
+cursor notifications, plus GTK, terminal and atomic consumers. Roll back only
+the new source change if fixed proof or required classes regress. Broader
+removal of legacy deferred state is a separate maintenance change. No runtime
+authority changed during this analysis or planned private reproduction.
+
+Reproduction update, 03:02–03:16 UTC: the fresh-IBus v1 control completed in
+5.752 s with all five correction surfaces correct and a visible prefix
+suggestion before an explicit cursor notification. Its FocusInId receipt was
+present, so it does not exercise the suspected legacy cursor gate. Receipt:
+`ime-cross-app-failure-_ul2eo18/cursor-notification-baseline-v1.json` (local),
+`autocorrect-ojoasco5/phrase-cursor-notification-baseline-v1/receipt.json`
+(remote). The earlier live snapshot has 13 FocusIn, four FocusOut and zero
+FocusInId callbacks; the current engine nevertheless advertises FocusId=true.
+Official IBus engineproxy source caches the advertised flag per engine name in
+ibus-daemon. This explains a possible persistent protocol difference; the
+actual live cache value has not been read and is not claimed proven.
+
+The next private control primes the real isolated IBus with an older false
+FocusId capability before starting the unchanged candidate under the same
+engine name. This is an explicitly controlled legacy cache condition, not a
+production restart or a clone of the user's in-memory daemon. Initial v2/v3
+seed-factory setup attempts returned Cannot find engine, and v4 timed out
+before any product cases. Those receipts remain FAILED with zero cases, not
+runtime failures or acceptable reproductions. Seed startup now has its own
+bounded diagnostic log to identify the setup failure. Production editing and
+selection of a repair remain pending a discriminating reproduction.
+
+Causal reproduction completed at 03:17 UTC with the exact installed candidate
+`13db8623`: private actual IBus, preserved across an explicit old-capability
+seed, sends plain FocusIn to the replacement engine even though its current
+FocusId property is true. The real admitted word has no native focus receipt.
+After ` про`, no visible preedit arrives during 152033 us of observation.
+One SetCursorLocation produces `верка` after 2907 us, with identical engine,
+word epoch, text and focus receipt and no text edit. All five ordinary
+correction controls pass under the same legacy route: both supplied typos
+restore, three clean words stay intact. This establishes the cursor dependency
+for suggestions, not a reproduction of the user's autocorrection refusal.
+Exact local receipts: `ime-cross-app-failure-_ul2eo18/` containing
+`cursor-notification-baseline-v6.json` and
+`cursor-notification-regression-red.json` (`EXPECTED_RED`). Remote evidence:
+`autocorrect-ojoasco5/phrase-cursor-notification-baseline-v6/`.
+
+Setup failures v2–v5 were private seed preparation failures with zero product
+cases. The decisive startup log identified an old remote libibus without the
+has-focus-id property; v6 uses only a small GDBus old-capability seed and then
+the actual unchanged Lay engine. The seed neither implements prediction nor
+handles the tested word. All failed receipts are retained.
+
+Selected route before code: design 1 (9/10). Add only the context-admission
+condition to the existing legacy cursor gate. The sole production caller first
+requires a matching InputFrameIdentity, which includes a currently revalidated
+KnownStart word; the existing worker repeats identity and age checks before
+publishing. No extra admission lock is added by the gate itself. Required but
+cancelled/unknown admission still fails the preceding frame guard, and is never
+made authoritative by cursor metadata. The no-admission legacy path keeps its
+prior cursor wait. This is a scheduling change: more valid prefixes may reach
+the existing replacing worker. Its bounded queue, 150 ms freshness limit,
+lexical material, ranking, feedback and mutation verifiers are unchanged.
+Native v6 is the fixed RED/GREEN regression; existing scoped correctness,
+unknown/stale/atomic/GTK/terminal controls, fixed89 and release checks remain
+required. Installation remains pending independent review and verification.
+
+### Candidate verification, before release (03:31 UTC)
+
+Only `engine.rs::preedit_waits_for_cursor_ack` changes runtime behavior: the
+existing cursor wait also requires absent ContextAdmission. Scoped formatting,
+449 discovered IME correctness tests and release IME build passed on the
+remote dedicated-20cpu worker. Three performance tests were explicitly excluded
+by the existing focused route. Receipt: `ime-cross-app-failure-_ul2eo18/`
+`cursor-candidate-build-receipt.json`; remote `run-WMSNYB/ime-cursor-candidate/`.
+Private candidate SHA `f1b78320`; all other 696 Rust files match installed 1.0.67.
+
+Actual private IBus v6 RED/GREEN passed: the installed baseline needs cursor
+notification; the candidate emits a current nonempty visible hint during
+typing, before that notification, with no FocusInId and the same admitted word.
+The reported 9 us wait return is not suggestion latency: the signal had already
+arrived while typing. The later redundant cursor event emits no extra signal;
+existing signal deduplication preserves the visible display. Both candidates
+pass all five ordinary correction controls. Receipts:
+`cursor-notification-candidate-v6.json` and
+`cursor-notification-regression-green.json` in the diagnostic directory.
+
+A separate width-1 terminal control changes only cursor geometry from 11 to 1;
+inverse reconstruction proves all other driver bytes unchanged. Both variants
+show 34 printable key events as `terminal_passthrough`, handled=false; the
+client applies native characters after each RPC returns. Baseline still needs
+cursor notification (151472 us observation, then 2366 us to a hint); candidate
+displays a current hint before it. Their five correction surfaces are identical:
+three clean preserved, two typos unchanged. This does not pass Space correction
+for the narrow terminal route: `managed.rs` deliberately returns Space to the
+client without IME prefetch/correction; the private harness has no physical
+keyboard daemon. Full desktop terminal correction remains outside this proof.
+Remote receipts: `autocorrect-ojoasco5/phrase-cursor-terminal-{baseline,candidate}-v1/`.
+The first terminal command failed its candidate-file precondition before
+launching any product case; its nonexistent path was corrected to the immutable
+release-binaries directory. No failing product case was retried or excluded.
+
+Independent fresh-context review, round 1: 9/10, H0/M0/L0. No repair requested.
+It checked the sole caller, live KnownStart/frame capture, repeated publication
+identity and age checks, pending Tab refusal, no-admission compatibility, and
+atomic route. The one running and one replaceable pending worker remain bounded
+in queue length; superseded computation can still finish. The 150 ms limit is
+a publication freshness limit, not a CPU execution bound. More scheduling is
+expected and CPU/RSS must be reported separately from correctness.
+
+Release preparation now targets 1.0.68 because runtime behavior changed after
+the installed 1.0.67. Mandatory full checks, fixed89 in all three safety profiles,
+native controls and a fixed repeated legacy-focus cadence gate will bind to
+the final release bytes before installation. Existing L1/L2 algorithm/package
+proofs retain their prior exact source and corpus scope; no model material or
+ranking change is part of this repair. No production authority changed yet.
+
+### Mandatory release prefix and Cargo cache boundary (03:51 UTC)
+
+The frozen 1.0.68 run `run-OfEiLW` passed architecture, both lint contracts,
+2675 correctness plus 36 package tests, extension syntax and helper syntax.
+The full command then exited 75 at CLI explain because Cargo target reached
+12896141312 bytes, beyond the unchanged 12884901888-byte guard. This is a
+build-resource failure after 2711 successful tests, not a test-quality failure.
+Original receipt remains `run-OfEiLW/td123-full-acceptance-completed-identity.json`
+with status FAIL; local copy is `run-hvrxwcxk/` with the same filename.
+The initial full attempt took 507.450 s. The two lint inventories retain every
+normalized entry (535 default, 359 research); only byte locations shifted.
+
+Under a fresh heavy-execution lease, a separate continuation verified the
+original snapshot and test summary, then removed only unused disposable
+`/home/e/projects/lay-td119-gate-v1/target/test-lanes/debug` (2461863936 bytes,
+directory dated September 6, no process executing from it). It preserves
+source, frozen release artifacts and all proof receipts. The unchanged full
+script suffix from CLI explain through the research release build passed in
+220.211 s. The final default-feature IME build is the remaining step at this
+checkpoint. The continuation writes a distinct
+`run-OfEiLW/ime-cursor-full-acceptance-completed-identity.json`; it does not
+rewrite the initial failure. Existing test results are reused only for the
+same 697 Rust files, Cargo/toolchain, manifests, fixtures and environment.
+The target budget was not raised. No installed runtime authority changed.
+
+### Final 1.0.68 acceptance before installation (04:06 UTC)
+
+The budget continuation passed in 397.347 s, including 176.519 s for the
+final default-feature IME. Exact candidate SHA:
+`2a2df132e44142be4b1f273122c7d3391a0ac7e1fbe7a5a1353dc65d91ac3219`.
+All ten immutable binaries and all 697 source files were verified after
+transfer. New L1.1 service SHA `570f35b9`; only its release-version rebuild
+changes the native dependency manifest, while eight model/receipt dependencies
+remain exact. The initial exit-75 receipt remains separate from the successful
+`ime-cursor-full-acceptance-completed-identity.json`.
+
+Final actual-IBus acceptance took 401.668 s: all 15 fixed-profile shards
+completed, and independent comparison against installed 1.0.67 found no lost
+correct outputs, new false outputs or per-class regressions. Each comparison
+recomputed 178 statuses. The proven v11 incomplete-line reader correction
+is normalized by inverse byte reconstruction; fixtures/events/deadlines and
+all model/config inputs match. Exact comparisons: local
+`autocorrect-live-ojoasco5/ime-cursor-fixed-profile-{strict,normal,experimental}-comparison-v1.json`.
+These 89 curated Cyrillic fixtures are not the full L1 heldout or a universal
+quality guarantee. The prior complete L1/L2 proof remains dated 1.0.67 evidence
+for unchanged model code and package bytes; its existing performance failures
+remain recorded, not promoted to new PASS results.
+
+| Profile | Class | 1.0.67 correct | 1.0.68 correct | 1.0.68 percent |
+|---|---|---:|---:|---:|
+| strict | all_dirty | 15/47 | 15/47 | 31.9149% |
+| strict | all_clean | 41/42 | 41/42 | 97.6190% |
+| strict | clean_missing_letter_control | 3/4 | 3/4 | 75.0000% |
+| strict | clean_repeated_letter_control | 4/4 | 4/4 | 100.0000% |
+| strict | clean_valid_word | 34/34 | 34/34 | 100.0000% |
+| strict | context_fixture | 0/6 | 0/6 | 0.0000% |
+| strict | missing_letter | 3/8 | 3/8 | 37.5000% |
+| strict | repeated_letter | 0/4 | 0/4 | 0.0000% |
+| strict | restoration_regressions | 7/24 | 7/24 | 29.1667% |
+| strict | transposition | 5/5 | 5/5 | 100.0000% |
+| normal | all_dirty | 19/47 | 19/47 | 40.4255% |
+| normal | all_clean | 41/42 | 41/42 | 97.6190% |
+| normal | clean_missing_letter_control | 3/4 | 3/4 | 75.0000% |
+| normal | clean_repeated_letter_control | 4/4 | 4/4 | 100.0000% |
+| normal | clean_valid_word | 34/34 | 34/34 | 100.0000% |
+| normal | context_fixture | 0/6 | 0/6 | 0.0000% |
+| normal | missing_letter | 5/8 | 5/8 | 62.5000% |
+| normal | repeated_letter | 0/4 | 0/4 | 0.0000% |
+| normal | restoration_regressions | 9/24 | 9/24 | 37.5000% |
+| normal | transposition | 5/5 | 5/5 | 100.0000% |
+| experimental | all_dirty | 20/47 | 20/47 | 42.5532% |
+| experimental | all_clean | 40/42 | 40/42 | 95.2381% |
+| experimental | clean_missing_letter_control | 3/4 | 3/4 | 75.0000% |
+| experimental | clean_repeated_letter_control | 4/4 | 4/4 | 100.0000% |
+| experimental | clean_valid_word | 33/34 | 33/34 | 97.0588% |
+| experimental | context_fixture | 0/6 | 0/6 | 0.0000% |
+| experimental | missing_letter | 5/8 | 5/8 | 62.5000% |
+| experimental | repeated_letter | 0/4 | 0/4 | 0.0000% |
+| experimental | restoration_regressions | 10/24 | 10/24 | 41.6667% |
+| experimental | transposition | 5/5 | 5/5 | 100.0000% |
+
+Native13 passed with the final service. Eight fresh legacy-focus managed
+controls at 80 ms cadence all displayed a current hint before cursor metadata,
+without FocusInId, and yielded 40/40 expected correction surfaces: both typos
+8/8 each, clean words 24/24. Final narrow passthrough likewise displayed the
+hint; its unchanged 3/5 correction surfaces retain the missing physical-daemon
+limitation above. All client processes were reaped. Local receipt hashes and
+visible surfaces were independently rechecked after download.
+
+A separate sampled legacy resource pair kept the final L1.1 service fixed.
+Baseline/candidate display worker completions: 1/31, all published; total
+display calculation 758/340497 us, maximum 758/41005 us. Sampled cgroup CPU
+5920935/6143365 us; process VmHWM 415696/410764 KiB; sampled cgroup peaks
+422756352/416997376 bytes; OOM 0/0. This is one instrumented five-word pair,
+not a general CPU improvement or a hard latency/RSS bound. Quiet cadence
+results have no resource sampler. Raw receipts are under
+`run-hvrxwcxk/ime-cursor-native-acceptance/` and `cursor-client-evidence/`;
+compact independently checked summary: `cursor-release-evidence-summary.json`.
+
+The second fresh review covered the installation transaction: initial 7/10,
+H0/M3/L0. All three findings were repaired before execution: mark the native
+handoff attempt before sending it; prevent failed receipt writes from skipping
+recovery; verify restored process hashes/activity and extension version before
+claiming restoration. Seven synthetic fault-path controls execute the actual
+exception branch and restored-runtime verifier AST against fake providers; all
+passed. They issue no live service/filesystem/input operations. Receipt:
+`run-hvrxwcxk/transaction-failure-paths.json`, bound to installer SHA `894654f0`.
+No third review was requested; this respects the two-round limit.
+
+Installation preflight passed read-only. The current IME is a verified child
+of global IBus, so the transaction preserves that ownership: native input
+handoff, stop only that exact child and three Lay services, install backed-up
+verified binaries, then let preserved IBus start the new IME. Source/installed/
+loaded versions, four process hashes, IBus PID/start identity, model hashes,
+config and input sources must all agree before installation is accepted.
+Physical input in the user's applications is still pending. No production
+authority changed during the checks recorded in this section.
+
+### Installed 1.0.68, physical acceptance pending (04:08 UTC)
+
+The reviewed transaction completed: `INSTALLED_VERIFIED_PHYSICAL_PENDING`.
+Installed source/CLI/loaded extension version is 1.0.68; all ten file hashes
+and the loaded executable hashes of all four Lay processes match the immutable
+release manifest. IME PID536035 (`2a2df132`) is again a child of the unchanged
+global IBus PID4715/start identity. L1.1 PID535803 (`570f35b9`), daemon PID536029
+(`b17a4fc7`) and L3 watcher PID536030 (`964f2265`) load accepted binaries.
+Model/receipt dependencies, user config and input-source list are unchanged.
+This installation changes runtime code authority; previous private proofs did
+not. No model authority or package promotion occurred.
+
+Exact receipt: `~/.cache/lay/development/run-hvrxwcxk/installation-1.0.68.json`.
+Backup: `~/.local/state/lay/release-backups/1.0.68-td123-4h4357ne/`.
+Two physical questions were issued only after installation: current suggestion
+after a known boundary, and ordinary-tempo correction of the supplied phrase.
+They remain pending. Private IBus success and process liveness do not prove
+Kitty/Tor/WeChat GUI behavior, nor the broad TD-123 quality goal. The user
+stopped the period counters; they remain stopped and are not re-enabled here.
+
+
+## Physical acceptance and candidate counts, 2026-09-09
+
+At 07:19 UTC the user confirmed ordinary typing with «работает !» and
+explicitly authorized push. The installed 1.0.68 delivery milestone is DONE.
+This accepts the current physical IME workflow; it is not a universal desktop,
+restoration-quality or performance verdict. General TD-123 quality remains OPEN.
+The release is prepared on `origin/codex/cleanup-20260908`; the remote ref and
+publication receipt identify the published commit without another version bump.
+
+Before publication, a read-only check again matched all 697 Rust input hashes,
+ten installed executable hashes and four loaded executable hashes to the
+accepted release. Global IBus PID 4715 and all four Lay process start identities
+were unchanged; both cancelled input counters had MainPID=0. The first ad-hoc
+readback used the build name `lay-l11-restore` as its installed filename and
+stopped before completing: the existing installer uses the public alias
+`lay-l1.1-restore` (and likewise `lay-l1.1-serve`). Applying that already verified
+alias map completed the check. No installation or runtime mutation occurred.
+Exact receipt:
+`~/.cache/lay/development/run-hvrxwcxk/publication-1.0.68/pre-push-readback.json`.
+
+The user's candidate-count question was answered by inspecting the current
+readout path and the existing isolated native trace for accepted IME SHA
+`2a2df132e44142be4b1f273122c7d3391a0ac7e1fbe7a5a1353dc65d91ac3219`.
+This is a read-only analysis of an earlier resource-observed five-word control,
+not a fresh measurement of the user's personal typing.
+
+| Stage | Current contract / measured scope |
+|---|---|
+| Internal material | Variable merged field. Lexical material requests 12, expands to 24 when thin; canonical material also receives that bounded request. Verified repair, layout and boundary sources may add material; L3 context births request up to 4. These request limits are not the total raw field count. |
+| Shared word decision | Returns up to 12 admitted candidates; reserves source lanes, ranks and deduplicates. |
+| IME projection | Removes whole-token replacements from passive preedit; Experimental may add up to 6 phrase suffixes, then declined-target and duplicate filtering applies. Upper bound 18, not a promise of 18 candidates per letter. |
+| Visible output | One selected continuation; the retained list supports Up/Down selection. A pending obsolete result has no Tab authority. |
+| Scheduling | One in-flight computation and one replaceable pending request. Superseded or stale frames cannot publish, so physical key count is not completed-inference count. |
+
+Measured final-list counts for the `проверка` fixture in its existing context:
+
+| Prefix | Candidates delivered to IME |
+|---|---:|
+| п | 12 |
+| пр | 11 |
+| про | 11 |
+| пров | 12 |
+| прове | 10 |
+| провер | 12 |
+| проверк | 2 |
+| проверка | 2 |
+
+All 31 worker completions in this trace were applied. Final-list distribution:
+0 candidates on 8 completions; 2 on 2; 9 on 1; 10 on 2; 11 on 9; 12 on 9.
+The zeroes occur on non-prefix typo continuations in the fixed control; its
+separate Space correction still restores the two supplied typos. Display
+completion and correction are distinct contracts.
+
+The trace's `candidates` field counts the final materialized IME list. It does
+not retain raw model count per prefix. `LiveGateRecord` accumulates raw counts
+in process statistics, while the per-prefix timing record lacks that field;
+therefore the exact earlier raw count is UNKNOWN. Do not describe the 12/24/64
+request/cap constants as measured total model output, or claim that list size
+proves answer quality. No source, model, calibration, test, runtime authority or
+candidate-selection policy changed for this analysis.
+
+Exact compact analysis and frozen trace provenance:
+`~/.cache/lay/development/run-hvrxwcxk/publication-1.0.68/candidate-counts.json`.
+The original installation and acceptance receipts remain unchanged, including
+their historically correct physical-pending status at installation time.
+
+
+## Missing typed suggestions restored by arrows, 2026-09-09
+
+After accepting and publishing 1.0.68, the user reported that `прове` has no
+visible suggestion during typing, but Up/Down makes suggestions appear. This
+reopens the automatic-display acceptance for that reported scenario; the
+published release, its earlier user confirmation and measured fixed proofs
+remain historical facts.
+
+The existing live trace was copied without enabling another observer. For the
+last retained `прове`, generation 622 / tail epoch 477, the admitted worker
+returned 10 final candidates in 2,535 us and applied at age 2,572 us. The engine
+emitted suffix `рка` before the Up/Down events, then those events changed the
+same selected-list surface. The trace has ordering but no per-event wall time
+or client render acknowledgement. Read-only focus inspection identified Kitty
+PID 272166; its loaded backend is `kitty.glfw-wayland.so`, version 0.48.2.
+Exact evidence: `~/.cache/lay/development/ime-prove-no-hint-qggkm5wl/`.
+
+The upstream source for the installed version contains a discriminating
+consumer hypothesis. `glfw/wl_text_input.c::text_input_done` sends preedit before
+commit, while `kitty/keys.c` clears the overlay on commit. Equal preedit text is
+then deduplicated against `current_pre_edit`, which still remembers text that
+has been cleared from the screen. A different arrow-selected suffix can show
+again. Wayland text-input-v3 specifies insertion of committed text before the
+new preedit. This explains the observed distinction if the two signals are in
+one compositor packet; packet grouping was not directly captured live.
+
+Before changing any production code, prove that sequence against the original
+upstream callback bodies, including unchanged-prefix, separate-packet,
+empty-commit and stale-serial controls. The proof must distinguish callback
+and final display-sink effects from an actual desktop pixel observation.
+No model, ranking, corpus, SafetyGate, verifier or installed runtime changes
+have been made for this investigation. Both cancelled counters stay stopped.
+
+
+### Original consumer proof and consequence analysis before patch
+
+The remote ASan/UBSan callback proof compiled exact bodies of Kitty 0.48.2
+`send_text`, `text_input_preedit_string`, `text_input_commit_string`,
+`text_input_done`, and the three IME cases from `kitty/keys.c`. Its backend
+sinks record committed bytes, final overlay text and cursor feedback; this is
+an original-consumer sequence proof, not a desktop pixel test.
+`baseline-v2/receipt.json`: 13 cases, 4 expected semantic failures, 9 controls
+PASS; sanitizer stderr empty. Both new and unchanged preedit are lost after a
+combined commit, including an empty commit and stale-serial packet. Separate
+packets, explicit clears, deduplication without commit, arrow selection,
+no-focus and empty packets retain expected behavior. The first `baseline-v1`
+failed compilation because the diagnostic debug macro discarded arguments;
+its replacement logging sink consumes them. Upstream callback bodies and
+assertions were unchanged. Both attempts are preserved under the incident
+folder locally and `/home/e/projects/lay-development-runner/kitty-preedit-qggkm5wl/`.
+
+| Design | Score | Consequence |
+|---|---:|---|
+| Repair Kitty's Wayland commit/preedit ordering and existing display-cache invalidation | 9/10 | Fixes the failing consumer and protocol contract in one function, without a new timing owner. Chosen for an isolated candidate. |
+| Delay or repeatedly republish Lay suggestions | 4/10 | Timing cannot prove compositor packet separation. Cursor acknowledgements may be absent; repeated frames can create feedback and return the starvation just repaired. Rejected. |
+| Switch Kitty to another display/input backend | 6/10 | Avoids this consumer but changes a wider terminal route and requires new-window acceptance. Keep as an alternative, not the primary implementation. |
+
+Chosen change: process pending commit before the new preedit; invalidate the
+existing `current_pre_edit` cache at commit because the actual commit callback
+clears that display. Then reuse the existing preedit comparison and serial
+handling. No literal prefix or suggestion enters the runtime condition.
+
+Consequence check:
+- Candidate retention, ranks, false authority, model/package reloads, learning
+  and feedback remain governed by the unchanged Lay pipeline. The consumer
+  preserves the exact committed bytes and preedit payload it receives.
+- Latency stays within the same event callback; no sleep, queue, retry, RPC or
+  deadline is introduced. A combined commit can now cause its required final
+  preedit update. Pure duplicate preedit still causes zero cursor feedback;
+  stale-serial packets still update the display without feedback to GNOME.
+- Memory: the existing cached string is freed once and nulled at commit. This
+  creates no additional persistent cache, allocation class, owner or package.
+  ASan/UBSan checks cover callback sequences; those checks do not establish a
+  whole-terminal RSS or performance bound.
+- Concurrency remains the single Wayland event callback; no worker or timer is
+  added. Null focus, empty commit, identical preedit and stale serial are
+  explicit controls. The independent direct-IBus transport is a separate
+  compatibility surface and is not inferred from this Wayland proof.
+- Installation is a separate gate: freeze the exact upstream tag and patch,
+  build and compare shared-library exports/dependencies, preserve the currently
+  mapped library and active Kitty/IBus processes, and first validate a separate
+  process. Do not restart the user's working terminal to apply a test candidate.
+- Rollback is the saved original shared library and original launcher path.
+  Keep the version-specific patch removable when an upstream fix is verified;
+  do not make this a permanent second Lay runtime or duplicate ranking route.
+
+Open evidence before any installation: exact compositor packet grouping in the
+reported live event was not captured; version matching is not a binary/source
+provenance proof. The isolated callback proof establishes the consumer defect.
+The remote worker lacks Kitty development headers; a private build sysroot and
+shared-library compatibility check are prerequisites for a runnable candidate.
+No installed bytes or running processes have changed.
+
+
+### Consumer candidate result and independent review
+
+The isolated patch changes only `text_input_done`; committed text is delivered
+first and the existing display cache is invalidated before admitting the new
+preedit. Candidate source SHA-256:
+`61220ed8fb2fbba6de57d75b9f228186e5d62878d8d925d4debb176797030f1a`.
+The removable, version-specific [patch](compat/kitty-0.48.2-preedit-after-commit.patch)
+is preserved in the project; original upstream sources remain in the incident
+folder. Guarded remote `candidate-v1/receipt.json`: 13/13 PASS, ASan/UBSan stderr
+empty. The downstream keys-switch extraction and its source hash are identical
+to baseline. Thus all four causal failures are repaired while nine original
+controls retain their expected effects.
+
+Fresh independent review, pass 1: 9/10, H0/M0/L0; no repair requested. Its verdict
+covers the bounded patch and callback proof. The actual key callback prelude,
+PTY timing and screen backend are outside the probe. Null-window handling is
+not a focus enter/leave or reentrancy proof; the existing nonrecursive-callback
+assumption is unchanged. Full shared-library ABI, actual pixels, focus changes,
+direct-IBus and complete Wayland conformance remain unaccepted. No global IBus,
+Lay process, working Kitty window, installed library or model has changed.
+
+### Private shared-library build preparation
+
+The full Kitty source is frozen at upstream tag 0.48.2, commit
+`2cb1d95c3accadd536bd66ba6bda044973440177`; both callback source files match
+the earlier downloaded proof inputs byte for byte. All compilation runs on
+the remote host under the existing dedicated-20cpu resource guard. Build
+dependencies are extracted/built into the incident's private sysroot; no
+system packages are installed. The original installed 455,776-byte module is
+preserved with SHA-256
+`3aa0e71a2bbda452d963eb3e40b8c48ce1441721fd79a2a8778010a19cca940f`.
+
+Four unsuccessful module-build setups are retained in `module-build/attempt-1`
+through `attempt-4`: missing protocol pkg-config metadata, missing transitive
+libffi metadata, an outdated 1.41 GitHub protocol mirror, and incompatible
+Wayland 1.20 headers rejected by unchanged upstream code with `-Werror`.
+No warning, assertion or runtime-source workaround was used for these failures.
+Kitty's own `bypy/sources.json` pins the appropriate dependency archives:
+Wayland 1.24.0 (`82892487a01ad67b334eca83b54317a7c86a03a89cfadacfef5211f11a5d0536`)
+and wayland-protocols 1.45
+(`4d2b2a9e3e099d017dc8107bf1c334d27bb87d9e4aff19a0c8d856d17cd41ef0`).
+Those official release downloads match the pinned hashes. The intervening
+official-head protocol checkout is also preserved; it is not the final build
+input. All 23 required protocol files must be present before module compilation.
+
+Private dependency-build failures are retained separately in
+`module-build/matched-dependencies/prepare-attempt-1.{json,log}` through
+`prepare-attempt-4.{json,log}`: embedded Kitty Python has an empty executable
+path for child processes; Debian's multiarch ffi headers and linker symlink
+require private search directories; a Meson reconfiguration reported `c_args`
+without applying them to the generated compiler commands. The final build
+uses host Python 3.10, a fresh Meson directory with verified `CFLAGS`, and
+`LIBRARY_PATH` restricted to the private dependency directory. The dependency
+receipt is `PASS_KITTY_PINNED_WAYLAND_1_24_PROTOCOLS_1_45`, scanner 1.24.0.
+These are build-environment corrections, not candidate-patch or proof changes.
+
+### Full module and isolated window result
+
+`module-build/build-receipt.json`: `PASS_BUILT_SHARED_LIBRARY_PAIR`, 5.825 s
+under the remote guard. The 501,680-byte candidate has SHA-256
+`9cbbe9f79568ac522fdfd25a8aafa32313b7690918842abba3134322baeec61b`;
+the same-build original module is
+`96589192681b831130ce6c4bef6620f078e53b4988cebea06199e7bdb1fb2428`.
+The two builds have identical 173 exports, 210 imports and five shared-library
+dependencies, with no RPATH/RUNPATH. Exports and dependency names match the
+installed module. The only installed/build import spelling difference is
+the version suffix on 32 xkbcommon symbols; normalized names match exactly.
+The only tracked Kitty source change remains the reviewed `wl_text_input.c`.
+The final build regenerated all disposable protocol/compiler products after
+changing build inputs; it did not reuse headers from the unsuccessful setup.
+
+`module-build/loader-receipt.json`: installed original, rebuilt original and
+candidate all load with `RTLD_NOW`, return the same GLFW version string, and
+map the same dependencies with empty stderr. Wayland and xkbcommon come from
+the copied installed Kitty bundle; dbus comes from the host, as it does for
+the installed original. The first loader probe incorrectly required dbus to
+be bundled; its failure is retained as `loader-attempt-1.json`. The corrected
+probe compares actual mappings and results against the immutable installed
+original, rather than assuming the packaging layout. These are loader/ABI
+checks, not complete terminal behavior or pixel proofs.
+
+A separate 111 MiB Kitty app copy was created without hard links to the
+installed module. Only that copy's Wayland module was replaced. The native
+Wayland window "Lay: проверка подсказок", PID 1891726, loaded the exact
+candidate path and hash; its startup stderr is empty. Local receipt:
+`~/.cache/lay/development/ime-prove-no-hint-qggkm5wl/candidate-window.json`.
+The input console reads text with readline and never executes it as a shell
+command. The physical `про` / `прове` typing question is pending.
+Existing Kitty PID 272166 still maps the original module; global IBus PID
+4715 remains running. No installed Kitty/Lay bytes, models, input sources or
+cancelled counters changed. Runtime change is limited to the new isolated
+Kitty consumer window. Focus transitions, actual pixels and whole-terminal
+acceptance still require native/physical observation; overall TD-123 remains
+OPEN. Local copies of all build/loader receipts and failed attempts are under
+`~/.cache/lay/development/ime-prove-no-hint-qggkm5wl/module-build-evidence/`.
+
+### User acceptance and publication, 2026-09-09
+
+The user answered "да пушь" to the direct question whether `про` / `прове`
+shows the continuation during typing without arrow keys in the isolated
+"Lay: проверка подсказок" window. This accepts that physical typing scenario
+and authorizes publication. It does not turn the callback probe into a full
+Wayland conformance proof, establish the original compositor packet grouping,
+or accept other applications, arbitrary focus transitions or all terminal
+editing behavior. Overall TD-123 remains OPEN.
+
+The separate acceptance record is
+`~/.cache/lay/development/ime-prove-no-hint-qggkm5wl/physical-acceptance.json`;
+the launch and build receipts keep their historical pending status. Publication
+contains the version-specific Kitty patch, this evidence and the refreshed
+architecture graph on `origin/codex/cleanup-20260908`. Lay remains 1.0.68.
+The accepted module runs in the isolated Kitty copy; the main Kitty installation
+and existing processes have not been replaced or restarted. Publication itself
+changes no runtime authority. Exact commit and verified remote reference:
+`~/.cache/lay/development/ime-prove-no-hint-qggkm5wl/publication/`.
+
+### Normal Kitty installation after the repeated report
+
+Later on 2026-09-09, the user reported that Tab fills `пров` to `проверка`
+while the suggestion remains invisible. Native focus inspection identified
+the existing working Kitty PID 272166, window 3077984638 / sequence 1131;
+its mapped Wayland module was the original `3aa0e71a` version. The accepted
+isolated Kitty PID 1891726 still mapped `9cbbe9f7`. Thus the latest observation
+came from a client which had not received the accepted consumer patch; the
+Git push did not replace its running module. No new model or timing diagnosis
+was inferred from this report.
+
+The accepted module was then installed atomically at the normal path
+`~/.local/kitty.app/lib/kitty-extensions/kitty.glfw-wayland.so`, after verifying
+the original file hash/inode, accepted candidate, unchanged launcher and
+bundled Wayland/xkbcommon dependencies. A permanent original backup and
+preflight/installation receipts are under
+`~/.local/state/lay/compat-backups/kitty-0.48.2-preedit-2lmgtmmm/`.
+The original inode 57960326 remains mapped in working PID 272166; its process
+was not restarted. Global IBus PID 4715 is preserved. Rollback restores the
+saved original module atomically for subsequent starts; it does not mutate
+an already running process.
+
+The normal Kitty launcher started native Wayland PID 3048061. Its new window
+"Kitty: исправление установлено" maps installed inode 57933842 with the exact
+accepted `9cbbe9f79568ac522fdfd25a8aafa32313b7690918842abba3134322baeec61b`
+hash and empty startup stderr. The first observation preceded creation of
+the control socket; the completed startup observation verified socket,
+window identity, mapped path/inode and hash. This is installation/startup
+verification of the physically accepted artifact, not a new physical typing
+or full-terminal proof. Existing windows need their own process restart to
+load the replacement. No Lay binaries, models, input sources or cancelled
+counters changed. Authority change is confined to the Kitty consumer in
+new processes using the normal installation.
+
+Exact local receipt:
+`~/.cache/lay/development/ime-prove-no-hint-qggkm5wl/normal-installation.json`,
+status `NORMAL_INSTALLATION_AND_NEW_PROCESS_VERIFIED`.
+
+The user subsequently confirmed "в новом окне работает все отлично!" for the
+window launched from the normal installation. Record:
+`~/.cache/lay/development/ime-prove-no-hint-qggkm5wl/normal-physical-acceptance.json`,
+status `USER_ACCEPTED_NORMAL_KITTY_INSTALLATION`. This closes the reported
+Kitty display scenario for the newly started client. Existing processes
+still require restart; other applications and the full TD-123 contract are
+outside this physical acceptance.
+
+## WeChat report and first-word admission, 2026-09-09
+
+**Current verdict: the user reports WeChat working and authorizes publication;
+the separate native first-word refusal remains open. Runtime authority changed: false.**
+
+The user reported "Теперь в окнах Wechat не работает ничего!" at 12:40 UTC.
+The read-only capability check found compatible WeChat 4.1.1.4, PID 3734978,
+`/opt/wechat/wechat`, using `QT_IM_MODULE=ibus`. Lay IME PID 536035 and the
+global IBus PID 4715 remained alive; `/proc/536035/exe` still hashes to the
+accepted 1.0.68 `2a2df132e44142be4b1f273122c7d3391a0ac7e1fbe7a5a1353dc65d91ac3219`.
+The selected engine was `lay-ime-ru`, with both original Lay input sources.
+The installed Kitty fix does not establish acceptance in other applications.
+
+The existing opt-in rolling trace was frozen locally, without enabling a new
+observer. It contains GUI input with capabilities 41 and surrounding text:
+after a FocusIn, an empty snapshot reports text/cursor/anchor 0/0/0, but the
+source-free activation and all three following printable settlements retain
+`UnknownStart`. No candidate worker starts for that word. Other GUI intervals
+contain a known word and visible-preedit output. These records have no source
+application or per-row wall-clock timestamp, so neither interval is labelled
+as a proved WeChat episode. Live focus checks initially saw Kitty, and a later
+check saw Tor Browser. The clarification distinguishing ordinary input from
+Lay features, and the requested focused WeChat repetition, remain open.
+
+The first failing authority boundary is before candidate generation:
+`source-free activation -> UnknownStart -> context_word_is_known() == false`.
+`observe_external_surrounding_text()` stores a snapshot but does not change
+word lineage; only an observed key boundary arms the next known word.
+`context_allows_manual_toggle()` also refuses an unknown GUI word, while its
+existing explicit terminal-suffix exception is separate. The latter is a
+source finding, not a physical Double Shift measurement in WeChat. There is
+no evidence here of a missing L1.1 candidate, L2/L3/L4 ranking loss, verifier
+failure, or a change to any model/package.
+
+### Exact installed-byte native diagnostic
+
+The existing private IBus client harness was reused on the remote worker
+under the dedicated-20cpu heavy lease and existing resource limits. The
+candidate SHA and all nine dependency roles were checked by the harness.
+The inherited driver is byte-identical after removing the added diagnostic
+override. The GUI consumer advertises capabilities 41, publishes surrounding
+text, and uses cursor geometry 2x19. The private old-FocusId cache is primed
+through the same already-proved seed route; no `FocusInId` occurred. Each
+prefix receives one fixed 150 ms observation window, without retrying it.
+
+| Native client state | Expected hint | Observed hint | Result |
+| --- | --- | --- | --- |
+| Empty field, first `про` | visible | absent | reproduced refusal |
+| Empty field, observed Space then `про` | visible | visible | positive control PASS |
+| Cursor after existing `за`, then `про` | absent | absent | unknown-word control PASS |
+
+All three literal surfaces were preserved and no deletion was emitted.
+The process completed all 3 cases: 1 expected product failure and 2 controls
+PASS, not release acceptance. Private service runtime was 3.254 s and CPU
+time 2.888 s; all private processes were reaped. The GUI harness's initial
+empty snapshot is suppressed by libibus's existing identical-value cache;
+actual received snapshots of lengths 1, 2 and 3 still fail to arm the first
+word. The separate live trace does contain the explicit empty snapshot.
+These facts must not be merged into a claim that native setup delivered it.
+
+Exact local evidence directory:
+`~/.cache/lay/development/wechat-ime-no-functions-8isocthh/`.
+`native-preflight.json` binds the helpers; `receipt.json` is native completion
+SHA `463158289e73a502da9134c7d356cdbd5533392e4f115e769af810f3236cd2f2`;
+`run-metadata.json` binds the candidate and dependencies;
+`ibus-engine-trace.jsonl` is the synthetic private native trace.
+`ibus_engine_debug.jsonl` is the initial private live snapshot, SHA
+`8b0a256becab7358b3569659fc4dcbc9578c22659f4b1a9f57dd46e3f646cd52`;
+its complete row 1686 is the empty snapshot. `existing-trace-v2-source.json`
+records the later snapshot and its actual Tor focus observation.
+The remote native run is
+`/home/e/projects/lay-development-runner/autocorrect-ojoasco5/phrase-gui-empty-field-8isocthh-v1/`.
+Raw personal input remained local; only synthetic diagnostic helpers were
+uploaded. Neither cancelled input counter was restarted.
+
+### Repair analysis before production changes
+
+The initial idea was to promote a current exact surrounding-text prefix via
+the existing admission reducer. Protocol review found an unresolved limit:
+IBus cursor positions are relative to the supplied surrounding fragment, not
+an absolute document position. Qt separately defines surrounding text,
+absolute position and text-before-cursor queries. Its IBus adapter sends the
+surrounding text and relative cursor/anchor values. Consequently, treating
+every fragment offset zero as a proved document start is not justified by
+the current transport contract. This is an inference from the documented
+protocol distinction, not a captured truncated WeChat snapshot.
+Sources: [IBus InputContext API](https://ibus.github.io/docs/ibus-1.5/IBusInputContext.html#ibus-input-context-set-surrounding-text),
+[Qt input-method queries](https://doc.qt.io/qt-6/qt.html#InputMethodQuery-enum),
+and the previously inspected Qt 5.15 `qibusplatforminputcontext.cpp` in the
+private cross-app evidence directory.
+
+Candidate designs and scores are engineering estimates, not test results:
+
+- Promote from a generic relative snapshot alone: **3/10**, rejected for now.
+  It would fix the positive fixture but cannot distinguish a real word start
+  from the beginning of an insufficient fragment. Matching visible bytes
+  does not itself prove completeness or bind a delayed snapshot to a focus.
+- Admit an authenticated word-start witness through the existing reducer:
+  **8/10 conditional**. A delimiter inside the supplied text is one usable
+  witness; document start needs an explicit, current client-origin proof.
+  Reuse the existing owner, activation, word lineage and bounded callback
+  ordering. Do not add a parallel authority controller. The required client
+  proof for the empty-field case is not yet implemented or verified.
+- Permit only explicitly requested observed-suffix operations for GUI clients,
+  with exact current surrounding-text validation: **7/10 conditional** for
+  manual actions. This may extend the existing manual suffix contract without
+  declaring the whole word known, but does not solve automatic first-word
+  correction. Its display/Tab contract must be specified separately.
+
+No production design has been selected and no runtime code has been edited.
+The missing word-start evidence must be resolved before granting automatic
+authority. Consequences to check in the selected design: preserve every
+candidate source/ranking/verifier contract; reject middle-word fragments,
+selection, stale snapshots, focus/owner ABA, reset and input gaps; preserve
+atomic, GTK and terminal routes and the sole physical Shift detector; retain
+the existing key/display deadlines and bounded worker queue; measure added
+callback CPU/RSS/allocation cost; bind cache invalidation to the existing
+frame identity; leave packages/reloads/learning/feedback unchanged; and define
+the removal boundary for any added client witness. A refusal must preserve
+literal input and cannot fall back to an unverified edit or another owner.
+
+Required proof remains the causal native failure/control set, real callback
+order and stale-evidence tests, the full affected and mandatory release gates,
+and actual WeChat keyboard acceptance. General TD-123 quality, physical input,
+ordinary typing health in the reported field, Tab acceptance, autocorrection
+and physical Double Shift have not been newly accepted by this diagnostic.
+
+### User confirmation and publication
+
+The user subsequently replied "да заработало пушь" to the ordinary-input
+clarification. Record this as user-reported recovery in WeChat and explicit
+permission to push the current work. No runtime repair was installed during
+this diagnosis; no particular recovery mechanism is established. The separate
+three-case native result and its first-word failure remain unchanged. This
+confirmation is not an individual measurement of Tab, autocorrection or
+Double Shift. The update publishes diagnosis and delivery records only.
+
+### First-word display repair preflight, 2026-09-09 13:33 UTC
+
+After authorizing the preceding publication (verified commit `863dc4b5`),
+the user explicitly reported the missing first-word IME suggestion. The
+previous 3-case native control is the causal RED for this narrower defect.
+No change has yet been installed. Automatic whole-word correction and
+generic GUI manual replacement remain separate authority questions.
+
+Engineering alternatives, assessed before editing runtime code:
+
+| Design | Estimate | Consequences |
+| --- | --- | --- |
+| Separate observed-suffix display and explicit append-only completion | 9/10, selected | Reuse current admission token, exact frame, worker and edit verifier; do not claim the entire word is known. |
+| Add a client-provided absolute word-start witness | 6/10 for this request | Could also authorize whole-word correction, but needs client/transport work beyond displaying and accepting a suffix. |
+| Treat relative surrounding offset zero as KnownStart | 3/10, rejected | Still cannot establish the beginning of the whole document. |
+
+Selected contract: a settled contiguous typed suffix can drive the existing
+candidate readout independently of whole-word authority. GUI clients must
+have a matching, unselected surrounding-text token at the caret, with no
+contradictory letter before or after the observed token. Terminals can reuse
+the already bounded observed suffix and terminal executor contract. Matching
+a relative fragment is explicitly not a completeness promotion. A display
+frame carries its original admission token so revocation, lineage, owner or
+activation changes cannot revive a stale result with equal text. The current
+150 ms deadline and single pending worker slot remain unchanged.
+
+The native surrounding-text callback may schedule display after committed
+input is reflected by the client; it grants no mutation permission. Explicit
+Tab/Alt may reuse only the existing suffix-append plan (zero deletion and
+cursor movement), rechecking the current suffix and client state. Replacement
+candidates, Space correction, active composition, generic manual edits and
+bridge authority retain their full-word gates. Unknown suffix acceptance
+must not create whole-word learning feedback. Existing candidate generation,
+ranking, source admission, SafetyGate, verifier, packages and physical Shift
+detector remain unchanged; no literal fixture text becomes a runtime condition.
+
+Proof gates: repeat the exact installed-byte RED/control set against the new
+candidate; exercise native Tab and lifecycle/selection/middle-word negatives;
+test stale worker identity and full-word mutation refusal; run affected and
+mandatory release checks remotely under the existing resource lease; obtain
+fresh-context independent review (at most two rounds), then install accepted
+bytes and request physical first-word acceptance. Record display correctness,
+edit safety, model quality and resource measurements separately. Native GUI
+behavior is not yet WeChat physical acceptance. Current verdict: REPAIR_OPEN.
+
+### First candidate measurements and retained failure
+
+Private candidate `100fa0a7390123132566b60180bf5f29da607f15c8b6f4926a5962c0960d8e8a`
+was built from six changed runtime files plus the regression tests. The
+focused runner executed 454/454 correctness tests successfully (3 performance
+tests excluded); its manifest reports exactly the 5 newly added tests.
+Formatting, focused tests and release IME build took 73.448 s total. A helper
+preflight initially rejected a missing `build.rs` registry key before any
+build/test command; that failed receipt is retained separately and the input
+check was corrected to hash every requested path directly.
+
+An expanded fixed native set contains 7 cases: first word + Tab, observed
+Space control, insertion after existing letters, insertion before an existing
+word, selection after hint, caret movement after hint, and Reset after hint.
+It uses the same exact client/inputs for baseline and candidate, with 80 ms
+between key dispatches and one 150 ms display observation per phase.
+Installed baseline passes 3/7; the new candidate passes 6/7. First-word Tab
+now commits exactly the displayed suffix plus a space; neither run deletes
+any text. The remaining failure is Reset leaving a visible stale preedit;
+Tab after Reset correctly refuses and the literal surface is unchanged.
+Runtime/CPU for these separate seven-case controls were 5.578/3.208 s for
+baseline and 5.593/3.225 s for candidate. These are single controls, not a
+performance bound or a general correction-quality measurement.
+
+The Reset callback previously cleared only engine state. The next revision
+also clears the legacy client preedit before local reset, preserves atomic
+output ownership, and performs local reset even if signal delivery fails.
+Independent review also identified duplicate identical surrounding snapshots
+restarting a displayed suggestion. The next revision schedules only changed
+snapshots while retaining observation/undo accounting, with an actual
+callback/Tab regression test. These changes have not yet passed their gates.
+Exact receipts: `~/.cache/lay/development/wechat-ime-no-functions-8isocthh/first-word-fix/`
+(`candidate-build.json`, `focused-tests-SUMMARY.json`,
+`native-baseline-v1/receipt.json`, `native-candidate-v1/receipt.json`).
+Native helper SHA `78b2c6c4c5b062da608c9faf6b8f2614b216d7e16298bf37903d91ff62252a36`.
+No runtime installation or general TD-123 promotion occurred.
+
+### Reviewed candidate and release provenance correction
+
+Candidate `5e9c7a557453fba8bea964ee745e0975e1ce8e0ec03336b87a3f824c525afacf`
+passes 455/455 focused correctness tests (3 performance tests excluded) and
+7/7 cases with the unchanged native driver. This repairs both the first-word
+hint/Tab failure and native Reset failure. Independent source review is
+9/10 H0/M0; its exact hashes and remaining evidence limits are recorded in
+`tech_debt/evidence/ime-first-word-suffix-source-review.md`. Duplicate-wire
+probes were inconclusive because duplicate delivery to the engine was not
+established; they are retained, not counted as a product PASS. The actual
+callback/Tab unit test passes. No runtime package or candidate source changed.
+
+The first mandatory 1.0.69 full run failed after 485.351 s. Its TD-113 protected
+artifact assertion correctly detected the new composition source against the
+historical TD-121 hash. The empty known-failure ledger also rejected the
+regenerated test manifest (6 new correctness tests; 2737 old rows unchanged).
+No semantic failure is admitted to the ledger. Keep TD-113/TD-120/TD-121 evidence
+immutable and add the explicit reviewed first-word successor binding. Rebind
+only the empty ledger's expected manifest SHA; retain its historical
+zero-failure observation as historical evidence, then rerun the canonical
+full gates. The old observation is not proof for the six new tests.
+
+Exact failed receipt:
+`/home/e/projects/lay-development-runner/run-9E6Heo/first-word-full-acceptance-completed-identity.json`.
+Revised-candidate receipts are `candidate-build-v3.json`,
+`focused-tests-v3-SUMMARY.json` in the private first-word directory and
+`/home/e/projects/lay-development-runner/autocorrect-ojoasco5/phrase-first-word-candidate-v2/receipt.json`.
+These measurements establish private candidate behavior only. Final released
+bytes, resource controls, installation and WeChat physical input remain OPEN;
+installed runtime authority is unchanged at this checkpoint.
+
+The next full attempt (`run-zJmtO5`, 134.722 s) passed architecture, manifest
+rebinding and unchanged lint inventory, then stopped at rustfmt on the new
+successor-contract assertion. Its requested formatting was applied without
+semantic or runtime changes. Receipt:
+`/home/e/projects/lay-development-runner/run-zJmtO5/first-word-full-acceptance-completed-identity.json`.
+The subsequent fresh run performs formatting first to reject this class
+before architecture and compilation work. Installed runtime is unchanged.
+
+### Final 1.0.69 build accepted, private client gates pending
+
+The fresh `run-inc1l8` completes every mandatory release gate successfully:
+2717/2717 correctness/package tests (2681 + 36), architecture, formatting,
+lints, desktop helper checks, CLI smoke, the full release build and the final
+IME build. The manifest has exactly six new correctness tests and all 2737
+prior rows unchanged. The known-failure list stays empty. Formal performance
+and ignored lanes were not run; sampled client resource controls are separate.
+No general model-quality promotion follows from these release gates.
+
+Total full-run time: 896.145 s, including 324.550 s for test execution,
+584.256 s for the canonical full command and 176.638 s for the final IME build.
+These nested timings are not additive. Target storage passed the 12 GiB guard.
+All ten release binaries and all 697 runtime Rust source hashes were copied
+and verified locally. Final IME SHA:
+`3c71eff1688fdbae06bd3f25e684fd5f8acfec4cc3a03ad77c7dd5741437277c`.
+
+Exact full identity:
+`/home/ubu/.cache/lay/development/run-btt4ilfz/first-word-full-acceptance-completed-identity.json`;
+remote origin `/home/e/projects/lay-development-runner/run-inc1l8/`.
+`full-test-lanes/SUMMARY.json` owns the test denominators. Source review remains
+9/10 H0/M0; the second independent review of the installer and historical
+successor binding closed at 10/10 H0/M0/L0. Its two provenance findings were
+repaired: hash/mode guards for the 13 consumed scripts/extension inputs and
+explicit baseline/candidate identities for the GUI resource pair. A subsequent
+installer path change only selects the fresh run after the rustfmt failure;
+functions and the installation transaction are unchanged.
+
+Installed runtime is still 1.0.68 at this checkpoint. The final candidate's
+private IBus profiles, lifecycle/Tab controls, first-word GUI/resource pair,
+installation and physical WeChat acceptance remain separate pending gates.
+
+### Final private-client acceptance and installation, 1.0.69
+
+The final-byte IBus acceptance completed in 357.726 s. All three fixed89
+profiles have exact metric parity with installed 1.0.68: 178 independently
+recomputed before/after statuses per profile, zero class regressions and zero
+new false outputs. The following values apply to both baseline and candidate;
+they are the existing diagnostic fixtures, not a new heldout quality proof.
+
+| Group | Strict | Normal | Experimental |
+| --- | --- | --- | --- |
+| `all_dirty` | 15/47 (31.91%) | 19/47 (40.43%) | 20/47 (42.55%) |
+| `all_clean` | 41/42 (97.62%) | 41/42 (97.62%) | 40/42 (95.24%) |
+| `clean_missing_letter_control` | 3/4 (75.00%) | 3/4 (75.00%) | 3/4 (75.00%) |
+| `clean_repeated_letter_control` | 4/4 (100.00%) | 4/4 (100.00%) | 4/4 (100.00%) |
+| `clean_valid_word` | 34/34 (100.00%) | 34/34 (100.00%) | 33/34 (97.06%) |
+| `context_fixture` | 0/6 (0.00%) | 0/6 (0.00%) | 0/6 (0.00%) |
+| `missing_letter` | 3/8 (37.50%) | 5/8 (62.50%) | 5/8 (62.50%) |
+| `repeated_letter` | 0/4 (0.00%) | 0/4 (0.00%) | 0/4 (0.00%) |
+| `restoration_regressions` | 7/24 (29.17%) | 9/24 (37.50%) | 10/24 (41.67%) |
+| `transposition` | 5/5 (100.00%) | 5/5 (100.00%) | 5/5 (100.00%) |
+
+Existing wrong outputs remain: dirty 0/3/3 and clean 1/1/2 for strict, normal
+and experimental respectively. Exact parity is not a general quality PASS;
+TD-123 remains OPEN. The L1/L2 heldout evidence and eight immutable model inputs
+were reused only under their unchanged source/dependency bindings.
+
+Final native controls pass 13/13 (US and RU first-word controls, manual edits,
+lifecycle and restoration). One quiet legacy control retains its early hint
+and 5/5 correction controls. The narrow terminal retains its early hint and
+3/5 controls, matching the prior isolated-harness limit without a physical
+keyboard daemon; this is not a claim that all terminal behavior passes.
+
+The separate fixed first-word GUI pair uses the same seven-case driver and
+newly accepted L1.1 service for both IME versions: old 1.0.68 is 3/7 with the
+first hint absent, new 1.0.69 is 7/7 with the hint and exact Tab append present.
+All seven candidate cases preserve the no-deletion contract. All private
+processes were reaped. Native duplicate-callback delivery remains inconclusive
+as documented above; its actual callback/Tab unit contract passes.
+
+Observed resource pair (one control each, 20 ms sampling):
+
+| Measure | 1.0.68 | 1.0.69 |
+| --- | --- | --- |
+| Observation duration | 6.024 s | 6.003 s |
+| Process VmHWM | 407356 KiB | 408300 KiB |
+| Private cgroup memory peak | 407539712 bytes | 405880832 bytes |
+| Observed cgroup CPU usage | 3.168 s | 3.141 s |
+| Observed swap | 0 | 0 |
+
+These are sampled observations, not statistical latency/CPU bounds; allocation
+counts and unobserved exit intervals were not measured. No resource-limit,
+worker-queue, deadline or candidate-source relaxation was needed.
+
+Exact local receipts are under `/home/ubu/.cache/lay/development/run-btt4ilfz/`:
+`first-word-native-acceptance/receipt.json`, its two `resource-*/first-word-resources.json`
+files, `td123-release-native-controls.json`, and the five `td123-release-native-*/receipt.json`
+files. Fixed89 comparisons and four final control directories are under
+`/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/` with the
+`first-word-fixed-profile-*` and `phrase-first-word-release-*` prefixes.
+
+Installation status: **INSTALLED_VERIFIED_PHYSICAL_PENDING**. All ten accepted
+release binaries are installed; the CLI and loaded extension report 1.0.69.
+The four loaded executable hashes match the release manifest: IME PID 3856819,
+daemon 3856813, L3 3856814, and L1.1 3856565.
+Global IBus PID 4715, user configuration, input sources and all eight immutable
+model inputs were preserved. WeChat and the older Kitty windows were not restarted.
+Both cancelled input counters remain off. Runtime installation authority
+changed at this step; whole-word completeness/mutation gates were not broadened.
+
+Installation receipt: `/home/ubu/.cache/lay/development/run-btt4ilfz/installation-1.0.69.json`.
+Backup: `/home/ubu/.local/state/lay/release-backups/1.0.69-td123-mrlex9zk`.
+The user has been asked to type the first word in an empty WeChat field and
+check the visible hint and Tab. Physical acceptance and publication remain
+pending; do not rebuild or reinstall merely to complete those steps.
+
+### Physical acceptance reopened before publication
+
+The first reply to the requested scenario was "проверка да круто!". Before
+commit/push the user then reported: "короче когда удалишь всегда IME есть а
+вот когда набираешь НЕ ВСЕГДА ЕСТЬ!", "опять пропала!", "Илине простраслась!",
+and "Нет пров(опять нет)". The next clarification was "Backspace наоборот
+активирует IME": deletion activates the visible hint, rather than hiding it.
+The initial confirmation is retained as history;
+current status is **INSTALLED_VERIFIED_ACCEPTANCE_REOPENED**. No commit or push
+of 1.0.69 occurred. The exact follow-up is in
+`/home/ubu/.cache/lay/development/run-btt4ilfz/physical-acceptance-1.0.69.json`.
+
+A bounded snapshot of the existing opt-in IME trace captures the reported
+prefix: `пров` produced 12 candidates in 2.965 ms, was applied at 3.004 ms,
+and sent a visible preedit update with four suffix characters. A later `(`
+cleared the hint, which is a separate punctuation event. Current GNOME focus
+is Kitty PID272166. It still maps the original deleted module inode57960326,
+whereas the installed corrected module is inode57933842, SHA `9cbbe9f7`.
+The previously accepted new Kitty PID3048061 is no longer running. This
+supports investigating the already known old-client rendering path; current
+focus alone does not attribute every reported failure to that application.
+The user has been asked whether the intermittent failure is in Codex/Kitty or
+WeChat. This observation alone does not justify another runtime change.
+
+Evidence: `/home/ubu/.cache/lay/development/run-btt4ilfz/intermittent-hint-live/`
+(trace snapshot, focused-window identity and module mapping receipt). Both
+cancelled input counters remain off. Installed 1.0.69 and global IBus are
+unchanged. Existing old terminal sessions are preserved. Further code work
+requires a fresh causal distinction between producer, transport and consumer;
+publication and physical acceptance remain open.
+
+### User accepted hint delivery and requested publication
+
+After the retained reopened report, the user wrote:
+"Push отлично но следущая проблема это то что автопераврот не работает !".
+This is explicit publication authorization and acceptance of the delivered
+hint scope. The client of the final confirmation was not specified; do not
+promote it to complete WeChat or desktop acceptance. The earlier trace and
+old Kitty module evidence remain historical observations with that limit.
+The next reported case is "зуын -> push не сработал !"; automatic layout
+correction is now the active diagnosis and general TD-123 remains OPEN.
+
+The installed 1.0.69 runtime and all 697 Rust source hashes still match the
+completed full-gate identity. This publication step changes no runtime, model,
+configuration, input-source or mutation authority. No old terminal, WeChat or
+global IBus process is restarted; cancelled input counters remain off.
+The original confirmation and reopening are preserved before the new scoped
+acceptance in `/home/ubu/.cache/lay/development/run-btt4ilfz/physical-acceptance-1.0.69.json`.
+The exact commit and verified remote ref belong in the separate publication
+receipt directory `/home/ubu/.cache/lay/development/run-btt4ilfz/publication-1.0.69/`.
+
+### Automatic layout correction after deleting a boundary, 2026-09-09
+
+Publication of the accepted 1.0.69 hint scope completed as commit
+`73724fa497a8d8e4b713277d4bf20d7e165bf3c2`; `origin/codex/cleanup-20260908`
+was read back at the same SHA. New work starts from that clean source.
+
+The bounded existing live trace contains two distinct mechanisms. The literal
+reported `зуын` maps to `pesy`, not `push`; its prepared correction reaches a
+Rank no-apply outcome (ready at Space, no timeout). This is a compound typing
+error and is not evidence for a failed exact layout projection. Separately,
+`ЗГыр` after an observed Space produces the automatic `Push ` replacement.
+After later Backspace crosses a retained Space, `WordCompleteness` changes
+from KnownStart to UnknownStart. Deleting back to a retained earlier separator
+and typing the exact-layout token `згыр` never restores completeness. Its Space
+has no captured correction frame or prefetch request; explicit manual toggle
+then produces `push ` through the terminal executor.
+
+The first authority loss in the latter case is
+`advance_context_word_scope` on boundary deletion, before L1.1/L2/L3/L4,
+DecisionCore and verifier are consulted. The next refusal is
+`capture_input_frame_identity`; `managed.rs` then commits the literal Space.
+All three live auto flags remain enabled; the installed executable hashes and
+configuration match the accepted 1.0.69 installation. This does not establish
+all-app behavior or a model-quality change.
+
+Evidence: `/home/ubu/.cache/lay/development/auto-layout-push-k9vjrshc/`
+`mechanism-evidence.json` and its hash-bound existing trace snapshot. The trace
+has ordered events but no per-event wall-clock timestamps or client rendering
+acknowledgement. No new observer was started; both cancelled counters stay off.
+
+The next bounded experiment uses the installed candidate in private IBus with
+real GNU Readline, four fixed cases: unknown first-word preservation, ordinary
+known-boundary layout correction, correction after deleting back across a
+boundary to an earlier retained separator, and recovery after a newly typed
+boundary. Only the third product case is expected to fail on baseline. The
+same driver will be reused for a candidate; the deliberate negative control
+must still preserve unknown text. Actual callback order, visible effects and
+admission evidence are recorded; this is neither physical keyboard acceptance
+nor heldout model quality. Runtime authority is unchanged. A production change
+still requires a provenance design that distinguishes retained observed
+boundaries from unobserved mirror text; do not promote arbitrary tail contents
+or weaken verifier/SafetyGate to make this example pass.
+
+The first native attempt stopped after two passing controls, before the
+boundary-deletion case: a copied generic handoff assertion required a nonempty
+native FocusInId receipt, while this controlled legacy client intentionally
+omits it. Its `native-baseline-v1/receipt.json` remains FAILED; all private
+processes were reaped. Driver v2 explicitly asserts the empty native receipt
+and exact visible tail while preserving current-context, engine-owner and
+observer-marker checks. No product assertion, cadence, deadline or retry was
+changed. Derivation: `native-helper-identity-v2.json` in the same evidence dir.
+
+The v2 attempt also remains FAILED before boundary deletion: automatic handoff
+supplied a native FocusInId while explicit profile selection could omit it.
+The globally-empty v2 assertion was therefore also an incorrect fixture
+assumption. This is an explicit harness-contract replan, not a product retry:
+v3 permits absence and otherwise requires the exact current InputContext path
+plus client name. Independent current-context/profile/owner/marker checks and
+all four product expectations remain unchanged. Receipts for v1 (two completed
+controls) and v2 (one completed control) are retained; all private processes
+were reaped. See `native-helper-identity-v3.json`.
+
+### Consequence analysis before retained-boundary implementation
+
+Measured baseline: driver v3 completes four actual IBus/Readline cases in one
+fresh 1.0.69 process. Three product cases pass; only retyping after boundary
+deletion remains literal. Both ordinary correction and correction after a new
+Space pass, while the unknown first-word negative control stays unchanged.
+All private processes are reaped. Receipt:
+`/home/ubu/.cache/lay/development/auto-layout-push-k9vjrshc/native-baseline-v3/receipt.json`.
+This establishes the admission defect, not a quality defect in the exact
+`згыр` projection. The distinct compound `зуын` Rank refusal remains separate.
+
+Design comparison (engineering estimates, not measured performance scores):
+
+| Route | Score | Consequences and verdict |
+| --- | --- | --- |
+| Current single completeness flag, discard provenance on boundary deletion | 4/10 | Preserves unknown-text refusal but loses an earlier observed separator; measured 3/4 native behavior. |
+| A retained observed-boundary floor inside existing WordLineage | 9/10 | One fixed-size optional scalar offset, carried by the existing admission/transfer token. Exact Backspace may reuse only a retained separator at or after that floor. No new owner, queue, timer, cache or model route. Selected. |
+| A bounded stack of every observed word boundary in the same admission owner | 7/10 | Viable, but more state and update/trim/transfer rules than the single earliest observed floor needed for this defect. Rejected maintenance cost. |
+| Generalize the manual observed-suffix count into a whole-tail provenance span | 7/10 | Viable with complete rebasing across every variable-length bridge output; changes manual suffix semantics and more executor contracts. Rejected for this repair. |
+
+An arbitrary separator found in an unproven mirror is not an alternative:
+without an observed floor it cannot establish word start. The new field is
+proof metadata within the existing WordLineage; all source-free activation,
+input-gap, Reset, changed-context and failed-transfer paths must clear it.
+Exact same-context transfer carries it with the existing lineage and tail seal.
+It does not carry separate authority, introduce a second generation or replace
+ContextAdmissionReducer. Scalar offsets count Unicode characters, not bytes.
+
+The selected floor is the earliest retained position known to be at or after
+an observed separator. Owned suffix replacement preserves that prefix or
+writes known new text to its right. Prefix trimming can only move retained
+text left: keeping the old floor is conservative and may discard otherwise
+recoverable older-boundary evidence. It must never move the floor left by
+inferring a prefix deletion from coincidentally equal strings. A newly
+observed boundary supplies a fresh floor. This bounded repair makes no claim
+of exhaustive restoration across a truncated 160-character mirror.
+
+On an exact one-character terminal/managed Backspace crossing a separator,
+inspect the retained tail once. An earlier separator inside the observed
+range keeps KnownStart under a new lineage generation; otherwise revoke as
+before. Empty mirrors, non-exact edits, command modifiers, navigation and
+unknown prefixes never gain authority. Ordinary within-word Backspace remains
+unchanged. No worker is scheduled from the Backspace callback and no preedit
+is republished there, preserving the WeChat deletion contract. Subsequent
+typed input uses the existing preparation worker. Immediate Space after a
+Backspace without retyping is outside this demonstrated repair.
+
+Candidate/lattice retention, ranking, L1.1/L2/L3/L4, DecisionCore, verifier and
+SafetyGate are unchanged. Newly re-admitted words use the same bounded
+candidate field and final edit authority as ordinary known-boundary words;
+no token, phrase, source ID or test name becomes a runtime condition. Existing
+word/frame/config/material identities and stale-result rejection remain.
+A boundary crossing must invalidate earlier word tokens even when the previous
+word's start is retained. Full/cold model outputs and package reload policy
+are unchanged; no new package or delta is installed by this implementation.
+
+CPU/RSS/allocation estimate: one optional u32 in existing copied lineage;
+no new task, queue or RPC. Exact Backspace compares the retained prefix even
+for KnownStart; crossing a boundary scans for the last retained separator.
+Each observed new boundary also scans the tail to calculate its scalar offset.
+These are O(n) operations over the retained mirror. Ordinary append limits it
+to 160 scalars; this is not a universal hard cap immediately after every bridge
+replacement. Diagnostic formatting allocates only when trace is enabled;
+the new provenance operations themselves introduce no heap allocation.
+Newly admitted typing performs existing bounded prefetch work previously
+skipped. Native timing and static layout size are recorded separately; a single
+four-case run establishes no statistical latency bound. The Space deadline
+and worker limits are unchanged.
+
+Learning remains gated by the existing verified output/postcondition route;
+manual projection, suffix display and refused operations do not become new
+positive feedback. Explicit append/variable-length suffix edits do not move
+the floor left. Sensitive input and all genuine input gaps discard provenance.
+Concurrent handoff remains owned by one engine guard and the existing source
+seal; bridge settlement still cannot rewrite word provenance. Failure leaves
+the prior literal/refusal behavior. Rollback is the already installed 1.0.69
+binary set and the isolated source commit `73724fa`.
+
+Required proof before promotion: actual legacy callback tests for observed
+and unobserved retained separators, only-boundary deletion, input-gap/reset
+revocation and stale-token invalidation; unchanged first-word hint/Tab and
+physical Double Shift ownership contracts; the same native v3 four-case
+baseline/candidate pair (3/4 to 4/4 with the negative control preserved);
+all three fixed89 profiles with aggregate/per-class/false-output parity and
+no regression; canonical full release gates; independent review with at most
+two repair/review rounds; exact-binary installation followed by user physical
+confirmation. Broad TD-123 quality and the compound typo report remain OPEN.
+Implementation has not started at this preflight point; runtime authority is
+unchanged. The ordinary starting-point release has already been pushed.
+
+
+#### Retained-boundary review round 1 and test repair
+
+Independent review: 8/10, H0/M1/L1. No production blocker was found. M1 was
+the new negative fixture seeding its unobserved mirror before source-free
+activation; the first callback correctly cleared it. The repaired fixture
+settles activation through existing Shift callbacks, checks the live token
+and UnknownStart, then seeds the mirror. It asserts the exact pre-Backspace
+tail and observed floor as well as the original refusal/no-learning effects.
+L1 corrected the CPU/allocation scope above.
+
+The first focused remote run failed: 458/459 in the main test process, one
+separate process passed, and the positive usage test failed on an empty file.
+That test stopped at the first successful read. The unchanged persistence
+writer creates the file, sets permissions, then writes a newline-terminated
+event; the reader could observe the interval before writing. Its wait now
+requires a complete line, retaining the original 1300 ms deadline and all
+positive/negative semantic assertions. No runtime persistence change.
+Receipt: `/home/ubu/.cache/lay/development/run-_iedwha7/RESULT.json`;
+remote test logs: `/home/e/projects/lay-development-runner/run-Nlo1dE/tests/logs/`.
+Review: `/home/ubu/.cache/lay/development/auto-layout-push-k9vjrshc/review-v1/review.md`.
+Candidate native proof, repaired focused results and final review remain pending
+at this record. Runtime authority and the installed 1.0.69 are unchanged.
+
+
+Repaired focused check: 461/461 PASS (459 main, two isolated processes),
+14.338 s total including format. Six new tests preserve all previous tests.
+Receipt: `/home/ubu/.cache/lay/development/run-v250cnbd/RESULT.json`;
+remote logs: `/home/e/projects/lay-development-runner/run-nkfjJj/tests/logs/`.
+Versioned candidate is 1.0.70; full release, native candidate and final review
+are pending. Installed runtime remains 1.0.69; runtime authority unchanged.
+
+
+The initial 1.0.70 full gate stopped during test discovery at the unchanged
+12 GiB Cargo target limit (64.531 s; Cargo exit 75). No test failure or
+candidate release followed from that attempt. Saved under
+`/home/ubu/.cache/lay/development/auto-layout-push-k9vjrshc/full-failed-budget-v1/`.
+Under the existing resource lease, only disposable Lay-owned debug artifacts
+and fingerprints were removed: target 12,946,116,608 -> 4,361,183,232 bytes.
+Dependency/release caches, saved proof binaries and installed runtime were
+preserved; the previous candidate SHA was checked after cleanup. Receipt:
+`/home/ubu/.cache/lay/development/auto-layout-push-k9vjrshc/cache-cleanup.json`.
+A fresh frozen full gate is required; no failed attempt is retried in place.
+
+
+#### Inline callback outcome budget, before lint repair
+
+Full attempt 2 reached default Clippy after format, architecture and manifest
+checks, then stopped (107.525 s). A separate scoped diagnostic preserves the
+actual error: the generic RendezvousOutcome Stamp variant is at least 208 bytes
+versus one byte for Failed. The added lineage metadata crosses Clippy's
+default size-difference heuristic. This is a measured compiler diagnostic,
+not a measured CPU/latency regression or a runtime correctness failure.
+Diagnostic: `/home/e/projects/lay-development-runner/run-3NAM4Y/clippy-bin-diagnostic.jsonl`.
+
+Consequence comparison before changing source (engineering scores):
+
+| Route | Score | Consequences |
+| --- | --- | --- |
+| Box the stamp | 3/10 | Adds allocation/indirection to callback results and changes the established ownership path solely to reduce enum stack size. |
+| Compact floor into an optional nonzero u16 | 7/10 | Could reuse lineage padding, but needs checked encoding and a new conservative refusal beyond 65534 scalars. More representation/range semantics for this repair. |
+| Keep the inline stamp with a local expected lint and an explicit size ceiling | 9/10 | Preserves ownership, callback API and allocation behavior; selected. Existing semantic test will enforce WordLineage <=24 and production RendezvousOutcome<Sequence> <=224 bytes and report actual sizes. |
+
+The selected annotation is local to this enum. Global warning policy and all
+runtime/authority gates stay in force; the compiler will report an unfulfilled
+expectation if the lint ceases to apply. The 224-byte inline ceiling is a stated
+engineering budget; actual layout and the existing 128-stamp capacity remain
+separate from RSS/latency observations. No new field, owner, queue, task or heap
+allocation is introduced by this lint repair. Independent final round 2 will
+review this delta and refreshed source/installer bindings. No candidate release
+or installed runtime changed at this point.
+
+### Retained-boundary final validation and installation, 2026-09-10
+
+Status: `INSTALLED_VERIFIED_PHYSICAL_PENDING`. The prior preflight and failed
+attempts above are historical. The scoped repair preserves an observed earlier
+boundary when Backspace removes a later one and the retained prefix is exact.
+It retires the old token, creates the new lineage generation, and permits
+the existing automatic-correction path after retyping. No new candidate source,
+literal exception, SafetyGate/verifier relaxation or model authority is added.
+Unknown first-word and unobserved mirror boundaries retain their refusal.
+
+Final source: seven reviewed IME/test Rust files differ from accepted 1.0.69;
+all 697 Rust source identities are bound to the successful full run. The final
+focused gate passes 461/461 in 14.144 s. Full acceptance passes in 894.496 s:
+format, architecture, test manifest, inline layout, lint and release gates.
+Mandatory tests: 2723/2723 (2687 correctness + 36 package); zero semantic or
+infrastructure failures. All 2743 prior manifest rows retain their scope;
+six tests were added. The 15 ignored and 11 optional performance cases remain
+outside this mandatory denominator. The known-failure ledger still admits
+zero failures; only its manifest binding changed. Lint baselines are byte-identical.
+
+Compiled layout: WordLineage 24 bytes; production RendezvousOutcome<Sequence>
+216 bytes, within the explicit 224-byte ceiling. This validates object layout,
+not allocation counts or latency. The local expected Clippy lint retains the
+inline ownership representation. Final independent round 2 review:9/10,
+H0/M0/L0; seven Rust hashes and the exact installer hash are bound. Review is
+static evidence, separate from the executed full/native gates. The failed
+Clippy run and diagnostic remain in `full-failed-clippy-v2/` under the case root.
+
+The private final-binary native acceptance passes in 367.929 s. Its frozen
+four-case boundary driver is identical for baseline and candidate: 3/4 -> 4/4.
+The only changed case is retyping after boundary deletion; unknown-first-word
+preservation, ordinary known-boundary conversion and recovery at a new boundary
+pass in both. The same new L1.1 service binary serves both versions and all eight
+model input identities are unchanged. The previous first-word GUI control stays
+7/7 -> 7/7; native 13 passes (US1 + RU1 + manual3 + lifecycle3 + restoration5).
+Quiet legacy hint/correction controls pass 5/5. Narrow terminal controls remain
+3/5 without the physical daemon; this is an explicit prior limitation.
+
+Fixed89 proof was rerun in strict, normal and experimental profiles, each with
+47 damaged and 42 clean cases. Each comparison independently recomputes 178
+statuses across its baseline/candidate pair. Input identities and fixture
+manifest are bound. Outputs, false outputs and every group metric are identical;
+there are zero new false outputs and zero per-class regressions. Counts and
+percentages below apply to both 1.0.69 and 1.0.70:
+
+| Fixed89 class | Strict | Normal | Experimental |
+| --- | --- | --- | --- |
+| All damaged | 15/47 (31.91%) | 19/47 (40.43%) | 20/47 (42.55%) |
+| All clean | 41/42 (97.62%) | 41/42 (97.62%) | 40/42 (95.24%) |
+| Restoration regressions | 7/24 (29.17%) | 9/24 (37.50%) | 10/24 (41.67%) |
+| Missing letter | 3/8 (37.50%) | 5/8 (62.50%) | 5/8 (62.50%) |
+| Repeated letter | 0/4 (0.00%) | 0/4 (0.00%) | 0/4 (0.00%) |
+| Transposition | 5/5 (100.00%) | 5/5 (100.00%) | 5/5 (100.00%) |
+| Context fixture | 0/6 (0.00%) | 0/6 (0.00%) | 0/6 (0.00%) |
+| Clean missing-letter control | 3/4 (75.00%) | 3/4 (75.00%) | 3/4 (75.00%) |
+| Clean repeated-letter control | 4/4 (100.00%) | 4/4 (100.00%) | 4/4 (100.00%) |
+| Clean valid word | 34/34 (100.00%) | 34/34 (100.00%) | 33/34 (97.06%) |
+
+Wrong outputs on damaged text remain 0/47 (0.00%),3/47 (6.38%),3/47 (6.38%)
+for strict/normal/experimental; wrong outputs on clean text remain 1/42 (2.38%),
+1/42 (2.38%),2/42 (4.76%). Non-restoration remains 32/47 (68.09%),25/47
+(53.19%),24/47 (51.06%). These are the existing fixed fixtures with ordered
+post-ready input and learning within each shard, not a new heldout quality proof
+or ordinary-keyboard timing gate. General quality is not promoted by parity.
+
+Resources were sampled every 20 ms during one unchanged seven-case GUI control
+per version (206 process/cgroup samples each). These are kernel high-water
+observations from private mini-PC clients, not a controlled performance gate:
+
+| Observation | Baseline 1.0.69 | Candidate 1.0.70 |
+| --- | --- | --- |
+| Process VmHWM, KiB | 399752 | 412428 |
+| Process RssAnon maximum, KiB | 173104 | 185900 |
+| Process RssFile maximum, KiB | 226648 | 226528 |
+| Maximum threads | 29 | 29 |
+| Private cgroup memory.peak, bytes | 397545472 | 413048832 |
+| Private cgroup CPU usage, microseconds | 3143702 | 3132878 |
+| Swap current maximum, bytes | 0 | 0 |
+| Observed OOM / OOM kill | 0 / 0 | 0 / 0 |
+
+Observed candidate HWM is 12676 KiB (3.17%) higher and cgroup memory.peak is
+15503360 bytes (3.90%) higher in this single pair. That difference is recorded
+without attributing causality or claiming RSS parity. Final process-exit
+intervals may be unobserved. No allocation/cadence/latency guarantee follows.
+The prior model proof is reused by unchanged non-IME Rust and eight model
+dependencies, not rerun: optional unique-prefix 301.738 ms exceeds 50 ms and
+conditional L2 formal 5.276 ms exceeds 5 ms. Their gates remain FAIL/OPEN.
+L1 per-class unique top-1 >95%, clean preservation, lattice coverage, false
+certainty, package/RSS budgets and latency remain a conjunctive contract; this
+admission repair does not independently satisfy or waive any model-quality gate.
+
+Ten verified release binaries were installed at 2026-09-09 21:41 UTC
+(2026-09-10 local date). CLI and loaded extension report 1.0.70. Installed
+file hashes and four loaded process hashes match the release manifest:
+
+| Owner | PID | Executable SHA256 prefix |
+| --- | --- | --- |
+| L1.1 service | 1719009 | 617d72b39710 |
+| Daemon | 1719235 | a9836cee7bab |
+| L3 online | 1719236 | de7b3f955852 |
+| IBus engine | 1719241 | f4d3c8e256ab |
+
+Runtime authority changed only at this verified installation, after the source,
+full/native and review gates passed. Global IBus PID 4715/start 2261 survived;
+configuration, input sources and eight model dependencies were preserved.
+No Kitty/WeChat client restart or keyboard/clipboard automation occurred. The
+rollback binary/config backup is
+`/home/ubu/.local/state/lay/release-backups/1.0.70-td123-ufl_l8wy`.
+The physical keyboard check requested at 21:42 UTC remains PENDING; publication
+is pending. The final candidate SHA256 is
+`f4d3c8e256ab4f9164007482d828a7e171a9e42770846e9bdd210724d9fd270a`.
+
+Not tested/promoted: physical keyboard acceptance in the reporting application,
+global desktop behavior, immediate Space without retyping after Backspace,
+or general restoration/latency improvement. The literal layout of «зуын» is
+«pesy», so «зуын» -> «push» requires two additional character corrections;
+its prepared Rank refusal is a separate OPEN mechanism. TD-123 remains OPEN.
+Both previously stopped input counters remain stopped.
+
+Exact evidence roots (private artifacts stay outside the repository):
+
+- Case: `/home/ubu/.cache/lay/development/auto-layout-push-k9vjrshc/`;
+  `candidate-source-1.0.70.json`, `review-v2/{identity.json,review.md,verdict.json}`,
+  `release-proof-v1/native-{baseline,candidate}-v3/receipt.json`,
+  `release-proof-v1/first-word-fixed-profile-{strict,normal,experimental}-comparison-v1.json`.
+- Successful run: `/home/ubu/.cache/lay/development/run-p4d_z81t/`;
+  `RESULT.json`, `retained-boundary-full-acceptance-completed-identity.json`,
+  `full-test-lanes/SUMMARY.json`, `retained-boundary-native-acceptance/receipt.json`,
+  `td123-release-native-controls.json`,
+  `retained-boundary-native-acceptance/resource-{baseline,candidate}/first-word-resources.json`,
+  `full-artifact-fetch.json`, `native-artifact-fetch.json`, `installation-1.0.70.json`.
+- Remote full/native run: `/home/e/projects/lay-development-runner/run-txvDIy/`;
+  prior model proof: `/home/ubu/.cache/lay/development/run-o0dqrl5c/td123-full-model-proof-comparison-v1.json`.
+
+### GitHub issues 42–44 supplement to 1.0.70, 2026-09-10
+
+The revised daemon retains leading ordinary symbols in its existing buffer;
+removing the token-wide ignore latch repairs exact replay suffix/erase identity.
+The first loss was daemon admission, before manual projection or the verifier.
+No model, ranking, SafetyGate, gesture detector or output transport changes.
+The 32-case baseline fails and candidate passes; shortcut and sixty clean-token
+configuration/context controls pass with the documented Nanda-disabled unit
+runtime. Four explicit physical-owner contracts pass in both complete gates.
+
+Fresh changed/full each pass 2726 cases (2690 correctness, 36 package), with
+zero failures; fifteen ignored and eleven performance cases remain excluded.
+The full frozen run takes 891.255 s. Independent round-2 review is 9/10,
+H/M/L 0/0/0. Public installer progress, ten-target selection, failure/cancellation
+and jq prerequisites pass eight tests; ARM cross-build and emulated startup/
+version/layout/XML proof also pass with native Ubuntu outcomes unobserved.
+
+All 698 Rust hashes are bound to the accepted build. Only the installed daemon
+binary changes to `133a1f79e57b34293c496921be40d96d3bc56c5e03ea630d1d8f8939404920d5`;
+the other nine hashes, including IME f4d3c8e2, match the first 1.0.70. Thus prior
+fixed89, native13 IBus/Readline, retained-boundary and GUI receipts remain
+applicable to the identical IME/model bytes. They do not prove a new daemon
+physical gesture or production Nanda preservation for newly admitted prefixes.
+No new latency/RSS or general quality improvement is claimed. The earlier
+conjunctive quality/resource/performance limits remain as recorded above.
+
+Runtime authority changes at verified installation 2026-09-10 01:07:29 UTC;
+four loaded hashes, configuration, eight model files and input sources match.
+Global IBus PID4715 is preserved. Physical keyboard confirmation is PENDING.
+Installation: `~/.cache/lay/development/run-j4e7w_0n/installation-1.0.70.json`;
+full identity and both lane summaries are beside it. Rollback:
+`~/.local/state/lay/release-backups/1.0.70-td123-aeuwv34d/`.
+Full consequences, failed private ARM-toolchain probes, exact proof scope and
+publication receipts: [owning issue document](public-issues-42-44-release-1.0.70.md).

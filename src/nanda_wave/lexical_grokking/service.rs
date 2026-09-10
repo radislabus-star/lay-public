@@ -46,6 +46,8 @@ pub struct InstalledL11Package {
     pub package_id: String,
     pub receipt_path: PathBuf,
     pub artifact_path: PathBuf,
+    pub artifact_bytes: u64,
+    pub artifact_sha256: [u8; 32],
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -354,9 +356,9 @@ fn validate_installed_l11_receipt(receipt_path: &Path) -> io::Result<InstalledL1
             ),
         ));
     }
-    let actual_sha256 = streaming_sha256(&receipt.installed_artifact)?;
+    let actual_sha256 = streaming_sha256_digest(&receipt.installed_artifact)?;
     if !valid_sha256(&receipt.artifact_sha256)
-        || !actual_sha256.eq_ignore_ascii_case(&receipt.artifact_sha256)
+        || !hex_sha256(actual_sha256).eq_ignore_ascii_case(&receipt.artifact_sha256)
     {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
@@ -385,10 +387,17 @@ fn validate_installed_l11_receipt(receipt_path: &Path) -> io::Result<InstalledL1
         package_id: receipt.package_id,
         receipt_path: receipt_path.to_path_buf(),
         artifact_path: receipt.installed_artifact,
+        artifact_bytes,
+        artifact_sha256: actual_sha256,
     })
 }
 
+#[cfg(test)]
 fn streaming_sha256(path: &Path) -> io::Result<String> {
+    streaming_sha256_digest(path).map(hex_sha256)
+}
+
+fn streaming_sha256_digest(path: &Path) -> io::Result<[u8; 32]> {
     let mut file = File::open(path)?;
     let mut hasher = Sha256::new();
     let mut buffer = [0_u8; 1024 * 1024];
@@ -399,7 +408,11 @@ fn streaming_sha256(path: &Path) -> io::Result<String> {
         }
         hasher.update(&buffer[..read]);
     }
-    Ok(format!("{:x}", hasher.finalize()))
+    Ok(hasher.finalize().into())
+}
+
+fn hex_sha256(value: [u8; 32]) -> String {
+    value.iter().map(|byte| format!("{byte:02x}")).collect()
 }
 
 fn valid_sha256(value: &str) -> bool {
@@ -1207,6 +1220,8 @@ mod tests {
             .expect("installed package");
         assert_eq!(discovered.package_id, "active");
         assert_eq!(discovered.receipt_path, root.join(ACTIVE_RECEIPT_NAME));
+        assert_eq!(discovered.artifact_bytes, 17);
+        assert_eq!(hex_sha256(discovered.artifact_sha256), artifact_sha256);
         assert!(admit_l11_service_artifact(&root.join("active.v9.bin")).is_ok());
         assert_eq!(
             admit_l11_service_artifact(&root.join("unselected.v9.bin"))

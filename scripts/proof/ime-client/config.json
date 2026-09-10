@@ -1,0 +1,10 @@
+{
+  "mode": "simple",
+  "text_backend": "ime",
+  "debug_action_log": true,
+  "nanda_autocorrect": true,
+  "nanda_precognition": false,
+  "auto_replace": true,
+  "typing_assist": false,
+  "auto_switch_layout": true
+}

@@ -40,7 +40,9 @@ pub(crate) use ascii::{
 pub(crate) use cyrillic::{
     correct_wrong_layout_cyrillic_word, correct_wrong_layout_cyrillic_word_experimental,
 };
-pub(crate) use english::is_known_english_layout_autoswitch_word;
+pub(crate) use english::{
+    english_layout_target_requires_context, is_known_english_layout_autoswitch_word,
+};
 pub(crate) use hyphen::is_cyrillic_hyphenated_word_for_layout;
 pub use technical::{
     correct_duplicate_layout_prefix_on_ascii_token, correct_wrong_layout_ascii_technical_token,

@@ -1,0 +1,44 @@
+{
+  "schema": "lay.tech-debt.successor-binding.v1",
+  "task": "TD-121",
+  "status": "ACCEPTED",
+  "checkpoint": {
+    "state": "frozen-at-checkpoint",
+    "note": "2026-09-07 final lint checkpoint: prior runtime repair review 9/10 H0/M0 retained; annotation-only successor delta independently reviewed 10/10 H0/M0. Both named actual-Tab tests passed again in final IME411/411. Final release-profile client, canonical release, physical keyboard and installation gates remain separate OPEN."
+  },
+  "predecessor": {
+    "task": "TD-120",
+    "binding": "tech_debt/evidence/td120-composition-mutation-successor.json",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "bfee6bdabc148de1cccf44558d176e3d78c101f42b8912e4ffa25b9de131f713",
+    "mode": "0664"
+  },
+  "successor": {
+    "task": "tech_debt/121-preserve-word-across-ime-layout-handoff.md",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "33739ccb18d07fd7206f4b98e605f5e45ec5fe3041e6033f4f70190397f01d5f",
+    "mode": "0664"
+  },
+  "review": {
+    "state": "PASS",
+    "report": "tech_debt/evidence/td121-residual-acceptance-review.md",
+    "score": "9/10",
+    "high_findings": 0,
+    "medium_findings": 0
+  },
+  "readiness": {
+    "state": "PASS",
+    "functional_tests": {
+      "unknown_start_active_composition_refusal": {
+        "state": "PASS",
+        "test": "context_runtime::tests::td121_unknown_start_actual_tab_refuses_active_composition_without_output_or_feedback",
+        "contract": "UnknownStart active composition refuses with no output and no feedback."
+      },
+      "known_start_complete_word_acceptance": {
+        "state": "PASS",
+        "test": "context_runtime::tests::td121_known_start_actual_tab_accepts_complete_word",
+        "contract": "KnownStart complete-word active composition remains accepted."
+      }
+    }
+  }
+}

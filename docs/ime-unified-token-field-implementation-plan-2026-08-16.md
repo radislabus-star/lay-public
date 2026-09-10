@@ -1105,8 +1105,9 @@ All gates are conjunctive.
   any deployment.
 - Do not restart the global `ibus-daemon` during ordinary deployment. Restart
   only the Lay-managed component required by the changed artifact.
-- Version, documentation, graphify update, commit and push occur only after all
-  promotion gates pass.
+- Version, documentation, the canonical
+  `scripts/update-architecture-graph.sh` refresh, commit and push occur only
+  after all promotion gates pass.
 
 ## 12. Current Verdict
 

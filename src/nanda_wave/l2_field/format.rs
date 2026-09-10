@@ -376,10 +376,16 @@ pub(super) fn read_calibration(cursor: &mut Cursor<'_>) -> Result<TieCalibration
     })
 }
 
-pub(super) fn checksum64(bytes: &[u8]) -> u64 {
-    bytes.iter().fold(0xcbf29ce484222325_u64, |state, byte| {
+pub(super) const CHECKSUM64_INITIAL: u64 = 0xcbf29ce484222325;
+
+pub(super) fn checksum64_update(state: u64, bytes: &[u8]) -> u64 {
+    bytes.iter().fold(state, |state, byte| {
         state.wrapping_mul(0x100000001b3) ^ u64::from(*byte)
     })
+}
+
+pub(super) fn checksum64(bytes: &[u8]) -> u64 {
+    checksum64_update(CHECKSUM64_INITIAL, bytes)
 }
 
 pub(super) fn put_u16(out: &mut Vec<u8>, value: u16) {
