@@ -304,3 +304,35 @@ build, progress/failure diagnostics and missing `jq` prerequisite are repaired
 and checked; the causes of the supplied incomplete logs and a successful
 installation on the authors' machines remain unobserved. Do not close those
 two installation reports solely on cross-build or source-publication evidence.
+
+## Public CI runner follow-up
+
+Public source commit `50c4303af11b1f89dc36405f12c93e9d5def9fab`, tag
+`v1.0.70` and the GitHub Release were published on 2026-09-10. Issue 42 is
+closed after all 1375 published blobs matched the accepted export; issues
+43/44 remain open. Exact private/public refs and release metadata are in the
+publication receipt above.
+
+[Initial public CI](https://github.com/radislabus-star/lay-public/actions/runs/34425589555)
+passes the public installer regressions and Rust 1.88 MSRV. Its hermetic job
+fails before Cargo test discovery on Ubuntu 24.04 runner image
+`20260907.300.1`, with Bubblewrap `0.9.0-1ubuntu0.1` reporting `loopback:
+Failed RTM_NEWADDR: Operation not permitted`. No Rust test runs in that job.
+Logs: `github-issues-70-3ps08xs0/github-ci-failed.log` and
+`github-ci-status.json`. Ubuntu documents capability restrictions inside
+unprivileged user namespaces in its
+[24.04 release notes](https://documentation.ubuntu.com/release-notes/24.04/#unprivileged-user-namespace-restrictions).
+AppArmor is consistent with the error; this run does not include an audit-log
+proof of the denying policy.
+
+The bounded follow-up pins only the hermetic/check job to `ubuntu-22.04`,
+matching the worker that completed both accepted 2726-case lanes. Installer
+and MSRV jobs retain `ubuntu-latest` (Ubuntu 24.04 in the observed run).
+Alternatives considered: skip network isolation (rejected, breaks the gate),
+add host AppArmor policy provisioning (requires another runner setup contract),
+or select the already verified Ubuntu 22.04 environment (selected). This
+changes no test selection, sandbox flag, resource guard, runtime source,
+model, binary, installation or runtime authority. The published release tag
+continues to identify the original release commit; the CI repair is a forward
+commit on main. Fresh public CI must establish the repaired workflow result;
+the previous Ubuntu 24.04 failure remains recorded as infrastructure evidence.

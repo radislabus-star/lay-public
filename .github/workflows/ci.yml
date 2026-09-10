@@ -53,7 +53,8 @@ jobs:
 
   check:
     name: Rust 1.97.1, tray, and extension checks
-    runs-on: ubuntu-latest
+    # Match the verified release worker's Bubblewrap namespace environment.
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4

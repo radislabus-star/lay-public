@@ -2480,8 +2480,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1788428356.7749965,
-    "ast_hash": "be94ff59f043ebb039666839d00c24ef",
+    "mtime": 1789004124.6065834,
+    "ast_hash": "82ee48235229c849663d00c54be21b0b",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -3235,8 +3235,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1789001317.4112537,
-    "ast_hash": "c32760e12fbb13a90270b12db5459974",
+    "mtime": 1789003227.3401196,
+    "ast_hash": "5c38a9f7055018f4680403ec2e5445fa",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5730,8 +5730,8 @@
     "semantic_hash": ""
   },
   "docs/public-issues-42-44-release-1.0.70.md": {
-    "mtime": 1789003200.2659464,
-    "ast_hash": "25198879771532d2cbcf1557678e46a1",
+    "mtime": 1789004124.6065834,
+    "ast_hash": "89a63203b0cf50b78d9955db54009a5a",
     "semantic_hash": ""
   }
 }

@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "6f317a21ab1ff8c049fe5af893f906825b93f89d7dbd1d9712f7147c6a51ab40",
-  "manifest_fingerprint": "b7951e8ab74ac6a133d3c2ed5743fc5ec0c7ef22c4527476f3683379467836ff",
+  "graph_fingerprint": "9a6a8d27573409873e4e083fc46c6908c53f37f54090e1ca17c46e38374daa6a",
+  "manifest_fingerprint": "fa3c4d84bc53c2ce76c714fa4279d253f510d51dc192538437bda36ad6efc65e",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
