@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2690,
+    "correctness": 2720,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 27,
-    "target": 2725
+    "target": 2755
   },
   "package_fixtures": [
     {
@@ -1559,6 +1559,34 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::residual_taken_transfer_rejects_same_owner_revocation_before_install",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_first_atomic_frame_retires_legacy_native_word_mode",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_legacy_native_glyphs_preserve_mirror_without_commit_or_release_capture",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_purpose_and_capability_changes_preserve_transport_and_word_lifetime",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_space_ready_and_refusal_outcomes_have_one_text_owner",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -10140,6 +10168,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "nanda_wave::l3_phrase_gate::tests::one_edit_recurrence_preserves_attested_sources_and_independent_reports",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "nanda_wave::l3_phrase_gate::tests::recurrence_before_sentence_boundary_does_not_grant_authority",
       "target": "lib:lay"
     },
@@ -15488,6 +15523,20 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "tests::learning::learning_backspace_overflow_past_lay_output_clears_pending_feedback",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::learning::learning_backspace_pops_user_typed_suffix_before_deleting_more_lay_output",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "tests::learning::learning_feedback_does_not_attach_space_to_non_space_correction",
       "target": "bin:lay-daemon"
     },
@@ -15517,6 +15566,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "tests::learning::learning_promotion_skips_unsafe_short_edits",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::learning::learning_unknown_typed_feedback_event_clears_pending_feedback",
       "target": "bin:lay-daemon"
     },
     {
@@ -15649,6 +15705,27 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "tests::runtime_state::backspace_autorepeat_deletes_one_known_event_without_release_effects",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::backspace_release_does_not_delete_or_reset_buffer_state",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::clear_on_next_typing_vetoes_raw_pop_but_keeps_manual_target_learning",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "tests::runtime_state::completed_double_shift_rearms_immediately_for_every_next_pair",
       "target": "bin:lay-daemon"
     },
@@ -15705,6 +15782,20 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "tests::runtime_state::ignored_shortcut_and_shift_insert_invalidate_buffer_learning_and_pending_assist",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::ignored_shortcut_keeps_manual_suppression_until_next_typing_consumes_pair",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "tests::runtime_state::leading_cli_option_token_is_retained_through_space",
       "target": "bin:lay-daemon"
     },
@@ -15719,7 +15810,56 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "tests::runtime_state::modified_backspace_resets_buffer_and_clears_learning",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "tests::runtime_state::multi_tap_scope_design_contract_maps_taps_to_scope",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::pending_ready_typing_assist_is_cancelled_by_backspace_even_when_buffer_empty",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::plain_backspace_at_word_boundary_resets_without_reviving_previous_word",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::plain_backspace_inside_known_current_word_preserves_shortened_raw_tail",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::pre_poll_backspace_cancels_pending_assist_without_mutating_buffer",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::pre_poll_backspace_release_does_not_cancel_pending_assist",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::raw_reset_keeps_manual_suppression_until_next_typing_consumes_pair",
       "target": "bin:lay-daemon"
     },
     {
@@ -15734,6 +15874,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "tests::runtime_state::short_fragments_force_replay_without_llm",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::stale_clear_on_next_typing_blocks_backspace_pop_and_resets",
       "target": "bin:lay-daemon"
     },
     {
@@ -15762,6 +15909,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "tests::runtime_state::typing_assist_runs_on_space_release_when_pending",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::unknown_current_event_mapping_resets_raw_buffer_but_preserves_verified_learning",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::within_word_backspace_then_suffix_space_keeps_complete_raw_usage_word",
       "target": "bin:lay-daemon"
     },
     {
@@ -18246,6 +18407,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "typing_transition::decision::tests::clean_one_edit_recurrence_cannot_issue_a_mutation_receipt",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "typing_transition::decision::tests::closed_exact_taxonomy_is_exhaustive_and_fail_closed",
       "target": "lib:lay"
     },
@@ -18506,6 +18674,41 @@
       "kind": "test",
       "lane": "correctness",
       "name": "typing_transition::decision::tests::td117_alias_lanes_cannot_bypass_surface_keep_or_veto",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::tests::td123_close_positive_phase_evidence_cannot_erase_local_repeated_letter_repair",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::tests::td123_controlled_phase_margin_is_diagnostic_not_admitted_witness",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::tests::td123_exact_l4_transition_witness_still_resolves_hidden_state",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::tests::td123_explicit_contradictory_phase_evidence_still_competes_with_local_repair",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::tests::td123_phase_bank_availability_is_advisory_not_hidden_state_certificate",
       "target": "lib:lay"
     },
     {
@@ -19052,6 +19255,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "word_buffer::tests::failed_backend_can_restore_unconsumed_pending_auto_undo",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "word_buffer::tests::learning_backspace_pops_user_typed_suffix_before_deleting_more_lay_target",
       "target": "lib:lay"
     },
     {

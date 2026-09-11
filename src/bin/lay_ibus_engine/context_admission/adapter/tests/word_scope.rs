@@ -1,6 +1,8 @@
 use super::*;
 #[path = "residuals.rs"]
 mod residuals;
+#[path = "terminal_delivery.rs"]
+mod terminal_delivery;
 use crate::output::{
     AtomicEffectBuilder, AtomicProposal, EngineOutput, PROPOSAL_FRAME_READY,
     PROPOSAL_NATIVE_UNHANDLED,

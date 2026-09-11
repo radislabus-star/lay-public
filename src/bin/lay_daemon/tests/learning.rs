@@ -69,6 +69,49 @@ fn learning_feedback_records_user_fix_after_lay_correction() {
 }
 
 #[test]
+fn learning_backspace_pops_user_typed_suffix_before_deleting_more_lay_output() {
+    let mut buffer = WordBuffer::new();
+    buffer.remember_pending_learning_correction("typing-assist", "abcd", "abce", 1, 1);
+    buffer.note_learning_backspace();
+    buffer.note_learning_typed(key_event(KeyCode::KEY_D, false));
+    buffer.note_learning_typed(key_event(KeyCode::KEY_F, false));
+
+    buffer.note_learning_backspace();
+
+    let correction = buffer
+        .take_user_learning_correction(false)
+        .expect("remaining typed suffix is still a correction");
+    assert_eq!(correction.from, "e");
+    assert_eq!(correction.to, "d");
+}
+
+#[test]
+fn learning_backspace_overflow_past_lay_output_clears_pending_feedback() {
+    let mut buffer = WordBuffer::new();
+    buffer.remember_pending_learning_correction("typing-assist", "abc", "abd", 1, 1);
+    for _ in 0..=3 {
+        buffer.note_learning_backspace();
+    }
+    buffer.note_learning_typed(key_event(KeyCode::KEY_C, false));
+
+    assert!(buffer.take_user_learning_correction(false).is_none());
+}
+
+#[test]
+fn learning_unknown_typed_feedback_event_clears_pending_feedback() {
+    let mut buffer = WordBuffer::new();
+    buffer.remember_pending_learning_correction("typing-assist", "abc", "abd", 1, 1);
+    buffer.note_learning_backspace();
+    buffer.note_learning_typed(lay::keyboard::KeyEvent {
+        keycode: KeyCode::KEY_F13.code(),
+        shift: false,
+        layout_is_ru: false,
+    });
+
+    assert!(buffer.take_user_learning_correction(false).is_none());
+}
+
+#[test]
 fn learning_feedback_ignores_lay_output_without_user_edit() {
     let mut buffer = WordBuffer::new();
     buffer.remember_pending_learning_correction("typing-assist", "смотри ", "смотрин ", 1, 1);

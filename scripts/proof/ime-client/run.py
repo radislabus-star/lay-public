@@ -20,7 +20,7 @@ import xml.etree.ElementTree as ET
 SCHEMA = "lay.ime-client-harness.v1"
 PROOF_CONTRACT = "lay.ime-client.actual-input-context.v2"
 RUN_METADATA_SCHEMA = "lay.ime-client-harness.run-metadata.v2"
-V2_DRIVER_SHA256 = "8ad4b46ed208b6a1fac11a7f44d8cf308c7f9b92c49f20a14086c3b6283c83b9"
+V2_DRIVER_SHA256 = "3bd1d4094c03b054872c01a5779a20f88118c55a5ff0bfa84976e6097b626c84"
 V1_DRIVER_PROVENANCE = {
     "version": "v1",
     "git_commit": "708245298a3f553ac3c52243728c02ba6344a140",
@@ -362,7 +362,7 @@ def prepare_output(plan: Plan, output: Path, harness_root: Path | None = None) -
         (output / "home").mkdir(mode=0o700)
         for name in ("driver.py", "dbus.conf", "config.json", "readline_consumer.py"):
             shutil.copyfile(root / name, output / name)
-        if plan.scenario_set in ("manual-toggle", "first-word", "first-word-us", "first-word-ru"):
+        if plan.scenario_set in ("manual-toggle", "terminal-delivery", "first-word", "first-word-us", "first-word-ru"):
             config_path = output / "config.json"
             config = json.loads(config_path.read_text(encoding="utf-8"))
             config["nanda_precognition"] = True
@@ -616,7 +616,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--output", required=True)
     result.add_argument("--startup-schedule", choices=("immediate", "post-exact-ready"),
                         default="immediate")
-    result.add_argument("--scenario-set", choices=("restoration", "lifecycle", "manual-toggle", "first-word",
+    result.add_argument("--scenario-set", choices=("restoration", "lifecycle", "manual-toggle", "terminal-delivery", "first-word",
                                                    "first-word-us", "first-word-ru"),
                         default="restoration")
     return result

@@ -163,6 +163,29 @@ fn learning_feedback_requires_user_delete_and_retype() {
 }
 
 #[test]
+fn learning_backspace_pops_user_typed_suffix_before_deleting_more_lay_target() {
+    let mut buffer = WordBuffer::new();
+    buffer.remember_pending_learning_correction("typing-assist", "может", "может", 1, 1);
+    assert!(buffer.take_user_learning_correction(false).is_none());
+
+    buffer.remember_pending_learning_correction("typing-assist", "можешь", "может", 1, 1);
+    buffer.note_learning_backspace();
+    buffer.note_learning_typed(text_events("ш", true).remove(0));
+    buffer.note_learning_backspace();
+    for event in text_events("шь", true) {
+        buffer.note_learning_typed(event);
+    }
+
+    let correction = buffer
+        .take_user_learning_correction(false)
+        .expect("within-word correction");
+
+    assert_eq!(correction.from, "т");
+    assert_eq!(correction.to, "шь");
+    assert_eq!(correction.user_target().as_deref(), Some("можешь"));
+}
+
+#[test]
 fn pending_auto_undo_readiness_does_not_consume_fresh_undo() {
     let mut buffer = WordBuffer::new();
     buffer.remember_pending_auto_undo("typing-assist", "посмотри", "посмотреть", 1, 1);

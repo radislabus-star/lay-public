@@ -37,6 +37,7 @@ barrier_waiter = None
 STARTUP_SCHEDULE = os.environ.get('IME_CLIENT_STARTUP_SCHEDULE', 'immediate')
 SCENARIO_SET = os.environ.get('IME_CLIENT_SCENARIO_SET', 'restoration')
 COMPLETED_STATUS = ('COMPLETED_3_LIFECYCLE_CASES' if SCENARIO_SET == 'lifecycle'
+                    else 'COMPLETED_4_TERMINAL_DELIVERY_CASES' if SCENARIO_SET == 'terminal-delivery'
                     else 'COMPLETED_3_MANUAL_CASES' if SCENARIO_SET == 'manual-toggle'
                     else 'COMPLETED_2_FIRST_WORD_CASES' if SCENARIO_SET == 'first-word'
                     else 'COMPLETED_1_FIRST_WORD_CASE' if SCENARIO_SET in ('first-word-us', 'first-word-ru')
@@ -44,6 +45,7 @@ COMPLETED_STATUS = ('COMPLETED_3_LIFECYCLE_CASES' if SCENARIO_SET == 'lifecycle'
 startup_observed = False
 KEYCODES = {' ': 57, 'l': 38, 'j': 36, 'v': 47, 'о': 36, 'м': 47, 'д': 38}
 KEYCODES.update({'a': 30, 'g': 34, 'h': 35, 'd': 32, 'п': 34, 'р': 35, 'в': 32})
+KEYCODES.update({'е': 20, 'к': 19, 'а': 33, 'и': 48, 'с': 46, 'т': 49, 'ь': 50})
 
 receipt = {
     'proof_contract': 'lay.ime-client.actual-input-context.v2',
@@ -438,7 +440,7 @@ class Client:
         drain()
 
     def key(self, character):
-        keyval = ord(character)
+        keyval = IBus.unicode_to_keyval(character)
         keycode = KEYCODES[character]
         press = self.context.process_key_event(keyval, keycode, 0)
         emit(input_log, kind='ProcessKeyEvent', context=self.path,
@@ -786,6 +788,116 @@ class TerminalClient(Client):
             self.consumer_errors.append(repr(error))
 
 
+def observe_terminal_prefetch(snapshot):
+    """Observe real publication for this word; never inject or retry input."""
+    trace_path = ROOT / 'ibus-engine-trace.jsonl'
+    loop = GLib.MainLoop()
+    observed, errors = [], []
+    started_ns = time.monotonic_ns()
+
+    def inspect(*_args):
+        try:
+            if not trace_path.exists():
+                return
+            assert trace_path.stat().st_size <= 1024 * 1024, 'bounded terminal trace'
+            for line in trace_path.read_text(encoding='utf-8').splitlines(keepends=True):
+                if not line.endswith('\n'):
+                    continue
+                row = json.loads(line)
+                if (row.get('kind') == 'ibus_space_prefetch_timing'
+                        and row.get('outcome') == 'prepared'
+                        and row.get('engine_path') == snapshot['engine_path']
+                        and row.get('tail_epoch') == snapshot['epoch']):
+                    observed.append(row)
+                    loop.quit()
+                    return
+        except Exception as error:
+            errors.append(error)
+            loop.quit()
+
+    monitor = Gio.File.new_for_path(str(trace_path)).monitor_file(Gio.FileMonitorFlags.NONE, None)
+    monitor.connect('changed', inspect)
+    timeout_id = GLib.timeout_add(2500, lambda: (loop.quit(), False)[1])
+    try:
+        inspect()
+        if not observed and not errors:
+            loop.run()
+        if errors:
+            raise errors[0]
+        assert observed, 'native word did not publish prefetch; no input/retry'
+        return emit(internal_log, kind='terminal_prefetch_publication_observed',
+                    snapshot=snapshot, publication=observed[0],
+                    observation_elapsed_us=(time.monotonic_ns() - started_ns) // 1000,
+                    trace_flush_delay_included=True, production_latency_proof=False)
+    finally:
+        monitor.cancel()
+        if GLib.MainContext.default().find_source_by_id(timeout_id):
+            GLib.source_remove(timeout_id)
+
+
+def run_terminal_delivery_cases():
+    global case_name
+    assert private_config['auto_replace'] and private_config['nanda_precognition']
+    receipt['diagnostic_controls']['surrounding_text_advertised_and_published'] = False
+    receipt['terminal_scope'] = ('real IBus native callbacks and GNU Readline replacement; '
+                                 'Space after observed publication; no GNOME keyboard encoder')
+    for shape, old, new in [('shortening', 'дподпись', 'подпись'),
+                            ('growth', 'средсва', 'средства'),
+                            ('equal', 'провреь', 'проверь')]:
+        case_name = 'terminal_delivery_' + shape
+        client = TerminalClient('td125-' + case_name)
+        checkpoint = barrier_checkpoint()
+        client.focus_in()
+        select_engine(RU_ENGINE)
+        setup_ready(client, RU_ENGINE, checkpoint)
+        prefix = 'метка '
+        for character in prefix + old:
+            assert not client.key(character), 'terminal glyph must use native input'
+        assert client.visible == prefix + old, client.visible
+        assert not client.output, client.output
+        before = bridge_snapshot('terminal_word_before_space')
+        assert before['text'] == prefix + old and before['focus_receipt'], before
+        prepared = observe_terminal_prefetch(before)
+        assert client.key(' '), 'published correction must consume Space'
+        expected = prefix + new + ' '
+        assert not client.consumer_errors, client.consumer_errors
+        assert client.visible == expected, (client.visible, expected)
+        assert len(client.output) == 1, client.output
+        edit = client.output[0]
+        assert edit['kind'] == 'CommitText' and edit['text'] == '\x7f' * len(old) + new + ' ', edit
+        assert edit['consumer']['line'] == expected + 'X', edit
+        assert client.cursor == len(expected), client.cursor
+        assert not client.key('а'), 'next native letter must follow the replacement'
+        assert client.visible == expected + 'а' and client.cursor == len(expected) + 1
+        assert len(client.output) == 1, 'no second text owner after replacement'
+        after = bridge_snapshot('terminal_after_replacement_and_native_letter')
+        assert after['text'] == client.visible, after
+        receipt['cases'].append({'case': case_name, 'status': 'PASS_TERMINAL_DELIVERY',
+                                'shape': shape, 'source': old, 'replacement': new,
+                                'before': before, 'prepared': prepared, 'edit': edit,
+                                'after': after, 'visible': client.visible, 'cursor': client.cursor})
+        client.focus_out()
+
+    case_name = 'terminal_native_hint_visible'
+    client = TerminalClient('td125-native-hint')
+    preedits = []
+    client.context.connect('update-preedit-text', lambda _c, text, cursor, visible:
+        preedits.append(emit(output_log, kind='UpdatePreeditText', text=text.get_text(),
+                             cursor=cursor, visible=bool(visible))))
+    checkpoint = barrier_checkpoint()
+    client.focus_in()
+    select_engine(RU_ENGINE)
+    setup_ready(client, RU_ENGINE, checkpoint)
+    for character in ' пров':
+        assert not client.key(character), 'hint input stays native'
+    wait_until(lambda: any(row['visible'] and row['text'] for row in preedits),
+               'visible terminal suggestion after native input')
+    assert client.visible == ' пров' and not client.output, client.visible
+    receipt['cases'].append({'case': case_name, 'status': 'PASS_TERMINAL_NATIVE_HINT',
+                            'preedits': preedits, 'visible': client.visible})
+    client.focus_out()
+
+
 def run_manual_toggle_cases(first_word=False):
     global case_name
     shell_requests = []
@@ -923,7 +1035,7 @@ def deadline(_signum, _frame):
 
 
 try:
-    assert SCENARIO_SET in ('restoration', 'lifecycle', 'manual-toggle', 'first-word',
+    assert SCENARIO_SET in ('restoration', 'lifecycle', 'manual-toggle', 'terminal-delivery', 'first-word',
                             'first-word-us', 'first-word-ru'), SCENARIO_SET
     signal.signal(signal.SIGALRM, deadline)
     signal.alarm(52)
@@ -1026,7 +1138,10 @@ try:
     assert receipt['global_mode'] is True
     behavior_started_ns = time.monotonic_ns()
     subscribe_barriers(connection)
-    if SCENARIO_SET in ('first-word', 'first-word-us', 'first-word-ru'):
+    if SCENARIO_SET == 'terminal-delivery':
+        run_terminal_delivery_cases()
+        assert len(receipt['cases']) == 4, receipt['cases']
+    elif SCENARIO_SET in ('first-word', 'first-word-us', 'first-word-ru'):
         run_manual_toggle_cases(first_word=True)
         expected_cases = (['first_word_us', 'first_word_ru'] if SCENARIO_SET == 'first-word'
                           else ['first_word_' + SCENARIO_SET.rsplit('-', 1)[1]])
@@ -1045,6 +1160,7 @@ try:
         run_cases()
     receipt['behavior'] = {
         'verdict': ('PASS_3_LIFECYCLE_CASES' if SCENARIO_SET == 'lifecycle'
+                    else 'PASS_4_TERMINAL_DELIVERY_CASES' if SCENARIO_SET == 'terminal-delivery'
                     else 'PASS_3_MANUAL_CASES' if SCENARIO_SET == 'manual-toggle'
                     else 'PASS_2_FIRST_WORD_CASES' if SCENARIO_SET == 'first-word'
                     else 'PASS_1_FIRST_WORD_CASE' if SCENARIO_SET in ('first-word-us', 'first-word-ru')

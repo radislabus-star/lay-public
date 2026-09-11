@@ -207,6 +207,13 @@ impl LayIbusEngine {
     ) -> fdo::Result<()> {
         self.push_tail_char(ch);
         let frame = self.capture_input_frame_identity();
+        if self.uses_native_terminal_input() {
+            if ch.is_whitespace() {
+                self.invalidate_space_autocorrect_path();
+            } else if let Some(identity) = frame.as_ref() {
+                self.schedule_space_autocorrect_prefetch(identity);
+            }
+        }
         self.refresh_precognition_after_visible_input(emitter, frame)
             .await
     }

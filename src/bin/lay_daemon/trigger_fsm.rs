@@ -58,6 +58,10 @@ impl ShiftState {
     pub(super) fn meta_active(&self) -> bool {
         self.left_meta || self.right_meta
     }
+
+    pub(super) fn any_modifier_active(&self) -> bool {
+        self.any() || self.shortcut_active()
+    }
 }
 
 pub(super) fn single_hotkey_keycode(id: &str) -> Option<KeyCode> {

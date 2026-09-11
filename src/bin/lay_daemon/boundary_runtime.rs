@@ -10,7 +10,8 @@ mod space;
 pub(super) use deferred::{try_handle_deferred_typing_assist, DeferredTypingAssistContext};
 pub(super) use enter::{try_handle_enter_autocorrect, EnterAutocorrectContext};
 pub(super) use hard::{
-    handle_hard_boundary_if_needed, note_learning_backspace_if_needed, HardBoundaryContext,
+    cancel_backspace_pending_assist_before_deferred_poll, handle_hard_boundary_if_needed,
+    HardBoundaryContext,
 };
 pub(super) use space::{
     handle_space_press, try_handle_space_release, SpacePressContext, SpaceReleaseContext,

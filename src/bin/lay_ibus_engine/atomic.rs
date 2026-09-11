@@ -112,7 +112,12 @@ impl LayIbusEngine {
             self.discard_atomic_pending();
             return Ok((native_unhandled(), context_tail_before));
         }
-        self.atomic.active = true;
+        if !self.atomic.active {
+            // A legacy terminal word may use native keys. The exclusive
+            // atomic transport must select its own baseline word mode.
+            self.composition.word_input_mode = None;
+            self.atomic.active = true;
+        }
         let prior_settled = self.settle_atomic_pending(envelope.3, &prior_receipt);
         // The prior receipt may advance both the admitted word lineage and the
         // committed tail. This is the preimage for the current native key.

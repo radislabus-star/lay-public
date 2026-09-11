@@ -540,34 +540,14 @@ fn settle_transition_interference(
 ) {
     #[cfg(test)]
     td117_record_surface_stage(|counts| counts.interference += 1);
-    // Phase evidence is a contrastive field over the complete eligible lattice.
+    // Phase evidence is an absolute calibrated field over each eligible candidate.
     // It only redistributes existing L2 energy; admission remains independent.
-    let strengths = candidates
-        .iter()
-        .zip(evaluations.iter())
-        .filter_map(|(candidate, evaluation)| {
-            (policy.l2_phase_apply && candidate.gate.action == CandidateGateAction::Eligible)
-                .then(|| phase_lattice_strength(&evaluation.signals))
-                .flatten()
-        })
-        .collect::<Vec<_>>();
-    let phase_bounds = strengths
-        .iter()
-        .copied()
-        .min_by(f32::total_cmp)
-        .zip(strengths.iter().copied().max_by(f32::total_cmp))
-        .filter(|(minimum, maximum)| minimum < maximum);
-
     for (candidate, evaluation) in candidates.iter().zip(evaluations) {
-        let phase_competition = phase_bounds.and_then(|(minimum, maximum)| {
-            (candidate.gate.action == CandidateGateAction::Eligible)
-                .then(|| phase_lattice_strength(&evaluation.signals))
-                .flatten()
-                .map(|strength| {
-                    let position = (strength - minimum) / (maximum - minimum);
-                    position.mul_add(2.0, -1.0)
-                })
-        });
+        let phase_competition = (policy.l2_phase_apply
+            && candidate.gate.action == CandidateGateAction::Eligible)
+            .then(|| phase_lattice_strength(&evaluation.signals))
+            .flatten()
+            .map(|strength| strength.mul_add(2.0, -1.0));
         let phase = phase_readout_from_signals(&evaluation.signals);
         let field =
             interference::read_transition_interference(interference::TransitionInterferenceInput {
@@ -628,7 +608,11 @@ fn settle_l4_hidden_state(
             witness_repel: evaluation.signals.l4_transition_repel_count,
             witness_state_specific: evaluation.signals.l4_transition_state_specific,
             phase_witness_milli: evaluation.signals.l4_phase_witness_milli,
-            phase_witness_supported: evaluation.signals.l4_phase_witness_supported,
+            // `l4_phase_witness_*` is a diagnostic readout from any compiled
+            // surface phase center. It is not yet a calibrated, target-specific
+            // disambiguation certificate, so hidden-state admission must ignore
+            // generic availability while preserving the visible diagnostics.
+            phase_witness_supported: false,
             operator_consensus_witness: verified_operator_consensus_witness(candidate, evaluation),
         })
         .collect::<Vec<_>>();

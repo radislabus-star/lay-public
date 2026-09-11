@@ -69,7 +69,8 @@ impl LayIbusEngine {
                 let initial_mode = self.initial_word_input_mode();
                 let mode = *self.composition.word_input_mode.get_or_insert(initial_mode);
                 let setup_us = space_started.elapsed().as_micros();
-                if mode == WordInputMode::ManagedCommit {
+                let managed = mode == WordInputMode::ManagedCommit;
+                if managed || self.uses_native_terminal_input() {
                     if self.take_manual_toggle_autocorrect_suppression() {
                         super::trace::record(
                             r#"{"kind":"ibus_space_autocorrect","status":"manual_toggle_suppressed"}"#,
@@ -77,7 +78,11 @@ impl LayIbusEngine {
                         self.clear_preedit(emitter).await?;
                         self.cancel_precognition_display_generation();
                         let commit_started = Instant::now();
-                        self.commit_managed_passthrough_char(emitter, ' ').await?;
+                        if managed {
+                            self.commit_managed_passthrough_char(emitter, ' ').await?;
+                        } else {
+                            self.observe_terminal_passthrough_char(emitter, ' ').await?;
+                        }
                         let commit_us = commit_started.elapsed().as_micros();
                         super::trace::record_space_autocorrect_timing(
                             "manual_toggle_suppressed",
@@ -86,14 +91,28 @@ impl LayIbusEngine {
                             space_started.elapsed().as_micros(),
                         );
                         super::trace::record_space_key_timing(
-                            "managed_manual_toggle_suppressed",
+                            if managed {
+                                "managed_manual_toggle_suppressed"
+                            } else {
+                                "terminal_manual_toggle_suppressed"
+                            },
                             setup_us,
                             0,
                             commit_us,
                             space_started.elapsed().as_micros(),
                         );
-                        self.trace_key("space_managed_commit", keyval, keycode, true, Some(' '));
-                        return Ok(true);
+                        self.trace_key(
+                            if managed {
+                                "space_managed_commit"
+                            } else {
+                                "space_terminal_passthrough"
+                            },
+                            keyval,
+                            keycode,
+                            managed,
+                            Some(' '),
+                        );
+                        return Ok(managed);
                     }
                     let autocorrect_started = Instant::now();
                     let frame = self.capture_input_frame_identity();
@@ -115,14 +134,22 @@ impl LayIbusEngine {
                         }
                         let autocorrect_us = autocorrect_started.elapsed().as_micros();
                         super::trace::record_space_key_timing(
-                            "managed_autocorrect",
+                            if managed {
+                                "managed_autocorrect"
+                            } else {
+                                "terminal_autocorrect"
+                            },
                             setup_us,
                             autocorrect_us,
                             0,
                             space_started.elapsed().as_micros(),
                         );
                         self.trace_key(
-                            "space_managed_autocorrect",
+                            if managed {
+                                "space_managed_autocorrect"
+                            } else {
+                                "space_terminal_autocorrect"
+                            },
                             keyval,
                             keycode,
                             true,
@@ -132,20 +159,38 @@ impl LayIbusEngine {
                     }
                     let autocorrect_us = autocorrect_started.elapsed().as_micros();
                     let commit_started = Instant::now();
-                    self.commit_managed_passthrough_char(emitter, ' ').await?;
+                    if managed {
+                        self.commit_managed_passthrough_char(emitter, ' ').await?;
+                    } else {
+                        self.observe_terminal_passthrough_char(emitter, ' ').await?;
+                    }
                     if let Some(identity) = frame.as_ref() {
                         self.invalidate_space_autocorrect_lease(identity);
                     }
                     let commit_us = commit_started.elapsed().as_micros();
                     super::trace::record_space_key_timing(
-                        "managed_fallback_commit",
+                        if managed {
+                            "managed_fallback_commit"
+                        } else {
+                            "terminal_fallback_native"
+                        },
                         setup_us,
                         autocorrect_us,
                         commit_us,
                         space_started.elapsed().as_micros(),
                     );
-                    self.trace_key("space_managed_commit", keyval, keycode, true, Some(' '));
-                    return Ok(true);
+                    self.trace_key(
+                        if managed {
+                            "space_managed_commit"
+                        } else {
+                            "space_terminal_passthrough"
+                        },
+                        keyval,
+                        keycode,
+                        managed,
+                        Some(' '),
+                    );
+                    return Ok(managed);
                 }
                 self.clear_preedit(emitter).await?;
                 self.cancel_precognition_display_generation();
@@ -285,7 +330,7 @@ mod word_boundary_route_contract {
     fn managed_space_takes_lease_before_closing_display_generation() {
         let source = include_str!("managed.rs");
         let route = source
-            .split("if mode == WordInputMode::ManagedCommit")
+            .split("if managed || self.uses_native_terminal_input()")
             .nth(1)
             .expect("managed Space route")
             .split("let autocorrect_started = Instant::now();")
@@ -311,7 +356,7 @@ mod word_boundary_route_contract {
     fn managed_space_consumes_manual_toggle_suppression_before_lookup() {
         let source = include_str!("managed.rs");
         let route = source
-            .split("if mode == WordInputMode::ManagedCommit")
+            .split("if managed || self.uses_native_terminal_input()")
             .nth(1)
             .expect("managed Space route")
             .split("self.push_tail_char(' ')")

@@ -330,10 +330,8 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
             assert_eq!(suffix_successor["path"], td121_successor["path"]);
             assert_eq!(suffix_successor["mode"], td121_successor["mode"]);
             assert_eq!(
-                sha256(&successor_path),
-                suffix_successor["sha256"]
-                    .as_str()
-                    .expect("first-word suffix successor sha256")
+                suffix_successor["sha256"].as_str(),
+                Some("2dceda04efa40c9b95f3d4ee00a9dea28c5692e7c87901890e4e84a3e1b4dc3b")
             );
             let suffix_review = &suffix_binding["review"];
             assert_eq!(suffix_review["state"].as_str(), Some("PASS"));
@@ -352,6 +350,60 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
                             suffix_review["report"]
                                 .as_str()
                                 .expect("source review path"),
+                        )
+                    )
+                    .as_str()
+                )
+            );
+            // Native terminal observation adds existing prefetch scheduling.
+            // Preserve the accepted suffix binding and verify its successor.
+            let terminal_binding: serde_json::Value = serde_json::from_str(&read(
+                "tech_debt/evidence/ime-terminal-native-delivery-composition-successor.json",
+            ))
+            .expect("valid native terminal successor binding");
+            assert_eq!(
+                terminal_binding["schema"].as_str(),
+                Some("lay.tech-debt.successor-binding.v1")
+            );
+            assert_eq!(terminal_binding["status"].as_str(), Some("ACCEPTED"));
+            assert_eq!(
+                terminal_binding["runtime_authority_changed"].as_bool(),
+                Some(false)
+            );
+            let terminal_predecessor = &terminal_binding["predecessor"];
+            let suffix_binding_path =
+                "tech_debt/evidence/ime-first-word-suffix-composition-successor.json";
+            assert_eq!(terminal_predecessor["binding"], suffix_binding_path);
+            assert_eq!(
+                terminal_predecessor["binding_sha256"].as_str(),
+                Some(sha256(&Path::new(ROOT).join(suffix_binding_path)).as_str())
+            );
+            for key in ["path", "sha256", "mode"] {
+                assert_eq!(terminal_predecessor[key], suffix_successor[key]);
+            }
+            let terminal_successor = &terminal_binding["successor"];
+            assert_eq!(terminal_successor["path"], suffix_successor["path"]);
+            assert_eq!(terminal_successor["mode"], suffix_successor["mode"]);
+            assert_eq!(
+                terminal_successor["sha256"].as_str(),
+                Some(sha256(&successor_path).as_str())
+            );
+            let terminal_review = &terminal_binding["review"];
+            assert_eq!(terminal_review["state"].as_str(), Some("PASS"));
+            assert_eq!(terminal_review["high_findings"].as_u64(), Some(0));
+            assert_eq!(terminal_review["medium_findings"].as_u64(), Some(0));
+            assert_eq!(
+                terminal_review["report"].as_str(),
+                Some("tech_debt/evidence/ime-terminal-native-delivery-source-review.md")
+            );
+            assert_eq!(
+                terminal_review["report_sha256"].as_str(),
+                Some(
+                    sha256(
+                        &Path::new(ROOT).join(
+                            terminal_review["report"]
+                                .as_str()
+                                .expect("terminal source review path"),
                         )
                     )
                     .as_str()

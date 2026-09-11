@@ -375,6 +375,97 @@ fn retained_two_edit_context_recurrence_reaches_verified_consumer_and_safety() {
 }
 
 #[test]
+fn clean_one_edit_recurrence_cannot_issue_a_mutation_receipt() {
+    for (observed, target, class) in [
+        ("окнах", "окна", TypingErrorClass::ExtraLetter),
+        ("книгам", "книгах", TypingErrorClass::LetterSubstitution),
+        ("бы", "ты", TypingErrorClass::LetterSubstitution),
+        ("форма", "ферма", TypingErrorClass::LetterSubstitution),
+        ("form", "from", TypingErrorClass::AdjacentTransposition),
+        ("plans", "plan", TypingErrorClass::ExtraLetter),
+    ] {
+        assert!(if observed.is_ascii() {
+            crate::token_language::is_known_en_token(observed)
+        } else {
+            crate::russian_lexicon::has_clean_russian_surface_certificate(observed)
+        });
+        let event = event(&format!("{target} и {observed} "));
+        let replacement = format!("{target} и {target} ");
+        let mutation = UnifiedCorrectionCandidate::new(
+            &replacement,
+            CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
+            "retained_context_surface",
+            class,
+            CandidateGateDecision {
+                action: CandidateGateAction::SuggestOnly,
+                reason: "candidate_requires_independent_context",
+            },
+        );
+        let identity = UnifiedCorrectionCandidate::new(
+            &event.original,
+            CorrectionDecisionSource::Nanda,
+            CandidateOrigin::L2Surface,
+            "retained_original_surface",
+            TypingErrorClass::Unknown,
+            CandidateGateDecision {
+                action: CandidateGateAction::KeepOriginal,
+                reason: "attested_original",
+            },
+        );
+        for candidates in [vec![mutation.clone()], vec![mutation.clone(), identity]] {
+            let replacements = candidates
+                .iter()
+                .map(|candidate| candidate.replacement.as_str())
+                .collect::<Vec<_>>();
+            let independent_phase = crate::nanda_wave::context_phase::readout_default_candidates(
+                &event.original,
+                &replacements,
+            );
+            assert!(
+                independent_phase
+                    .iter()
+                    .all(|report| !report.pairwise_certified),
+                "regression fixture requires absence of independent phase authority"
+            );
+            for correction_safety in [
+                CorrectionSafety::Strict,
+                CorrectionSafety::Normal,
+                CorrectionSafety::Experimental,
+            ] {
+                let batch = super::TransitionDecisionCore::evaluate_candidates(
+                    &event,
+                    &candidates,
+                    super::TransitionDecisionPolicy {
+                        correction_safety,
+                        ..super::TransitionDecisionPolicy::default()
+                    },
+                    super::DecisionEvidenceMode::FullField(None),
+                );
+                assert_eq!(candidates[0].replacement, replacement);
+                assert!(
+                    !batch.evaluations[0]
+                        .transition
+                        .l4_signed_signal
+                        .exact_positive(),
+                    "regression fixture requires absence of exact learned L4 authority"
+                );
+                assert!(batch.evaluations[0].action.verifier_passed, "{batch:#?}");
+                assert!(!batch.evaluations[0].action.left_context_changed);
+                assert_eq!(batch.evaluations[0].action.changed_tokens, 1);
+                assert!(
+                    !batch.evaluations[0].signals.l3_pairwise_certified,
+                    "{batch:#?}"
+                );
+                assert!(batch.selected_index.is_none(), "{batch:#?}");
+                assert!(batch.selected_candidate.is_none());
+                assert!(batch.selected_transition.is_none());
+            }
+        }
+    }
+}
+
+#[test]
 fn two_edit_context_evidence_cannot_bypass_the_actual_edit_verifier() {
     let event = event("форма нужна рфрма ");
     for (replacement, class) in [
@@ -1074,6 +1165,480 @@ fn word_only_rejection_cannot_become_negative_transition_evidence() {
                 .is_none());
         }
     }
+}
+
+#[derive(Debug)]
+struct PhaseInterferenceProbe {
+    source_id: String,
+    replacement: String,
+    verifier_passed: bool,
+    rank_before: i16,
+    lexical_margin_micro: i64,
+    lexical_threshold_micro: i64,
+    lexical_ready: bool,
+    phase_competition_milli: i16,
+    field_milli: i16,
+}
+
+fn probe_phase_interference(
+    candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &mut [super::CandidateDecisionEvaluation],
+) -> Vec<PhaseInterferenceProbe> {
+    let before = evaluations
+        .iter()
+        .map(|evaluation| evaluation.signals.rank_milli)
+        .collect::<Vec<_>>();
+    super::settle_transition_interference(
+        candidates,
+        evaluations,
+        super::TransitionDecisionPolicy {
+            l2_phase_apply: true,
+            ..super::TransitionDecisionPolicy::default()
+        },
+    );
+    candidates
+        .iter()
+        .zip(evaluations.iter())
+        .zip(before)
+        .map(
+            |((candidate, evaluation), rank_before)| PhaseInterferenceProbe {
+                source_id: candidate.source_id.clone(),
+                replacement: candidate.replacement.clone(),
+                verifier_passed: evaluation.action.verifier_passed,
+                rank_before,
+                lexical_margin_micro: evaluation.signals.l2_lexical_phase_margin_micro,
+                lexical_threshold_micro: evaluation.signals.l2_lexical_phase_threshold_micro,
+                lexical_ready: evaluation.signals.l2_lexical_phase_competition_ready,
+                phase_competition_milli: evaluation
+                    .signals
+                    .transition_field_phase_competition_milli,
+                field_milli: evaluation.signals.transition_field_milli,
+            },
+        )
+        .collect()
+}
+
+fn force_ready_lexical_phase(
+    evaluation: &mut super::CandidateDecisionEvaluation,
+    non_field_rank: f32,
+    l2_rank_energy: f32,
+    lexical_margin_micro: i64,
+    lexical_threshold_micro: i64,
+) {
+    evaluation.signals.non_field_rank_score = non_field_rank;
+    evaluation.signals.rank_score = non_field_rank;
+    evaluation.signals.rank_milli = crate::text_metrics::score_to_milli(non_field_rank);
+    evaluation.signals.l2_rank_energy = l2_rank_energy;
+    evaluation.signals.l3_rank_energy = 0.0;
+    evaluation.signals.l4_signed_rank_energy = 0.0;
+    evaluation.signals.l2_wave_peak_milli = crate::text_metrics::score_to_milli(l2_rank_energy);
+    evaluation.signals.l2_wave_peak_positive_milli =
+        crate::text_metrics::score_to_milli(l2_rank_energy);
+    evaluation.signals.l2_wave_peak_negative_milli = 0;
+    evaluation.signals.l2_wave_peak_uncertainty_milli = 80;
+    evaluation.signals.l2_transition_phase_package_loaded = true;
+    evaluation.signals.l2_transition_phase_operator_present = true;
+    evaluation.signals.l2_transition_phase_operator_promoted = true;
+    evaluation.signals.l2_transition_phase_verdict = crate::nanda_wave::PhaseVerdict::Support;
+    evaluation.signals.l2_transition_phase_margin_micro = lexical_margin_micro;
+    evaluation.signals.l2_transition_phase_threshold_micro = lexical_threshold_micro;
+    evaluation.signals.l2_lexical_phase_margin_micro = lexical_margin_micro;
+    evaluation.signals.l2_lexical_phase_threshold_micro = lexical_threshold_micro;
+    evaluation.signals.l2_lexical_phase_competition_ready = true;
+    evaluation.signals.transition_field_milli = 0;
+    evaluation.signals.transition_field_attraction_milli = 0;
+    evaluation.signals.transition_field_repulsion_milli = 0;
+    evaluation.signals.transition_field_phase_competition_milli = 0;
+}
+
+#[test]
+fn td123_close_positive_phase_evidence_cannot_erase_local_repeated_letter_repair() {
+    let event = event("видешь скоолько ");
+    let candidates = [
+        l2_candidate(
+            "видешь сколько ",
+            "repeated_letter",
+            TypingErrorClass::RepeatedLetter,
+        ),
+        l2_candidate(
+            "видешь столько ",
+            "composite_ru_typo",
+            TypingErrorClass::CompositeTypo,
+        ),
+    ];
+    let baseline = super::TransitionDecisionCore::evaluate_candidates(
+        &event,
+        &candidates,
+        super::TransitionDecisionPolicy::default(),
+        super::DecisionEvidenceMode::FullField(None),
+    );
+    let mut evaluations = baseline.evaluations;
+    force_ready_lexical_phase(&mut evaluations[0], 0.800, 0.900, 50_000, 0);
+    force_ready_lexical_phase(&mut evaluations[1], 0.790, 0.900, 51_000, 0);
+
+    let probes = probe_phase_interference(&candidates, &mut evaluations);
+
+    assert_eq!(probes.len(), 2, "{probes:#?}");
+    let _source_provenance = (&probes[0].source_id, &probes[1].source_id);
+    assert_eq!(probes[0].replacement, "видешь сколько ");
+    assert_eq!(probes[1].replacement, "видешь столько ");
+    assert!(probes.iter().all(|probe| probe.verifier_passed));
+    assert!(probes.iter().all(|probe| probe.lexical_ready));
+    assert_eq!(probes[0].lexical_threshold_micro, 0, "{probes:#?}");
+    assert_eq!(probes[1].lexical_threshold_micro, 0, "{probes:#?}");
+    assert!(
+        probes[0].lexical_margin_micro > 0 && probes[1].lexical_margin_micro > 0,
+        "{probes:#?}"
+    );
+    assert!(
+        (probes[1].lexical_margin_micro - probes[0].lexical_margin_micro).abs() <= 1_000,
+        "{probes:#?}"
+    );
+    assert!(
+        probes[0].phase_competition_milli > -200,
+        "a close positive lexical margin must not be expanded into full repulsion: {probes:#?}"
+    );
+    assert!(
+        probes[0].field_milli > 350 && probes[1].field_milli > 350,
+        "close positive evidence must retain positive L2 field energy for both candidates: {probes:#?}"
+    );
+    assert!(
+        probes[0].rank_before > probes[1].rank_before,
+        "the forced non-field baseline must start with local repair rank authority: {probes:#?}"
+    );
+    assert!(
+        evaluations[0].signals.rank_milli > evaluations[1].signals.rank_milli,
+        "local repeated-letter candidate must retain rank authority over the broader composite surface: {probes:#?}"
+    );
+    let receipt = super::DecisionTransitionReceipt::from_selected_candidate(
+        &event,
+        &candidates[0],
+        &evaluations[0],
+    );
+    assert!(receipt
+        .projected_transition(&event.original, &candidates[0].replacement)
+        .is_some());
+    assert!(receipt
+        .projected_transition(&event.original, &candidates[1].replacement)
+        .is_none());
+}
+
+#[test]
+fn td123_explicit_contradictory_phase_evidence_still_competes_with_local_repair() {
+    let event = event("видешь скоолько ");
+    let candidates = [
+        l2_candidate(
+            "видешь сколько ",
+            "repeated_letter",
+            TypingErrorClass::RepeatedLetter,
+        ),
+        l2_candidate(
+            "видешь столько ",
+            "composite_ru_typo",
+            TypingErrorClass::CompositeTypo,
+        ),
+    ];
+    let baseline = super::TransitionDecisionCore::evaluate_candidates(
+        &event,
+        &candidates,
+        super::TransitionDecisionPolicy::default(),
+        super::DecisionEvidenceMode::FullField(None),
+    );
+    let mut evaluations = baseline.evaluations;
+    force_ready_lexical_phase(&mut evaluations[0], 0.800, 0.900, -450_000, 0);
+    force_ready_lexical_phase(&mut evaluations[1], 0.790, 0.900, 450_000, 0);
+
+    let probes = probe_phase_interference(&candidates, &mut evaluations);
+
+    assert_eq!(probes[0].replacement, "видешь сколько ");
+    assert_eq!(probes[1].replacement, "видешь столько ");
+    assert!(probes.iter().all(|probe| probe.verifier_passed));
+    assert!(probes.iter().all(|probe| probe.lexical_ready));
+    assert!(probes[0].lexical_margin_micro < 0, "{probes:#?}");
+    assert!(probes[1].lexical_margin_micro > 0, "{probes:#?}");
+    assert!(
+        probes[0].phase_competition_milli < 0,
+        "explicit contradictory evidence against the local repair must reduce its phase field: {probes:#?}"
+    );
+    let no_competition_released_budget_milli = crate::text_metrics::score_to_milli(0.900);
+    assert!(
+        probes[0].field_milli < no_competition_released_budget_milli,
+        "explicit contradictory evidence must reduce the local repair field below the no-competition released L2 budget: {probes:#?}"
+    );
+    assert!(
+        probes[0].field_milli < probes[1].field_milli,
+        "explicit contradictory evidence must reduce the local repair field relative to the supported rival: {probes:#?}"
+    );
+    assert!(
+        evaluations[1].signals.rank_milli > evaluations[0].signals.rank_milli,
+        "explicit independently measured contradictory evidence must still compete: {probes:#?}"
+    );
+    let receipt = super::DecisionTransitionReceipt::from_selected_candidate(
+        &event,
+        &candidates[1],
+        &evaluations[1],
+    );
+    assert!(receipt
+        .projected_transition(&event.original, &candidates[1].replacement)
+        .is_some());
+}
+
+fn apply_l4_signed_signal_from_structural_usage(
+    event: &TypingErrorEvent,
+    candidate: &UnifiedCorrectionCandidate,
+    evaluation: &mut super::CandidateDecisionEvaluation,
+    usage_events: &str,
+) -> super::L4SignedSignal {
+    let usage = crate::nanda_wave::usage_prior::snapshot_from_usage_events_for_tests(usage_events);
+    let surface = crate::typing_memory::transition_surface_key(
+        &event.original,
+        &candidate.replacement,
+        candidate.origin.memory_key(),
+        evaluation.action.operator.as_str(),
+    );
+    let context =
+        crate::typing_memory::transition_context_words(&event.original, &candidate.replacement);
+    let state_word = crate::transition_relation::signed_memory_state_id(&event.original);
+    let signal = super::l4_signed_signal_from_memory(
+        &crate::nanda_wave::l4_signed_memory::l4_signed_memory_signal(
+            crate::nanda_wave::l4_signed_memory::L4SignedMemoryInput {
+                context: &context,
+                source: candidate.origin.memory_key(),
+                operation: evaluation.action.operator.as_str(),
+                state_word: &state_word,
+                candidate_text: &candidate.replacement,
+                usage: &usage,
+                surface: Some(&surface),
+            },
+        ),
+    );
+    evaluation.signals.l4_signed_milli = crate::text_metrics::score_to_milli(signal.signal);
+    evaluation.signals.l4_signed_reason = signal.reason;
+    evaluation.signals.l4_surface_status = signal.surface_status;
+    evaluation.signals.l4_transition_state_specific = signal.transition_state_specific;
+    evaluation.signals.l4_transition_attract_count = signal.transition_attract_count;
+    evaluation.signals.l4_transition_repel_count = signal.transition_repel_count;
+    evaluation.signals.l4_phase_witness_milli = signal.phase_witness_milli;
+    evaluation.signals.l4_phase_witness_supported = signal.phase_witness_supported;
+    evaluation.signals.l4_phase_positive_centers = signal.phase_positive_centers;
+    evaluation.signals.l4_phase_negative_centers = signal.phase_negative_centers;
+    evaluation.signals.l4_signed_rank_energy = signal.rank_energy;
+    evaluation.transition.l4_signed_signal = evaluation.signals.l4_transition_signal();
+    signal
+}
+
+fn phase_only_usage_events(surface: &str, accepted: bool) -> String {
+    let kind = if accepted {
+        "accepted_ime"
+    } else {
+        "rejected_candidate"
+    };
+    let word = if accepted {
+        "phase-positive"
+    } else {
+        "phase-negative"
+    };
+    format!(
+        "{{\"ts\":1,\"kind\":\"{kind}\",\"word\":\"{word}\",\"to\":\"{word}\",\"source\":\"phase-bank\",\"operation\":\"surface-only\",\"surface\":\"{surface}\"}}\n"
+    )
+}
+
+fn forced_l4_phase_fixture() -> (
+    TypingErrorEvent,
+    [UnifiedCorrectionCandidate; 2],
+    Vec<super::CandidateDecisionEvaluation>,
+) {
+    let event = event("видешь скоолько ");
+    let candidates = [
+        l2_candidate(
+            "видешь сколько ",
+            "repeated_letter",
+            TypingErrorClass::RepeatedLetter,
+        ),
+        l2_candidate(
+            "видешь столько ",
+            "composite_ru_typo",
+            TypingErrorClass::CompositeTypo,
+        ),
+    ];
+    let baseline = super::TransitionDecisionCore::evaluate_candidates(
+        &event,
+        &candidates,
+        super::TransitionDecisionPolicy::default(),
+        super::DecisionEvidenceMode::FullField(None),
+    );
+    let mut evaluations = baseline.evaluations;
+    for (index, evaluation) in evaluations.iter_mut().enumerate() {
+        evaluation.signals.rank_milli = if index == 0 { 1101 } else { 1033 };
+        evaluation.signals.rank_score = f32::from(evaluation.signals.rank_milli) / 1_000.0;
+        evaluation.signals.l2_wave_peak_milli = 0;
+        evaluation.signals.l2_wave_peak_uncertainty_milli = 1_000;
+        evaluation.signals.l2_transition_phase_verdict = crate::nanda_wave::PhaseVerdict::Support;
+        evaluation.signals.l2_lexical_phase_competition_ready = true;
+        evaluation.signals.l3_pairwise_certified = false;
+        evaluation.signals.l4_transition_state_specific = false;
+        evaluation.signals.l4_transition_attract_count = 0;
+        evaluation.signals.l4_transition_repel_count = 0;
+        evaluation.signals.l4_hidden_disposition = super::L4HiddenDisposition::Unobserved;
+        evaluation.signals.l4_hidden_selected_witnessed = false;
+        evaluation.signals.l4_hidden_certificate_valid = false;
+        evaluation.signals.l4_hidden_probe = "none";
+    }
+    (event, candidates, evaluations)
+}
+
+#[test]
+fn td123_phase_bank_availability_is_advisory_not_hidden_state_certificate() {
+    for (name, accepted_surface, expected_sign) in [
+        ("real_positive_phase_bank", true, 1),
+        ("real_negative_phase_bank", false, -1),
+    ] {
+        let (event, candidates, mut evaluations) = forced_l4_phase_fixture();
+        let rival_surface = crate::typing_memory::transition_surface_key(
+            &event.original,
+            &candidates[1].replacement,
+            candidates[1].origin.memory_key(),
+            evaluations[1].action.operator.as_str(),
+        );
+        let usage_events = phase_only_usage_events(&rival_surface, accepted_surface);
+        let correct_signal = apply_l4_signed_signal_from_structural_usage(
+            &event,
+            &candidates[0],
+            &mut evaluations[0],
+            &usage_events,
+        );
+        let rival_signal = apply_l4_signed_signal_from_structural_usage(
+            &event,
+            &candidates[1],
+            &mut evaluations[1],
+            &usage_events,
+        );
+
+        assert!(correct_signal.phase_witness_supported, "{name}");
+        assert!(rival_signal.phase_witness_supported, "{name}");
+        for signal in [correct_signal, rival_signal] {
+            assert_eq!(signal.transition_attract_count, 0, "{name}");
+            assert_eq!(signal.transition_repel_count, 0, "{name}");
+            assert!(!signal.transition_state_specific, "{name}");
+        }
+        assert_eq!(
+            rival_signal.phase_witness_milli.signum(),
+            expected_sign,
+            "{name}: fixture must use the real queried-surface phase bank path: {rival_signal:#?}"
+        );
+        assert!(evaluations
+            .iter()
+            .all(|evaluation| evaluation.action.verifier_passed));
+
+        super::settle_l4_hidden_state(&event, &candidates, &mut evaluations);
+
+        assert_eq!(
+            evaluations[1].signals.l4_phase_witness_supported, rival_signal.phase_witness_supported,
+            "{name}: phase readout must remain visible diagnostics"
+        );
+        assert_eq!(
+            evaluations[1].signals.l4_phase_witness_milli, rival_signal.phase_witness_milli,
+            "{name}: phase margin diagnostics must be preserved exactly"
+        );
+        assert!(
+            evaluations
+                .iter()
+                .all(|evaluation| !evaluation.signals.l4_hidden_ambiguity_authoritative),
+            "{name}: non-target-specific phase availability must not create authoritative ambiguity: {evaluations:#?}"
+        );
+        assert!(
+            evaluations
+                .iter()
+                .all(|evaluation| evaluation.signals.l4_hidden_probe != "phase_relation"),
+            "{name}: phase bank availability without a calibrated admitted witness artifact must stay advisory: {evaluations:#?}"
+        );
+        assert!(
+            !evaluations[1].signals.l4_hidden_selected_witnessed,
+            "{name}: rival phase availability must not become selected witnessed state: {evaluations:#?}"
+        );
+        assert!(
+            evaluations[0].signals.rank_milli > evaluations[1].signals.rank_milli,
+            "{name}: advisory phase state must preserve the already ranked local target: {evaluations:#?}"
+        );
+    }
+}
+
+#[test]
+fn td123_controlled_phase_margin_is_diagnostic_not_admitted_witness() {
+    for (name, correct_phase, rival_phase) in [
+        ("tiny_diagnostic_shape", -91, 37),
+        ("forced_strong_contradiction_shape", -800, 800),
+    ] {
+        let (event, candidates, mut evaluations) = forced_l4_phase_fixture();
+        evaluations[0].signals.l4_phase_witness_milli = correct_phase;
+        evaluations[0].signals.l4_phase_witness_supported = true;
+        evaluations[1].signals.l4_phase_witness_milli = rival_phase;
+        evaluations[1].signals.l4_phase_witness_supported = true;
+
+        super::settle_l4_hidden_state(&event, &candidates, &mut evaluations);
+
+        assert_eq!(evaluations[0].signals.l4_phase_witness_milli, correct_phase);
+        assert_eq!(evaluations[1].signals.l4_phase_witness_milli, rival_phase);
+        assert!(evaluations
+            .iter()
+            .all(|evaluation| evaluation.signals.l4_phase_witness_supported));
+        assert!(
+            evaluations
+                .iter()
+                .all(|evaluation| !evaluation.signals.l4_hidden_ambiguity_authoritative),
+            "{name}: controlled phase margins without admitted producer evidence must not create authoritative ambiguity: {evaluations:#?}"
+        );
+        assert!(
+            evaluations
+                .iter()
+                .all(|evaluation| evaluation.signals.l4_hidden_probe != "phase_relation"),
+            "{name}: controlled phase margin diagnostics must not become hidden-state admission: {evaluations:#?}"
+        );
+        assert!(
+            !evaluations[1].signals.l4_hidden_selected_witnessed,
+            "{name}: controlled rival phase margin must not become selected witnessed state: {evaluations:#?}"
+        );
+    }
+}
+
+#[test]
+fn td123_exact_l4_transition_witness_still_resolves_hidden_state() {
+    let (event, candidates, mut evaluations) = forced_l4_phase_fixture();
+    evaluations[0].signals.l4_transition_state_specific = true;
+    evaluations[0].signals.l4_transition_attract_count = 2;
+    evaluations[0].signals.l4_transition_repel_count = 0;
+    evaluations[1].signals.l4_transition_state_specific = true;
+    evaluations[1].signals.l4_transition_attract_count = 0;
+    evaluations[1].signals.l4_transition_repel_count = 2;
+    evaluations[0].signals.l4_phase_witness_milli = -91;
+    evaluations[0].signals.l4_phase_witness_supported = true;
+    evaluations[1].signals.l4_phase_witness_milli = 37;
+    evaluations[1].signals.l4_phase_witness_supported = true;
+
+    super::settle_l4_hidden_state(&event, &candidates, &mut evaluations);
+
+    assert!(
+        matches!(
+            evaluations[0].signals.l4_hidden_disposition,
+            super::L4HiddenDisposition::Resolved | super::L4HiddenDisposition::Witnessed
+        ),
+        "{evaluations:#?}"
+    );
+    assert!(evaluations[0].signals.l4_hidden_selected_witnessed);
+    assert_ne!(evaluations[0].signals.l4_hidden_probe, "phase_relation");
+    assert_eq!(
+        evaluations[0].signals.l4_hidden_selected_class,
+        super::predicted_state_id(
+            crate::nanda_wave::phase_field::hash_text(&event.original),
+            evaluations[0].action.operator.as_str(),
+            &candidates[0].replacement,
+        )
+    );
+    assert_eq!(
+        evaluations[1].signals.l4_hidden_disposition,
+        super::L4HiddenDisposition::Rejected
+    );
+    assert_eq!(evaluations[0].signals.l4_hidden_probe, "transition_history");
 }
 
 #[test]

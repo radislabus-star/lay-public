@@ -1,6 +1,6 @@
 use std::time::{Duration, Instant};
 
-use crate::keyboard::{map_original_events, KeyEvent};
+use crate::keyboard::{map_original_events, original_event_char, KeyEvent};
 use crate::text_edit::tail_chars;
 
 use super::{
@@ -94,8 +94,15 @@ impl WordBuffer {
             self.pending_learning = None;
             return;
         }
+        if pending.typed.pop().is_some() {
+            return;
+        }
+        let lay_to_len = pending.lay_to.chars().count() as u32;
+        if pending.deleted_chars >= lay_to_len {
+            self.pending_learning = None;
+            return;
+        }
         pending.deleted_chars = pending.deleted_chars.saturating_add(1);
-        pending.typed.clear();
     }
 
     pub fn note_learning_typed(&mut self, event: KeyEvent) {
@@ -106,7 +113,7 @@ impl WordBuffer {
             self.pending_learning = None;
             return;
         }
-        if pending.deleted_chars == 0 {
+        if pending.deleted_chars == 0 || original_event_char(&event).is_none() {
             self.pending_learning = None;
             return;
         }

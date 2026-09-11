@@ -15,16 +15,43 @@ From `1.0.0`, the package follows semantic versioning. GNOME Shell's required
 integer metadata version remains monotonic and is encoded as
 `major * 1,000,000 + minor * 1,000 + patch` for stable releases.
 
-Current installed source version:
+Current source version:
 
-- `1.0.70`
+- `1.0.71`
 
-1.0.70: `INSTALLED_VERIFIED_PHYSICAL_PENDING` (2026-09-10 local date).
-The revised GitHub-issues build is installed: daemon `133a1f79e57b`; the other
+1.0.71: `INSTALLED_VERIFIED_PHYSICAL_PENDING` (2026-09-11 local date).
+This is the installed release transaction for the accepted terminal
+word-boundary replacement, clean repeated-word handling, candidate comparison,
+and Backspace/pending-learning source repairs. Fresh
+1.0.71 full identity `7585f7df394fa6d06c15181923d68b553f07f0bf788f3184a4b2baf5da7c36e7`
+binds 699 source files and all 10 release binaries; candidate IME SHA-256 is
+`2ee1479cfc84c40ce3e8673e573d2dbfc42226f0e4dbdeb7cc310f6f1a63fcc5`.
+Changed/full gates passed `2756/2756` each; native controls passed `17/17`;
+fixed89 stayed exact-output identical across three profiles; diagnostic18 is
+`14/18` with `7/11` dirty restored and `7/7` clean preserved.
+
+Installed runtime receipt:
+`~/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/installation-1.0.71-attempt2.json`.
+Post-install runtime receipt:
+`~/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/post-install-runtime-1.0.71.json`.
+The global IBus PID 4715, LayRU config, input sources, and eight immutable
+model/data dependency payloads were preserved. The L1.1 executable dependency
+changed from the accepted 1.0.70 service hash to
+`db825d2f244282392fe507ebeee335ef3e66ee33fc35f6e701a688abc7845034`. Input journals were cut over at
+`2026-09-11T09:54:01.913546Z` by deleting exactly 10 old files without archive;
+new logs belong to 1.0.71 after that reset. Physical keyboard acceptance remains separate. Final document graph completion
+is established only by
+`~/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/final-document-graph/fetch-receipt.json`
+with `PASS`; publication refs are established only by
+`~/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/publication.json`.
+Evidence: [release 1.0.71](docs/release-1.0.71-preflight-2026-09-11.md).
+
+Historical 1.0.70: `INSTALLED_VERIFIED_PHYSICAL_PENDING` (2026-09-10 local date).
+The revised GitHub-issues build was installed: daemon `133a1f79e57b`; the other
 nine binary hashes match the first 1.0.70. Changed/full each pass 2726 tests;
 the public installer passes eight regressions. Current installation receipt:
 `~/.cache/lay/development/run-j4e7w_0n/installation-1.0.70.json`.
-Public delivery targets `public/main` and `v1.0.70`; its exact remote refs are
+Public delivery targeted `public/main` and `v1.0.70`; its exact remote refs were
 recorded in `~/.cache/lay/development/github-issues-70-3ps08xs0/publication.json`.
 The Ubuntu issue outcomes and physical keyboard remain separate unobserved
 claims. [Scope and evidence](docs/public-issues-42-44-release-1.0.70.md).
@@ -36,11 +63,11 @@ native 13 and first-word GUI 7/7 PASS. Final review 9/10, H0/M0/L0.
 Ten installed binaries and four loaded executable hashes match; CLI and loaded
 extension report 1.0.70. Global IBus PID 4715 and model/config/input sources
 were preserved. Receipt: `~/.cache/lay/development/run-p4d_z81t/installation-1.0.70.json`.
-Physical acceptance and publication are pending. General TD-123 quality and
+Physical acceptance and publication were pending at that historical handoff. General TD-123 quality and
 the compound layout-plus-two-letter error remain OPEN. Do not rebuild or
 reinstall merely to publish the verified bytes.
 
-Last published version: `1.0.69`.
+Historical publication marker before the 1.0.71 transaction: `1.0.70`; verify exact refs in `~/.cache/lay/development/github-issues-70-3ps08xs0/publication.json`.
 
 1.0.69 local runtime: `DELIVERY_ACCEPTED` for hint/Tab scope (2026-09-09).
 First-word suffix display and explicit Tab append pass 7/7 final-byte native

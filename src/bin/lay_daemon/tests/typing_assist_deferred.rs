@@ -68,6 +68,8 @@ fn hard_boundary_drops_pending_typing_assist_without_unsafe_output() {
         find_typing_assist_correction(&buffer, true, 1).expect("prepared completed word");
     let mut pending = Some(PendingTypingAssist::new(correction, test_text_context()));
     let mut events_since_word_start = 3;
+    let shift_state = ShiftState::default();
+    let mut clear_on_next_typing = false;
 
     assert!(handle_hard_boundary_if_needed(
         KeyCode::KEY_ENTER,
@@ -76,6 +78,8 @@ fn hard_boundary_drops_pending_typing_assist_without_unsafe_output() {
             buffer: &mut buffer,
             pending_typing_assist_after_space: &mut pending,
             events_since_word_start: &mut events_since_word_start,
+            shift_state: &shift_state,
+            clear_on_next_typing: &mut clear_on_next_typing,
             verbose: false,
         },
     ));

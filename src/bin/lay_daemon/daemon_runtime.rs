@@ -6,10 +6,10 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 
 use super::boundary_runtime::{
-    handle_hard_boundary_if_needed, handle_space_press, note_learning_backspace_if_needed,
-    try_handle_deferred_typing_assist, try_handle_enter_autocorrect, try_handle_space_release,
-    DeferredTypingAssistContext, EnterAutocorrectContext, HardBoundaryContext, SpacePressContext,
-    SpaceReleaseContext,
+    cancel_backspace_pending_assist_before_deferred_poll, handle_hard_boundary_if_needed,
+    handle_space_press, try_handle_deferred_typing_assist, try_handle_enter_autocorrect,
+    try_handle_space_release, DeferredTypingAssistContext, EnterAutocorrectContext,
+    HardBoundaryContext, SpacePressContext, SpaceReleaseContext,
 };
 use super::buffer_filter_runtime::BufferFilterContext;
 use super::daemon_state::DaemonLoopState;
@@ -172,6 +172,31 @@ pub(super) fn listen_keyboard(
                 continue;
             }
 
+            let code = event.code();
+            let value = event.value();
+            let key = KeyCode::new(code);
+
+            // Modifier state must be current before a queued Backspace can
+            // cancel deferred typing assist ahead of the pre-event poll.
+            state.shift_state.update(key, value);
+
+            // ─── флаг выполнения: пока идёт замена — все события в игнор ───
+            // Clutter virtual device (TypeText fallback) создаёт evdev-устройство
+            // которое мы тоже слушаем → feedback loop: TypeText-события попадают
+            // обратно в буфер. Блокируем ВСЕ ключи пока state.executing=true.
+            // modifier state обновляем всё равно — чтобы не рассинхронизироваться.
+            if state.executing {
+                continue;
+            }
+
+            if key != trigger_key {
+                cancel_backspace_pending_assist_before_deferred_poll(
+                    key,
+                    value,
+                    &mut state.pending_typing_assist_after_space,
+                );
+            }
+
             // A busy physical event queue must not starve a completed boundary
             // decision. Poll before consuming the next visible key so the
             // verified edit remains attached to the token that created it.
@@ -182,22 +207,7 @@ pub(super) fn listen_keyboard(
                 field_context_epoch.as_ref(),
             );
 
-            let code = event.code();
-            let value = event.value();
-            let key = KeyCode::new(code);
-
-            // ─── флаг выполнения: пока идёт замена — все события в игнор ───
-            // Clutter virtual device (TypeText fallback) создаёт evdev-устройство
-            // которое мы тоже слушаем → feedback loop: TypeText-события попадают
-            // обратно в буфер. Блокируем ВСЕ ключи пока state.executing=true.
-            // modifier state обновляем всё равно — чтобы не рассинхронизироваться.
-            if state.executing {
-                state.shift_state.update(key, value);
-                continue;
-            }
-
             // ─── modifier tracking ────────────────────────────
-            state.shift_state.update(key, value);
             if handle_alt_shift_layout_switch(key, value, &mut state) {
                 continue;
             }
@@ -293,6 +303,10 @@ pub(super) fn listen_keyboard(
                 key,
                 code,
                 shift_state: &state.shift_state,
+                buffer: &mut state.buffer,
+                pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
+                events_since_word_start: &mut state.events_since_word_start,
+                clear_on_next_typing: &mut state.clear_on_next_typing,
                 verbose,
             }) {
                 continue;
@@ -318,7 +332,6 @@ pub(super) fn listen_keyboard(
             }
 
             // ─── граница (Enter/Tab/Esc/стрелки/BS/Del) — сброс на press ──
-            note_learning_backspace_if_needed(key, value, &mut state.buffer);
             let text_context = state.daemon_text_context();
             let text_observer = DaemonTextContextObserver::new(
                 state.focused_window_identity.as_deref(),
@@ -349,6 +362,8 @@ pub(super) fn listen_keyboard(
                     buffer: &mut state.buffer,
                     pending_typing_assist_after_space: &mut state.pending_typing_assist_after_space,
                     events_since_word_start: &mut state.events_since_word_start,
+                    shift_state: &state.shift_state,
+                    clear_on_next_typing: &mut state.clear_on_next_typing,
                     verbose,
                 },
             ) {
@@ -467,10 +482,25 @@ mod route_contract {
             .split_once("for (event_idx, event) in events.iter().enumerate()")
             .expect("physical event loop")
             .1
-            .split_once("let code = event.code();")
-            .expect("key decode")
+            .split_once("#[cfg(test)]")
+            .expect("test module delimiter")
+            .0;
+        let per_event_prefix = event_loop
+            .split_once("if handle_alt_shift_layout_switch(key, value, &mut state)")
+            .expect("first visible consumer")
             .0;
 
-        assert!(event_loop.contains("poll_deferred_typing_assist("));
+        let executing_guard = per_event_prefix
+            .find("if state.executing")
+            .expect("executing guard");
+        let backspace_cancel = per_event_prefix
+            .find("cancel_backspace_pending_assist_before_deferred_poll(")
+            .expect("queued Backspace cancellation");
+        let deferred_poll = per_event_prefix
+            .find("poll_deferred_typing_assist(")
+            .expect("deferred assist poll");
+
+        assert!(executing_guard < backspace_cancel);
+        assert!(backspace_cancel < deferred_poll);
     }
 }

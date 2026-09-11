@@ -15,7 +15,7 @@ V1 remains immutable in Git at commit
 and historical normalized SHA-256
 `669e3ef88cc2639794fde79dcb9132b99ebcaf142cafe39065376f42c4a056dc`.
 The maintained V2 file is pinned directly at SHA-256
-`8ad4b46ed208b6a1fac11a7f44d8cf308c7f9b92c49f20a14086c3b6283c83b9`;
+`3bd1d4094c03b054872c01a5779a20f88118c55a5ff0bfa84976e6097b626c84`;
 there is no copied legacy driver or source-rewriting loader.
 Publication uses the public `InputContext.needs_surrounding_text()` accessor;
 `RequireSurroundingText` is consumed internally by libibus, not exposed as a
@@ -50,8 +50,20 @@ manual conversions per boundary/no-boundary case and a visible preedit after a
 same-context handoff. Terminal CommitText bytes go through the existing real
 GNU Readline consumer. A private `org.gnome.Shell` fixture forwards one
 ActivateLayout request to real IBus; GNOME and the daemon's physical detector
-are not exercised. Precognition is enabled only in this lane's private config.
+are not exercised. Precognition is enabled in this lane's private config.
 The generated metadata binds that config and the copied consumer by SHA-256.
+
+`--scenario-set terminal-delivery` checks shortening, growth and equal-length
+correction with both correction and hints enabled before typing. Each word
+is delivered through real unhandled IBus callbacks. The client uses
+`IBus.unicode_to_keyval` for valid keysyms and supplies the resulting native
+glyph to its existing input sink. It observes the existing prefetch publication
+for the exact engine path and tail epoch before Space, without injecting a
+lease or retrying input. The single replacement goes through GNU Readline;
+exact prefix, separator, final text, caret marker and subsequent native input
+must match. A fourth case requires a visible native-input hint. This four-case
+denominator does not establish immediate-Space latency, the GNOME keyboard
+encoder, Kitty or physical input. Trace observation includes flush delay.
 
 Preferred entrypoint from the editing workstation (remote execution and the
 existing heavy lease are handled automatically):

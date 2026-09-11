@@ -1,4 +1,97 @@
-# Lay 1.0.70: GitHub fixes и установленный runtime
+# Lay 1.0.71 installed, physical check separate
+
+Release `1.0.71` is installed locally with status
+`INSTALLED_VERIFIED_PHYSICAL_PENDING`. The loaded runtime matches candidate
+`2ee1479cfc84c40ce3e8673e573d2dbfc42226f0e4dbdeb7cc310f6f1a63fcc5`:
+IME PID `4152536`, daemon PID `4152503`, L3 PID `4152477`, and L1.1 PID
+`4152326`. The global `ibus-daemon` PID `4715` was preserved; CLI and loaded
+GNOME extension both report `1.0.71`; config, input sources, and the eight immutable model/data dependency payloads were
+preserved; the L1.1 executable dependency changed from the accepted 1.0.70
+service hash to `db825d2f244282392fe507ebeee335ef3e66ee33fc35f6e701a688abc7845034`.
+
+Release 1.0.71 includes the accepted repairs for terminal word-boundary
+replacement, clean repeated-word handling, candidate comparison, and
+within-word Backspace/pending-learning feedback. It is installed runtime
+authority for the verified local processes; physical keyboard acceptance is
+still `PENDING`.
+
+Evidence: fresh full identity `7585f7df394fa6d06c15181923d68b553f07f0bf788f3184a4b2baf5da7c36e7`,
+acceptance summary `b08915f4bdf76e1951d25a98feb0abf4118fe308b189c3ddf41580ddf196a68d`,
+installation receipt `8e6124c06c0f41543be7c077d84964cfcb3f919cd73d84ddd4a2cc19a665b9be`,
+and post-install runtime receipt `fa9a979c2c1eefd367cbe7c7f24ebe15d655d0e85db0558fb32938449122d3a8`.
+Changed/full gates passed `2756/2756` each; client checks passed
+`17/17`; fixed89 stayed exact-output identical across three profiles
+(`267/267`, including the known wrong-output counts `1/4/5`); diagnostic18 is
+`14/18` with `7/11` dirty restored and `7/7` clean preserved.
+
+The install cut over input journals at `2026-09-11T09:54:01.913546Z`: exactly
+10 old journal files were deleted without archive, and L3 observed the new
+empty usage journal alone (`source_offset=0`, `source_tail_hashes=[]`) before
+daemon/IME started. The second install attempt observed L1.1
+`socket_refused -> warming -> ready` and then ran one strict guard; there were
+no command failures. The first failed attempt and recovery receipts remain a
+truthful incident record, not the final state.
+
+Exact graph completion is established only by
+`/home/ubu/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/final-document-graph/fetch-receipt.json`
+with `PASS`. Exact publication refs are established only by
+`/home/ubu/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/publication.json`.
+
+Current owning release evidence:
+[release 1.0.71](docs/release-1.0.71-preflight-2026-09-11.md).
+
+# Historical: poor-input mechanics installed before 1.0.71 release
+
+2026-09-11T01:31:13Z local install completed with status
+`INSTALLED_VERIFIED_PHYSICAL_PENDING`. Candidate IME
+`aec4f55310e7aded386d037176070e709523e3d4a66a231c7fdd951a24920c99`
+is loaded as PID `1652608` under preserved global IBus PID `4715`.
+Changed verified consumers: `lay-daemon` PID `1652602`
+(`be231d78fd01`), `lay-nanda-wave-train`/L3 online PID `1652603`
+(`d2df74855c83`), and `lay-ibus-engine`. Preserved L1.1 PID is
+`2729596`; source, config, extension, immutable dependencies, input sources,
+and all release artifact identities were verified.
+
+The accepted repair has three mechanisms: L2 absolute phase competition keeps
+actual margins, generic L4 phase-bank availability is advisory until exact
+transition evidence exists, and within-word Backspace keeps raw retention plus
+bounded pending-learning feedback aligned with the Lay target. Private acceptance:
+composed source proof `2052/2052`, changed/full both `2756/2756` with zero
+failures, fixed89 `267/267` exact-output no-regression across three profiles,
+diagnostic18 `10/18 -> 14/18`, and native client matrix `17/17`.
+
+Installation receipt:
+`~/.cache/lay/development/poor-input-20260911-xoi17mif/final-mechanics-v1/installation-poor-input.json`
+sha256 `706022c30e9f9bd3423db36340be6dcfe17ffdb41f1a4f87241ae88ae6af4551`.
+Runtime receipt:
+`~/.cache/lay/development/poor-input-20260911-xoi17mif/post-install-runtime.json`
+sha256 `858931b908302163a85a92372ad3fb70b96df821870941383e2d412b87be55bb`.
+Backup: `/home/ubu/.local/state/lay/release-backups/poor-input-20260911-bgoa6qf_`.
+Installation review: `9/10`, H0/M0/L0. Physical keyboard acceptance remains
+`NOT_TESTED`; no general quality, RSS, latency, heldout, or physical PASS is
+claimed. Final document-graph verification is recorded at
+`~/.cache/lay/development/poor-input-20260911-xoi17mif/final-mechanics-v1/final-graph/fetch-receipt.json`;
+only an existing `PASS` receipt there establishes graph completion. Full facts and limits are in
+[poor-input authority](docs/poor-input-authority-2026-09-11.md).
+
+# Historical: terminal IME commit repair installed, physical check was pending
+
+2026-09-10T13:17:32.727160+00:00 локально установлен IME `4bfe47fa3db1`
+(PID 2182844); общий IBus4715 сохранён. Для legacy terminal обычные
+буквы идут через native input, замена — одним commit. Пробел и курсор
+сохранены в трёх классах длины; видимая подсказка проверена отдельно.
+Changed/full: по 2730/2730; actual-client: 17 отдельных случаев;
+финальное независимое ревью 9/10, H0/M0/L0. Прежний cold-hint отказ
+воспроизведён на обоих бинарниках и отделён от принятого post-ready сценария.
+
+Один owning document: [terminal commit order](docs/ime-terminal-commit-order-2026-09-10.md).
+Установка и откат:
+`~/.cache/lay/development/ime-replacement-cursor-20260910-7xc45bzi/installation-terminal-ime.json`.
+Это локальный патч с меткой 1.0.70; новый тег и публикация не выполнялись.
+Не повторять установку и пройденные проверки. Следующий шаг — пользовательский
+ввод в настоящем окне; GNOME/Kitty physical acceptance пока PENDING.
+
+# Historical: Lay 1.0.70 GitHub fixes installed runtime
 
 Исправлен #42: обычные начальные `-`, `_`, `=` и `+` сохраняются в daemon
 буфере вместе с буквами и участвуют в точном replay. Для #43/#44 установщик

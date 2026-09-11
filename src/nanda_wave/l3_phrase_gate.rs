@@ -57,9 +57,10 @@ fn evaluate_candidates_with_phase(
     reports
 }
 
-/// Certifies a restoration when the exact target already occurred in the current
-/// sentence. Two-edit evidence additionally requires an unattested source and a
-/// unique nearby word across the complete current context, including noncandidates.
+/// Certifies restoration of an unattested source when the exact target already
+/// occurred in the current sentence. Recurrence cannot contradict an attested
+/// current token. Two-edit evidence additionally requires a unique nearby word
+/// across the complete current context, including noncandidates.
 /// This is bounded current-input evidence, not a phrase-specific rewrite.
 fn apply_context_recurrence_certificate(
     original: &str,
@@ -103,9 +104,8 @@ fn apply_context_recurrence_certificate(
     }
 
     if witnessed.is_empty() {
-        // The preservation reader's exact dictionary covers sources of length5+.
-        // Keep the existing one-edit branch first; do not widen short/other-script
-        // authority or infer damage merely from a missing reference entry.
+        // Keep the stricter length and script bounds for two-edit evidence.
+        // Missing reference evidence alone never proves that a repair is valid.
         if damaged.chars().count() < 5 || !damaged.chars().all(crate::keyboard::is_cyrillic_letter)
         {
             return;
@@ -142,13 +142,6 @@ fn apply_context_recurrence_certificate(
                 witnessed.entry(target.to_owned()).or_default().push(index);
             }
         }
-        // This can initialize process reference snapshots; defer its single call
-        // until an otherwise issuable retained recurrence actually exists.
-        if witnessed.is_empty()
-            || crate::russian_lexicon::has_clean_russian_surface_certificate(damaged)
-        {
-            return;
-        }
     }
 
     let Some((target, indices)) = (witnessed.len() == 1)
@@ -157,6 +150,16 @@ fn apply_context_recurrence_certificate(
     else {
         return;
     };
+    // Consult existing preservation evidence only for an otherwise issuable
+    // recurrence. Leave independent phase reports intact for attested inputs.
+    let source_is_attested = if damaged.is_ascii() {
+        crate::token_language::is_known_en_token(damaged)
+    } else {
+        crate::russian_lexicon::has_clean_russian_surface_certificate(damaged)
+    };
+    if source_is_attested {
+        return;
+    }
     let support = sentence_context
         .iter()
         .filter(|word| word.as_str() == target)
@@ -603,20 +606,84 @@ mod tests {
 
     #[test]
     fn unique_one_edit_recurrence_certifies_current_sentence_repair() {
-        let original = "сделать ошибку в слове мало и написать мло ";
-        let replacements = [
-            "сделать ошибку в слове мало и написать мало ",
-            "сделать ошибку в слове мало и написать смело ",
-        ];
-        let mut reports = vec![None, None];
+        for (original, replacements) in [
+            (
+                "сделать ошибку в слове мало и написать мло ",
+                [
+                    "сделать ошибку в слове мало и написать мало ",
+                    "сделать ошибку в слове мало и написать смело ",
+                ],
+            ),
+            ("from here frmo ", ["from here from ", "from here farm "]),
+        ] {
+            let mut reports = vec![None, None];
 
-        apply_context_recurrence_certificate(original, &replacements, &mut reports);
+            apply_context_recurrence_certificate(original, &replacements, &mut reports);
 
-        let report = reports[0].as_ref().expect("recurrence certificate");
-        assert_eq!(report.decision, L3PhraseGateDecision::Support);
-        assert!(report.pairwise_certified);
-        assert_eq!(report.reason, "l3_unique_context_recurrence");
-        assert!(reports[1].is_none());
+            let report = reports[0].as_ref().expect("recurrence certificate");
+            assert_eq!(report.decision, L3PhraseGateDecision::Support);
+            assert!(report.pairwise_certified);
+            assert_eq!(report.reason, "l3_unique_context_recurrence");
+            assert!(reports[1].is_none());
+        }
+    }
+
+    #[test]
+    fn one_edit_recurrence_preserves_attested_sources_and_independent_reports() {
+        for (observed, target) in [
+            ("окнах", "окна"),
+            ("книгам", "книгах"),
+            ("бы", "ты"),
+            ("форма", "ферма"),
+            ("form", "from"),
+            ("plans", "plan"),
+        ] {
+            assert!(if observed.is_ascii() {
+                crate::token_language::is_known_en_token(observed)
+            } else {
+                crate::russian_lexicon::has_clean_russian_surface_certificate(observed)
+            });
+            assert_eq!(
+                crate::text_metrics::damerau_levenshtein(observed, target),
+                1
+            );
+            for uppercase in [false, true] {
+                let original = format!("{target} и {observed} ");
+                let replacement = format!("{target} и {target} ");
+                let (original, replacement) = if uppercase {
+                    (original.to_uppercase(), replacement.to_uppercase())
+                } else {
+                    (original, replacement)
+                };
+                let surfaces = [
+                    replacement.as_str(),
+                    original.as_str(),
+                    replacement.as_str(),
+                ];
+                for order in [[0, 1, 2], [1, 2, 0], [2, 0, 1]] {
+                    let replacements = order.map(|index| surfaces[index]);
+                    for decision in [
+                        L3PhraseGateDecision::Support,
+                        L3PhraseGateDecision::Suppress,
+                    ] {
+                        let mut independent = context_recurrence_report(None, 2, 3);
+                        independent.source = "independent_phase";
+                        independent.reason = "independent_phase_evidence";
+                        independent.decision = decision;
+                        let mut reports = vec![Some(independent), None, None];
+                        let before = reports.clone();
+
+                        apply_context_recurrence_certificate(
+                            &original,
+                            &replacements,
+                            &mut reports,
+                        );
+
+                        assert_eq!(reports, before, "{original:?}, order={order:?}");
+                    }
+                }
+            }
+        }
     }
 
     #[test]

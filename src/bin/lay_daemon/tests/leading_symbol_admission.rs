@@ -7,10 +7,17 @@ fn observe_character(
     modifiers: &ShiftState,
 ) {
     let key = KeyCode::new(event.keycode);
+    let mut pending_typing_assist_after_space = None;
+    let mut events_since_word_start = buffer.current_len() as u32;
+    let mut clear_on_next_typing = false;
     if should_skip_buffer_input(BufferFilterContext {
         key,
         code: event.keycode,
         shift_state: modifiers,
+        buffer,
+        pending_typing_assist_after_space: &mut pending_typing_assist_after_space,
+        events_since_word_start: &mut events_since_word_start,
+        clear_on_next_typing: &mut clear_on_next_typing,
         verbose: false,
     }) {
         return;

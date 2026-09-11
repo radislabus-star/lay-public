@@ -59,14 +59,23 @@ impl LayIbusEngine {
     }
 
     pub(super) fn initial_word_input_mode(&self) -> WordInputMode {
-        if self.client_context.cursor_cell_width > 0
-            && self.client_context.cursor_cell_width <= 3
-            && !self.client_context.surrounding_text_supported
+        if self.uses_native_terminal_input()
+            || (self.client_context.cursor_cell_width > 0
+                && self.client_context.cursor_cell_width <= 3
+                && !self.client_context.surrounding_text_supported)
         {
             WordInputMode::TerminalPassthrough
         } else {
             WordInputMode::ManagedCommit
         }
+    }
+
+    pub(super) fn uses_native_terminal_input(&self) -> bool {
+        // Consecutive legacy CommitText signals can share one Wayland done.
+        // Native terminal keys retain the compositor's existing replay order.
+        !self.atomic.active
+            && self.client_context.content_purpose == IBUS_INPUT_PURPOSE_TERMINAL
+            && !self.client_context.surrounding_text_supported
     }
 
     pub(super) fn preedit_waits_for_cursor_ack(&self) -> bool {
@@ -259,6 +268,9 @@ impl LayIbusEngine {
             && self.client_context.content_hints == hints
         {
             return;
+        }
+        if self.client_context.content_purpose != purpose {
+            self.composition.word_input_mode = None;
         }
         self.client_context.content_purpose = purpose;
         self.client_context.content_hints = hints;

@@ -144,7 +144,7 @@ class ImeClientHarnessTest(unittest.TestCase):
 
     def test_v2_driver_and_preserved_scenarios_have_exact_identities(self) -> None:
         self.assertEqual(
-            "8ad4b46ed208b6a1fac11a7f44d8cf308c7f9b92c49f20a14086c3b6283c83b9",
+            "3bd1d4094c03b054872c01a5779a20f88118c55a5ff0bfa84976e6097b626c84",
             HARNESS.verify_driver_identity(HARNESS_ROOT),
         )
         self.assertEqual(
@@ -222,7 +222,7 @@ class ImeClientHarnessTest(unittest.TestCase):
         self.assertEqual("lifecycle", command[index + 1])
 
     def test_manual_lane_binds_terminal_consumer_and_enabled_preedit(self) -> None:
-        for scenario_set in ("manual-toggle", "first-word", "first-word-us", "first-word-ru"):
+        for scenario_set in ("manual-toggle", "terminal-delivery", "first-word", "first-word-us", "first-word-ru"):
             plan = HARNESS.replace(HARNESS.load_plan(self.fixture.config),
                                    scenario_set=scenario_set)
             output = self.root / (scenario_set + "-output")
@@ -593,6 +593,7 @@ class ImeClientConsumerTest(unittest.TestCase):
             "client_log": None, "input_log": None, "output_log": None,
             "KEYCODES": {"l": 38}, "RELEASE_MASK": 1 << 30,
             "IBus": SimpleNamespace(
+                unicode_to_keyval=lambda character: ord(character),
                 Capabilite=SimpleNamespace(PREEDIT_TEXT=1, FOCUS=8, SURROUNDING_TEXT=32),
                 InputPurpose=SimpleNamespace(FREE_FORM=0),
                 Text=SimpleNamespace(new_from_string=lambda text: text)),
@@ -668,6 +669,15 @@ class ImeClientConsumerTest(unittest.TestCase):
         self.assertTrue(set(registered) <= signals, (registered, signals))
         self.assertTrue(callable(IBus.InputContext.needs_surrounding_text))
         self.assertTrue(callable(IBus.InputContext.set_surrounding_text))
+        self.namespace["IBus"].unicode_to_keyval = IBus.unicode_to_keyval
+        self.namespace["KEYCODES"]["п"] = 34
+        for character in ("l", "п"):
+            self.assertFalse(self.client.key(character))
+        self.assertEqual("lп", self.client.visible)
+        self.assertEqual(
+            mock.call(IBus.unicode_to_keyval("п"), 34, 1 << 30),
+            self.context.process_key_event.call_args,
+        )
 
 
 class ImeClientStartupScheduleTest(unittest.TestCase):

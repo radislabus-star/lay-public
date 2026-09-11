@@ -1,15 +1,44 @@
 # TD-123: Wave 1.0.67 — повысить качество восстановления в целом
 
-Status: `ACTIVE_QUALITY`; installed revised 1.0.70 GitHub fixes and retained-boundary IME; physical acceptance pending; general restoration quality remains OPEN
+Status: `ACTIVE_QUALITY`; poor-input mechanics installed after private full/native/fixed/diagnostic gates; physical acceptance pending; general restoration quality remains OPEN
 Priority: `P1` — основная продуктовая цель следующего релиза
 Target release: `1.0.67`
 Admission: 2026-09-05, явное поручение пользователя:
 «„Wave стала умнее вообще“ — вот это наша задача на .67 — запиши её себе!
 после релиза66».
 
-## Дополнение 1.0.70 по public issues 42–44
+## Poor-input mechanics repair installed, physical pending, 2026-09-11
 
-Установлен daemon `133a1f79e57b` с исправленным сохранением ведущих символов.
+Candidate `aec4f55310e7aded386d037176070e709523e3d4a66a231c7fdd951a24920c99` is installed with status `INSTALLED_VERIFIED_PHYSICAL_PENDING`. Installation receipt `/home/ubu/.cache/lay/development/poor-input-20260911-xoi17mif/final-mechanics-v1/installation-poor-input.json` has sha256 `706022c30e9f9bd3423db36340be6dcfe17ffdb41f1a4f87241ae88ae6af4551`; post-install runtime receipt `/home/ubu/.cache/lay/development/poor-input-20260911-xoi17mif/post-install-runtime.json` has sha256 `858931b908302163a85a92372ad3fb70b96df821870941383e2d412b87be55bb`. Physical keyboard acceptance is still `NOT_TESTED`; no general quality promotion is claimed.
+
+The repair covers three mechanisms: L2 absolute phase competition preserves the actual margin for close repeated-letter repairs; generic L4 phase-bank availability is advisory unless exact transition evidence exists; Backspace raw retention and bounded pending-learning feedback now track the Lay target after within-word edits.
+
+Evidence: composed source proof `2052/2052` PASS from GREEN4 lib1792 plus GREEN3 daemon260, with only a two-line cfgtest `PhaseInterferenceProbe.rank_after` field/initializer removal between proof parts and current production source identical; mandatory full attempt 2 on `run-JiMwYK` PASS with changed/full both `2756/2756`, zero known semantic failures, zero infrastructure failures; full identity elapsed `1069.518s`; `699` source hashes match; final IME SHA `aec4f55310e7aded386d037176070e709523e3d4a66a231c7fdd951a24920c99`. The first full attempt failed only on the unused test-only `rank_after` field and was not accepted; the second attempt is the valid proof, without lint-baseline expansion.
+
+Diagnostic18 improved from `10/18` to `14/18`; dirty restored from `3/11` to `7/11`; clean controls stayed `7/7 = 100%`. Fixed89 is exact-output no-regression across all three profiles: `267/267` outputs/statuses unchanged, with zero new false applies. Native client matrix passed `17/17` as separate terminal/restoration/lifecycle/manual/first-word lanes. These first-word/manual results are native controls, not physical keyboard acceptance.
+
+Known remaining scope: `nfr b` still resolves incorrectly, three endings cases remain not restored, and this does not prove universal grammar, `видешь`, `выровнить`, mixed-input, resource/RSS/performance, or general heldout quality. Full facts, per-class percentages, receipt paths, installed process identities, and source-contract notes are in [poor-input authority](../docs/poor-input-authority-2026-09-11.md).
+
+## Historical: Shared L3 clean-source repair, 2026-09-11
+
+Кандидат `e5720ec292620c0554696834d2fa4381775e1c5eed013c8c37cfbe24fff4ffbd`
+исправляет ложную L3 recurrence authority для clean-word источника. Private
+acceptance complete: full gates, source review, fixed89, paired diagnostic
+`17/18 -> 18/18` and native accepted denominator `17` passed. Immediate
+manual-toggle cold failures remain recorded separately for candidate and
+installed baseline. Installation is `INSTALLED_VERIFIED_PHYSICAL_PENDING`;
+physical keyboard acceptance is still PENDING. Final source-graph result is
+recorded in
+`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/final-graph/fetch-receipt.json`;
+inspect that receipt for the verdict. No general latency improvement or
+general TD-123 quality PASS is claimed. Exact receipts, installed process
+identities, per-class percentages, resources and scope limits are in
+[clean-surface authority](../docs/clean-surface-authority-2026-09-11.md#fixed-diagnostic-and-native-acceptance).
+
+## Historical: дополнение 1.0.70 по public issues 42–44
+
+В этом предыдущем этапе был установлен daemon `133a1f79e57b` с исправленным
+сохранением ведущих символов.
 Модели и байты IME не изменены; это не продвижение общего качества Wave.
 Свежие changed/full, исправления установщика и точные receipts:
 [owning issue document](../docs/public-issues-42-44-release-1.0.70.md).

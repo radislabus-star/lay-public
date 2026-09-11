@@ -1483,12 +1483,12 @@ async fn manual_toggle_bridge_round_trips(leading_boundary: bool) {
         source.client_context.content_purpose = 10;
         source.client_context.cursor_cell_width = 11;
         source.client_context.surrounding_text_supported = false;
-        assert!(legacy_key(&mut harness, &mut source, 8_000, 'a' as u32, 30, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        assert!(!legacy_key(&mut harness, &mut source, 8_000, 'a' as u32, 30, 0).await);
+        super::terminal_delivery::no_legacy_text_output(&mut harness).await;
         assert!(source.committed_tail.buffer.ends_with('a'));
         if boundary {
-            assert!(legacy_key(&mut harness, &mut source, 8_001, KEY_SPACE, 57, 0).await);
-            expect_legacy_commit(&mut harness.peer).await;
+            assert!(!legacy_key(&mut harness, &mut source, 8_001, KEY_SPACE, 57, 0).await);
+            super::terminal_delivery::no_legacy_text_output(&mut harness).await;
         }
         for turn in 0..12 {
             let target_is_ru = turn % 2 == 0;
@@ -1604,8 +1604,8 @@ fn residual_first_word_suffix_tracks_unicode_backspace_and_rejects_retained_pref
         engine.client_context.cursor_cell_width = 11;
         engine.layout_gesture.layout_is_ru = true;
         for (index, code) in [30, 48, 46].into_iter().enumerate() {
-            assert!(legacy_key(&mut harness, &mut engine, 9_000 + index as u32, 0, code, 0).await);
-            expect_legacy_commit(&mut harness.peer).await;
+            assert!(!legacy_key(&mut harness, &mut engine, 9_000 + index as u32, 0, code, 0).await);
+            super::terminal_delivery::no_legacy_text_output(&mut harness).await;
             assert_eq!(
                 engine
                     .context_word_scope
@@ -1647,8 +1647,8 @@ fn residual_first_word_suffix_tracks_unicode_backspace_and_rejects_retained_pref
             0
         );
         assert!(!engine.context_allows_manual_toggle());
-        assert!(legacy_key(&mut harness, &mut engine, 9_006, 0, 46, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        assert!(!legacy_key(&mut harness, &mut engine, 9_006, 0, 46, 0).await);
+        super::terminal_delivery::no_legacy_text_output(&mut harness).await;
         assert_eq!(engine.committed_tail.buffer, "фис");
         assert_eq!(
             engine
@@ -1686,8 +1686,8 @@ fn residual_first_word_manual_admission_is_terminal_only_and_revoked_with_contex
             engine.config.auto_replace = false;
             engine.client_context.content_purpose = 10;
             engine.client_context.cursor_cell_width = 11;
-            assert!(legacy_key(&mut harness, &mut engine, 9_100, 'a' as u32, 30, 0).await);
-            expect_legacy_commit(&mut harness.peer).await;
+            assert!(!legacy_key(&mut harness, &mut engine, 9_100, 'a' as u32, 30, 0).await);
+            super::terminal_delivery::no_legacy_text_output(&mut harness).await;
             assert!(engine.context_allows_manual_toggle());
             engine.client_context.surrounding_text_supported = true;
             assert!(
@@ -1839,8 +1839,8 @@ fn residual_first_numeric_word_bridge_refuses_without_delegation_or_output() {
         engine.client_context.content_purpose = 10;
         engine.client_context.cursor_cell_width = 11;
         for (index, code) in [2, 3, 4].into_iter().enumerate() {
-            assert!(legacy_key(&mut harness, &mut engine, 9_400 + index as u32, 0, code, 0).await);
-            expect_legacy_commit(&mut harness.peer).await;
+            assert!(!legacy_key(&mut harness, &mut engine, 9_400 + index as u32, 0, code, 0).await);
+            super::terminal_delivery::no_legacy_text_output(&mut harness).await;
         }
         assert_eq!(engine.committed_tail.buffer, "123");
         assert!(engine.context_allows_manual_toggle());

@@ -11,7 +11,7 @@ mod visible_text_memory;
 
 use std::time::Instant;
 
-use crate::keyboard::KeyEvent;
+use crate::keyboard::{original_event_char, KeyEvent};
 use crate::text_edit::TextReplacement;
 
 pub const MAX_REPLACE_WORDS: usize = 8;
@@ -154,6 +154,28 @@ impl WordBuffer {
             }
             self.prev_had_trailing_space = true;
         }
+    }
+
+    pub fn current_events_have_known_original_chars(&self) -> bool {
+        self.current
+            .iter()
+            .all(|event| original_event_char(event).is_some())
+    }
+
+    pub fn pop_known_current_event_preserving_nonempty(&mut self) -> bool {
+        if self.current.len() <= 1 || !self.current_events_have_known_original_chars() {
+            return false;
+        }
+        self.current.pop();
+        self.prev_had_trailing_space = false;
+        self.replay_toggle_words = 0;
+        self.pending_auto_undo = None;
+        true
+    }
+
+    pub fn invalidate_replay_and_auto_undo(&mut self) {
+        self.replay_toggle_words = 0;
+        self.pending_auto_undo = None;
     }
 
     #[inline]
