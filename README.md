@@ -7,10 +7,10 @@
 `lay` исправляет слово, набранное не в той раскладке: нажмите
 **Shift два раза** и продолжайте писать.
 
-**Версия исходников: 1.0.66. Статус: alpha.**
+**Последний публичный релиз: [1.0.71](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.71). Статус: alpha.**
 
-Состояние установленного IME и незавершённые проверки описаны в
-[точке продолжения](CONTINUE.md).
+Изменения, результаты проверок и известные ограничения — в
+[описании релиза](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.71).
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -47,19 +47,27 @@ Daemon локально слушает физические клавиши, хр
 пробела и автоматическое применение исправлений выключены, пока пользователь
 сам их не включит.
 
-## Текущая работа
+## Что изменилось в 1.0.71
 
-Ветка `codex/cleanup-20260908` содержит исходники 1.0.66 и сохранённые
-исправления IME. Очистка проекта не является новым релизом. Автокоррекция
-остаётся незавершённой: текущая выборка существующих native fixtures даёт
-19/47 правильных восстановлений и 39/42 сохранённых clean строк; обычный темп
-физического ввода ещё не подтверждён.
+- Замена слова в терминале сохраняет границу после слова.
+- Повторный ввод правильного слова не вызывает лишнюю автозамену.
+- Выбор исправления учитывает совпадение кандидата с набранным текстом.
+- Backspace внутри слова сохраняет буквы и не запускает лишнюю автозамену
+  через обучение.
 
-[Точка продолжения](CONTINUE.md) · [Текущая очередь](tech_debt/README.md) ·
-[Документация](docs/README.md) · [Сохранённая история](ARCHIVE.md).
+Основной и полный обязательный наборы проверок прошли по **2756/2756**;
+клиентские проверки ввода — **17/17**. Диагностическая выборка дала
+**7/11** восстановлений ошибочного ввода и **7/7** сохранений чистого ввода.
+Это ограниченные проверки: общее качество автокоррекции и ввод с физической
+клавиатуры ими не подтверждены.
 
-История изменений 1.0.44–1.0.65 сохранена в исходном Git snapshot по пути
-`README.md`; точные команды восстановления находятся в `ARCHIVE.md`.
+Известные нерешённые случаи: `nfr b ` с завершающим пробелом, `видешь`,
+`видешь!` и `выровнить`.
+[Подробности проверок](docs/release-1.0.71-preflight-2026-09-11.md).
+
+[Документация](docs/README.md) ·
+[Сообщить об ошибке](https://github.com/radislabus-star/lay-public/issues) ·
+[История релизов](https://github.com/radislabus-star/lay-public/releases).
 
 ## Текущая архитектура
 
@@ -337,7 +345,7 @@ PASS receipt и обязательная architecture-проверка. Producti
 
 ## English
 
-`lay` 1.0.66 is a local Double Shift RU/EN layout rescue and bounded
+`lay` 1.0.71 is a local Double Shift RU/EN layout rescue and bounded
 typing-correction tool for Linux desktops.
 
 ```text
@@ -352,8 +360,9 @@ L3 context, `TransitionDecisionCore`, and a structural verifier.
 Exact search contributes candidates and certificates but does not bypass final
 authority.
 
-Current development state and archived release history are linked from
-[CONTINUE.md](CONTINUE.md) and [ARCHIVE.md](ARCHIVE.md).
+The [1.0.71 release notes](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.71)
+cover terminal boundaries, repeated typing, candidate selection and Backspace
+fixes, along with the verification scope and known limitations.
 
 Quick install:
 
