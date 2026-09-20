@@ -7,10 +7,10 @@
 `lay` исправляет слово, набранное не в той раскладке: нажмите
 **Shift два раза** и продолжайте писать.
 
-**Последний публичный релиз: [1.0.73](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.73). Статус: alpha.**
+**Последний публичный релиз: [1.0.74](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.74). Статус: alpha.**
 
 Изменения, результаты проверок и известные ограничения — в
-[описании релиза](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.73).
+[описании релиза](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.74).
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -47,25 +47,17 @@ Daemon локально слушает физические клавиши, хр
 пробела и автоматическое применение исправлений выключены, пока пользователь
 сам их не включит.
 
-## Что изменилось в 1.0.73
+## Что изменилось в 1.0.74
 
-- Double Shift в Firefox сохраняет целое слово при смене экземпляра IME и
-  допускает точное обратное переключение вторым жестом.
-- Первый ввод, смешанный префикс, принятое дополнение с пробелом и слово перед
-  пробелом проходят один и тот же ограниченный маршрут подтверждения текста.
-- Горячий перезапуск IME сохраняет выбранный русский или английский источник
-  и не перезапускает глобальный IBus.
-- Захваченные `Ctrl+PageUp` и `Ctrl+PageDown` передаются замкнутым кадром;
-  при ошибке модификаторы освобождаются общим безопасным маршрутом.
-- Формы русских глаголов на `-ять` защищены от ложной автокоррекции.
+- Исправлено дублирование текста при автокоррекции в Chrome и Firefox, когда
+  браузер принимал замену без применения предшествующего удаления.
+- Исправленное слово остаётся под владением цельного preedit до подтверждения
+  клиентом.
+- Отменённые зеркала удаляются, а устаревший допуск контекста отзывается до
+  завершения callback.
+- Маршруты GTK и терминала не изменены.
 
-Полный обязательный набор прошёл **2891/2891** обнаруженных тестов; отдельная
-IME-выборка — **564/564**. Финальные бинарники прошли четыре точных нативных
-Firefox-сценария и отдельный контроль `Shift+1`. Это синтетические
-клиент-видимые проверки; ввод человеком с физической клавиатуры ими не
-подтверждён.
-
-[Подробности проверок](docs/release-1.0.73-finalization-2026-09-20.md).
+[Подробности релиза](docs/release-1.0.74-td125-2026-09-20.md).
 
 [Документация](docs/README.md) ·
 [Сообщить об ошибке](https://github.com/radislabus-star/lay-public/issues) ·
@@ -347,7 +339,7 @@ PASS receipt и обязательная architecture-проверка. Producti
 
 ## English
 
-`lay` 1.0.73 is a local Double Shift RU/EN layout rescue and bounded
+`lay` 1.0.74 is a local Double Shift RU/EN layout rescue and bounded
 typing-correction tool for Linux desktops.
 
 ```text
@@ -362,9 +354,8 @@ L3 context, `TransitionDecisionCore`, and a structural verifier.
 Exact search contributes candidates and certificates but does not bypass final
 authority.
 
-The [1.0.73 release notes](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.73)
-cover exact Firefox round trips, safe IME restart, closed modifier frames, and
-the verification scope and known limitations.
+The [1.0.74 release notes](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.74)
+cover the accepted Chrome and Firefox autocorrection-boundary repair.
 
 Quick install:
 

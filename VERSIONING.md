@@ -19,11 +19,11 @@ Current source version:
 
 - `1.0.74`
 
-1.0.74: `RELEASE_CANDIDATE` (2026-09-20). This patch release publishes the
-installed and physically accepted TD-125 browser autocorrection-boundary repair.
-The release tag remains forbidden until the exact 1.0.74 source passes the full
-release gate, all ten versioned binaries are built and installed, the four-client
-matrix remains exact, and source/installed/loaded identities agree.
+1.0.74: `PUBLISHED_VERIFIED` (2026-09-21). This patch release publishes the
+accepted TD-125 browser autocorrection-boundary repair. Public `main` contains
+the release commit `ecd5af2a`; annotated tag `v1.0.74` and the GitHub Release
+point to that commit. The post-publication documentation commit records the
+public readback without moving the immutable release tag.
 
 Historical 1.0.73: `PUBLISHED_VERIFIED` (2026-09-20). This release contains the
 #47 pure-uinput Double Shift and independent Auto Switch fixes, the `-ять`

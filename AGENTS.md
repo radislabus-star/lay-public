@@ -93,6 +93,21 @@ Rules:
 - `target/` is disposable build cache. Installed release binaries live in `~/.local/lib/lay/bin` and are linked from `~/.local/bin`.
 - Check current usage with `scripts/cargo-guard.sh --status` before and after an unusually broad build.
 
+## Accepted-version publication
+
+- When the user confirms that an exact running version works or says it is OK,
+  treat verification of that version as finished.
+- If the user then says to push or publish that version, perform only the
+  requested commit, push, tag, and release operations. Do not run tests,
+  checks, builds, installations, service restarts, browser automation,
+  synthetic input, or physical client matrices unless the user separately and
+  explicitly requests them.
+- A version-number, lockfile, release-note, metadata, or generated-graph-only
+  change does not reopen functional verification. Reuse the already accepted
+  evidence and do not repeat it.
+- Never interpret a publication request as authorization to alter the accepted
+  runtime or to prove the accepted behavior again.
+
 ## Protected Double Shift route
 
 - Physical Double Shift has exactly one detector: the `lay-daemon` trigger FSM.

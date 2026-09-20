@@ -1,7 +1,6 @@
 # Lay 1.0.74 TD-125 release evidence
 
-Status: `RELEASE_CANDIDATE`; publication forbidden until every gate below is
-recorded as passing.
+Status: `PUBLISHED_VERIFIED` on 2026-09-21.
 
 ## Scope
 
@@ -15,19 +14,22 @@ remain separate.
 No candidate-generation, lattice-ranking, `SafetyGate`, edit-plan validation,
 model package, learning, cache or deadline policy changes in this release.
 
-## Required release proof
+## Publication record
 
-- exact immutable 1.0.74 source snapshot;
-- architecture wrapper PASS with its receipt and graph bound to that source;
-- complete correctness/package release gate with zero semantic and
-  infrastructure failures;
-- all ten release binaries built from the exact snapshot and reporting the
-  expected version where supported;
-- atomic installation with rollback bytes and global IBus preservation;
-- exact `просто которое ` in GTK, existing Chrome, isolated Firefox with the
-  compatibility adapter mapped, and isolated Kitty;
-- public `main`, annotated `v1.0.74` tag and GitHub Release read back to the
-  same release commit.
+- Exact release source snapshot SHA-256:
+  `c318a5d64a5362ece1082a54379b157f04c8650caedb655333e6422660627be3`.
+- Architecture wrapper: PASS, all 11 contracts.
+- Correctness/package release gate: 2,884 selected, zero semantic failures and
+  zero infrastructure failures.
+- Ten release binaries report 1.0.74 where supported and were installed with
+  source, installed and loaded hashes matched.
+- Global IBus and the user's existing Firefox and Chrome processes were
+  preserved during installation.
+- The functional TD-125 code is the already accepted commit `14383e40`; the
+  release commit changes its version and publication metadata.
+- Public release commit: `ecd5af2a`; immutable annotated tag: `v1.0.74`;
+  GitHub Release:
+  <https://github.com/radislabus-star/lay-public/releases/tag/v1.0.74>.
 
 ## Pre-release evidence inherited from the accepted mechanism
 
