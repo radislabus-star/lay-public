@@ -5,7 +5,7 @@ use lay::config::LayConfig;
 
 use crate::atomic::td120_test_atomic_capability;
 use crate::bridge::LayImeBridge;
-use crate::engine::LayIbusEngine;
+use crate::engine::{LayIbusEngine, SurroundingTextSnapshot};
 use crate::output::{PROPOSAL_FRAME_READY, PROPOSAL_NATIVE_UNHANDLED};
 use crate::protocol::{AutocorrectSuppression, Shared, KEY_LEFT_SHIFT, KEY_SPACE};
 
@@ -203,7 +203,10 @@ fn td120_real_bridge_v2_arm_and_revoke_survive_atomic_settlement() {
         let isolated = isolated_p2p_bridge(shared.clone()).await;
         let path = "/io/github/lay/td120/bridge_v2_arm";
         let mut live = engine(path, shared.clone(), false);
-        live.push_tail_char('x');
+        live.push_tail_char('ч');
+        live.set_client_capabilities(1 << 5);
+        live.client_context.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("ч".to_string(), 1, 1));
         live.prepare_exact_manual_toggle_layout_handoff();
         let epoch = live.committed_tail.epoch;
         register_engine(&isolated.bridge, path, live).await;
@@ -211,7 +214,7 @@ fn td120_real_bridge_v2_arm_and_revoke_survive_atomic_settlement() {
         prepare_atomic_space(&isolated.bridge, path, 511, 83).await;
         assert!(isolated
             .bridge
-            .suppress_next_autocorrect_v2_inner("x".to_string(), epoch, path.to_string(), false)
+            .suppress_next_autocorrect_v2_inner("ч".to_string(), epoch, path.to_string(), false)
             .await
             .expect("real V2 bridge admission"));
         let armed_revision = shared.lock().expect("shared state").suppression_revision;

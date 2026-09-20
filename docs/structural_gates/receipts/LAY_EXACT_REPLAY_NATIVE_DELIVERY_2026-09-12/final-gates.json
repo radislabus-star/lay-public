@@ -1,0 +1,107 @@
+{
+  "schema": "lay.exact-replay-native-delivery.final-gates.v1",
+  "status": "RELEASE_CANDIDATE_BUILT_NOT_INSTALLED_PHYSICAL_PENDING",
+  "date": "2026-09-12",
+  "runtime_authority_changed": false,
+  "source_snapshot": {
+    "local_root": "/home/ubu/.cache/lay/development/exact-replay-native-final2-20260912-F6zFecGQ",
+    "remote_root": "/home/e/projects/lay-development-runner/exact-replay-native-final2-F6zFecGQ",
+    "source_head": "83ba0f42db5c87cdc4f17abf42197396566cb05b",
+    "archive_sha256": "84d194c04055b000c55f380cd8148a7a37af8bf9a2a114765f44fff7c5eff58d",
+    "request_sha256": "9c0c42081c3e649d5215082a1f30a1391e19bb229540392b0bbcf73c365c1dbc",
+    "files": 1394,
+    "changed_paths": 45,
+    "post_snapshot_documentation_only": true
+  },
+  "canonical_manifest": {
+    "manifest_sha256": "b9d934aa38cb348189c1f4dac6a83297df52360380f2908d087240e4408ea3d1",
+    "known_failures_sha256": "874a3aa4af7d9923ef63423ea3fb9ad9b2320f686ea2bc4c6a07b52d7748025c",
+    "correctness": 2731,
+    "package": 36,
+    "selected_changed_gate": 2767,
+    "ignored": 15,
+    "performance": 11,
+    "total_inventory": 2793,
+    "known_failure_count": 0
+  },
+  "changed_gate": {
+    "command": "scripts/check-lay-changed.sh",
+    "resource_profile": "dedicated-20cpu",
+    "returncode": 0,
+    "log_sha256": "04fdb0c80fbe45e57b1d1f414655e34a4a35b41a41faaf5e7cfbdea3945d522a",
+    "verdict": "PASS",
+    "selected": 2767,
+    "known_semantic_failures": 0,
+    "infrastructure_failures": 0,
+    "ime_target": "476/476 PASS",
+    "typing_transition_authority_contract": "21/21 PASS",
+    "unsafe_edit_scoreboard": {
+      "records": 200,
+      "gate_failures": 0,
+      "verdict": "PASS"
+    }
+  },
+  "structural_matcher_repair": {
+    "failed_changed_log_sha256": "e9973125bad87ce9c73f0f1fd85c2b4115bb466dd3469a6eb5c2c8e4b9955f5f",
+    "failed_target_log_sha256": "98124e0192455f75fe3aaf04a626a29ca2d4a9dffc9794b6bac8b8ba0308d06a",
+    "cause": "the first read-only UnknownStart capability query was mistaken for the actual manual/layout fallback",
+    "repair": "anchor the existing undo-before-manual assertion to let authority = self.manual_toggle_authority();",
+    "production_source_changed": false,
+    "exact_repair_test": "1/1 PASS",
+    "exact_repair_log_sha256": "d113c69ef6750f73005f14e1e804ce187a5c31f8de45bcd6ac591be17e8253d3"
+  },
+  "physical_double_shift_owner_tests": {
+    "verdict": "4/4 PASS",
+    "tests": [
+      "committed_tail::tests::physical_double_shift_owner_committed_tail_waits_for_visible_postcondition",
+      "ibus_interface::causal_precondition_tests::physical_double_shift_owner_legacy_boundary_has_no_edit_capability",
+      "ibus_interface::causal_precondition_tests::physical_double_shift_owner_legacy_route_is_observation_only",
+      "layout_controller::ime_manual_toggle::tests::physical_double_shift_owner_daemon_does_not_repeat_ime_layout_switch"
+    ],
+    "ime_log_sha256": "0f511b2913bc018963b295764715cff08b7746f5482f34deaea29bb50d5776ae",
+    "daemon_log_sha256": "5a4189e54cd3a87c1e05fac8ac438e12f96961d7315c1f4e6d5e4812e68165df"
+  },
+  "graph": {
+    "receipt": "docs/structural_gates/receipts/LAY_EXACT_REPLAY_NATIVE_DELIVERY_2026-09-12/graph-final.json",
+    "receipt_sha256": "b4cb7db920ac3ee5b305666848dc320703371da4a783e68d6444f1996d4bcfc8",
+    "verdict": "PASS",
+    "nodes": 22328,
+    "edges": 59225,
+    "communities": 842,
+    "rust_sources": 700,
+    "architecture_checks": "11/11 PASS, 0 violations",
+    "architecture_tests": "26/26 PASS",
+    "binding_tests": "2/2 PASS"
+  },
+  "release_build": {
+    "command": "scripts/cargo-guard.sh build --release --bin lay-ibus-engine",
+    "resource_profile": "dedicated-20cpu",
+    "returncode": 0,
+    "log_sha256": "dec4f7062731e8b71f831058cb40b67a1635bfbf6af8a82eb164fb5f88b37e2b",
+    "remote_binary": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
+    "local_candidate": "/home/ubu/.cache/lay/development/exact-replay-native-final2-20260912-F6zFecGQ/candidate/lay-ibus-engine",
+    "binary_sha256": "7cfe11ade4698efc822cc7a01cb7224753e2a7bc78df3844f8c7ef4d3a454d79",
+    "bytes": 7813088,
+    "rejected_invocation": {
+      "reason": "initial command ran cargo-guard one directory above source and did not reach Cargo compilation",
+      "exitcode": 101,
+      "log_sha256": "8d3306480da95e5a0ef7c262114c6f83e836578818808d5f1c9db7b248408f89"
+    }
+  },
+  "activation_review": {
+    "status": "SECOND_REVIEW_PENDING_NOT_EXECUTED",
+    "directory": "/home/ubu/.cache/lay/development/exact-replay-native-final2-20260912-F6zFecGQ/activation-review",
+    "controller_sha256": "aeae71b8a4d60a840bc04fb2923c407925040e6d7580038eff6e1b9533adfb30",
+    "passive_capture_sha256": "d8309ed007ffc0559cd8013f2a6ccac918d0e0e00f2516feb3a3a372408c4ddd",
+    "readme_sha256": "34064de9be364bdffb6717777eaff67422ed2e05b3a16579726ebd5ac3991898",
+    "executed": false
+  },
+  "not_tested": [
+    "candidate installation or activation",
+    "actual GNOME Text Editor native delivery",
+    "physical many-cycle repeat acceptance",
+    "post-replay client surrounding-text equality",
+    "live latency or RSS",
+    "answer quality"
+  ]
+}

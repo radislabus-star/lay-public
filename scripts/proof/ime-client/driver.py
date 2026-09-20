@@ -36,13 +36,16 @@ barrier_events = []
 barrier_waiter = None
 STARTUP_SCHEDULE = os.environ.get('IME_CLIENT_STARTUP_SCHEDULE', 'immediate')
 SCENARIO_SET = os.environ.get('IME_CLIENT_SCENARIO_SET', 'restoration')
+STARTUP_PROOF_PROFILE = os.environ.get('IME_CLIENT_STARTUP_PROOF_PROFILE', 'legacy')
 COMPLETED_STATUS = ('COMPLETED_3_LIFECYCLE_CASES' if SCENARIO_SET == 'lifecycle'
                     else 'COMPLETED_4_TERMINAL_DELIVERY_CASES' if SCENARIO_SET == 'terminal-delivery'
                     else 'COMPLETED_3_MANUAL_CASES' if SCENARIO_SET == 'manual-toggle'
                     else 'COMPLETED_2_FIRST_WORD_CASES' if SCENARIO_SET == 'first-word'
                     else 'COMPLETED_1_FIRST_WORD_CASE' if SCENARIO_SET in ('first-word-us', 'first-word-ru')
+                    else 'COMPLETED_1_STARTUP_CASE' if SCENARIO_SET in ('fresh-preedit', 'startup-only', 'packages-absent-literal')
                     else 'COMPLETED_5_CASES_AUTHORITY_ON')
 startup_observed = False
+startup_measurement = None
 KEYCODES = {' ': 57, 'l': 38, 'j': 36, 'v': 47, 'о': 36, 'м': 47, 'д': 38}
 KEYCODES.update({'a': 30, 'g': 34, 'h': 35, 'd': 32, 'п': 34, 'р': 35, 'в': 32})
 KEYCODES.update({'е': 20, 'к': 19, 'а': 33, 'и': 48, 'с': 46, 'т': 49, 'ь': 50})
@@ -62,6 +65,7 @@ receipt = {
     'configuration': 'private_authority_on_correction_enabled',
     'startup_schedule': STARTUP_SCHEDULE,
     'scenario_set': SCENARIO_SET,
+    'startup_proof_profile': STARTUP_PROOF_PROFILE,
     'unknown_authority_verdict': 'REQUIRES_SAME_RUN_POSITIVE_CONTROL',
     'gui': 'NOT_TESTED',
     'physical_keyboard': 'NOT_TESTED',
@@ -101,6 +105,42 @@ def exact_file_from_env(path_name, hash_name):
     actual = sha256(path)
     assert actual == expected, (path_name, expected, actual)
     return {'path': str(path), 'sha256': actual, 'bytes': path.stat().st_size}
+
+
+def startup_trace_measurement(path):
+    if path.stat().st_size > 1024 * 1024:
+        raise ValueError('startup trace exceeds bounded proof input')
+    rows = []
+    for line in path.read_text(encoding='utf-8').splitlines():
+        rows.append(json.loads(line))
+    completed = [(index, row) for index, row in enumerate(rows)
+                 if row.get('kind') == 'ibus_startup_warmup' and row.get('stage') == 'completed']
+    factories = [(index, row) for index, row in enumerate(rows)
+                 if row.get('kind') == 'ibus_context_admission'
+                 and row.get('member') == 'CreateEngine'
+                 and row.get('stage') == 'factory_acquisition_state']
+    exact = [row for row in rows if row.get('kind') == 'ibus_exact_authority_warmup'
+             and row.get('stage') == 'completed']
+    assert len(completed) == 1 and factories and len(exact) == 1
+    assert completed[0][0] < factories[0][0]
+    expected_exact = STARTUP_PROOF_PROFILE != 'absent'
+    assert completed[0][1].get('exact_available') is expected_exact
+    assert exact[0].get('available') is expected_exact
+    assert completed[0][1].get('exact_available') is exact[0].get('available')
+    assert completed[0][1].get('l2_complete') is True
+    expected_l2 = STARTUP_PROOF_PROFILE != 'absent'
+    assert completed[0][1].get('l2_available') is expected_l2
+    assert completed[0][1].get('l2_candidate_ready') is expected_l2
+    return {'warmup_join_us': completed[0][1]['elapsed_us'],
+            'exact_warmup_us': exact[0]['elapsed_us'],
+            'exact_available': exact[0]['available'],
+            'l2_complete': completed[0][1]['l2_complete'],
+            'l2_available': completed[0][1]['l2_available'],
+            'l2_candidate_ready': completed[0][1]['l2_candidate_ready'],
+            'warmup_event_index': completed[0][0],
+            'first_factory_event_index': factories[0][0],
+            'factory_after_warmup': True,
+            'production_percentile_claim': False}
 
 
 def open_stream(name):
@@ -304,6 +344,7 @@ def observe_startup_schedule():
 
 
 def setup_ready(client, profile, checkpoint, expected_prefix=None, expected_manual_suffix=None):
+    global startup_measurement
     connection = ibus_bus.get_connection()
     owner = name_owner(connection, IBUS_ENGINE_NAME)
     marker = await_barrier(checkpoint, owner)
@@ -337,6 +378,10 @@ def setup_ready(client, profile, checkpoint, expected_prefix=None, expected_manu
          profile=profile, owner=owner, marker_nonce=marker['nonce'],
          input_state=state, expected_prefix_chars=(len(expected_prefix)
                                                  if expected_prefix is not None else 0))
+    if startup_measurement is not None and 'client_ready_elapsed_us' not in startup_measurement:
+        startup_measurement['client_ready_elapsed_us'] = (
+            time.monotonic_ns() - startup_measurement['started_monotonic_ns']) // 1000
+        startup_measurement['factory_owner'] = owner
     observe_startup_schedule()
 
 
@@ -346,7 +391,7 @@ def client_snapshot(client, label):
                 cursor=client.cursor, output_count=len(client.output))
 
 
-def candidate_pids():
+def candidate_pids(include_status=False):
     found = []
     for entry in Path('/proc').iterdir():
         if not entry.name.isdigit():
@@ -354,8 +399,20 @@ def candidate_pids():
         try:
             command = (entry / 'cmdline').read_bytes().replace(b'\0', b' ').decode()
             if command.split(' ', 1)[0] == str(CANDIDATE):
-                found.append({'pid': int(entry.name), 'cmdline': command.strip(),
-                              'ppid': int((entry / 'stat').read_text().split()[3])})
+                row = {'pid': int(entry.name), 'cmdline': command.strip(),
+                       'ppid': int((entry / 'stat').read_text().split()[3])}
+                if include_status:
+                    status = (entry / 'status').read_text(encoding='utf-8')
+                    memory = {}
+                    for line in status.splitlines():
+                        field, separator, value = line.partition(':')
+                        if separator and field in ('VmRSS', 'VmHWM'):
+                            amount, unit = value.split()
+                            assert unit == 'kB', (field, value)
+                            memory[field + '_kib'] = int(amount)
+                    assert set(memory) == {'VmRSS_kib', 'VmHWM_kib'}, memory
+                    row['memory_sample'] = memory
+                found.append(row)
         except (FileNotFoundError, PermissionError, ProcessLookupError, UnicodeDecodeError):
             pass
     return sorted(found, key=lambda row: row['pid'])
@@ -460,13 +517,19 @@ class Client:
 
 
 def select_engine(name):
+    global startup_measurement
     before = current_engine_name()
     before_ns = time.monotonic_ns()
+    if startup_measurement is None and before == SEED_ENGINE and name in (US_ENGINE, RU_ENGINE):
+        startup_measurement = {'started_monotonic_ns': before_ns, 'target_engine': name}
+        receipt['startup_measurement'] = startup_measurement
     assert ibus_bus.set_global_engine(name), name
     wait_until(lambda: current_engine_name() == name,
                f'global engine did not become {name}')
     row = emit(internal_log, kind='global_engine_transition', before=before,
                after=name, elapsed_us=(time.monotonic_ns() - before_ns) // 1000)
+    if startup_measurement is not None and startup_measurement.get('target_engine') == name:
+        startup_measurement.setdefault('global_engine_transition_us', row['elapsed_us'])
     return row
 
 
@@ -476,6 +539,28 @@ def outputs_since(client, start):
 
 def assert_no_edits(rows):
     assert not [row for row in rows if row['kind'] == 'DeleteSurroundingText'], rows
+
+
+def deliver_exact_literal(client, character):
+    output_start = len(client.output)
+    visible_before = client.visible
+    cursor_before = client.cursor
+    handled = client.key(character)
+    rows = outputs_since(client, output_start)
+    commits = [row for row in rows if row['kind'] == 'CommitText']
+    deletes = [row for row in rows if row['kind'] == 'DeleteSurroundingText']
+    forwards = [row for row in rows if row['kind'] == 'ForwardKeyEvent']
+    expected_visible = (visible_before[:cursor_before] + character
+                        + visible_before[cursor_before:])
+    assert not deletes and not forwards, rows
+    assert client.visible == expected_visible, (client.visible, expected_visible, rows)
+    assert client.cursor == cursor_before + len(character), (client.cursor, cursor_before, rows)
+    if handled:
+        assert len(commits) == 1 and commits[0]['text'] == character, rows
+    else:
+        assert not commits, rows
+    return {'character': character, 'handled': handled, 'outputs': rows,
+            'visible': client.visible}
 
 
 def run_cases():
@@ -1030,13 +1115,109 @@ def run_manual_toggle_cases(first_word=False):
         session_connection.unregister_object(registration)
 
 
+def run_startup_only_case():
+    global case_name
+    case_name = 'startup_only'
+    client = Client('td121-startup-only')
+    checkpoint = barrier_checkpoint()
+    client.focus_in()
+    select_engine(US_ENGINE)
+    wait_until(lambda: name_has_owner(session_connection, BRIDGE), 'Lay bridge owner')
+    setup_ready(client, US_ENGINE, checkpoint)
+    receipt['cases'].append({'case': case_name, 'status': 'PASS_STARTUP_READY',
+                            'visible': client.visible, 'outputs': client.output})
+    client.focus_out()
+
+
+def run_fresh_preedit_case():
+    global case_name
+    case_name = 'fresh_process_l2_preedit'
+    client = Client('td121-fresh-preedit')
+    preedits = []
+    client.context.connect('update-preedit-text', lambda _c, text, cursor, visible:
+        preedits.append(emit(output_log, kind='UpdatePreeditText', text=text.get_text(),
+                             cursor=cursor, visible=bool(visible))))
+    checkpoint = barrier_checkpoint()
+    client.focus_in()
+    select_engine(RU_ENGINE)
+    wait_until(lambda: name_has_owner(session_connection, BRIDGE), 'Lay bridge owner')
+    setup_ready(client, RU_ENGINE, checkpoint)
+    deliveries = [deliver_exact_literal(client, character) for character in ' пров']
+    wait_until(lambda: any(row['visible'] and row['text'] for row in preedits),
+               'fresh-process visible L2 preedit')
+    assert client.visible == ' пров', (client.visible, client.output)
+    literal_control = None
+    if STARTUP_PROOF_PROFILE == 'off':
+        client.focus_out()
+        literal = Client('td121-autocorrect-off-literal')
+        checkpoint = barrier_checkpoint()
+        literal.focus_in()
+        select_engine(US_ENGINE)
+        setup_ready(literal, US_ENGINE, checkpoint)
+        deliveries_control = [deliver_exact_literal(literal, character) for character in ' ljv ']
+        rows = [row for delivery in deliveries_control for row in delivery['outputs']]
+        space_handled = deliveries_control[-1]['handled']
+        deletes = [row for row in rows if row['kind'] == 'DeleteSurroundingText']
+        assert literal.visible == ' ljv ', literal.visible
+        assert not deletes, rows
+        literal_control = {'input': ' ljv ', 'visible': literal.visible,
+                           'outputs': rows, 'delete_count': 0,
+                           'space_handled': space_handled,
+                           'space_settled': literal.visible.endswith(' ')}
+        literal.focus_out()
+    receipt['cases'].append({'case': case_name, 'status': 'PASS_FRESH_L2_PREEDIT',
+                            'preedits': preedits, 'visible': client.visible,
+                            'literal_deliveries': deliveries,
+                            'nanda_autocorrect': private_config['nanda_autocorrect'],
+                            'literal_control': literal_control})
+    if STARTUP_PROOF_PROFILE != 'off':
+        client.focus_out()
+
+
+def run_packages_absent_literal_case():
+    global case_name
+    case_name = 'packages_absent_literal'
+    client = Client('td121-packages-absent')
+    checkpoint = barrier_checkpoint()
+    client.focus_in()
+    select_engine(US_ENGINE)
+    wait_until(lambda: name_has_owner(session_connection, BRIDGE), 'Lay bridge owner')
+    setup_ready(client, US_ENGINE, checkpoint)
+    deliveries = [deliver_exact_literal(client, character) for character in ' ljv ']
+    rows = [row for delivery in deliveries for row in delivery['outputs']]
+    assert client.visible == ' ljv ', client.visible
+    assert_no_edits(rows)
+    receipt['cases'].append({'case': case_name, 'status': 'PASS_PACKAGES_ABSENT_LITERAL',
+                            'visible': client.visible, 'outputs': rows,
+                            'literal_deliveries': deliveries})
+    client.focus_out()
+
+
 def deadline(_signum, _frame):
     raise TimeoutError('private client proof hard deadline')
 
 
+def validate_private_config(config, profile):
+    assert config.get('debug_action_log') is True
+    assert config.get('typing_assist') is False
+    if profile == 'off':
+        assert config.get('nanda_autocorrect') is False
+        assert config.get('auto_replace') is False
+        assert config.get('auto_switch_layout') is False
+        assert config.get('nanda_precognition') is True
+    else:
+        assert config.get('nanda_autocorrect') is True
+        assert config.get('auto_replace') is True
+        assert config.get('auto_switch_layout') is True
+        if profile != 'legacy':
+            assert config.get('nanda_precognition') is True
+
+
 try:
     assert SCENARIO_SET in ('restoration', 'lifecycle', 'manual-toggle', 'terminal-delivery', 'first-word',
-                            'first-word-us', 'first-word-ru'), SCENARIO_SET
+                            'first-word-us', 'first-word-ru', 'fresh-preedit', 'startup-only',
+                            'packages-absent-literal'), SCENARIO_SET
+    assert STARTUP_PROOF_PROFILE in ('legacy', 'on', 'off', 'absent'), STARTUP_PROOF_PROFILE
     signal.signal(signal.SIGALRM, deadline)
     signal.alarm(52)
     lease_id = os.environ['TD121_EXECUTION_LEASE_ID']
@@ -1048,12 +1229,12 @@ try:
     assert CANDIDATE.is_file() and os.access(CANDIDATE, os.X_OK)
     assert sha256(CANDIDATE) == expected_hash
     private_config = json.loads((ROOT / 'config.json').read_text(encoding='utf-8'))
-    assert private_config.get('debug_action_log') is True
-    assert private_config.get('auto_replace') is True
-    assert private_config.get('nanda_autocorrect') is True
-    assert private_config.get('auto_switch_layout') is True
-    assert private_config.get('typing_assist') is False
-    authority_files = {
+    validate_private_config(private_config, STARTUP_PROOF_PROFILE)
+    if STARTUP_PROOF_PROFILE != 'legacy':
+        receipt['configuration'] = ('private_packages_absent'
+                                    if STARTUP_PROOF_PROFILE == 'absent'
+                                    else 'private_autocorrect_' + STARTUP_PROOF_PROFILE + '_preedit_enabled')
+    authority_files = {} if STARTUP_PROOF_PROFILE == 'absent' else {
         'l11_service': exact_file_from_env(
             'LAY_L11_SERVICE_BIN', 'EXPECTED_L11_SERVICE_SHA256'),
         'l11_package': exact_file_from_env(
@@ -1073,6 +1254,20 @@ try:
         'l2_v13_dafsa': exact_file_from_env(
             'LAY_L2_V13_DAFSA', 'EXPECTED_LAY_L2_V13_DAFSA_SHA256'),
     }
+    if STARTUP_PROOF_PROFILE == 'absent':
+        absent_names = (
+            'LAY_L11_SERVICE_BIN', 'EXPECTED_L11_SERVICE_SHA256',
+            'TD121_L11_PACKAGE_PATH', 'EXPECTED_TD121_L11_PACKAGE_SHA256',
+            'TD121_L11_PROOF_PATH', 'EXPECTED_TD121_L11_PROOF_SHA256',
+            'LAY_L11_RECEIPT', 'EXPECTED_LAY_L11_RECEIPT_SHA256',
+            'LAY_L2_LEXICAL_PHASE_MEMORY', 'LAY_L2_PACKAGE',
+            'EXPECTED_LAY_L2_PACKAGE_SHA256', 'LAY_L2_PRODUCTIVE_V1_PACKAGE',
+            'EXPECTED_LAY_L2_PRODUCTIVE_V1_PACKAGE_SHA256',
+            'TD121_PRODUCTIVE_V90_RECOVERY_PATH',
+            'EXPECTED_TD121_PRODUCTIVE_V90_RECOVERY_SHA256',
+            'LAY_L2_V13_DAFSA', 'EXPECTED_LAY_L2_V13_DAFSA_SHA256')
+        assert not [name for name in absent_names if name in os.environ], os.environ.keys()
+        assert not any(Path('/tmp/deps').iterdir()), 'dependency files visible in absent profile'
     assert DAEMON_BIN.is_file() and LOADER.is_file()
     assert SEED_BIN.is_file() and os.access(SEED_BIN, os.X_OK)
     assert not os.environ.get('DISPLAY') and not os.environ.get('WAYLAND_DISPLAY')
@@ -1081,19 +1276,23 @@ try:
     assert session_address.startswith(('unix:path=/tmp/', 'unix:abstract='))
     for name in ('runtime', 'cache', 'config', 'data', 'usage', 'no-models'):
         (ROOT / name).mkdir(mode=0o700, exist_ok=True)
+    if STARTUP_PROOF_PROFILE == 'absent':
+        assert not any((ROOT / 'no-models').rglob('*')), 'model files visible in absent profile'
     ibus_address = 'unix:path=/tmp/proof/ibus.sock'
-    os.environ.update({
+    runtime_environment = {
         'IBUS_ADDRESS': ibus_address,
         'IBUS_COMPONENT_PATH': '/tmp/proof/component',
         'LAY_CONFIG_PATH': '/tmp/proof/config.json',
         'LAY_IBUS_TRACE_PATH': '/tmp/proof/ibus-engine-trace.jsonl',
         'LAY_L11_SOCKET': '/tmp/proof/runtime/l11.sock',
-        'LAY_L11_MODEL_DIR': str(Path(os.environ['LAY_L11_RECEIPT']).parent),
         'LAY_NANDA_WORD_USAGE_EVENTS': '/tmp/proof/usage/events.jsonl',
         'LAY_NANDA_WORD_USAGE_COUNTS': '/tmp/proof/usage/counts.json',
         'LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS': '/tmp/proof/usage/feedback.json',
         'LAY_NANDA_USAGE_PRIOR': '/tmp/proof/usage/prior.json',
-    })
+    }
+    if STARTUP_PROOF_PROFILE != 'absent':
+        runtime_environment['LAY_L11_MODEL_DIR'] = str(Path(os.environ['LAY_L11_RECEIPT']).parent)
+    os.environ.update(runtime_environment)
     receipt['identity'] = {
         'candidate_path': str(CANDIDATE), 'candidate_sha256': sha256(CANDIDATE),
         'copied_daemon_sha256': sha256(DAEMON_BIN),
@@ -1113,6 +1312,7 @@ try:
         'ibus_address': ibus_address,
         'namespace_ids': {name: os.readlink('/proc/self/ns/' + name)
                           for name in ('pid', 'net', 'ipc', 'mnt')},
+        'packages_absent': STARTUP_PROOF_PROFILE == 'absent',
     }
     daemon_log = (ROOT / 'private-daemon-and-components.stderr').open('x', encoding='utf-8')
     daemon = subprocess.Popen([
@@ -1146,6 +1346,13 @@ try:
         expected_cases = (['first_word_us', 'first_word_ru'] if SCENARIO_SET == 'first-word'
                           else ['first_word_' + SCENARIO_SET.rsplit('-', 1)[1]])
         assert [row['case'] for row in receipt['cases']] == expected_cases, receipt['cases']
+    elif SCENARIO_SET == 'fresh-preedit':
+        run_fresh_preedit_case()
+    elif SCENARIO_SET == 'startup-only':
+        run_startup_only_case()
+    elif SCENARIO_SET == 'packages-absent-literal':
+        assert STARTUP_PROOF_PROFILE == 'absent'
+        run_packages_absent_literal_case()
     elif SCENARIO_SET == 'manual-toggle':
         run_manual_toggle_cases()
         assert len(receipt['cases']) == 3, receipt['cases']
@@ -1164,12 +1371,16 @@ try:
                     else 'PASS_3_MANUAL_CASES' if SCENARIO_SET == 'manual-toggle'
                     else 'PASS_2_FIRST_WORD_CASES' if SCENARIO_SET == 'first-word'
                     else 'PASS_1_FIRST_WORD_CASE' if SCENARIO_SET in ('first-word-us', 'first-word-ru')
+                    else 'PASS_1_STARTUP_CASE' if SCENARIO_SET in ('fresh-preedit', 'startup-only', 'packages-absent-literal')
                     else 'PASS_5_CASES_AUTHORITY_ON'),
         'completed_cases': len(receipt['cases']),
         'started_monotonic_ns': behavior_started_ns,
         'finished_monotonic_ns': time.monotonic_ns(),
     }
-    receipt['candidate_processes'] = candidate_pids()
+    receipt['candidate_processes'] = candidate_pids(include_status=True)
+    receipt['candidate_memory_interpretation'] = (
+        'single post-verdict process samples with kernel VmHWM; '
+        'not a production RSS distribution')
     assert len(receipt['candidate_processes']) == 1, receipt['candidate_processes']
     receipt['status'] = COMPLETED_STATUS
 except Exception as error:
@@ -1245,6 +1456,15 @@ finally:
             receipt['status'] = 'FAILED_CLEANUP'
     if daemon_log is not None:
         daemon_log.close()
+    if STARTUP_PROOF_PROFILE != 'legacy':
+        try:
+            receipt['startup_measurement'].update(startup_trace_measurement(trace_path))
+        except Exception as error:
+            status_before_measurement = receipt['status']
+            if status_before_measurement == COMPLETED_STATUS:
+                receipt['status'] = 'FAILED_STARTUP_MEASUREMENT'
+            receipt['startup_measurement_status_before_error'] = status_before_measurement
+            receipt['startup_measurement_error'] = f'{type(error).__name__}: {error}'
     receipt['elapsed_s'] = time.monotonic() - started
     for handle in streams.values():
         handle.close()

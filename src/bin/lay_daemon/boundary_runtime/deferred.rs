@@ -1,8 +1,8 @@
 use std::time::Instant;
 
 use super::super::{
-    active_typing_assist, apply_prepared_typing_assist_after_space, lock_virtual_keyboard, log,
-    pending_typing_assist::PendingTypingAssist, should_run_deferred_typing_assist_after_space,
+    active_boundary_correction, apply_prepared_typing_assist_after_space, lock_virtual_keyboard,
+    log, pending_typing_assist::PendingTypingAssist, should_run_deferred_typing_assist_after_space,
     typing_assist_worker::WorkerPoll, DaemonTextObservation, TypingAssistOutcome,
 };
 
@@ -13,7 +13,7 @@ pub(crate) use context::DeferredTypingAssistContext;
 pub(crate) fn try_handle_deferred_typing_assist(ctx: DeferredTypingAssistContext<'_>) -> bool {
     if !should_run_deferred_typing_assist_after_space(
         ctx.pending_typing_assist_after_space.is_some(),
-        active_typing_assist(),
+        active_boundary_correction(),
         ctx.shift_state.any(),
     ) {
         return false;

@@ -3110,45 +3110,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 15890,
-          "byte_start": 15851,
-          "file": "src/bin/lay_ibus_engine/tail_memory.rs"
-        }
-      ],
-      "message": "method `arm_visible_postcondition_with_feedback` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/bin/lay_ibus_engine/tail_memory.rs",
-          "is_primary": false,
-          "label": "method in this implementation",
-          "text": [
-            "impl LayIbusEngine {"
-          ]
-        },
-        {
-          "file": "src/bin/lay_ibus_engine/tail_memory.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(super) fn arm_visible_postcondition_with_feedback("
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "bin"
-        ],
-        "kind": [
-          "bin"
-        ],
-        "name": "lay-ibus-engine"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 16198,
           "byte_start": 16185,
           "file": "src/nanda_wave/lexical_grokking/typed_basin/mod.rs"
@@ -3426,13 +3387,13 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 17008,
-          "byte_start": 16989,
+          "byte_end": 17175,
+          "byte_start": 17156,
           "file": "src/bin/lay_ibus_engine/preedit.rs"
         },
         {
-          "byte_end": 36388,
-          "byte_start": 36358,
+          "byte_end": 38895,
+          "byte_start": 38865,
           "file": "src/bin/lay_ibus_engine/preedit.rs"
         }
       ],
@@ -10371,45 +10332,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 5813,
-          "byte_start": 5787,
-          "file": "src/bin/lay_ibus_engine/preedit.rs"
-        }
-      ],
-      "message": "method `observed_prediction_target` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/bin/lay_ibus_engine/preedit.rs",
-          "is_primary": false,
-          "label": "method in this implementation",
-          "text": [
-            "impl PreeditFastState {"
-          ]
-        },
-        {
-          "file": "src/bin/lay_ibus_engine/preedit.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "fn observed_prediction_target(&self) -> Option<&str> {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "bin"
-        ],
-        "kind": [
-          "bin"
-        ],
-        "name": "lay-ibus-engine"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 5826,
           "byte_start": 5820,
           "file": "src/nanda_wave/lexical_grokking/typed_basin/quality/metrics.rs"
@@ -10482,6 +10404,45 @@
           "lib"
         ],
         "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 5859,
+          "byte_start": 5833,
+          "file": "src/bin/lay_ibus_engine/preedit.rs"
+        }
+      ],
+      "message": "method `observed_prediction_target` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/bin/lay_ibus_engine/preedit.rs",
+          "is_primary": false,
+          "label": "method in this implementation",
+          "text": [
+            "impl PreeditFastState {"
+          ]
+        },
+        {
+          "file": "src/bin/lay_ibus_engine/preedit.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "fn observed_prediction_target(&self) -> Option<&str> {"
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "kind": [
+          "bin"
+        ],
+        "name": "lay-ibus-engine"
       }
     },
     {

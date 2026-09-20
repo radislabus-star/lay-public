@@ -12,6 +12,7 @@ use super::space_autocorrect_prefetch::{
 use super::state::CommittedTailReplaceRequest;
 use super::text::make_ibus_text;
 use super::trace::{self, SpaceCorrectionLeaseOutcome};
+use super::window_interaction::{ExecutionReceipt, LocalEffectProgress, LocalExecutionFailure};
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 
@@ -414,29 +415,47 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<Option<bool>> {
+        self.toggle_committed_tail_target_with_disposition(emitter)
+            .await
+            .map(|(target, _)| target)
+            .map_err(Into::into)
+    }
+
+    pub(super) async fn toggle_committed_tail_target_with_disposition(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> Result<(Option<bool>, ExecutionReceipt), LocalExecutionFailure> {
         let Some(plan) = self.committed_tail_toggle_plan() else {
-            return Ok(None);
+            return Ok((None, ExecutionReceipt::Rejected));
         };
         if emitter.is_legacy()
             && self.client_context.surrounding_text_supported
             && self.client_context.surrounding_text_snapshot.is_none()
         {
             self.layout_gesture.pending_manual_toggle = !self.layout_gesture.pending_manual_toggle;
-            let stage = if self.layout_gesture.pending_manual_toggle {
-                emitter.require_surrounding_text().await?;
-                "queued_waiting_exact_snapshot"
+            let (stage, receipt) = if self.layout_gesture.pending_manual_toggle {
+                emitter.require_surrounding_text().await.map_err(|source| {
+                    LocalExecutionFailure::new(
+                        LocalEffectProgress::SurroundingTextRequested,
+                        source,
+                    )
+                })?;
+                (
+                    "queued_waiting_exact_snapshot",
+                    ExecutionReceipt::LocalPending,
+                )
             } else {
-                "cancelled_even_pair"
+                ("cancelled_even_pair", ExecutionReceipt::LocalCancelled)
             };
             trace::record(format!(
                 r#"{{"kind":"ibus_manual_toggle_pending","stage":"{stage}","tail_chars":{}}}"#,
                 self.committed_tail.buffer.chars().count(),
             ));
-            return Ok(Some(self.layout_gesture.layout_is_ru));
+            return Ok((Some(self.layout_gesture.layout_is_ru), receipt));
         }
         trace::record_manual_toggle_plan(&plan);
         let handled = self
-            .replace_committed_tail(
+            .replace_committed_tail_with_effect_progress(
                 emitter,
                 CommittedTailReplaceRequest::ime_manual_toggle(
                     plan.backspaces,
@@ -448,7 +467,14 @@ impl LayIbusEngine {
         if handled {
             self.trace_key("double_shift_committed_tail", 0, 0, true, None);
         }
-        Ok(handled.then_some(plan.target_layout_is_ru))
+        Ok((
+            handled.then_some(plan.target_layout_is_ru),
+            if handled {
+                ExecutionReceipt::LocalComplete
+            } else {
+                ExecutionReceipt::Rejected
+            },
+        ))
     }
 
     pub(super) async fn apply_pending_manual_toggle_after_surrounding_snapshot(
@@ -497,6 +523,15 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<Option<bool>> {
+        self.undo_last_ime_autocorrect_with_effect_progress(emitter)
+            .await
+            .map_err(Into::into)
+    }
+
+    pub(super) async fn undo_last_ime_autocorrect_with_effect_progress(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> Result<Option<bool>, LocalExecutionFailure> {
         let boundary_elided_snapshot = self.pending_ime_auto_undo_uses_boundary_elided_snapshot();
         let causal_precondition_snapshot =
             self.pending_ime_auto_undo_uses_causal_precondition_snapshot();
@@ -527,7 +562,10 @@ impl LayIbusEngine {
         if causal_precondition_snapshot {
             request = request.with_causal_precondition_external_snapshot(pending.original.clone());
         }
-        let handled = match self.replace_committed_tail(emitter, request).await {
+        let handled = match self
+            .replace_committed_tail_with_effect_progress(emitter, request)
+            .await
+        {
             Ok(handled) => handled,
             Err(error) => {
                 self.restore_pending_ime_auto_undo(pending);
@@ -778,6 +816,12 @@ mod tests {
             path: engine.path.clone(),
             epoch: 7,
             expires_at: Instant::now() - Duration::from_millis(1),
+            owner_lease_identity: engine.client_context.runtime_owner_lease_identity,
+            target_layout_is_ru: engine.layout_gesture.layout_is_ru,
+            original_tail: "x".to_string(),
+            original_suffix: "x".to_string(),
+            unchanged_prefix: String::new(),
+            replacement: "ч".to_string(),
         };
         engine.committed_tail.autocorrect_suppression =
             Some(AutocorrectSuppression::ExactReplay(expired.clone()));

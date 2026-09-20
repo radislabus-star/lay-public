@@ -15,21 +15,37 @@ pub fn typing_assist_pipeline_for_context(
     configured: &[TypingAssistRuleConfig],
     context: &str,
 ) -> Vec<TypingAssistRuleConfig> {
+    typing_assist_pipeline_for_context_with_layout(
+        auto_replace,
+        auto_replace,
+        safety,
+        configured,
+        context,
+    )
+}
+
+pub fn typing_assist_pipeline_for_context_with_layout(
+    auto_replace: bool,
+    auto_switch_layout: bool,
+    safety: CorrectionSafety,
+    configured: &[TypingAssistRuleConfig],
+    context: &str,
+) -> Vec<TypingAssistRuleConfig> {
     let mut pipeline = typing_assist_pipeline_for_policy(auto_replace, safety, configured);
-    if auto_replace
+    if auto_switch_layout
         && safety == CorrectionSafety::Normal
         && should_enable_ascii_to_ru_layout(context)
         && user_config_allows_rule(configured, LAYOUT_EN_TO_RU)
     {
         push_contextual_rule(&mut pipeline, CONTEXTUAL_LAYOUT_EN_TO_RU);
     }
-    if auto_replace
+    if auto_switch_layout
         && safety == CorrectionSafety::Experimental
         && user_config_allows_rule(configured, LAYOUT_EN_TO_RU)
     {
         push_contextual_rule(&mut pipeline, EXPERIMENTAL_LAYOUT_EN_TO_RU);
     }
-    if auto_replace
+    if auto_switch_layout
         && safety == CorrectionSafety::Experimental
         && user_config_allows_rule(configured, LAYOUT_RU_TO_EN)
     {

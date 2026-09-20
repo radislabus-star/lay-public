@@ -335,7 +335,7 @@ fn layout_converted_token(token: &str, allow_noisy_projection: bool) -> Option<L
     if is_ascii_layout_letter_surface(token)
         && token.chars().count() >= 3
         && converted.chars().all(is_cyrillic_letter)
-        && surface_motif_memory().contains_surface(&converted_lower)
+        && surface_motif_memory().is_some_and(|memory| memory.contains_surface(&converted_lower))
     {
         return Some(LayoutProjection {
             converted: apply_word_case(token, &converted_lower),
@@ -374,7 +374,8 @@ pub(super) fn settle_english_word_center(token: &str) -> Option<String> {
     if crate::layout_autoswitch::is_known_english_layout_autoswitch_word(&normalized) {
         return Some(normalized);
     }
-    let mut candidates = surface_motif_memory()
+    let memory = surface_motif_memory()?;
+    let mut candidates = memory
         .field_surface_candidates(&normalized, 8)
         .into_iter()
         .filter(|candidate| {

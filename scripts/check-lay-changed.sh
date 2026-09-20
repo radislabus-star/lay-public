@@ -64,6 +64,11 @@ if [[ "${#python_files[@]}" -gt 0 ]]; then
   python3 -m py_compile "${python_files[@]}"
 fi
 
+if has_file_matching '(^scripts/compat/|^tests/test_firefox_compat_adapter\.py$)'; then
+  echo "== Firefox compatibility adapter regressions =="
+  python3 -m unittest tests.test_firefox_compat_adapter
+fi
+
 if has_file_matching '(^scripts/install-live-release-[0-9.]+\.sh$|^scripts/lay-release-l11-guard\.py$|^tests/test_release_(live_install_controller|l11_process_guard)\.py$)'; then
   echo "== live release controller regressions =="
   python3 -m unittest \

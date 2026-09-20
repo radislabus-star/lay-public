@@ -45,6 +45,9 @@ echo "== python compile desktop helpers =="
 python3 -m py_compile scripts/*.py
 bash -n install.sh update.sh dev-reload.sh scripts/*.sh
 
+echo "== Firefox compatibility adapter regressions =="
+python3 -m unittest tests.test_firefox_compat_adapter
+
 echo "== CLI explain smoke =="
 LAY_CONFIG_PATH="$ROOT/scripts/proof/autocorrect-proof-config.json" \
   cargo run --quiet --bin lay -- --explain-correct 'кторое ' | grep -F 'confidence:' >/dev/null

@@ -51,6 +51,27 @@
   IBus, change engine names or migrate user input sources without explicit
   separate user approval; accepting simplification is not that approval.
 
+## Automated checks and compact evidence
+
+- Run development checks with one command:
+  `python3 scripts/dev-check.py check --compact`. Use an explicit `--target`
+  only when the affected component is known; a focused PASS is not release
+  acceptance. Preserve the required remote execution, guards and release gates.
+- Let the command perform setup, execution, waiting and report collection.
+  For an asynchronous tool call, wait for its returned session/cell to finish;
+  avoid frequent short status polls or separate process/log checks unless a
+  timeout, failure or user status request requires diagnosis.
+- On success, read only the verdict, executed/passed counts and report path.
+  Keep full logs and per-test output on disk. On failure, first read the failed
+  test identities and bounded error excerpt; open only the relevant log section
+  if that packet does not explain the failure.
+- Reuse successful evidence while its source, dependency, configuration and
+  toolchain identities still match. Rerun after a relevant change, a failure or
+  an unresolved concern; do not repeat unchanged checks just to watch progress
+  or regenerate a receipt. Never reinterpret BLOCKED/NOT_TESTED as PASS.
+- Report one concise test result at completion. Intermediate updates should
+  describe a new finding or blocker, not repeat that tests are still running.
+
 ## graphify
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.

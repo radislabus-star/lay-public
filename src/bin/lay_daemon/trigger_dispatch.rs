@@ -2,7 +2,7 @@ use evdev::{uinput::VirtualDevice, Device, KeyCode};
 use lay::manual_toggle::ImeManualToggleOutcome;
 use lay::word_buffer::WordBuffer;
 use std::sync::{Arc, Mutex};
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use crate::pending_typing_assist::PendingTypingAssist;
 
@@ -11,7 +11,7 @@ use super::{
     active_replace_words, capture_ime_committed_tail_replay, execute_exact_ime_tail_replay,
     handle_double_shift, lock_virtual_keyboard, run_manual_correction_with_scope,
     try_ime_manual_toggle, wait_for_ime_committed_tail_settlement, ImeCommittedTailReplay,
-    ManualCorrectionOutputRoute, ManualCorrectionRequest, ScopedManualCorrectionRequest,
+    ManualCorrectionDispatchPlan, ManualCorrectionRequest, ScopedManualCorrectionRequest,
 };
 use super::{DShiftState, DaemonTextObservation, MultiTapPending, ShiftState};
 
@@ -38,17 +38,20 @@ pub(super) fn run_configured_manual_correction(
     virtual_kbd: &Arc<Mutex<Option<VirtualDevice>>>,
     executing: &mut bool,
     text_observation: DaemonTextObservation<'_>,
-    output_route: ManualCorrectionOutputRoute,
+    dispatch_plan: ManualCorrectionDispatchPlan,
 ) -> Option<bool> {
-    let mut physical_grab = if !output_route.requires_physical_grab() {
-        // The IME committed-tail executor completes without key replay. Keep
-        // subsequent physical Shift taps in the normal event stream so every
-        // complete press-release pair remains a separate toggle.
-        PhysicalInputGrab::new(None)
-    } else {
+    let mut physical_grab = if dispatch_plan.input_isolation.requires_physical_grab() {
         PhysicalInputGrab::new(Some(device))
+    } else {
+        // IME-owned output does not need daemon-side key replay. Keep
+        // subsequent physical input in the ordinary event stream.
+        PhysicalInputGrab::new(None)
     };
     let input_isolated = physical_grab.is_active();
+    if dispatch_plan.input_isolation.requires_physical_grab() && !input_isolated {
+        super::log("⚠ manual replay blocked: required physical input isolation is unavailable");
+        return None;
+    }
     let mut g = lock_virtual_keyboard(virtual_kbd);
     handle_double_shift(ManualCorrectionRequest {
         buf: buffer,
@@ -58,7 +61,7 @@ pub(super) fn run_configured_manual_correction(
         input_isolated,
         text_observation,
         physical_grab: Some(&mut physical_grab),
-        output_route,
+        output_route: dispatch_plan.output_route,
     })
 }
 
@@ -68,6 +71,8 @@ pub(super) fn run_exact_ime_tail_replay(
     virtual_kbd: &Arc<Mutex<Option<VirtualDevice>>>,
     executing: &mut bool,
     replay: ImeCommittedTailReplay,
+    shift_window: Duration,
+    queued_dshift_state: &mut DShiftState,
 ) -> Option<bool> {
     let mut keyboard = lock_virtual_keyboard(virtual_kbd);
     let mut physical_grab = PhysicalInputGrab::new(Some(device));
@@ -76,7 +81,9 @@ pub(super) fn run_exact_ime_tail_replay(
         execute_exact_ime_tail_replay(buffer, keyboard.as_mut(), executing, input_isolated, replay);
     if let (Some(layout_is_ru), Some(virtual_keyboard)) = (result, keyboard.as_mut()) {
         let mut replay_queued_manual_toggle =
-            |queued_keyboard: &mut VirtualDevice, queued_buffer: &mut WordBuffer| {
+            |queued_keyboard: &mut VirtualDevice,
+             queued_buffer: &mut WordBuffer,
+             current_layout_is_ru: bool| {
                 let Some(expected_tail) =
                     queued_buffer.visible_tail_text(lay::word_buffer::MAX_REPLACE_WORDS)
                 else {
@@ -84,7 +91,7 @@ pub(super) fn run_exact_ime_tail_replay(
                     return None;
                 };
                 if let Err(error) =
-                    wait_for_ime_committed_tail_settlement(&expected_tail, layout_is_ru)
+                    wait_for_ime_committed_tail_settlement(&expected_tail, current_layout_is_ru)
                 {
                     super::log(&format!(
                         "warning: queued Double Shift settlement failed: {error}"
@@ -133,6 +140,8 @@ pub(super) fn run_exact_ime_tail_replay(
             "exact-ime-tail-replay",
             0,
             true,
+            shift_window,
+            queued_dshift_state,
             &mut replay_queued_manual_toggle,
         );
         if forwarded.last_manual_toggle_layout_is_ru.is_some() {
@@ -148,14 +157,20 @@ pub(super) fn run_scoped_manual_correction(
     replace_words: usize,
     events_since_word_start: u32,
     reason: &str,
-    output_route: ManualCorrectionOutputRoute,
+    dispatch_plan: ManualCorrectionDispatchPlan,
 ) -> Option<bool> {
-    let mut physical_grab = if !output_route.requires_physical_grab() {
-        PhysicalInputGrab::new(None)
-    } else {
+    let mut physical_grab = if dispatch_plan.input_isolation.requires_physical_grab() {
         PhysicalInputGrab::new(Some(ctx.device))
+    } else {
+        PhysicalInputGrab::new(None)
     };
     let input_isolated = physical_grab.is_active();
+    if dispatch_plan.input_isolation.requires_physical_grab() && !input_isolated {
+        super::log(
+            "⚠ scoped manual replay blocked: required physical input isolation is unavailable",
+        );
+        return None;
+    }
     let mut g = lock_virtual_keyboard(ctx.virtual_kbd);
     run_manual_correction_with_scope(ScopedManualCorrectionRequest {
         manual: ManualCorrectionRequest {
@@ -166,7 +181,7 @@ pub(super) fn run_scoped_manual_correction(
             input_isolated,
             text_observation: ctx.text_observation,
             physical_grab: Some(&mut physical_grab),
-            output_route,
+            output_route: dispatch_plan.output_route,
         },
         events_since_word_start,
         label: reason,
@@ -206,6 +221,7 @@ pub(super) struct ManualTriggerCompletion<'a> {
     pub(super) pending_multi_tap: &'a mut Option<MultiTapPending>,
     pub(super) last_double_at: &'a mut Option<Instant>,
     pub(super) clear_on_next_typing: &'a mut bool,
+    pub(super) preserve_queued_dshift_state: bool,
 }
 
 pub(super) fn complete_manual_trigger(
@@ -220,7 +236,9 @@ pub(super) fn complete_manual_trigger(
         ctx.pending_typing_assist_after_space,
     );
     ctx.shift_state.clear_shifts();
-    *ctx.dshift_state = DShiftState::Idle;
+    if !ctx.preserve_queued_dshift_state {
+        *ctx.dshift_state = DShiftState::Idle;
+    }
     *ctx.pending_multi_tap = None;
     *ctx.last_double_at = Some(Instant::now());
     *ctx.clear_on_next_typing = true;

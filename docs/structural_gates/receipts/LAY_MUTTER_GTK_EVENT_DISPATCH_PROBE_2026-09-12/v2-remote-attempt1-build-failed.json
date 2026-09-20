@@ -1,0 +1,214 @@
+{
+  "status": "EXPERIMENT_FAILED",
+  "started_utc": "2026-09-12T15:33:40.884809+00:00",
+  "scope": "byte-identical extracted Mutter 50.1 and GTK 4.22.4 functions with platform/type/output sinks; async initial filter and INPUT_METHOD native redispatch; no desktop session",
+  "runtime_authority_changed": false,
+  "envelope": {
+    "LAY_RESOURCE_GUARD_ACTIVE": "1",
+    "LAY_RESOURCE_LEASE_HELD": "1",
+    "LAY_RESOURCE_PROFILE": "dedicated-20cpu",
+    "CARGO_BUILD_JOBS": "20",
+    "RUST_TEST_THREADS": "1"
+  },
+  "input_manifest_sha256": "3ac6692bfa5e1bd48bc3dac216ac76b393e9f3078946357707569debf6847def",
+  "source_files": {
+    "mutter-50.1-meta-wayland-text-input.c": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
+    "mutter-50.1-clutter-input-method.c": "89093206273858d7c419000667ad32dd7469d8343db3f12e40d49d7bdcf11a2b",
+    "mutter-50.1-clutter-input-focus.c": "55726d45d7d2835b4aa9793191de3fe04083e92165655e828d1f7dd376ad09fa",
+    "gtk-4.22.4-gtkimcontextwayland.c": "d56fa9e7dfa6fd60b8adee11c15d394b6e9fa39f6ee9a8b5547bd6ffd19aa9e6"
+  },
+  "fragments": [
+    {
+      "source": "gtk-4.22.4-gtkimcontextwayland.c",
+      "symbol": "text_input_commit",
+      "source_sha256": "d56fa9e7dfa6fd60b8adee11c15d394b6e9fa39f6ee9a8b5547bd6ffd19aa9e6",
+      "fragment_sha256": "9f2c9a769d2ed30a8a381bb5eb9d1f2e406cee1f10097d8ac0b675e9d4b90581",
+      "line_start": 214,
+      "line_end": 229,
+      "bytes": 428
+    },
+    {
+      "source": "gtk-4.22.4-gtkimcontextwayland.c",
+      "symbol": "text_input_commit_apply",
+      "source_sha256": "d56fa9e7dfa6fd60b8adee11c15d394b6e9fa39f6ee9a8b5547bd6ffd19aa9e6",
+      "fragment_sha256": "39f8d3edb1fdb038abeba1c221eb1fceed84c8ef59b98555a7c15095d29ea965",
+      "line_start": 231,
+      "line_end": 241,
+      "bytes": 343
+    },
+    {
+      "source": "gtk-4.22.4-gtkimcontextwayland.c",
+      "symbol": "text_input_done",
+      "source_sha256": "d56fa9e7dfa6fd60b8adee11c15d394b6e9fa39f6ee9a8b5547bd6ffd19aa9e6",
+      "fragment_sha256": "8d2321e7179ec770acb0e3032d540e548b7b63f39cb3964651011a7561eb834c",
+      "line_start": 295,
+      "line_end": 320,
+      "bytes": 814
+    },
+    {
+      "source": "mutter-50.1-meta-wayland-text-input.c",
+      "symbol": "clutter_input_focus_send_done",
+      "source_sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
+      "fragment_sha256": "425a2b6babef5d6e669b864aba924bd0d75e5e8444706a7477a00751ba5aa496",
+      "line_start": 158,
+      "line_end": 180,
+      "bytes": 835
+    },
+    {
+      "source": "mutter-50.1-meta-wayland-text-input.c",
+      "symbol": "done_idle_cb",
+      "source_sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
+      "fragment_sha256": "aa618967f065e150601ecbab25e3b7009d61a394ecd780656c08c48d112b38b1",
+      "line_start": 182,
+      "line_end": 193,
+      "bytes": 296
+    },
+    {
+      "source": "mutter-50.1-meta-wayland-text-input.c",
+      "symbol": "meta_wayland_text_input_focus_defer_done",
+      "source_sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
+      "fragment_sha256": "2913129979bdc92fe8145be271304fe2c46c1ce1f20bbca4ac7256608ab26672",
+      "line_start": 195,
+      "line_end": 217,
+      "bytes": 860
+    },
+    {
+      "source": "mutter-50.1-meta-wayland-text-input.c",
+      "symbol": "meta_wayland_text_input_focus_flush_done",
+      "source_sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
+      "fragment_sha256": "bcae5db0b78af978029865c41f0d8163cfe7c693ecdf53b5c9fe3e4b6220d884",
+      "line_start": 219,
+      "line_end": 231,
+      "bytes": 344
+    },
+    {
+      "source": "mutter-50.1-meta-wayland-text-input.c",
+      "symbol": "meta_wayland_text_input_focus_commit_text",
+      "source_sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
+      "fragment_sha256": "1f98caddbc227f5da3fc906e340e2cb4676324264871b69d5e90f4e5ffe23954",
+      "line_start": 276,
+      "line_end": 292,
+      "bytes": 550
+    },
+    {
+      "source": "mutter-50.1-clutter-input-method.c",
+      "symbol": "clutter_input_method_put_im_event",
+      "source_sha256": "89093206273858d7c419000667ad32dd7469d8343db3f12e40d49d7bdcf11a2b",
+      "fragment_sha256": "51af95aa996f7444472f8ec4991cf802ed7e28fc8b7722a314250e633341fee0",
+      "line_start": 238,
+      "line_end": 264,
+      "bytes": 1157
+    },
+    {
+      "source": "mutter-50.1-clutter-input-method.c",
+      "symbol": "clutter_input_method_commit",
+      "source_sha256": "89093206273858d7c419000667ad32dd7469d8343db3f12e40d49d7bdcf11a2b",
+      "fragment_sha256": "20d06914532231b0d97b541deb3ffa211d82137842ce5e9d7ad7c48dabd2d4df",
+      "line_start": 266,
+      "line_end": 274,
+      "bytes": 310
+    },
+    {
+      "source": "mutter-50.1-clutter-input-method.c",
+      "symbol": "clutter_input_method_notify_key_event",
+      "source_sha256": "89093206273858d7c419000667ad32dd7469d8343db3f12e40d49d7bdcf11a2b",
+      "fragment_sha256": "83a79827368505ad351f010aa3f88a377f3f959027440d6e1c5d63dabad1d85b",
+      "line_start": 321,
+      "line_end": 353,
+      "bytes": 1490
+    },
+    {
+      "source": "mutter-50.1-clutter-input-focus.c",
+      "symbol": "clutter_input_focus_filter_event",
+      "source_sha256": "55726d45d7d2835b4aa9793191de3fe04083e92165655e828d1f7dd376ad09fa",
+      "fragment_sha256": "648d1e25f2ae8df57211386d37404960ee6adf9b6b41946e414491f726dc1f18",
+      "line_start": 183,
+      "line_end": 204,
+      "bytes": 642
+    },
+    {
+      "source": "mutter-50.1-clutter-input-focus.c",
+      "symbol": "clutter_input_focus_commit",
+      "source_sha256": "55726d45d7d2835b4aa9793191de3fe04083e92165655e828d1f7dd376ad09fa",
+      "fragment_sha256": "aadf96038b99bc8ca74dd60f89b1a8eeb1a6b0a10d673d3b1f327dafc18c7b5d",
+      "line_start": 299,
+      "line_end": 306,
+      "bytes": 237
+    },
+    {
+      "source": "mutter-50.1-clutter-input-focus.c",
+      "symbol": "clutter_input_focus_process_event",
+      "source_sha256": "55726d45d7d2835b4aa9793191de3fe04083e92165655e828d1f7dd376ad09fa",
+      "fragment_sha256": "cb73ee8be626e3c3ca11c8229d6e4c74b68cbdc02bf617ba11f7e148b13fbf9f",
+      "line_start": 206,
+      "line_end": 251,
+      "bytes": 1467
+    },
+    {
+      "source": "mutter-50.1-meta-wayland-text-input.c",
+      "symbol": "meta_wayland_text_input_update",
+      "source_sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
+      "fragment_sha256": "c03217d75b3573785a17356f38dbcb720c10df96e9d233e8196eb45ad17b84a5",
+      "line_start": 896,
+      "line_end": 921,
+      "bytes": 679
+    },
+    {
+      "source": "mutter-50.1-meta-wayland-text-input.c",
+      "symbol": "meta_wayland_text_input_handle_event",
+      "source_sha256": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
+      "fragment_sha256": "b69acacdf781691902956e843951999f379275c0e758585de2f2528dcc424154",
+      "line_start": 923,
+      "line_end": 973,
+      "bytes": 1638
+    }
+  ],
+  "stages": [
+    {
+      "name": "cc-version",
+      "argv": [
+        "cc",
+        "--version"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.0016516447067260742,
+      "stdout_sha256": "5fa6bf5b83f57f14020be375ac663df894027e2d672d6b7d82d7e8d8f7b49c8b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "compile",
+      "argv": [
+        "cc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c",
+        "-Wl,-l:libglib-2.0.so.0",
+        "-o",
+        "/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe"
+      ],
+      "returncode": 1,
+      "elapsed_seconds": 0.21850842144340277,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "5001a77f16ef876684b2a271ba28f8eec68adc403d27a7a64df64d4cc4ca330b"
+    }
+  ],
+  "exact_fragment_count": 16,
+  "exact_fragments_sha256": "862c9168a25f32b8657e098a15c6bcba0af67f2c5326c963e8a6126b7b91afeb",
+  "translation_unit_sha256": "d3f928defc10d47b5fcf98765a9b8e6f53533f470bd359a9cc5caca0f10f0174",
+  "stub_boundary": [
+    "GLib scheduler ABI is real; only event ingress/queue and platform object APIs are stubs",
+    "initial unflagged filter returns true; later INPUT_METHOD-flagged native copy returns false",
+    "Wayland commit/done output sinks call the exact extracted GTK callbacks",
+    "preedit/delete/feedback and pointer/touch paths are inert because the cases exercise commit/key only"
+  ],
+  "compiler": "cc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+  "error": "RuntimeError: compile returned 1: /home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c: In function \u2018text_input_commit\u2019:\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c:295:46: error: unused parameter \u2018text_input\u2019 [-Werror=unused-parameter]\n  295 |                    struct zwp_text_input_v3 *text_input,\n      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c: In function \u2018text_input_done\u2019:\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c:324:44: error: unused parameter \u2018text_input\u2019 [-Werror=unused-parameter]\n  324 |                  struct zwp_text_input_v3 *text_input,\n      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c: In function \u2018clutter_input_method_put_im_event\u2019:\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c:443:61: error: unused parameter \u2018im\u2019 [-Werror=unused-parameter]\n  443 | clutter_input_method_put_im_event (ClutterInputMethod      *im,\n      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~^~\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c: In function \u2018clutter_input_method_notify_key_event\u2019:\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c:481:60: error: unused parameter \u2018im\u2019 [-Werror=unused-parameter]\n  481 | clutter_input_method_notify_key_event (ClutterInputMethod *im,\n      |                                        ~~~~~~~~~~~~~~~~~~~~^~\ncc1: all warnings being treated as errors\n",
+  "traceback": "Traceback (most recent call last):\n  File \"/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/input/run.py\", line 615, in main\n    command(receipt,\"compile\",[\n  File \"/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/input/run.py\", line 549, in command\n    raise RuntimeError(f\"{name} returned {result.returncode}: \" +\nRuntimeError: compile returned 1: /home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c: In function \u2018text_input_commit\u2019:\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c:295:46: error: unused parameter \u2018text_input\u2019 [-Werror=unused-parameter]\n  295 |                    struct zwp_text_input_v3 *text_input,\n      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c: In function \u2018text_input_done\u2019:\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c:324:44: error: unused parameter \u2018text_input\u2019 [-Werror=unused-parameter]\n  324 |                  struct zwp_text_input_v3 *text_input,\n      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c: In function \u2018clutter_input_method_put_im_event\u2019:\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c:443:61: error: unused parameter \u2018im\u2019 [-Werror=unused-parameter]\n  443 | clutter_input_method_put_im_event (ClutterInputMethod      *im,\n      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~^~\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c: In function \u2018clutter_input_method_notify_key_event\u2019:\n/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b/output/probe.c:481:60: error: unused parameter \u2018im\u2019 [-Werror=unused-parameter]\n  481 | clutter_input_method_notify_key_event (ClutterInputMethod *im,\n      |                                        ~~~~~~~~~~~~~~~~~~~~^~\ncc1: all warnings being treated as errors\n\n",
+  "elapsed_seconds": 0.22612267639487982
+}

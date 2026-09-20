@@ -17,9 +17,26 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.71`
+- `1.0.73`
 
-1.0.71: `INSTALLED_VERIFIED_PHYSICAL_PENDING` (2026-09-11 local date).
+1.0.73: `UNRELEASED_SOURCE_SNAPSHOT` (2026-09-19). This source step contains the
+#47 pure-uinput Double Shift and independent Auto Switch fixes, the `-ять`
+present-form protection, and the safe IME hot-restart handoff. The installed
+runtime remains on the previously verified 1.0.72 bytes until a complete
+1.0.73 release build, install, and live verification transaction is finished.
+Do not describe 1.0.73 as released or create a public release tag from this
+source-only state.
+
+1.0.72: the current Firefox repair transaction is recorded in the
+[execution receipt](tech_debt/evidence/td121-release-1.0.72-execution-2026-09-14.md).
+It binds the final release gates, native tests, installed and loaded artifacts,
+launcher activation and publication. R12 development acceptance is 563/563
+focused IME tests, two independent source reviews and 4/4 exact native scenarios.
+Historical C20 acceptance does not establish acceptance of the later repairs.
+A human hardware-keyboard check remains unobserved; the user authorized
+independent verification, installation and push while away.
+
+Historical 1.0.71: `INSTALLED_VERIFIED_PHYSICAL_PENDING` (2026-09-11 local date).
 This is the installed release transaction for the accepted terminal
 word-boundary replacement, clean repeated-word handling, candidate comparison,
 and Backspace/pending-learning source repairs. Fresh

@@ -798,7 +798,7 @@ fn ingest_usage_hot_state_if_stale() -> Arc<UsageHotState> {
     {
         return Arc::clone(&cache.hot);
     }
-    set_usage_cache_hot_from_counts(&mut cache, load_usage_counts());
+    set_usage_cache_hot_from_counts(&mut cache, &load_usage_counts());
     cache.loaded_at = Some(Instant::now());
     Arc::clone(&cache.hot)
 }
@@ -1045,7 +1045,7 @@ fn increment_optional_count(target: &mut HashMap<String, u32>, value: Option<&st
 fn refresh_usage_counts_from_disk() -> UsageCounts {
     let counts = load_usage_counts();
     if let Ok(mut cache) = usage_cache().lock() {
-        cache.hot = Arc::new(UsageHotState::from_counts(&counts));
+        set_usage_cache_hot_from_counts(&mut cache, &counts);
         cache.loaded_at = Some(Instant::now());
     }
     counts
@@ -1122,12 +1122,15 @@ fn ensure_usage_cache_initialized(cache: &mut UsageCache, load: impl FnOnce() ->
     if cache.loaded_at.is_some() {
         return;
     }
-    set_usage_cache_hot_from_counts(cache, load());
+    set_usage_cache_hot_from_counts(cache, &load());
     cache.loaded_at = Some(Instant::now());
 }
 
-fn set_usage_cache_hot_from_counts(cache: &mut UsageCache, counts: UsageCounts) {
-    cache.hot = Arc::new(UsageHotState::from_counts(&counts));
+fn set_usage_cache_hot_from_counts(cache: &mut UsageCache, counts: &UsageCounts) {
+    if cache.loaded_at.is_some() {
+        super::candidate_gate::clear_live_completion_cache();
+    }
+    cache.hot = Arc::new(UsageHotState::from_counts(counts));
 }
 
 #[cfg(test)]
@@ -1541,6 +1544,7 @@ fn apply_usage_event_to_cache(
     load: impl FnOnce() -> UsageCounts,
 ) {
     ensure_usage_cache_initialized(cache, load);
+    super::candidate_gate::clear_live_completion_cache();
     Arc::make_mut(&mut cache.hot).apply_event(event);
     cache.loaded_at = Some(Instant::now());
 }

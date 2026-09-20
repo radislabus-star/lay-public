@@ -35,6 +35,9 @@ python3 scripts/dev-check.py check
 # One explicit inner-loop target. This is NOT all affected-contract coverage.
 python3 scripts/dev-check.py check --target bin:lay-ibus-engine
 
+# Same remote checks, one completion line with counts and report/log paths.
+python3 scripts/dev-check.py check --target bin:lay-ibus-engine --compact
+
 # Include committed branch work since a chosen base as well as dirty work.
 python3 scripts/dev-check.py check --base origin/main
 

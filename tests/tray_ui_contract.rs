@@ -250,10 +250,65 @@ fn opening_tray_refreshes_config_and_visible_state() {
 #[test]
 fn runtime_restart_preserves_visible_layout_and_global_ibus() {
     let runtime = read("scripts/lay-runtime-control.sh");
-    let start = nearby(&runtime, "start_ime() {", 500);
+    assert!(runtime.contains("hydrate_desktop_env"));
+
+    let sync = nearby(&runtime, "sync_ibus_engine() {", 900);
+    assert!(sync.contains("ibus engine \"$layout\" >/dev/null 2>&1 || true"));
+    assert!(sync.contains("if [ \"$engine\" = \"$layout\" ]"));
+
+    let select_ime = nearby(&runtime, "select_lay_ime() {", 1200);
+    let activate = select_ime
+        .find("activate_gnome_layout \"$layout\"")
+        .expect("GNOME layout activation");
+    let settle = select_ime
+        .find("for attempt in 1 2 3 4 5")
+        .expect("GNOME/IBus settle loop");
+    let fallback_sync = select_ime
+        .rfind("sync_ibus_engine \"$layout\"")
+        .expect("direct IBus fallback");
+    assert!(
+        activate < settle,
+        "GNOME must own the initial engine transition"
+    );
+    assert!(
+        settle < fallback_sync,
+        "direct IBus setter may run only after GNOME settle attempts"
+    );
+
+    let start = nearby(&runtime, "start_ime() {", 1900);
     assert!(start.contains("preferred_lay_ime"));
+    assert!(start.contains("source_already_lay"));
+    assert!(start.contains("xkb_fallback_for_lay_ime"));
+    assert!(start.contains("sync_ibus_engine \"$safe_xkb\" || return 1"));
+    assert!(start.contains("wait_lay_ibus_engine_stopped || return 1"));
     assert!(start.contains("select_lay_ime \"$preferred\""));
     assert!(start.contains("select_lay_ime \"$fallback\""));
+
+    let xkb = start
+        .find("sync_ibus_engine \"$safe_xkb\" || return 1")
+        .expect("same-language XKB fallback");
+    let stop = start
+        .find("systemctl --user stop lay-ibus-engine.service")
+        .expect("engine service stop");
+    let wait = start
+        .find("wait_lay_ibus_engine_stopped || return 1")
+        .expect("managed engine exit wait");
+    let hot_restart = start
+        .find("sync_ibus_engine \"$preferred\" || return 1")
+        .expect("hot restart IBus reselection");
+    let select = start
+        .find("select_lay_ime \"$preferred\"")
+        .expect("Lay IME source activation");
+    assert!(
+        xkb < stop,
+        "XKB fallback must settle before stopping Lay IME"
+    );
+    assert!(stop < wait, "old Lay IME must be stopped before waiting");
+    assert!(
+        wait < hot_restart && hot_restart < select,
+        "hot restart must restore IBus directly before any GNOME source activation"
+    );
+
     assert!(!runtime.contains("ibus restart"));
 }
 

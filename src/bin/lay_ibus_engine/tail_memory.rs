@@ -1,11 +1,9 @@
-use super::engine::{
-    LayIbusEngine, PendingImeCompletionLearning, PendingSystemOutcomeFeedback, SystemOutcomeKind,
-};
+use super::engine::{LayIbusEngine, PendingImeCompletionLearning};
 use super::protocol::{
     AutocorrectSuppression, CurrentWordSuppression, ExactManualToggleSuppression,
     PendingImeAutoUndo, PendingImeAutoUndoRetry, SharedState, ShiftGestureHandoff,
 };
-use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
+use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
 use std::time::{Duration, Instant};
 
 #[cfg(test)]
@@ -38,12 +36,19 @@ fn advance_suppression_revision(state: &mut SharedState) {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum SurroundingSnapshotMatch {
+pub(crate) enum SurroundingSnapshotMatch {
     Exact,
     AtomicSubmission,
     TrailingBoundaryElided,
     CausalPrecondition,
     Missing,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum ExactReplayPress {
+    Inactive,
+    Native,
+    Rejected,
 }
 
 impl LayIbusEngine {
@@ -400,174 +405,6 @@ impl LayIbusEngine {
         true
     }
 
-    pub(super) fn arm_visible_postcondition(&mut self, dispatched_at: Instant) {
-        self.arm_visible_postcondition_with_effects(dispatched_at, None, None);
-    }
-
-    pub(super) fn arm_visible_postcondition_with_feedback(
-        &mut self,
-        dispatched_at: Instant,
-        feedback: Option<PendingSystemOutcomeFeedback>,
-    ) {
-        self.arm_visible_postcondition_with_effects(dispatched_at, feedback, None);
-    }
-
-    pub(super) fn arm_visible_postcondition_with_effects(
-        &mut self,
-        dispatched_at: Instant,
-        feedback: Option<PendingSystemOutcomeFeedback>,
-        layout_sync_text: Option<String>,
-    ) {
-        if !self.client_context.surrounding_text_supported {
-            return;
-        }
-        self.arm_visible_postcondition_from_surrounding_dispatch(
-            dispatched_at,
-            feedback,
-            layout_sync_text,
-        );
-    }
-
-    pub(super) fn arm_visible_postcondition_from_surrounding_dispatch(
-        &mut self,
-        dispatched_at: Instant,
-        feedback: Option<PendingSystemOutcomeFeedback>,
-        layout_sync_text: Option<String>,
-    ) {
-        self.arm_visible_postcondition_from_surrounding_dispatch_with_snapshot(
-            dispatched_at,
-            feedback,
-            layout_sync_text,
-            None,
-        );
-    }
-
-    pub(super) fn arm_exact_visible_postcondition_from_surrounding_dispatch(
-        &mut self,
-        dispatched_at: Instant,
-        feedback: Option<PendingSystemOutcomeFeedback>,
-        layout_sync_text: Option<String>,
-        expected_external_snapshot: super::engine::SurroundingTextSnapshot,
-    ) {
-        self.arm_visible_postcondition_from_surrounding_dispatch_with_snapshot(
-            dispatched_at,
-            feedback,
-            layout_sync_text,
-            Some(expected_external_snapshot),
-        );
-    }
-
-    fn arm_visible_postcondition_from_surrounding_dispatch_with_snapshot(
-        &mut self,
-        dispatched_at: Instant,
-        feedback: Option<PendingSystemOutcomeFeedback>,
-        layout_sync_text: Option<String>,
-        expected_external_snapshot: Option<super::engine::SurroundingTextSnapshot>,
-    ) {
-        let snapshot = VisibleTailSnapshot::new(
-            VisibleTailSource::ImeCommittedTail,
-            self.committed_tail.buffer.clone(),
-            Some(self.path.clone()),
-            self.committed_tail.epoch,
-        )
-        .identity();
-        self.committed_tail.pending_visible_postcondition =
-            Some(super::engine::PendingVisiblePostcondition {
-                expected_suffix: self.committed_tail.buffer.clone(),
-                expected_external_snapshot,
-                snapshot,
-                dispatched_epoch: self.committed_tail.epoch,
-                dispatched_at,
-                feedback,
-                layout_sync_text,
-            });
-    }
-
-    pub(super) fn observe_visible_postcondition(&mut self) {
-        const OBSERVATION_TIMEOUT_MS: u128 = 1500;
-        const SETTLE_GRACE_MS: u128 = 500;
-        let Some(pending) = self.committed_tail.pending_visible_postcondition.take() else {
-            return;
-        };
-        let elapsed_ms = pending.dispatched_at.elapsed().as_millis();
-        if elapsed_ms > OBSERVATION_TIMEOUT_MS
-            || pending.dispatched_epoch != self.committed_tail.epoch
-        {
-            record_causal_outcome("censored", &pending, self.committed_tail.epoch);
-            return;
-        }
-        let observed = match pending.expected_external_snapshot.as_ref() {
-            Some(expected)
-                if self.client_context.surrounding_text_snapshot.as_ref() == Some(expected) =>
-            {
-                SurroundingSnapshotMatch::Exact
-            }
-            Some(_) => SurroundingSnapshotMatch::Missing,
-            None => surrounding_snapshot_match(
-                self.client_context.surrounding_text_snapshot.as_ref(),
-                &pending.expected_suffix,
-            ),
-        };
-        let status = if matches!(
-            observed,
-            SurroundingSnapshotMatch::Exact | SurroundingSnapshotMatch::TrailingBoundaryElided
-        ) {
-            self.record_observed_system_outcome(pending.feedback.as_ref());
-            record_causal_outcome("confirmed_positive", &pending, self.committed_tail.epoch);
-            if let Some(text) = pending.layout_sync_text.as_deref() {
-                self.sync_layout_after_committed_text(text, "visible_postcondition_confirmed");
-            }
-            if observed == SurroundingSnapshotMatch::TrailingBoundaryElided {
-                "observed_boundary_elided"
-            } else {
-                "observed"
-            }
-        } else if elapsed_ms <= SETTLE_GRACE_MS {
-            record_causal_outcome(
-                "pending_stale_observation",
-                &pending,
-                self.committed_tail.epoch,
-            );
-            self.committed_tail.pending_visible_postcondition = Some(pending);
-            "pending"
-        } else {
-            // The compositor may report the pre-commit surrounding text once
-            // before publishing the committed value. Only quarantine after the
-            // bounded settle window has elapsed.
-            self.quarantine_visible_postcondition_mismatch();
-            record_causal_outcome("censored", &pending, self.committed_tail.epoch);
-            "mismatch"
-        };
-        super::trace::record(format!(
-            r#"{{"kind":"ibus_visible_postcondition","status":"{status}"}}"#
-        ));
-    }
-
-    fn record_observed_system_outcome(&self, feedback: Option<&PendingSystemOutcomeFeedback>) {
-        if !self.context_word_is_known() {
-            return;
-        }
-        let Some(feedback) = feedback else {
-            return;
-        };
-        match feedback.kind {
-            SystemOutcomeKind::LayoutProjection => {
-                lay::typing_cpu::TypingCpu::record_observed_system_apply(
-                    &feedback.original,
-                    &feedback.replacement,
-                    lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
-                );
-            }
-            SystemOutcomeKind::Correction => {
-                lay::typing_cpu::TypingCpu::record_observed_system_apply(
-                    &feedback.original,
-                    &feedback.replacement,
-                    lay::typing_cpu::ObservedSystemTransition::Correction,
-                );
-            }
-        }
-    }
-
     pub(super) fn selected_visible_completion_suffix(&self) -> String {
         if self.selected_precognition_replacement().is_some() {
             return String::new();
@@ -615,6 +452,9 @@ impl LayIbusEngine {
 
     pub(super) fn rebuild_preedit_fast_from_tail(&mut self) {
         self.composition.preedit_fast.reset();
+        if self.committed_tail.buffer.ends_with(char::is_whitespace) {
+            return;
+        }
         for ch in self.last_tail_token_text().chars() {
             self.composition.preedit_fast.push(ch);
         }
@@ -641,6 +481,16 @@ impl LayIbusEngine {
     }
 
     pub(super) fn prepare_exact_manual_toggle_layout_handoff(&mut self) {
+        let source_snapshot_is_exact = self.current_external_snapshot_agrees_with_owned_tail();
+        let source_token = self.context_token.clone();
+        let source_observation_revision = self.client_context.surrounding_observation_revision;
+        if let Some(AutocorrectSuppression::ExactReplay(scope)) =
+            self.committed_tail.autocorrect_suppression.clone()
+        {
+            if self.exact_replay_scope_is_completed(&scope) {
+                self.retire_completed_exact_replay(&scope);
+            }
+        }
         if !self.publish_tail_handoff() {
             return;
         }
@@ -650,10 +500,25 @@ impl LayIbusEngine {
         if !self.owns_shared_context_state(&state) {
             return;
         }
-        state.preserve_active_path_until = Some(Instant::now() + IME_LAYOUT_HANDOFF_MAX_AGE);
+        let expires_at = Instant::now() + IME_LAYOUT_HANDOFF_MAX_AGE;
+        state.preserve_active_path_until = Some(expires_at);
         state.exact_manual_toggle_handoff_epoch = Some(self.committed_tail.epoch);
         state.exact_manual_toggle_handoff_path = Some(self.path.clone());
         advance_suppression_revision(&mut state);
+        drop(state);
+        if source_snapshot_is_exact {
+            if let (Some(admission), Some(token)) =
+                (self.context_admission.as_ref(), source_token.as_ref())
+            {
+                let _ = admission.publish_exact_manual_snapshot(
+                    token,
+                    self.committed_tail.epoch,
+                    self.committed_tail.buffer.clone(),
+                    source_observation_revision,
+                    expires_at,
+                );
+            }
+        }
     }
 
     pub(super) fn exact_manual_toggle_handoff_is_live(&self) -> bool {
@@ -674,10 +539,126 @@ impl LayIbusEngine {
             let had_exact_epoch = state.exact_manual_toggle_handoff_epoch.take().is_some();
             let had_exact_path = state.exact_manual_toggle_handoff_path.take().is_some();
             if had_exact_epoch || had_exact_path {
+                state.preserve_active_path_until = None;
                 advance_suppression_revision(&mut state);
             }
         }
         live
+    }
+
+    pub(super) fn exact_manual_toggle_handoff_is_bound_to_current_owner(&self) -> bool {
+        let Ok(state) = self.shared.lock() else {
+            return false;
+        };
+        self.owns_shared_context_state(&state)
+            && state.exact_manual_toggle_handoff_epoch.is_some()
+            && state.exact_manual_toggle_handoff_path.is_some()
+    }
+
+    pub(super) fn current_external_snapshot_agrees_with_owned_tail(&self) -> bool {
+        if !self.client_context.surrounding_text_supported || self.committed_tail.buffer.is_empty()
+        {
+            return false;
+        }
+        let Some(snapshot) = self.client_context.surrounding_text_snapshot.as_ref() else {
+            return false;
+        };
+        let owned_tail_chars = self.committed_tail.buffer.chars().count();
+        if snapshot.has_selection()
+            || snapshot.suffix_before_cursor(owned_tail_chars).as_deref()
+                != Some(self.committed_tail.buffer.as_str())
+        {
+            return false;
+        }
+        let Some((token_start, token_end)) = last_tail_token_range(&self.committed_tail.buffer)
+        else {
+            return false;
+        };
+        let token_chars = self.committed_tail.buffer[token_start..token_end]
+            .chars()
+            .count();
+        let trailing_chars = self.committed_tail.buffer[token_end..].chars().count();
+        let cursor = snapshot.cursor_pos as usize;
+        let Some(external_token_end) = cursor.checked_sub(trailing_chars) else {
+            return false;
+        };
+        let Some(external_token_start) = external_token_end.checked_sub(token_chars) else {
+            return false;
+        };
+        let left_is_boundary = external_token_start == 0
+            || snapshot
+                .text
+                .chars()
+                .nth(external_token_start - 1)
+                .is_some_and(super::preedit::is_observed_word_boundary);
+        let right_is_boundary = snapshot
+            .text
+            .chars()
+            .nth(external_token_end)
+            .is_none_or(super::preedit::is_observed_word_boundary);
+        left_is_boundary && right_is_boundary
+    }
+
+    pub(super) fn inherited_exact_manual_snapshot_agrees_with_owned_tail(&self) -> bool {
+        let Some(receipt) = self.exact_manual_target_snapshot.as_ref() else {
+            return false;
+        };
+        receipt.target_epoch == self.committed_tail.epoch
+            && receipt.source.tail_epoch == self.committed_tail.epoch
+            && receipt.source.tail == self.committed_tail.buffer
+            && receipt.source.expires_at > Instant::now()
+            && receipt.target_observation_revision
+                == self.client_context.surrounding_observation_revision
+            && self.client_context.surrounding_text_supported
+            && !self.client_context.surrounding_text_callback_observed
+            && self.content_allows_text_assistance()
+            && self.context_token.as_ref() == Some(&receipt.target_token)
+            && self
+                .context_admission
+                .as_ref()
+                .is_some_and(|admission| admission.revalidate(&receipt.target_token))
+    }
+
+    pub(super) fn clear_identity_bound_exact_manual_toggle_authority(&mut self) {
+        self.exact_manual_target_snapshot = None;
+        let epoch = self.committed_tail.epoch;
+        let path = self.path.as_str();
+        let local_suppression_is_current = self
+            .committed_tail
+            .autocorrect_suppression
+            .as_ref()
+            .is_some_and(|suppression| {
+                matches!(suppression, AutocorrectSuppression::ExactReplay(scope)
+                    if scope.path == path && scope.epoch == epoch)
+            });
+        let Ok(mut state) = self.shared.lock() else {
+            if local_suppression_is_current {
+                self.committed_tail.autocorrect_suppression = None;
+            }
+            return;
+        };
+        let owns_shared_state = self.owns_shared_context_state(&state);
+        let handoff_is_current = owns_shared_state
+            && state.exact_manual_toggle_handoff_epoch == Some(epoch)
+            && state.exact_manual_toggle_handoff_path.is_some()
+            && state.handoff_tail_epoch == epoch;
+        if handoff_is_current {
+            state.preserve_active_path_until = None;
+            state.exact_manual_toggle_handoff_epoch = None;
+            state.exact_manual_toggle_handoff_path = None;
+            advance_suppression_revision(&mut state);
+        }
+        if owns_shared_state
+            && local_suppression_is_current
+            && state.autocorrect_suppression.as_ref()
+                == self.committed_tail.autocorrect_suppression.as_ref()
+        {
+            state.autocorrect_suppression = None;
+            advance_suppression_revision(&mut state);
+        }
+        if local_suppression_is_current {
+            self.committed_tail.autocorrect_suppression = None;
+        }
     }
 
     pub(super) fn consume_exact_manual_toggle_handoff(&self) {
@@ -701,13 +682,28 @@ impl LayIbusEngine {
     ) -> bool {
         let exact_tail_suffix = last_tail_token_range(&self.committed_tail.buffer)
             .map(|(start, _)| &self.committed_tail.buffer[start..]);
+        let plan = plan_manual_toggle(ManualToggleRequest {
+            visible_tail: VisibleTail::ime_committed_tail(&self.committed_tail.buffer),
+            current_layout_is_ru: !expected_layout_is_ru,
+            preserve_trailing_whitespace: true,
+        });
         if expected_suffix.is_empty()
             || exact_tail_suffix != Some(expected_suffix)
             || self.path != expected_path
             || self.layout_gesture.layout_is_ru != expected_layout_is_ru
             || self.committed_tail.epoch != expected_epoch
             || !self.committed_tail.buffer.ends_with(expected_suffix)
+            || plan.as_ref().is_none_or(|plan| {
+                plan.target_layout_is_ru != expected_layout_is_ru
+                    || plan.backspaces as usize != expected_suffix.chars().count()
+            })
         {
+            return false;
+        }
+        if !(self.current_external_snapshot_agrees_with_owned_tail()
+            || self.inherited_exact_manual_snapshot_agrees_with_owned_tail())
+        {
+            self.clear_identity_bound_exact_manual_toggle_authority();
             return false;
         }
         let Ok(mut state) = self.shared.lock() else {
@@ -722,21 +718,309 @@ impl LayIbusEngine {
             && state.handoff_tail_epoch == expected_epoch
             && state.handoff_tail_buffer == self.committed_tail.buffer;
         if !live {
+            drop(state);
+            self.clear_identity_bound_exact_manual_toggle_authority();
             return false;
         }
 
         state.preserve_active_path_until = None;
         state.exact_manual_toggle_handoff_epoch = None;
         state.exact_manual_toggle_handoff_path = None;
+        let plan = plan.expect("validated exact manual-toggle projection");
+        let unchanged_prefix = self
+            .committed_tail
+            .buffer
+            .strip_suffix(expected_suffix)
+            .expect("validated exact suffix")
+            .to_string();
         let suppression = AutocorrectSuppression::ExactReplay(ExactManualToggleSuppression {
             path: expected_path.to_string(),
             epoch: expected_epoch,
             expires_at: Instant::now() + IME_LAYOUT_HANDOFF_MAX_AGE,
+            owner_lease_identity: self.client_context.runtime_owner_lease_identity,
+            target_layout_is_ru: expected_layout_is_ru,
+            original_tail: self.committed_tail.buffer.clone(),
+            original_suffix: expected_suffix.to_string(),
+            unchanged_prefix,
+            replacement: plan.replacement,
         });
         state.autocorrect_suppression = Some(suppression.clone());
         advance_suppression_revision(&mut state);
         self.committed_tail.autocorrect_suppression = Some(suppression);
+        self.exact_manual_target_snapshot = None;
+        drop(state);
+        self.invalidate_input_frame_background_work();
+        self.committed_tail.pending_completion_learning = None;
+        self.client_context.surrounding_text_snapshot = None;
+        self.composition.pending_passthrough_preedit_clear = self.composition.preedit_visible;
+        self.clear_preedit_completion_state();
+        self.composition.preedit_fast.reset();
         true
+    }
+
+    fn exact_replay_scope_pair(
+        &self,
+    ) -> (
+        Option<ExactManualToggleSuppression>,
+        Option<ExactManualToggleSuppression>,
+    ) {
+        let local = match self.committed_tail.autocorrect_suppression.as_ref() {
+            Some(AutocorrectSuppression::ExactReplay(scope)) => Some(scope.clone()),
+            _ => None,
+        };
+        let shared = self.shared.lock().ok().and_then(|state| {
+            (state.active_path.as_deref() == Some(self.path.as_str()))
+                .then(|| match state.autocorrect_suppression.as_ref() {
+                    Some(AutocorrectSuppression::ExactReplay(scope)) => Some(scope.clone()),
+                    _ => None,
+                })
+                .flatten()
+        });
+        (local, shared)
+    }
+
+    fn exact_replay_expected_tail(
+        scope: &ExactManualToggleSuppression,
+        distance: usize,
+    ) -> Option<String> {
+        let delete_chars = scope.original_suffix.chars().count();
+        let replacement_chars = scope.replacement.chars().count();
+        if distance > delete_chars.saturating_add(replacement_chars) {
+            return None;
+        }
+        if distance <= delete_chars {
+            let retained = scope.original_tail.chars().count().checked_sub(distance)?;
+            return Some(scope.original_tail.chars().take(retained).collect());
+        }
+        let inserted = distance - delete_chars;
+        Some(format!(
+            "{}{}",
+            scope.unchanged_prefix,
+            scope.replacement.chars().take(inserted).collect::<String>()
+        ))
+    }
+
+    fn exact_replay_scope_is_current_except_expiry(
+        &self,
+        scope: &ExactManualToggleSuppression,
+    ) -> bool {
+        if scope.path != self.path
+            || scope.owner_lease_identity != self.client_context.runtime_owner_lease_identity
+            || scope.target_layout_is_ru != self.layout_gesture.layout_is_ru
+            || !self.live_composition_enabled()
+            || !self.client_context.surrounding_text_supported
+            || self.content_is_sensitive()
+            || !self.composition.buffer.is_empty()
+            || self
+                .client_context
+                .surrounding_text_snapshot
+                .as_ref()
+                .is_some_and(|snapshot| snapshot.has_selection())
+        {
+            return false;
+        }
+        let distance = self.committed_tail.epoch.wrapping_sub(scope.epoch) as usize;
+        if Self::exact_replay_expected_tail(scope, distance).as_deref()
+            != Some(self.committed_tail.buffer.as_str())
+        {
+            return false;
+        }
+        let Ok(state) = self.shared.lock() else {
+            return false;
+        };
+        self.owns_shared_context_state(&state)
+            && state.active_path.as_deref() == Some(self.path.as_str())
+            && state.autocorrect_suppression.as_ref()
+                == Some(&AutocorrectSuppression::ExactReplay(scope.clone()))
+            && state.handoff_tail_epoch == self.committed_tail.epoch
+            && state.handoff_tail_buffer == self.committed_tail.buffer
+    }
+
+    fn exact_replay_scope_is_current(&self, scope: &ExactManualToggleSuppression) -> bool {
+        Instant::now() <= scope.expires_at
+            && self.exact_replay_scope_is_current_except_expiry(scope)
+    }
+
+    fn revoke_exact_replay_scope(&mut self, scope: &ExactManualToggleSuppression) {
+        self.invalidate_input_frame_background_work();
+        self.committed_tail.pending_completion_learning = None;
+        self.client_context.surrounding_text_snapshot = None;
+        self.clear_preedit_completion_state();
+        if self.committed_tail.autocorrect_suppression.as_ref()
+            == Some(&AutocorrectSuppression::ExactReplay(scope.clone()))
+        {
+            self.committed_tail.autocorrect_suppression = None;
+        }
+        if let Ok(mut state) = self.shared.lock() {
+            if self.owns_shared_context_state(&state)
+                && state.active_path.as_deref() == Some(self.path.as_str())
+                && scope.path == self.path
+                && scope.owner_lease_identity == self.client_context.runtime_owner_lease_identity
+                && state.autocorrect_suppression.as_ref()
+                    == Some(&AutocorrectSuppression::ExactReplay(scope.clone()))
+            {
+                state.autocorrect_suppression = None;
+                advance_suppression_revision(&mut state);
+            }
+        }
+    }
+
+    fn exact_replay_mirror_transition(
+        &mut self,
+        scope: &ExactManualToggleSuppression,
+        append: Option<char>,
+    ) -> bool {
+        self.invalidate_input_frame_background_work();
+        self.committed_tail.pending_completion_learning = None;
+        self.client_context.surrounding_text_snapshot = None;
+        self.clear_preedit_completion_state();
+        match append {
+            Some(ch) => self.committed_tail.buffer.push(ch),
+            None => {
+                self.committed_tail.buffer.pop();
+            }
+        }
+        self.exact_replay_tail_change_quarantined = true;
+        if !self.publish_tail_handoff() || !self.exact_replay_scope_is_current(scope) {
+            self.revoke_exact_replay_scope(scope);
+            return false;
+        }
+        true
+    }
+
+    fn exact_replay_scope_is_completed(&self, scope: &ExactManualToggleSuppression) -> bool {
+        self.committed_tail.epoch.wrapping_sub(scope.epoch) as usize
+            == scope
+                .original_suffix
+                .chars()
+                .count()
+                .saturating_add(scope.replacement.chars().count())
+            && self.exact_replay_scope_is_current_except_expiry(scope)
+    }
+
+    fn retire_completed_exact_replay(&mut self, scope: &ExactManualToggleSuppression) {
+        if self.committed_tail.autocorrect_suppression.as_ref()
+            == Some(&AutocorrectSuppression::ExactReplay(scope.clone()))
+        {
+            self.committed_tail.autocorrect_suppression = None;
+        }
+        if let Ok(mut state) = self.shared.lock() {
+            if self.owns_shared_context_state(&state)
+                && state.active_path.as_deref() == Some(self.path.as_str())
+                && scope.path == self.path
+                && scope.owner_lease_identity == self.client_context.runtime_owner_lease_identity
+                && state.autocorrect_suppression.as_ref()
+                    == Some(&AutocorrectSuppression::ExactReplay(scope.clone()))
+            {
+                state.autocorrect_suppression = None;
+                advance_suppression_revision(&mut state);
+            }
+        }
+        self.rebuild_preedit_fast_from_tail();
+        if !self.committed_tail.buffer.ends_with(char::is_whitespace) {
+            self.arm_current_word_autocorrect_suppression();
+        }
+    }
+
+    pub(super) fn exact_replay_quarantine_active(&self) -> bool {
+        let (local, shared) = self.exact_replay_scope_pair();
+        matches!((local, shared), (Some(ref local), Some(ref shared))
+            if local == shared
+                && (self.exact_replay_scope_is_current(local)
+                    || self.exact_replay_scope_is_current_except_expiry(local)
+                        && self.committed_tail.epoch.wrapping_sub(local.epoch)
+                            == local.original_suffix.chars().count() as u64
+                                + local.replacement.chars().count() as u64))
+    }
+
+    pub(super) fn exact_replay_contains_prior_snapshot(
+        &self,
+        snapshot: &super::engine::SurroundingTextSnapshot,
+    ) -> bool {
+        let Some(AutocorrectSuppression::ExactReplay(scope)) =
+            self.committed_tail.autocorrect_suppression.as_ref()
+        else {
+            return false;
+        };
+        let deletes = scope.original_suffix.chars().count();
+        let replacements = scope.replacement.chars().count();
+        let distance = self.committed_tail.epoch.wrapping_sub(scope.epoch) as usize;
+        let complete_distance = deletes.saturating_add(replacements);
+        let snapshot_chars = snapshot.text.chars().count();
+        if snapshot.has_selection()
+            || snapshot.cursor_pos as usize != snapshot_chars
+            || distance > complete_distance
+            || (distance < complete_distance && Instant::now() > scope.expires_at)
+            || !self.exact_replay_scope_is_current_except_expiry(scope)
+        {
+            return false;
+        }
+        // Only already observed delete/replay progress can explain a delayed
+        // surface. Future prefixes and foreign content cannot retain provenance.
+        // This remains inert until a fresh exact client receipt arrives.
+        let shortest_source = scope.original_tail.chars().count() - distance.min(deletes);
+        snapshot.text.starts_with(&scope.unchanged_prefix)
+            && ((snapshot_chars >= shortest_source
+                && scope.original_tail.starts_with(&snapshot.text))
+                || (distance >= deletes
+                    && snapshot
+                        .text
+                        .strip_prefix(&scope.unchanged_prefix)
+                        .is_some_and(|suffix| {
+                            suffix.chars().count() <= distance - deletes
+                                && scope.replacement.starts_with(suffix)
+                        })))
+    }
+
+    pub(super) fn process_exact_replay_press(
+        &mut self,
+        keyval: u32,
+        keycode: u32,
+        state: u32,
+    ) -> ExactReplayPress {
+        let (local, shared) = self.exact_replay_scope_pair();
+        let Some(scope) = local.clone().or(shared.clone()) else {
+            return ExactReplayPress::Inactive;
+        };
+        if local.as_ref() != Some(&scope) || shared.as_ref() != Some(&scope) {
+            self.revoke_exact_replay_scope(&scope);
+            return ExactReplayPress::Rejected;
+        }
+
+        let delete_chars = scope.original_suffix.chars().count();
+        let distance = self.committed_tail.epoch.wrapping_sub(scope.epoch) as usize;
+        if self.exact_replay_scope_is_completed(&scope) {
+            self.retire_completed_exact_replay(&scope);
+            return ExactReplayPress::Inactive;
+        }
+        if !self.exact_replay_scope_is_current(&scope) {
+            self.revoke_exact_replay_scope(&scope);
+            return ExactReplayPress::Rejected;
+        }
+
+        if super::protocol::has_command_modifier(state) {
+            self.revoke_exact_replay_scope(&scope);
+            return ExactReplayPress::Rejected;
+        }
+
+        let append = if distance < delete_chars {
+            (keyval == super::protocol::KEY_BACKSPACE).then_some(None)
+        } else {
+            let inserted = distance - delete_chars;
+            let expected = scope.replacement.chars().nth(inserted);
+            (self.passthrough_visible_char(keyval, keycode) == expected)
+                .then_some(expected)
+                .flatten()
+                .map(Some)
+        };
+        let Some(append) = append else {
+            self.revoke_exact_replay_scope(&scope);
+            return ExactReplayPress::Rejected;
+        };
+        if !self.exact_replay_mirror_transition(&scope, append) {
+            return ExactReplayPress::Rejected;
+        }
+        ExactReplayPress::Native
     }
 
     pub(super) fn revoke_exact_manual_toggle_autocorrect_suppression(
@@ -935,7 +1219,7 @@ impl LayIbusEngine {
         state.shift_gesture_handoff = None;
     }
 
-    fn quarantine_visible_postcondition_mismatch(&mut self) {
+    pub(crate) fn quarantine_visible_postcondition_mismatch(&mut self) {
         let shared = self.shared.clone();
         self.composition.buffer.clear();
         self.composition.cursor = 0;
@@ -1110,7 +1394,7 @@ impl LayIbusEngine {
     }
 }
 
-fn surrounding_snapshot_match(
+pub(crate) fn surrounding_snapshot_match(
     snapshot: Option<&super::engine::SurroundingTextSnapshot>,
     expected_suffix: &str,
 ) -> SurroundingSnapshotMatch {
@@ -1239,7 +1523,7 @@ fn record_detached_ime_auto_undo_lifecycle(
     );
 }
 
-fn record_causal_outcome(
+pub(crate) fn record_causal_outcome(
     outcome: &str,
     pending: &super::engine::PendingVisiblePostcondition,
     observed_epoch: u64,
@@ -1291,10 +1575,12 @@ fn trim_committed_tail_buffer(buffer: &mut String) {
 #[cfg(test)]
 mod tests {
     use super::{last_tail_token_range, LayIbusEngine};
+    use crate::context_admission::{EngineOwner, EnginePath, OwnerGeneration};
     use crate::engine::{
-        ManualToggleAuthority, PendingSystemOutcomeFeedback, SystemOutcomeKind, WordInputMode,
+        ManualToggleAuthority, PendingSystemOutcomeFeedback, SurroundingTextSnapshot,
+        SystemOutcomeKind, WordInputMode,
     };
-    use crate::protocol::AutocorrectSuppression;
+    use crate::protocol::{AutocorrectSuppression, CurrentWordSuppression};
     use lay::config::LayConfig;
     use lay::text_edit::{
         decide_text_transition, LatentTextTransitionCandidate, TextTransitionDecision,
@@ -1468,7 +1754,7 @@ mod tests {
         engine.client_context.surrounding_text_supported = true;
         engine.committed_tail.buffer = "давай ".to_string();
         engine.publish_tail_handoff();
-        engine.arm_visible_postcondition_with_feedback(
+        engine.arm_visible_postcondition_from_surrounding_dispatch(
             Instant::now(),
             Some(PendingSystemOutcomeFeedback {
                 original: "lfdfq".to_string(),
@@ -1476,6 +1762,7 @@ mod tests {
                 source: VisibleTailSource::ImeCommittedTail,
                 kind: SystemOutcomeKind::LayoutProjection,
             }),
+            None,
         );
 
         let pending = engine
@@ -2104,6 +2391,9 @@ mod tests {
         );
         assert!(target.bind_focus_path());
         target.reset_for_ibus_soft_reset();
+        target.set_client_capabilities(1 << 5);
+        target.client_context.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("ghbdtn".to_string(), 6, 6));
 
         assert!(!target.arm_exact_manual_toggle_autocorrect_suppression(
             "hbdtn",
@@ -2184,6 +2474,7 @@ mod tests {
         );
         publisher.committed_tail.buffer = "вот ".to_string();
         publisher.publish_tail_handoff();
+        let published_epoch = publisher.committed_tail.epoch;
         let mut reader = LayIbusEngine::new(
             "/reader".to_string(),
             shared,
@@ -2196,7 +2487,109 @@ mod tests {
         reader.refresh_empty_tail_from_handoff();
 
         assert_eq!(reader.committed_tail.buffer, "вот ");
-        assert_eq!(reader.composition.preedit_fast.token(), "вот");
+        assert_eq!(reader.committed_tail.epoch, published_epoch);
+        assert_eq!(reader.last_tail_token_text(), "вот");
+        assert_eq!(reader.composition.preedit_fast.token(), "");
+        assert!(!reader.composition.preedit_fast.has_open_token());
+        assert_eq!(
+            reader.manual_toggle_authority(),
+            ManualToggleAuthority::DaemonWordBuffer
+        );
+
+        reader.set_client_capabilities(1 << 5);
+        reader.push_tail_char('д');
+        assert_eq!(reader.committed_tail.buffer, "вот д");
+        assert_eq!(reader.composition.preedit_fast.token(), "д");
+        assert!(reader.composition.preedit_fast.has_open_token());
+        assert_eq!(
+            reader.manual_toggle_authority(),
+            ManualToggleAuthority::ImeCommittedTail
+        );
+    }
+
+    #[test]
+    fn stale_source_exact_cleanup_cannot_clear_target_current_word_scope() {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut source = LayIbusEngine::new_from_component(
+            "/stale/source".to_string(),
+            shared.clone(),
+            None,
+            "lay-ime-us",
+            true,
+            LayConfig::default(),
+        );
+        source.context_owner = Some(EngineOwner {
+            path: EnginePath::new(source.path.clone()).unwrap(),
+            generation: OwnerGeneration(1),
+        });
+        source.committed_tail.buffer = "a".to_string();
+        source.committed_tail.epoch = 41;
+
+        let mut target = LayIbusEngine::new_from_component(
+            "/current/target".to_string(),
+            shared.clone(),
+            None,
+            "lay-ime-ru",
+            true,
+            LayConfig::default(),
+        );
+        target.context_owner = Some(EngineOwner {
+            path: EnginePath::new(target.path.clone()).unwrap(),
+            generation: OwnerGeneration(2),
+        });
+        target.committed_tail.buffer = source.committed_tail.buffer.clone();
+        target.committed_tail.epoch = source.committed_tail.epoch;
+        let target_lease = target.client_context.runtime_owner_lease_identity;
+        source.client_context.runtime_owner_lease_identity = target_lease;
+        let current_scope = AutocorrectSuppression::CurrentWord(CurrentWordSuppression {
+            incarnation: 73,
+            owner_lease_identity: target_lease,
+            open_token_chars: 1,
+        });
+        source.committed_tail.autocorrect_suppression = Some(current_scope.clone());
+        target.committed_tail.autocorrect_suppression = Some(current_scope.clone());
+        {
+            let mut state = shared.lock().unwrap();
+            state.active_path = Some(target.path.clone());
+            state.context_owner_generation = Some(2);
+            state.handoff_tail_buffer = "a".to_string();
+            state.handoff_tail_epoch = 41;
+            state.preserve_active_path_until = Some(Instant::now() + Duration::from_secs(1));
+            state.exact_manual_toggle_handoff_epoch = Some(41);
+            state.exact_manual_toggle_handoff_path = Some(source.path.clone());
+            state.autocorrect_suppression = Some(current_scope.clone());
+        }
+
+        source.clear_identity_bound_exact_manual_toggle_authority();
+
+        assert_eq!(
+            source.committed_tail.autocorrect_suppression,
+            Some(current_scope.clone())
+        );
+        assert_eq!(
+            target.committed_tail.autocorrect_suppression,
+            Some(current_scope.clone())
+        );
+        {
+            let state = shared.lock().unwrap();
+            assert_eq!(state.autocorrect_suppression, Some(current_scope.clone()));
+            assert_eq!(state.exact_manual_toggle_handoff_epoch, Some(41));
+            assert_eq!(
+                state.exact_manual_toggle_handoff_path.as_deref(),
+                Some(source.path.as_str())
+            );
+        }
+
+        target.clear_identity_bound_exact_manual_toggle_authority();
+
+        assert_eq!(
+            target.committed_tail.autocorrect_suppression,
+            Some(current_scope.clone())
+        );
+        let state = shared.lock().unwrap();
+        assert_eq!(state.autocorrect_suppression, Some(current_scope));
+        assert!(state.exact_manual_toggle_handoff_epoch.is_none());
+        assert!(state.exact_manual_toggle_handoff_path.is_none());
     }
 
     #[test]

@@ -140,3 +140,20 @@ observation and cleanup are now accurate, but the disappearance cause remains
 UNKNOWN. This task does not accept the client, exonerate its environment,
 resolve TD-121 or install/release anything. Broad runtime cleanup remains a
 separate decision, not a completed or silently added deliverable.
+
+
+## Compact automated completion, 2026-09-14
+
+`python3 scripts/dev-check.py check --compact` retains the existing remote
+execution and source/resource guards and emits one JSON completion line.
+It reports actual selected/executed/passed/failed counts when available,
+report/log paths, and on failure at most eight failed-test records plus the
+last 2,048 bytes of the execution log. Missing remote completion is BLOCKED;
+unknown counts remain null. The detailed receipt/logs remain on disk.
+AGENTS.md records awaited completion, bounded failure inspection and reuse
+of unchanged proof. DEVELOPMENT.md documents the one-command focused route.
+Verification: tool self-tests `run-vej1soxg/RESULT.json` PASS; real compact
+545/545 PASS `run-9o1oux26/RESULT.json`; real failed-regression packet with
+544/545 and its assertion `run-27egvxnh/RESULT.json`. Receipts are under
+`~/.cache/lay/development/`. Reporting-only change; runtime authority and
+release gates are unchanged. No new daemon or automatic retry is introduced.

@@ -72,6 +72,7 @@ pub(crate) struct ManualTriggerFireContext<'a> {
     pub(crate) pending_multi_tap: &'a mut Option<MultiTapPending>,
     pub(crate) last_double_at: &'a mut Option<Instant>,
     pub(crate) clear_on_next_typing: &'a mut bool,
+    pub(crate) shift_window: Duration,
     pub(crate) text_observation: DaemonTextObservation<'a>,
 }
 
@@ -92,6 +93,7 @@ impl<'a> ManualTriggerEventContext<'a> {
             pending_multi_tap: self.pending_multi_tap,
             last_double_at: self.last_double_at,
             clear_on_next_typing: self.clear_on_next_typing,
+            shift_window: self.shift_window,
             text_observation: self.text_observation.clone(),
         }
     }

@@ -291,6 +291,7 @@ impl TransitionDecisionCore {
                         event,
                         candidate,
                         &evaluations[index],
+                        policy,
                     ) && candidate_has_apply_authority(
                         event,
                         index,
@@ -378,12 +379,30 @@ fn ordinary_producer_allows_authority_evaluation(
     event: &TypingErrorEvent,
     candidate: &UnifiedCorrectionCandidate,
     evaluation: &CandidateDecisionEvaluation,
+    policy: TransitionDecisionPolicy,
 ) -> bool {
     apply_policy::producer_allows_authority_evaluation(
         candidate.gate.action,
         evaluation.signals.l3_pairwise_certified,
         evaluation.transition.l4_signed_signal,
+    ) || experimental_strong_l2_suggestion_allows_authority_evaluation(
+        candidate, evaluation, policy,
     ) || admission::suggest_boundary_allows_authority_evaluation(event, candidate, evaluation)
+}
+
+fn experimental_strong_l2_suggestion_allows_authority_evaluation(
+    candidate: &UnifiedCorrectionCandidate,
+    evaluation: &CandidateDecisionEvaluation,
+    policy: TransitionDecisionPolicy,
+) -> bool {
+    policy.correction_safety == CorrectionSafety::Experimental
+        && candidate.gate.action == CandidateGateAction::SuggestOnly
+        && candidate.gate.reason == "productive_v90_lattice_requires_common_l3"
+        && candidate.origin.source_role() == CorrectionSourceRole::L2Surface
+        && evaluation.action.verifier_passed
+        && !evaluation.action.left_context_changed
+        && evaluation.action.changed_tokens == 1
+        && strong_l2_wave_peak_support(&evaluation.signals)
 }
 
 #[derive(Clone)]
@@ -438,6 +457,7 @@ fn authority_lane_allows_apply(
             event,
             &lane_candidates[candidate_index],
             &lane_evaluations[candidate_index],
+            policy,
         )
     };
     (producer_admitted

@@ -246,7 +246,9 @@ fn is_backed_russian_suffix_form(word: &str, contains: impl Fn(&str) -> bool + C
             return false;
         }
         let adjective_suffix = adjective_form_suffixes().any(|candidate| candidate == suffix);
-        (!adjective_suffix && contains(stem))
+        // A backed surface ending in -я is not a generic suffix stem. Its noun
+        // paradigm replaces final -я, while verb forms need conjugation proof.
+        (!adjective_suffix && !stem.ends_with('я') && contains(stem))
             || (suffix == "а" && contains(&format!("{stem}о")))
             || (suffix == "я" && contains(&format!("{stem}е")))
             || (matches!(suffix, "ы" | "и")

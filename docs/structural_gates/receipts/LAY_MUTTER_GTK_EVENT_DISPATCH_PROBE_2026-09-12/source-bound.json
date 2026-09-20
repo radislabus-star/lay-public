@@ -1,0 +1,102 @@
+{
+  "status": "REJECTED_MIRROR_MODEL_LOCAL_EXECUTION",
+  "historical": true,
+  "superseded_by": "v2-remote-exact.json",
+  "rejection_reasons": [
+    "The extracted originals were hashed but not inserted into the compiled translation unit; probe.c independently rewrote tested algorithms.",
+    "The release control passed an asynchronous reply into the initial filter and discarded native copies instead of redispatching the INPUT_METHOD-flagged event.",
+    "Compilation and execution used the local workstation guard rather than the required remote dedicated-20cpu guard."
+  ],
+  "captured_at_utc": "2026-09-12T15:22:51Z",
+  "scope": "Test-only source-bound model of the Mutter 50.1 input-method event dispatch and GTK 4.22.4 text-input-v3 commit/done consumer callbacks. Proves that the tested callback ordering permits commit overwrite before one deferred done and that an unfiltered release flushes pending done.",
+  "artifact_root": "/home/ubu/.cache/lay/development/gnome-repeat-capture-d9q6uzjm/mutter-gtk-dispatch-probe-v1",
+  "command": "/home/ubu/projects/lay-cleanup-20260908/scripts/lay-resource-guard.sh -- ./build_probe.py",
+  "source_provenance": {
+    "manifest": "/home/ubu/.cache/lay/development/gnome-repeat-capture-d9q6uzjm/upstream/manifest.json",
+    "mutter-50.1-meta-wayland-text-input.c": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
+    "mutter-50.1-clutter-input-method.c": "89093206273858d7c419000667ad32dd7469d8343db3f12e40d49d7bdcf11a2b",
+    "mutter-50.1-clutter-input-focus.c": "55726d45d7d2835b4aa9793191de3fe04083e92165655e828d1f7dd376ad09fa",
+    "gtk-4.22.4-gtkimcontextwayland.c": "d56fa9e7dfa6fd60b8adee11c15d394b6e9fa39f6ee9a8b5547bd6ffd19aa9e6",
+    "ubuntu_packaging_relevant_patch_match": "none",
+    "extracts_manifest_sha256": "70c8b5c8be9314051603cdf07d6d36088fb60b565a2869ad0211ebc0cf020e0e",
+    "represented_upstream_function_count": 16
+  },
+  "artifacts_sha256": {
+    "probe.c": "f6e7e5b049659cfed259274709a031adf67b886d5ceb8d252af2c1f474c798e0",
+    "build_probe.py": "7f27bab6fc583d5d99e32812e72ef023ac79d5a6e474ca8ab5979f2de487a232",
+    "stdout.jsonl": "0b1acf062dd41a3f39ef71eb1a0644449312758699d237e139af8e80610a185d",
+    "sanitizer.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "probe": "f8999390b5773fb1087b5f811adab56418e6d342b91827ffe63d268accf2682c"
+  },
+  "toolchain": {
+    "compiler": "gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+    "sanitizers": ["address", "undefined"],
+    "resource_profile": "workstation",
+    "kernel": "Linux 7.0.0-22-generic x86_64"
+  },
+  "results": [
+    {
+      "case": "handled_press_release_before_idle",
+      "status": "PASS",
+      "protocol_commits": 3,
+      "protocol_done": 0,
+      "gtk_apply_count": 0,
+      "gtk_applied": "",
+      "native_copies": 0,
+      "pending_idle": true
+    },
+    {
+      "case": "coalesced_idle_applies_last_commit_only",
+      "status": "PASS",
+      "protocol_commits": 3,
+      "protocol_done": 1,
+      "gtk_apply_count": 1,
+      "gtk_applied": "c",
+      "native_copies": 0,
+      "pending_idle": false
+    },
+    {
+      "case": "idle_after_each_commit_preserves_all",
+      "status": "PASS",
+      "protocol_commits": 3,
+      "protocol_done": 3,
+      "gtk_apply_count": 3,
+      "gtk_applied": "abc",
+      "native_copies": 0,
+      "pending_idle": false
+    },
+    {
+      "case": "unfiltered_release_flushes_each_done",
+      "status": "PASS",
+      "protocol_commits": 3,
+      "protocol_done": 3,
+      "gtk_apply_count": 3,
+      "gtk_applied": "abc",
+      "native_copies": 3,
+      "pending_idle": false
+    }
+  ],
+  "denominators": {
+    "schedule_cases": 4,
+    "passed": 4,
+    "failed": 0,
+    "asan_ubsan_findings": 0,
+    "live_clients": 0,
+    "desktop_pixel_checks": 0,
+    "production_code_changes": 0
+  },
+  "measured_facts": [
+    "A legal run of three filtered press/release pairs and three IM_COMMIT events before the idle produces three Wayland commit strings, one done, and one GTK commit signal containing only the final string.",
+    "Running the deferred done after each commit produces three GTK commit signals and preserves abc.",
+    "Returning unfiltered for each release flushes the pending done before notify_key_event enqueues each native release copy; the model preserves abc and observes three native copies."
+  ],
+  "not_tested": [
+    "Whether GNOME Text Editor used Mutter text-input-v3 for the captured failure",
+    "A live Mutter or GTK process, Wayland wire traffic, desktop pixels, physical input, or application state",
+    "Whether the captured cycle 9 followed the admissible coalesced schedule",
+    "Whether a release-only policy is portable across GTK IBus, X11, terminals, browsers, or other clients",
+    "Latency, RSS, package size, answer quality, and installed runtime behavior"
+  ],
+  "verdict_scope": "The callback chain admits the coalesced overwrite schedule. This is mechanism feasibility only, not live transport attribution or proof of the cycle 9 cause. Unfiltered release is a transport-specific scheduling lever, not an accepted repair.",
+  "runtime_authority_changed": false
+}

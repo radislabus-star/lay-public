@@ -320,6 +320,8 @@ fn v27_atomic_space_refusal_and_double_shift_round_trip() {
         7,
     )));
     assert_eq!(live.client_context.surrounding_observation_revision, 1);
+    assert!(live.client_context.surrounding_text_callback_observed);
+    assert!(live.exact_manual_target_snapshot.is_none());
 
     let first_press = zbus::block_on(live.process_atomic_key_event(
         KEY_LEFT_SHIFT,
@@ -336,6 +338,8 @@ fn v27_atomic_space_refusal_and_double_shift_round_trip() {
         "\u{43f}\u{440}\u{438}\u{432}\u{435}\u{442} "
     );
     assert_eq!(live.client_context.surrounding_observation_revision, 1);
+    assert!(live.client_context.surrounding_text_callback_observed);
+    assert!(live.exact_manual_target_snapshot.is_none());
     assert_eq!(
         live.client_context
             .surrounding_text_snapshot

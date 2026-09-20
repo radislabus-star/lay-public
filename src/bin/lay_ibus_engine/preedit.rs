@@ -1,4 +1,6 @@
 use super::output::EngineOutput;
+#[cfg(test)]
+use std::sync::atomic::Ordering;
 use std::time::Instant;
 use zbus::fdo;
 
@@ -475,6 +477,9 @@ impl LayIbusEngine {
             )
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        if emitter.is_legacy() {
+            self.record_context_reset_preedit_publication(&text, cursor_pos);
+        }
         let sensitive = self.content_is_sensitive();
         let trace_text = (!sensitive).then_some(text.as_str());
         let trace_chars = if sensitive { 0 } else { text.chars().count() };
@@ -631,7 +636,9 @@ impl LayIbusEngine {
             super::precognition_worker::cancel();
             return false;
         };
-        if !self.precognition_identity_matches(&identity) {
+        if !self.precognition_identity_matches(&identity)
+            && self.capture_pending_reset_readout_frame().as_ref() != Some(&identity)
+        {
             super::precognition_worker::cancel();
             return false;
         }
@@ -647,6 +654,10 @@ impl LayIbusEngine {
             super::precognition_worker::cancel();
             return false;
         };
+        #[cfg(test)]
+        self.composition
+            .precognition_schedule_count
+            .fetch_add(1, Ordering::SeqCst);
         super::precognition_worker::schedule(PrecognitionWork {
             identity,
             input,
@@ -678,6 +689,15 @@ impl LayIbusEngine {
         Some(identity)
     }
 
+    pub(super) fn capture_pending_reset_readout_frame(&self) -> Option<InputFrameIdentity> {
+        if !self.context_reset_rereceipt_computation_allowed() {
+            return None;
+        }
+        let mut identity = self.capture_word_frame_identity()?;
+        identity.display_suffix_token = Some(self.live_context_token()?);
+        Some(identity)
+    }
+
     pub(super) async fn refresh_observed_suffix_precognition(
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
@@ -687,6 +707,32 @@ impl LayIbusEngine {
             return Ok(());
         }
         let frame = self.capture_observed_suffix_display_frame();
+        if frame.is_none() {
+            if let Some(pending) = self.capture_pending_reset_readout_frame() {
+                self.clear_preedit(emitter).await?;
+                // Keep the existing pending latch: Alt before publication must
+                // retire this work and may not accept a later receipt's hint.
+                self.composition.preedit_display_only_pending =
+                    self.schedule_background_precognition(emitter, Some(pending));
+                return Ok(());
+            }
+        } else if self.context_reset_rereceipt_exact_manual_handoff_allowed()
+            && self.precognition_display_ready()
+        {
+            if let Some(proposals) = self
+                .precognition_input()
+                .as_ref()
+                .and_then(cached_precognition_candidates)
+            {
+                if frame
+                    .as_ref()
+                    .is_some_and(|identity| self.precognition_identity_matches(identity))
+                {
+                    self.cancel_precognition_display_generation();
+                    return self.apply_background_precognition(emitter, proposals).await;
+                }
+            }
+        }
         self.refresh_precognition_after_visible_input(emitter, frame)
             .await
     }
@@ -857,7 +903,33 @@ impl LayIbusEngine {
         };
         publication?;
         *self = projected;
+        #[cfg(test)]
+        self.composition
+            .precognition_apply_count
+            .fetch_add(1, Ordering::SeqCst);
         Ok(())
+    }
+
+    #[cfg(test)]
+    pub(crate) fn reset_precognition_causal_counts(&self) {
+        self.composition
+            .precognition_schedule_count
+            .store(0, Ordering::SeqCst);
+        self.composition
+            .precognition_apply_count
+            .store(0, Ordering::SeqCst);
+    }
+
+    #[cfg(test)]
+    pub(crate) fn precognition_causal_counts(&self) -> (usize, usize) {
+        (
+            self.composition
+                .precognition_schedule_count
+                .load(Ordering::SeqCst),
+            self.composition
+                .precognition_apply_count
+                .load(Ordering::SeqCst),
+        )
     }
 
     pub(super) fn cycle_precognition_candidate(&mut self, step: isize) -> bool {
@@ -928,14 +1000,7 @@ impl LayIbusEngine {
     }
 
     fn live_candidate_partial(&self) -> String {
-        if self
-            .composition
-            .preedit_fast
-            .is_ascii_live_candidate_token()
-        {
-            return self.composition.preedit_fast.token.to_lowercase();
-        }
-        split_last_alphabetic_token(self.committed_tail.buffer.trim_end())
+        self.live_word_readout_input(self.committed_tail.buffer.trim_end())
             .map(|(_, token)| token.to_lowercase())
             .unwrap_or_default()
     }
@@ -1073,7 +1138,7 @@ impl LayIbusEngine {
         if !self.context_word_is_known() {
             return;
         }
-        let Some((prefix, observed_word)) = split_last_alphabetic_token(tail_before_boundary)
+        let Some((prefix, observed_word)) = self.live_word_readout_input(tail_before_boundary)
         else {
             return;
         };

@@ -1,86 +1,31 @@
 # TD-121 promotion coverage ledger
 
-Status: `OPEN / installed1.0.66, release client5/5 and full gate PASS; physical NOT_TESTED`,
-2026-09-07.
-This is a source-to-proof worklist, not an execution receipt. It complements
-the fixed C01–C30 and H01–H16 contracts in
-[the accepted analysis](td121-context-admission-analysis.md) and
-[the owning task](../121-preserve-word-across-ime-layout-handoff.md).
+## Current TD-121 acceptance — 2026-09-13
 
-Current final candidate `dfeb50e88c8a9170137563ddaf09ae3a44eb8a5441899e3d399baf60fd8e5185`
-passed the same five V2 post-ready cases on optimized release bytes. Receipt
-`release-1066-final-IFSMv9/client-release-post-ready/receipt.json` SHA256
-`80978ba5382d14a29a896eaff0b5d069aa5a17eeadb0815a84e3f08a6a26a9dc`.
-Both final changed/full gates passed2646/2646, including IME411/protected7;
-lint and architecture passed. Fourteen Cargo binary targets plus sidecar and
-receipt transferred with16/16 digest parity. This does not promote mixed
-correction, physical GTK/keyboard, installation or loaded-process verification.
-The source-to-C/H coverage mapping below is unchanged. Earlier checkpoint:
+TD-121 is **IN PROGRESS / INSTALLED_VERIFIED_PHYSICAL_PENDING**. The focused
+proof on the final runtime source passed 519/519 separately. C20 then passed all
+13 release commands; changed and full gates each passed 2,807/2,807 with 11
+intentional performance skips, compiled-receipt verification passed, and four
+isolated final-byte client cells passed. Release `RESULT.json` SHA-256:
+`02458047a539fb85be82b301fd1cf38b19af1f71241f34260713cf5c5dd90534`.
 
-Diagnostic actual-client checkpoint: candidate
-`d9920add9dd7253c327e0debd24384b912ab5dea033e9f7bc98edd6dd61cf88b`
-completed the fixed V2 `post-exact-ready` schedule **5/5**, rc 0, with owned
-process cleanup clean. Service runtime was 2.722 s. Receipt:
-`/home/e/projects/lay-development-runner/release-1066-final-IFSMv9/client-stale-arm-post-ready/receipt.json`,
-SHA-256 `c2f86ff3e69ad8ae5c6a2b1435a2584fff67dcc72d449d1be14e09236b0a56b8`;
-focused SUMMARY SHA-256
-`2184ab00e4577153fee2cb4a76a892b5ca40a5bc0d8e7f7febc32e4eeef059ea`.
-The source/controlled checkpoint is **418/418 PASS**: IME 411 plus the seven
-protected tests. It includes the exact delayed-native Transfer handler route,
-cross-field SourceFree fallback, ownerless SourceFree factory supersession,
-and rejection of a superseded acquisition attempting to arm after observer
-refresh. The stale-arm regression also rejects wrong target and nonce, leaves
-Bridge arming unchanged, and completes the successor once through its marker
-to a SourceFree grant. Bounded repair review: **9/10, High 0, Medium 0**. That
-score covers only the native-enrichment, ownerless-factory-supersession, and
-stale-arm publication repairs.
+The owned GTK entry matrix passed 3/3: `привет` with one manual toggle, `ghbdtn`
+with two toggles and zero queued key/space/boundary passthrough, and layout
+projection `ghjdthrf` after autocomplete with one toggle. GTK receipt SHA-256:
+`27bf83fccd5a15e552dabd9afeada8f1bacfd9038b8f9a0046f2cb3d0fcd1eaf`.
+Release 1.0.72 is installed; ten installed artifacts and four loaded owners match
+C20, and the loaded extension reports 1.0.72. Global IBus identity, configuration,
+input sources, immutable models, journals and learner state were preserved.
+Installation receipt SHA-256:
+`ca7b0cb622f862cdb9a51678e640d27953fe798f3b37f291bdebce4f5e4735a4`.
+Only human physical-keyboard confirmation remains for TD-121. C12 and C18 below
+are retained as historical checkpoints; they do not own current release identity.
+General TD-123 answer quality remains `UNKNOWN`.
 
-The five cases are an actual IBus/Lay **protocol-client** result. They are not
-physical key injection, a GTK widget replay, desktop-bus evidence, or an
-installed final-release proof. Mixed `lом` and reverse `дjv` retention are
-measured, but neither case invokes or evaluates a mixed-token correction;
-their correction-quality verdict remains **UNKNOWN**. Physical keyboard/GTK
-acceptance is **NOT_TESTED**. Final release gates and artifact transfer now
-PASS as recorded above; install and loaded-image verification remain
-**NOT_TESTED** at that earlier checkpoint. Following the user's direct
-installation instruction,1.0.66 is now installed/loaded with independent
-process-image parity: [installation receipt](release-1.0.66-installation.md).
-Physical/GTK and mixed-token correction coverage are unchanged and not
-promoted. The matrix below still states the actual measured scope.
+Historical attempts and their exact receipts are retained only in
+[evidence/td121-private-actual-baseline-2026-09-13.md](td121-private-actual-baseline-2026-09-13.md).
 
-Historical pre-successor checkpoint: 7/7 final-pass regressions and 399/399
-full IME tests PASS, 0 ignored/filtered in the full run, 15.49s. All 7 exact
-residual test names were
-discovered. Full log SHA256
-`8e882054a95b4c4146b7ac9dab5cd74db91271303388e917a480b553bbbad185`;
-focused log SHA256
-`00fe9da1a54de4cab2041f0aa9583bba93105e6d46d15c0a3d0eaefa2ed06678`.
-Paths: `/home/e/.cache/lay/td121-remote-sidecar/td121-residuals-full-20260907.log`
-and `td121-residuals-green-controlled-config-20260907.log` in that directory.
-The real client separately proved full-prefix handoff, then failed correction
-on both cold debug and optimized candidates (`prefetch_not_ready`):0/5 complete
-cases in each run. Optimized candidate6c480f39 built in3m14s. Warmup completion
-and inline exact-certificate refusal reason are not yet independently observed.
-Independent pass2 remains the actual pre-repair4/10,H4/M0, not a self-issued
-passing score. Four static schedules now have controlled RED/GREEN evidence.
-An additional narrow independent closure check requires the user's explicit
-exception to the exhausted review limit; request sent, not presumed granted.
-At that historical checkpoint, successor binding and all release/physical
-acceptance remained pending.
-
-Historical checkpoint before the legacy/final-pass work: adapter22/22 and full IME390/390 PASS are
-source-bound unit/controlled-harness results, not the five-case client proof.
-Actual private run `td121-private-five.cVZ7BN` completed0/5 cases with candidate
-`b7e783753d03950e81ff31aab40f17257ada78e668cdceaff101d3f28124e81c`.
-The first legacy Space remained UnknownStart; marker-before-key was not
-established by setup. The new word_scope tests use the atomic callback, so
-the actual legacy entrypoint and both causal readiness schedules are the
-next discriminating proof. See the current checkpoints in
-[client evidence](td121-private-client-proof.md#latest-five-case-run-checkpoint--2026-09-07)
-and [analysis](td121-context-admission-analysis.md#legacy-client-first-boundary-checkpoint--2026-09-07).
-No C/H row is promoted by390 alone; no install/restart/commit/push occurred.
-
-## Denominators and source identity
+## Historical denominators and source identity
 
 - Frozen helper/adapter 30/30 and the earlier IME binary 379/379 are historical
   checkpoints. Neither proves the consolidated receive-order, lifecycle,
@@ -137,6 +82,23 @@ keyboard evidence, measured RSS, or latency distributions. These gaps do not
 invalidate the scoped 5/5 protocol-client repair result, but they prevent a
 final TD-121/release promotion claim.
 
+### Prepared grouped source assertions, not yet executed
+
+The current test-only candidate adds scoped checks for C12, C17, C24, C25,
+and C28. C17 and C28 use one controlled P2P adapter, real factory/focus/lifecycle
+handlers, pending acquisition, and late key handlers; C25 injects the matched
+IBus `NameOwnerChanged` owner-loss signal. C24 proves bounded legacy handler
+`NativeUnhandled` results while compatibility Get is held; it is not a GUI
+visible-output receipt. C12 covers false mode and malformed bootstrap with a
+fresh authority-free legacy handler control. The C28 material change is a
+controlled test injection of the existing generation guard, not a package
+reload. KnownStart retention and UnknownStart non-promotion are asserted before
+any ordinary Space can rearm a later word.
+
+These tests have no execution receipt yet and add no C/H PASS, quality claim,
+physical-input claim, or runtime authority. Their first focused failure, if any,
+must be reported as the mechanism under repair before broader proof runs.
+
 ## C01–C30 closure worklist
 
 | ID | Existing source pointer / proof route | Remaining assertion before promotion |
@@ -169,7 +131,7 @@ final TD-121/release promotion claim.
 | C26 | A Ping+marker route and actual bridge | Pending earlier IBus invalidation forbids session-bus bridge authority; no cross-connection Sequence comparison |
 | C27 | E `td121_atomic_known_commit_and_stale_token_refusal`; TD-120 bridge/atomic regressions | Actual AtomicV1 consecutive transactions across boundary, native-unhandled settlement, stale clone no-write, and no global layout work during discarded preview |
 | C28 | Existing material/config/frame regression routes | Reload while acquisition/frame pending does not promote stale frame or incomplete word; identity and lexical authority remain distinct |
-| C29 | Actual ManualToggleV3 and daemon disposition | UnknownStart returns NotHandled→Complete(None), with no daemon-buffer or exact-tail fallback |
+| C29 | Actual ManualToggleV3 and daemon disposition | Accepted terminal observed suffix may use the bounded terminal exact-tail route, including boundary preservation. Generic automatic and Tab authority remain refused; prove no daemon-buffer reconstruction or unrelated fallback |
 | C30 | Existing protected exact GTK/terminal tests and smoke | Preserve independent GTK capture/grab/replay and terminal single-commit plans, one detector, one mutation, no duplicate layout/suppression |
 
 ## H01–H16 expansion worklist
@@ -285,3 +247,37 @@ one serial execution lease, `td121-private-five-20260907T0051-candidate-b7e78375
 Its result is pending. Source edits are frozen during that run. This checkpoint
 does not close final C/H promotion, independent review, canonical release
 checks, physical keyboard acceptance, installation or push.
+# Latest grouped proof — 2026-09-13 02:09 UTC
+
+Status: **FAILED / no promotion**. Python harness: **36/36 PASS**. Rust:
+**0 tests executed**, because discovery compilation stopped at two test-only
+E0716 lifetime errors in the new FIFO oracle. Actual client: **1/2 PASS**;
+on-fresh-preedit passed exact ` пров` plus non-empty preedit, while
+off-fresh-preedit produced a forbidden delete of `ljv` followed by commit
+`дом `. Both cleanups passed. Final source/candidate/dependency identities
+matched with zero audit errors. Runtime authority and installation did not
+change. Primary receipt:
+`/home/ubu/.cache/lay/development/td121-grouped-proof-20260913T020000Z-c1-PRIMARY-RESULTS/RESULT.json`
+(SHA-256 `69efc77e4d9efb3ebca0a1b3a8cdda1413ae04124befd980393f7aca3a41035d`).
+
+## C20 promotion coverage — 2026-09-13
+
+C20 supersedes the earlier candidate for release identity. The canonical release
+run passed 13/13 commands; changed and full gates each passed 2,807/2,807
+with 11 intentional performance skips; compiled-receipt and four
+isolated final-byte client checks. `RESULT.json` SHA-256:
+`02458047a539fb85be82b301fd1cf38b19af1f71241f34260713cf5c5dd90534`.
+The preceding focused 519/519 proof on the same runtime source passed separately.
+The owned GTK entry matrix passed 3/3: `привет` with one manual toggle, `ghbdtn`
+with two toggles and zero queued key/space/boundary passthrough, and `ghjdthrf`
+after autocomplete with one toggle. GTK receipt SHA-256:
+`27bf83fccd5a15e552dabd9afeada8f1bacfd9038b8f9a0046f2cb3d0fcd1eaf`.
+
+Installation status is `INSTALLED_VERIFIED_PHYSICAL_PENDING`. Ten installed
+artifact hashes and four loaded process hashes match C20; the loaded extension
+is 1.0.72. Preservation checks cover global IBus identity, input sources,
+configuration, eight immutable model dependencies, journals and learner state.
+Installation receipt SHA-256:
+`ca7b0cb622f862cdb9a51678e640d27953fe798f3b37f291bdebce4f5e4735a4`.
+The only remaining TD-121 promotion denominator is human physical-keyboard input.
+General heldout quality remains `UNKNOWN` and belongs to TD-123.

@@ -33,7 +33,7 @@ perl -0pi -e "s/export const APP_VERSION = '[^']+';/export const APP_VERSION = '
   extension/lay@radislabus-star.github.io/tray_support.js
 perl -0pi -e "s/((?:export\s+)?const APP_RELEASE_DATE = ')[^']+(')/\${1}${release_date}\${2}/" \
   extension/lay@radislabus-star.github.io/tray_support.js
-perl -0pi -e 's/Current publication branch version:\n\n- `[^`]+`/Current publication branch version:\n\n- `'"${version}"'`/' \
+perl -0pi -e 's/Current source version:\n\n- `[^`]+`/Current source version:\n\n- `'"${version}"'`/' \
   VERSIONING.md
 
 cargo check --quiet

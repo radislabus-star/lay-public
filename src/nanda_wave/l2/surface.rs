@@ -59,7 +59,9 @@ pub(super) fn surface_motif_word_candidates(
         return Vec::new();
     }
 
-    let memory = surface_motif_memory();
+    let Some(memory) = surface_motif_memory() else {
+        return Vec::new();
+    };
     let stable_input = surface_motif_stable_existing_word(&normalized);
     let mut surface_candidates = memory.surface_candidates(&normalized, 24);
     if options.is_enabled(L2_SURFACE_MOTIF_CELL) {
@@ -350,7 +352,9 @@ fn latin_surface_word_candidates(
     options: &WaveOptions,
 ) -> Vec<WordCandidate> {
     let len = normalized.chars().count();
-    let memory = surface_motif_memory();
+    let Some(memory) = surface_motif_memory() else {
+        return Vec::new();
+    };
     let stable_input = memory.contains_decoded_surface(normalized);
     let mut surface_candidates = memory.surface_candidates(normalized, 24);
     if options.is_enabled(L2_SURFACE_COMPLETION_CELL) && !stable_input {
@@ -457,7 +461,10 @@ pub(super) fn form_attractor_word_candidates(
     let usage = usage_prior::cached_usage_prior_snapshot();
     let transition_state =
         crate::transition_relation::signed_memory_state_id(&format!("{prefix}{token}"));
-    let surface_candidates = surface_motif_memory().surface_candidates(&normalized, 32);
+    let Some(memory) = surface_motif_memory() else {
+        return Vec::new();
+    };
+    let surface_candidates = memory.surface_candidates(&normalized, 32);
     let phase_deltas = l2_birth_phase_deltas(&normalized, &surface_candidates, options);
     let mut out = surface_candidates
         .into_iter()
@@ -1371,9 +1378,8 @@ pub(super) fn surface_motif_typo_risk(context: &TailContext, distance: usize) ->
     (0.10 + distance as f32 * 0.06 + phrase_bonus).clamp(0.06, 0.40)
 }
 
-pub(super) fn surface_motif_memory() -> &'static LexicalPhaseMemory {
+pub(super) fn surface_motif_memory() -> Option<&'static LexicalPhaseMemory> {
     default_memory()
-        .expect("missing L2 lexical phase artifact; run scripts/install-l2-lexical-phase.sh")
 }
 
 pub(crate) fn l2_surface_foundation_contains(word: &str) -> bool {

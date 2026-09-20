@@ -6,8 +6,6 @@ mod args;
 mod atomic;
 #[path = "lay_ibus_engine/bridge.rs"]
 mod bridge;
-#[path = "lay_ibus_engine/bridge_actions.rs"]
-mod bridge_actions;
 #[path = "lay_ibus_engine/bridge_policy.rs"]
 mod bridge_policy;
 #[path = "lay_ibus_engine/committed_tail.rs"]
@@ -18,8 +16,6 @@ mod composition_commit;
 mod composition_edit;
 #[path = "lay_ibus_engine/context_admission.rs"]
 mod context_admission;
-#[path = "lay_ibus_engine/context_runtime.rs"]
-mod context_runtime;
 #[path = "lay_ibus_engine/engine.rs"]
 mod engine;
 #[path = "lay_ibus_engine/factory.rs"]
@@ -63,6 +59,8 @@ mod td120_full_frame_tests;
 #[cfg(test)]
 #[path = "lay_ibus_engine/td120_word_lifecycle_tests.rs"]
 mod td120_word_lifecycle_tests;
+#[path = "lay_ibus_engine/window_interaction/mod.rs"]
+mod window_interaction;
 
 #[cfg(test)]
 #[path = "lay_ibus_engine/td125_terminal_edit_tests.rs"]

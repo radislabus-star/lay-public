@@ -109,9 +109,20 @@ pub(super) fn active_auto_replace() -> bool {
     cfg.active_text_backend().daemon_owns_text_mutation() && cfg.auto_replace
 }
 
+#[cfg(not(test))]
 pub(super) fn active_typing_assist() -> bool {
     let cfg = current_config();
     cfg.active_text_backend().daemon_owns_text_mutation() && cfg.typing_assist
+}
+
+pub(super) fn active_boundary_correction() -> bool {
+    let cfg = current_config();
+    daemon_boundary_correction_active(&cfg)
+}
+
+fn daemon_boundary_correction_active(cfg: &LayConfig) -> bool {
+    cfg.active_text_backend().daemon_owns_text_mutation()
+        && (cfg.auto_replace || cfg.typing_assist || cfg.auto_switch_layout)
 }
 
 pub(super) fn active_enter_autocorrect() -> bool {
@@ -191,8 +202,9 @@ pub(super) fn active_typing_assist_pipeline_for_auto_replace(
 ) -> Vec<lay::config::TypingAssistRuleConfig> {
     let cfg = current_config();
     let safety = cfg.active_correction_safety();
-    lay::typing_context::typing_assist_pipeline_for_context(
+    lay::typing_context::typing_assist_pipeline_for_context_with_layout(
         cfg.auto_replace,
+        cfg.auto_switch_layout,
         safety,
         &cfg.typing_assist_pipeline,
         context,
@@ -250,6 +262,30 @@ mod tests {
 
     #[test]
     fn direct_ime_owners_disable_daemon_text_decisions() {
+        for (auto_replace, typing_assist, auto_switch_layout) in [
+            (true, false, false),
+            (false, true, false),
+            (false, false, true),
+        ] {
+            let cfg = LayConfig {
+                text_backend: "uinput".to_string(),
+                auto_replace,
+                typing_assist,
+                auto_switch_layout,
+                ..LayConfig::default()
+            };
+            assert!(daemon_boundary_correction_active(&cfg));
+        }
+
+        let disabled = LayConfig {
+            text_backend: "uinput".to_string(),
+            auto_replace: false,
+            typing_assist: false,
+            auto_switch_layout: false,
+            ..LayConfig::default()
+        };
+        assert!(!daemon_boundary_correction_active(&disabled));
+
         for text_backend in ["ime", "auto"] {
             let cfg = LayConfig {
                 text_backend: text_backend.to_string(),
@@ -261,6 +297,7 @@ mod tests {
             };
 
             assert!(!cfg.active_text_backend().daemon_owns_text_mutation());
+            assert!(!daemon_boundary_correction_active(&cfg));
             assert!(!daemon_nanda_autocorrect_active(&cfg));
         }
     }

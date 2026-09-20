@@ -1,0 +1,48 @@
+{
+  "status": "PASS_EXACT_EXTRACTED_SCHEDULE_EXISTS_RUNTIME_UNCHANGED",
+  "remote": "e@192.168.3.94",
+  "remote_run": "/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-k1FFeX",
+  "local_artifact": "/home/ubu/.cache/lay/development/gnome-repeat-capture-d9q6uzjm/mutter-gtk-dispatch-probe-v2-remote-run-k1FFeX",
+  "input_root": "/home/ubu/.cache/lay/development/gnome-repeat-capture-d9q6uzjm/mutter-gtk-dispatch-probe-v2-input",
+  "resource_profile": "dedicated-20cpu",
+  "resource_guard_active": true,
+  "cargo_build_jobs": 20,
+  "rust_test_threads": 1,
+  "exact_remote_receipt": "v2-remote-exact.json",
+  "exact_remote_receipt_sha256": "72342c7d50a90d7780e0fe8240299c70594d10cc77f3898a806c30b1730e314e",
+  "input_manifest_sha256": "a3c1d94225783825096cfa1f1142e8a13690713f062a91385fd0576bc8f92d1d",
+  "generator_sha256": "e65d0669d08b0aace1211135742a1501ceb50ea34d13146a48935e1cb3bb4960",
+  "generated_translation_unit_sha256": "3f122cf8140c4010de19bf96190eee15638df6d1788954a5d4d4fa970d8a6afe",
+  "exact_fragment_count": 17,
+  "exact_fragments_sha256": "bfcbed5f988e3b1838d46cc8836cd61e2ec27f21f0c865b1a7c38f84c64c2e15",
+  "probe_binary_sha256": "d749727ea198c8f0193793630a57bac3e2cc6befb904efbaf882e5353fb8f958",
+  "probe_stdout_sha256": "b3288102c344ee102cf7407695dd95d06d42cd8c5bd3cfacc1418a4e21ac9c46",
+  "probe_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "assertions": {
+    "passed": 4,
+    "failed": 0,
+    "asan_ubsan_findings": 0
+  },
+  "failed_predecessor": {
+    "remote_run": "/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b",
+    "receipt": "v2-remote-attempt1-build-failed.json",
+    "receipt_sha256": "2c029150bbc5a59019ea542a9460e27cf6477e937ee791352c147d935ec377c0",
+    "reason": "Original unused callback parameters were promoted to errors by the standalone -Werror build; the accepted fresh run adds only -Wno-unused-parameter and leaves the generated translation-unit hash unchanged."
+  },
+  "incomplete_predecessor": {
+    "remote_run": "/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-fMNhxJ",
+    "receipt": "v2-remote-16-function-incomplete.json",
+    "receipt_sha256": "8e1b517856fc8112338e66ba1c5848979854ddfc39aff6cc0e225e2a845090d2",
+    "reason": "The first passing v2 still mirrored clutter_input_method_filter_key_event; the accepted run inserts that original function as fragment 17 and leaves only im_class->filter_key_event as the async platform callback."
+  },
+  "tested": "Byte-identical extracted functions from four pinned upstream files, a real GLib 2.72.4 idle scheduler, exact Wayland output-to-GTK callback dispatch, and initial asynchronous filter followed by INPUT_METHOD-flagged native redispatch.",
+  "not_tested": [
+    "Live GNOME Text Editor transport selection or focus",
+    "A live Mutter/GTK process, Wayland wire, desktop pixels, or physical input",
+    "The actual packet order of captured cycle 9",
+    "Safety or portability of release-only forwarding across clients and backends",
+    "Latency, RSS, package size, answer quality, or installed runtime behavior"
+  ],
+  "verdict_scope": "The exact callback bodies admit the tested coalesced overwrite schedule and the tested unfiltered-release redispatch flush. This is mechanism feasibility only; transport and cycle-9 causation remain UNKNOWN, and release-only forwarding is not authorized.",
+  "runtime_authority_changed": false
+}

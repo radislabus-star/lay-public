@@ -5975,45 +5975,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 15890,
-          "byte_start": 15851,
-          "file": "src/bin/lay_ibus_engine/tail_memory.rs"
-        }
-      ],
-      "message": "method `arm_visible_postcondition_with_feedback` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/bin/lay_ibus_engine/tail_memory.rs",
-          "is_primary": false,
-          "label": "method in this implementation",
-          "text": [
-            "impl LayIbusEngine {"
-          ]
-        },
-        {
-          "file": "src/bin/lay_ibus_engine/tail_memory.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(super) fn arm_visible_postcondition_with_feedback("
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "bin"
-        ],
-        "kind": [
-          "bin"
-        ],
-        "name": "lay-ibus-engine"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 16198,
           "byte_start": 16185,
           "file": "src/nanda_wave/lexical_grokking/typed_basin/mod.rs"
@@ -6384,13 +6345,13 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 17008,
-          "byte_start": 16989,
+          "byte_end": 17175,
+          "byte_start": 17156,
           "file": "src/bin/lay_ibus_engine/preedit.rs"
         },
         {
-          "byte_end": 36388,
-          "byte_start": 36358,
+          "byte_end": 38895,
+          "byte_start": 38865,
           "file": "src/bin/lay_ibus_engine/preedit.rs"
         }
       ],
@@ -15334,45 +15295,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 5813,
-          "byte_start": 5787,
-          "file": "src/bin/lay_ibus_engine/preedit.rs"
-        }
-      ],
-      "message": "method `observed_prediction_target` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/bin/lay_ibus_engine/preedit.rs",
-          "is_primary": false,
-          "label": "method in this implementation",
-          "text": [
-            "impl PreeditFastState {"
-          ]
-        },
-        {
-          "file": "src/bin/lay_ibus_engine/preedit.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "fn observed_prediction_target(&self) -> Option<&str> {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "bin"
-        ],
-        "kind": [
-          "bin"
-        ],
-        "name": "lay-ibus-engine"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 5815,
           "byte_start": 5805,
           "file": "src/nanda_wave/l4_cross_scene/merge.rs"
@@ -15507,6 +15429,45 @@
           "lib"
         ],
         "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 5859,
+          "byte_start": 5833,
+          "file": "src/bin/lay_ibus_engine/preedit.rs"
+        }
+      ],
+      "message": "method `observed_prediction_target` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/bin/lay_ibus_engine/preedit.rs",
+          "is_primary": false,
+          "label": "method in this implementation",
+          "text": [
+            "impl PreeditFastState {"
+          ]
+        },
+        {
+          "file": "src/bin/lay_ibus_engine/preedit.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "fn observed_prediction_target(&self) -> Option<&str> {"
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "kind": [
+          "bin"
+        ],
+        "name": "lay-ibus-engine"
       }
     },
     {
@@ -16823,37 +16784,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 66172,
-          "byte_start": 66133,
-          "file": "src/nanda_wave/usage_prior.rs"
-        }
-      ],
-      "message": "function `exact_reverted_system_apply_usage_jsonl` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/nanda_wave/usage_prior.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn exact_reverted_system_apply_usage_jsonl(text: &str) -> (String, u32) {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 662,
           "byte_start": 647,
           "file": "src/nanda_wave/surface_wave.rs"
@@ -17034,6 +16964,37 @@
           "label": "",
           "text": [
             "pub(super) fn states_checked(&self) -> usize {"
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "kind": [
+          "lib"
+        ],
+        "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 66330,
+          "byte_start": 66291,
+          "file": "src/nanda_wave/usage_prior.rs"
+        }
+      ],
+      "message": "function `exact_reverted_system_apply_usage_jsonl` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/nanda_wave/usage_prior.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) fn exact_reverted_system_apply_usage_jsonl(text: &str) -> (String, u32) {"
           ]
         }
       ],
@@ -17672,37 +17633,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 7191,
-          "byte_start": 7170,
-          "file": "src/nanda_wave/context_phase/runtime_refresh.rs"
-        }
-      ],
-      "message": "function `reload_default_memory` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/nanda_wave/context_phase/runtime_refresh.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn reload_default_memory() -> io::Result<serde_json::Value> {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 7214,
           "byte_start": 7188,
           "file": "src/text_edit/output_transaction.rs"
@@ -17748,6 +17678,37 @@
           "label": "",
           "text": [
             "pub(super) struct SpeedParityCandidateV1 {"
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "kind": [
+          "lib"
+        ],
+        "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 7269,
+          "byte_start": 7248,
+          "file": "src/nanda_wave/context_phase/runtime_refresh.rs"
+        }
+      ],
+      "message": "function `reload_default_memory` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/nanda_wave/context_phase/runtime_refresh.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) fn reload_default_memory() -> io::Result<serde_json::Value> {"
           ]
         }
       ],
@@ -17923,37 +17884,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 7629,
-          "byte_start": 7595,
-          "file": "src/nanda_wave/context_phase/runtime_refresh.rs"
-        }
-      ],
-      "message": "function `default_memory_runtime_status_json` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/nanda_wave/context_phase/runtime_refresh.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn default_memory_runtime_status_json() -> serde_json::Value {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 763,
           "byte_start": 739,
           "file": "src/nanda_wave/lexical_grokking/typed_basin/support.rs"
@@ -18015,6 +17945,37 @@
           "label": "",
           "text": [
             "pub(super) completeness: SearchCompleteness,"
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "kind": [
+          "lib"
+        ],
+        "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 7707,
+          "byte_start": 7673,
+          "file": "src/nanda_wave/context_phase/runtime_refresh.rs"
+        }
+      ],
+      "message": "function `default_memory_runtime_status_json` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/nanda_wave/context_phase/runtime_refresh.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) fn default_memory_runtime_status_json() -> serde_json::Value {"
           ]
         }
       ],

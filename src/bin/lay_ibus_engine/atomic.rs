@@ -391,6 +391,7 @@ impl LayIbusEngine {
                     self.client_context.surrounding_text_supported,
                     self.client_context.surrounding_text_snapshot.clone(),
                     self.client_context.surrounding_observation_revision,
+                    self.client_context.surrounding_text_callback_observed,
                 )
             });
         let live_shared = Arc::clone(&self.shared);
@@ -475,10 +476,12 @@ impl LayIbusEngine {
                 }
             }
         }
-        if let Some((supported, snapshot, revision)) = newer_live_surrounding {
+        if let Some((supported, snapshot, revision, callback_observed)) = newer_live_surrounding {
             self.client_context.surrounding_text_supported = supported;
             self.client_context.surrounding_text_snapshot = snapshot;
             self.client_context.surrounding_observation_revision = revision;
+            self.client_context.surrounding_text_callback_observed = callback_observed;
+            self.exact_manual_target_snapshot = None;
             self.observe_visible_postcondition();
         }
         self.apply_deferred_layout_actions();
@@ -617,6 +620,7 @@ pub(crate) fn td120_test_defer_reverted_feedback_on_pending(engine: &LayIbusEngi
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::engine::SurroundingTextSnapshot;
     use lay::config::LayConfig;
     use std::sync::atomic::{AtomicU64, Ordering};
 
@@ -1099,6 +1103,9 @@ mod tests {
 
         let mut revoked = engine();
         revoked.push_tail_char('x');
+        revoked.set_client_capabilities(1 << 5);
+        revoked.client_context.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("x".to_string(), 1, 1));
         revoked.prepare_exact_manual_toggle_layout_handoff();
         let epoch = revoked.committed_tail.epoch;
         assert!(revoked.arm_exact_manual_toggle_autocorrect_suppression(
@@ -1144,6 +1151,9 @@ mod tests {
     fn td120_atomic_equal_final_revisions_compare_against_base() {
         let mut live = engine();
         live.push_tail_char('a');
+        live.set_client_capabilities(1 << 5);
+        live.client_context.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("a".to_string(), 1, 1));
         live.prepare_exact_manual_toggle_layout_handoff();
         let epoch = live.committed_tail.epoch;
         let path = live.path.clone();

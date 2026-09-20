@@ -1242,6 +1242,13 @@ pub fn build_and_prove_l3_context_phase_memory_with_surface_evidence(
 
 static L2_IME_WARMUP_STARTED: std::sync::atomic::AtomicBool =
     std::sync::atomic::AtomicBool::new(false);
+
+pub(crate) fn record_ime_runtime_trace(build: impl FnOnce() -> String) {
+    if !crate::config::runtime_debug_action_log() {
+        return;
+    }
+    crate::debug_log::append_private_line(crate::debug_log::ibus_runtime_trace_path(), build());
+}
 #[cfg(test)]
 const SEMANTIC_WORD_SOURCE: &str = "SemanticWordCell32";
 const PHRASE_FORECAST_CELL: &str = "PhraseForecastCell32";
@@ -1676,15 +1683,38 @@ pub fn warm_up_for_ime() {
     let _ = llmwave::load_default_memory();
 }
 
-pub fn warm_up_l2_for_ime() {
+pub fn warm_up_l2_for_ime() -> bool {
     L2_IME_WARMUP_STARTED.store(true, std::sync::atomic::Ordering::Relaxed);
+    let started = std::time::Instant::now();
+    record_ime_runtime_trace(|| {
+        let thread = std::thread::current();
+        let thread = serde_json::to_string(&thread.name()).unwrap_or_else(|_| "null".to_string());
+        format!(r#"{{"kind":"ibus_l2_ime_warmup","stage":"procedure_started","thread":{thread}}}"#)
+    });
     // The IME gate evaluates L2 and L3 together. Do not publish an L2-ready
     // state while the first context-phase readout could still fault in the
     // phase package on the user's keystroke.
     context_phase::warm_default_memory();
     l2_field::warm_up_installed_l2_field();
-    l2::warm_up_ime_word_candidate_memory();
+    let l2_available = l2::warm_up_ime_word_candidate_memory();
+    record_ime_runtime_trace(|| {
+        format!(
+            r#"{{"kind":"ibus_l2_ime_warmup","stage":"candidate_memory_ready_observed","elapsed_us":{},"available":{l2_available},"candidate_memory_ready":{}}}"#,
+            started.elapsed().as_micros(),
+            l2::ime_word_candidate_memory_is_warm(),
+        )
+    });
     candidate_gate::warm_up_live_candidate_readout();
+    record_ime_runtime_trace(|| {
+        let thread = std::thread::current();
+        let thread = serde_json::to_string(&thread.name()).unwrap_or_else(|_| "null".to_string());
+        format!(
+            r#"{{"kind":"ibus_l2_ime_warmup","stage":"live_readout_completed","thread":{thread},"elapsed_us":{},"available":{l2_available},"candidate_memory_ready":{}}}"#,
+            started.elapsed().as_micros(),
+            l2::ime_word_candidate_memory_is_warm(),
+        )
+    });
+    l2_available
 }
 
 pub fn warm_up_l3_phrase_memory() {
@@ -1714,6 +1744,14 @@ pub fn ensure_l2_ime_warmup_started() {
         )
         .is_ok()
     {
+        record_ime_runtime_trace(|| {
+            let caller_thread = std::thread::current();
+            let caller_thread =
+                serde_json::to_string(&caller_thread.name()).unwrap_or_else(|_| "null".to_string());
+            format!(
+                r#"{{"kind":"ibus_l2_ime_warmup","stage":"async_request_claimed","caller_thread":{caller_thread}}}"#
+            )
+        });
         std::thread::spawn(warm_up_l2_for_ime);
     }
 }

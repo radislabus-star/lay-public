@@ -4,6 +4,7 @@ use super::*;
 fn first_hot_readout_initializes_persisted_usage_memory_once() {
     let mut cache = UsageCache::default();
     let mut loads = 0;
+    let readout_revision = super::super::candidate_gate::live_completion_cache_revision_for_tests();
     ensure_usage_cache_initialized(&mut cache, || {
         loads += 1;
         let mut counts = UsageCounts::default();
@@ -17,6 +18,17 @@ fn first_hot_readout_initializes_persisted_usage_memory_once() {
     assert_eq!(loads, 1);
     assert_eq!(cache.hot.rejected_word_count_for_tests("ошибка"), 8);
     assert!(cache.loaded_at.is_some());
+    assert_eq!(
+        super::super::candidate_gate::live_completion_cache_revision_for_tests(),
+        readout_revision,
+        "initial usage fill cannot invalidate its own first readout"
+    );
+    set_usage_cache_hot_from_counts(&mut cache, &UsageCounts::default());
+    assert_ne!(
+        super::super::candidate_gate::live_completion_cache_revision_for_tests(),
+        readout_revision,
+        "replacement of loaded usage must invalidate completed scores"
+    );
 }
 
 #[test]
@@ -170,6 +182,7 @@ fn live_cache_make_mut_clones_when_snapshot_holds_hot_state() {
     let snapshot_owner = Arc::as_ptr(&snapshot.hot);
     let cache_owner = Arc::as_ptr(&cache.hot);
 
+    let readout_revision = super::super::candidate_gate::live_completion_cache_revision_for_tests();
     apply_usage_event_to_cache(
         &mut cache,
         &UsageEvent {
@@ -219,6 +232,11 @@ fn live_cache_make_mut_clones_when_snapshot_holds_hot_state() {
             proposal: None,
         },
         || panic!("initialized live cache must not reload cold counts"),
+    );
+    assert_ne!(
+        super::super::candidate_gate::live_completion_cache_revision_for_tests(),
+        readout_revision,
+        "feedback must invalidate completed scores before applying the event"
     );
 
     assert_eq!(Arc::as_ptr(&snapshot.hot), snapshot_owner);

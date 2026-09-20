@@ -170,7 +170,9 @@ pub fn ensure_ime_runtime_warmup_started(nanda_autocorrect: bool) {
                     run_enabled_lifecycle_with(
                         super::ensure_l11_service_started,
                         log_observation,
-                        super::warm_up_l2_for_ime,
+                        || {
+                            super::warm_up_l2_for_ime();
+                        },
                     );
                 })
                 .map(|_| ())
@@ -180,7 +182,9 @@ pub fn ensure_ime_runtime_warmup_started(nanda_autocorrect: bool) {
         // Thread creation already failed, so do not delegate the fallback to
         // another thread. This warmup is process-free and runs only on this
         // exceptional startup branch.
-        super::warm_up_l2_for_ime,
+        || {
+            super::warm_up_l2_for_ime();
+        },
     );
 }
 

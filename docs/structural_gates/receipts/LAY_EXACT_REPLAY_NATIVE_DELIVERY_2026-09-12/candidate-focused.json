@@ -1,0 +1,160 @@
+{
+  "schema": "lay.exact-replay-native-delivery.candidate-focused.v1",
+  "status": "CANDIDATE_FOCUSED_CALLBACK_PASS_REVIEW_ACCEPTED_RUNTIME_UNCHANGED",
+  "date": "2026-09-12",
+  "scope": "source candidate and remote focused lay-ibus-engine callback proof; not a release, build, install, or physical-client proof",
+  "runtime_authority_changed": false,
+  "causal_red": {
+    "receipt": "docs/structural_gates/receipts/LAY_EXACT_REPLAY_NATIVE_DELIVERY_2026-09-12/causal-red.json",
+    "status": "CAUSAL_RED_CONFIRMED_CURRENT_RUNTIME_VIOLATES_REQUIRED_NATIVE_DELIVERY"
+  },
+  "common_text_target_contract": {
+    "gesture_entrypoint": "manual_toggle_outcome_inner -> ImeManualToggleOutcome::{Handled, DelegateExactImeTail, DelegateDaemon, NotHandled}",
+    "capability_selector": "text_target_decision(backspaces) -> TextTargetDecision { route, reason }",
+    "routes": [
+      "CommitOnly",
+      "ExactSurroundingText",
+      "TerminalErase",
+      "Unsupported"
+    ],
+    "guard_owners": "ContextAdmissionReducer, context_runtime, bridge token checks, and existing route executors retain focus, Reset, owner, path, epoch, exact snapshot, selection, sensitive-content, and atomic guards",
+    "execute_entrypoint": "replace_committed_tail executes an admitted typed edit and records the chosen route or refusal reason",
+    "native_contour_entrypoint": "process_exact_replay_press -> ExactReplayPress::{Native, Rejected, Inactive}",
+    "fresh_observation_entrypoint": "set_surrounding_text records client observation; current_external_snapshot_agrees_with_owned_tail remains the next destructive-lease gate",
+    "authority_limit": "TextTargetCapabilityFacts is an output-backend selector only; it is not complete TextTarget authority and no new authority owner was added"
+  },
+  "tested_runtime_files": [
+    "src/bin/lay_ibus_engine.rs",
+    "src/bin/lay_ibus_engine/atomic.rs",
+    "src/bin/lay_ibus_engine/engine.rs",
+    "src/bin/lay_ibus_engine/ibus_interface.rs",
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "src/bin/lay_ibus_engine/protocol/state.rs",
+    "src/bin/lay_ibus_engine/state.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/text_target.rs"
+  ],
+  "test_source": {
+    "primary_path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+    "sha256": "2f4d231c6d42580ec7ea2b7b1271106f8a63e3dba49336716557766cad0c9f9d",
+    "supporting_cfg_test_probes": [
+      "src/bin/lay_ibus_engine/preedit.rs",
+      "src/bin/lay_ibus_engine/tail_memory.rs",
+      "src/bin/lay_ibus_engine/text_target.rs"
+    ]
+  },
+  "positive_transactions": {
+    "denominator": 6,
+    "cases": [
+      "lowercase US-to-RU through authenticated Reset, exact SetSurroundingText, live-token bridge re-receipt consumption, and later unhandled replay",
+      "uppercase Ghbdtn-to-Привет with real Shift press and release around the uppercase replay glyph",
+      "RU-to-US open token",
+      "US-to-RU with retained trailing space",
+      "RU-to-US with retained trailing space",
+      "unchanged digit prefix"
+    ],
+    "press_release_result": "exact Backspace and printable presses plus paired releases were unhandled",
+    "ime_text_effects": {
+      "CommitText": 0,
+      "DeleteSurroundingText": 0
+    },
+    "mirror_and_epoch": "exact controlled callback sink, exact final optimistic mirror, and exact bounded epoch progression",
+    "interleaving": "SetSurroundingText was driven after every replay step and at completion"
+  },
+  "refusal_transactions": {
+    "mechanism_classes": 6,
+    "concrete_subcases": 9,
+    "cases": [
+      "printable before deletion completes",
+      "command modifier on otherwise expected printable",
+      "duplicate Backspace",
+      "skipped epoch",
+      "duplicate printable",
+      "client-visible keysym mismatch despite matching physical decode",
+      "runtime owner lease identity mismatch",
+      "active path mismatch",
+      "active expiry before completion"
+    ],
+    "result": "all nine offending presses handled=true and emitted no text mutation signal; mirror preservation was asserted for premature printable, duplicate printable, path mismatch, and active expiry; local suppression removal was asserted for premature printable, duplicate Backspace, skipped epoch, owner mismatch, path mismatch, and active expiry",
+    "path_scope_result": "path mismatch preserves the separately owned shared ExactReplay scope for the original active engine path"
+  },
+  "side_effect_and_lifecycle_proof": {
+    "seeded_state": [
+      "visible stale preedit",
+      "candidate and replacement target",
+      "pending display frame",
+      "pending completion learning"
+    ],
+    "preedit_clear": "ordinary fixtures emit exactly one empty UpdatePreeditText(cursor=0, visible=false, mode=0) plus HidePreeditText on the first replay callback; the Reset fixture emitted its single clear during the real Reset before arm; no later replay or SetSurroundingText text output",
+    "replay_precognition_success_counters_with_flags_enabled": {
+      "schedule": 0,
+      "apply": 0
+    },
+    "ordinary_unknown_start_control": {
+      "schedule": 1,
+      "apply": 0
+    },
+    "completion_feedback": 0,
+    "completed_contours": "open-token and trailing-space contours retire before ordinary managed input; completed-expired state cannot consume the next ordinary key",
+    "reset_rereceipt": "consumed during the live-token bridge handoff and absent throughout later handled-false replay"
+  },
+  "remote_check": {
+    "command": "python3 scripts/dev-check.py check --target bin:lay-ibus-engine",
+    "resource_profile": "dedicated-20cpu",
+    "local_receipt": "/home/ubu/.cache/lay/development/run-4tue0yaf",
+    "remote_run": "/home/e/projects/lay-development-runner/run-JBWPp7",
+    "source_head": "83ba0f42db5c87cdc4f17abf42197396566cb05b",
+    "source_archive_sha256": "6edfcff541122f4f61a938140958c42e4fb08e08c591495bcc673c1cf821bdae",
+    "request_sha256": "18f12911ec6156078049caf3a21310c4a5b166e0a09eda3cbadff47bdb862ed6",
+    "result_sha256": "babc399c8d2d04997296b6b012b4b2409de10eb07ccc9faa861fa299ca48494a",
+    "focused_summary_sha256": "3133d67d9ebd85b62bde16e18a4b16d89d28c53aafa82b22d46ceeb570c4c4f8",
+    "binary_log_sha256": "1bae95112c41e22d7909c68371921fd3790dd548971aa883252d7e1f2e5ca2d8",
+    "format_check": "PASS",
+    "focused_manifest": {
+      "discovered": 479,
+      "selected": 476,
+      "passed": 476,
+      "failed": 0,
+      "canonical_manifest_status": "DRIFT_WITH_NEW_TESTS_NOT_MUTATED"
+    },
+    "rust_binary_log": {
+      "passed": 474,
+      "failed": 0,
+      "filtered_out": 5
+    },
+    "verdict": "PASS"
+  },
+  "tested_snapshot_currentness": {
+    "checked_after_documentation_update": 801,
+    "scope": "all request-manifest Rust, Cargo, build, shell, and Python source/configuration paths",
+    "sha256_mismatches": 0,
+    "documentation_changed_after_tested_archive": true,
+    "next_binding_gate": "final remote changed suite on the complete documented snapshot"
+  },
+  "rejected_predecessor": {
+    "local_receipt": "/home/ubu/.cache/lay/development/run-v33jokr1",
+    "remote_run": "/home/e/projects/lay-development-runner/run-MA3Wod",
+    "status": "REJECTED_TEST_PROCESS_STACK_OVERFLOW_NO_ACCEPTANCE",
+    "cause_and_fix": "two additional independent async harness subcases enlarged one monolithic test future; splitting them into a separate test retained the same assertions and production source without changing runtime or test stack limits"
+  },
+  "architecture_document": {
+    "path": "docs/ime-daemon-route-map-2026-06-20.md",
+    "sha256": "5aa68c24446325c0fe2fd1b3e7001146a6d76ba7ec72e7dac328c5cbf2510658"
+  },
+  "continuation_document": {
+    "path": "CONTINUE.md",
+    "sha256": "fdbbd129445aa40619b4259ddf89cccacb23b18e3cdf869df42a7da07e53cd8d"
+  },
+  "not_tested": [
+    "affected-closure or full release gates",
+    "dedicated physical Double Shift owner gate",
+    "final architecture graph",
+    "release build",
+    "installed candidate or runtime process",
+    "actual GNOME Text Editor native delivery and final visible text",
+    "selected GNOME Text Editor transport",
+    "many-cycle physical acceptance",
+    "latency, RSS, package size",
+    "answer quality"
+  ]
+}

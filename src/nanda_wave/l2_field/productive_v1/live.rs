@@ -1013,7 +1013,10 @@ fn materialize_live_candidates(
         if live_authority_override {
             gate = CandidateGateDecision {
                 action: CandidateGateAction::SuggestOnly,
-                reason: live_authority_deferral_reason(&field_authority),
+                reason: live_authority_deferral_reason(
+                    &field_authority,
+                    lattice.exact_peak_incompleteness.is_some(),
+                ),
             };
         }
         #[cfg(test)]
@@ -1126,7 +1129,13 @@ fn candidate_has_live_authority(
                 )))
 }
 
-fn live_authority_deferral_reason(authority: &L2FieldAuthority) -> &'static str {
+fn live_authority_deferral_reason(
+    authority: &L2FieldAuthority,
+    exact_search_incomplete: bool,
+) -> &'static str {
+    if exact_search_incomplete {
+        return "productive_v90_incomplete_exact_search";
+    }
     match authority {
         L2FieldAuthority::Tied { .. } => "productive_v90_lattice_requires_common_l3",
         L2FieldAuthority::Abstain => "productive_v90_lattice_abstained",
@@ -2345,6 +2354,10 @@ mod tests {
                         assert_eq!(field.replacement_grounded_l11_surfaces(), vec!["проверка"]);
                     }
                     if !eligible {
+                        assert_eq!(
+                            candidates[0].gate.reason,
+                            "productive_v90_incomplete_exact_search"
+                        );
                         let event = TypingErrorEvent {
                             original: "проврка ".into(),
                             core: "проврка".into(),

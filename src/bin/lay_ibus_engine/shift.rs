@@ -9,12 +9,23 @@ use lay::text_edit::{
 use super::engine::{LayIbusEngine, ManualToggleAuthority};
 use super::output::EngineOutput;
 use super::trace;
+use super::window_interaction::{ExecutionReceipt, LocalEffectProgress, LocalExecutionFailure};
 
 impl LayIbusEngine {
     pub(super) async fn manual_toggle_active_text_target(
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<Option<bool>> {
+        self.manual_toggle_active_text_target_with_disposition(emitter)
+            .await
+            .map(|(target, _)| target)
+            .map_err(Into::into)
+    }
+
+    pub(super) async fn manual_toggle_active_text_target_with_disposition(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> Result<(Option<bool>, ExecutionReceipt), LocalExecutionFailure> {
         if !self.context_word_is_known() {
             self.clear_preedit_completion_state();
             if self.context_allows_manual_toggle() {
@@ -23,9 +34,49 @@ impl LayIbusEngine {
                 trace::record(
                     r#"{"kind":"ibus_manual_toggle_dispatch","source":"observed_terminal_suffix","executor":"terminal_erase_commit"}"#,
                 );
-                return self.toggle_committed_tail_target(emitter).await;
+                return self
+                    .toggle_committed_tail_target_with_disposition(emitter)
+                    .await;
             }
-            return Ok(None);
+            if self.context_reset_rereceipt_computation_allowed()
+                && self.client_context.surrounding_text_supported
+                && self.client_context.surrounding_text_snapshot.is_none()
+            {
+                trace::record(
+                    r#"{"kind":"ibus_manual_toggle_pending","stage":"browser_reset_waiting_exact_snapshot"}"#,
+                );
+                return self
+                    .toggle_committed_tail_target_with_disposition(emitter)
+                    .await;
+            }
+            let reset_rereceipt_bound =
+                self.consume_context_reset_rereceipt_for_exact_manual_handoff();
+            if (reset_rereceipt_bound
+                || self.context_observed_suffix_exact_manual_handoff_allowed())
+                && self.manual_toggle_authority() == ManualToggleAuthority::ImeCommittedTail
+            {
+                let delete_chars = self.last_tail_token_text().chars().count() as u32;
+                if self.text_target_edit_route(delete_chars)
+                    == super::window_interaction::TextTargetEditRoute::ExactSurroundingText
+                {
+                    self.prepare_exact_manual_toggle_layout_handoff();
+                    if !self.exact_manual_toggle_handoff_is_live() {
+                        return Ok((None, ExecutionReceipt::Rejected));
+                    }
+                    trace::record(
+                        r#"{"kind":"ibus_manual_toggle_delegation","source":"observed_suffix_ime_committed_tail"}"#,
+                    );
+                    self.trace_key(
+                        "double_shift_defer_exact_observed_ime_tail",
+                        0,
+                        0,
+                        false,
+                        None,
+                    );
+                    return Ok((None, ExecutionReceipt::DelegatedExactImeTail));
+                }
+            }
+            return Ok((None, ExecutionReceipt::Rejected));
         }
         // PROTECTED USER CONTRACT: an immediate double Shift after autocorrect
         // restores the exact recorded input before any layout/manual toggle.
@@ -42,16 +93,27 @@ impl LayIbusEngine {
                         &(),
                     )
                     .await
-                    .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+                    .map_err(|error| {
+                        LocalExecutionFailure::new(
+                            LocalEffectProgress::SurroundingTextRequested,
+                            fdo::Error::Failed(error.to_string()),
+                        )
+                    })?;
             } else {
                 trace::record_auto_undo_retry("atomic_waiting_exact_snapshot");
             }
             // The IME owns the pending rollback. Keep the daemon from replaying
             // a second route while SetSurroundingText confirms the exact tail.
-            return Ok(Some(self.layout_gesture.layout_is_ru));
+            return Ok((
+                Some(self.layout_gesture.layout_is_ru),
+                ExecutionReceipt::LocalPending,
+            ));
         }
-        if let Some(target_layout_is_ru) = self.undo_last_ime_autocorrect(emitter).await? {
-            return Ok(Some(target_layout_is_ru));
+        if let Some(target_layout_is_ru) = self
+            .undo_last_ime_autocorrect_with_effect_progress(emitter)
+            .await?
+        {
+            return Ok((Some(target_layout_is_ru), ExecutionReceipt::LocalComplete));
         }
         let authority = self.manual_toggle_authority();
         match authority {
@@ -60,14 +122,16 @@ impl LayIbusEngine {
                     trace::record(
                         r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"terminal_erase_commit"}"#,
                     );
-                    return self.toggle_committed_tail_target(emitter).await;
+                    return self
+                        .toggle_committed_tail_target_with_disposition(emitter)
+                        .await;
                 }
                 self.prepare_exact_manual_toggle_layout_handoff();
                 trace::record(
                     r#"{"kind":"ibus_manual_toggle_delegation","source":"ime_committed_tail"}"#,
                 );
                 self.trace_key("double_shift_defer_exact_ime_tail", 0, 0, false, None);
-                return Ok(None);
+                return Ok((None, ExecutionReceipt::DelegatedExactImeTail));
             }
             ManualToggleAuthority::DaemonWordBuffer => {
                 self.defer_committed_tail_manual_toggle_to_daemon();
@@ -75,7 +139,7 @@ impl LayIbusEngine {
                     r#"{"kind":"ibus_manual_toggle_delegation","source":"daemon_word_buffer"}"#,
                 );
                 self.trace_key("double_shift_defer_to_daemon", 0, 0, false, None);
-                return Ok(None);
+                return Ok((None, ExecutionReceipt::DelegatedDaemonBuffer));
             }
             ManualToggleAuthority::ImeActiveComposition => {}
         }
@@ -84,12 +148,12 @@ impl LayIbusEngine {
             current_layout_is_ru: self.layout_gesture.layout_is_ru,
             preserve_trailing_whitespace: false,
         }) else {
-            return Ok(None);
+            return Ok((None, ExecutionReceipt::Rejected));
         };
         trace::record_manual_toggle_plan(&plan);
         let original = self.composition.buffer.clone();
         let Some(replacement_plan) = plan_text_replacement(&original, &plan.replacement) else {
-            return Ok(None);
+            return Ok((None, ExecutionReceipt::Rejected));
         };
         let action = plan_ime_manual_toggle_edit(&original, &plan.replacement, replacement_plan);
         lay::action_log::record_candidate_edit_action_before_apply(
@@ -101,17 +165,23 @@ impl LayIbusEngine {
             authorize_backend_edit(TextEditBackend::Ime, action).into_authorized()
         else {
             trace::record(r#"{"kind":"ibus_manual_toggle_authorization_blocked"}"#);
-            return Ok(None);
+            return Ok((None, ExecutionReceipt::Rejected));
         };
         self.commit_verified_active_composition(
             emitter,
             authorized_edit,
             plan.suppress_next_autocorrect,
         )
-        .await?;
+        .await
+        .map_err(|source| {
+            LocalExecutionFailure::new(LocalEffectProgress::CursorOrPreedit, source)
+        })?;
         self.sync_layout_after_manual_toggle(&plan.replacement);
         self.trace_key("double_shift_commit", 0, 0, true, None);
-        Ok(Some(plan.target_layout_is_ru))
+        Ok((
+            Some(plan.target_layout_is_ru),
+            ExecutionReceipt::LocalComplete,
+        ))
     }
 
     fn defer_committed_tail_manual_toggle_to_daemon(&mut self) {
@@ -171,7 +241,9 @@ mod tests {
             .expect("daemon authority arm follows committed-tail arm");
 
         assert!(committed_tail_arm.contains("terminal_committed_tail_executor_available"));
-        assert!(committed_tail_arm.contains("toggle_committed_tail_target(emitter).await"));
+        assert!(
+            committed_tail_arm.contains("toggle_committed_tail_target_with_disposition(emitter)")
+        );
         assert!(committed_tail_arm.contains("prepare_exact_manual_toggle_layout_handoff"));
         assert!(!committed_tail_arm.contains("defer_committed_tail_manual_toggle_to_daemon"));
         assert!(committed_tail_arm.contains("ime_committed_tail"));

@@ -15,46 +15,7 @@ use super::engine::{
 use super::protocol::{Shared, KEY_LEFT, KEY_RIGHT, RELEASE_MASK};
 use super::text::make_ibus_text;
 use super::trace;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum CommittedTailOutputProfile {
-    CommitOnly,
-    TerminalErase,
-    SurroundingText,
-    Unavailable,
-}
-
-impl CommittedTailOutputProfile {
-    fn select(cursor_cell_width: i32, surrounding_text_supported: bool, backspaces: u32) -> Self {
-        if backspaces == 0 {
-            return Self::CommitOnly;
-        }
-        if surrounding_text_supported {
-            return Self::SurroundingText;
-        }
-        if cursor_cell_width > 0 {
-            return Self::TerminalErase;
-        }
-        Self::Unavailable
-    }
-
-    fn output_route(self) -> &'static str {
-        match self {
-            Self::CommitOnly => "commit",
-            Self::TerminalErase => "terminal_erase_commit",
-            Self::SurroundingText => "surrounding_text_delete_commit",
-            Self::Unavailable => "no_proven_delete_backend",
-        }
-    }
-
-    fn uses_terminal_erase(self) -> bool {
-        matches!(self, Self::TerminalErase)
-    }
-
-    fn can_execute(self) -> bool {
-        !matches!(self, Self::Unavailable)
-    }
-}
+use super::window_interaction::{LocalEffectProgress, LocalExecutionFailure, TextTargetEditRoute};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct CommittedTailReplaceRequest {
@@ -211,12 +172,7 @@ impl CommittedTailReplaceRequest {
 
 impl LayIbusEngine {
     pub(crate) fn can_replace_committed_tail(&self, backspaces: u32) -> bool {
-        CommittedTailOutputProfile::select(
-            self.client_context.cursor_cell_width,
-            self.client_context.surrounding_text_supported,
-            backspaces,
-        )
-        .can_execute()
+        self.text_target_edit_route(backspaces).can_execute()
     }
 
     #[cfg(test)]
@@ -286,6 +242,9 @@ impl LayIbusEngine {
             context_callback_entered: None,
             context_bridge_token: None,
             context_handoff_sealed: false,
+            context_reset_rereceipt: None,
+            exact_replay_tail_change_quarantined: false,
+            exact_manual_target_snapshot: None,
             composition: CompositionState::default(),
             committed_tail: CommittedTailState::new(handoff_tail_buffer, handoff_tail_epoch),
             client_context: ClientContextState::new(
@@ -306,6 +265,7 @@ impl LayIbusEngine {
 
     pub(super) fn reset_for_ibus_focus_change(&mut self) {
         self.invalidate_input_frame_background_work();
+        self.context_reset_rereceipt = None;
         self.committed_tail.pending_completion_learning = None;
         let preserve_tail = self.context_handoff_sealed
             || !self.context_admission_required
@@ -356,6 +316,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn reset_for_ibus_soft_reset(&mut self) {
+        let preserves_exact_replay = self.exact_replay_quarantine_active();
         self.invalidate_input_frame_background_work();
         // GTK resets the IBus context after an unhandled committed-tail
         // Backspace. Keep only an edit trajectory that was armed immediately
@@ -396,7 +357,12 @@ impl LayIbusEngine {
         // republishing here would advance the epoch and invalidate the seal.
         let preserves_admission_seal =
             self.context_admission_required && self.context_handoff_sealed;
-        if !preserves_admission_seal && !self.exact_manual_toggle_handoff_is_live() {
+        let preserves_reset_rereceipt = self.context_reset_rereceipt.is_some();
+        if !preserves_admission_seal
+            && !preserves_reset_rereceipt
+            && !self.exact_manual_toggle_handoff_is_live()
+            && !preserves_exact_replay
+        {
             self.publish_tail_handoff();
         }
     }
@@ -412,6 +378,16 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         request: CommittedTailReplaceRequest,
     ) -> fdo::Result<bool> {
+        self.replace_committed_tail_with_effect_progress(emitter, request)
+            .await
+            .map_err(Into::into)
+    }
+
+    pub(crate) async fn replace_committed_tail_with_effect_progress(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        request: CommittedTailReplaceRequest,
+    ) -> Result<bool, LocalExecutionFailure> {
         if request.is_noop() {
             return Ok(false);
         }
@@ -547,23 +523,20 @@ impl LayIbusEngine {
             return Ok(false);
         }
         let surrounding_postcondition_available = self.client_context.surrounding_text_supported;
-        let output_profile = CommittedTailOutputProfile::select(
-            self.client_context.cursor_cell_width,
-            surrounding_postcondition_available,
-            backspaces,
-        );
+        let text_target_decision = self.text_target_decision(backspaces);
+        let output_profile = text_target_decision.route;
         if !output_profile.can_execute() {
             trace::record_committed_tail_replace_guard(
                 source,
                 output_profile.output_route(),
                 backspaces,
-                "surrounding_text_snapshot_or_terminal_route",
+                text_target_decision.reason.as_str(),
                 "unavailable",
             );
             return Ok(false);
         }
         if (authorized_plan.move_left != 0 || authorized_plan.move_right != 0)
-            && output_profile != CommittedTailOutputProfile::SurroundingText
+            && output_profile != TextTargetEditRoute::ExactSurroundingText
         {
             trace::record_committed_tail_replace(
                 source,
@@ -574,7 +547,7 @@ impl LayIbusEngine {
             return Ok(false);
         }
         let text = authorized_plan.insert.clone();
-        let exact_final_snapshot = if output_profile == CommittedTailOutputProfile::SurroundingText
+        let exact_final_snapshot = if output_profile == TextTargetEditRoute::ExactSurroundingText
             && emitter.is_legacy()
             && authorized_plan.move_left == 0
             && authorized_plan.move_right == 0
@@ -613,7 +586,10 @@ impl LayIbusEngine {
         }
         let total_started = Instant::now();
         let clear_started = Instant::now();
-        self.clear_preedit(emitter).await?;
+        let mut effect_progress = LocalEffectProgress::CursorOrPreedit;
+        self.clear_preedit(emitter)
+            .await
+            .map_err(|source| LocalExecutionFailure::new(effect_progress, source))?;
         let clear_us = clear_started.elapsed().as_micros();
         let output_route = if exact_final_snapshot.is_some() {
             "surrounding_text_immediate_delete_commit"
@@ -631,7 +607,11 @@ impl LayIbusEngine {
             // The request covers the logical old token; execute only the verified physical edit.
             terminal_erase_prefix(authorized_plan.backspaces) + &text
         } else {
-            forward_cursor_steps(emitter, KEY_LEFT, authorized_plan.move_left).await?;
+            forward_cursor_steps(emitter, KEY_LEFT, authorized_plan.move_left)
+                .await
+                .map_err(|source| {
+                    LocalExecutionFailure::new(LocalEffectProgress::CursorOrPreedit, source)
+                })?;
             let delete_started = Instant::now();
             if authorized_plan.backspaces > 0 {
                 emitter
@@ -640,7 +620,10 @@ impl LayIbusEngine {
                         authorized_plan.backspaces,
                     )
                     .await
-                    .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+                    .map_err(|source| {
+                        LocalExecutionFailure::new(LocalEffectProgress::DeleteDispatched, source)
+                    })?;
+                effect_progress = LocalEffectProgress::DeleteDispatched;
             }
             delete_us = delete_started.elapsed().as_micros();
             text.clone()
@@ -650,15 +633,19 @@ impl LayIbusEngine {
             emitter
                 .commit_text(make_ibus_text(commit_text))
                 .await
-                .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+                .map_err(|source| LocalExecutionFailure::new(effect_progress, source))?;
+            effect_progress = LocalEffectProgress::CommitDispatched;
         }
-        forward_cursor_steps(emitter, KEY_RIGHT, authorized_plan.move_right).await?;
+        forward_cursor_steps(emitter, KEY_RIGHT, authorized_plan.move_right)
+            .await
+            .map_err(|source| LocalExecutionFailure::new(effect_progress, source))?;
         let commit_us = commit_started.elapsed().as_micros();
         let state_started = Instant::now();
         for _ in 0..backspaces {
             self.committed_tail.buffer.pop();
             self.composition.preedit_fast.backspace();
         }
+        self.context_reset_rereceipt = None;
         self.client_context.surrounding_text_snapshot = None;
         self.committed_tail.buffer.push_str(&logical_text);
         self.composition.preedit_fast.reset();
@@ -920,9 +907,10 @@ fn terminal_erase_prefix(count: u32) -> String {
 mod tests {
     use super::{
         committed_tail_external_observation, surrounding_replacement_final_snapshot,
-        CommittedTailExternalObservation, CommittedTailOutputProfile, CommittedTailReplaceRequest,
-        LayIbusEngine, RecentCommittedTailReplace, SurroundingTextSnapshot,
+        CommittedTailExternalObservation, CommittedTailReplaceRequest, LayIbusEngine,
+        RecentCommittedTailReplace, SurroundingTextSnapshot,
     };
+    use crate::window_interaction::TextTargetEditRoute;
     use lay::config::LayConfig;
     use lay::manual_toggle::VisibleTailSource;
     use lay::text_edit::TextTransitionIntent;
@@ -1158,27 +1146,27 @@ mod tests {
 
     #[test]
     fn terminal_profile_keeps_existing_erase_route() {
-        let profile = CommittedTailOutputProfile::select(9, false, 7);
+        let profile = TextTargetEditRoute::select(7, false, true);
 
-        assert_eq!(profile, CommittedTailOutputProfile::TerminalErase);
+        assert_eq!(profile, TextTargetEditRoute::TerminalErase);
         assert_eq!(profile.output_route(), "terminal_erase_commit");
         assert!(profile.uses_terminal_erase());
     }
 
     #[test]
     fn proven_surrounding_text_precedes_terminal_erase() {
-        let profile = CommittedTailOutputProfile::select(9, true, 7);
+        let profile = TextTargetEditRoute::select(7, true, true);
 
-        assert_eq!(profile, CommittedTailOutputProfile::SurroundingText);
+        assert_eq!(profile, TextTargetEditRoute::ExactSurroundingText);
         assert_eq!(profile.output_route(), "surrounding_text_delete_commit");
         assert!(!profile.uses_terminal_erase());
     }
 
     #[test]
     fn unproven_generic_delete_backend_is_unavailable() {
-        let profile = CommittedTailOutputProfile::select(0, false, 7);
+        let profile = TextTargetEditRoute::select(7, false, false);
 
-        assert_eq!(profile, CommittedTailOutputProfile::Unavailable);
+        assert_eq!(profile, TextTargetEditRoute::Unsupported);
         assert!(!profile.can_execute());
     }
 
@@ -1203,17 +1191,17 @@ mod tests {
 
     #[test]
     fn advertised_surrounding_text_proves_the_delete_backend() {
-        let profile = CommittedTailOutputProfile::select(9, true, 7);
+        let profile = TextTargetEditRoute::select(7, true, true);
 
-        assert_eq!(profile, CommittedTailOutputProfile::SurroundingText);
+        assert_eq!(profile, TextTargetEditRoute::ExactSurroundingText);
         assert!(profile.can_execute());
     }
 
     #[test]
     fn plain_commits_do_not_select_delete_profile() {
-        let profile = CommittedTailOutputProfile::select(9, false, 0);
+        let profile = TextTargetEditRoute::select(0, false, true);
 
-        assert_eq!(profile, CommittedTailOutputProfile::CommitOnly);
+        assert_eq!(profile, TextTargetEditRoute::CommitOnly);
         assert_eq!(profile.output_route(), "commit");
         assert!(!profile.uses_terminal_erase());
     }

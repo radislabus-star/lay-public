@@ -7,7 +7,7 @@ use super::context::ManualTriggerFireContext;
 use super::ime::{dispatch_ime_manual_toggle, ImeManualToggleDispatch};
 
 pub(crate) fn fire_configured_manual_trigger(ctx: ManualTriggerFireContext<'_>) {
-    let output_route = match dispatch_ime_manual_toggle(ctx.buffer) {
+    let dispatch_plan = match dispatch_ime_manual_toggle(ctx.buffer) {
         ImeManualToggleDispatch::ReplayExactImeTail(replay) => {
             let correction_result = run_exact_ime_tail_replay(
                 ctx.buffer,
@@ -15,19 +15,21 @@ pub(crate) fn fire_configured_manual_trigger(ctx: ManualTriggerFireContext<'_>) 
                 ctx.virtual_kbd,
                 ctx.executing,
                 replay,
+                ctx.shift_window,
+                ctx.dshift_state,
             );
-            complete_manual_trigger_with_result(correction_result, ctx);
+            complete_manual_trigger_with_result(correction_result, ctx, true);
             return;
         }
         ImeManualToggleDispatch::Complete(result) => {
-            complete_manual_trigger_with_result(result, ctx);
+            complete_manual_trigger_with_result(result, ctx, false);
             return;
         }
         ImeManualToggleDispatch::RejectExactImeTailCapture => {
             reject_manual_trigger_with_context(ctx);
             return;
         }
-        ImeManualToggleDispatch::DelegateDaemon(output_route) => output_route,
+        ImeManualToggleDispatch::DelegateDaemon(plan) => plan,
     };
     let correction_result = run_configured_manual_correction(
         ctx.buffer,
@@ -35,9 +37,9 @@ pub(crate) fn fire_configured_manual_trigger(ctx: ManualTriggerFireContext<'_>) 
         ctx.virtual_kbd,
         ctx.executing,
         ctx.text_observation.clone(),
-        output_route,
+        dispatch_plan,
     );
-    complete_manual_trigger_with_result(correction_result, ctx);
+    complete_manual_trigger_with_result(correction_result, ctx, false);
 }
 
 pub(crate) fn fire_scoped_manual_trigger(
@@ -46,7 +48,7 @@ pub(crate) fn fire_scoped_manual_trigger(
     events_since_word_start: u32,
     reason: &str,
 ) {
-    let output_route = match dispatch_ime_manual_toggle(ctx.buffer) {
+    let dispatch_plan = match dispatch_ime_manual_toggle(ctx.buffer) {
         ImeManualToggleDispatch::ReplayExactImeTail(replay) => {
             let correction_result = run_exact_ime_tail_replay(
                 ctx.buffer,
@@ -54,19 +56,21 @@ pub(crate) fn fire_scoped_manual_trigger(
                 ctx.virtual_kbd,
                 ctx.executing,
                 replay,
+                ctx.shift_window,
+                ctx.dshift_state,
             );
-            complete_manual_trigger_with_result(correction_result, ctx);
+            complete_manual_trigger_with_result(correction_result, ctx, true);
             return;
         }
         ImeManualToggleDispatch::Complete(result) => {
-            complete_manual_trigger_with_result(result, ctx);
+            complete_manual_trigger_with_result(result, ctx, false);
             return;
         }
         ImeManualToggleDispatch::RejectExactImeTailCapture => {
             reject_manual_trigger_with_context(ctx);
             return;
         }
-        ImeManualToggleDispatch::DelegateDaemon(output_route) => output_route,
+        ImeManualToggleDispatch::DelegateDaemon(plan) => plan,
     };
     let correction_result = run_scoped_manual_correction(
         ScopedManualCorrectionContext {
@@ -79,9 +83,9 @@ pub(crate) fn fire_scoped_manual_trigger(
         replace_words,
         events_since_word_start,
         reason,
-        output_route,
+        dispatch_plan,
     );
-    complete_manual_trigger_with_result(correction_result, ctx);
+    complete_manual_trigger_with_result(correction_result, ctx, false);
 }
 
 fn reject_manual_trigger_with_context(ctx: ManualTriggerFireContext<'_>) {
@@ -96,12 +100,14 @@ fn reject_manual_trigger_with_context(ctx: ManualTriggerFireContext<'_>) {
         pending_multi_tap: ctx.pending_multi_tap,
         last_double_at: ctx.last_double_at,
         clear_on_next_typing: ctx.clear_on_next_typing,
+        preserve_queued_dshift_state: false,
     });
 }
 
 fn complete_manual_trigger_with_result(
     correction_result: Option<bool>,
     ctx: ManualTriggerFireContext<'_>,
+    preserve_queued_dshift_state: bool,
 ) {
     complete_manual_trigger(
         correction_result,
@@ -116,6 +122,7 @@ fn complete_manual_trigger_with_result(
             pending_multi_tap: ctx.pending_multi_tap,
             last_double_at: ctx.last_double_at,
             clear_on_next_typing: ctx.clear_on_next_typing,
+            preserve_queued_dshift_state,
         },
     );
 }

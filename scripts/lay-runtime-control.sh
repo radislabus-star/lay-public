@@ -6,6 +6,29 @@ LAY_DBUS_DEST="org.gnome.Shell"
 LAY_DBUS_PATH="/io/github/radislabus_star/LayDaemon"
 LAY_DBUS_IFACE="io.github.radislabus_star.LayDaemon"
 
+hydrate_desktop_env() {
+    if [ -z "${XDG_RUNTIME_DIR:-}" ]; then
+        export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+    fi
+    if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
+        export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+    fi
+
+    local manager_env key value
+    manager_env="$(systemctl --user show-environment 2>/dev/null || true)"
+    for key in DISPLAY WAYLAND_DISPLAY XAUTHORITY; do
+        if [ -n "${!key:-}" ]; then
+            continue
+        fi
+        value="$(printf '%s\n' "$manager_env" | sed -n "s/^${key}=//p" | head -n1)"
+        if [ -n "$value" ]; then
+            export "$key=$value"
+        fi
+    done
+}
+
+hydrate_desktop_env
+
 text_backend() {
     python3 - "$CONFIG_PATH" <<'PY'
 import json
@@ -46,14 +69,15 @@ current_gnome_layout() {
 
 sync_ibus_engine() {
     local layout="${1:?layout required}"
-    local attempt
+    local attempt engine
     for attempt in 1 2 3 4 5; do
-        if timeout 2s ibus engine "$layout" >/dev/null 2>&1; then
-            local engine
-            engine="$(timeout 1s ibus engine 2>/dev/null || true)"
-            if [ "$engine" = "$layout" ]; then
-                return 0
-            fi
+        # ibus(1) may return non-zero after the global engine has already
+        # changed (for example when an XKB helper fails). Trust the observable
+        # global-engine readback, not only the setter's exit status.
+        timeout 2s ibus engine "$layout" >/dev/null 2>&1 || true
+        engine="$(timeout 1s ibus engine 2>/dev/null || true)"
+        if [ "$engine" = "$layout" ]; then
+            return 0
         fi
         sleep 0.15
     done
@@ -79,16 +103,39 @@ stop_lay_ibus_engine() {
     )
 }
 
-select_lay_ime() {
-    local layout="${1:?layout required}"
-    if activate_gnome_layout "$layout"; then
-        sync_ibus_engine "$layout" || true
-        local current engine
-        current="$(current_gnome_layout || true)"
-        engine="$(timeout 1s ibus engine 2>/dev/null || true)"
-        if [ "$current" = "$layout" ] && [ "$engine" = "$layout" ]; then
+wait_lay_ibus_engine_stopped() {
+    local attempt
+    for attempt in $(seq 1 40); do
+        if ! pgrep -f '(^|/)lay-ibus-engine --ibus( --managed)?$' >/dev/null 2>&1; then
             return 0
         fi
+        sleep 0.05
+    done
+    return 1
+}
+
+xkb_fallback_for_lay_ime() {
+    case "${1:?Lay IME required}" in
+        lay-ime-us) printf '%s\n' xkb:us::eng ;;
+        lay-ime-ru) printf '%s\n' xkb:ru::rus ;;
+        *) return 1 ;;
+    esac
+}
+
+select_lay_ime() {
+    local layout="${1:?layout required}"
+    local attempt current engine
+    if activate_gnome_layout "$layout"; then
+        # ActivateLayout already owns the global-engine transition. Do not race
+        # it with a second setter; wait for GNOME and IBus to converge first.
+        for attempt in 1 2 3 4 5; do
+            current="$(current_gnome_layout || true)"
+            engine="$(timeout 1s ibus engine 2>/dev/null || true)"
+            if [ "$current" = "$layout" ] && [ "$engine" = "$layout" ]; then
+                return 0
+            fi
+            sleep 0.10
+        done
     fi
     sync_ibus_engine "$layout"
 }
@@ -115,18 +162,41 @@ preferred_lay_ime() {
 }
 
 start_ime() {
-    local preferred fallback
+    local preferred fallback safe_xkb current_source source_already_lay
+    current_source="$(current_gnome_layout || true)"
     preferred="$(preferred_lay_ime)"
     if [ "$preferred" = lay-ime-us ]; then
         fallback=lay-ime-ru
     else
         fallback=lay-ime-us
     fi
+    case "$current_source" in
+        lay-ime-us|lay-ime-ru) source_already_lay=true ;;
+        *) source_already_lay=false ;;
+    esac
+    safe_xkb="$(xkb_fallback_for_lay_ime "$preferred")"
+
+    # Never terminate the process that currently owns the global IBus engine.
+    # Move clients onto the same-language XKB engine first and verify that the
+    # switch settled; otherwise killing Lay can strand existing input contexts.
+    sync_ibus_engine "$safe_xkb" || return 1
+    sleep 0.10
+
     systemctl --user stop lay-ibus-engine.service >/dev/null 2>&1 || true
     stop_lay_ibus_engine
+    wait_lay_ibus_engine_stopped || return 1
+
+    if [ "$source_already_lay" = true ]; then
+        # During a hot restart GNOME already owns the correct input source.
+        # Re-select only the global IBus engine; calling ActivateLayout again
+        # races GNOME's own setter and produces a cancelled engine transition.
+        sync_ibus_engine "$preferred" || return 1
+        return 0
+    fi
+
     select_lay_ime "$preferred" \
         || select_lay_ime "$fallback" \
-        || true
+        || return 1
 }
 
 stop_ime() {

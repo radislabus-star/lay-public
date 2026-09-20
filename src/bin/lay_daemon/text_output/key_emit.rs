@@ -72,6 +72,35 @@ fn emit_closed_frame<E: KeyFrameEmitter>(
     }
 }
 
+fn key_chord_frame(modifiers: &[KeyCode], key: KeyCode) -> Vec<InputEvent> {
+    let mut events = Vec::with_capacity(modifiers.len().saturating_mul(2).saturating_add(2));
+    for modifier in modifiers {
+        events.push(InputEvent::new(EventType::KEY.0, modifier.code(), 1));
+    }
+    events.push(InputEvent::new(EventType::KEY.0, key.code(), 1));
+    events.push(InputEvent::new(EventType::KEY.0, key.code(), 0));
+    for modifier in modifiers.iter().rev() {
+        events.push(InputEvent::new(EventType::KEY.0, modifier.code(), 0));
+    }
+    events
+}
+
+fn emit_closed_key_chord_with<E: KeyFrameEmitter>(
+    emitter: &mut E,
+    modifiers: &[KeyCode],
+    key: KeyCode,
+) -> std::io::Result<()> {
+    emit_closed_frame(emitter, &key_chord_frame(modifiers, key))
+}
+
+pub(crate) fn emit_closed_key_chord(
+    dev: &mut VirtualDevice,
+    modifiers: &[KeyCode],
+    key: KeyCode,
+) -> std::io::Result<()> {
+    emit_closed_key_chord_with(dev, modifiers, key)
+}
+
 pub(crate) fn release_all_virtual_keys(dev: &mut VirtualDevice) -> std::io::Result<()> {
     dev.emit(&release_all_frame())
 }
@@ -93,11 +122,18 @@ fn shifted_key_tap_frame(code: u16) -> [InputEvent; 4] {
     ]
 }
 
-pub(crate) fn emit_shifted_key_tap_fast(
-    dev: &mut VirtualDevice,
-    key: KeyCode,
-) -> std::io::Result<()> {
-    emit_closed_frame(dev, &shifted_key_tap_frame(key.code()))
+fn left_shift_pair_frame() -> [InputEvent; 4] {
+    let code = KeyCode::KEY_LEFTSHIFT.code();
+    [
+        InputEvent::new(EventType::KEY.0, code, 1),
+        InputEvent::new(EventType::KEY.0, code, 0),
+        InputEvent::new(EventType::KEY.0, code, 1),
+        InputEvent::new(EventType::KEY.0, code, 0),
+    ]
+}
+
+pub(crate) fn emit_left_shift_pair_fast(dev: &mut VirtualDevice) -> std::io::Result<()> {
+    emit_closed_frame(dev, &left_shift_pair_frame())
 }
 
 pub(crate) fn replay_keycodes(dev: &mut VirtualDevice, events: &[KeyEvent]) -> std::io::Result<()> {
@@ -309,6 +345,53 @@ mod tests {
         assert!(emitter.frames[1]
             .iter()
             .any(|(code, _)| *code == KeyCode::KEY_Y.code()));
+    }
+
+    #[test]
+    fn failed_balanced_shift_pair_preserves_first_error_and_releases_all_keys() {
+        let mut emitter = RecordingEmitter {
+            fail_first: true,
+            ..RecordingEmitter::default()
+        };
+        let error = emit_closed_frame(&mut emitter, &left_shift_pair_frame())
+            .expect_err("balanced pair emission must fail");
+        assert_eq!(error.to_string(), "injected emit failure");
+        assert_eq!(emitter.frames.len(), 2);
+        assert!(emitter.frames[1].iter().all(|(_, value)| *value == 0));
+    }
+
+    #[test]
+    fn failed_command_chord_preserves_first_error_and_releases_every_virtual_key() {
+        let mut emitter = RecordingEmitter {
+            fail_first: true,
+            ..RecordingEmitter::default()
+        };
+        let error = emit_closed_key_chord_with(
+            &mut emitter,
+            &[KeyCode::KEY_LEFTCTRL],
+            KeyCode::KEY_PAGEDOWN,
+        )
+        .expect_err("command chord emission must fail");
+
+        assert_eq!(error.to_string(), "injected emit failure");
+        assert_eq!(
+            emitter.frames[0],
+            [
+                (KeyCode::KEY_LEFTCTRL.code(), 1),
+                (KeyCode::KEY_PAGEDOWN.code(), 1),
+                (KeyCode::KEY_PAGEDOWN.code(), 0),
+                (KeyCode::KEY_LEFTCTRL.code(), 0),
+            ]
+        );
+        assert_eq!(emitter.frames.len(), 2);
+        assert_eq!(emitter.frames[1].len(), VIRTUAL_KEYBOARD_KEYS.len());
+        assert!(emitter.frames[1].iter().all(|(_, value)| *value == 0));
+        assert!(emitter.frames[1]
+            .iter()
+            .any(|(code, _)| *code == KeyCode::KEY_LEFTCTRL.code()));
+        assert!(emitter.frames[1]
+            .iter()
+            .any(|(code, _)| *code == KeyCode::KEY_PAGEDOWN.code()));
     }
 
     #[test]

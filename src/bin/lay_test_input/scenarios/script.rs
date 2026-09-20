@@ -73,6 +73,7 @@ pub(super) fn run_script_text(
                 double_shift(dev, parse_u64(settle_ms, source_name, idx)?)?
             }
             ["double_shift_enter"] => double_shift_enter(dev, 900)?,
+            ["alt"] => tap(dev, KeyCode::KEY_LEFTALT.code())?,
             ["double_alt"] => double_alt(dev, 900)?,
             _ => return Err(bad_script_line(source_name, idx, raw_line)),
         }

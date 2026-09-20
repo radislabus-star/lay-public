@@ -1,0 +1,123 @@
+{
+  "schema": "lay.exact-replay-native-delivery.causal-red.v1",
+  "status": "CAUSAL_RED_CONFIRMED_CURRENT_RUNTIME_VIOLATES_REQUIRED_NATIVE_DELIVERY",
+  "date": "2026-09-12",
+  "scope": "test-only observational baseline against the unchanged accepted runtime source",
+  "accepted_for_implementation_or_install": false,
+  "runtime_authority_changed": false,
+  "test_source": {
+    "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+    "sha256": "06a5d20cbf9e4893758154bcc38ae67e26106215fc379dbfd6814c4008929a6f",
+    "new_tests": [
+      "context_admission::adapter::tests::word_scope::terminal_delivery::red_exact_replay_current_printable_is_managed_commit_with_captured_release",
+      "context_admission::adapter::tests::word_scope::terminal_delivery::red_exact_replay_current_first_backspace_enters_completion_learning_edit"
+    ],
+    "production_source_changed_by_this_step": false
+  },
+  "consumer_link": {
+    "receipt": "docs/structural_gates/receipts/LAY_MUTTER_GTK_EVENT_DISPATCH_PROBE_2026-09-12/v2-remote-exact.json",
+    "sha256": "72342c7d50a90d7780e0fe8240299c70594d10cc77f3898a806c30b1730e314e",
+    "scope": "exact extracted Mutter and GTK schedule proves consecutive handled CommitText pairs can coalesce to the last visible commit on the tested Wayland text-input-v3 route; affected application transport remains UNKNOWN"
+  },
+  "measured_current_runtime": {
+    "matching_keysym": {
+      "input": "exact suppression armed; six real legacy Backspace press/release pairs; client-visible and physical first replacement glyph both U+043F",
+      "backspace_press_handled": false,
+      "backspace_release_handled": false,
+      "backspace_ime_text_effects": 0,
+      "printable_press_handled": true,
+      "printable_ime_effects": [
+        "CommitText(U+043F)"
+      ],
+      "printable_release_handled": true
+    },
+    "stale_ascii_keysym": {
+      "input": "same exact suppression and deletion sequence; client-visible keysym g with RU physical keycode decoding to U+043F",
+      "client_visible_glyph": "g",
+      "physical_decoded_glyph": "U+043F",
+      "printable_press_handled": true,
+      "printable_ime_effects": [
+        "CommitText(U+043F)"
+      ],
+      "printable_release_handled": true
+    },
+    "first_backspace_learning": {
+      "input": "exact suppression armed over a retained trailing space with a seeded pending completion-learning record",
+      "press_handled": false,
+      "ime_text_effects": 0,
+      "pending_completion_learning_before": "present editing=false",
+      "pending_completion_learning_after": "present editing=true"
+    }
+  },
+  "required_candidate_contract_on_same_inputs": {
+    "matching_keysym": {
+      "printable_press_handled": false,
+      "printable_ime_effects": 0,
+      "printable_release_handled": false,
+      "delivery_owner": "native client path",
+      "replay_worker_or_learning_effects": 0
+    },
+    "stale_ascii_keysym": {
+      "printable_press_handled": true,
+      "printable_ime_effects": 0,
+      "native_delivery_authority": 0,
+      "contour": "revoked"
+    },
+    "first_backspace_learning": {
+      "press_handled": false,
+      "ime_text_effects": 0,
+      "completion_edit_feedback": 0,
+      "pending_completion_learning": "cleared or otherwise absent from replay authority"
+    }
+  },
+  "denominators": {
+    "delivery_cases": 2,
+    "delivery_cases_violating_required_contract": 2,
+    "seeded_learning_cases": 1,
+    "seeded_learning_cases_mutated_by_replay": 1,
+    "space_prefetch_schedule_counter": "NOT_INSTRUMENTED_IN_RED",
+    "precognition_schedule_apply_counter": "NOT_INSTRUMENTED_IN_RED",
+    "answer_quality": "UNKNOWN"
+  },
+  "remote_check": {
+    "command": "python3 scripts/dev-check.py check --target bin:lay-ibus-engine",
+    "resource_profile": "dedicated-20cpu",
+    "local_receipt": "/home/ubu/.cache/lay/development/run-wb2os2hm",
+    "remote_run": "/home/e/projects/lay-development-runner/run-eRS2o6",
+    "source_archive_sha256": "7d7c61e89fc8124a2c7c02b49d4d1781164619308afbfd28b0a5ce739700037d",
+    "request_sha256": "0cd30099427e0b9a4a68e16cc9ebce2e6e82d354d5c5c7b58e8c9e4beb61deca",
+    "result_sha256": "32450c91621253b9652fc74e36477367ee3c683ceaabbae3064338e34ee38050",
+    "focused_summary_sha256": "693748ceba9ff14bd0f944d5877011d184b35b2bf7c69f34353fc4136ed3ea19",
+    "binary_log_sha256": "6a1d2c671ed19986d4025a56d1a794e2852efd1375a265e7c6d92e70d83761c8",
+    "format_check": "PASS",
+    "focused_manifest": {
+      "discovered": 475,
+      "selected": 472,
+      "executed": 472,
+      "failed": 0,
+      "canonical_manifest_status": "DRIFT_WITH_NEW_TESTS_NOT_MUTATED"
+    },
+    "rust_binary_log": {
+      "passed": 470,
+      "failed": 0,
+      "filtered_out": 5,
+      "both_new_red_tests": "ok"
+    },
+    "execution_verdict": "PASS_OBSERVATIONAL_BASELINE_REPRODUCED",
+    "desired_native_delivery_verdict": "RED"
+  },
+  "predecessor": {
+    "local_receipt": "/home/ubu/.cache/lay/development/run-2am3tq7_",
+    "remote_run": "/home/e/projects/lay-development-runner/run-uenZNn",
+    "status": "BUILD_FAILED_E0716_NO_TEST_EXECUTION_NOT_ACCEPTANCE"
+  },
+  "not_tested": [
+    "candidate implementation",
+    "native uinput sink in this Rust fixture",
+    "SetSurroundingText interleavings after replay steps",
+    "space-prefetch and precognition counter instrumentation",
+    "physical GNOME Text Editor final visible text",
+    "installed runtime",
+    "latency, RSS, package size"
+  ]
+}

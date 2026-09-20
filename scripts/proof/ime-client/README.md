@@ -14,8 +14,10 @@ V1 remains immutable in Git at commit
 `9ece223f6689323e5cae3fc5f27cf990d37b86dff5e9f6e0ff3212d4dd488750`,
 and historical normalized SHA-256
 `669e3ef88cc2639794fde79dcb9132b99ebcaf142cafe39065376f42c4a056dc`.
-The maintained V2 file is pinned directly at SHA-256
-`3bd1d4094c03b054872c01a5779a20f88118c55a5ff0bfa84976e6097b626c84`;
+The maintained V2 driver is pinned directly at SHA-256
+`d80447f21db4d689ea49d39742feb36e2202b23979d820380c1fcef916b88c12`;
+the canonical runner is pinned at SHA-256
+`3d40b60f54b6224edb760203e3b9ea740a60641976edb2665a4ca946cfa33441`;
 there is no copied legacy driver or source-rewriting loader.
 Publication uses the public `InputContext.needs_surrounding_text()` accessor;
 `RequireSurroundingText` is consumed internally by libibus, not exposed as a
@@ -151,3 +153,48 @@ in its own fresh private process to prove two independent cold starts from the
 foreign seed. Each receipt has a one-case denominator. Their combined results
 do not establish the separate cross-field/profile transition in `first-word`;
 retain that matrix's own result, including any setup failure before text input.
+
+The bounded TD-121 startup packet uses `--startup-proof-profile on`, `off`, or
+`absent`; the default `legacy` profile preserves every earlier scenario and
+command contract. Non-legacy profiles require the unchanged `immediate`
+schedule. Profile `on` admits the existing combined `first-word` lane plus the
+new `fresh-preedit` and `startup-only` cases. Profile `off` admits only
+`fresh-preedit` and `startup-only`: private config keeps precognition enabled
+while setting `nanda_autocorrect`, `auto_replace`, `auto_switch_layout`, and
+`typing_assist` to false. The earlier grouped run disabled only Nanda while
+leaving exact replacement and layout switching enabled; its observed
+`DeleteSurroundingText(-3,3)` plus `CommitText("дом ")` therefore proves that
+the old fixture did not represent literal-off. It does not prove a runtime
+defect. Samples from the corrected off profile form a new measurement group
+and must not be aggregated with the three earlier off samples. Profile `absent` admits only
+`packages-absent-literal` and `startup-only`; host dependency bytes are still
+validated for request provenance, but no dependency directory, model receipt,
+package path, or package environment variable enters the sandbox. Empty
+L1.1/L2 model roots are explicit and verified by the driver.
+
+The new cases reuse the existing SetGlobalEngine, bridge-owner and
+`setup_ready` choreography. They add no wait, retry, readiness poll, RPC, or
+trace observation before first input. `fresh-preedit` requires a visible L2
+preedit for native ` пров`; `packages-absent-literal` requires exact literal
+` ljv ` from a leading boundary with no deletion. The `off` fresh-preedit case
+also settles exact literal ` ljv ` after proving its first visible preedit and
+records its Space result and zero-delete output. `startup-only` performs no text input. Monotonic
+timestamps bracket the existing first Lay SetGlobalEngine through
+`setup_ready`; after the behavior verdict and existing trace drain, the receipt
+also binds exact/warmup duration and warmup-before-factory event order. A
+multi-process packet reports every sample and descriptive min/median/max by
+profile. It does not report or imply a production p95.
+
+The non-legacy startup measurement keeps procedure completion separate from
+capability. It requires `l2_complete=true`; on/off profiles additionally
+require `l2_available=true` and `l2_candidate_ready=true`, while the absent
+profile requires both values to be false. The absent literal case uses the
+same per-key `deliver_exact_literal` FIFO oracle as the other literal controls.
+Here `l2_available` and `l2_candidate_ready` refer only to the lexical
+candidate memory used by the IME; they do not certify that every canonical or
+productive L2 package is installed, and an empty absent-material readout is not
+a quality result.
+
+The post-verdict candidate identity row reads that candidate PID's `/proc/PID/status`
+once before cleanup and records `VmRSS` and kernel `VmHWM`. These are descriptive
+per-process samples, not a production RSS distribution.

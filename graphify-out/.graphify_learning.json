@@ -1,0 +1,118 @@
+{
+  "generated_at": "2026-09-07T11:33:59.863418+00:00",
+  "nodes": {
+    "src_bin_lay_ibus_engine_atomic_atomicsuppressionblock": {
+      "code_fingerprint": "086520514c6847c06561d050acdcd74bddd49cee83b93d6482baf83877c427e4",
+      "label": "AtomicSuppressionBlock",
+      "last": "2026-09-06T19:20:36.040533+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-06T19:20:36.040533+00:00",
+          "outcome": "useful",
+          "q": "TD-120 suppression and TD-121 handoff integration route"
+        }
+      ],
+      "score": 0.984503105,
+      "source_file": "src/bin/lay_ibus_engine/atomic.rs",
+      "status": "tentative",
+      "uses": 1
+    },
+    "src_bin_lay_ibus_engine_output_engineoutput": {
+      "code_fingerprint": "a54f041342a683036240f04f0e4f081451f51a03ab46c62981cbfc48745fe530",
+      "label": "EngineOutput",
+      "last": "2026-09-06T19:20:36.040533+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-06T19:20:36.040533+00:00",
+          "outcome": "useful",
+          "q": "TD-120 suppression and TD-121 handoff integration route"
+        }
+      ],
+      "score": 0.984503105,
+      "source_file": "src/bin/lay_ibus_engine/output.rs",
+      "status": "tentative",
+      "uses": 1
+    },
+    "src_bin_lay_ibus_engine_protocol_state_sharedstate": {
+      "code_fingerprint": "8ea5c161c7ff050c19b72a150e7cd97c36dcf977f744b3d13e289a7d7da0425d",
+      "label": "SharedState",
+      "last": "2026-09-06T19:20:36.040533+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-06T19:20:36.040533+00:00",
+          "outcome": "useful",
+          "q": "TD-120 suppression and TD-121 handoff integration route"
+        }
+      ],
+      "score": 0.984503105,
+      "source_file": "src/bin/lay_ibus_engine/protocol/state.rs",
+      "status": "tentative",
+      "uses": 1
+    },
+    "src_nanda_wave_l2_field_bridge_canonicalcohortreadout": {
+      "code_fingerprint": "aa582339ec55e6af2dfbb783c4e29a2155d174ef39d38612aa1ceccc6f274fee",
+      "label": "CanonicalCohortReadout",
+      "last": "2026-09-04T00:33:24.636871+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-04T00:33:24.636871+00:00",
+          "outcome": "useful",
+          "q": "Trace the complete TD-117 authority path from canonical L1 lexical grounding to verified current-token mutation"
+        }
+      ],
+      "score": 0.923195842,
+      "source_file": "src/nanda_wave/l2_field/bridge.rs",
+      "status": "tentative",
+      "uses": 1
+    },
+    "src_nanda_wave_l2_field_productive_v1_live_preparedcanonicaltokenfield": {
+      "code_fingerprint": "307efba56c7bcb6243a659234d33a6ad83af4f0bd95e35314bfc453ca3d2d896",
+      "label": "PreparedCanonicalTokenField",
+      "last": "2026-09-04T00:33:24.636871+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-04T00:33:24.636871+00:00",
+          "outcome": "useful",
+          "q": "Trace the complete TD-117 authority path from canonical L1 lexical grounding to verified current-token mutation"
+        }
+      ],
+      "score": 0.923195842,
+      "source_file": "src/nanda_wave/l2_field/productive_v1/live.rs",
+      "status": "tentative",
+      "uses": 1
+    },
+    "src_nanda_wave_l2_field_runtime_canonicall1lexicalanchorv1": {
+      "code_fingerprint": "1c2227b6697597a7b62fa3728f94e9b2baea463cd66b3668e3f15d62e3a9bc9b",
+      "label": "CanonicalL1LexicalAnchorV1",
+      "last": "2026-09-04T00:33:24.636871+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-04T00:33:24.636871+00:00",
+          "outcome": "useful",
+          "q": "Trace the complete TD-117 authority path from canonical L1 lexical grounding to verified current-token mutation"
+        }
+      ],
+      "score": 0.923195842,
+      "source_file": "src/nanda_wave/l2_field/runtime.rs",
+      "status": "tentative",
+      "uses": 1
+    },
+    "src_nanda_wave_l2_field_runtime_l2fieldauthority": {
+      "code_fingerprint": "1c2227b6697597a7b62fa3728f94e9b2baea463cd66b3668e3f15d62e3a9bc9b",
+      "label": "L2FieldAuthority",
+      "last": "2026-09-04T00:33:24.636871+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-04T00:33:24.636871+00:00",
+          "outcome": "useful",
+          "q": "Trace the complete TD-117 authority path from canonical L1 lexical grounding to verified current-token mutation"
+        }
+      ],
+      "score": 0.923195842,
+      "source_file": "src/nanda_wave/l2_field/runtime.rs",
+      "status": "tentative",
+      "uses": 1
+    }
+  },
+  "version": 1
+}

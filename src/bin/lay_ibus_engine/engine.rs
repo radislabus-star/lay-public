@@ -2,15 +2,11 @@ use lay::config::LayConfig;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
 
-use super::context_admission::{AdmissionToken, ContextAdmissionAdapter, EngineOwner, WordScope};
+use super::context_admission::{
+    AdmissionToken, ContextAdmissionAdapter, EngineOwner, ExactManualSourceSnapshotReceipt,
+    WordScope,
+};
 use super::protocol::{AutocorrectSuppression, Shared};
-
-const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
-const IBUS_INPUT_PURPOSE_PASSWORD: u32 = 8;
-const IBUS_INPUT_PURPOSE_PIN: u32 = 9;
-const IBUS_INPUT_PURPOSE_TERMINAL: u32 = 10;
-const IBUS_INPUT_HINT_PRIVATE: u32 = 1 << 11;
-const IBUS_INPUT_HINT_HIDDEN_TEXT: u32 = 1 << 12;
 
 pub(super) fn next_input_identity() -> u64 {
     static NEXT: AtomicU64 = AtomicU64::new(1);
@@ -21,14 +17,28 @@ pub(super) fn next_input_identity() -> u64 {
 mod state_groups;
 #[path = "engine/types.rs"]
 mod types;
+use super::window_interaction::PendingContextResetRereceipt;
+#[cfg(test)]
+pub(super) use super::window_interaction::IBUS_CAP_SURROUNDING_TEXT;
+pub(super) use super::window_interaction::{
+    ClientContextState, SurroundingTextSnapshot, IBUS_INPUT_PURPOSE_TERMINAL,
+};
 pub(super) use state_groups::{
-    AtomicRouteState, ClientContextState, CommittedTailState, CompositionState, LayoutGestureState,
+    AtomicRouteState, CommittedTailState, CompositionState, LayoutGestureState,
 };
 pub(super) use types::{
     DeferredLayoutAction, DeferredLearningAction, InputFrameIdentity, ManualToggleAuthority,
     PendingImeCompletionLearning, PendingSystemOutcomeFeedback, PendingVisiblePostcondition,
-    RecentCommittedTailReplace, SurroundingTextSnapshot, SystemOutcomeKind, WordInputMode,
+    RecentCommittedTailReplace, SystemOutcomeKind, WordInputMode,
 };
+
+#[derive(Clone)]
+pub(super) struct ExactManualTargetSnapshotReceipt {
+    pub(super) source: ExactManualSourceSnapshotReceipt,
+    pub(super) target_token: AdmissionToken,
+    pub(super) target_epoch: u64,
+    pub(super) target_observation_revision: u64,
+}
 
 #[derive(Clone)]
 pub(crate) struct LayIbusEngine {
@@ -42,6 +52,9 @@ pub(crate) struct LayIbusEngine {
     pub(super) context_bridge_token: Option<AdmissionToken>,
     pub(super) context_callback_entered: Option<Instant>,
     pub(super) context_handoff_sealed: bool,
+    pub(super) context_reset_rereceipt: Option<PendingContextResetRereceipt>,
+    pub(super) exact_replay_tail_change_quarantined: bool,
+    pub(super) exact_manual_target_snapshot: Option<ExactManualTargetSnapshotReceipt>,
     pub(super) composition: CompositionState,
     pub(super) committed_tail: CommittedTailState,
     pub(super) client_context: ClientContextState,
@@ -100,6 +113,7 @@ impl LayIbusEngine {
             self.composition.buffer.clear();
             self.composition.cursor = 0;
             self.clear_preedit_completion_state();
+            self.context_reset_rereceipt = None;
             self.composition.pending_passthrough_preedit_clear = false;
             self.close_committed_tail_field();
         }
@@ -164,6 +178,7 @@ impl LayIbusEngine {
 
         self.client_context.focus_serial = next_input_identity();
         self.client_context.runtime_owner_lease_identity = next_owner_lease_identity;
+        self.context_reset_rereceipt = None;
 
         self.composition.buffer.clear();
         self.composition.cursor = 0;
@@ -191,32 +206,6 @@ impl LayIbusEngine {
         true
     }
 
-    pub(super) fn manual_toggle_authority(&self) -> ManualToggleAuthority {
-        if !self.composition.buffer.is_empty() {
-            return ManualToggleAuthority::ImeActiveComposition;
-        }
-        let committed_tail_chars = self.last_tail_token_text().chars().count() as u32;
-        // Generic cursor geometry is not proof that CommitText control
-        // characters can delete client text. An explicit terminal purpose plus
-        // an executable terminal-erase profile is such proof for terminals
-        // that do not expose SurroundingText (notably Kitty).
-        let terminal_erase_supported = self.terminal_committed_tail_executor_available();
-        if committed_tail_chars > 0
-            && (self.client_context.surrounding_text_supported || terminal_erase_supported)
-        {
-            return ManualToggleAuthority::ImeCommittedTail;
-        }
-        ManualToggleAuthority::DaemonWordBuffer
-    }
-
-    pub(super) fn terminal_committed_tail_executor_available(&self) -> bool {
-        let committed_tail_chars = self.last_tail_token_text().chars().count() as u32;
-        committed_tail_chars > 0
-            && self.client_context.content_purpose == IBUS_INPUT_PURPOSE_TERMINAL
-            && !self.client_context.surrounding_text_supported
-            && self.can_replace_committed_tail(committed_tail_chars)
-    }
-
     pub(super) fn live_composition_enabled(&self) -> bool {
         self.client_context.managed_input && self.config.active_text_backend().should_try_ime()
     }
@@ -242,79 +231,6 @@ impl LayIbusEngine {
         self.composition.preedit_fast.clear_candidate_tracking();
         self.composition.preedit_dirty = false;
         self.composition.pending_display_frame = None;
-    }
-
-    pub(super) fn set_client_capabilities(&mut self, caps: u32) {
-        let surrounding_text_was_supported = self.client_context.surrounding_text_supported;
-        self.client_context.surrounding_text_supported = caps & IBUS_CAP_SURROUNDING_TEXT != 0;
-        if surrounding_text_was_supported != self.client_context.surrounding_text_supported {
-            self.advance_surrounding_observation_revision();
-        }
-        if !surrounding_text_was_supported
-            && self.client_context.surrounding_text_supported
-            && self.composition.word_input_mode == Some(WordInputMode::TerminalPassthrough)
-        {
-            self.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
-            self.composition.pending_passthrough_preedit_clear = true;
-        }
-        if !self.client_context.surrounding_text_supported {
-            self.client_context.surrounding_text_snapshot = None;
-            self.layout_gesture.pending_manual_toggle = false;
-        }
-    }
-
-    pub(super) fn set_content_type_state(&mut self, purpose: u32, hints: u32) {
-        if self.client_context.content_purpose == purpose
-            && self.client_context.content_hints == hints
-        {
-            return;
-        }
-        if self.client_context.content_purpose != purpose {
-            self.composition.word_input_mode = None;
-        }
-        self.client_context.content_purpose = purpose;
-        self.client_context.content_hints = hints;
-        self.invalidate_input_frame_background_work();
-        self.clear_preedit_completion_state();
-        if self.content_is_sensitive() {
-            self.composition.buffer.clear();
-            self.composition.cursor = 0;
-            self.client_context.surrounding_text_snapshot = None;
-            self.close_committed_tail_field();
-        }
-    }
-
-    pub(super) fn content_is_sensitive(&self) -> bool {
-        matches!(
-            self.client_context.content_purpose,
-            IBUS_INPUT_PURPOSE_PASSWORD | IBUS_INPUT_PURPOSE_PIN
-        ) || self.client_context.content_hints
-            & (IBUS_INPUT_HINT_PRIVATE | IBUS_INPUT_HINT_HIDDEN_TEXT)
-            != 0
-    }
-
-    pub(super) fn content_allows_text_assistance(&self) -> bool {
-        !self.content_is_sensitive()
-    }
-
-    pub(super) fn observe_external_surrounding_text(
-        &mut self,
-        snapshot: Option<SurroundingTextSnapshot>,
-    ) {
-        self.advance_surrounding_observation_revision();
-        self.client_context.surrounding_text_supported = true;
-        self.client_context.surrounding_text_snapshot = if self.content_is_sensitive() {
-            None
-        } else {
-            snapshot
-        };
-    }
-
-    fn advance_surrounding_observation_revision(&mut self) {
-        self.client_context.surrounding_observation_revision = self
-            .client_context
-            .surrounding_observation_revision
-            .saturating_add(1);
     }
 
     pub(super) fn remember_handled_press(&mut self, keycode: u32, handled: bool) {

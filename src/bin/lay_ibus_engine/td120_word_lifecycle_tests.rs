@@ -4,7 +4,7 @@ use std::time::Instant;
 use lay::config::LayConfig;
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 
-use crate::engine::LayIbusEngine;
+use crate::engine::{LayIbusEngine, SurroundingTextSnapshot};
 use crate::output::{
     AtomicEffectBuilder, AtomicProposal, EngineOutput, PROPOSAL_CONSUMED_NO_EFFECT,
     PROPOSAL_FRAME_READY, PROPOSAL_NATIVE_UNHANDLED,
@@ -257,6 +257,7 @@ fn td120_rejected_output_does_not_newly_arm_suppression() {
 fn td120_duplicate_output_does_not_newly_arm_suppression() {
     let mut engine = isolated_engine("/td120/duplicate", false);
     engine.set_client_capabilities(0);
+    engine.set_content_type_state(10, 0);
     engine.client_context.cursor_cell_width = 9;
     type_tail(&mut engine, "a  ");
 
@@ -313,6 +314,11 @@ fn td120_exact_replay_suppression_survives_temporary_empty_tail_and_exact_revoke
     let mut target = unbound_engine("/td120/exact/ru", shared.clone(), true);
     assert!(target.bind_focus_path());
     target.reset_for_ibus_soft_reset();
+    target.client_context.surrounding_text_snapshot = Some(SurroundingTextSnapshot::new(
+        US_TO_RU.source.to_string(),
+        US_TO_RU.source.chars().count() as u32,
+        US_TO_RU.source.chars().count() as u32,
+    ));
     assert_eq!(target.committed_tail.buffer, US_TO_RU.source);
     assert!(target.arm_exact_manual_toggle_autocorrect_suppression(
         US_TO_RU.source,
@@ -807,6 +813,8 @@ fn td120_exact_v2_admission_revoke_and_expiry_keep_transport_scope() {
     let mut target = unbound_engine("/td120/exact-v2/target", shared.clone(), true);
     assert!(target.bind_focus_path());
     target.reset_for_ibus_soft_reset();
+    target.client_context.surrounding_text_snapshot =
+        Some(SurroundingTextSnapshot::new("abc".to_string(), 3, 3));
     assert!(!target.arm_exact_manual_toggle_autocorrect_suppression(
         "bc",
         epoch,
@@ -828,6 +836,12 @@ fn td120_exact_v2_admission_revoke_and_expiry_keep_transport_scope() {
         path: "/td120/exact-v2/target".to_string(),
         epoch,
         expires_at: Instant::now() - std::time::Duration::from_millis(1),
+        owner_lease_identity: target.client_context.runtime_owner_lease_identity,
+        target_layout_is_ru: target.layout_gesture.layout_is_ru,
+        original_tail: "abc".to_string(),
+        original_suffix: "abc".to_string(),
+        unchanged_prefix: String::new(),
+        replacement: "фис".to_string(),
     };
     target.committed_tail.autocorrect_suppression =
         Some(AutocorrectSuppression::ExactReplay(expired.clone()));

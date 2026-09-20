@@ -1,6 +1,6 @@
 use super::*;
 #[path = "residuals.rs"]
-mod residuals;
+pub(crate) mod residuals;
 #[path = "terminal_delivery.rs"]
 mod terminal_delivery;
 use crate::output::{
@@ -16,6 +16,69 @@ const ENVELOPE_CLIENT: u64 = 12;
 const ENVELOPE_FOCUS_EPOCH: u64 = 4;
 const ENVELOPE_CONTEXT: u64 = 6;
 const ENVELOPE_LEASE: u64 = 13;
+
+#[test]
+fn td121_observed_bridge_expiry_releases_only_its_own_slot() {
+    zbus::block_on(bounded(async {
+        let mut harness = bootstrap_harness().await;
+        complete_native_activation(&mut harness).await;
+        let owner = harness.adapter.current_owner();
+        let token = harness.adapter.current_token().unwrap();
+        let (fence, ()) = future::zip(
+            harness.adapter.begin_bridge_fence(),
+            serve_ping_and_marker(&mut harness.peer),
+        )
+        .await;
+        let fence = fence.unwrap();
+        assert!(harness.observer.process_next().await.unwrap());
+        {
+            let slot = harness.adapter.shared.pending.lock().unwrap();
+            let current = slot.as_ref().unwrap();
+            assert_eq!(current.nonce, fence.nonce);
+            assert!(current.ready && current.marker_observed);
+        }
+        // The timer has already won the wait; marker completion runs before
+        // its existing error-cleanup callback. No elapsed-time claim or sleep.
+        harness.adapter.expire_fence(fence);
+        assert!(harness.adapter.shared.pending.lock().unwrap().is_none());
+        assert_eq!(harness.adapter.current_owner(), owner);
+        assert!(harness.adapter.revalidate(&token));
+        assert!(harness
+            .adapter
+            .shared
+            .ready_activation
+            .lock()
+            .unwrap()
+            .is_none());
+
+        for _ in 0..2 {
+            let (successor, ()) = future::zip(
+                harness.adapter.begin_bridge_fence(),
+                serve_ping_and_marker(&mut harness.peer),
+            )
+            .await;
+            let successor = successor.expect("expired bridge cannot leave Busy");
+            assert_ne!(successor.nonce, fence.nonce);
+            harness.adapter.expire_fence(fence);
+            assert_eq!(
+                harness
+                    .adapter
+                    .shared
+                    .pending
+                    .lock()
+                    .unwrap()
+                    .as_ref()
+                    .unwrap()
+                    .nonce,
+                successor.nonce
+            );
+            assert!(harness.observer.process_next().await.unwrap());
+            let admitted = harness.adapter.finish_bridge_fence(successor).unwrap();
+            assert!(harness.adapter.revalidate(&admitted));
+            assert_eq!(harness.adapter.current_owner(), owner);
+        }
+    }));
+}
 
 async fn bounded<T>(work: impl std::future::Future<Output = T>) -> T {
     future::race(work, async {
@@ -246,6 +309,25 @@ fn next_factory_keeps_ready_predecessor_until_delayed_source_installation() {
             .is_none());
         // An old completed fence's timer cannot erase its successor's work.
         harness.adapter.expire_fence(predecessor.fence);
+        assert!(pending.marker_observed);
+        assert!(matches!(pending.kind, FenceKind::Acquisition { .. }));
+        // Matching observed Acquisition retains its separate ready owner.
+        harness.adapter.expire_fence(PendingFence {
+            nonce: pending.nonce,
+            deadline: pending.deadline,
+        });
+        assert_eq!(
+            harness
+                .adapter
+                .shared
+                .ready_activation
+                .lock()
+                .unwrap()
+                .as_ref()
+                .unwrap()
+                .owner,
+            predecessor.owner
+        );
         assert_eq!(
             harness
                 .adapter
@@ -381,7 +463,8 @@ async fn atomic_callback(
     harness.peer.connection.send(&key).await.unwrap();
     bounded(async {
         let (proposal, observed) = future::zip(
-            engine.process_key_event_atomic_callback(
+            crate::window_interaction::WindowInteraction::process_atomic_key(
+                engine,
                 &key.header(),
                 keyval,
                 keycode,

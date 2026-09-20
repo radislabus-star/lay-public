@@ -12,10 +12,13 @@ mod ordered_merge;
 mod rendezvous;
 
 use std::collections::VecDeque;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
+#[cfg(test)]
+pub(crate) use adapter::tests::word_scope::residuals::assert_window_interaction_reset_rereceipt_contract;
 pub(crate) use adapter::{
-    ActivationOutcome, AdapterConfig, ContextAdmissionAdapter, KeyCallback, PendingContextAdapter,
+    ActivationOutcome, AdapterConfig, AdapterError, ContextAdmissionAdapter, KeyCallback,
+    PendingContextAdapter,
 };
 pub(crate) use ordered_merge::{join_ordered_streams, next_ordered_message};
 pub(crate) use rendezvous::{
@@ -82,6 +85,10 @@ pub(crate) struct EngineProfile(String);
 impl EngineProfile {
     pub(crate) fn new(value: impl Into<String>) -> Option<Self> {
         bounded_identifier(value).map(Self)
+    }
+
+    pub(crate) fn as_str(&self) -> &str {
+        &self.0
     }
 }
 
@@ -188,17 +195,31 @@ impl WordScope {
     }
 
     pub(crate) fn observe_tail_append(&mut self, retained_chars: u32) {
+        self.observe_tail_append_span(retained_chars, 1);
+    }
+
+    pub(crate) fn observe_tail_append_span(&mut self, retained_chars: u32, appended_chars: u32) {
         if self.lineage.completeness == WordCompleteness::UnknownStart {
             self.lineage.observed_suffix_chars = self
                 .lineage
                 .observed_suffix_chars
-                .saturating_add(1)
+                .saturating_add(appended_chars)
                 .min(retained_chars);
         }
     }
 
     pub(crate) fn observe_tail_backspace(&mut self) {
         self.lineage.observed_suffix_chars = self.lineage.observed_suffix_chars.saturating_sub(1);
+    }
+
+    pub(crate) fn observe_soft_reset_rereceipt(&mut self, observed_suffix_chars: u32) -> bool {
+        if self.lineage.completeness != WordCompleteness::UnknownStart
+            || observed_suffix_chars <= self.lineage.observed_suffix_chars
+        {
+            return false;
+        }
+        self.lineage.observed_suffix_chars = observed_suffix_chars;
+        true
     }
 
     /// Reopening an earlier word retires the old token even when its start is
@@ -284,6 +305,7 @@ pub(crate) enum IngressDisposition {
     Passive,
     Key {
         owner: EngineOwner,
+        revocation: u64,
     },
     Factory {
         ticket: TicketId,
@@ -467,6 +489,22 @@ struct SourceFreeFactoryReservation<P> {
 struct UnsettledKey {
     owner: EngineOwner,
     header: HeaderKey,
+    word_effect: KeyWordEffect,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum KeyWordEffect {
+    PossibleMutation,
+    LegacyShiftObservation,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct ExactManualSourceSnapshotReceipt {
+    source_token: AdmissionToken,
+    pub(crate) tail_epoch: u64,
+    pub(crate) tail: String,
+    pub(crate) observation_revision: u64,
+    pub(crate) expires_at: Instant,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -484,6 +522,7 @@ pub(crate) struct TransferGrant {
     /// Candidate/prepared/Tab/feedback authority must be regenerated.
     pub(crate) invalidate_prior_authority: bool,
     pub(crate) receipt_origin: ReceiptOrigin,
+    pub(crate) exact_manual_snapshot: Option<Box<ExactManualSourceSnapshotReceipt>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -532,6 +571,29 @@ impl AdmissionToken {
     pub(crate) fn matches_word_scope(&self, scope: &WordScope) -> bool {
         self.lineage == scope.lineage()
     }
+
+    pub(crate) fn owner_path(&self) -> &str {
+        self.owner.path.as_str()
+    }
+
+    pub(crate) fn matches_owner(&self, owner: &EngineOwner) -> bool {
+        &self.owner == owner
+    }
+
+    pub(crate) fn word_scope(&self) -> WordScope {
+        WordScope::new(self.lineage)
+    }
+
+    /// Opaque field receipt for bridge-side exact-tail leases. This projects
+    /// the admitted IBus context identity without storing a fallback receipt in
+    /// engine frame state.
+    pub(crate) fn exact_field_receipt(&self) -> String {
+        format!(
+            "context-admission:{}\u{1f}{}",
+            self.activation.context.connection.0,
+            self.activation.context.path.as_str()
+        )
+    }
 }
 
 /// Stable identity for layout work owned by one live input context.
@@ -556,6 +618,14 @@ pub(crate) enum AdmissionStatus {
     Consumed,
 }
 
+#[derive(Clone, Copy)]
+pub(crate) struct AdmissionDiagnosticSnapshot {
+    pub(crate) reducer_status: &'static str,
+    pub(crate) unsettled_count: usize,
+    pub(crate) owner_generation: Option<u64>,
+    pub(crate) activation_generation: Option<u64>,
+}
+
 /// Actual TD-121 reducer. `P` is zbus's opaque `Sequence` in production and a
 /// deterministic order token in pure tests; no conversion between them exists.
 #[derive(Debug)]
@@ -574,6 +644,7 @@ pub(crate) struct ContextAdmissionReducer<P = zbus::message::Sequence> {
     source_free: Option<SourceFreeActivation<P>>,
     request: Option<ContextRequest<P>>,
     unsettled: VecDeque<UnsettledKey>,
+    exact_manual_snapshot: Option<ExactManualSourceSnapshotReceipt>,
     next_owner: u64,
     next_activation: u64,
     next_lineage: u64,
@@ -611,6 +682,7 @@ where
             source_free: None,
             request: None,
             unsettled: VecDeque::with_capacity(MAX_UNSETTLED_KEYS),
+            exact_manual_snapshot: None,
             next_owner: 1,
             next_activation: 1,
             next_lineage: 1,
@@ -702,6 +774,24 @@ where
                 TicketStatus::Revoked => AdmissionStatus::Revoked,
                 TicketStatus::Consumed => AdmissionStatus::Consumed,
             })
+    }
+
+    pub(crate) fn diagnostic_snapshot(&self) -> AdmissionDiagnosticSnapshot {
+        AdmissionDiagnosticSnapshot {
+            reducer_status: match self.status() {
+                AdmissionStatus::Idle => "idle",
+                AdmissionStatus::Pending => "pending",
+                AdmissionStatus::Ready => "ready",
+                AdmissionStatus::Revoked => "revoked",
+                AdmissionStatus::Consumed => "consumed",
+            },
+            unsettled_count: self.unsettled.len(),
+            owner_generation: self.owner.as_ref().map(|owner| owner.generation.0),
+            activation_generation: self
+                .activation
+                .as_ref()
+                .map(|activation| activation.generation.0),
+        }
     }
 
     pub(crate) fn open_factory_request(
@@ -877,7 +967,12 @@ where
         true
     }
 
-    pub(crate) fn observe_key_start(&mut self, owner: &EngineOwner, header: HeaderKey) -> bool {
+    pub(crate) fn observe_key_start(
+        &mut self,
+        owner: &EngineOwner,
+        header: HeaderKey,
+        word_effect: KeyWordEffect,
+    ) -> bool {
         if self.owner.as_ref() != Some(owner) {
             return false;
         }
@@ -890,6 +985,7 @@ where
         self.unsettled.push_back(UnsettledKey {
             owner: owner.clone(),
             header,
+            word_effect,
         });
         true
     }
@@ -947,6 +1043,31 @@ where
         true
     }
 
+    /// A Firefox soft Reset may revoke the local suffix witness after the
+    /// reducer has already moved to the post-Reset token. The next exact manual
+    /// action can bind that current zero-count UnknownStart lineage only when
+    /// the post-Reset token is still live and no text epoch changed.
+    pub(crate) fn settle_soft_reset_rereceipt(
+        &mut self,
+        owner: &EngineOwner,
+        reset_token: &AdmissionToken,
+        settled: SettledWordState,
+    ) -> bool {
+        if self.owner.as_ref() != Some(owner)
+            || !self.revalidate_bridge(reset_token)
+            || settled.tail_epoch != self.latest_tail_epoch
+            || settled.lineage.generation != self.lineage.generation
+            || settled.lineage.observed_boundary_floor != self.lineage.observed_boundary_floor
+            || self.lineage.completeness != WordCompleteness::UnknownStart
+            || settled.lineage.completeness != WordCompleteness::UnknownStart
+            || settled.lineage.observed_suffix_chars <= self.lineage.observed_suffix_chars
+        {
+            return false;
+        }
+        self.lineage = settled.lineage;
+        true
+    }
+
     /// The bridge holds the engine write lock from fence validation through
     /// output publication. It cannot settle a key or change word provenance.
     pub(crate) fn settle_bridge_output(
@@ -962,6 +1083,43 @@ where
         }
         self.latest_tail_epoch = settled.tail_epoch;
         true
+    }
+
+    pub(crate) fn publish_exact_manual_snapshot(
+        &mut self,
+        token: &AdmissionToken,
+        tail_epoch: u64,
+        tail: String,
+        observation_revision: u64,
+        expires_at: Instant,
+    ) -> bool {
+        if tail.is_empty()
+            || expires_at <= Instant::now()
+            || !self.revalidate_bridge(token)
+            || tail_epoch != self.latest_tail_epoch
+            || token.lineage != self.lineage
+        {
+            if self.owner.as_ref() == Some(&token.owner)
+                && self.activation.as_ref() == Some(&token.activation)
+            {
+                self.exact_manual_snapshot = None;
+            }
+            return false;
+        }
+        self.exact_manual_snapshot = Some(ExactManualSourceSnapshotReceipt {
+            source_token: token.clone(),
+            tail_epoch,
+            tail,
+            observation_revision,
+            expires_at,
+        });
+        true
+    }
+
+    pub(crate) fn invalidate_exact_manual_snapshot(&mut self, owner: &EngineOwner) {
+        if self.owner.as_ref() == Some(owner) {
+            self.exact_manual_snapshot = None;
+        }
     }
 
     /// Repeated metadata is not a new field. A pending target still needs the
@@ -1045,10 +1203,7 @@ where
         };
         let expected_target_profile = ticket.expected_target_profile.clone();
         if self.mode != GlobalEngineMode::Verified
-            || !matches!(
-                &self.profile,
-                GlobalProfile::Lay(profile) if profile == &expected_target_profile
-            )
+            || !matches!(self.profile, GlobalProfile::Lay(_))
             || request.lifecycle_revision != self.revocation
         {
             self.revoke();
@@ -1585,6 +1740,15 @@ where
             self.revoke();
             return None;
         }
+        let exact_manual_snapshot = self.exact_manual_snapshot.take().filter(|receipt| {
+            receipt.source_token.connection == self.connection
+                && receipt.source_token.revocation == self.revocation
+                && receipt.source_token.owner == source_owner
+                && receipt.source_token.activation == source_activation
+                && receipt.source_token.lineage == seal.lineage
+                && receipt.tail_epoch == seal.tail_epoch
+                && receipt.expires_at > Instant::now()
+        });
         let target_owner = EngineOwner {
             path: target_path,
             generation: OwnerGeneration(self.take_owner_generation()),
@@ -1613,6 +1777,7 @@ where
             frame_generation,
             invalidate_prior_authority: true,
             receipt_origin: origin,
+            exact_manual_snapshot: exact_manual_snapshot.map(Box::new),
         })
     }
 
@@ -1728,13 +1893,22 @@ where
     }
 
     pub(crate) fn bridge_admission_token(&self) -> Option<AdmissionToken> {
-        (self.unsettled.is_empty() && self.lifecycle_is_settled())
+        (!self.has_pending_word_input() && self.lifecycle_is_settled())
             .then(|| self.admission_token())
             .flatten()
     }
 
     pub(crate) fn revalidate_bridge(&self, token: &AdmissionToken) -> bool {
-        self.unsettled.is_empty() && self.lifecycle_is_settled() && self.revalidate(token)
+        !self.has_pending_word_input() && self.lifecycle_is_settled() && self.revalidate(token)
+    }
+
+    fn has_pending_word_input(&self) -> bool {
+        // Legacy Shift still occupies the bounded queue and needs its actual
+        // callback settlement. Its protected handler cannot change the word,
+        // so it cannot conflict with the daemon-owned manual projection.
+        self.unsettled
+            .iter()
+            .any(|key| key.word_effect == KeyWordEffect::PossibleMutation)
     }
 
     pub(crate) fn admission_token(&self) -> Option<AdmissionToken> {
@@ -1898,8 +2072,143 @@ where
         }
     }
 
+    fn compatibility_readiness_reason(&self, generation: RequestGeneration) -> &'static str {
+        let Some(request) = self
+            .request
+            .as_ref()
+            .filter(|request| request.generation == generation)
+        else {
+            return "request_not_current";
+        };
+        let Some((context, reply_position)) = request.reply.as_ref() else {
+            return "reply_missing";
+        };
+        let Some(marker_position) = request.marker_position.as_ref() else {
+            return "marker_missing";
+        };
+        if request.lifecycle_revision != self.revocation {
+            return "lifecycle_revision_mismatch";
+        }
+        if marker_position <= reply_position {
+            return "marker_not_after_reply";
+        }
+        match request.target {
+            RequestTarget::Transfer(ticket_id) => {
+                let Some(ticket) = self.ticket.as_ref() else {
+                    return "transfer_ticket_missing";
+                };
+                if ticket.status == TicketStatus::Ready {
+                    return "ready";
+                }
+                if ticket.status != TicketStatus::Pending {
+                    return "transfer_ticket_not_pending";
+                }
+                if ticket.id != ticket_id {
+                    return "transfer_ticket_identity_mismatch";
+                }
+                if ticket.revocation_at_open != self.revocation {
+                    return "transfer_ticket_revocation_mismatch";
+                }
+                if ticket.focus_out_position.is_none() {
+                    return "source_focus_out_missing";
+                }
+                if ticket.kind == TicketKind::Factory && ticket.disable_position.is_none() {
+                    return "source_disable_missing";
+                }
+                if ticket.source_seal.is_none() {
+                    return "source_seal_missing";
+                }
+                if ticket.target_focus_position.is_none() {
+                    return "target_focus_missing";
+                }
+                if !self.unsettled.is_empty() {
+                    return "unsettled_callbacks";
+                }
+                let source_seal_position = &ticket
+                    .source_seal
+                    .as_ref()
+                    .expect("source seal presence checked above")
+                    .position;
+                let target_focus_position = ticket
+                    .target_focus_position
+                    .as_ref()
+                    .expect("target focus presence checked above");
+                let reply_follows_focus = match request.origin {
+                    ReceiptOrigin::Native => reply_position >= target_focus_position,
+                    ReceiptOrigin::CompatibilityProperty => reply_position > target_focus_position,
+                };
+                if context != &ticket.source_activation.context {
+                    return "source_context_mismatch";
+                }
+                if !reply_follows_focus {
+                    return "reply_not_after_target_focus";
+                }
+                if marker_position <= source_seal_position {
+                    return "marker_not_after_source_seal";
+                }
+                if !matches!(
+                    &self.profile,
+                    GlobalProfile::Lay(profile) if profile == &ticket.expected_target_profile
+                ) {
+                    return "target_profile_mismatch";
+                }
+                "ready"
+            }
+            RequestTarget::SourceFree => {
+                let Some(activation) = self.source_free.as_ref() else {
+                    return "source_free_activation_missing";
+                };
+                if activation.status == TicketStatus::Ready {
+                    return "ready";
+                }
+                if activation.status != TicketStatus::Pending {
+                    return "source_free_activation_not_pending";
+                }
+                let reply_follows_focus = match request.origin {
+                    ReceiptOrigin::Native => reply_position >= &activation.focus_position,
+                    ReceiptOrigin::CompatibilityProperty => {
+                        reply_position > &activation.focus_position
+                    }
+                };
+                if !reply_follows_focus {
+                    return "reply_not_after_target_focus";
+                }
+                if !self.unsettled.is_empty() {
+                    return "unsettled_callbacks";
+                }
+                if !matches!(
+                    &self.profile,
+                    GlobalProfile::Lay(profile) if profile == &activation.expected_target_profile
+                ) {
+                    return "target_profile_mismatch";
+                }
+                "ready"
+            }
+        }
+    }
+
+    fn bridge_readiness_reason(&self) -> &'static str {
+        if self.has_pending_word_input() {
+            return "unsettled_callbacks";
+        }
+        if !self.lifecycle_is_settled() {
+            return "lifecycle_pending";
+        }
+        if self.mode != GlobalEngineMode::Verified {
+            return "global_mode_unverified";
+        }
+        if self.owner.is_none() {
+            return "owner_missing";
+        }
+        if self.activation.is_none() {
+            return "activation_missing";
+        }
+        "ready"
+    }
+
     fn revoke(&mut self) {
         self.settled_content_type = None;
+        self.exact_manual_snapshot = None;
         self.revocation = next_generation(self.revocation);
         // A consumed receipt identifies a live admitted successor only until
         // revocation. It must not block a later empty recovery after word loss.

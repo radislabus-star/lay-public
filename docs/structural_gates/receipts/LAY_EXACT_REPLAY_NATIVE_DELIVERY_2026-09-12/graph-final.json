@@ -1,0 +1,69 @@
+{
+  "schema": "lay.exact-replay-native-delivery.graph-final.v1",
+  "status": "PASS_REMOTE_CANONICAL_GRAPH_RUNTIME_UNCHANGED",
+  "date": "2026-09-12",
+  "runtime_authority_changed": false,
+  "source_snapshot": {
+    "local_root": "/home/ubu/.cache/lay/development/exact-replay-native-graph2-20260912-EdsZyd3o",
+    "source_archive_sha256": "e10a39ee3822af07b659963f267fa51abc1f09e938b7158239c5c0ea10b40348",
+    "source_request_sha256": "a5cf22ee80edc9e36663bca9d7b2f841ab0b20b1c389da65be8e28e18cedd096",
+    "files": 1394,
+    "changed_paths": 45,
+    "source_head": "83ba0f42db5c87cdc4f17abf42197396566cb05b"
+  },
+  "remote_execution": {
+    "host": "e@192.168.3.94",
+    "run": "/home/e/projects/lay-development-runner/exact-replay-native-graph2-EdsZyd3o",
+    "command": "scripts/update-architecture-graph.sh",
+    "resource_profile": "dedicated-20cpu",
+    "graphify_launcher": "/usr/local/bin/graphify",
+    "graphify_version": "0.9.11",
+    "graphify_python": "/home/e/tools/graphifyy/bin/python",
+    "tree_sitter_version": "0.25.2",
+    "tree_sitter_rust_version": "0.24.2",
+    "returncode": 0,
+    "log_sha256": "67f80fddd23e8b83ad72716533089a3152dd4c8b236d158b5f60227bbd7ad064",
+    "provenance_log_sha256": "c6c60e67d0063a03375bab90f169e5a33511ba67e3970d905916fcb65023a32f"
+  },
+  "graph": {
+    "nodes": 22328,
+    "edges": 59225,
+    "communities": 842,
+    "rust_sources": 700,
+    "outputs": {
+      "graphify-out/.graphify_labels.json": "a1296483231c6fa0406c62cbc18bdc6c35b161a194e18f646cb67922ef2518dd",
+      "graphify-out/GRAPH_REPORT.md": "9b3debcc0240290cb7d67e38f5bbfb299983fd3c41d029f75c604a3f59d0da94",
+      "graphify-out/graph.json": "850472acc543b2f5d4320b3cb51ec7a4bcea8eefe2f95078c4aab036b100cf00",
+      "graphify-out/manifest.json": "73abd2e358c60dfeedd8d401468191fbb80759290d57b82158f58d4cd35a6145",
+      "graphify-out/source_graph_binding.json": "7463af5f0dda4887da269d441a5d797ae752b46a6ac8bf6d92d94e7aa461ce4b",
+      "src/generated/architecture_graph_receipt.json": "5b1ec121d047aa137159c963ef0105d5a9dd384e1b677a722447668617cf5c64"
+    }
+  },
+  "architecture_checks": {
+    "verdict": "PASS",
+    "violations": 0,
+    "checks": [
+      "decision-authority",
+      "snapshot-lease",
+      "ime-backend-only",
+      "edit-plan-verifier",
+      "typed-transition-capability",
+      "observed-outcome-feedback",
+      "hot-field-memory",
+      "l1-surface-field",
+      "l2-candidate-field",
+      "l3-l4-learning",
+      "fast-verifiable"
+    ],
+    "architecture_unit_tests": "26/26 PASS",
+    "generated_binding_tests": "2/2 PASS",
+    "architecture_shell_gate": "PASS"
+  },
+  "not_tested": [
+    "runtime build",
+    "installed process",
+    "GNOME Text Editor delivery",
+    "physical repeat acceptance",
+    "answer quality"
+  ]
+}

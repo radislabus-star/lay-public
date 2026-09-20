@@ -86,7 +86,11 @@ fn is_known_russian_suffix_form(word: &str) -> bool {
         if is_known_russian_adjective_form(stem, suffix) {
             return true;
         }
-        if known_runtime_lemma(stem) {
+        // A lexical surface already ending in -я is not a generic inflection
+        // stem. Noun -я paradigms replace that ending, and verbs require their
+        // own conjugation authority; blindly appending suffixes to e.g. "стоя"
+        // creates inventions such as "стояем".
+        if !stem.ends_with('я') && known_runtime_lemma(stem) {
             return true;
         }
         if matches!(suffix, "я" | "ю" | "ем" | "ями" | "ях")

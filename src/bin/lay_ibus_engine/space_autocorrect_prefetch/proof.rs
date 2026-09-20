@@ -506,11 +506,23 @@ fn v27_component_latency_denominators() {
 }
 
 pub(crate) fn install_exact_lease(identity: &InputFrameIdentity, config: &LayConfig) {
+    install_exact_lease_with_material_generation(
+        identity,
+        config,
+        lay::nanda_wave::candidate_material_generation(),
+    );
+}
+
+pub(crate) fn install_exact_lease_with_material_generation(
+    identity: &InputFrameIdentity,
+    config: &LayConfig,
+    material_generation: u64,
+) {
     initialize();
     let worker = worker_for_schedule(&identity.path).expect("path prefetch worker");
     let generation = reserve_generation(&worker.latest_request_generation);
-    let material_generation = lay::nanda_wave::candidate_material_generation();
-    let lease = exact_lease(identity, config, generation);
+    let mut lease = exact_lease(identity, config, generation);
+    lease.material_generation = material_generation;
     let (lock, wake) = &*worker.state;
     let mut state = lock.lock().expect("global proof slot");
     state.generation = generation;

@@ -1,0 +1,11 @@
+layout	ru	300
+type	ghj	25
+# Discriminator for the original double-Alt scenario: preserve timing while
+# replacing only the second 10 ms Alt tap with sleep.
+sleep	120
+sleep	220
+alt
+sleep	990
+sleep	120
+double_shift
+enter

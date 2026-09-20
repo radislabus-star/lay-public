@@ -1,0 +1,72 @@
+{
+  "schema": "lay.gui-text-target-reset-rereceipt.source-focused.v2",
+  "generated_at_utc": "2026-09-12T11:59:13Z",
+  "checkout": "/home/ubu/projects/lay-cleanup-20260908",
+  "status": "REJECTED_SOURCE_EXPERIMENT_PROTECTED_ROUTE_VIOLATION",
+  "accepted_for_implementation_or_install": false,
+  "runtime_authority_changed": false,
+  "review_findings": [
+    "legacy sequential DeleteSurroundingText plus CommitText is forbidden for GTK committed tails",
+    "the positive test retained one engine and did not exercise GNOME or IBus engine handoff",
+    "the test did not exercise physical grab, both lease validations, checked suppression, or uinput replay",
+    "the tests ran locally although repository development execution is remote-only",
+    "the local measurements do not explain the reported failure of the installed V3 binary"
+  ],
+  "tests": [
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-ibus-engine residual_exact_surrounding_toggle_renews_after_observer_first_reset -- --nocapture",
+      "result": "HISTORICAL_LOCAL_PASS_NOT_ACCEPTANCE",
+      "rust_tests": 1,
+      "exact_gui_toggles": 6,
+      "observer_first_reset_renewals": 5,
+      "delete_surrounding_text_per_toggle": 1,
+      "commit_text_per_toggle": 1
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-ibus-engine residual_reset_rereceipt_failures_never_delete_gui_text -- --nocapture",
+      "result": "HISTORICAL_LOCAL_PASS_NOT_ACCEPTANCE",
+      "rust_tests": 1,
+      "negative_schedules": 7,
+      "negative_classes": [
+        "snapshot_mismatch",
+        "selection",
+        "second_surrounding_receipt",
+        "navigation",
+        "focus_out",
+        "caps9_without_surrounding_text",
+        "sensitive_content"
+      ],
+      "delete_or_commit_effects": 0
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-ibus-engine capability_contract_selects_one_delete_executor -- --nocapture",
+      "result": "HISTORICAL_LOCAL_PASS_NOT_ACCEPTANCE",
+      "rust_tests": 1,
+      "routes_checked": 4
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-ibus-engine manual_toggle_uses_terminal_erase_authority_for_terminal_committed_tail -- --nocapture",
+      "result": "HISTORICAL_LOCAL_PASS_NOT_ACCEPTANCE",
+      "rust_tests": 1
+    },
+    {
+      "command": "scripts/cargo-guard.sh test --bin lay-ibus-engine terminal_profile_keeps_existing_erase_route -- --nocapture",
+      "result": "HISTORICAL_LOCAL_PASS_NOT_ACCEPTANCE",
+      "rust_tests": 1
+    }
+  ],
+  "not_tested": [
+    "full_or_changed_suite",
+    "live_browser_or_other_gui_client",
+    "physical_double_shift",
+    "installed_binary",
+    "terminal_runtime",
+    "cross_engine_source_to_target_handoff",
+    "physical_input_grab_and_two_lease_validation",
+    "gnome_activation_and_shell_ibus_readback",
+    "visible_text_and_layout_postcondition",
+    "causal_red_on_installed_v3_source_snapshot",
+    "quality_heldout",
+    "latency_or_rss"
+  ]
+}

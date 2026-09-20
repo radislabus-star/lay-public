@@ -120,8 +120,9 @@ fn deterministic_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorr
     }
     let layout_us = layout_started.elapsed().as_micros();
 
-    let pipeline = typing_assist_pipeline_for_context(
+    let pipeline = typing_assist_pipeline_for_context_with_layout(
         req.auto_replace,
+        req.auto_switch_layout,
         req.correction_safety,
         req.typing_assist_pipeline,
         req.text,
@@ -165,8 +166,7 @@ fn deterministic_text_candidates(req: &CorrectionRequest<'_>) -> Vec<UnifiedCorr
     }
     let typing_us = typing_started.elapsed().as_micros();
     let composite_started = std::time::Instant::now();
-    let composite_candidates =
-        deterministic_composite_text_candidates(req, &pipeline, &candidates);
+    let composite_candidates = deterministic_composite_text_candidates(req, &pipeline, &candidates);
     candidates.extend(composite_candidates);
     let composite_us = composite_started.elapsed().as_micros();
     if timing_enabled {

@@ -18,10 +18,24 @@ impl ManualCorrectionOutputRoute {
     pub(crate) fn allows_ime_stage(self) -> bool {
         matches!(self, Self::ConfiguredBackend)
     }
+}
 
-    pub(crate) fn requires_physical_grab(self) -> bool {
-        !self.allows_ime_stage()
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ManualCorrectionInputIsolation {
+    Shared,
+    PhysicalGrab,
+}
+
+impl ManualCorrectionInputIsolation {
+    pub(crate) const fn requires_physical_grab(self) -> bool {
+        matches!(self, Self::PhysicalGrab)
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct ManualCorrectionDispatchPlan {
+    pub(crate) output_route: ManualCorrectionOutputRoute,
+    pub(crate) input_isolation: ManualCorrectionInputIsolation,
 }
 
 pub(crate) struct ManualCorrectionRequest<'a, 'grab> {
@@ -43,15 +57,16 @@ pub(crate) struct ScopedManualCorrectionRequest<'a, 'grab> {
 
 #[cfg(test)]
 mod tests {
-    use super::ManualCorrectionOutputRoute;
+    use super::{ManualCorrectionInputIsolation, ManualCorrectionOutputRoute};
 
     #[test]
-    fn output_routes_keep_configured_and_uinput_ownership_distinct() {
+    fn output_route_and_input_isolation_are_independent_contracts() {
         assert!(ManualCorrectionOutputRoute::ConfiguredBackend.allows_native_stage());
         assert!(ManualCorrectionOutputRoute::ConfiguredBackend.allows_ime_stage());
-        assert!(!ManualCorrectionOutputRoute::ConfiguredBackend.requires_physical_grab());
         assert!(!ManualCorrectionOutputRoute::DaemonUinput.allows_native_stage());
         assert!(!ManualCorrectionOutputRoute::DaemonUinput.allows_ime_stage());
-        assert!(ManualCorrectionOutputRoute::DaemonUinput.requires_physical_grab());
+
+        assert!(!ManualCorrectionInputIsolation::Shared.requires_physical_grab());
+        assert!(ManualCorrectionInputIsolation::PhysicalGrab.requires_physical_grab());
     }
 }

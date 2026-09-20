@@ -55,11 +55,27 @@ pub(super) const VIRTUAL_KEYBOARD_KEYS: &[KeyCode] = &[
     KeyCode::KEY_RIGHTALT,
     KeyCode::KEY_LEFTCTRL,
     KeyCode::KEY_RIGHTCTRL,
+    KeyCode::KEY_LEFTMETA,
+    KeyCode::KEY_RIGHTMETA,
+    KeyCode::KEY_ENTER,
+    KeyCode::KEY_TAB,
+    KeyCode::KEY_ESC,
     KeyCode::KEY_INSERT,
+    KeyCode::KEY_DELETE,
+    KeyCode::KEY_HOME,
+    KeyCode::KEY_END,
+    KeyCode::KEY_PAGEUP,
+    KeyCode::KEY_PAGEDOWN,
     KeyCode::KEY_LEFT,
     KeyCode::KEY_RIGHT,
+    KeyCode::KEY_UP,
+    KeyCode::KEY_DOWN,
     KeyCode::KEY_BACKSPACE,
 ];
+
+pub(crate) fn virtual_keyboard_supports_key(key: KeyCode) -> bool {
+    VIRTUAL_KEYBOARD_KEYS.contains(&key)
+}
 
 pub(crate) fn make_virtual_keyboard() -> std::io::Result<VirtualDevice> {
     let mut keys = AttributeSet::new();

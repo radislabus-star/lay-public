@@ -9,6 +9,7 @@ use super::preedit::{
     PrecognitionMaterializationTiming,
 };
 use super::trace;
+use lay::typing_cpu::TypingCpu;
 
 const PRECOGNITION_DISPLAY_DEADLINE: Duration = Duration::from_millis(150);
 
@@ -94,8 +95,13 @@ fn run_worker(shared: Arc<(Mutex<WorkerState>, Condvar)>) {
             (generation, work)
         };
 
+        let trace_enabled = trace::enabled();
+        let candidate_memory_warm_before =
+            trace_enabled && TypingCpu::ime_candidate_memory_is_warm();
         let started = Instant::now();
         let materialized = materialize_precognition_candidates_observed(&work.input);
+        let candidate_memory_warm_after =
+            trace_enabled && TypingCpu::ime_candidate_memory_is_warm();
         let candidates = materialized.candidates;
         let material_us = started.elapsed().as_micros();
         let display_age = work.scheduled_at.elapsed();
@@ -113,6 +119,9 @@ fn run_worker(shared: Arc<(Mutex<WorkerState>, Condvar)>) {
                 material_us,
                 display_age.as_micros(),
                 candidates.len(),
+                trace_enabled,
+                candidate_memory_warm_before,
+                candidate_memory_warm_after,
                 &token,
                 top.as_deref(),
             );
@@ -128,6 +137,9 @@ fn run_worker(shared: Arc<(Mutex<WorkerState>, Condvar)>) {
                 material_us,
                 display_age.as_micros(),
                 candidates.len(),
+                trace_enabled,
+                candidate_memory_warm_before,
+                candidate_memory_warm_after,
                 &token,
                 top.as_deref(),
             );
@@ -149,6 +161,9 @@ fn run_worker(shared: Arc<(Mutex<WorkerState>, Condvar)>) {
             material_us,
             completion.display_age.as_micros(),
             candidate_count,
+            trace_enabled,
+            candidate_memory_warm_before,
+            candidate_memory_warm_after,
             &token,
             top.as_deref(),
         );
@@ -253,18 +268,26 @@ fn display_age_is_fresh(age: Duration) -> bool {
     reason = "existing explicit boundary contract"
 )]
 fn record_completion(
-    stage: &str,
+    stage: &'static str,
     generation: u64,
     identity: &InputFrameIdentity,
     timing: &PrecognitionMaterializationTiming,
     material_us: u128,
     display_age_us: u128,
     candidates: usize,
+    trace_enabled: bool,
+    candidate_memory_warm_before: bool,
+    candidate_memory_warm_after: bool,
     token: &str,
     top: Option<&str>,
 ) {
+    #[cfg(test)]
+    completion_observation::notify(identity, stage, candidates, timing.word.cache_hit);
+    if !trace_enabled {
+        return;
+    }
     trace::record(format!(
-        r#"{{"kind":"ibus_precognition_worker","stage":{},"generation":{generation},"tail_epoch":{},"material_us":{material_us},"display_age_us":{display_age_us},"candidates":{candidates}}}"#,
+        r#"{{"kind":"ibus_precognition_worker","stage":{},"generation":{generation},"tail_epoch":{},"material_us":{material_us},"display_age_us":{display_age_us},"candidates":{candidates},"candidate_memory_warm_before":{candidate_memory_warm_before},"candidate_memory_warm_after":{candidate_memory_warm_after}}}"#,
         serde_json::to_string(stage).unwrap_or_else(|_| "\"unknown\"".to_string()),
         identity.tail_epoch,
     ));
@@ -373,5 +396,40 @@ mod tests {
     fn late_display_results_are_not_publishable() {
         assert!(display_age_is_fresh(Duration::from_millis(150)));
         assert!(!display_age_is_fresh(Duration::from_millis(151)));
+    }
+}
+
+#[cfg(test)]
+pub(crate) mod completion_observation {
+    use super::*;
+    use std::sync::mpsc::{self, Receiver, Sender};
+
+    struct Observation {
+        identity: InputFrameIdentity,
+        sender: Sender<(&'static str, usize, bool)>,
+    }
+
+    static OBSERVATION: Mutex<Option<Observation>> = Mutex::new(None);
+
+    pub(crate) fn observe(identity: InputFrameIdentity) -> Receiver<(&'static str, usize, bool)> {
+        let (sender, receiver) = mpsc::channel();
+        *OBSERVATION.lock().unwrap() = Some(Observation { identity, sender });
+        receiver
+    }
+
+    pub(super) fn notify(
+        identity: &InputFrameIdentity,
+        stage: &'static str,
+        candidates: usize,
+        cache_hit: bool,
+    ) {
+        let mut observer = OBSERVATION.lock().unwrap();
+        if observer
+            .as_ref()
+            .is_some_and(|pending| &pending.identity == identity)
+        {
+            let pending = observer.take().unwrap();
+            let _ = pending.sender.send((stage, candidates, cache_hit));
+        }
     }
 }

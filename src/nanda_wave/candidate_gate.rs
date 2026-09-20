@@ -92,6 +92,11 @@ pub(crate) fn clear_live_completion_cache() {
     cache::clear();
 }
 
+#[cfg(test)]
+pub(crate) fn live_completion_cache_revision_for_tests() -> u64 {
+    cache::revision_for_tests()
+}
+
 pub fn last_live_completion_timing() -> LiveCompletionTiming {
     LAST_LIVE_COMPLETION_TIMING.with(Cell::get)
 }
@@ -147,6 +152,36 @@ struct LiveCandidateGateStats {
     decision_max_us: u64,
 }
 
+fn live_completion_cache_key(
+    request: &LiveCompletionRequest<'_>,
+) -> Option<LiveCompletionCacheKey> {
+    let partial = request.partial.to_lowercase();
+    if request.limit == 0
+        || request.max_suffix_chars == 0
+        || !(1..=18).contains(&partial.chars().count())
+        || !is_live_lexical_surface(&partial)
+        || !l2::ime_word_candidate_memory_is_warm()
+    {
+        return None;
+    }
+    Some(LiveCompletionCacheKey {
+        identity: cache::identity()?,
+        context_tail: live_completion_context_tail(request.context_prefix),
+        partial,
+        max_suffix_chars: request.max_suffix_chars,
+        active_composition: request.active_composition,
+        allow_short_lexical: request.allow_short_lexical,
+        limit: request.limit,
+    })
+}
+
+/// Read completed material only; a miss never scores candidates or starts warmup.
+pub fn cached_live_completion_candidates(
+    request: LiveCompletionRequest<'_>,
+) -> Option<Vec<LiveCompletionCandidate>> {
+    cache::get(&live_completion_cache_key(&request)?)
+}
+
 pub fn live_completion_candidates(
     request: LiveCompletionRequest<'_>,
 ) -> Vec<LiveCompletionCandidate> {
@@ -184,13 +219,8 @@ pub fn live_completion_candidates(
         );
         return Vec::new();
     }
-    let cache_key = LiveCompletionCacheKey {
-        context_tail: live_completion_context_tail(request.context_prefix),
-        partial: partial.clone(),
-        max_suffix_chars: request.max_suffix_chars,
-        active_composition: request.active_composition,
-        allow_short_lexical: request.allow_short_lexical,
-        limit: request.limit,
+    let Some(cache_key) = live_completion_cache_key(&request) else {
+        return Vec::new();
     };
     if let Some(cached) = cache::get(&cache_key) {
         record_live_gate_stats(
@@ -464,8 +494,13 @@ pub fn live_completion_candidates(
         .as_micros()
         .min(u128::from(u64::MAX)) as u64;
     if material_cacheable {
-        cache::store(cache_key, &candidates);
+        cache::store(cache_key.clone(), &candidates);
     }
+    let candidates = if cache::identity_is_current(cache_key.identity) {
+        candidates
+    } else {
+        Vec::new()
+    };
     record_live_gate_stats(
         started,
         LiveGateRecord {
@@ -1631,6 +1666,32 @@ mod tests {
     use crate::typing_transition::live_candidate::{
         live_completion_has_authority, live_suffix_has_display_authority,
     };
+
+    #[test]
+    fn cache_only_readout_preserves_complete_gate_and_does_no_work_on_miss() {
+        super::super::warm_up_l2_for_ime();
+        clear_live_completion_cache();
+        let query = request("", "про");
+        clear_last_live_completion_timing();
+        assert_eq!(cached_live_completion_candidates(query.clone()), None);
+        assert_eq!(
+            last_live_completion_timing(),
+            LiveCompletionTiming::default()
+        );
+        let candidates = live_completion_candidates(query.clone());
+        assert!(!candidates.is_empty());
+        assert_eq!(
+            cached_live_completion_candidates(query.clone()),
+            Some(candidates)
+        );
+        clear_live_completion_cache();
+        clear_last_live_completion_timing();
+        assert_eq!(cached_live_completion_candidates(query), None);
+        assert_eq!(
+            last_live_completion_timing(),
+            LiveCompletionTiming::default()
+        );
+    }
 
     fn request<'a>(context_prefix: &'a str, partial: &'a str) -> LiveCompletionRequest<'a> {
         LiveCompletionRequest {

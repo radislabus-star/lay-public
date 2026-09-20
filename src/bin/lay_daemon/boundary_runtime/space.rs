@@ -3,7 +3,7 @@ use lay::word_buffer::WordBuffer;
 
 use super::super::pending_typing_assist::PendingTypingAssist;
 use super::super::{
-    active_typing_assist, append_user_correction_learning_log, has_later_typing_press, log,
+    active_boundary_correction, append_user_correction_learning_log, has_later_typing_press, log,
     record_precognition_tick_if_enabled, should_run_typing_assist_on_space_release,
     should_schedule_typing_assist_after_space, typing_assist_worker::TypingAssistWorker,
     DaemonTextContext, ShiftState,
@@ -27,7 +27,7 @@ pub(crate) fn try_handle_space_release(
         || value != 0
         || !should_run_typing_assist_on_space_release(
             ctx.pending_typing_assist_after_space.is_some(),
-            active_typing_assist(),
+            active_boundary_correction(),
             ctx.shift_state.any(),
             ctx.buffer.is_empty(),
         )
@@ -92,7 +92,7 @@ pub(crate) fn handle_space_press(ctx: SpacePressContext<'_>) {
     *ctx.events_since_word_start = 0;
     if !already_pending
         && should_schedule_typing_assist_after_space(
-            active_typing_assist(),
+            active_boundary_correction(),
             ctx.suppress_next_typing_assist_after_manual_replay,
         )
     {
@@ -129,7 +129,7 @@ mod route_contract {
         let forbidden_ime_owner = ["focused_ime_engine", "_handles_typing"].concat();
 
         assert!(source.contains("typing_assist_worker.submit"));
-        assert!(source.contains("active_typing_assist()"));
+        assert!(source.contains("active_boundary_correction()"));
         assert!(!source.contains(&forbidden_ime_owner));
     }
 

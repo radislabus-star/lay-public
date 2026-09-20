@@ -32,6 +32,12 @@ def make_ime_cases(Case):
             "ime_file_ghjdthrf_alt_twice_enter", "file проверка"
         ),
         "ime_ntrcn_space_shift_enter": Case("ime_ntrcn_space_shift_enter", "ntrcn"),
+        "ime_ntrcn_space_manual_projection_enter": Case(
+            "ime_ntrcn_space_manual_projection_enter",
+            "текст",
+            expected_manual_toggles=1,
+            config_overrides={"auto_replace": False},
+        ),
         "ime_raw_ghjdthrf_right_shift_enter": Case(
             "ime_raw_ghjdthrf_right_shift_enter", "проверка"
         ),
@@ -116,6 +122,13 @@ def make_ime_cases(Case):
             "ime_autocomplete_then_double_shift_enter",
             "ghjdthrf",
             start_layout="ru",
+            expected_manual_toggles=1,
+        ),
+        "ime_single_alt_autocomplete_then_double_shift_enter": Case(
+            "ime_single_alt_autocomplete_then_double_shift_enter",
+            "ghjdthrf",
+            start_layout="ru",
+            expected_completion_accepts=1,
             expected_manual_toggles=1,
         ),
         "ime_alt_left_right_passthrough_enter": Case(

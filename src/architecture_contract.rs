@@ -96,7 +96,7 @@ mod tests {
         let verifier = include_str!("text_edit/gate.rs");
         let executor = include_str!("text_edit/executor.rs");
         let postcondition = include_str!("bin/lay_ibus_engine/engine/types.rs");
-        let observer = include_str!("bin/lay_ibus_engine/tail_memory.rs");
+        let observer = include_str!("bin/lay_ibus_engine/window_interaction/observation.rs");
 
         assert!(snapshot.contains("pub struct VisibleTailSnapshot"));
         assert!(decision.contains("struct DecisionTransitionReceipt"));

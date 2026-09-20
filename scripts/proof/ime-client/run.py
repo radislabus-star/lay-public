@@ -20,7 +20,7 @@ import xml.etree.ElementTree as ET
 SCHEMA = "lay.ime-client-harness.v1"
 PROOF_CONTRACT = "lay.ime-client.actual-input-context.v2"
 RUN_METADATA_SCHEMA = "lay.ime-client-harness.run-metadata.v2"
-V2_DRIVER_SHA256 = "3bd1d4094c03b054872c01a5779a20f88118c55a5ff0bfa84976e6097b626c84"
+V2_DRIVER_SHA256 = "d80447f21db4d689ea49d39742feb36e2202b23979d820380c1fcef916b88c12"
 V1_DRIVER_PROVENANCE = {
     "version": "v1",
     "git_commit": "708245298a3f553ac3c52243728c02ba6344a140",
@@ -101,6 +101,7 @@ class Plan:
     dependencies: dict[str, Dependency]
     startup_schedule: str = "immediate"
     scenario_set: str = "restoration"
+    startup_proof_profile: str = "legacy"
 
 
 def sha256(path: Path) -> str:
@@ -362,10 +363,18 @@ def prepare_output(plan: Plan, output: Path, harness_root: Path | None = None) -
         (output / "home").mkdir(mode=0o700)
         for name in ("driver.py", "dbus.conf", "config.json", "readline_consumer.py"):
             shutil.copyfile(root / name, output / name)
-        if plan.scenario_set in ("manual-toggle", "terminal-delivery", "first-word", "first-word-us", "first-word-ru"):
+        if (plan.scenario_set in ("manual-toggle", "terminal-delivery", "first-word", "first-word-us", "first-word-ru", "fresh-preedit")
+                or plan.startup_proof_profile != "legacy"):
             config_path = output / "config.json"
             config = json.loads(config_path.read_text(encoding="utf-8"))
             config["nanda_precognition"] = True
+            if plan.startup_proof_profile == "off":
+                config.update({
+                    "nanda_autocorrect": False,
+                    "auto_replace": False,
+                    "auto_switch_layout": False,
+                    "typing_assist": False,
+                })
             config_path.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
         shutil.copyfile(root / "component/seed-simple.xml", component / "seed-simple.xml")
         _write_generated_component(root / "component/lay.xml.template", component / "lay.xml")
@@ -376,6 +385,7 @@ def prepare_output(plan: Plan, output: Path, harness_root: Path | None = None) -
             "configuration_schema": SCHEMA,
             "startup_schedule": plan.startup_schedule,
             "scenario_set": plan.scenario_set,
+            "startup_proof_profile": plan.startup_proof_profile,
             "readline_consumer_sha256": sha256(root / "readline_consumer.py"),
             "private_config_sha256": sha256(output / "config.json"),
             "runtime_authority_changed": False,
@@ -436,6 +446,48 @@ def build_command(plan: Plan, output: Path) -> list[str]:
     unit = f"lay-ime-client-{os.getpid()}-{uuid.uuid4().hex[:12]}"
     embedded = plan.receipt_embedded_mount_path
     role = plan.dependencies
+    packages_absent = plan.startup_proof_profile == "absent"
+    dependency_mount_args = [] if packages_absent else [
+        "--ro-bind", str(plan.deps_root), str(SANDBOX_DEPS_ROOT),
+        "--ro-bind", str(plan.deps_root / "l1.1"), str(embedded),
+    ]
+    dependency_env_args = [] if packages_absent else [
+        "--setenv", "LAY_L11_SERVICE_BIN", _sandbox_dependency(role["l11_service"]),
+        "--setenv", "EXPECTED_L11_SERVICE_SHA256", role["l11_service"].sha256,
+        "--setenv", "TD121_L11_PACKAGE_PATH", str(embedded / role["l11_package"].relative_path.name),
+        "--setenv", "EXPECTED_TD121_L11_PACKAGE_SHA256", role["l11_package"].sha256,
+        "--setenv", "TD121_L11_PROOF_PATH", str(embedded / role["l11_proof"].relative_path.name),
+        "--setenv", "EXPECTED_TD121_L11_PROOF_SHA256", role["l11_proof"].sha256,
+        "--setenv", "LAY_L11_RECEIPT", str(embedded / "active.installed.json"),
+        "--setenv", "EXPECTED_LAY_L11_RECEIPT_SHA256", role["l11_active_receipt"].sha256,
+        "--setenv", "LAY_L2_LEXICAL_PHASE_MEMORY", _sandbox_dependency(role["l2_lexical_phase"]),
+        "--setenv", "LAY_L2_PACKAGE", _sandbox_dependency(role["l2_v13"]),
+        "--setenv", "EXPECTED_LAY_L2_PACKAGE_SHA256", role["l2_v13"].sha256,
+        "--setenv", "LAY_L2_PRODUCTIVE_V1_PACKAGE", _sandbox_dependency(role["productive_v90_package"]),
+        "--setenv", "EXPECTED_LAY_L2_PRODUCTIVE_V1_PACKAGE_SHA256", role["productive_v90_package"].sha256,
+        "--setenv", "TD121_PRODUCTIVE_V90_RECOVERY_PATH", _sandbox_dependency(role["productive_v90_recovery"]),
+        "--setenv", "EXPECTED_TD121_PRODUCTIVE_V90_RECOVERY_SHA256", role["productive_v90_recovery"].sha256,
+        "--setenv", "LAY_L2_V13_DAFSA", _sandbox_dependency(role["l2_v13_dafsa"]),
+        "--setenv", "EXPECTED_LAY_L2_V13_DAFSA_SHA256", role["l2_v13_dafsa"].sha256,
+    ]
+    authority_env_names = (
+        "LAY_L11_SERVICE_BIN", "EXPECTED_L11_SERVICE_SHA256",
+        "TD121_L11_PACKAGE_PATH", "EXPECTED_TD121_L11_PACKAGE_SHA256",
+        "TD121_L11_PROOF_PATH", "EXPECTED_TD121_L11_PROOF_SHA256",
+        "LAY_L11_RECEIPT", "EXPECTED_LAY_L11_RECEIPT_SHA256",
+        "LAY_L2_LEXICAL_PHASE_MEMORY", "LAY_L2_PACKAGE",
+        "EXPECTED_LAY_L2_PACKAGE_SHA256", "LAY_L2_PRODUCTIVE_V1_PACKAGE",
+        "EXPECTED_LAY_L2_PRODUCTIVE_V1_PACKAGE_SHA256",
+        "TD121_PRODUCTIVE_V90_RECOVERY_PATH",
+        "EXPECTED_TD121_PRODUCTIVE_V90_RECOVERY_SHA256",
+        "LAY_L2_V13_DAFSA", "EXPECTED_LAY_L2_V13_DAFSA_SHA256",
+    )
+    inherited_authority_unsets = [argument for name in authority_env_names
+                                  for argument in ("--unsetenv", name)] if packages_absent else []
+    absence_env_args = [
+        "--setenv", "LAY_L11_MODEL_DIR", "/tmp/proof/no-models/l1.1",
+        "--setenv", "LAY_L2_MODEL_DIR", "/tmp/proof/no-models/l2",
+    ] if packages_absent else []
     command = [
         "/usr/bin/systemd-run",
         "--user",
@@ -477,12 +529,7 @@ def build_command(plan: Plan, output: Path) -> list[str]:
         "--ro-bind",
         str(plan.deployed_ibus_root),
         str(SANDBOX_DEPLOYED_ROOT),
-        "--ro-bind",
-        str(plan.deps_root),
-        str(SANDBOX_DEPS_ROOT),
-        "--ro-bind",
-        str(plan.deps_root / "l1.1"),
-        str(embedded),
+        *dependency_mount_args,
         "--bind",
         str(output),
         str(SANDBOX_PROOF_ROOT),
@@ -504,6 +551,7 @@ def build_command(plan: Plan, output: Path) -> list[str]:
         "LD_LIBRARY_PATH",
         "--unsetenv",
         "LD_PRELOAD",
+        *inherited_authority_unsets,
         "--setenv",
         "HOME",
         "/tmp/proof/home",
@@ -517,6 +565,9 @@ def build_command(plan: Plan, output: Path) -> list[str]:
         "IME_CLIENT_SCENARIO_SET",
         plan.scenario_set,
         "--setenv",
+        "IME_CLIENT_STARTUP_PROOF_PROFILE",
+        plan.startup_proof_profile,
+        "--setenv",
         "EXPECTED_CANDIDATE_SHA256",
         plan.candidate_sha256,
         "--setenv",
@@ -525,57 +576,8 @@ def build_command(plan: Plan, output: Path) -> list[str]:
         "--setenv",
         "TD121_RESOURCE_ENVELOPE_ID",
         RESOURCE_ENVELOPE_ID,
-        "--setenv",
-        "LAY_L11_SERVICE_BIN",
-        _sandbox_dependency(role["l11_service"]),
-        "--setenv",
-        "EXPECTED_L11_SERVICE_SHA256",
-        role["l11_service"].sha256,
-        "--setenv",
-        "TD121_L11_PACKAGE_PATH",
-        str(embedded / role["l11_package"].relative_path.name),
-        "--setenv",
-        "EXPECTED_TD121_L11_PACKAGE_SHA256",
-        role["l11_package"].sha256,
-        "--setenv",
-        "TD121_L11_PROOF_PATH",
-        str(embedded / role["l11_proof"].relative_path.name),
-        "--setenv",
-        "EXPECTED_TD121_L11_PROOF_SHA256",
-        role["l11_proof"].sha256,
-        "--setenv",
-        "LAY_L11_RECEIPT",
-        str(embedded / "active.installed.json"),
-        "--setenv",
-        "EXPECTED_LAY_L11_RECEIPT_SHA256",
-        role["l11_active_receipt"].sha256,
-        "--setenv",
-        "LAY_L2_LEXICAL_PHASE_MEMORY",
-        _sandbox_dependency(role["l2_lexical_phase"]),
-        "--setenv",
-        "LAY_L2_PACKAGE",
-        _sandbox_dependency(role["l2_v13"]),
-        "--setenv",
-        "EXPECTED_LAY_L2_PACKAGE_SHA256",
-        role["l2_v13"].sha256,
-        "--setenv",
-        "LAY_L2_PRODUCTIVE_V1_PACKAGE",
-        _sandbox_dependency(role["productive_v90_package"]),
-        "--setenv",
-        "EXPECTED_LAY_L2_PRODUCTIVE_V1_PACKAGE_SHA256",
-        role["productive_v90_package"].sha256,
-        "--setenv",
-        "TD121_PRODUCTIVE_V90_RECOVERY_PATH",
-        _sandbox_dependency(role["productive_v90_recovery"]),
-        "--setenv",
-        "EXPECTED_TD121_PRODUCTIVE_V90_RECOVERY_SHA256",
-        role["productive_v90_recovery"].sha256,
-        "--setenv",
-        "LAY_L2_V13_DAFSA",
-        _sandbox_dependency(role["l2_v13_dafsa"]),
-        "--setenv",
-        "EXPECTED_LAY_L2_V13_DAFSA_SHA256",
-        role["l2_v13_dafsa"].sha256,
+        *dependency_env_args,
+        *absence_env_args,
         "--setenv",
         "XDG_RUNTIME_DIR",
         "/tmp/proof/runtime",
@@ -609,6 +611,18 @@ def execute(command: list[str], output: Path) -> int:
         return process.wait()
 
 
+def validate_startup_proof_combination(plan: Plan) -> None:
+    allowed = {
+        "legacy": {"restoration", "lifecycle", "manual-toggle", "terminal-delivery", "first-word", "first-word-us", "first-word-ru"},
+        "on": {"first-word", "first-word-us", "first-word-ru", "fresh-preedit", "startup-only"},
+        "off": {"fresh-preedit", "startup-only"},
+        "absent": {"packages-absent-literal", "startup-only"},
+    }
+    if (plan.scenario_set not in allowed[plan.startup_proof_profile]
+            or (plan.startup_proof_profile != "legacy" and plan.startup_schedule != "immediate")):
+        raise HarnessError("unsupported startup proof profile/scenario/schedule combination")
+
+
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
     result.add_argument("--remote-worker", action="store_true")
@@ -617,8 +631,9 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--startup-schedule", choices=("immediate", "post-exact-ready"),
                         default="immediate")
     result.add_argument("--scenario-set", choices=("restoration", "lifecycle", "manual-toggle", "terminal-delivery", "first-word",
-                                                   "first-word-us", "first-word-ru"),
+                                                   "first-word-us", "first-word-ru", "fresh-preedit", "startup-only", "packages-absent-literal"),
                         default="restoration")
+    result.add_argument("--startup-proof-profile", choices=("legacy", "on", "off", "absent"), default="legacy")
     return result
 
 
@@ -627,7 +642,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         output = _fresh_output_path(args.output)
         plan = replace(load_plan(Path(args.config)), startup_schedule=args.startup_schedule,
-                       scenario_set=args.scenario_set)
+                       scenario_set=args.scenario_set, startup_proof_profile=args.startup_proof_profile)
+        validate_startup_proof_combination(plan)
         validate_remote_guard(args.remote_worker, plan.origin_machine_id_sha256)
         validate_host_prerequisites()
         prepare_output(plan, output)

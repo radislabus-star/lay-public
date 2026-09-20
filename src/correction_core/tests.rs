@@ -2959,6 +2959,19 @@ mod tests {
             Some("давай там посмотреть "),
             "{resolution:#?}"
         );
+
+        let mut known_form_req = request("наполняют ", &pipeline, CorrectionMode::NandaOnly);
+        known_form_req.nanda_candidate_route = CandidateReadoutRoute::live_default();
+        let known_form_resolution = resolve_text_correction(known_form_req);
+        assert_ne!(
+            known_form_resolution
+                .decision
+                .as_ref()
+                .map(|decision| decision.replacement.as_str()),
+            Some("наполняю "),
+            "known -ять present form must not auto-rewrite: {known_form_resolution:#?}"
+        );
+
         let infinitive_candidates: Vec<_> = resolution
             .candidates
             .iter()

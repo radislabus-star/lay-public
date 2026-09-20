@@ -27,7 +27,8 @@ mod request;
 
 pub(super) use force_layout::handle_force_layout_hotkey;
 pub(super) use request::{
-    ManualCorrectionOutputRoute, ManualCorrectionRequest, ScopedManualCorrectionRequest,
+    ManualCorrectionDispatchPlan, ManualCorrectionInputIsolation, ManualCorrectionOutputRoute,
+    ManualCorrectionRequest, ScopedManualCorrectionRequest,
 };
 
 pub(super) fn run_manual_correction_with_scope(

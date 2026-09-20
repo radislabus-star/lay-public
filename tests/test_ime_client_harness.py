@@ -144,7 +144,7 @@ class ImeClientHarnessTest(unittest.TestCase):
 
     def test_v2_driver_and_preserved_scenarios_have_exact_identities(self) -> None:
         self.assertEqual(
-            "3bd1d4094c03b054872c01a5779a20f88118c55a5ff0bfa84976e6097b626c84",
+            "d80447f21db4d689ea49d39742feb36e2202b23979d820380c1fcef916b88c12",
             HARNESS.verify_driver_identity(HARNESS_ROOT),
         )
         self.assertEqual(
@@ -237,6 +237,150 @@ class ImeClientHarnessTest(unittest.TestCase):
                              metadata["readline_consumer_sha256"])
             command = HARNESS.build_command(plan, output)
             self.assertEqual(scenario_set, command[command.index("IME_CLIENT_SCENARIO_SET") + 1])
+
+    def test_startup_proof_profiles_bind_config_and_reject_scope_drift(self) -> None:
+        base = HARNESS.load_plan(self.fixture.config)
+        accepted = (("on", "first-word"), ("on", "first-word-us"),
+                    ("on", "first-word-ru"), ("on", "fresh-preedit"),
+                    ("on", "startup-only"), ("off", "fresh-preedit"),
+                    ("off", "startup-only"), ("absent", "packages-absent-literal"),
+                    ("absent", "startup-only"))
+        for profile, scenario in accepted:
+            plan = HARNESS.replace(base, startup_proof_profile=profile,
+                                   scenario_set=scenario)
+            HARNESS.validate_startup_proof_combination(plan)
+        rejected = (("on", "restoration", "immediate"),
+                    ("off", "first-word", "immediate"),
+                    ("off", "first-word-us", "immediate"),
+                    ("off", "first-word-ru", "immediate"),
+                    ("absent", "fresh-preedit", "immediate"),
+                    ("absent", "first-word-us", "immediate"),
+                    ("absent", "first-word-ru", "immediate"),
+                    ("on", "first-word-us", "post-exact-ready"),
+                    ("on", "first-word-ru", "post-exact-ready"),
+                    ("on", "startup-only", "post-exact-ready"))
+        for profile, scenario, schedule in rejected:
+            plan = HARNESS.replace(base, startup_proof_profile=profile,
+                                   scenario_set=scenario, startup_schedule=schedule)
+            with self.assertRaises(HARNESS.HarnessError):
+                HARNESS.validate_startup_proof_combination(plan)
+
+        off = HARNESS.replace(base, startup_proof_profile="off",
+                              scenario_set="fresh-preedit")
+        output = self.root / "off-preedit-output"
+        HARNESS.prepare_output(off, output)
+        config = json.loads((output / "config.json").read_text())
+        metadata = json.loads((output / "run-metadata.json").read_text())
+        self.assertFalse(config["nanda_autocorrect"])
+        self.assertFalse(config["auto_replace"])
+        self.assertFalse(config["auto_switch_layout"])
+        self.assertFalse(config["typing_assist"])
+        self.assertTrue(config["nanda_precognition"])
+        self.assertEqual("off", metadata["startup_proof_profile"])
+
+        driver_source = (HARNESS_ROOT / "driver.py").read_text(encoding="utf-8")
+        driver_tree = ast.parse(driver_source)
+        validator_node = next(
+            node for node in driver_tree.body
+            if isinstance(node, ast.FunctionDef)
+            and node.name == "validate_private_config"
+        )
+        validator_namespace: dict[str, object] = {}
+        exec(
+            compile(
+                ast.Module(body=[validator_node], type_ignores=[]),
+                str(HARNESS_ROOT / "driver.py"),
+                "exec",
+            ),
+            validator_namespace,
+        )
+        validate = validator_namespace["validate_private_config"]
+        validate(config, "off")
+        on_config = dict(config)
+        on_config.update({
+            "nanda_autocorrect": True,
+            "auto_replace": True,
+            "auto_switch_layout": True,
+        })
+        validate(on_config, "on")
+        with self.assertRaises(AssertionError):
+            validate(config, "on")
+        with self.assertRaises(AssertionError):
+            validate(on_config, "off")
+
+    def test_absent_profile_omits_all_model_mounts_and_environment(self) -> None:
+        plan = HARNESS.replace(HARNESS.load_plan(self.fixture.config),
+                               startup_proof_profile="absent",
+                               scenario_set="packages-absent-literal")
+        output = self.root / "absent-output"
+        HARNESS.prepare_output(plan, output)
+        command = HARNESS.build_command(plan, output)
+        rendered = "\0".join(command)
+        self.assertNotIn(str(plan.deps_root), rendered)
+        for name in ("LAY_L11_SERVICE_BIN", "LAY_L11_RECEIPT", "LAY_L2_PACKAGE",
+                     "LAY_L2_LEXICAL_PHASE_MEMORY", "LAY_L2_PRODUCTIVE_V1_PACKAGE",
+                     "LAY_L2_V13_DAFSA"):
+            positions = [index for index, value in enumerate(command) if value == name]
+            self.assertEqual(1, len(positions), name)
+            self.assertEqual("--unsetenv", command[positions[0] - 1])
+        self.assertEqual("/tmp/proof/no-models/l1.1",
+                         command[command.index("LAY_L11_MODEL_DIR") + 1])
+        self.assertEqual("/tmp/proof/no-models/l2",
+                         command[command.index("LAY_L2_MODEL_DIR") + 1])
+
+    def test_startup_trace_contract_rejects_oversized_malformed_and_inconsistent_input(self) -> None:
+        source = (HARNESS_ROOT / "driver.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        function = next(node for node in tree.body if isinstance(node, ast.FunctionDef)
+                        and node.name == "startup_trace_measurement")
+        namespace = {"json": json, "STARTUP_PROOF_PROFILE": "on"}
+        exec(compile(ast.Module(body=[function], type_ignores=[]), "driver.py", "exec"), namespace)
+        measure = namespace["startup_trace_measurement"]
+        trace = self.root / "startup-trace.jsonl"
+        trace.write_bytes(b" " * (1024 * 1024 + 1))
+        with self.assertRaisesRegex(ValueError, "bounded proof input"):
+            measure(trace)
+        trace.write_text("{malformed}\n", encoding="utf-8")
+        with self.assertRaises(json.JSONDecodeError):
+            measure(trace)
+        rows = (
+            {"kind": "ibus_startup_warmup", "stage": "completed",
+             "exact_available": True, "l2_complete": True, "l2_available": False,
+             "l2_candidate_ready": False, "elapsed_us": 10},
+            {"kind": "ibus_exact_authority_warmup", "stage": "completed",
+             "available": False, "elapsed_us": 4},
+            {"kind": "ibus_context_admission", "member": "CreateEngine",
+             "stage": "factory_acquisition_state"},
+        )
+        trace.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+        with self.assertRaises(AssertionError):
+            measure(trace)
+
+    def test_startup_trace_contract_accepts_completed_unavailable_lexical_memory(self) -> None:
+        source = (HARNESS_ROOT / "driver.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        function = next(node for node in tree.body if isinstance(node, ast.FunctionDef)
+                        and node.name == "startup_trace_measurement")
+        namespace = {"json": json, "STARTUP_PROOF_PROFILE": "absent"}
+        exec(compile(ast.Module(body=[function], type_ignores=[]), "driver.py", "exec"),
+             namespace)
+        trace = self.root / "absent-startup-trace.jsonl"
+        rows = (
+            {"kind": "ibus_exact_authority_warmup", "stage": "completed",
+             "available": False, "elapsed_us": 4},
+            {"kind": "ibus_startup_warmup", "stage": "completed",
+             "exact_available": False, "l2_complete": True, "l2_available": False,
+             "l2_candidate_ready": False, "elapsed_us": 10},
+            {"kind": "ibus_context_admission", "member": "CreateEngine",
+             "stage": "factory_acquisition_state"},
+        )
+        trace.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+
+        measurement = namespace["startup_trace_measurement"](trace)
+
+        self.assertTrue(measurement["l2_complete"])
+        self.assertFalse(measurement["l2_available"])
+        self.assertFalse(measurement["l2_candidate_ready"])
 
     def test_lifecycle_scenarios_use_real_context_without_retry_or_new_wait(self) -> None:
         tree = ast.parse((HARNESS_ROOT / "driver.py").read_text())
@@ -580,8 +724,12 @@ class ImeClientConsumerTest(unittest.TestCase):
 
     def setUp(self) -> None:
         source = (HARNESS_ROOT / "driver.py").read_text(encoding="utf-8")
-        node = next(node for node in ast.parse(source).body
+        tree = ast.parse(source)
+        node = next(node for node in tree.body
                     if isinstance(node, ast.ClassDef) and node.name == "Client")
+        oracle_nodes = [node for node in tree.body
+                        if isinstance(node, ast.FunctionDef)
+                        and node.name in {"outputs_since", "deliver_exact_literal"}]
         self.context = mock.Mock()
         self.context.get_object_path.return_value = "/private/context"
         self.context.needs_surrounding_text.return_value = True
@@ -599,9 +747,10 @@ class ImeClientConsumerTest(unittest.TestCase):
                 Text=SimpleNamespace(new_from_string=lambda text: text)),
         }
         self.namespace["ibus_bus"].create_input_context.return_value = self.context
-        exec(compile(ast.Module(body=[node], type_ignores=[]),
+        exec(compile(ast.Module(body=[node, *oracle_nodes], type_ignores=[]),
                      str(HARNESS_ROOT / "driver.py"), "exec"), self.namespace)
         self.client = self.namespace["Client"]("unit-consumer")
+        self.deliver_exact_literal = self.namespace["deliver_exact_literal"]
 
     def test_unhandled_press_inserts_once_and_release_never_duplicates(self) -> None:
         self.assertFalse(self.client.key("l"))
@@ -623,6 +772,69 @@ class ImeClientConsumerTest(unittest.TestCase):
         self.assertTrue(self.client.key("l"))
         self.assertEqual(("л", 1), (self.client.visible, self.client.cursor))
         self.assertFalse(any(row["kind"] == "NativeUnhandledInput" for row in self.events))
+
+    def test_literal_oracle_accepts_exact_native_and_managed_delivery(self) -> None:
+        native = self.deliver_exact_literal(self.client, "l")
+        self.assertFalse(native["handled"])
+        self.assertEqual(("l", 1), (self.client.visible, self.client.cursor))
+
+        self.client.visible, self.client.cursor, self.client.output = "", 0, []
+        def managed(_keyval, _keycode, state):
+            if not state:
+                self.client.on_commit(None, SimpleNamespace(get_text=lambda: "l"))
+                return True
+            return False
+        self.context.process_key_event.side_effect = managed
+        committed = self.deliver_exact_literal(self.client, "l")
+        self.assertTrue(committed["handled"])
+        self.assertEqual(("l", 1), (self.client.visible, self.client.cursor))
+
+    def test_literal_oracle_rejects_lost_duplicate_mismatched_and_destructive_delivery(self) -> None:
+        def lost(_keyval, _keycode, state):
+            return not state
+
+        def duplicate(_keyval, _keycode, state):
+            if not state:
+                self.client.on_commit(None, SimpleNamespace(get_text=lambda: "l"))
+                self.client.on_commit(None, SimpleNamespace(get_text=lambda: "l"))
+                return True
+            return False
+
+        def mismatched(_keyval, _keycode, state):
+            if not state:
+                self.client.on_commit(None, SimpleNamespace(get_text=lambda: "x"))
+                return True
+            return False
+
+        def deleted(_keyval, _keycode, state):
+            if not state:
+                self.client.on_commit(None, SimpleNamespace(get_text=lambda: "l"))
+                self.client.on_delete(None, -1, 1)
+                return True
+            return False
+
+        def forwarded(_keyval, _keycode, state):
+            if not state:
+                self.client.on_commit(None, SimpleNamespace(get_text=lambda: "l"))
+                self.client.on_forward(None, ord("l"), 38, 0)
+                return True
+            return False
+
+        def wrong_cursor(_keyval, _keycode, state):
+            if not state:
+                self.client.on_commit(None, SimpleNamespace(get_text=lambda: "l"))
+                self.client.cursor = 0
+                return True
+            return False
+
+        for name, behavior in (("lost", lost), ("duplicate", duplicate),
+                               ("mismatched", mismatched), ("delete", deleted),
+                               ("forward", forwarded), ("cursor", wrong_cursor)):
+            with self.subTest(name=name):
+                self.client.visible, self.client.cursor, self.client.output = "", 0, []
+                self.context.process_key_event.side_effect = behavior
+                with self.assertRaises(AssertionError):
+                    self.deliver_exact_literal(self.client, "l")
 
     def test_requested_snapshot_is_published_with_current_cursor(self) -> None:
         self.client.visible, self.client.cursor = "метка слово", 11

@@ -297,7 +297,9 @@ fn l2_word_candidates_impl(
     let context_tokens = super::super::llmwave::tokenize(context_prefix);
     let usage = super::super::usage_prior::cached_usage_prior_snapshot();
     let usage_context = usage.prepare_hot_context(&context_tokens);
-    let memory = surface_motif_memory();
+    let Some(memory) = surface_motif_memory() else {
+        return Vec::new();
+    };
     let material_limit = limit.saturating_mul(IME_L2_MATERIAL_FACTOR).max(limit);
     let lexical = cached_lexical_candidates(memory, &normalized, material_limit, mode);
     let include_completion = mode.includes_completion();
@@ -383,8 +385,11 @@ fn ranked_correction_candidates(
     let usage = super::super::usage_prior::cached_usage_prior_snapshot();
     let usage_context = usage.prepare_hot_context(&context_tokens);
     let material_limit = limit.saturating_mul(IME_L2_MATERIAL_FACTOR).max(limit);
+    let Some(memory) = surface_motif_memory() else {
+        return Vec::new();
+    };
     let lexical = cached_lexical_candidates(
-        surface_motif_memory(),
+        memory,
         &normalized,
         material_limit,
         LexicalReadoutMode::Correction,
@@ -626,8 +631,10 @@ fn prefix_is_one_edit_from_surface(prefix: &str, surface: &str) -> bool {
     })
 }
 
-pub(super) fn warm_up_lexical_readout_cache(prefixes: &[String], material_limit: usize) {
-    let memory = surface_motif_memory();
+pub(super) fn warm_up_lexical_readout_cache(prefixes: &[String], material_limit: usize) -> bool {
+    let Some(memory) = surface_motif_memory() else {
+        return false;
+    };
     for prefix in prefixes {
         if !is_supported_lexical_surface(prefix) {
             continue;
@@ -635,6 +642,7 @@ pub(super) fn warm_up_lexical_readout_cache(prefixes: &[String], material_limit:
         let _ =
             cached_lexical_candidates(memory, prefix, material_limit, LexicalReadoutMode::FullIme);
     }
+    true
 }
 
 /// Projects a previously settled L2 lattice into the next typed prefix. This
@@ -719,7 +727,10 @@ pub(crate) fn l2_center_near_surfaces(text: &str, limit: usize) -> Vec<String> {
     {
         return surfaces.as_ref().clone();
     }
-    let surfaces = surface_motif_memory()
+    let Some(memory) = surface_motif_memory() else {
+        return Vec::new();
+    };
+    let surfaces = memory
         .surface_candidates(&normalized, limit.saturating_mul(8))
         .into_iter()
         .filter(|candidate| {
@@ -747,7 +758,7 @@ pub(crate) fn l2_center_near_surfaces(text: &str, limit: usize) -> Vec<String> {
 }
 
 pub(crate) fn l2_center_contains_surface(word: &str) -> bool {
-    surface_motif_memory().contains_surface(word)
+    surface_motif_memory().is_some_and(|memory| memory.contains_surface(word))
 }
 
 pub(crate) fn l2_decoder_contains_surface(word: &str) -> bool {
@@ -780,7 +791,16 @@ impl L2SurfacePhaseReadout {
 }
 
 pub(crate) fn l2_surface_phase_readout(word: &str) -> L2SurfacePhaseReadout {
-    let readout = surface_motif_memory().phase_readout(word);
+    let Some(memory) = surface_motif_memory() else {
+        return L2SurfacePhaseReadout {
+            exact_center: false,
+            l1_refs: 0,
+            motif_refs: 0,
+            covered_l1_refs: 0,
+            residual_l1_refs: 0,
+        };
+    };
+    let readout = memory.phase_readout(word);
     L2SurfacePhaseReadout {
         exact_center: readout.exact_center,
         l1_refs: readout.atom_count,
@@ -1277,8 +1297,9 @@ mod tests {
     #[test]
     fn one_edit_prefix_field_keeps_ranked_missing_letter_basin() {
         super::super::super::warm_up_l2_for_ime();
-        let candidates =
-            surface_motif_memory().one_edit_prefix_completion_candidates("предскз", 24, 96);
+        let candidates = surface_motif_memory()
+            .expect("installed lexical fixture")
+            .one_edit_prefix_completion_candidates("предскз", 24, 96);
 
         assert!(
             candidates
@@ -1299,8 +1320,9 @@ mod tests {
     #[test]
     fn one_edit_prefix_field_keeps_infrequent_form_inside_bounded_material() {
         super::super::super::warm_up_l2_for_ime();
-        let candidates =
-            surface_motif_memory().one_edit_prefix_completion_candidates("переспективн", 512, 512);
+        let candidates = surface_motif_memory()
+            .expect("installed lexical fixture")
+            .one_edit_prefix_completion_candidates("переспективн", 512, 512);
         let rank = candidates
             .iter()
             .position(|candidate| candidate.word == "перспективнее");
@@ -1314,7 +1336,9 @@ mod tests {
     #[test]
     fn corrected_prefix_frontier_contains_attested_comparative() {
         super::super::super::warm_up_l2_for_ime();
-        let candidates = surface_motif_memory().completion_candidates("персп", 96, 576);
+        let candidates = surface_motif_memory()
+            .expect("installed lexical fixture")
+            .completion_candidates("персп", 96, 576);
         assert!(
             candidates
                 .iter()

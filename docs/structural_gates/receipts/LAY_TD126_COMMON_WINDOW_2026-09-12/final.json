@@ -1,0 +1,253 @@
+{
+  "schema": "lay.td126-common-window.final.v1",
+  "date": "2026-09-12",
+  "status": "PASS_SOURCE_ONLY_RUNTIME_UNCHANGED",
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": false,
+  "source_head": "83ba0f42db5c87cdc4f17abf42197396566cb05b",
+  "local_root": "/home/ubu/.cache/lay/development/td126-final4-20260912-LHBMzvAX",
+  "remote_root": "/home/e/projects/lay-development-runner/td126-final4-LHBMzvAX",
+  "resource": {
+    "profile": "dedicated-20cpu",
+    "cargo_jobs": 20,
+    "rust_test_threads": 1,
+    "target_dir": "/home/e/projects/lay-td119-gate-v1/target",
+    "target_budget_bytes": 12884901888,
+    "single_lease": true
+  },
+  "accepted_green": {
+    "archive_sha256": "0004e1a73f1da4982ab57e13916b554feb65f2369a1c5141a5a759a05ccef8e6",
+    "selected": 506,
+    "passed": 506,
+    "summary_sha256": "43b869ee7cf0be9c06d72264764afae33d3787319acb7c2af60bb93e2ba705a2"
+  },
+  "canonical_manifest": {
+    "sha256": "f80243ff9420b7e7b1cd8476c7786ca584579c04acde8946a82d373bacf4a578",
+    "correctness": 2745,
+    "package": 36,
+    "performance": 11,
+    "ignored": 15,
+    "total": 2807,
+    "known_failure_count": 0,
+    "known_failures_sha256": "86742bdd62b301722089ced6df5193d8769fda26d27489b46e4c54a4d7fa7fbc"
+  },
+  "final_gate": {
+    "verdict": "PASS",
+    "selected": 2781,
+    "executed": 2781,
+    "passed": 2781,
+    "failed": 0,
+    "correctness_selected": 2745,
+    "package_selected": 36,
+    "known_semantic_failures": 0,
+    "infrastructure_failures": 0,
+    "ignored": 15,
+    "summary_fields_executed_passed_failed": "ABSENT_DERIVED_FROM_TARGET_AND_ISOLATED_PROCESS_LOGS",
+    "summary_sha256": "108806a17c1d3eee4cb45606b71b909585fd4ad62eccb53f31a8fb7988a9977c",
+    "log_sha256": "bd724774508009a38ee90d50ad85840ba564c10f72b363e7c95cc7d92042cda9",
+    "actual_counts_path": "/home/ubu/.cache/lay/development/td126-final4-20260912-LHBMzvAX/actual-test-counts.json",
+    "actual_counts_sha256": "0e2f3e3dfe32d006995ca44f205ec84f88cb781e756092538c7badd771b4bdf2",
+    "target_log_count": 32,
+    "isolated_process_log_count": 15,
+    "elapsed_seconds": 409.1902572447434
+  },
+  "architecture": {
+    "verdict": "PASS",
+    "source_fingerprint": "79797de877724b0dfa0df311d06b4ad50d19d064e920d860267f7220c5180546",
+    "graph_fingerprint": "bcf88bc2c9217b6a5acc392a777f3c3bd6ed28867e214ac777fc32ee853eb5df",
+    "graph_binding_fingerprint": "c72782de41b4941ffa663b94d38530e10713db8898167518aa31e33871e855e2",
+    "graph_nodes": 22424,
+    "graph_links": 59476,
+    "checks_total": 11,
+    "checks_passed": 11,
+    "checks": [
+      [
+        "decision-authority",
+        "PASS"
+      ],
+      [
+        "snapshot-lease",
+        "PASS"
+      ],
+      [
+        "ime-backend-only",
+        "PASS"
+      ],
+      [
+        "edit-plan-verifier",
+        "PASS"
+      ],
+      [
+        "typed-transition-capability",
+        "PASS"
+      ],
+      [
+        "observed-outcome-feedback",
+        "PASS"
+      ],
+      [
+        "hot-field-memory",
+        "PASS"
+      ],
+      [
+        "l1-surface-field",
+        "PASS"
+      ],
+      [
+        "l2-candidate-field",
+        "PASS"
+      ],
+      [
+        "l3-l4-learning",
+        "PASS"
+      ],
+      [
+        "fast-verifiable",
+        "PASS"
+      ]
+    ],
+    "receipt_sha256": "0c1b0d598b5d50a1c178b0e85d76a18e15ad6aadfaa405147122363751115119",
+    "update_log_sha256": "5d94097989ef4dd91d638121c7bb9e52a1273cb25d9d82c7341437e64a7c8233",
+    "check_log_sha256": "d8ad198f43955763cfdb9f779c2bcabb7cf5f0a4ec1739bb1b0c42975152c36d",
+    "compiled_receipt_projection": "PASS",
+    "compiled_log_sha256": "eb58a5bdffb656c56bce8f1cbadb400898d8926c21f3c6cbcf20928013224baf",
+    "compiled_receipt_sha256": "0c1b0d598b5d50a1c178b0e85d76a18e15ad6aadfaa405147122363751115119",
+    "compiled_receipt_matches_source": true
+  },
+  "identity": {
+    "verdict": "PASS",
+    "source_archive_sha256": "d6ab293cae9cab6542448933f8bb86542ba4d3d323a8e1aa724e4c89c6d2c6ba",
+    "source_request_sha256": "c543ad62e86866c9e1d2aa8fe7f216e722477bf55853dd85230f791ea10437c1",
+    "pre_graph_file_count": 1399,
+    "accepted_source_manifest_sha256": "8a9328b744e2845474db010a10138a249cfc1e2902035ee41a79a616360758d5",
+    "accepted_source_freeze_unchanged": true,
+    "accepted_source_mismatches": [],
+    "only_declared_graph_outputs_changed": true,
+    "input_files_changed_by_run": [
+      "graphify-out/.graphify_labels.json",
+      "graphify-out/GRAPH_REPORT.md",
+      "graphify-out/graph.json",
+      "graphify-out/manifest.json",
+      "graphify-out/source_graph_binding.json",
+      "src/generated/architecture_graph_receipt.json"
+    ],
+    "remote_graph_outputs_match_local": true,
+    "graph_output_sha256": {
+      "graphify-out/.graphify_labels.json": "54a4e7a8770362b4ceacaaec958cdc524cb6f8fd77461b4d24c199288e2d49fb",
+      "graphify-out/GRAPH_REPORT.md": "34068a6d47a9314ff1254ab022fac2de0d0a46016b5c7328c0813d7eddafa1b8",
+      "graphify-out/graph.json": "bcf88bc2c9217b6a5acc392a777f3c3bd6ed28867e214ac777fc32ee853eb5df",
+      "graphify-out/manifest.json": "5e73aa153994756d54db04631bc70e4859983567fb91c28a10178026baccef1a",
+      "graphify-out/source_graph_binding.json": "c72782de41b4941ffa663b94d38530e10713db8898167518aa31e33871e855e2",
+      "src/generated/architecture_graph_receipt.json": "0c1b0d598b5d50a1c178b0e85d76a18e15ad6aadfaa405147122363751115119"
+    },
+    "identity_receipt_sha256": "6a483311e5da82e165426c1b2ee0f2746f31af89d6a4dd36fa884acbe107262a"
+  },
+  "budget": {
+    "before_bytes": 8501673984,
+    "after_bytes": 8594276352,
+    "growth_bytes": 92602368,
+    "budget_bytes": 12884901888,
+    "verdict": "PASS"
+  },
+  "proof_scope": {
+    "routing": "SOURCE_CONTRACT_AND_CONTROLLED_TESTS_PASS",
+    "local_execution": "CONTROLLED_TESTS_PASS",
+    "later_client_observation": "CONTROLLED_CALLBACK_TESTS_PASS_REAL_CLIENT_NOT_TESTED",
+    "answer_quality": "UNKNOWN",
+    "physical_keyboard": "NOT_TESTED",
+    "installation": "NOT_PERFORMED",
+    "cpu_rss_latency": "NOT_TESTED"
+  },
+  "logs": {
+    "budget_before": "00-budget-before.log",
+    "architecture_update": "10-architecture-update.log",
+    "changed": "20-changed.log",
+    "results": "20-results",
+    "architecture_check": "30-architecture-check.log",
+    "compiled_receipt": "40-compiled-receipt.log",
+    "identities": "50-identities.json",
+    "budget_after": "60-budget-after.log",
+    "result": "RESULT.json",
+    "lints": "15-lints.log",
+    "actual_counts": "actual-test-counts.json"
+  },
+  "historical_failed_attempts": [
+    {
+      "local_root": "/home/ubu/.cache/lay/development/td126-final-20260912-TtqvKNCD",
+      "remote_root": "/home/e/projects/lay-development-runner/td126-final-TtqvKNCD",
+      "verdict": "FAIL_ARCHITECTURE_STALE_OWNER_MAP_BEFORE_CARGO",
+      "archive_sha256": "108316b2eccdfc0e06697ce34835942d85ff816f08c74b05f54dc4da064b67dd",
+      "request_sha256": "2146455ae778ee23d4999a41f410c0e558ba702c61b0057e7c1a51e83eba63e3",
+      "result_sha256": "e3b7065a5a078974951a915c21d2d22488f459103515684955643f8cab1da7ac",
+      "architecture_log_sha256": "2d7175d270c7c626f3191f62cda44e77b2acd4d89dcaa252048be94ff5702765",
+      "budget_before_bytes": 8501657600,
+      "budget_after_bytes": 8501657600,
+      "cause": "architecture_graph_gate expected moved postcondition methods and feedback source in deleted tail_memory orchestration owner",
+      "rust_tests_or_lints_executed": false
+    },
+    {
+      "local_root": "/home/ubu/.cache/lay/development/td126-final2-20260912-tnERB58x",
+      "remote_root": "/home/e/projects/lay-development-runner/td126-final2-tnERB58x",
+      "verdict": "FAIL_STALE_TEST_SOURCE_ANCHOR_AFTER_ARCHITECTURE_PASS",
+      "archive_sha256": "b5bdfa1c015ee3506d4a9d8dc892725f0a125471b036ce62f9323ae41788b86d",
+      "request_sha256": "eba280f0a2beb9778bdcad397ad284f7175e061625423ef012d544d32d840973",
+      "result_sha256": "c59dd799b4fa2d0d47d25b965178dee3f7f19e49083c14784ec715e8894a6bdc",
+      "architecture_log_sha256": "45852a62dcec5cb857328c4fd38535b991ea95a6a0e4d8be77d076b9eaae9509",
+      "changed_log_sha256": "a2b665f20d167705fe8db285eebc818c87cefb11f89aa675414d2123ab7c06e1",
+      "blocked_summary_sha256": "2d5e3be7ee4bb7824cc3bbbfb811d6b27adf954a59056192e93fd5a337ae83d9",
+      "failure_log_sha256": "55d16dcd687e97e1f11126e9a477cecedec7b115fc2a9ee6b5fc51554a93ee0a",
+      "budget_before_bytes": 8501657600,
+      "budget_after_bytes": 8501657600,
+      "cause": "typing transition structural contract searched the pre-typed-progress helper call",
+      "production_changed": false,
+      "test_identity_or_manifest_changed": false
+    },
+    {
+      "local_root": "/home/ubu/.cache/lay/development/td126-final3-20260912-klRwgwwe",
+      "remote_root": "/home/e/projects/lay-development-runner/td126-final3-klRwgwwe",
+      "verdict": "FAIL_LINT_AFTER_CANONICAL_LANES_PASS",
+      "archive_sha256": "bf3e10daf74f06612f6a76b983192a2f47e6d69f00b97dbaa34d2d14ce1de915",
+      "request_sha256": "8045ef91e464087f25758e3efe0d2c9081d2d8c59c3c6083fb874cf05173b398",
+      "result_sha256": "4d8e6250f17027adcfd7c408b587037632d1aec6cc755282466b38e636b903b2",
+      "architecture_log_sha256": "364809e9d4a9c455551eae155bab37b20edd74e4a46ce3848c0d7d02baf4f17f",
+      "changed_log_sha256": "171064eb8f23a086e36536c3fcaaf27ff5979b8746766db613b7e2a18560124d",
+      "canonical_summary_sha256": "fdb6e53eeb90efe033b64940d4346e4653789bd9e9aeb14c14859b06ea61227f",
+      "canonical_selected": 2781,
+      "correctness_selected": 2745,
+      "package_selected": 36,
+      "known_semantic_failures": 0,
+      "infrastructure_failures": 0,
+      "summary_executed_passed_failed_fields": "ABSENT",
+      "budget_before_bytes": 8501657600,
+      "budget_after_bytes": 8501669888,
+      "cause": "test-only re-exports were unconditional; subsequent lint convergence removed or cfg(test)-gated all new dead declarations without baseline expansion",
+      "runtime_authority_changed": false,
+      "installed_runtime_changed": false
+    }
+  ],
+  "lint_convergence": {
+    "verdict": "PASS",
+    "default_dead_code_before": 535,
+    "default_dead_code_after": 534,
+    "research_dead_code_before": 359,
+    "research_dead_code_after": 358,
+    "default_baseline_sha256": "6dcd15f7927df93540c77933f7787a30b249e31c482040ed77549d9db44dcfd5",
+    "research_baseline_sha256": "7899073e7545eaf241d0c6a1241c25daebfbdefbd36d6bd9f552fa1522047fcc",
+    "baseline_expanded": false,
+    "remote_reproduced": true,
+    "log_sha256": "93de2574aa4264f11bd9787c352f76d239a14f620315dac7ceb80215616551ab",
+    "elapsed_seconds": 70.56292939186096,
+    "non_dead_diagnostics": 0
+  },
+  "completed_at_local_date": "2026-09-13",
+  "final_result_sha256": "d3e44763d2b2075f7b08ea97e56a4a16806e219bc8c3b7be0edd48cd0f386855",
+  "final_run": {
+    "verdict": "PASS",
+    "elapsed_seconds": 561.1468919944018,
+    "single_outer_lease": true,
+    "all_command_returncodes_zero": true,
+    "result_sha256": "d3e44763d2b2075f7b08ea97e56a4a16806e219bc8c3b7be0edd48cd0f386855",
+    "local_artifact_root": "/home/ubu/.cache/lay/development/td126-final4-20260912-LHBMzvAX",
+    "remote_artifact_root": "/home/e/projects/lay-development-runner/td126-final4-LHBMzvAX"
+  }
+}

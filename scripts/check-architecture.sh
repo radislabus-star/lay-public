@@ -213,8 +213,14 @@ assert_text_mutation_call_owners \
   "IBus committed-tail replacement must stay inside approved IME backend owners" \
   src/bin/lay_ibus_engine/state.rs \
   src/bin/lay_ibus_engine/committed_tail.rs \
-  src/bin/lay_ibus_engine/bridge_actions.rs \
   src/bin/lay_ibus_engine/composition_commit.rs
+
+assert_text_mutation_call_owners \
+  "replace_committed_tail_with_effect_progress(" \
+  "effect-aware IBus committed-tail replacement must stay inside approved IME backend owners" \
+  src/bin/lay_ibus_engine/state.rs \
+  src/bin/lay_ibus_engine/committed_tail.rs \
+  src/bin/lay_ibus_engine/window_interaction/execution.rs
 
 assert_text_mutation_call_owners \
   "commit_active_composition(" \
@@ -619,7 +625,7 @@ assert_single_owner "pub fn choose_typing_candidate" "src/typing_candidate/ranki
 assert_single_owner "pub fn classify_typing_confidence" "src/typing_candidate/confidence.rs"
 assert_single_owner "pub fn score_typing_candidate" "src/typing_candidate/scoring.rs"
 assert_single_owner "pub fn classify_typing_rule" "src/typing_candidate/scoring.rs"
-assert_single_owner "pub fn typing_assist_pipeline_for_context" "src/typing_context/pipeline.rs"
+assert_single_owner "pub fn typing_assist_pipeline_for_context(" "src/typing_context/pipeline.rs"
 assert_single_owner "pub fn should_enable_ascii_to_ru_layout" "src/typing_context/layout_signal.rs"
 assert_single_owner "pub fn completed_tail_context" "src/typing_context/context_window.rs"
 assert_single_owner "fn strong_ascii_to_ru_layout_candidate" "src/typing_context/layout_signal/candidate.rs"

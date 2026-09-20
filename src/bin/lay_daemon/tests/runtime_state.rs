@@ -8,7 +8,9 @@ use crate::correction_memory_runtime::{
     remember_manual_text_correction, ManualTextCorrectionMemory,
 };
 use crate::pending_typing_assist::PendingTypingAssist;
-use crate::trigger_dispatch::apply_manual_correction_result;
+use crate::trigger_dispatch::{
+    apply_manual_correction_result, complete_manual_trigger, ManualTriggerCompletion,
+};
 use crate::typing_key_runtime::{handle_typing_key_press, TypingKeyContext};
 
 fn test_text_context() -> DaemonTextContext {
@@ -17,6 +19,45 @@ fn test_text_context() -> DaemonTextContext {
 
 fn default_shift_state() -> ShiftState {
     ShiftState::default()
+}
+
+#[test]
+fn queued_completion_preserves_every_partial_successor_in_real_completion_path() {
+    for successor in [
+        DShiftState::FirstPress,
+        DShiftState::WaitingSecond {
+            first_release: Instant::now(),
+        },
+        DShiftState::SecondPress,
+    ] {
+        let mut current_layout_is_ru = false;
+        let mut last_layout_poll = Instant::now();
+        let mut suppress = false;
+        let mut pending_assist = None;
+        let mut shift_state = ShiftState::default();
+        let mut dshift_state = successor;
+        let mut pending_multi_tap = None;
+        let mut last_double_at = None;
+        let mut clear_on_next_typing = false;
+        complete_manual_trigger(
+            None,
+            ManualTriggerCompletion {
+                current_layout_is_ru: &mut current_layout_is_ru,
+                last_layout_poll: &mut last_layout_poll,
+                suppress_next_typing_assist_after_manual_replay: &mut suppress,
+                pending_typing_assist_after_space: &mut pending_assist,
+                shift_state: &mut shift_state,
+                dshift_state: &mut dshift_state,
+                pending_multi_tap: &mut pending_multi_tap,
+                last_double_at: &mut last_double_at,
+                clear_on_next_typing: &mut clear_on_next_typing,
+                preserve_queued_dshift_state: true,
+            },
+        );
+        assert_eq!(dshift_state, successor);
+        assert!(clear_on_next_typing);
+        assert!(last_double_at.is_some());
+    }
 }
 
 fn pending_typing_assist() -> Option<PendingTypingAssist> {

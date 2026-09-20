@@ -1,5 +1,5 @@
 const CONTROL_MASK: u32 = 1 << 2;
-const MOD1_MASK: u32 = 1 << 3;
+pub(crate) const MOD1_MASK: u32 = 1 << 3;
 const MOD4_MASK: u32 = 1 << 6;
 const SUPER_MASK: u32 = 1 << 26;
 const HYPER_MASK: u32 = 1 << 27;

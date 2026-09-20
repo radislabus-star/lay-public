@@ -1,0 +1,94 @@
+{
+  "schema": "lay.external-tail-lease-preflight.v1",
+  "status": "V3_CAUSAL_RED_RUNTIME_UNCHANGED",
+  "date": "2026-09-12",
+  "installed_v3_source": {
+    "archive": "/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2/source.tar",
+    "archive_sha256": "bf8665188a62e077b7095843480b67b1d67aefc835ad4760fa024dee04d407a6",
+    "immutable": true
+  },
+  "disposable_copy": {
+    "path": "/tmp/lay-v3-cycle09-red-nvk0gp37",
+    "format_normalization": {
+      "reason": "The frozen archive predates the current mandatory rustfmt gate. Only rustfmt-equivalent ordering and wrapping changes were committed before the test-only delta.",
+      "commit": "2de10f9b0d4d33606d660a8dc33fb85b0510cbdb",
+      "patch_sha256": "68d9d666bab7f4b43e6fa5b34539b05ef60927a09b34dc2ca6b8a71f7d06087d",
+      "files": [
+        {
+          "path": "src/bin/lay_ibus_engine/context_runtime.rs",
+          "original_sha256": "5b2ace9e4f34698e4b21aefb6cf83e9bbcfc2335d97a376bd350a51219a375fc",
+          "normalized_sha256": "84411bf557ddb4f7a245c6418ecb98e2917bfbc6d182fd8828ebbb572451ea18"
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/shift.rs",
+          "original_sha256": "3b0ec9c178363a563533f13ab1098d887d1b86a7e9a99122f47bcc1f141256cf",
+          "normalized_sha256": "a5aaab2c80cdccf2a8fdd69127c04d0c7826f397a20115e6f3b416a33e910004"
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/state.rs",
+          "original_sha256": "6da91f068c9cae5bc3a38baea26892e0a9b05590ea8faeefdd339b20f2224e76",
+          "normalized_sha256": "92982c28e79fe6420819c83f7dcd4afe826418737ce12557bfae5cde07e07fd0"
+        }
+      ]
+    },
+    "uncommitted_test_only_patch": {
+      "sha256": "e8aa01a972b59a4a869b06a8dfd2a737aa8d1256b18ff2f1149051329a0d17df",
+      "changed_files": [
+        "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+      ],
+      "test": "context_admission::adapter::tests::word_scope::residuals::exact_replay_requires_current_unselected_external_tail_at_each_lease"
+    }
+  },
+  "remote_check": {
+    "command": "python3 scripts/dev-check.py check --target bin:lay-ibus-engine",
+    "resource_profile": "dedicated-20cpu",
+    "local_receipt": "/home/ubu/.cache/lay/development/run-nv1eixc9",
+    "remote_run": "/home/e/projects/lay-development-runner/run-QRC4BO",
+    "remote_snapshot_sha256": "5eb0ae955c0aae64b28931a025f4cfde9aec07894b5b69efc51279658583e26e",
+    "format_check": "PASS",
+    "focused_selected": 466,
+    "focused_failures": 2,
+    "verdict": "EXPECTED_RED"
+  },
+  "new_regression": {
+    "denominator": {
+      "positive": 2,
+      "negative": 7
+    },
+    "positive_exact_match": "PASS_THROUGH_TARGET_SUPPRESSION",
+    "positive_exact_match_with_trailing_boundary": "PASS_THROUGH_TARGET_SUPPRESSION",
+    "negative_results": {
+      "source_shorter": "FALSE_ACCEPT",
+      "target_shorter_after_ru_factory_handoff": "FALSE_ACCEPT",
+      "target_changed_after_visible_tail_before_suppression": "FALSE_ACCEPT",
+      "source_same_final_token_missing_boundary": "FALSE_ACCEPT",
+      "source_selection": "FALSE_ACCEPT",
+      "source_missing_snapshot": "FALSE_ACCEPT",
+      "stale_context_identity": "REJECTED"
+    },
+    "false_accepts": 6,
+    "causal_red": true,
+    "local_ibus_delete_or_commit_effects": 0
+  },
+  "separate_existing_failure": {
+    "test": "tail_memory::tests::focus_engine_can_refresh_empty_tail_from_shared_handoff",
+    "failure": "assertion left empty, right вот",
+    "touched_by_test_patch": false,
+    "isolated_without_new_test": {
+      "local_receipt": "/home/ubu/.cache/lay/development/run-rivdkaou",
+      "remote_run": "/home/e/projects/lay-development-runner/run-n8n3et",
+      "selected": 465,
+      "failures": 1,
+      "new_test_present": false
+    }
+  },
+  "not_tested": [
+    "client transport selection",
+    "which insertion was lost",
+    "physical input grab or uinput replay",
+    "final client-visible text",
+    "latency, RSS, package size",
+    "installed runtime"
+  ],
+  "runtime_authority_changed": false
+}

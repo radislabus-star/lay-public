@@ -22,6 +22,17 @@ const DEBUG_LOG_CHANNEL_CAPACITY: usize = 4096;
 const PENDING_LINE_FLUSH_LIMIT: usize = 2048;
 const MAX_LOG_BYTES: u64 = 500 * 1024;
 
+pub fn ibus_runtime_trace_path() -> PathBuf {
+    std::env::var_os("LAY_IBUS_TRACE_PATH")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| {
+            std::env::var_os("HOME")
+                .map(PathBuf::from)
+                .unwrap_or_else(|| PathBuf::from("/tmp"))
+                .join(".local/share/lay/ibus_engine_debug.jsonl")
+        })
+}
+
 #[cfg(not(test))]
 struct DebugLogLine {
     path: PathBuf,

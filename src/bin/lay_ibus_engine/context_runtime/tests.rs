@@ -162,6 +162,64 @@ fn first_word_tab_appends_only_selected_suffix_without_whole_word_feedback() {
 }
 
 #[test]
+fn exact_appended_span_advances_unknown_scope_on_press_or_release() {
+    for state in [0, crate::protocol::RELEASE_MASK] {
+        let mut fixture =
+            installed_engine("/engine/exact_append_span", WordCompleteness::UnknownStart);
+        fixture.engine.committed_tail.buffer = "abcdef".into();
+        fixture
+            .engine
+            .advance_context_word_scope(KEY_LEFT_SHIFT, 42, state, "abc", true);
+        let scope = fixture.engine.context_word_scope.unwrap();
+        assert_eq!(scope.lineage().completeness, WordCompleteness::UnknownStart);
+        assert_eq!(scope.lineage().observed_suffix_chars, 3);
+    }
+
+    let mut fixture = installed_engine(
+        "/engine/exact_append_boundary",
+        WordCompleteness::UnknownStart,
+    );
+    fixture.engine.committed_tail.buffer = "abcdef ".into();
+    fixture.engine.advance_context_word_scope(
+        KEY_LEFT_SHIFT,
+        42,
+        crate::protocol::RELEASE_MASK,
+        "abc",
+        true,
+    );
+    assert_eq!(
+        fixture
+            .engine
+            .context_word_scope
+            .unwrap()
+            .lineage()
+            .completeness,
+        WordCompleteness::KnownStart
+    );
+
+    let mut unchanged = installed_engine(
+        "/engine/unchanged_saturated_release",
+        WordCompleteness::UnknownStart,
+    );
+    let saturated = "a".repeat(crate::preedit::PREEDIT_TAIL_LIMIT);
+    unchanged
+        .engine
+        .committed_tail
+        .buffer
+        .clone_from(&saturated);
+    unchanged.engine.advance_context_word_scope(
+        KEY_LEFT_SHIFT,
+        42,
+        crate::protocol::RELEASE_MASK,
+        &saturated,
+        true,
+    );
+    let scope = unchanged.engine.context_word_scope.unwrap();
+    assert_eq!(scope.lineage().completeness, WordCompleteness::UnknownStart);
+    assert_eq!(scope.lineage().observed_suffix_chars, 0);
+}
+
+#[test]
 fn first_word_snapshot_contradictions_refuse_display_and_tab_without_text_effects() {
     for (text, cursor, anchor) in [
         ("запров", 6, 6),
@@ -451,6 +509,7 @@ fn transfer_fixture(
         frame_generation: FrameGeneration(9),
         invalidate_prior_authority: true,
         receipt_origin: ReceiptOrigin::Native,
+        exact_manual_snapshot: None,
     };
     let outcome = ActivationOutcome::Transfer(transfer);
     adapter.test_bind_activation_outcome(&outcome);

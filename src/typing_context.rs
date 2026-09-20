@@ -17,7 +17,9 @@ mod tokens;
 
 pub use context_window::completed_tail_context;
 pub use layout_signal::should_enable_ascii_to_ru_layout;
-pub use pipeline::typing_assist_pipeline_for_context;
+pub use pipeline::{
+    typing_assist_pipeline_for_context, typing_assist_pipeline_for_context_with_layout,
+};
 pub(crate) use syntax_guard::syntax_allows_candidate;
 
 #[cfg(test)]

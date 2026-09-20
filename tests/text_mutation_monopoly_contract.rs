@@ -315,6 +315,32 @@ fn live_text_mutation_outputs_use_executor_contract() {
         "executor must issue a sealed AuthorizedEdit capability"
     );
 
+    let effect_aware_committed_tail_owners = [
+        "src/bin/lay_ibus_engine/state.rs",
+        "src/bin/lay_ibus_engine/committed_tail.rs",
+        "src/bin/lay_ibus_engine/window_interaction/execution.rs",
+    ];
+    assert!(
+        !Path::new(ROOT)
+            .join("src/bin/lay_ibus_engine/bridge_actions.rs")
+            .exists(),
+        "the deleted bridge_actions mutation owner must stay deleted"
+    );
+    for path in source_files("src/bin/lay_ibus_engine") {
+        let relative = path
+            .strip_prefix(ROOT)
+            .expect("runtime source is under repository root")
+            .to_string_lossy()
+            .replace('\\', "/");
+        let source = std::fs::read_to_string(&path).expect("runtime source");
+        if source.contains("replace_committed_tail_with_effect_progress(") {
+            assert!(
+                effect_aware_committed_tail_owners.contains(&relative.as_str()),
+                "{relative} must not call the effect-aware committed-tail mutator"
+            );
+        }
+    }
+
     let daemon_pipeline = read("src/bin/lay_daemon/text_output/replacement.rs");
     assert!(
         daemon_pipeline.contains("pub(crate) fn apply_text_replacement_pipeline")
@@ -575,9 +601,12 @@ fn dispatched_text_edit_cannot_fall_through_to_a_second_backend() {
     );
 
     let ibus_interface = read("src/bin/lay_ibus_engine/ibus_interface.rs");
+    let output = read("src/bin/lay_ibus_engine/output.rs");
     assert!(
         ibus_interface.contains("name = \"RequireSurroundingText\"")
-            && ibus_interface.contains("Self::require_surrounding_text(&emitter)"),
+            && ibus_interface.contains("Self::require_surrounding_text(&emitter)")
+            && output.contains("async fn require_surrounding_text")
+            && output.contains("LayIbusEngine::require_surrounding_text(emitter)"),
         "IME enable must activate the standard IBus surrounding-text contract"
     );
 }
@@ -638,15 +667,16 @@ fn ime_auto_undo_restores_pending_snapshot_on_backend_error() {
         std::fs::read_to_string(Path::new(ROOT).join("src/bin/lay_ibus_engine/committed_tail.rs"))
             .expect("committed-tail source");
     let function = source
-        .split("pub(super) async fn undo_last_ime_autocorrect")
+        .split("pub(super) async fn undo_last_ime_autocorrect_with_effect_progress")
         .nth(1)
-        .expect("auto-undo function")
+        .expect("effect-aware auto-undo function")
         .split("fn committed_tail_toggle_plan")
         .next()
         .expect("bounded auto-undo function");
 
     assert!(function.contains("Err(error) =>"));
     assert!(function.contains("self.restore_pending_ime_auto_undo(pending);"));
+    assert!(function.contains("replace_committed_tail_with_effect_progress(emitter, request)"));
     assert!(!function.contains("replace_committed_tail(emitter, request).await?"));
 }
 

@@ -48,6 +48,13 @@ impl TypingCpu {
         candidate_gate::live_completion_readout(request)
     }
 
+    /// Cache-only material lookup. Context and publication authority belong to the caller.
+    pub fn cached_live_completion_candidates(
+        request: LiveCompletionRequest<'_>,
+    ) -> Option<Vec<LiveCompletionCandidate>> {
+        candidate_gate::cached_live_completion_candidates(request)
+    }
+
     pub fn clear_last_live_completion_timing() {
         candidate_gate::clear_last_live_completion_timing();
     }
@@ -68,8 +75,8 @@ impl TypingCpu {
         crate::nanda_wave::ensure_ime_runtime_warmup_started(nanda_autocorrect);
     }
 
-    pub fn warm_l2_for_ime() {
-        crate::nanda_wave::warm_up_l2_for_ime();
+    pub fn warm_l2_for_ime() -> bool {
+        crate::nanda_wave::warm_up_l2_for_ime()
     }
 
     pub fn ensure_l11_service_started() -> std::io::Result<Option<L11ServiceEnsureReport>> {

@@ -838,6 +838,7 @@ fn l2_form_attractor_does_not_rewrite_stable_word() {
 #[test]
 fn l2_form_attractor_does_not_rewrite_known_verb_form() {
     assert!(surface_motif_stable_existing_word("можем"));
+    assert!(surface_motif_stable_existing_word("наполняют"));
     assert!(!surface_motif_stable_existing_word("пукнт"));
     assert!(!surface_motif_stable_existing_word("звгрузи"));
 
@@ -864,6 +865,26 @@ fn l2_form_attractor_does_not_rewrite_known_verb_form() {
                 !matches!(candidate.text.as_str(), "проверка модем" | "проверка может")
             }),
             "known verb form leaked phrase drift candidates: {candidates:?}"
+        );
+    }
+
+    for original in ["наполняют ", "они наполняют "] {
+        let l1 = run_l1(original);
+        let candidates = run_l2(original, &l1);
+        assert!(
+            candidates.iter().all(|candidate| {
+                !matches!(
+                    candidate.source,
+                    L2_SURFACE_MOTIF_CELL | LEXICAL_ATTRACTOR_CELL
+                ) || candidate.text == original.trim_end()
+            }),
+            "known -ять present form should not drift: {candidates:?}"
+        );
+        assert!(
+            candidates
+                .iter()
+                .all(|candidate| !candidate.text.ends_with("наполняю")),
+            "known -ять present form leaked shorter neighboring form: {candidates:?}"
         );
     }
 }
@@ -896,7 +917,9 @@ fn l2_surface_motif_does_not_treat_usage_typo_as_stable_word() {
 
 #[test]
 fn l2_surface_motif_memory_recovers_missing_letter_without_fuzzy_route() {
-    let candidates = surface_motif_memory().surface_candidates("звгрузи", 8);
+    let candidates = surface_motif_memory()
+        .expect("installed lexical fixture")
+        .surface_candidates("звгрузи", 8);
     assert!(
         candidates
             .iter()
@@ -915,7 +938,9 @@ fn lexical_phase_field_recovers_inflected_forms_from_compiled_transition_mass() 
         ("исправленно", "исправлено"),
     ];
     for (input, expected) in cases {
-        let candidates = surface_motif_memory().surface_candidates(input, 32);
+        let candidates = surface_motif_memory()
+            .expect("installed lexical fixture")
+            .surface_candidates(input, 32);
         assert!(
             candidates
                 .iter()
@@ -1061,7 +1086,9 @@ fn l2_surface_motif_memory_recovers_common_shadow_words() {
         ("ффективная", "эффективная"),
         ("ффетивная", "эффективная"),
     ] {
-        let candidates = surface_motif_memory().surface_candidates(input, 32);
+        let candidates = surface_motif_memory()
+            .expect("installed lexical fixture")
+            .surface_candidates(input, 32);
         assert!(
             candidates
                 .iter()
@@ -1080,7 +1107,9 @@ fn l2_surface_motif_cell_promotes_common_shadow_words() {
     ] {
         let l1 = run_l1(input);
         let candidates = run_l2(input, &l1);
-        let surface_candidates = surface_motif_memory().surface_candidates(input.trim(), 24);
+        let surface_candidates = surface_motif_memory()
+            .expect("installed lexical fixture")
+            .surface_candidates(input.trim(), 24);
         assert!(
                 candidates.iter().any(|candidate| {
                     candidate.source == L2_SURFACE_MOTIF_CELL && candidate.text == expected

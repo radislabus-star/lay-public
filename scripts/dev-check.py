@@ -215,9 +215,26 @@ with tarfile.open(p/'source.tar') as t:
                "remote": config["remote"], "returncode": completed.returncode,
                "result_fetched": fetched.returncode == 0,
                "elapsed_seconds": time.monotonic() - started})
-    print(f"development_check rc={completed.returncode} local={result} remote={remote_run}", flush=True)
-    if fetched.returncode == 0:
-        receipt = json.loads((result / "RESULT.json").read_text())
+    receipt = json.loads((result / "RESULT.json").read_text()) if fetched.returncode == 0 else None
+    if args.compact:
+        status = (receipt.get("verdict", "FAIL") if completed.returncode == 0 else "FAIL") if receipt else "BLOCKED"
+        summary = {"status": status, "scope": "development_only_not_release",
+                   "tests": receipt.get("tests") if receipt else None,
+                   "seconds": round(time.monotonic() - started, 1),
+                   "report": str(result / "RESULT.json"), "log": str(result / "run.log")}
+        if status != "PASS":
+            summary["failed_step"] = next((item["argv"] for item in (receipt or {}).get("commands", [])
+                                           if item.get("returncode")), None)
+            summary["failures"] = (receipt or {}).get("test_failures", [])
+            summary["error"] = (receipt or {}).get("error") or (
+                "remote result unavailable" if receipt is None else None)
+            with (result / "run.log").open("rb") as log:
+                log.seek(max(0, (result / "run.log").stat().st_size - 2048))
+                summary["diagnostic"] = log.read().decode(errors="replace")
+        print(json.dumps(summary, separators=(",", ":")), flush=True)
+    else:
+        print(f"development_check rc={completed.returncode} local={result} remote={remote_run}", flush=True)
+    if receipt is not None and not args.compact:
         print(json.dumps({key: receipt.get(key) for key in
                           ("verdict", "scope", "elapsed_seconds", "commands", "error")}, indent=2))
     return completed.returncode or (0 if fetched.returncode == 0 else 1)
@@ -315,6 +332,13 @@ def worker(request_path: Path) -> int:
         status = 1
     result.update(returncode=status, verdict="PASS" if status == 0 else "FAIL",
                   elapsed_seconds=time.monotonic() - started)
+    summary_path = run / "tests/SUMMARY.json"
+    if summary_path.is_file():
+        summary = json.loads(summary_path.read_text())
+        result["tests"] = {key: summary[key] for key in
+                           ("selected", "executed", "passed", "failed")
+                           if type(summary.get(key)) is int}
+        result["test_failures"] = summary.get("failures", [])[:8]
     write_json(run / "RESULT.json", result)
     return status
 
@@ -326,6 +350,7 @@ def main(argv=None) -> int:
     parser.add_argument("--base", help="also include committed changes since this Git ref")
     parser.add_argument("--target", action="append", default=[], help="explicit development scope, not affected-closure proof")
     parser.add_argument("--client-config", help="absolute configuration path on the remote host")
+    parser.add_argument("--compact", action="store_true", help="one JSON completion line; full logs stay on disk")
     parser.add_argument("--request", type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     try:

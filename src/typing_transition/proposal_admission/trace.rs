@@ -45,7 +45,7 @@ const ADMISSION_TRACE_STAGE_NAMES: [&str; ADMISSION_TRACE_STAGE_COUNT] = [
 ];
 
 #[cfg(test)]
-const ADMISSION_TRACE_REASON_NAMES: [&str; 43] = [
+const ADMISSION_TRACE_REASON_NAMES: [&str; 44] = [
     "unchanged",
     "unexplained_signal_loss",
     "word_count_shrink_requires_boundary_class",
@@ -86,6 +86,7 @@ const ADMISSION_TRACE_REASON_NAMES: [&str; 43] = [
     "unknown_error_class",
     "class_allows_apply",
     "productive_v90_lattice_requires_common_l3",
+    "productive_v90_incomplete_exact_search",
     "productive_v90_lattice_abstained",
     "productive_v90_lattice_unavailable",
     "productive_v90_non_winner_requires_common_l3",

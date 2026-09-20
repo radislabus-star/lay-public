@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2720,
+    "correctness": 2829,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 27,
-    "target": 2755
+    "target": 2864
   },
   "package_fixtures": [
     {
@@ -676,27 +676,6 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "bridge_actions::tests::daemon_authority_exposes_its_typed_ime_observation_without_claiming_ime_ownership",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "bridge_actions::tests::exact_handoff_cancellation_requires_matching_path_and_epoch",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "bridge_actions::tests::manual_toggle_delegates_each_passive_authority_to_its_typed_daemon_route",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
       "name": "bridge_policy::tests::daemon_boundary_autocorrect_kinds_suppress_inner_ime_repeat",
       "target": "bin:lay-ibus-engine"
     },
@@ -1222,6 +1201,27 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::native_transfer::td121_e0_e1_e2_delayed_handlers_install_only_latest_and_reject_late_e1_frame",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::native_transfer::td121_pending_cross_profile_reset_or_content_type_retains_source_free_unknown_request",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::native_transfer::td121_pending_transfer_config_and_controlled_material_change_refuse_stale_frame_authority",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::receive_order_key_blocks_focus_out_seal_until_handler_settlement",
       "target": "bin:lay-ibus-engine"
     },
@@ -1230,6 +1230,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::td121_expired_background_activation_clears_for_next_target_bound_fence",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::td121_false_global_mode_refuses_authority_and_literal_delivery_is_exact",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::td121_legacy_letters_and_space_settle_exactly_before_held_get_release",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -1257,7 +1271,21 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::td121_pending_acquisition_owner_loss_rejects_late_completion_and_fresh_literal_is_exact",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::td121_slow_compatibility_get_does_not_hold_actual_key_callback",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::td121_unverified_bootstrap_failure_is_bounded_and_fresh_literal_has_no_transfer_authority",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -1314,6 +1342,146 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::next_factory_keeps_ready_predecessor_until_delayed_source_installation",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::exact_replay_requires_current_unselected_external_tail_at_each_lease",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_bridge_accepts_shift_received_before_marker_and_dispatches_it_once",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_bridge_publication_survives_shift_received_after_reset_suffix_binding",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_bridge_readonly_shift_does_not_exempt_other_input_or_lifecycle",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_confirmed_reset_allows_suffix_frame_tab_effect_and_exact_manual_tail",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_confirmed_reset_alt_preparation_preserves_receipt_until_actual_append",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_exact_client_receipt_wins_when_typed_token_equals_retired_presentation",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_fresh_surrounding_after_confirmed_append_rearms_next_reset",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_initial_delayed_prefix_cannot_survive_contradiction_or_input_gap",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_initial_delayed_prefix_recovers_only_after_append_reset_and_exact_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_native_replay_append_preserves_reset_lineage_until_exact_tail",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_observed_reset_after_release_preserves_prefix_in_both_callback_orders",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_published_preedit_retention_refuses_unproved_or_contradictory_snapshots",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_readonly_shift_keeps_callback_queue_bound",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_replay_reset_receipt_rejects_revoked_scope_and_context",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_reset_alt_preparation_cannot_accept_across_intervening_gaps",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_reset_retains_known_word_or_closed_observed_tail",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_reset_suffix_frame_and_tab_refuse_unconfirmed_or_invalid_receipts",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_retired_published_preedit_preserves_only_lineage_until_exact_client_text",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_revoked_release_retirement_cannot_hide_effects_gaps_or_foreign_content",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -1432,6 +1600,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::residual_known_numeric_word_bridge_refuses_without_delegation_or_output",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::residual_later_empty_factory_isolated_from_stale_focus_before_or_after_old_bind",
       "target": "bin:lay-ibus-engine"
     },
@@ -1516,6 +1691,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::residual_pending_auto_undo_bridge_keeps_ime_ownership_without_delegation",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::residual_pending_get_rejects_unrelated_or_malformed_content_type_without_revival",
       "target": "bin:lay-ibus-engine"
     },
@@ -1551,6 +1733,20 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::residual_reset_rereceipt_failures_never_delete_gui_text",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::residual_reset_rereceipt_rejoins_typed_daemon_exact_route",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::residual_reset_unknown_witness_is_not_revived_by_foreign_or_focus_out",
       "target": "bin:lay-ibus-engine"
     },
@@ -1559,6 +1755,314 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::residual_taken_transfer_rejects_same_owner_revocation_before_install",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_alt_before_exact_receipt_cannot_accept_later_cached_hint",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_captured_target_snapshot_cannot_survive_layout_a_b_a",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_compatibility_request_fits_five_milliseconds_then_forced_expiry_clears",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_completion_boundary_backspace_cannot_resurrect_the_completed_word",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_default_bridge_still_refuses_the_same_delayed_marker",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_default_compatibility_activation_survives_marker_beyond_bridge_deadline",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_default_native_activation_survives_marker_beyond_bridge_deadline",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_delayed_activation_revalidates_nonce_and_lifecycle",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_exact_receipt_publishes_cached_current_suffix_before_alt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_expired_inherited_snapshot_cannot_authorize_visible_tail_or_suppression",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_late_boundary_receipt_cannot_restore_contradiction_or_intervening_input",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_literal_boundary_retains_observed_tail_through_late_reset_prefixes",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_non_effectful_completion_routes_cannot_promote_unknown_start",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_pending_reset_schedules_material_without_publication_authority",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_pending_worker_fills_missing_material_before_exact_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_preinstall_target_observation_never_inherits_the_source_snapshot",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_published_source_free_refocus_prompt_compatibility_reply_is_ready",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_same_context_target_without_a_fresh_snapshot_keeps_the_controlled_handoff_lease",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_successful_completion_release_settles_its_append_and_boundary_effect",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_target_capability_change_after_transfer_invalidates_the_inherited_snapshot",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_visible_tail_denial_is_passive_until_the_exact_callback_settles",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::td121_observed_bridge_expiry_releases_only_its_own_slot",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::completed_exact_replay_retires_before_ordinary_managed_input",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::completed_expired_exact_replay_cannot_consume_the_next_ordinary_key",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::exact_replay_active_path_and_expiry_refuse_before_text_effect",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::exact_replay_duplicate_and_identity_mismatches_revoke_without_text_effect",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::exact_replay_order_and_visible_glyph_mismatches_revoke_without_text_effect",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::exact_replay_unhandled_callback_preserves_six_complete_transactions",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::ordinary_unknown_start_input_reaches_the_precognition_schedule_probe",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_aborted_second_exact_capture_does_not_consume_enter",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_batched_reset_callbacks_cannot_restore_invalidated_provenance",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_batched_reset_callbacks_retain_provenance_until_final_exact_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_completed_replay_delayed_client_surfaces_require_final_exact_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_completed_replay_preserved_prefix_and_consumed_receipt_are_not_rearmed",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_completed_replay_prior_surface_cannot_hide_contradiction",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_completed_unknown_replay_exports_tail_before_the_next_manual_toggle",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_firefox_coarse_reset_receipts_separate_readout_from_replay_confirmation",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_interleaved_replay_history_rejects_future_or_invalid_surfaces",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_interleaved_replay_reset_retains_history_through_final_exact_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_native_engine_dispatch_preserves_burst_order_and_exact_replay",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_next_exact_handoff_cannot_retire_incomplete_or_mismatched_replay",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_soft_reset_does_not_preserve_invalid_exact_replay_scopes",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_text_free_soft_reset_during_exact_replay_preserves_progress_epoch",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::td121_visible_tail_refuses_unqualified_unknown_suffixes_without_side_effects",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -1873,6 +2377,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::tests::stale_foreign_snapshot_publish_cannot_clear_the_current_owner_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::tests::stale_settlement_revokes_but_old_owner_callbacks_cannot_modify_the_new_owner",
       "target": "bin:lay-ibus-engine"
     },
@@ -1895,118 +2406,6 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::tests::unknown_start_is_sticky_until_next_observed_boundary",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::bridge_output_scope_clears_its_witness_on_success_and_cancellation",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::first_word_refuses_unobserved_sensitive_missing_snapshot_and_replacement_paths",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::first_word_repeated_surrounding_ack_keeps_visible_tab_completion",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::first_word_snapshot_contradictions_refuse_display_and_tab_without_text_effects",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::first_word_stale_lineage_cannot_reuse_equal_text_display_frame",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::first_word_suffix_has_display_identity_but_no_whole_word_edit_identity",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::first_word_tab_appends_only_selected_suffix_without_whole_word_feedback",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::td121_atomic_known_commit_and_stale_token_refusal",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::td121_known_start_actual_tab_accepts_complete_word",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::td121_late_activation_failure_cannot_overwrite_newer_shared_owner",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::td121_runtime_rejects_different_field_aba_epoch_and_stale_owner_generation",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::td121_same_context_transfer_preserves_full_and_mixed_partial_words",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::td121_stale_source_free_grant_cannot_overwrite_newer_shared_owner",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::td121_unknown_space_then_boundary_backspace_refuses_tab_completion",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::td121_unknown_start_actual_space_delivers_literal_without_correction_or_feedback",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "context_runtime::tests::td121_unknown_start_actual_tab_refuses_active_composition_without_output_or_feedback",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -3014,7 +3413,7 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "correction_runtime::request::tests::output_routes_keep_configured_and_uinput_ownership_distinct",
+      "name": "correction_runtime::request::tests::output_route_and_input_isolation_are_independent_contracts",
       "target": "bin:lay-daemon"
     },
     {
@@ -3833,14 +4232,14 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "ibus_interface::causal_precondition_tests::causal_precondition_undo_precedes_stale_postcondition_quarantine",
+      "name": "ibus_interface::causal_precondition_tests::physical_double_shift_owner_legacy_boundary_has_no_edit_capability",
       "target": "bin:lay-ibus-engine"
     },
     {
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "ibus_interface::causal_precondition_tests::physical_double_shift_owner_legacy_boundary_has_no_edit_capability",
+      "name": "ibus_interface::causal_precondition_tests::physical_double_shift_owner_legacy_observation_has_no_cleanup_or_word_effect",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -5688,7 +6087,28 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "nanda_wave::candidate_gate::cache::tests::inflight_completed_readout_cannot_repopulate_after_clear",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::candidate_gate::cache::tests::material_generation_is_part_of_completed_readout_identity",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "nanda_wave::candidate_gate::tests::ascii_lexical_neighbor_cannot_outrank_exact_layout_replacement",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::candidate_gate::tests::cache_only_readout_preserves_complete_gate_and_does_no_work_on_miss",
       "target": "lib:lay"
     },
     {
@@ -13318,7 +13738,35 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "physical_input_grab::tests::queued_left_shift_pairs_remain_exact_inverse_gestures",
+      "name": "physical_input_grab::tests::balanced_pair_emits_once_before_callback_and_failure_blocks_callback",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "physical_input_grab::tests::modifier_replay_is_bounded_and_tracks_command_chords",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "physical_input_grab::tests::multiple_pairs_receive_current_layout_and_word_buffer_remains_fifo",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "physical_input_grab::tests::repeats_do_not_create_or_cancel_taps_and_other_press_cancels",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "physical_input_grab::tests::shared_fsm_preserves_every_internal_partition_without_virtual_partial_output",
       "target": "bin:lay-daemon"
     },
     {
@@ -13340,6 +13788,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "precognition_worker::tests::superseded_generation_cannot_be_applied",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "preedit::preedit_readout_contract::cached_projection_cannot_omit_applicable_semantic_source",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "preedit::preedit_readout_contract::cached_projection_preserves_shared_order_and_declined_targets",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -14368,6 +14830,41 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "server::tests::startup_gate_accepts_completed_unavailable_exact_capability",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "server::tests::startup_gate_rejects_completion_observed_after_deadline",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "server::tests::startup_gate_rejects_conflicting_worker_completion",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "server::tests::startup_gate_reports_worker_loss_before_publication",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "server::tests::startup_gate_uses_one_absolute_deadline_after_partial_completion",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "settings_desktop_entry_and_tray_use_the_same_standalone_entrypoint",
       "target": "test:tray_ui_contract"
     },
@@ -14936,6 +15433,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "tail_memory::tests::pending_system_feedback_waits_for_visible_postcondition",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tail_memory::tests::stale_source_exact_cleanup_cannot_clear_target_current_word_scope",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -15853,6 +16357,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "tests::runtime_state::pre_poll_backspace_release_does_not_cancel_pending_assist",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::queued_completion_preserves_every_partial_successor_in_real_completion_path",
       "target": "bin:lay-daemon"
     },
     {
@@ -17392,6 +17903,20 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "text_output::key_emit::tests::failed_balanced_shift_pair_preserves_first_error_and_releases_all_keys",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "text_output::key_emit::tests::failed_command_chord_preserves_first_error_and_releases_every_virtual_key",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "text_output::key_emit::tests::failed_frame_attempts_release_of_every_virtual_key",
       "target": "bin:lay-daemon"
     },
@@ -17499,6 +18024,13 @@
       "lane": "correctness",
       "name": "token_language::tests::recognizes_known_ru_and_en_tokens",
       "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "trace::tests::admission_diagnostic_trace_is_fixed_metadata_without_user_text",
+      "target": "bin:lay-ibus-engine"
     },
     {
       "isolation": "target",
@@ -19228,6 +19760,237 @@
       "lane": "correctness",
       "name": "visible_tail_decision_delegates_to_transition_core",
       "target": "test:typing_transition_authority_contract"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::authority::tests::daemon_authority_exposes_its_typed_ime_observation_without_claiming_ime_ownership",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::authority::tests::exact_handoff_cancellation_requires_matching_path_and_epoch",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::authority::tests::manual_toggle_projects_only_the_actual_execution_disposition",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::causal_precondition_order_tests::causal_precondition_undo_precedes_stale_postcondition_quarantine",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::bridge_output_scope_clears_its_witness_on_success_and_cancellation",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::exact_appended_span_advances_unknown_scope_on_press_or_release",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::first_word_refuses_unobserved_sensitive_missing_snapshot_and_replacement_paths",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::first_word_repeated_surrounding_ack_keeps_visible_tab_completion",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::first_word_snapshot_contradictions_refuse_display_and_tab_without_text_effects",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::first_word_stale_lineage_cannot_reuse_equal_text_display_frame",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::first_word_suffix_has_display_identity_but_no_whole_word_edit_identity",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::first_word_tab_appends_only_selected_suffix_without_whole_word_feedback",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::td121_atomic_known_commit_and_stale_token_refusal",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::td121_known_start_actual_tab_accepts_complete_word",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::td121_late_activation_failure_cannot_overwrite_newer_shared_owner",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::td121_runtime_rejects_different_field_aba_epoch_and_stale_owner_generation",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::td121_same_context_transfer_preserves_full_and_mixed_partial_words",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::td121_stale_source_free_grant_cannot_overwrite_newer_shared_owner",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::td121_unknown_space_then_boundary_backspace_refuses_tab_completion",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::td121_unknown_start_actual_space_delivers_literal_without_correction_or_feedback",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::observation::tests::td121_unknown_start_actual_tab_refuses_active_composition_without_output_or_feedback",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::selector::capability_contract_selects_one_delete_executor",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::window_interaction_bridge_raii_revokes_on_cancel_or_drop",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::window_interaction_commit_failure_after_delete_is_indeterminate",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::window_interaction_daemon_buffer_delegates_with_zero_local_effects",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::window_interaction_exact_tail_is_delegation_without_client_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::window_interaction_gui_uses_existing_later_postcondition_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::window_interaction_manual_toggle_terminal_failure_preserves_progress_and_revokes",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::window_interaction_only_boundary_has_full_callsite_closure",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::window_interaction_priority_routes_keep_existing_owners",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::window_interaction_reset_rereceipt_uses_existing_one_shot_token",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::window_interaction_sensitive_selection_and_stale_authority_refuse",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::window_interaction_terminal_execution_stays_client_unverified",
+      "target": "bin:lay-ibus-engine"
     },
     {
       "isolation": "target",

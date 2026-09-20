@@ -129,6 +129,7 @@ impl DefaultMemoryRuntime {
             if !force && current.manifest_stamp == memory.manifest_stamp {
                 return false;
             }
+            crate::nanda_wave::candidate_gate::clear_live_completion_cache();
             *current = Arc::new(memory);
         }
         self.load_generation.fetch_add(1, Ordering::AcqRel);
@@ -285,15 +286,25 @@ mod tests {
         let runtime = DefaultMemoryRuntime::new(first);
         assert_eq!(runtime.load_generation.load(Ordering::Acquire), 1);
 
+        let readout_revision =
+            crate::nanda_wave::candidate_gate::live_completion_cache_revision_for_tests();
         let same = L3CompositeMemory::empty(PathBuf::from("same.nwpc"));
         assert!(!runtime.install(same, "test", false));
         assert_eq!(runtime.load_generation.load(Ordering::Acquire), 1);
 
+        assert_eq!(
+            crate::nanda_wave::candidate_gate::live_completion_cache_revision_for_tests(),
+            readout_revision
+        );
         let mut changed = L3CompositeMemory::empty(PathBuf::from("changed.nwpc"));
         changed.manifest_stamp = 42;
         assert!(runtime.install(changed, "test", false));
         assert_eq!(runtime.load_generation.load(Ordering::Acquire), 2);
         assert_eq!(runtime.refresh_successes.load(Ordering::Acquire), 1);
+        assert_ne!(
+            crate::nanda_wave::candidate_gate::live_completion_cache_revision_for_tests(),
+            readout_revision
+        );
     }
 
     #[test]

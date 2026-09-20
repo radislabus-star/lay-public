@@ -11,7 +11,7 @@ mod modifiers;
 mod state;
 
 pub(crate) use keys::*;
-pub(crate) use modifiers::has_command_modifier;
+pub(crate) use modifiers::{has_command_modifier, MOD1_MASK};
 pub(crate) use state::{
     AutocorrectSuppression, CurrentWordSuppression, ExactManualToggleSuppression,
     PendingImeAutoUndo, PendingImeAutoUndoRetry, Shared, SharedState, ShiftGestureHandoff,

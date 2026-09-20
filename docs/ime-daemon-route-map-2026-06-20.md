@@ -3,6 +3,15 @@
 Date: 2026-06-20
 Runtime baseline: `0.1.233`
 
+## Current TD-126 source consolidation
+
+The managed IBus window/context lifecycle now has one source boundary for
+observation, existing authority admission, local execution or typed delegation,
+later postcondition projection and RAII settlement/revocation. Exact scope,
+review and final-gate receipt routing are in
+[`TD-126`](../tech_debt/126-common-window-interaction-module.md); the installed
+runtime remains unchanged.
+
 ## Main Finding
 
 IME is currently not just another output backend. It owns a separate word state
@@ -145,6 +154,95 @@ CommitText
 DeleteSurroundingText
 UpdatePreeditText
 ```
+
+
+## 2026-09-11 Alt+Shift and ASCII layout token recheck
+
+The first 2026-09-11 Alt+Shift owner hotfix failed physical recheck. After each
+manual Alt+Shift, the first word (`tot`, `yt`, `ytgjyznyj`, `b`) installed as
+source-free `UnknownStart`; the next word in the same direction applied normally.
+The fresh trace
+`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/ibus_engine_debug.jsonl`
+shows `Reset`, `FocusOut`, `FocusIn`, GUI-like capabilities (`caps=41`) and
+`purpose=0`, then terminal-like capabilities (`caps=9`) and `purpose=10`, then
+`source_free_ready/source_free_installed unknown_start`. Current GNOME
+`switch-input-source` bindings still contained the four direct Alt+Shift gestures
+before the follow-up install. Together, those facts support the popup/focus-churn
+attribution; no window identity measurement was taken for the popup itself.
+
+Rechecked reducer fact: factory handoff is not prepared by `LayoutIntentToken`.
+`open_factory_request` creates a factory `HandoffTicket` whenever live owner and
+activation exist; source-free is used only when owner or activation is missing.
+The adapter calls that reducer on `CreateEngine` independently of whether the
+layout switch was initiated by the daemon or the IME. `LayoutIntentToken` only
+revalidates/cancels layout work around the switch; it does not create transfer
+authority.
+
+Viable owner alternatives after recheck were bounded to two routes. The GNOME
+native owner route failed physical recheck. An IME sole-owner route remains
+possible, but would require returning the local legacy Alt+Shift layout route.
+The selected route keeps the existing daemon direct GNOME `ActivateLayout`,
+removes only GNOME's four direct Alt+Shift `switch-input-source` bindings at
+runtime, and keeps legacy non-atomic IME Alt+Shift passive. Atomic exclusive IME
+processing keeps its existing speculative route; uinput/daemon-owned text keeps
+the existing daemon switch. No new authority API, cache, timer, transfer
+promotion, or UnknownStart recovery is introduced.
+
+The source supports daemon direct ownership: IME `switch_complete_layout_stack`
+also calls GNOME `ActivateLayout`; neither route explicitly prepares a factory
+transfer. The reducer creates transfer/source-free outcome in `open_factory_request`
+on `CreateEngine`. The existing 90 ms daemon reconcile remains a postcondition
+risk, but it first verifies the actual selected engine and should not switch if
+that engine already matches.
+
+The same recheck exposed a separate KnownStart coordinate defect. In rows
+1395..1508, the completed token `ckf,j` reaches KnownStart and comma remains a
+valid ASCII layout letter symbol. After a committed Space/manual transfer, the
+next word starts as a separate whitespace-delimited token, but
+`ibus_prediction_outcome` records `typed_prefix=ckf,jc`, `suggested=ckf,jcat`,
+`final=j`. First shared loss: a transfer/handoff rebuild could restore
+`preedit_fast` from `last_tail_token_text()` even when the committed tail ended
+with whitespace, reviving the closed previous token for the next word. The next
+coordinate loss is IME readout/frame capture preferring a live fast suffix or
+falling back to `split_last_alphabetic_token`; both can slice a whole ASCII
+layout word at punctuation-shaped letter keys.
+
+Token repair alternatives were cache-only closure versus whole-authoritative
+readout plus closed cache. The selected source repair does both: keep fast state
+closed across trailing-whitespace rebuilds, and read the whole last whitespace
+token when it is an ASCII layout-letter surface. This preserves the completed
+`ckf,j` token as one token and prevents the following `c` from borrowing that
+closed token, while leaving punctuation classification, reducer authority,
+verifier and SafetyGate unchanged.
+
+Build-only completed under
+`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/build-result.json`
+with status `PASS_RUNTIME_BUILD_ONLY_GRAPH_UPDATED` in 136.82 s. Built runtime
+binaries: daemon SHA
+`7680d8680563d48d8591106cc852960137339535d4ee377d86a7b5763f63780e`, IME SHA
+`86f5ea13549ffeb473bc70959b934d734406c9ed336fb5c3a06b71415ed6b96b`. Static
+review is recorded in
+`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/static-review.json`;
+download hash verification is recorded in
+`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/fetch-verification.json`.
+
+Installation completed under
+`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/installation.json`
+with status `INSTALLED_LOADED_HASH_VERIFIED_PHYSICAL_PENDING`. Loaded daemon PID
+`2128412` has SHA
+`7680d8680563d48d8591106cc852960137339535d4ee377d86a7b5763f63780e`; loaded IME
+PID `2128417` has SHA
+`86f5ea13549ffeb473bc70959b934d734406c9ed336fb5c3a06b71415ed6b96b`. The global
+`ibus-daemon` PID `4715` was preserved. GNOME `switch-input-source` now contains
+only `['<Shift><Alt>space']`; the four direct Alt+Shift entries were removed.
+Backward bindings, XKB options, input-source IDs, and config SHA were preserved.
+
+Rollback backup for this installation is
+`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/backup/` with
+`lay-daemon`, `lay-ibus-engine`, and `gnome-bindings.json`. Older release backups
+remain historical only. Tests/CI denominator is 0. Build-only and installation do
+not establish quality, RSS, latency, heldout, or physical acceptance; physical
+acceptance remains `PENDING` until live recheck.
 
 ## Current Overlap
 
@@ -3432,3 +3530,964 @@ full identity and both lane summaries are beside it. Rollback:
 `~/.local/state/lay/release-backups/1.0.70-td123-aeuwv34d/`.
 Full consequences, failed private ARM-toolchain probes, exact proof scope and
 publication receipts: [owning issue document](public-issues-42-44-release-1.0.70.md).
+
+
+
+
+
+### Exact manual handoff V2 installed, physical pending, 2026-09-12
+
+Final measured delivery state for the connected repair: installation completed
+with status `INSTALLED_LOADED_HASH_VERIFIED_PHYSICAL_PENDING`. Runtime authority
+changed: true, IME binary only. Physical acceptance remains `PENDING`; the ping
+after restart returned `('lay-ibus-engine-rs no-focus',)`, so this record makes
+no browser-focus, text mutation, answer-quality, heldout, RSS, or latency claim.
+Tests/CI denominator is 0. Root static source review accepted the source shape;
+that is source review only, not correctness or quality proof.
+
+Build receipt:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v2/build-result.json`.
+The build receipt status is `PASS_RUNTIME_BUILD_ONLY_GRAPH_UPDATED`, elapsed
+78.86 s, with root-reported transport 79.29 s / worker 78.86 s. Source snapshot:
+1382 files, archive SHA
+`ce1e223ae79cff15064c349f6a07257bfba1fd36e5bb71d9f022aa2838b8a7c0`. Built
+binary hashes: daemon
+`7680d8680563d48d8591106cc852960137339535d4ee377d86a7b5763f63780e`; IME
+`994485bf9d7379c8d820171960c61e5980e59f88341ab51d6a8b7741c08eec80`. Fetch
+verification:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v2/fetch-verification.json`
+with status `FETCH_HASH_VERIFIED`, source files verified 1382, build receipt SHA
+`cf52594b41cdc2e182fc29e2bddc01d699ac4bc35e4947f087157a78000d514f`.
+
+Installation receipt:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/installation.json`
+with SHA
+`abc0b753a6f676fc7b6ce91c0f09405f8749244f9c871b5beae867f9a5943a22`. Runtime identity receipt:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/runtime-after.json`
+with status `INSTALLED_PROCESS_IDENTITY_VERIFIED`; all 11 recorded identity and
+configuration checks are true, covering loaded process hashes/PIDs, DBus owner,
+config, sources, switch/backward bindings, XKB options, selected engine and
+temporary debug removal. Only `lay-ibus-engine` changed. Old IME PID `2128417` SHA
+`86f5ea13549ffeb473bc70959b934d734406c9ed336fb5c3a06b71415ed6b96b`; new IME
+PID `4051893` SHA
+`994485bf9d7379c8d820171960c61e5980e59f88341ab51d6a8b7741c08eec80`. Daemon
+PID `3880511` SHA
+`7680d8680563d48d8591106cc852960137339535d4ee377d86a7b5763f63780e` and global
+`ibus-daemon` PID `4715` were unchanged during install. Selected engine
+`lay-ime-us`, input sources `[('ibus', 'lay-ime-us'), ('ibus', 'lay-ime-ru')]`,
+`switch-input-source` `['<Shift><Alt>space']`, backward binding `@as []`, XKB
+options `['grp_led:scroll']`, and config SHA
+`5887b077e716357cd0a622d16feda7147ff50c1f5ad2bee136f970fa095a9479` were
+preserved. Rollback backup root:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/backup`.
+The temporary diagnostic override was already removed before this final install.
+
+Installed source scope: valid same-field context-admission `Transfer` preserves
+live exact manual handoff markers while retaining the original source path for
+daemon cleanup; `SourceFree`, `ResetUnknown`, revocation and failure clears remain
+clearing. `VisibleTailV3` and `SuppressNextAutocorrectV2` resolve the engine from
+the same fenced token, consume ready target activation under that target engine
+guard, and then require live-token plus explicit shared-active-path match.
+First-word GUI manual Double Shift is installed only for the bounded
+`UnknownStart` suffix witness with current unselected surrounding-text evidence,
+strict observed suffix count equal to token length, observed left/right
+boundaries, and live exact handoff lease. Generic `ReplaceTail`, automatic
+routes, terminal manual projection, normal `KnownStart`, verifier, SafetyGate,
+daemon WordBuffer fallback, and stored legacy focus receipts are unchanged.
+First-word automatic hints/autocorrect remain OPEN pending user clarification.
+
+### Historical: connected exact manual handoff source-only preflight before V2 install, 2026-09-12
+
+Preflight consequence analysis for the follow-up source change: the V1 receipt
+projection build was reported PASS by the parent/root route, but it was not
+installed and is not sufficient as a complete repair. The exact manual replay
+chain has three deterministic blockers that must be closed together before a
+runtime installation.
+
+First, a context-admission `Transfer` previously copied the shared tail into the
+target owner and then unconditionally cleared `preserve_active_path_until`,
+`exact_manual_toggle_handoff_epoch`, and `exact_manual_toggle_handoff_path`. That
+would let the daemon pass the new field receipt check but fail later at
+`SuppressNextAutocorrectV2`, whose V2 arm requires the exact handoff marker to
+remain live. The selected repair preserves the existing live marker only for a
+valid same-context transfer where shared active path and owner generation match
+the grant source, the shared handoff epoch is the grant source tail epoch, the
+lease has not expired, and the exact marker still names the original source
+engine path. The original source path remains intentional: daemon cleanup can
+still cancel `CancelExactManualToggleHandoffV2(epoch, source_path)` if
+suppression arming fails after layout. Non-transfer `SourceFree`, `ResetUnknown`,
+revocation and failure clears remain unchanged.
+
+Second, a bridge V3 read after controlled layout can happen while the reducer's
+current owner is already the target, but the ready activation has not yet been
+installed into that target engine or reflected in `SharedState.active_path`. A
+plain `active_path()` lookup would still select the old source engine. The
+selected repair derives the target engine path from the same fenced
+`AdmissionToken`, consumes any already ready activation under that engine's
+exclusive guard, then requires the live bridge token and explicit shared active
+path match. It adds no extra RPC, wait, poll, controller, cache, or second
+current-owner lookup.
+
+Third, explicit first-word manual Double Shift in a GUI `UnknownStart` field can
+reuse the same exact manual handoff as an observed-suffix lease, but only before
+layout and only with full surrounding-text evidence: live context token, no
+atomic/composition/sensitive/trailing-boundary state, no selection, exact suffix
+before cursor, observed suffix count equal to current token length, and observed
+left/right word boundaries. After a valid transfer, V3 read and exact suppression
+may accept that `UnknownStart` only while the exact handoff lease is still live;
+they do not require a fresh surrounding-text copy after layout. Generic
+`ReplaceTail`, automatic routes, normal `KnownStart`, terminal manual projection,
+verifier, SafetyGate and daemon WordBuffer fallback are unchanged. First-word
+automatic hints/autocorrect remain unresolved outside this source step pending
+user clarification.
+
+This section records the historical source-only preflight before the V2 build and install. It is superseded for delivery state by the V2 installed section above.
+
+### Historical: browser legacy FocusIn exact-tail receipt projection source-only V1, 2026-09-11
+
+Consequence analysis before code change: the fresh physical report `djn` failed
+after the IME had already admitted the word and delegated the exact committed
+tail route. This is not the earlier source-free first-word `UnknownStart`
+refusal. The frozen trace at
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/user-failed-djn-20260911T231756Z/`
+shows caps41 browser input, managed commits for `d`, `j`, `n`, source-free
+`UnknownStart` through the first word, a normal Space settlement to
+`KnownStart`, then Double Shift callbacks that also settle `KnownStart` before
+`ibus_manual_toggle_delegation` reports `ime_committed_tail`. The daemon journal
+then rejects exact replay before mutation because `VisibleTailV3` lacks the field
+focus receipt. Daemon `WordBuffer` is empty in the same cross-check, so daemon
+fallback would be the wrong authority route.
+
+The rejected install-stored repair was to fill `client_context.focus_receipt`
+when it is `None`. That can preserve a stale fallback or native receipt across a
+later legacy `FocusIn` context and would also make a second derived identity part
+of the engine's ordinary frame state. The selected bounded repair is bridge-only:
+for context-admission engines, `VisibleTailV3` exposes an opaque exact field
+receipt derived from the currently revalidated `AdmissionToken`'s admitted
+`ContextKey`, namely the IBus connection generation plus canonical context path.
+Existing `FocusInId`/legacy stored receipts remain the non-context-admission
+behavior. The value is not derived from engine path or activation generation.
+It stays stable across the controlled layout handoff for the same context, and
+changes across a different `ContextKey` or IBus connection.
+
+The daemon-side V3 guards remain unchanged: source, engine path, exact field
+receipt, tail epoch, suffix, layout and focused-window lease are still validated
+before replay. No tail epoch, InputState, detector, `KnownStart`, automatic gate,
+ranker, verifier, SafetyGate, model, or package authority changes. Existing
+handoff state continues to rely on context-admission transfer independently of a
+stored legacy `handoff_focus_receipt`; the new receipt is projected only at the
+bridge boundary that already requires a live bridge token and `context_word_is_known()`.
+
+The first-word concern remains OPEN and separate. The same trace proves first
+word assistance can have suffix-display evidence before Space, but `djn` had no
+candidate before Space. This change is not a quality proof and does not silently
+expand first-word automatic authority. If first-word Double Shift before Space is
+required, it must use the existing observed-suffix evidence route under its own
+explicit scope, without promoting arbitrary `UnknownStart` words or falling back
+to daemon `WordBuffer`.
+
+This historical V1 source step ran no tests, CI, build, install, smoke, graph
+update, or publication and is superseded by the V2 installed section above. Additional consequence
+axes: the runtime cost is one bounded `String` allocation on an already requested
+`VisibleTailV3` read, with no extra RPC, deadline, timer, state cache, worker,
+learning, package, reload, or binary-install change; bridge token revalidation,
+race invalidation, focused-window lease and daemon V3 rejection semantics remain
+unchanged; the scalar key is stable only for the same admitted `ContextKey` on
+the same IBus connection and changes across another context or connection;
+rollback is only the two source files until a binary is built; tests denominator
+is 0 and quality, RSS and latency are unmeasured. The trace is treated as a
+user-reported browser / caps41 GUI episode, not proof of which Firefox/Tor window
+was focused, because the current focus after failure was Kitty and the trace has
+no application ID.
+
+
+### Firefox soft Reset exact-ST re-receipt V3 installed, physical pending, 2026-09-12
+
+Final measured delivery state for the V3 follow-up: installation completed with
+status `INSTALLED_LOADED_HASH_VERIFIED_PHYSICAL_PENDING`. Runtime authority
+changed: true, IME binary only. Physical acceptance remains `PENDING`; the
+post-install ping returned `lay-ibus-engine-rs no-focus`, so this record makes no
+Firefox/Tor focus, browser text mutation, answer-quality, heldout, RSS, or
+latency claim. Tests/CI denominator is 0.
+
+Measured trigger from the post-V2 physical report: Firefox/GTK sends an
+authenticated `Reset` after a handled printable managed commit, and then sends
+the exact `SetSurroundingText` for the same current tail. Before V3, Reset
+revoked the local UnknownStart observed suffix and `reset_for_ibus_soft_reset()`
+could republish the tail, so the following manual Double Shift had no full exact
+suffix witness.
+
+Build receipt:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2`.
+Remote run:
+`/home/e/projects/lay-development-runner/browser-receipt-XQR6ov`. Source archive:
+1382 files, SHA
+`bf8665188a62e077b7095843480b67b1d67aefc835ad4760fa024dee04d407a6`. Build
+result SHA:
+`5cd763bc62c31af68b8c53351a89d7b86837f842d46a4d1143b8159da910163b`, status
+`PASS_RUNTIME_BUILD_ONLY_GRAPH_UPDATED`. The graph AST update happened in the
+remote build path; the fetched artifact and hash were verified. The built IME
+binary is 7,775,072 bytes with SHA
+`67827521149fe73434f8025a6daa404f26d9ac2072d7de7cbe6f3aec0ad57969`. The daemon
+binary SHA stayed
+`7680d8680563d48d8591106cc852960137339535d4ee377d86a7b5763f63780e`, and the
+daemon binary was not installed.
+
+Failed predecessor: `receipt-fix-build-v3` stopped before installation on E0063
+because `state.rs` was missing the new `context_reset_rereceipt` initializer.
+That failed run changed no runtime authority. The initializer was then fixed and
+`receipt-fix-build-v3-compile2` became the canonical V3 build receipt.
+
+Installation receipt:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/installation-v3.json`.
+Old IME PID `4051893` SHA
+`994485bf9d7379c8d820171960c61e5980e59f88341ab51d6a8b7741c08eec80`; new loaded
+IME PID `911924`, PPID `4715`, start `80439768`, SHA
+`67827521149fe73434f8025a6daa404f26d9ac2072d7de7cbe6f3aec0ad57969`.
+`ibus-daemon` stayed PID `4715`, start `2261`; `lay-daemon` stayed PID
+`3880511`, start `79007142`, SHA
+`7680d8680563d48d8591106cc852960137339535d4ee377d86a7b5763f63780e`. Selected
+engine `lay-ime-ru` and settings were preserved. Rollback backup root:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2/install-backup`.
+
+The installed invariant is manual-only re-receipt with bridge-token rebinding at
+explicit consumption. The pre-Reset live token/scope can contribute only the
+already observed suffix text/count and tail epoch. After the reducer handles
+Reset, the pending witness is attached to the new post-Reset token and the local
+post-Reset UnknownStart zero-count scope. The next surrounding-text revision must
+be the one that confirms the witness, and its unselected snapshot must contain
+the current committed-tail token as an exact bounded suffix with left/right word
+boundaries. A second surrounding-text callback, mismatch, selection, sensitive
+field, focus/content/lifecycle change, command/navigation, boundary, or non-exact
+input clears the witness.
+
+The witness is not written into `WordScope` on `SetSurroundingText`; this keeps
+automatic precognition/hints on the existing generic authority. Explicit Double
+Shift is the only consumer: it binds the current UnknownStart lineage to the
+manual-only suffix count, settles that lineage in the admission reducer under the
+still-live post-Reset bridge token, atomically rebinds the bridge output token to
+the new settled token, and then reuses the existing exact manual handoff. Shift
+press/release preserves the witness so the daemon gesture can reach
+`ManualToggleV3`. Exact handled printable appends may advance the witness from
+`N` to `N+1` only when the committed-tail epoch advances by exactly one publish,
+and rebind it to the newly settled token/epoch; non-exact appends clear it.
+
+Shared cleanup consequence: while an authenticated reset re-receipt witness is
+armed, soft Reset skips the redundant tail `publish_tail_handoff()` so the local
+tail text/epoch remain the values already settled by the handled printable.
+Generic Reset without that witness still follows the existing
+republish/revocation behavior. First-word automatic hints/autocorrect remain
+outside this bounded manual route.
+
+### Historical rejected GUI direct-edit experiment, 2026-09-12
+
+This source experiment retained a useful capability-neutral Reset observation:
+the old owner/path/lineage/epoch was only a predecessor candidate, and a distinct
+live post-Reset token plus exactly one unselected, exact, word-bounded
+SurroundingText revision was required before explicit manual consumption. Its
+GUI executor was invalid. It returned `Handled` from `ManualToggleV3` after a
+legacy sequential `DeleteSurroundingText(-N, N)` and `CommitText`, bypassing the
+protected physical-input grab, two lease validations, GNOME layout handoff and
+readback, checked suppression, and bounded uinput replay.
+
+The five local focused Rust tests were measurements of that simulated direct
+executor only. The six-toggle test kept one engine registered throughout,
+injected Reset and SurroundingText callbacks, and asserted emitted IBus delete
+and commit signals plus local tail epoch. It did not create the target engine,
+perform the source FocusOut/Disable and target FocusIn transfer, call GNOME
+`ActivateLayout`, validate the same source/focus/epoch/tail lease before and
+after layout, hold a physical-input grab, run uinput replay, or assert the final
+visible-text and layout postcondition. Local test execution also did not follow
+the remote-only development contract. These measurements cannot establish GTK,
+physical-input, cross-engine, or installed behavior.
+
+The source receipt is therefore superseded with status
+`REJECTED_SOURCE_EXPERIMENT_PROTECTED_ROUTE_VIOLATION`; it is retained only to
+identify what the local tests exercised. No candidate binary was installed or
+restarted. Runtime authority changed: false. Exact historical receipt:
+`docs/structural_gates/receipts/LAY_GUI_TEXT_TARGET_RESET_RERECEIPT_2026-09-12/source-focused.json`.
+
+### Preflight: exact external tail at both replay leases, 2026-09-12
+
+Status is `PREFLIGHT_TEST_RED_RUNTIME_UNCHANGED`. The currently loaded IME remains
+PID `911924`, SHA
+`67827521149fe73434f8025a6daa404f26d9ac2072d7de7cbe6f3aec0ad57969`, from the
+frozen V3 source archive SHA
+`bf8665188a62e077b7095843480b67b1d67aefc835ad4760fa024dee04d407a6`.
+No candidate from this preflight is installed.
+
+#### Measured causal hole
+
+The preserved `cycle09` trace establishes one live divergence. External
+`SurroundingText` lengths move `12 -> 11 -> 10 -> 9 -> 10 -> 11` and never
+return to `12`. The three handled printable callbacks for `d`, `j`, and `n`
+advance the internal committed-tail length `5 -> 6 -> 7 -> 8`. Preedit is
+published after `d`, cleared before `j`, becomes `inn` after `j`, and is cleared
+before `n`. The final observed external tail is `j;jl вотвот`, while the owned
+tracked tail is ` вот вот`; the second separator present internally is absent
+externally. No Reset occurs in the failing cycle. Therefore the prior Reset
+hypothesis is falsified for this trace. One handled insertion did not become
+visible in the client's later `SurroundingText`; the trace does not establish
+which insertion was lost or why. Client transport and delivery remain
+`UNKNOWN`, and the loaded `libim-ibus.so` alone does not identify the selected
+client input module or prove a GTK callback route.
+
+`SurroundingText` batching alone does not distinguish the loss mechanism. In
+passing cycles 1, 3, 6, 7, 8, 11, 13, and 14, three internal commits also precede
+the three external growth receipts; cycle 9 is distinct because only two
+growths arrive. This supports a controlled consumer-schedule proof and the
+external-tail safety check. It does not justify per-key sleeps or establish the
+selected live client transport.
+
+The first observed loss is client delivery in cycle 9. The first demonstrated
+authority defect before the next cycle's deletion is transport-independent.
+`visible_tail_v3_inner()` projects the IME's internal `committed_tail.buffer`
+without requiring it to match the current client `SurroundingText` snapshot.
+`arm_exact_manual_toggle_autocorrect_suppression()` checks the internal tail and
+the shared handoff against each other, but does not bind either value to current
+external text. Thus an internally stale tail can satisfy both the source and
+target lease checks. The daemon may then issue the exact number of Backspaces
+for the longer internal tail against shorter client text. The delivery cause is
+still unknown, but delivery uncertainty must not become deletion authority.
+
+The causal regression must first be run against a mutable copy of the frozen V3
+archive. The archive itself remains immutable. A useful RED is a nonzero false
+accept in which current unselected external text disagrees with the requested
+tail at either lease point, yet V3 returns `DelegateExactImeTail`, preserves the
+handoff, or arms suppression. Candidate PASS can be attributed only to closing
+that same false accept.
+
+#### Design comparison and selected boundary
+
+1. Keeping the current internal-only source and target lease is rejected. It
+   compares two copies of the same internal claim and cannot detect the live
+   divergence.
+2. The existing reducer, bridge, factory handoff, and typed exact-tail
+   delegation are retained. At both source capture and target validation, the
+   existing owned tracked tail must agree with the current, unselected external
+   `SurroundingText` tail before its cursor. Matching only the requested last
+   token with `ends_with` is insufficient: that token must retain its owned word
+   boundary and tracked left context, so a dropped separator cannot merge two
+   words and still authorize deletion. KnownStart uses this owned-tail
+   agreement. UnknownStart remains limited to its separately bounded exact
+   receipt. Missing snapshot, selection, mismatch, stale context, or changed
+   identity makes the source capture or target validation passive and clears
+   exact handoff/suppression authority before any text mutation.
+   `ManualToggleV3` may retain its typed exact disposition before the source
+   capture. If it instead returns `NotHandled`, the current dispatcher completes
+   with no action and does not fall back to the daemon WordBuffer. This is the
+   selected boundary.
+3. A new retry controller and a direct client edit path are rejected. Either
+   would create another authority owner while the current two-lease route can
+   express the required evidence. No GTK-specific branch is justified by the
+   trace.
+
+The rejected uninstalled branch is bounded precisely to the
+`manual_toggle_active_text_target()` arm that consumed Reset rereceipt or a
+generic observed suffix and then called `toggle_committed_tail_target()` for a
+GUI `ExactSurroundingText` target. Candidate implementation removes that direct
+GUI delete/commit dispatch. Retained Reset evidence may only prepare the
+existing typed exact-tail handoff and return control to the daemon's protected
+physical replay route. This removal does not reset or rewrite the surrounding
+baseline work: terminal erase, atomic execution, the existing known-tail
+handoff, and Reset observation remain in place.
+
+The `VisibleTailV3` snapshot check is conditional on an exact handoff bound to
+the current owner. Ordinary status and display readout carry no mutation lease
+and remain readable without this extra precondition. Once an exact handoff is
+present, its deadline, epoch, shared buffer, full external tail, and word
+boundaries are conjunctive: an expired or mismatched lease is cleared and the
+read becomes passive, so neither source capture nor target validation can
+release physical replay from stale evidence.
+
+No new reducer, worker, generation, cache, timer, queue, RPC, retry, polling
+loop, fallback, application identity, or source of truth is admitted. The
+check consumes only the latest snapshot already delivered to the adapter and
+does not wait for a future receipt. Focus, owner, token, tail epoch, capability,
+content type, source transition, and external snapshot revision remain identity
+invalidators. The physical-input grab, one layout activation and readback, two
+lease validations, suppression ordering, and bounded physical replay remain
+owned by the existing exact replay path.
+
+#### Consequence analysis
+
+- Candidate retention, ranking, false authority, `SafetyGate`, and verifier are
+  unchanged. The manual-toggle planner and the new snapshot checks remain
+  literal reversible physical-key projection and enter no lexical, morphology,
+  L1-L4, learning, or model decision. Successful physical replay still enters
+  the existing managed printable path and may schedule its existing prefetch or
+  precognition work; this preflight does not remove or measure that work.
+- Latency and deadlines gain two bounded in-memory comparisons and no wait,
+  retry, polling, or blocking model work. Exact latency and deadline headroom
+  remain unmeasured until the remote proof.
+- CPU, RSS, allocation, and package size remain unmeasured. The comparison uses
+  the existing bounded snapshot lifetime and revision. No worker, queue, cache,
+  package, manifest, schema, or persistent allocation is added. Configuration
+  or package hot reload cannot grant authority to an old snapshot; the existing
+  cleanup and identity invalidations apply without another steady-state worker.
+- Missing, selected, mismatched, or stale external context fails closed before
+  delete, commit, uinput, or suppression. Source mismatch refuses capture;
+  target mismatch after the real factory handoff revokes the captured lease.
+- Learning, feedback, automatic acceptance, candidate scores, and suppression
+  learning do not change. Suppression may arm only after target identity and
+  current external text validate.
+- Rollback is the external-snapshot precondition slice plus its tests and this
+  documentation. There is no installed-state migration. Terminal and atomic
+  executors retain their protected behavior outside this GUI exact-tail
+  condition.
+
+#### Bounded proof plan
+
+1. Add one adapter regression using the production `Harness`, `LayImeBridge`,
+   factory handoff, and real `SetSurroundingText` callbacks. Two positive cases
+   use a left-context prefix and an unselected snapshot whose tail before the
+   cursor exactly matches the owned internal tail at source and target: one
+   open token and one token with a retained trailing boundary. Both must
+   delegate the exact length, accept source capture, survive source
+   FocusOut/Disable plus target factory/FocusIn, accept target validation and
+   suppression, and emit no local IBus delete or commit.
+2. In the same table, prove seven zero-effect refusals: a shorter source text;
+   a shorter target text introduced after the actual factory handoff; target
+   text changed after successful target `VisibleTailV3` but before the immediate
+   suppression arm; a
+   same-length source mismatch whose final token matches but whose word boundary
+   is missing; selected external text; missing snapshot; and stale context
+   identity. Each case must assert no exact mutation authority and cleared
+   handoff/suppression state.
+3. Apply the test-only patch to a copy of the frozen V3 archive and record the
+   exact false accepts. Run the candidate only after V3 is causally RED. Use
+   `scripts/dev-check.py check` with the remote `dedicated20cpu` configuration;
+   do not run local Cargo.
+4. This proof has one observed live divergence and a regression denominator of
+   two positive plus seven negative cases. It establishes adapter authority and
+   zero local IBus mutation only. It does not establish which client insertion
+   was lost, client transport, physical grab/uinput behavior, final visible
+   text, latency, RSS, package size, or installed runtime behavior.
+
+#### Frozen V3 causal result
+
+The frozen archive remained immutable. Its source copy required only mechanical
+rustfmt normalization in `context_runtime.rs`, `shift.rs`, and `state.rs` to
+pass the current mandatory format gate; that normalization was committed before
+the uncommitted test-only patch. The normalization and test patch have separate
+hashes in the receipt.
+
+The updated remote `dedicated20cpu` check passed formatting, selected 466
+focused `lay-ibus-engine` tests, and reached the new regression. Both the open
+token and retained-trailing-boundary positives completed source capture, the RU
+factory handoff, target validation, and suppression. Stale context identity was
+rejected. V3 then reported six causal false accepts: shorter source text;
+shorter target text after the actual factory handoff; target text changed after
+successful target validation but before suppression; a source text with the
+same final token but a missing word boundary; selected source text; and missing
+source snapshot. Each path emitted zero local IBus delete/commit effects in the
+adapter harness. Local receipt is
+`/home/ubu/.cache/lay/development/run-nv1eixc9`; remote run is
+`/home/e/projects/lay-development-runner/run-QRC4BO`. This is the required V3
+RED for the external-tail authority hole.
+
+The same focused run also failed the unchanged historical test
+`tail_memory::tests::focus_engine_can_refresh_empty_tail_from_shared_handoff`
+(`left: ""`, `right: "вот"`). That failure is outside the test-only patch and is
+reported as a separate baseline failure. A second normalization-only run with
+the new regression absent selected 465 tests and reproduced that single failure
+(`/home/ubu/.cache/lay/development/run-rivdkaou`, remote
+`/home/e/projects/lay-development-runner/run-n8n3et`). The transferred buffer
+and epoch are correct; only the old `preedit_fast.token() == "вот"` expectation
+is stale because `"вот "` is a closed word and has no open-token candidate
+authority. The candidate fixture instead asserts the visible tail and epoch,
+empty closed-token state, and reopening plus IME authority after a fresh
+printable character. The focused V3 target as a whole is not a PASS. Exact
+receipt:
+`docs/structural_gates/receipts/LAY_EXTERNAL_TAIL_LEASE_PREFLIGHT_2026-09-12/v3-red.json`.
+
+#### Candidate focused result
+
+The candidate adds the external-tail agreement at source `VisibleTailV3`, at
+target `VisibleTailV3` after the real factory handoff, and again immediately
+before suppression. The agreement covers the complete owned tail plus the
+embedded token boundaries, including a retained trailing whitespace boundary.
+Failure clears only an exact handoff owned by the current admission owner and a
+matching `ExactReplay` suppression. A stale source and a current owner both
+preserve the target's `CurrentWord` suppression.
+
+The rejected direct GUI mutation branch was replaced by preparation of the
+existing typed exact handoff. The retained Reset rereceipt regression now proves
+`DelegateExactImeTail` and zero local `DeleteSurroundingText`/`CommitText`
+effects. Terminal fixtures declare terminal purpose and retain the separate
+erase executor; atomic contracts remain on their existing route.
+
+The remote `dedicated20cpu` candidate check passed formatting and all 470
+selected `lay-ibus-engine` tests with zero failures. Local receipt is
+`/home/ubu/.cache/lay/development/run-6yjp8x5k`; remote run is
+`/home/e/projects/lay-development-runner/run-8f5G0o`; remote snapshot SHA-256 is
+`dbcdcc58e2bd8c27966f5df7ef3e937c339d85730cfb73227a0d3c3234aafcf7`.
+Exact candidate receipt:
+`docs/structural_gates/receipts/LAY_EXTERNAL_TAIL_LEASE_PREFLIGHT_2026-09-12/candidate-focused.json`.
+
+No binary build, installation, restart, live mutation, or installed runtime
+authority change occurred. Physical input grab/uinput replay, final visible
+text, client transport, latency, RSS, and package size remain untested.
+
+### Mutter/GTK event-dispatch consumer probe, 2026-09-12
+
+#### Historical rejected handwritten mirror
+
+The first probe is retained with status
+`REJECTED_MIRROR_MODEL_LOCAL_EXECUTION`. It hashed 16 extracted upstream
+functions but compiled a separately handwritten model, so the hashes did not
+bind the executed algorithms. Its release control also skipped the real
+asynchronous order: it supplied the callback result to the initial filter and
+discarded the native copy instead of redispatching the INPUT_METHOD-flagged
+event. Finally, it compiled and ran under the local workstation guard despite
+the remote-only development contract. Its four rows carry no causal acceptance
+and authorize no implementation. Historical receipt:
+`docs/structural_gates/receipts/LAY_MUTTER_GTK_EVENT_DISPATCH_PROBE_2026-09-12/source-bound.json`.
+
+#### Exact extracted remote probe
+
+Status is `PASS_EXACT_EXTRACTED_SCHEDULE_EXISTS_RUNTIME_UNCHANGED`. The v2
+generator inserted 17 byte-identical function definitions from the four pinned
+Mutter 50.1 and GTK 4.22.4 files into the compiled translation unit. The exact
+fragments total SHA-256 is
+`bfcbed5f988e3b1838d46cc8836cd61e2ec27f21f0c865b1a7c38f84c64c2e15`;
+the generated unit SHA-256 is
+`3f122cf8140c4010de19bf96190eee15638df6d1788954a5d4d4fa970d8a6afe`.
+Only platform types, Clutter queue ingress, output observation, unused
+preedit/delete/pointer branches, and object accessors are stubs. The idle
+scheduler is the remote worker's real GLib 2.72.4. Wayland commit and done sinks
+call the exact extracted GTK callbacks.
+
+The test now preserves the asynchronous order. Each original unflagged press or
+release enters exact `meta_wayland_text_input_update()` and exact
+`clutter_input_method_filter_key_event()`. Only its external virtual
+`im_class->filter_key_event` callback is stubbed to accept the initial event
+asynchronously. The callback later enters exact
+`clutter_input_method_commit()` and
+`clutter_input_method_notify_key_event()`. When that reply is unfiltered, the
+exact notify callback enqueues an INPUT_METHOD-flagged native copy; its later
+redispatch re-enters the exact update/filter branch as unfiltered and only then
+flushes pending `done`.
+
+The exact callback sequence admits the overwrite schedule. Three filtered
+press/release pairs dispatched three `CLUTTER_IM_COMMIT` events through the
+exact focus and Wayland handlers before the idle ran. Mutter emitted three
+commit strings and deferred one `done`; GTK's exact `text_input_commit()`
+replaced its single `pending_commit` twice. Before idle there were six initial
+filter calls, three protocol commits, no native copy, no done and no GTK commit.
+After the coalesced idle, the exact GTK `text_input_done()` applied one commit,
+`c`. A control that drained GLib after every character emitted three done and
+preserved `abc`.
+
+The corrected release control also preserved `abc`. Each release was initially
+accepted asynchronously; its later unfiltered callback enqueued one flagged
+native copy. Three copies were queued and three were redispatched through the
+exact update/filter branch. Each redispatch flushed the pending `done`, yielding
+three GTK commits. This proves that unfiltered release redispatch can supply a
+flush boundary on this tested transport. It does not establish a safe repair:
+the behavior depends on the client using Mutter's Wayland text-input-v3 route
+and on release-only native delivery being harmless.
+
+Transport remains `UNKNOWN`. GTK scans all modules; a resident IBus module does
+not prove selection, `GTK_IM_MODULE` and the `gtk-im-module` setting are unset,
+and native Wayland priority 100 exceeds IBus priority 50. No affected GNOME
+Text Editor focus observation was captured. The release-only alternative
+therefore remains unselected. Exact native replay retains the protected
+client-independent transaction and no production change was authored.
+
+The final accepted run executed once on `e@192.168.3.94` under the dedicated-20cpu
+resource guard. All four assertions passed, compiler and sanitizer stderr were
+empty, and runtime authority did not change. The preceding fresh remote attempt
+is preserved separately: it stopped at compile because original unused callback
+parameters met standalone `-Werror`; v2 added only
+`-Wno-unused-parameter`. A subsequent 16-function run passed but remained
+incomplete because it mirrored the central INPUT_METHOD rejection branch; that
+receipt is preserved as `v2-remote-16-function-incomplete.json` and carries no
+acceptance. The final run inserted that original function as fragment 17 and
+moved the initial/native counters outside the tested body.
+Exact receipts:
+`docs/structural_gates/receipts/LAY_MUTTER_GTK_EVENT_DISPATCH_PROBE_2026-09-12/v2-remote-exact.json`
+and
+`docs/structural_gates/receipts/LAY_MUTTER_GTK_EVENT_DISPATCH_PROBE_2026-09-12/v2-transport.json`.
+Remote accepted run:
+`/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-k1FFeX`;
+local fetched artifact:
+`/home/ubu/.cache/lay/development/gnome-repeat-capture-d9q6uzjm/mutter-gtk-dispatch-probe-v2-remote-run-k1FFeX`.
+
+This result proves only that the exact callbacks admit the tested schedule. It
+does not show the selected GNOME Text Editor transport, the packet order of
+captured cycle 9, which insertion was lost, or any visible pixel. Live clients,
+Wayland traffic, physical replay, latency, RSS, package size and installed
+behavior were not tested; answer quality is `UNKNOWN`.
+
+### Preflight: exact-replay native delivery and side-effect quarantine, 2026-09-12
+
+This section began as `PREFLIGHT_ONLY_REVIEW_PENDING_RUNTIME_UNCHANGED`. The
+reviewed implementation result is recorded separately below; the preflight text
+is retained as the contract against which that candidate was measured.
+
+#### Current consequence and rejected release-only alternative
+
+The protected replay currently arms `ExactReplay`, emits the leased Backspaces,
+and replays the replacement keycodes under the target layout. Each replayed
+printable then re-enters ordinary legacy `ProcessKeyEvent`. The managed branch
+emits `CommitText(ch)`, calls `push_tail_char(ch)`, schedules Space prefetch, and
+refreshes precognition. `push_tail_char()` can finalize pending completion
+editing, record a prediction outcome at a replayed boundary, refresh suppression,
+and publish a new shared tail epoch. The outer callback performs another
+observed-suffix refresh whenever the tail changes. Avoiding only one refresh is
+therefore insufficient, especially when the exact replacement retains a trailing
+space.
+
+Returning replay releases unhandled is rejected as the repair. The exact
+Mutter/GTK probe proves that an unfiltered release redispatch flushes pending
+`done` only on its tested Wayland text-input-v3 callback route. The affected
+GNOME Text Editor transport remains `UNKNOWN`: a resident `libim-ibus.so` does
+not prove selection, the relevant GTK module settings are unset, native Wayland
+has the higher advertised priority, and no affected editor focus observation
+was captured. More fundamentally, release-only forwarding leaves every replay
+press on the managed `CommitText -> push_tail_char -> worker/learning` path. It
+cannot establish zero replay learning or zero candidate resurrection even if a
+consumer happens to use the tested flush schedule.
+
+Per-key sleeps, a cursor-location wait, or completion of the daemon's uinput
+write are also not delivery receipts. The client applies an unhandled event
+asynchronously. No timing gap, daemon write completion, or unchanged internal
+tail may be promoted into a client-visible postcondition.
+
+#### One text-target contract, existing owners
+
+The common contract is capability- and fact-based; it is not an application
+list and does not require moving every executor into one file. The existing
+`manual_toggle_authority()` first preserves pending auto-undo and active
+composition ownership, then distinguishes an IME committed tail from the proven
+daemon WordBuffer route. `TextTargetEditRoute::select()` chooses commit-only,
+exact SurroundingText, terminal erase, or unsupported from the requested delete
+and available capabilities. Exact snapshot, selection, sensitive-content,
+Reset re-receipt, focus/owner and atomic exclusions remain conjunctive guards.
+
+The existing owners execute that one contract: `shift` performs gesture
+routing; `committed_tail` owns authorized IME and terminal edits;
+`ContextAdmissionReducer` and `context_runtime` own context authority and Reset;
+the bridge binds typed leases to the active engine; and the daemon's existing
+exact-replay executor owns layout handoff, physical isolation and uinput. The
+native delivery contour below completes the exact GUI executor inside those
+owners. It does not add a controller, timer, RPC, daemon state machine or
+scheduler.
+
+Unsupported facts remain explicit refusal outcomes. Missing exact
+SurroundingText, a selection, sensitive content, stale owner/path/epoch, or an
+unproven delete backend cannot authorize an exact GUI edit. Capability value 9
+alone is not a blanket refusal: it may still belong to a separately proven
+terminal or daemon route. A target window is supported only when its current
+facts admit one of the typed executors.
+
+Native replay and the optimistic IME tail are not client confirmation. A later
+matching `SetSurroundingText` may confirm the visible postcondition. Until then,
+the existing current-external-snapshot check remains the gate for any next
+destructive exact cycle; daemon uinput completion cannot renew that authority.
+
+#### Selected bounded design
+
+Reuse the existing exact suppression arm as a transaction lease. At its already
+validated target-side arm, derive the replacement again through the same literal
+`ManualToggleV3` projection using the original source layout, and retain a
+bounded immutable delivery contour inside `ExactReplay`:
+
+- target path and existing armed tail epoch;
+- current runtime owner lease identity and expiry;
+- exact original owned tail and leased suffix;
+- exact unchanged prefix before that suffix; and
+- exact projected replacement, including retained trailing spaces.
+
+This adds no new RPC, reducer, worker, queue, timer, retry, model call, candidate
+source, executor, application identity, or persistent schema. The strings are
+already bounded by the committed-tail and exact replay limits and exist only for
+the lifetime of the current exact suppression.
+
+The contour phase must use the existing tail epoch as well as exact text. If the
+armed epoch is `E`, deletion count is `N`, and replacement length is `M`, the
+only admissible states are:
+
+1. deletion step `k`, where `0 <= k < N`, current epoch is exactly `E + k`, and
+   the current mirror is the original tail with exactly `k` final characters
+   removed; only the next Backspace may advance it;
+2. insertion step `j`, where `0 <= j < M`, current epoch is exactly
+   `E + N + j`, and the current mirror is the unchanged prefix plus exactly the
+   first `j` replacement characters; only the next expected printable may
+   advance it; and
+3. complete, where current epoch is exactly `E + N + M` and the mirror is the
+   unchanged prefix plus the complete replacement.
+
+Use bounded wrapping epoch distance consistently with the existing wrapping
+tail epoch, and reject any distance outside `N + M`. The owner identity, target
+path, suppression identity, expiry, exact mirror, and phase are conjunctive.
+Epoch is necessary: a digit or punctuation character unchanged by layout
+projection can make a deletion state textually equal to a later insertion state.
+Text alone would allow an out-of-order or repeated event to select the wrong
+phase.
+
+At an admissible insertion step, determine the glyph from
+`passthrough_visible_char(keyval, keycode)` and require it to equal the next
+expected replacement character. `physical_char()` is not an eligibility proof:
+it prefers the selected engine layout, while the native client receives the
+keysym and can therefore see a different character. An eligible press updates
+the optimistic mirror once and returns `handled=false`; it emits no `CommitText`.
+Because that press is not remembered as handled, its release follows the
+existing unhandled release path without a new release policy.
+
+The replay mirror update reuses the existing invalidation and mirror owners:
+cancel precognition display work, invalidate the path's Space prefetch, clear
+preedit candidates, replacement targets, observed prediction and pending
+display identity, clear pending completion learning, invalidate the stale
+surrounding snapshot, append and trim the exact visible glyph, and publish the
+tail handoff once. It must not call `push_tail_char`, finalize or confirm
+completion feedback, record a prediction outcome, schedule either worker, or
+publish preedit. The outer observed-suffix refresh recognizes the same exact
+epoch phase and remains quarantined for that replay change; otherwise it would
+recreate the work just cancelled by the inner path.
+
+Quarantine begins before the first replay Backspace. That Backspace must bypass
+`begin_pending_ime_completion_edit_before_backspace()` and any completion-edit
+feedback as well as candidate refresh. Deletion and insertion reuse one shared
+tail-mirror transition primitive: pop or append the exact character, invalidate
+the same background/candidate state, and publish one epoch. They must not copy
+tail ownership into a second buffer or implement a second trim/publish path. If
+a stale visible preedit must be hidden, clear it once when the contour is armed;
+do not emit a clear or preedit update for every replay key.
+
+After the final replayed character, the delivery contour has no next character
+and cannot classify a later press as replay. A retained trailing space consumes
+the existing one-shot exact autocorrect suppression at this boundary without
+running boundary learning. For an open-token replacement, retain only the
+existing next-boundary autocorrect suppression. Before the first later ordinary
+printable or Space, retire the completed delivery contour, rebuild only the
+open-token fast mirror from the exact tail, and enter the unchanged ordinary
+managed/native route. Candidate work and learning may resume from that new user
+input; no replay event itself may enqueue or confirm them.
+
+Any path, owner, epoch, expiry, text, order, duplicate, keyval, or projected-glyph
+mismatch revokes the contour through the existing identity-bound exact cleanup
+and invalidates background work. While an active contour expects another replay
+step, the rejected offending press is consumed with `handled=true` and zero
+native, `CommitText`, or `DeleteSurroundingText` effect. It cannot fall through
+to managed commit or authorize native insertion using a physical-layout guess.
+Exact visible recovery after output from earlier steps is indeterminate; do not
+add a second output fallback or claim rollback of text already delivered.
+
+Reset re-receipt keeps its existing `handled=true` rule. The explicit Double
+Shift path calls `consume_context_reset_rereceipt_for_exact_manual_handoff()`;
+that function validates the confirmed receipt and takes it before
+`prepare_exact_manual_toggle_layout_handoff()` publishes the daemon handoff.
+Replay begins only after that delegation. Its later native-unhandled printable
+therefore sees no pending Reset re-receipt, and
+`advance_context_reset_rereceipt_after_key()` returns immediately. Widening the
+re-receipt rule to accept `handled=false` would admit unrelated client input and
+is not part of this repair.
+
+#### Consequences and proof boundary
+
+- Candidate generation, ranking, `SafetyGate`, verifier, L1.1-L4 packages, and
+  manual projection remain unchanged. Replay produces no candidate denominator
+  and proves no answer quality.
+- Replay adds bounded string/epoch comparisons on the existing key callback and
+  removes per-character `CommitText` plus replay worker scheduling. CPU, RSS,
+  allocation and latency effects are unmeasured. There is no blocking model work
+  or new wait.
+- The mirror after an unhandled press is optimistic. Daemon/uinput completion is
+  not a client acknowledgment. Current external-tail checks must still reject a
+  later destructive exact handoff until a fresh unselected `SurroundingText`
+  agrees. Final visible text remains an actual-client proof obligation.
+- Focus, owner, content type, selection, Reset, capability, factory transfer,
+  path, suppression revision, epoch, and expiry keep their existing invalidation
+  authority. Configuration or material hot reload cannot widen the contour.
+- Terminal native typing, atomic input, active composition, direct committed-tail
+  replacement, daemon WordBuffer replay, ordinary managed typing, and the gesture
+  detector remain outside this exact suppression branch.
+- Rollback is the connected exact-delivery contour, quarantine checks and their
+  tests. No installed-state migration is required.
+
+#### Required causal RED and candidate proof
+
+Before implementation, add the fixed tests to an unchanged-source copy and run
+them remotely under the dedicated-20cpu guard. The useful delivery RED is the
+current exact suppression accepting replay presses through managed `CommitText`
+instead of required native delivery; it is linked to the accepted exact
+original-consumer schedule proof. Measure worker and learning counters as
+separate denominators. Their absence on a particular fixture does not erase the
+delivery RED, and a model-dependent side effect is not required for RED. A
+source string search alone is insufficient.
+
+The candidate proof has separate denominators:
+
+1. Five exact transactions: US-to-RU and RU-to-US open tokens; both directions
+   with one retained trailing space; and a token containing an unchanged digit
+   prefix. Drive the real press/release callback sequence.
+   Require exactly `N` native Backspaces, exactly `M` unhandled printable
+   presses, unhandled paired releases, zero `CommitText`, exact epoch progress,
+   exact optimistic final mirror, and no duplicate/missing visible glyph in the
+   controlled native sink.
+2. Six ordered-progress refusals: printable before deletion completes, duplicate
+   Backspace, skipped epoch, duplicate printable, wrong keysym despite a matching
+   `physical_char`, and owner/path expiry or identity change. Each must release
+   zero native-delivery authority from the rejected phase, clear the matching
+   contour, and leave no second mutation fallback.
+3. Side-effect assertions on every positive transaction: zero Space-prefetch
+   schedule, zero precognition schedule/apply, no pending display frame or
+   candidate/replacement target, no observed prediction outcome, no accepted or
+   edited completion feedback, and no pending completion-learning record. Seed
+   stale work and candidate state first so invalidation is distinguished from an
+   initially empty fixture.
+4. Lifecycle controls: a completed open-token replay followed by one ordinary
+   letter and Space uses the ordinary path and existing one-shot suppression; a
+   completed trailing-space replay followed by a new word uses ordinary typing
+   immediately. A confirmed Reset re-receipt is consumed before delegation and
+   remains absent throughout the later handled-false replay without changing its
+   `handled=true` continuation rule.
+5. Run the affected IME callback, native-transfer, residual, terminal, atomic,
+   manual-toggle and package/architecture gates. Then refresh the architecture
+   graph only after the final source and document are fixed. All Cargo work and
+   graph acceptance run remotely; local source inspection carries no PASS.
+6. Final acceptance requires a fresh physical GNOME Text Editor run that observes
+   the exact resulting text and matching post-replay `SurroundingText` after many
+   repeated bidirectional toggles, plus ordinary typing afterward. Keep transport
+   attribution, callback correctness, final visible text, learning/candidate
+   isolation, latency, RSS/package size and answer quality as separate claims.
+
+This preflight selected only the bounded exact-replay delivery contour for a
+causal RED/PASS attempt. At that point it did not authorize production edits,
+build, installation, restart, or runtime mutation before review.
+
+#### Candidate result: focused callback proof, runtime unchanged
+
+Status is `CANDIDATE_FOCUSED_CALLBACK_PASS_REVIEW_ACCEPTED_RUNTIME_UNCHANGED`.
+Production source now contains the reviewed contour, but no candidate binary was
+built or installed and no process, input source, setting, package, or runtime
+authority changed. Canonical evidence belongs at
+`docs/structural_gates/receipts/LAY_EXACT_REPLAY_NATIVE_DELIVERY_2026-09-12/candidate-focused.json`.
+
+The common TextTarget contract is a composition of existing public entrypoints
+and owners. It is not a new authority object:
+
+- `manual_toggle_outcome_inner()` exposes the typed gesture result
+  `ImeManualToggleOutcome::{Handled, DelegateExactImeTail, DelegateDaemon,
+  NotHandled}` after `manual_toggle_authority()` preserves auto-undo and active
+  composition priority.
+- `text_target_decision(backspaces)` maps the bounded capability facts to a
+  `TextTargetDecision { route, reason }`; its route is one of `CommitOnly`,
+  `ExactSurroundingText`, `TerminalErase`, or `Unsupported`, and refusal retains
+  the typed `MissingProvenDeleteCapability` reason. These three capability facts
+  are only the output-backend selector, not complete TextTarget authority.
+- `ContextAdmissionReducer`, `context_runtime`, and the bridge token checks keep
+  focus, Reset, path, owner, lineage, selection, sensitive-content, atomic, and
+  exact-snapshot guards with their existing owners. `can_replace_committed_tail_inner()`
+  exposes the guarded executable capability without moving those guards.
+- `replace_committed_tail()` executes the admitted typed edit and records the
+  selected output route or exact refusal reason. Exact daemon replay then enters
+  `process_exact_replay_press()` before the ordinary managed callback; it returns
+  `Native`, `Rejected`, or `Inactive` for the current immutable contour.
+- `set_surrounding_text()` records the client observation. A new destructive
+  lease still requires `current_external_snapshot_agrees_with_owned_tail()`;
+  neither the optimistic mirror nor daemon uinput completion renews authority.
+
+Measured facts from the fixed remote focused proof:
+
+- Six complete bidirectional transactions passed: lower-case US-to-RU through
+  the real Reset, exact SurroundingText, live-token bridge and re-receipt
+  choreography; uppercase `Ghbdtn -> Привет` with real Shift press/release;
+  RU-to-US; both trailing-space directions; and an unchanged digit prefix.
+  Replay presses and paired releases were unhandled, the controlled
+  callback sink and epoch sequence were exact, and no `CommitText` or
+  `DeleteSurroundingText` was emitted.
+- Six refusal mechanism classes passed through nine concrete subcases:
+  premature printable, command modifier, duplicate Backspace, skipped epoch,
+  duplicate printable, client-visible keysym mismatch, owner mismatch, active
+  path mismatch, and active expiry. All nine offending presses were handled and
+  emitted no text mutation signal. Mirror preservation was asserted directly for
+  premature printable, duplicate printable, path mismatch, and active expiry;
+  local suppression removal was asserted directly for premature printable,
+  duplicate Backspace, skipped epoch, owner mismatch, path mismatch, and active
+  expiry. The path-mismatch case also asserted preservation of the separately
+  owned shared scope for the original engine. The other subcases establish
+  callback refusal and signal behavior without adding broader mirror/cleanup
+  denominators.
+- Every positive seeded stale preedit, candidate, pending-display and completion
+  learning state. In the ordinary fixtures, the first replay callback emitted
+  exactly one empty preedit update plus hide; the Reset fixture had already
+  emitted that single clear through the real Reset before the contour arm.
+  Later replay and interleaved `SetSurroundingText` callbacks emitted no text
+  effect. With production precognition flags enabled after the Reset arm, actual
+  successful schedule/apply counters stayed `(0, 0)` and completion feedback
+  stayed empty. The ordinary UnknownStart control reached `(1, 0)`, so the zero
+  replay count was not produced by a disabled probe.
+- Completed open-token and trailing-space contours retired before later ordinary
+  input; completed-expired state could quarantine a late matching snapshot but
+  could not consume the next ordinary key. The Reset case consumed its confirmed
+  re-receipt during the live-token bridge handoff and kept it absent throughout
+  unhandled replay.
+- The dedicated-20cpu focused lane passed formatting and all selected
+  `lay-ibus-engine` tests. The canonical receipt binds the final source snapshot,
+  request, result, summary, and binary test log. Canonical-manifest drift is
+  recorded because the candidate adds tests; no manifest was mutated in this
+  focused lane.
+
+Not tested here: affected-closure or full release gates, the dedicated physical
+Double Shift owner test as a separate gate, final architecture graph, release
+build, installed process behavior, actual GNOME Text Editor native delivery,
+selected editor transport, visible pixels, many-cycle physical acceptance,
+latency, RSS, package size, or answer quality. Transport and answer quality
+remain `UNKNOWN`; physical acceptance remains `PENDING`.
+
+The subsequent canonical remote graph refresh passed on the same Rust source:
+22,327 nodes, 59,224 edges, 814 communities and 700 Rust sources. All eleven
+architecture checks reported PASS with zero violations; the 26 architecture
+unit tests, two generated-binding tests, and `check-architecture.sh` passed. The
+generated graph, source binding and compiled architecture receipt were fetched
+back with exact hashes. This proves AST/architecture coverage only; it does not
+upgrade callback behavior, desktop delivery, physical acceptance or answer
+quality. Exact receipt:
+`docs/structural_gates/receipts/LAY_EXACT_REPLAY_NATIVE_DELIVERY_2026-09-12/graph-final.json`.
+
+#### Final changed-suite structural matcher correction
+
+The first complete documented release snapshot reached the canonical hermetic
+lanes with zero reported failures in every earlier target, then stopped in
+`test:typing_transition_authority_contract`: that target ran 21 tests, with 20
+passing and one failing. The canonical manifest still selected 2,793 total tests
+across all lanes, but the stopped run supplies no full-suite PASS denominator.
+The failure was the source-order assertion in
+`double_shift_exact_auto_undo_is_a_protected_first_priority_contract`. It used
+the first textual occurrence of `self.manual_toggle_authority()`. The new
+unknown-word Reset re-receipt branch queries that capability before entering
+the separate known-word protected auto-undo branch, so the matcher selected a
+capability query rather than the manual/layout fallback it was intended to
+order.
+
+Production order inside the protected branch remained
+`defer_pending_ime_auto_undo_until_visible -> undo_last_ime_autocorrect ->
+manual/layout fallback`. The contract now locates the explicit fallback binding
+`let authority = self.manual_toggle_authority();` and retains the same
+`undo < manual` assertion and `PROTECTED USER CONTRACT` marker. No runtime source,
+authority, candidate, verifier, or safety behavior changed in this correction.
+The failed log hashes are
+`e9973125bad87ce9c73f0f1fd85c2b4115bb466dd3469a6eb5c2c8e4b9955f5f`
+for the changed-suite log and
+`98124e0192455f75fe3aaf04a626a29ca2d4a9dffc9794b6bac8b8ba0308d06a`
+for the target log. The corrected exact contract then passed `1/1` remotely
+under the dedicated-20cpu guard from source archive
+`48e19e9117a9c064b78205526ab8d5980075f0b3311e02c96f33a607d3e135c2`;
+its log SHA-256 is
+`d113c69ef6750f73005f14e1e804ce187a5c31f8de45bcd6ac591be17e8253d3`.
+The later test comment and denominator wording are documentation-only changes
+outside that exact-test archive. A new complete changed suite and refreshed
+graph remained required at that point; neither the failed run nor the focused
+repair granted release or runtime authority.
+
+The post-repair canonical graph refresh then passed remotely: 22,328 nodes,
+59,225 edges, 842 communities and 700 Rust sources; all eleven architecture
+checks had zero violations, 26 architecture tests and two generated-binding
+tests passed, and `check-architecture.sh` passed. This refresh binds the changed
+contract source and updates
+`docs/structural_gates/receipts/LAY_EXACT_REPLAY_NATIVE_DELIVERY_2026-09-12/graph-final.json`.
+It remains architecture evidence only. The complete changed suite, release
+build, installed runtime and physical application proof were not tested by it.

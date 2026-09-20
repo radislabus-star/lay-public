@@ -29,6 +29,7 @@ pub(crate) fn fire_expired_pending_multi_tap(ctx: PendingMultiTapTimeoutContext<
                 pending_multi_tap: ctx.pending_multi_tap,
                 last_double_at: ctx.last_double_at,
                 clear_on_next_typing: ctx.clear_on_next_typing,
+                shift_window: ctx.shift_window,
                 text_observation: ctx.text_observation,
             },
             replace_words,

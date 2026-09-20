@@ -237,10 +237,61 @@ fn recognizes_common_live_noun_case_forms() {
 
 #[test]
 fn recognizes_ch_verb_present_forms_from_l2_foundation_lemmas() {
-    for word in ["можем", "может", "можешь", "поможем"] {
+    for word in [
+        "можем",
+        "может",
+        "можешь",
+        "поможем",
+        "наполняю",
+        "наполняешь",
+        "наполняет",
+        "наполняем",
+        "наполняете",
+        "наполняют",
+    ] {
         assert!(
             is_known_russian_word_or_form(word),
-            "missing -чь present form from L2 foundation lemma: {word:?}"
+            "missing backed present form from L2 foundation lemma: {word:?}"
+        );
+        if word.starts_with("наполня") {
+            assert!(
+                full_russian_generated_form_dictionary().contains(word),
+                "valid -ять present form missing from generated Hunspell authority: {word:?}"
+            );
+        }
+    }
+
+    for invalid in [
+        "стояю",
+        "стояешь",
+        "стояет",
+        "стояем",
+        "стояете",
+        "стояют",
+        "состояет",
+        "выстояет",
+        "засеяет",
+        "залаяет",
+    ] {
+        assert!(
+            !full_russian_dictionary().contains(invalid),
+            "wrong -ять form entered exact dictionary authority: {invalid:?}"
+        );
+        assert!(
+            !full_russian_generated_form_dictionary().contains(invalid),
+            "wrong -ять form entered generated Hunspell authority: {invalid:?}"
+        );
+        assert!(
+            !forms::is_known_russian_form(invalid),
+            "wrong -ять form entered morphology authority: {invalid:?}"
+        );
+        assert!(
+            !crate::lexicon::is_ru_technical_loanword(invalid),
+            "wrong -ять form entered technical-word authority: {invalid:?}"
+        );
+        assert!(
+            !is_known_russian_word_or_form(invalid),
+            "wrong -ять conjugation was promoted to known: {invalid:?}"
         );
     }
 }

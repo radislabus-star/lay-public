@@ -170,8 +170,9 @@ impl Worker {
         let exact = prepare_inline_exact(&work);
         let exact_us = exact_started.elapsed().as_micros();
         if trace::enabled() {
+            let candidate_memory_warm = lay::typing_cpu::TypingCpu::ime_candidate_memory_is_warm();
             trace::record(format!(
-                r#"{{"kind":"ibus_exact_layout_preparation","worker_generation":{worker_generation},"tail_epoch":{},"authority_snapshot_present":{},"certificate_present":{},"decision_present":{},"exact_us":{exact_us}}}"#,
+                r#"{{"kind":"ibus_exact_layout_preparation","worker_generation":{worker_generation},"tail_epoch":{},"authority_snapshot_present":{},"candidate_memory_warm":{candidate_memory_warm},"certificate_present":{},"decision_present":{},"exact_us":{exact_us}}}"#,
                 work.identity.tail_epoch,
                 work.identity.exact_authority_snapshot.is_some(),
                 exact.is_some(),

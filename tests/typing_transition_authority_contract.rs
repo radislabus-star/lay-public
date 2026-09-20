@@ -26,7 +26,7 @@ fn visible_tail_decision_delegates_to_transition_core() {
 #[test]
 fn visible_tail_bridge_carries_focus_and_epoch_to_the_transition_core() {
     let bridge = read("src/bin/lay_ibus_engine/bridge.rs");
-    let bridge_actions = read("src/bin/lay_ibus_engine/bridge_actions.rs");
+    let window_authority = read("src/bin/lay_ibus_engine/window_interaction/authority.rs");
     let daemon_bridge = read("src/bin/lay_daemon/layout_controller/ime_bridge.rs");
     let visible_tail = read("src/text_edit/visible_tail.rs");
     let transition = read("src/text_edit/transition.rs");
@@ -43,10 +43,10 @@ fn visible_tail_bridge_carries_focus_and_epoch_to_the_transition_core() {
         "daemon replacement must preflight and forward the observed epoch/focus"
     );
     assert!(
-        bridge_actions.contains(
+        window_authority.contains(
             "unwrap_or_else(|| (engine.committed_tail.epoch, path.clone()))"
         ),
-        "legacy bridge callers must inherit the current epoch instead of manufacturing revision zero"
+        "window authority must make legacy bridge callers inherit the current epoch instead of manufacturing revision zero"
     );
     assert!(
         visible_tail.contains("matches_source_focus_and_epoch")
@@ -62,10 +62,12 @@ fn double_shift_exact_auto_undo_is_a_protected_first_priority_contract() {
     let transition = read("src/text_edit/transition.rs");
 
     let undo = shift
-        .find("undo_last_ime_autocorrect(emitter)")
+        .find("undo_last_ime_autocorrect_with_effect_progress(emitter)")
         .expect("double Shift exact undo route");
+    // The earlier UnknownStart authority query is read-only eligibility, not a
+    // manual/layout fallback. Anchor this order check to the actual dispatch.
     let manual = shift
-        .find("self.manual_toggle_authority()")
+        .find("let authority = self.manual_toggle_authority();")
         .expect("manual toggle fallback");
 
     assert!(

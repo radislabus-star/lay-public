@@ -645,20 +645,37 @@ def build_receipt() -> dict[str, Any]:
     outcome_violations: list[str] = []
     for label, owner in (
         ("PendingSystemOutcomeFeedback", "src/bin/lay_ibus_engine/engine/types.rs"),
-        (".observe_visible_postcondition()", "src/bin/lay_ibus_engine/tail_memory.rs"),
-        (".arm_visible_postcondition_with_feedback()", "src/bin/lay_ibus_engine/tail_memory.rs"),
+        (
+            ".observe_visible_postcondition()",
+            "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+        ),
+        (
+            ".arm_visible_postcondition_from_surrounding_dispatch()",
+            "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+        ),
     ):
         item_evidence, item_violations = graph.node(label, owner)
         outcome_evidence.extend(item_evidence)
         outcome_violations.extend(item_violations)
+    observation_source = (
+        ROOT
+        / "src"
+        / "bin"
+        / "lay_ibus_engine"
+        / "window_interaction"
+        / "observation.rs"
+    ).read_text(encoding="utf-8")
     tail_memory_source = (
         ROOT / "src" / "bin" / "lay_ibus_engine" / "tail_memory.rs"
     ).read_text(encoding="utf-8")
-    if "record_observed_system_outcome" not in tail_memory_source:
+    if "record_observed_system_outcome" not in observation_source:
         outcome_violations.append("observed_state_does_not_train_feedback")
     if "quarantine_visible_postcondition_mismatch" not in tail_memory_source:
         outcome_violations.append("mismatch_does_not_quarantine_execution_lease")
-    if "record_rejected_candidate_usage" in tail_memory_source:
+    if (
+        "record_rejected_candidate_usage" in observation_source
+        or "record_rejected_candidate_usage" in tail_memory_source
+    ):
         outcome_violations.append("backend_mismatch_trains_semantic_anti_feedback")
     checks.append(check("observed-outcome-feedback", outcome_evidence, outcome_violations))
 

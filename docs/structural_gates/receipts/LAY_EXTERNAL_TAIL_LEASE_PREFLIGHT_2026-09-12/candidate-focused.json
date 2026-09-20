@@ -1,0 +1,91 @@
+{
+  "schema": "lay.external-tail-lease-preflight.candidate.v1",
+  "status": "CANDIDATE_FOCUSED_PASS_RUNTIME_UNCHANGED",
+  "date": "2026-09-12",
+  "installed_v3_source": {
+    "archive": "/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2/source.tar",
+    "archive_sha256": "bf8665188a62e077b7095843480b67b1d67aefc835ad4760fa024dee04d407a6",
+    "immutable": true
+  },
+  "causal_red_receipt": "docs/structural_gates/receipts/LAY_EXTERNAL_TAIL_LEASE_PREFLIGHT_2026-09-12/v3-red.json",
+  "core_delta_against_normalized_v3": {
+    "method": "sha256 of concatenated Python unified diffs in listed order",
+    "sha256": "83f33b16fbc361ad3714a02bc0b5ca14d2fa18b8e2a7e5fd7d0f742f00bb2211",
+    "files": [
+      {
+        "path": "src/bin/lay_ibus_engine/bridge_actions.rs",
+        "v3_sha256": "40ab2dd352740e0ac1dc79512f8feb643411930277c03615ba482c107b18e7fa",
+        "candidate_sha256": "d359a1b82500e5cc95da30905d8ab9241cf00188fce0b6aac7713ff6a7ff5c6d"
+      },
+      {
+        "path": "src/bin/lay_ibus_engine/shift.rs",
+        "v3_sha256": "a5aaab2c80cdccf2a8fdd69127c04d0c7826f397a20115e6f3b416a33e910004",
+        "candidate_sha256": "e3088eda1308284f047ffea514e387150b91611b0b98f5ab7bc92dc13366bf91"
+      },
+      {
+        "path": "src/bin/lay_ibus_engine/tail_memory.rs",
+        "v3_sha256": "b07d5797b2f9bd82c0478e2b16f074d720e50193b9c8900c2bdb21e22d494dd7",
+        "candidate_sha256": "e04a4cfe5870f2999fe3666430604cad311ce84ffffd68ce47b5735012176246"
+      }
+    ]
+  },
+  "implementation": {
+    "source_visible_tail": "identity-bound exact handoff must be live and current unselected external snapshot must contain the complete owned tail with token boundaries",
+    "target_visible_tail": "same check after the real factory handoff",
+    "immediate_suppression_arm": "same external agreement is rechecked immediately before exact suppression",
+    "mismatch_cleanup": "only current-owner exact handoff and matching ExactReplay suppression are cleared",
+    "gui_executor": "Reset or observed-suffix evidence prepares the existing typed exact handoff; no direct GUI DeleteSurroundingText or CommitText branch remains",
+    "unchanged_owners": [
+      "daemon physical exact replay",
+      "terminal erase executor",
+      "atomic executor"
+    ]
+  },
+  "regression": {
+    "test": "context_admission::adapter::tests::word_scope::residuals::exact_replay_requires_current_unselected_external_tail_at_each_lease",
+    "denominator": {
+      "positive": 2,
+      "negative": 7
+    },
+    "positive_results": {
+      "open_token": "PASS",
+      "retained_trailing_boundary": "PASS"
+    },
+    "negative_results": {
+      "source_shorter": "REJECTED_ZERO_EFFECT",
+      "target_shorter_after_factory_handoff": "REJECTED_ZERO_EFFECT",
+      "target_changed_after_visible_tail_before_suppression": "REJECTED_ZERO_EFFECT",
+      "source_same_final_token_missing_boundary": "REJECTED_ZERO_EFFECT",
+      "source_selection": "REJECTED_ZERO_EFFECT",
+      "source_missing_snapshot": "REJECTED_ZERO_EFFECT",
+      "stale_context_identity": "REJECTED_ZERO_EFFECT"
+    },
+    "local_ibus_delete_or_commit_effects": 0
+  },
+  "affected_contracts": {
+    "stale_owner_cleanup": "stale admission owner with a copied CurrentWord scope cannot clear target local/shared suppression or target-bound exact handoff; current target may clear only its exact handoff while CurrentWord remains",
+    "reset_rereceipt": "returns typed DelegateExactImeTail and emits no local GUI delete or commit",
+    "terminal": "fixtures declare terminal purpose and preserve the terminal erase executor",
+    "closed_handoff_tail": "buffer and epoch transfer; trailing boundary keeps preedit token closed; fresh printable input reopens token and IME authority"
+  },
+  "remote_check": {
+    "command": "python3 scripts/dev-check.py check --target bin:lay-ibus-engine",
+    "resource_profile": "dedicated-20cpu",
+    "local_receipt": "/home/ubu/.cache/lay/development/run-6yjp8x5k",
+    "remote_run": "/home/e/projects/lay-development-runner/run-8f5G0o",
+    "remote_snapshot_sha256": "dbcdcc58e2bd8c27966f5df7ef3e937c339d85730cfb73227a0d3c3234aafcf7",
+    "format_check": "PASS",
+    "focused_selected": 470,
+    "focused_failures": 0,
+    "verdict": "PASS"
+  },
+  "not_tested": [
+    "client transport selection",
+    "which insertion was lost",
+    "physical input grab or uinput replay",
+    "final client-visible text",
+    "latency, RSS, package size",
+    "installed runtime"
+  ],
+  "runtime_authority_changed": false
+}

@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
@@ -17,6 +18,7 @@ struct TraceConfigCache {
 }
 
 static TRACE_CONFIG: Mutex<Option<TraceConfigCache>> = Mutex::new(None);
+static TRACE_ENABLED_CACHED: AtomicBool = AtomicBool::new(false);
 
 pub(crate) fn record(line: impl AsRef<str>) {
     if !enabled() {
@@ -72,6 +74,152 @@ pub(crate) fn record_context_admission(
         .unwrap_or_else(|| "null".to_string());
     write_record(format!(
         r#"{{"kind":"ibus_context_admission","stage":{stage},"member":{member},"serial":{serial},"disposition":{disposition},"owner_generation":{owner_generation},"activation_generation":{activation_generation},"completeness":{completeness}}}"#
+    ));
+}
+
+pub(crate) struct AdmissionDiagnosticTrace<'a> {
+    pub(crate) flow: &'a str,
+    pub(crate) phase: &'a str,
+    pub(crate) reason: &'a str,
+    pub(crate) request_generation: Option<u64>,
+    pub(crate) nonce: u64,
+    pub(crate) reducer_status: &'a str,
+    pub(crate) post_decision_unsettled_count: usize,
+    pub(crate) owner_generation: Option<u64>,
+    pub(crate) activation_generation: Option<u64>,
+    pub(crate) fence_present: bool,
+    pub(crate) marker_observed: bool,
+}
+
+pub(crate) fn record_admission_diagnostic(event: AdmissionDiagnosticTrace<'_>) {
+    if !enabled() {
+        return;
+    }
+    write_record(admission_diagnostic_line(event));
+}
+
+pub(crate) fn record_admission_timing(
+    phase: &str,
+    request_generation: Option<u64>,
+    nonce: u64,
+    deadline: Option<Instant>,
+) {
+    if !diagnostics_enabled_cached() {
+        return;
+    }
+    let now = Instant::now();
+    let remaining_us = deadline.map(|deadline| {
+        if deadline >= now {
+            deadline.duration_since(now).as_micros() as i128
+        } else {
+            -(now.duration_since(deadline).as_micros() as i128)
+        }
+    });
+    let at_unix_us = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_micros();
+    write_record(admission_timing_line(
+        phase,
+        request_generation,
+        nonce,
+        at_unix_us,
+        remaining_us,
+    ));
+}
+
+fn admission_timing_line(
+    phase: &str,
+    request_generation: Option<u64>,
+    nonce: u64,
+    at_unix_us: u128,
+    remaining_us: Option<i128>,
+) -> String {
+    let phase = json_string(phase);
+    let request = request_generation
+        .map(|value| value.to_string())
+        .unwrap_or_else(|| "null".to_string());
+    let remaining = remaining_us
+        .map(|value| value.to_string())
+        .unwrap_or_else(|| "null".to_string());
+    format!(
+        r#"{{"kind":"ibus_admission_timing","phase":{phase},"request_generation":{request},"nonce":{nonce},"at_unix_us":{at_unix_us},"remaining_us":{remaining}}}"#,
+    )
+}
+
+fn admission_diagnostic_line(event: AdmissionDiagnosticTrace<'_>) -> String {
+    let flow = json_string(event.flow);
+    let phase = json_string(event.phase);
+    let reason = json_string(event.reason);
+    let reducer_status = json_string(event.reducer_status);
+    let request_generation = event
+        .request_generation
+        .map(|generation| generation.to_string())
+        .unwrap_or_else(|| "null".to_string());
+    let owner_generation = event
+        .owner_generation
+        .map(|generation| generation.to_string())
+        .unwrap_or_else(|| "null".to_string());
+    let activation_generation = event
+        .activation_generation
+        .map(|generation| generation.to_string())
+        .unwrap_or_else(|| "null".to_string());
+    let nonce = event.nonce;
+    let post_decision_unsettled_count = event.post_decision_unsettled_count;
+    let fence_present = event.fence_present;
+    let marker_observed = event.marker_observed;
+    format!(
+        r#"{{"kind":"ibus_admission_diagnostic","flow":{flow},"phase":{phase},"reason":{reason},"request_generation":{request_generation},"nonce":{nonce},"reducer_status":{reducer_status},"post_decision_unsettled_count":{post_decision_unsettled_count},"owner_generation":{owner_generation},"activation_generation":{activation_generation},"fence_present":{fence_present},"marker_observed":{marker_observed}}}"#
+    )
+}
+
+pub(crate) struct NativeActivationTrace<'a> {
+    pub(crate) stage: &'a str,
+    pub(crate) outcome: &'a str,
+    pub(crate) target_path: &'a str,
+    pub(crate) request_generation: Option<u64>,
+    pub(crate) nonce: u64,
+    pub(crate) context_path: Option<&'a str>,
+    pub(crate) owner_generation: Option<u64>,
+    pub(crate) revocation: Option<u64>,
+    pub(crate) profile: Option<&'a str>,
+    pub(crate) route: Option<&'a str>,
+}
+
+pub(crate) fn record_native_activation(event: NativeActivationTrace<'_>) {
+    if !enabled() {
+        return;
+    }
+    let stage = json_string(event.stage);
+    let outcome = json_string(event.outcome);
+    let target_path = json_string(event.target_path);
+    let request_generation = event
+        .request_generation
+        .map(|generation| generation.to_string())
+        .unwrap_or_else(|| "null".to_string());
+    let context_path = event
+        .context_path
+        .map(json_string)
+        .unwrap_or_else(|| "null".to_string());
+    let owner_generation = event
+        .owner_generation
+        .map(|generation| generation.to_string())
+        .unwrap_or_else(|| "null".to_string());
+    let revocation = event
+        .revocation
+        .map(|generation| generation.to_string())
+        .unwrap_or_else(|| "null".to_string());
+    let profile = event
+        .profile
+        .map(json_string)
+        .unwrap_or_else(|| "null".to_string());
+    let route = event
+        .route
+        .map(json_string)
+        .unwrap_or_else(|| "null".to_string());
+    let nonce = event.nonce;
+    write_record(format!(
+        r#"{{"kind":"ibus_native_activation","stage":{stage},"outcome":{outcome},"target_path":{target_path},"request_generation":{request_generation},"nonce":{nonce},"context_path":{context_path},"owner_generation":{owner_generation},"revocation":{revocation},"profile":{profile},"route":{route}}}"#
     ));
 }
 
@@ -527,6 +675,10 @@ pub(crate) fn enabled() -> bool {
     debug_enabled_cached()
 }
 
+pub(crate) fn diagnostics_enabled_cached() -> bool {
+    TRACE_ENABLED_CACHED.load(Ordering::Acquire)
+}
+
 fn write_record(line: impl AsRef<str>) {
     let path = trace_path();
     lay::debug_log::append_private_line(path, line.as_ref().to_string());
@@ -541,6 +693,7 @@ fn debug_enabled_cached() -> bool {
         }
     }
     let enabled = lay::config::LayConfig::load().debug_action_log;
+    TRACE_ENABLED_CACHED.store(enabled, Ordering::Release);
     *cache = Some(TraceConfigCache {
         enabled,
         checked_at: now,
@@ -549,13 +702,7 @@ fn debug_enabled_cached() -> bool {
 }
 
 fn trace_path() -> PathBuf {
-    if let Some(path) = std::env::var_os("LAY_IBUS_TRACE_PATH") {
-        return PathBuf::from(path);
-    }
-    std::env::var_os("HOME")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from("/tmp"))
-        .join(".local/share/lay/ibus_engine_debug.jsonl")
+    lay::debug_log::ibus_runtime_trace_path()
 }
 
 fn json_string(value: &str) -> String {
@@ -792,5 +939,83 @@ mod tests {
             encoded,
             ["ready", "not_ready", "stale", "unauthorized", "applied"]
         );
+    }
+
+    #[test]
+    fn admission_diagnostic_trace_is_fixed_metadata_without_user_text() {
+        for (request, remaining) in [(Some(3), Some(-20)), (None, None)] {
+            let value = parse(&admission_timing_line(
+                "marker_ingress",
+                request,
+                7,
+                123,
+                remaining,
+            ));
+            let object = value.as_object().unwrap();
+            assert_eq!(object.len(), 6);
+            for field in [
+                "kind",
+                "phase",
+                "request_generation",
+                "nonce",
+                "at_unix_us",
+                "remaining_us",
+            ] {
+                assert!(object.contains_key(field));
+            }
+            assert_eq!(value["request_generation"].as_u64(), request);
+            assert_eq!(
+                value["remaining_us"].as_i64(),
+                remaining.map(|value| value as i64)
+            );
+        }
+        let line = admission_diagnostic_line(AdmissionDiagnosticTrace {
+            flow: "compatibility",
+            phase: "marker",
+            reason: "unsettled_callbacks",
+            request_generation: Some(3),
+            nonce: 7,
+            reducer_status: "pending",
+            post_decision_unsettled_count: 1,
+            owner_generation: Some(2),
+            activation_generation: Some(2),
+            fence_present: true,
+            marker_observed: true,
+        });
+        let value = parse(&line);
+        assert_eq!(value.as_object().unwrap().len(), 12);
+        for field in [
+            "kind",
+            "flow",
+            "phase",
+            "reason",
+            "request_generation",
+            "nonce",
+            "reducer_status",
+            "post_decision_unsettled_count",
+            "owner_generation",
+            "activation_generation",
+            "fence_present",
+            "marker_observed",
+        ] {
+            assert!(
+                value.get(field).is_some(),
+                "diagnostic trace is missing {field}"
+            );
+        }
+        for forbidden in [
+            "text",
+            "context_path",
+            "client",
+            "profile",
+            "body",
+            "keyval",
+            "decoded",
+        ] {
+            assert!(
+                value.get(forbidden).is_none(),
+                "forbidden trace field {forbidden}"
+            );
+        }
     }
 }

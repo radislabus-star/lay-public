@@ -22,6 +22,7 @@ const IME_EN_BOOTSTRAP_PREFIXES: &[&str] = &["ex"];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
 pub struct L2SurfaceMemoryStatus {
+    pub available: bool,
     pub active_source_target: usize,
     source_words: usize,
     l1_centers: usize,
@@ -39,24 +40,41 @@ pub struct L2SurfaceMemoryStatus {
     pub generated_forms_words: usize,
 }
 
-pub(crate) fn warm_up_surface_motif_memory() {
-    let _ = surface_motif_memory().stats();
+pub(crate) fn warm_up_surface_motif_memory() -> bool {
+    surface_motif_memory().is_some()
 }
 
-pub(crate) fn warm_up_ime_word_candidate_memory() {
+pub(crate) fn warm_up_ime_word_candidate_memory() -> bool {
     IME_WORD_CANDIDATE_MEMORY_WARMUP.get_or_init(|| {
-        warm_up_prefixes(IME_RU_BOOTSTRAP_PREFIXES, IME_RU_HOT_MATERIAL_LIMIT);
-        warm_up_prefixes(IME_EN_BOOTSTRAP_PREFIXES, IME_EN_HOT_MATERIAL_LIMIT);
+        let started = std::time::Instant::now();
+        let available = warm_up_prefixes(IME_RU_BOOTSTRAP_PREFIXES, IME_RU_HOT_MATERIAL_LIMIT)
+            && warm_up_prefixes(IME_EN_BOOTSTRAP_PREFIXES, IME_EN_HOT_MATERIAL_LIMIT);
+        if !available {
+            super::super::record_ime_runtime_trace(|| {
+                format!(
+                    r#"{{"kind":"ibus_l2_ime_warmup","stage":"candidate_memory_unavailable","prefix_warmup_us":{},"candidate_memory_ready":false,"available":false}}"#,
+                    started.elapsed().as_micros(),
+                )
+            });
+            return;
+        }
         IME_WORD_CANDIDATE_MEMORY_READY.store(true, Ordering::Release);
+        super::super::record_ime_runtime_trace(|| {
+            format!(
+                r#"{{"kind":"ibus_l2_ime_warmup","stage":"candidate_memory_ready_published","prefix_warmup_us":{},"candidate_memory_ready":true}}"#,
+                started.elapsed().as_micros(),
+            )
+        });
     });
+    IME_WORD_CANDIDATE_MEMORY_READY.load(Ordering::Acquire)
 }
 
-fn warm_up_prefixes(prefixes: &[&str], material_limit: usize) {
+fn warm_up_prefixes(prefixes: &[&str], material_limit: usize) -> bool {
     let prefixes = prefixes
         .iter()
         .map(|prefix| (*prefix).to_string())
         .collect::<Vec<_>>();
-    super::ime_readout::warm_up_lexical_readout_cache(&prefixes, material_limit);
+    super::ime_readout::warm_up_lexical_readout_cache(&prefixes, material_limit)
 }
 
 pub fn ime_word_candidate_memory_is_warm() -> bool {
@@ -64,7 +82,8 @@ pub fn ime_word_candidate_memory_is_warm() -> bool {
 }
 
 pub fn l2_surface_memory_status() -> L2SurfaceMemoryStatus {
-    let hot = surface_motif_memory().stats();
+    let memory = surface_motif_memory();
+    let hot = memory.map(|memory| memory.stats()).unwrap_or_default();
     let generated_forms_loaded =
         crate::russian_lexicon::russian_generated_form_dictionary_is_warm();
     let generated_forms_words = if generated_forms_loaded {
@@ -73,6 +92,7 @@ pub fn l2_surface_memory_status() -> L2SurfaceMemoryStatus {
         0
     };
     L2SurfaceMemoryStatus {
+        available: memory.is_some(),
         active_source_target: L2_ACTIVE_SOURCE_TARGET,
         source_words: hot.source_words,
         l1_centers: hot.l1_centers,

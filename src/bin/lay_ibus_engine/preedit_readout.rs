@@ -9,7 +9,8 @@ use lay::typing_cpu::{
 impl LayIbusEngine {
     fn live_completion_input_is_active(&self) -> bool {
         !self.composition.buffer.is_empty()
-            || (self.committed_tail.last_input_at.is_some() && !self.composition.preedit_fast.token.is_empty())
+            || (self.committed_tail.last_input_at.is_some()
+                && !self.composition.preedit_fast.token.is_empty())
     }
 
     #[cfg(test)]
@@ -27,10 +28,18 @@ impl LayIbusEngine {
     }
 
     fn live_word_readout_input<'a>(&self, tail: &'a str) -> Option<(&'a str, &'a str)> {
-        if self.composition.preedit_fast.is_ascii_live_candidate_token()
+        if let Some(input) = split_last_ascii_layout_token(tail) {
+            return Some(input);
+        }
+        if self
+            .composition
+            .preedit_fast
+            .is_ascii_live_candidate_token()
             && tail.ends_with(self.composition.preedit_fast.token.as_str())
         {
-            let split = tail.len().saturating_sub(self.composition.preedit_fast.token.len());
+            let split = tail
+                .len()
+                .saturating_sub(self.composition.preedit_fast.token.len());
             return Some(tail.split_at(split));
         }
         split_last_alphabetic_token(tail)
@@ -62,15 +71,27 @@ impl LayIbusEngine {
     }
 }
 
+fn split_last_ascii_layout_token(tail: &str) -> Option<(&str, &str)> {
+    let (prefix, token) = lay::word_reader::split_last_ws_token(tail)?;
+    let is_ascii_layout_token = token.is_ascii()
+        && token.chars().any(|ch| ch.is_ascii_alphabetic())
+        && token.chars().all(|ch| {
+            ch.is_ascii_alphabetic() || lay::typing_cpu::is_ascii_layout_letter_symbol(ch)
+        });
+    is_ascii_layout_token.then_some((prefix, token))
+}
+
+fn semantic_phrase_readout_applicable(input: &PrecognitionInput) -> bool {
+    input.correction_safety == lay::config::CorrectionSafety::Experimental
+        && input.tail.trim_end().chars().count() >= 6
+        && should_query_llmwave_phrase_suffix(&input.tail)
+        && TypingCpu::phrase_memory_is_warm()
+}
+
 fn semantic_phrase_candidates_for_input(input: &PrecognitionInput) -> Vec<ImeCandidateProposal> {
-    if input.correction_safety != lay::config::CorrectionSafety::Experimental
-        || input.tail.trim_end().chars().count() < 6
-        || !should_query_llmwave_phrase_suffix(&input.tail)
-        || !TypingCpu::phrase_memory_is_warm()
-    {
+    if !semantic_phrase_readout_applicable(input) {
         return Vec::new();
     }
-
     // Phrase memory is suffix-only. Whole-token replacements remain available
     // to correction routes but are not projected onto live IBus preedit.
     llmwave_phrase_candidates_for_input(&input.tail, input.max_suffix_chars)
@@ -84,12 +105,28 @@ fn word_candidate_proposals_for_input(input: &PrecognitionInput) -> Vec<ImeCandi
 fn word_candidate_readout_for_input(
     input: &PrecognitionInput,
 ) -> (Vec<ImeCandidateProposal>, LiveCompletionTiming) {
-    if input.correction_safety == lay::config::CorrectionSafety::Strict {
+    if input.correction_safety != lay::config::CorrectionSafety::Strict
+        && !TypingCpu::ime_candidate_memory_is_warm()
+    {
+        TypingCpu::ensure_ime_warmup_started();
+    }
+    let Some(request) = word_completion_request(input) else {
         return (Vec::new(), LiveCompletionTiming::default());
+    };
+    let readout = TypingCpu::live_completion_readout(request);
+    let timing = readout.timing;
+    (
+        project_word_completion_candidates(readout.candidates),
+        timing,
+    )
+}
+
+fn word_completion_request(input: &PrecognitionInput) -> Option<LiveCompletionRequest<'_>> {
+    if input.correction_safety == lay::config::CorrectionSafety::Strict {
+        return None;
     }
     if !TypingCpu::ime_candidate_memory_is_warm() {
-        TypingCpu::ensure_ime_warmup_started();
-        return (Vec::new(), LiveCompletionTiming::default());
+        return None;
     }
     let partial_len = input.partial.chars().count();
     let ru_surface = input
@@ -103,24 +140,27 @@ fn word_candidate_readout_for_input(
     if !(PREEDIT_RU_PREFIX_MIN_CHARS..=18).contains(&partial_len)
         || !(ru_surface || ascii_layout_surface)
     {
-        return (Vec::new(), LiveCompletionTiming::default());
+        return None;
     }
 
-    let readout = TypingCpu::live_completion_readout(LiveCompletionRequest {
+    Some(LiveCompletionRequest {
         context_prefix: &input.context_prefix,
         partial: &input.partial,
         max_suffix_chars: input.max_suffix_chars,
         active_composition: input.active_composition,
         allow_short_lexical: true,
         limit: PREEDIT_RU_WAVE_CANDIDATE_LIMIT,
-    });
-    let timing = readout.timing;
+    })
+}
+
+fn project_word_completion_candidates(
+    candidates: Vec<lay::typing_cpu::LiveCompletionCandidate>,
+) -> Vec<ImeCandidateProposal> {
     // The shared candidate gate still owns and exposes replacement candidates
     // to correction routes. Live IBus preedit only projects suffix completion;
     // replacing the visible token after a background result is a disruptive UI
     // transition and is not passive completion.
-    let proposals = readout
-        .candidates
+    candidates
         .into_iter()
         .filter(|candidate| !candidate.replacement)
         .enumerate()
@@ -132,8 +172,7 @@ fn word_candidate_readout_for_input(
             )
             .with_authority_order(order)
         })
-        .collect();
-    (proposals, timing)
+        .collect()
 }
 
 fn llmwave_phrase_candidates_for_input(
@@ -189,13 +228,7 @@ pub(crate) fn materialize_precognition_candidates_observed(
     let mut proposals = Vec::with_capacity(semantic_candidates.len() + word_candidates.len());
     proposals.extend(semantic_candidates);
     proposals.extend(word_candidates);
-    proposals.retain(|proposal| {
-        !proposal_repeats_declined_target(&input.declined_target_surfaces, &input.partial, proposal)
-    });
-    let candidates = select_ime_candidate_proposals(ImeCandidateReadoutRequest {
-        proposals: &proposals,
-        limit: proposals.len(),
-    });
+    let candidates = select_precognition_material(input, proposals);
 
     PrecognitionMaterialization {
         candidates,
@@ -206,6 +239,32 @@ pub(crate) fn materialize_precognition_candidates_observed(
             word: word_timing,
         },
     }
+}
+
+fn select_precognition_material(
+    input: &PrecognitionInput,
+    mut proposals: Vec<ImeCandidateProposal>,
+) -> Vec<ImeCandidateProposal> {
+    proposals.retain(|proposal| {
+        !proposal_repeats_declined_target(&input.declined_target_surfaces, &input.partial, proposal)
+    });
+    select_ime_candidate_proposals(ImeCandidateReadoutRequest {
+        proposals: &proposals,
+        limit: proposals.len(),
+    })
+}
+
+fn cached_precognition_candidates(input: &PrecognitionInput) -> Option<Vec<ImeCandidateProposal>> {
+    // This cache contains the entire shared word gate, but not the additional
+    // experimental phrase source. Never omit that source on the inline route.
+    if semantic_phrase_readout_applicable(input) {
+        return None;
+    }
+    let candidates = TypingCpu::cached_live_completion_candidates(word_completion_request(input)?)?;
+    Some(select_precognition_material(
+        input,
+        project_word_completion_candidates(candidates),
+    ))
 }
 
 fn proposal_repeats_declined_target(
@@ -233,6 +292,54 @@ fn elapsed_us(started: Option<Instant>) -> u64 {
 
 #[cfg(test)]
 mod preedit_readout_contract {
+    use super::*;
+
+    fn completion_input(tail: &str, context_prefix: &str, partial: &str) -> PrecognitionInput {
+        PrecognitionInput {
+            tail: tail.into(),
+            context_prefix: context_prefix.into(),
+            partial: partial.into(),
+            max_suffix_chars: 16,
+            active_composition: true,
+            correction_safety: lay::config::CorrectionSafety::Normal,
+            declined_target_surfaces: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn cached_projection_preserves_shared_order_and_declined_targets() {
+        assert!(TypingCpu::warm_l2_for_ime());
+        let mut input = completion_input("про", "", "про");
+        let ordinary = materialize_precognition_candidates(&input);
+        assert!(!ordinary.is_empty());
+        assert_eq!(
+            cached_precognition_candidates(&input),
+            Some(ordinary.clone())
+        );
+        input
+            .declined_target_surfaces
+            .push(format!("{}{}", input.partial, ordinary[0].suffix));
+        let filtered = materialize_precognition_candidates(&input);
+        assert!(!filtered
+            .iter()
+            .any(|candidate| candidate.suffix == ordinary[0].suffix));
+        assert_eq!(cached_precognition_candidates(&input), Some(filtered));
+        input.correction_safety = lay::config::CorrectionSafety::Strict;
+        assert_eq!(cached_precognition_candidates(&input), None);
+    }
+
+    #[test]
+    fn cached_projection_cannot_omit_applicable_semantic_source() {
+        assert!(TypingCpu::warm_l2_for_ime());
+        TypingCpu::warm_l3_phrase_memory();
+        let mut input = completion_input("на улице опять идёт д", "на улице опять идёт ", "д");
+        let _ = materialize_precognition_candidates(&input);
+        assert!(cached_precognition_candidates(&input).is_some());
+        input.correction_safety = lay::config::CorrectionSafety::Experimental;
+        assert!(semantic_phrase_readout_applicable(&input));
+        assert_eq!(cached_precognition_candidates(&input), None);
+    }
+
     #[test]
     fn preedit_rendering_does_not_own_l2_l3_material_acquisition() {
         let render = include_str!("preedit.rs");

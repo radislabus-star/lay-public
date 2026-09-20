@@ -12,14 +12,14 @@ use zbus::zvariant::{ObjectPath, OwnedValue, StructureBuilder};
 use super::*;
 use crate::atomic::td120_test_atomic_capability;
 use crate::context_admission::rendezvous::RendezvousBegin;
-use crate::engine::LayIbusEngine;
+use crate::engine::{LayIbusEngine, SurroundingTextSnapshot};
 use crate::output::{PROPOSAL_FRAME_READY, PROPOSAL_NATIVE_UNHANDLED};
 use crate::protocol::SharedState;
 
 #[path = "tests/native_transfer.rs"]
 mod native_transfer;
 #[path = "tests/word_scope.rs"]
-mod word_scope;
+pub(crate) mod word_scope;
 
 const ADAPTER_SENDER: &str = ":1.2";
 const IBUS_SENDER: &str = ":1.0";
@@ -95,6 +95,14 @@ fn global_engine_value(name: &str) -> OwnedValue {
 }
 
 async fn serve_bootstrap(peer: &mut ControlledPeer, profile_name: &str) {
+    serve_bootstrap_with_mode(peer, profile_name, true).await;
+}
+
+async fn serve_bootstrap_with_mode(
+    peer: &mut ControlledPeer,
+    profile_name: &str,
+    use_global_engine: bool,
+) {
     for step in 0..4 {
         let call = next_peer_message(peer).await;
         assert_eq!(call.header().message_type(), Type::MethodCall);
@@ -110,7 +118,10 @@ async fn serve_bootstrap(peer: &mut ControlledPeer, profile_name: &str) {
                 peer.connection.reply(&call.header(), &owner).await.unwrap();
             }
             (2, "GetUseGlobalEngine") => {
-                peer.connection.reply(&call.header(), &true).await.unwrap();
+                peer.connection
+                    .reply(&call.header(), &use_global_engine)
+                    .await
+                    .unwrap();
             }
             (3, "Get") => {
                 let (interface, property) = call.body().deserialize::<(String, String)>().unwrap();
@@ -126,6 +137,148 @@ async fn serve_bootstrap(peer: &mut ControlledPeer, profile_name: &str) {
     }
 }
 
+#[test]
+fn td121_false_global_mode_refuses_authority_and_literal_delivery_is_exact() {
+    zbus::block_on(async {
+        let (connection, mut peer) = controlled_pair();
+        let config = AdapterConfig::new(ConnectionGeneration(60), vec![profile("lay-us")]).unwrap();
+        let pending = PendingContextAdapter::subscribe(connection.clone(), config)
+            .await
+            .unwrap();
+        let (result, ()) = future::zip(
+            pending.bootstrap(),
+            serve_bootstrap_with_mode(&mut peer, "lay-us", false),
+        )
+        .await;
+        let (adapter, mut observer, identity) = result.unwrap();
+        assert_eq!(identity.mode, GlobalEngineMode::UnsupportedOrFalse);
+        assert!(adapter.current_owner().is_none());
+        assert!(adapter.current_token().is_none());
+
+        let shared = Arc::new(Mutex::new(SharedState::default()));
+        let mut engine = LayIbusEngine::new_from_component(
+            TARGET_PATH.to_string(),
+            shared,
+            Some(adapter.clone()),
+            "lay-ime-us",
+            true,
+            ime_config(),
+        );
+        let key = method_message(
+            DISPATCH_SENDER,
+            590,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+            "ProcessKeyEvent",
+        );
+        peer.connection.send(&key).await.unwrap();
+        let emitter = zbus::object_server::SignalEmitter::new(&connection, TARGET_PATH).unwrap();
+        let (handled, observed) = future::zip(
+            engine.process_key_event(key.header(), emitter, u32::from(b'a'), 30, 0),
+            observer.process_next(),
+        )
+        .await;
+        assert!(observed.unwrap());
+        let handled = handled.unwrap();
+        assert_exact_literal_delivery(&connection, &mut peer, TARGET_PATH, handled, "a").await;
+        assert_eq!(engine.committed_tail.buffer, if handled { "a" } else { "" });
+        assert!(engine.composition.buffer.is_empty());
+        assert!(adapter.current_owner().is_none());
+        assert!(adapter.current_token().is_none());
+    });
+}
+
+#[test]
+fn td121_unverified_bootstrap_failure_is_bounded_and_fresh_literal_has_no_transfer_authority() {
+    zbus::block_on(async {
+        let (connection, mut peer) = controlled_pair();
+        let config = AdapterConfig::new(ConnectionGeneration(59), vec![profile("lay-us")]).unwrap();
+        let pending = PendingContextAdapter::subscribe(connection, config)
+            .await
+            .unwrap();
+        let malformed_peer = async {
+            for step in 0..3 {
+                let call = next_peer_message(&mut peer).await;
+                match step {
+                    0 | 1 => {
+                        let name = call.body().deserialize::<String>().unwrap();
+                        let owner = if name == IBUS_NAME {
+                            IBUS_SENDER
+                        } else {
+                            DISPATCH_SENDER
+                        };
+                        peer.connection.reply(&call.header(), &owner).await.unwrap();
+                    }
+                    2 => peer
+                        .connection
+                        .reply(&call.header(), &"not-a-boolean")
+                        .await
+                        .unwrap(),
+                    _ => unreachable!(),
+                }
+            }
+        };
+        let completed = future::race(
+            async {
+                let (result, ()) = future::zip(pending.bootstrap(), malformed_peer).await;
+                assert!(matches!(result, Err(AdapterError::InvalidBootstrap(_))));
+                true
+            },
+            async {
+                async_io::Timer::after(Duration::from_millis(50)).await;
+                false
+            },
+        )
+        .await;
+        assert!(
+            completed,
+            "malformed bootstrap must fail without an async hang"
+        );
+
+        let mut fresh = bootstrap_harness().await;
+        assert!(fresh.adapter.current_owner().is_none());
+        assert!(fresh.adapter.current_token().is_none());
+        let shared = Arc::new(Mutex::new(SharedState::default()));
+        let mut engine = LayIbusEngine::new_from_component(
+            TARGET_PATH.to_string(),
+            shared,
+            Some(fresh.adapter.clone()),
+            "lay-ime-us",
+            true,
+            ime_config(),
+        );
+        let key = method_message(
+            DISPATCH_SENDER,
+            591,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+            "ProcessKeyEvent",
+        );
+        fresh.peer.connection.send(&key).await.unwrap();
+        let emitter =
+            zbus::object_server::SignalEmitter::new(&fresh.connection, TARGET_PATH).unwrap();
+        let (handled, observed) = future::zip(
+            engine.process_key_event(key.header(), emitter, u32::from(b'a'), 30, 0),
+            fresh.observer.process_next(),
+        )
+        .await;
+        assert!(observed.unwrap());
+        let handled = handled.unwrap();
+        assert_exact_literal_delivery(
+            &fresh.connection,
+            &mut fresh.peer,
+            TARGET_PATH,
+            handled,
+            "a",
+        )
+        .await;
+        assert_eq!(engine.committed_tail.buffer, if handled { "a" } else { "" });
+        assert!(engine.composition.buffer.is_empty());
+        assert!(fresh.adapter.current_owner().is_none());
+        assert!(fresh.adapter.current_token().is_none());
+    });
+}
+
 async fn bootstrap_harness() -> Harness {
     bootstrap_harness_with_budget(Duration::from_millis(250)).await
 }
@@ -138,10 +291,27 @@ async fn bootstrap_harness_with_profile_and_budget(
     profile_name: &str,
     acquisition_budget: Duration,
 ) -> Harness {
-    let (connection, mut peer) = controlled_pair();
-    let config = AdapterConfig::new(ConnectionGeneration(60), vec![profile("lay-us")])
+    bootstrap_harness_with_profiles_and_budget(
+        profile_name,
+        vec![profile("lay-us")],
+        acquisition_budget,
+    )
+    .await
+}
+
+async fn bootstrap_harness_with_profiles_and_budget(
+    profile_name: &str,
+    profiles: Vec<EngineProfile>,
+    acquisition_budget: Duration,
+) -> Harness {
+    let config = AdapterConfig::new(ConnectionGeneration(60), profiles)
         .unwrap()
         .with_acquisition_budget(acquisition_budget);
+    bootstrap_harness_with_config(profile_name, config).await
+}
+
+async fn bootstrap_harness_with_config(profile_name: &str, config: AdapterConfig) -> Harness {
+    let (connection, mut peer) = controlled_pair();
     let pending = PendingContextAdapter::subscribe(connection.clone(), config)
         .await
         .unwrap();
@@ -195,6 +365,87 @@ async fn forward_marker(peer: &mut ControlledPeer) {
         .build(&nonce)
         .unwrap();
     peer.connection.send(&forwarded).await.unwrap();
+}
+
+async fn literal_effects(
+    connection: &Connection,
+    peer: &mut ControlledPeer,
+    path: &str,
+) -> Vec<Message> {
+    connection
+        .emit_signal(None::<&str>, path, "org.lay.Proof", "LiteralSettled", &())
+        .await
+        .unwrap();
+    future::race(
+        async {
+            let mut effects = Vec::new();
+            loop {
+                let message = next_peer_message(peer).await;
+                let header = message.header();
+                assert_eq!(header.message_type(), Type::Signal);
+                assert_eq!(header.path().map(|value| value.as_str()), Some(path));
+                let interface = header.interface().unwrap().as_str().to_owned();
+                let member = header.member().unwrap().as_str().to_owned();
+                if interface == "org.lay.Proof" {
+                    assert_eq!(member, "LiteralSettled");
+                    return effects;
+                }
+                assert_eq!(interface, ENGINE_INTERFACE);
+                match member.as_str() {
+                    "UpdatePreeditText" => {
+                        let body = message.body();
+                        let (text, cursor, visible, mode) = body
+                            .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+                            .unwrap();
+                        assert_eq!(
+                            crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
+                            Some("")
+                        );
+                        assert_eq!((cursor, visible, mode), (0, false, 0));
+                    }
+                    "HidePreeditText" => {}
+                    "CommitText" | "DeleteSurroundingText" | "ForwardKeyEvent" => {
+                        effects.push(message);
+                    }
+                    member => panic!("unexpected literal-path engine effect {member}"),
+                }
+            }
+        },
+        async {
+            async_io::Timer::after(Duration::from_millis(10)).await;
+            panic!("literal effect FIFO marker timed out")
+        },
+    )
+    .await
+}
+
+async fn assert_exact_literal_delivery(
+    connection: &Connection,
+    peer: &mut ControlledPeer,
+    path: &str,
+    handled: bool,
+    expected: &str,
+) {
+    let effects = literal_effects(connection, peer, path).await;
+    if handled {
+        assert_eq!(
+            effects.len(),
+            1,
+            "handled literal requires exactly one effect"
+        );
+        assert_eq!(effects[0].header().member().unwrap().as_str(), "CommitText");
+        let body = effects[0].body();
+        let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+        assert_eq!(
+            crate::ibus_interface::ibus_text_value_to_string(&value).as_deref(),
+            Some(expected)
+        );
+    } else {
+        assert!(
+            effects.is_empty(),
+            "native literal must not emit an engine effect"
+        );
+    }
 }
 
 async fn serve_current_context_and_marker(peer: &mut ControlledPeer) {
@@ -355,7 +606,8 @@ fn td121_slow_compatibility_get_does_not_hold_actual_key_callback() {
         let key_callback_completed = future::race(
             async {
                 let (proposal, observed) = future::zip(
-                    engine.process_key_event_atomic_callback(
+                    crate::window_interaction::WindowInteraction::process_atomic_key(
+                        &mut engine,
                         &key.header(),
                         u32::from(b'a'),
                         38,
@@ -413,6 +665,100 @@ fn td121_slow_compatibility_get_does_not_hold_actual_key_callback() {
             .try_finish_activation_for(&engine_path(TARGET_PATH))
             .unwrap()
             .is_none());
+    });
+}
+
+#[test]
+fn td121_legacy_letters_and_space_settle_exactly_before_held_get_release() {
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness_with_budget(Duration::from_millis(80)).await;
+        let shared = Arc::new(Mutex::new(SharedState::default()));
+        let mut engine = LayIbusEngine::new_from_component(
+            TARGET_PATH.to_string(),
+            shared,
+            Some(harness.adapter.clone()),
+            "lay-ime-us",
+            true,
+            ime_config(),
+        );
+        let focus = method_message(
+            DISPATCH_SENDER,
+            620,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+            "FocusIn",
+        );
+        harness.peer.connection.send(&focus).await.unwrap();
+        let (started, observed) = future::zip(
+            engine.activate_context_from_header(&focus.header(), Instant::now(), None),
+            harness.observer.process_next(),
+        )
+        .await;
+        assert!(observed.unwrap());
+        assert!(started);
+        let held_get = next_peer_message(&mut harness.peer).await;
+        assert_eq!(held_get.header().member().unwrap().as_str(), "Get");
+
+        let completed_before_get_budget = future::race(
+            async {
+                let mut managed_literal = String::new();
+                for (serial, keyval, keycode) in [
+                    (621, u32::from(b'a'), 30),
+                    (622, u32::from(b'b'), 48),
+                    (623, crate::protocol::KEY_SPACE, 57),
+                ] {
+                    let key = method_message(
+                        DISPATCH_SENDER,
+                        serial,
+                        TARGET_PATH,
+                        ENGINE_INTERFACE,
+                        "ProcessKeyEvent",
+                    );
+                    harness.peer.connection.send(&key).await.unwrap();
+                    let emitter =
+                        zbus::object_server::SignalEmitter::new(&harness.connection, TARGET_PATH)
+                            .unwrap();
+                    let (handled, observed) = future::zip(
+                        engine.process_key_event(key.header(), emitter, keyval, keycode, 0),
+                        harness.observer.process_next(),
+                    )
+                    .await;
+                    assert!(observed.unwrap());
+                    let handled = handled.unwrap();
+                    let expected = char::from_u32(keyval).unwrap().to_string();
+                    assert_exact_literal_delivery(
+                        &harness.connection,
+                        &mut harness.peer,
+                        TARGET_PATH,
+                        handled,
+                        &expected,
+                    )
+                    .await;
+                    if handled {
+                        managed_literal.push_str(&expected);
+                    }
+                    assert_eq!(engine.committed_tail.buffer, managed_literal);
+                }
+                true
+            },
+            async {
+                async_io::Timer::after(Duration::from_millis(25)).await;
+                false
+            },
+        )
+        .await;
+        assert!(completed_before_get_budget);
+        assert!(engine.composition.buffer.is_empty());
+
+        let value = OwnedValue::from(ObjectPath::try_from(CONTEXT_PATH).unwrap());
+        harness
+            .peer
+            .connection
+            .reply(&held_get.header(), &value)
+            .await
+            .unwrap();
+        forward_marker(&mut harness.peer).await;
+        assert!(harness.observer.process_next().await.unwrap());
     });
 }
 
@@ -619,7 +965,8 @@ fn td121_marker_ready_owner_survives_deadline_until_first_atomic_key() {
         );
         harness.peer.connection.send(&key).await.unwrap();
         let (proposal, observed) = future::zip(
-            engine.process_key_event_atomic_callback(
+            crate::window_interaction::WindowInteraction::process_atomic_key(
+                &mut engine,
                 &key.header(),
                 u32::from(b'a'),
                 38,
@@ -712,23 +1059,26 @@ fn td121_marker_ready_owner_is_installed_before_focus_out_and_disable() {
             .unwrap()
             .is_none());
 
-        engine.committed_tail.buffer = "x".to_string();
+        engine.committed_tail.buffer = "ч".to_string();
+        engine.set_client_capabilities(1 << 5);
+        engine.client_context.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("ч".to_string(), 1, 1));
         {
             let mut state = shared.lock().unwrap();
-            state.handoff_tail_buffer = "x".to_string();
+            state.handoff_tail_buffer = "ч".to_string();
             state.preserve_active_path_until = Some(Instant::now() + Duration::from_secs(1));
             state.exact_manual_toggle_handoff_epoch = Some(old_tail_epoch);
             state.exact_manual_toggle_handoff_path = Some(TARGET_PATH.to_string());
         }
         assert!(!engine.arm_exact_manual_toggle_autocorrect_suppression(
-            "x",
+            "ч",
             old_tail_epoch,
             TARGET_PATH,
             false,
         ));
         shared.lock().unwrap().exact_manual_toggle_handoff_epoch = Some(installed_tail_epoch);
         assert!(engine.arm_exact_manual_toggle_autocorrect_suppression(
-            "x",
+            "ч",
             installed_tail_epoch,
             TARGET_PATH,
             false,
@@ -1332,6 +1682,130 @@ fn controlled_p2p_observer_cancellation_wakes_and_drops_cleanly() {
         let (result, ()) = future::zip(harness.observer.process_next(), cancel).await;
         assert!(matches!(result, Err(AdapterError::Cancelled)));
         drop(harness.observer);
+    });
+}
+
+#[test]
+fn td121_pending_acquisition_owner_loss_rejects_late_completion_and_fresh_literal_is_exact() {
+    zbus::block_on(async {
+        let mut old = bootstrap_harness().await;
+        old.adapter
+            .start_native_activation(
+                engine_path(TARGET_PATH),
+                context(CONTEXT_PATH),
+                Default::default(),
+            )
+            .unwrap();
+        let outbound_marker = next_peer_message(&mut old.peer).await;
+        assert_eq!(
+            outbound_marker.header().member().unwrap().as_str(),
+            MARKER_MEMBER
+        );
+        let old_nonce = BarrierNonce(outbound_marker.body().deserialize::<u64>().unwrap());
+        assert_eq!(
+            old.adapter
+                .shared
+                .pending
+                .lock()
+                .unwrap()
+                .as_ref()
+                .unwrap()
+                .nonce,
+            old_nonce
+        );
+        let owner_loss = Message::signal(DBUS_PATH, DBUS_INTERFACE, "NameOwnerChanged")
+            .unwrap()
+            .sender(DISPATCH_SENDER)
+            .unwrap()
+            .build(&(IBUS_NAME, IBUS_SENDER, ""))
+            .unwrap();
+        old.peer.connection.send(&owner_loss).await.unwrap();
+        assert!(old.observer.process_next().await.unwrap());
+        assert!(old.adapter.shared.pending.lock().unwrap().is_none());
+        assert!(old
+            .adapter
+            .shared
+            .ready_activation
+            .lock()
+            .unwrap()
+            .is_none());
+
+        let late_marker = Message::signal(MARKER_PATH, MARKER_INTERFACE, MARKER_MEMBER)
+            .unwrap()
+            .sender(ADAPTER_SENDER)
+            .unwrap()
+            .build(&old_nonce.0)
+            .unwrap();
+        old.peer.connection.send(&late_marker).await.unwrap();
+        assert!(matches!(
+            old.observer.process_next().await,
+            Err(AdapterError::Cancelled)
+        ));
+        assert!(old
+            .adapter
+            .try_finish_activation_for(&engine_path(TARGET_PATH))
+            .unwrap()
+            .is_none());
+        assert!(old.adapter.current_owner().is_none());
+        assert!(old.adapter.current_token().is_none());
+
+        let (connection, mut peer) = controlled_pair();
+        let config = AdapterConfig::new(ConnectionGeneration(61), vec![profile("lay-us")]).unwrap();
+        let pending = PendingContextAdapter::subscribe(connection.clone(), config)
+            .await
+            .unwrap();
+        let (result, ()) =
+            future::zip(pending.bootstrap(), serve_bootstrap(&mut peer, "lay-us")).await;
+        let (adapter, observer, identity) = result.unwrap();
+        let mut fresh = Harness {
+            connection,
+            peer,
+            adapter,
+            observer,
+            identity,
+        };
+        assert_eq!(
+            fresh.adapter.shared.connection_generation,
+            ConnectionGeneration(61)
+        );
+        let shared = Arc::new(Mutex::new(SharedState::default()));
+        let mut engine = LayIbusEngine::new_from_component(
+            TARGET_PATH.to_string(),
+            shared,
+            Some(fresh.adapter.clone()),
+            "lay-ime-us",
+            true,
+            ime_config(),
+        );
+        let key = method_message(
+            DISPATCH_SENDER,
+            780,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+            "ProcessKeyEvent",
+        );
+        fresh.peer.connection.send(&key).await.unwrap();
+        let emitter =
+            zbus::object_server::SignalEmitter::new(&fresh.connection, TARGET_PATH).unwrap();
+        let (handled, observed) = future::zip(
+            engine.process_key_event(key.header(), emitter, u32::from(b'a'), 30, 0),
+            fresh.observer.process_next(),
+        )
+        .await;
+        assert!(observed.unwrap());
+        let handled = handled.unwrap();
+        assert_exact_literal_delivery(
+            &fresh.connection,
+            &mut fresh.peer,
+            TARGET_PATH,
+            handled,
+            "a",
+        )
+        .await;
+        assert_eq!(engine.committed_tail.buffer, if handled { "a" } else { "" });
+        assert!(engine.composition.buffer.is_empty());
+        assert!(old.adapter.current_owner().is_none());
+        assert!(old.adapter.current_token().is_none());
     });
 }
 

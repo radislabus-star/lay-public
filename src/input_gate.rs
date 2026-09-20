@@ -703,6 +703,36 @@ mod tests {
     #[test]
     fn disabled_sources_keep_original_on_boundary() {
         let pipeline = default_typing_assist_pipeline();
+
+        for (input, expected) in [("ghbdtn ", "привет "), ("руддщ ", "hello ")] {
+            let decision = decide_input_gate(InputGateRequest {
+                trigger: InputGateTrigger::Space,
+                text_tail: input,
+                lexical_authority_frame: None,
+                auto_replace: false,
+                typing_assist: false,
+                auto_switch_layout: true,
+                correction_safety: CorrectionSafety::Normal,
+                typing_assist_pipeline: &pipeline,
+                nanda_autocorrect: false,
+                nanda_candidate_route: CandidateReadoutRoute::FullWave,
+                nanda_wave_options: WaveOptions::default(),
+                correction_mode: CorrectionMode::DeterministicOnly,
+            });
+            assert_eq!(
+                decision.action,
+                InputGateAction::ApplyReplacement {
+                    replacement: expected.to_string(),
+                    source: CorrectionDecisionSource::Deterministic,
+                },
+                "input={input:?} trace={:?}",
+                decision.trace
+            );
+            assert_eq!(
+                selected_error_class(&decision),
+                Some(TypingErrorClass::WrongLayout)
+            );
+        }
         let decision = decide_input_gate(InputGateRequest {
             trigger: InputGateTrigger::Space,
             text_tail: "lfdfq ",

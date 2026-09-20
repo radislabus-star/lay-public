@@ -197,6 +197,18 @@ where
 pub(crate) enum EngineOutput<'a, 'e> {
     Legacy(&'a SignalEmitter<'e>),
     Atomic(&'a mut AtomicEffectBuilder),
+    #[cfg(test)]
+    Test(&'a mut TestEngineOutput),
+}
+
+#[cfg(test)]
+#[derive(Default)]
+pub(crate) struct TestEngineOutput {
+    pub(crate) effects: Vec<&'static str>,
+    pub(crate) committed_texts: Vec<String>,
+    pub(crate) surrounding_deletes: Vec<(i32, u32)>,
+    pub(crate) fail_commit: bool,
+    pub(crate) pause_before_commit: bool,
 }
 
 impl<'a, 'e> EngineOutput<'a, 'e> {
@@ -208,15 +220,22 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
         Self::Atomic(builder)
     }
 
+    #[cfg(test)]
+    pub(crate) fn test(output: &'a mut TestEngineOutput) -> Self {
+        Self::Test(output)
+    }
+
     pub(crate) fn connection(&self) -> Option<&Connection> {
         match self {
             Self::Legacy(emitter) => Some(emitter.connection()),
             Self::Atomic(_) => None,
+            #[cfg(test)]
+            Self::Test(_) => None,
         }
     }
 
     pub(crate) const fn is_legacy(&self) -> bool {
-        !matches!(self, Self::Atomic(_))
+        matches!(self, Self::Legacy(_))
     }
 
     pub(crate) async fn commit_text(&mut self, text: Value<'_>) -> fdo::Result<()> {
@@ -230,6 +249,22 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
                 };
                 builder.push_commit(text);
                 Ok(())
+            }
+            #[cfg(test)]
+            Self::Test(output) => {
+                if output.pause_before_commit {
+                    output.pause_before_commit = false;
+                    futures_lite::future::yield_now().await;
+                }
+                output.effects.push("commit");
+                let text = ibus_text_value_to_string(&text)
+                    .ok_or_else(|| fdo::Error::InvalidArgs("invalid IBusText commit".into()))?;
+                output.committed_texts.push(text);
+                if output.fail_commit {
+                    Err(fdo::Error::Failed("injected commit failure".into()))
+                } else {
+                    Ok(())
+                }
             }
         }
     }
@@ -249,6 +284,12 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
                 builder.push_delete(offset, nchars);
                 Ok(())
             }
+            #[cfg(test)]
+            Self::Test(output) => {
+                output.effects.push("delete");
+                output.surrounding_deletes.push((offset, nchars));
+                Ok(())
+            }
         }
     }
 
@@ -259,6 +300,11 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
                 .map_err(|error| fdo::Error::Failed(error.to_string())),
             Self::Atomic(builder) => {
                 builder.unsupported = true;
+                Ok(())
+            }
+            #[cfg(test)]
+            Self::Test(output) => {
+                output.effects.push("require-surrounding");
                 Ok(())
             }
         }
@@ -290,6 +336,11 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
                 builder.push_preedit(text, cursor_pos, visible, mode);
                 Ok(())
             }
+            #[cfg(test)]
+            Self::Test(output) => {
+                output.effects.push("update-preedit");
+                Ok(())
+            }
         }
     }
 
@@ -302,6 +353,11 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
                 builder.show_preedit();
                 Ok(())
             }
+            #[cfg(test)]
+            Self::Test(output) => {
+                output.effects.push("show-preedit");
+                Ok(())
+            }
         }
     }
 
@@ -312,6 +368,11 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
                 .map_err(|error| fdo::Error::Failed(error.to_string())),
             Self::Atomic(builder) => {
                 builder.hide_preedit();
+                Ok(())
+            }
+            #[cfg(test)]
+            Self::Test(output) => {
+                output.effects.push("hide-preedit");
                 Ok(())
             }
         }
@@ -331,6 +392,11 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
             }
             Self::Atomic(builder) => {
                 builder.unsupported = true;
+                Ok(())
+            }
+            #[cfg(test)]
+            Self::Test(output) => {
+                output.effects.push("forward-key");
                 Ok(())
             }
         }

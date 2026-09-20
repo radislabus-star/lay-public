@@ -59,7 +59,7 @@ fn bridge_output_settlement_preserves_lineage_and_rejects_interposed_work() {
         "duplicate epoch is not another output"
     );
     let key = header(ConnectionGeneration(11), 8_100);
-    assert!(reducer.observe_key_start(&owner, key.clone()));
+    assert!(reducer.observe_key_start(&owner, key.clone(), KeyWordEffect::PossibleMutation));
     assert!(!reducer.settle_bridge_output(
         &token,
         SettledWordState {
@@ -102,6 +102,47 @@ fn bridge_output_settlement_preserves_lineage_and_rejects_interposed_work() {
 }
 
 #[test]
+fn stale_foreign_snapshot_publish_cannot_clear_the_current_owner_receipt() {
+    let mut reducer: ContextAdmissionReducer<u64> = ContextAdmissionReducer::new(
+        ConnectionGeneration(11),
+        GlobalEngineMode::Verified,
+        GlobalProfile::Lay(profile("lay-us")),
+    );
+    reducer
+        .establish_source(
+            engine_path("/engine/source"),
+            context(ConnectionGeneration(11), "/context"),
+            WordCompleteness::UnknownStart,
+            7,
+        )
+        .unwrap();
+    let token = reducer.bridge_admission_token().unwrap();
+    assert!(reducer.publish_exact_manual_snapshot(
+        &token,
+        7,
+        "abc".into(),
+        3,
+        Instant::now() + Duration::from_secs(1),
+    ));
+    let mut stale_foreign = token.clone();
+    stale_foreign.owner.path = engine_path("/engine/stale-foreign");
+    assert!(!reducer.publish_exact_manual_snapshot(
+        &stale_foreign,
+        7,
+        "foreign".into(),
+        4,
+        Instant::now() + Duration::from_secs(1),
+    ));
+    assert_eq!(
+        reducer
+            .exact_manual_snapshot
+            .as_ref()
+            .map(|receipt| receipt.tail.as_str()),
+        Some("abc")
+    );
+}
+
+#[test]
 fn repeated_content_type_requires_settled_provenance_and_exact_target() {
     let mut reducer: ContextAdmissionReducer<u64> = ContextAdmissionReducer::new(
         ConnectionGeneration(11),
@@ -121,7 +162,7 @@ fn repeated_content_type_requires_settled_provenance_and_exact_target() {
         .unchanged_content_type_token(&source, (10, 0))
         .is_none());
     let key = header(ConnectionGeneration(11), 8_110);
-    assert!(reducer.observe_key_start(&owner, key.clone()));
+    assert!(reducer.observe_key_start(&owner, key.clone(), KeyWordEffect::PossibleMutation));
     assert!(reducer.settle_key(
         &owner,
         &key,
@@ -300,7 +341,11 @@ fn abandoned_key_requires_exact_owner_and_header_and_invalidates_sealed_transfer
     let key = header(fixture.reducer.connection, 901);
     let owner = fixture.source_owner.clone();
     let token = fixture.reducer.admission_token().unwrap();
-    assert!(fixture.reducer.observe_key_start(&owner, key.clone()));
+    assert!(fixture.reducer.observe_key_start(
+        &owner,
+        key.clone(),
+        KeyWordEffect::PossibleMutation
+    ));
     let other_owner = EngineOwner {
         generation: OwnerGeneration(owner.generation.0 + 1),
         ..owner.clone()
@@ -334,13 +379,16 @@ fn genuinely_unsettled_key_overflow_remains_fail_closed() {
     let owner = fixture.source_owner.clone();
     let token = fixture.reducer.admission_token().unwrap();
     for serial in 1..=MAX_UNSETTLED_KEYS {
-        assert!(fixture
-            .reducer
-            .observe_key_start(&owner, header(token.connection, serial as u32)));
+        assert!(fixture.reducer.observe_key_start(
+            &owner,
+            header(token.connection, serial as u32),
+            KeyWordEffect::PossibleMutation
+        ));
     }
     assert!(!fixture.reducer.observe_key_start(
         &owner,
-        header(token.connection, MAX_UNSETTLED_KEYS as u32 + 1)
+        header(token.connection, MAX_UNSETTLED_KEYS as u32 + 1),
+        KeyWordEffect::PossibleMutation
     ));
     assert!(!fixture.reducer.revalidate(&token));
     assert!(fixture.reducer.consume().is_none());
@@ -717,7 +765,7 @@ fn source_key_must_settle_before_source_seal() {
         )
         .unwrap();
     let key = header(epoch, 31);
-    assert!(reducer.observe_key_start(&owner, key.clone()));
+    assert!(reducer.observe_key_start(&owner, key.clone(), KeyWordEffect::PossibleMutation));
     open_bound_factory(
         &mut reducer,
         engine_path("/org/freedesktop/IBus/Engine/Lay/1"),
@@ -1099,7 +1147,7 @@ fn settled_word_scope_updates_lineage_and_the_only_sealable_tail_revision() {
         )
         .unwrap();
     let key = header(epoch, 420);
-    assert!(reducer.observe_key_start(&owner, key.clone()));
+    assert!(reducer.observe_key_start(&owner, key.clone(), KeyWordEffect::PossibleMutation));
     let mut scope = WordScope::new(reducer.lineage());
     assert_eq!(
         scope.close_at_observed_boundary(7, None),
@@ -1143,7 +1191,11 @@ fn stale_settlement_revokes_but_old_owner_callbacks_cannot_modify_the_new_owner(
         )
         .unwrap();
     let stale_key = header(epoch, 430);
-    assert!(stale.observe_key_start(&stale_owner, stale_key.clone()));
+    assert!(stale.observe_key_start(
+        &stale_owner,
+        stale_key.clone(),
+        KeyWordEffect::PossibleMutation
+    ));
     let stale_scope = WordScope::new(stale.lineage());
     let before_stale = stale.revocation_generation();
     assert!(!stale.settle_key(
@@ -1162,9 +1214,11 @@ fn stale_settlement_revokes_but_old_owner_callbacks_cannot_modify_the_new_owner(
     let new_revocation = fixture.reducer.revocation_generation();
     let new_token = fixture.reducer.admission_token().unwrap();
     let old_key = header(ConnectionGeneration(11), 431);
-    assert!(!fixture
-        .reducer
-        .observe_key_start(&old_owner, old_key.clone()));
+    assert!(!fixture.reducer.observe_key_start(
+        &old_owner,
+        old_key.clone(),
+        KeyWordEffect::PossibleMutation
+    ));
     assert!(!fixture.reducer.settle_key(
         &old_owner,
         &old_key,
@@ -1238,7 +1292,7 @@ fn admission_token_invalidates_on_lineage_owner_and_revocation_changes() {
         .unwrap();
     let before_lineage = reducer.admission_token().unwrap();
     let key = header(epoch, 450);
-    assert!(reducer.observe_key_start(&owner, key.clone()));
+    assert!(reducer.observe_key_start(&owner, key.clone(), KeyWordEffect::PossibleMutation));
     let mut scope = WordScope::new(reducer.lineage());
     scope.close_at_observed_boundary(2, None);
     assert!(reducer.settle_key(&owner, &key, SettledWordState::from_scope(2, &scope),));
@@ -1440,6 +1494,39 @@ fn p121_2_rendezvous_absolute_timeout_and_revocation_do_not_leak_waiters() {
 
 #[test]
 fn rendezvous_ring_eviction_fails_closed() {
+    // A full ring may discard an unrelated old stamp while publishing the
+    // exact awaited header. Its retained identity must remain deliverable.
+    for capacity in [1, 2, 8, 128] {
+        let epoch = ConnectionGeneration(21);
+        let owner = OwnerGeneration(9);
+        let store = CallbackStampStore::with_capacity(epoch, owner, capacity);
+        for serial in 1..=capacity as u32 {
+            assert!(store.publish(IngressStamp {
+                header: header(epoch, serial),
+                position: serial as u64,
+                disposition: IngressDisposition::Passive,
+            }));
+        }
+        let serial = capacity as u32 + 1;
+        let wanted = header(epoch, serial);
+        let guard = store.guard().unwrap();
+        let RendezvousBegin::Pending(pending) = store.begin(wanted.clone(), guard) else {
+            panic!("initial miss expected")
+        };
+        let stamp = IngressStamp {
+            header: wanted,
+            position: serial as u64,
+            disposition: IngressDisposition::Passive,
+        };
+        assert!(store.publish(stamp.clone()));
+        expect_stamp(pending.recheck().unwrap(), &stamp);
+        // Revocation still dominates even an exact retained stamp.
+        store.replace_owner(OwnerGeneration(10));
+        assert_eq!(
+            pending.recheck(),
+            Some(RendezvousOutcome::Failed(RendezvousFailure::Revoked))
+        );
+    }
     let epoch = ConnectionGeneration(21);
     let owner = OwnerGeneration(9);
     let store = CallbackStampStore::with_capacity(epoch, owner, 1);

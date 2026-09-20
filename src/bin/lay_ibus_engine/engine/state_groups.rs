@@ -1,11 +1,13 @@
 use std::collections::BTreeSet;
 #[cfg(test)]
+use std::sync::atomic::AtomicUsize;
+#[cfg(test)]
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
 use super::super::preedit::PreeditFastState;
 use super::super::protocol::AutocorrectSuppression;
-use super::types::{DeferredLayoutAction, DeferredLearningAction, SurroundingTextSnapshot};
+use super::types::{DeferredLayoutAction, DeferredLearningAction};
 use super::types::{
     InputFrameIdentity, PendingImeCompletionLearning, PendingVisiblePostcondition,
     RecentCommittedTailReplace, WordInputMode,
@@ -53,43 +55,10 @@ pub(crate) struct CompositionState {
     pub(crate) pending_display_frame: Option<InputFrameIdentity>,
     pub(crate) pending_passthrough_preedit_clear: bool,
     pub(crate) word_input_mode: Option<WordInputMode>,
-}
-
-#[derive(Clone)]
-pub(crate) struct ClientContextState {
-    pub(crate) focus_receipt: Option<String>,
-    pub(crate) focus_serial: u64,
-    pub(crate) runtime_owner_lease_identity: u64,
-    pub(crate) cursor_cell_width: i32,
-    pub(crate) content_purpose: u32,
-    pub(crate) content_hints: u32,
-    pub(crate) surrounding_text_supported: bool,
-    pub(crate) surrounding_text_snapshot: Option<SurroundingTextSnapshot>,
-    pub(crate) surrounding_observation_revision: u64,
-    pub(crate) factory_engine_profile: lay::exact_layout_authority::FactoryEngineProfile,
-    pub(crate) managed_input: bool,
-}
-
-impl ClientContextState {
-    pub(crate) fn new(
-        focus_receipt: Option<String>,
-        factory_engine_profile: lay::exact_layout_authority::FactoryEngineProfile,
-        managed_input: bool,
-    ) -> Self {
-        Self {
-            focus_receipt,
-            focus_serial: super::next_input_identity(),
-            runtime_owner_lease_identity: super::next_input_identity(),
-            cursor_cell_width: 0,
-            content_purpose: 0,
-            content_hints: 0,
-            surrounding_text_supported: false,
-            surrounding_text_snapshot: None,
-            surrounding_observation_revision: 0,
-            factory_engine_profile,
-            managed_input,
-        }
-    }
+    #[cfg(test)]
+    pub(crate) precognition_schedule_count: Arc<AtomicUsize>,
+    #[cfg(test)]
+    pub(crate) precognition_apply_count: Arc<AtomicUsize>,
 }
 
 #[derive(Clone)]

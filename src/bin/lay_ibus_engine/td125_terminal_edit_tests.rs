@@ -22,6 +22,7 @@ fn terminal(initial: &str) -> LayIbusEngine {
         },
     );
     engine.set_client_capabilities(0);
+    engine.set_content_type_state(10, 0);
     engine.client_context.cursor_cell_width = 11;
     assert!(engine.bind_focus_path());
     for ch in initial.chars() {

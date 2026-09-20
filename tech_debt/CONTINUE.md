@@ -1,4 +1,163 @@
-# Текущий этап 1.0.70: GitHub fixes установлены
+# Current TD-121 repair — 2026-09-14
+
+R12 development acceptance: **563/563 focused PASS**, two independent reviews,
+**4/4 Firefox native PASS**, with two exact visible transitions in every case.
+Final release, installation and publication status is recorded in the
+[execution receipt](evidence/td121-release-1.0.72-execution-2026-09-14.md).
+The [owning evidence](evidence/td121-r5-final-native-analysis-2026-09-14.md#r12-preflight-retain-observed-replay-history-across-an-interleaved-reset)
+records the mechanisms, rejected candidates and bounded verdicts.
+
+Latest development: R7 focused **554/554 IME PASS**, **1,795/1,795 library PASS**,
+and both review passes complete. Actual-worker controlled proof passes; the
+native four-case gate is pending. Follow
+[the R7 proof](evidence/td121-r5-final-native-analysis-2026-09-14.md#r7-implementation-and-focused-proof).
+The selected route is early inert computation in the existing worker plus an
+exact-receipt cache-only readout; no deadline or Alt acceptance weakening.
+The user authorized autonomous verification, installation and push while away;
+do not wait for a human keyboard check, and do not claim one was performed.
+
+Latest measured browser result: R6 has controlled RED, **548/548 focused IME PASS**, two completed
+independent review passes, and **native 3/4 PASS, overall FAIL**. First word,
+mixed prefix and trailing Space visibly flip and return with two delegations.
+Completion exercises the active second-prefix preedit and fails: the fresh
+third-character receipt arrives only immediately before Alt, which correctly
+retires pending work. Start with
+[the current evidence](evidence/td121-r5-final-native-analysis-2026-09-14.md#r6-native-result-and-first-remaining-loss).
+Do not rerun unchanged R6 until green or weaken the pending-Alt rule. The next
+investigation needs a causal fresh-client notification before Alt. A post-release
+GTK filter return is not proof that Firefox's content cache has updated. The
+user reports Kitty works ideally and asks about transferring its mechanism;
+its one-commit terminal erase is a distinct transport, not a Firefox delay.
+R6 full release and human keyboard acceptance remain pending. Historical R5 full
+gate PASS (2,841/2,841) still has final native FAIL 2/4: **do not install R5**.
+C20, the main Firefox and global IBus remain protected. No launcher change or
+installation has been made in this continuation.
+
+Continue the ordinary Firefox repair. Every native case must demonstrate TWO
+complete DoubleShift gestures on the same word, an actual intermediate target
+and the exact returned source. No zero-toggle round-trip acceptance.
+Current source contains the retained-stamp ring fix, native replay closing
+boundary receipt, own-Alt release-bit classification and both observed cursor
+positions of a retired published preedit. Each new first loss has a causal
+RED and grouped GREEN in the owning TD-121 document. Latest focused result:
+545/545 PASS `run-4y_owq5d/RESULT.json`; R5 accepted-completion native round trip
+now passes with two visible flips. Final research-byte release, four-case native
+and physical acceptance remain pending.
+Installed C20/global IBus/original Firefox remain protected. No new install.
+
+Use `python3 scripts/dev-check.py check --compact` for automated remote
+completion; select an explicit target only for a known component. AGENTS.md
+records compact evidence and identity-bound reuse. Root owns the repair;
+previous two formal source reviews are history, not scores for later deltas.
+
+# Текущий этап: приёмка TD-121, 2026-09-13
+
+## Current TD-121 acceptance — 2026-09-13
+
+Latest steering: finish the ordinary Firefox repair quickly. The physical
+trace is sealed and its observer stopped. Four recognized Shift pairs were
+refused by the IME; the retained trace proves loss of the already known word
+and its closing Space across Reset despite a fresh actual client snapshot.
+The grouped regression reproduced all three authority-transfer cases; the
+bounded repair of the existing exact receipt now passes **545/545** focused
+checks (`run-72tfxnuq`). Freeze graph and binaries, then check the owned Firefox
+single pair, repeat, completion and Space cases. Installed C20 is unchanged;
+no new physical or release acceptance. Exact evidence is in TD-121.
+
+The combined existing client-notification adapter and boundary runtime now
+pass single Shift, fast repeat and accepted completion in Firefox (**3/4**).
+The fourth original case has no preceding autocorrection and correctly
+projects `ntrcn ` to `текст `, failing its original `ntrcn` expectation; retain
+that result separately. Add the explicit auto_replace=false physical-boundary
+case without changing the original. Source includes the measured C adapter
+and a narrowly scoped Snap Firefox launcher under `scripts/compat/`; neither
+is installed. Next: final manifests/release checks and exact final-byte Firefox
+verification, then installation and the separately controlled browser restart.
+
+The private GTK Reset-notification discriminator subsequently passed its
+guarded four-tap case 1/1 with two exact projections and a real final client
+snapshot. The initial batch's cancelled/mixed-input cases are excluded, not
+new runtime failures. This proves a private client notification mechanism;
+it does not repair or accept ordinary installed Firefox. Exact receipts and
+scope are in the owning TD-121 document. The ordered runtime and its proof
+below remain unchanged.
+
+TD-121 is **IN PROGRESS / FIREFOX_FAST_REPEAT_FAIL**. The ordered Engine
+interface passes 544/544 IME checks and its canonical architecture/build freeze.
+The new native gate passes 2/4 cases: one fast Shift pair works, and single Alt
+acceptance followed by manual projection now yields exact `ghjdthrf`. All 146
+legacy callback entries follow received order, with zero callback-stamp
+timeouts. Retain this fix; it repaired measured replay corruption.
+
+Four taps still project only once: final Reset retains all six characters but
+no fresh client snapshot arrives. The original double-Alt case completes with
+`про`, without acceptance or manual projection. Inputs/expectations remain
+unchanged. The prior split-Shift/passive-progress experiment was rejected and
+removed with exact source hashes restored; its unit/native evidence is history.
+The next investigation must address actual client snapshot notification, while
+keeping the proved dispatch fix separate. Do not add probe keys, extend waits,
+fabricate text or weaken exact leases. Root owns source/execution; both formal
+scored reviews have been used.
+
+The pinned Firefox helper already removes the sync-mode override and verifies
+the user's input environment; the top-level runner mode is not the child mode.
+Exact analysis and receipts are in
+[TD-121](121-preserve-word-across-ime-layout-handoff.md) and its
+[Firefox evidence](evidence/td121-firefox-client-baseline-2026-09-13.md).
+Installed C20 bytes and original browser/global IBus identities are preserved.
+No native/physical/release acceptance or new installation.
+
+## Historical C20 installation — before the Firefox report
+
+TD-121 is **IN PROGRESS / INSTALLED_VERIFIED_PHYSICAL_PENDING**. C20 passed the
+complete 1.0.72 release gate: 13/13 commands; changed and full gates each
+passed 2,807/2,807 with 11 intentional performance skips; compiled receipt and
+four isolated final-byte client cells. Release `RESULT.json` SHA-256:
+`02458047a539fb85be82b301fd1cf38b19af1f71241f34260713cf5c5dd90534`.
+The preceding focused 519/519 proof on the same runtime source passed separately.
+The owned GTK entry smoke passed `привет` (one toggle), `ghbdtn` (two toggles,
+zero queued key/space/boundary passthrough) and layout projection `ghjdthrf` after autocomplete
+(one toggle). Receipt SHA-256:
+`27bf83fccd5a15e552dabd9afeada8f1bacfd9038b8f9a0046f2cb3d0fcd1eaf`.
+
+Release 1.0.72 is installed with ten installed and four loaded artifact hashes
+matching C20; the loaded extension reports 1.0.72. Global IBus, configuration,
+input sources, immutable models, journals and learner state were preserved.
+Installation receipt SHA-256:
+`ca7b0cb622f862cdb9a51678e640d27953fe798f3b37f291bdebce4f5e4735a4`.
+C12 remains the historical 502/502, 9/10 accepted source-review checkpoint.
+This installation checkpoint predates the Firefox failure and cannot close
+TD-121. TD-123 quality is still `UNKNOWN`.
+
+Historical attempts and their exact receipts are retained only in
+[evidence/td121-private-actual-baseline-2026-09-13.md](evidence/td121-private-actual-baseline-2026-09-13.md).
+
+# Предыдущий этап: TD-126 source-only DONE
+
+TD-126 завершил единый `window_interaction` boundary без нового owner или
+runtime authority. Implementation review был ровно в два прохода:
+`7/10 REQUEST_CHANGES → 8/10 ACCEPT`; focused proof `506/506 PASS`, final
+affected gate `2 781/2 781 PASS`, lint/architecture/compiled receipt PASS.
+Точный scope, source/archive/graph fingerprints и ограничения:
+[TD-126 final acceptance](evidence/td126-final-acceptance.md).
+
+Перед TD-121 проверить внешний
+`/home/ubu/.cache/lay/development/td126-publication-20260913/publication.json`.
+Если checkpoint ещё не подтверждён, выполнить один bounded canonical graph
+refresh, explicit compiled-receipt check и source/diff identity; затем commit и
+push только в `origin/codex/cleanup-20260908`, проверить remote ref и обновить
+внешний receipt. Checkpoint включает ранее принятую незакоммиченную
+IME/context/native базу и TD-126 extraction как одну принятую
+final4-композицию. Он не означает новую установку, качество или physical PASS.
+
+После подтверждённого чистого checkpoint активная очередь: **TD-121 → TD-125 →
+TD-122 → TD-123**. Перед каждым task заново проверить текущие зависимости; затем frozen
+baseline, ограниченная реализация, fresh-context code review с оценкой 1–10 и
+не более чем двумя суммарными проходами, объективные gates, scoped `DONE`,
+commit/push/remote-ref, и только после этого следующий task. TD-113, TD-120 и
+TD-124 сохраняют свои уже принятые ограниченные `DONE`.
+
+# История: этап 1.0.70, GitHub fixes установлены
 
 Для #42 исправлена общая потеря ведущих символов daemon буфером; для #43/#44
 исправлены состав/диагностика сборки и отсутствующая зависимость `jq`.

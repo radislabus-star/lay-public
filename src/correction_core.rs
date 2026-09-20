@@ -15,7 +15,9 @@ use crate::text_case::apply_word_case;
 use crate::text_metrics::{damerau_levenshtein, has_cyrillic};
 use crate::typing_assist::split_ws_segments;
 use crate::typing_candidate::TypingCandidateFamily;
-use crate::typing_context::{syntax_allows_candidate, typing_assist_pipeline_for_context};
+use crate::typing_context::{
+    syntax_allows_candidate, typing_assist_pipeline_for_context_with_layout,
+};
 use crate::typing_pipeline::{
     collect_typing_assist_candidates_with_pipeline, explain_typing_assist_with_pipeline,
 };

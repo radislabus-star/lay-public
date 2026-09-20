@@ -31,6 +31,12 @@ pub(crate) struct ExactManualToggleSuppression {
     pub(crate) path: String,
     pub(crate) epoch: u64,
     pub(crate) expires_at: Instant,
+    pub(crate) owner_lease_identity: u64,
+    pub(crate) target_layout_is_ru: bool,
+    pub(crate) original_tail: String,
+    pub(crate) original_suffix: String,
+    pub(crate) unchanged_prefix: String,
+    pub(crate) replacement: String,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

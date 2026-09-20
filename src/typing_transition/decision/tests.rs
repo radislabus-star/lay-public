@@ -2854,6 +2854,66 @@ fn exact_positive_l4_memory_can_promote_a_suggestion_to_authority_evaluation() {
         true,
         neutral,
     ));
+
+    let event = event("проврка ");
+    let mut candidate = l2_candidate(
+        "проверка ",
+        "ProductiveL2V90Surface",
+        TypingErrorClass::MissingLetter,
+    );
+    candidate.gate = CandidateGateDecision {
+        action: CandidateGateAction::SuggestOnly,
+        reason: "productive_v90_lattice_requires_common_l3",
+    };
+    let candidates = [candidate];
+    let baseline = super::TransitionDecisionCore::evaluate_candidates(
+        &event,
+        &candidates,
+        super::TransitionDecisionPolicy {
+            l2_phase_apply: false,
+            correction_safety: CorrectionSafety::Normal,
+        },
+        super::DecisionEvidenceMode::FullField(None),
+    );
+    let mut evaluation = baseline.evaluations[0].clone();
+    assert!(evaluation.action.verifier_passed);
+    assert!(!evaluation.signals.l3_pairwise_certified);
+    assert!(!evaluation.transition.l4_signed_signal.exact_positive());
+    evaluation.signals.l2_wave_peak_milli = super::calibration::CURRENT.l2_peak_milli;
+    evaluation.signals.l2_wave_peak_uncertainty_milli =
+        super::calibration::CURRENT.l2_peak_uncertainty_milli;
+    evaluation.signals.l2_transition_phase_operator_promoted = false;
+
+    let normal = super::TransitionDecisionPolicy {
+        l2_phase_apply: false,
+        correction_safety: CorrectionSafety::Normal,
+    };
+    let experimental = super::TransitionDecisionPolicy {
+        l2_phase_apply: false,
+        correction_safety: CorrectionSafety::Experimental,
+    };
+    assert!(!super::ordinary_producer_allows_authority_evaluation(
+        &event,
+        &candidates[0],
+        &evaluation,
+        normal,
+    ));
+    assert!(super::ordinary_producer_allows_authority_evaluation(
+        &event,
+        &candidates[0],
+        &evaluation,
+        experimental,
+    ));
+
+    evaluation.signals.l2_transition_phase_operator_promoted = true;
+    evaluation.signals.l2_transition_phase_verdict = crate::nanda_wave::PhaseVerdict::Repel;
+    evaluation.signals.l2_transition_phase_milli = -1;
+    assert!(!super::ordinary_producer_allows_authority_evaluation(
+        &event,
+        &candidates[0],
+        &evaluation,
+        experimental,
+    ));
 }
 
 #[test]

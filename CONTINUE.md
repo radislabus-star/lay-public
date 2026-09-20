@@ -1,6 +1,301 @@
-# Lay 1.0.71 installed, physical check separate
+# Current: TD-121 acceptance, 2026-09-13
 
-Release `1.0.71` is installed locally with status
+## Current TD-121 acceptance — 2026-09-13
+
+TD-121 is **IN PROGRESS / INSTALLED_VERIFIED_PHYSICAL_PENDING**. C20 passed the
+complete 1.0.72 release gate, including all 13 commands, with changed and full gates each passing
+2,807/2,807 and 11 intentional performance skips, plus compiled-receipt verification and four isolated final-byte client cells. Its
+immutable release `RESULT.json` SHA-256 is
+`02458047a539fb85be82b301fd1cf38b19af1f71241f34260713cf5c5dd90534`.
+The preceding focused 519/519 proof on the same runtime source passed separately.
+The owned GTK entry smoke then passed all three exact surfaces: `привет` after
+one manual toggle, `ghbdtn` after two toggles with zero queued key/space/boundary
+passthrough, and layout projection `ghjdthrf` after autocomplete with one toggle. Receipt
+SHA-256: `27bf83fccd5a15e552dabd9afeada8f1bacfd9038b8f9a0046f2cb3d0fcd1eaf`.
+
+Release 1.0.72 is installed. All ten installed artifacts and all four loaded
+owners match C20; the loaded extension reports 1.0.72. Global IBus identity,
+configuration, input sources, immutable model dependencies, journals and learner
+state were preserved. Installation receipt SHA-256:
+`ca7b0cb622f862cdb9a51678e640d27953fe798f3b37f291bdebce4f5e4735a4`.
+C12 remains the historical 502/502 source-review checkpoint accepted at 9/10;
+it is not the release identity. The remaining TD-121 acceptance gate is a human
+physical-keyboard confirmation. General TD-123 answer quality remains `UNKNOWN`.
+
+Historical attempts and their exact receipts are retained only in
+[evidence/td121-private-actual-baseline-2026-09-13.md](tech_debt/evidence/td121-private-actual-baseline-2026-09-13.md).
+
+# Previous checkpoint: TD-126 source-only DONE
+
+TD-126 now consolidates the managed IBus client boundary behind
+`window_interaction/{observation,authority,execution}.rs`: lifecycle and fact
+observation, existing authority admission, local execution or typed delegation,
+later postcondition projection, cancellation and RAII settlement/revocation.
+The old `bridge_actions.rs`, `context_runtime.rs` and `text_target.rs` owners are
+deleted. Plan review closed 6/10 → 8/10 and implementation review closed
+7/10 → 8/10, each with one grouped repair and exactly two passes; no third
+review is claimed. Focused repair proof is 506/506 PASS. The final one-lease
+affected denominator is 2,781/2,781 PASS; lint, all 11 architecture checks and
+the compiled-receipt projection pass. The authoritative source result is
+`docs/structural_gates/receipts/LAY_TD126_COMMON_WINDOW_2026-09-12/final.json`;
+the compact durable account is
+`tech_debt/evidence/td126-final-acceptance.md`.
+
+TD-126 is `DONE` only for source scope. The installed runtime and runtime
+authority are unchanged; installation, activation, real-client and physical
+keyboard acceptance remain outside this verdict. Commit/push were outside the
+authorization active during implementation, but the user has now authorized
+the complete task loop. Git checkpoint status, the exact commit, verified remote
+ref and clean-worktree result belong to
+`/home/ubu/.cache/lay/development/td126-publication-20260913/publication.json`.
+On continuation, inspect that receipt first. If the checkpoint is not verified,
+run the one bounded graph/compiled-receipt/diff identity check, commit the
+accepted final4 composition, push only to `origin/codex/cleanup-20260908`, verify
+the remote ref, and update the receipt.
+The checkpoint includes the previously accepted uncommitted
+IME/context/native prerequisite base and the TD-126 extraction; it does not
+claim a new quality result or runtime installation.
+
+After a verified clean checkpoint, continue in dependency order: **TD-121 → TD-125 →
+TD-122 → TD-123**. Re-evaluate live dependencies before each task. For each:
+freeze the baseline, implement the bounded mechanism, use a fresh-context code
+review scored 1–10 with at most two total passes, pass the objective gates, mark
+the scoped task `DONE`, commit/push/verify its checkpoint, then move on.
+Temporary candidate activation may begin only after its owned test field/capture
+and activation preflight are ready. Permanent installation and physical
+promotion require the corresponding client and real-behavior checks to pass.
+
+# Historical predecessor: exact-replay native callback candidate accepted
+
+The reviewed ExactReplay contour is implemented in source with status
+`CANDIDATE_FOCUSED_CALLBACK_PASS_REVIEW_ACCEPTED_RUNTIME_UNCHANGED`. It routes
+leased replay Backspaces and printable key presses through the legacy callback
+as native-unhandled events while updating the bounded optimistic tail mirror
+once per exact epoch. It emits no replay `CommitText`, does not run ordinary
+`push_tail_char` bookkeeping, and quarantines replay candidate, precognition and
+completion-learning effects. Mismatch revokes the contour and consumes the
+offending press instead of falling through to a second text mutation path.
+
+The common TextTarget map composes the existing owners. Public bridge
+`manual_toggle_outcome_inner()` yields typed `Handled`,
+`DelegateExactImeTail`, `DelegateDaemon`, or `NotHandled`; the internal
+`text_target_decision()` yields typed commit-only, exact SurroundingText,
+terminal erase, or unsupported route and reason. `ContextAdmissionReducer`,
+`context_runtime`, bridge tokens and the route executors retain their existing
+focus, Reset, owner, path, epoch, snapshot, selection, sensitive-content and
+atomic guards. `replace_committed_tail()` executes an admitted edit;
+`process_exact_replay_press()` owns only the active native replay contour; and a
+later `set_surrounding_text()` observation must satisfy
+`current_external_snapshot_agrees_with_owned_tail()` before another destructive
+lease. The three capability facts in `TextTargetDecision` are not complete
+TextTarget authority and no new authority owner was added.
+
+The dedicated-20cpu focused proof passed formatting and `476/476` selected
+`lay-ibus-engine` tests. It covers six complete transactions, including the real
+Reset -> exact SurroundingText -> live-token bridge re-receipt path and uppercase
+`Ghbdtn -> Привет` with Shift press/release; nine concrete refusal subcases,
+including separate owner, active-path and active-expiry failures; exact
+interleaved SurroundingText; and ordinary-input lifecycle controls. Successful
+precognition schedule/apply counters stayed `(0, 0)` on replay with enabled
+production flags while the ordinary control reached `(1, 0)`. Canonical receipt:
+`docs/structural_gates/receipts/LAY_EXACT_REPLAY_NATIVE_DELIVERY_2026-09-12/candidate-focused.json`.
+
+Source and focused-test status are PASS only. The installed IME remains the
+earlier Firefox soft-Reset V3 baseline below. No candidate binary was built or
+installed, no process or setting changed, transport remains `UNKNOWN`, and
+physical acceptance remains `PENDING`. The canonical remote graph refresh now
+passes with 22,327 nodes, 59,224 edges, 814 communities, 700 bound Rust sources,
+and all eleven architecture checks at zero violations. Receipt:
+`docs/structural_gates/receipts/LAY_EXACT_REPLAY_NATIVE_DELIVERY_2026-09-12/graph-final.json`.
+The remaining source gates are the final changed suite, the dedicated physical
+Double Shift owner test, and remote release-candidate build.
+
+Candidate activation remains a separate reviewed step. Immediately before it,
+recapture the selected `lay-ime-us`/`lay-ime-ru` engine, GNOME sources/settings,
+installed IME PID/start/executable hash, daemon identity and global IBus
+identity, then back up the installed IME bytes. Stop only that captured old IME
+and wait for its IBus/session names to disappear. Start the receipt-bound
+candidate in a transient user systemd unit whose persistent parent satisfies
+the `--ibus --managed` parent-death contract. Verify the Lay IBus factory,
+session bridge, DBus owners/PIDs/executable hash and absence of a third IME,
+then reactivate the same previously selected engine exactly once through IBus.
+Any component-demand race or identity mismatch triggers candidate teardown and
+restoration through installed component demand; do not start the normally
+inactive `lay-ibus-engine.service`.
+
+The client proof must use an isolated text field under the current default GTK
+transport and capture the actual focused client/context. Do not use the common
+runtime smoke harness because it stops the daemon and forces
+`GTK_IM_MODULE=ibus` plus synchronous IBus mode. The running daemon does not
+hotplug a newly created `lay-test-input` virtual keyboard, so that helper cannot
+prove physical ownership without a daemon restart. Use one user-observed manual
+many-cycle keyboard sequence and record client-visible text, trace and matching
+SurroundingText as separate facts. Verify daemon, global IBus, engine settings
+and sources are unchanged before promotion or rollback.
+
+# Installed baseline: Firefox soft Reset exact-ST re-receipt V3, physical pending
+
+V3 follow-up for the post-V2 Firefox/GTK failure is installed and loaded with
+status `INSTALLED_LOADED_HASH_VERIFIED_PHYSICAL_PENDING`. Runtime authority
+changed: true, IME binary only. Physical acceptance remains `PENDING`: the
+post-install ping returned `lay-ibus-engine-rs no-focus`, so there is no
+Firefox/Tor focus proof, no browser text mutation proof, and no quality,
+heldout, RSS, or latency claim. Tests/CI denominator is 0.
+
+Build receipt:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2`.
+Remote run:
+`/home/e/projects/lay-development-runner/browser-receipt-XQR6ov`. Source archive
+SHA `bf8665188a62e077b7095843480b67b1d67aefc835ad4760fa024dee04d407a6`,
+1382 files. Build result SHA
+`5cd763bc62c31af68b8c53351a89d7b86837f842d46a4d1143b8159da910163b`; status
+`PASS_RUNTIME_BUILD_ONLY_GRAPH_UPDATED`. The graph AST was updated in the remote
+build path and the fetched artifact/hash were verified. The built IME binary is
+7,775,072 bytes with SHA
+`67827521149fe73434f8025a6daa404f26d9ac2072d7de7cbe6f3aec0ad57969`. The daemon
+binary SHA stayed
+`7680d8680563d48d8591106cc852960137339535d4ee377d86a7b5763f63780e`; it was not
+installed.
+
+The failed predecessor build receipt `receipt-fix-build-v3` stopped before
+installation on E0063 because `state.rs` was missing the new
+`context_reset_rereceipt` initializer; that run changed no runtime authority. The
+initializer was then fixed before the `receipt-fix-build-v3-compile2` build.
+
+Installation receipt:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/installation-v3.json`.
+Old IME PID `4051893` SHA
+`994485bf9d7379c8d820171960c61e5980e59f88341ab51d6a8b7741c08eec80`; new IME
+PID `911924`, PPID `4715`, start `80439768`. `ibus-daemon` stayed PID `4715`,
+start `2261`; `lay-daemon` stayed PID `3880511`, start `79007142`, SHA
+`7680d8680563d48d8591106cc852960137339535d4ee377d86a7b5763f63780e`. Selected
+engine `lay-ime-ru` and settings were preserved. Rollback backup root:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2/install-backup`.
+
+Installed V3 invariant: an authenticated soft Reset may keep one manual-only
+reset re-receipt witness without republishing the tail epoch. The already-handled
+printable key settlement owns the tail text/epoch in the reducer; redundant
+soft-reset `publish_tail_handoff()` is skipped only while that witness is armed.
+Generic Reset without the witness keeps the existing republish/revocation
+behavior.
+
+Installed source scope: the IME captures live pre-Reset eligibility from the old
+token/scope only as evidence, stores the post-Reset admission token after reducer
+revocation, confirms the witness only on the next surrounding-text revision when
+the unselected snapshot exactly bounds the current committed-tail token,
+preserves it across Shift press/release, advances it across exact handled
+printable appends, and consumes it only during explicit manual Double Shift to
+bind the current UnknownStart lineage in the reducer. This does not promote
+`KnownStart`, does not authorize automatic hints, and does not change ranking,
+verifier, SafetyGate, model paths, terminal fallback, or generic replacement
+routes. First-word automatic hints/autocorrect remain outside this bounded manual
+route.
+
+# Current: exact manual handoff V2 installed, physical pending
+
+V2 connected repair is installed with status
+`INSTALLED_LOADED_HASH_VERIFIED_PHYSICAL_PENDING` for the browser exact manual
+Double Shift route and bounded first-word GUI manual handoff. Runtime authority
+changed: true, IME binary only. Physical acceptance remains `PENDING`: the
+post-restart ping returned `('lay-ibus-engine-rs no-focus',)`, so there is no
+browser-focus proof, no text mutation proof, and no quality/heldout/RSS/latency
+claim. Tests/CI denominator is 0.
+
+Build receipt:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v2/build-result.json`
+with status `PASS_RUNTIME_BUILD_ONLY_GRAPH_UPDATED`, elapsed 78.86 s, transport
+79.29 s / worker 78.86 s as reported by root, source snapshot 1382 files,
+archive SHA
+`ce1e223ae79cff15064c349f6a07257bfba1fd36e5bb71d9f022aa2838b8a7c0`. Fetch
+verification:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v2/fetch-verification.json`
+with status `FETCH_HASH_VERIFIED`, build receipt SHA
+`cf52594b41cdc2e182fc29e2bddc01d699ac4bc35e4947f087157a78000d514f`.
+
+Installation receipt:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/installation.json`
+with SHA
+`abc0b753a6f676fc7b6ce91c0f09405f8749244f9c871b5beae867f9a5943a22`. Runtime identity receipt:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/runtime-after.json`
+with status `INSTALLED_PROCESS_IDENTITY_VERIFIED`; all 11 recorded identity and
+configuration checks are true, including loaded process hashes/PIDs, DBus owner,
+config/sources/bindings/XKB/selected engine, and temporary debug removal. Only
+`lay-ibus-engine` changed. Loaded IME PID `4051893` SHA
+`994485bf9d7379c8d820171960c61e5980e59f88341ab51d6a8b7741c08eec80`. Daemon
+PID `3880511` SHA
+`7680d8680563d48d8591106cc852960137339535d4ee377d86a7b5763f63780e` and global
+`ibus-daemon` PID `4715` stayed unchanged during install. Selected
+`lay-ime-us`, input sources, config SHA, direct Alt+Shift binding state, backward
+bindings, and XKB options were preserved. Rollback backup root:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/backup`.
+The temporary diagnostic override had already been removed before this final
+install.
+
+Installed source scope: live exact markers are preserved through valid same-field
+context-admission `Transfer` while keeping the original source path for daemon
+cleanup; `VisibleTailV3` and `SuppressNextAutocorrectV2` consume ready target
+activation under the fenced-token target engine before live-token/shared-active
+checks; first-word GUI manual Double Shift can use the existing exact handoff
+only with current unselected surrounding-text suffix evidence and live bounded
+lease. Generic mutation routes, automatic routes, terminal manual route,
+verifier, SafetyGate, `SourceFree`/`ResetUnknown`/revocation clears, daemon
+WordBuffer fallback, and stored legacy focus receipts are unchanged. Root static
+source review accepted the source shape; that review is not correctness, quality,
+or physical proof. First-word automatic hints/autocorrect remain OPEN pending
+user clarification.
+
+
+# Historical: browser legacy FocusIn exact-tail receipt projection source-only V1
+
+Fresh physical report on 2026-09-11: `djn` was typed, the IME later delegated
+Double Shift through exact committed-tail, and daemon replay was rejected before
+mutation because `VisibleTailV3` had no field focus receipt. Frozen evidence:
+`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/user-failed-djn-20260911T231756Z/`.
+
+Bounded source fix prepared for review only: context-admission `VisibleTailV3`
+projects an opaque receipt from the current live `AdmissionToken` / admitted
+`ContextKey` instead of storing a fallback receipt in engine state. Daemon V3
+guards, tail epochs, InputState, detectors, `KnownStart`, automatic gates, ranker,
+verifier and SafetyGate are unchanged. Runtime cost is one bounded `String`
+allocation on an existing `VisibleTailV3` read; no extra RPC, deadline, timer,
+state cache, worker, learning, package, reload, install, or binary authority
+change. The scalar receipt is stable only for the same admitted `ContextKey` on
+the same IBus connection. The first-word assistance concern remains OPEN and
+separate. This step ran no tests/CI/build/local graph/install/smoke, per the
+current instruction. Runtime authority changed: false.
+
+# Historical: Alt+Shift/source-frame follow-up installation before V2
+
+The first 2026-09-11 GNOME-owner Alt+Shift hotfix failed physical recheck:
+after each manual Alt+Shift the first word still entered source-free
+`UnknownStart`, while the next word applied normally. Fresh evidence:
+`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/ibus_engine_debug.jsonl`.
+
+The follow-up source/runtime fix is installed with status
+`INSTALLED_LOADED_HASH_VERIFIED_PHYSICAL_PENDING`. GNOME now keeps only
+`['<Shift><Alt>space']` for `switch-input-source`; the four direct Alt+Shift
+bindings were removed, while backward bindings, XKB options, input-source IDs,
+and config SHA were preserved. lay-daemon again performs direct GNOME
+`ActivateLayout`, legacy non-atomic IME Alt+Shift remains passive, and the IME
+readout closes stale `preedit_fast` after whitespace-terminated handoff rebuilds
+while preserving whole ASCII layout tokens with punctuation-shaped letter keys.
+
+Build receipt:
+`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/build-result.json`
+with `PASS_RUNTIME_BUILD_ONLY_GRAPH_UPDATED` in 136.82 s. Installation receipt:
+`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/installation.json`.
+Loaded daemon PID `2128412` SHA
+`7680d8680563d48d8591106cc852960137339535d4ee377d86a7b5763f63780e`; loaded IME
+PID `2128417` SHA
+`86f5ea13549ffeb473bc70959b934d734406c9ed336fb5c3a06b71415ed6b96b`; global
+`ibus-daemon` PID `4715` was preserved. Rollback backup for this installation:
+`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/backup/`.
+Tests/CI denominator is 0; physical acceptance remains `PENDING`; no quality,
+latency, RSS, or heldout claim is made.
+
+# Historical: release 1.0.71 installation before Alt+Shift owner fix
+
+At release installation, `1.0.71` was installed locally with status
 `INSTALLED_VERIFIED_PHYSICAL_PENDING`. The loaded runtime matches candidate
 `2ee1479cfc84c40ce3e8673e573d2dbfc42226f0e4dbdeb7cc310f6f1a63fcc5`:
 IME PID `4152536`, daemon PID `4152503`, L3 PID `4152477`, and L1.1 PID

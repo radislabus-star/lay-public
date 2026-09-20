@@ -38,6 +38,9 @@ const LIFECYCLE_QUEUE: usize = 8;
 const KEY_QUEUE: usize = 64;
 const MAX_LAY_PROFILES: usize = 8;
 pub(crate) const ACQUISITION_BUDGET: Duration = Duration::from_millis(5);
+// Focus acquisition is asynchronous and includes a full Get/marker round trip.
+// Keep its end-to-end deadline separate from text-mutation callback fencing.
+const ACTIVATION_BUDGET: Duration = Duration::from_millis(50);
 
 const ENGINE_CALLBACK_MEMBERS: &[&str] = &[
     "FocusIn",
@@ -73,7 +76,7 @@ fn context_admission_trace_disposition(
 ) -> (&'static str, Option<u64>) {
     match disposition {
         IngressDisposition::Passive => ("passive", None),
-        IngressDisposition::Key { owner } => ("key", Some(owner.generation.0)),
+        IngressDisposition::Key { owner, .. } => ("key", Some(owner.generation.0)),
         IngressDisposition::Factory { .. } => ("factory", None),
         IngressDisposition::FocusOut { owner, .. } => ("focus_out", Some(owner.generation.0)),
         IngressDisposition::Disable { owner } => ("disable", Some(owner.generation.0)),
@@ -130,6 +133,7 @@ pub(crate) struct AdapterConfig {
     connection: ConnectionGeneration,
     lay_profiles: Vec<EngineProfile>,
     acquisition_budget: Duration,
+    activation_budget: Duration,
 }
 
 impl AdapterConfig {
@@ -152,12 +156,14 @@ impl AdapterConfig {
             connection,
             lay_profiles,
             acquisition_budget: ACQUISITION_BUDGET,
+            activation_budget: ACTIVATION_BUDGET,
         })
     }
 
     #[cfg(test)]
     pub(super) fn with_acquisition_budget(mut self, budget: Duration) -> Self {
         self.acquisition_budget = budget;
+        self.activation_budget = budget;
         self
     }
 }
@@ -316,6 +322,7 @@ impl PendingContextAdapter {
             connection_generation: self.config.connection,
             lay_profiles: self.config.lay_profiles,
             acquisition_budget: self.config.acquisition_budget,
+            activation_budget: self.config.activation_budget,
             bindings,
             reducer: Mutex::new(reducer),
             stamps: CallbackStampStore::new(self.config.connection, OwnerGeneration(0)),
@@ -347,6 +354,7 @@ struct AdapterState {
     connection_generation: ConnectionGeneration,
     lay_profiles: Vec<EngineProfile>,
     acquisition_budget: Duration,
+    activation_budget: Duration,
     bindings: SenderBindings,
     reducer: Mutex<ContextAdmissionReducer<Sequence>>,
     stamps: CallbackStampStore<Sequence>,
@@ -452,6 +460,30 @@ pub(crate) struct FactoryCallback {
     pub(crate) position: Sequence,
 }
 
+fn record_admission_diagnostic(
+    flow: &str,
+    phase: &str,
+    reason: &str,
+    (request_generation, nonce): (Option<RequestGeneration>, BarrierNonce),
+    snapshot: AdmissionDiagnosticSnapshot,
+    fence_present: bool,
+    marker_observed: bool,
+) {
+    trace::record_admission_diagnostic(trace::AdmissionDiagnosticTrace {
+        flow,
+        phase,
+        reason,
+        request_generation: request_generation.map(|generation| generation.0),
+        nonce: nonce.0,
+        reducer_status: snapshot.reducer_status,
+        post_decision_unsettled_count: snapshot.unsettled_count,
+        owner_generation: snapshot.owner_generation,
+        activation_generation: snapshot.activation_generation,
+        fence_present,
+        marker_observed,
+    });
+}
+
 impl ContextAdmissionAdapter {
     #[cfg(test)]
     pub(crate) fn test_established(
@@ -510,6 +542,7 @@ impl ContextAdmissionAdapter {
             connection_generation,
             lay_profiles: vec![profile],
             acquisition_budget: ACQUISITION_BUDGET,
+            activation_budget: ACTIVATION_BUDGET,
             bindings,
             reducer: Mutex::new(reducer),
             stamps: CallbackStampStore::new(connection_generation, owner.generation),
@@ -662,7 +695,7 @@ impl ContextAdmissionAdapter {
             return Err(AdapterError::Denied);
         }
         let owner = match &observed.disposition {
-            IngressDisposition::Key { owner } => owner.clone(),
+            IngressDisposition::Key { owner, .. } => owner.clone(),
             _ => return Err(AdapterError::Denied),
         };
         if &owner != expected_owner || observed.guard.owner != owner.generation {
@@ -713,6 +746,37 @@ impl ContextAdmissionAdapter {
         }
     }
 
+    /// The observer already cancelled this older key at a later revocation.
+    /// A caller proving no text effect must leave the successor state alone.
+    pub(crate) fn key_observation_was_revoked(
+        &self,
+        callback: &KeyCallback,
+        tail_epoch: u64,
+    ) -> bool {
+        let IngressDisposition::Key { revocation, .. } = &callback.observed.disposition else {
+            return false;
+        };
+        let retired = self.shared.reducer.lock().is_ok_and(|reducer| {
+            reducer.owner() == Some(&callback.owner)
+                && reducer.revocation_generation() != *revocation
+                && reducer.latest_tail_epoch == tail_epoch
+        });
+        if retired {
+            trace::record_context_admission(
+                "callback_settlement",
+                &callback.observed.header.member,
+                callback.observed.header.serial,
+                "retired_after_revocation",
+                Some(callback.owner.generation.0),
+                trace::enabled()
+                    .then(|| self.current_activation_generation())
+                    .flatten(),
+                None,
+            );
+        }
+        retired
+    }
+
     pub(crate) fn settle_key_callback(
         &self,
         callback: &KeyCallback,
@@ -740,7 +804,7 @@ impl ContextAdmissionAdapter {
     }
 
     pub(crate) fn abandon_observed_key(&self, observed: &ObservedCallback) {
-        if let IngressDisposition::Key { owner } = &observed.disposition {
+        if let IngressDisposition::Key { owner, .. } = &observed.disposition {
             if self
                 .shared
                 .reducer
@@ -838,6 +902,7 @@ impl ContextAdmissionAdapter {
             IngressDisposition::StaleContext => true,
             IngressDisposition::Key {
                 owner: observed_owner,
+                ..
             }
             | IngressDisposition::FocusOut {
                 owner: observed_owner,
@@ -888,7 +953,7 @@ impl ContextAdmissionAdapter {
         target_path: EnginePath,
         focus_position: Sequence,
     ) -> Result<PendingFence, AdapterError> {
-        let deadline = self.acquisition_deadline();
+        let deadline = self.activation_deadline();
         let nonce = self.next_nonce();
         let request = self.begin_activation_request(
             target_path.clone(),
@@ -905,7 +970,7 @@ impl ContextAdmissionAdapter {
         target_path: EnginePath,
         focus_position: Sequence,
     ) -> Result<(), AdapterError> {
-        let deadline = self.acquisition_deadline();
+        let deadline = self.activation_deadline();
         let nonce = self.next_nonce();
         let request = self.begin_activation_request(
             target_path.clone(),
@@ -940,6 +1005,7 @@ impl ContextAdmissionAdapter {
         nonce: BarrierNonce,
         deadline: Instant,
     ) -> Result<PendingFence, AdapterError> {
+        trace::record_admission_timing("get_started", Some(request.0), nonce.0, Some(deadline));
         let result = async {
             let mut operation = Box::pin(self.shared.connection.call_method(
                 Some(IBUS_NAME),
@@ -993,6 +1059,12 @@ impl ContextAdmissionAdapter {
                     return Err(AdapterError::Denied);
                 }
             }
+            trace::record_admission_timing(
+                "reply_accepted",
+                Some(request.0),
+                nonce.0,
+                Some(deadline),
+            );
             self.arm_and_emit_marker(target_path, request, nonce, deadline)
                 .await
         }
@@ -1012,7 +1084,7 @@ impl ContextAdmissionAdapter {
         context: ContextKey,
         focus_position: Sequence,
     ) -> Result<PendingFence, AdapterError> {
-        let deadline = self.acquisition_deadline();
+        let deadline = self.activation_deadline();
         let nonce = self.next_nonce();
         let request = self.begin_activation_request(
             target_path.clone(),
@@ -1037,7 +1109,7 @@ impl ContextAdmissionAdapter {
         context: ContextKey,
         focus_position: Sequence,
     ) -> Result<(), AdapterError> {
-        let deadline = self.acquisition_deadline();
+        let deadline = self.activation_deadline();
         let nonce = self.next_nonce();
         let request = self.begin_activation_request(
             target_path.clone(),
@@ -1081,10 +1153,34 @@ impl ContextAdmissionAdapter {
         nonce: BarrierNonce,
         deadline: Instant,
     ) -> Result<PendingFence, AdapterError> {
+        let trace_target = trace::enabled().then(|| target_path.as_str().to_owned());
+        let trace_context = trace::enabled().then(|| context.path.as_str().to_owned());
         let result = async {
-            if !self.shared.reducer.lock().is_ok_and(|mut reducer| {
-                reducer.context_reply(request, nonce, context, focus_position)
-            }) {
+            let (accepted, revocation) = match self.shared.reducer.lock() {
+                Ok(mut reducer) => {
+                    let accepted = reducer.context_reply(request, nonce, context, focus_position);
+                    (accepted, Some(reducer.revocation_generation()))
+                }
+                Err(error) => {
+                    drop(error);
+                    (false, None)
+                }
+            };
+            if let Some(target) = trace_target.as_deref() {
+                trace::record_native_activation(trace::NativeActivationTrace {
+                    stage: "context_reply",
+                    outcome: if accepted { "accepted" } else { "refused" },
+                    target_path: target,
+                    request_generation: Some(request.0),
+                    nonce: nonce.0,
+                    context_path: trace_context.as_deref(),
+                    owner_generation: None,
+                    revocation,
+                    profile: None,
+                    route: None,
+                });
+            }
+            if !accepted {
                 return Err(AdapterError::Denied);
             }
             self.arm_and_emit_marker(target_path, request, nonce, deadline)
@@ -1158,6 +1254,7 @@ impl ContextAdmissionAdapter {
     pub(crate) async fn begin_bridge_fence(&self) -> Result<PendingFence, AdapterError> {
         let deadline = self.acquisition_deadline();
         let nonce = self.next_nonce();
+        trace::record_admission_timing("bridge_begin", None, nonce.0, Some(deadline));
         let sent = OwnedValue::from(nonce.0);
         let reply = before_deadline(
             self.shared.connection.call_method(
@@ -1170,6 +1267,7 @@ impl ContextAdmissionAdapter {
             deadline,
         )
         .await?;
+        trace::record_admission_timing("bridge_ping_complete", None, nonce.0, Some(deadline));
         let echoed = reply
             .body()
             .deserialize::<OwnedValue>()
@@ -1203,6 +1301,7 @@ impl ContextAdmissionAdapter {
             self.clear_fence(nonce);
             return Err(AdapterError::Timeout);
         }
+        trace::record_admission_timing("bridge_marker_emitted", None, nonce.0, Some(deadline));
         Ok(PendingFence { nonce, deadline })
     }
 
@@ -1228,6 +1327,20 @@ impl ContextAdmissionAdapter {
             .is_ok_and(|reducer| reducer.revalidate_bridge(token))
     }
 
+    pub(crate) fn settle_soft_reset_rereceipt(
+        &self,
+        owner: &EngineOwner,
+        reset_token: &AdmissionToken,
+        settled: SettledWordState,
+    ) -> Option<AdmissionToken> {
+        self.shared.reducer.lock().ok().and_then(|mut reducer| {
+            reducer
+                .settle_soft_reset_rereceipt(owner, reset_token, settled)
+                .then(|| reducer.admission_token())
+                .flatten()
+        })
+    }
+
     pub(crate) fn settle_bridge_output(
         &self,
         token: &AdmissionToken,
@@ -1237,6 +1350,31 @@ impl ContextAdmissionAdapter {
             .reducer
             .lock()
             .is_ok_and(|mut reducer| reducer.settle_bridge_output(token, settled))
+    }
+
+    pub(crate) fn publish_exact_manual_snapshot(
+        &self,
+        token: &AdmissionToken,
+        tail_epoch: u64,
+        tail: String,
+        observation_revision: u64,
+        expires_at: Instant,
+    ) -> bool {
+        self.shared.reducer.lock().is_ok_and(|mut reducer| {
+            reducer.publish_exact_manual_snapshot(
+                token,
+                tail_epoch,
+                tail,
+                observation_revision,
+                expires_at,
+            )
+        })
+    }
+
+    pub(crate) fn invalidate_exact_manual_snapshot(&self, owner: &EngineOwner) {
+        if let Ok(mut reducer) = self.shared.reducer.lock() {
+            reducer.invalidate_exact_manual_snapshot(owner);
+        }
     }
 
     pub(crate) fn current_token(&self) -> Option<AdmissionToken> {
@@ -1317,9 +1455,21 @@ impl ContextAdmissionAdapter {
         fence: PendingFence,
     ) -> Result<AdmissionToken, AdapterError> {
         if let Err(error) = self.wait_for_fence(fence, true).await {
+            trace::record_admission_timing(
+                "bridge_wait_failed",
+                None,
+                fence.nonce.0,
+                Some(fence.deadline),
+            );
             self.expire_fence(fence);
             return Err(error);
         }
+        trace::record_admission_timing(
+            "bridge_wait_complete",
+            None,
+            fence.nonce.0,
+            Some(fence.deadline),
+        );
         self.finish_bridge_fence(fence)
     }
 
@@ -1449,25 +1599,86 @@ impl ContextAdmissionAdapter {
         origin: ReceiptOrigin,
         focus_position: Sequence,
     ) -> Result<RequestGeneration, AdapterError> {
+        let trace_target = (origin == ReceiptOrigin::Native && trace::enabled())
+            .then(|| target_path.as_str().to_owned());
         // Serialize reducer begin with completed-result publication. Reuse
         // the pending-slot lock; never await or prune ready state while held.
-        let publication = self
-            .shared
-            .pending
-            .lock()
-            .map_err(|_| AdapterError::Denied)?;
+        let publication = match self.shared.pending.lock() {
+            Ok(publication) => publication,
+            Err(error) => {
+                drop(error);
+                if let Some(target) = trace_target.as_deref() {
+                    trace::record_native_activation(trace::NativeActivationTrace {
+                        stage: "begin",
+                        outcome: "refused_pending_lock",
+                        target_path: target,
+                        request_generation: None,
+                        nonce: nonce.0,
+                        context_path: None,
+                        owner_generation: None,
+                        revocation: None,
+                        profile: None,
+                        route: None,
+                    });
+                }
+                return Err(AdapterError::Denied);
+            }
+        };
         if publication.is_some() {
+            drop(publication);
+            if let Some(target) = trace_target.as_deref() {
+                trace::record_native_activation(trace::NativeActivationTrace {
+                    stage: "begin",
+                    outcome: "busy",
+                    target_path: target,
+                    request_generation: None,
+                    nonce: nonce.0,
+                    context_path: None,
+                    owner_generation: None,
+                    revocation: None,
+                    profile: None,
+                    route: Some("pending_occupied"),
+                });
+            }
             return Err(AdapterError::Busy);
         }
-        let mut reducer = self
-            .shared
-            .reducer
-            .lock()
-            .map_err(|_| AdapterError::Denied)?;
+        let mut reducer = match self.shared.reducer.lock() {
+            Ok(reducer) => reducer,
+            Err(error) => {
+                drop(error);
+                drop(publication);
+                if let Some(target) = trace_target.as_deref() {
+                    trace::record_native_activation(trace::NativeActivationTrace {
+                        stage: "begin",
+                        outcome: "refused_reducer_lock",
+                        target_path: target,
+                        request_generation: None,
+                        nonce: nonce.0,
+                        context_path: None,
+                        owner_generation: None,
+                        revocation: None,
+                        profile: None,
+                        route: None,
+                    });
+                }
+                return Err(AdapterError::Denied);
+            }
+        };
         let has_transfer = reducer.ticket.as_ref().is_some_and(|ticket| {
             ticket.status == TicketStatus::Pending
                 && ticket.target_path.as_ref() == Some(&target_path)
         });
+        let trace_profile = trace_target.as_ref().map(|_| match &reducer.profile {
+            GlobalProfile::Lay(profile) | GlobalProfile::Foreign(profile) => {
+                profile.as_str().to_owned()
+            }
+        });
+        let trace_revocation = reducer.revocation_generation();
+        let trace_route = if has_transfer {
+            "transfer"
+        } else {
+            "source_free"
+        };
         let request = if has_transfer {
             reducer.focus_in(&target_path, nonce, origin, focus_position)
         } else {
@@ -1476,6 +1687,24 @@ impl ContextAdmissionAdapter {
         .ok_or(AdapterError::Denied);
         drop(reducer);
         drop(publication);
+        if let Some(target) = trace_target.as_deref() {
+            trace::record_native_activation(trace::NativeActivationTrace {
+                stage: "begin",
+                outcome: if request.is_ok() {
+                    "accepted"
+                } else {
+                    "refused"
+                },
+                target_path: target,
+                request_generation: request.as_ref().ok().map(|request| request.0),
+                nonce: nonce.0,
+                context_path: None,
+                owner_generation: None,
+                revocation: Some(trace_revocation),
+                profile: trace_profile.as_deref(),
+                route: Some(trace_route),
+            });
+        }
         self.discard_stale_ready_activation();
         request
     }
@@ -1511,7 +1740,8 @@ impl ContextAdmissionAdapter {
         nonce: BarrierNonce,
         deadline: Instant,
     ) -> Result<PendingFence, AdapterError> {
-        self.arm_fence(PendingFenceState {
+        let trace_target = trace::enabled().then(|| target_path.as_str().to_owned());
+        let arm_result = self.arm_fence(PendingFenceState {
             nonce,
             deadline,
             kind: FenceKind::Acquisition {
@@ -1521,7 +1751,27 @@ impl ContextAdmissionAdapter {
             ready_token: None,
             marker_observed: false,
             ready: false,
-        })?;
+        });
+        if let Some(target) = trace_target.as_deref() {
+            trace::record_native_activation(trace::NativeActivationTrace {
+                stage: "marker_arm",
+                outcome: match &arm_result {
+                    Ok(()) => "armed",
+                    Err(AdapterError::Busy) => "refused_busy",
+                    Err(AdapterError::Denied) => "refused_denied",
+                    Err(_) => "refused_error",
+                },
+                target_path: target,
+                request_generation: Some(request.0),
+                nonce: nonce.0,
+                context_path: None,
+                owner_generation: None,
+                revocation: None,
+                profile: None,
+                route: None,
+            });
+        }
+        arm_result?;
         if before_deadline(
             self.shared.connection.emit_signal(
                 None::<()>,
@@ -1539,8 +1789,37 @@ impl ContextAdmissionAdapter {
             if let Ok(mut reducer) = self.shared.reducer.lock() {
                 reducer.context_acquisition_failed(request);
             }
+            if let Some(target) = trace_target.as_deref() {
+                trace::record_native_activation(trace::NativeActivationTrace {
+                    stage: "marker_emission",
+                    outcome: "timeout",
+                    target_path: target,
+                    request_generation: Some(request.0),
+                    nonce: nonce.0,
+                    context_path: None,
+                    owner_generation: None,
+                    revocation: None,
+                    profile: None,
+                    route: None,
+                });
+            }
             return Err(AdapterError::Timeout);
         }
+        if let Some(target) = trace_target.as_deref() {
+            trace::record_native_activation(trace::NativeActivationTrace {
+                stage: "marker_emission",
+                outcome: "emitted",
+                target_path: target,
+                request_generation: Some(request.0),
+                nonce: nonce.0,
+                context_path: None,
+                owner_generation: None,
+                revocation: None,
+                profile: None,
+                route: None,
+            });
+        }
+        trace::record_admission_timing("marker_emitted", Some(request.0), nonce.0, Some(deadline));
         Ok(PendingFence { nonce, deadline })
     }
 
@@ -1609,30 +1888,87 @@ impl ContextAdmissionAdapter {
     }
 
     fn expire_fence(&self, fence: PendingFence) {
-        let pending = self.shared.pending.lock().ok().and_then(|mut slot| {
-            let matches = slot.as_ref().is_some_and(|pending| {
-                pending.nonce == fence.nonce && pending.deadline == fence.deadline
-            });
-            if matches
-                && slot
-                    .as_ref()
-                    .is_some_and(|pending| !pending.marker_observed)
-            {
-                slot.take()
-            } else {
-                None
-            }
+        let diagnostics_enabled = trace::diagnostics_enabled_cached();
+        let (removed, observed_at_expiry, matching_request) = self
+            .shared
+            .pending
+            .lock()
+            .ok()
+            .map(|mut slot| {
+                let matches = slot.as_ref().is_some_and(|pending| {
+                    pending.nonce == fence.nonce && pending.deadline == fence.deadline
+                });
+                let marker_observed =
+                    matches && slot.as_ref().is_some_and(|pending| pending.marker_observed);
+                let matching_request = matches
+                    .then(|| {
+                        slot.as_ref().and_then(|pending| match pending.kind {
+                            FenceKind::Acquisition { request, .. } => Some(request),
+                            FenceKind::Bridge { .. } => None,
+                        })
+                    })
+                    .flatten();
+                // Bridge has no ready-activation consumer after its wait
+                // returns an error. Only Acquisition retains observed work.
+                let observed_acquisition = marker_observed && matching_request.is_some();
+                let removed = if matches && !observed_acquisition {
+                    slot.take()
+                } else {
+                    None
+                };
+                (removed, marker_observed, matching_request)
+            })
+            .unwrap_or((None, false, None));
+        let removed_request = removed.as_ref().and_then(|pending| match pending.kind {
+            FenceKind::Acquisition { request, .. } => Some(request),
+            FenceKind::Bridge { .. } => None,
         });
-        if let Some(PendingFenceState {
-            kind: FenceKind::Acquisition { request, .. },
-            ..
-        }) = pending
-        {
+        if let Some(request) = removed_request {
             if let Ok(mut reducer) = self.shared.reducer.lock() {
                 reducer.context_acquisition_failed(request);
             }
         }
         self.shared.changed.notify(usize::MAX);
+        if diagnostics_enabled && matching_request.is_some() {
+            trace::record_admission_timing(
+                "fence_expiry",
+                matching_request.map(|request| request.0),
+                fence.nonce.0,
+                Some(fence.deadline),
+            );
+            let diagnostic = self.shared.reducer.lock().ok().map(|reducer| {
+                let reason = if observed_at_expiry {
+                    matching_request
+                        .map(|generation| {
+                            let reason = reducer.compatibility_readiness_reason(generation);
+                            if reason == "ready" {
+                                "publication_not_completed"
+                            } else {
+                                reason
+                            }
+                        })
+                        .unwrap_or("request_not_current")
+                } else {
+                    "marker_not_observed_before_expiry"
+                };
+                (matching_request, reason, reducer.diagnostic_snapshot())
+            });
+            if let Some((request, reason, snapshot)) = diagnostic {
+                record_admission_diagnostic(
+                    "compatibility",
+                    if observed_at_expiry {
+                        "expiry_post_decision_snapshot"
+                    } else {
+                        "expiry"
+                    },
+                    reason,
+                    (request, fence.nonce),
+                    snapshot,
+                    observed_at_expiry,
+                    observed_at_expiry,
+                );
+            }
+        }
     }
 
     fn refresh_acquisition_fence_ready(&self) {
@@ -1662,15 +1998,37 @@ impl ContextAdmissionAdapter {
         else {
             return;
         };
-        let request_is_current = self.shared.reducer.lock().is_ok_and(|reducer| {
-            reducer
-                .request
-                .as_ref()
-                .is_some_and(|current| current.generation == request)
-        });
+        let request_observation = self
+            .shared
+            .reducer
+            .lock()
+            .map(|reducer| {
+                (
+                    reducer
+                        .request
+                        .as_ref()
+                        .is_some_and(|current| current.generation == request),
+                    Some(reducer.revocation_generation()),
+                )
+            })
+            .ok();
+        let (request_is_current, rejection_revocation) =
+            request_observation.unwrap_or((false, None));
         if !request_is_current {
             *slot = None;
             drop(slot);
+            trace::record_native_activation(trace::NativeActivationTrace {
+                stage: "publication",
+                outcome: "refused_not_current",
+                target_path: target_path.as_str(),
+                request_generation: Some(request.0),
+                nonce: pending.nonce.0,
+                context_path: None,
+                owner_generation: None,
+                revocation: rejection_revocation,
+                profile: None,
+                route: None,
+            });
             self.shared.changed.notify(usize::MAX);
             return;
         }
@@ -1730,6 +2088,8 @@ impl ContextAdmissionAdapter {
             ),
         };
         let owner_generation = owner.generation.0;
+        let revocation = outcome.token().revocation;
+        let trace_target = trace::enabled().then(|| target_path.as_str().to_owned());
         *ready = Some(ReadyActivationState {
             fence: PendingFence {
                 nonce: pending.nonce,
@@ -1750,6 +2110,20 @@ impl ContextAdmissionAdapter {
         }
         drop(ready);
         drop(slot);
+        if let Some(target) = trace_target.as_deref() {
+            trace::record_native_activation(trace::NativeActivationTrace {
+                stage: "publication",
+                outcome: "published",
+                target_path: target,
+                request_generation: Some(request.0),
+                nonce: pending.nonce.0,
+                context_path: None,
+                owner_generation: Some(owner_generation),
+                revocation: Some(revocation),
+                profile: None,
+                route: Some(outcome_kind),
+            });
+        }
         trace::record_context_admission(
             "activation_ready",
             "",
@@ -1811,6 +2185,14 @@ impl ContextAdmissionAdapter {
             let kind = pending.kind.clone();
             *slot = None;
             drop(slot);
+            if bridge {
+                trace::record_admission_timing(
+                    "bridge_expired_at_take",
+                    None,
+                    fence.nonce.0,
+                    Some(fence.deadline),
+                );
+            }
             if let FenceKind::Acquisition { request, .. } = kind {
                 if let Ok(mut reducer) = self.shared.reducer.lock() {
                     reducer.context_acquisition_failed(request);
@@ -1823,12 +2205,27 @@ impl ContextAdmissionAdapter {
         }
         let token = pending.ready_token.clone();
         *slot = None;
+        drop(slot);
+        if bridge {
+            trace::record_admission_timing(
+                "bridge_taken",
+                None,
+                fence.nonce.0,
+                Some(fence.deadline),
+            );
+        }
         Ok(token)
     }
 
     fn acquisition_deadline(&self) -> Instant {
         let now = Instant::now();
         now.checked_add(self.shared.acquisition_budget)
+            .unwrap_or(now)
+    }
+
+    fn activation_deadline(&self) -> Instant {
+        let now = Instant::now();
+        now.checked_add(self.shared.activation_budget)
             .unwrap_or(now)
     }
 
@@ -2218,8 +2615,21 @@ impl ContextAdmissionObserver {
         match member {
             "ProcessKeyEvent" | "ProcessKeyEventAtomicV1" => {
                 if let Some(owner) = path_owner {
-                    if reducer.observe_key_start(&owner, stamp.header.clone()) {
-                        Ok(IngressDisposition::Key { owner })
+                    let word_effect = if member == "ProcessKeyEvent"
+                        && message
+                            .body()
+                            .deserialize::<(u32, u32, u32)>()
+                            .is_ok_and(|(keyval, _, _)| crate::protocol::is_shift_key(keyval))
+                    {
+                        KeyWordEffect::LegacyShiftObservation
+                    } else {
+                        KeyWordEffect::PossibleMutation
+                    };
+                    if reducer.observe_key_start(&owner, stamp.header.clone(), word_effect) {
+                        Ok(IngressDisposition::Key {
+                            owner,
+                            revocation: reducer.revocation_generation(),
+                        })
                     } else {
                         Err(AdapterError::Denied)
                     }
@@ -2353,6 +2763,8 @@ impl ContextAdmissionObserver {
     }
 
     fn process_marker(&self, nonce: BarrierNonce, position: Sequence) -> Result<(), AdapterError> {
+        trace::record_admission_timing("marker_ingress", None, nonce.0, None);
+        let diagnostics_enabled = trace::diagnostics_enabled_cached();
         let pending = self
             .shared
             .pending
@@ -2366,24 +2778,59 @@ impl ContextAdmissionObserver {
             return Ok(());
         }
         if Instant::now() > pending.deadline {
+            let request = match pending.kind {
+                FenceKind::Acquisition { request, .. } => Some(request),
+                FenceKind::Bridge { .. } => None,
+            };
             if let FenceKind::Acquisition { request, .. } = pending.kind {
                 if let Ok(mut reducer) = self.shared.reducer.lock() {
                     reducer.context_acquisition_failed(request);
                 }
             }
             self.clear_pending(nonce);
+            if diagnostics_enabled {
+                if let Ok(reducer) = self.shared.reducer.lock() {
+                    let snapshot = reducer.diagnostic_snapshot();
+                    drop(reducer);
+                    record_admission_diagnostic(
+                        if request.is_some() {
+                            "compatibility"
+                        } else {
+                            "bridge"
+                        },
+                        "marker",
+                        "deadline_exceeded_before_observation",
+                        (request, nonce),
+                        snapshot,
+                        false,
+                        false,
+                    );
+                }
+            }
             return Ok(());
         }
+        let bridge = matches!(&pending.kind, FenceKind::Bridge { .. });
+        let mut bridge_diagnostic = None;
         let ready_token = match pending.kind {
             FenceKind::Acquisition { request, .. } => {
-                let marker_accepted = self.shared.reducer.lock().is_ok_and(|mut reducer| {
+                let decision = self.shared.reducer.lock().ok().map(|mut reducer| {
                     let _ = reducer.marker(request, nonce, position);
-                    reducer.request.as_ref().is_some_and(|current| {
+                    let accepted = reducer.request.as_ref().is_some_and(|current| {
                         current.generation == request
                             && current.nonce == nonce
                             && current.marker_position.as_ref() == Some(&position)
-                    })
+                    });
+                    let diagnostic = diagnostics_enabled.then(|| {
+                        (
+                            reducer.compatibility_readiness_reason(request),
+                            reducer.diagnostic_snapshot(),
+                        )
+                    });
+                    (accepted, diagnostic)
                 });
+                let Some((marker_accepted, diagnostic)) = decision else {
+                    return Ok(());
+                };
                 if !marker_accepted {
                     return Ok(());
                 }
@@ -2395,6 +2842,22 @@ impl ContextAdmissionObserver {
                     }
                 }
                 self.refresh_acquisition_fence_ready();
+                if let Some((reason, snapshot)) = diagnostic {
+                    if reason != "ready" {
+                        let post_fence_present = self.shared.pending.lock().is_ok_and(|slot| {
+                            slot.as_ref().is_some_and(|current| current.nonce == nonce)
+                        });
+                        record_admission_diagnostic(
+                            "compatibility",
+                            "marker",
+                            reason,
+                            (Some(request), nonce),
+                            snapshot,
+                            post_fence_present,
+                            true,
+                        );
+                    }
+                }
                 return Ok(());
             }
             FenceKind::Bridge { ping_position } => {
@@ -2402,11 +2865,23 @@ impl ContextAdmissionObserver {
                     self.fail_closed();
                     return Err(AdapterError::Denied);
                 }
-                self.shared
-                    .reducer
-                    .lock()
-                    .ok()
-                    .and_then(|reducer| reducer.bridge_admission_token())
+                let decision = self.shared.reducer.lock().ok().map(|reducer| {
+                    let token = reducer.bridge_admission_token();
+                    let diagnostic = (diagnostics_enabled && token.is_none()).then(|| {
+                        (
+                            reducer.bridge_readiness_reason(),
+                            reducer.diagnostic_snapshot(),
+                        )
+                    });
+                    (token, diagnostic)
+                });
+                match decision {
+                    Some((token, diagnostic)) => {
+                        bridge_diagnostic = diagnostic;
+                        token
+                    }
+                    None => None,
+                }
             }
         };
         let mut slot = self
@@ -2414,16 +2889,38 @@ impl ContextAdmissionObserver {
             .pending
             .lock()
             .map_err(|_| AdapterError::Denied)?;
-        if let Some(current) = slot
+        let marker_ready = if let Some(current) = slot
             .as_mut()
             .filter(|current| current.nonce == nonce && current.deadline == pending.deadline)
         {
             current.ready = true;
             current.ready_token = ready_token;
             current.marker_observed = true;
-        }
+            true
+        } else {
+            false
+        };
         drop(slot);
         self.shared.changed.notify(usize::MAX);
+        if bridge && marker_ready {
+            trace::record_admission_timing(
+                "bridge_marker_ready",
+                None,
+                nonce.0,
+                Some(pending.deadline),
+            );
+        }
+        if let Some((reason, snapshot)) = bridge_diagnostic {
+            record_admission_diagnostic(
+                "bridge",
+                "marker",
+                reason,
+                (None, nonce),
+                snapshot,
+                true,
+                true,
+            );
+        }
         Ok(())
     }
 
@@ -2566,4 +3063,4 @@ where
 
 #[cfg(test)]
 #[path = "adapter/tests.rs"]
-mod tests;
+pub(crate) mod tests;

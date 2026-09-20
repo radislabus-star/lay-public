@@ -10756,3 +10756,75 @@ The corresponding remote roots are
 Raw typing logs stay private. Source documentation and the architecture graph
 are updated after these measurements; accepted binaries are not rebuilt for
 prose-only changes.
+
+### TD-121 C17 retained-output Clippy diagnosis (2026-09-13)
+
+Tested: the default-feature `cargo clippy --locked --all-targets` contract from
+the frozen C16 source, with warnings denied and dead-code diagnostics excluded.
+Measured fact: Clippy reported one `clippy::question_mark` mechanism at
+`src/nanda_wave/l2/layout_adapter.rs:377`; the duplicate rendered diagnostic is
+the same library source compiled for the library and library-test targets.
+Replacing the `let Some(memory) = surface_motif_memory() else { return None; }`
+form with `let memory = surface_motif_memory()?;` preserves the identical
+`None` propagation when motif memory is unavailable. It does not change
+candidate authority, rank, evidence, safety effects, or any deadline.
+
+Not tested by C17: manifest discovery, semantic tests, research-feature Clippy,
+full release acceptance, clients, installation, or physical delivery. Verdict
+scope: **ACCEPTED MECHANICAL LINT CORRECTION ONLY**. Exact receipt:
+`/home/ubu/.cache/lay/development/release-1.0.72-td121-prepared/c17-diagnostic/RESULT.json`
+(SHA-256 `70687be0554d15a050e2868874a7017bec5e0234f0a73728a8f8a6e76af63423`).
+Runtime authority changed: **false**.
+
+### TD-121 C20 terminal-delivery release and installation (2026-09-13)
+
+Tested: the final C20 source through the complete 1.0.72 release runner, four
+isolated final-byte client cells, an owned GTK entry smoke, and the reviewed
+transactional installer. Measured facts: all 13 release commands passed; changed and full gates each passed 2,807/2,807
+with 11 intentional performance skips; compiled-receipt verification passed. The
+preceding focused 519/519 proof on the same runtime source passed separately. The
+GTK surfaces were exactly `привет`, `ghbdtn`, and layout projection `ghjdthrf` after autocomplete with expected manual-toggle counts
+1/2/1. The extra-toggle case forwarded zero queued keys, spaces, or boundaries.
+
+C20 contains two GTK `SurroundingText` replay fixes. First, valid exact-replay
+scope is captured before Reset clears context. That captured scope suppresses only
+the redundant epoch publication; negative, expired and stale scopes retain their
+rejection. Fresh matching `SurroundingText` then permits every intended Backspace.
+
+```text
+valid exact-replay scope -> capture before Reset -> suppress redundant epoch
+-> fresh matching SurroundingText -> intended Backspaces accepted
+```
+
+Separately, after completed replay `VisibleTailV3` may report the qualified
+observed `UnknownStart` suffix even after the handoff flag is consumed. The queued
+`ManualToggleV3` then settles and toggles once.
+
+```text
+completed replay -> qualified observed UnknownStart suffix
+-> VisibleTailV3 -> queued ManualToggleV3 -> one settled toggle
+```
+
+Terminal single erase/commit is a distinct route and has no GTK quarantine.
+
+The release result SHA-256 is
+`02458047a539fb85be82b301fd1cf38b19af1f71241f34260713cf5c5dd90534`.
+The GTK receipt is
+`/home/ubu/.cache/lay/development/release-1.0.72-td121-c20-20260913/gui-smoke-owned-c20/RECEIPT.json`,
+SHA-256 `27bf83fccd5a15e552dabd9afeada8f1bacfd9038b8f9a0046f2cb3d0fcd1eaf`.
+Its `case_results_sha256` is the canonical v3 projection hash over selected case
+identity, exact output and semantic trace fields; it is intentionally distinct
+from the raw receipt-file hash.
+
+Release 1.0.72 is installed. All ten installed artifacts and the four loaded
+owners match the C20 manifest, and the loaded extension reports 1.0.72. The
+transaction preserved global IBus identity, configuration, input sources, model
+dependencies, journals and learner state. Installation receipt:
+`/home/ubu/.cache/lay/development/release-1.0.72-td121-c20-20260913/installation-1.0.72.json`,
+SHA-256 `ca7b0cb622f862cdb9a51678e640d27953fe798f3b37f291bdebce4f5e4735a4`.
+Runtime authority changed: **true**, by installation of the accepted C20 bytes.
+
+Not tested: human physical-keyboard behavior after installation, general heldout
+answer quality, or TD-123 per-class quality gates. Verdict scope:
+`INSTALLED_VERIFIED_PHYSICAL_PENDING`; those open denominators are not inferred
+from release, client, or GTK delivery success.

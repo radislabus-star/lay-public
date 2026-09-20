@@ -198,11 +198,14 @@ where
         {
             return Lookup::Failed(RendezvousFailure::Revoked);
         }
-        if expected_eviction.is_some_and(|expected| state.eviction != expected) {
-            return Lookup::Failed(RendezvousFailure::Evicted);
-        }
         if let Some(stamp) = state.stamps.iter().find(|stamp| stamp.header == *key) {
             return Lookup::Stamp(stamp.clone());
+        }
+        // Publishing this exact stamp may evict an unrelated older entry.
+        // Only a missing stamp is ambiguous after eviction; the epoch checks
+        // above still revoke retained stamps across ownership changes.
+        if expected_eviction.is_some_and(|expected| state.eviction != expected) {
+            return Lookup::Failed(RendezvousFailure::Evicted);
         }
         Lookup::Pending(state.eviction)
     }

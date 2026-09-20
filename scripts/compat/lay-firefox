@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+
+# Set the Firefox-only client adapter inside Snap confinement. Keep IBus
+# asynchronous: synchronous processing loses native Wayland modifier events.
+exec /usr/bin/snap run --shell firefox -c '
+    library="$SNAP_USER_COMMON/lay/compat/liblay-firefox-ibus-reset-notify.so"
+    if [ ! -r "$library" ]; then
+        printf "%s\n" "Lay Firefox compatibility library is missing: $library" >&2
+        exit 1
+    fi
+    unset IBUS_ENABLE_SYNC_MODE
+    if [ -n "${LD_PRELOAD:-}" ]; then
+        preload="$library:$LD_PRELOAD"
+    else
+        preload="$library"
+    fi
+    exec env GTK_IM_MODULE=ibus LD_PRELOAD="$preload" "$SNAP/firefox.launcher" "$@"
+' lay-firefox "$@"
