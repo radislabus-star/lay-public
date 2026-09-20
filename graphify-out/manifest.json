@@ -3230,8 +3230,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1789882509.7850666,
-    "ast_hash": "e969ac8b6683d925de0615c8be2017b3",
+    "mtime": 1789883375.0750437,
+    "ast_hash": "11032c215c864e1d48e8bb0a23f1b1d9",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5290,8 +5290,8 @@
     "semantic_hash": ""
   },
   "tech_debt/121-preserve-word-across-ime-layout-handoff.md": {
-    "mtime": 1789883315.186357,
-    "ast_hash": "1df9dbb942e5306e6efd339065041dcd",
+    "mtime": 1789883708.551297,
+    "ast_hash": "ad7add5c3f778cacd82b69ecb33638b3",
     "semantic_hash": ""
   },
   "tech_debt/122-bind-legacy-replay-suppression-request.md": {
@@ -5835,8 +5835,8 @@
     "semantic_hash": ""
   },
   "docs/release-1.0.73-finalization-2026-09-20.md": {
-    "mtime": 1789883315.1843572,
-    "ast_hash": "21c194bb06ee5bbef51074a4b9943dbf",
+    "mtime": 1789883708.5492969,
+    "ast_hash": "df5802fc2ea3401012e3f050f863666f",
     "semantic_hash": ""
   }
 }

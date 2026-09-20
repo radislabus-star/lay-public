@@ -4261,3 +4261,10 @@ The installation receipt is
 `release-1.0.73-final-20260920-r7/installation-1.0.73.json`. Publication remains
 the only pending release transaction; physical human-keyboard acceptance is
 still `NOT_TESTED`.
+
+Publication is now `PUBLISHED_VERIFIED`. Private commit `96d6b669` was read
+back from its origin branch. The isolated public commit is `9c9fc3c6`; annotated
+tag `v1.0.73` dereferences to it, and its tree is byte-identical to the accepted
+private source tree. The GitHub Release, README and tagged evidence document
+were read back live. Physical human-keyboard acceptance remains outside this
+verdict.

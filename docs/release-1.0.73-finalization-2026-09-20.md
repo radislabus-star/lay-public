@@ -1,6 +1,6 @@
 # Lay 1.0.73 finalization and release evidence
 
-Status: `INSTALLED_VERIFIED`; publication evidence pending.
+Status: `PUBLISHED_VERIFIED`.
 
 This document owns the final repair, verification, installation and publication
 transaction for 1.0.73. The source starts at commit
@@ -662,3 +662,24 @@ entries and Firefox CLI wrapper were unchanged. Only Lay-managed runtime owners
 were restarted. The pre-install 1.0.72 backup is
 `/home/ubu/.local/state/lay/release-backups/1.0.73-preinstall-20260920T054651Z`.
 Physical human-keyboard acceptance remains `NOT_TESTED`.
+
+## Publication readback
+
+The accepted private source is commit
+`96d6b6697a3583318537738d99066ad4c6206a1f` on
+`origin/codex/review-fixes-1.0.73`; live `ls-remote` returned that exact object.
+Publication used an isolated child of `public/main`, with no private-history
+merge. Its staged tree `0c15612aa0326c0004e5b1ef29f3460056f33317` was
+byte-identical to the accepted private commit tree before the public commit was
+created. Public installer regressions passed **8/8** on that isolated tree.
+
+GitHub readback reports public `main` commit
+`9c9fc3c6de7e119caf7479d956b3080b0e4b2764`. Annotated tag object
+`0f44cafcd74e0fc567a94f31f272fda0f79e448e` dereferences to that exact commit,
+and both commit and tag resolve to tree
+`0c15612aa0326c0004e5b1ef29f3460056f33317`. GitHub Release
+[`v1.0.73`](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.73)
+is published, non-draft and non-prerelease. Live content readback confirmed the
+1.0.73 README, both test denominators and the tagged evidence document. This
+closes installation and publication; the physical-keyboard limitation remains
+unchanged.
