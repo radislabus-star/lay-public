@@ -1,6 +1,6 @@
 #EXTM3U
 # Free nature / documentary / sports playlist for Lampa
-# Curated 2026-09-20 from current public FAST listings
+# Updated 2026-09-20
 # No pay-TV Eurosport / Discovery / Animal Planet restreams
 # Availability may vary by region
 
@@ -15,12 +15,13 @@ https://amg00861-terninternation-inwonder-samsungau-1k63k.amagi.tv/playlist/amg0
 #EXTINF:-1 group-title="Nature",Wild Nature
 https://dhiy0zcig7ty1.cloudfront.net/scheduler/scheduleMaster/491.m3u8
 
-#EXTINF:-1 group-title="Documentary",Smithsonian Channel Selects
-https://jmp2.uk/plu-61fb9907b1b78d000717ed9f.m3u8
-#EXTINF:-1 group-title="Documentary",MagellanTV Now
-https://amg00376-magellan-amg00376c5-samsung-nz-1714.playouts.now.amagi.tv/playlist/amg00376-magellantv-magellantvnowww-samsungnz/playlist.m3u8
-#EXTINF:-1 group-title="Documentary",History Hit
-https://lds-timeline-rakuten.amagi.tv/playlist.m3u8
+#EXTINF:-1 group-title="Documentary",CGTN Documentary
+https://global.cgtn.cicc.media.caton.cloud/master/cgtn-documentary.m3u8
+#EXTINF:-1 group-title="Documentary",NHK World-Japan
+https://masterpl.hls.nhkworld.jp/hls/w/live/smarttv.m3u8
+#EXTINF:-1 group-title="Documentary",DocuBox
+https://dash3.antik.sk/live/test_docubox_medium_atk/playlist.m3u8
+
 #EXTINF:-1 group-title="Science",Cosmic Frontiers
 https://amg00376-magellan-amg00376c14-rakuten-uk-1694.playouts.now.amagi.tv/playlist/amg00376-magellantv-spacesciencenowcauk-rakutenuk/playlist.m3u8
 
