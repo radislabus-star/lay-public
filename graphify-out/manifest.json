@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1789883785.0,
-    "ast_hash": "877bb3cc09a6bb4bbf1ad701b16896f3",
+    "mtime": 1789937807.4213412,
+    "ast_hash": "1f748fb4a21172fd727bebdfe37bb9cf",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1789883785.0,
-    "ast_hash": "89cf16d0f6478f9ab6a98bbedb87205d",
+    "mtime": 1789937807.4213412,
+    "ast_hash": "a6c4734ab035688a8710355e7b479fd0",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -2495,8 +2495,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1789883785.0,
-    "ast_hash": "ea6f3b84cdee29e7fb17159344cab1f3",
+    "mtime": 1789937807.4213412,
+    "ast_hash": "063a5b749a42a13fcfe42bb248e26ae6",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3230,8 +3230,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1789929012.1532626,
-    "ast_hash": "0f48ebc7ccee11f88c0e8ed9fba383ad",
+    "mtime": 1789930328.6353974,
+    "ast_hash": "174c4e8ee28f9883f66db4ed165f580a",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5600,8 +5600,8 @@
     "semantic_hash": ""
   },
   "tech_debt/125-preserve-autocorrection-left-boundary.md": {
-    "mtime": 1789930206.1691315,
-    "ast_hash": "bf389bff5eb78a337b8bc1d5cc6c5279",
+    "mtime": 1789930344.0779448,
+    "ast_hash": "87233d958759af91f68b391fba75f33b",
     "semantic_hash": ""
   },
   "tech_debt/evidence/td121-client-boundary-diagnosis.md": {
@@ -5842,6 +5842,11 @@
   "src/bin/lay_ibus_engine/td125_legacy_preedit_tests.rs": {
     "mtime": 1789926968.9688845,
     "ast_hash": "61e5bbfc64ba701303ac5b6fed5fb701",
+    "semantic_hash": ""
+  },
+  "docs/release-1.0.74-td125-2026-09-20.md": {
+    "mtime": 1789937807.4363413,
+    "ast_hash": "b35304d91f403fc352c71eec52701abf",
     "semantic_hash": ""
   }
 }

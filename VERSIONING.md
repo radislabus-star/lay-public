@@ -17,15 +17,19 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.73`
+- `1.0.74`
 
-1.0.73: `UNRELEASED_SOURCE_SNAPSHOT` (2026-09-19). This source step contains the
+1.0.74: `RELEASE_CANDIDATE` (2026-09-20). This patch release publishes the
+installed and physically accepted TD-125 browser autocorrection-boundary repair.
+The release tag remains forbidden until the exact 1.0.74 source passes the full
+release gate, all ten versioned binaries are built and installed, the four-client
+matrix remains exact, and source/installed/loaded identities agree.
+
+Historical 1.0.73: `PUBLISHED_VERIFIED` (2026-09-20). This release contains the
 #47 pure-uinput Double Shift and independent Auto Switch fixes, the `-ять`
-present-form protection, and the safe IME hot-restart handoff. The installed
-runtime remains on the previously verified 1.0.72 bytes until a complete
-1.0.73 release build, install, and live verification transaction is finished.
-Do not describe 1.0.73 as released or create a public release tag from this
-source-only state.
+present-form protection, safe IME hot restart and exact Firefox round trips.
+Its final transaction and publication readback are recorded in
+[release evidence](docs/release-1.0.73-finalization-2026-09-20.md).
 
 1.0.72: the current Firefox repair transaction is recorded in the
 [execution receipt](tech_debt/evidence/td121-release-1.0.72-execution-2026-09-14.md).
