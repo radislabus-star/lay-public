@@ -16,6 +16,14 @@ use super::window_interaction::{ExecutionReceipt, LocalEffectProgress, LocalExec
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 
+struct AdmittedSpaceAutocorrect {
+    decision: lay::ime_correction::ActiveCompositionAutocorrectDecision,
+    decision_us: u128,
+    lookup_wait_us: u128,
+    worker_generation: u64,
+    layout_transition: bool,
+}
+
 impl LayIbusEngine {
     pub(super) fn schedule_space_autocorrect_prefetch(&self, identity: &InputFrameIdentity) {
         if !self.config.auto_replace || !self.content_allows_text_assistance() {
@@ -54,28 +62,15 @@ impl LayIbusEngine {
         space_autocorrect_prefetch::invalidate_path(&self.path);
     }
 
-    /// Applies only a verified current-token correction after Space.
-    ///
-    /// This is the autocorrect route, not the IME/preedit route:
-    /// `BoundaryCell32 + shared L2/L3/L4/Bayes signals -> DecisionCore ->
-    /// AuthorizedEdit`.
-    /// Completion acceptance remains in `accept_stuck_tail()` and is never
-    /// routed here.
-    pub(super) async fn autocorrect_committed_token_on_space(
-        &mut self,
-        emitter: &mut EngineOutput<'_, '_>,
+    fn admit_space_autocorrect_lease(
+        &self,
         identity: &InputFrameIdentity,
         lookup: SpaceAutocorrectLookupReceipt,
-    ) -> fdo::Result<bool> {
-        let total_started = Instant::now();
+        total_started: Instant,
+    ) -> Option<AdmittedSpaceAutocorrect> {
         if !self.config.auto_replace || !self.content_allows_text_assistance() {
-            return Ok(false);
+            return None;
         }
-        let token = self.last_tail_token_text();
-        if token.is_empty() {
-            return Ok(false);
-        }
-        let boundary_text = format!("{token} ");
         let lookup_wait_us = lookup.wait_us;
         let worker_generation = lookup.worker_generation;
         let lease = match lookup.lookup {
@@ -101,7 +96,7 @@ impl LayIbusEngine {
                     identity,
                     lookup_wait_us,
                 );
-                return Ok(false);
+                return None;
             }
             SpaceAutocorrectLookup::NotReady => {
                 trace::record(r#"{"kind":"ibus_space_autocorrect","status":"prefetch_not_ready"}"#);
@@ -117,7 +112,7 @@ impl LayIbusEngine {
                     identity,
                     lookup_wait_us,
                 );
-                return Ok(false);
+                return None;
             }
             SpaceAutocorrectLookup::Stale => {
                 trace::record(r#"{"kind":"ibus_space_autocorrect","status":"stale_lease"}"#);
@@ -133,7 +128,7 @@ impl LayIbusEngine {
                     identity,
                     lookup_wait_us,
                 );
-                return Ok(false);
+                return None;
             }
         };
         let decision_us = lease.decision_us;
@@ -158,7 +153,7 @@ impl LayIbusEngine {
                 identity,
                 lookup_wait_us,
             );
-            return Ok(false);
+            return None;
         }
         let decision = lease.decision;
         let layout_transition = decision
@@ -183,7 +178,7 @@ impl LayIbusEngine {
                 identity,
                 lookup_wait_us,
             );
-            return Ok(false);
+            return None;
         }
         if !autocorrect_replacement_has_one_trailing_space(&decision.replacement) {
             trace::record(r#"{"kind":"ibus_space_autocorrect","status":"invalid_space_boundary"}"#);
@@ -199,9 +194,48 @@ impl LayIbusEngine {
                 identity,
                 lookup_wait_us,
             );
-            return Ok(false);
+            return None;
         }
         trace::record(r#"{"kind":"ibus_space_autocorrect","status":"authorized"}"#);
+        Some(AdmittedSpaceAutocorrect {
+            decision,
+            decision_us,
+            lookup_wait_us,
+            worker_generation,
+            layout_transition,
+        })
+    }
+
+    /// Applies only a verified current-token correction after Space.
+    ///
+    /// This is the autocorrect route, not the IME/preedit route:
+    /// `BoundaryCell32 + shared L2/L3/L4/Bayes signals -> DecisionCore ->
+    /// AuthorizedEdit`.
+    /// Completion acceptance remains in `accept_stuck_tail()` and is never
+    /// routed here.
+    pub(super) async fn autocorrect_committed_token_on_space(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        identity: &InputFrameIdentity,
+        lookup: SpaceAutocorrectLookupReceipt,
+    ) -> fdo::Result<bool> {
+        let total_started = Instant::now();
+        let token = self.last_tail_token_text();
+        if token.is_empty() {
+            return Ok(false);
+        }
+        let boundary_text = format!("{token} ");
+        let Some(admitted) = self.admit_space_autocorrect_lease(identity, lookup, total_started)
+        else {
+            return Ok(false);
+        };
+        let AdmittedSpaceAutocorrect {
+            decision,
+            decision_us,
+            lookup_wait_us,
+            worker_generation,
+            layout_transition,
+        } = admitted;
 
         lay::action_log::record_candidate_edit_action_before_apply(
             &decision.action,
@@ -263,6 +297,107 @@ impl LayIbusEngine {
             self.remember_pending_ime_auto_undo(boundary_text, replacement, transition);
         }
         Ok(handled)
+    }
+
+    pub(super) async fn autocorrect_active_composition_on_space(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        identity: &InputFrameIdentity,
+        lookup: SpaceAutocorrectLookupReceipt,
+    ) -> fdo::Result<bool> {
+        let total_started = Instant::now();
+        if !self.composition.legacy_word_preedit_active {
+            return Ok(false);
+        }
+        let token = self.composition.buffer.clone();
+        if token.is_empty() || self.last_tail_token_text() != token {
+            return Ok(false);
+        }
+        let boundary_text = format!("{token} ");
+        let Some(admitted) = self.admit_space_autocorrect_lease(identity, lookup, total_started)
+        else {
+            return Ok(false);
+        };
+        let AdmittedSpaceAutocorrect {
+            decision,
+            decision_us,
+            lookup_wait_us,
+            worker_generation,
+            layout_transition,
+        } = admitted;
+        if decision.action.to_text() != decision.replacement {
+            trace::record(
+                r#"{"kind":"ibus_space_autocorrect","status":"authorized_text_mismatch"}"#,
+            );
+            trace::record_space_correction_lease_outcome(
+                SpaceCorrectionLeaseOutcome::Unauthorized,
+                worker_generation,
+                identity,
+                lookup_wait_us,
+            );
+            return Ok(false);
+        }
+        lay::action_log::record_candidate_edit_action_before_apply(
+            &decision.action,
+            lay::action_log::MutationLogRoute::IME_ACTIVE_COMPOSITION,
+            decision.input_gate,
+        );
+        let replacement = decision.replacement;
+        let backend_action = lay::text_edit::authorize_backend_edit(
+            lay::text_edit::TextEditBackend::Ime,
+            decision.action,
+        );
+        let Some(authorized_edit) = backend_action.into_authorized() else {
+            trace::record(
+                r#"{"kind":"ibus_space_autocorrect","status":"backend_authorization_blocked"}"#,
+            );
+            trace::record_space_correction_lease_outcome(
+                SpaceCorrectionLeaseOutcome::Unauthorized,
+                worker_generation,
+                identity,
+                lookup_wait_us,
+            );
+            return Ok(false);
+        };
+        let feedback = PendingSystemOutcomeFeedback {
+            original: token,
+            replacement: replacement.clone(),
+            source: VisibleTailSource::ImeActiveComposition,
+            kind: if layout_transition {
+                SystemOutcomeKind::LayoutProjection
+            } else {
+                SystemOutcomeKind::Correction
+            },
+        };
+        let replacement_started = Instant::now();
+        self.commit_verified_active_composition(emitter, authorized_edit, false)
+            .await?;
+        self.retire_legacy_word_preedit_ownership_if_empty();
+        self.arm_active_composition_visible_postcondition_with_effects(
+            Instant::now(),
+            Some(feedback),
+            Some(replacement.clone()),
+        );
+        let replacement_us = replacement_started.elapsed().as_micros();
+        trace::record_space_autocorrect_timing(
+            "active_composition_applied",
+            decision_us,
+            replacement_us,
+            total_started.elapsed().as_micros(),
+        );
+        trace::record_space_correction_lease_outcome(
+            SpaceCorrectionLeaseOutcome::Applied,
+            worker_generation,
+            identity,
+            lookup_wait_us,
+        );
+        let transition = if layout_transition {
+            lay::typing_cpu::ObservedSystemTransition::LayoutProjection
+        } else {
+            lay::typing_cpu::ObservedSystemTransition::Correction
+        };
+        self.remember_pending_ime_auto_undo(boundary_text, replacement, transition);
+        Ok(true)
     }
 
     pub(super) async fn accept_stuck_tail(

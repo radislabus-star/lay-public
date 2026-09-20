@@ -267,11 +267,21 @@ impl LayIbusEngine {
         self.invalidate_input_frame_background_work();
         self.context_reset_rereceipt = None;
         self.committed_tail.pending_completion_learning = None;
+        let discarded_owned_preedit = self.strip_legacy_word_preedit_mirror();
+        if discarded_owned_preedit {
+            // A seal over the mirrored preedit suffix describes text that the
+            // client never committed. It cannot survive cancellation.
+            self.context_handoff_sealed = false;
+            if self.context_admission_required {
+                self.revoke_context_word();
+            }
+        }
         let preserve_tail = self.context_handoff_sealed
             || !self.context_admission_required
                 && (self.should_preserve_focus_handoff() || self.shared_active_path_preserved());
         self.composition.buffer.clear();
         self.composition.cursor = 0;
+        self.composition.legacy_word_preedit_active = false;
         self.composition.preedit_visible = false;
         self.composition.preedit_suffix.clear();
         self.composition.preedit_candidates.clear();
@@ -299,6 +309,8 @@ impl LayIbusEngine {
             self.committed_tail.buffer.clear();
             self.composition.preedit_fast.reset();
             self.publish_tail_handoff();
+        } else if discarded_owned_preedit {
+            self.publish_tail_handoff();
         }
         self.client_context.surrounding_text_snapshot = None;
         self.layout_gesture.pending_manual_toggle = false;
@@ -318,6 +330,14 @@ impl LayIbusEngine {
     pub(super) fn reset_for_ibus_soft_reset(&mut self) {
         let preserves_exact_replay = self.exact_replay_quarantine_active();
         self.invalidate_input_frame_background_work();
+        let discarded_owned_preedit = self.strip_legacy_word_preedit_mirror();
+        if discarded_owned_preedit {
+            self.context_handoff_sealed = false;
+            self.context_reset_rereceipt = None;
+            if self.context_admission_required {
+                self.revoke_context_word();
+            }
+        }
         // GTK resets the IBus context after an unhandled committed-tail
         // Backspace. Keep only an edit trajectory that was armed immediately
         // before that Backspace; focus changes still clear it unconditionally.
@@ -331,6 +351,7 @@ impl LayIbusEngine {
         }
         self.composition.buffer.clear();
         self.composition.cursor = 0;
+        self.composition.legacy_word_preedit_active = false;
         self.composition.preedit_visible = false;
         self.composition.preedit_suffix.clear();
         self.composition.preedit_candidates.clear();
@@ -358,10 +379,11 @@ impl LayIbusEngine {
         let preserves_admission_seal =
             self.context_admission_required && self.context_handoff_sealed;
         let preserves_reset_rereceipt = self.context_reset_rereceipt.is_some();
-        if !preserves_admission_seal
-            && !preserves_reset_rereceipt
-            && !self.exact_manual_toggle_handoff_is_live()
-            && !preserves_exact_replay
+        if discarded_owned_preedit
+            || !preserves_admission_seal
+                && !preserves_reset_rereceipt
+                && !self.exact_manual_toggle_handoff_is_live()
+                && !preserves_exact_replay
         {
             self.publish_tail_handoff();
         }
@@ -658,6 +680,7 @@ impl LayIbusEngine {
         self.publish_tail_handoff();
         self.composition.buffer.clear();
         self.composition.cursor = 0;
+        self.composition.legacy_word_preedit_active = false;
         self.clear_preedit_completion_state();
         let deferred_layout_sync_text = (ime_owns_layout_postcondition
             && surrounding_postcondition_available)

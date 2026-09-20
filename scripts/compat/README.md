@@ -15,6 +15,16 @@ Thread-local depth guards prevent nested requests. The adapter does not inspect
 text, synthesize keys or snapshots, poll, or grant edit access. Lay's current
 owner, epoch, cursor, selection and exact-snapshot checks remain required.
 
+The adapter also preserves Firefox's real IBus capability mask and adds private
+bit `1 << 30`, `LAY_COMMIT_ONLY_PREEDIT`. That bit declares that the client
+needs whole-word preedit for Lay-managed words because its legacy
+delete-plus-commit route has no applied-delete receipt. It does not grant edit
+authority or alter the client's advertised preedit, focus or surrounding-text
+bits. The interposer first resolves the real capability setter with
+`RTLD_NEXT`. Firefox loads `libibus-1.0.so.5` into a local dynamic-loader scope,
+so the adapter falls back to `RTLD_NOLOAD` on that already-loaded library. It
+exits before input starts if neither route resolves the real setter.
+
 Build only on the remote worker under `scripts/lay-resource-guard.sh`, with:
 
 ```sh

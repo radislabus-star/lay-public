@@ -248,12 +248,16 @@ pub(crate) fn record_cursor_location(x: i32, y: i32, w: i32, h: i32) {
     ));
 }
 
-pub(crate) fn record_capabilities(caps: u32, surrounding_text_supported: bool) {
+pub(crate) fn record_capabilities(
+    caps: u32,
+    surrounding_text_supported: bool,
+    commit_only_preedit_requested: bool,
+) {
     if !enabled() {
         return;
     }
     write_record(format!(
-        r#"{{"kind":"ibus_capabilities","caps":{caps},"surrounding_text_supported":{surrounding_text_supported}}}"#
+        r#"{{"kind":"ibus_capabilities","caps":{caps},"surrounding_text_supported":{surrounding_text_supported},"commit_only_preedit_requested":{commit_only_preedit_requested}}}"#
     ));
 }
 

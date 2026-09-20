@@ -41,6 +41,7 @@ impl LayIbusEngine {
         }
         if keyval == KEY_TAB {
             let handled = self.accept_completion(emitter, true).await?;
+            self.retire_legacy_word_preedit_ownership_if_empty();
             self.trace_key("tab", keyval, keycode, handled, None);
             return Ok(handled);
         }
@@ -52,6 +53,7 @@ impl LayIbusEngine {
             if !self.composition.buffer.is_empty() {
                 self.commit_active_composition(emitter, ActiveCompositionCommit::plain())
                     .await?;
+                self.retire_legacy_word_preedit_ownership_if_empty();
                 self.retire_current_word_autocorrect_suppression();
                 self.trace_key("enter_commit_passthrough", keyval, keycode, false, None);
                 return Ok(false);
@@ -65,6 +67,64 @@ impl LayIbusEngine {
         }
         if keyval == KEY_SPACE {
             let space_started = Instant::now();
+            if self.composition.legacy_word_preedit_active {
+                if self.take_manual_toggle_autocorrect_suppression() {
+                    super::trace::record(
+                        r#"{"kind":"ibus_space_autocorrect","status":"manual_toggle_suppressed"}"#,
+                    );
+                    self.cancel_precognition_display_generation();
+                    self.commit_active_composition(emitter, ActiveCompositionCommit::with_space())
+                        .await?;
+                    self.retire_legacy_word_preedit_ownership_if_empty();
+                    super::trace::record_space_key_timing(
+                        "legacy_preedit_manual_toggle_suppressed",
+                        0,
+                        0,
+                        space_started.elapsed().as_micros(),
+                        space_started.elapsed().as_micros(),
+                    );
+                    self.trace_key(
+                        "space_legacy_preedit_manual_toggle_suppressed",
+                        keyval,
+                        keycode,
+                        true,
+                        Some(' '),
+                    );
+                    return Ok(true);
+                }
+                let frame = self.capture_input_frame_identity();
+                let lookup = frame
+                    .as_ref()
+                    .map(|identity| self.take_space_autocorrect_lease(identity));
+                self.cancel_precognition_display_generation();
+                let autocorrected = match (frame.as_ref(), lookup) {
+                    (Some(identity), Some(lookup)) => {
+                        self.autocorrect_active_composition_on_space(emitter, identity, lookup)
+                            .await?
+                    }
+                    _ => false,
+                };
+                if let Some(identity) = frame.as_ref() {
+                    self.invalidate_space_autocorrect_lease(identity);
+                }
+                if !autocorrected {
+                    self.commit_active_composition(emitter, ActiveCompositionCommit::with_space())
+                        .await?;
+                    self.retire_legacy_word_preedit_ownership_if_empty();
+                }
+                self.trace_key(
+                    if autocorrected {
+                        "space_legacy_preedit_autocorrect"
+                    } else {
+                        "space_legacy_preedit_commit"
+                    },
+                    keyval,
+                    keycode,
+                    true,
+                    Some(' '),
+                );
+                return Ok(true);
+            }
             if self.composition.buffer.is_empty() {
                 let initial_mode = self.initial_word_input_mode();
                 let mode = *self.composition.word_input_mode.get_or_insert(initial_mode);
@@ -227,6 +287,7 @@ impl LayIbusEngine {
             if !self.composition.buffer.is_empty() {
                 self.commit_active_composition(emitter, ActiveCompositionCommit::plain())
                     .await?;
+                self.retire_legacy_word_preedit_ownership_if_empty();
                 self.trace_key("non_printable_commit", keyval, keycode, false, None);
                 return Ok(false);
             }
@@ -241,6 +302,26 @@ impl LayIbusEngine {
         };
         if ch.is_alphabetic() || is_completion_learning_boundary(ch) {
             self.confirm_pending_ime_completion_at_stable_boundary();
+        }
+        if self.composition.legacy_word_preedit_active && !ch.is_alphabetic() {
+            self.invalidate_space_autocorrect_path();
+            self.cancel_precognition_display_generation();
+            self.insert_composition_char(ch);
+            self.commit_active_composition(emitter, ActiveCompositionCommit::plain())
+                .await?;
+            self.retire_legacy_word_preedit_ownership_if_empty();
+            self.trace_key(
+                "legacy_preedit_boundary_commit",
+                keyval,
+                keycode,
+                true,
+                Some(ch),
+            );
+            super::trace::record_printable_key_timing(
+                "legacy_preedit_boundary_commit",
+                pressed_started.elapsed().as_micros(),
+            );
+            return Ok(true);
         }
         if self.composition.buffer.is_empty() {
             let initial_mode = self.initial_word_input_mode();
@@ -262,6 +343,22 @@ impl LayIbusEngine {
                 );
                 return Ok(false);
             }
+            if self.should_start_legacy_word_preedit(emitter, mode, ch) {
+                self.composition.legacy_word_preedit_active = true;
+                self.insert_composition_char(ch);
+                let frame = self.capture_input_frame_identity();
+                if let Some(identity) = frame.as_ref() {
+                    self.schedule_space_autocorrect_prefetch(identity);
+                }
+                self.update_composition_preedit_after_visible_input(emitter, frame)
+                    .await?;
+                self.trace_key("printable_legacy_preedit", keyval, keycode, true, Some(ch));
+                super::trace::record_printable_key_timing(
+                    "legacy_preedit",
+                    pressed_started.elapsed().as_micros(),
+                );
+                return Ok(true);
+            }
             self.commit_managed_passthrough_char(emitter, ch).await?;
             self.trace_key("printable_managed_commit", keyval, keycode, true, Some(ch));
             super::trace::record_printable_key_timing(
@@ -272,6 +369,11 @@ impl LayIbusEngine {
         }
         self.insert_composition_char(ch);
         let frame = self.capture_input_frame_identity();
+        if self.composition.legacy_word_preedit_active {
+            if let Some(identity) = frame.as_ref() {
+                self.schedule_space_autocorrect_prefetch(identity);
+            }
+        }
         self.update_composition_preedit_after_visible_input(emitter, frame)
             .await?;
         self.trace_key("printable", keyval, keycode, true, Some(ch));
@@ -288,7 +390,29 @@ impl LayIbusEngine {
         }
         self.commit_active_composition(emitter, ActiveCompositionCommit::with_space())
             .await?;
+        self.retire_legacy_word_preedit_ownership_if_empty();
         Ok(true)
+    }
+
+    fn should_start_legacy_word_preedit(
+        &self,
+        emitter: &EngineOutput<'_, '_>,
+        mode: WordInputMode,
+        ch: char,
+    ) -> bool {
+        emitter.is_legacy()
+            && mode == WordInputMode::ManagedCommit
+            && self.client_context.preedit_text_supported
+            && (!self.client_context.surrounding_text_supported
+                || self.client_context.commit_only_preedit_requested)
+            && self.content_allows_text_assistance()
+            && ch.is_alphabetic()
+            && self
+                .committed_tail
+                .buffer
+                .chars()
+                .last()
+                .is_none_or(char::is_whitespace)
     }
 }
 

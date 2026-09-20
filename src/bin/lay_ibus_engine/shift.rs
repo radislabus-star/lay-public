@@ -176,6 +176,7 @@ impl LayIbusEngine {
         .map_err(|source| {
             LocalExecutionFailure::new(LocalEffectProgress::CursorOrPreedit, source)
         })?;
+        self.retire_legacy_word_preedit_ownership_if_empty();
         self.sync_layout_after_manual_toggle(&plan.replacement);
         self.trace_key("double_shift_commit", 0, 0, true, None);
         Ok((

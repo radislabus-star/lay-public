@@ -1,5 +1,6 @@
 use super::{
-    OutcomeProof, IBUS_CAP_SURROUNDING_TEXT, IBUS_INPUT_HINT_HIDDEN_TEXT, IBUS_INPUT_HINT_PRIVATE,
+    OutcomeProof, IBUS_CAP_LAY_COMMIT_ONLY_PREEDIT, IBUS_CAP_PREEDIT_TEXT,
+    IBUS_CAP_SURROUNDING_TEXT, IBUS_INPUT_HINT_HIDDEN_TEXT, IBUS_INPUT_HINT_PRIVATE,
     IBUS_INPUT_PURPOSE_PASSWORD, IBUS_INPUT_PURPOSE_PIN,
 };
 use crate::atomic::{AtomicCapability, AtomicEnvelope, AtomicPriorReceipt};
@@ -226,9 +227,21 @@ impl LayIbusEngine {
             self.revoke_context_word();
             return true;
         }
-        let accepted = matches!(observed.header.member.as_str(), "FocusOut" | "FocusOutId")
-            && admission.focus_out(&owner, &observed)
-            && admission.seal_source(&owner, self.committed_tail.epoch, &observed);
+        let accepted_focus = matches!(observed.header.member.as_str(), "FocusOut" | "FocusOutId")
+            && admission.focus_out(&owner, &observed);
+        if accepted_focus && self.composition.legacy_word_preedit_active {
+            // FocusOut cancels client preedit. Remove its lexical mirror before
+            // the admission reducer can seal or transfer committed-tail state.
+            // The settled lineage described the canceled word, so this focus
+            // transition must become source-free instead of sealing a prefix
+            // under that stale lineage.
+            self.context_handoff_sealed = false;
+            self.context_reset_rereceipt = None;
+            self.discard_legacy_word_preedit_ownership();
+            return true;
+        }
+        let accepted =
+            accepted_focus && admission.seal_source(&owner, self.committed_tail.epoch, &observed);
         self.context_handoff_sealed = accepted;
         if !accepted {
             self.revoke_context_word();
@@ -744,6 +757,7 @@ impl LayIbusEngine {
         self.client_context.runtime_owner_lease_identity = next_owner_lease_identity;
         self.composition.buffer.clear();
         self.composition.cursor = 0;
+        self.composition.legacy_word_preedit_active = false;
         self.clear_preedit_completion_state();
         self.composition.pending_passthrough_preedit_clear = false;
         if let Some((tail, epoch, suppression)) = transferred {
@@ -1661,7 +1675,27 @@ mod tests;
 impl LayIbusEngine {
     pub(crate) fn set_client_capabilities(&mut self, caps: u32) {
         let surrounding_text_was_supported = self.client_context.surrounding_text_supported;
+        let preedit_text_was_supported = self.client_context.preedit_text_supported;
+        let commit_only_preedit_was_requested = self.client_context.commit_only_preedit_requested;
+        let legacy_word_preedit_was_supported = preedit_text_was_supported
+            && (!surrounding_text_was_supported || commit_only_preedit_was_requested);
         self.client_context.surrounding_text_supported = caps & IBUS_CAP_SURROUNDING_TEXT != 0;
+        self.client_context.preedit_text_supported = caps & IBUS_CAP_PREEDIT_TEXT != 0;
+        self.client_context.commit_only_preedit_requested =
+            caps & IBUS_CAP_LAY_COMMIT_ONLY_PREEDIT != 0;
+        let legacy_word_preedit_is_supported = self.client_context.preedit_text_supported
+            && (!self.client_context.surrounding_text_supported
+                || self.client_context.commit_only_preedit_requested);
+        if legacy_word_preedit_was_supported != legacy_word_preedit_is_supported {
+            self.invalidate_space_autocorrect_path();
+            if preedit_text_was_supported
+                && !self.client_context.preedit_text_supported
+                && self.composition.legacy_word_preedit_active
+            {
+                self.cancel_precognition_display_generation();
+                self.discard_legacy_word_preedit_ownership();
+            }
+        }
         if surrounding_text_was_supported != self.client_context.surrounding_text_supported {
             self.context_reset_rereceipt = None;
             self.advance_surrounding_observation_revision();
@@ -1695,6 +1729,7 @@ impl LayIbusEngine {
         if self.content_is_sensitive() {
             self.composition.buffer.clear();
             self.composition.cursor = 0;
+            self.composition.legacy_word_preedit_active = false;
             self.client_context.surrounding_text_snapshot = None;
             self.close_committed_tail_field();
         }
@@ -1784,6 +1819,8 @@ pub(crate) struct ClientContextState {
     pub(crate) content_purpose: u32,
     pub(crate) content_hints: u32,
     pub(crate) surrounding_text_supported: bool,
+    pub(crate) preedit_text_supported: bool,
+    pub(crate) commit_only_preedit_requested: bool,
     pub(crate) surrounding_text_snapshot: Option<SurroundingTextSnapshot>,
     pub(crate) surrounding_observation_revision: u64,
     pub(crate) surrounding_text_callback_observed: bool,
@@ -1804,6 +1841,8 @@ impl ClientContextState {
             content_purpose: 0,
             content_hints: 0,
             surrounding_text_supported: false,
+            preedit_text_supported: false,
+            commit_only_preedit_requested: false,
             surrounding_text_snapshot: None,
             surrounding_observation_revision: 0,
             surrounding_text_callback_observed: false,
@@ -2146,7 +2185,11 @@ impl WindowInteraction {
         match event {
             WindowFactEvent::Capabilities(caps) => {
                 engine.set_client_capabilities(caps);
-                trace::record_capabilities(caps, engine.client_context.surrounding_text_supported);
+                trace::record_capabilities(
+                    caps,
+                    engine.client_context.surrounding_text_supported,
+                    engine.client_context.commit_only_preedit_requested,
+                );
                 Ok(ObservationReceipt::Capabilities)
             }
             WindowFactEvent::ContentType { value, header } => {
@@ -2324,6 +2367,20 @@ impl LayIbusEngine {
             layout_sync_text,
         );
     }
+    pub(crate) fn arm_active_composition_visible_postcondition_with_effects(
+        &mut self,
+        dispatched_at: Instant,
+        feedback: Option<PendingSystemOutcomeFeedback>,
+        layout_sync_text: Option<String>,
+    ) {
+        self.arm_visible_postcondition_from_surrounding_dispatch_with_source(
+            dispatched_at,
+            feedback,
+            layout_sync_text,
+            None,
+            VisibleTailSource::ImeActiveComposition,
+        );
+    }
     pub(crate) fn arm_visible_postcondition_from_surrounding_dispatch(
         &mut self,
         dispatched_at: Instant,
@@ -2358,8 +2415,24 @@ impl LayIbusEngine {
         layout_sync_text: Option<String>,
         expected_external_snapshot: Option<crate::engine::SurroundingTextSnapshot>,
     ) {
-        let snapshot = VisibleTailSnapshot::new(
+        self.arm_visible_postcondition_from_surrounding_dispatch_with_source(
+            dispatched_at,
+            feedback,
+            layout_sync_text,
+            expected_external_snapshot,
             VisibleTailSource::ImeCommittedTail,
+        );
+    }
+    fn arm_visible_postcondition_from_surrounding_dispatch_with_source(
+        &mut self,
+        dispatched_at: Instant,
+        feedback: Option<PendingSystemOutcomeFeedback>,
+        layout_sync_text: Option<String>,
+        expected_external_snapshot: Option<crate::engine::SurroundingTextSnapshot>,
+        source: VisibleTailSource,
+    ) {
+        let snapshot = VisibleTailSnapshot::new(
+            source,
             self.committed_tail.buffer.clone(),
             Some(self.path.clone()),
             self.committed_tail.epoch,

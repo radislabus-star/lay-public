@@ -17,7 +17,7 @@
     {
       "evidence": [
         "src/bin/lay_ibus_engine/state.rs:L151:.with_winner_action()",
-        "src/bin/lay_ibus_engine/state.rs:L376:.replace_committed_tail()",
+        "src/bin/lay_ibus_engine/state.rs:L398:.replace_committed_tail()",
         "src/text_edit/structural_verifier.rs:L20:verify_visible_text_transition()",
         "src/text_edit/visible_tail.rs:L100:VisibleTailSnapshot",
         "src/text_edit/visible_tail.rs:L65:SnapshotIdentity"
@@ -61,8 +61,8 @@
     {
       "evidence": [
         "src/bin/lay_ibus_engine/engine/types.rs:L390:PendingSystemOutcomeFeedback",
-        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L2327:.arm_visible_postcondition_from_surrounding_dispatch()",
-        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L2379:.observe_visible_postcondition()"
+        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L2384:.arm_visible_postcondition_from_surrounding_dispatch()",
+        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L2452:.observe_visible_postcondition()"
       ],
       "id": "observed-outcome-feedback",
       "status": "PASS",
@@ -108,8 +108,8 @@
     },
     {
       "evidence": [
-        "graph_links:60814",
-        "graph_nodes:22857"
+        "graph_links:60937",
+        "graph_nodes:22919"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -123,11 +123,11 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_binding_fingerprint": "78a36732769a5acdb985388b1371b6b9c172027caec9592efcd31366cfc662fc",
-  "graph_fingerprint": "697318dfc9be615a77dab7cb00879571ed6e64c42806b7e72131750dfcafa528",
-  "graph_links": 60814,
-  "graph_nodes": 22857,
+  "graph_binding_fingerprint": "8854e6d4dc1f5236555d7a77c06c0c0b1e4846f15d76a3f6ded177d239cc16d1",
+  "graph_fingerprint": "0f1aba20850d4895c734a50239badb67de7dd0ed0892af943cef2e12e50455e9",
+  "graph_links": 60937,
+  "graph_nodes": 22919,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "3fd99da379604749c4c5cf79718a5e5154f19925a6bf77614988b5789a65c2e0",
+  "source_fingerprint": "dc49fd756eef746921e062c704132d5a6c3a3e32800bc355c18b761b71844af6",
   "verdict": "PASS"
 }

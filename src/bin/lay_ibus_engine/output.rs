@@ -207,6 +207,8 @@ pub(crate) struct TestEngineOutput {
     pub(crate) effects: Vec<&'static str>,
     pub(crate) committed_texts: Vec<String>,
     pub(crate) surrounding_deletes: Vec<(i32, u32)>,
+    pub(crate) preedit_updates: Vec<(String, u32, bool, u32)>,
+    pub(crate) legacy_transport: bool,
     pub(crate) fail_commit: bool,
     pub(crate) pause_before_commit: bool,
 }
@@ -235,7 +237,12 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
     }
 
     pub(crate) const fn is_legacy(&self) -> bool {
-        matches!(self, Self::Legacy(_))
+        match self {
+            Self::Legacy(_) => true,
+            Self::Atomic(_) => false,
+            #[cfg(test)]
+            Self::Test(output) => output.legacy_transport,
+        }
     }
 
     pub(crate) async fn commit_text(&mut self, text: Value<'_>) -> fdo::Result<()> {
@@ -339,6 +346,11 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
             #[cfg(test)]
             Self::Test(output) => {
                 output.effects.push("update-preedit");
+                let text = ibus_text_value_to_string(&text)
+                    .ok_or_else(|| fdo::Error::InvalidArgs("invalid IBusText preedit".into()))?;
+                output
+                    .preedit_updates
+                    .push((text, cursor_pos, visible, mode));
                 Ok(())
             }
         }

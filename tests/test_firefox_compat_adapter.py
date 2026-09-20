@@ -22,6 +22,8 @@ static int multicontext = 1;
 static int filter_calls;
 static int reset_calls;
 static int retrieve_calls;
+static int capability_calls;
+static unsigned last_capabilities;
 
 void fake_gtk_configure(int next_handled, int next_ibus, int next_multicontext) {
     handled = next_handled;
@@ -30,11 +32,21 @@ void fake_gtk_configure(int next_handled, int next_ibus, int next_multicontext) 
     filter_calls = 0;
     reset_calls = 0;
     retrieve_calls = 0;
+    capability_calls = 0;
+    last_capabilities = 0;
 }
 
 int fake_gtk_filter_calls(void) { return filter_calls; }
 int fake_gtk_reset_calls(void) { return reset_calls; }
 int fake_gtk_retrieve_calls(void) { return retrieve_calls; }
+int fake_ibus_capability_calls(void) { return capability_calls; }
+unsigned fake_ibus_last_capabilities(void) { return last_capabilities; }
+
+void ibus_input_context_set_capabilities(void *context, unsigned capabilities) {
+    (void)context;
+    ++capability_calls;
+    last_capabilities = capabilities;
+}
 
 int gtk_im_context_filter_keypress(void *context, void *event) {
     (void)context;
@@ -106,8 +118,11 @@ extern void fake_gtk_configure(int, int, int);
 extern int fake_gtk_filter_calls(void);
 extern int fake_gtk_reset_calls(void);
 extern int fake_gtk_retrieve_calls(void);
+extern int fake_ibus_capability_calls(void);
+extern unsigned fake_ibus_last_capabilities(void);
 extern int gtk_im_context_filter_keypress(void *, Event *);
 extern void gtk_im_context_reset(void *);
+extern void ibus_input_context_set_capabilities(void *, unsigned);
 
 static int failures;
 
@@ -148,6 +163,11 @@ int main(void) {
     run_reset("reset", 1, 1, 1);
     run_reset("non-ibus reset", 0, 1, 0);
     run_reset("non-multicontext reset", 1, 0, 0);
+    fake_gtk_configure(1, 1, 1);
+    ibus_input_context_set_capabilities((void *)1, 41u);
+    expect("capability calls", fake_ibus_capability_calls(), 1);
+    expect("commit-only preedit capability", (int)fake_ibus_last_capabilities(),
+           (int)(41u | (1u << 30)));
     return failures ? 1 : 0;
 }
 """

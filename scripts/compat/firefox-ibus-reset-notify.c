@@ -13,6 +13,7 @@ enum {
     LAY_GDK_SUPER_MASK = 1u << 26,
     LAY_GDK_HYPER_MASK = 1u << 27,
     LAY_GDK_META_MASK = 1u << 28,
+    LAY_IBUS_CAP_COMMIT_ONLY_PREEDIT = 1u << 30,
 };
 
 typedef struct {
@@ -30,6 +31,36 @@ typedef struct {
 } LayGdkEventKey;
 
 static _Thread_local unsigned request_count;
+
+void ibus_input_context_set_capabilities(void *context, unsigned capabilities) {
+    typedef void (*SetCapabilities)(void *, unsigned);
+    static SetCapabilities real_set_capabilities;
+    static void *ibus_library;
+
+    if (!real_set_capabilities) {
+        real_set_capabilities =
+            (SetCapabilities)dlsym(RTLD_NEXT, "ibus_input_context_set_capabilities");
+    }
+    if (!real_set_capabilities) {
+        ibus_library = dlopen("libibus-1.0.so.5", RTLD_NOW | RTLD_NOLOAD);
+        if (ibus_library) {
+            real_set_capabilities = (SetCapabilities)dlsym(
+                ibus_library, "ibus_input_context_set_capabilities");
+        }
+    }
+    if (real_set_capabilities == ibus_input_context_set_capabilities) {
+        real_set_capabilities = NULL;
+    }
+    if (!real_set_capabilities) {
+        static const char error[] =
+            "lay-context-notify: missing original capability setter\n";
+        const ssize_t written = write(STDERR_FILENO, error, sizeof(error) - 1);
+        (void)written;
+        _exit(125);
+    }
+    real_set_capabilities(
+        context, capabilities | LAY_IBUS_CAP_COMMIT_ONLY_PREEDIT);
+}
 
 static void request_surrounding(void *context, const char *reason, unsigned keyval) {
     typedef const char *(*Name)(void *);

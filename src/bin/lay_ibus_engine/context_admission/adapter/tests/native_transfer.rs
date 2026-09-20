@@ -1,5 +1,5 @@
 use super::*;
-use crate::protocol::{KEY_SPACE, KEY_TAB};
+use crate::protocol::{KEY_BACKSPACE, KEY_SPACE, KEY_TAB};
 
 const NATIVE_TRANSFER_BUDGET: Duration = Duration::from_secs(1);
 const OTHER_CONTEXT_PATH: &str = "/org/freedesktop/IBus/InputContext_2";
@@ -402,6 +402,120 @@ fn pending_transfer_focus_in_then_focus_in_id_enriches_one_prearm_request() {
     zbus::block_on(bounded(async {
         pending_transfer_late_native_case(CONTEXT_PATH).await;
         pending_transfer_late_native_case(OTHER_CONTEXT_PATH).await;
+    }));
+}
+
+#[test]
+fn td125_focus_out_refuses_transfer_of_cancelled_owned_preedit() {
+    zbus::block_on(bounded(async {
+        let mut harness = bootstrap_harness_with_budget(NATIVE_TRANSFER_BUDGET).await;
+        let shared = Arc::new(Mutex::new(SharedState::default()));
+        let mut source = establish_known_source(&mut harness, shared.clone()).await;
+
+        source.committed_tail.buffer = "l ab".to_string();
+        source.composition.buffer = "ab".to_string();
+        source.composition.cursor = 2;
+        source.composition.legacy_word_preedit_active = true;
+        source.composition.preedit_visible = true;
+        source.rebuild_preedit_fast_from_tail();
+        assert!(source.publish_tail_handoff());
+        assert_eq!(shared.lock().unwrap().handoff_tail_buffer, "l ab");
+
+        let factory = factory_message(7_207);
+        send_observed(&mut harness, &factory).await;
+        let factory_callback = harness
+            .adapter
+            .begin_factory_callback(&factory.header(), Instant::now(), profile("lay-us"))
+            .await
+            .unwrap();
+        assert!(harness
+            .adapter
+            .bind_factory_target(&factory_callback, engine_path(TARGET_PATH)));
+
+        let focus_out = focus_out_id_message(7_208);
+        harness.peer.connection.send(&focus_out).await.unwrap();
+        let (accepted, observed) = bounded(future::zip(
+            source.observe_context_focus_out(&focus_out.header(), Instant::now()),
+            harness.observer.process_next(),
+        ))
+        .await;
+        assert!(observed.unwrap());
+        assert!(accepted);
+
+        assert!(!source.context_handoff_sealed);
+        assert!(!source.context_word_is_known());
+        assert!(source.composition.buffer.is_empty());
+        assert!(!source.composition.legacy_word_preedit_active);
+        assert_eq!(source.committed_tail.buffer, "l ");
+        {
+            let state = shared.lock().unwrap();
+            assert_eq!(state.handoff_tail_buffer, "l ");
+            assert_eq!(state.handoff_tail_epoch, source.committed_tail.epoch);
+        }
+
+        crate::window_interaction::WindowInteraction::finish_focus_out(&mut source);
+        assert!(source.committed_tail.buffer.is_empty());
+        assert!(shared.lock().unwrap().handoff_tail_buffer.is_empty());
+    }));
+}
+
+#[test]
+fn td125_cursor_zero_cancellation_cannot_resettle_known_start_authority() {
+    zbus::block_on(bounded(async {
+        let mut harness = bootstrap_harness_with_budget(NATIVE_TRANSFER_BUDGET).await;
+        let shared = Arc::new(Mutex::new(SharedState::default()));
+        let mut source = establish_known_source(&mut harness, shared.clone()).await;
+
+        source.set_client_capabilities(crate::window_interaction::IBUS_CAP_PREEDIT_TEXT | (1 << 3));
+        source.committed_tail.buffer = "l ab".to_string();
+        source.composition.buffer = "ab".to_string();
+        source.composition.cursor = 0;
+        source.composition.legacy_word_preedit_active = true;
+        source.composition.preedit_visible = true;
+        source.rebuild_preedit_fast_from_tail();
+        {
+            let mut state = shared.lock().unwrap();
+            state.handoff_tail_buffer = "l ab".to_string();
+            state.handoff_tail_epoch = source.committed_tail.epoch;
+        }
+        assert!(harness.adapter.test_set_word_scope(
+            source.context_owner.as_ref().unwrap(),
+            source.committed_tail.epoch,
+            source.context_word_scope.as_ref().unwrap(),
+        ));
+        source.context_token = harness.adapter.current_token();
+        let stale_known = source.live_context_token().expect("known preedit scope");
+        assert!(source.context_word_is_known());
+
+        let backspace = method_message(
+            DISPATCH_SENDER,
+            7_209,
+            SOURCE_PATH,
+            ENGINE_INTERFACE,
+            "ProcessKeyEvent",
+        );
+        harness.peer.connection.send(&backspace).await.unwrap();
+        let emitter = zbus::object_server::SignalEmitter::new(&harness.connection, SOURCE_PATH)
+            .expect("source signal emitter");
+        let (handled, observed) = bounded(future::zip(
+            source.process_key_event(backspace.header(), emitter, KEY_BACKSPACE, 14, 0),
+            harness.observer.process_next(),
+        ))
+        .await;
+        assert!(observed.unwrap());
+        assert!(!handled.unwrap());
+        for expected in ["UpdatePreeditText", "HidePreeditText"] {
+            let signal = bounded(next_peer_message(&mut harness.peer)).await;
+            assert_eq!(signal.header().member().unwrap().as_str(), expected);
+        }
+
+        assert!(source.composition.buffer.is_empty());
+        assert!(!source.composition.legacy_word_preedit_active);
+        assert_eq!(source.committed_tail.buffer, "l");
+        assert_eq!(shared.lock().unwrap().handoff_tail_buffer, "l");
+        assert!(!source.context_word_is_known());
+        assert!(source.capture_input_frame_identity().is_none());
+        assert!(!harness.adapter.revalidate(&stale_known));
     }));
 }
 

@@ -63,6 +63,9 @@ mod td120_word_lifecycle_tests;
 mod window_interaction;
 
 #[cfg(test)]
+#[path = "lay_ibus_engine/td125_legacy_preedit_tests.rs"]
+mod td125_legacy_preedit_tests;
+#[cfg(test)]
 #[path = "lay_ibus_engine/td125_terminal_edit_tests.rs"]
 mod td125_terminal_edit_tests;
 #[path = "lay_ibus_engine/text.rs"]

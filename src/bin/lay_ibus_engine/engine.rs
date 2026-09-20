@@ -112,6 +112,7 @@ impl LayIbusEngine {
         if replaces_existing_focus {
             self.composition.buffer.clear();
             self.composition.cursor = 0;
+            self.composition.legacy_word_preedit_active = false;
             self.clear_preedit_completion_state();
             self.context_reset_rereceipt = None;
             self.composition.pending_passthrough_preedit_clear = false;
@@ -182,6 +183,7 @@ impl LayIbusEngine {
 
         self.composition.buffer.clear();
         self.composition.cursor = 0;
+        self.composition.legacy_word_preedit_active = false;
         self.clear_preedit_completion_state();
         self.composition.pending_passthrough_preedit_clear = false;
         if let Some((tail, epoch, focus_receipt, current_word_suppression)) = preserved_handoff {
@@ -231,6 +233,43 @@ impl LayIbusEngine {
         self.composition.preedit_fast.clear_candidate_tracking();
         self.composition.preedit_dirty = false;
         self.composition.pending_display_frame = None;
+    }
+
+    pub(super) fn retire_legacy_word_preedit_ownership_if_empty(&mut self) {
+        if self.composition.buffer.is_empty() {
+            self.composition.legacy_word_preedit_active = false;
+        }
+    }
+
+    pub(super) fn strip_legacy_word_preedit_mirror(&mut self) -> bool {
+        if !self.composition.legacy_word_preedit_active {
+            return false;
+        }
+        let owned = std::mem::take(&mut self.composition.buffer);
+        if let Some(prefix) = self.committed_tail.buffer.strip_suffix(&owned) {
+            self.committed_tail.buffer.truncate(prefix.len());
+        } else {
+            self.committed_tail.buffer.clear();
+        }
+        self.composition.cursor = 0;
+        self.composition.legacy_word_preedit_active = false;
+        self.rebuild_preedit_fast_from_tail();
+        true
+    }
+
+    pub(super) fn discard_legacy_word_preedit_ownership(&mut self) -> bool {
+        if !self.strip_legacy_word_preedit_mirror() {
+            return false;
+        }
+        self.composition.preedit_visible = false;
+        self.clear_preedit_completion_state();
+        self.publish_tail_handoff();
+        if self.context_admission_required {
+            self.context_handoff_sealed = false;
+            self.context_reset_rereceipt = None;
+            self.revoke_context_word();
+        }
+        true
     }
 
     pub(super) fn remember_handled_press(&mut self, keycode: u32, handled: bool) {

@@ -768,8 +768,8 @@ impl LayIbusEngine {
         }
         if !self.live_composition_enabled() {
             if self.has_live_composition_state() {
-                self.reset_for_ibus_focus_change();
                 self.clear_preedit(output).await?;
+                self.reset_for_ibus_focus_change();
             }
             trace::record_key("composition_disabled", keyval, keycode, false, None, 0, 0);
             return Ok(false);
@@ -829,7 +829,9 @@ impl LayIbusEngine {
                 && !self.layout_gesture.alt_used_as_modifier
             {
                 self.layout_gesture.alt_completion_active = false;
-                return self.accept_completion_with_space(output).await;
+                let handled = self.accept_completion_with_space(output).await?;
+                self.retire_legacy_word_preedit_ownership_if_empty();
+                return Ok(handled);
             }
             self.layout_gesture.alt_completion_active = false;
             self.layout_gesture.alt_used_as_modifier = false;

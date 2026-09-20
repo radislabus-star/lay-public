@@ -1223,6 +1223,7 @@ impl LayIbusEngine {
         let shared = self.shared.clone();
         self.composition.buffer.clear();
         self.composition.cursor = 0;
+        self.composition.legacy_word_preedit_active = false;
         self.committed_tail.buffer.clear();
         self.composition.preedit_fast.reset();
         self.clear_preedit_completion_state();

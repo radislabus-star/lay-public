@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2829,
+    "correctness": 2848,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 27,
-    "target": 2864
+    "target": 2883
   },
   "package_fixtures": [
     {
@@ -1216,6 +1216,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::native_transfer::td121_pending_transfer_config_and_controlled_material_change_refuse_stale_frame_authority",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::native_transfer::td125_cursor_zero_cancellation_cannot_resettle_known_start_authority",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::native_transfer::td125_focus_out_refuses_transfer_of_cancelled_owned_preedit",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -15776,6 +15790,125 @@
       "kind": "test",
       "lane": "correctness",
       "name": "td120_word_lifecycle_tests::td120_uncapped_length_uses_the_same_capped_layout_symbol_classification",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_atomic_output_does_not_enter_legacy_preedit_ownership",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_backspace_and_arrow_edit_only_the_owned_preedit",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_capability_gain_does_not_claim_an_already_committed_token_suffix",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_capability_loss_discards_only_the_uncommitted_preedit_word",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_cursor_zero_backspace_cancels_owned_preedit_and_tracks_native_delete",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_disabling_live_composition_clears_client_preedit_before_state_reset",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_enter_commits_owned_preedit_and_passes_enter_through",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_focus_reset_cannot_transfer_owned_preedit_as_committed_tail",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_legacy_preedit_word_commits_ready_space_correction_without_delete",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_not_ready_space_commits_original_preedit_once",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_punctuation_finishes_owned_word_in_one_commit",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_soft_reset_discards_owned_preedit_from_local_and_shared_authority",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_surrounding_capability_gain_finishes_owned_preedit_before_managed_commits",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_surrounding_text_capability_does_not_prove_applied_delete_and_uses_preedit",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_tab_accepts_existing_candidate_and_retires_preedit_ownership",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_terminal_purpose_keeps_native_passthrough",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_without_preedit_capability_keeps_per_character_managed_commits",
       "target": "bin:lay-ibus-engine"
     },
     {

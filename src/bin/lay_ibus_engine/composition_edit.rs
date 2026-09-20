@@ -14,19 +14,37 @@ impl LayIbusEngine {
         if !self.composition.buffer.is_empty() {
             if self.composition.cursor == 0 {
                 self.clear_preedit(emitter).await?;
-                self.composition.buffer.clear();
-                self.composition.cursor = 0;
-                self.composition.preedit_suffix.clear();
-                self.composition.preedit_candidates.clear();
-                self.composition.preedit_replacement_targets.clear();
-                self.composition.preedit_candidate_index = 0;
-                self.composition.preedit_fast.reset();
+                if self.strip_legacy_word_preedit_mirror() {
+                    // The unhandled Backspace now reaches the client. Mirror
+                    // that native deletion after removing the canceled,
+                    // client-uncommitted preedit suffix.
+                    self.backspace_committed_tail_only();
+                    if self.context_admission_required {
+                        // One client event canceled an uncommitted suffix and
+                        // deleted a committed scalar. The old word lineage
+                        // cannot describe that compound edit, so prevent this
+                        // callback from settling it at the shortened epoch.
+                        self.revoke_context_word();
+                    }
+                } else {
+                    self.composition.buffer.clear();
+                    self.composition.cursor = 0;
+                    self.composition.legacy_word_preedit_active = false;
+                    self.composition.preedit_suffix.clear();
+                    self.composition.preedit_candidates.clear();
+                    self.composition.preedit_replacement_targets.clear();
+                    self.composition.preedit_candidate_index = 0;
+                    self.composition.preedit_fast.reset();
+                }
                 return Ok(false);
             }
             let byte_idx = char_to_byte_idx(&self.composition.buffer, self.composition.cursor - 1);
             self.composition.buffer.remove(byte_idx);
             self.composition.cursor -= 1;
             self.sync_tail_from_composition();
+            if self.composition.buffer.is_empty() {
+                self.composition.legacy_word_preedit_active = false;
+            }
             self.update_composition_preedit(emitter).await?;
             return Ok(true);
         }
@@ -149,6 +167,7 @@ impl LayIbusEngine {
             self.composition.preedit_fast.push(ch);
         }
         self.refresh_current_word_autocorrect_suppression();
+        self.publish_tail_handoff();
     }
 }
 

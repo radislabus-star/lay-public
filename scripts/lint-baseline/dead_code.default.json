@@ -6345,13 +6345,13 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 17175,
-          "byte_start": 17156,
+          "byte_end": 17271,
+          "byte_start": 17252,
           "file": "src/bin/lay_ibus_engine/preedit.rs"
         },
         {
-          "byte_end": 38895,
-          "byte_start": 38865,
+          "byte_end": 38991,
+          "byte_start": 38961,
           "file": "src/bin/lay_ibus_engine/preedit.rs"
         }
       ],

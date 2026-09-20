@@ -18,6 +18,8 @@ pub(crate) use observation::{
 pub(crate) use observation::{LifecycleReceipt, ObservationReceipt};
 
 pub(crate) const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
+pub(crate) const IBUS_CAP_PREEDIT_TEXT: u32 = 1;
+pub(crate) const IBUS_CAP_LAY_COMMIT_ONLY_PREEDIT: u32 = 1 << 30;
 pub(crate) const IBUS_INPUT_PURPOSE_PASSWORD: u32 = 8;
 pub(crate) const IBUS_INPUT_PURPOSE_PIN: u32 = 9;
 pub(crate) const IBUS_INPUT_PURPOSE_TERMINAL: u32 = 10;

@@ -44,6 +44,9 @@ impl CommittedTailState {
 pub(crate) struct CompositionState {
     pub(crate) buffer: String,
     pub(crate) cursor: usize,
+    /// The unfinished word is owned as legacy IBus preedit, so its boundary
+    /// may commit a verified replacement without editing application text.
+    pub(crate) legacy_word_preedit_active: bool,
     pub(crate) preedit_visible: bool,
     pub(crate) preedit_suffix: String,
     pub(crate) preedit_candidates: Vec<String>,

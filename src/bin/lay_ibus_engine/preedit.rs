@@ -335,7 +335,7 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<()> {
-        if !self.precognition_preedit_enabled() {
+        if !self.precognition_preedit_enabled() && !self.composition.legacy_word_preedit_active {
             return self.clear_preedit(emitter).await;
         }
         self.refresh_precognition_candidates();
@@ -434,7 +434,7 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         frame: Option<InputFrameIdentity>,
     ) -> fdo::Result<()> {
-        if !self.precognition_preedit_enabled() {
+        if !self.precognition_preedit_enabled() && !self.composition.legacy_word_preedit_active {
             return self.clear_preedit(emitter).await;
         }
         if self.composition.buffer.is_empty() {

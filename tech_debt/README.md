@@ -53,7 +53,7 @@ installation и publication приёмки. Порядок: **121 → 125 → 12
 |---|---|---|
 | [TD-126: common window interaction](126-common-window-interaction-module.md) | DONE, source-only; commit/push подтверждены | Сохранять принятую композицию; отдельная установка этим результатом не заявлена |
 | [TD-121: целое слово при IME handoff](121-preserve-word-across-ime-layout-handoff.md) | IN_PROGRESS; final R5 native FAIL 2/4 | Доказать и исправить причины двух native сбоев; R5 не устанавливать |
-| [TD-125: левая граница автозамены](125-preserve-autocorrection-left-boundary.md) | IN_PROGRESS / physical PENDING | Перепроверить зависимость от TD-121 и доказать физическую variable-length замену без потери слова/разделителя |
+| [TD-125: левая граница автозамены](125-preserve-autocorrection-left-boundary.md) | DONE / installed; immutable full gate 2,884/2,884 and GTK/Chrome/Firefox/Kitty PASS | Сохранять release3 receipts и fail-closed отзыв stale KnownStart authority; commit/push только по явному запросу |
 | [TD-122: legacy replay request](122-bind-legacy-replay-suppression-request.md) | DECISION_REQUIRED | После TD-125 заново проверить, нужен ли отдельный protocol binding; старый label сам по себе не закрывает task |
 | [TD-123: качество восстановления Wave](123-improve-wave-restoration-quality-for-1.0.67.md) | OPEN / ACTIVE_QUALITY | После route tasks найти первый общий механизм по полной L1.1 → L2 → L3 → L4 → DecisionCore → verifier цепочке; весь fixed proof и каждый класс |
 | [TD-113: hybrid source contract](113-restore-hybrid-nanda-autocorrect.md) | DONE | Сохранять принятую композицию источников и её strict gates |
