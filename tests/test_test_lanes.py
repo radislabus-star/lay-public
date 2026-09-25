@@ -83,6 +83,19 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual("correctness", discovery.classify("lib:lay", "case", "test", False))
         isolated = next(iter(discovery.PROCESS_ISOLATED_TESTS))
         self.assertEqual("process", discovery.isolation(*isolated, "correctness"))
+        isolated_target, isolated_prefix = discovery.PROCESS_ISOLATED_PREFIXES[0]
+        self.assertEqual(
+            "process",
+            discovery.isolation(
+                isolated_target,
+                isolated_prefix + "word_scope::case",
+                "correctness",
+            ),
+        )
+        self.assertEqual(
+            "target",
+            discovery.isolation(isolated_target, "context_admission::tests::case", "correctness"),
+        )
         self.assertEqual("target", discovery.isolation("lib:lay", "case", "correctness"))
 
 

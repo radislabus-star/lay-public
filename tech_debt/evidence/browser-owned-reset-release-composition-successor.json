@@ -1,0 +1,42 @@
+{
+  "schema": "lay.tech-debt.successor-binding.v1",
+  "task": "Browser-owned-Reset-release-1.0.74",
+  "status": "ACCEPTED",
+  "checkpoint": {
+    "state": "source-reviewed",
+    "scope": "Bounded owned Reset/release successor; full fixed gate and final same-binary physical browser acceptance remain separate."
+  },
+  "predecessor": {
+    "task": "Browser-delayed-snapshot-Space-1.0.74",
+    "binding": "tech_debt/evidence/browser-delayed-snapshot-composition-successor.json",
+    "binding_sha256": "92c0efd44c322a739dfc59d053a89fbfd0bc1f1f60f19b3c62269eadd05b2c9d",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "2f6d78072dc9c4087ad5cea738e6e35d20de93425f8867c94ab46256a62270ed",
+    "mode": "0664"
+  },
+  "successor": {
+    "task": "tech_debt/125-preserve-autocorrection-left-boundary.md",
+    "section": "Browser managed-commit reset/release order",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "c7e8f604ced77488302e510bfb4c3df87ed05ac60efef67e78b568a4fe769358",
+    "mode": "0664"
+  },
+  "review": {
+    "state": "PASS",
+    "report": "tech_debt/evidence/browser-owned-reset-release-source-review.md",
+    "report_sha256": "b703f9a98c7a820e33defc3f85b3776ce052c3c00b7cd6a0496807f8ac941152",
+    "score": "8/10",
+    "high_findings": 0,
+    "medium_findings": 0,
+    "low_findings": 0
+  },
+  "focused_gate": {
+    "state": "PASS",
+    "selected": 1,
+    "passed": 1,
+    "failed": 0,
+    "log": "/home/ubu/.cache/lay/development/browser-autocorrect-20260922/reset-release-focused-final.log",
+    "log_sha256": "c0a52ab44597169721e670b2a7f9b0164dea87f138a21572cca9418a17e9820c"
+  },
+  "runtime_authority_changed": true
+}

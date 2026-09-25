@@ -181,21 +181,37 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         ch: char,
     ) -> fdo::Result<()> {
+        if !ch.is_whitespace() {
+            self.rebind_managed_word_start_before_first_commit();
+        }
         emitter
             .commit_text(make_ibus_text(ch.to_string()))
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         self.committed_tail.last_commit_at = Some(Instant::now());
         self.push_tail_char(ch);
-        let frame = self.capture_input_frame_identity();
         if !ch.is_whitespace() {
-            if let Some(identity) = frame.as_ref() {
+            self.arm_managed_commit_reset_echo();
+        }
+        let display_frame = self.capture_input_frame_identity();
+        if !ch.is_whitespace() {
+            let correction_frame = self.capture_space_autocorrect_frame_identity();
+            if let Some(identity) = correction_frame.as_ref() {
                 self.schedule_space_autocorrect_prefetch(identity);
+            } else {
+                let reason = self
+                    .managed_word_start_invalid_reason()
+                    .unwrap_or("other_frame");
+                super::trace::record(format!(
+                    r#"{{"kind":"ibus_managed_word_start","stage":"space_frame_absent","reason":"{reason}","tail_epoch":{},"tail_chars":{}}}"#,
+                    self.committed_tail.epoch,
+                    self.committed_tail.buffer.chars().count(),
+                ));
             }
         } else {
             self.invalidate_space_autocorrect_path();
         }
-        self.refresh_precognition_after_visible_input(emitter, frame)
+        self.refresh_precognition_after_visible_input(emitter, display_frame)
             .await?;
         Ok(())
     }
@@ -210,8 +226,6 @@ impl LayIbusEngine {
         if self.uses_native_terminal_input() {
             if ch.is_whitespace() {
                 self.invalidate_space_autocorrect_path();
-            } else if let Some(identity) = frame.as_ref() {
-                self.schedule_space_autocorrect_prefetch(identity);
             }
         }
         self.refresh_precognition_after_visible_input(emitter, frame)
@@ -411,12 +425,20 @@ mod active_composition_route_contract {
         assert_eq!(
             route.matches("capture_input_frame_identity").count(),
             1,
-            "one printable event must capture one shared GUI identity"
+            "one printable event must capture one display identity"
+        );
+        assert_eq!(
+            route
+                .matches("capture_space_autocorrect_frame_identity")
+                .count(),
+            1,
+            "one printable event must revalidate one correction identity"
         );
         assert!(
             route.contains("schedule_space_autocorrect_prefetch(identity)")
-                && route.contains("refresh_precognition_after_visible_input(emitter, frame)"),
-            "correction and display must receive clones of the same captured frame"
+                && route
+                    .contains("refresh_precognition_after_visible_input(emitter, display_frame)"),
+            "correction and display must keep their distinct authority frames"
         );
         assert!(
             !route.contains("refresh_precognition_candidates("),

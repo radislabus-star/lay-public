@@ -129,6 +129,10 @@ PROCESS_ISOLATED_TESTS = {
     ),
 }
 
+PROCESS_ISOLATED_PREFIXES = (
+    ("bin:lay-ibus-engine", "context_admission::adapter::tests::"),
+)
+
 PERFORMANCE_TESTS = {
     (
         "bin:lay-daemon",
@@ -259,7 +263,11 @@ def classify(target: str, name: str, item_kind: str, ignored: bool) -> str:
 
 
 def isolation(target: str, name: str, lane: str) -> str:
-    if lane == "performance" or (target, name) in PROCESS_ISOLATED_TESTS:
+    prefix_isolated = any(
+        target == isolated_target and name.startswith(name_prefix)
+        for isolated_target, name_prefix in PROCESS_ISOLATED_PREFIXES
+    )
+    if lane == "performance" or (target, name) in PROCESS_ISOLATED_TESTS or prefix_isolated:
         return "process"
     return "target"
 

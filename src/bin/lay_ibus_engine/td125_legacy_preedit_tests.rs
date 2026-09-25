@@ -2,12 +2,12 @@ use std::sync::{Arc, Mutex};
 
 use lay::config::LayConfig;
 
-use crate::engine::LayIbusEngine;
+use crate::engine::{LayIbusEngine, SurroundingTextSnapshot};
 use crate::output::{AtomicEffectBuilder, EngineOutput, TestEngineOutput, PROPOSAL_FRAME_READY};
 use crate::protocol::{KEY_BACKSPACE, KEY_ENTER, KEY_LEFT, KEY_SPACE, KEY_TAB};
 use crate::space_autocorrect_prefetch::proof::install_exact_lease;
 use crate::window_interaction::{
-    IBUS_CAP_LAY_COMMIT_ONLY_PREEDIT, IBUS_CAP_PREEDIT_TEXT, IBUS_CAP_SURROUNDING_TEXT,
+    IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH, IBUS_CAP_PREEDIT_TEXT, IBUS_CAP_SURROUNDING_TEXT,
     IBUS_INPUT_PURPOSE_TERMINAL,
 };
 
@@ -109,7 +109,7 @@ fn td125_without_preedit_capability_keeps_per_character_managed_commits() {
 }
 
 #[test]
-fn td125_surrounding_text_capability_does_not_prove_applied_delete_and_uses_preedit() {
+fn td125_exact_refresh_marker_keeps_typed_prefix_committed_and_out_of_preedit() {
     lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
         .expect("warm exact-layout authority");
     let mut unmarked = legacy_engine(
@@ -129,7 +129,7 @@ fn td125_surrounding_text_capability_does_not_prove_applied_delete_and_uses_pree
         IBUS_CAP_PREEDIT_TEXT
             | IBUS_CAP_FOCUS
             | IBUS_CAP_SURROUNDING_TEXT
-            | IBUS_CAP_LAY_COMMIT_ONLY_PREEDIT,
+            | IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
     );
     let mut output = TestEngineOutput {
         legacy_transport: true,
@@ -140,25 +140,40 @@ fn td125_surrounding_text_capability_does_not_prove_applied_delete_and_uses_pree
         assert!(press(&mut engine, &mut output, ch as u32));
     }
 
-    assert!(output.committed_texts.is_empty());
-    assert_eq!(engine.composition.buffer, "ghbdtn");
-    assert!(engine.composition.legacy_word_preedit_active);
+    assert_eq!(output.committed_texts, ["g", "h", "b", "d", "t", "n"]);
+    assert!(
+        output
+            .preedit_updates
+            .iter()
+            .all(|(text, _, _, _)| text != "ghbdtn"),
+        "the typed prefix must never become whole-word preedit"
+    );
+    assert!(engine.composition.buffer.is_empty());
+    assert!(!engine.composition.legacy_word_preedit_active);
 
+    engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+        "ghbdtn".into(),
+        6,
+        6,
+    )));
     let identity = engine
         .capture_input_frame_identity()
-        .expect("caps41 active preedit identity");
+        .expect("committed-prefix input identity");
     install_exact_lease(&identity, &engine.config);
 
     assert!(press(&mut engine, &mut output, KEY_SPACE));
-    assert_eq!(output.committed_texts, ["привет "]);
-    assert!(output.surrounding_deletes.is_empty());
+    assert_eq!(
+        output.committed_texts,
+        ["g", "h", "b", "d", "t", "n", "привет "]
+    );
+    assert_eq!(output.surrounding_deletes, [(-6, 6)]);
     assert!(!output.effects.contains(&"forward-key"));
     assert_eq!(engine.committed_tail.buffer, "привет ");
 
     assert!(press(&mut engine, &mut output, 'a' as u32));
-    assert_eq!(output.committed_texts, ["привет "]);
-    assert_eq!(engine.composition.buffer, "a");
-    assert!(engine.composition.legacy_word_preedit_active);
+    assert_eq!(output.committed_texts.last().map(String::as_str), Some("a"));
+    assert!(engine.composition.buffer.is_empty());
+    assert!(!engine.composition.legacy_word_preedit_active);
 }
 
 #[test]

@@ -324,6 +324,34 @@ fn v27_race_fault_and_space_effect_matrix() {
     );
 }
 
+#[test]
+fn equal_slot_reuse_rechecks_material_generation_under_the_slot_lock() {
+    let config = exact_config();
+    let current = identity("/engine/material-recheck", "focus", 17, "ghbdtn", &config);
+    let worker = worker_with_terminal(current.clone(), 71);
+    let old_material_generation = lay::nanda_wave::candidate_material_generation();
+    let new_material_generation = next_generation(old_material_generation);
+    let mut reads = [old_material_generation, new_material_generation].into_iter();
+
+    let registration = worker.begin_schedule_request_with_material(&current, || {
+        reads
+            .next()
+            .expect("two controlled material-generation reads")
+    });
+    assert!(matches!(
+        registration,
+        ScheduleRegistration::Registered {
+            material_generation,
+            ..
+        } if material_generation == new_material_generation
+    ));
+    let state = worker.state.0.lock().expect("material recheck slot");
+    let slot = state.slot.as_ref().expect("replacement slot");
+    assert_eq!(slot.identity, current);
+    assert_eq!(slot.material_generation, new_material_generation);
+    assert!(matches!(slot.full, FullSlotState::Pending));
+}
+
 fn percentile(samples: &mut [u128], numerator: usize, denominator: usize) -> u128 {
     samples.sort_unstable();
     let index = samples
@@ -511,6 +539,71 @@ pub(crate) fn install_exact_lease(identity: &InputFrameIdentity, config: &LayCon
         config,
         lay::nanda_wave::candidate_material_generation(),
     );
+}
+
+pub(crate) fn install_full_lease(identity: &InputFrameIdentity, config: &LayConfig) {
+    initialize();
+    let material_generation = lay::nanda_wave::candidate_material_generation();
+    let worker = worker_for_schedule(&identity.path).expect("path prefetch worker");
+    let generation = reserve_generation(&worker.latest_request_generation);
+    let desired = DesiredWork {
+        worker_generation: generation,
+        material_generation,
+        work: SpaceAutocorrectWork {
+            identity: identity.clone(),
+            config: config.clone(),
+        },
+        exact_certificate: None,
+        enqueued_at: None,
+    };
+    let (outcome, _) = evaluate_full(&desired, Instant::now());
+    assert!(
+        matches!(outcome, PreparedFullOutcome::Apply(_)),
+        "proof fixture requires an authorized full correction"
+    );
+    let (lock, wake) = &*worker.state;
+    let mut state = lock.lock().expect("global proof slot");
+    state.generation = generation;
+    state.slot = Some(PreparedDecisionSlot {
+        identity: identity.clone(),
+        request_generation: generation,
+        material_generation,
+        full: FullSlotState::Terminal(outcome),
+        exact: ExactSlotState::Absent,
+    });
+    state.desired = None;
+    wake.notify_all();
+}
+
+pub(crate) fn has_current_slot(identity: &InputFrameIdentity) -> bool {
+    let Some(worker) = existing_worker(&identity.path) else {
+        return false;
+    };
+    let Ok(state) = worker.state.0.lock() else {
+        return false;
+    };
+    state.slot.as_ref().is_some_and(|slot| {
+        slot.identity == *identity
+            && slot.request_generation == state.generation
+            && slot.request_generation == worker.latest_request_generation.load(Ordering::Acquire)
+            && slot.material_generation == lay::nanda_wave::candidate_material_generation()
+    })
+}
+
+pub(crate) fn has_current_terminal_full_slot(identity: &InputFrameIdentity) -> bool {
+    let Some(worker) = existing_worker(&identity.path) else {
+        return false;
+    };
+    let Ok(state) = worker.state.0.lock() else {
+        return false;
+    };
+    state.slot.as_ref().is_some_and(|slot| {
+        slot.identity == *identity
+            && slot.request_generation == state.generation
+            && slot.request_generation == worker.latest_request_generation.load(Ordering::Acquire)
+            && slot.material_generation == lay::nanda_wave::candidate_material_generation()
+            && matches!(slot.full, FullSlotState::Terminal(_))
+    })
 }
 
 pub(crate) fn install_exact_lease_with_material_generation(

@@ -841,6 +841,7 @@ fn td120_exact_v2_admission_revoke_and_expiry_keep_transport_scope() {
         original_tail: "abc".to_string(),
         original_suffix: "abc".to_string(),
         unchanged_prefix: String::new(),
+        observed_external_prefix: None,
         replacement: "фис".to_string(),
     };
     target.committed_tail.autocorrect_suppression =

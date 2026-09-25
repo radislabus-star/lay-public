@@ -61,6 +61,19 @@ pub(crate) struct InputFrameIdentity {
     /// Display of a locally observed suffix is distinct from a complete-word
     /// frame. Its original admission token also prevents equal-text ABA reuse.
     pub(crate) display_suffix_token: Option<crate::context_admission::AdmissionToken>,
+    /// An UnknownStart token may autocorrect only while its complete local
+    /// owner is still exact: either the native terminal suffix or an active
+    /// legacy preedit. Keep that edit lease distinct from display authority.
+    pub(crate) space_autocorrect_suffix_token: Option<crate::context_admission::AdmissionToken>,
+    /// A managed widget can independently prove the complete current word by
+    /// returning an exact, unselected, boundary-bounded surrounding snapshot.
+    /// Bind that proof to one observation revision so equal-text ABA receipts
+    /// cannot reuse prepared Space work.
+    pub(crate) space_autocorrect_surrounding_revision: Option<u64>,
+    /// A managed CommitText word can also be anchored by an exact caret
+    /// boundary observed before its first local character. The witness lives
+    /// outside callback admission so a client Reset cannot erase it.
+    pub(crate) space_autocorrect_managed_start_identity: Option<u64>,
 }
 
 impl InputFrameIdentity {
@@ -157,6 +170,9 @@ impl InputFrameIdentity {
             config,
             lexical_coordinates: None,
             display_suffix_token: None,
+            space_autocorrect_suffix_token: None,
+            space_autocorrect_surrounding_revision: None,
+            space_autocorrect_managed_start_identity: None,
         }
     }
 

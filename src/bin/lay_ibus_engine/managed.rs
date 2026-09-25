@@ -24,32 +24,42 @@ impl LayIbusEngine {
         }
         self.clear_pending_ime_auto_undo("next_pressed_key");
         if keyval == KEY_BACKSPACE {
+            self.revoke_managed_word_start_before_client_key();
             self.begin_pending_ime_completion_edit_before_backspace();
             let handled = self.backspace(emitter).await?;
             self.trace_key("backspace", keyval, keycode, handled, None);
             return Ok(handled);
         }
         if keyval == KEY_LEFT || keyval == KEY_RIGHT {
+            self.revoke_managed_word_start_before_client_key();
             let handled = self.move_composition_cursor(emitter, keyval).await?;
             self.trace_key("cursor", keyval, keycode, handled, None);
             return Ok(handled);
         }
         if keyval == KEY_UP || keyval == KEY_DOWN {
             let handled = self.select_precognition_candidate(emitter, keyval).await?;
+            if !handled {
+                self.revoke_managed_word_start_before_client_key();
+            }
             self.trace_key("candidate_select", keyval, keycode, handled, None);
             return Ok(handled);
         }
         if keyval == KEY_TAB {
             let handled = self.accept_completion(emitter, true).await?;
+            if !handled {
+                self.revoke_managed_word_start_before_client_key();
+            }
             self.retire_legacy_word_preedit_ownership_if_empty();
             self.trace_key("tab", keyval, keycode, handled, None);
             return Ok(handled);
         }
         if has_command_modifier(state) {
+            self.revoke_managed_word_start_before_client_key();
             self.trace_key("command_passthrough", keyval, keycode, false, None);
             return Ok(false);
         }
         if keyval == KEY_ENTER || keyval == KEY_KP_ENTER {
+            self.revoke_managed_word_start_before_client_key();
             if !self.composition.buffer.is_empty() {
                 self.commit_active_composition(emitter, ActiveCompositionCommit::plain())
                     .await?;
@@ -92,7 +102,7 @@ impl LayIbusEngine {
                     );
                     return Ok(true);
                 }
-                let frame = self.capture_input_frame_identity();
+                let frame = self.capture_space_autocorrect_frame_identity();
                 let lookup = frame
                     .as_ref()
                     .map(|identity| self.take_space_autocorrect_lease(identity));
@@ -175,7 +185,7 @@ impl LayIbusEngine {
                         return Ok(managed);
                     }
                     let autocorrect_started = Instant::now();
-                    let frame = self.capture_input_frame_identity();
+                    let frame = self.capture_space_autocorrect_frame_identity();
                     let lookup = frame
                         .as_ref()
                         .map(|identity| self.take_space_autocorrect_lease(identity));
@@ -269,6 +279,7 @@ impl LayIbusEngine {
                     false,
                     Some(' '),
                 );
+                self.revoke_managed_word_start_before_client_key();
                 return Ok(false);
             }
             let commit_started = Instant::now();
@@ -284,6 +295,7 @@ impl LayIbusEngine {
             return Ok(handled);
         }
         let Some(ch) = self.physical_char(keyval, keycode) else {
+            self.revoke_managed_word_start_before_client_key();
             if !self.composition.buffer.is_empty() {
                 self.commit_active_composition(emitter, ActiveCompositionCommit::plain())
                     .await?;
@@ -327,6 +339,7 @@ impl LayIbusEngine {
             let initial_mode = self.initial_word_input_mode();
             let mode = *self.composition.word_input_mode.get_or_insert(initial_mode);
             if mode == WordInputMode::TerminalPassthrough {
+                self.revoke_managed_word_start_before_client_key();
                 let visible_ch = self.passthrough_visible_char(keyval, keycode).unwrap_or(ch);
                 self.observe_terminal_passthrough_char(emitter, visible_ch)
                     .await?;
@@ -346,10 +359,7 @@ impl LayIbusEngine {
             if self.should_start_legacy_word_preedit(emitter, mode, ch) {
                 self.composition.legacy_word_preedit_active = true;
                 self.insert_composition_char(ch);
-                let frame = self.capture_input_frame_identity();
-                if let Some(identity) = frame.as_ref() {
-                    self.schedule_space_autocorrect_prefetch(identity);
-                }
+                let frame = self.capture_space_autocorrect_frame_identity();
                 self.update_composition_preedit_after_visible_input(emitter, frame)
                     .await?;
                 self.trace_key("printable_legacy_preedit", keyval, keycode, true, Some(ch));
@@ -368,12 +378,11 @@ impl LayIbusEngine {
             return Ok(true);
         }
         self.insert_composition_char(ch);
-        let frame = self.capture_input_frame_identity();
-        if self.composition.legacy_word_preedit_active {
-            if let Some(identity) = frame.as_ref() {
-                self.schedule_space_autocorrect_prefetch(identity);
-            }
-        }
+        let frame = if self.composition.legacy_word_preedit_active {
+            self.capture_space_autocorrect_frame_identity()
+        } else {
+            self.capture_input_frame_identity()
+        };
         self.update_composition_preedit_after_visible_input(emitter, frame)
             .await?;
         self.trace_key("printable", keyval, keycode, true, Some(ch));
@@ -382,6 +391,14 @@ impl LayIbusEngine {
             pressed_started.elapsed().as_micros(),
         );
         Ok(true)
+    }
+
+    /// Once a key is handed back to the client, the client may change text or
+    /// the caret before sending another surrounding-text receipt. Revoke both
+    /// the projected word-start witness and any prepared Space work first.
+    pub(super) fn revoke_managed_word_start_before_client_key(&mut self) {
+        self.client_context.managed_word_start = None;
+        self.invalidate_space_autocorrect_path();
     }
 
     async fn commit_space(&mut self, emitter: &mut EngineOutput<'_, '_>) -> fdo::Result<bool> {
@@ -403,8 +420,8 @@ impl LayIbusEngine {
         emitter.is_legacy()
             && mode == WordInputMode::ManagedCommit
             && self.client_context.preedit_text_supported
-            && (!self.client_context.surrounding_text_supported
-                || self.client_context.commit_only_preedit_requested)
+            && !self.client_context.surrounding_text_supported
+            && !self.client_context.exact_surrounding_refresh_available
             && self.content_allows_text_assistance()
             && ch.is_alphabetic()
             && self

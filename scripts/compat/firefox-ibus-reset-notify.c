@@ -13,7 +13,7 @@ enum {
     LAY_GDK_SUPER_MASK = 1u << 26,
     LAY_GDK_HYPER_MASK = 1u << 27,
     LAY_GDK_META_MASK = 1u << 28,
-    LAY_IBUS_CAP_COMMIT_ONLY_PREEDIT = 1u << 30,
+    LAY_IBUS_CAP_EXACT_SURROUNDING_REFRESH = 1u << 30,
 };
 
 typedef struct {
@@ -59,7 +59,7 @@ void ibus_input_context_set_capabilities(void *context, unsigned capabilities) {
         _exit(125);
     }
     real_set_capabilities(
-        context, capabilities | LAY_IBUS_CAP_COMMIT_ONLY_PREEDIT);
+        context, capabilities | LAY_IBUS_CAP_EXACT_SURROUNDING_REFRESH);
 }
 
 static void request_surrounding(void *context, const char *reason, unsigned keyval) {

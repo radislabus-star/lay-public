@@ -746,6 +746,7 @@ impl LayIbusEngine {
         state: u32,
     ) -> fdo::Result<bool> {
         if !self.client_context.managed_input {
+            self.revoke_managed_word_start_before_client_key();
             return Ok(false);
         }
         if !is_key_press(state) && self.consume_handled_release(keycode) {
@@ -771,6 +772,7 @@ impl LayIbusEngine {
                 self.clear_preedit(output).await?;
                 self.reset_for_ibus_focus_change();
             }
+            self.revoke_managed_word_start_before_client_key();
             trace::record_key("composition_disabled", keyval, keycode, false, None, 0, 0);
             return Ok(false);
         }
@@ -803,6 +805,9 @@ impl LayIbusEngine {
                     self.committed_tail.buffer.chars().count(),
                     self.composition.preedit_suffix.chars().count(),
                 );
+                if !handled {
+                    self.revoke_managed_word_start_before_client_key();
+                }
                 return Ok(handled);
             }
         }
@@ -819,10 +824,16 @@ impl LayIbusEngine {
                 if self.layout_gesture.shift_active {
                     self.layout_gesture.shift_used_as_modifier = true;
                     if self.atomic.speculation {
-                        return Ok(self.toggle_layout_from_modifier_hotkey());
+                        let handled = self.toggle_layout_from_modifier_hotkey();
+                        if !handled {
+                            self.revoke_managed_word_start_before_client_key();
+                        }
+                        return Ok(handled);
                     }
+                    self.revoke_managed_word_start_before_client_key();
                     return Ok(false);
                 }
+                self.revoke_managed_word_start_before_client_key();
                 return Ok(false);
             }
             if self.layout_gesture.alt_completion_active
@@ -831,13 +842,18 @@ impl LayIbusEngine {
                 self.layout_gesture.alt_completion_active = false;
                 let handled = self.accept_completion_with_space(output).await?;
                 self.retire_legacy_word_preedit_ownership_if_empty();
+                if !handled {
+                    self.revoke_managed_word_start_before_client_key();
+                }
                 return Ok(handled);
             }
             self.layout_gesture.alt_completion_active = false;
             self.layout_gesture.alt_used_as_modifier = false;
+            self.revoke_managed_word_start_before_client_key();
             return Ok(false);
         }
         if !is_key_press(state) {
+            self.revoke_managed_word_start_before_client_key();
             return Ok(false);
         }
         self.layout_gesture.last_shift_release_at = None;

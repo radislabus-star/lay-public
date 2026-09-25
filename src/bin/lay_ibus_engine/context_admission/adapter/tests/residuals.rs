@@ -157,6 +157,14 @@ async fn td121_pending_current_completion_with_compute(
     harness: &mut Harness,
     compute: bool,
 ) -> LayIbusEngine {
+    td121_pending_current_completion_with_compute_and_reset_lineage(harness, compute, true).await
+}
+
+async fn td121_pending_current_completion_with_compute_and_reset_lineage(
+    harness: &mut Harness,
+    compute: bool,
+    retain_reset_lineage: bool,
+) -> LayIbusEngine {
     let mut engine = new_engine(harness);
     start_source_free_unknown(harness, &mut engine).await;
     engine.layout_gesture.layout_is_ru = true;
@@ -191,17 +199,34 @@ async fn td121_pending_current_completion_with_compute(
         publish_fixture_append_completion(harness, &mut engine, "ивет").await,
         "ивет"
     );
+    if !retain_reset_lineage {
+        engine.context_reset_rereceipt = None;
+    }
     engine.config.nanda_precognition = compute;
     let _ = harness.connection.object_server();
     engine.reset_precognition_causal_counts();
     assert!(td121_readout_key(harness, &mut engine, 24_011, 'о' as u32, 36, 0).await);
     td121_expect_legacy_commit_text(&mut harness.peer, "о").await;
+    assert_eq!(
+        engine.composition.preedit_visible, compute,
+        "enabled precognition retains its inert frame; disabling the feature hides it"
+    );
     for cursor in [3, 2] {
         surrounding_receipt(harness, &mut engine, "привет", cursor, cursor).await;
         assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
         assert!(engine.capture_observed_suffix_display_frame().is_none());
         assert!(engine.selected_precognition_suffix().is_none());
-        assert!(!engine.composition.preedit_visible);
+        assert_eq!(
+            engine.composition.preedit_visible, compute,
+            "enabled precognition must not blink across unconfirmed surrounding snapshots"
+        );
+        assert_eq!(
+            engine.composition.preedit_suffix,
+            if compute { "ивет" } else { "" }
+        );
+        assert!(engine.composition.preedit_candidates.is_empty());
+        assert!(engine.composition.preedit_replacement_targets.is_empty());
+        assert_eq!(engine.composition.preedit_display_only_pending, compute);
         assert_eq!(engine.committed_tail.buffer, "про");
     }
     engine
@@ -312,45 +337,75 @@ fn td121_pending_reset_schedules_material_without_publication_authority() {
 fn td121_exact_receipt_publishes_cached_current_suffix_before_alt() {
     td121_prime_completion_material();
     zbus::block_on(bounded(async {
-        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
-        let mut engine = td121_pending_current_completion(&mut harness).await;
-        let effects = td121_current_completion_receipt(&mut harness, &mut engine).await;
-        assert_eq!(engine.selected_precognition_suffix().as_deref(), Some("верка"), "exact client receipt must publish already-computed current material before the next key callback");
-        assert!(!engine.composition.preedit_display_only_pending);
-        assert_eq!(effects.len(), 2);
-        assert_eq!(
-            effects[0].header().member().unwrap().as_str(),
-            "UpdatePreeditText"
-        );
-        let body = effects[0].body();
-        let (text, cursor, visible, mode) = body
-            .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
-            .unwrap();
-        assert_eq!(
-            crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
-            Some("верка")
-        );
-        assert_eq!((cursor, visible, mode), (0, true, 0));
-        assert_eq!(
-            effects[1].header().member().unwrap().as_str(),
-            "ShowPreeditText"
-        );
-        assert!(!td121_readout_key(&mut harness, &mut engine, 24_020, KEY_LEFT_ALT, 56, 0).await);
-        assert!(
-            td121_readout_key(
+        for retain_reset_lineage in [true, false] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = td121_pending_current_completion_with_compute_and_reset_lineage(
                 &mut harness,
-                &mut engine,
-                24_021,
-                KEY_LEFT_ALT,
-                56,
-                RELEASE_MASK
+                true,
+                retain_reset_lineage,
             )
-            .await
-        );
-        td121_expect_legacy_commit_text(&mut harness.peer, "верка ").await;
-        assert_eq!(engine.committed_tail.buffer, "проверка ");
-        assert!(engine.context_word_is_known());
-        engine.cancel_precognition_display_generation();
+            .await;
+            let effects = td121_current_completion_receipt(&mut harness, &mut engine).await;
+            if !retain_reset_lineage {
+                assert!(engine.composition.preedit_visible);
+                assert!(engine.composition.preedit_display_only_pending);
+                assert!(engine.selected_precognition_suffix().is_none());
+                assert!(effects.iter().all(|effect| {
+                    effect.header().member().unwrap().as_str() == "UpdatePreeditText"
+                }));
+                assert!(effects.iter().all(|effect| {
+                    !matches!(
+                        effect.header().member().unwrap().as_str(),
+                        "HidePreeditText" | "ShowPreeditText"
+                    )
+                }));
+                for effect in &effects {
+                    let body = effect.body();
+                    let (text, _, visible, _) = body
+                        .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+                        .unwrap();
+                    assert!(visible);
+                    assert!(crate::ibus_interface::ibus_text_value_to_string(&text)
+                        .is_some_and(|text| !text.is_empty()));
+                }
+                engine.cancel_precognition_display_generation();
+                continue;
+            }
+            assert_eq!(engine.selected_precognition_suffix().as_deref(), Some("верка"), "exact client receipt must publish already-computed current material before the next key callback");
+            assert!(!engine.composition.preedit_display_only_pending);
+            assert_eq!(effects.len(), 1);
+            assert_eq!(
+                effects[0].header().member().unwrap().as_str(),
+                "UpdatePreeditText"
+            );
+            let body = effects[0].body();
+            let (text, cursor, visible, mode) = body
+                .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+                .unwrap();
+            assert_eq!(
+                crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
+                Some("верка")
+            );
+            assert_eq!((cursor, visible, mode), (0, true, 0));
+            assert!(
+                !td121_readout_key(&mut harness, &mut engine, 24_020, KEY_LEFT_ALT, 56, 0).await
+            );
+            assert!(
+                td121_readout_key(
+                    &mut harness,
+                    &mut engine,
+                    24_021,
+                    KEY_LEFT_ALT,
+                    56,
+                    RELEASE_MASK
+                )
+                .await
+            );
+            td121_expect_legacy_commit_text(&mut harness.peer, "верка ").await;
+            assert_eq!(engine.committed_tail.buffer, "проверка ");
+            assert!(engine.context_word_is_known());
+            engine.cancel_precognition_display_generation();
+        }
     }));
 }
 
@@ -2764,6 +2819,11 @@ async fn observer_first_reset_unknown_tail(harness: &mut Harness, serial: u32) -
     assert_eq!(engine.committed_tail.buffer, "abcde");
     exact_surrounding_receipt(harness, &mut engine, "abcde").await;
 
+    // This fixture models Reset as the next callback after the exact receipt.
+    // Bind its production recency precondition to that callback rather than to
+    // the time the controlled peer spent serving the receipt.
+    assert!(engine.committed_tail.last_input_at.is_some());
+    engine.committed_tail.last_input_at = Some(Instant::now());
     let reset = receive(harness, serial + 10, "Reset").await;
     engine
         .reset(
@@ -3068,6 +3128,11 @@ async fn initial_observed_tail_reset(
         engine.committed_tail.buffer,
         keys.iter().map(|key| key.0).collect::<String>()
     );
+    // This fixture models Reset at the next callback after the final key. Its
+    // product recency precondition belongs to that modeled callback, not to
+    // wall time spent by the test harness between callbacks.
+    assert!(engine.committed_tail.last_input_at.is_some());
+    engine.committed_tail.last_input_at = Some(Instant::now());
     actual_reset(harness, &mut engine, serial + keys.len() as u32 * 2, false).await;
     assert!(
         engine.context_reset_rereceipt.is_some(),
@@ -4096,6 +4161,87 @@ fn firefox_fresh_surrounding_after_confirmed_append_rearms_next_reset() {
     }));
 }
 
+#[test]
+fn firefox_shortened_preedit_does_not_erase_prior_stale_surface_witness() {
+    zbus::block_on(bounded(async {
+        for (appended, keycode, stale_surface, matches_prior, accept_with_tab) in [
+            ('d', 32, "abcdef", true, false),
+            ('d', 32, "abcdef", true, true),
+            ('d', 32, "abcxef", false, false),
+            ('x', 45, "abcdef", false, false),
+        ] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = initial_observed_tail_reset(
+                &mut harness,
+                9_500,
+                &[('a', 30), ('b', 48), ('c', 46)],
+            )
+            .await;
+            exact_surrounding_receipt(&mut harness, &mut engine, "abc").await;
+            assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            engine.record_context_reset_preedit_publication("def", 0);
+
+            // The real legacy callback publishes the shortened frame *inside*
+            // the key handler, after its commit but before the post-key Reset
+            // lineage is advanced. Reproduce that interleaving here.
+            let tail_before = engine.committed_tail.buffer.clone();
+            let epoch_before = engine.committed_tail.epoch;
+            engine.committed_tail.buffer.push(appended);
+            engine.committed_tail.epoch += 1;
+            engine.record_context_reset_preedit_publication("ef", 0);
+            engine.committed_tail.buffer = tail_before;
+            engine.committed_tail.epoch = epoch_before;
+
+            assert!(
+                legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    9_510,
+                    appended as u32,
+                    keycode,
+                    0
+                )
+                .await
+            );
+            expect_legacy_commit(&mut harness.peer).await;
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            // Firefox can still report the previous displayed completion after
+            // the append shortens it. That surface remains inert until a fresh
+            // exact receipt arrives; a different surface must still revoke it.
+            surrounding_receipt(&mut harness, &mut engine, stale_surface, 4, 4).await;
+            assert_eq!(engine.context_reset_rereceipt.is_some(), matches_prior);
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+
+            exact_surrounding_receipt(&mut harness, &mut engine, &format!("abc{appended}")).await;
+            assert_eq!(
+                engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                matches_prior
+            );
+            if accept_with_tab {
+                engine.composition.preedit_candidates = vec!["ef".to_string()];
+                engine.composition.preedit_suffix = "ef".to_string();
+                engine.composition.preedit_visible = true;
+                engine.composition.preedit_display_only_pending = false;
+                assert!(legacy_key(&mut harness, &mut engine, 9_511, KEY_TAB, 15, 0).await);
+                td121_expect_legacy_commit_text(&mut harness.peer, "ef ").await;
+            } else {
+                let (_engine, disposition) = cycle09_manual_toggle(&mut harness, engine).await;
+                if matches_prior {
+                    assert_eq!(
+                        disposition,
+                        Ok(
+                            lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail
+                                .as_v3()
+                        )
+                    );
+                } else {
+                    assert!(matches!(disposition, Ok((0, _)) | Err(_)));
+                }
+            }
+        }
+    }));
+}
+
 pub(crate) async fn assert_window_interaction_reset_rereceipt_contract() {
     let mut positive_harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
     let mut positive = observer_first_reset_unknown_tail(&mut positive_harness, 8_800).await;
@@ -4159,13 +4305,14 @@ pub(super) async fn consume_detached_callback_reply(peer: &mut ControlledPeer, s
     // Later lifecycle callbacks are driven directly while that engine is
     // detached; zbus replies UnknownObject even with NoReplyExpected. Consume
     // only that exact transport reply, never a client effect or arbitrary log.
-    let reply = bounded(next_peer_message(peer)).await;
+    let reply = bounded(next_peer_message_raw(peer)).await;
     assert_eq!(reply.header().message_type(), Type::Error);
     assert_eq!(reply.header().reply_serial().map(|n| n.get()), Some(serial));
     assert_eq!(
         reply.header().error_name().map(|n| n.as_str()),
         Some("org.freedesktop.DBus.Error.UnknownObject")
     );
+    peer.detached_callback_reply_serials.remove(&serial);
 }
 
 async fn repeated_terminal_metadata(
@@ -6030,6 +6177,12 @@ async fn firefox_replay_prefix_with_reset(
     engine.config.nanda_precognition = false;
     assert!(engine.live_composition_enabled());
     assert!(engine.exact_replay_quarantine_active());
+    cycle09_surrounding_receipt(&mut harness, &mut engine, "prefix abc", 10, 10).await;
+    assert!(matches!(
+        engine.committed_tail.autocorrect_suppression.as_ref(),
+        Some(crate::protocol::AutocorrectSuppression::ExactReplay(scope))
+            if scope.observed_external_prefix.as_deref() == Some("prefix ")
+    ));
     for _ in 0..3 {
         for state in [0, RELEASE_MASK] {
             assert!(
@@ -6070,6 +6223,15 @@ async fn firefox_replay_prefix_with_reset(
         .collect();
     let text = format!("prefix {received}");
     let cursor = text.chars().count() as u32;
+    if prefix_chars == 1 && delayed_receipt {
+        assert!(
+            !engine.exact_replay_contains_prior_snapshot(&SurroundingTextSnapshot::new(
+                "foreign ".to_string(),
+                8,
+                8,
+            ))
+        );
+    }
     cycle09_surrounding_receipt(&mut harness, &mut engine, &text, cursor, cursor).await;
     assert!(engine.context_reset_rereceipt.is_some());
     assert_eq!(
@@ -6083,7 +6245,7 @@ async fn firefox_replay_prefix_with_reset(
 #[test]
 fn firefox_native_replay_append_preserves_reset_lineage_until_exact_tail() {
     zbus::block_on(bounded(async {
-        for (prefix_chars, delayed_receipt) in [(1, false), (2, false), (2, true)] {
+        for (prefix_chars, delayed_receipt) in [(1, false), (1, true), (2, false), (2, true)] {
             let mut serial = 15_000;
             let (mut harness, mut engine) =
                 firefox_replay_prefix_with_reset(&mut serial, prefix_chars, delayed_receipt).await;
@@ -6129,6 +6291,223 @@ fn firefox_native_replay_append_preserves_reset_lineage_until_exact_tail() {
             let (engine, tail) = cycle09_visible_tail(&mut harness, engine).await;
             assert!(cycle09_tail_is_authoritative(&tail, &path, true, "фис"));
             assert!(!engine.context_word_is_known());
+        }
+    }));
+}
+
+#[test]
+fn firefox_completed_boundary_replay_waits_for_final_exact_receipt() {
+    zbus::block_on(bounded(async {
+        let mut harness = cycle09_harness().await;
+        let mut source = cycle09_source(&mut harness).await;
+        cycle09_add_trailing_boundary(&mut harness, &mut source).await;
+        cycle09_surrounding_receipt(&mut harness, &mut source, "prefix abc ", 11, 11).await;
+        let (source, disposition) = cycle09_manual_toggle(&mut harness, source).await;
+        assert_eq!(disposition, Ok((3, false)));
+        let (source, tail) = cycle09_visible_tail(&mut harness, source).await;
+        assert!(cycle09_tail_is_authoritative(
+            &tail,
+            &source.path,
+            false,
+            " abc ",
+        ));
+        let epoch = tail.as_ref().unwrap().3;
+        let target_path = format!("{TARGET_PATH}_completed_boundary_replay");
+        let target = cycle09_factory_handoff(
+            &mut harness,
+            source,
+            26_000,
+            &target_path,
+            None,
+            "lay-ime-ru",
+        )
+        .await;
+        let (mut target, suppression) =
+            cycle09_suppress_exact_replay(&mut harness, target, "abc ", epoch, &target_path, true)
+                .await;
+        assert_eq!(suppression, Ok(true));
+        target.config.text_backend = "ime".into();
+        target.config.typing_assist = false;
+        target.config.nanda_precognition = false;
+        cycle09_surrounding_receipt(&mut harness, &mut target, "prefix abc ", 11, 11).await;
+        let mut serial = 26_040;
+        for _ in 0..4 {
+            for state in [0, RELEASE_MASK] {
+                assert!(
+                    !firefox_replay_callback(
+                        &mut harness,
+                        &mut target,
+                        &mut serial,
+                        (KEY_BACKSPACE, 14, state),
+                    )
+                    .await
+                );
+            }
+        }
+        assert_eq!(target.committed_tail.buffer, " ");
+        for (ch, code) in [('ф', 30), ('и', 48), ('с', 46), (' ', 57)] {
+            let keyval = if ch == ' ' {
+                KEY_SPACE
+            } else {
+                0x0100_0000 | ch as u32
+            };
+            for state in [0, RELEASE_MASK] {
+                assert!(
+                    !firefox_replay_callback(
+                        &mut harness,
+                        &mut target,
+                        &mut serial,
+                        (keyval, code, state),
+                    )
+                    .await
+                );
+            }
+        }
+        assert_eq!(target.committed_tail.buffer, " фис ");
+        firefox_replay_reset(&mut harness, &mut target, &mut serial).await;
+        assert!(target.context_reset_rereceipt.is_some());
+
+        // Firefox reports the surface after deletion even though replacement
+        // keys have already completed. It cannot yet authorize another edit.
+        cycle09_surrounding_receipt(&mut harness, &mut target, "prefix ", 7, 7).await;
+        assert!(target.context_reset_rereceipt.is_some());
+        assert!(!target.context_reset_rereceipt_exact_manual_handoff_allowed());
+        assert!(!target.context_word_is_known());
+
+        cycle09_surrounding_receipt(&mut harness, &mut target, "prefix фис ", 11, 11).await;
+        assert!(target.context_reset_rereceipt_exact_manual_handoff_allowed());
+        let (target, disposition) = cycle09_manual_toggle(&mut harness, target).await;
+        assert_eq!(
+            disposition,
+            Ok(lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail.as_v3()),
+        );
+        let (target, tail) = cycle09_visible_tail(&mut harness, target).await;
+        assert!(cycle09_tail_is_authoritative(
+            &tail,
+            &target.path,
+            true,
+            " фис ",
+        ));
+    }));
+}
+
+#[test]
+fn firefox_source_free_first_word_after_space_delegates_exact_tail() {
+    zbus::block_on(bounded(async {
+        for reset_before_toggle in [false, true] {
+            let mut harness = cycle09_harness().await;
+            let mut source = new_engine(&harness);
+            start_source_free_unknown(&mut harness, &mut source).await;
+            source.config.auto_replace = false;
+            source.config.typing_assist = false;
+            source.config.nanda_precognition = false;
+            source.set_client_capabilities(41);
+            source.set_content_type_state(0, 0);
+            for (offset, (ch, code)) in [('a', 30), ('b', 48), ('c', 46)].into_iter().enumerate() {
+                assert!(
+                    legacy_key(
+                        &mut harness,
+                        &mut source,
+                        27_000 + offset as u32,
+                        ch as u32,
+                        code,
+                        0,
+                    )
+                    .await
+                );
+                expect_legacy_commit(&mut harness.peer).await;
+            }
+            assert_eq!(source.committed_tail.buffer, "abc");
+            assert!(!source.context_word_is_known());
+            cycle09_surrounding_receipt(&mut harness, &mut source, "abc", 3, 3).await;
+            assert!(legacy_key(&mut harness, &mut source, 27_010, KEY_SPACE, 57, 0).await);
+            expect_legacy_commit(&mut harness.peer).await;
+            assert_eq!(source.committed_tail.buffer, "abc ");
+            cycle09_surrounding_receipt(&mut harness, &mut source, "abc ", 4, 4).await;
+            if reset_before_toggle {
+                actual_reset(&mut harness, &mut source, 27_020, false).await;
+                cycle09_surrounding_receipt(&mut harness, &mut source, "abc ", 4, 4).await;
+            }
+            let (source, disposition) = cycle09_manual_toggle(&mut harness, source).await;
+            assert_eq!(
+                disposition,
+                Ok(lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail.as_v3()),
+                "first word after Space must delegate, reset_before_toggle={reset_before_toggle}"
+            );
+            let (source, tail) = cycle09_visible_tail(&mut harness, source).await;
+            assert!(cycle09_tail_is_authoritative(
+                &tail,
+                &source.path,
+                false,
+                "abc ",
+            ));
+        }
+    }));
+}
+
+#[test]
+fn firefox_first_word_space_retires_published_preedit_before_exact_receipt() {
+    zbus::block_on(bounded(async {
+        for (retired_surface, cursor, expected_retention) in [
+            ("abcdefgh", 1, true),
+            ("abcxefgh", 1, false),
+            ("abcdefgh", 0, false),
+        ] {
+            let mut harness = cycle09_harness().await;
+            let mut source = new_engine(&harness);
+            start_source_free_unknown(&mut harness, &mut source).await;
+            source.config.auto_replace = false;
+            source.config.typing_assist = false;
+            source.config.nanda_precognition = false;
+            source.set_client_capabilities(41);
+            source.set_content_type_state(0, 0);
+            assert!(legacy_key(&mut harness, &mut source, 27_100, 'a' as u32, 30, 0).await);
+            expect_legacy_commit(&mut harness.peer).await;
+            assert_eq!(source.committed_tail.buffer, "a");
+            actual_reset(&mut harness, &mut source, 27_101, false).await;
+            cycle09_surrounding_receipt(&mut harness, &mut source, "a", 1, 1).await;
+            assert!(source.context_reset_rereceipt_exact_manual_handoff_allowed());
+            let published =
+                publish_fixture_append_completion(&mut harness, &mut source, "bcdefgh").await;
+            assert_eq!(published, "bcdefgh");
+
+            assert!(legacy_key(&mut harness, &mut source, 27_102, KEY_SPACE, 57, 0).await);
+            td121_expect_legacy_commit_text(&mut harness.peer, " ").await;
+            assert_eq!(source.committed_tail.buffer, "a ");
+            assert!(
+                source.context_reset_rereceipt.is_some(),
+                "Space must retain the first-word predecessor"
+            );
+            // Firefox first reports the retired preedit at the old insertion
+            // cursor, then resets and reports the actual committed word + Space.
+            cycle09_surrounding_receipt(&mut harness, &mut source, retired_surface, cursor, cursor)
+                .await;
+            if !expected_retention {
+                assert!(source.context_reset_rereceipt.is_none());
+                continue;
+            }
+            assert!(
+                source.context_reset_rereceipt.is_some(),
+                "the retired preedit is not an authority-bearing contradiction"
+            );
+            assert!(!source.context_reset_rereceipt_exact_manual_handoff_allowed());
+            actual_reset(&mut harness, &mut source, 27_103, false).await;
+            assert!(source.context_reset_rereceipt.is_some());
+            cycle09_surrounding_receipt(&mut harness, &mut source, "a ", 2, 2).await;
+            assert!(source.context_reset_rereceipt_exact_manual_handoff_allowed());
+            let (source, disposition) = cycle09_manual_toggle(&mut harness, source).await;
+            assert_eq!(
+                disposition,
+                Ok(lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail.as_v3()),
+                "the retired preedit must not erase first-word authority before exact text"
+            );
+            let (source, tail) = cycle09_visible_tail(&mut harness, source).await;
+            assert!(cycle09_tail_is_authoritative(
+                &tail,
+                &source.path,
+                false,
+                "a "
+            ));
         }
     }));
 }

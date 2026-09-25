@@ -386,7 +386,7 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
             assert_eq!(terminal_successor["mode"], suffix_successor["mode"]);
             assert_eq!(
                 terminal_successor["sha256"].as_str(),
-                Some(sha256(&successor_path).as_str())
+                Some("344a525b388879af088ff8afaa5ec7bf8ddc9fd96c83c7ce6daa8281fa28efd7")
             );
             let terminal_review = &terminal_binding["review"];
             assert_eq!(terminal_review["state"].as_str(), Some("PASS"));
@@ -409,6 +409,182 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
                     .as_str()
                 )
             );
+            // Chromium's owned-preedit route needs the Space lease captured
+            // after native callback settlement. Preserve the terminal binding
+            // and verify the reviewed successor that moves only that schedule.
+            let chromium_binding_path =
+                "tech_debt/evidence/chromium-owned-preedit-composition-successor.json";
+            let chromium_binding: serde_json::Value =
+                serde_json::from_str(&read(chromium_binding_path))
+                    .expect("valid Chromium owned-preedit successor binding");
+            assert_eq!(
+                chromium_binding["schema"].as_str(),
+                Some("lay.tech-debt.successor-binding.v1")
+            );
+            assert_eq!(chromium_binding["status"].as_str(), Some("ACCEPTED"));
+            assert_eq!(
+                chromium_binding["runtime_authority_changed"].as_bool(),
+                Some(false)
+            );
+            let chromium_predecessor = &chromium_binding["predecessor"];
+            let terminal_binding_path =
+                "tech_debt/evidence/ime-terminal-native-delivery-composition-successor.json";
+            assert_eq!(chromium_predecessor["binding"], terminal_binding_path);
+            assert_eq!(
+                chromium_predecessor["binding_sha256"].as_str(),
+                Some(sha256(&Path::new(ROOT).join(terminal_binding_path)).as_str())
+            );
+            for key in ["path", "sha256", "mode"] {
+                assert_eq!(chromium_predecessor[key], terminal_successor[key]);
+            }
+            let chromium_successor = &chromium_binding["successor"];
+            assert_eq!(chromium_successor["path"], terminal_successor["path"]);
+            assert_eq!(chromium_successor["mode"], terminal_successor["mode"]);
+            assert_eq!(
+                chromium_successor["sha256"].as_str(),
+                Some("f615fc1af80c9a8c64b64dfb435ce55776d80321e3e650435a84aa2a1fc04659")
+            );
+            let chromium_review = &chromium_binding["review"];
+            assert_eq!(chromium_review["state"].as_str(), Some("PASS"));
+            assert_eq!(chromium_review["score"].as_str(), Some("9/10"));
+            assert_eq!(chromium_review["high_findings"].as_u64(), Some(0));
+            assert_eq!(chromium_review["medium_findings"].as_u64(), Some(0));
+            assert_eq!(
+                chromium_review["report"].as_str(),
+                Some("tech_debt/evidence/chromium-owned-preedit-space-source-review.md")
+            );
+            assert_eq!(
+                chromium_review["report_sha256"].as_str(),
+                Some(
+                    sha256(
+                        &Path::new(ROOT).join(
+                            chromium_review["report"]
+                                .as_str()
+                                .expect("Chromium source review path"),
+                        )
+                    )
+                    .as_str()
+                )
+            );
+            // Delayed browser snapshots may arrive only after Space. Preserve
+            // the reviewed Chromium scheduling checkpoint and verify the
+            // successor that binds one exact managed word start to its
+            // uninterrupted local CommitText chain.
+            let delayed_binding_path =
+                "tech_debt/evidence/browser-delayed-snapshot-composition-successor.json";
+            let delayed_binding: serde_json::Value =
+                serde_json::from_str(&read(delayed_binding_path))
+                    .expect("valid delayed-snapshot successor binding");
+            assert_eq!(
+                delayed_binding["schema"].as_str(),
+                Some("lay.tech-debt.successor-binding.v1")
+            );
+            assert_eq!(delayed_binding["status"].as_str(), Some("ACCEPTED"));
+            assert_eq!(
+                delayed_binding["runtime_authority_changed"].as_bool(),
+                Some(true)
+            );
+            let delayed_predecessor = &delayed_binding["predecessor"];
+            assert_eq!(delayed_predecessor["binding"], chromium_binding_path);
+            assert_eq!(
+                delayed_predecessor["binding_sha256"].as_str(),
+                Some(sha256(&Path::new(ROOT).join(chromium_binding_path)).as_str())
+            );
+            for key in ["path", "sha256", "mode"] {
+                assert_eq!(delayed_predecessor[key], chromium_successor[key]);
+            }
+            let delayed_successor = &delayed_binding["successor"];
+            assert_eq!(delayed_successor["path"], chromium_successor["path"]);
+            assert_eq!(delayed_successor["mode"], chromium_successor["mode"]);
+            assert_eq!(
+                delayed_successor["sha256"].as_str(),
+                Some("2f6d78072dc9c4087ad5cea738e6e35d20de93425f8867c94ab46256a62270ed")
+            );
+            let delayed_review = &delayed_binding["review"];
+            assert_eq!(delayed_review["state"].as_str(), Some("PASS"));
+            let delayed_review_score = delayed_review["score"]
+                .as_str()
+                .and_then(|score| score.strip_suffix("/10"))
+                .and_then(|score| score.parse::<u8>().ok())
+                .expect("delayed-snapshot review score in N/10 form");
+            assert!(delayed_review_score >= 8);
+            assert_eq!(delayed_review["high_findings"].as_u64(), Some(0));
+            assert_eq!(delayed_review["medium_findings"].as_u64(), Some(0));
+            assert_eq!(
+                delayed_review["report"].as_str(),
+                Some("tech_debt/evidence/browser-delayed-snapshot-source-review.md")
+            );
+            assert_eq!(
+                delayed_review["report_sha256"].as_str(),
+                Some(
+                    sha256(
+                        &Path::new(ROOT).join(
+                            delayed_review["report"]
+                                .as_str()
+                                .expect("delayed-snapshot source review path"),
+                        )
+                    )
+                    .as_str()
+                )
+            );
+            // The Firefox owned-Reset/release repair is a later source
+            // successor; keep the reviewed delayed-snapshot hash historical.
+            let reset_binding_path =
+                "tech_debt/evidence/browser-owned-reset-release-composition-successor.json";
+            let reset_binding: serde_json::Value = serde_json::from_str(&read(reset_binding_path))
+                .expect("valid browser owned Reset/release successor binding");
+            assert_eq!(
+                reset_binding["schema"].as_str(),
+                Some("lay.tech-debt.successor-binding.v1")
+            );
+            assert_eq!(reset_binding["status"].as_str(), Some("ACCEPTED"));
+            assert_eq!(
+                reset_binding["runtime_authority_changed"].as_bool(),
+                Some(true)
+            );
+            let reset_predecessor = &reset_binding["predecessor"];
+            assert_eq!(reset_predecessor["binding"], delayed_binding_path);
+            assert_eq!(
+                reset_predecessor["binding_sha256"].as_str(),
+                Some(sha256(&Path::new(ROOT).join(delayed_binding_path)).as_str())
+            );
+            for key in ["path", "sha256", "mode"] {
+                assert_eq!(reset_predecessor[key], delayed_successor[key]);
+            }
+            let reset_successor = &reset_binding["successor"];
+            assert_eq!(reset_successor["path"], delayed_successor["path"]);
+            assert_eq!(reset_successor["mode"], delayed_successor["mode"]);
+            assert_eq!(
+                reset_successor["sha256"].as_str(),
+                Some(sha256(&successor_path).as_str())
+            );
+            let reset_review = &reset_binding["review"];
+            assert_eq!(reset_review["state"].as_str(), Some("PASS"));
+            assert_eq!(reset_review["high_findings"].as_u64(), Some(0));
+            assert_eq!(reset_review["medium_findings"].as_u64(), Some(0));
+            let reset_review_score = reset_review["score"]
+                .as_str()
+                .and_then(|score| score.strip_suffix("/10"))
+                .and_then(|score| score.parse::<u8>().ok())
+                .expect("owned Reset/release review score in N/10 form");
+            assert!(reset_review_score >= 8);
+            assert_eq!(
+                reset_review["report"].as_str(),
+                Some("tech_debt/evidence/browser-owned-reset-release-source-review.md")
+            );
+            assert_eq!(
+                reset_review["report_sha256"].as_str(),
+                Some(
+                    sha256(
+                        &Path::new(ROOT).join(
+                            reset_review["report"]
+                                .as_str()
+                                .expect("owned Reset/release review report path"),
+                        )
+                    )
+                    .as_str()
+                )
+            );
             assert_eq!(
                 std::fs::metadata(&successor_path)
                     .expect("TD-121 successor metadata")
@@ -416,12 +592,12 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
                     .mode()
                     & PROTECTED_MODE_BITS,
                 u32::from_str_radix(
-                    td121_successor["mode"]
+                    reset_successor["mode"]
                         .as_str()
-                        .expect("TD-121 successor mode"),
+                        .expect("owned Reset/release successor mode"),
                     8,
                 )
-                .expect("octal TD-121 successor mode")
+                .expect("octal owned Reset/release successor mode")
                     & PROTECTED_MODE_BITS
             );
             let review = &td121_binding["review"];

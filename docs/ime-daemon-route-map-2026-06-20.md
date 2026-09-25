@@ -4491,3 +4491,1432 @@ contract source and updates
 `docs/structural_gates/receipts/LAY_EXACT_REPLAY_NATIVE_DELIVERY_2026-09-12/graph-final.json`.
 It remains architecture evidence only. The complete changed suite, release
 build, installed runtime and physical application proof were not tested by it.
+
+## Firefox second-character nonblinking repair preflight (2026-09-22)
+
+### Demonstrated failure and first unresolved mechanism
+
+The user confirmed that committed-tail Space autocorrection already changes
+`публекует` to `публикует`; that route is outside this repair. The remaining
+failure is the completion surface: Firefox shows a completion after the first
+character, hides it on the second, and later shows a new completion. The
+physical Firefox trace proves that candidate generation is not empty. Prefix
+`п` published suffix `очему` from 12 candidates. On the next printable `у`, the
+engine emitted `ibus_preedit clear`, then two current `пу` readouts each found
+10 candidates with top suffix `сть` but were discarded during the existing
+Reset re-receipt sequence. Only after the exact two-character surrounding-text
+receipt did the engine emit `update + show` for `сть`.
+
+The first shared mechanism is therefore the pending-display transition in
+`begin_pending_precognition_refresh`: when the newly typed character diverges
+from the previously displayed full target, it clears candidate authority and
+also clears the client frame before the asynchronous current-identity result
+can replace it. This recreates the forbidden per-key
+`clear -> later update -> show` sequence. The evidence is
+`/home/ubu/.cache/lay/development/firefox-reset-rereceipt-20260922/physical-firefox-run2/trace-after.jsonl`,
+lines 2528-2561, SHA-256
+`bcc2656c40c6c18767e7ae95e1bb3ab37a0fa61f2f99ccf01a50ef0355463492`.
+The failed run receipt is beside it as `receipt.json`, SHA-256
+`5ac3c1ccf6a7b321da45aba58294bf875b017cd9a89fe3f4e73a18dfd00df100`.
+
+### Consequence analysis and selected design
+
+Facts: the existing state already separates the visible suffix from selectable
+candidate vectors, has a `preedit_display_only_pending` latch, rejects Tab while
+that latch is set, and accepts a background result only after exact input-frame
+identity checks. The current failure is an output-lifecycle defect, not missing
+candidates, ranking failure, or Space-correction failure. Hypothesis to test:
+retaining the last published payload as display-only across a divergent
+printable event will remove the visible gap until the exact current worker
+replaces it once or publishes an empty result and hides it once.
+
+Three designs were compared:
+
+1. Retain the existing published payload in the existing pending-display state,
+   clear all candidate and replacement authority immediately, and let only the
+   exact current worker replace or hide the frame. This reuses the established
+   nonblinking contract and adds no owner, queue, timer, cache, fallback, or
+   source of truth.
+2. Materialize the next candidate synchronously before returning from every
+   printable key. This avoids a pending frame but moves observed 50-110 ms
+   readout outliers onto the typing hot path, duplicates the asynchronous route,
+   and changes latency behavior for every client.
+3. Publish an empty or placeholder frame while work is pending. An empty frame
+   is the reported disappearance under another representation; a placeholder
+   would invent a new UI surface and still need independent acceptance rules.
+
+Design 1 is selected. Candidate/lattice production, candidate limit, ranking,
+SafetyGate, correction verdicts, and the current per-class quality contract are
+unchanged. The old payload becomes presentation only: actionable candidate and
+replacement vectors are cleared, candidate cycling cannot recreate authority,
+and Tab/Alt/cursor retirement must remain unable to accept it. A package or
+delta reload may change the next result, but existing material-generation and
+input-identity checks still prevent the retained payload from becoming that
+result. No learning or feedback event is emitted from display retention.
+
+The async worker deadline and tail mutation order remain unchanged. CPU work is
+unchanged; the selected route retains one already allocated suffix string and
+adds no unbounded storage. RSS and package size should change only by compiled
+code noise. Concurrency remains single-publication: cancelled, stale, late, or
+wrong-identity workers cannot install authority. An exact current empty result,
+a word boundary, explicit pending retirement, focus/capability loss, or engine
+cleanup must still hide once. If the current worker is delayed, the user may
+briefly see the prior suffix after divergence, but it is inert and cannot be
+accepted; this is the explicit display-versus-authority tradeoff already owned
+by the 1.0.50-1.0.53 contract. Failure of the worker cannot authorize or mutate
+text. Rollback is the single pending-display selection branch plus its causal
+tests.
+
+Compatibility scope includes the existing legacy IBus and atomic output
+abstractions; no daemon protocol or consumer changes. The Firefox regression
+must causally prove `п -> пу`: the old implementation emits a hide; the repair
+emits no hide/show transition between the first and second payloads, keeps the
+retained frame nonselectable while both pre- and post-receipt workers are stale,
+and installs only the exact `пу` result. Existing matching-target shortening,
+Tab/Alt/cursor retirement, empty-result hiding, focus cleanup, autocorrection,
+and full discovered test denominators remain required. A physical Firefox run
+must then prove continuous client-visible completion and preserve the already
+working `публекует -> публикует` Space result.
+
+What has not yet been tested: the causal regression, affected closure, full
+denominator, architecture refresh, release build, installed runtime, physical
+Firefox behavior, other applications, latency distribution, RSS/package size,
+or fixed-heldout answer quality. Runtime authority changed at preflight:
+**no**. Long term, this branch can be removed only if every supported client
+provides an exact current completion in the same output transaction; until
+then, it is the existing display-only pending owner rather than a new subsystem.
+
+### Causal regression before production repair
+
+The regression changed only the expected pending-display effect and retained
+the existing test identity so the canonical manifest remained exact. The old
+production code failed exactly one of 588 selected `lay-ibus-engine` tests:
+587 passed and
+`preedit::tests::pending_refresh_hides_a_target_that_no_longer_matches_the_partial`
+failed because `preedit_visible` became false after the divergent second
+character. The fixture constructs the observed `п -> пу` state, proves that the
+old target identity is already revoked, and requires zero `clear`, `hide`,
+`update`, or `show` effects while the current worker is pending. This is a
+controlled old-production RED, not a physical-client result. Exact result:
+`/home/ubu/.cache/lay/development/run-dad_fftc/RESULT.json`, SHA-256
+`9fed5f7a6875e681b919e0bb19dad9b30d956436e9efe08a8062c5fc87905fc4`;
+log SHA-256
+`3df2ce017ae6afedea4ce641eb3853751370c06e8391e9e6b83afd77b64aa3d5`.
+Runtime authority changed: **no**.
+
+### Focused repair result and manifest refresh
+
+Production now retains the already published nonempty suffix only when the
+prior target has been revoked by divergent input and the surface was visible.
+It immediately clears candidate/replacement vectors, marks the frame
+display-only pending, emits no IBus output for that intermediate state, and
+records only a text-free `retained_inert` diagnostic. Matching-target input
+continues to shorten and update the existing surface. Completing the old full
+target still hides normally because its target remains present with an empty
+suffix. No display payload is retained from a hidden or empty frame.
+
+The first post-code attempt stopped before compilation on one formatter delta;
+`/home/ubu/.cache/lay/development/run-qivqg7v1/RESULT.json` has SHA-256
+`31ddae70830106c40140abe63ac70485d0ccf9dc8e8affa0a47dd66137918b82`.
+After that exact delta, all product assertions passed but the fixture still
+expected an atomic `FRAME_READY` disposition from an intentionally empty
+effect builder. That helper-level expectation was corrected to inspect the
+empty effect vector; product behavior was not changed. The intermediate result
+is `/home/ubu/.cache/lay/development/run-pyhd6tay/RESULT.json`, SHA-256
+`2596d299e4f9517367fdfbd17b431bdee821b7027400e6180cec3f97d0b6c7ae`.
+
+The causal regression then passed with all **588/588** selected
+`lay-ibus-engine` tests. It proves the divergent second character leaves the
+prior frame visible with zero output and zero acceptance authority, then an
+exact current `сть` result performs one `update-visible` with no `show` or
+`hide`. Exact result:
+`/home/ubu/.cache/lay/development/run-g113182t/RESULT.json`, SHA-256
+`ecec41daa33449f64a324872aff4f3287a3f0fb2edf2ccfb1480b8fe6096b581`;
+log SHA-256
+`61cb2c332cf415f488b350726946333df18b77101baa696bd12e0b44ab0e550f`.
+This is focused development evidence, not full or physical acceptance.
+
+The regression was then renamed to
+`pending_refresh_retains_divergent_surface_without_accepting_it`. A guarded
+remote discovery regenerated the canonical manifest with 2,915 tests:
+correctness 2,853, package 36, performance 11, ignored 15. Manifest SHA-256 is
+`ba302d4f929a67ac126407e646d2d9c18fc0f8638662d1a4ac21c047547a0e08`;
+refresh record:
+`/home/ubu/.cache/lay/development/nonblinking-ime-20260922/manifest-refresh.log`,
+SHA-256
+`2f93036013ea187b3ecd0ffc764d0e22f522cfa60dbdb5c4a3b88a5344112fdb`.
+The rename and manifest change do not alter runtime authority.
+
+The observed Firefox latency is also separated from candidate computation.
+For prefix `пу`, the trace computed 10 candidates first in 2,052 microseconds
+and then from cache in 9 microseconds; both publications were rejected while
+the exact Reset re-receipt was pending. Publishing those results early would
+weaken the existing display identity contract, so this repair does not do so.
+The retained inert frame removes the disappearance while the exact receipt is
+pending. Fresh installed Firefox and Chrome measurements remain required to
+decide whether any latency work is still justified after scoped connector
+reload. Runtime authority changed by the repair: **display lifecycle only**;
+candidate acceptance, text mutation, correction and learning authority remain
+unchanged.
+
+### Independent review pass 1 and callback-level repair preflight
+
+Independent review scored the first delta **4/10 FAIL** with one High and one
+Medium finding. The helper-level change is authority-safe, but the reviewer
+identified a later callback that still blinks. When
+`refresh_observed_suffix_precognition()` receives Firefox's first unconfirmed
+published-preedit `SurroundingText`, it captures a pending Reset readout frame,
+unconditionally calls `clear_preedit()`, and only then schedules another
+worker. The original trace's `text_chars=6, cursor=2` event follows exactly
+that route before the final exact `text_chars=2` receipt. The first test called
+the pending-display helper and injected a final result directly, so it bypassed
+this callback, worker identity and legacy IBus output. The complete
+browser-visible failure therefore remained.
+
+This is the next first unresolved mechanism; the full gate started after the
+helper PASS was stopped without a verdict. No full-suite evidence is claimed.
+The selected repair keeps the existing pending-display owner through this
+callback: run the same display-only preparation before scheduling the pending
+Reset identity, clear candidate and replacement vectors immediately, emit no
+client effect when a nonempty inert frame is already visible, and hide if no
+worker can be scheduled. The final exact current receipt remains the only event
+that can install selectable candidates. This does not publish the pending
+worker early and therefore does not weaken display identity.
+
+Alternatives remain worse: leaving the unconditional clear preserves the
+reported blink; accepting the unconfirmed worker changes authority; adding a
+separate callback cache or timer creates another lifecycle owner. The selected
+route adds no state, queue, timer, retry, cache, fallback, allocation class, or
+daemon protocol. Candidate/lattice contents, ranking, package generation,
+learning, Space correction, CPU work and the 150 ms worker deadline remain
+unchanged. Focus, Disable, true empty results, completed targets and failed
+scheduling still hide. Late, cancelled, material-stale and wrong-identity
+workers remain unable to publish or mutate text.
+
+The callback-level causal proof will reuse the actual legacy harness that
+already publishes suffix `ивет`, commits divergent `о`, drives both
+unconfirmed surrounding snapshots, waits for the real worker, and publishes
+the final exact `про` receipt. Before production editing it must fail because
+the surface becomes hidden. After repair it must require zero preedit effects
+through both unconfirmed callbacks, no candidate acceptance authority, and
+exactly one `UpdatePreeditText` with no second `ShowPreeditText` at the final
+receipt. Chrome uses the same pending-display callback; physical checks remain
+required in both browsers. Runtime authority changed at this preflight:
+**no**.
+
+The callback-level old-production RED failed four tests sharing that exact
+legacy harness, with 584/588 passing. Each failure occurred at the first
+unconfirmed surrounding snapshot because the already published suffix `ивет`
+became hidden. The four tests separately cover missing-material worker fill,
+pending computation without publication authority, exact cached publication,
+and Alt-before-exact refusal. Result:
+`/home/ubu/.cache/lay/development/run-rf7ccvnb/RESULT.json`, SHA-256
+`28a544f199a27a6811336019fb37ddfe1dd1eb78266a0223fb04e338ffd538d2`;
+log SHA-256
+`93c9b5c1c39b7b0e2d6b933224d41f9f308b0a00f8483c00f622d5b040f89799`.
+This is the required causal RED for the review finding. Runtime authority
+remains unchanged.
+
+The first callback repair alone left the same four failures. Inspection moved
+the first loss earlier than review could establish from the physical trace:
+`commit_managed_passthrough_char()` asks only for a known-word frame. During
+the Firefox/Chrome Reset re-receipt interval that frame is absent, and
+`refresh_precognition_after_visible_input_with_background()` clears the surface
+before key settlement reaches `refresh_observed_suffix_precognition()`. Result:
+`/home/ubu/.cache/lay/development/run-p_4w0w97/RESULT.json`, SHA-256
+`a739130a683ffd9758539eef5d8291e7a2b5555e837d8e14ff1fb206a9f28624`;
+log SHA-256
+`16faedeb24a02fec3b3d9748d085f9555e87494583710a48d2cd1aef9e50405b`.
+
+The bounded repair will resolve the existing pending Reset readout identity at
+that refresh boundary when no known-word frame is available. That identity is
+already admitted by `schedule_background_precognition()` for computation and
+is still rejected by `precognition_identity_matches()` for publication. The
+refresh may therefore prepare the existing display-only pending surface and
+schedule computation immediately, while only a later exact observed-suffix
+identity may publish selectable candidates. A supplied but mismatching frame,
+an absent pending Reset lineage, sensitive/disabled content, or failed schedule
+retains the prior fail-closed clear. No identity predicate is weakened, and no
+new authority, owner, cache, timer, retry or fallback is added. This may start
+the same worker one callback earlier and can reduce wasted latency; CPU work,
+candidate/ranking/package inputs and the 150 ms deadline remain unchanged.
+Runtime authority changed at this preflight: **no**.
+
+The pending-identity fallback still failed 584/588. A new assertion immediately
+after the actual divergent key, before either surrounding snapshot, proved the
+surface was already hidden inside the key callback. Result:
+`/home/ubu/.cache/lay/development/run-is3kcusw/RESULT.json`, SHA-256
+`3fdb50990f554d6afd914ad2ff26d023365cefc54e0c9fdfc061da62b46e1f58`;
+log SHA-256
+`88591c76ab399556b45f94bfa6f204480be70b05ad76942957956ec216dfd49f`.
+The earlier fallback run has result SHA-256
+`eaabaa471b9d971f858638c42d0cc4553f4ac406d940843bb8f92f13f5c3d149`.
+
+At that instant the key callback has invalidated the prior exact snapshot but
+key settlement has not yet advanced the Reset lineage, so neither a known-word
+nor pending Reset identity can exist. The selected final boundary is the
+existing `context_callback_entered` scope: only a legacy background-capable key
+callback with a currently visible nonempty surface may retain it as inert while
+no frame exists. Candidate/replacement vectors are cleared immediately. No
+worker or authority is created at that point. After the callback,
+`context_callback_entered` is cleared; normal settlement must supply a known or
+pending computation identity and schedule the worker, otherwise the ordinary
+invalid-frame branch hides the surface. This makes failure bounded and avoids a
+new latch. Atomic output, focus/lifecycle cleanup, completed-target hiding and
+all publication identity checks remain unchanged. Runtime authority changed at
+this preflight: **no**.
+
+### Callback-level repair result
+
+The production repair now preserves the already visible frame as inert at the
+earliest divergent legacy key callback, then carries that same display-only
+state through both unconfirmed surrounding-text snapshots while the existing
+Reset re-receipt lineage supplies computation identity. The actual controlled
+legacy callback harness proves that the divergent key and each unconfirmed
+snapshot emit no clear or hide, expose no selected candidate or replacement
+target, and retain no Tab/Alt acceptance authority. The final exact current
+receipt publishes `про` with one `UpdatePreeditText` and no second
+`ShowPreeditText`. A feature-disabled run through the same harness remains the
+negative control: it hides immediately and later publishes with the original
+update-plus-show sequence.
+
+All **588/588** selected `lay-ibus-engine` tests passed, including the actual
+callback path and the helper-level authority-separation regression. Exact
+result: `/home/ubu/.cache/lay/development/run-u8dm6ozv/RESULT.json`, SHA-256
+`39bf6b33af87c1a687cbad1a03b5ab932348f6175fb0acb4bf53d67167fb54fb`;
+log SHA-256
+`ff420692fa2bc9a4882e926b3abeb22f3ccdae2b6ab992308c3391ad9045e8f7`.
+This remains focused development evidence. Firefox and Chrome physical
+acceptance and the full project gate remain outstanding. Runtime authority
+changed by this repair: **display lifecycle only**; candidate selection, text
+mutation, correction, learning, and publication identity authority remain
+unchanged.
+
+Independent review pass 2 found no remaining blocker and scored the delta
+**9/10 PASS**. The reviewer confirmed both former clear points are closed: the
+active divergent legacy key callback and both unconfirmed surrounding-text
+callbacks preserve only an inert surface, failed scheduling still clears, and
+the final exact receipt alone installs selectable candidates. The actual
+callback fixture covers the immediate key, both snapshots, final publication,
+empty candidate/replacement authority, unchanged committed text, Alt refusal,
+and the feature-disabled hide control. No review edits or tests were performed.
+This is the final independent review pass; full and physical acceptance remain
+separate gates. Runtime authority changed by review: **no**.
+
+The first post-review full-gate attempt stopped after 1,926 passing tests, with
+no product-test failure reported. The lane contract rejected the zero-failure
+ledger because its `manifest_sha256` still named an intermediate manifest
+rather than the already regenerated 2,915-test canonical manifest. Exact
+result: `/home/ubu/.cache/lay/development/run-aapbq4h0/RESULT.json`, SHA-256
+`2056535a23bc0212bb3a8132a063ca820ce3e78e98851d57cbe1443d3bd34e7b`;
+log SHA-256
+`f946ed2e64d9f4a36b71945e569bb8f0f76fc28d04ca9b974d91526b956b6a62`.
+This is an infrastructure-contract FAIL, not a full-suite verdict. The ledger
+binding is updated to the canonical manifest SHA-256
+`ba302d4f929a67ac126407e646d2d9c18fc0f8638662d1a4ac21c047547a0e08`;
+the zero-failure set and its observation remain unchanged. A fresh full gate is
+required. Runtime authority changed: **no**.
+
+The fresh full development gate passed with **2,889/2,889** selected
+correctness and package tests. Formatter and lane self-tests also passed; no
+known or unexpected product failures were reported. Exact result:
+`/home/ubu/.cache/lay/development/run-lujfl754/RESULT.json`, SHA-256
+`b69aca22d47afda53a6040069dff5418a56fb6fe5259884818e46865d981395e`;
+log SHA-256
+`da1c9f6b68f031dc8ff76b32d45ed1ec8720beb4b1e5f6c60a4d57485e296d0a`.
+This is the complete development correctness/package denominator for the
+current source closure. Performance and ignored lanes and live browser behavior
+are outside this gate. Runtime authority changed by the gate: **no**.
+
+### Physical Firefox post-settlement failure and next boundary
+
+The installed release artifact has SHA-256
+`e53237b9b983990b4056902db9370104d086577cceb11df81e44238f539b6e9f`.
+Scoped `channel ime` reload replaced only the Lay engine process; the global
+IBus daemon, Lay daemon and existing Firefox process retained their PIDs. A
+fresh isolated Firefox profile mapped adapter SHA-256
+`924b59822e26f5ad3e6e0daf2a8f762b15e6905bb0b3683ce56bee55744a6f22`.
+
+That physical run is a **FAIL** for continuous display. The divergent `у` key
+correctly emitted `retained_inert` and committed with the prior five-character
+surface still visible. Immediately after callback settlement, before either
+surrounding-text trace record, the engine emitted `clear`; the exact `пу`
+result then emitted `update` plus a second `show`. Both `пу` readouts contained
+10 candidates and the causal readout took 3,595 microseconds, so this is again
+a publication-lifecycle defect rather than missing candidates or initial model
+latency. Exact receipt:
+`/home/ubu/.cache/lay/development/nonblinking-ime-20260922/physical-firefox/receipt.json`,
+SHA-256
+`d12297c4ac3578754c188964b5d135b3f63f359272aab1fe803f9480a58fd22f`;
+40-event causal trace SHA-256
+`e143fc3effedae6f969b0e971c79b12119f4eb4c959a8770de912b9487c1fcfe`.
+The fresh profile and ydotool service were removed and the pre-existing Firefox
+process was preserved. Chrome was not tested after this failure. Runtime
+authority changed by the physical test: **no**.
+
+The first lost boundary is now exact. `process_legacy_key()` clears
+`context_callback_entered` immediately after `process_key_event_with_output()`,
+then performs callback settlement and its post-settlement
+`refresh_observed_suffix_precognition()`. The inner key route can therefore
+retain the inert surface, while the same callback's post-settlement refresh no
+longer sees its existing callback scope and clears when no Reset re-receipt
+lineage is active. The controlled callback fixture used an active Reset
+lineage, so it did not exercise this physical order.
+
+The bounded repair will keep the existing `context_callback_entered` timestamp
+through settlement, Reset-lineage advancement, correction-prefetch scheduling
+and the post-settlement precognition refresh, clearing it before the callback
+returns on both success and error. This extends no deadline: the timestamp is
+already the callback entry used to compute the remaining correction wait
+budget. It creates no new state or owner and does not let the inert frame accept
+Tab/Alt, mutate text, or publish unconfirmed candidates. A callback-level RED
+without active Reset lineage must fail on the old clear, then require the same
+zero-output inert surface until the exact surrounding snapshot. Runtime
+authority changed at this preflight: **no**.
+
+The no-Reset-lineage variant was added inside the existing exact-publication
+test identity, so the canonical manifest did not change. Old production failed
+exactly that variant immediately after the divergent key: **587/588** passed
+and the inert frame was already hidden before either unconfirmed snapshot.
+Exact result: `/home/ubu/.cache/lay/development/run-blq7am75/RESULT.json`,
+SHA-256
+`f0a5a025c81c8de08301787a44cebcd13899176f7470528b38d550ddb37997ae`;
+log SHA-256
+`7f58424bd3840e441850f628bbd30cfb8c91ad8990904176fa46a27444e5d463`.
+This is the causal RED for the physical post-settlement clear.
+
+After the callback-scope repair, a later unconfirmed `SetSurroundingText` may
+still lack both an exact frame and Reset lineage. The existing
+`preedit_display_only_pending` latch is the bounded evidence that this surface
+was already made inert by the preceding key. In that exact state, the refresh
+will repeat pending-display preparation without scheduling or publishing; the
+next exact snapshot supplies computation/publication identity, while focus,
+Reset, Disable, another key, failed exact scheduling, or lifecycle cleanup
+continues to retire the surface. This adds no latch, timer, candidate authority
+or mutation route. Runtime authority changed at this preflight: **no**.
+
+The callback scope now remains active through post-settlement refresh, and an
+already visible display-only pending surface survives an unconfirmed
+surrounding snapshot without scheduling identity-less work. The exact snapshot
+still owns computation and publication. The existing test identity now runs
+both active-Reset and no-Reset variants; all **588/588** selected
+`lay-ibus-engine` tests passed. Exact result:
+`/home/ubu/.cache/lay/development/run-06wjag_m/RESULT.json`, SHA-256
+`32d728aaf7ab919c871ce20495464639e3c055420e1aad3e5db6c4b55de79ca1`;
+log SHA-256
+`edcdde2a0f5cf60dcf153c0160130223a966d131bb7304af4571aac703fc26fa`.
+This focused result proves the newly observed callback order but is not a full
+or physical acceptance result. Runtime authority changed: **display lifecycle
+only**.
+
+The fresh full development gate passed with **2,889/2,889** selected
+correctness and package tests after the no-Reset repair. Formatter and lane
+self-tests also passed. Exact result:
+`/home/ubu/.cache/lay/development/run-9wn398kq/RESULT.json`, SHA-256
+`20446d7541e45f7540d7b3baed490e8b6424d791bba4629e3536c1aead721a12`;
+log SHA-256
+`882c395088fd1502d9ce3af13c7900cc9d48b9ca383891b9a607a863111c57e6`.
+Performance and ignored lanes and live browser behavior remain outside this
+gate. Runtime authority changed by the gate: **no**.
+
+### Final installed artifact and physical browser acceptance
+
+The final release artifact has SHA-256
+`a937a07918ed82985fdce1c447f93c1ddf73b0d82797dba543f574e995cb4352`.
+The scoped `scripts/lay-runtime-control.sh channel ime` reload replaced only the
+Lay IBus engine, from PID 89284 to PID 257677. The global IBus daemon (PID
+4062416), Lay daemon (PID 428182), and pre-existing Firefox main process (PID
+3960280) were preserved. The installed file and `/proc/257677/exe` both match
+the release artifact. Exact installation receipt:
+`/home/ubu/.cache/lay/development/nonblinking-ime-20260922/installation-final.json`,
+SHA-256
+`d2d5ea63decea1d354c8da4772c28c7144ac1b079b2b3bf05d913c5db4db4c01`.
+
+The target physical scenario passed in both Firefox and Chrome. Each run typed
+`п`, observed the visible `очему` surface, then typed the divergent `у`. The
+engine retained that surface inert until the exact `пу` publication replaced
+it in place with `сть`. Between the first `show` and the exact replacement,
+neither trace contains `clear`, `hide`, or another `show`; the exact result is
+therefore a continuous update rather than a hide/show reconstruction. No Reset
+occurred between the first key and exact publication in either selected causal
+trace.
+
+Firefox recorded three post-key `retained_inert` events. Its exact `пу`
+publication contained 10 candidates and required 3,121 microseconds of engine
+material work; the preceding cold `п` publication contained 12 candidates and
+required 4,848 microseconds. A fresh isolated Firefox instance used the mapped
+adapter SHA-256
+`924b59822e26f5ad3e6e0daf2a8f762b15e6905bb0b3683ce56bee55744a6f22`;
+its temporary profile was removed, and the pre-existing Firefox PID 3960280
+retained start tick 170178761. Exact target-only receipt:
+`/home/ubu/.cache/lay/development/nonblinking-ime-20260922/physical-firefox/suggestion-receipt.json`,
+SHA-256
+`86240a5c1fc76f7ab03e6f17c8b4fedc7790b27f93a625ac666b236a6a50961a`;
+42-event causal trace SHA-256
+`a7413b6bd0ddce140f4df2015e3b91f14eb34131076d1dc5b59d031a3180342f`.
+
+Chrome recorded two post-key `retained_inert` events. Its warmed exact `пу`
+publication contained 10 candidates and required 12 microseconds; the preceding
+warmed `п` publication contained 12 candidates and required 13 microseconds.
+The tested ordinary Chrome main process retained PID 483227 and start tick
+49964070. The combined harness's broader process-set preservation field is
+false because that set included renderer and unrelated Chrome process churn;
+the scoped tested-main identity is unchanged. Exact target-only receipt:
+`/home/ubu/.cache/lay/development/nonblinking-ime-20260922/physical-chrome/suggestion-receipt.json`,
+SHA-256
+`62c6df0cce939ddca00247808d76ea4df1e96d02416371ea522412e5b8f8418e`;
+32-event causal trace SHA-256
+`3c8421911cc181ec7585dc3c435f0f226eca22c8a6200a572d3a9c809f8f1b6e`.
+
+The original combined browser receipts remain unchanged and retain `FAIL`
+because their separate auxiliary correction assertion observed `публекует`
+rather than `публикует`. That observation is outside this continuous-suggestion
+verdict; the user separately confirmed the live correction route works, and
+this repair does not change correction selection, mutation, or publication
+authority. The target-only receipts preserve the combined receipt hashes and
+the auxiliary observation instead of rewriting them.
+
+This physical acceptance tests the two reported browser paths and the exact
+`п` to `пу` transition. It does not establish a latency distribution, a long
+duration or stress result, behavior in other applications, or a new correction
+quality verdict. The full development gate excludes performance and ignored
+lanes, as recorded above. Final verdict scope: **PASS for continuous suggestion
+display in Firefox and Chrome for the reproduced disappearing-surface route**.
+Runtime authority changed by the repair: **display lifecycle only**. Candidate
+generation, selection, correction, learning, committed-text mutation, and
+publication identity authority remain unchanged.
+
+### Browser managed-commit Space correction regression preflight (2026-09-22)
+
+The combined physical receipts above are now treated as a real correction
+failure. Both Firefox and Chrome left the widget at `публекует ` instead of
+`публикует `. The trace comparison found one shared loss point before Space:
+the widget had returned an exact, unselected surrounding-text snapshot whose
+bounded word equalled the engine's current committed-tail token, but
+`capture_space_autocorrect_frame_identity()` still required a live
+KnownStart/Reset admission token, terminal ownership, or legacy-preedit
+ownership. Firefox lost that token after later Reset/rereceipt rejection;
+Chrome's printable callbacks were refused while its managed CommitText and
+exact snapshots continued normally. In both cases the final Space therefore
+had no current correction frame or prepared lease.
+
+The planned systemic repair recognizes the existing exact widget snapshot as
+a distinct managed-commit computation witness. It is valid only with managed
+input, exact-surrounding capability, no selection, an empty local composition,
+a non-sensitive field, exact token equality, proved left and right word
+boundaries, and the current path, focus receipt, focus serial, owner lease,
+tail epoch, capability fingerprint, layout generation, configuration, and
+surrounding-observation revision. Space must revalidate the same witness before
+using the prepared result. This does not turn an arbitrary UnknownStart suffix
+into a word: the widget itself supplies both whole-word boundaries and exact
+current text. The existing DecisionCore, SafetyGate, authorized edit,
+DeleteSurroundingText/CommitText execution, and visible postcondition verifier
+remain unchanged.
+
+Tested before production code change: physical traces from both browsers and
+the complete capture-to-Space authority path. Measured fact: exact widget
+snapshots continued after the admission lineage stopped authorizing a frame.
+Not yet tested at this preflight: the new callback-level fixture, full
+development gate, final installed binary, or a same-run physical acceptance of
+both continuous suggestion display and correction. Preflight verdict:
+**FAIL at managed exact-snapshot frame capture**. Planned runtime authority
+change: **permit correction computation and later revalidation from the exact
+bounded managed-widget snapshot; no change to candidate selection or mutation
+authorization**.
+
+The callback-level fixture now reproduces both browser orders: admission absent
+from the first managed key (Chrome) and admission lost after the fourth managed
+key (Firefox). Both variants commit each character, return the exact widget
+snapshot after it, and require the final exact bounded snapshot to prepare and
+apply the Space correction. Against the pre-repair runtime, the new test failed
+at frame capture while the other **588/588** selected engine tests passed.
+Exact RED result:
+`/home/ubu/.cache/lay/development/run-jkq2clja/RESULT.json`; the failing test is
+`terminal_delivery_browser_exact_snapshots_restore_space_frame_after_callback_admission_loss`.
+This proves the authority loss without changing runtime code. It does not yet
+prove the repair or physical acceptance. Runtime authority changed by this
+experiment: **no**.
+
+The repair adds a separate `space_autocorrect_surrounding_revision` witness to
+the existing input-frame identity. Exact managed-widget capture now requires
+whole-token equality, no selection, both word boundaries, managed CommitText
+mode, the exact-surrounding capability, and the existing frame authority. A
+later equal-text receipt has a different revision and cannot reuse the old
+lease. The callback fixture also rejects a joined character on either side and
+any selection before restoring the exact snapshot. It then proves one
+DeleteSurroundingText plus one corrected CommitText through the unchanged full
+decision and verifier route in both Chrome-order and Firefox-order variants.
+
+All **589/589** selected `lay-ibus-engine` tests passed. Exact focused result:
+`/home/ubu/.cache/lay/development/run-md_jmn1b/RESULT.json`, SHA-256
+`16717ad2826f442daab2e4465faf4285fb1fa89bb9b93a9382d53eb2c3422c41`;
+log SHA-256
+`abaffa9cad11f4d32b5da47a9b798ba8b41f65f9c454c03476e899ee75f3c0ba`.
+This verifies callback-level frame capture, stale-revision rejection, boundary
+and selection rejection, prepared full correction, and text effects. It does
+not yet prove the full project gate, installed artifact, or physical browser
+behavior. Focused verdict: **PASS**. Runtime authority changed: **the exact
+bounded managed-widget snapshot may prepare and revalidate Space correction**;
+candidate selection, SafetyGate, edit authorization, and postcondition
+verification are unchanged.
+
+The fresh full development gate passed with **2,890/2,890** selected
+correctness and package tests after registering the new process-isolated
+callback fixture. Formatter, lane self-tests, exact manifest discovery, and the
+zero-known-failure binding also passed. Exact result:
+`/home/ubu/.cache/lay/development/run-sh0xsooo/RESULT.json`, SHA-256
+`8bd4d43926ad82189101a4943248fd582e7295e59a1556b0fef7238d87207db6`;
+log SHA-256
+`167d8079631403704939acec6e6b484df3ff847916f0cba36f6e850370cec85d`.
+Performance, ignored lanes, and physical browser behavior remain outside this
+gate. Full development verdict: **PASS**. Runtime authority changed only by the
+bounded managed-widget snapshot witness described above.
+
+### Delayed final snapshot physical finding (2026-09-22)
+
+The first installed repair preserved the continuous `п` to `пу` suggestion in
+Firefox, but the same physical run still left `публекует `. The completed
+correction trace proves that Space took `managed_fallback_commit` with no
+correction lease; the widget returned its nine-character and ten-character
+surrounding snapshots only after that Space callback. Exact receipt:
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-firefox/receipt.json`;
+correction trace:
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-firefox/correction-trace.jsonl`.
+The suggestion sub-result remained continuous with two retained-inert events,
+ten `пу` candidates, and no clear/hide/show between the initial surface and
+the exact `сть` update.
+
+This falsifies the narrower assumption that the final exact widget snapshot is
+always available before Space. The next experiment will retain a separate
+managed-word-start witness from an exact, unselected snapshot at a proved caret
+boundary. It may remain live only while the same focus/owner is current and the
+committed tail equals the witnessed boundary tail plus exactly one locally
+handled managed CommitText character per tail epoch. A later snapshot must be
+compatible with that projected cursor and prefix; selection, cursor movement,
+external text, backspace, boundary input, focus/owner change, sensitive
+content, capability change, or an epoch/text mismatch retires the witness.
+This witness can prepare Space work during a burst even when the browser delays
+the final callback. The existing candidate decision, SafetyGate, authorized
+edit, and postcondition verifier remain unchanged.
+
+Tested at this point: the installed exact-snapshot repair and one physical
+Firefox burst. Measured fact: final surrounding receipts followed Space.
+Not yet tested: the managed-start callback fixture, revised full gate, rebuilt
+artifact, Chrome, or final same-run physical acceptance. Verdict:
+**FAIL at pre-Space frame availability for delayed-snapshot bursts**. Planned
+runtime authority change: **a proved boundary snapshot plus an uninterrupted
+locally committed managed word may prepare and revalidate Space correction**.
+
+### Managed-word-start delayed-snapshot experiment (2026-09-22)
+
+The controlled RED sends one exact empty caret-boundary snapshot, then commits
+`рабоает` through seven real managed legacy callbacks without any later
+SurroundingText receipt. The pre-repair source passed **589/590** selected
+engine tests and failed only when Space attempted to capture a correction
+frame. Exact RED result:
+`/home/ubu/.cache/lay/development/run-t_clj0dc/RESULT.json`, SHA-256
+`abe34f467d4fa9c3d2f537e9e36efe5d59e19436f725d1e274b90657d2fea1c7`.
+This reproduces the physical Firefox timing without a browser-name branch or a
+literal-word runtime condition.
+
+The implementation records a `ManagedWordStartWitness` from an exact,
+unselected snapshot whose caret has word boundaries on both sides. It binds
+the focus receipt, focus serial, runtime owner lease, layout generation,
+starting tail epoch and committed tail, exact snapshot prefix/suffix/cursor,
+and surrounding-observation revision. Source-free activation may rebind the
+serial, owner and starting epoch exactly once before the first local character,
+only while the focus receipt and observation revision are unchanged. The
+controlled intermediate result proved why that transition is necessary: the
+exact boundary had focus serial/owner `1/2` and epoch `0`; authenticated
+activation installed `7/6` and advanced the seven-character final epoch to
+`8`. Exact diagnostic result:
+`/home/ubu/.cache/lay/development/run-jqrd46t1/RESULT.json`, SHA-256
+`1db6c6ade85d2e8fa9ab76cab2b0af7a476203d039bbb6ddcafd59724cb98e1d`.
+
+After the first character, every current token character must correspond to
+exactly one tail-epoch advance from the rebound start, with the same focus,
+owner and layout. A compatible later snapshot may confirm the projected prefix
+and cursor; selection, cursor mismatch, external text, Backspace/equal-text
+ABA, focus or owner change, capability change, sensitive content, layout
+change, boundary input, or an epoch/text mismatch cannot capture the frame.
+The witness projects one request-scoped external snapshot from the observed
+boundary plus the verified local CommitText chain. That projection is supplied
+only to the existing committed-tail edit validator and exact
+DeleteSurroundingText postcondition plan; it is never installed as a client
+observation.
+
+The final focused experiment passed **590/590** selected `lay-ibus-engine`
+tests, including the delayed-snapshot correction, exact projected widget state,
+equal-text epoch ABA, changed focus, changed owner, selection and cursor-move
+negative assertions. It emits one DeleteSurroundingText and the exact corrected
+CommitText `работает `. Exact result:
+`/home/ubu/.cache/lay/development/run-ecu1938a/RESULT.json`, SHA-256
+`06f5ee634ad8eb7a8c4d34f1654898f9312175f917fd502b4a8a3009e6c05e10`;
+log SHA-256
+`fbd7400366942c45101fa42ba2f01570ebe322b865b9a7cc3879eaa77dbd8559`.
+Focused verdict: **PASS**.
+
+Not tested by this focused result: the complete project gate, performance or
+ignored lanes, release bytes, installation, physical Firefox, physical Chrome,
+Tor Browser, GTK or Kitty. Runtime authority changed: **an exact managed word
+start plus its uninterrupted local CommitText chain may prepare, revalidate
+and structurally authorize the same bounded DeleteSurroundingText correction
+when the final client snapshot is delayed**. Candidate generation, ranking,
+DecisionCore, SafetyGate, winner action, edit-plan validation and later visible
+postcondition verification remain unchanged.
+
+The first complete project-gate attempt reached the full test matrix, validated
+the 2,917-test manifest and selected all 2,891 correctness/package cases, but
+correctly refused acceptance because the protected
+TD-113 composition artifact still terminated at the older Chromium successor.
+All other reported targets passed; the only unexpected failure was
+`td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline`.
+Exact result:
+`/home/ubu/.cache/lay/development/run-uq8qm7_u/RESULT.json`; worker
+`run-1Svbou`; elapsed 384.5 seconds. Verdict scope: **provenance-chain FAIL,
+no full-gate PASS**. This result does not challenge the delayed-snapshot
+mechanism and grants no release authority. The owning contract must bind the
+reviewed delayed-snapshot successor before the complete gate is repeated.
+
+The first independent review rejected that checkpoint with one high finding:
+command-modified keys, unsuccessful Tab/candidate navigation and generic
+non-printable keys could be returned to the client while retaining both the
+managed-word-start witness and prepared Space slot. Because the client can
+paste, cut or move the caret before a delayed snapshot arrives, this was a
+fail-open edit-authority gap. No second high or medium source defect was found,
+but the 590/590 result above did not cover the omitted route and therefore did
+not admit the successor.
+
+The repair centralizes revocation for client-owned mutation/navigation exits:
+it clears `managed_word_start` and invalidates the current Space path before
+control returns to the client. The causal negative covers command input, Tab,
+candidate navigation, generic navigation and cursor movement. Each variant
+starts with a fully prepared old lease, returns the key as unhandled, then
+presses Space and requires no DeleteSurroundingText plus exactly the ordinary
+space commit. The repaired focused gate passed **590/590**. Exact result:
+`/home/ubu/.cache/lay/development/run-gvlb0oqw/RESULT.json`, SHA-256
+`78b097aa1a30025a0784c349bf6278cfc43193b15c655de23551e64c01bdac07`;
+log SHA-256
+`62bc9b2fb9922cf46a6a0d89eeb7fbcc6cbf4220beac1b340fb84dd7d097c2bb`.
+Runtime-authority scope is unchanged from the bounded delayed-snapshot rule;
+successor review, the complete gate and both physical browsers remain pending.
+
+The next review round confirmed every exit inside `process_pressed_key`, then
+found the same mechanism at the outer dispatcher: a failed standalone
+Alt/ISO-level3 completion release and the disabled-composition branch return to
+the client before managed dispatch. This medium finding rejected the first
+revocation checkpoint. The outer repair applies the same witness-plus-path
+revocation to all pre-managed client exits, including native exact replay,
+while leaving harmless Shift press/release observation untouched so shifted
+managed typing remains continuous.
+
+Two wrapper-level causal negatives now install the authorized old lease before
+the event. One disables and re-enables the live text backend around a
+client-owned key; the other exercises an unsuccessful standalone Alt release.
+Both require the witness, frame and ready slot to be absent, then require the
+next Space to emit no deletion and only the ordinary space commit. The repaired
+focused gate again passed **590/590**. Exact result:
+`/home/ubu/.cache/lay/development/run-ekb6jas1/RESULT.json`, SHA-256
+`ad9442d37e357d27f1c6a9aede2cd0ae6695961dc0efe16c91277da2627dcfa9`;
+log SHA-256
+`b9f264e409f61b8779bfe351db34d64d3927cef228b52cf05107d04bc1c4b972`.
+Final source review remained pending at this checkpoint.
+
+Final read-only source review passed **9/10, H0/M0/L0**. It confirmed that all
+client-owned managed and wrapper exits revoke the witness and path-wide Space
+work, while the retained Shift-only branches are observation-only. Review
+record:
+`tech_debt/evidence/browser-delayed-snapshot-source-review.md`; successor
+binding:
+`tech_debt/evidence/browser-delayed-snapshot-composition-successor.json`.
+
+The TD-113 protected-artifact contract then passed **7/7** at
+`/home/ubu/.cache/lay/development/run-35r44hn_/RESULT.json`, SHA-256
+`2fb30e957372deb22df89834135fbc345670b98fb18e73685e21da99844e4e59`.
+The complete remote project gate subsequently passed all **2,891/2,891**
+selected correctness and package cases in 352.9 seconds, after validating the
+2,917-test manifest. Exact result:
+`/home/ubu/.cache/lay/development/run-7pv91b6z/RESULT.json`, SHA-256
+`2eac3f79e371ff4f1d60bff13120462c4db5a071c932b238fb4aed9f4db9c299`;
+run-log SHA-256
+`1c7d4b5921ebe71a8b3e39046dca20daa1da27358b218184799c7c66ec3fda73`;
+source-archive SHA-256
+`d4e4acff902d0bd0613504578c52105a2a02dbe357e728371a0a87a7d9b9e62f`.
+Full development verdict: **PASS**. Performance and ignored lanes, release
+bytes, installation and physical clients remain outside this receipt.
+
+### Browser managed-commit reset/release order, 2026-09-22
+
+**Tested:** physical Firefox input with the compatibility adapter, an exact
+surrounding-text receipt during a managed word, repeated client `Reset` after
+`CommitText`, and the following key release. Earlier physical checks retained
+the suggestion but left `публекует ` unchanged. Receipts:
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-firefox-midword/receipt.json`
+(SHA-256 `3db900cfae54125bd711ea50755470e3017d58825f37bce75f38e34054d1bf2e`)
+and `physical-firefox-reconcile-diag/receipt.json` in the same directory
+(SHA-256 `fa54f2d51ada151403ded3d7ee1bee34ffec8bff6f02e1200ae45644f15058fc`).
+The latter trace proved that a six-character exact snapshot still matched the
+word-start witness after `Reset`, but the next key's release had already
+removed it: reset cleanup discarded the handled-press keycode before Firefox
+delivered that release.
+
+**Change:** an exact complete midword snapshot can establish a word-start
+witness for the existing managed CommitText chain. A one-use echo ticket, bound
+to that chain's tail epoch and to a CommitText no older than 700 ms, permits
+its immediate client `Reset` to retain the witness, prepared Space frame and
+handled-press keycodes. The matching release is then consumed by the engine.
+Focus changes, client-owned keys, a second or late `Reset`, changed text and
+changed owner still revoke edit authority. The focused callback test exercises
+`CommitText -> Reset -> release`, correction, duplicate reset and late-echo
+rejection; it passed 1/1. Log:
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/reset-release-focused-final.log`,
+SHA-256 `c0a52ab44597169721e670b2a7f9b0164dea87f138a21572cca9418a17e9820c`.
+
+**Measured physical result:** Firefox kept a continuous visible suggestion and
+changed `публекует ` to `публикует `; no composition events occurred. The
+installed and loaded diagnostic engine had SHA-256
+`1263b4aca6c6983d851cd318ca12e443091eafd31828ba2f9b7f892afa650fb2`.
+Receipt:
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-firefox-reset-release/receipt.json`,
+SHA-256 `c0cb13a12e698c278426d3ea5a7ad53093c2ca156baabbb108e1623c10b0101b`.
+This physical PASS establishes that behavior only for the diagnostic source
+and Firefox run. The final source archive, full fixed proof, final release
+bytes, ordinary Chrome and final exact-binary physical rerun remain untested
+at this checkpoint. Runtime authority changed only in the bounded
+managed-commit snapshot and owned-reset/release path; correction ranking,
+SafetyGate, edit-plan validation and verifier authority did not change.
+
+The first final-source full-gate attempt compiled successfully but stopped at
+test discovery: the new causal test was absent from the fixed manifest. No
+correctness verdict was issued. Receipt:
+`/home/ubu/.cache/lay/development/run-eahy_9az/RESULT.json`, SHA-256
+`ff3fe23d29f11525b0a5899c00616a5379d470ff97ba91b16f72afc556f05793`.
+The runner regenerated the manifest from that exact source; its only added row
+is the new process-isolated correctness test. Counts change from 2,855 to
+2,856 correctness and from 177 to 178 process-isolated cases. The zero-failure
+record is rebound to manifest SHA-256
+`c85270ff2503cc14eba03f5c6faf7ffc4620d0886f4e1d3228e7796404874c1d`.
+The complete fixed gate still requires a fresh snapshot and execution.
+
+The next full snapshot validated the 2,918-test manifest and ran the selected
+tests, but the TD-113 protected-artifact contract found that
+`composition_commit.rs` had changed since the historical delayed-snapshot
+review. Its review hash must remain historical; retagging it as the new file
+would misattribute old focused and source-review evidence. The full verdict
+was **FAIL** despite the other completed targets reporting zero failures.
+Receipt: `/home/ubu/.cache/lay/development/run-rm0v4byf/RESULT.json`,
+SHA-256 `1b266531e8f72897a239174665779f402efed8b0c4de6a8794fa7f71bd4a023d`.
+
+The new source is therefore bound as a separate successor in
+`tech_debt/evidence/browser-owned-reset-release-composition-successor.json`,
+chained by the prior binding hash and prior source SHA-256. Its focused source
+review is `tech_debt/evidence/browser-owned-reset-release-source-review.md`
+(8/10, H0/M0/L0). The TD-113 contract now validates both historical and new
+bindings against the current source. Full fixed proof and final physical
+acceptance are still pending; this provenance repair did not widen runtime
+authority beyond the bounded managed-commit Reset/release rule above.
+
+### Settled Chrome owned-preedit display, 2026-09-23
+
+The complete fixed gate for the owned Reset/release source passed all
+**2,892/2,892** selected correctness and package cases against the 2,918-test
+manifest. Result:
+`/home/ubu/.cache/lay/development/run-x9mo88hp/RESULT.json`; source archive
+SHA-256 `971a5de1d442351655bf3e2d7bde398ad6954119cf3abe2125ede1ba0f97bebb`.
+Its installed release binary kept the suggestion and corrected
+`публекует ` to `публикует ` in Firefox (receipt
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-firefox-final-gate/receipt.json`).
+The ordinary Chrome correction route also passed (receipt
+`physical-chrome-correction-only/receipt.json` under that same directory), but
+Chrome's separate suggestion check failed: the preedit showed only `п` and
+`пу`, with no candidate. These are separate physical denominators; the earlier
+fixed gate cannot prove the later display change.
+
+The Chrome trace computed 12 candidates after `п` and 10 after `пу`, yet the
+worker discarded both display outcomes. At discard, generation and frame
+authority still matched, the owned preedit was current, and only the Space
+frame identity differed. The first display job was scheduled before the
+printable callback settled its admission token. The repair schedules the
+display job again from the same post-settlement exact owned-preedit frame used
+for Space prefetch. An UnknownStart owned composition may use that exact frame
+for **display identity only**; this neither gives it new committed-text or
+Space edit authority nor changes ranking, SafetyGate, edit-plan validation or
+the verifier.
+
+**Tested:** one focused callback fixture passed 1/1 with the first unknown
+Chrome preedit key, capability transition, next key, continuous preedit output,
+settled-frame scheduling, and stale-epoch rejection. Log:
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/chrome-settled-focused.log`.
+A release diagnostic binary with SHA-256
+`5fee789644ac3aea5c881aa283bddfaa2c347a6332154bcacd44ff1fa17e98c7`
+was installed and loaded without restarting the global IBus daemon, Lay daemon,
+or existing Firefox and Chrome main processes. Ordinary Chrome then showed
+`п`, `почему`, `пу`, `пусть` with no hide/clear event: suggestion receipt
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-chrome-settled-suggestion/receipt.json`
+(SHA-256 `3116ed3b0af329ef5452aa147d8c6cdd9ffb59b687cf26d3815bcceb9994c3ad`).
+On the same installed engine and existing Chrome main, a separate correction
+run produced `публикует `: receipt
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-chrome-settled-correction/receipt.json`
+(SHA-256 `766b7c9ad7c3265021163393f305980a81c28d9145e2f3e096cff17b962a9df8`).
+
+**Verdict scope:** diagnostic Chrome suggestion and correction **PASS** as two
+physical runs. The revised fixed manifest, complete gate, final source-bound
+release bytes and one-run final Firefox/Chrome acceptance remain untested here.
+Performance and ignored lanes, other applications, package/RSS and latency
+distribution were not tested. Runtime edit authority did not change in this
+display repair; it only reschedules display work against a settled frame.
+
+A stronger single-window probe typed `пу` in one Chrome textarea, moved by Tab
+to another textarea, then typed `публекует `. The suggestion half passed, but
+the second field remained `публекует ` (receipt
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-chrome-settled-combined/receipt.json`).
+This is a separate **FAIL**, not covered by the two passing fresh-window runs.
+After focus transition Chrome advertised capabilities 41 before the first
+printable. It supplied asynchronous surrounding-text receipts, but no exact
+surrounding-refresh capability. The engine committed each character; its
+managed word-start witness was absent at every key and Space had no correction
+frame. The first field had advertised capabilities 9 for its first printable,
+so the engine owned that word in preedit from its start.
+
+The new experiment extends owned legacy preedit to an alphabetic word whose
+first key arrives with surrounding-text support but **without exact refresh**.
+This preserves the already proven exact local composition surface through
+Space, rather than deriving edit authority from asynchronous client receipts.
+The existing test now covers both Chrome capability orders (9→41 and 41 from
+the first key). Focused proof, full fixed gate and physical single-window
+recheck are pending. Runtime authority would change only in which side owns
+the active uncommitted word; SafetyGate, edit-plan validation and verifier
+authority remain unchanged.
+
+The preceding display-only source passed the complete fixed gate, **2,893 of
+2,893** selected cases in 390.9 seconds, against the 2,919-test manifest.
+Receipt:
+`/home/ubu/.cache/lay/development/run-2nrara15/RESULT.json` (SHA-256
+`15dfb55a24b5a8ec9b1fd81aefbf843d9efc4066a93f2cd30a12442c689977b8`);
+archive SHA-256
+`889c4774012d2924be4b6734b244e26ff646e90ed158924edfcd7c81eb282dba`.
+This is the **display-only checkpoint**, not a pass for the later caps=41
+input-ownership change.
+
+The expanded Chrome callback fixture passed **1/1** on the remote runner with
+both capability orders; log
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/chrome-caps41-focused-remote.log`
+(SHA-256 `e6e5d1b7e5155fd713d0470a6c11496ad57926e4946447d65454159cbe15e825`).
+The first combined physical attempt on the revised binary also failed: its
+trace showed `legacy_callback_admission=refused` before the first key in the
+second field, because the new focus context had not completed activation.
+The probe was tightened to wait for the field's focus to settle. It then
+passed in one ordinary Chrome window: suggestion `п → почему`, `пу → пусть`
+without hide/clear, then `публекует ` corrected to `публикует ` in the second
+field. The installed and loaded diagnostic engine SHA-256 was
+`8ca9cc712d66c3a403f984e08af515680f45009c9e7fdb58f650b62885c3fb0c`.
+Receipt:
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-chrome-caps41-combined-settled/receipt.json`
+(SHA-256 `69c0ac880329e914c83c7b33cde1881cda45f70dc5be22301b2c7e096278ae3e`).
+The existing Chrome main processes were preserved. The revised source has
+**focused and diagnostic physical PASS**, but complete fixed proof and final
+source-bound binary acceptance are still pending. Other applications,
+performance/ignored lanes, package/RSS, and latency distribution were not
+tested at this checkpoint.
+
+The complete fixed gate rejected that broad input-ownership change. It
+reported **10 unexpected IME failures** in the 2,919-test manifest; receipt:
+`/home/ubu/.cache/lay/development/run-_6qt7fnj/RESULT.json`. They share the
+first mechanism: treating a client that advertises surrounding text but lacks
+the exact-refresh marker as an owned-preedit client changes accepted replay,
+inherited-snapshot and capability-transition routes. The two TD-125 contracts
+explicitly require per-character managed commits for an unmarked surrounding
+client and a clean finish of a preedit when surrounding capability appears.
+Selected physical successes cannot override this fixed proof. **Verdict:
+REJECTED.** The broad predicate and expanded fixture were reverted byte-for-byte
+to the preceding gate source (`managed.rs` SHA-256
+`70113d94e9e513a71d74eb19518e0b38d4edfbb2ef38c4f555330400d3466ee1`,
+`terminal_delivery.rs` SHA-256
+`eb80db0989a16e8d5e8ab30ed88ac459008687be116df11390404b294dab3e32`).
+The tested extension would have changed runtime input ownership; the retained
+display-only source does not. Automatic Chrome admission after a Tab focus
+handoff remains unproved and is outside the accepted browser correction route.
+
+### Accepted browser display source and installed artifact
+
+The retained engine source is byte-identical under
+`src/bin/lay_ibus_engine/` to the archive from the **2,893/2,893 PASS** at
+`/home/ubu/.cache/lay/development/run-2nrara15/source.tar` (archive SHA-256
+`889c4774012d2924be4b6734b244e26ff646e90ed158924edfcd7c81eb282dba`).
+The release engine was built from that remote archive checkout and atomically
+installed; both installed and loaded SHA-256 are
+`daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88`.
+
+Build log:
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/chrome-display-final-release-build.log`
+(SHA-256 `ad48fdf73a3efa61ad4046bbc34617a281cbd8e72244988738f751e75366a1a6`);
+installation receipt `final-gated-installation.json` in the same directory
+(SHA-256 `720cfb76bc60a9cd20a223d54547fe84ccc2f3f452f933997b51f1157e37667c`).
+The global IBus daemon, Lay daemon and original Firefox/Chrome main processes
+kept their identities.
+
+On these exact bytes, physical Firefox passed continuous suggestion plus
+`публекует ` → `публикует ` in one fresh profile run; receipt
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-firefox-final-accepted/receipt.json`
+(SHA-256 `10232f22461db9157b199841c6d94a99163c8c8429ba3ef11851125c4b88d501`).
+Ordinary existing Chrome passed continuous suggestion (`п`, `почему`, `пу`,
+`пусть`, no hide/clear) and exact correction in **two fresh-field runs** on
+the same installed engine and preserved browser main. Receipts:
+`physical-chrome-final-accepted-suggestion-current/receipt.json` (SHA-256
+`36a15e19cc4d74c796e4e36d82ad668f0decd0e68768cb4bba487b271f763591`)
+and `physical-chrome-final-accepted-correction/receipt.json` (SHA-256
+`59a26594f1375f16edbf17a86b82b74ee1f249f6ae9bbcda16c85d9f231233d0`)
+under the same directory. The stronger **same-window Tab-to-second-field**
+Chrome probe remained **FAIL** (`публекует ` unchanged), receipt
+`physical-chrome-final-accepted-combined/receipt.json` (SHA-256
+`6f469b2ae96974462c25c3e1436e0d7257dd97336274f6516ee721ec547960fa`).
+Its second field used managed CommitText without an exact word-start witness;
+the broad preedit alternative was rejected by the fixed gate. Thus quality is
+proven for the reported fresh-field browser paths, not for automatic
+cross-field admission. The accepted display repair grants no new edit
+authority. Performance/ignored lanes, other applications, package/RSS and
+latency distribution were not tested by this final physical acceptance.
+
+The direct **same-run Chrome acceptance in one field** passed twice on those
+same installed bytes: `пу` displayed `пусть` continuously, further typing
+formed `публекует `, and the owned-preedit Space route committed exactly
+`публикует `. Both runs retained the original Chrome main processes and
+showed no preedit hide/clear between the first two key publications. Receipts:
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-chrome-final-same-word/receipt.json`
+(SHA-256 `a35b4280659b55f81137b15907e9dfd992fc0352cd51330034ba582124e1c77c`)
+and `physical-chrome-final-same-word-repeat/receipt.json` in that directory
+(SHA-256 `4aff21928bd895dcc46bc2d536f402bf567e9c40c5d73f2ae492163ab391d4c5`).
+This closes the reported same-word browser path in Chrome as well as Firefox;
+the Tab-to-another-field limitation remains a distinct unaccepted route.
+
+A follow-up architecture experiment allowed owned preedit only when an
+admitted UnknownStart context had an empty retained tail, no surrounding-text
+callback or snapshot, no exact inherited target, and no replay quarantine.
+The physical second Chrome field could satisfy that shape after a transfer,
+but the complete engine unit set rejected the predicate: **584/595 PASS,
+11 FAIL**. Every failure is in the Firefox/TD-121 transfer and Reset/replay
+family, so the first shared defect is still transfer lineage being treated as
+a new locally owned word without an independent proof of that transition.
+Exact log:
+`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/chrome-narrow-focused-bin.log`
+(SHA-256 `2c58bbb9736b915f53889dd883ae748bfb7d3a8b2bbd7a0a60be29990bddb451`).
+This narrower candidate was **REJECTED and reverted before installation**;
+no new runtime authority was retained. A full project gate and physical client
+run were not performed on it because the owning engine proof already failed.
+The accepted archive-built engine above remains installed. Any future
+cross-field repair must distinguish source-free start from transferred
+Reset/replay ownership at the admission layer and preserve all 11 existing
+negative contracts before physical promotion.
+
+### Firefox Double Shift after a shortened completion (2026-09-23)
+
+The user's physical Firefox failure was captured before any candidate install.
+The retained engine trace has 18 consecutive left-Shift callbacks in the final
+episode, a six-character committed tail and a three-character visible suffix,
+but no manual-toggle plan. Earlier in that episode, the completion shortened
+after an owned append; Firefox reported the old preedit surface (53 characters,
+cursor 50) before the exact committed surface (50 characters, cursor 50).
+`context_reset_rereceipt` rejected the first as `second_surrounding_receipt`,
+so the later exact receipt could not restore manual-toggle authority. The trace
+does not identify whether the daemon sent `ManualToggleV3` for those Shift
+pairs; a simultaneous physical/DBus capture was attempted but received no new
+Shift input. This is evidence of the first observed receipt loss, not yet a
+complete physical cause attribution.
+
+The development repair retains the previous published completion only as an
+inert stale-surface witness while the same confirmed Reset lineage advances
+through an owned append. The witness cannot authorize an edit. A fresh exact
+client snapshot is still required for `ManualToggleV3`; a different stale
+surface revokes the pending lineage. The causal test failed on the old code at
+the retained-lineage assertion, then passed after the repair and also asserts
+the contradictory-surface denial. No Tab handling, candidate ranking,
+`SafetyGate`, verifier, or edit authority was changed.
+
+The scoped test passed 1/1. The fixed correctness/package execution completed
+2,894/2,894 tests over 32/32 expected targets with zero failures. Its driver
+then rejected the known-failure ledger's old manifest hash; the manifest gained
+exactly the new test, the zero-failure ledger binding was updated, and the
+manifest/ledger contract plus every target count were validated without
+repeating the unchanged test execution. Formatting and graph update passed.
+The isolated candidate Firefox attempt stopped before client input because
+the candidate bridge owner did not appear. It restarted the baseline Lay
+daemon/engine during cleanup, so process identities changed, but the selected
+`lay-ime-ru` source and accepted loaded binary hashes were restored. The
+candidate was **not installed**. Native Firefox behavior on candidate bytes,
+the user's physical repeat, package/RSS, and latency remain **NOT TESTED**;
+there is no runtime promotion verdict. Exact receipt:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0231/receipt.json`
+(SHA-256 `5d15ae1d63f9ce9bfe048a539f36aa0a8b0649badcfa59c51942a57a550ed284`).
+The separate release candidate is `candidate-lay-ibus-engine` in that receipt
+directory (SHA-256 `f17191f43936e87a195ec28c0c09a41b2229fa4f340070741e5f5ca83321548c`);
+the installed engine remains SHA-256
+`daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88`.
+
+### Firefox Double Shift candidate installation (2026-09-23)
+
+At the user's request, the prepared engine candidate was installed with an
+atomic file replacement and a scoped `scripts/lay-runtime-control.sh channel ime`
+reload. The installed file and loaded `/proc/3656661/exe` both have SHA-256
+`f17191f43936e87a195ec28c0c09a41b2229fa4f340070741e5f5ca83321548c`.
+The previous binary is backed up at
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0231/preinstall-lay-ibus-engine-daaa47bf`
+(SHA-256 `daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88`).
+The Lay engine changed PID 3354067 -> 3656661; global IBus stayed PID 4062416,
+Lay daemon stayed PID 3354052, and GNOME plus IBus read back `lay-ime-ru`.
+The daemon is active with exactly one Lay IME process. This verifies deployment
+and runtime identity, not Firefox Double Shift behavior or IME/Tab regression:
+those physical checks remain **NOT TESTED after install**. Runtime authority
+changed only for the Lay IBus engine process. Exact installation receipt:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0231/install-receipt.json`
+(SHA-256 `5b4462e8333deb12d2e391f16bb060e69d961576b914e96535068bfcdf6431f9`).
+
+### Firefox Tab and Double Shift regression after installation (2026-09-23)
+
+The user reported two physical failures on installed candidate SHA-256
+`f17191f43936e87a195ec28c0c09a41b2229fa4f340070741e5f5ca83321548c`:
+Tab did not accept a visible IME completion, and Double Shift converted one
+way but did not continue its cycle. The candidate was immediately rolled back.
+The restored installed file and `/proc/3690335/exe` both hash to accepted
+`daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88`;
+global IBus PID 4062416 and Lay daemon PID 3354052 were unchanged. Runtime
+authority changed temporarily for the Lay engine only, then returned to the
+accepted binary. This is a **physical FAIL** for the candidate, not a release
+gate pass.
+
+The frozen candidate trace shows a visible shortened `ика` preedit followed by
+`second_surrounding_receipt` rejection and Tab `handled=false` (serials 972,
+974, 1153, 1155, 1157). Two `ManualToggleV3` calls were seen on the session
+bus, but only one new conversion plan (`ldjqyjq` -> `двойной `) appears in the
+engine trace. The second RPC's disposition was not captured; no cause for the
+one-way Shift failure is asserted. The live trace was tailed from a 512 KB
+truncating ring, so duplicate rows cannot be counted as distinct events.
+
+Source-level diagnosis of the Tab path found the missed callback order: the
+preedit is shortened inside `ProcessKeyEvent`, after the tail epoch increments
+but before `advance_context_reset_rereceipt_after_key` advances the pending
+lineage. The previous repair cleared the old publication witness in that
+window. A revised fixture reproducing this order failed on that source and
+passed after retaining the inert witness only for a matching one-character
+shortening; contradictory surfaces still revoke and a fresh exact snapshot
+remains required. The revised fixture also checks Tab acceptance. Scoped
+`ManualToggleV3` outcome tracing was added for the unresolved Shift case. The
+revised source has **no installed or physical verdict**; package/RSS, latency,
+and the per-window-type physical matrix remain untested. Exact incident receipt:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/incident-receipt.json`
+(SHA-256 `d6ee01cb6567c9e60a5f04d7ba19e20ea510cfbfb36c086d138bf1873a867a1c`).
+The acceptance matrix is `docs/ime-window-type-acceptance-2026-09-23.md`.
+
+### Scoped installed Firefox textarea verdict (2026-09-23)
+
+The revised release engine SHA-256
+`dc030fdcc7e6a3096825be2fb2612cb35d13ef372e50a02a66108145032c142c`
+was temporarily installed at the real Lay path and verified through the loaded
+`/proc/<pid>/exe` and bridge owner before each owned Firefox Snap textarea run.
+A separate isolated daemon drove a virtual keyboard through the GNOME/IBus
+route. The previous managed candidate harness had stopped before input because
+the global component loaded the installed baseline engine; it is not evidence
+of Firefox behavior. The first new Tab attempt also exposed a **test keyboard
+capability defect**: the script sent `KEY_TAB`, but its uinput device did not
+advertise that key. `src/bin/lay_test_input/input_device.rs` now advertises it;
+no engine runtime behavior changed in that correction.
+
+After fixing the test device, the owned Firefox textarea visibly offered
+`про` + `сто`; `KEY_TAB` reached IBus (`keycode=15`), returned `handled=true`,
+recorded `ibus_completion_accept` and committed `просто `. Two consecutive
+Double Shift gestures then produced `просто ` -> `ghjcnj ` -> `просто `.
+Both `ManualToggleV3` replies were status 3 (`DelegateExactImeTail`); the
+daemon's exact replay completed in each direction. The case receipt reports
+`ok=true`, expected/got `просто`, at
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-td121_tab_two_toggles-20260923-044512/`
+(trace SHA-256 `fdaef3ec82cf4c112cb6476ca15a9ea34e98e8bc24db46764456738883176b43`).
+
+A distinct Firefox textarea run typed `публекует`, waited for the correction,
+and committed a space. Browser DOM events show `публекует` -> `публикует `
+**before** any Shift. One Double Shift then restored `публекует `, and the
+engine recorded `ibus_space_autocorrect: authorized`, `ibus_auto_undo:
+restored_exact_original`, and `ManualToggleV3` status 1 (`Handled`). The case
+receipt reports `ok=true`, expected/got `публекует`, at
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-td121_known_autocorrect_undo-20260923-044418/`
+(trace SHA-256 `6ac4d3eb5aa8fc89e460e837634e43b724e2333995b265de277121ea0b6d75dd`).
+
+An earlier typo-undo attempt with `доллора` did not test undo: the first Space
+preceded prefetch; the second waited, but the rank gate returned
+`full_no_apply`. In both, the word was never corrected and Double Shift took
+the ordinary layout route. Those negative attempts remain in the same evidence
+root and were not counted as undo results.
+
+After every temporary run, the installed file and loaded engine returned to
+accepted SHA-256
+`daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88`,
+with `lay-daemon.service` active. Runtime authority changed temporarily for the
+Lay engine and test daemon; it is back on the accepted binary. No commit,
+push, package/RSS or latency promotion occurred. This is **PASS for one owned
+Firefox textarea representative only**. Firefox contenteditable, the user's
+existing Firefox window, Chrome and other window classes, as well as after-focus
+variants, remain untested on revised bytes. The separate window-type ledger is
+`docs/ime-window-type-acceptance-2026-09-23.md`; no complete physical or
+release verdict follows from this row.
+
+### GTK 4 entry window-type probe (2026-09-23)
+
+The same candidate SHA was temporarily loaded for an owned GTK 4 `Gtk.Entry`
+run. Tab accepted a visible suffix (`handled=true`, `ibus_completion_accept`)
+and two Double Shift gestures completed the same-word round trip. The
+suggestion alternated between `проверка` and `просто` across runs, so the
+final semantic receipt compares the result to the actual pre-Tab preedit
+rather than a fixed word. Its `...044838` receipt is `ok=true`, with suffix
+`сто`, result `просто`, and two status-3 exact-tail delegations. Exact path:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gtk-td121_tab_two_toggles-20260923-044838/`
+(trace SHA-256 `d5977783ba64a9895010a888341b8ae60c11666b2e16197a0e8a637826aa26bb`).
+
+The separate GTK undo attempt did **not** apply autocorrection: after
+`публекует`, Space took `managed_fallback_commit`; the IME emitted a normal
+space. `managed_word_start` was missing during word growth and the candidate
+frame was absent. Double Shift then took the ordinary exact-tail layout route,
+producing `ge,ktretn `. This is neither a passed nor a failed undo of an
+*applied* correction. It is an open GTK correction-precondition gap. Exact
+negative receipt:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gtk-td121_known_autocorrect_undo-20260923-044900/`
+(trace SHA-256 `97dcbc4f7881e3222bb40df17a123a1b75d7c697c1a5827216164acb89c4c8dc`).
+The baseline installed and loaded hash was restored after both runs; no
+persistent runtime authority changed. The GTK row cannot be promoted as a
+three-action window-type pass. The cause of the missing correction frame, and
+all other window classes, remain open.
+
+### Firefox contenteditable window-type probe (2026-09-23)
+
+An owned fresh Firefox Snap `contenteditable` div, using the same release
+client adapter and temporarily installed candidate SHA, passed visible Tab
+acceptance and a two-gesture exact-tail round trip. The expected and final
+text were `просто`; exact receipt:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-contenteditable-td121_tab_two_toggles-20260923-045217/`
+(trace SHA-256 `813a35648ce2ecfe439a977a8c5e697eda5e8a6c644d8a25a7918f23d988a610`).
+A separate Space correction attempt on `публекует` returned
+`ibus_space_autocorrect: full_no_apply` at the rank stage, so the word never
+became `публикует` and Shift performed ordinary layout conversion to
+`ge,ktretn`. It does not provide an applied-correction undo verdict. Exact
+negative receipt:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-contenteditable-td121_known_autocorrect_undo-20260923-045242/`
+(trace SHA-256 `9c8b4fa6b2638cb4ea308419cbc505fe8a78792664ca310116d9a3f349388142`).
+The installed and loaded baseline SHA was restored after each run. This row
+remains partial; no runtime promotion follows.
+
+### Chrome textarea and contenteditable window-type probes (2026-09-23)
+
+A separate ordinary Google Chrome process/profile was launched for each owned
+local page. GNOME reported renderer PID for the focused window, so the owned
+process-group and unique local page title were used to establish identity;
+the first two narrow profile-argument checks stopped before input. The user's
+existing Chrome main process/profile was not controlled. On temporarily
+installed candidate SHA
+`dc030fdcc7e6a3096825be2fb2612cb35d13ef372e50a02a66108145032c142c`,
+both textarea and `contenteditable` accepted the visible `про` + `сто`
+suggestion with Tab and completed `просто ` -> `ghjcnj ` -> `просто ` via two
+Double Shift gestures. Their positive receipts are:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-chrome-td121_tab_two_toggles-20260923-045527/`
+(trace SHA-256 `c2331e71e3a3f0139f96b808aa42a7cddf50e6407b7ed0244356ec1746def471`)
+and
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-chrome-contenteditable-td121_tab_two_toggles-20260923-045641/`
+(trace SHA-256 `6668c283d9e2897000be08919329f1964b3a15b0aad2e1b5a339ce81e7769256`).
+
+Neither Chrome class corrected `публекует` on Space in its separate undo case.
+Chrome advertised IBus capabilities 41: surrounding-text support without the
+client-specific exact refresh bit. The word remained unchanged before Shift,
+and one Double Shift performed ordinary layout conversion to `ge,ktretn `.
+These attempts do **not** prove undo of an applied correction. Negative
+receipts:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-chrome-td121_known_autocorrect_undo-20260923-045555/`
+(trace SHA-256 `e5966543ea1dec61dcdafc12668fe0451da0ff86ae4ec43e6b5744f44bdbd6ca`)
+and
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-chrome-contenteditable-td121_known_autocorrect_undo-20260923-045706/`
+(trace SHA-256 `e5c4895c6428f722a164682639773d19f323aa9ea81bb74644519eb80e8424c5`).
+The baseline installed and loaded SHA was restored and the Lay daemon active
+after every run. This covers only the fresh owned Chrome input fields; the
+previously reported existing-profile Chrome focus-transfer failure was not
+retested. No broad release or runtime promotion is claimed.
+
+### GTK 4 multiline TextView probe (2026-09-23)
+
+An owned GTK 4 `TextView` accepted a visibly offered suffix by Tab and
+completed two exact-tail Double Shift gestures. Its semantic receipt compares
+the final `просто` to the pre-Tab visible suffix `сто` and records
+`handled=true`, one completion acceptance, and two status-3 manual delegations:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gtk-textview-td121_tab_two_toggles-20260923-045845/`
+(trace SHA-256 `6e88bee88bacafb169947134d2fa5fb73d29546664112f0cb917d7561f04eab6`).
+The separate `публекует` correction stimulus did not autocorrect before Shift;
+ordinary layout conversion followed, leaving applied-correction undo untested:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gtk-textview-td121_known_autocorrect_undo-20260923-045907/`
+(trace SHA-256 `0794621310863be71797f32ed93219f8d93518c9d582bd44d0ac6a3920b5163f`).
+The accepted installed and loaded engine was restored after each run. This
+proves a GTK 4 multiline widget, not Gedit's own editor behavior.
+
+### GNOME Terminal VTE window-type probe (2026-09-23)
+
+An owned GNOME Terminal window ran a timeout-limited `read` command, which
+captured text without executing user input as commands. Tab accepted a visible
+`сто` suffix after `про`. Two Double Shift gestures completed with IME-local
+plans (`просто ` -> `ghjcnj ` -> `просто `), and `ManualToggleV3` replied
+status 1 twice. The terminal semantic receipt was updated to recognize this
+local executor, unlike the web/GTK exact-tail delegation status 3. The passed
+receipt is
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gnome-terminal-td121_tab_two_toggles-20260923-050152/`
+(trace SHA-256 `480a1cfdcad1f1308ed7a23679f280dc68070bf9ad85ecfddb704b9b53d3b07e`).
+The separate `публекует` correction attempt reached Space with
+`prefetch_not_ready`; no correction was applied before one Double Shift made
+an ordinary layout conversion. It cannot count as an applied-correction undo
+verdict. Negative receipt:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gnome-terminal-td121_known_autocorrect_undo-20260923-050218/`
+(trace SHA-256 `aef1b17b658fea0ddb5479c8d00729c4dcc56600e0e456ac9043d68fc9251125`).
+The baseline installed and loaded SHA was restored after both runs. VTE is a
+partial row; Kitty and other terminal classes are not inferred from it.
+
+### Kitty terminal window-type probe (2026-09-23)
+
+An owned Kitty terminal window accepted the visible `про` + `сто` completion
+with Tab and completed `просто ` -> `ghjcnj ` -> `просто ` through two
+IME-local manual toggle plans, each `ManualToggleV3` status 1. Passed receipt:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-kitty-td121_tab_two_toggles-20260923-050327/`
+(trace SHA-256 `4727f03cb94d135061a3121bcc56c54420f64af12b6d0ce4eb641d7fc1db0ed3`).
+The separate `публекует` attempt encountered `prefetch_not_ready` at Space;
+no correction was applied and the following Shift made ordinary layout
+conversion. Negative receipt:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-kitty-td121_known_autocorrect_undo-20260923-050351/`
+(trace SHA-256 `bb85743d5972386f23b59701fa53d5b61a9d3d8e3a4e4022a3c52c8fb09e4d96`).
+The accepted installed and loaded engine was restored after both runs. The
+known Kitty Space-vs-Tab gap is tracked separately in TD-127; this result does
+not make an applied-correction undo claim.
+
+A direct standalone Gedit 48.1 launch for the editor-specific row exited with
+SIGSEGV before any input or focus; GLib-GIO reported a
+`g_dbus_action_group_get` assertion. The no-input receipt is
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gedit-td121_tab_two_toggles-20260923-050642/`.
+The scoped runner restored the accepted engine. This is a Gedit startup
+blocker, not a Tab or Shift verdict, and the GTK `TextView` result cannot be
+substituted for Gedit-specific behavior.
+
+An isolated LibreOffice Writer fixture also stopped before client input:
+headless ODT conversion exited 1 with
+`com::sun::star::deployment::DeploymentException` and produced no document.
+The bounded launch receipt is
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/writer-fixture/LAUNCH-RECEIPT.json`
+(SHA-256 `7d802cac8d45335b0cd6ac030f00231fc6b84b5168f64b0187ed60d9edfb1e09`).
+No Writer IME or runtime behavior was tested by that command.
+
+An isolated VS Code Snap profile/window was also attempted, but the sender
+readiness guard fired before its editor window became ready. No synthetic
+keyboard input reached Code. Its detached exact test-profile process group
+was terminated and verified absent. The bounded no-input receipt is
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-code-td121_tab_two_toggles-20260923-051019/`.
+The accepted installed/loaded Lay engine remained active after cleanup. This
+is no IME or editor-class verdict.
+
+### Qt multiline QTextEdit window-type probe (2026-09-23)
+
+An owned local PySide6 `QTextEdit` accepted the visibly offered `про` +
+`верка` completion with Tab as `проверка`. Two consecutive Double Shift
+gestures completed a text round trip with two status-3 exact-tail delegations.
+The passing installed-candidate receipt is
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-qt-textedit-td121_tab_two_toggles-20260923-051244/`
+(trace SHA-256 `c00a316242f87d135128e2913ccae29eaad4182b53a8ab3f1a0564c54deb1c3e`).
+
+The separate `публекует` Space attempt returned `prefetch_not_ready`, leaving
+the typo unchanged; the following Double Shift made an ordinary layout
+conversion. The trace has 18 superseded prefetch evaluations, two prepared
+evaluations and two `prefetch_not_ready` Space events; it does not establish
+why the final identity had no ready lease. No applied autocorrection existed
+to test undo. Negative receipt:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-qt-textedit-td121_known_autocorrect_undo-20260923-051308/`
+(trace SHA-256 `7b4656cf7e11559fc0fb5ccf09f70a7a264d9c95189bfe8abcd24c73ecc1d8d9`).
+This Qt widget is not Telegram Desktop. Neither Telegram draft behavior nor
+focus transfer was tested. The accepted installed and loaded engine SHA-256
+`daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88`
+was restored after both runs; runtime authority did not change.
+
+### Firefox address bar in a neighboring tab (2026-09-23)
+
+The user identified browser chrome's address bar in an adjacent tab as the
+failing input class. A new installed-candidate Firefox textarea run first
+showed Tab `handled=false` after `про`, with DOM blur before any Shift; this
+contradicts the earlier textarea Tab PASS and is recorded at
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-td121_tab_two_toggles-20260923-103142/`.
+
+An owned Firefox Snap window was then opened and kept running. The candidate
+engine SHA-256 `dc030fdcc7e6a3096825be2fb2612cb35d13ef372e50a02a66108145032c142c`
+was installed and loaded for bounded probes. The first address-bar route
+used `Ctrl+L`, selected text and typed into the same bar. Two manual plans
+ran, but the accessibility text drifted from `просто` through mixed case to
+`ПрОсТо`; this is route evidence, not a clean correctness PASS. Receipt:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/persistent-firefox-window-20260923-103450/addressbar-physical-receipt.json`.
+
+The exact adjacent-tab route opened a new tab in the same Firefox window and
+typed into its automatically focused address bar without `Ctrl+L` or
+selection. A scoped uinput device was explicitly bound to a diagnostic
+`lay-daemon`; this avoids the system daemon's intentional exclusion of the
+`ydotoold virtual device`. Both physical double taps reached its FSM. The
+first `ManualToggleV3` completed with status 1 and a committed-tail plan.
+Firefox then emitted `FocusOut → Disable → FocusIn → Enable → Reset`; the new
+context's admission was `reset_unknown_installed` with `UnknownStart`, and
+the next Shift events had zero tail and preedit characters. The second
+`ManualToggleV3` returned `not_handled/context_authority` with a live bridge
+token but `manual_toggle_allowed=false`. The daemon log independently says
+"physical manual trigger blocked by focused IME owner" for the second tap.
+This pins the first observed authority loss between the first plan and the
+Firefox context reset; it does not establish why Firefox reset that context
+or authorize inheriting the old word into a new path. Accessibility sampling
+did not show a complete two-way text cycle. Exact receipt and bounded logs:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/persistent-firefox-window-20260923-103450/addressbar-neighbor-physical-receipt.json`.
+
+The candidate was automatically restored to accepted installed and loaded
+SHA-256 `daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88`;
+`lay-daemon.service` remained active and `lay-ime-ru` selected. The owned
+Firefox window and local test page were deliberately left open. No runtime
+authority was promoted, no code repair was made, and no package or release
+was published.
+
+### Existing authenticated Firefox GitHub issue #46 composer (2026-09-23)
+
+The user's already open and authenticated Firefox Snap window (PID 1811070)
+was used directly on `https://github.com/radislabus-star/lay-public/issues/46`.
+The native `Add a comment` editor already contained a draft. Each physical
+test appended only a bounded token, then restored the original draft exactly;
+no comment was submitted and the window was left open. The installed engine
+remained the accepted SHA-256
+`daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88`.
+
+Two scoped-uinput Double Shift probes ran in the actual composer. With a US
+physical token, the daemon recorded both complete double-tap FSM gestures and
+logged `physical manual trigger blocked by focused IME owner` twice; the text
+never converted. With a RU physical token, both gestures again reached the FSM,
+and both `ManualToggleV3` requests failed with `context admission denied;
+identity-free cancellation forbidden`. The visible text did not complete a
+round trip. The daemon's physical detection therefore works; IME context
+authority is the first observed rejection. Exact receipts:
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/github-issue46-live/double-shift-receipt.json`
+and `double-shift-ru-receipt.json` in that directory, with bounded daemon logs.
+
+The physical Tab test typed RU `про` in the same composer while GNOME reported
+that Firefox stayed foreground. Tab left `про` unchanged and moved focus out of
+the editor. An earlier US-token Tab run likewise returned `handled=false` and
+blurred the field; its trace recorded `preedit_chars=0`, so it is not proof of
+Tab rejecting a visibly offered completion. The RU-prefix run did not
+independently capture the visible suggestion before Tab either. In the US run,
+the IME trace shows a Firefox `Reset` after each managed printable commit and
+repeated `missing_predecessor_or_post_reset_token` re-receipt rejection; this
+supports the context-loss route, but does not establish why this GitHub editor
+produces that schedule. One intervening RU-prefix run lost foreground focus and
+was excluded; the repeated foreground-verified run is the scored result.
+Tab receipts are `github-issue46-live/tab-receipt.json` and
+`github-issue46-live/tab-ru-prefix-receipt.json` under the same cache root.
+
+The user then manually tested the same running, authenticated Firefox window.
+The immediate `РАБОТАЕТ ПРОВЕРИЛ!` and `ВСЕ РАБОТАЕТ` reports were clarified:
+IME, Tab, autocorrection, the first Double Shift flip and Shift rollback after
+autocomplete all work. Only the next Double Shift after a layout flip fails to
+return the word. The required cycle is `A → B → A → B` in one field. Therefore
+the live-window verdict is **USER PASS for IME/Tab/autocorrection/first flip
+and post-completion rollback, USER FAIL for cyclic Double Shift**. The
+scoped-uinput failures above remain diagnostic evidence but do not replace
+the user's first-success, second-failure observation. Rollback after an
+independently logged applied autocorrection was not separately observed. No
+runtime code, installation, service authority, commit, or publication changed;
+the system daemon and RU IME layout were restored after every scoped probe.

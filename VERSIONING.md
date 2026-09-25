@@ -17,7 +17,15 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.74`
+- `1.0.75`
+
+1.0.75: publishes the user-accepted Firefox repeated Double Shift and
+first-word-after-Space repair from source checkpoint `51420a4`. The exact
+installed IME accepted by the user has SHA-256
+`4bbe07233808d1d14ecd072b87c052d760c22fe17bcac5f63d8adf9e8d1c7328`.
+The release changes source version metadata; it does not replace the installed
+binary. Tor's no-SurroundingText route remains open. See
+[release scope](docs/release-1.0.75-firefox-cyclic-2026-09-25.md).
 
 1.0.74: `PUBLISHED_VERIFIED` (2026-09-21). This patch release publishes the
 accepted TD-125 browser autocorrection-boundary repair. Public `main` contains

@@ -56,6 +56,7 @@ pub(super) fn run_script_text(
                 tap(dev, KeyCode::KEY_SPACE.code())?;
             }
             ["space"] => tap(dev, KeyCode::KEY_SPACE.code())?,
+            ["tab"] => tap(dev, KeyCode::KEY_TAB.code())?,
             ["enter"] => tap(dev, KeyCode::KEY_ENTER.code())?,
             ["left"] => tap(dev, KeyCode::KEY_LEFT.code())?,
             ["right"] => tap(dev, KeyCode::KEY_RIGHT.code())?,
@@ -66,8 +67,10 @@ pub(super) fn run_script_text(
             ["ctrl_l"] => hold_tap(dev, KeyCode::KEY_LEFTCTRL.code(), KeyCode::KEY_L.code())?,
             ["ctrl_c"] => hold_tap(dev, KeyCode::KEY_LEFTCTRL.code(), KeyCode::KEY_C.code())?,
             ["ctrl_v"] => hold_tap(dev, KeyCode::KEY_LEFTCTRL.code(), KeyCode::KEY_V.code())?,
+            ["ctrl_s"] => hold_tap(dev, KeyCode::KEY_LEFTCTRL.code(), KeyCode::KEY_S.code())?,
             ["alt_left"] => hold_tap(dev, KeyCode::KEY_LEFTALT.code(), KeyCode::KEY_LEFT.code())?,
             ["alt_right"] => hold_tap(dev, KeyCode::KEY_LEFTALT.code(), KeyCode::KEY_RIGHT.code())?,
+            ["alt_f4"] => hold_tap(dev, KeyCode::KEY_LEFTALT.code(), KeyCode::KEY_F4.code())?,
             ["double_shift"] => double_shift(dev, 900)?,
             ["double_shift", settle_ms] => {
                 double_shift(dev, parse_u64(settle_ms, source_name, idx)?)?

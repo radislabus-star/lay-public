@@ -1,3 +1,4 @@
+use std::collections::BTreeSet;
 use std::num::NonZeroU32;
 use std::os::unix::net::UnixStream;
 use std::pin::Pin;
@@ -31,6 +32,7 @@ const CONTEXT_PATH: &str = "/org/freedesktop/IBus/InputContext_1";
 struct ControlledPeer {
     connection: Connection,
     incoming: MessageStream,
+    detached_callback_reply_serials: BTreeSet<u32>,
 }
 
 struct Harness {
@@ -73,15 +75,32 @@ fn controlled_pair() -> (Connection, ControlledPeer) {
         ControlledPeer {
             connection: peer_connection,
             incoming,
+            detached_callback_reply_serials: BTreeSet::new(),
         },
     )
 }
 
-async fn next_peer_message(peer: &mut ControlledPeer) -> Message {
+async fn next_peer_message_raw(peer: &mut ControlledPeer) -> Message {
     next_ordered_message(Pin::new(&mut peer.incoming))
         .await
         .expect("controlled peer stream remains open")
         .expect("controlled peer message")
+}
+
+async fn next_peer_message(peer: &mut ControlledPeer) -> Message {
+    loop {
+        let message = next_peer_message_raw(peer).await;
+        let detached_reply = message.header().message_type() == Type::Error
+            && message.header().error_name().map(|name| name.as_str())
+                == Some("org.freedesktop.DBus.Error.UnknownObject")
+            && message
+                .header()
+                .reply_serial()
+                .is_some_and(|serial| peer.detached_callback_reply_serials.remove(&serial.get()));
+        if !detached_reply {
+            return message;
+        }
+    }
 }
 
 fn global_engine_value(name: &str) -> OwnedValue {
@@ -496,6 +515,8 @@ fn method_message(sender: &str, serial: u32, path: &str, interface: &str, member
         .sender(sender)
         .unwrap()
         .serial(NonZeroU32::new(serial).unwrap())
+        .with_flags(zbus::message::Flags::NoReplyExpected)
+        .unwrap()
         .build(&())
         .unwrap()
 }

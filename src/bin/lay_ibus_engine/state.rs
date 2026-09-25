@@ -25,6 +25,10 @@ pub(crate) struct CommittedTailReplaceRequest {
     pub(crate) intent: TextTransitionIntent,
     pub(crate) suppress_next_autocorrect: bool,
     pub(crate) expected_tail: Option<VisibleTailSnapshot>,
+    /// Exact widget state projected from an observed managed word boundary and
+    /// its uninterrupted local CommitText chain. It is scoped to this one edit
+    /// request and never becomes a client observation.
+    proved_managed_external_snapshot: Option<SurroundingTextSnapshot>,
     boundary_elided_external_snapshot: bool,
     causal_precondition_external_snapshot: Option<String>,
     /// Authority selected before this adapter boundary. When present, the
@@ -50,6 +54,7 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::ImeAutocorrect,
             suppress_next_autocorrect: false,
             expected_tail: None,
+            proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
             winner_action: None,
@@ -70,6 +75,7 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::ImeManualToggle,
             suppress_next_autocorrect,
             expected_tail: None,
+            proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
             winner_action: None,
@@ -86,6 +92,7 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::ImeAutoUndo,
             suppress_next_autocorrect: true,
             expected_tail: None,
+            proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
             winner_action: None,
@@ -102,6 +109,7 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::ImeCandidateAccept,
             suppress_next_autocorrect: true,
             expected_tail: None,
+            proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
             winner_action: None,
@@ -122,6 +130,7 @@ impl CommittedTailReplaceRequest {
             intent: TextTransitionIntent::DaemonBridge,
             suppress_next_autocorrect,
             expected_tail: None,
+            proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
             winner_action: None,
@@ -132,6 +141,14 @@ impl CommittedTailReplaceRequest {
 
     pub(crate) fn with_expected_tail(mut self, expected_tail: VisibleTailSnapshot) -> Self {
         self.expected_tail = Some(expected_tail);
+        self
+    }
+
+    pub(crate) fn with_proved_managed_external_snapshot(
+        mut self,
+        snapshot: Option<SurroundingTextSnapshot>,
+    ) -> Self {
+        self.proved_managed_external_snapshot = snapshot;
         self
     }
 
@@ -265,6 +282,7 @@ impl LayIbusEngine {
 
     pub(super) fn reset_for_ibus_focus_change(&mut self) {
         self.invalidate_input_frame_background_work();
+        self.client_context.managed_word_start = None;
         self.context_reset_rereceipt = None;
         self.committed_tail.pending_completion_learning = None;
         let discarded_owned_preedit = self.strip_legacy_word_preedit_mirror();
@@ -329,7 +347,21 @@ impl LayIbusEngine {
 
     pub(super) fn reset_for_ibus_soft_reset(&mut self) {
         let preserves_exact_replay = self.exact_replay_quarantine_active();
-        self.invalidate_input_frame_background_work();
+        // A Reset that immediately echoes our own managed CommitText does not
+        // alter the observed word boundary. Its one-use ticket is tied to the
+        // exact tail epoch and can retain only that word's prepared Space work.
+        let preserves_managed_commit_reset = self.take_managed_commit_reset_echo();
+        let preserved_space_frame = if preserves_managed_commit_reset {
+            self.capture_space_autocorrect_frame_identity()
+        } else {
+            self.capture_pending_reset_space_frame()
+        };
+        self.cancel_precognition_display_generation();
+        if let Some(identity) = preserved_space_frame.as_ref() {
+            self.retain_space_autocorrect_across_reset(identity);
+        } else {
+            self.invalidate_space_autocorrect_path();
+        }
         let discarded_owned_preedit = self.strip_legacy_word_preedit_mirror();
         if discarded_owned_preedit {
             self.context_handoff_sealed = false;
@@ -369,7 +401,12 @@ impl LayIbusEngine {
         self.layout_gesture.shift_used_as_modifier = false;
         self.layout_gesture.alt_completion_active = false;
         self.layout_gesture.alt_used_as_modifier = false;
-        self.layout_gesture.handled_press_keycodes.clear();
+        // A client may Reset immediately on our CommitText, before sending
+        // the release for that handled press. Keep its release receipt across
+        // this one-use owned echo so it cannot escape as client input.
+        if !preserves_managed_commit_reset {
+            self.layout_gesture.handled_press_keycodes.clear();
+        }
         self.client_context.surrounding_text_snapshot = None;
         self.layout_gesture.pending_manual_toggle = false;
         self.rebuild_preedit_fast_from_tail();
@@ -382,6 +419,7 @@ impl LayIbusEngine {
         if discarded_owned_preedit
             || !preserves_admission_seal
                 && !preserves_reset_rereceipt
+                && !preserves_managed_commit_reset
                 && !self.exact_manual_toggle_handoff_is_live()
                 && !preserves_exact_replay
         {
@@ -419,6 +457,12 @@ impl LayIbusEngine {
         let boundary_elided_external_snapshot = request.boundary_elided_external_snapshot;
         let causal_precondition_external_snapshot =
             request.causal_precondition_external_snapshot.clone();
+        let proved_managed_external_snapshot = request.proved_managed_external_snapshot.clone();
+        let external_snapshot = self
+            .client_context
+            .surrounding_text_snapshot
+            .as_ref()
+            .or(proved_managed_external_snapshot.as_ref());
         if !matches!(
             intent,
             TextTransitionIntent::ImeAutocorrect | TextTransitionIntent::ImeAutoUndo
@@ -441,7 +485,7 @@ impl LayIbusEngine {
         if let Some(observation) = committed_tail_external_observation(
             source,
             intent,
-            self.client_context.surrounding_text_snapshot.as_ref(),
+            external_snapshot,
             &self.committed_tail.buffer,
             backspaces as usize,
             boundary_elided_external_snapshot,
@@ -577,7 +621,7 @@ impl LayIbusEngine {
             && !text.is_empty()
         {
             let Some(snapshot) = surrounding_replacement_final_snapshot(
-                self.client_context.surrounding_text_snapshot.as_ref(),
+                external_snapshot,
                 authorized_plan.backspaces,
                 &text,
             ) else {
@@ -613,7 +657,9 @@ impl LayIbusEngine {
             .await
             .map_err(|source| LocalExecutionFailure::new(effect_progress, source))?;
         let clear_us = clear_started.elapsed().as_micros();
-        let output_route = if exact_final_snapshot.is_some() {
+        let output_route = if proved_managed_external_snapshot.is_some() {
+            "managed_word_start_delete_commit"
+        } else if exact_final_snapshot.is_some() {
             "surrounding_text_immediate_delete_commit"
         } else {
             output_profile.output_route()
@@ -669,6 +715,7 @@ impl LayIbusEngine {
         }
         self.context_reset_rereceipt = None;
         self.client_context.surrounding_text_snapshot = None;
+        self.client_context.managed_word_start = None;
         self.committed_tail.buffer.push_str(&logical_text);
         self.composition.preedit_fast.reset();
         for ch in logical_text.chars() {

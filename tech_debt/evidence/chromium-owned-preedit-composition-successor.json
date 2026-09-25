@@ -1,0 +1,34 @@
+{
+  "schema": "lay.tech-debt.successor-binding.v1",
+  "task": "Chromium-owned-preedit-Space-1.0.74",
+  "status": "ACCEPTED",
+  "checkpoint": {
+    "state": "frozen-at-source-review",
+    "scope": "Reviewed bounded Space-authority successor; changed-source gate, release build, installed runtime and physical Chromium acceptance remain separate."
+  },
+  "predecessor": {
+    "task": "IME-terminal-native-delivery-2026-09-10",
+    "binding": "tech_debt/evidence/ime-terminal-native-delivery-composition-successor.json",
+    "binding_sha256": "aec7150a385c0d9fc90f2a5b6b525adb23bc5f48768da8d2d3d6aa67fb1ff308",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "344a525b388879af088ff8afaa5ec7bf8ddc9fd96c83c7ce6daa8281fa28efd7",
+    "mode": "0664"
+  },
+  "successor": {
+    "task": "tech_debt/125-preserve-autocorrection-left-boundary.md",
+    "section": "Chromium owned-preedit acceptance repair — 2026-09-22",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "f615fc1af80c9a8c64b64dfb435ce55776d80321e3e650435a84aa2a1fc04659",
+    "mode": "0664"
+  },
+  "review": {
+    "state": "PASS",
+    "report": "tech_debt/evidence/chromium-owned-preedit-space-source-review.md",
+    "report_sha256": "357186a1b0534b78ea4c497e6dea8f5c1e3e44a0551f66f3b270b01aebf218dc",
+    "score": "9/10",
+    "high_findings": 0,
+    "medium_findings": 0,
+    "low_findings": 1
+  },
+  "runtime_authority_changed": false
+}

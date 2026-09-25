@@ -742,6 +742,7 @@ impl LayIbusEngine {
             original_tail: self.committed_tail.buffer.clone(),
             original_suffix: expected_suffix.to_string(),
             unchanged_prefix,
+            observed_external_prefix: None,
             replacement: plan.replacement,
         });
         state.autocorrect_suppression = Some(suppression.clone());
@@ -777,6 +778,43 @@ impl LayIbusEngine {
                 .flatten()
         });
         (local, shared)
+    }
+
+    pub(super) fn bind_exact_replay_external_prefix_from_snapshot(&mut self) {
+        let (Some(local), Some(shared)) = self.exact_replay_scope_pair() else {
+            return;
+        };
+        if local != shared
+            || local.observed_external_prefix.is_some()
+            || self.committed_tail.epoch != local.epoch
+            || !self.exact_replay_scope_is_current(&local)
+        {
+            return;
+        }
+        let Some(snapshot) = self.client_context.surrounding_text_snapshot.as_ref() else {
+            return;
+        };
+        if snapshot.has_selection() || snapshot.cursor_pos as usize != snapshot.text.chars().count()
+        {
+            return;
+        }
+        let Some(external_prefix) = snapshot.text.strip_suffix(&local.original_tail) else {
+            return;
+        };
+        let mut bound = local.clone();
+        bound.observed_external_prefix = Some(external_prefix.to_string());
+        let Ok(mut state) = self.shared.lock() else {
+            return;
+        };
+        if state.autocorrect_suppression.as_ref()
+            != Some(&AutocorrectSuppression::ExactReplay(local.clone()))
+        {
+            return;
+        }
+        state.autocorrect_suppression = Some(AutocorrectSuppression::ExactReplay(bound.clone()));
+        advance_suppression_revision(&mut state);
+        self.committed_tail.autocorrect_suppression =
+            Some(AutocorrectSuppression::ExactReplay(bound));
     }
 
     fn exact_replay_expected_tail(
@@ -946,9 +984,8 @@ impl LayIbusEngine {
         let replacements = scope.replacement.chars().count();
         let distance = self.committed_tail.epoch.wrapping_sub(scope.epoch) as usize;
         let complete_distance = deletes.saturating_add(replacements);
-        let snapshot_chars = snapshot.text.chars().count();
         if snapshot.has_selection()
-            || snapshot.cursor_pos as usize != snapshot_chars
+            || snapshot.cursor_pos as usize != snapshot.text.chars().count()
             || distance > complete_distance
             || (distance < complete_distance && Instant::now() > scope.expires_at)
             || !self.exact_replay_scope_is_current_except_expiry(scope)
@@ -958,13 +995,22 @@ impl LayIbusEngine {
         // Only already observed delete/replay progress can explain a delayed
         // surface. Future prefixes and foreign content cannot retain provenance.
         // This remains inert until a fresh exact client receipt arrives.
+        let Some(relative_text) = scope
+            .observed_external_prefix
+            .as_deref()
+            .map_or(Some(snapshot.text.as_str()), |prefix| {
+                snapshot.text.strip_prefix(prefix)
+            })
+        else {
+            return false;
+        };
+        let relative_chars = relative_text.chars().count();
         let shortest_source = scope.original_tail.chars().count() - distance.min(deletes);
-        snapshot.text.starts_with(&scope.unchanged_prefix)
-            && ((snapshot_chars >= shortest_source
-                && scope.original_tail.starts_with(&snapshot.text))
+        relative_text.starts_with(&scope.unchanged_prefix)
+            && ((relative_chars >= shortest_source
+                && scope.original_tail.starts_with(relative_text))
                 || (distance >= deletes
-                    && snapshot
-                        .text
+                    && relative_text
                         .strip_prefix(&scope.unchanged_prefix)
                         .is_some_and(|suffix| {
                             suffix.chars().count() <= distance - deletes
@@ -1183,6 +1229,7 @@ impl LayIbusEngine {
 
     pub(super) fn close_committed_tail_field(&mut self) {
         self.committed_tail.pending_completion_learning = None;
+        self.client_context.managed_word_start = None;
         self.committed_tail.buffer.clear();
         self.composition.preedit_fast.reset();
         let local_suppression = self.committed_tail.autocorrect_suppression.take();

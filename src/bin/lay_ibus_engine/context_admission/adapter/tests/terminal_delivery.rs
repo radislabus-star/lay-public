@@ -357,6 +357,11 @@ async fn reset_to_unknown_start_with_one_preedit_clear(
     harness: &mut Harness,
     engine: &mut LayIbusEngine,
 ) {
+    // The trace places Reset immediately after the final native edit. Bind the
+    // fixture's recency precondition to this modeled callback so harness work
+    // between callbacks cannot consume the production window.
+    assert!(engine.committed_tail.last_input_at.is_some());
+    engine.committed_tail.last_input_at = Some(Instant::now());
     let reset = method_message(
         DISPATCH_SENDER,
         21_020,
@@ -384,6 +389,10 @@ async fn text_free_owned_soft_reset(
     engine: &mut LayIbusEngine,
     serial: u32,
 ) {
+    // This Reset is the next modeled callback after exact replay. Rebind only
+    // the fixture clock; the runtime deadline and reset logic stay unchanged.
+    assert!(engine.committed_tail.last_input_at.is_some());
+    engine.committed_tail.last_input_at = Some(Instant::now());
     let reset = method_message(
         DISPATCH_SENDER,
         serial,
@@ -2138,6 +2147,1252 @@ fn terminal_delivery_purpose_and_capability_changes_preserve_transport_and_word_
 }
 
 #[test]
+fn terminal_delivery_unknown_first_word_stays_native_and_autocorrects_exact_suffix_on_space() {
+    lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
+        .expect("exact preparation available");
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        engine.config.auto_replace = true;
+        engine.config.auto_switch_layout = true;
+        engine.config.nanda_precognition = false;
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_content_type_state(10, 0);
+        engine.set_client_capabilities(1 | 1 << 3);
+        engine.client_context.cursor_cell_width = 11;
+        assert!(!engine.context_word_is_known());
+
+        for (index, (key, code)) in [
+            ('g', 34),
+            ('h', 35),
+            ('b', 48),
+            ('d', 32),
+            ('t', 20),
+            ('n', 49),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let serial = 24_500 + index as u32 * 2;
+            assert!(!legacy_key(&mut harness, &mut engine, serial, key as u32, code, 0).await);
+            no_legacy_output(&mut harness).await;
+            assert!(
+                !legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    serial + 1,
+                    key as u32,
+                    code,
+                    RELEASE_MASK,
+                )
+                .await
+            );
+            no_legacy_output(&mut harness).await;
+            assert!(engine.composition.buffer.is_empty());
+            assert!(!engine.composition.legacy_word_preedit_active);
+        }
+
+        assert_eq!(engine.committed_tail.buffer, "ghbdtn");
+        assert!(engine.capture_input_frame_identity().is_none());
+        let frame = engine
+            .capture_space_autocorrect_frame_identity()
+            .expect("exact native terminal suffix frame");
+        assert!(frame.display_suffix_token.is_none());
+        assert!(frame.space_autocorrect_suffix_token.is_some());
+        engine.client_context.cursor_cell_width = 0;
+        assert!(engine.capture_space_autocorrect_frame_identity().is_none());
+        engine.client_context.cursor_cell_width = 11;
+        assert_eq!(
+            engine.capture_space_autocorrect_frame_identity(),
+            Some(frame.clone())
+        );
+        crate::space_autocorrect_prefetch::proof::install_exact_lease(&frame, &engine.config);
+
+        assert!(legacy_key(&mut harness, &mut engine, 24_520, KEY_SPACE, 57, 0).await);
+        let effects = legacy_effects(&mut harness).await;
+        assert_eq!(effects.len(), 1, "one terminal replacement frame");
+        let effect = &effects[0];
+        assert_eq!(effect.header().member().unwrap().as_str(), "CommitText");
+        let body = effect.body();
+        let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+        assert_eq!(
+            crate::ibus_interface::ibus_text_value_to_string(&value),
+            Some("\u{7f}".repeat(6) + "привет ")
+        );
+        assert_eq!(engine.committed_tail.buffer, "привет ");
+        assert!(engine.composition.buffer.is_empty());
+        assert!(!engine.composition.legacy_word_preedit_active);
+
+        assert!(
+            legacy_key(
+                &mut harness,
+                &mut engine,
+                24_521,
+                KEY_SPACE,
+                57,
+                RELEASE_MASK,
+            )
+            .await
+        );
+        no_legacy_output(&mut harness).await;
+    });
+}
+
+#[test]
+fn terminal_delivery_unknown_first_word_stays_native_and_runs_full_typo_correction_on_space() {
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        engine.config.auto_replace = true;
+        engine.config.auto_switch_layout = true;
+        engine.config.nanda_autocorrect = true;
+        engine.config.nanda_precognition = false;
+        engine.config.correction_safety = "experimental".into();
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_content_type_state(10, 0);
+        engine.set_client_capabilities(1 | 1 << 3);
+        engine.client_context.cursor_cell_width = 11;
+        engine.set_layout_is_ru(true);
+
+        for (index, (ch, code)) in [
+            ('р', 35),
+            ('а', 33),
+            ('б', 51),
+            ('о', 36),
+            ('а', 33),
+            ('е', 20),
+            ('т', 49),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let serial = 24_600 + index as u32 * 2;
+            let keyval = replay_keyval(ch);
+            assert!(!legacy_key(&mut harness, &mut engine, serial, keyval, code, 0).await);
+            no_legacy_output(&mut harness).await;
+            assert!(
+                !legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    serial + 1,
+                    keyval,
+                    code,
+                    RELEASE_MASK,
+                )
+                .await
+            );
+            no_legacy_output(&mut harness).await;
+            assert!(engine.composition.buffer.is_empty());
+            assert!(!engine.composition.legacy_word_preedit_active);
+        }
+
+        assert_eq!(engine.committed_tail.buffer, "рабоает");
+        assert!(engine.capture_input_frame_identity().is_none());
+        let frame = engine
+            .capture_space_autocorrect_frame_identity()
+            .expect("exact native terminal suffix frame");
+        assert!(frame.display_suffix_token.is_none());
+        assert!(frame.space_autocorrect_suffix_token.is_some());
+        crate::space_autocorrect_prefetch::proof::install_full_lease(&frame, &engine.config);
+
+        assert!(legacy_key(&mut harness, &mut engine, 24_620, KEY_SPACE, 57, 0).await);
+        let effects = legacy_effects(&mut harness).await;
+        assert_eq!(effects.len(), 1, "one terminal replacement frame");
+        let effect = &effects[0];
+        assert_eq!(effect.header().member().unwrap().as_str(), "CommitText");
+        let body = effect.body();
+        let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+        assert_eq!(
+            crate::ibus_interface::ibus_text_value_to_string(&value),
+            Some("\u{7f}".repeat(7) + "работает ")
+        );
+        assert_eq!(engine.committed_tail.buffer, "работает ");
+        assert!(engine.composition.buffer.is_empty());
+        assert!(!engine.composition.legacy_word_preedit_active);
+
+        assert!(
+            legacy_key(
+                &mut harness,
+                &mut engine,
+                24_621,
+                KEY_SPACE,
+                57,
+                RELEASE_MASK,
+            )
+            .await
+        );
+        no_legacy_output(&mut harness).await;
+    });
+}
+
+#[test]
+fn terminal_delivery_chrome_unknown_first_word_autocorrects_owned_preedit_on_space() {
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        engine.config.auto_replace = true;
+        engine.config.auto_switch_layout = true;
+        engine.config.nanda_autocorrect = true;
+        engine.config.nanda_precognition = false;
+        engine.config.correction_safety = "experimental".into();
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_content_type_state(0, 0);
+        engine.set_client_capabilities(1 | 1 << 3);
+        engine.set_layout_is_ru(true);
+
+        for (index, (ch, code)) in [
+            ('р', 35),
+            ('а', 33),
+            ('б', 51),
+            ('о', 36),
+            ('а', 33),
+            ('е', 20),
+            ('т', 49),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let serial = 24_700 + index as u32 * 2;
+            let keyval = replay_keyval(ch);
+            assert!(legacy_key(&mut harness, &mut engine, serial, keyval, code, 0).await);
+            let effects = legacy_effects(&mut harness).await;
+            assert!(effects.iter().any(|effect| {
+                effect
+                    .header()
+                    .member()
+                    .is_some_and(|member| member.as_str() == "UpdatePreeditText")
+            }));
+            assert!(
+                legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    serial + 1,
+                    keyval,
+                    code,
+                    RELEASE_MASK,
+                )
+                .await
+            );
+            no_legacy_output(&mut harness).await;
+            if index == 0 {
+                // Chromium advertises caps=9 while the first printable starts
+                // the owned preedit, then caps=41 for the remaining token.
+                engine.set_client_capabilities(1 | 1 << 3 | 1 << 5);
+            }
+        }
+
+        assert!(!engine.context_word_is_known());
+        assert!(engine.capture_input_frame_identity().is_none());
+        assert!(engine.composition.legacy_word_preedit_active);
+        assert_eq!(engine.composition.buffer, "рабоает");
+        assert_eq!(engine.last_tail_token_text(), "рабоает");
+        let frame = engine
+            .capture_space_autocorrect_frame_identity()
+            .expect("exact owned-preedit Space frame");
+        assert!(frame.display_suffix_token.is_none());
+        assert!(frame.space_autocorrect_suffix_token.is_some());
+        assert!(frame.lexical_coordinates.is_some());
+        let scheduled = crate::space_autocorrect_prefetch::take_with_budget(&frame, Duration::ZERO);
+        assert!(
+            !matches!(
+                scheduled.lookup,
+                crate::space_autocorrect_prefetch::SpaceAutocorrectLookup::Stale
+            ),
+            "owned-preedit Space work must bind the post-settlement callback frame"
+        );
+        crate::space_autocorrect_prefetch::proof::install_full_lease(&frame, &engine.config);
+
+        assert!(legacy_key(&mut harness, &mut engine, 24_720, KEY_SPACE, 57, 0).await);
+        let effects = legacy_effects(&mut harness).await;
+        let commits = effects
+            .iter()
+            .filter(|effect| {
+                effect
+                    .header()
+                    .member()
+                    .is_some_and(|member| member.as_str() == "CommitText")
+            })
+            .map(|effect| {
+                let body = effect.body();
+                let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+                crate::ibus_interface::ibus_text_value_to_string(&value).unwrap()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(commits, ["работает "]);
+        assert_eq!(engine.committed_tail.buffer, "работает ");
+        assert!(engine.composition.buffer.is_empty());
+        assert!(!engine.composition.legacy_word_preedit_active);
+    });
+}
+
+#[test]
+fn terminal_delivery_chrome_owned_preedit_schedules_unknown_start_suggestion() {
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        engine.config.nanda_precognition = true;
+        engine.config.correction_safety = "experimental".into();
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_content_type_state(0, 0);
+        engine.set_client_capabilities(1 | 1 << 3);
+        engine.set_layout_is_ru(true);
+
+        assert!(legacy_key(&mut harness, &mut engine, 24_740, replay_keyval('п'), 34, 0).await);
+        let effects = legacy_effects(&mut harness).await;
+        assert!(effects.iter().any(|effect| effect
+            .header()
+            .member()
+            .is_some_and(|member| member.as_str() == "ShowPreeditText")));
+        assert!(!engine.context_word_is_known());
+        let first = engine
+            .capture_space_autocorrect_frame_identity()
+            .expect("owned preedit frame");
+        assert!(engine.precognition_identity_matches(&first));
+        assert!(
+            engine.precognition_causal_counts().0 > 0,
+            "owned preedit did not schedule display work"
+        );
+
+        assert!(
+            legacy_key(
+                &mut harness,
+                &mut engine,
+                24_741,
+                replay_keyval('п'),
+                34,
+                RELEASE_MASK
+            )
+            .await
+        );
+        no_legacy_output(&mut harness).await;
+        engine.set_client_capabilities(1 | 1 << 3 | 1 << 5);
+        assert!(legacy_key(&mut harness, &mut engine, 24_742, replay_keyval('у'), 18, 0).await);
+        let effects = legacy_effects(&mut harness).await;
+        assert!(effects.iter().any(|effect| effect
+            .header()
+            .member()
+            .is_some_and(|member| member.as_str() == "UpdatePreeditText")));
+        assert!(effects.iter().all(|effect| effect
+            .header()
+            .member()
+            .is_none_or(|member| member.as_str() != "HidePreeditText")));
+        let second = engine
+            .capture_space_autocorrect_frame_identity()
+            .expect("advanced owned preedit frame");
+        assert!(engine.precognition_identity_matches(&second));
+        assert!(engine.precognition_causal_counts().0 > 1);
+        let mut stale = second.clone();
+        stale.tail_epoch = stale.tail_epoch.wrapping_add(1);
+        assert!(!engine.precognition_identity_matches(&stale));
+    });
+}
+
+async fn browser_managed_exact_snapshots_autocorrect_after_admission_loss(
+    lose_admission_after: usize,
+) {
+    lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
+        .expect("exact preparation available");
+    let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+    let mut engine = new_engine(&harness);
+    engine.config.auto_replace = true;
+    engine.config.auto_switch_layout = true;
+    engine.config.nanda_autocorrect = true;
+    engine.config.nanda_precognition = false;
+    engine.config.correction_safety = "experimental".into();
+    start_source_free_unknown(&mut harness, &mut engine).await;
+    engine.set_content_type_state(0, 0);
+    engine.set_client_capabilities(
+        1 | 1 << 3 | 1 << 5 | crate::window_interaction::IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
+    );
+    engine.set_layout_is_ru(true);
+
+    for (index, (ch, code)) in [
+        ('р', 35),
+        ('а', 33),
+        ('б', 51),
+        ('о', 36),
+        ('а', 33),
+        ('е', 20),
+        ('т', 49),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let serial = 24_760 + index as u32 * 2;
+        let keyval = replay_keyval(ch);
+        assert!(legacy_key(&mut harness, &mut engine, serial, keyval, code, 0).await);
+        let effects = legacy_effects(&mut harness).await;
+        let commits = effects
+            .iter()
+            .filter(|effect| {
+                effect
+                    .header()
+                    .member()
+                    .is_some_and(|member| member.as_str() == "CommitText")
+            })
+            .map(|effect| {
+                let body = effect.body();
+                let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+                crate::ibus_interface::ibus_text_value_to_string(&value).unwrap()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(commits, [ch.to_string()]);
+        assert!(
+            legacy_key(
+                &mut harness,
+                &mut engine,
+                serial + 1,
+                keyval,
+                code,
+                RELEASE_MASK,
+            )
+            .await
+        );
+        no_legacy_output(&mut harness).await;
+
+        if index >= lose_admission_after {
+            engine.context_token = None;
+            engine.context_word_scope = None;
+            engine.context_reset_rereceipt = None;
+        }
+        let visible = engine.committed_tail.buffer.clone();
+        exact_replay_surrounding_receipt(&mut harness, &mut engine, &visible).await;
+    }
+
+    assert!(!engine.context_word_is_known());
+    assert_eq!(engine.committed_tail.buffer, "рабоает");
+    assert!(engine.composition.buffer.is_empty());
+    assert!(engine
+        .client_context
+        .surrounding_text_snapshot
+        .as_ref()
+        .is_some_and(|snapshot| !snapshot.has_selection() && snapshot.text == "рабоает"));
+
+    let first_exact_frame = engine
+        .capture_space_autocorrect_frame_identity()
+        .expect("first exact bounded managed-widget Space frame");
+    super::residuals::surrounding_receipt(&mut harness, &mut engine, "xрабоает", 8, 8).await;
+    assert!(
+        engine.capture_space_autocorrect_frame_identity().is_none(),
+        "a non-boundary character to the left must keep the suffix read-only"
+    );
+    super::residuals::surrounding_receipt(&mut harness, &mut engine, "рабоаетx", 7, 7).await;
+    assert!(
+        engine.capture_space_autocorrect_frame_identity().is_none(),
+        "a non-boundary character to the right must keep the prefix read-only"
+    );
+    super::residuals::surrounding_receipt(&mut harness, &mut engine, "рабоает", 7, 6).await;
+    assert!(
+        engine.capture_space_autocorrect_frame_identity().is_none(),
+        "a selection must never authorize whole-word correction"
+    );
+    exact_replay_surrounding_receipt(&mut harness, &mut engine, "рабоает").await;
+    let frame = engine
+        .capture_space_autocorrect_frame_identity()
+        .expect("exact bounded managed-widget Space frame after admission loss");
+    assert_ne!(
+        first_exact_frame.space_autocorrect_surrounding_revision,
+        frame.space_autocorrect_surrounding_revision,
+        "an equal-text rereceipt must create a fresh snapshot witness"
+    );
+    assert!(frame.display_suffix_token.is_none());
+    assert!(frame.space_autocorrect_suffix_token.is_none());
+    assert_eq!(
+        frame.space_autocorrect_surrounding_revision,
+        Some(engine.client_context.surrounding_observation_revision)
+    );
+    crate::space_autocorrect_prefetch::proof::install_full_lease(&frame, &engine.config);
+
+    assert!(legacy_key(&mut harness, &mut engine, 24_790, KEY_SPACE, 57, 0).await);
+    let effects = legacy_effects(&mut harness).await;
+    let members = effects
+        .iter()
+        .filter_map(|effect| {
+            effect
+                .header()
+                .member()
+                .map(|member| member.as_str().to_string())
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        members
+            .iter()
+            .filter(|member| member.as_str() == "DeleteSurroundingText")
+            .count(),
+        1
+    );
+    let commits = effects
+        .iter()
+        .filter(|effect| {
+            effect
+                .header()
+                .member()
+                .is_some_and(|member| member.as_str() == "CommitText")
+        })
+        .map(|effect| {
+            let body = effect.body();
+            let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+            crate::ibus_interface::ibus_text_value_to_string(&value).unwrap()
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(commits, ["работает "]);
+    assert_eq!(engine.committed_tail.buffer, "работает ");
+}
+
+#[test]
+fn terminal_delivery_browser_exact_snapshots_restore_space_frame_after_callback_admission_loss() {
+    zbus::block_on(async {
+        // Chrome refuses the printable callback lineage from the first key;
+        // Firefox loses its Reset/rereceipt lineage later in the same word.
+        browser_managed_exact_snapshots_autocorrect_after_admission_loss(0).await;
+        browser_managed_exact_snapshots_autocorrect_after_admission_loss(3).await;
+    });
+}
+
+#[test]
+fn terminal_delivery_browser_delayed_surrounding_uses_proved_managed_word_start_on_space() {
+    lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
+        .expect("exact preparation available");
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        engine.config.auto_replace = true;
+        engine.config.auto_switch_layout = true;
+        engine.config.nanda_autocorrect = true;
+        engine.config.nanda_precognition = false;
+        engine.config.correction_safety = "experimental".into();
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_content_type_state(0, 0);
+        engine.set_client_capabilities(
+            1 | 1 << 3 | 1 << 5 | crate::window_interaction::IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
+        );
+        engine.set_layout_is_ru(true);
+        exact_replay_surrounding_receipt(&mut harness, &mut engine, "").await;
+        assert!(
+            engine.client_context.managed_word_start.is_some(),
+            "exact empty boundary must arm managed-word-start witness"
+        );
+
+        for (index, (ch, code)) in [
+            ('р', 35),
+            ('а', 33),
+            ('б', 51),
+            ('о', 36),
+            ('а', 33),
+            ('е', 20),
+            ('т', 49),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let serial = 24_800 + index as u32 * 2;
+            let keyval = replay_keyval(ch);
+            assert!(legacy_key(&mut harness, &mut engine, serial, keyval, code, 0).await);
+            let effects = legacy_effects(&mut harness).await;
+            assert!(effects.iter().any(|effect| {
+                effect
+                    .header()
+                    .member()
+                    .is_some_and(|member| member.as_str() == "CommitText")
+            }));
+            assert!(
+                legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    serial + 1,
+                    keyval,
+                    code,
+                    RELEASE_MASK,
+                )
+                .await
+            );
+            no_legacy_output(&mut harness).await;
+            engine.context_token = None;
+            engine.context_word_scope = None;
+            engine.context_reset_rereceipt = None;
+        }
+
+        assert_eq!(engine.committed_tail.buffer, "рабоает");
+        assert!(
+            engine.managed_word_start_is_current(),
+            "managed word-start chain lost: witness={:?} mode={:?} epoch={} tail={:?} focus={} owner={} layout_generation={} surrounding_revision={} sealed={} atomic={} composition={:?}",
+            engine.client_context.managed_word_start,
+            engine.composition.word_input_mode,
+            engine.committed_tail.epoch,
+            engine.committed_tail.buffer,
+            engine.client_context.focus_serial,
+            engine.client_context.runtime_owner_lease_identity,
+            engine.layout_gesture.layout_generation,
+            engine.client_context.surrounding_observation_revision,
+            engine.context_handoff_sealed,
+            engine.atomic.active,
+            engine.composition.buffer,
+        );
+        let frame = engine
+            .capture_space_autocorrect_frame_identity()
+            .expect("proved managed-word-start Space frame before delayed final snapshot");
+        assert!(frame.space_autocorrect_managed_start_identity.is_some());
+        assert!(frame.space_autocorrect_surrounding_revision.is_none());
+        assert!(frame.space_autocorrect_suffix_token.is_none());
+        assert_eq!(
+            engine.managed_word_start_projected_snapshot(),
+            Some(SurroundingTextSnapshot::new("рабоает".to_string(), 7, 7,))
+        );
+
+        // Any key returned to the client can mutate text or move the caret
+        // before a delayed surrounding callback. All such routes must revoke
+        // both the projected witness and already prepared Space work.
+        for (route, keyval, keycode, state) in [
+            ("command", 'v' as u32, 55, 1 << 2),
+            ("tab", KEY_TAB, 15, 0),
+            ("candidate_navigation", crate::protocol::KEY_UP, 103, 0),
+            ("generic_navigation", 0xff50, 110, 0),
+            ("cursor", KEY_LEFT, 105, 0),
+        ] {
+            let mut relinquished = engine.clone();
+            crate::space_autocorrect_prefetch::proof::install_full_lease(
+                &frame,
+                &relinquished.config,
+            );
+            let mut key_output = crate::output::TestEngineOutput::default();
+            let handled = relinquished
+                .process_pressed_key(
+                    &mut crate::output::EngineOutput::test(&mut key_output),
+                    keyval,
+                    keycode,
+                    state,
+                )
+                .await
+                .unwrap_or_else(|error| panic!("{route} key failed: {error}"));
+            assert!(!handled, "{route} must remain client-owned");
+            assert!(
+                relinquished.client_context.managed_word_start.is_none(),
+                "{route} retained projected word-start authority"
+            );
+            assert!(
+                relinquished
+                    .capture_space_autocorrect_frame_identity()
+                    .is_none(),
+                "{route} retained a Space correction frame"
+            );
+            let revoked =
+                crate::space_autocorrect_prefetch::take_with_budget(&frame, Duration::ZERO);
+            assert!(
+                !matches!(
+                    revoked.lookup,
+                    crate::space_autocorrect_prefetch::SpaceAutocorrectLookup::Ready(_)
+                ),
+                "{route} retained prepared Space work"
+            );
+
+            let mut space_output = crate::output::TestEngineOutput::default();
+            assert!(relinquished
+                .process_pressed_key(
+                    &mut crate::output::EngineOutput::test(&mut space_output),
+                    KEY_SPACE,
+                    57,
+                    0,
+                )
+                .await
+                .unwrap_or_else(|error| panic!("{route} Space failed: {error}")));
+            assert!(
+                space_output.surrounding_deletes.is_empty(),
+                "{route} allowed projected deletion after client-owned input"
+            );
+            assert_eq!(space_output.committed_texts, [" "]);
+        }
+
+        let mut disabled = engine.clone();
+        crate::space_autocorrect_prefetch::proof::install_full_lease(&frame, &disabled.config);
+        disabled.config.text_backend = "uinput".to_string();
+        let mut disabled_output = crate::output::TestEngineOutput::default();
+        assert!(!disabled
+            .process_key_event_with_output(
+                &mut crate::output::EngineOutput::test(&mut disabled_output),
+                'v' as u32,
+                55,
+                0,
+            )
+            .await
+            .expect("disabled-composition client key"));
+        assert!(disabled.client_context.managed_word_start.is_none());
+        assert!(disabled
+            .capture_space_autocorrect_frame_identity()
+            .is_none());
+        assert!(!matches!(
+            crate::space_autocorrect_prefetch::take_with_budget(&frame, Duration::ZERO).lookup,
+            crate::space_autocorrect_prefetch::SpaceAutocorrectLookup::Ready(_)
+        ));
+        disabled.config.text_backend = "ime".to_string();
+        let mut disabled_space_output = crate::output::TestEngineOutput::default();
+        assert!(disabled
+            .process_key_event_with_output(
+                &mut crate::output::EngineOutput::test(&mut disabled_space_output),
+                KEY_SPACE,
+                57,
+                0,
+            )
+            .await
+            .expect("Space after disabled-composition client key"));
+        assert!(disabled_space_output.surrounding_deletes.is_empty());
+        assert_eq!(disabled_space_output.committed_texts, [" "]);
+
+        let mut alt_release = engine.clone();
+        alt_release.layout_gesture.alt_completion_active = true;
+        alt_release.layout_gesture.alt_used_as_modifier = false;
+        crate::space_autocorrect_prefetch::proof::install_full_lease(&frame, &alt_release.config);
+        let mut alt_output = crate::output::TestEngineOutput::default();
+        assert!(!alt_release
+            .process_key_event_with_output(
+                &mut crate::output::EngineOutput::test(&mut alt_output),
+                crate::protocol::KEY_LEFT_ALT,
+                64,
+                RELEASE_MASK,
+            )
+            .await
+            .expect("standalone Alt completion release"));
+        assert!(alt_release.client_context.managed_word_start.is_none());
+        assert!(alt_release
+            .capture_space_autocorrect_frame_identity()
+            .is_none());
+        assert!(!matches!(
+            crate::space_autocorrect_prefetch::take_with_budget(&frame, Duration::ZERO).lookup,
+            crate::space_autocorrect_prefetch::SpaceAutocorrectLookup::Ready(_)
+        ));
+        let mut alt_space_output = crate::output::TestEngineOutput::default();
+        assert!(alt_release
+            .process_key_event_with_output(
+                &mut crate::output::EngineOutput::test(&mut alt_space_output),
+                KEY_SPACE,
+                57,
+                0,
+            )
+            .await
+            .expect("Space after standalone Alt completion release"));
+        assert!(alt_space_output.surrounding_deletes.is_empty());
+        assert_eq!(alt_space_output.committed_texts, [" "]);
+
+        let mut equal_text_aba = engine.clone();
+        equal_text_aba.committed_tail.epoch = equal_text_aba.committed_tail.epoch.wrapping_add(2);
+        assert!(equal_text_aba
+            .capture_space_autocorrect_frame_identity()
+            .is_none());
+
+        let mut changed_focus = engine.clone();
+        changed_focus.client_context.focus_serial = crate::engine::next_input_identity();
+        assert!(changed_focus
+            .capture_space_autocorrect_frame_identity()
+            .is_none());
+
+        let mut changed_owner = engine.clone();
+        changed_owner.client_context.runtime_owner_lease_identity =
+            crate::engine::next_input_identity();
+        assert!(changed_owner
+            .capture_space_autocorrect_frame_identity()
+            .is_none());
+
+        let mut selected = engine.clone();
+        selected.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+            "рабоает".to_string(),
+            7,
+            6,
+        )));
+        assert!(selected.client_context.managed_word_start.is_none());
+
+        let mut moved_cursor = engine.clone();
+        moved_cursor.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+            "рабоает".to_string(),
+            6,
+            6,
+        )));
+        assert!(moved_cursor.client_context.managed_word_start.is_none());
+
+        crate::space_autocorrect_prefetch::proof::install_full_lease(&frame, &engine.config);
+
+        assert!(legacy_key(&mut harness, &mut engine, 24_820, KEY_SPACE, 57, 0).await);
+        let effects = legacy_effects(&mut harness).await;
+        assert_eq!(
+            effects
+                .iter()
+                .filter(|effect| effect
+                    .header()
+                    .member()
+                    .is_some_and(|member| member.as_str() == "DeleteSurroundingText"))
+                .count(),
+            1
+        );
+        let commits = effects
+            .iter()
+            .filter(|effect| {
+                effect
+                    .header()
+                    .member()
+                    .is_some_and(|member| member.as_str() == "CommitText")
+            })
+            .map(|effect| {
+                let body = effect.body();
+                let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+                crate::ibus_interface::ibus_text_value_to_string(&value).unwrap()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(commits, ["работает "]);
+        assert_eq!(engine.committed_tail.buffer, "работает ");
+    });
+}
+
+#[test]
+fn terminal_delivery_midword_exact_snapshot_survives_owned_commit_reset_echo() {
+    lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
+        .expect("exact preparation available");
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        engine.config.auto_replace = true;
+        engine.config.auto_switch_layout = true;
+        engine.config.nanda_autocorrect = true;
+        engine.config.nanda_precognition = false;
+        engine.config.correction_safety = "experimental".into();
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_content_type_state(0, 0);
+        engine.set_client_capabilities(
+            1 | 1 << 3 | 1 << 5 | crate::window_interaction::IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
+        );
+        engine.set_layout_is_ru(true);
+
+        let first = ('р', 35);
+        assert!(
+            legacy_key(
+                &mut harness,
+                &mut engine,
+                25_000,
+                replay_keyval(first.0),
+                first.1,
+                0
+            )
+            .await
+        );
+        let effects = legacy_effects(&mut harness).await;
+        assert!(effects.iter().any(|effect| effect
+            .header()
+            .member()
+            .is_some_and(|member| member.as_str() == "CommitText")));
+        assert!(
+            legacy_key(
+                &mut harness,
+                &mut engine,
+                25_001,
+                replay_keyval(first.0),
+                first.1,
+                RELEASE_MASK
+            )
+            .await
+        );
+        no_legacy_output(&mut harness).await;
+        assert!(engine.client_context.managed_word_start.is_none());
+
+        // The first exact client receipt arrives after the word has started.
+        exact_replay_surrounding_receipt(&mut harness, &mut engine, "р").await;
+        assert!(engine.managed_word_start_is_current());
+        assert_eq!(
+            engine.managed_word_start_projected_snapshot(),
+            Some(SurroundingTextSnapshot::new("р".to_string(), 1, 1))
+        );
+
+        for (index, (ch, code)) in [
+            ('а', 33),
+            ('б', 51),
+            ('о', 36),
+            ('а', 33),
+            ('е', 20),
+            ('т', 49),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let serial = 25_002 + index as u32 * 2;
+            let keyval = replay_keyval(ch);
+            assert!(legacy_key(&mut harness, &mut engine, serial, keyval, code, 0).await);
+            let effects = legacy_effects(&mut harness).await;
+            assert!(effects.iter().any(|effect| effect
+                .header()
+                .member()
+                .is_some_and(|member| member.as_str() == "CommitText")));
+            assert!(engine.managed_word_start_is_current());
+            let frame = engine
+                .capture_space_autocorrect_frame_identity()
+                .expect("proved frame before Reset");
+            engine.reset_for_ibus_soft_reset();
+            assert!(
+                engine.managed_word_start_is_current(),
+                "owned CommitText Reset lost word-start proof"
+            );
+            assert_eq!(
+                engine.capture_space_autocorrect_frame_identity(),
+                Some(frame)
+            );
+            // Firefox's Reset can arrive before the release of the same
+            // managed key. That release must remain owned by the engine.
+            assert!(
+                legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    serial + 1,
+                    keyval,
+                    code,
+                    RELEASE_MASK
+                )
+                .await
+            );
+            no_legacy_output(&mut harness).await;
+            assert!(
+                engine.managed_word_start_is_current(),
+                "release after owned Reset lost word-start proof"
+            );
+        }
+        assert_eq!(engine.committed_tail.buffer, "рабоает");
+        let frame = engine
+            .capture_space_autocorrect_frame_identity()
+            .expect("final Space frame");
+        assert_eq!(
+            engine.managed_word_start_projected_snapshot(),
+            Some(SurroundingTextSnapshot::new("рабоает".to_string(), 7, 7))
+        );
+        let mut duplicate_reset = engine.clone();
+        let mut expired_echo = engine.clone();
+        crate::space_autocorrect_prefetch::proof::install_full_lease(&frame, &engine.config);
+        assert!(legacy_key(&mut harness, &mut engine, 25_020, KEY_SPACE, 57, 0).await);
+        let effects = legacy_effects(&mut harness).await;
+        assert_eq!(
+            effects
+                .iter()
+                .filter(|effect| effect
+                    .header()
+                    .member()
+                    .is_some_and(|member| member.as_str() == "DeleteSurroundingText"))
+                .count(),
+            1
+        );
+        assert_eq!(engine.committed_tail.buffer, "работает ");
+
+        // The owned echo is one-use, and a delayed Reset cannot preserve a
+        // handled release or revive Space authority for an old CommitText.
+        duplicate_reset.reset_for_ibus_soft_reset();
+        assert!(duplicate_reset
+            .capture_space_autocorrect_frame_identity()
+            .is_none());
+        expired_echo.arm_managed_commit_reset_echo();
+        expired_echo.committed_tail.last_commit_at =
+            Some(Instant::now() - Duration::from_millis(701));
+        expired_echo
+            .layout_gesture
+            .handled_press_keycodes
+            .insert(49);
+        expired_echo.reset_for_ibus_soft_reset();
+        assert!(!expired_echo
+            .layout_gesture
+            .handled_press_keycodes
+            .contains(&49));
+        assert!(expired_echo
+            .capture_space_autocorrect_frame_identity()
+            .is_none());
+    });
+}
+
+#[test]
+fn terminal_delivery_firefox_exact_refresh_keeps_prefix_committed_and_schedules_space() {
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        engine.config.auto_replace = true;
+        engine.config.auto_switch_layout = true;
+        engine.config.nanda_autocorrect = true;
+        engine.config.nanda_precognition = false;
+        engine.config.correction_safety = "experimental".into();
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_content_type_state(0, 0);
+        engine.set_client_capabilities(
+            1 | 1 << 3 | 1 << 5 | crate::window_interaction::IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
+        );
+        engine.set_layout_is_ru(true);
+
+        let mut visible = String::new();
+        let mut pending_final_frame = None;
+        for (index, (ch, code)) in [
+            ('р', 35),
+            ('а', 33),
+            ('б', 51),
+            ('о', 36),
+            ('а', 33),
+            ('е', 20),
+            ('т', 49),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let serial = 24_800 + index as u32 * 4;
+            let keyval = replay_keyval(ch);
+            assert!(legacy_key(&mut harness, &mut engine, serial, keyval, code, 0).await);
+            visible.push(ch);
+            let effects = legacy_effects(&mut harness).await;
+            let commits = effects
+                .iter()
+                .filter(|effect| {
+                    effect
+                        .header()
+                        .member()
+                        .is_some_and(|member| member.as_str() == "CommitText")
+                })
+                .map(|effect| {
+                    let body = effect.body();
+                    let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+                    crate::ibus_interface::ibus_text_value_to_string(&value).unwrap()
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(commits, [ch.to_string()]);
+            assert!(effects.iter().all(|effect| {
+                if effect
+                    .header()
+                    .member()
+                    .is_none_or(|member| member.as_str() != "UpdatePreeditText")
+                {
+                    return true;
+                }
+                let body = effect.body();
+                let (text, _, _, _) = body
+                    .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+                    .unwrap();
+                crate::ibus_interface::ibus_text_value_to_string(&text)
+                    .as_deref()
+                    .is_none_or(str::is_empty)
+            }));
+            assert!(engine.composition.buffer.is_empty());
+            assert!(!engine.composition.legacy_word_preedit_active);
+
+            let final_printable = index == 6;
+            if final_printable {
+                // The prior strict receipt advances with the final managed
+                // append before Firefox publishes its updated snapshot. Space
+                // computation must already use the identity that the later
+                // exact receipt will authorize.
+                assert!(engine.context_reset_rereceipt_computation_allowed());
+                assert!(!engine.exact_marked_surrounding_suffix_is_current());
+                let pending = engine
+                    .capture_pending_reset_space_frame()
+                    .expect("pending Reset computation frame");
+                assert!(pending.space_autocorrect_suffix_token.is_some());
+                assert!(crate::space_autocorrect_prefetch::proof::has_current_slot(
+                    &pending
+                ));
+                crate::space_autocorrect_prefetch::proof::install_full_lease(
+                    &pending,
+                    &engine.config,
+                );
+
+                // Physical Firefox can deliver a delayed strict prefix from
+                // its retired presentation before the final key release. It
+                // removes exact authority, but must retain the current Reset
+                // lineage for the authenticated Reset/full-receipt sequence.
+                let delayed_prefix = visible.chars().take(3).collect::<String>();
+                exact_replay_surrounding_receipt(&mut harness, &mut engine, &delayed_prefix).await;
+                assert!(
+                    engine.context_reset_rereceipt.is_some(),
+                    "delayed strict prefix must retain inert Reset lineage"
+                );
+                assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+                assert!(
+                    legacy_key(
+                        &mut harness,
+                        &mut engine,
+                        serial + 2,
+                        keyval,
+                        code,
+                        RELEASE_MASK,
+                    )
+                    .await
+                );
+                no_legacy_output(&mut harness).await;
+                let lookup =
+                    crate::space_autocorrect_prefetch::take_with_budget(&pending, Duration::ZERO);
+                assert!(matches!(
+                    &lookup.lookup,
+                    crate::space_autocorrect_prefetch::SpaceAutocorrectLookup::Ready(_)
+                ));
+                let emitter = zbus::object_server::SignalEmitter::new(
+                    &harness.connection,
+                    engine.path.clone(),
+                )
+                .unwrap();
+                let mut output = crate::output::EngineOutput::legacy(&emitter);
+                assert!(
+                    !engine
+                        .autocorrect_committed_token_on_space(&mut output, &pending, lookup)
+                        .await
+                        .unwrap(),
+                    "pending Reset computation must not grant edit authority"
+                );
+                no_legacy_output(&mut harness).await;
+                assert_eq!(engine.committed_tail.buffer, visible);
+                crate::space_autocorrect_prefetch::proof::install_full_lease(
+                    &pending,
+                    &engine.config,
+                );
+
+                for (offset, prefix_chars) in [(3_u32, 4_usize), (4, 6)] {
+                    text_free_owned_soft_reset(&mut harness, &mut engine, serial + offset).await;
+                    assert!(engine.context_reset_rereceipt.is_some());
+                    assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+                    assert!(
+                        crate::space_autocorrect_prefetch::proof::has_current_terminal_full_slot(
+                            &pending
+                        ),
+                        "authenticated Reset must preserve only the identity-equal full slot"
+                    );
+                    assert_eq!(
+                        engine.capture_pending_reset_space_frame().as_ref(),
+                        Some(&pending),
+                        "authenticated Reset token rotation must retain the current job identity"
+                    );
+                    let delayed_prefix = visible.chars().take(prefix_chars).collect::<String>();
+                    exact_replay_surrounding_receipt(&mut harness, &mut engine, &delayed_prefix)
+                        .await;
+                    assert!(engine.context_reset_rereceipt.is_some());
+                    assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+                }
+                text_free_owned_soft_reset(&mut harness, &mut engine, serial + 5).await;
+                assert!(engine.context_reset_rereceipt.is_some());
+                assert!(
+                    crate::space_autocorrect_prefetch::proof::has_current_terminal_full_slot(
+                        &pending
+                    ),
+                    "the final Reset must retain the completed early full-worker result"
+                );
+                assert_eq!(
+                    engine.capture_pending_reset_space_frame().as_ref(),
+                    Some(&pending),
+                    "the final Reset must preserve the early full-worker identity"
+                );
+                pending_final_frame = Some(pending);
+            } else {
+                // Firefox retires the managed commit's client composition
+                // before delivering the key release. Its first exact receipt
+                // arms the strict witness used by later managed appends.
+                text_free_owned_soft_reset(&mut harness, &mut engine, serial + 1).await;
+                assert!(engine.context_reset_rereceipt.is_some());
+            }
+
+            let cursor = visible.chars().count() as u32;
+            let emitter =
+                zbus::object_server::SignalEmitter::new(&harness.connection, engine.path.clone())
+                    .unwrap();
+            let mut output = crate::output::EngineOutput::legacy(&emitter);
+            crate::window_interaction::WindowInteraction::observe_facts(
+                &mut engine,
+                crate::window_interaction::WindowFactEvent::SurroundingText(Some(
+                    SurroundingTextSnapshot::new(visible.clone(), cursor, cursor),
+                )),
+                Some(&mut output),
+            )
+            .await
+            .unwrap();
+            let snapshot_effects = legacy_effects(&mut harness).await;
+            assert!(snapshot_effects.iter().all(|effect| {
+                if effect
+                    .header()
+                    .member()
+                    .is_none_or(|member| member.as_str() != "UpdatePreeditText")
+                {
+                    return true;
+                }
+                let body = effect.body();
+                let (text, _, _, _) = body
+                    .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+                    .unwrap();
+                crate::ibus_interface::ibus_text_value_to_string(&text)
+                    .as_deref()
+                    .is_none_or(str::is_empty)
+            }));
+            assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            if final_printable {
+                let exact = engine
+                    .capture_space_autocorrect_frame_identity()
+                    .expect("final exact marked surrounding Space frame");
+                assert_eq!(Some(&exact), pending_final_frame.as_ref());
+                assert!(
+                    crate::space_autocorrect_prefetch::proof::has_current_terminal_full_slot(
+                        &exact
+                    ),
+                    "the exact receipt must preserve the completed equal-identity lease"
+                );
+            }
+
+            if !final_printable {
+                assert!(
+                    !legacy_key(
+                        &mut harness,
+                        &mut engine,
+                        serial + 2,
+                        keyval,
+                        code,
+                        RELEASE_MASK,
+                    )
+                    .await
+                );
+                no_legacy_output(&mut harness).await;
+            }
+        }
+
+        assert!(!engine.context_word_is_known());
+        assert_eq!(engine.committed_tail.buffer, "рабоает");
+        assert!(engine.capture_input_frame_identity().is_none());
+        let frame = engine
+            .capture_space_autocorrect_frame_identity()
+            .expect("exact marked surrounding Space frame");
+        assert!(frame.display_suffix_token.is_none());
+        assert!(frame.space_autocorrect_suffix_token.is_some());
+        assert!(frame.lexical_coordinates.is_some());
+        assert_eq!(Some(&frame), pending_final_frame.as_ref());
+        assert!(crate::space_autocorrect_prefetch::proof::has_current_terminal_full_slot(&frame));
+
+        assert!(legacy_key(&mut harness, &mut engine, 24_840, KEY_SPACE, 57, 0).await);
+        let effects = legacy_effects(&mut harness).await;
+        let members = effects
+            .iter()
+            .filter_map(|effect| {
+                effect
+                    .header()
+                    .member()
+                    .map(|member| member.as_str().to_string())
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            members
+                .iter()
+                .filter(|member| member.as_str() == "DeleteSurroundingText")
+                .count(),
+            1
+        );
+        let commits = effects
+            .iter()
+            .filter(|effect| {
+                effect
+                    .header()
+                    .member()
+                    .is_some_and(|member| member.as_str() == "CommitText")
+            })
+            .map(|effect| {
+                let body = effect.body();
+                let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+                crate::ibus_interface::ibus_text_value_to_string(&value).unwrap()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(commits, ["работает "]);
+        assert_eq!(engine.committed_tail.buffer, "работает ");
+        assert!(engine.composition.buffer.is_empty());
+        assert!(!engine.composition.legacy_word_preedit_active);
+    });
+}
+
+#[test]
 fn terminal_delivery_space_ready_and_refusal_outcomes_have_one_text_owner() {
     lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
         .expect("exact preparation available");
@@ -2181,7 +3436,7 @@ fn terminal_delivery_space_ready_and_refusal_outcomes_have_one_text_owner() {
             engine.config.auto_switch_layout = true;
             let frame = engine
                 .capture_input_frame_identity()
-                .expect("known current word");
+                .unwrap_or_else(|| panic!("known current word for outcome={outcome}"));
             crate::space_autocorrect_prefetch::proof::install_exact_lease(&frame, &engine.config);
             match outcome {
                 "not_ready" => engine.invalidate_space_autocorrect_path(),

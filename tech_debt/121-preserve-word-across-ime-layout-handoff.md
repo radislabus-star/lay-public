@@ -4268,3 +4268,597 @@ tag `v1.0.73` dereferences to it, and its tree is byte-identical to the accepted
 private source tree. The GitHub Release, README and tagged evidence document
 were read back live. Physical human-keyboard acceptance remains outside this
 verdict.
+
+## 2026-09-23 Firefox intermittent Double Shift: development candidate
+
+The live failure trace shows a shortened visible completion followed by a
+Firefox stale preedit snapshot and then the exact committed snapshot. The
+stale snapshot was rejected as `second_surrounding_receipt`; the subsequent
+exact snapshot could no longer authorize the manual toggle. A general inert
+publication-witness retention repair and a positive/contradictory receipt
+test are in the development source. The fixed test execution observed
+2,894/2,894 zero-failure correctness/package cases; native candidate Firefox
+input was not reached because the isolated bridge did not start. The accepted
+engine remains installed, and no physical user acceptance is claimed. Detailed
+authority path, limits, and receipt are in
+`docs/ime-daemon-route-map-2026-06-20.md` under the same date.
+
+## 2026-09-23 candidate regression and revised gate
+
+The user installed candidate SHA-256 `f17191f43936e87a195ec28c0c09a41b2229fa4f340070741e5f5ca83321548c` and immediately reported that Firefox Tab did not accept a visible suggestion and Double Shift converted only one way. The candidate was rolled back; the accepted `daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88` is again the installed and loaded engine. The global IBus daemon and Lay daemon retained their PIDs. Incident receipt: `/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/incident-receipt.json`.
+
+The candidate trace has the causal Tab chain: a shortened preedit remained visible, Firefox delivered a stale preedit snapshot, `second_surrounding_receipt` revoked exact authority, and Tab returned `handled=false`. The earlier regression test placed the shortened publication **after** key settlement; production publishes it **before** the Reset lineage advances. A revised test reproduces that order, was red on the installed candidate source, and is green with the provisional one-character append witness fix. It also checks Tab acceptance after a fresh exact receipt and rejection of contradictory surfaces. This revised source is not installed. Two `ManualToggleV3` calls but only one new conversion plan were captured; the second RPC outcome was not recorded, so the one-way Shift cause is still open. The source now records scoped RPC outcomes for a later physical capture.
+
+Promotion requires physical checks on the exact installed binary for each relevant window type: visible IME suggestion + Tab, repeated Double Shift round trip, and Double Shift cancellation of an applied autocorrection. The window-type ledger is `docs/ime-window-type-acceptance-2026-09-23.md`; untested rows cannot be promoted by aggregate tests.
+
+## 2026-09-23 installed revised Firefox textarea scope
+
+The revised engine `dc030fdcc7e6a3096825be2fb2612cb35d13ef372e50a02a66108145032c142c`
+was temporarily installed and verified as loaded during owned Firefox textarea
+input. A visible completion was accepted by Tab (`handled=true`), two Double
+Shift gestures made a full text round trip, and a separately observed applied
+Space correction (`публекует ` -> `публикует `) was restored by one Double
+Shift. The exact receipts and negative attempts are documented in
+`docs/ime-daemon-route-map-2026-06-20.md` under "Scoped installed Firefox
+textarea verdict" and the per-window-type ledger. The first Tab harness try
+was invalid because its uinput keyboard did not advertise `KEY_TAB`; that
+test-only device was corrected before the accepted run. The installed engine
+was restored to accepted `daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88`
+after each test. This supports only one owned Firefox textarea representative;
+the user's original failure window, focus-transfer variants, other input
+classes, package/RSS and latency remain open. Runtime authority is currently
+the accepted binary, not the candidate. No publication occurred.
+
+The next owned GTK 4 entry experiment passed visible Tab acceptance and the
+two-gesture text round trip, but could not exercise autocorrection undo:
+`публекует` was not corrected at Space because the candidate frame was absent
+and `managed_word_start` remained missing during word growth. Space used
+`managed_fallback_commit`, then Shift performed ordinary layout conversion.
+This is a correction-precondition gap, not an undo verdict. The exact positive
+and negative receipts and runtime restoration are in the architecture document
+under "GTK 4 entry window-type probe". No authority was promoted.
+
+The owned Firefox `contenteditable` input class also passed visible Tab and
+two-direction Double Shift, but its `публекует` Space correction was rejected
+at rank (`full_no_apply`); no correction was available for Shift to undo. The
+exact positive and negative receipts are in the architecture document under
+"Firefox contenteditable window-type probe". This row is partial and did not
+change the accepted installed runtime.
+
+Owned ordinary Chrome textarea and `contenteditable` classes each passed a
+visible Tab acceptance and two-direction Double Shift round trip on the
+revised candidate. Neither class applied a Space correction to `публекует`
+in the separate undo attempt, so the undo branch remains unexercised in Chrome.
+Chrome advertised standard surrounding-text capability but not the exact
+refresh bit. The original existing-profile focus-transfer case remains open.
+All four scoped Chrome receipts are recorded in the architecture document
+under "Chrome textarea and contenteditable window-type probes". The accepted
+installed engine was restored after every run.
+
+An owned GTK 4 multiline `TextView` also passed Tab and the two-direction
+Double Shift round trip; its Space correction did not apply, so Shift undo of
+an applied correction remains untested for this input class. The architecture
+document's "GTK 4 multiline TextView probe" records both receipts. Gedit
+itself was not tested; the accepted runtime was restored.
+
+The owned GNOME Terminal VTE row passed visible Tab and two-direction Double
+Shift with IME-local edit plans. Its `публекует` Space received
+`prefetch_not_ready`, so applied-correction undo remains untested. See
+"GNOME Terminal VTE window-type probe" in the architecture document for the
+positive and negative receipts. The accepted runtime was restored.
+
+The owned Kitty terminal row passed visible Tab and a two-direction
+IME-local Double Shift round trip. The Space correction attempt remained
+`prefetch_not_ready`, so applied-correction undo was untested; see the Kitty
+probe receipts in the architecture document and the separate TD-127 Space
+route. The accepted installed engine was restored.
+
+An owned PySide6 `QTextEdit` Qt multiline widget passed visible Tab acceptance
+and the two-direction Double Shift text round trip on the temporary candidate.
+The separate Space correction attempt returned `prefetch_not_ready`; no applied
+correction existed for Double Shift to undo. The architecture document's
+"Qt multiline QTextEdit window-type probe" records both exact receipts.
+Telegram Desktop and after-focus-transfer behavior remain untested, and the
+accepted installed and loaded engine was restored.
+
+The owned Firefox browser-chrome address bar is a separate failed window
+class. In a newly opened adjacent tab, both physical Double Shift gestures
+were detected, but after the first status-1 IME plan Firefox sent a new
+`FocusOut → FocusIn → Reset` sequence. Admission installed `UnknownStart` on
+the new path; the second RPC had `manual_toggle_allowed=false` and returned
+`not_handled/context_authority`. This is the first observed authority loss,
+not proof that carrying text across the path would be safe. A separate fresh
+textarea retry also returned Tab `handled=false`, so the earlier Tab PASS is
+intermittent. Both exact receipts are in the architecture document's
+"Firefox address bar in a neighboring tab" section. The candidate was
+rolled back and the test Firefox window remained open.
+
+## 2026-09-23 route decision for cyclic Double Shift in Firefox
+
+**Decision: retain the daemon-owned physical Double Shift detector and the two
+registered Lay IBus engines. Repair the exact manual-toggle successor at the
+existing context-admission boundary.** This is an architecture choice and
+preflight, not an accepted implementation or a claim of universal Firefox
+coverage. The installed/loaded engine remains
+`daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88`;
+no runtime authority, input source or browser process changed in this review.
+
+Measured facts: the native Firefox combined control previously made an
+immediate two-gesture round trip with two delegations (3/4 overall; its Space
+autocorrection case failed separately), so the current two-engine route can
+cycle under at least one callback order. In the newer adjacent-tab address-bar
+trace, both physical gestures reached the daemon. The first `ManualToggleV3`
+was handled, then the target engine received `FocusOut → Disable → FocusIn →
+Enable → Reset`, installed `UnknownStart`, and rejected the second request with
+`context_authority` (`bridge_token_live=true`,
+`manual_toggle_allowed=false`). That address-bar context advertised no
+surrounding text; its sampled accessibility text was empty, so the trace does
+not prove a safe visible round trip. The existing signed-in GitHub composer has
+a **user-observed** first successful flip and failed second flip, while the
+scoped-uinput attempts failed earlier; the exact first-success GitHub callback
+sequence is still unobserved. Its working IME, Tab and autocorrection are
+acceptance constraints, not evidence that an arbitrary recovered tail is safe.
+Receipts: `~/.cache/lay/development/td121-firefox-boundary-receipt-20260914/notification-combined/native-control/RECEIPT.json`,
+`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/persistent-firefox-window-20260923-103450/addressbar-neighbor-physical-receipt.json`,
+and the same directory's `engine-trace-after-lease.jsonl`; the GitHub receipts
+are linked in `docs/ime-daemon-route-map-2026-06-20.md`.
+
+The chosen narrow design is an **exact manual successor**, carried by the
+existing `ContextAdmissionReducer` and existing handoff/activation state. A
+successful manual edit may prepare one bounded successor for its specific
+source owner, target path, activation generation, field/context identity,
+converted surface and tail epoch. Target `Reset` may retain that successor
+only while the authenticated transfer and lifecycle still identify the same
+field. For clients with surrounding text, the successor must wait for a fresh,
+unselected, exact target snapshot matching the expected converted suffix
+before it can authorize the next edit. Any contradictory text, selection,
+different field, intervening input, stale owner, unmatched epoch, duplicate or
+expired transfer revokes it. The reducer remains the only admission authority;
+the daemon's WordBuffer and a remembered word alone never authorize external
+deletion. This is a proposed proof obligation, not an assertion that all needed
+field identities or callbacks are already available. For no-surrounding-text
+inputs such as the measured address bar, an independently proven same-field
+terminal edit witness and geometry would be required; if absent, refuse the
+second edit and keep that window class open rather than invent text authority.
+
+Alternatives and consequences:
+
+| Route | Benefit | Cost or unresolved failure | Verdict |
+| --- | --- | --- | --- |
+| Exact successor within current two-engine path | Targets the observed loss; preserves GNOME layout indicator, IME/Tab/autocorrection and existing adapter contracts | Must prove same-field continuity through Reset; no-surrounding clients may remain unsupported | Chosen for bounded implementation/proof |
+| One persistent IBus engine with internal RU/US layout | Avoids the cross-engine FocusOut/Enable transition | Firefox also emits ordinary per-key Reset; exact surrounding refresh is still needed. GNOME source/indicator and passthrough key mapping could diverge; affects every client, terminal and sensitive-field path | Separate isolated research only if the bounded route cannot meet coverage |
+| Firefox page extension/native page connector | Can observe a page editor | Cannot own the browser address bar as ordinary page content; creates a second editor/IME authority and does not repair native IBus admission | Reject |
+| Delay GNOME source switch until another key | Avoids immediate transfer | Leaves decoder, GNOME indicator and passed-through key mapping out of sync, with new input races | Reject |
+
+Consequence bounds for the chosen route: candidate ranking and learning must
+remain untouched; the new witness can authorize only the already converted
+surface and cannot manufacture a correction or suppress a contradiction. It
+must add no synchronous IBus RPC, polling, timer or wait to the key path; actual
+latency, CPU and RSS deltas are **not measured** and require guarded receipts
+before promotion. Key the successor by owner/path/generation/epoch and exact
+surface, never a global word cache; package reload, engine replacement, focus
+change and client mismatch revoke it. Superseded workers and delayed old-path
+callbacks must not consume or erase a newer owner. Keep existing
+`ImeCommittedTail`/`VisibleTailV2`, autocorrection undo, terminal transport,
+Firefox refresh adapter and safety gates. A failed experiment rolls back its
+source and candidate binary to the accepted hash; it must not migrate GNOME
+input sources or restart the user's Firefox. Reuse the reducer rather than add
+a second authority owner, limiting ongoing maintenance to one admission path.
+
+Proof gate before any runtime promotion: capture the **user's first-success,
+second-failure** GitHub sequence with owner/path/epoch and refusal reason but
+without draft text; establish a RED test with the same callback ordering; then
+show a GREEN two-toggle cycle and negative tests for changed field, selection,
+contradictory snapshot, stale generation, intervening key, missing surrounding
+text and late callback. Recheck visible Tab and autocorrection on the same
+candidate. Finally score each relevant window/input class in
+`docs/ime-window-type-acceptance-2026-09-23.md` on the exact installed binary:
+visible IME + Tab, repeated `A → B → A → B` Double Shift, and Double Shift
+undo after an **observed applied** autocorrection. A library PASS or the
+historical 3/4 native control is not the final client verdict. The address-bar
+no-surrounding class and exact GitHub first-success trace remain open gates;
+there is no 100% closure claim.
+
+### First exact-snapshot successor experiment
+
+The first implementation slice handles a target `Reset` that overtakes an
+uninstalled, already-ready `Transfer` **only when** the source published an
+unexpired exact external snapshot with the same source owner and tail epoch.
+The reducer revokes the old token, retains the authenticated transfer under a
+new revocation/frame generation, and downgrades its word lineage to
+`UnknownStart` with only the bounded token length. The target installs the
+existing shared tail, but it cannot take a surrounding-text manual edit until
+the target supplies a fresh unselected matching snapshot. Mismatch and
+selection stay refused. A changed `ContentType` and ordinary transfer without
+the exact receipt still take the original `ResetUnknown` route. No daemon
+WordBuffer fallback or new text effect was added.
+
+A controlled callback-order regression was RED with the old code: the two
+terminal round-trip tests stopped at the injected ready-transfer `Reset`
+(591/593 focused tests passed). That broad terminal injection was removed
+because its no-surrounding source cannot provide the exact snapshot required
+by this slice. The focused real adapter/reducer test then covered exact source
+publication, target `Reset`, old-token revocation, transfer installation, no
+authority before the fresh target callback, exact callback acceptance,
+contradictory callback refusal, selection refusal, and changed-content-type
+refusal. The remote guarded focused run passed **595/595** tests; receipt:
+`/home/ubu/.cache/lay/development/run-tti_cilb/RESULT.json`. These are
+development tests, not a Firefox client verdict. Runtime authority changed:
+**false**; the installed/loaded accepted engine stayed `daaa47bf…687b88`.
+
+The measured address-bar failure has no surrounding-text capability and is
+outside this slice. The exact user first-success GitHub sequence is still
+missing, so this implementation has not yet been shown to hit that live route.
+Physical Tab, repeated Shift and applied-autocorrection undo on the candidate
+are **NOT TESTED**. Latency, CPU, RSS, package reload and full release gates
+are also **NOT TESTED** for this source. A wider no-surrounding successor must
+first prove same-field delivered text independently; this slice does not
+promote the address-bar class.
+
+### Accepted-base isolated candidate verdict (2026-09-23)
+
+The exact-snapshot slice was transplanted alone to a clean worktree at accepted
+tag `v1.0.73` (`9c9fc3c6de7e119caf7479d956b3080b0e4b2764`). The remote guarded
+focused check passed **566/566** (`/home/ubu/.cache/lay/development/run-yr03g1hd/RESULT.json`).
+The built candidate SHA-256 is
+`42f0b37b1abfffaf448d24b3649d8b9aca1e152195b0b29fce31eee9a115c61c`.
+It was temporarily installed only inside guarded, owned Firefox textarea
+probes. The full input and DOM sequence after visible Tab was
+`просто ` → `ghjcnj ` → `просто ` → `ghjcnj ` → `просто `,
+with four daemon Double Shift delegations: PASS for that one input class.
+Receipt: `/home/ubu/.cache/lay/development/td121-accepted-base-20260923/installed-candidate-firefox-td121_tab_four_toggles-20260923-142031/`.
+Its trace did **not** exercise the new ready-transfer Reset successor; the
+successful cycle therefore cannot be attributed to the proposed repair.
+
+The same candidate failed the applied-autocorrection precondition twice in
+the owned textarea. At Space, the visible word remained `публекует ` and the
+trace recorded `prefetch_not_ready` / `managed_fallback_commit`; Double Shift
+then made an ordinary layout conversion. Extending the pre-Space wait from
+950 to 2,500 ms did not change that observation. These are **NOT TESTED**
+verdicts for undo after *applied* autocorrection, not evidence that the undo
+handler itself failed. Receipts:
+`/home/ubu/.cache/lay/development/td121-accepted-base-20260923/installed-candidate-firefox-td121_known_autocorrect_undo-20260923-141712/`
+and `...-20260923-142638/` under the same root. The accepted installed engine
+passed the exact-word apply-and-undo control earlier in
+`/home/ubu/.cache/lay/development/td121-exact-successor-20260923/baseline-autocorrect-undo-control/`.
+
+**Verdict: reject promotion of this slice.** It does not reach the measured
+address-bar no-surrounding Reset path, the authenticated GitHub first-success
+handoff was not reproduced, the new branch was not exercised by the positive
+native cycle, and candidate autocorrection was not demonstrated. These are
+separate gates; 566/566 focused checks and one four-gesture textarea PASS do
+not imply a general Firefox fix. Address bar, GitHub composer, other window
+types, full release, performance, package and human-keyboard gates remain
+**NOT TESTED** on this candidate. The accepted installed and loaded engine
+was restored after each probe (`daaa47bf…687b88`); runtime authority changed:
+**false**. The Firefox window was left open.
+
+The next architecture experiment needs a same-field delivered-text witness
+for Firefox browser chrome or a separately bounded one-engine prototype. A
+tail remembered across FocusOut/Reset is insufficient evidence to delete
+visible text. Capture the user's first-success GitHub callback sequence before
+claiming that any successor reaches its loss point. Preserve the existing
+IME, Tab, correction and undo routes as acceptance constraints.
+
+### Repeated Firefox replay: bounded external-prefix witness — 2026-09-24
+
+The user's latest report is that cyclic Double Shift fails after roughly four
+or five flips. The retained 20:38:35 installed-engine ring is a partial trace,
+so it does not establish the exact visible success count. It does establish a
+later loss: an exact delegated toggle is followed by a new Firefox IME owner,
+native Backspace/replacement replay, then a delayed surrounding snapshot of
+the pre-insertion surface after the first replacement character. That snapshot
+clears the Reset predecessor; later gestures reach the bridge but have no
+admitted edit. Ring:
+`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/current-engine-ring.jsonl`
+(SHA-256 `6123549b159db3ad105b27b43273f6867b96ac6c5f24a36abd3ad501f25481cd`).
+
+An isolated candidate now binds Firefox's external text prefix only when an
+exact live replay scope, owner, layout and original-tail snapshot agree before
+replay starts. Its prior-surface check strips only that bound prefix. This
+retains the stale snapshot as an inert predecessor; the next edit still needs
+an authenticated, exact current receipt. The target-snapshot fixture with a
+delayed first-character receipt was RED before this edit and GREEN after it.
+The fixture also rejects a foreign prefix. The candidate is based on the
+current accepted source in
+`/home/ubu/projects/lay-td121-repeat-clean-20260924`; source diff is only six
+IME files. The earlier source copy contained unrelated rejected experiments
+and is not a build or installation source.
+
+Measured source checks: focused Firefox fixture **1/1 PASS**; serial IME bin
+**595/596 PASS**. Its sole failure,
+`td121_pending_worker_fills_missing_material_before_exact_receipt`, times out
+in the P2P test choreography; the same isolated test also times out on the
+unmodified accepted source. The candidate's first parallel bin run on the
+earlier contaminated copy had 31 failures, mostly timing-sensitive, and is
+not an acceptance result. Logs: `clean-focused.log`, `clean-bin-serial.log`,
+and `accepted-baseline-pending-worker.log` under
+`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/`.
+
+Verdict scope: source mechanism is supported and the candidate passes its
+focused proof; complete six-cycle Firefox visible-text behavior, Tab,
+autocorrection undo, release gates and human input remain **NOT TESTED** on
+this candidate. Runtime authority changed: **false**; the accepted installed
+engine remains `daaa47bf…687b88`. No release or publication claim.
+
+### Native six-cycle discriminator — inconclusive for the user failure
+
+The isolated release candidate compiled successfully (SHA-256
+`6351c890686a5f165d1a24628961ff470df761126726325a7f03b204aeb3f751`).
+Each native probe used a scoped install and restored the accepted installed
+and loaded SHA-256 `daaa47bf…687b88` afterward; no candidate remains active.
+
+With a simple `abc ` field, both candidate and accepted baseline produced the
+same seven visible full surfaces across six toggles:
+`abc → фис → abc → фис → abc → фис → abc`. This held with a 900 ms settle
+after each gesture, and the baseline also passed when only the first gesture
+used that settle and the next five used 70 ms. Exact DOM receipts are under
+`clean-native-td121_space_six_toggles-20260924-212309/`,
+`baseline-native-six-20260924-212418/`, and
+`baseline-native-six-20260924-212542/` in the repeat-cycle evidence directory.
+This is **6/6 baseline and 6/6 candidate**, not evidence of an improvement.
+
+The all-fast 70 ms baseline probe reported a false success from the old
+final-value-only harness. DOM showed zero flips and the daemon recorded an
+initial GNOME layout readback mismatch; it is an invalid acceptance test
+(`baseline-native-six-20260924-212503/`). With pre-existing `prefix ` in the
+same contenteditable, baseline denied the *first* toggle and had zero flips
+(`baseline-native-six-20260924-212724/`), so it also did not reach the
+candidate's post-toggle replay branch. The initial `ntrcn ` attempts were
+invalid because the client autocorrected them to `текст ` before the first
+gesture, even when the test config disabled auto-replace. All these are native
+Firefox probes, not human keyboard proof.
+
+The first-character delayed-snapshot unit repair remains a supported narrow
+hypothesis, but its production benefit is **UNKNOWN**. Do not promote or
+install the candidate on this evidence. The next discriminating test needs a
+verified *initial successful* toggle in the user's failing field, then at
+least five further rapid gestures with a DOM/text witness after every one and
+the exact source/target IME callback trace. Tab and autocorrection undo remain
+protected acceptance routes. Publication and installed runtime authority
+remain unchanged.
+
+The existing authenticated Firefox Issue #46 tab was located via the local
+accessibility tree without opening or closing a window. Its `Add a comment`
+editor already held a 96-character draft. No text was entered or removed; the
+previously selected Firefox tab was restored. Agent-browser's verified CDP
+route cannot attach to this Firefox process. A same-field human/GUI sequence
+was therefore **NOT TESTED** in that authorized tab. This is a concrete
+remaining evidence gap, not a failed Lay edit in that tab.
+
+### Human Firefox Issue #46 repeat capture — 2026-09-24
+
+The user cleared the 96-character draft and typed in the existing authenticated
+Firefox comment field while the installed accepted engine ran. Capture was
+stopped on the user's `всё стоп`. The transient capture unit is inactive.
+Raw receipts are in
+`/home/ubu/.cache/lay/development/firefox-repeat-live-user-20260924/`:
+`engine.jsonl` (10,212 events; SHA-256 `4ee8b9c7f126dfed9e8d6dcf1f4de7bd3fe0d858e013cce0ae75c3f116f46f24`),
+`physical_keys.jsonl` (326 relevant key events; SHA-256 `035591afff9ec18721f0b7d63595c896b2618868f3ad77bdda733ead430cc530`),
+`field.jsonl` (270 value changes; SHA-256 `cb7ebfe7d5aa86039fb7b791e8a2aa01d9dd4b670991dbd0989e8863c504e832`), and
+`status.jsonl` (final stopped, `gaps=0`; SHA-256 `45cc3d42b5371f30bc318aecc6224ea908999cf284ae2129953a61f3a1c4ce4a`).
+The raw field file contains user-entered text; keep it local.
+
+Measured failure: after a Space, the first physical Left Shift pair at
+22:01:11.913/12.100 changed visible `шифт ` to `iban ` by 22:01:12.429.
+Three subsequent physical pairs at 12.663/12.827, 13.380/13.537 and
+13.708/13.855 left `iban ` unchanged. All six later presses/releases were
+recorded. Bridge admissions at 12.916, 13.618 and 13.976 establish that the
+completed gestures reached the IME path; they were not lost in the keyboard
+detector. The first gesture emitted `ibus_manual_toggle_delegation`, while the
+three later ones emitted no delegation or edit. Their exact `ManualToggleV3`
+return statuses are not logged by this installed binary.
+
+The first gesture transferred to the US IME owner with `known_start` (engine
+row 8219). Native replay temporarily changed completeness to `unknown_start`
+at the first Backspace (row 8235), then recovered `known_start` by the replayed
+Space (row 8344). Firefox's subsequent Reset armed a five-character
+re-receipt (row 8352), but the next `SurroundingText` was the 185-character
+post-deletion/pre-insertion surface (rows 8354-8355), not the final 190-character
+`iban ` surface. The engine rejected it with `surrounding_receipt_mismatch`.
+Later Reset callbacks reported `missing_predecessor_or_post_reset_token`
+(rows 8358 and 8363); the final 190-character snapshot arrived only after
+that lineage was lost (row 8365). Subsequent Shift callbacks were admitted
+with `unknown_start` (rows 8371, 8383, 8414, 8445), and the committed-tail
+buffer still reported 141 characters. The loss is exact context/edit authority
+after the delayed Firefox receipt, not disappearance of the physical keys or
+the entire IME buffer. Source gates require a matching fresh Reset receipt
+before another committed-text deletion.
+
+Verdict scope: this is a **human live reproduction of the repeat failure and
+its first observed authority-loss point** on the installed accepted binary.
+The isolated external-prefix-witness candidate targets that class of delayed
+receipt but has not been tested on this human sequence; its production benefit
+remains **UNKNOWN**. This capture does not validate all Firefox fields,
+Tab, or autocorrection undo. Runtime authority changed: **false**; installed
+engine SHA-256 remains `daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88`.
+
+### Exact human-order regression preflight — 2026-09-24
+
+The first unresolved proof is a completed native replay of a committed word
+with trailing Space followed by Firefox's old post-deletion snapshot and only
+then its final current snapshot. The existing candidate fixture covers a
+delayed receipt after the first replacement character, not this complete
+post-boundary sequence. Add one test using the existing controlled IBus
+adapter, real `ProcessKeyEvent`/Reset callbacks, and a nonempty external field
+prefix. Require the old snapshot to retain only an inert predecessor, the
+final exact snapshot to restore one-shot edit authority, and a second
+`ManualToggleV3` to delegate; also reject a foreign prefix. The test changes
+no runtime authority or source route. A baseline RED and candidate GREEN on
+this same test, followed by native Firefox visible intermediate surfaces, are
+the next promotion evidence. No installation is justified by a source-only
+PASS. Test fixtures use neutral tokens, never literal user-entered text in
+runtime conditions.
+
+The exact-order test is
+`firefox_completed_boundary_replay_waits_for_final_exact_receipt` in the
+existing IBus adapter residual suite. It uses native `ProcessKeyEvent`
+Backspaces/replacement including Space, then a Reset, an old post-deletion
+external-prefix receipt, a final exact receipt, and a second `ManualToggleV3`.
+The accepted-source comparison compiled with the same new test and failed at
+the old receipt (`context_reset_rereceipt.is_some()`, test line 6358):
+**593/594**, sole failure this test. Remote receipt:
+`/home/ubu/.cache/lay/development/run-32djw3rt/RESULT.json`.
+The isolated candidate passed **594/594**:
+`/home/ubu/.cache/lay/development/run-6969hmzg/RESULT.json`.
+Both runs used the guarded remote `bin:lay-ibus-engine` development lane;
+this is an explicit component check, not a release gate. The baseline
+comparison used a separate scratch worktree with only the three candidate
+runtime files restored to the accepted source and the same new test; no
+installed runtime was changed for these source checks.
+
+Native Firefox control checks temporarily loaded candidate SHA-256
+`6351c890686a5f165d1a24628961ff470df761126726325a7f03b204aeb3f751`
+in a separately owned profile and restored the accepted installed/loaded SHA
+`daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88`
+after each run. The candidate's Tab acceptance produced visible `про` →
+`просто` and `ibus_completion_accept`/handled Tab; its applied-autocorrection
+undo produced visible `публекует` → `публикует ` → `публекует `.
+Receipts are under
+`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/human-order-native-20260925-000550/`
+and `human-order-native-20260925-000638/`.
+
+The 179-character neutral-text native cycle attempt did **not** reach a first
+flip: the eight Shift keydowns reached Firefox but there was no manual
+delegation or converted full surface. Its final-value-only runner said OK;
+the independent intermediate-surface check correctly rejected it (0/4).
+Receipt:
+`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/human-order-native-20260925-000352/VISIBLE-CYCLE-VERDICT.json`.
+The earlier faster attempt also had 0/4 and lost queued input when its virtual
+keyboard exited; its final-value-only OK is invalid. These attempts do not
+show candidate regression or repair of the human Issue #46 cycle. The
+candidate has **source RED/GREEN and native Tab/undo controls**, while actual
+same-field cyclic acceptance, full release gates and user physical-keyboard
+confirmation remain **NOT TESTED**. Runtime authority changed: **false**;
+candidate was restored after each scoped run. The AST graph refresh ran but
+the architecture gate returned WATCH due to three edit-plan-verifier sink
+edges and stale test-source binding; no PASS architecture receipt was written.
+
+### Development gate and test installation — 2026-09-25
+
+The baseline comparison and candidate used the same remote Cargo target
+directory. After the baseline RED run, two candidate checks reused its stale
+test executable despite matching candidate source snapshots and failed at the
+baseline assertion. Touching only the three unchanged candidate runtime files
+forced a rebuild. The rebuilt focused IME suite passed **594/594**
+(`/home/ubu/.cache/lay/development/run-o27lxcm8/RESULT.json`), and the full
+guarded development suite passed **2,895 selected, zero reported failures**
+(`/home/ubu/.cache/lay/development/run-3ukqj44h/RESULT.json`). The stale-cache
+failures are recorded in `run-wbtve846` and `run-wkfgmejv`; they are not
+candidate-source failures. No runtime source was edited in this gate.
+
+The second graph refresh failed in `prune-graphify-self-sources.py` because a
+self-sourced TD-117 query label survived report pruning; receipt:
+`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/human-order-graph-update-final.log`.
+There is still **no PASS architecture receipt** and no release gate. This
+tooling failure does not establish the Firefox cycle's result.
+The partially refreshed generated graph files were restored to the scratch
+checkout's previous state; the four remaining dirty files are the regression
+test, its two test-lane manifests, and this owning document.
+
+At the user's request, candidate SHA-256
+`6351c890686a5f165d1a24628961ff470df761126726325a7f03b204aeb3f751`
+was installed as a **test IME build**, with the accepted binary saved at
+`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/candidate-installed-20260925-4TVAX3/accepted-lay-ibus-engine`.
+The installed file and loaded process both matched the candidate hash;
+`lay-daemon.service` was active. GNOME's current layout and the global IBus
+engine both read `lay-ime-ru` after the installation. Installation receipt:
+`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/candidate-installed-20260925-4TVAX3/INSTALL.txt`.
+Runtime authority changed: **true, test installation only**. The user's
+physical-keyboard cyclic sequence in the authenticated Issue #46 field remains
+**NOT TESTED** on this installed candidate. Native Tab and autocorrection undo
+controls passed; the synthetic cyclic attempt did not reach an initial flip
+and supplies no acceptance evidence. Do not publish or claim the cycle fixed
+until the same field visibly alternates through multiple Shift pairs.
+The read-only Firefox field/physical-key/engine capture was restarted as the
+active user unit `lay-firefox-double-shift-capture-20260925.service` from
+`/home/ubu/.cache/lay/development/firefox-repeat-live-user-20260924/capture.py`;
+its `status.jsonl`, `physical_keys.jsonl`, `engine.jsonl`, and `field.jsonl`
+are the evidence for the next user-run sequence. The capture leaves the
+pre-existing GitHub draft out of the field log until the field becomes empty.
+
+### User acceptance and first-word-after-Space exception — 2026-09-25
+
+On the exact installed and loaded test engine SHA-256
+`6351c890686a5f165d1a24628961ff470df761126726325a7f03b204aeb3f751`,
+the user reported that the previously failing cyclic Double Shift now works,
+with one remaining exception: the first word after Space does not toggle in
+Firefox. This is a **user-reported partial acceptance**, not a release PASS.
+Preserve this installed build while investigating the first-word case; do not
+regress the working cycles, IME suggestion/Tab acceptance, or autocorrection
+undo. The exact failing gesture position (first flip or return) and whether the
+GitHub field was empty are pending clarification.
+
+The live capture service remained active. Physical Left Shift pairs and Space
+were recorded around 01:10 local time. One fresh `ManualToggleV3` trace at
+01:10:07.839 was `not_handled/context_authority` with
+`bridge_token_live=true`, `manual_toggle_allowed=false`; a preceding
+`surrounding_receipt_mismatch` was recorded at 01:10:07.837. The bounded IME
+ring rewrote itself several times, so later copies of these events are not
+independent occurrences. The field-text collector recorded zero new values
+because the existing draft had not been observed empty. These facts establish
+an authority rejection during a physical test, but do **not yet prove** that
+this particular rejection was the first-word scenario. Receipts:
+`/home/ubu/.cache/lay/development/firefox-repeat-live-user-20260924/physical_keys.jsonl`,
+`engine.jsonl`, `field.jsonl`, and `status.jsonl`. Runtime authority changed:
+**false in this investigation**; the test build remains installed and loaded.
+
+### First-word retired-preedit experiment — 2026-09-25
+
+Tested a source-free first word followed by Space against the Firefox receipt
+order seen in the live engine trace: a published completion surface at the old
+cursor, Reset, then the exact committed word and Space. Exact-only first-word
+receipts already passed. The new stale-surface fixture failed before the
+repair (595/596; `/home/ubu/.cache/lay/development/run-o8ru4uky/RESULT.json`):
+the old publication revoked the waiting predecessor before the exact receipt.
+The trace and fixture have the same receipt *shape*; no captured field value
+ties the fixture's literal text to the user's first-word failure.
+
+The source candidate now carries the already published preedit witness across
+the Space boundary and retains a matching old surface as an **unconfirmed**
+predecessor before Reset. It still requires same-owner admission, the correct
+tail epoch and boundary, a subsequent Reset, and an exact fresh client receipt
+before a manual edit is authorized. A condition initially placed in the prior
+replay branch did not fix the fixture (595/596;
+`/home/ubu/.cache/lay/development/run-hc4ee1k5/RESULT.json`). Moving it to
+the retired-preedit branch passed 596/596
+(`/home/ubu/.cache/lay/development/run-dc67j4zc/RESULT.json`). Repeating the
+focused suite with wrong-surface and wrong-cursor negative cases also passed
+596/596 (`/home/ubu/.cache/lay/development/run-vjfxvkoh/RESULT.json`).
+
+Verdict scope: **source-level mechanism supported**, not native Firefox or
+release acceptance. The user's exact failing field sequence, multiple
+post-Space cycles, Tab and autocorrection-undo behavior on this new source,
+and the full development/release gates are **NOT TESTED** at this stage.
+Runtime authority changed: **false**; the previously accepted test binary
+remains installed and loaded. `graphify update .` completed; receipt:
+`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/first-word-graph-update-20260925.log`.
+
+The complete guarded development check then passed **2,897 selected**
+(`/home/ubu/.cache/lay/development/run-jao09yph/RESULT.json`). The local
+guarded release build completed, producing `lay-ibus-engine` SHA-256
+`4bbe07233808d1d14ecd072b87c052d760c22fe17bcac5f63d8adf9e8d1c7328`;
+build log:
+`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/first-word-release-build-20260925.log`.
+The previous installed test binary SHA-256 `6351c890…3f751` was backed up
+before replacing it. The installed file and sole loaded IME process both
+matched `4bbe0723…d1c7328`; daemon, GNOME layout, and global IBus engine
+were active on `lay-ime-ru`, and the capture service stayed active. Installation
+receipt and backup:
+`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/first-word-installed-20260925-wvtejH/`.
+Runtime authority changed: **true, test installation only**. Human Firefox
+first-word and repeated-cycle acceptance, Tab, and autocorrection undo on this
+new installed binary remain **NOT TESTED**; no commit or publication occurred.
+
+### User acceptance of installed first-word repair — 2026-09-25
+
+The user reported **“ВСЁ КРУТО РАБОТАЕТ”** on the installed engine SHA-256
+`4bbe07233808d1d14ecd072b87c052d760c22fe17bcac5f63d8adf9e8d1c7328`
+after the repeat-cycle and first-word-after-Space fixes. This supersedes the
+pending human verdict for the reported Firefox failure: **user-accepted on this
+exact test installation**. No separate per-window matrix or independent native
+receipt was collected for this final report, so universal window coverage and
+release certification are not claimed. The capture service was stopped after
+the user questioned its continued need; existing logs remain local. Runtime
+authority changed in this acceptance step: **false**. No additional build,
+test, browser action, commit, tag, or publication followed the acceptance.

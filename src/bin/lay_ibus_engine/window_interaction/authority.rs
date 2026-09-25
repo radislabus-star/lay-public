@@ -602,8 +602,19 @@ impl LayImeBridge {
     }
 
     async fn manual_toggle_outcome_inner(&self) -> fdo::Result<ImeManualToggleOutcome> {
-        let token = self.bridge_admission_token().await?;
+        let token = match self.bridge_admission_token().await {
+            Ok(token) => token,
+            Err(error) => {
+                crate::trace::record(
+                    r#"{"kind":"ibus_manual_toggle_rpc","stage":"rejected","reason":"bridge_admission"}"#,
+                );
+                return Err(error);
+            }
+        };
         let Some(path) = self.active_path() else {
+            crate::trace::record(
+                r#"{"kind":"ibus_manual_toggle_rpc","stage":"not_handled","reason":"no_active_path"}"#,
+            );
             return Ok(ImeManualToggleOutcome::NotHandled);
         };
         let iface_ref = self
@@ -621,11 +632,18 @@ impl LayImeBridge {
             || engine.context_observed_suffix_exact_manual_handoff_allowed()
             || engine.context_reset_rereceipt_exact_manual_handoff_allowed()
             || reset_snapshot_pending;
-        if !self.bridge_token_is_live(&engine, token.as_ref()) || !manual_toggle_allowed {
+        let bridge_token_live = self.bridge_token_is_live(&engine, token.as_ref());
+        if !bridge_token_live || !manual_toggle_allowed {
+            crate::trace::record(format!(
+                r#"{{"kind":"ibus_manual_toggle_rpc","stage":"not_handled","reason":"context_authority","bridge_token_live":{bridge_token_live},"manual_toggle_allowed":{manual_toggle_allowed}}}"#,
+            ));
             return Ok(ImeManualToggleOutcome::NotHandled);
         }
         let atomic_route_active = engine.atomic.active;
         if atomic_route_active {
+            crate::trace::record(
+                r#"{"kind":"ibus_manual_toggle_rpc","stage":"not_handled","reason":"atomic_route"}"#,
+            );
             return Ok(ImeManualToggleOutcome::NotHandled);
         }
         let mut engine = engine.begin_context_bridge_output(token.as_ref());
@@ -635,6 +653,9 @@ impl LayImeBridge {
             target_authority,
             TextTargetAuthority::AtomicOwned | TextTargetAuthority::Reject(_)
         ) {
+            crate::trace::record(
+                r#"{"kind":"ibus_manual_toggle_rpc","stage":"not_handled","reason":"target_authority"}"#,
+            );
             return Ok(ImeManualToggleOutcome::NotHandled);
         }
         let mut output = EngineOutput::legacy(emitter);
@@ -643,6 +664,10 @@ impl LayImeBridge {
                 .await
                 .map_err(fdo::Error::from)?;
         let outcome = manual_toggle_outcome_from_execution(target_layout_is_ru, execution);
+        let (status, target_layout_is_ru) = outcome.as_v3();
+        crate::trace::record(format!(
+            r#"{{"kind":"ibus_manual_toggle_rpc","stage":"complete","status":{status},"target_layout_is_ru":{target_layout_is_ru}}}"#,
+        ));
         engine.complete();
         Ok(outcome)
     }

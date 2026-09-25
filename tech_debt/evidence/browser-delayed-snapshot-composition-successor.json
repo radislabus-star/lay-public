@@ -1,0 +1,44 @@
+{
+  "schema": "lay.tech-debt.successor-binding.v1",
+  "task": "Browser-delayed-snapshot-Space-1.0.74",
+  "status": "ACCEPTED",
+  "checkpoint": {
+    "state": "frozen-at-source-review",
+    "scope": "Reviewed bounded managed-word-start successor; full gate, release build, installation and physical Firefox/Chrome acceptance remain separate."
+  },
+  "predecessor": {
+    "task": "Chromium-owned-preedit-Space-1.0.74",
+    "binding": "tech_debt/evidence/chromium-owned-preedit-composition-successor.json",
+    "binding_sha256": "6a645d7e655837d93ddd5fedeee845ec9a96154d3dab8b53787f5aab3b9aa766",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "f615fc1af80c9a8c64b64dfb435ce55776d80321e3e650435a84aa2a1fc04659",
+    "mode": "0664"
+  },
+  "successor": {
+    "task": "tech_debt/125-preserve-autocorrection-left-boundary.md",
+    "section": "Managed-word-start delayed-snapshot successor",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "2f6d78072dc9c4087ad5cea738e6e35d20de93425f8867c94ab46256a62270ed",
+    "mode": "0664"
+  },
+  "review": {
+    "state": "PASS",
+    "report": "tech_debt/evidence/browser-delayed-snapshot-source-review.md",
+    "report_sha256": "62e9594442572f6f27c1943122a332909e41a4e02698a7d5d5ed922a34006d83",
+    "score": "9/10",
+    "high_findings": 0,
+    "medium_findings": 0,
+    "low_findings": 0
+  },
+  "focused_gate": {
+    "state": "PASS",
+    "selected": 590,
+    "passed": 590,
+    "failed": 0,
+    "result": "/home/ubu/.cache/lay/development/run-ekb6jas1/RESULT.json",
+    "result_sha256": "ad9442d37e357d27f1c6a9aede2cd0ae6695961dc0efe16c91277da2627dcfa9",
+    "log_sha256": "b9f264e409f61b8779bfe351db34d64d3927cef228b52cf05107d04bc1c4b972",
+    "archive_sha256": "9c22a693763a8f9130b1325eaa7b4f6e77df54055055882b23b2b81695b3e2d1"
+  },
+  "runtime_authority_changed": true
+}

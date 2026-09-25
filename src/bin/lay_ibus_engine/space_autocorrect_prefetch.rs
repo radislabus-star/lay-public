@@ -130,6 +130,15 @@ struct WorkerLane {
     last_used: u64,
 }
 
+enum ScheduleRegistration {
+    Reused,
+    Registered {
+        worker_generation: u64,
+        material_generation: u64,
+    },
+    Unavailable,
+}
+
 #[derive(Default)]
 struct WorkerPool {
     lanes: HashMap<String, WorkerLane>,
@@ -158,13 +167,20 @@ impl Worker {
     }
 
     fn schedule(&self, work: SpaceAutocorrectWork) {
-        let material_generation = lay::nanda_wave::candidate_material_generation();
-        let Some(worker_generation) = self.begin_request(&work.identity, material_generation)
-        else {
-            trace::record(
-                r#"{"kind":"ibus_space_exact_layout_lease","status":"register_unavailable"}"#,
-            );
-            return;
+        let (worker_generation, material_generation) = match self
+            .begin_schedule_request(&work.identity)
+        {
+            ScheduleRegistration::Reused => return,
+            ScheduleRegistration::Registered {
+                worker_generation,
+                material_generation,
+            } => (worker_generation, material_generation),
+            ScheduleRegistration::Unavailable => {
+                trace::record(
+                    r#"{"kind":"ibus_space_exact_layout_lease","status":"register_unavailable"}"#,
+                );
+                return;
+            }
         };
         let exact_started = Instant::now();
         let exact = prepare_inline_exact(&work);
@@ -197,6 +213,56 @@ impl Worker {
             trace::record(
                 r#"{"kind":"ibus_space_exact_layout_lease","status":"publish_unavailable_or_superseded"}"#,
             );
+        }
+    }
+
+    fn begin_schedule_request(&self, identity: &InputFrameIdentity) -> ScheduleRegistration {
+        self.begin_schedule_request_with_material(identity, || {
+            lay::nanda_wave::candidate_material_generation()
+        })
+    }
+
+    fn begin_schedule_request_with_material(
+        &self,
+        identity: &InputFrameIdentity,
+        mut current_material_generation: impl FnMut() -> u64,
+    ) -> ScheduleRegistration {
+        let (lock, wake) = &*self.state;
+        let mut state = match lock.try_lock() {
+            Ok(state) => state,
+            Err(TryLockError::WouldBlock) | Err(TryLockError::Poisoned(_)) => {
+                // Preserve the existing fail-closed rule: a request that
+                // cannot inspect the slot invalidates any older publication.
+                let _ = reserve_generation(&self.latest_request_generation);
+                return ScheduleRegistration::Unavailable;
+            }
+        };
+        let material_generation = current_material_generation();
+        let latest = self.latest_request_generation.load(Ordering::Acquire);
+        let equal_current_slot = state.slot.as_ref().is_some_and(|slot| {
+            slot.identity == *identity
+                && slot.request_generation == state.generation
+                && slot.request_generation == latest
+                && slot.material_generation == material_generation
+        });
+        let confirmed_material_generation = current_material_generation();
+        if equal_current_slot && confirmed_material_generation == material_generation {
+            return ScheduleRegistration::Reused;
+        }
+        let worker_generation = reserve_generation(&self.latest_request_generation);
+        state.generation = worker_generation;
+        state.slot = Some(PreparedDecisionSlot {
+            identity: identity.clone(),
+            request_generation: worker_generation,
+            material_generation: confirmed_material_generation,
+            full: FullSlotState::Pending,
+            exact: ExactSlotState::Absent,
+        });
+        state.desired = None;
+        wake.notify_all();
+        ScheduleRegistration::Registered {
+            worker_generation,
+            material_generation: confirmed_material_generation,
         }
     }
 
@@ -404,6 +470,26 @@ impl Worker {
         retire_slot(&mut state, &self.latest_request_generation, generation);
         wake.notify_all();
     }
+
+    fn retain_current_or_invalidate(&self, identity: &InputFrameIdentity) {
+        let (lock, wake) = &*self.state;
+        let Ok(mut state) = lock.lock() else {
+            return;
+        };
+        let current_material_generation = lay::nanda_wave::candidate_material_generation();
+        let keep = state.slot.as_ref().is_some_and(|slot| {
+            slot.identity == *identity
+                && slot.request_generation == state.generation
+                && slot.request_generation == self.latest_request_generation.load(Ordering::Acquire)
+                && slot.material_generation == current_material_generation
+        });
+        if keep || state.slot.is_none() {
+            return;
+        }
+        let generation = state.generation;
+        retire_slot(&mut state, &self.latest_request_generation, generation);
+        wake.notify_all();
+    }
 }
 
 impl Drop for Worker {
@@ -466,6 +552,12 @@ fn existing_worker(path: &str) -> Option<Arc<Worker>> {
         .lock()
         .ok()
         .and_then(|mut pool| pool.existing_lane(path))
+}
+
+pub(crate) fn retain_current_or_invalidate(identity: &InputFrameIdentity) {
+    if let Some(worker) = existing_worker(&identity.path) {
+        worker.retain_current_or_invalidate(identity);
+    }
 }
 
 fn prepare_inline_exact(

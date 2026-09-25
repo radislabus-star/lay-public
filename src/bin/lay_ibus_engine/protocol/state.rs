@@ -36,6 +36,7 @@ pub(crate) struct ExactManualToggleSuppression {
     pub(crate) original_tail: String,
     pub(crate) original_suffix: String,
     pub(crate) unchanged_prefix: String,
+    pub(crate) observed_external_prefix: Option<String>,
     pub(crate) replacement: String,
 }
 

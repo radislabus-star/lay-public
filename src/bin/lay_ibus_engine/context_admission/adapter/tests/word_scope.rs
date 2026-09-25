@@ -418,19 +418,20 @@ async fn legacy_key(
     state: u32,
 ) -> bool {
     let key = legacy_message(serial);
+    harness.peer.detached_callback_reply_serials.insert(serial);
     harness.peer.connection.send(&key).await.unwrap();
+    // Semantic callback fixtures own a received observer stamp before the
+    // engine callback consumes it. Rendezvous wait and timeout schedules have
+    // dedicated adapter tests; racing every semantic fixture against the 1 ms
+    // product deadline only measures host scheduling jitter.
+    assert!(bounded(harness.observer.process_next())
+        .await
+        .expect("legacy key observer result"));
     let emitter = zbus::object_server::SignalEmitter::new(&harness.connection, TARGET_PATH)
         .expect("legacy signal emitter");
-    bounded(async {
-        let (handled, observed) = future::zip(
-            engine.process_key_event(key.header(), emitter, keyval, keycode, state),
-            harness.observer.process_next(),
-        )
-        .await;
-        assert!(observed.expect("legacy key observer result"));
-        handled.expect("legacy ProcessKeyEvent result")
-    })
-    .await
+    bounded(engine.process_key_event(key.header(), emitter, keyval, keycode, state))
+        .await
+        .expect("legacy ProcessKeyEvent result")
 }
 
 async fn expect_legacy_commit(peer: &mut ControlledPeer) {

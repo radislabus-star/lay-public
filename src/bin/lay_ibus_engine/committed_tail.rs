@@ -29,7 +29,7 @@ impl LayIbusEngine {
         if !self.config.auto_replace || !self.content_allows_text_assistance() {
             return;
         }
-        if !self.input_frame_identity_matches(identity) {
+        if !self.space_autocorrect_computation_identity_matches(identity) {
             return;
         }
         let token = self.last_tail_token_text();
@@ -40,6 +40,53 @@ impl LayIbusEngine {
             identity: identity.clone(),
             config: self.config.clone(),
         });
+    }
+
+    fn space_autocorrect_identity_matches(&self, expected: &InputFrameIdentity) -> bool {
+        if let Some(witness_identity) = expected.space_autocorrect_managed_start_identity {
+            expected.display_suffix_token.is_none()
+                && expected.space_autocorrect_suffix_token.is_none()
+                && expected.space_autocorrect_surrounding_revision.is_none()
+                && self
+                    .client_context
+                    .managed_word_start
+                    .as_ref()
+                    .is_some_and(|witness| witness.identity == witness_identity)
+                && self.managed_word_start_is_current()
+                && self.input_frame_authority_matches(expected)
+                && self.capture_space_autocorrect_frame_identity().as_ref() == Some(expected)
+        } else if let Some(revision) = expected.space_autocorrect_surrounding_revision {
+            expected.display_suffix_token.is_none()
+                && expected.space_autocorrect_suffix_token.is_none()
+                && expected.space_autocorrect_managed_start_identity.is_none()
+                && self.client_context.surrounding_observation_revision == revision
+                && self.exact_managed_surrounding_word_is_current()
+                && self.input_frame_authority_matches(expected)
+                && self.capture_space_autocorrect_frame_identity().as_ref() == Some(expected)
+        } else if expected.space_autocorrect_suffix_token.is_some() {
+            expected.display_suffix_token.is_none()
+                && expected.space_autocorrect_managed_start_identity.is_none()
+                && (self.uses_native_terminal_input()
+                    || self.exact_marked_surrounding_suffix_is_current()
+                    || self.exact_owned_legacy_preedit_is_current())
+                && self.input_frame_authority_matches(expected)
+                && self.capture_space_autocorrect_frame_identity().as_ref() == Some(expected)
+        } else {
+            expected.display_suffix_token.is_none() && self.input_frame_identity_matches(expected)
+        }
+    }
+
+    fn space_autocorrect_computation_identity_matches(
+        &self,
+        expected: &InputFrameIdentity,
+    ) -> bool {
+        self.space_autocorrect_identity_matches(expected)
+            || (expected.space_autocorrect_suffix_token.is_some()
+                && expected.space_autocorrect_surrounding_revision.is_none()
+                && expected.space_autocorrect_managed_start_identity.is_none()
+                && expected.display_suffix_token.is_none()
+                && self.input_frame_authority_matches(expected)
+                && self.capture_pending_reset_space_frame().as_ref() == Some(expected))
     }
 
     pub(super) fn take_space_autocorrect_lease(
@@ -60,6 +107,10 @@ impl LayIbusEngine {
 
     pub(super) fn invalidate_space_autocorrect_path(&self) {
         space_autocorrect_prefetch::invalidate_path(&self.path);
+    }
+
+    pub(super) fn retain_space_autocorrect_across_reset(&self, identity: &InputFrameIdentity) {
+        space_autocorrect_prefetch::retain_current_or_invalidate(identity);
     }
 
     fn admit_space_autocorrect_lease(
@@ -138,7 +189,7 @@ impl LayIbusEngine {
                 .exact_certificate
                 .as_ref()
                 .is_some_and(|certificate| !identity.certificate_matches(certificate))
-            || !self.input_frame_identity_matches(identity)
+            || !self.space_autocorrect_identity_matches(identity)
         {
             trace::record(r#"{"kind":"ibus_space_autocorrect","status":"identity_mismatch"}"#);
             trace::record_space_autocorrect_timing(
@@ -243,6 +294,9 @@ impl LayIbusEngine {
             decision.input_gate,
         );
         let replacement = decision.replacement;
+        let proved_managed_external_snapshot = identity
+            .space_autocorrect_managed_start_identity
+            .and_then(|_| self.managed_word_start_projected_snapshot());
         let expected_tail = VisibleTailSnapshot::new(
             VisibleTailSource::ImeCommittedTail,
             token.clone(),
@@ -258,6 +312,7 @@ impl LayIbusEngine {
                     replacement.clone(),
                 )
                 .with_expected_tail(expected_tail)
+                .with_proved_managed_external_snapshot(proved_managed_external_snapshot)
                 .with_winner_action(decision.action)
                 .with_outcome_feedback(PendingSystemOutcomeFeedback {
                     original: token.clone(),
@@ -956,6 +1011,7 @@ mod tests {
             original_tail: "x".to_string(),
             original_suffix: "x".to_string(),
             unchanged_prefix: String::new(),
+            observed_external_prefix: None,
             replacement: "ч".to_string(),
         };
         engine.committed_tail.autocorrect_suppression =

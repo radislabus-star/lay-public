@@ -284,11 +284,23 @@ impl LayIbusEngine {
         frame: Option<InputFrameIdentity>,
         background_supported: bool,
     ) -> fdo::Result<()> {
+        let frame = frame.or_else(|| self.capture_pending_reset_readout_frame());
         if !frame
             .as_ref()
-            .is_some_and(|identity| self.precognition_identity_matches(identity))
+            .is_some_and(|identity| self.precognition_computation_identity_matches(identity))
         {
             self.cancel_precognition_display_generation();
+            if frame.is_none()
+                && background_supported
+                && emitter.is_legacy()
+                && self.context_callback_entered.is_some()
+                && self.composition.preedit_visible
+                && !self.composition.preedit_suffix.is_empty()
+            {
+                return self
+                    .begin_pending_precognition_refresh(emitter, background_supported)
+                    .await;
+            }
             return self.clear_preedit(emitter).await;
         }
         if !background_supported {
@@ -595,16 +607,29 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         background_supported: bool,
     ) -> fdo::Result<()> {
-        let retained_suffix = background_supported
+        let matching_suffix = background_supported
             .then(|| self.matching_target_suffix())
             .flatten();
+        let inert_suffix = (background_supported
+            && matching_suffix.is_none()
+            && self.composition.preedit_fast.target_surface().is_none()
+            && self.composition.preedit_visible)
+            .then(|| self.composition.preedit_suffix.clone())
+            .filter(|suffix| !suffix.is_empty());
         self.clear_visible_precognition_candidates();
-        let Some(retained_suffix) = retained_suffix else {
+        let Some(retained_suffix) = matching_suffix.as_ref().or(inert_suffix.as_ref()) else {
             return self.clear_preedit(emitter).await;
         };
         self.composition.preedit_display_only_pending = true;
-        self.composition.preedit_suffix = retained_suffix;
+        self.composition.preedit_suffix.clone_from(retained_suffix);
         if !self.composition.preedit_visible {
+            return Ok(());
+        }
+        if matching_suffix.is_none() {
+            trace::record(format!(
+                r#"{{"kind":"ibus_precognition_display","stage":"retained_inert","chars":{}}}"#,
+                self.composition.preedit_suffix.chars().count()
+            ));
             return Ok(());
         }
         let (preedit_text, cursor_pos) = self.inactive_preedit_payload();
@@ -636,9 +661,7 @@ impl LayIbusEngine {
             super::precognition_worker::cancel();
             return false;
         };
-        if !self.precognition_identity_matches(&identity)
-            && self.capture_pending_reset_readout_frame().as_ref() != Some(&identity)
-        {
+        if !self.precognition_computation_identity_matches(&identity) {
             super::precognition_worker::cancel();
             return false;
         }
@@ -667,6 +690,20 @@ impl LayIbusEngine {
         true
     }
 
+    pub(super) fn schedule_settled_owned_preedit_precognition(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        identity: &InputFrameIdentity,
+    ) {
+        if self.composition.legacy_word_preedit_active {
+            // Callback settlement may advance the admission token after the
+            // initial visible preedit publication. Schedule display from the
+            // settled frame, as Space prefetch already does for this word.
+            self.composition.preedit_display_only_pending =
+                self.schedule_background_precognition(emitter, Some(identity.clone()));
+        }
+    }
+
     fn precognition_display_ready(&self) -> bool {
         self.live_candidate_partial().chars().count() >= PREEDIT_VISIBLE_PREFIX_MIN_CHARS
     }
@@ -675,9 +712,22 @@ impl LayIbusEngine {
         if expected.display_suffix_token.is_some() {
             self.input_frame_authority_matches(expected)
                 && self.capture_observed_suffix_display_frame().as_ref() == Some(expected)
+        } else if expected.space_autocorrect_suffix_token.is_some()
+            && self.exact_owned_legacy_preedit_is_current()
+        {
+            // An owned live composition already has an exact local surface.
+            // It may display a suggestion while its start is UnknownStart;
+            // this does not create any new Space or committed-text authority.
+            self.input_frame_authority_matches(expected)
+                && self.capture_space_autocorrect_frame_identity().as_ref() == Some(expected)
         } else {
             self.input_frame_identity_matches(expected)
         }
+    }
+
+    fn precognition_computation_identity_matches(&self, expected: &InputFrameIdentity) -> bool {
+        self.precognition_identity_matches(expected)
+            || self.capture_pending_reset_readout_frame().as_ref() == Some(expected)
     }
 
     pub(super) fn capture_observed_suffix_display_frame(&self) -> Option<InputFrameIdentity> {
@@ -709,12 +759,22 @@ impl LayIbusEngine {
         let frame = self.capture_observed_suffix_display_frame();
         if frame.is_none() {
             if let Some(pending) = self.capture_pending_reset_readout_frame() {
-                self.clear_preedit(emitter).await?;
+                self.begin_pending_precognition_refresh(emitter, true)
+                    .await?;
                 // Keep the existing pending latch: Alt before publication must
                 // retire this work and may not accept a later receipt's hint.
-                self.composition.preedit_display_only_pending =
-                    self.schedule_background_precognition(emitter, Some(pending));
+                let scheduled = self.schedule_background_precognition(emitter, Some(pending));
+                self.composition.preedit_display_only_pending = scheduled;
+                if !scheduled {
+                    self.clear_preedit(emitter).await?;
+                }
                 return Ok(());
+            }
+            if self.composition.preedit_display_only_pending
+                && self.composition.preedit_visible
+                && !self.composition.preedit_suffix.is_empty()
+            {
+                return self.begin_pending_precognition_refresh(emitter, true).await;
             }
         } else if self.context_reset_rereceipt_exact_manual_handoff_allowed()
             && self.precognition_display_ready()
@@ -742,6 +802,66 @@ impl LayIbusEngine {
             return None;
         }
         self.capture_word_frame_identity()
+    }
+
+    pub(super) fn capture_space_autocorrect_frame_identity(&self) -> Option<InputFrameIdentity> {
+        if let Some(identity) = self.capture_input_frame_identity() {
+            return Some(identity);
+        }
+        let exact_native_suffix =
+            self.uses_native_terminal_input() && self.context_observed_suffix_is_exact_current();
+        let exact_marked_suffix = self.exact_marked_surrounding_suffix_is_current();
+        let exact_managed_surrounding = self.exact_managed_surrounding_word_is_current();
+        let exact_managed_start = self.managed_word_start_is_current();
+        if !exact_native_suffix
+            && !exact_marked_suffix
+            && !self.exact_owned_legacy_preedit_is_current()
+            && !exact_managed_surrounding
+            && !exact_managed_start
+        {
+            return None;
+        }
+        let mut identity = self.capture_word_frame_identity()?;
+        if exact_managed_surrounding && !exact_native_suffix && !exact_marked_suffix {
+            identity.space_autocorrect_surrounding_revision =
+                Some(self.client_context.surrounding_observation_revision);
+            return Some(identity);
+        }
+        if exact_managed_start && !exact_native_suffix && !exact_marked_suffix {
+            identity.space_autocorrect_managed_start_identity = self
+                .client_context
+                .managed_word_start
+                .as_ref()
+                .map(|witness| witness.identity);
+            return Some(identity);
+        }
+        identity.space_autocorrect_suffix_token = Some(
+            exact_marked_suffix
+                .then(|| self.context_reset_rereceipt_space_identity_token())
+                .flatten()
+                .or_else(|| self.live_context_token())?,
+        );
+        Some(identity)
+    }
+
+    pub(super) fn capture_pending_reset_space_frame(&self) -> Option<InputFrameIdentity> {
+        if !self.client_context.exact_surrounding_refresh_available
+            || !self.client_context.surrounding_text_supported
+            || !self.context_reset_rereceipt_computation_allowed()
+            || !self.composition.buffer.is_empty()
+        {
+            return None;
+        }
+        let mut identity = self.capture_word_frame_identity()?;
+        identity.space_autocorrect_suffix_token =
+            Some(self.context_reset_rereceipt_space_identity_token()?);
+        Some(identity)
+    }
+
+    pub(super) fn exact_owned_legacy_preedit_is_current(&self) -> bool {
+        self.composition.legacy_word_preedit_active
+            && !self.composition.buffer.is_empty()
+            && self.last_tail_token_text() == self.composition.buffer
     }
 
     fn capture_word_frame_identity(&self) -> Option<InputFrameIdentity> {
@@ -1098,6 +1218,9 @@ impl LayIbusEngine {
             .then(|| self.composition.preedit_fast.observed_prediction.clone())
             .flatten();
         self.client_context.surrounding_text_snapshot = None;
+        if is_boundary {
+            self.client_context.managed_word_start = None;
+        }
         self.committed_tail.buffer.push(ch);
         self.composition.preedit_fast.push(ch);
         self.committed_tail.last_input_at = Some(Instant::now());

@@ -166,7 +166,7 @@ int main(void) {
     fake_gtk_configure(1, 1, 1);
     ibus_input_context_set_capabilities((void *)1, 41u);
     expect("capability calls", fake_ibus_capability_calls(), 1);
-    expect("commit-only preedit capability", (int)fake_ibus_last_capabilities(),
+    expect("exact surrounding refresh capability", (int)fake_ibus_last_capabilities(),
            (int)(41u | (1u << 30)));
     return failures ? 1 : 0;
 }

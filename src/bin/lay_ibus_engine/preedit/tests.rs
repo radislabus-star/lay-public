@@ -2247,8 +2247,8 @@ fn pending_refresh_shortens_the_retained_surface_without_accepting_it() {
 }
 
 #[test]
-fn pending_refresh_hides_a_target_that_no_longer_matches_the_partial() {
-    use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY};
+fn pending_refresh_retains_divergent_surface_without_accepting_it() {
+    use crate::output::{AtomicEffectBuilder, EngineOutput};
 
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
@@ -2257,33 +2257,71 @@ fn pending_refresh_hides_a_target_that_no_longer_matches_the_partial() {
         true,
         LayConfig::default(),
     );
-    for ch in "прод".chars() {
-        engine.push_tail_char(ch);
-    }
+    engine.push_tail_char('п');
     engine.composition.preedit_visible = true;
-    engine.composition.preedit_suffix = "ерка".to_string();
-    engine.composition.preedit_candidates = vec!["ерка".to_string()];
+    engine.composition.preedit_suffix = "очему".to_string();
+    engine.composition.preedit_candidates = vec!["очему".to_string()];
+    engine.composition.preedit_replacement_targets = vec![None];
     engine
         .composition
         .preedit_fast
-        .remember_target(Some("проверка".to_string()));
+        .remember_target(Some("почему".to_string()));
+    engine.push_tail_char('у');
+    assert_eq!(
+        engine.composition.preedit_fast.target_surface(),
+        None,
+        "the divergent printable must revoke old candidate identity before display refresh"
+    );
 
     let mut builder = AtomicEffectBuilder::default();
     let mut output = EngineOutput::atomic(&mut builder);
     zbus::block_on(engine.begin_pending_precognition_refresh(&mut output, true))
         .expect("mismatched pending surface");
 
-    assert!(!engine.composition.preedit_visible);
-    assert!(engine.composition.preedit_suffix.is_empty());
+    assert!(
+        engine.composition.preedit_visible,
+        "the prior client frame must remain visible while current work is pending"
+    );
+    assert_eq!(engine.composition.preedit_suffix, "очему");
     assert!(engine.composition.preedit_candidates.is_empty());
+    assert!(engine.composition.preedit_replacement_targets.is_empty());
+    assert!(engine.composition.preedit_display_only_pending);
     assert_eq!(engine.composition.preedit_fast.target_surface(), None);
-    assert_eq!(builder.preedit_calls(), ["update-hidden", "hide"]);
-    let proposal = builder.finish(false);
-    assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
     assert_eq!(
-        proposal.1.iter().map(|effect| effect.0).collect::<Vec<_>>(),
-        [4],
-        "a mismatched retained target must emit exactly one HidePreeditText"
+        engine.selected_precognition_suffix(),
+        None,
+        "the retained client frame must have no acceptance authority"
+    );
+    assert!(!engine.cycle_precognition_candidate(1));
+    assert!(
+        builder.preedit_calls().is_empty(),
+        "divergent printable input must not emit clear, hide, update, or show while current work is pending"
+    );
+    assert!(builder.finish(false).1.is_empty());
+
+    let proposals = vec![ImeCandidateProposal::new(
+        "сть",
+        1.0,
+        lay::typing_cpu::ImeCandidateSource::L2Completion,
+    )];
+    let mut applied_builder = AtomicEffectBuilder::default();
+    let mut applied_output = EngineOutput::atomic(&mut applied_builder);
+    zbus::block_on(engine.apply_background_precognition(&mut applied_output, proposals))
+        .expect("exact current result replaces retained client frame");
+
+    assert_eq!(
+        engine.selected_precognition_suffix().as_deref(),
+        Some("сть")
+    );
+    assert!(!engine.composition.preedit_display_only_pending);
+    assert_eq!(
+        applied_builder.pending_preedit_update(),
+        Some(("сть", 0, 0))
+    );
+    assert_eq!(
+        applied_builder.preedit_calls(),
+        ["update-visible"],
+        "the exact current candidate must replace the retained frame without another ShowPreeditText"
     );
 }
 
