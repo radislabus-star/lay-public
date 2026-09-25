@@ -7,10 +7,10 @@
 `lay` исправляет слово, набранное не в той раскладке: нажмите
 **Shift два раза** и продолжайте писать.
 
-**Последний публичный релиз: [1.0.75](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.75). Статус: alpha.**
+**Последний публичный релиз: [1.0.76](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.76). Статус: alpha.**
 
 Изменения, результаты проверок и известные ограничения — в
-[описании релиза](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.75).
+[описании релиза](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.76).
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
@@ -47,14 +47,19 @@ Daemon локально слушает физические клавиши, хр
 пробела и автоматическое применение исправлений выключены, пока пользователь
 сам их не включит.
 
-## Что изменилось в 1.0.75
+## Что изменилось в 1.0.76
 
-- В Firefox исправлен повторный Double Shift после пробела, включая первое
-  слово: переключение можно повторять в обе стороны.
-- Сохранены принятые подсказки IME, Tab и отмена автокоррекции Double Shift.
-- Маршрут Tor без SurroundingText остаётся открытым и в этот релиз не входит.
+- После перезапуска IBus Lay ждёт подтверждённый GlobalEngine перед допуском
+  контекста. Это устраняет запуск, при котором слово целиком оставалось в IME,
+  а Double Shift отклонялся.
+- В Kitty восстановлен терминальный ввод, если после перезапуска IBus не
+  передал тип поля: Tab и повторный Double Shift проверены на установленной
+  версии.
+- Исправление Firefox из 1.0.75 сохранено. Маршрут Tor без SurroundingText
+  остаётся открытым. В поле WhatsApp на этой версии известен сбой подсказки
+  после второго символа; подробности в документе релиза.
 
-[Подробности релиза](docs/release-1.0.75-firefox-cyclic-2026-09-25.md).
+[Подробности релиза](docs/release-1.0.76-ibus-startup-2026-09-25.md).
 
 [Документация](docs/README.md) ·
 [Сообщить об ошибке](https://github.com/radislabus-star/lay-public/issues) ·
@@ -336,7 +341,7 @@ PASS receipt и обязательная architecture-проверка. Producti
 
 ## English
 
-`lay` 1.0.75 is a local Double Shift RU/EN layout rescue and bounded
+`lay` 1.0.76 is a local Double Shift RU/EN layout rescue and bounded
 typing-correction tool for Linux desktops.
 
 ```text
@@ -351,8 +356,8 @@ L3 context, `TransitionDecisionCore`, and a structural verifier.
 Exact search contributes candidates and certificates but does not bypass final
 authority.
 
-The [1.0.75 release notes](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.75)
-cover the accepted Firefox repeated Double Shift and first-word repair.
+The [1.0.76 release notes](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.76)
+cover IBus startup admission, the Kitty focus repair, and known browser limits.
 
 Quick install:
 

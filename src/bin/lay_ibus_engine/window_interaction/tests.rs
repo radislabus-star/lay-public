@@ -82,6 +82,51 @@ use crate::engine::LayIbusEngine;
 use crate::output::{EngineOutput, TestEngineOutput};
 use crate::state::CommittedTailReplaceRequest;
 
+#[test]
+fn kitty_focus_probe_requires_exact_window_identity() {
+    use super::observation::exact_kitty_window;
+
+    assert!(exact_kitty_window(
+        r#"{"appId":"kitty.desktop","windowId":"42","stableSequence":"7"}"#
+    ));
+    assert!(!exact_kitty_window(
+        r#"{"appId":"google-chrome.desktop","windowId":"42","stableSequence":"7"}"#
+    ));
+    assert!(!exact_kitty_window(
+        r#"{"appId":"kitty.desktop","windowId":"","stableSequence":"7"}"#
+    ));
+}
+
+#[test]
+fn kitty_focus_probe_survives_activation_serial_but_not_focus_transfer() {
+    let mut engine = engine();
+    engine.set_client_capabilities(9);
+    engine.client_context.cursor_cell_width = 8;
+    engine.client_context.focus_receipt = Some("kitty-context".to_string());
+    let before = engine.client_context.focus_serial;
+    engine.client_context.kitty_focus_probe_serial = Some(before);
+    engine.client_context.focus_serial = crate::engine::next_input_identity();
+    assert!(engine
+        .client_context
+        .finish_kitty_focus_probe(Some("kitty-context"), true));
+    assert_eq!(
+        engine
+            .client_context
+            .kitty_terminal_focus_receipt
+            .as_deref(),
+        Some("kitty-context")
+    );
+    engine.client_context.focus_serial = crate::engine::next_input_identity();
+    assert!(engine.has_proven_terminal_input());
+
+    engine.client_context.focus_receipt = Some("other-context".to_string());
+    assert!(!engine.has_proven_terminal_input());
+    assert!(!engine
+        .client_context
+        .finish_kitty_focus_probe(Some("kitty-context"), true));
+    assert!(!engine.has_proven_terminal_input());
+}
+
 fn callback_message(member: &str) -> zbus::Message {
     zbus::Message::method_call("/engine/window_interaction", member)
         .unwrap()

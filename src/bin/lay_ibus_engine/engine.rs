@@ -86,9 +86,18 @@ impl LayIbusEngine {
     pub(super) fn uses_native_terminal_input(&self) -> bool {
         // Consecutive legacy CommitText signals can share one Wayland done.
         // Native terminal keys retain the compositor's existing replay order.
-        !self.atomic.active
-            && self.client_context.content_purpose == IBUS_INPUT_PURPOSE_TERMINAL
-            && !self.client_context.surrounding_text_supported
+        !self.atomic.active && self.has_proven_terminal_input()
+    }
+
+    pub(super) fn has_proven_terminal_input(&self) -> bool {
+        !self.client_context.surrounding_text_supported
+            && (self.client_context.content_purpose == IBUS_INPUT_PURPOSE_TERMINAL
+                || (self.client_context.content_purpose == 0
+                    && self.client_context.preedit_text_supported
+                    && self.client_context.cursor_cell_width >= 5
+                    && self.client_context.kitty_terminal_focus_receipt.is_some()
+                    && self.client_context.kitty_terminal_focus_receipt
+                        == self.client_context.focus_receipt))
     }
 
     pub(super) fn preedit_waits_for_cursor_ack(&self) -> bool {
@@ -289,7 +298,7 @@ mod profile_tests;
 
 #[cfg(test)]
 mod tests {
-    use super::{LayIbusEngine, ManualToggleAuthority, IBUS_INPUT_PURPOSE_TERMINAL};
+    use super::{LayIbusEngine, ManualToggleAuthority, WordInputMode, IBUS_INPUT_PURPOSE_TERMINAL};
     use lay::config::LayConfig;
     use std::sync::{Arc, Mutex};
 
@@ -429,6 +438,47 @@ mod tests {
         assert_eq!(
             engine.manual_toggle_authority(),
             ManualToggleAuthority::ImeCommittedTail
+        );
+    }
+
+    #[test]
+    fn kitty_focus_receipt_recovers_terminal_route_without_content_type() {
+        let mut engine = engine(LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            ..LayConfig::default()
+        });
+        engine.committed_tail.buffer.push_str("typed ");
+        engine.set_client_capabilities(9);
+        engine.client_context.cursor_cell_width = 11;
+        assert_eq!(
+            engine.initial_word_input_mode(),
+            WordInputMode::ManagedCommit
+        );
+        assert_eq!(
+            engine.manual_toggle_authority(),
+            ManualToggleAuthority::DaemonWordBuffer
+        );
+
+        engine.client_context.focus_receipt = Some("kitty-context".to_string());
+        engine.client_context.kitty_terminal_focus_receipt = Some("kitty-context".to_string());
+        assert_eq!(
+            engine.initial_word_input_mode(),
+            WordInputMode::TerminalPassthrough
+        );
+        assert_eq!(
+            engine.manual_toggle_authority(),
+            ManualToggleAuthority::ImeCommittedTail
+        );
+
+        engine.client_context.focus_receipt = Some("other-context".to_string());
+        assert_eq!(
+            engine.initial_word_input_mode(),
+            WordInputMode::ManagedCommit
+        );
+        assert_eq!(
+            engine.manual_toggle_authority(),
+            ManualToggleAuthority::DaemonWordBuffer
         );
     }
 

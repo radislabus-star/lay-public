@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2861,
+    "correctness": 2868,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 183,
-    "target": 2740
+    "process": 187,
+    "target": 2743
   },
   "package_fixtures": [
     {
@@ -417,6 +417,13 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::no_global_engine_bootstrap_keeps_observer_for_later_verified_lay_profile",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::receive_order_key_blocks_focus_out_seal_until_handler_settlement",
       "target": "bin:lay-ibus-engine"
     },
@@ -705,6 +712,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::firefox_source_free_first_word_after_space_delegates_exact_tail",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_zero_width_space_after_caret_requires_fresh_exact_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_zero_width_space_then_owned_append_requires_new_exact_token",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -1321,6 +1342,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_firefox_exact_refresh_keeps_prefix_committed_and_schedules_space",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_firefox_reset_keeps_physically_held_shift",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -4065,6 +4093,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "engine::tests::ime_backend_enables_live_composition_without_precognition",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "engine::tests::kitty_focus_receipt_recovers_terminal_route_without_content_type",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -20130,6 +20165,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "window_interaction::observation::tests::td121_unknown_start_actual_tab_refuses_active_composition_without_output_or_feedback",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::kitty_focus_probe_requires_exact_window_identity",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::kitty_focus_probe_survives_activation_serial_but_not_focus_transfer",
       "target": "bin:lay-ibus-engine"
     },
     {

@@ -3387,58 +3387,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 17271,
-          "byte_start": 17252,
-          "file": "src/bin/lay_ibus_engine/preedit.rs"
-        },
-        {
-          "byte_end": 38991,
-          "byte_start": 38961,
-          "file": "src/bin/lay_ibus_engine/preedit.rs"
-        }
-      ],
-      "message": "methods `precognition_suffix` and `precognition_suffix_candidates` are never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/bin/lay_ibus_engine/preedit.rs",
-          "is_primary": false,
-          "label": "methods in this implementation",
-          "text": [
-            "impl LayIbusEngine {"
-          ]
-        },
-        {
-          "file": "src/bin/lay_ibus_engine/preedit.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "fn precognition_suffix_candidates(&self) -> Vec<String> {"
-          ]
-        },
-        {
-          "file": "src/bin/lay_ibus_engine/preedit.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(super) fn precognition_suffix(&self) -> Option<String> {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "bin"
-        ],
-        "kind": [
-          "bin"
-        ],
-        "name": "lay-ibus-engine"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 17311,
           "byte_start": 17297,
           "file": "src/nanda_wave/l2_field/productive_v1/phase.rs"
@@ -3586,6 +3534,58 @@
           "lib"
         ],
         "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 17820,
+          "byte_start": 17801,
+          "file": "src/bin/lay_ibus_engine/preedit.rs"
+        },
+        {
+          "byte_end": 44631,
+          "byte_start": 44601,
+          "file": "src/bin/lay_ibus_engine/preedit.rs"
+        }
+      ],
+      "message": "methods `precognition_suffix` and `precognition_suffix_candidates` are never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/bin/lay_ibus_engine/preedit.rs",
+          "is_primary": false,
+          "label": "methods in this implementation",
+          "text": [
+            "impl LayIbusEngine {"
+          ]
+        },
+        {
+          "file": "src/bin/lay_ibus_engine/preedit.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "fn precognition_suffix_candidates(&self) -> Vec<String> {"
+          ]
+        },
+        {
+          "file": "src/bin/lay_ibus_engine/preedit.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(super) fn precognition_suffix(&self) -> Option<String> {"
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "kind": [
+          "bin"
+        ],
+        "name": "lay-ibus-engine"
       }
     },
     {

@@ -114,12 +114,12 @@ fn global_engine_value(name: &str) -> OwnedValue {
 }
 
 async fn serve_bootstrap(peer: &mut ControlledPeer, profile_name: &str) {
-    serve_bootstrap_with_mode(peer, profile_name, true).await;
+    serve_bootstrap_with_mode(peer, Some(profile_name), true).await;
 }
 
 async fn serve_bootstrap_with_mode(
     peer: &mut ControlledPeer,
-    profile_name: &str,
+    profile_name: Option<&str>,
     use_global_engine: bool,
 ) {
     for step in 0..4 {
@@ -146,10 +146,21 @@ async fn serve_bootstrap_with_mode(
                 let (interface, property) = call.body().deserialize::<(String, String)>().unwrap();
                 assert_eq!(interface, IBUS_INTERFACE);
                 assert_eq!(property, "GlobalEngine");
-                peer.connection
-                    .reply(&call.header(), &global_engine_value(profile_name))
-                    .await
-                    .unwrap();
+                if let Some(profile_name) = profile_name {
+                    peer.connection
+                        .reply(&call.header(), &global_engine_value(profile_name))
+                        .await
+                        .unwrap();
+                } else {
+                    peer.connection
+                        .reply_error(
+                            &call.header(),
+                            "org.freedesktop.DBus.Error.Failed",
+                            &"No global engine.",
+                        )
+                        .await
+                        .unwrap();
+                }
             }
             _ => panic!("unexpected bootstrap step {step}: {member}"),
         }
@@ -166,7 +177,7 @@ fn td121_false_global_mode_refuses_authority_and_literal_delivery_is_exact() {
             .unwrap();
         let (result, ()) = future::zip(
             pending.bootstrap(),
-            serve_bootstrap_with_mode(&mut peer, "lay-us", false),
+            serve_bootstrap_with_mode(&mut peer, Some("lay-us"), false),
         )
         .await;
         let (adapter, mut observer, identity) = result.unwrap();
@@ -204,6 +215,65 @@ fn td121_false_global_mode_refuses_authority_and_literal_delivery_is_exact() {
         assert!(engine.composition.buffer.is_empty());
         assert!(adapter.current_owner().is_none());
         assert!(adapter.current_token().is_none());
+    });
+}
+
+#[test]
+fn no_global_engine_bootstrap_keeps_observer_for_later_verified_lay_profile() {
+    zbus::block_on(async {
+        let (connection, mut peer) = controlled_pair();
+        let config = AdapterConfig::new(ConnectionGeneration(60), vec![profile("lay-us")]).unwrap();
+        let pending = PendingContextAdapter::subscribe(connection.clone(), config)
+            .await
+            .unwrap();
+        let (result, ()) = future::zip(
+            pending.bootstrap(),
+            serve_bootstrap_with_mode(&mut peer, None, true),
+        )
+        .await;
+        let (adapter, mut observer, identity) = result.expect("unset engine is a startup state");
+        assert!(adapter.current_owner().is_none());
+        assert!(adapter.current_token().is_none());
+
+        let factory = Message::method_call("/org/freedesktop/IBus/Factory", "CreateEngine")
+            .unwrap()
+            .interface(FACTORY_INTERFACE)
+            .unwrap()
+            .sender(DISPATCH_SENDER)
+            .unwrap()
+            .serial(NonZeroU32::new(5_900).unwrap())
+            .build(&"lay-us")
+            .unwrap();
+        peer.connection.send(&factory).await.unwrap();
+        assert!(observer.process_next().await.unwrap());
+        let callback = adapter
+            .begin_factory_callback(&factory.header(), Instant::now(), profile("lay-us"))
+            .await
+            .unwrap();
+        assert!(adapter.bind_factory_target(&callback, engine_path(SOURCE_PATH)));
+        assert!(adapter.current_token().is_none());
+
+        let changed = Message::signal(IBUS_PATH, IBUS_INTERFACE, "GlobalEngineChanged")
+            .unwrap()
+            .sender(IBUS_SENDER)
+            .unwrap()
+            .serial(NonZeroU32::new(5_901).unwrap())
+            .build(&"lay-us")
+            .unwrap();
+        peer.connection.send(&changed).await.unwrap();
+        assert!(observer.process_next().await.unwrap());
+        let reducer = adapter.shared.reducer.lock().unwrap();
+        assert!(matches!(reducer.profile, GlobalProfile::Lay(_)));
+        assert!(reducer
+            .source_free_factory
+            .as_ref()
+            .is_some_and(|reservation| {
+                reservation.status == TicketStatus::Pending
+                    && reservation.target_path.as_ref() == Some(&engine_path(SOURCE_PATH))
+            }));
+        drop(reducer);
+        assert!(adapter.current_token().is_none());
+        assert_eq!(identity.mode, GlobalEngineMode::Verified);
     });
 }
 

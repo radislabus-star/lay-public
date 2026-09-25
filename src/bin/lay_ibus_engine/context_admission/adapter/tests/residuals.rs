@@ -4242,6 +4242,105 @@ fn firefox_shortened_preedit_does_not_erase_prior_stale_surface_witness() {
     }));
 }
 
+#[test]
+fn firefox_zero_width_space_after_caret_requires_fresh_exact_receipt() {
+    zbus::block_on(bounded(async {
+        for (surface, cursor, anchor, retain) in [
+            ("a\u{200b}", 1, 1, true),
+            ("ax", 1, 1, false),
+            ("a\u{200b}x", 1, 1, false),
+            ("a\u{200b}", 1, 0, false),
+        ] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = initial_observed_tail_reset(&mut harness, 9_520, &[('a', 30)]).await;
+            exact_surrounding_receipt(&mut harness, &mut engine, "a").await;
+            assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            engine.record_context_reset_preedit_publication("bc", 0);
+            if retain {
+                engine.config.nanda_precognition = true;
+                engine.composition.preedit_candidates = vec!["bc".to_string()];
+                engine.composition.preedit_suffix = "bc".to_string();
+                engine.composition.preedit_visible = true;
+            }
+
+            surrounding_receipt(&mut harness, &mut engine, surface, cursor, anchor).await;
+            assert_eq!(
+                engine.context_reset_rereceipt.is_some(),
+                retain,
+                "{surface:?}"
+            );
+            assert!(
+                !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                "temporary or contradictory right-side text must not authorize Tab or an edit"
+            );
+            if retain {
+                assert!(
+                    engine.composition.preedit_visible,
+                    "the transient editor sentinel must not hide the visible suggestion"
+                );
+            }
+            exact_surrounding_receipt(&mut harness, &mut engine, "a").await;
+            assert_eq!(
+                engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                retain,
+                "only the retained sentinel lineage can recover from a new exact receipt: {surface:?}"
+            );
+            if retain {
+                engine.composition.preedit_candidates = vec!["bc".to_string()];
+                engine.composition.preedit_suffix = "bc".to_string();
+                engine.composition.preedit_visible = true;
+                engine.composition.preedit_display_only_pending = false;
+                assert!(legacy_key(&mut harness, &mut engine, 9_522, KEY_TAB, 15, 0).await);
+                td121_expect_legacy_commit_text(&mut harness.peer, "bc ").await;
+            }
+        }
+    }));
+}
+
+#[test]
+fn firefox_zero_width_space_then_owned_append_requires_new_exact_token() {
+    zbus::block_on(bounded(async {
+        for (surface, cursor, anchor, retain) in [
+            ("axbc", 2, 2, true),
+            ("axbd", 2, 2, false),
+            ("axbcq", 2, 2, false),
+            ("axbc", 2, 1, false),
+        ] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = initial_observed_tail_reset(&mut harness, 9_530, &[('a', 30)]).await;
+            exact_surrounding_receipt(&mut harness, &mut engine, "a").await;
+            assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            engine.record_context_reset_preedit_publication("bc", 0);
+            engine.config.nanda_precognition = true;
+            engine.composition.preedit_candidates = vec!["bc".to_string()];
+            engine.composition.preedit_suffix = "bc".to_string();
+            engine.composition.preedit_visible = true;
+
+            surrounding_receipt(&mut harness, &mut engine, "a\u{200b}", 1, 1).await;
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            assert!(legacy_key(&mut harness, &mut engine, 9_533, 'x' as u32, 45, 0).await);
+            expect_legacy_commit(&mut harness.peer).await;
+            assert_eq!(engine.committed_tail.buffer, "ax");
+            assert!(engine.context_reset_rereceipt.is_some());
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+
+            surrounding_receipt(&mut harness, &mut engine, surface, cursor, anchor).await;
+            assert_eq!(
+                engine.context_reset_rereceipt.is_some(),
+                retain,
+                "{surface:?}"
+            );
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            exact_surrounding_receipt(&mut harness, &mut engine, "ax").await;
+            assert_eq!(
+                engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                retain,
+                "only a matching old publication and fresh exact appended token may recover"
+            );
+        }
+    }));
+}
+
 pub(crate) async fn assert_window_interaction_reset_rereceipt_contract() {
     let mut positive_harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
     let mut positive = observer_first_reset_unknown_tail(&mut positive_harness, 8_800).await;

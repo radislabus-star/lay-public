@@ -1,5 +1,4 @@
 use super::execution::ExecutionReceipt;
-use super::IBUS_INPUT_PURPOSE_TERMINAL;
 use super::{TextTargetAuthority, WindowInteraction, WindowRejectReason};
 /// Shared output-backend capability selector for committed-text targets.
 ///
@@ -756,9 +755,7 @@ impl LayIbusEngine {
         TextTargetDecision::from_facts(TextTargetCapabilityFacts {
             backspaces,
             surrounding_text_supported: self.client_context.surrounding_text_supported,
-            terminal_erase_supported: self.client_context.content_purpose
-                == IBUS_INPUT_PURPOSE_TERMINAL
-                && !self.client_context.surrounding_text_supported
+            terminal_erase_supported: self.has_proven_terminal_input()
                 && self.client_context.cursor_cell_width > 0,
         })
     }

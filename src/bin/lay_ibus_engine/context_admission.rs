@@ -411,6 +411,7 @@ pub(crate) enum GlobalEngineMode {
 pub(crate) enum GlobalProfile {
     Lay(EngineProfile),
     Foreign(EngineProfile),
+    Unset,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1247,7 +1248,7 @@ where
             let source_activation = self.activation.clone()?;
             let expected_target_profile = match &self.profile {
                 GlobalProfile::Lay(profile) => profile.clone(),
-                GlobalProfile::Foreign(_) => {
+                GlobalProfile::Foreign(_) | GlobalProfile::Unset => {
                     self.revoke();
                     return None;
                 }
@@ -1447,7 +1448,7 @@ where
         } else {
             match &self.profile {
                 GlobalProfile::Lay(profile) => profile.clone(),
-                GlobalProfile::Foreign(_) => {
+                GlobalProfile::Foreign(_) | GlobalProfile::Unset => {
                     self.revoke();
                     return None;
                 }

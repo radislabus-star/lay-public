@@ -17,7 +17,15 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.75`
+- `1.0.76`
+
+1.0.76: repairs IBus context-admission bootstrap when a full restart starts
+Lay before IBus exposes GlobalEngine. The observer begins without text authority
+and waits for the verified engine-change and focus receipt. Kitty terminal
+input is restored when IBus omits its content type after restart. Tor's
+no-SurroundingText route and the WhatsApp second-key suggestion regression
+remain open. See
+[release scope](docs/release-1.0.76-ibus-startup-2026-09-25.md).
 
 1.0.75: publishes the user-accepted Firefox repeated Double Shift and
 first-word-after-Space repair from source checkpoint `51420a4`. The exact

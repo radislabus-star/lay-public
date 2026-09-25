@@ -11,6 +11,10 @@ mod bridge_policy;
 #[path = "lay_ibus_engine/committed_tail.rs"]
 mod committed_tail;
 #[path = "lay_ibus_engine/composition_commit.rs"]
+#[expect(
+    clippy::collapsible_if,
+    reason = "TD-121 accepts the exact composition_commit.rs bytes"
+)]
 mod composition_commit;
 #[path = "lay_ibus_engine/composition_edit.rs"]
 mod composition_edit;

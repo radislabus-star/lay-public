@@ -266,6 +266,7 @@ impl Worker {
         }
     }
 
+    #[cfg(test)]
     fn begin_request(
         &self,
         identity: &InputFrameIdentity,

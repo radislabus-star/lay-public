@@ -13,7 +13,53 @@ use crate::tail_memory::{
     record_causal_outcome, surrounding_snapshot_match, SurroundingSnapshotMatch,
 };
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
+use std::future::Future;
+use std::task::Poll;
 use zbus::fdo;
+
+pub(super) fn exact_kitty_window(json: &str) -> bool {
+    let Ok(window) = serde_json::from_str::<serde_json::Value>(json) else {
+        return false;
+    };
+    window.get("appId").and_then(|value| value.as_str()) == Some("kitty.desktop")
+        && window
+            .get("windowId")
+            .and_then(|value| value.as_str())
+            .is_some_and(|value| !value.is_empty())
+        && window
+            .get("stableSequence")
+            .and_then(|value| value.as_str())
+            .is_some_and(|value| !value.is_empty())
+}
+
+async fn focused_window_is_kitty() -> bool {
+    let mut request = Box::pin(async {
+        let connection = zbus::Connection::session().await.ok()?;
+        let reply = connection
+            .call_method(
+                Some("org.gnome.Shell"),
+                "/io/github/radislabus_star/LayDaemon",
+                Some("io.github.radislabus_star.LayDaemon"),
+                "FocusedWindowInfo",
+                &(),
+            )
+            .await
+            .ok()?;
+        let json = reply.body().deserialize::<String>().ok()?;
+        Some(exact_kitty_window(&json))
+    });
+    let mut timeout = Box::pin(async_io::Timer::after(Duration::from_millis(150)));
+    std::future::poll_fn(|cx| {
+        if let Poll::Ready(result) = request.as_mut().poll(cx) {
+            return Poll::Ready(result.unwrap_or(false));
+        }
+        if let Poll::Ready(_) = timeout.as_mut().poll(cx) {
+            return Poll::Ready(false);
+        }
+        Poll::Pending
+    })
+    .await
+}
 
 /// A Reset invalidates the old admission token before the engine callback can
 /// inspect it. This record is only a non-authoritative predecessor candidate;
@@ -87,6 +133,35 @@ fn snapshot_matches_retired_preedit(
     }
     let cursor = snapshot.cursor_pos as usize;
     let presentation_chars = published.text.chars().count();
+    let old_prefix_chars = published.prefix_chars as usize;
+    let current_chars = pending.observed_suffix_chars as usize;
+    let old_suffix_chars = presentation_chars.saturating_sub(old_prefix_chars);
+    // The old display suffix can remain after one owned next character.
+    // This witness does not authorize an edit without a fresh exact receipt.
+    let old_suffix_after_append = old_suffix_chars > 0
+        && cursor >= current_chars
+        && snapshot.suffix_before_cursor(current_chars).as_deref()
+            == Some(pending.token_text.as_str())
+        && (cursor == current_chars
+            || snapshot
+                .text
+                .chars()
+                .nth(cursor - current_chars - 1)
+                .is_some_and(crate::preedit::is_observed_word_boundary))
+        && snapshot
+            .text
+            .chars()
+            .skip(cursor)
+            .take(old_suffix_chars)
+            .eq(published.text.chars().skip(old_prefix_chars))
+        && snapshot
+            .text
+            .chars()
+            .nth(cursor + old_suffix_chars)
+            .is_none_or(crate::preedit::is_observed_word_boundary);
+    if old_suffix_after_append {
+        return true;
+    }
     // Firefox can report the same retired publication with either the old
     // insertion cursor or the cursor advanced by our observed append. Both
     // retain only an inert witness until the exact committed text arrives.
@@ -142,6 +217,33 @@ fn snapshot_exactly_bounds_token(
         .nth(snapshot.cursor_pos as usize)
         .is_none_or(crate::preedit::is_observed_word_boundary);
     left_is_boundary && right_is_boundary
+}
+
+fn snapshot_has_transient_zero_width_boundary(
+    snapshot: &SurroundingTextSnapshot,
+    pending: &PendingContextResetRereceipt,
+) -> bool {
+    let chars = pending.observed_suffix_chars as usize;
+    if chars == 0
+        || snapshot.has_selection()
+        || snapshot.suffix_before_cursor(chars).as_deref() != Some(pending.token_text.as_str())
+    {
+        return false;
+    }
+    let cursor = snapshot.cursor_pos as usize;
+    let start = cursor - chars;
+    let left_is_boundary = start == 0
+        || snapshot
+            .text
+            .chars()
+            .nth(start - 1)
+            .is_some_and(crate::preedit::is_observed_word_boundary);
+    let mut right = snapshot.text.chars().skip(cursor);
+    left_is_boundary
+        && right.next() == Some('\u{200b}')
+        && right
+            .next()
+            .is_none_or(crate::preedit::is_observed_word_boundary)
 }
 
 fn snapshot_exactly_bounds_strict_token_prefix(
@@ -1711,6 +1813,32 @@ impl LayIbusEngine {
         let Some(pending) = self.context_reset_rereceipt.clone() else {
             return;
         };
+        let revision_gap = self
+            .client_context
+            .surrounding_observation_revision
+            .checked_sub(pending.armed_revision);
+        if (revision_gap == Some(1) || pending.confirmed && revision_gap == Some(2))
+            && self.context_reset_rereceipt_identity_is_current()
+            && self
+                .client_context
+                .surrounding_text_snapshot
+                .as_ref()
+                .is_some_and(|snapshot| {
+                    snapshot_has_transient_zero_width_boundary(snapshot, &pending)
+                })
+        {
+            // A client may briefly place a zero-width editor sentinel just
+            // after the caret. Preserve lineage only; require a fresh exact
+            // receipt before Tab or any text mutation can use it.
+            if let Some(pending) = self.context_reset_rereceipt.as_mut() {
+                pending.confirmed = false;
+                pending.armed_revision = self.client_context.surrounding_observation_revision;
+            }
+            trace::record(
+                r#"{"kind":"ibus_context_reset_rereceipt","stage":"retained_unconfirmed","reason":"zero_width_right_boundary"}"#,
+            );
+            return;
+        }
         if self.client_context.surrounding_observation_revision
             == pending.armed_revision.saturating_add(1)
             && !self.context_reset_rereceipt_matches_current_snapshot()
@@ -1871,6 +1999,22 @@ impl LayIbusEngine {
         // match. Preserve the prior surface in either phase only when this
         // publication is its exact shortening. It remains an inert witness.
         let tail_token = self.last_tail_token_text();
+        let retain_identical_unconfirmed_surface = cursor == 0
+            && !text.is_empty()
+            && self
+                .context_reset_rereceipt
+                .as_ref()
+                .is_some_and(|pending| {
+                    !pending.confirmed
+                        && pending.published_preedit.as_ref().is_some_and(|published| {
+                            published.prefix_chars as usize <= pending.token_text.chars().count()
+                                && published
+                                    .text
+                                    .chars()
+                                    .skip(published.prefix_chars as usize)
+                                    .eq(text.chars())
+                        })
+                });
         let retain_retired_surface = cursor == 0
             && !text.is_empty()
             && self
@@ -1904,7 +2048,9 @@ impl LayIbusEngine {
             text: format!("{}{text}", pending.token_text),
         });
         if let Some(pending) = self.context_reset_rereceipt.as_mut() {
-            if published.is_some() || !retain_retired_surface {
+            if published.is_some()
+                || !(retain_retired_surface || retain_identical_unconfirmed_surface)
+            {
                 pending.published_preedit = published;
             }
         }
@@ -2269,6 +2415,8 @@ pub(crate) struct ClientContextState {
     pub(crate) focus_serial: u64,
     pub(crate) runtime_owner_lease_identity: u64,
     pub(crate) cursor_cell_width: i32,
+    pub(crate) kitty_focus_probe_serial: Option<u64>,
+    pub(crate) kitty_terminal_focus_receipt: Option<String>,
     pub(crate) content_purpose: u32,
     pub(crate) content_hints: u32,
     pub(crate) surrounding_text_supported: bool,
@@ -2292,6 +2440,8 @@ impl ClientContextState {
             focus_serial: crate::engine::next_input_identity(),
             runtime_owner_lease_identity: crate::engine::next_input_identity(),
             cursor_cell_width: 0,
+            kitty_focus_probe_serial: None,
+            kitty_terminal_focus_receipt: None,
             content_purpose: 0,
             content_hints: 0,
             surrounding_text_supported: false,
@@ -2304,6 +2454,22 @@ impl ClientContextState {
             factory_engine_profile,
             managed_input,
         }
+    }
+
+    pub(super) fn finish_kitty_focus_probe(
+        &mut self,
+        expected_focus_receipt: Option<&str>,
+        is_kitty: bool,
+    ) -> bool {
+        let Some(expected_focus_receipt) = expected_focus_receipt else {
+            return false;
+        };
+        if self.focus_receipt.as_deref() != Some(expected_focus_receipt) {
+            return false;
+        }
+        self.kitty_focus_probe_serial = Some(self.focus_serial);
+        self.kitty_terminal_focus_receipt = is_kitty.then(|| expected_focus_receipt.to_string());
+        is_kitty
     }
 }
 
@@ -2632,6 +2798,7 @@ impl WindowInteraction {
                 }
                 engine.discard_atomic_pending();
                 trace::record(r#"{"kind":"ibus_focus","stage":"reset"}"#);
+                let held_shift = engine.layout_gesture.shift_active;
                 let cleared = if engine.atomic.active {
                     Ok(())
                 } else {
@@ -2641,6 +2808,7 @@ impl WindowInteraction {
                     engine.clear_preedit(output).await
                 };
                 engine.reset_for_ibus_soft_reset();
+                engine.layout_gesture.shift_active = held_shift;
                 cleared?;
                 Ok(LifecycleReceipt::Reset)
             }
@@ -2699,6 +2867,31 @@ impl WindowInteraction {
             } => {
                 engine.client_context.cursor_cell_width = width;
                 trace::record_cursor_location(x, y, width, height);
+                let focus_serial = engine.client_context.focus_serial;
+                let focus_receipt = engine.client_context.focus_receipt.clone();
+                if (5..=32).contains(&width)
+                    && engine.client_context.preedit_text_supported
+                    && !engine.client_context.surrounding_text_supported
+                    && engine.client_context.content_purpose == 0
+                    && focus_receipt.is_some()
+                    && engine
+                        .client_context
+                        .kitty_terminal_focus_receipt
+                        .as_deref()
+                        != focus_receipt.as_deref()
+                    && engine.client_context.kitty_focus_probe_serial != Some(focus_serial)
+                {
+                    engine.client_context.kitty_focus_probe_serial = Some(focus_serial);
+                    let is_kitty = focused_window_is_kitty().await;
+                    if engine
+                        .client_context
+                        .finish_kitty_focus_probe(focus_receipt.as_deref(), is_kitty)
+                    {
+                        trace::record(
+                            r#"{"kind":"ibus_terminal_focus","source":"gnome_exact_kitty_window"}"#,
+                        );
+                    }
+                }
                 if !engine.atomic.active {
                     let output = output.as_deref_mut().ok_or_else(|| {
                         fdo::Error::Failed("cursor observation requires output".into())
@@ -2803,6 +2996,8 @@ impl WindowInteraction {
         engine.discard_atomic_pending();
         engine.atomic.active = false;
         trace::record(r#"{"kind":"ibus_focus","stage":"focus_out"}"#);
+        engine.client_context.kitty_focus_probe_serial = None;
+        engine.client_context.kitty_terminal_focus_receipt = None;
         let preserve_active_path = engine.context_handoff_sealed
             || !engine.context_admission_required
                 && (engine.should_preserve_focus_handoff()

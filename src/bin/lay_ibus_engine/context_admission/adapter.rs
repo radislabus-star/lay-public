@@ -292,15 +292,28 @@ impl PendingContextAdapter {
                 "Get",
                 &(IBUS_INTERFACE, "GlobalEngine"),
             )
-            .await?;
-        let profile_value = profile_reply
-            .body()
-            .deserialize::<OwnedValue>()
-            .map_err(|_| AdapterError::InvalidBootstrap("GlobalEngine was not a variant"))?;
-        let profile_name = engine_name_from_global_value(&profile_value).ok_or(
-            AdapterError::InvalidBootstrap("GlobalEngine descriptor had no name"),
-        )?;
-        let profile = classify_profile(&self.config.lay_profiles, profile_name)?;
+            .await;
+        let profile = match profile_reply {
+            Ok(reply) => {
+                let value = reply.body().deserialize::<OwnedValue>().map_err(|_| {
+                    AdapterError::InvalidBootstrap("GlobalEngine was not a variant")
+                })?;
+                let name = engine_name_from_global_value(&value).ok_or(
+                    AdapterError::InvalidBootstrap("GlobalEngine descriptor had no name"),
+                )?;
+                classify_profile(&self.config.lay_profiles, name)?
+            }
+            Err(zbus::Error::MethodError(name, Some(detail), _))
+                if name.as_str() == "org.freedesktop.DBus.Error.Failed"
+                    && detail == "No global engine." =>
+            {
+                trace::record(
+                    r#"{"kind":"ibus_context_admission","status":"bootstrap_global_engine_unset"}"#,
+                );
+                GlobalProfile::Unset
+            }
+            Err(error) => return Err(error.into()),
+        };
         let mode = if global_mode {
             GlobalEngineMode::Verified
         } else {
@@ -1668,10 +1681,11 @@ impl ContextAdmissionAdapter {
             ticket.status == TicketStatus::Pending
                 && ticket.target_path.as_ref() == Some(&target_path)
         });
-        let trace_profile = trace_target.as_ref().map(|_| match &reducer.profile {
+        let trace_profile = trace_target.as_ref().and_then(|_| match &reducer.profile {
             GlobalProfile::Lay(profile) | GlobalProfile::Foreign(profile) => {
-                profile.as_str().to_owned()
+                Some(profile.as_str().to_owned())
             }
+            GlobalProfile::Unset => None,
         });
         let trace_revocation = reducer.revocation_generation();
         let trace_route = if has_transfer {

@@ -2941,6 +2941,73 @@ fn terminal_delivery_browser_delayed_surrounding_uses_proved_managed_word_start_
 }
 
 #[test]
+fn terminal_delivery_firefox_reset_keeps_physically_held_shift() {
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        engine.config.auto_replace = false;
+        engine.config.nanda_precognition = false;
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_content_type_state(0, 0);
+        engine.set_client_capabilities(
+            1 | 1 << 3 | 1 << 5 | crate::window_interaction::IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
+        );
+        engine.set_layout_is_ru(true);
+        exact_replay_surrounding_receipt(&mut harness, &mut engine, "").await;
+
+        assert!(!legacy_key(&mut harness, &mut engine, 26_100, KEY_LEFT_SHIFT, 42, 0).await);
+        no_legacy_output(&mut harness).await;
+        assert!(legacy_key(&mut harness, &mut engine, 26_101, replay_keyval('А'), 33, 0,).await);
+        let effects = legacy_effects(&mut harness).await;
+        assert!(effects.iter().any(|effect| {
+            effect
+                .header()
+                .member()
+                .is_some_and(|member| member.as_str() == "CommitText")
+        }));
+        assert_eq!(engine.physical_char(replay_keyval('А'), 33), Some('А'));
+
+        // Firefox resets the IBus context after CommitText while Shift is
+        // physically held. Reset is not a Shift release.
+        let reset = method_message(
+            DISPATCH_SENDER,
+            26_102,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+            "Reset",
+        );
+        harness.peer.connection.send(&reset).await.unwrap();
+        assert!(bounded(harness.observer.process_next()).await.unwrap());
+        engine
+            .reset(
+                reset.header(),
+                zbus::object_server::SignalEmitter::new(&harness.connection, engine.path.clone())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        let _ = legacy_effects(&mut harness).await;
+        assert!(engine.layout_gesture.shift_active);
+        assert_eq!(engine.physical_char(replay_keyval('Р'), 35), Some('Р'));
+
+        assert!(
+            !legacy_key(
+                &mut harness,
+                &mut engine,
+                26_103,
+                KEY_LEFT_SHIFT,
+                42,
+                RELEASE_MASK,
+            )
+            .await
+        );
+        no_legacy_output(&mut harness).await;
+        assert!(!engine.layout_gesture.shift_active);
+        assert_eq!(engine.physical_char(replay_keyval('р'), 35), Some('р'));
+    });
+}
+
+#[test]
 fn terminal_delivery_midword_exact_snapshot_survives_owned_commit_reset_echo() {
     lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
         .expect("exact preparation available");

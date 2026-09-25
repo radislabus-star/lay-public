@@ -4862,3 +4862,377 @@ release certification are not claimed. The capture service was stopped after
 the user questioned its continued need; existing logs remain local. Runtime
 authority changed in this acceptance step: **false**. No additional build,
 test, browser action, commit, tag, or publication followed the acceptance.
+
+### IBus restart before GlobalEngine is set — 2026-09-25, 1.0.76 candidate
+
+After 1.0.75 publication, restarting all active Lay/IME routes reproduced a
+new startup failure on the still accepted installed IME SHA-256
+`4bbe07233808d1d14ecd072b87c052d760c22fe17bcac5f63d8adf9e8d1c7328`.
+The new process logged `bootstrap_unavailable: No global engine.` once, then
+every legacy key callback had no owner/activation generation. Words went through
+whole-word IME preedit and physical Double Shift reached `ManualToggleV3` but
+was rejected at `bridge_admission`. Active service states and a matching loaded
+binary hash did not establish functioning context admission. Directly killing
+the Lay IME while it was the selected global engine reproduced the same race.
+Selecting `xkb:us::eng`, ending only the old Lay IME process, then selecting
+`lay-ime-ru` started an observer with accepted callback admissions; the user
+reported that the original behavior worked everywhere again. This was a
+runtime recovery, not a code or binary update.
+
+The isolated 1.0.76 source experiment handles only IBus's exact
+`org.freedesktop.DBus.Error.Failed: No global engine.` bootstrap response as an
+explicit unset profile. It keeps the ordered observer alive, with no owner or
+text authority until a verified `GlobalEngineChanged` event and fresh context
+activation. Other bootstrap errors still fail closed. Its new P2P fixture
+reproduced the exact D-Bus error and failed against 1.0.75 source, then passed
+after this change; the RED run is recorded in the execution transcript but has
+no saved raw log. The GREEN focused receipt is
+`/home/ubu/.cache/lay/development/lay-1.0.76-bootstrap-focused.log`.
+The isolated IME development lane passed **597 selected, 0 failures**:
+`/home/ubu/.cache/lay/development/lay-1.0.76-focused/SUMMARY.json`.
+
+Verdict scope: source mechanism supported by the focused fixture and IME lane.
+A full-service restart on this new binary, physical Tab/Double Shift, full
+release gate, and cross-window parity are **NOT TESTED** at this point. Runtime
+authority changed by this source experiment: **false**. Tor's separate
+no-SurroundingText behavior remains OPEN and is outside 1.0.76.
+
+### Firefox held Shift across managed CommitText Reset — 2026-09-25
+
+The user typed `АРОДЕЗИАК` twice in the same Firefox window. The live IBus
+trace showed an all-uppercase terminal-passthrough run and a managed-commit run
+whose first letter was uppercase and later letters lowercase. The exact-word
+ring segment rotated before an immutable copy was made, so it is not a saved
+whole-word receipt. A retained segment at
+`/home/ubu/.cache/lay/development/ibus-held-shift-2026-09-25-1256.jsonl`
+records Shift press, uppercase managed CommitText, Firefox Reset, then Shift
+release, in that order (parsed rows 1752, 1760, 1768, 1813). The first loss of
+modifier state is `reset_for_ibus_soft_reset`, which clears `shift_active`
+despite no Shift release; the next physical key is therefore decoded lowercase.
+
+The narrowly scoped repair restores the observed Shift state only after an
+accepted Reset. Disable and focus-change cleanup retain their existing clearing
+behavior, and legacy Double Shift detection remains daemon-owned. The real
+legacy callback/Reset regression failed against the previous source at the
+post-Reset `shift_active` assertion: 597 passed, 1 failed,
+`/home/ubu/.cache/lay/development/run-9x__g6__/RESULT.json`. With the repair,
+the focused IME lane passed 598/598:
+`/home/ubu/.cache/lay/development/run-acvlgehx/RESULT.json`.
+
+Verdict scope: source mechanism and focused legacy callback coverage. Physical
+Firefox same-field held Shift, Tab, Double Shift, Chrome, Kitty, full release
+gate and installation are **NOT TESTED** for this candidate. Runtime authority
+changed by this experiment: **false**; the installed IME remained at SHA-256
+`4bbe07233808d1d14ecd072b87c052d760c22fe17bcac5f63d8adf9e8d1c7328`.
+
+The subsequent full release gate passed **2,899/2,899** correctness/package
+tests, lint, Firefox compatibility-adapter tests and release build; exact log:
+`/home/ubu/.cache/lay/development/held-shift-install-20260925/full-release-gate.log`.
+The candidate IME alone was installed and loaded at SHA-256
+`5adea0c1f4c83e16931bd80891b92e29df7de1fce09b7e28050e9b6add3a490a`.
+L1.1, L3, daemon and IME were restarted; `lay-ime-ru` and the L1.1 listening
+socket were verified. The previous IME is retained for rollback. Receipt:
+`/home/ubu/.cache/lay/development/held-shift-install-20260925/INSTALL.json`.
+Physical same-field Firefox held Shift and the Tab/Double Shift/Chrome/Kitty
+matrix are **PENDING USER CHECK**, so this is installed candidate evidence,
+not a physical acceptance or publication claim.
+
+## 2026-09-25 Firefox contenteditable zero-width boundary preflight
+
+Measured in the user's Firefox WhatsApp field, not a fresh textarea: the
+installed IME `5adea0c1` committed `П`, published suffix `очему`, then cleared
+that preedit. The IME trace records a confirmed Reset rereceipt followed by
+`second_surrounding_receipt` rejection on a two-character snapshot at cursor
+one; subsequent letters committed but published no further suggestion. A
+second, read-only IBus wire capture identifies the intervening snapshot as
+`П\u{200b}` at cursor one, followed 25 ms later by exact `П` at cursor one.
+The extra character is U+200B ZERO WIDTH SPACE. The wire capture is
+`/home/ubu/.cache/lay/development/capture-proverka-raw-20260925/set-surrounding.dbus.txt`
+(SHA-256 `ee110b964796d3fc40fb38d0c424eb09c1e73d0eaac518731432b24b4f8c6e99`);
+the IME ring snapshots and focus receipt are under
+`/home/ubu/.cache/lay/development/capture-proverka-20260925-185132/`
+(manifest SHA-256 `fd74f745fb4a79ee49e3577a2c1319c0d821ff1a8c08dd3e18e960aee7898146`).
+The user confirmed Shift was released after `П`, so this capture is not a
+held-Shift failure. Chrome and Tab were not exercised in these captures.
+
+Mechanism: `snapshot_exactly_bounds_token` requires the character immediately
+after the caret to be an observed word boundary. U+200B is neither Rust
+whitespace nor ASCII punctuation, so the temporary browser snapshot fails
+that check. `observe_context_reset_rereceipt_surrounding_text` then discards
+the confirmed predecessor; when exact `П` returns, the predecessor is gone.
+The label `second_surrounding_receipt` means a rejected changed snapshot here,
+not proof that the browser duplicated the same text. Whether WhatsApp always
+inserts U+200B is untested; only this observed transition is established.
+
+Consequence analysis before a candidate code change:
+
+- Selected design: recognize only an otherwise exact committed token followed
+  immediately at the caret by U+200B in the existing Reset-rereceipt path.
+  Retain the same owner/token/epoch lineage as **unconfirmed**; a later exact
+  snapshot must restore it. While U+200B is present, Tab, whole-word edits and
+  manual-toggle authority must remain denied. Focus loss, selection, another
+  character, intervening input, owner change and contradictory text must still
+  revoke the lineage. This reuses the existing receipt; it adds no owner,
+  route, cache, timer or fallback.
+- Rejected global design: classify U+200B as a word boundary everywhere.
+  That would alter tokenization, candidate competition, edit boundaries and
+  potential false authority in every client, even where U+200B is real text.
+  A display-only suppression or timed retry is also insufficient: it cannot
+  restore the destroyed exact receipt and would add a new timing dependency.
+- Candidate/lattice retention, ranking, false correction authority, package
+  reload and learning/feedback remain unchanged. Display may retain an inert
+  prior suggestion for one more browser receipt; a stale worker may not make
+  it acceptable. Checks stay on the existing callback path, without a wait or
+  deadline change; CPU/allocation/RSS impact should be limited to comparing
+  the already held snapshot and token. The remote gate must verify this rather
+  than assume it. Future model/package updates cannot change the receipt rule.
+- Failure boundary: any mismatching surface or ABA in owner, epoch or input
+  must leave the candidate unconfirmed or revoke it. The accepted installed
+  binary remains untouched during source testing; rollback is deleting the
+  one receipt branch and its test. A red/green production-adapter test must
+  cover `exact -> token+U+200B -> exact`, deny Tab/manual edit before the final
+  exact receipt, accept Tab after it, and reject contradictory right-side text.
+  Run the focused remote IME check, affected contracts and real Firefox field
+  replay before claiming repair. Chrome, Kitty, full release and other window
+  types need separate verdicts; one field cannot certify them.
+
+Candidate result so far: the production-adapter regression first failed on
+the unchanged receipt logic (598 passed, 1 failed) precisely at retention of
+`a\u{200b}` after a confirmed `a`:
+`/home/ubu/.cache/lay/development/run-6m3d7iox/RESULT.json`. The candidate
+keeps that right-side sentinel in the existing rereceipt as unconfirmed,
+without changing the global token boundary. The same test checks that the
+visible suggestion stays up, exact authority is absent while the sentinel is
+present, a new exact receipt permits Tab, and ordinary right-side letters,
+continuing text and selection do not recover. The focused remote IME lane
+passed 599/599: `/home/ubu/.cache/lay/development/run-kcv4av5q/RESULT.json`.
+This is source-level scope only; affected/full release checks and the actual
+Firefox field replay remain **NOT TESTED**. Runtime authority changed: **false**.
+
+The subsequent affected development check passed all 2,900 selected
+correctness/package tests with zero known semantic or infrastructure failures:
+`/home/ubu/.cache/lay/development/run-lsqpkdya/RESULT.json`. The guarded
+remote full release gate then passed 2,900/2,900 tests, the architecture and
+lint contracts, Firefox compatibility adapter, release build and diff check:
+`/home/ubu/.cache/lay/development/zwsp-ime-install-20260925/full-release-gate.log`
+(SHA-256 `e6cd615843a34dfd51d8be6b3132afb4b616f3d3735bc9deea0cc6969e4b7a1f`).
+These are source and build verdicts; they do not establish physical browser
+behavior.
+
+Only the IME executable was installed. The installed file and the live
+`/proc/<pid>/exe` both have SHA-256
+`460c53dc6e45bb489dd47a9d43917d01c4fb6b3491b40f2c0902ec3c70bf7bba`.
+L1.1, L3, IBus/IME and `lay-daemon` were restarted; `lay-ime-ru` was restored
+as the active GNOME input source and the L1.1 socket was listening. The prior
+IME binary remains in the backup path in
+`/home/ubu/.cache/lay/development/zwsp-ime-install-20260925/INSTALL.json`.
+Runtime authority changed: **true, only the installed IME executable**.
+The original Firefox WhatsApp field replay, held Shift, Chrome, Kitty, Tab and
+Double Shift are **NOT TESTED** for this candidate until separately observed.
+
+## 2026-09-25 installed WhatsApp replay: next key before exact receipt
+
+The installed IME SHA-256 `460c53dc6e45bb489dd47a9d43917d01c4fb6b3491b40f2c0902ec3c70bf7bba`
+was tested in the user's existing authenticated Firefox `web.whatsapp.com`
+message composer using virtual physical keys. No message was sent; test text
+was removed and the composer was verified empty afterward. The window focus
+receipt and compressed IME/action ring snapshots are in
+`/home/ubu/.cache/lay/development/capture-whatsapp-live-20260925b/` and
+`/home/ubu/.cache/lay/development/capture-whatsapp-live-20260925c/`; their
+manifest SHA-256 values are respectively
+`1b3ba36f6e6536a53d60d8a210827d88ec02693bd0b8232107fce987527d06b6`
+and `2bb1a0c80620f6758f0497c2990762a1102dda1b791fe1ec1cf8eb513029d81b`.
+
+Measured: after physical `П`, the engine committed one character, published
+the five-character `очему` preedit and observed `П` followed by U+200B at the
+caret. It retained the lineage unconfirmed. A following Tab returned
+`handled=false`; the field then displayed `Почему`, but that visual result is
+not proof that Lay accepted Tab. The earlier verbal Tab PASS was incorrect.
+After clearing the field, the physical prefix `Пров` reproduced the user's
+failure. The next printable key arrived while the U+200B lineage was still
+unconfirmed. Firefox then reported a seven-character stale preedit surface
+with cursor at two, followed by the exact two-character token. The current
+receipt helper rejected the stale surface as `surrounding_receipt_mismatch`
+before the exact token arrived. On the next key, Reset had no predecessor and
+cleared the preedit; the field contained `Пров` with no suggestion. This is a
+**physical Firefox WhatsApp FAIL** for continuous IME completion. The exact
+IBus sender of the U+200B marker (Firefox versus WhatsApp editor) remains
+unidentified. Chrome, Kitty, held Shift, Double Shift and autocorrection undo
+were not exercised in this replay. Runtime authority changed: **false during
+this diagnostic replay**; the installed candidate remains active.
+
+Consequence analysis before another code change: the first unresolved
+mechanism is `published_preedit_cache` recognizing the old full publication,
+but not the same old suffix displayed to the right of a newly committed,
+one-character-longer token. The next candidate should retain only that exact
+same-owner/epoch/revision old-publication suffix as an **inert** witness, then
+require a fresh exact receipt of the longer token before display refresh or
+Tab/edit authority. Contradictory text, selection, changed owner, input gap
+and stale worker must still revoke. A client-name/WhatsApp branch and global
+U+200B word-boundary classification would widen authority without proving the
+observed sequence, so neither is selected. Immediate Tab on the U+200B
+snapshot remains a separate open authority question: visible preedit with
+`handled=false` is a UX failure, but this capture does not justify accepting
+an unconfirmed edit. The existing installed executable is the rollback point.
+Gate: red/green production-adapter replay of `exact -> U+200B -> owned append
+-> old-suffix stale surface -> exact longer token`, plus rejection of altered
+suffix/selection/owner; focused, affected and full remote checks; then the
+same physical WhatsApp field, Tab and cross-window regressions. No new route,
+timer, package policy or decision producer is proposed. Estimates of cost or
+latency are not measurements; both remain untested for the next candidate.
+
+## 2026-09-25 next-key lineage candidate: focused source result
+
+The production-adapter replay `firefox_zero_width_space_then_owned_append_requires_new_exact_token`
+first failed against the installed source at the stale published-suffix receipt:
+the predecessor record had already been cleared. Its red receipt is
+`/home/e/projects/lay-development-runner/zwsp-append-red-20260925.log`.
+The candidate recognizes the exact old published suffix after one locally
+committed next character and retains that publication through an identical
+unconfirmed display refresh. It does not classify U+200B as a word boundary,
+grant Tab/edit authority from the stale surface, or accept changed suffix or
+selection. A fresh exact receipt of the longer committed token is still
+required. The same replay, including a later Tab acceptance on a fresh
+candidate, passed in
+`/home/e/projects/lay-development-runner/zwsp-append-green-v2-20260925.log`
+(one passed, 602 filtered). This is a focused source result, not a live-client
+PASS. The `Пров` WhatsApp replay, immediate Tab after the sentinel, Chrome,
+Kitty, held Shift, Double Shift, autocorrection undo and full release checks
+remain untested for this candidate. Runtime authority changed: **false**.
+
+## 2026-09-25 next-key candidate rejected after live client replay
+
+The guarded remote full release gate passed 2,901 selected tests, including
+600 `lay-ibus-engine` tests, the architecture/lint contracts and release build:
+`/home/e/projects/lay-development-runner/zwsp-full-v2-20260925.log`
+(SHA-256 `b9842b08698183fbf08b9a3716365cf79b0b5729f16f8e8ff69313ce3339adf0`).
+The built IME SHA-256 was
+`3246f7379aabed25c6707403d4f6e58def280aa4abff5cf6e018fc59f462491d`.
+Only that IME binary was installed as a test; L1.1, L3, lay-daemon and IBus
+were restarted, and the loaded executable matched the installed hash.
+
+The existing authenticated Firefox WhatsApp composer then **failed** the
+physical second-key replay. The first `П` showed the `очему` suggestion.
+After physical `о`, the engine published its shortened `чему` suggestion
+before Firefox sent the stale old publication as surrounding text. The
+candidate retained an identical unconfirmed old suffix but discarded it on
+this legitimate shortening, then rejected the stale snapshot with
+`surrounding_receipt_mismatch` and cleared preedit at Reset. Thus its focused
+synthetic GREEN did not cover the real callback order. The capture receipt is
+`/home/ubu/.cache/lay/development/capture-whatsapp-nextkey-20260925/`
+(manifest SHA-256
+`9f762361dea6e646fef1a31358635c84d4ed72cc9c1b9d1497adb751585836be`).
+No WhatsApp message was sent. The separate immediate-Tab question remains
+open. Chrome, held Shift, Double Shift and autocorrection undo were not tested
+on this candidate.
+
+The same installation/restart also exposed a **Kitty routing failure**: its
+active IBus context reported capabilities 9, no SurroundingText and an
+11-pixel cursor cell, but no terminal `SetContentType`/purpose 10 after the
+IBus restart. `initial_word_input_mode()` therefore selected `ManagedCommit`,
+and `should_start_legacy_word_preedit()` put an entire word in preedit.
+The user observed this directly; the live engine trace confirms
+`printable_legacy_preedit` and later whole-word preedit updates. Capability 9
+alone is not terminal proof because the existing Chromium first-key fixture
+also reports capability 9 before changing to 41. Focused-app identity or
+another independently established terminal fact must be considered before
+granting terminal mode; geometry or a client name alone cannot be treated as
+an edit target. This is separate from the Firefox stale publication.
+
+The test binary was rolled back to the saved prior IME SHA-256
+`460c53dc6e45bb489dd47a9d43917d01c4fb6b3491b40f2c0902ec3c70bf7bba`.
+The installed file and loaded process match it; L1.1, L3, lay-daemon and IBus
+are active, with `lay-ime-ru` selected at the rollback check. The failed
+next-key source branch and its test were removed; the canonical test manifest
+returned to SHA-256
+`05f76b49fc999d85ae0775940fda333bcb459870d9d8bdeecdb861d506d203a8`.
+Runtime authority changed during the test installation and rollback; final
+runtime authority is the prior IME binary. The previous browser defect and
+possible Kitty context failure remain open after rollback until a physical
+recheck. No commit, push, tag or publication occurred.
+
+## 2026-09-25 requested one-patch rollback for Kitty
+
+The user clarified that the working Kitty state was **one IME patch before**
+the `460c53dc…3c70bf7bba` test build. Its `INSTALL.json` identifies the
+immediate predecessor as SHA-256
+`5adea0c1f4c83e16931bd80891b92e29df7de1fce09b7e28050e9b6add3a490a`,
+backed up at
+`/home/ubu/.cache/lay/development/zwsp-ime-install-20260925/lay-ibus-engine.previous-5adea0c1f4c8`.
+That exact binary was restored. The installed file and live IME executable
+matched; L1.1, L3, lay-daemon and IBus were restarted, `lay-ime-ru` selected,
+and the L1.1 socket listened. No build, test, browser input, commit or
+publication followed this rollback. Runtime authority changed: **true, back
+to the immediate predecessor**. This verifies installation and routes, not a
+new physical Kitty PASS; the post-rollback user verdict is still pending.
+
+## 2026-09-25 Kitty focus proof and aligned input-source test
+
+The user requested the latest `3246f737…2491d` IME patch and a Kitty repair.
+That binary was loaded with all four routes restarted. Its existing WhatsApp
+failure remains a separate known regression. Live Kitty without terminal
+`SetContentType` reported capabilities 9, no SurroundingText and an 8-pixel
+cursor cell; `ManagedCommit` put the first letter in whole-word preedit. The
+first focus-probe candidate bound its proof to `focus_serial`, which native
+activation rotated before the first key. The second candidate survived one
+rotation but lost the proof on the first-key activation. Both failed the same
+owned Kitty Tab/two-Double-Shift test; receipts are under
+`/home/ubu/.cache/lay/development/kitty-focus-proof-20260925/kitty-tab-cycle/`
+and `kitty-tab-cycle-race-fix/`.
+
+Chosen route: an exact GNOME focused-window `appId=kitty.desktop` with a
+nonempty window identity, an IBus `FocusInId` receipt, preedit capability,
+no SurroundingText and a wide cursor cell jointly prove Kitty terminal input.
+The proof is attached to the stable focus receipt and cleared on FocusOut;
+IBus activation serials are not focus identity. Geometry alone could grant
+terminal erase to a browser; app identity alone could bind the wrong IBus
+field, so both alternatives were rejected. The probe is one bounded local
+D-Bus call per qualifying focus, capped at 150 ms; actual latency, CPU/RSS and
+allocation cost have not been measured. If the extension is unavailable or
+late, the old conservative mode remains. Candidate/lattice ranking, package
+reload, learning and feedback are unchanged by this Kitty route; future model
+packages can still change the Tab candidate. Remove this compatibility proof
+when Kitty reliably sends terminal purpose 10 or IBus supplies equivalent
+field-bound terminal evidence.
+
+The third native run reached terminal passthrough but failed with literal
+`ghj` and Tab because GNOME's active source was `lay-ime-us` while `ibus engine`
+reported `lay-ime-ru`: a restart procedure had selected IBus alone. After
+`ActivateLayout(lay-ime-ru)` made both sources agree, the unchanged installed
+IME SHA-256 `a8b9d1686ec61fd7014ab7d2a43731deec1a830a25b78987b03fc622135589ea`
+passed the owned Kitty sequence `ghj`, Tab, two Double Shift gestures with
+visible final text `просто `. The daemon trace records both physical gestures
+handled by the focused IME, and the IME trace records Tab plus two
+`double_shift_committed_tail` effects. Exact receipt:
+`/home/ubu/.cache/lay/development/kitty-focus-proof-20260925/kitty-tab-cycle-aligned/receipt.json`.
+The installed and loaded executable hashes matched; L1.1, L3, lay-daemon and
+IBus were active with GNOME and IBus both on `lay-ime-ru`. Runtime authority
+changed: **true**, to this IME binary and GNOME source alignment.
+
+Three focused Kitty tests passed remotely (receipt
+`/home/e/projects/lay-development-runner/kitty-focus-receipt-tests-20260925.log`).
+The affected IME suite passed 601/605 serial tests; four existing completion
+fixtures failed before this focus route because the current package ranked
+`просто`/`сто` where they expected `проверка`/`верка` (receipt
+`/home/e/projects/lay-development-runner/kitty-focus-tests-20260925.log`).
+This is an installed candidate and owned-window PASS, not a release gate or a
+human-keyboard confirmation. Existing user Kitty, Chrome, Firefox, WhatsApp,
+autocorrection undo and the KDE route were not physically retested on this
+exact binary; the prior WhatsApp failure must not be called repaired. No
+commit, push, tag or publication occurred.
+
+### 2026-09-26 changed-source gate
+
+After adding the three Kitty tests, the canonical test manifest and its
+zero-known-failure binding were updated. The guarded remote
+`scripts/check-lay-changed.sh` then passed: 2,904/2,904 selected correctness
+and package checks, zero known semantic failures, zero infrastructure failures,
+including 603 selected IME tests and 1,795 library tests. Format, version,
+Cargo check, transition replay and unsafe-edit gates also passed. Exact log:
+`/home/e/projects/lay-development-runner/kitty-focus-changed-v3-20260925.log`
+(SHA-256 `e0e5005856d7b88a354ef3b7217fe469d029b37cd95cc868668a37aaca6883ba`).
+This hermetic gate is distinct from the ambient direct IME run's 601/605 and
+from the owned Kitty client PASS. Performance, ignored tests, user-keyboard
+confirmation, the existing Kitty window and the known WhatsApp regression
+were not covered by this gate. Runtime authority did not change during the
+gate; the installed IME remains `a8b9d168…135589ea`.
