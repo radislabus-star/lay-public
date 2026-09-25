@@ -752,9 +752,21 @@ impl ContextAdmissionAdapter {
                 // A delayed equality witness cannot touch a newer context.
                 Ok(live.then_some(true))
             }
-            IngressDisposition::Revocation { .. } | IngressDisposition::StaleContext => {
-                Ok(Some(false))
+            IngressDisposition::Revocation {
+                owner: observed_owner,
+            } => {
+                // This Set already revoked its ingress owner. If a later
+                // FocusIn admitted a new owner on the same engine path, the
+                // delayed setter may update content type but cannot revoke
+                // the successor's word a second time.
+                let successor_is_current = self.shared.reducer.lock().is_ok_and(|reducer| {
+                    reducer
+                        .owner()
+                        .is_some_and(|owner| owner != &observed_owner && &owner.path == path)
+                });
+                Ok(Some(successor_is_current))
             }
+            IngressDisposition::StaleContext => Ok(Some(false)),
             _ => Err(AdapterError::Denied),
         }
     }
@@ -883,6 +895,31 @@ impl ContextAdmissionAdapter {
                     && current.source_owner == *owner
                     && current.focus_out_position.as_ref() == Some(&stamp.position)
             })
+        })
+    }
+
+    pub(crate) fn focus_out_retired_by_later_ingress(
+        &self,
+        owner: &EngineOwner,
+        stamp: &ObservedCallback,
+    ) -> bool {
+        let IngressDisposition::FocusOut {
+            owner: observed_owner,
+            ticket,
+        } = &stamp.disposition
+        else {
+            return false;
+        };
+        if observed_owner != owner {
+            return false;
+        }
+        self.shared.reducer.lock().is_ok_and(|reducer| {
+            reducer.owner() == Some(owner)
+                && reducer.ticket.as_ref().is_some_and(|current| {
+                    current.id == *ticket
+                        && current.source_owner == *owner
+                        && current.status == TicketStatus::Revoked
+                })
         })
     }
 

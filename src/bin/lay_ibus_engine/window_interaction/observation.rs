@@ -368,6 +368,16 @@ impl LayIbusEngine {
             accepted_focus && admission.seal_source(&owner, self.committed_tail.epoch, &observed);
         self.context_handoff_sealed = accepted;
         if !accepted {
+            if admission.focus_out_retired_by_later_ingress(&owner, &observed) {
+                // The observer already received a later word revocation. Drop
+                // only this old local path: revoking the adapter here would
+                // erase the later FocusIn/Reset stamps before their callbacks.
+                self.discard_context_activation();
+                trace::record(
+                    r#"{"kind":"ibus_focus","stage":"focus_out_retired_by_later_ingress"}"#,
+                );
+                return false;
+            }
             self.revoke_context_word();
         }
         accepted
@@ -2015,6 +2025,32 @@ impl LayIbusEngine {
                                     .eq(text.chars())
                         })
                 });
+        let retain_unconfirmed_prior_surface = cursor == 0
+            && !text.is_empty()
+            && self
+                .context_reset_rereceipt
+                .as_ref()
+                .is_some_and(|pending| {
+                    !pending.confirmed
+                        && pending.published_preedit.as_ref().is_some_and(|published| {
+                            let prefix_chars = published.prefix_chars as usize;
+                            let prefix_is_owned = prefix_chars
+                                <= pending.token_text.chars().count()
+                                && pending
+                                    .token_text
+                                    .chars()
+                                    .take(prefix_chars)
+                                    .eq(published.text.chars().take(prefix_chars));
+                            prefix_is_owned
+                                && ((published.prefix_chars < pending.observed_suffix_chars
+                                    && self.context_reset_rereceipt_identity_is_current())
+                                    || (pending.tail_epoch.checked_add(1)
+                                        == Some(self.committed_tail.epoch)
+                                        && tail_token.starts_with(&pending.token_text)
+                                        && tail_token.chars().count()
+                                            == pending.observed_suffix_chars as usize + 1))
+                        })
+                });
         let retain_retired_surface = cursor == 0
             && !text.is_empty()
             && self
@@ -2049,7 +2085,9 @@ impl LayIbusEngine {
         });
         if let Some(pending) = self.context_reset_rereceipt.as_mut() {
             if published.is_some()
-                || !(retain_retired_surface || retain_identical_unconfirmed_surface)
+                || !(retain_retired_surface
+                    || retain_identical_unconfirmed_surface
+                    || retain_unconfirmed_prior_surface)
             {
                 pending.published_preedit = published;
             }
@@ -2831,7 +2869,7 @@ impl WindowInteraction {
                 Ok(ObservationReceipt::Capabilities)
             }
             WindowFactEvent::ContentType { value, header } => {
-                let unchanged = if let (Some(admission), Some(path), Some(header)) = (
+                let preserve_current_word = if let (Some(admission), Some(path), Some(header)) = (
                     engine.context_admission.clone(),
                     EnginePath::new(engine.path.clone()),
                     header,
@@ -2840,14 +2878,14 @@ impl WindowInteraction {
                         .observe_content_type_callback(&path, value, header, Instant::now())
                         .await
                     {
-                        Ok(Some(unchanged)) => unchanged,
+                        Ok(Some(preserve)) => preserve,
                         Ok(None) => return Ok(ObservationReceipt::Refused),
                         Err(_) => false,
                     }
                 } else {
                     false
                 };
-                if !unchanged {
+                if !preserve_current_word {
                     engine.revoke_context_word();
                 }
                 engine.set_content_type_state(value.0, value.1);

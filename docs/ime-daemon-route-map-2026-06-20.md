@@ -5920,3 +5920,148 @@ the user's first-success, second-failure observation. Rollback after an
 independently logged applied autocorrection was not separately observed. No
 runtime code, installation, service authority, commit, or publication changed;
 the system daemon and RU IME layout were restored after every scoped probe.
+
+### Live Firefox and Kitty transition, and FocusOut admission repair candidate (2026-09-26)
+
+The user confirmed the installed 1.0.76 route worked in Kitty at 00:45:50
+EEST. A passive monitor then captured a later failure without typing into user
+windows or changing Lay. The installed and loaded IME SHA-256 remained
+`a8b9d1686ec61fd7014ab7d2a43731deec1a830a25b78987b03fc622135589ea`.
+The complete text-free monitor snapshot is
+`/home/ubu/.cache/lay/development/live-transition-20260926/monitor-snapshot-0125.jsonl`
+(SHA-256 `00f9c4f9ad019001597033629fa0f197277065108fa9e3770bdf1c71be5be8a7`,
+9,456 records). Monitor timestamps are polling times, usually up to two seconds
+after the underlying IME event.
+
+In Firefox WhatsApp, the user saw a five-character suggestion after `п`, then
+no suggestion after `пр`. The monitor recorded first and second managed commits
+at about 01:16:43, followed by `retained_unconfirmed/zero_width_right_boundary`
+and `rejected/surrounding_receipt_mismatch` while Firefox sent a surrounding
+snapshot with seven characters and cursor at two. This is the first traced
+context mismatch; the monitor did not capture a later explicit preedit clear
+before focus moved, so the exact display-loss step remains unproven. A separate
+`п` then Tab attempt at about 01:17:13-15 returned `ibus_key tab handled=false`
+with zero preedit characters and no `ibus_completion_accept`. Thus that
+attempt did not emit a space through IME. Double Shift in Firefox later
+returned `not_handled/context_authority` after a context reset. These Firefox
+symptoms are not covered by the repair candidate below.
+
+The cross-window refusal started as Firefox focus moved to Kitty at about
+01:17:41-43. On one IBus connection, the metadata observer received
+`FocusOutId` serial 5959 for owner 125, then `FocusInId` serial 5960, then a
+`ContentType Set` serial 5963 that revoked the old word. The delayed
+`FocusOutId` handler did not complete focus-out; the following two callback
+stamps returned `refused_timeout`. From 01:17:43 until the layout change at
+01:18:33, the monitor counted 350 refused legacy key admissions, zero
+accepted admissions and zero preedit shows. At 01:18:33 a new activation
+installed owner 126 and key admissions resumed; no Lay service restarted.
+GNOME and IBus sources were aligned at each sampled state.
+
+The source path explains the first authority loss: the later `Set` revokes the
+ticket opened by `FocusOutId`. The old handler still demands a pending ticket;
+on failure it calls `revoke_context_word`, which calls
+`revoke_current_owner` and clears the callback stamp store. That erases the
+already observed `FocusInId` and `Set` stamps. This causal step is inferred
+from ordered metadata and source behavior; the production trace has no direct
+`revoke_current_owner` event. An isolated test reproduces the same order with
+both `Reset` and `Set`: it failed on the accepted source because the later
+`FocusInId` stamp was lost, then passed on the candidate. The strengthened
+candidate test also completes the later `FocusInId` marker and installs a
+fresh owner distinct from the revoked one.
+
+The candidate recognizes a `FocusOut` stamp whose exact ticket was already
+revoked by later ingress. It discards only the old local context and leaves
+later callback stamps intact. An independently received repeated `FocusOut`
+keeps its existing cleanup. Extending the test through the later `Set` callback
+exposed a second failure: the old setter revoked the freshly admitted owner.
+The candidate now lets a setter stamped against a revoked predecessor update
+content type without revoking a distinct successor on the same engine path.
+`Reset` and `Set` both complete the full delayed-callback schedule in the
+focused test. The focused new test and existing repeated-focus
+test passed. A serial IME binary run passed 605/607; the two failures were a
+P2P choreography timeout and an unrelated precognition ranking assertion.
+The unchanged 1.0.76 serial run passed 604/606 with precisely the same two
+failures, so the candidate added one passing recovery test with no additional
+failure in this suite. The extended candidate retained 605/607 after the
+late-`Set` repair. Both failures were also reproduced individually. Candidate
+and baseline logs, including `candidate-ime-serial-v2.log`, are in
+`/home/ubu/.cache/lay/development/live-transition-20260926/`.
+This is a source-level repair candidate for the cross-window admission loss,
+not a physical-client PASS. WhatsApp suggestion display,
+Tab, Double Shift, and full post-install behavior were not retested with this
+candidate. No installed binary, service, GNOME source, or runtime authority
+changed.
+
+The guarded remote correctness/package gate on the focused repair snapshot
+`6c27dbff70b204b2ae359e0bbe54c823708f0bd6` passed all 2,905 selected
+tests with zero failures. Its test manifest contains 2,931 tests in total:
+2,869 correctness, 36 package, 11 performance and 15 ignored. The first
+run completed the selected tests with zero failures but failed the final
+known-failure ledger check because the new test changed the manifest hash.
+After rebinding that zero-failure ledger to the new manifest, the same source
+snapshot passed the complete selected gate. The log is
+`/home/ubu/.cache/lay/development/live-transition-20260926/focus-race-gate-v4.log`
+(SHA-256 `712fd55ff687805b2ff5249d9586ab6ad7a9382a64f20d9ea7a99b19784e8fa3`);
+the machine-readable observation is
+`/home/ubu/.cache/lay/development/live-transition-20260926/focus-race-v4-observation.json`
+(SHA-256 `3c2eb3287d077c41a0bed1a9c0518bf296af417959541655efdc82e0c923dd8e`).
+The observation reports `PASS`, zero failures and no source-closure change.
+Performance tests, ignored tests, release build, physical Firefox/Kitty
+clients, Tab, Double Shift and all post-install routes remain untested for
+this snapshot. Runtime authority changed: **false**.
+
+### Firefox delayed publication receipt experiment (2026-09-26)
+
+The live WhatsApp trace ordered an owned next key, a newer preedit publication,
+and then a stale seven-character surrounding snapshot with cursor at two.
+The existing zero-width-sentinel replay did not insert a newer preedit
+publication between the key and that stale snapshot. A production-adapter
+test now exercises the missing order with both an exact shortening of the old
+suggestion and an unrelated new suggestion. It also checks altered stale text
+and selection. On the focus-only source snapshot, the test failed at the first
+stale receipt: the newer publication erased the old output witness and
+`context_reset_rereceipt` was rejected. Red receipt:
+`/home/ubu/.cache/lay/development/live-transition-20260926/whatsapp-next-publication-red.log`
+(SHA-256 `a1a7afe98aaccdba5892c5a580e68bbb162fcd74b65fb071db87e3721746b000`).
+
+The candidate preserves that old publication as an inert, same-word witness
+while the one-character owned append is current and its receipt is still
+unconfirmed. A fresh exact receipt of the longer committed token is still
+required before Tab, display refresh or any edit authority. The new test
+passed all four cases; the altered surface and selection were rejected, and
+no stale receipt produced a text mutation. Green receipt:
+`/home/ubu/.cache/lay/development/live-transition-20260926/whatsapp-next-publication-green.log`
+(SHA-256 `47966a41f39a9f7d90a1fb3fdff65d64033f69702631d6c87c555f93ad9c038a`).
+This establishes a source-level mechanism for the observed receipt mismatch,
+not a physical WhatsApp PASS. Immediate `п` then Tab without an exact client
+receipt is still intentionally refused and has not been repaired by this
+change. At this focused-test stage, physical Firefox/Kitty behavior, the
+complete selected gate on the combined candidate, performance/ignored tests
+and post-install routes were untested. Runtime authority changed: **false**.
+
+The combined focus and delayed-publication candidate at remote snapshot
+`9ba4a4bca35fd0fe5c8ff5b2342a4095cb63bf47` passed the guarded
+correctness/package gate: 2,906 selected tests, zero known semantic or
+infrastructure failures. The test manifest contains 2,932 tests overall,
+including 11 performance and 15 ignored tests outside that run. The receipt
+is `/home/ubu/.cache/lay/development/live-transition-20260926/lay-combined-gate-v5.log`
+(SHA-256 `d707f888ce10893db580a1b3d63a41dc992d536c5baefadef2a6c39c0f12e40d`),
+with machine-readable observation
+`/home/ubu/.cache/lay/development/live-transition-20260926/lay-combined-v5-observation.json`
+(SHA-256 `f788b9ff098ff3b0e686aa18ad73b20426458a6f6df072a9821567aa1aa3bebb`).
+The observation reports `PASS`, zero failures and an unchanged source closure.
+Physical WhatsApp/Kitty replay, performance tests, release build, installation
+and post-install routes remain untested. Runtime authority changed: **false**.
+
+The same text-free live capture narrows the remaining user-visible behavior.
+At about 01:17:13 the `п` attempt showed a five-character preedit, then
+retained a `zero_width_right_boundary` receipt as unconfirmed. At about
+01:17:15 Tab reached the IME with one committed tail character and returned
+`handled=false`; the preedit was then cleared. There was no IME completion
+acceptance or trailing-space commit. At about 01:17:33 the hardware monitor
+recorded physical Shift presses; at about 01:17:35 the manual-toggle RPC
+reached the IME and returned `not_handled/context_authority`. This locates
+the Double Shift refusal after hotkey detection, at field authority. The
+combined candidate does not change the immediate unconfirmed-Tab rule or
+prove physical Double Shift recovery. These are measured trace facts and
+source-level conclusions, not post-install behavior.

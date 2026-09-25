@@ -962,6 +962,95 @@ fn residual_repeated_focus_out_revokes_locally_and_recovers_fresh_unknown_start(
 }
 
 #[test]
+fn delayed_focus_out_after_later_word_revocation_preserves_successor_stamps() {
+    zbus::block_on(bounded(async {
+        for later_event in ["Reset", "Set"] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = known_engine(&mut harness).await;
+            let old_token = engine.live_context_token().unwrap();
+
+            let focus_out = receive(&mut harness, 30_100, "FocusOut").await;
+            let focus_in = receive(&mut harness, 30_101, "FocusInId").await;
+            let later = if later_event == "Set" {
+                let set = Message::method_call(TARGET_PATH, "Set")
+                    .unwrap()
+                    .interface(PROPERTIES_INTERFACE)
+                    .unwrap()
+                    .sender(DISPATCH_SENDER)
+                    .unwrap()
+                    .serial(NonZeroU32::new(30_102).unwrap())
+                    .build(&(
+                        ENGINE_INTERFACE,
+                        "ContentType",
+                        zbus::zvariant::Value::from((0u32, 1u32)),
+                    ))
+                    .unwrap();
+                harness.peer.connection.send(&set).await.unwrap();
+                assert!(bounded(harness.observer.process_next()).await.unwrap());
+                set
+            } else {
+                receive(&mut harness, 30_102, "Reset").await
+            };
+            assert!(!harness.adapter.revalidate(&old_token));
+
+            assert!(
+                !engine
+                    .observe_context_focus_out(&focus_out.header(), Instant::now())
+                    .await,
+                "{later_event} already retired the older FocusOut"
+            );
+            assert!(
+                harness
+                    .adapter
+                    .observe_callback(&focus_in.header(), Instant::now())
+                    .await
+                    .is_ok(),
+                "{later_event} must not erase the later FocusInId stamp"
+            );
+            assert!(
+                harness
+                    .adapter
+                    .observe_callback(&later.header(), Instant::now())
+                    .await
+                    .is_ok(),
+                "{later_event} stamp must remain available"
+            );
+            assert!(engine.context_owner.is_none(), "{later_event}");
+
+            assert!(
+                engine
+                    .activate_context_from_header(
+                        &focus_in.header(),
+                        Instant::now(),
+                        Some(CONTEXT_PATH),
+                    )
+                    .await,
+                "{later_event} successor must start a fresh activation"
+            );
+            forward_marker_bounded(&mut harness.peer).await;
+            assert!(bounded(harness.observer.process_next()).await.unwrap());
+            engine.try_install_pending_context_activation();
+            let new_token = engine.live_context_token().expect("successor authority");
+            assert_ne!(new_token.owner, old_token.owner, "{later_event}");
+
+            if later_event == "Set" {
+                engine.set_content_type((0, 1), Some(later.header())).await;
+            } else {
+                assert!(
+                    !engine
+                        .observe_context_revocation(&later.header(), Instant::now())
+                        .await
+                );
+            }
+            assert!(
+                harness.adapter.revalidate(&new_token),
+                "{later_event} from the old owner must not revoke the successor"
+            );
+        }
+    }));
+}
+
+#[test]
 fn residual_repeated_focus_out_after_reset_or_content_type_revocation_survives() {
     zbus::block_on(bounded(async {
         for content_type in [false, true] {
@@ -4336,6 +4425,56 @@ fn firefox_zero_width_space_then_owned_append_requires_new_exact_token() {
                 engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
                 retain,
                 "only a matching old publication and fresh exact appended token may recover"
+            );
+        }
+    }));
+}
+
+#[test]
+fn firefox_retired_preedit_survives_next_publication_until_exact_append_receipt() {
+    zbus::block_on(bounded(async {
+        for (appended, code, next_preedit, surface, anchor, retain) in [
+            ('b', 48, "c", "abbc", 2, true),
+            ('x', 45, "yz", "axbc", 2, true),
+            ('x', 45, "yz", "axbd", 2, false),
+            ('x', 45, "yz", "axbc", 1, false),
+        ] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = initial_observed_tail_reset(&mut harness, 9_540, &[('a', 30)]).await;
+            exact_surrounding_receipt(&mut harness, &mut engine, "a").await;
+            engine.record_context_reset_preedit_publication("bc", 0);
+            surrounding_receipt(&mut harness, &mut engine, "a\u{200b}", 1, 1).await;
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+
+            assert!(legacy_key(&mut harness, &mut engine, 9_543, appended as u32, code, 0).await);
+            expect_legacy_commit(&mut harness.peer).await;
+            let committed = format!("a{appended}");
+            assert_eq!(engine.committed_tail.buffer, committed);
+            engine.record_context_reset_preedit_publication(next_preedit, 0);
+
+            surrounding_receipt(&mut harness, &mut engine, surface, 2, anchor).await;
+            assert_eq!(
+                engine.context_reset_rereceipt.is_some(),
+                retain,
+                "new preedit {next_preedit:?}, stale surface {surface:?}"
+            );
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            assert!(engine.capture_observed_suffix_display_frame().is_none());
+            exact_surrounding_receipt(&mut harness, &mut engine, &committed).await;
+            assert_eq!(
+                engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                retain,
+                "only a fresh exact appended token may restore authority"
+            );
+            assert!(
+                drain_output_to_proof(&mut harness)
+                    .await
+                    .iter()
+                    .all(|member| !matches!(
+                        member.as_str(),
+                        "DeleteSurroundingText" | "CommitText"
+                    )),
+                "a stale publication cannot authorize text mutation"
             );
         }
     }));

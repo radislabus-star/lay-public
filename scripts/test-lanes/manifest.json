@@ -13,13 +13,13 @@
     "project": []
   },
   "counts": {
-    "correctness": 2868,
+    "correctness": 2870,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 187,
+    "process": 189,
     "target": 2743
   },
   "package_fixtures": [
@@ -550,6 +550,13 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::delayed_focus_out_after_later_word_revocation_preserves_successor_stamps",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::exact_replay_requires_current_unselected_external_tail_at_each_lease",
       "target": "bin:lay-ibus-engine"
     },
@@ -684,6 +691,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::firefox_reset_suffix_frame_and_tab_refuse_unconfirmed_or_invalid_receipts",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_retired_preedit_survives_next_publication_until_exact_append_receipt",
       "target": "bin:lay-ibus-engine"
     },
     {
