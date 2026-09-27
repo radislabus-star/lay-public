@@ -13,7 +13,7 @@ use zbus::zvariant::{ObjectPath, OwnedValue, StructureBuilder};
 use super::*;
 use crate::atomic::td120_test_atomic_capability;
 use crate::context_admission::rendezvous::RendezvousBegin;
-use crate::engine::{LayIbusEngine, SurroundingTextSnapshot};
+use crate::engine::{LayIbusEngine, SurroundingTextSnapshot, WordInputMode};
 use crate::output::{PROPOSAL_FRAME_READY, PROPOSAL_NATIVE_UNHANDLED};
 use crate::protocol::SharedState;
 
@@ -1077,6 +1077,70 @@ fn td121_marker_ready_owner_survives_deadline_until_first_atomic_key() {
             .try_finish_activation_for(&engine_path(TARGET_PATH))
             .unwrap()
             .is_none());
+    });
+}
+
+#[test]
+fn duplicate_native_focus_before_reply_keeps_exact_pending_activation() {
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness().await;
+        let target = engine_path(TARGET_PATH);
+        let exact_context = context(CONTEXT_PATH);
+        let first = method_message(
+            DISPATCH_SENDER,
+            6_201,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+            "FocusInId",
+        );
+        harness.peer.connection.send(&first).await.unwrap();
+        assert!(harness.observer.process_next().await.unwrap());
+        let first_observed = harness
+            .adapter
+            .observe_callback(&first.header(), Instant::now())
+            .await
+            .unwrap();
+        let nonce = BarrierNonce(6_202);
+        let request = harness
+            .adapter
+            .begin_activation_request(
+                target.clone(),
+                nonce,
+                ReceiptOrigin::Native,
+                first_observed.position,
+                Some(&exact_context),
+            )
+            .unwrap();
+        let revision = harness
+            .adapter
+            .shared
+            .reducer
+            .lock()
+            .unwrap()
+            .revocation_generation();
+
+        let duplicate = method_message(
+            DISPATCH_SENDER,
+            6_203,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+            "FocusInId",
+        );
+        harness.peer.connection.send(&duplicate).await.unwrap();
+        assert!(harness.observer.process_next().await.unwrap());
+        let observed = harness
+            .adapter
+            .observe_callback(&duplicate.header(), Instant::now())
+            .await
+            .unwrap();
+        assert!(harness.adapter.enrich_pending_native_activation(
+            &target,
+            exact_context,
+            &observed
+        ));
+        let reducer = harness.adapter.shared.reducer.lock().unwrap();
+        assert_eq!(reducer.revocation_generation(), revision);
+        assert_eq!(reducer.request.as_ref().unwrap().generation, request);
     });
 }
 

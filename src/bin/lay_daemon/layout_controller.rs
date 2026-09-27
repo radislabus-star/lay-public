@@ -24,7 +24,9 @@ const LAYOUT_SWITCH_SETTLE_MS: u64 = 12;
 const MANUAL_REPLAY_READY_SETTLE_MS: u64 = 8;
 const TRIGGER_RELEASE_SETTLE_MS: u64 = 80;
 
-pub(super) use ime_bridge::{ImeCommittedTailReplay, ImeDelegatedTailLease};
+pub(super) use ime_bridge::{
+    await_same_gesture_exact_receipt, ImeCommittedTailReplay, ImeDelegatedTailLease,
+};
 pub(super) use verify::verify_current_layout;
 
 #[derive(Debug, Clone, Copy)]
@@ -70,7 +72,9 @@ pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {
 }
 
 fn read_current_layout_gnome_is_ru() -> Result<bool, String> {
-    read_current_gnome_shell_layout_is_ru().or_else(|_| read_current_ibus_layout_is_ru())
+    gnome_dbus::call_current_input_mode()
+        .map(|id| is_ru_layout_id(&id))
+        .or_else(|_| read_current_ibus_layout_is_ru())
 }
 
 fn read_current_gnome_shell_layout_is_ru() -> Result<bool, String> {
@@ -248,8 +252,12 @@ pub(super) fn sync_ime_engine_to_current_layout(current_is_ru: bool) {
     if !active_text_backend().should_try_ime() || active_layout_backend() != LayoutBackend::Gnome {
         return;
     }
-    let (_, ibus_engine) = target_layout(current_is_ru);
-    if let Err(error) = ibus_bridge::ensure_engine(ibus_engine, current_is_ru) {
+    // A Lay source may publish a different internal RU/EN mode via InputMode.
+    // Reconcile the selected IBus engine with the selected GNOME source ID,
+    // never with the internal mode; switching engines would erase its preedit.
+    let source_is_ru = read_current_gnome_shell_layout_is_ru().unwrap_or(current_is_ru);
+    let (_, ibus_engine) = target_layout(source_is_ru);
+    if let Err(error) = ibus_bridge::ensure_engine(ibus_engine, source_is_ru) {
         log(&format!(
             "⚠ IME engine sync failed for {ibus_engine}: {error}"
         ));

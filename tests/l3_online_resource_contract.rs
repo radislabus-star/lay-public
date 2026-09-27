@@ -14,7 +14,7 @@ fn l3_online_service_has_a_persistent_proof_cpu_budget() {
         setting_values("Environment"),
         ["MALLOC_ARENA_MAX=2", "LAY_L3_PROOF_WORKERS=2"]
     );
-    assert_eq!(setting_values("CPUQuota"), ["150%"]);
+    assert_eq!(setting_values("CPUQuota"), ["25%"]);
 }
 
 #[test]

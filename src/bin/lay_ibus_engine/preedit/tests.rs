@@ -2014,6 +2014,44 @@ fn bracketed_precognition_is_display_only() {
 }
 
 #[test]
+fn completion_suffix_uses_exact_typed_word_case_for_display_and_acceptance() {
+    for (prefix, suffix, expected_suffix, expected_preedit) in [
+        ("про", "сто", "сто", "просто"),
+        ("П", "очему", "очему", "Почему"),
+        ("ПР", "осто", "ОСТО", "ПРОСТО"),
+        ("ПРО", "сто", "СТО", "ПРОСТО"),
+    ] {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.committed_tail.buffer = prefix.to_string();
+        engine.composition.buffer = prefix.to_string();
+        engine.composition.cursor = prefix.chars().count();
+        engine.composition.preedit_candidates = vec![suffix.to_string()];
+        let target = format!("{}{}", prefix.to_lowercase(), suffix);
+        engine
+            .composition
+            .preedit_fast
+            .remember_target(Some(target));
+
+        assert_eq!(engine.selected_visible_completion_suffix(), expected_suffix);
+        assert_eq!(
+            engine.matching_target_suffix().as_deref(),
+            Some(expected_suffix)
+        );
+        assert_eq!(
+            engine.composition_preedit_payload(),
+            (expected_preedit.to_string(), prefix.chars().count() as u32)
+        );
+        assert_eq!(engine.composition.preedit_suffix, expected_suffix);
+    }
+}
+
+#[test]
 fn preedit_candidates_suppress_noisy_single_letter_suffixes() {
     let mut candidates = Vec::new();
 

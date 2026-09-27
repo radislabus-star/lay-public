@@ -114,6 +114,15 @@ struct PublishedPreeditWitness {
     text: String,
 }
 
+fn retired_preedit_right_edge_is_safe(snapshot: &SurroundingTextSnapshot, end: usize) -> bool {
+    let mut right = snapshot.text.chars().skip(end);
+    match right.next() {
+        None => true,
+        Some('\u{200b}') => right.next().is_none(),
+        Some(ch) => crate::preedit::is_observed_word_boundary(ch),
+    }
+}
+
 fn snapshot_matches_retired_preedit(
     snapshot: &SurroundingTextSnapshot,
     pending: &PendingContextResetRereceipt,
@@ -122,7 +131,7 @@ fn snapshot_matches_retired_preedit(
         return false;
     };
     if snapshot.has_selection()
-        || published.prefix_chars >= pending.observed_suffix_chars
+        || published.prefix_chars > pending.observed_suffix_chars
         || !pending
             .token_text
             .chars()
@@ -136,6 +145,29 @@ fn snapshot_matches_retired_preedit(
     let old_prefix_chars = published.prefix_chars as usize;
     let current_chars = pending.observed_suffix_chars as usize;
     let old_suffix_chars = presentation_chars.saturating_sub(old_prefix_chars);
+    if old_prefix_chars == current_chars {
+        // HidePreeditText can be followed by one last echo of the current
+        // display-only publication. Keep it solely as an inert witness; the
+        // pending manual gesture still requires a later exact token receipt.
+        let Some(start) = cursor.checked_sub(current_chars) else {
+            return false;
+        };
+        return snapshot.suffix_before_cursor(current_chars).as_deref()
+            == Some(pending.token_text.as_str())
+            && (start == 0
+                || snapshot
+                    .text
+                    .chars()
+                    .nth(start - 1)
+                    .is_some_and(crate::preedit::is_observed_word_boundary))
+            && snapshot
+                .text
+                .chars()
+                .skip(start)
+                .take(presentation_chars)
+                .eq(published.text.chars())
+            && retired_preedit_right_edge_is_safe(snapshot, start + presentation_chars);
+    }
     // The old display suffix can remain after one owned next character.
     // This witness does not authorize an edit without a fresh exact receipt.
     let old_suffix_after_append = old_suffix_chars > 0
@@ -154,11 +186,7 @@ fn snapshot_matches_retired_preedit(
             .skip(cursor)
             .take(old_suffix_chars)
             .eq(published.text.chars().skip(old_prefix_chars))
-        && snapshot
-            .text
-            .chars()
-            .nth(cursor + old_suffix_chars)
-            .is_none_or(crate::preedit::is_observed_word_boundary);
+        && retired_preedit_right_edge_is_safe(snapshot, cursor + old_suffix_chars);
     if old_suffix_after_append {
         return true;
     }
@@ -185,11 +213,7 @@ fn snapshot_matches_retired_preedit(
                     .skip(start)
                     .take(presentation_chars)
                     .eq(published.text.chars())
-                && snapshot
-                    .text
-                    .chars()
-                    .nth(end)
-                    .is_none_or(crate::preedit::is_observed_word_boundary)
+                && retired_preedit_right_edge_is_safe(snapshot, end)
         })
 }
 
@@ -481,6 +505,69 @@ impl LayIbusEngine {
                     token.matches_word_scope(scope) && admission.revalidate(token)
                 })
         })
+    }
+
+    /// A client without surrounding text can still accept an append-only
+    /// completion while the whole uncommitted word is this IME's live preedit.
+    /// This does not authorize replacement of already committed client text.
+    pub(crate) fn context_owns_active_preedit_append_completion(&self) -> bool {
+        if self.context_handoff_sealed
+            || self.atomic.active
+            || self.content_is_sensitive()
+            || self.client_context.surrounding_text_supported
+            || self.client_context.surrounding_text_snapshot.is_some()
+            || !self.composition.legacy_word_preedit_active
+            || !self.composition.preedit_visible
+            || self.composition.preedit_dirty
+            || self.composition.preedit_display_only_pending
+            || self.composition.buffer.is_empty()
+            || self.composition.cursor != self.composition.buffer.chars().count()
+            || self.selected_precognition_replacement().is_some()
+            || self.selected_visible_completion_suffix().is_empty()
+        {
+            return false;
+        }
+        let (Some(scope), Some(token), Some(admission)) = (
+            self.context_word_scope.as_ref(),
+            self.context_token.as_ref(),
+            self.context_admission.as_ref(),
+        ) else {
+            return false;
+        };
+        scope.lineage().completeness == WordCompleteness::UnknownStart
+            && token.matches_word_scope(scope)
+            && admission.revalidate(token)
+    }
+
+    /// A browser without surrounding text may still own every character of
+    /// its unfinished word as this engine's visible, uncommitted preedit.
+    /// The grant is limited to that exact word and current context token.
+    pub(crate) fn context_owns_active_preedit_manual_toggle(&self) -> bool {
+        if self.context_handoff_sealed
+            || self.atomic.active
+            || self.content_is_sensitive()
+            || self.client_context.surrounding_text_supported
+            || self.client_context.surrounding_text_snapshot.is_some()
+            || !self.composition.legacy_word_preedit_active
+            || !self.composition.preedit_visible
+            || self.composition.preedit_dirty
+            || self.composition.preedit_display_only_pending
+            || self.composition.buffer.is_empty()
+            || self.composition.cursor != self.composition.buffer.chars().count()
+            || self.selected_precognition_replacement().is_some()
+        {
+            return false;
+        }
+        let (Some(scope), Some(token), Some(admission)) = (
+            self.context_word_scope.as_ref(),
+            self.context_token.as_ref(),
+            self.context_admission.as_ref(),
+        ) else {
+            return false;
+        };
+        scope.lineage().completeness == WordCompleteness::UnknownStart
+            && token.matches_word_scope(scope)
+            && admission.revalidate(token)
     }
 
     /// An unknown beginning can support a suffix suggestion and an explicit
@@ -1737,12 +1824,23 @@ impl LayIbusEngine {
                 && pending.predecessor_token.matches_owner(owner)
                 && pending.predecessor_token != pending.token
         }) {
+            let same_gesture_refresh = self.layout_gesture.pending_manual_toggle
+                && self
+                    .layout_gesture
+                    .pending_manual_refresh_at
+                    .is_some_and(|queued| {
+                        queued.elapsed() <= std::time::Duration::from_millis(700)
+                    });
             let published_preedit = pending
                 .published_preedit
                 .as_ref()
                 .filter(|published| {
-                    pending.confirmed
-                        && published.prefix_chars == observed_suffix_chars as u32
+                    (pending.confirmed || same_gesture_refresh)
+                        // A locally owned next letter can shorten the same
+                        // displayed word without a new exact client receipt.
+                        // Its earlier prefix remains an inert publication
+                        // witness across this one owner-matched Reset.
+                        && published.prefix_chars <= observed_suffix_chars as u32
                         && published.text.starts_with(&token_text)
                 })
                 .cloned();
@@ -1804,6 +1902,11 @@ impl LayIbusEngine {
         }
         let tail_epoch = candidate.tail_epoch;
         let observed_suffix_chars = candidate.observed_suffix_chars;
+        let same_gesture_refresh = self.layout_gesture.pending_manual_toggle
+            && self
+                .layout_gesture
+                .pending_manual_refresh_at
+                .is_some_and(|queued| queued.elapsed() <= std::time::Duration::from_millis(700));
         self.context_reset_rereceipt = Some(PendingContextResetRereceipt {
             token,
             predecessor_token: candidate.token,
@@ -1812,7 +1915,14 @@ impl LayIbusEngine {
             observed_suffix_chars,
             armed_revision: candidate.armed_revision,
             confirmed: false,
-            published_preedit: None,
+            // HidePreeditText can make Firefox Reset before its last echo of
+            // this exact publication. Carry only the inert display witness
+            // while the same physical gesture still owns the refresh lease.
+            published_preedit: if same_gesture_refresh {
+                candidate.published_preedit
+            } else {
+                None
+            },
         });
         trace::record(format!(
             r#"{{"kind":"ibus_context_reset_rereceipt","stage":"armed","tail_epoch":{tail_epoch},"suffix_chars":{observed_suffix_chars}}}"#,
@@ -1936,6 +2046,39 @@ impl LayIbusEngine {
             != pending.armed_revision.saturating_add(1)
             || !self.context_reset_rereceipt_matches_current_snapshot()
         {
+            if trace::enabled() {
+                let snapshot = self.client_context.surrounding_text_snapshot.as_ref();
+                let surface_is_strict_prefix = snapshot.is_some_and(|snapshot| {
+                    snapshot_exactly_bounds_strict_token_prefix(snapshot, &pending.token_text)
+                });
+                let surface_is_prior_replay = snapshot
+                    .is_some_and(|snapshot| self.exact_replay_contains_prior_snapshot(snapshot));
+                let (chars, cursor, selection, zero_width_only, initial_matches, ascii_latin) =
+                    snapshot.map_or((0, 0, false, false, false, false), |snapshot| {
+                        let first = snapshot.text.chars().next();
+                        (
+                            snapshot.text.chars().count(),
+                            snapshot.cursor_pos,
+                            snapshot.has_selection(),
+                            snapshot.text == "\u{200b}",
+                            first.is_some() && first == pending.token_text.chars().next(),
+                            first.is_some_and(|ch| ch.is_ascii_alphabetic()),
+                        )
+                    });
+                trace::record(format!(
+                    r#"{{"kind":"ibus_context_reset_rereceipt","stage":"mismatch_diagnostic","revision_gap":{},"expected_chars":{},"snapshot_chars":{chars},"cursor":{cursor},"selection":{selection},"zero_width_only":{zero_width_only},"initial_matches":{initial_matches},"ascii_latin":{ascii_latin},"strict_prefix_surface":{surface_is_strict_prefix},"strict_prefix_with_identity":{},"prior_replay_surface":{surface_is_prior_replay},"replay_scope_present":{},"identity_current":{}}}"#,
+                    self.client_context
+                        .surrounding_observation_revision
+                        .saturating_sub(pending.armed_revision),
+                    pending.observed_suffix_chars,
+                    self.context_reset_rereceipt_strict_prefix_is_current(&pending),
+                    matches!(
+                        self.committed_tail.autocorrect_suppression.as_ref(),
+                        Some(AutocorrectSuppression::ExactReplay(_))
+                    ),
+                    self.context_reset_rereceipt_identity_is_current(),
+                ));
+            }
             self.context_reset_rereceipt = None;
             trace::record(
                 r#"{"kind":"ibus_context_reset_rereceipt","stage":"rejected","reason":"surrounding_receipt_mismatch"}"#,
@@ -1986,6 +2129,62 @@ impl LayIbusEngine {
             .is_some_and(|pending| pending.confirmed)
             && self.context_reset_rereceipt_identity_is_current()
             && self.context_reset_rereceipt_matches_current_snapshot()
+    }
+
+    /// A manual gesture may ask the same client for a new exact receipt while
+    /// its display-only preedit leaves one editor sentinel after the caret.
+    /// This permits a refresh request only; it never authorizes deletion.
+    pub(crate) fn context_reset_rereceipt_manual_refresh_allowed(&self) -> bool {
+        self.context_reset_rereceipt
+            .as_ref()
+            .is_some_and(|pending| {
+                !pending.confirmed
+                    && self.context_reset_rereceipt_identity_is_current()
+                    && self.client_context.exact_surrounding_refresh_available
+                    && self.composition.preedit_visible
+                    && self.composition.preedit_display_only_pending
+                    && !self.composition.preedit_suffix.is_empty()
+                    && self
+                        .client_context
+                        .surrounding_text_snapshot
+                        .as_ref()
+                        .is_some_and(|snapshot| {
+                            snapshot_has_transient_zero_width_boundary(snapshot, pending)
+                        })
+            })
+    }
+
+    /// A single editor sentinel after the caret can invalidate the surrounding
+    /// receipt while leaving a completion published for this exact token on
+    /// screen. It proves only an explicit append of that visible suffix.
+    pub(crate) fn context_reset_rereceipt_visible_append_suffix(&self) -> Option<String> {
+        let pending = self.context_reset_rereceipt.as_ref()?;
+        let suffix = &self.composition.preedit_suffix;
+        if pending.confirmed
+            || !self.context_reset_rereceipt_identity_is_current()
+            || !self.composition.preedit_visible
+            || !self.composition.preedit_display_only_pending
+            || self.composition.preedit_dirty
+            || !self.composition.preedit_candidates.is_empty()
+            || self.selected_precognition_replacement().is_some()
+            || suffix.is_empty()
+            || suffix == "*"
+            || self.client_context.surrounding_observation_revision != pending.armed_revision
+            || !self
+                .client_context
+                .surrounding_text_snapshot
+                .as_ref()
+                .is_some_and(|snapshot| {
+                    snapshot_has_transient_zero_width_boundary(snapshot, pending)
+                })
+        {
+            return None;
+        }
+        let published = pending.published_preedit.as_ref()?;
+        let displayed = self.visible_precognition_suffix(suffix.clone());
+        (published.prefix_chars == pending.observed_suffix_chars
+            && published.text == format!("{}{displayed}", pending.token_text))
+        .then(|| suffix.clone())
     }
 
     /// The observed suffix may be computed before the client supplies its exact
@@ -2338,12 +2537,16 @@ impl LayIbusEngine {
             && self.composition.word_input_mode == Some(WordInputMode::TerminalPassthrough)
         {
             self.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
-            self.composition.pending_passthrough_preedit_clear = true;
+            // Retire only an already visible native-mode preedit. A worker
+            // may publish the first current suggestion after this capability
+            // callback; the next key must not clear that new publication.
+            self.composition.pending_passthrough_preedit_clear = self.composition.preedit_visible;
         }
         if !self.client_context.surrounding_text_supported {
             self.client_context.surrounding_text_snapshot = None;
             self.client_context.managed_word_start = None;
             self.layout_gesture.pending_manual_toggle = false;
+            self.layout_gesture.pending_manual_refresh_at = None;
         }
     }
     pub(crate) fn set_content_type_state(&mut self, purpose: u32, hints: u32) {

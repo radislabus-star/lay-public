@@ -55,6 +55,19 @@ impl LayIbusEngine {
         }
         if has_command_modifier(state) {
             self.revoke_managed_word_start_before_client_key();
+            if self.composition.buffer.is_empty() && self.client_context.surrounding_text_supported
+            {
+                // The client owns an unhandled shortcut. Ctrl+A followed by
+                // Backspace can delete the whole field while a one-scalar
+                // local mirror would otherwise survive and contaminate the
+                // next word. Discard that mirror; a fresh client receipt and
+                // later keys can establish only their own observed suffix.
+                self.cancel_precognition_display_generation();
+                self.clear_preedit(emitter).await?;
+                self.close_committed_tail_field();
+                self.client_context.surrounding_text_snapshot = None;
+                self.advance_surrounding_observation_revision();
+            }
             self.trace_key("command_passthrough", keyval, keycode, false, None);
             return Ok(false);
         }

@@ -50,7 +50,12 @@ pub enum ImeManualToggleOutcome {
     NotHandled,
     DelegateDaemon,
     DelegateExactImeTail,
-    Handled { target_layout_is_ru: bool },
+    /// The same physical gesture is waiting for its focused client's exact
+    /// surrounding-text receipt. No text or layout action has completed.
+    AwaitingExactSnapshot,
+    Handled {
+        target_layout_is_ru: bool,
+    },
 }
 
 impl ImeManualToggleOutcome {
@@ -62,7 +67,10 @@ impl ImeManualToggleOutcome {
 
     pub fn target_layout_is_ru(self) -> Option<bool> {
         match self {
-            Self::NotHandled | Self::DelegateDaemon | Self::DelegateExactImeTail => None,
+            Self::NotHandled
+            | Self::DelegateDaemon
+            | Self::DelegateExactImeTail
+            | Self::AwaitingExactSnapshot => None,
             Self::Handled {
                 target_layout_is_ru,
             } => Some(target_layout_is_ru),
@@ -71,7 +79,10 @@ impl ImeManualToggleOutcome {
 
     pub fn as_legacy_v2(self) -> (bool, bool) {
         match self {
-            Self::NotHandled | Self::DelegateDaemon | Self::DelegateExactImeTail => (false, false),
+            Self::NotHandled
+            | Self::DelegateDaemon
+            | Self::DelegateExactImeTail
+            | Self::AwaitingExactSnapshot => (false, false),
             Self::Handled {
                 target_layout_is_ru,
             } => (true, target_layout_is_ru),
@@ -86,6 +97,7 @@ impl ImeManualToggleOutcome {
             } => (1, target_layout_is_ru),
             Self::DelegateDaemon => (2, false),
             Self::DelegateExactImeTail => (3, false),
+            Self::AwaitingExactSnapshot => (4, false),
         }
     }
 
@@ -95,6 +107,7 @@ impl ImeManualToggleOutcome {
             (1, target_layout_is_ru) => Ok(Self::handled(target_layout_is_ru)),
             (2, false) => Ok(Self::DelegateDaemon),
             (3, false) => Ok(Self::DelegateExactImeTail),
+            (4, false) => Ok(Self::AwaitingExactSnapshot),
             _ => Err("invalid ManualToggleV3 outcome"),
         }
     }
@@ -304,6 +317,10 @@ mod tests {
             ImeManualToggleOutcome::DelegateExactImeTail.as_legacy_v2(),
             (false, false)
         );
+        assert_eq!(
+            ImeManualToggleOutcome::AwaitingExactSnapshot.as_legacy_v2(),
+            (false, false)
+        );
 
         let handled = ImeManualToggleOutcome::handled(true);
         assert_eq!(handled.target_layout_is_ru(), Some(true));
@@ -316,6 +333,7 @@ mod tests {
             ImeManualToggleOutcome::NotHandled,
             ImeManualToggleOutcome::DelegateDaemon,
             ImeManualToggleOutcome::DelegateExactImeTail,
+            ImeManualToggleOutcome::AwaitingExactSnapshot,
             ImeManualToggleOutcome::handled(false),
             ImeManualToggleOutcome::handled(true),
         ] {
@@ -326,6 +344,7 @@ mod tests {
         assert!(ImeManualToggleOutcome::from_v3(0, true).is_err());
         assert!(ImeManualToggleOutcome::from_v3(2, true).is_err());
         assert!(ImeManualToggleOutcome::from_v3(3, true).is_err());
-        assert!(ImeManualToggleOutcome::from_v3(4, false).is_err());
+        assert!(ImeManualToggleOutcome::from_v3(4, true).is_err());
+        assert!(ImeManualToggleOutcome::from_v3(5, false).is_err());
     }
 }

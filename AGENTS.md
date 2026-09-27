@@ -1,3 +1,18 @@
+## Architecture canon
+
+- Read [ARCHITECTURE.md](ARCHITECTURE.md) before changing architecture or runtime
+  input. It is the entrypoint for C01–C10, owning documents and proof boundaries.
+- Identify the actual checkout/version, affected invariant, current owner and
+  first failed transition before editing. Use the existing reducer, decision
+  and output contracts; do not add a parallel owner or client-specific bypass.
+- Distinguish required architecture from implemented source, installed runtime
+  and physical-client acceptance. A plan, graph or passing source test does
+  not establish the latter two.
+- Changes to the canon or its guards require a new explicit decision under
+  docs/architecture/decisions/. Do not weaken a rule or test to obtain PASS.
+- CLAUDE.md, GEMINI.md and .github/copilot-instructions.md point here and to the
+  same canon. Keep one contract rather than model-specific architectural rules.
+
 ## Accepted development simplification — 2026-09-07
 
 - The user subsequently prioritized TD-124 maintenance tooling before further

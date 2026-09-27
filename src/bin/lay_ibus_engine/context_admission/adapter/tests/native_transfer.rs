@@ -1039,6 +1039,7 @@ fn superseded_source_free_cannot_publish_its_stale_fence() {
                 stale_nonce,
                 ReceiptOrigin::CompatibilityProperty,
                 Default::default(),
+                None,
             )
             .expect("old empty source-free request");
         assert!(harness.adapter.shared.pending.lock().unwrap().is_none());
@@ -1118,6 +1119,7 @@ fn superseded_source_free_cannot_publish_its_stale_fence() {
                 current_nonce,
                 ReceiptOrigin::Native,
                 observed.position,
+                None,
             )
             .expect("the factory-bound successor activation can start");
 

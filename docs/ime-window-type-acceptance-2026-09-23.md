@@ -1,5 +1,10 @@
 # IME acceptance by window type
 
+The user's 2026-09-26 acceptance gate supersedes this historical two-gesture
+matrix: see `docs/ime-all-window-acceptance-2026-09-26.md` for eight rapid
+Double Shift gestures, Tab with a trailing space, held-Shift IME behavior and
+every available editable window.
+
 The user's acceptance requirement is physical behavior on the **exact installed
 binary** in each relevant window/input class. A passing library or private-bus
 test does not promote a client type. Each row needs three separate observations:

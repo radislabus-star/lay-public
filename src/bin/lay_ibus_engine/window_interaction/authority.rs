@@ -107,6 +107,7 @@ impl TextTargetEditRoute {
     }
 }
 
+use std::time::{Duration, Instant};
 use zbus::fdo;
 
 use crate::bridge::LayImeBridge;
@@ -624,17 +625,59 @@ impl LayImeBridge {
             .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         let emitter = iface_ref.signal_emitter();
         let mut engine = iface_ref.get_mut().await;
+        if let Some(queued_at) = engine.layout_gesture.pending_manual_refresh_at {
+            if queued_at.elapsed() > Duration::from_millis(700)
+                || !engine.context_reset_rereceipt_computation_allowed()
+            {
+                engine.layout_gesture.pending_manual_toggle = false;
+                engine.layout_gesture.pending_manual_refresh_at = None;
+                crate::trace::record(
+                    r#"{"kind":"ibus_manual_toggle_refresh","stage":"cancelled_before_resume"}"#,
+                );
+                return Ok(ImeManualToggleOutcome::NotHandled);
+            }
+            if !engine.context_reset_rereceipt_exact_manual_handoff_allowed() {
+                return Ok(ImeManualToggleOutcome::AwaitingExactSnapshot);
+            }
+            // The daemon is still servicing the same physical gesture. Its
+            // follow-up may now use the ordinary exact-tail handoff path.
+            engine.layout_gesture.pending_manual_toggle = false;
+            engine.layout_gesture.pending_manual_refresh_at = None;
+            crate::trace::record(
+                r#"{"kind":"ibus_manual_toggle_refresh","stage":"exact_ready_for_same_gesture"}"#,
+            );
+        }
         let reset_snapshot_pending = engine.context_reset_rereceipt_computation_allowed()
             && engine.client_context.surrounding_text_supported
             && engine.client_context.surrounding_text_snapshot.is_none();
-        let manual_toggle_allowed = engine.context_allows_manual_toggle()
+        let mut manual_toggle_allowed = engine.context_allows_manual_toggle()
+            || engine.context_owns_active_preedit_manual_toggle()
             || engine.context_observed_suffix_exact_manual_handoff_allowed()
             || engine.context_reset_rereceipt_exact_manual_handoff_allowed()
             || reset_snapshot_pending;
         let bridge_token_live = self.bridge_token_is_live(&engine, token.as_ref());
+        let manual_refresh_allowed = bridge_token_live
+            && !manual_toggle_allowed
+            && engine.context_reset_rereceipt_manual_refresh_allowed();
+        if manual_refresh_allowed {
+            // Firefox may deliver SetSurroundingText only after this RPC
+            // returns. The existing pending-manual-toggle path owns the one
+            // gesture until an exact receipt arrives; the old display-only
+            // preedit and sentinel never authorize a text edit.
+            engine.client_context.surrounding_text_snapshot = None;
+            engine.cancel_precognition_display_generation();
+            let mut output = EngineOutput::legacy(emitter);
+            engine.clear_preedit(&mut output).await?;
+            manual_toggle_allowed = engine.context_reset_rereceipt_computation_allowed()
+                && engine.client_context.surrounding_text_supported
+                && engine.client_context.surrounding_text_snapshot.is_none();
+            crate::trace::record(
+                r#"{"kind":"ibus_manual_toggle_refresh","stage":"prepared_deferred_snapshot"}"#,
+            );
+        }
         if !bridge_token_live || !manual_toggle_allowed {
             crate::trace::record(format!(
-                r#"{{"kind":"ibus_manual_toggle_rpc","stage":"not_handled","reason":"context_authority","bridge_token_live":{bridge_token_live},"manual_toggle_allowed":{manual_toggle_allowed}}}"#,
+                r#"{{"kind":"ibus_manual_toggle_rpc","stage":"not_handled","reason":"context_authority","bridge_token_live":{bridge_token_live},"manual_toggle_allowed":{manual_toggle_allowed},"manual_refresh_allowed":{manual_refresh_allowed}}}"#,
             ));
             return Ok(ImeManualToggleOutcome::NotHandled);
         }
@@ -662,7 +705,15 @@ impl LayImeBridge {
             WindowInteraction::execute_manual_toggle(&mut engine, target_authority, &mut output)
                 .await
                 .map_err(fdo::Error::from)?;
-        let outcome = manual_toggle_outcome_from_execution(target_layout_is_ru, execution);
+        let outcome = if manual_refresh_allowed && execution == ExecutionReceipt::LocalPending {
+            engine.layout_gesture.pending_manual_refresh_at = Some(Instant::now());
+            crate::trace::record(
+                r#"{"kind":"ibus_manual_toggle_refresh","stage":"queued_waiting_exact_snapshot"}"#,
+            );
+            ImeManualToggleOutcome::AwaitingExactSnapshot
+        } else {
+            manual_toggle_outcome_from_execution(target_layout_is_ru, execution)
+        };
         let (status, target_layout_is_ru) = outcome.as_v3();
         crate::trace::record(format!(
             r#"{{"kind":"ibus_manual_toggle_rpc","stage":"complete","status":{status},"target_layout_is_ru":{target_layout_is_ru}}}"#,

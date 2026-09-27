@@ -19,6 +19,7 @@ use super::engine::{InputFrameIdentity, LayIbusEngine};
 use super::precognition_worker::PrecognitionWork;
 use super::text::{make_ibus_text, make_preedit_ibus_text};
 use super::trace;
+use lay::text_edit::{AuthorizedEdit, TextEditBackend};
 
 pub(super) const PREEDIT_TAIL_LIMIT: usize = 160;
 const PREEDIT_TOKEN_LIMIT: usize = 32;
@@ -372,7 +373,7 @@ impl LayIbusEngine {
         else {
             return self.clear_preedit(emitter).await;
         };
-        self.composition.preedit_suffix = suffix;
+        self.composition.preedit_suffix = self.visible_case_completion_suffix(suffix);
         let (preedit_text, cursor_pos) = self.inactive_preedit_payload();
         self.publish_preedit_payload(emitter, preedit_text, cursor_pos)
             .await
@@ -508,6 +509,69 @@ impl LayIbusEngine {
         Ok(())
     }
 
+    /// Keep the unfinished word in one IME preedit while the decoder changes.
+    /// Publish the same decoder as a native IBus InputMode property so GNOME's
+    /// own indicator follows each successful physical gesture.
+    pub(super) async fn replace_verified_owned_preedit(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        authorized_edit: AuthorizedEdit,
+        target_layout_is_ru: bool,
+        protect_current_word: bool,
+    ) -> fdo::Result<()> {
+        let action = authorized_edit.action();
+        let original = self.composition.buffer.clone();
+        let replacement = action.to_text();
+        if authorized_edit.backend() != TextEditBackend::Ime
+            || !self.context_owns_active_preedit_manual_toggle()
+            || action.from_text() != original
+            || self.last_tail_token_text() != original
+            || replacement.is_empty()
+            || replacement.chars().count() > PREEDIT_TAIL_LIMIT
+        {
+            return Err(fdo::Error::Failed(
+                "owned preedit manual toggle lost exact authority".into(),
+            ));
+        }
+        let replacement = replacement.to_string();
+        let original_cursor = self.composition.cursor as u32;
+        let original_tail = self.committed_tail.buffer.clone();
+        self.cancel_precognition_display_generation();
+        self.clear_preedit_completion_state();
+        let cursor = replacement.chars().count() as u32;
+        self.publish_preedit_payload(emitter, replacement.clone(), cursor)
+            .await?;
+        self.composition.buffer = replacement.clone();
+        self.composition.cursor = cursor as usize;
+        self.replace_last_tail_token_text(&replacement, original.chars().count());
+        self.rebuild_preedit_fast_from_tail();
+        if !self.publish_tail_handoff() {
+            return Err(fdo::Error::Failed(
+                "owned preedit manual toggle lost context handoff".into(),
+            ));
+        }
+        if let Err(error) = emitter.register_input_mode(target_layout_is_ru).await {
+            // A failed indicator publication cannot count as a completed
+            // gesture. Restore the old preedit only while its owner is live.
+            if self.context_owns_active_preedit_manual_toggle() {
+                let _ = self
+                    .publish_preedit_payload(emitter, original.clone(), original_cursor)
+                    .await;
+                self.composition.buffer = original;
+                self.composition.cursor = original_cursor as usize;
+                self.committed_tail.buffer = original_tail;
+                self.rebuild_preedit_fast_from_tail();
+                let _ = self.publish_tail_handoff();
+            }
+            return Err(error);
+        }
+        if protect_current_word {
+            self.arm_current_word_autocorrect_suppression();
+        }
+        self.set_layout_is_ru(target_layout_is_ru);
+        Ok(())
+    }
+
     pub(super) fn precognition_suffix(&self) -> Option<String> {
         self.precognition_suffix_candidates().into_iter().next()
     }
@@ -544,11 +608,42 @@ impl LayIbusEngine {
         (text, cursor_pos)
     }
 
-    fn visible_precognition_suffix(&self, suffix: String) -> String {
+    pub(super) fn visible_precognition_suffix(&self, suffix: String) -> String {
         if suffix.is_empty() || !self.config.ime_bracket_candidates {
             return suffix;
         }
         format!("[{suffix}]")
+    }
+
+    /// L2 readout is case-folded; project its suffix back onto the exact
+    /// current token only when the typed letters establish all-caps intent.
+    pub(super) fn visible_case_completion_suffix(&self, suffix: String) -> String {
+        if suffix.is_empty() || !suffix.chars().all(char::is_alphabetic) {
+            return suffix;
+        }
+        let token = if self.composition.buffer.is_empty() {
+            self.committed_tail
+                .buffer
+                .split_whitespace()
+                .last()
+                .unwrap_or("")
+        } else {
+            self.composition.buffer.as_str()
+        };
+        let letters = token.chars().count();
+        if letters < 2
+            || !token
+                .chars()
+                .all(|ch| ch.is_alphabetic() && ch.is_uppercase())
+        {
+            return suffix;
+        }
+        let upper = suffix.to_uppercase();
+        if upper.chars().count() == suffix.chars().count() {
+            upper
+        } else {
+            suffix
+        }
     }
 
     pub(super) fn selected_precognition_suffix(&self) -> Option<String> {
@@ -649,7 +744,7 @@ impl LayIbusEngine {
             .target_surface()
             .and_then(|target| target.strip_prefix(&partial))
             .filter(|suffix| !suffix.is_empty())
-            .map(str::to_owned)
+            .map(|suffix| self.visible_case_completion_suffix(suffix.to_owned()))
     }
 
     fn schedule_background_precognition(
@@ -1000,7 +1095,8 @@ impl LayIbusEngine {
                 *self = projected;
                 return Ok(());
             };
-            projected.composition.preedit_suffix = candidate;
+            projected.composition.preedit_suffix =
+                projected.visible_case_completion_suffix(candidate);
             let (preedit_text, cursor_pos) = projected.inactive_preedit_payload();
             projected
                 .publish_preedit_payload(emitter, preedit_text, cursor_pos)

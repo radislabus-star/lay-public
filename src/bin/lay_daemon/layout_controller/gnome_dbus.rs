@@ -124,6 +124,10 @@ pub(super) fn call_current_layout() -> Result<String, String> {
     })
 }
 
+pub(super) fn call_current_input_mode() -> Result<String, String> {
+    call_dbus_current_input_mode().or_else(|_| call_current_layout())
+}
+
 pub(super) fn call_current_layout_once() -> Result<String, String> {
     call_dbus_current_layout()
 }
@@ -213,6 +217,22 @@ fn call_dbus_current_layout() -> Result<String, String> {
             DBUS_PATH,
             Some(DBUS_INTERFACE),
             "CurrentLayout",
+            &(),
+        )
+        .map_err(|e| e.to_string())?;
+    reply
+        .body()
+        .deserialize::<String>()
+        .map_err(|e| e.to_string())
+}
+
+fn call_dbus_current_input_mode() -> Result<String, String> {
+    let reply = dbus_connection()?
+        .call_method(
+            Some(DBUS_DEST),
+            DBUS_PATH,
+            Some(DBUS_INTERFACE),
+            "CurrentInputMode",
             &(),
         )
         .map_err(|e| e.to_string())?;

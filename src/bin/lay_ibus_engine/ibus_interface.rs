@@ -61,33 +61,31 @@ impl LayIbusEngine {
     }
 
     #[zbus(name = "FocusIn")]
-    pub(crate) async fn focus_in_callback(
+    async fn focus_in_callback_bus(
         &mut self,
         #[zbus(header)] header: zbus::message::Header<'_>,
+        #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
     ) {
-        let _ = WindowInteraction::observe_lifecycle(
-            self,
-            WindowLifecycleEvent::FocusIn { header: &header },
-            None,
+        self.focus_in_callback(header).await;
+        let _ = Self::register_properties(
+            &emitter,
+            super::text::make_ibus_input_mode_properties(self.layout_gesture.layout_is_ru),
         )
         .await;
     }
 
     #[zbus(name = "FocusInId")]
-    pub(crate) async fn focus_in_id(
+    async fn focus_in_id_bus(
         &mut self,
         #[zbus(header)] header: zbus::message::Header<'_>,
+        #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
         object_path: String,
         client: String,
     ) {
-        let _ = WindowInteraction::observe_lifecycle(
-            self,
-            WindowLifecycleEvent::FocusInId {
-                header: &header,
-                object_path,
-                client,
-            },
-            None,
+        self.focus_in_id(header, object_path, client).await;
+        let _ = Self::register_properties(
+            &emitter,
+            super::text::make_ibus_input_mode_properties(self.layout_gesture.layout_is_ru),
         )
         .await;
     }
@@ -170,6 +168,7 @@ impl LayIbusEngine {
         #[zbus(header)] header: zbus::message::Header<'_>,
         #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
     ) -> fdo::Result<()> {
+        let previous_mode_is_ru = self.layout_gesture.layout_is_ru;
         let mut output = EngineOutput::legacy(&emitter);
         WindowInteraction::observe_lifecycle(
             self,
@@ -177,6 +176,14 @@ impl LayIbusEngine {
             Some(&mut output),
         )
         .await?;
+        if self.layout_gesture.layout_is_ru != previous_mode_is_ru {
+            Self::register_properties(
+                &emitter,
+                super::text::make_ibus_input_mode_properties(self.layout_gesture.layout_is_ru),
+            )
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+        }
         Ok(())
     }
 
@@ -186,6 +193,12 @@ impl LayIbusEngine {
         #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
     ) -> fdo::Result<()> {
         trace::record(r#"{"kind":"ibus_focus","stage":"enable"}"#);
+        Self::register_properties(
+            &emitter,
+            super::text::make_ibus_input_mode_properties(self.layout_gesture.layout_is_ru),
+        )
+        .await
+        .map_err(|error| fdo::Error::Failed(error.to_string()))?;
         Self::require_surrounding_text(&emitter)
             .await
             .map_err(|error| fdo::Error::Failed(error.to_string()))
@@ -272,6 +285,12 @@ impl LayIbusEngine {
         mode: u32,
     ) -> zbus::Result<()>;
 
+    #[zbus(signal, name = "RegisterProperties")]
+    pub(crate) async fn register_properties(
+        emitter: &SignalEmitter<'_>,
+        properties: Value<'_>,
+    ) -> zbus::Result<()>;
+
     #[zbus(signal, name = "ShowPreeditText")]
     pub(crate) async fn show_preedit_text(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 
@@ -311,6 +330,35 @@ impl LayIbusEngine {
     #[zbus(property, name = "ActiveSurroundingText")]
     fn active_surrounding_text(&self) -> bool {
         true
+    }
+}
+
+impl LayIbusEngine {
+    pub(crate) async fn focus_in_callback(&mut self, header: zbus::message::Header<'_>) {
+        let _ = WindowInteraction::observe_lifecycle(
+            self,
+            WindowLifecycleEvent::FocusIn { header: &header },
+            None,
+        )
+        .await;
+    }
+
+    pub(crate) async fn focus_in_id(
+        &mut self,
+        header: zbus::message::Header<'_>,
+        object_path: String,
+        client: String,
+    ) {
+        let _ = WindowInteraction::observe_lifecycle(
+            self,
+            WindowLifecycleEvent::FocusInId {
+                header: &header,
+                object_path,
+                client,
+            },
+            None,
+        )
+        .await;
     }
 }
 

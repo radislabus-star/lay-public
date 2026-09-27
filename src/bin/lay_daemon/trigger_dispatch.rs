@@ -8,10 +8,11 @@ use crate::pending_typing_assist::PendingTypingAssist;
 
 use super::physical_input_grab::PhysicalInputGrab;
 use super::{
-    active_replace_words, capture_ime_committed_tail_replay, execute_exact_ime_tail_replay,
-    handle_double_shift, lock_virtual_keyboard, run_manual_correction_with_scope,
-    try_ime_manual_toggle, wait_for_ime_committed_tail_settlement, ImeCommittedTailReplay,
-    ManualCorrectionDispatchPlan, ManualCorrectionRequest, ScopedManualCorrectionRequest,
+    active_replace_words, await_same_gesture_exact_receipt, capture_ime_committed_tail_replay,
+    execute_exact_ime_tail_replay, handle_double_shift, lock_virtual_keyboard,
+    run_manual_correction_with_scope, try_ime_manual_toggle,
+    wait_for_ime_committed_tail_settlement, ImeCommittedTailReplay, ManualCorrectionDispatchPlan,
+    ManualCorrectionRequest, ScopedManualCorrectionRequest,
 };
 use super::{DShiftState, DaemonTextObservation, MultiTapPending, ShiftState};
 
@@ -98,7 +99,7 @@ pub(super) fn run_exact_ime_tail_replay(
                     ));
                     return None;
                 }
-                match try_ime_manual_toggle() {
+                match await_same_gesture_exact_receipt(try_ime_manual_toggle) {
                     Ok(ImeManualToggleOutcome::DelegateExactImeTail) => {}
                     Ok(ImeManualToggleOutcome::Handled {
                         target_layout_is_ru,

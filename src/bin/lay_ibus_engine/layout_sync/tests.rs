@@ -64,6 +64,16 @@ fn manual_toggle_syncs_internal_layout_both_directions() {
 
     engine.sync_layout_after_manual_toggle("привет ");
     assert!(engine.layout_gesture.layout_is_ru);
+    engine.atomic.speculation = true;
+    engine.sync_layout_after_committed_text("привет ", "owned_preedit_boundary");
+    assert!(matches!(
+        engine.atomic.deferred_layout_actions.last(),
+        Some(super::super::engine::DeferredLayoutAction::Background {
+            target_is_ru: true,
+            ..
+        })
+    ));
+    engine.atomic.speculation = false;
 
     engine.sync_layout_after_manual_toggle("hello ");
     assert!(!engine.layout_gesture.layout_is_ru);

@@ -409,7 +409,9 @@ impl LayIbusEngine {
         if self.selected_precognition_replacement().is_some() {
             return String::new();
         }
-        visible_completion_suffix(self.selected_precognition_suffix())
+        self.visible_case_completion_suffix(visible_completion_suffix(
+            self.selected_precognition_suffix(),
+        ))
     }
 
     pub(super) fn last_tail_token_text(&self) -> String {
@@ -1238,6 +1240,7 @@ impl LayIbusEngine {
         self.committed_tail.last_commit_at = None;
         self.committed_tail.recent_replace = None;
         self.layout_gesture.pending_manual_toggle = false;
+        self.layout_gesture.pending_manual_refresh_at = None;
         self.committed_tail.pending_visible_postcondition = None;
         self.committed_tail.epoch = self.committed_tail.epoch.wrapping_add(1);
         let Ok(mut state) = self.shared.lock() else {
@@ -1278,6 +1281,7 @@ impl LayIbusEngine {
         self.committed_tail.last_input_at = None;
         self.committed_tail.recent_replace = None;
         self.layout_gesture.pending_manual_toggle = false;
+        self.layout_gesture.pending_manual_refresh_at = None;
         let local_suppression = self.committed_tail.autocorrect_suppression.take();
         self.committed_tail.epoch = self.committed_tail.epoch.wrapping_add(1);
         if let Ok(mut state) = shared.lock() {

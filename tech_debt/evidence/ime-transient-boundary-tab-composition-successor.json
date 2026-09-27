@@ -1,0 +1,42 @@
+{
+  "schema": "lay.tech-debt.successor-binding.v1",
+  "task": "IME-transient-boundary-Tab-2026-09-26",
+  "status": "SOURCE_PROVEN",
+  "checkpoint": {
+    "state": "red-green-adapter-and-focused-ime",
+    "scope": "Explicit append of a current published suffix after one editor sentinel or from the current IME-owned no-surrounding preedit; full gate, independent review and installed physical acceptance remain separate."
+  },
+  "predecessor": {
+    "task": "Browser-owned-Reset-release-1.0.74",
+    "binding": "tech_debt/evidence/browser-owned-reset-release-composition-successor.json",
+    "binding_sha256": "ec1b220996ec93122f0767180328457444438d70f8d0317cd5638d136042e96f",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "c7e8f604ced77488302e510bfb4c3df87ed05ac60efef67e78b568a4fe769358",
+    "mode": "0664"
+  },
+  "successor": {
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "1010b57153d612f8c34e8c83cb2526a78355b569cb81bf5829be4e87a538da30",
+    "mode": "0664"
+  },
+  "source_proof": {
+    "red_receipt": "/home/ubu/.cache/lay/development/run-lq3ona66/RESULT.json",
+    "red_receipt_sha256": "7c58a6acbcd334eab49e763d16c765b64c7dc1f4bd99b17088514867e3d58228",
+    "green_receipt": "/home/ubu/.cache/lay/development/run-i_34q96o/RESULT.json",
+    "green_receipt_sha256": "c56afe4a611064c141ea10dfa22587881453290054d109f7697d15f0f0a21350",
+    "gost_owned_preedit_red_receipt": "/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-red-test.log",
+    "gost_owned_preedit_red_receipt_sha256": "f099e31027396576fd27c1e301df223eab137d15b1e7fc23ef3880b77d2cba14",
+    "gost_owned_preedit_green_receipt": "/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-green-test.log",
+    "gost_owned_preedit_green_receipt_sha256": "905c19b49be8bac7ae0c540cb380f053e8f0fc9f1c49f35c6da76e128e08a245",
+    "gost_owned_preedit_safety_receipt": "/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-safety-tests.log",
+    "gost_owned_preedit_safety_receipt_sha256": "4b043353d311f8a8c096f2a1a9851e56acc8b73cfb49cb6c782ca74088c3e832"
+  },
+  "review": {
+    "state": "PENDING"
+  },
+  "physical_acceptance": {
+    "state": "NOT_TESTED"
+  },
+  "source_append_authority_changed": true,
+  "installed_runtime_authority_changed": false
+}

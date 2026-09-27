@@ -1,0 +1,32 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Adopt one repository entrypoint for runtime architecture and preserve the existing semantic/structural authorities.",
+  "reason": "The user requested a durable canon for future AI agents after cross-window IME failures. Existing instructions diverged: main is older than the accepted runtime and CLAUDE.md described only the daemon route with unguarded test/restart examples.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "ARCHITECTURE.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    ".github/copilot-instructions.md",
+    ".github/workflows/architecture-canon.yml",
+    "scripts/check_architecture_canon.py",
+    "tests/test_architecture_canon.py",
+    "scripts/check-lay-changed.sh",
+    "scripts/check-lay-full.sh"
+  ],
+  "verification": "PASS: canon links and new-decision coverage for both edited checkouts; shell syntax; 13/13 guard refusal tests. Receipt: /home/ubu/.cache/lay/development/architecture-canon-20260926-9p2aq_gh/RESULT.json; SHA-256 ed37a8f13a7c633f5b94cd949bb8a2a9e4006f7f1ffcd3dd28c4c6e6f65ea87e. Candidate existing structural graph gate also passed; owning stabilization plan records its exact scope and receipt.",
+  "not_tested": "Runtime migration, Rust semantics, physical clients, performance, installation, remote CI execution and server branch protection. This record declares the rule change; it is not independent approval or proof of runtime behavior.",
+  "runtime_authority_changed": false
+}

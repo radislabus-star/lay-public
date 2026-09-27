@@ -1,7 +1,7 @@
 use super::super::{
-    active_text_backend, capture_ime_committed_tail_replay, log, try_ime_manual_toggle,
-    ImeCommittedTailReplay, ManualCorrectionDispatchPlan, ManualCorrectionInputIsolation,
-    ManualCorrectionOutputRoute,
+    active_text_backend, await_same_gesture_exact_receipt, capture_ime_committed_tail_replay, log,
+    try_ime_manual_toggle, ImeCommittedTailReplay, ManualCorrectionDispatchPlan,
+    ManualCorrectionInputIsolation, ManualCorrectionOutputRoute,
 };
 use lay::manual_toggle::ImeManualToggleOutcome;
 use lay::word_buffer::WordBuffer;
@@ -48,7 +48,7 @@ pub(crate) fn dispatch_ime_manual_toggle(buffer: &mut WordBuffer) -> ImeManualTo
 }
 
 fn run_ime_manual_toggle() -> ImeManualToggleDispatch {
-    match try_ime_manual_toggle() {
+    match await_same_gesture_exact_receipt(try_ime_manual_toggle) {
         Ok(ImeManualToggleOutcome::Handled {
             target_layout_is_ru,
         }) => {
@@ -78,6 +78,10 @@ fn run_ime_manual_toggle() -> ImeManualToggleDispatch {
         }
         Ok(ImeManualToggleOutcome::NotHandled) => {
             log("· physical manual trigger blocked by focused IME owner");
+            ImeManualToggleDispatch::Complete(None)
+        }
+        Ok(ImeManualToggleOutcome::AwaitingExactSnapshot) => {
+            // The bounded helper returns only a terminal disposition.
             ImeManualToggleDispatch::Complete(None)
         }
         Err(error) => {

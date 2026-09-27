@@ -500,6 +500,64 @@ fn native_receipt_before_get_preserves_same_field_or_revokes_cross_field_transfe
 }
 
 #[test]
+fn duplicate_native_focus_for_exact_pending_field_keeps_one_request() {
+    let epoch = ConnectionGeneration(11);
+    let mut reducer: ContextAdmissionReducer<u64> = ContextAdmissionReducer::new(
+        epoch,
+        GlobalEngineMode::Verified,
+        GlobalProfile::Lay(profile("lay-us")),
+    );
+    let target = engine_path("/engine/target");
+    let field = context(epoch, "/org/freedesktop/IBus/InputContext_1");
+    let nonce = BarrierNonce(10);
+    let request = reducer
+        .begin_source_free_activation(target.clone(), nonce, ReceiptOrigin::Native, 10)
+        .unwrap();
+    assert!(reducer.bind_pending_native_context(request, nonce, field.clone()));
+    let revision = reducer.revocation_generation();
+
+    assert!(reducer.enrich_pending_native_activation(&target, field.clone(), 11));
+    assert_eq!(reducer.revocation_generation(), revision);
+    assert_eq!(reducer.request.as_ref().unwrap().generation, request);
+    assert!(reducer.context_reply(request, nonce, field.clone(), 12));
+    assert!(reducer.enrich_pending_native_activation(&target, field, 13));
+    assert_eq!(reducer.revocation_generation(), revision);
+    assert_eq!(reducer.request.as_ref().unwrap().generation, request);
+    assert!(reducer.marker(request, nonce, 14));
+    assert!(reducer.consume_source_free_activation().is_some());
+}
+
+#[test]
+fn duplicate_native_focus_for_other_field_revokes_pending_request() {
+    let epoch = ConnectionGeneration(11);
+    let mut reducer: ContextAdmissionReducer<u64> = ContextAdmissionReducer::new(
+        epoch,
+        GlobalEngineMode::Verified,
+        GlobalProfile::Lay(profile("lay-us")),
+    );
+    let target = engine_path("/engine/target");
+    let first = context(epoch, "/org/freedesktop/IBus/InputContext_1");
+    let second = context(epoch, "/org/freedesktop/IBus/InputContext_2");
+    let nonce = BarrierNonce(10);
+    let request = reducer
+        .begin_source_free_activation(target.clone(), nonce, ReceiptOrigin::Native, 10)
+        .unwrap();
+    assert!(reducer.bind_pending_native_context(request, nonce, first.clone()));
+    let revision = reducer.revocation_generation();
+
+    assert!(!reducer.enrich_pending_native_activation(&target, second.clone(), 11));
+    assert!(reducer.revocation_generation() > revision);
+    assert!(reducer.request.is_none());
+    assert!(!reducer.context_reply(request, nonce, first, 12));
+    let next_nonce = BarrierNonce(11);
+    let next = reducer
+        .begin_source_free_activation(target, next_nonce, ReceiptOrigin::Native, 13)
+        .unwrap();
+    assert_ne!(next, request);
+    assert!(reducer.bind_pending_native_context(next, next_nonce, second));
+}
+
+#[test]
 fn next_factory_supersedes_unadmitted_source_free_without_borrowing_authority() {
     let epoch = ConnectionGeneration(111);
     let lay_profile = profile("lay-us");

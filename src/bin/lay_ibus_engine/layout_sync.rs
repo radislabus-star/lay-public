@@ -18,8 +18,14 @@ impl LayIbusEngine {
         }
         let target_is_ru = preferred_layout_for_text(text, self.layout_gesture.layout_is_ru);
         let target_engine = ime_engine_for_layout(target_is_ru);
+        // An IME-owned word may already have changed its physical decoder
+        // while its selected source stayed fixed to preserve the preedit.
+        let source_is_ru = self
+            .client_context
+            .factory_engine_profile
+            .initial_layout_is_ru();
         if self.atomic.speculation {
-            if target_is_ru != self.layout_gesture.layout_is_ru {
+            if target_is_ru != source_is_ru {
                 let previous_is_ru = self.layout_gesture.layout_is_ru;
                 self.set_layout_is_ru(target_is_ru);
                 self.publish_tail_handoff();
@@ -38,7 +44,8 @@ impl LayIbusEngine {
             return;
         }
         supersede_active_ime_engine_switch();
-        if target_is_ru == self.layout_gesture.layout_is_ru {
+        if target_is_ru == source_is_ru {
+            self.set_layout_is_ru(target_is_ru);
             self.publish_tail_handoff();
             trace::record_layout_sync(target_is_ru, target_engine, true);
             return;

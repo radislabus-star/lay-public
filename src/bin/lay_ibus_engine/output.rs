@@ -208,8 +208,10 @@ pub(crate) struct TestEngineOutput {
     pub(crate) committed_texts: Vec<String>,
     pub(crate) surrounding_deletes: Vec<(i32, u32)>,
     pub(crate) preedit_updates: Vec<(String, u32, bool, u32)>,
+    pub(crate) input_mode_updates: Vec<bool>,
     pub(crate) legacy_transport: bool,
     pub(crate) fail_commit: bool,
+    pub(crate) fail_input_mode_publication: bool,
     pub(crate) pause_before_commit: bool,
 }
 
@@ -352,6 +354,35 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
                     .preedit_updates
                     .push((text, cursor_pos, visible, mode));
                 Ok(())
+            }
+        }
+    }
+
+    pub(crate) async fn register_input_mode(&mut self, is_ru: bool) -> fdo::Result<()> {
+        match self {
+            Self::Legacy(emitter) => LayIbusEngine::register_properties(
+                emitter,
+                super::text::make_ibus_input_mode_properties(is_ru),
+            )
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string())),
+            Self::Atomic(builder) => {
+                builder.unsupported = true;
+                Err(fdo::Error::Failed(
+                    "IBus input mode requires legacy signal transport".into(),
+                ))
+            }
+            #[cfg(test)]
+            Self::Test(output) => {
+                output.effects.push("register-input-mode");
+                if output.fail_input_mode_publication {
+                    Err(fdo::Error::Failed(
+                        "injected input mode publication failure".into(),
+                    ))
+                } else {
+                    output.input_mode_updates.push(is_ru);
+                    Ok(())
+                }
             }
         }
     }

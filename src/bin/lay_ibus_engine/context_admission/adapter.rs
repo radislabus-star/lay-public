@@ -38,6 +38,10 @@ const LIFECYCLE_QUEUE: usize = 8;
 const KEY_QUEUE: usize = 64;
 const MAX_LAY_PROFILES: usize = 8;
 pub(crate) const ACQUISITION_BUDGET: Duration = Duration::from_millis(5);
+// A bridge fence verifies an already acquired field across a synchronous
+// daemon/IME handoff. It must tolerate a bounded IBus marker round trip
+// without changing the shorter callback acquisition deadline.
+const BRIDGE_BUDGET: Duration = Duration::from_millis(20);
 // Focus acquisition is asynchronous and includes a full Get/marker round trip.
 // Keep its end-to-end deadline separate from text-mutation callback fencing.
 const ACTIVATION_BUDGET: Duration = Duration::from_millis(50);
@@ -133,6 +137,7 @@ pub(crate) struct AdapterConfig {
     connection: ConnectionGeneration,
     lay_profiles: Vec<EngineProfile>,
     acquisition_budget: Duration,
+    bridge_budget: Duration,
     activation_budget: Duration,
 }
 
@@ -156,6 +161,7 @@ impl AdapterConfig {
             connection,
             lay_profiles,
             acquisition_budget: ACQUISITION_BUDGET,
+            bridge_budget: BRIDGE_BUDGET,
             activation_budget: ACTIVATION_BUDGET,
         })
     }
@@ -163,6 +169,7 @@ impl AdapterConfig {
     #[cfg(test)]
     pub(super) fn with_acquisition_budget(mut self, budget: Duration) -> Self {
         self.acquisition_budget = budget;
+        self.bridge_budget = budget;
         self.activation_budget = budget;
         self
     }
@@ -335,6 +342,7 @@ impl PendingContextAdapter {
             connection_generation: self.config.connection,
             lay_profiles: self.config.lay_profiles,
             acquisition_budget: self.config.acquisition_budget,
+            bridge_budget: self.config.bridge_budget,
             activation_budget: self.config.activation_budget,
             bindings,
             reducer: Mutex::new(reducer),
@@ -367,6 +375,7 @@ struct AdapterState {
     connection_generation: ConnectionGeneration,
     lay_profiles: Vec<EngineProfile>,
     acquisition_budget: Duration,
+    bridge_budget: Duration,
     activation_budget: Duration,
     bindings: SenderBindings,
     reducer: Mutex<ContextAdmissionReducer<Sequence>>,
@@ -555,6 +564,7 @@ impl ContextAdmissionAdapter {
             connection_generation,
             lay_profiles: vec![profile],
             acquisition_budget: ACQUISITION_BUDGET,
+            bridge_budget: BRIDGE_BUDGET,
             activation_budget: ACTIVATION_BUDGET,
             bindings,
             reducer: Mutex::new(reducer),
@@ -1010,6 +1020,7 @@ impl ContextAdmissionAdapter {
             nonce,
             ReceiptOrigin::CompatibilityProperty,
             focus_position,
+            None,
         )?;
         self.finish_compatibility_activation(target_path, request, nonce, deadline)
             .await
@@ -1027,6 +1038,7 @@ impl ContextAdmissionAdapter {
             nonce,
             ReceiptOrigin::CompatibilityProperty,
             focus_position,
+            None,
         )?;
         let adapter = self.clone();
         self.shared
@@ -1141,6 +1153,7 @@ impl ContextAdmissionAdapter {
             nonce,
             ReceiptOrigin::Native,
             focus_position,
+            Some(&context),
         )?;
         self.finish_native_activation(
             target_path,
@@ -1166,6 +1179,7 @@ impl ContextAdmissionAdapter {
             nonce,
             ReceiptOrigin::Native,
             focus_position,
+            Some(&context),
         )?;
         let adapter = self.clone();
         self.shared
@@ -1302,7 +1316,7 @@ impl ContextAdmissionAdapter {
     }
 
     pub(crate) async fn begin_bridge_fence(&self) -> Result<PendingFence, AdapterError> {
-        let deadline = self.acquisition_deadline();
+        let deadline = self.bridge_deadline();
         let nonce = self.next_nonce();
         trace::record_admission_timing("bridge_begin", None, nonce.0, Some(deadline));
         let sent = OwnedValue::from(nonce.0);
@@ -1648,6 +1662,7 @@ impl ContextAdmissionAdapter {
         nonce: BarrierNonce,
         origin: ReceiptOrigin,
         focus_position: Sequence,
+        native_context_hint: Option<&ContextKey>,
     ) -> Result<RequestGeneration, AdapterError> {
         let trace_target = (origin == ReceiptOrigin::Native && trace::enabled())
             .then(|| target_path.as_str().to_owned());
@@ -1735,7 +1750,15 @@ impl ContextAdmissionAdapter {
         } else {
             reducer.begin_source_free_activation(target_path, nonce, origin, focus_position)
         }
-        .ok_or(AdapterError::Denied);
+        .ok_or(AdapterError::Denied)
+        .and_then(|generation| {
+            if let Some(context) = native_context_hint {
+                if !reducer.bind_pending_native_context(generation, nonce, context.clone()) {
+                    return Err(AdapterError::Denied);
+                }
+            }
+            Ok(generation)
+        });
         drop(reducer);
         drop(publication);
         if let Some(target) = trace_target.as_deref() {
@@ -2272,6 +2295,11 @@ impl ContextAdmissionAdapter {
         let now = Instant::now();
         now.checked_add(self.shared.acquisition_budget)
             .unwrap_or(now)
+    }
+
+    fn bridge_deadline(&self) -> Instant {
+        let now = Instant::now();
+        now.checked_add(self.shared.bridge_budget).unwrap_or(now)
     }
 
     fn activation_deadline(&self) -> Instant {

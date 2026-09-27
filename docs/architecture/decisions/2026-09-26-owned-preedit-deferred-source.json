@@ -1,0 +1,20 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Permit a bounded IME-owned preedit to change its internal physical-key decoder on each Double Shift and defer the GNOME/IBus source switch until that word is committed.",
+  "reason": "In the no-surrounding Chromium-GOST field, the first current route commits the preedit and loses authority for the second gesture. An accepted-runtime probe showed that an IBus engine switch clears the uncommitted word to empty; target republishing has no proved lossless failure path. The user explicitly requires each word transition to be visible before the next pair. This candidate preserves one engine and one preedit owner while the word is uncommitted.",
+  "invariants": [
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "ARCHITECTURE.md"
+  ],
+  "verification": "Remote focused IME proof passed 621/621 at /home/ubu/.cache/lay/development/run-sur7up7y/RESULT.json; the amended full source gate passed 2923/2923 correctness/package tests plus check/replay/safety at /home/ubu/.cache/lay/development/tab-changed-bl8f8rpm/RESULT.json. The accepted-runtime IBus clear probe is /home/ubu/.cache/lay/development/live-pair-candidate-20260926/ibus-preedit-clear-probe-20260926/RESULT.json. Installed-client proof is still required.",
+  "not_tested": "The deferred-source candidate has no installed client acceptance. Whether the user requires the GNOME indicator to change after each pair is awaiting clarification. The full eight-gesture client sequence, painted frames, Tab, held Shift, focus/Reset behavior in actual clients, terminals, other browsers and WhatsApp remain untested on this candidate.",
+  "runtime_authority_changed": false
+}

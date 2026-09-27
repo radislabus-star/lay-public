@@ -27,6 +27,29 @@ export function currentLayoutKind() {
     }
 }
 
+export function currentInputModeKind() {
+    try {
+        const source = getInputSourceManager().currentSource;
+        const sourceKind = normalizeLayoutKind(source?.id ?? '');
+        if (!String(source?.id ?? '').startsWith('lay-ime-'))
+            return sourceKind;
+        const properties = source?.properties;
+        for (let i = 0; properties?.get(i) != null; i++) {
+            const property = properties.get(i);
+            if (property.get_key() !== 'InputMode')
+                continue;
+            const symbol = String(property.get_symbol()?.get_text() ?? '').toUpperCase();
+            if (symbol === 'RU')
+                return 'ru';
+            if (symbol === 'EN')
+                return 'us';
+        }
+        return sourceKind;
+    } catch(e) {
+        return currentLayoutKind();
+    }
+}
+
 function imeEngineForLayoutKind(kind) {
     if (kind === 'ru')
         return 'lay-ime-ru';
@@ -155,6 +178,7 @@ const DBUS_XML = `
       <arg name="success" direction="out" type="b"/>
     </method>
     <method name="CurrentLayout"><arg name="id" direction="out" type="s"/></method>
+    <method name="CurrentInputMode"><arg name="mode" direction="out" type="s"/></method>
     <method name="NextLayout"><arg name="success" direction="out" type="b"/></method>
     <method name="ListLayouts"><arg name="layouts" direction="out" type="s"/></method>
     <method name="FocusedWindowInfo"><arg name="json" direction="out" type="s"/></method>
@@ -236,6 +260,10 @@ export class LayDaemonService {
         } catch(e) {
             return '';
         }
+    }
+
+    CurrentInputMode() {
+        return currentInputModeKind();
     }
 
     NextLayout() {

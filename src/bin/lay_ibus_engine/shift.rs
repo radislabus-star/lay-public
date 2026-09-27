@@ -26,7 +26,8 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> Result<(Option<bool>, ExecutionReceipt), LocalExecutionFailure> {
-        if !self.context_word_is_known() {
+        let owned_preedit_at_entry = self.context_owns_active_preedit_manual_toggle();
+        if !self.context_word_is_known() && !owned_preedit_at_entry {
             self.clear_preedit_completion_state();
             if self.context_allows_manual_toggle() {
                 // Explicit terminal projection only. Incomplete words cannot
@@ -167,6 +168,27 @@ impl LayIbusEngine {
             trace::record(r#"{"kind":"ibus_manual_toggle_authorization_blocked"}"#);
             return Ok((None, ExecutionReceipt::Rejected));
         };
+        if owned_preedit_at_entry && !self.context_owns_active_preedit_manual_toggle() {
+            trace::record(r#"{"kind":"ibus_manual_toggle_owned_preedit_stale"}"#);
+            return Ok((None, ExecutionReceipt::Rejected));
+        }
+        if self.config.auto_switch_layout && owned_preedit_at_entry {
+            self.replace_verified_owned_preedit(
+                emitter,
+                authorized_edit,
+                plan.target_layout_is_ru,
+                plan.suppress_next_autocorrect,
+            )
+            .await
+            .map_err(|source| {
+                LocalExecutionFailure::new(LocalEffectProgress::CursorOrPreedit, source)
+            })?;
+            self.trace_key("double_shift_owned_preedit_input_mode", 0, 0, true, None);
+            return Ok((
+                Some(plan.target_layout_is_ru),
+                ExecutionReceipt::LocalComplete,
+            ));
+        }
         self.commit_verified_active_composition(
             emitter,
             authorized_edit,

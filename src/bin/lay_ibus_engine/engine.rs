@@ -189,6 +189,11 @@ impl LayIbusEngine {
         self.client_context.focus_serial = next_input_identity();
         self.client_context.runtime_owner_lease_identity = next_owner_lease_identity;
         self.context_reset_rereceipt = None;
+        self.set_layout_is_ru(
+            self.client_context
+                .factory_engine_profile
+                .initial_layout_is_ru(),
+        );
 
         self.composition.buffer.clear();
         self.composition.cursor = 0;

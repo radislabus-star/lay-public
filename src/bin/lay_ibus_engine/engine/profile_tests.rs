@@ -128,6 +128,7 @@ fn late_surrounding_text_capability_promotes_current_terminal_word() {
     engine.client_context.cursor_cell_width = 2;
     engine.composition.word_input_mode = Some(WordInputMode::TerminalPassthrough);
     engine.composition.preedit_suffix = "suffix".to_string();
+    engine.composition.preedit_visible = true;
 
     engine.set_client_capabilities(1 << 5);
 

@@ -83,19 +83,29 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         with_space: bool,
     ) -> fdo::Result<bool> {
+        let transient_append_suffix = if with_space {
+            self.context_reset_rereceipt_visible_append_suffix()
+        } else {
+            None
+        };
         if !self.context_word_is_known()
             && !(self.context_observed_suffix_is_current()
                 && self.composition.preedit_visible
                 && self.selected_precognition_replacement().is_none())
+            && !self.context_owns_active_preedit_append_completion()
+            && transient_append_suffix.is_none()
         {
             self.clear_preedit_completion_state();
             return Ok(false);
         }
-        if self.retire_pending_precognition(emitter).await? {
+        if transient_append_suffix.is_none() && self.retire_pending_precognition(emitter).await? {
             return Ok(false);
         }
         if self.composition.buffer.is_empty() {
-            if self.accept_stuck_tail(emitter, with_space).await? {
+            if self
+                .accept_stuck_tail(emitter, with_space, transient_append_suffix)
+                .await?
+            {
                 return Ok(true);
             }
             return Ok(false);
@@ -315,7 +325,13 @@ impl LayIbusEngine {
             return Err(fdo::Error::Failed(error.to_string()));
         }
         let output_ms = output_started_at.elapsed().as_micros() as u64;
-        if sync_layout {
+        if sync_layout
+            || self.layout_gesture.layout_is_ru
+                != self
+                    .client_context
+                    .factory_engine_profile
+                    .initial_layout_is_ru()
+        {
             self.sync_layout_after_committed_text(&text, "active_composition");
         }
         self.sync_tail_after_active_composition_commit(&text);

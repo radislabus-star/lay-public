@@ -556,7 +556,7 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
             assert_eq!(reset_successor["mode"], delayed_successor["mode"]);
             assert_eq!(
                 reset_successor["sha256"].as_str(),
-                Some(sha256(&successor_path).as_str())
+                Some("c7e8f604ced77488302e510bfb4c3df87ed05ac60efef67e78b568a4fe769358")
             );
             let reset_review = &reset_binding["review"];
             assert_eq!(reset_review["state"].as_str(), Some("PASS"));
@@ -585,6 +585,43 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
                     .as_str()
                 )
             );
+            // The reviewed 1.0.74 binding stays immutable. The new Tab
+            // candidate has its own exact source identity and remains outside
+            // physical acceptance until the installed client proof exists.
+            let tab_binding_path =
+                "tech_debt/evidence/ime-transient-boundary-tab-composition-successor.json";
+            let tab_binding: serde_json::Value = serde_json::from_str(&read(tab_binding_path))
+                .expect("valid transient-boundary Tab successor binding");
+            assert_eq!(
+                tab_binding["schema"].as_str(),
+                Some("lay.tech-debt.successor-binding.v1")
+            );
+            assert_eq!(tab_binding["status"].as_str(), Some("SOURCE_PROVEN"));
+            let tab_predecessor = &tab_binding["predecessor"];
+            assert_eq!(tab_predecessor["binding"], reset_binding_path);
+            assert_eq!(
+                tab_predecessor["binding_sha256"].as_str(),
+                Some(sha256(&Path::new(ROOT).join(reset_binding_path)).as_str())
+            );
+            for key in ["path", "sha256", "mode"] {
+                assert_eq!(tab_predecessor[key], reset_successor[key]);
+            }
+            let tab_successor = &tab_binding["successor"];
+            assert_eq!(tab_successor["path"], reset_successor["path"]);
+            assert_eq!(tab_successor["mode"], reset_successor["mode"]);
+            assert_eq!(
+                tab_successor["sha256"].as_str(),
+                Some("1010b57153d612f8c34e8c83cb2526a78355b569cb81bf5829be4e87a538da30")
+            );
+            assert_eq!(tab_binding["review"]["state"].as_str(), Some("PENDING"));
+            assert_eq!(
+                tab_binding["physical_acceptance"]["state"].as_str(),
+                Some("NOT_TESTED")
+            );
+            assert_eq!(
+                tab_binding["installed_runtime_authority_changed"].as_bool(),
+                Some(false)
+            );
             assert_eq!(
                 std::fs::metadata(&successor_path)
                     .expect("TD-121 successor metadata")
@@ -592,7 +629,7 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
                     .mode()
                     & PROTECTED_MODE_BITS,
                 u32::from_str_radix(
-                    reset_successor["mode"]
+                    tab_successor["mode"]
                         .as_str()
                         .expect("owned Reset/release successor mode"),
                     8,

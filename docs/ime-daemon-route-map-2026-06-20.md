@@ -6065,3 +6065,422 @@ the Double Shift refusal after hotkey detection, at field authority. The
 combined candidate does not change the immediate unconfirmed-Tab rule or
 prove physical Double Shift recovery. These are measured trace facts and
 source-level conclusions, not post-install behavior.
+
+The user then tightened physical acceptance: eight rapid Double Shift
+gestures in the same field, Tab acceptance with a trailing space, held-Shift
+IME suggestions, and every available editable window rather than a browser
+and Kitty sample. The owning current acceptance matrix is
+`docs/ime-all-window-acceptance-2026-09-26.md`. A read-only AT-SPI/XWayland
+inventory supplied its dated window rows; no candidate was installed, no
+client input was sent, and runtime authority did not change.
+
+## 2026-09-26 resumed Tab append experiment, source candidate only
+
+The user resumed work after the architecture pause. The loaded IME and daemon
+were still the prior version at 03:45 EEST; neither was restarted or replaced.
+The first failed WhatsApp transition remains the measured 01:17:13–15 event
+above. After an exact Reset rereceipt and five-character preedit publication,
+the next surrounding snapshot had one U+200B after the caret. The reducer
+retained lineage but withdrew whole-word authority; pending precognition
+cleared the candidate list while retaining the visible suffix. Tab then
+returned `handled=false`. The source path was `accept_completion` admission,
+followed by `retire_pending_precognition`; neither could accept that surface.
+
+Tested: a new production-adapter replay first failed on the unchanged source
+at the Tab assertion (606 IME tests selected, one failure). On the candidate,
+the replay passed and observed exactly one append-only `CommitText` containing
+the visible suffix and one trailing space, with no `DeleteSurroundingText`.
+Negative cases reject a changed visible suffix, absent publication, hidden
+preedit, changed tail epoch, selection, or extra text after U+200B. The remote
+focused IME gate passed 607/607, zero failures. Red receipt:
+`/home/ubu/.cache/lay/development/run-lq3ona66/RESULT.json`. Green receipt:
+`/home/ubu/.cache/lay/development/run-i_34q96o/RESULT.json` (SHA-256
+`c56afe4a611064c141ea10dfa22587881453290054d109f7697d15f0f0a21350`).
+
+Mechanism: the current reducer checks the same owner/token/tail epoch and exact
+single-sentinel snapshot; the already published preedit corroborates the
+current visible suffix. The existing IME candidate edit plan still requires
+zero backspaces and a suffix-only insertion. This is a narrow explicit Tab
+append, not whole-word replacement or general acceptance of a stale preedit.
+The candidate changes source-level append authority at this one boundary;
+installed runtime authority changed: **false**. Full correctness/package gate,
+post-change graph gate, installation and physical all-window matrix were not
+tested by this focused run. The exact disappearance after the next letter
+and repeated Double Shift remain separate physical acceptance items.
+
+The first full correctness/package attempt selected 2,908 tests and found one
+unexpected historical TD-113 source-identity failure. Its protected accepted
+1.0.74 binding still named the previous `composition_commit.rs` bytes, while
+the new Tab candidate necessarily changed that source. The reviewed binding
+and review were not rewritten. A new exact successor binding at
+`tech_debt/evidence/ime-transient-boundary-tab-composition-successor.json`
+records the predecessor, candidate source hash and red/green source receipts
+with `SOURCE_PROVEN`; independent review and physical acceptance remain
+pending. The TD-113 focused contract then passed 7/7. Full attempt receipt:
+`/home/ubu/.cache/lay/development/run-j2inr2ts/RESULT.json` (FAIL, one
+unlisted source-identity failure). Focused successor receipt:
+`/home/ubu/.cache/lay/development/run-36u130lm/RESULT.json` (PASS, 7/7).
+Runtime authority changed on installed Lay: **false**.
+
+The repeated guarded correctness/package gate on the candidate source
+passed: 2,872 correctness and 36 package tests selected, 2,908 total, zero
+failures. Receipt:
+`/home/ubu/.cache/lay/development/run-bfyzz3o1/RESULT.json` (SHA-256
+`ea5e590872a3deb8d35a4ca048c0c010a6adf212a9d0f3660c512e14cac7e3f8`).
+This does not include performance, a release build, installation, physical
+WhatsApp or eight physical Double Shift cycles. Installed runtime authority
+changed: **false**.
+
+## 2026-09-26 Qt physical A/B after guarded build
+
+The candidate source passed the guarded changed gate (2,908 selected tests,
+zero failures, plus `cargo check --lib --bins`):
+`/home/ubu/.cache/lay/development/tab-changed-4q0amz02/RESULT.json`.
+The matching release IME SHA was
+`6168fc43a58043312b3087993b369a25be450758a8aeb8a56adcdf43712bdbb2`.
+It was installed transactionally and then rolled back; receipts are
+`/home/ubu/.cache/lay/development/live-tab-candidate-preflight-20260926/INSTALL.json`
+and `ROLLBACK.json` in the same directory. L1.1, L3, daemon and managed IME
+were verified across the operation; global IBus PID stayed unchanged.
+
+With GNOME and IBus both on `lay-ime-ru`, an owned Qt QTextEdit showed
+`очему` after `п`, then Tab cleared the preedit and the client inserted a
+literal tab (`п\t`). The accepted baseline SHA
+`a8b9d1686ec61fd7014ab7d2a43731deec1a830a25b78987b03fc622135589ea`
+repeated the same result in the same owned widget type. Candidate and baseline
+event receipts:
+`/home/ubu/.cache/lay/development/live-tab-candidate-preflight-20260926/qt-owned-2/events.jsonl`
+and `qt-owned-baseline/events.jsonl` in that directory. The first attempt
+with mismatched GNOME/IBus sources is excluded. A held synthetic Shift kept
+the suggestion visible while `ПРО` was entered in Qt; hardware Shift was not
+tested. Eight synthetic Double Shift gestures did not reach the daemon because
+their virtual input node was created after daemon startup; the gesture verdict
+is `NOT TESTED`, not a product failure or pass.
+
+The candidate trace, copied privately to `qt-owned-2/ime-debug-candidate.jsonl`,
+shows the first `п` callback handled as terminal passthrough while the client
+profile still reported purpose 10. SetCapabilities(41) then enabled
+SurroundingText, a one-character snapshot arrived, and the worker published
+`очему`. The pending preedit-clear latch armed during profile promotion was
+still set; the next Tab cleared the newly published suggestion before the
+acceptance check, returned `handled=false`, and Qt inserted `\t`. This is the
+first established Qt failure transition. It does not prove the WhatsApp
+`п→р` visual step or any other window. Installed runtime authority has been
+restored to the accepted baseline; no all-window acceptance was claimed.
+
+## 2026-09-26 late capability preedit-clear repair, source proof
+
+The Qt A/B established the first wrong transition: SetCapabilities(41)
+promoted a terminal-passthrough word to ManagedCommit and armed a delayed
+preedit clear before the first suggestion existed. A current suggestion was
+then published after the widget's exact `a` snapshot, yet Tab cleared it
+before acceptance. A production callback/admission regression first failed
+only this Tab assertion (607/608 passed) on the unchanged code; receipt:
+`/home/ubu/.cache/lay/development/run-r1zrjx8g/RESULT.json`.
+
+The existing profile transition now arms delayed clear only for a preedit
+already visible at the transition. The previously visible surface remains
+subject to clear; a later current publication no longer inherits that clear.
+Focused remote IME gate: 608/608 PASS, zero failures; receipt:
+`/home/ubu/.cache/lay/development/run-k4mlgvys/RESULT.json`.
+No word replacement, deletion, second owner, or verifier rule changed.
+Physical Qt on these new source bytes, WhatsApp, other clients, hardware
+Double Shift, and aggregate release acceptance were not tested by this run.
+Installed runtime authority remained at the accepted baseline hash.
+
+## 2026-09-26 corrected Qt candidate, Tab pass and repeated toggle failure
+
+The corrected source passed remote `check-lay-changed.sh`: 2,873 correctness
+and 36 package tests selected, 2,909 total, zero failures, followed by
+`cargo check --lib --bins`, structural and unsafe-edit gates. Receipt:
+`/home/ubu/.cache/lay/development/tab-changed-3_5g1a7p/RESULT.json`.
+The exact guarded release build is SHA-256
+`84ae59dceda5e0b8cc4da45b52b14fdba8fdaaf790f8d613e7cc36c7e186325b`
+(`BUILD.json` next to that receipt). It was transactionally installed and
+rolled back with L1.1, L3, daemon, managed IME and GNOME/IBus alignment
+checked; receipts:
+`/home/ubu/.cache/lay/development/live-qt-capability-candidate-20260926/INSTALL.json`
+and `ROLLBACK.json`.
+
+In an owned Qt QTextEdit, `п` displayed `очему`, and Tab committed `очему `:
+the resulting widget text was `почему `. That is a physical-client Qt Tab
+PASS on this exact candidate. The same widget then received synthetic held
+Shift through `ПРО`; the letters appeared with intended case, but no nonempty
+IME preedit was observed after Ctrl+A/Backspace. This sequence is a suggestion
+FAIL, while a fresh-field held-Shift check remains NOT TESTED. After another
+clear, `про` was entered and eight rapid pairs of Shift were emitted. The
+virtual device existed before daemon startup and was open as daemon fd 13
+(`/dev/input/event24`). The IME trace contains exactly eight
+`ibus_manual_toggle_rpc` responses, all `not_handled/context_authority`, with
+`bridge_token_live=true`, `manual_toggle_allowed=false`. The widget text
+stayed `про` throughout; eight alternating surfaces were not obtained.
+These are synthetic evdev route observations, not hardware keyboard proof.
+
+Widget event receipt:
+`/home/ubu/.cache/lay/development/live-qt-capability-candidate-20260926/qt-owned/events.jsonl`.
+The copied private IME trace is `ime-debug-candidate.jsonl` in the parent
+directory (SHA-256
+`a82aa6693073849503949fb605b9dfe2fc482139f8b63fcebca910ce686d8bfa`).
+The current failure is after gesture detection, at IME word authority in this
+field. It does not prove the reason for the user's WhatsApp `п→р` disappearance.
+No other real app, hardware Shift, applied-autocorrection undo, or focus
+return was tested on these bytes. The candidate was rejected for full-window
+acceptance and the accepted loaded/installed IME SHA `a8b9d168...` plus
+`lay-ime-us` GNOME/IBus source were restored; installed runtime authority
+changed temporarily and is now restored.
+
+## 2026-09-26 Qt command-selection mirror invalidation, source proof
+
+The exact captured sequence after the Qt Tab PASS was native Ctrl+A,
+unhandled Backspace and an empty Qt SurroundingText receipt. The local
+committed-tail mirror dropped only one scalar, then retained the old word
+through new managed commits: tail length 11 while the widget held only `про`
+(3 scalars). The eight ManualToggleV3 denials therefore followed an invalid
+local current-suffix comparison, despite a live bridge token. This is a
+measured trace transition for the owned Qt sequence, not a claim about the
+user's WhatsApp `п→р` step.
+
+A production callback/admission test reproduced the old mirror retention:
+608/609 passed, one failure at the stale `abc` assertion. Red receipt:
+`/home/ubu/.cache/lay/development/run-jkpqs2ls/RESULT.json`. The existing
+managed command branch now discards the mirror and current observation only
+when surrounding text is supported and no active composition exists; the
+client still owns the command. A broader first edit regressed the existing
+terminal-without-surrounding contract and was narrowed. Focused remote IME
+gate on the scoped candidate: 609/609 PASS, zero failures; receipt:
+`/home/ubu/.cache/lay/development/run-0frdaq65/RESULT.json`.
+The source change revokes local authority and cannot delete or replace client
+text. A new release binary, physical Qt rerun, other windows, eight hardware
+gestures, performance and aggregate gate were not tested in this source run.
+Installed runtime authority remained at the accepted baseline.
+
+## 2026-09-26 repeated Qt manual gestures, one lost visible flip
+
+The mirror-invalidation source passed remote `check-lay-changed.sh`: 2,910
+selected correctness/package tests, zero failures, `cargo check --lib --bins`,
+structural and unsafe-edit gates. Receipt:
+`/home/ubu/.cache/lay/development/tab-changed-b09xibki/RESULT.json`.
+The matching guarded release IME SHA was
+`2b21860c2f21e919527e199df3fa13d15e48b7dfebd6d420e3913c2a033f1095`
+(`BUILD.json` next to that receipt). It was installed for an owned Qt probe,
+then rolled back; exact install/rollback receipts are under
+`/home/ubu/.cache/lay/development/live-qt-mirror-candidate-20260926/`.
+
+The Qt widget showed `очему` after `п`, then Tab committed `очему ` for
+`почему `. Synthetic held Shift after Ctrl+A/Backspace typed `ПРО` and the
+nonempty preedit advanced across all three letters. A new `про` in the same
+widget again had a current suggestion. The previously stale local mirror
+after client selection deletion did not recur in this sequence.
+
+The first eight rapid synthetic evdev Double Shift gestures all reached
+ManualToggleV3: the IME trace has eight `complete/status=3` delegated replies.
+Only seven final text flips appeared in Qt, leaving `ghj` rather than the
+starting `про`. The eight action-log plans contain a duplicate direction:
+plan 3 and plan 4 both use `про→ghj`. The third user gesture therefore did
+not produce its required alternating visible state. A second eight-gesture
+run on the same candidate and widget did produce eight alternations from
+`ghj` back to `ghj`. This is an intermittent C10 FAIL, not a pass by retry.
+The action log proves the proposed edits, not their application; the point
+where the duplicate lost or applied its effect still needs an outcome receipt.
+
+Widget events:
+`/home/ubu/.cache/lay/development/live-qt-mirror-candidate-20260926/qt-owned/events.jsonl`.
+Private IME trace:
+`/home/ubu/.cache/lay/development/live-qt-mirror-candidate-20260926/ime-debug-candidate-final.jsonl`
+(SHA-256 `8f50b0b0832f598f51d75239fbbd2046c8c9a04237451351fc414dcb42b2a613`).
+The virtual `/dev/input/event24` was open by daemon fd 13 before all gestures.
+Other applications, user hardware, applied-autocorrection undo, and focus
+return were not tested on this candidate. Runtime authority changed
+temporarily only for this probe; accepted IME SHA `a8b9d168...` and GNOME/
+IBus `lay-ime-us` were restored, with all Lay units active.
+
+### 2026-09-26: bridge-fence timeout caused the missing third gesture
+
+The action log records a proposal before lease and layout checks. A causal
+review of the same captured trace found the missing outcome: the third
+delegation switched GNOME/IBus to `lay-ime-us/4`, but its `VisibleTailV3`
+bridge fence (`nonce=21`) failed at 05:42:50.256485 EEST, 57 microseconds
+past the five-millisecond deadline. The matching marker arrived at
+05:42:50.256850, 365 microseconds after failure. No suppression acceptance
+or Qt delete/insert followed. The daemon restored `lay-ime-ru/5`, leaving
+`про`; the fourth gesture then planned the same `про→ghj` direction. This
+was the only bridge wait failure among 80 timed bridge markers in the saved
+IME trace. Source artifacts and a filtered proof are at
+`/home/ubu/.cache/lay/development/live-qt-mirror-candidate-20260926/CAUSAL_PROOF.json`
+(SHA-256 `fff524e1782e5f80bf166379b750ea61b2d9255476ad9bf61bd5e7d48b384091`).
+The copied action log is private, mode 600; its SHA-256 is
+`e68c41d31c922d4259bbc2986b8a87030af7d8a5f7134e7ac9a03a4b234ed338`.
+
+The source candidate gives the already owned bridge fence a separate 20-ms
+budget while leaving callback acquisition at 5 ms and focus activation at
+50 ms. Nonce, ordered marker, live reducer token, revocation, and expiry
+remain mandatory. A controlled delayed-marker acceptance test and an
+own-deadline refusal test passed with the focused IME suite: 610/610,
+receipt `/home/ubu/.cache/lay/development/run-coasz5u7/RESULT.json`.
+No runtime authority changed. The broad gate, physical Qt retest, hardware
+gestures, WhatsApp, other windows, applied-autocorrection undo, and focus
+return are not tested on these source bytes.
+
+### 2026-09-26: bridge candidate source gate and owned Qt acceptance
+
+The exact source archive SHA-256
+`cc6dd4716a68e5ef3acf222f27afbd2870b7fdff66809ce0752e8f49853227e5`
+passed guarded `check-lay-changed.sh`: 2,875 correctness plus 36 package
+tests, zero failures, including structural and unsafe-edit gates. Receipt:
+`/home/ubu/.cache/lay/development/tab-changed-xgb2ozs4/RESULT.json`.
+Its guarded release IME SHA-256 was
+`f644a3f9fdbd7c72455b981f6bbd1f7c0a9d0bc29fda055d8d1be1e7f14a8490`
+(`BUILD.json` in the same directory).
+
+That exact IME was temporarily installed for one owned Qt QTextEdit probe.
+`п→Tab` yielded `почему ` with one space. Synthetic held Shift yielded
+`ПРО` with successive visible suggestions. Eight rapid synthetic evdev
+Double Shift gestures on `про` produced eight visible flips and returned to
+`про`: `про/ghj/про/ghj/про/ghj/про/ghj/про`. All eight IME RPCs delegated;
+none of the bridge fences timed out. The result is PASS for those Qt
+surfaces only. Filtered receipt:
+`/home/ubu/.cache/lay/development/live-bridge-candidate-20260926/QT_ACCEPTANCE.json`
+(SHA-256 `37674ac19d45b5ab05f37cbd12a5ca04c80d8028950a61041b9d5f83e25dd6f1`).
+The final Qt event log SHA-256 is
+`51fbaf3923a544a052c0f40757e50ff4ce0023535bf381e975859f89114d9a5a`.
+Install/rollback receipts and private trace copies are alongside it.
+
+The accepted installed and loaded IME was restored at SHA-256
+`a8b9d1686ec61fd7014ab7d2a43731deec1a830a25b78987b03fc622135589ea`;
+L1.1, L3 and daemon were active, and GNOME/IBus agreed on `lay-ime-ru`.
+Runtime authority changed temporarily for the Qt probe, then was restored.
+Hardware Shift, focus return, applied-autocorrection undo, WhatsApp and all
+other editable windows are not tested on this candidate. A no-timeout live
+sample does not replace the controlled delayed-marker regression test.
+
+### 2026-09-26: first physical WhatsApp composer result on bridge candidate
+
+The existing Firefox WhatsApp composer was tested on exact installed IME
+SHA `f644a3f9...` with an evdev device opened before daemon restart. The
+pre-existing unsent draft was backed up privately, then restored with
+ordinary key events; independent AT-SPI readback after rollback matched its
+original SHA-256
+`8c64ae99292bc4592ce3f403b48d1695b513150e5d96490f2b2bc42e03077203`.
+No Enter key or Send action was exposed to the test route. AT-SPI
+`setTextContents` returned true without changing Firefox's DOM, so it was
+not counted as a restoration receipt.
+
+After `п`, the accessible field showed `почему` plus U+200B; after `р`,
+only `пр` remained. This reproduces the disappearing suggestion. Separately,
+`п→Tab` committed `почему ` and kept composer focus: PASS for Tab in this
+field. Synthetic held Shift showed `ПРО` with a suggestion and U+200B.
+Eight synthetic Double Shift gestures left `про` unchanged. The IME trace
+contains eight `ManualToggleV3` replies at `not_handled`, and the action log
+contains no new replay plan for them. Double Shift is FAIL here; this is
+an authority refusal before execution, not the earlier Qt bridge timeout.
+
+Filtered receipt:
+`/home/ubu/.cache/lay/development/live-bridge-candidate-20260926/WHATSAPP_PROBE.json`
+(SHA-256 `db2ee75ac036b39791322c3a3b1553f0586175730e7d950adba2bd75af4154dd`).
+Private IME trace and action log are in `whatsapp-live`, SHA-256
+`01fccbd6f20905e803b2866184f1d58be9b78c872c726bf08edcf31e4a9e5e31`
+and `2d878c4668455636be986d540650697ffbf377a2a5dc7ea98b46c25257ed4564`.
+Install/rollback receipts are alongside. The accepted installed and loaded
+IME SHA `a8b9d168...` was restored; L1.1/L3/daemon were active and GNOME/
+IBus agreed on `lay-ime-ru`. Runtime authority changed temporarily only
+for this probe. The first context admission transition causing the eight
+refusals remains undetermined; other windows, hardware Shift, applied undo
+and focus return were not tested on these bytes.
+
+### 2026-09-26: terminal U+200B on a retired Firefox preedit
+
+A passive IBus monitor on the accepted IME SHA `a8b9d168...` captured the
+scoped `п→р` sequence in the existing unsent WhatsApp composer: `п` at
+cursor 1, `п` plus U+200B at cursor 1, the *old* published `почему` plus
+U+200B at cursor 2, then the current `пр` at cursor 2. The original draft
+was restored exactly. Filtered codepoint receipt:
+`/home/ubu/.cache/lay/development/live-bridge-candidate-20260926/whatsapp-live/WHATSAPP_IBUS_SURROUNDING_PROOF.json`
+(SHA-256 `ae4c6e8d5320e806a998caacc81a91b339b750ee88b9e28526c8fa75ea03db03`);
+private raw monitor SHA-256
+`748d92bb8f8daf700a9e3c34bed20997a2ccb93eee575c61ab4cf12667362b1d`.
+
+`snapshot_matches_retired_preedit` matched the old publication but rejected
+the one terminal U+200B after it. That discarded the inert re-receipt lineage
+before the exact `пр` receipt. A later Reset on `про` therefore had no
+predecessor, and the eight ManualToggleV3 calls returned `context_authority`
+despite a live bridge token. This is the first proven authority loss for the
+WhatsApp trace. The candidate keeps only that exact retired publication with
+one terminal sentinel as an inert witness. A fresh exact client receipt is
+still required for any text effect, and wrong text, additional right text,
+selection, owner change, and existing SafetyGate checks still refuse effects.
+
+The production-adapter test failed 609/610 before the code change
+(`/home/ubu/.cache/lay/development/run-e411sp9v/RESULT.json`), then passed
+610/610 after it (`run-6p7wa_k7/RESULT.json`). An extended test continued
+through another owned key, Reset, and exact receipt, and passed 610/610
+(`run-iirag3cd/RESULT.json`). These are source-only results. The broad gate,
+exact installed Firefox retest, hardware Shift, applied undo, focus return,
+and other windows remain untested on the new bytes. Runtime authority did not
+change in this experiment.
+
+### 2026-09-26: exact U+200B candidate fixes suggestion but not manual toggle
+
+The guarded source archive SHA-256
+`fa471cd805db93b5e0a2b0492424edd90a068e896e2f277a06c763c6d80467d0`
+passed 2,875 correctness and 36 package tests with zero failures
+(`/home/ubu/.cache/lay/development/tab-changed-879jwh0x/RESULT.json`). The
+release IME built from that archive has SHA-256
+`84925a04412c9063c860dc97f50ad530278e5a5d4126dd22cb507100273ba295`.
+It was installed temporarily with the test evdev device already open before
+daemon restart; daemon held `/dev/input/event24` during the probe.
+
+On the actual unsent WhatsApp composer, `п→р` retained a current `просто`
+suggestion (PASS for that symptom); `п→Tab` inserted `почему ` with one space
+and kept focus (PASS). Synthetic held Shift showed `ПРОсто` plus U+200B.
+Eight synthetic Double Shift gestures produced eight `context_authority`
+refusals with a live bridge token, no text flip (FAIL). The trace shows that
+the previously retired preedit plus terminal U+200B was retained inertly and
+the exact `пр` receipt then confirmed. After the next owned `о`, however,
+Firefox reported a retired publication and `про` plus U+200B, without an
+exact `про` receipt before the manual gestures. The authority rule correctly
+kept that lineage unconfirmed, so whole-word deletion stayed blocked.
+
+The probe's immediate visible restoration included a display-only `то`
+completion; real Alt+Tab away/back removed it and independent AT-SPI readback
+proved the exact original six-character draft SHA-256. No message was sent.
+The accepted installed and loaded IME SHA `a8b9d168...` was restored with all
+Lay units active and GNOME/IBus on RU. Candidate authority changed only for
+the bounded probe and was restored. Filtered receipt:
+`/home/ubu/.cache/lay/development/live-whatsapp-zwsp-candidate-20260926/WHATSAPP_ACCEPTANCE.json`
+(SHA-256 `d2df85b2bca843b587aa98ac595f8bff9f8ff9979e6d6bc4d672b77f0a728894`).
+Private trace/action and install/rollback receipts are alongside it. A
+same-gesture exact-surrounding refresh is a hypothesis, not yet a measured
+fix. Other windows, hardware Shift, and applied-autocorrection undo remain
+untested on these bytes.
+
+A follow-up Escape diagnostic used the **accepted** IME, not the candidate.
+The passive IBus monitor observed exact `про` at cursor 3 before
+`HidePreeditText`. This does not prove that hiding the candidate's visible
+preedit would trigger an exact receipt. Escape closed the chat with the test
+draft `про`; the chat was reopened and the original draft restored to its
+exact SHA-256, with no send and no runtime authority change. Filtered receipt:
+`/home/ubu/.cache/lay/development/live-whatsapp-zwsp-candidate-20260926/ESC_DIAGNOSTIC.json`
+(SHA-256 `e8f90fd23cf9cd1645563ea0853631ca62d4e1273deb9e5e9a97ec7866e0c212`).
+
+### 2026-09-26: same-gesture exact refresh candidate for transient preedit
+
+The WhatsApp candidate trace has a current `про` plus one U+200B after the
+caret and a visible display-only completion, but no exact `про` receipt
+before Double Shift. The source candidate preserves the refusal to delete
+under that temporary surface. For one ManualToggleV3 request, it can hide
+only that display-only preedit and emit the existing IBus
+`RequireSurroundingText` signal. It waits at most 120 ms for a fresh exact
+receipt, aborting on changed focus, owner lease, layout generation, tail
+epoch/text, contradiction, or timeout. After an exact receipt it reacquires
+the bridge admission token and continues through the existing decision,
+verifier, and executor. No new word owner, queued replay, or second physical
+gesture is introduced.
+
+The controlled production-adapter test gives an exact client receipt and
+observes one `DelegateExactImeTail` without IME text effects; its contrary
+client word returns `NotHandled` with no Delete or Commit. Focused source
+suite: 611/611 PASS, receipt
+`/home/ubu/.cache/lay/development/run-m1ko2_ol/RESULT.json`.
+Runtime authority did not change. Broad gate, installed Firefox behavior,
+other windows, hardware Shift, and applied-autocorrection undo remain
+untested on these new bytes.

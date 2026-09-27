@@ -282,6 +282,11 @@ impl LayIbusEngine {
 
     pub(super) fn reset_for_ibus_focus_change(&mut self) {
         self.invalidate_input_frame_background_work();
+        self.set_layout_is_ru(
+            self.client_context
+                .factory_engine_profile
+                .initial_layout_is_ru(),
+        );
         self.client_context.managed_word_start = None;
         self.context_reset_rereceipt = None;
         self.committed_tail.pending_completion_learning = None;
@@ -332,6 +337,7 @@ impl LayIbusEngine {
         }
         self.client_context.surrounding_text_snapshot = None;
         self.layout_gesture.pending_manual_toggle = false;
+        self.layout_gesture.pending_manual_refresh_at = None;
     }
 
     pub(super) fn should_preserve_focus_handoff(&self) -> bool {
@@ -347,6 +353,12 @@ impl LayIbusEngine {
 
     pub(super) fn reset_for_ibus_soft_reset(&mut self) {
         let preserves_exact_replay = self.exact_replay_quarantine_active();
+        let preserves_pending_manual_refresh = self.layout_gesture.pending_manual_toggle
+            && self
+                .layout_gesture
+                .pending_manual_refresh_at
+                .is_some_and(|queued| queued.elapsed() <= std::time::Duration::from_millis(700))
+            && self.context_reset_rereceipt_computation_allowed();
         // A Reset that immediately echoes our own managed CommitText does not
         // alter the observed word boundary. Its one-use ticket is tied to the
         // exact tail epoch and can retain only that word's prepared Space work.
@@ -364,6 +376,11 @@ impl LayIbusEngine {
         }
         let discarded_owned_preedit = self.strip_legacy_word_preedit_mirror();
         if discarded_owned_preedit {
+            self.set_layout_is_ru(
+                self.client_context
+                    .factory_engine_profile
+                    .initial_layout_is_ru(),
+            );
             self.context_handoff_sealed = false;
             self.context_reset_rereceipt = None;
             if self.context_admission_required {
@@ -408,7 +425,10 @@ impl LayIbusEngine {
             self.layout_gesture.handled_press_keycodes.clear();
         }
         self.client_context.surrounding_text_snapshot = None;
-        self.layout_gesture.pending_manual_toggle = false;
+        if !preserves_pending_manual_refresh {
+            self.layout_gesture.pending_manual_toggle = false;
+            self.layout_gesture.pending_manual_refresh_at = None;
+        }
         self.rebuild_preedit_fast_from_tail();
         // A verified FocusOut already sealed this exact tail epoch in the
         // admission reducer. The ordinary following Disable is cleanup only;

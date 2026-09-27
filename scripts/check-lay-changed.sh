@@ -8,6 +8,9 @@ if [[ "${LAY_RESOURCE_GUARD_ACTIVE:-0}" != "1" ]]; then
 fi
 cd "$ROOT"
 
+python3 scripts/check_architecture_canon.py --base HEAD
+python3 -m unittest discover -s tests -p test_architecture_canon.py
+
 cargo() {
   "$ROOT/scripts/cargo-guard.sh" "$@"
 }

@@ -459,6 +459,8 @@ struct ContextRequest<P> {
     target: RequestTarget,
     origin: ReceiptOrigin,
     lifecycle_revision: u64,
+    // Exact native InputContext supplied by FocusInId before its reply/marker.
+    native_context_hint: Option<ContextKey>,
     reply: Option<(ContextKey, P)>,
     marker_position: Option<P>,
 }
@@ -1375,6 +1377,7 @@ where
             target: RequestTarget::Transfer(ticket_id),
             origin,
             lifecycle_revision: self.revocation,
+            native_context_hint: None,
             reply: None,
             marker_position: None,
         });
@@ -1473,6 +1476,7 @@ where
             target: RequestTarget::SourceFree,
             origin,
             lifecycle_revision: self.revocation,
+            native_context_hint: None,
             reply: None,
             marker_position: None,
         });
@@ -1495,6 +1499,10 @@ where
         if request.nonce != nonce
             || request.lifecycle_revision != self.revocation
             || context.connection != self.connection
+            || request
+                .native_context_hint
+                .as_ref()
+                .is_some_and(|hint| hint != &context)
             || request.reply.is_some()
         {
             self.revoke();
@@ -1537,6 +1545,7 @@ where
                     target: RequestTarget::SourceFree,
                     origin,
                     lifecycle_revision: self.revocation,
+                    native_context_hint: Some(context.clone()),
                     reply: Some((context, position)),
                     marker_position: None,
                 });
@@ -1551,6 +1560,30 @@ where
         true
     }
 
+    pub(crate) fn bind_pending_native_context(
+        &mut self,
+        generation: RequestGeneration,
+        nonce: BarrierNonce,
+        context: ContextKey,
+    ) -> bool {
+        let Some(request) = self.request.as_mut() else {
+            return false;
+        };
+        if request.generation != generation
+            || request.nonce != nonce
+            || request.origin != ReceiptOrigin::Native
+            || request.lifecycle_revision != self.revocation
+            || context.connection != self.connection
+            || request.native_context_hint.is_some()
+            || request.reply.is_some()
+        {
+            self.revoke();
+            return false;
+        }
+        request.native_context_hint = Some(context);
+        true
+    }
+
     pub(crate) fn enrich_pending_native_activation(
         &mut self,
         target_path: &EnginePath,
@@ -1560,9 +1593,6 @@ where
         let Some(request) = self.request.as_ref() else {
             return false;
         };
-        if request.origin != ReceiptOrigin::CompatibilityProperty {
-            return false;
-        }
         let matches_target = match request.target {
             RequestTarget::Transfer(ticket_id) => self.ticket.as_ref().is_some_and(|ticket| {
                 ticket.id == ticket_id
@@ -1578,6 +1608,23 @@ where
         };
         if !matches_target {
             return false;
+        }
+        if request.origin == ReceiptOrigin::Native {
+            // A second FocusInId for the same exact field is an idempotent
+            // observation while the original reply/marker is pending. A
+            // different InputContext remains a new field and revokes it.
+            if request.lifecycle_revision != self.revocation
+                || context.connection != self.connection
+                || request.native_context_hint.as_ref() != Some(&context)
+                || request
+                    .reply
+                    .as_ref()
+                    .is_some_and(|(observed, _)| observed != &context)
+            {
+                self.revoke();
+                return false;
+            }
+            return true;
         }
         if request.lifecycle_revision != self.revocation
             || context.connection != self.connection

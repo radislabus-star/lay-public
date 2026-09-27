@@ -16,6 +16,23 @@ const IME_DBUS_PATH: &str = "/io/github/radislabus_star/LayIme";
 const IME_DBUS_INTERFACE: &str = "io.github.radislabus_star.LayIme";
 const QUEUED_MANUAL_TOGGLE_SETTLEMENT_MAX: Duration = Duration::from_millis(80);
 
+pub(crate) fn await_same_gesture_exact_receipt(
+    mut request: impl FnMut() -> Result<ImeManualToggleOutcome, String>,
+) -> Result<ImeManualToggleOutcome, String> {
+    let started = Instant::now();
+    loop {
+        let outcome = request()?;
+        if outcome != ImeManualToggleOutcome::AwaitingExactSnapshot {
+            return Ok(outcome);
+        }
+        // Give the IME's 700-ms owner lease one final poll to revoke itself.
+        if started.elapsed() > Duration::from_millis(750) {
+            return Ok(ImeManualToggleOutcome::NotHandled);
+        }
+        std::thread::sleep(Duration::from_millis(10));
+    }
+}
+
 type VisibleTailV2Reply = (String, String, bool, u64, String);
 type VisibleTailV3Reply = (String, String, bool, u64, String, String);
 
@@ -539,6 +556,22 @@ fn replace_tail_checked(
 #[cfg(test)]
 mod delegated_tail_tests {
     use super::*;
+
+    #[test]
+    fn late_exact_receipt_stays_within_one_physical_gesture() {
+        let mut calls = 0;
+        let result = await_same_gesture_exact_receipt(|| {
+            calls += 1;
+            Ok(if calls < 3 {
+                ImeManualToggleOutcome::AwaitingExactSnapshot
+            } else {
+                ImeManualToggleOutcome::DelegateExactImeTail
+            })
+        });
+
+        assert_eq!(result, Ok(ImeManualToggleOutcome::DelegateExactImeTail));
+        assert_eq!(calls, 3);
+    }
 
     fn reply(state: &str, text: &str, epoch: u64, focus: &str) -> VisibleTailV2Reply {
         (

@@ -1,0 +1,37 @@
+{
+  "schema": "lay.tech-debt.successor-binding.v1",
+  "task": "IME-owned-preedit-deferred-source-2026-09-26",
+  "status": "SUPERSEDED",
+  "checkpoint": {
+    "state": "focused-ime-621-pass",
+    "scope": "An authenticated no-surrounding IME-owned preedit stays uncommitted across each manual toggle; a later composition commit synchronizes the selected source. Full gate, independent review and installed client acceptance remain separate."
+  },
+  "superseded_reason": "The user requires the GNOME layout indicator to switch after every Double Shift pair; this source experiment deferred the indicator until the word boundary. Its historical text-only proof cannot satisfy the accepted contract.",
+  "predecessor": {
+    "task": "IME-transient-boundary-Tab-2026-09-26",
+    "binding": "tech_debt/evidence/ime-transient-boundary-tab-composition-successor.json",
+    "binding_sha256": "05af0c186eddc6d21ad24aff519aa502e264790877109df8831aaa80790618f4",
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "1010b57153d612f8c34e8c83cb2526a78355b569cb81bf5829be4e87a538da30",
+    "mode": "0664"
+  },
+  "successor": {
+    "path": "src/bin/lay_ibus_engine/composition_commit.rs",
+    "sha256": "527f9ebfaf0f0f775353840082751ceedea0483f4c44047ddff7f0accab9a4c5",
+    "mode": "0664"
+  },
+  "source_proof": {
+    "red_receipt": "/home/ubu/.cache/lay/development/run-hfp1be91/RESULT.json",
+    "red_receipt_sha256": "1b2336c2af2a586f458c3b9a24972e8ca1d47602438a3e8f58983288a0bdf0e6",
+    "green_receipt": "/home/ubu/.cache/lay/development/run-sur7up7y/RESULT.json",
+    "green_receipt_sha256": "02fe88b84731631294e99fdfe8e8e9253335a67f371516298fee48ce82bd71b6"
+  },
+  "review": {
+    "state": "PENDING"
+  },
+  "physical_acceptance": {
+    "state": "NOT_TESTED"
+  },
+  "source_preedit_authority_changed": true,
+  "installed_runtime_authority_changed": false
+}

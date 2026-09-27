@@ -134,6 +134,7 @@ fn completed_acquisition_releases_pending_and_keeps_exact_finish_contract() {
                 BarrierNonce(pending_nonce.0 + 1),
                 ReceiptOrigin::Native,
                 Default::default(),
+                None,
             ),
             Err(AdapterError::Busy)
         ));

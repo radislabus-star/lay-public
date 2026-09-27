@@ -1,0 +1,15 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Make every complete visible transition in the eight Double Shift sequence a required acceptance result before the next pair.",
+  "reason": "The user explicitly clarified that each transition must be visible. Timed Firefox Issue #46 tests emitted eight native replays but returned delayed or partial intermediate AT-SPI surfaces, so final parity alone hid a failure.",
+  "invariants": [
+    "C04",
+    "C10"
+  ],
+  "protected_paths": [
+    "ARCHITECTURE.md"
+  ],
+  "verification": "PASS: python3 scripts/check_architecture_canon.py --base HEAD reported canon_links_and_records=PASS change_record=CHECKED runtime_behavior=NOT_TESTED; git diff --check passed for the changed canon and acceptance documents. Exact runtime evidence is in docs/architecture/runtime-stabilization-2026-09-26.md.",
+  "not_tested": "The new per-pair visible-chain probe aborted before input because the focused window changed; painted Firefox frames, hardware Shift, WhatsApp on the gated pair and the remaining window matrix are untested by this decision.",
+  "runtime_authority_changed": false
+}

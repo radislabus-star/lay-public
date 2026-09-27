@@ -17,6 +17,7 @@ import {
     LayDaemonService,
     activateLayoutId,
     currentLayoutKind,
+    currentInputModeKind,
     syncIbusEngineForCurrentLayout,
 } from './dbus_service.js';
 import {
@@ -167,7 +168,7 @@ class LayIndicator extends PanelMenu.Button {
     _layoutSwitchItem() {
         const item = new PopupMenu.PopupImageMenuItem('Раскладка: --', 'input-keyboard-symbolic');
         item.connect('activate', () => {
-            const target = currentLayoutKind() === 'ru' ? 'us' : 'ru';
+            const target = currentInputModeKind() === 'ru' ? 'us' : 'ru';
             if (activateLayoutId(target))
                 this._refreshLayout();
         });
@@ -323,7 +324,7 @@ class LayIndicator extends PanelMenu.Button {
 
     _refreshLayout() {
         try {
-            const isRu = currentLayoutKind() === 'ru';
+            const isRu = currentInputModeKind() === 'ru';
             this._label.text = isRu ? 'RU' : 'EN';
             if (this._layoutSwitch?.label)
                 this._layoutSwitch.label.text = `Раскладка: ${isRu ? 'RU' : 'EN'} → ${isRu ? 'EN' : 'RU'}`;

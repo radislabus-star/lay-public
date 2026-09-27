@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2870,
+    "correctness": 2889,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 189,
-    "target": 2743
+    "process": 203,
+    "target": 2748
   },
   "package_fixtures": [
     {
@@ -347,6 +347,13 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::duplicate_native_focus_before_reply_keeps_exact_pending_activation",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::foreign_bootstrap_factory_focus_final_foreign_profile_is_hard_negative",
       "target": "bin:lay-ibus-engine"
     },
@@ -606,6 +613,13 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_deferred_manual_refresh_retains_retired_preedit_from_previous_prefix",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::firefox_exact_client_receipt_wins_when_typed_token_equals_retired_presentation",
       "target": "bin:lay-ibus-engine"
     },
@@ -635,6 +649,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::firefox_initial_delayed_prefix_recovers_only_after_append_reset_and_exact_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_manual_toggle_defers_until_the_client_replies_after_rpc",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -740,6 +761,62 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::firefox_zero_width_space_then_owned_append_requires_new_exact_token",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::firefox_zero_width_visible_completion_tab_appends_once_with_space",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::late_surrounding_capability_keeps_newly_published_native_completion_for_tab",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::no_surrounding_browser_accepts_only_its_live_owned_preedit_completion",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::no_surrounding_browser_manual_toggle_rejects_stale_preedit_owner",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::no_surrounding_owned_preedit_cannot_accept_after_context_token_loss",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::no_surrounding_owned_preedit_emits_native_ibus_input_mode_signal",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::no_surrounding_owned_preedit_next_key_uses_published_ru_and_en_modes",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::no_surrounding_owned_preedit_publishes_each_of_eight_modes_without_committing",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -1047,7 +1124,14 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
-      "name": "context_admission::adapter::tests::word_scope::residuals::td121_default_bridge_still_refuses_the_same_delayed_marker",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_default_bridge_accepts_authenticated_marker_after_callback_budget",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td121_default_bridge_refuses_marker_after_its_own_deadline",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -1160,6 +1244,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::td121_visible_tail_denial_is_passive_until_the_exact_callback_settles",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::transient_boundary_tab_rejects_changed_surface_or_authority",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::unhandled_command_selection_deletion_starts_a_fresh_observed_word",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -2273,6 +2371,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::tests::duplicate_complete_header_key_revokes_rendezvous_epoch",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::tests::duplicate_native_focus_for_exact_pending_field_keeps_one_request",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::tests::duplicate_native_focus_for_other_field_revokes_pending_request",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -5486,6 +5598,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "layout_controller::ime_bridge::delegated_tail_tests::exact_daemon_tail_creates_and_revalidates_one_lease",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_controller::ime_bridge::delegated_tail_tests::late_exact_receipt_stays_within_one_physical_gesture",
       "target": "bin:lay-daemon"
     },
     {
@@ -14060,6 +14179,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "preedit::tests::completion_suffix_uses_exact_typed_word_case_for_display_and_acceptance",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "preedit::tests::composition_preedit_keeps_visible_suffix_when_autocorrect_is_pending",
       "target": "bin:lay-ibus-engine"
     },
@@ -17520,6 +17646,13 @@
       "lane": "correctness",
       "name": "tests::user_corrections_are_opt_in_for_training",
       "target": "bin:lay-nanda-wave-train"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "text::tests::input_mode_property_has_ibus_wire_shape_and_two_letter_symbol",
+      "target": "bin:lay-ibus-engine"
     },
     {
       "isolation": "target",

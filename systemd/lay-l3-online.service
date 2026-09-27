@@ -11,7 +11,7 @@ ExecStart=%h/.local/bin/lay-nanda-wave-train --watch-l3-context-online --poll-ms
 Restart=on-failure
 RestartSec=5
 Nice=10
-CPUQuota=150%
+CPUQuota=25%
 CPUWeight=20
 IOWeight=20
 

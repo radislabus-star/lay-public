@@ -76,6 +76,9 @@ pub(crate) struct LayoutGestureState {
     pub(crate) handled_press_keycodes: BTreeSet<u32>,
     pub(crate) last_shift_release_at: Option<Instant>,
     pub(crate) pending_manual_toggle: bool,
+    /// A Firefox preedit refresh may deliver its exact receipt after the
+    /// ManualToggleV3 reply. The existing pending toggle owns that one reply.
+    pub(crate) pending_manual_refresh_at: Option<Instant>,
 }
 
 impl LayoutGestureState {
@@ -91,6 +94,7 @@ impl LayoutGestureState {
             handled_press_keycodes: BTreeSet::new(),
             last_shift_release_at: None,
             pending_manual_toggle: false,
+            pending_manual_refresh_at: None,
         }
     }
 }

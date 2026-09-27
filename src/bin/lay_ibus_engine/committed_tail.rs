@@ -459,6 +459,7 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
         with_space: bool,
+        transient_append_suffix: Option<String>,
     ) -> fdo::Result<bool> {
         let complete_word = self.context_word_is_known();
         if self.committed_tail.buffer.trim().is_empty() {
@@ -472,7 +473,8 @@ impl LayIbusEngine {
                 .accept_stuck_tail_replacement(emitter, replacement, with_space)
                 .await;
         }
-        let mut committed_suffix = self.selected_visible_completion_suffix();
+        let mut committed_suffix =
+            transient_append_suffix.unwrap_or_else(|| self.selected_visible_completion_suffix());
         if committed_suffix.is_empty() {
             return Ok(false);
         }
@@ -528,6 +530,7 @@ impl LayIbusEngine {
             trace::record(r#"{"kind":"ibus_stuck_completion_authorized_plan_mismatch"}"#);
             return Ok(false);
         }
+        self.cancel_precognition_display_generation();
         self.clear_preedit(emitter).await?;
         emitter
             .commit_text(make_ibus_text(authorized_plan.insert.clone()))
@@ -635,6 +638,7 @@ impl LayIbusEngine {
                     ExecutionReceipt::LocalPending,
                 )
             } else {
+                self.layout_gesture.pending_manual_refresh_at = None;
                 ("cancelled_even_pair", ExecutionReceipt::LocalCancelled)
             };
             trace::record(format!(
@@ -674,8 +678,37 @@ impl LayIbusEngine {
         if !self.layout_gesture.pending_manual_toggle {
             return Ok(false);
         }
+        if let Some(queued_at) = self.layout_gesture.pending_manual_refresh_at {
+            if queued_at.elapsed() > Duration::from_millis(700)
+                || !self.context_reset_rereceipt_computation_allowed()
+            {
+                self.layout_gesture.pending_manual_toggle = false;
+                self.layout_gesture.pending_manual_refresh_at = None;
+                trace::record(
+                    r#"{"kind":"ibus_manual_toggle_refresh","stage":"cancelled_identity_or_expired"}"#,
+                );
+                return Ok(true);
+            }
+            if !self.context_reset_rereceipt_exact_manual_handoff_allowed() {
+                // Firefox may first echo the retired display-only preedit.
+                // The reducer keeps only an owned, inert publication; wait
+                // for its exact receipt before touching client text.
+                trace::record(
+                    r#"{"kind":"ibus_manual_toggle_refresh","stage":"waiting_exact_after_transient"}"#,
+                );
+                return Ok(true);
+            }
+            trace::record(
+                r#"{"kind":"ibus_manual_toggle_refresh","stage":"exact_ready_for_daemon_handoff"}"#,
+            );
+            // The daemon owns this same gesture. A follow-up ManualToggleV3
+            // consumes its exact-tail handoff; this callback never sends a
+            // second IME Delete/Commit route.
+            return Ok(true);
+        }
         let Some(plan) = self.committed_tail_toggle_plan() else {
             self.layout_gesture.pending_manual_toggle = false;
+            self.layout_gesture.pending_manual_refresh_at = None;
             trace::record(r#"{"kind":"ibus_manual_toggle_pending","stage":"cancelled_no_plan"}"#);
             return Ok(true);
         };
@@ -697,6 +730,7 @@ impl LayIbusEngine {
                 != Some(expected.as_str())
         {
             self.layout_gesture.pending_manual_toggle = false;
+            self.layout_gesture.pending_manual_refresh_at = None;
             trace::record(
                 r#"{"kind":"ibus_manual_toggle_pending","stage":"cancelled_snapshot_mismatch"}"#,
             );
@@ -704,6 +738,7 @@ impl LayIbusEngine {
         }
 
         self.layout_gesture.pending_manual_toggle = false;
+        self.layout_gesture.pending_manual_refresh_at = None;
         trace::record(r#"{"kind":"ibus_manual_toggle_pending","stage":"released_exact_snapshot"}"#);
         let _ = self.toggle_committed_tail_target(emitter).await?;
         Ok(true)
