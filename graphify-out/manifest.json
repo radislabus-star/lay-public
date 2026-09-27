@@ -915,8 +915,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit.rs": {
-    "mtime": 1790454869.173702,
-    "ast_hash": "15c13a5a414613493157a6f7782cc84d",
+    "mtime": 1790469006.9008296,
+    "ast_hash": "491e9a88becb009359f84cea3423d6fd",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol.rs": {
@@ -3245,8 +3245,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit/tests.rs": {
-    "mtime": 1790451511.4919665,
-    "ast_hash": "2af00233002bb901e10977e0a4ebbdb0",
+    "mtime": 1790469273.0708306,
+    "ast_hash": "1575a51b75d58df2e3a0c9a15944b618",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/grammar_adapter.rs": {
@@ -5050,13 +5050,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1790465662.3124628,
-    "ast_hash": "411cf13e948b903fd983e592130afa71",
+    "mtime": 1790469400.2737057,
+    "ast_hash": "cd2c99044f1953a8502e1021c3ab3046",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1790465651.1360207,
-    "ast_hash": "71575dfd5080b51081bfcbebf1895032",
+    "mtime": 1790469383.5493972,
+    "ast_hash": "5fecc418c8f833e9d85ca3bca458a26b",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -5945,8 +5945,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/runtime-stabilization-2026-09-26.md": {
-    "mtime": 1790467264.8419745,
-    "ast_hash": "3794ac4fada3414b7ae51dd5b9e81e9b",
+    "mtime": 1790469927.3745015,
+    "ast_hash": "d77fea78cf64347e6398f6773fc0ae71",
     "semantic_hash": ""
   },
   "docs/ime-all-window-acceptance-2026-09-26.md": {

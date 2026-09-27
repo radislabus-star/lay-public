@@ -285,6 +285,9 @@ impl LayIbusEngine {
         frame: Option<InputFrameIdentity>,
         background_supported: bool,
     ) -> fdo::Result<()> {
+        if !completion_token_is_letters_only(&self.committed_tail.buffer) {
+            return self.suppress_nonletter_precognition(emitter).await;
+        }
         let frame = frame.or_else(|| self.capture_pending_reset_readout_frame());
         if !frame
             .as_ref()
@@ -697,11 +700,31 @@ impl LayIbusEngine {
         self.composition.preedit_display_only_pending = false;
     }
 
+    async fn suppress_nonletter_precognition(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> fdo::Result<()> {
+        self.cancel_precognition_display_generation();
+        if self.composition.buffer.is_empty() {
+            return self.clear_preedit(emitter).await;
+        }
+        self.clear_visible_precognition_candidates();
+        let cursor = self
+            .composition
+            .cursor
+            .min(self.composition.buffer.chars().count()) as u32;
+        self.publish_preedit_payload(emitter, self.composition.buffer.clone(), cursor)
+            .await
+    }
+
     async fn begin_pending_precognition_refresh(
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
         background_supported: bool,
     ) -> fdo::Result<()> {
+        if !completion_token_is_letters_only(&self.committed_tail.buffer) {
+            return self.suppress_nonletter_precognition(emitter).await;
+        }
         let matching_suffix = background_supported
             .then(|| self.matching_target_suffix())
             .flatten();
@@ -1081,6 +1104,9 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         proposals: Vec<ImeCandidateProposal>,
     ) -> fdo::Result<()> {
+        if !completion_token_is_letters_only(&self.committed_tail.buffer) {
+            return self.suppress_nonletter_precognition(emitter).await;
+        }
         let mut projected = self.clone();
         projected.context_bridge_token = None;
         projected.install_precognition_candidates(proposals);
@@ -1244,6 +1270,9 @@ impl LayIbusEngine {
             return None;
         }
         let tail = self.committed_tail.buffer.clone();
+        if !completion_token_is_letters_only(&tail) {
+            return None;
+        }
         let (context_prefix, partial) = {
             let trimmed = tail.trim_end();
             if is_command_like_long_tail(trimmed) {
@@ -1521,6 +1550,12 @@ fn is_hard_precognition_boundary(ch: char) -> bool {
         ch,
         '.' | ',' | '!' | '?' | ':' | ';' | ')' | ']' | '}' | '…'
     )
+}
+
+fn completion_token_is_letters_only(tail: &str) -> bool {
+    tail.rsplit(char::is_whitespace)
+        .next()
+        .is_some_and(|token| !token.is_empty() && token.chars().all(char::is_alphabetic))
 }
 
 #[cfg(test)]

@@ -3,6 +3,84 @@ use lay::config::LayConfig;
 use std::sync::{Arc, Mutex};
 
 #[test]
+fn live_completion_requires_an_all_letter_current_token() {
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            ..LayConfig::default()
+        },
+    );
+    for tail in [
+        "1",
+        "слово 2",
+        "слово 2п",
+        "слово п2",
+        "слово !",
+        "слово !п",
+        "слово @п",
+    ] {
+        engine.committed_tail.buffer = tail.to_string();
+        engine.composition.preedit_candidates = vec!["старое".to_string()];
+        engine.refresh_precognition_candidates();
+        assert!(engine.precognition_input().is_none(), "tail {tail:?}");
+        assert!(
+            engine.composition.preedit_candidates.is_empty(),
+            "tail {tail:?}"
+        );
+    }
+    for tail in ["п", "слово п", "слово 2 п", "слово ! п"] {
+        engine.committed_tail.buffer = tail.to_string();
+        assert!(engine.precognition_input().is_some(), "tail {tail:?}");
+    }
+}
+
+#[test]
+fn nonletter_token_hides_stale_hint_before_and_after_background_work() {
+    use crate::output::{AtomicEffectBuilder, EngineOutput};
+
+    for tail in ["слово 2", "слово !"] {
+        for background_completed in [false, true] {
+            let mut engine = LayIbusEngine::new(
+                "/test".to_string(),
+                Arc::new(Mutex::new(Default::default())),
+                true,
+                true,
+                LayConfig::default(),
+            );
+            engine.committed_tail.buffer = tail.to_string();
+            engine.composition.preedit_visible = true;
+            engine.composition.preedit_suffix = "старое".to_string();
+            engine.composition.preedit_candidates = vec!["старое".to_string()];
+            let mut builder = AtomicEffectBuilder::default();
+            let mut output = EngineOutput::atomic(&mut builder);
+            if background_completed {
+                let proposals = vec![ImeCandidateProposal::new(
+                    "новое",
+                    1.0,
+                    lay::typing_cpu::ImeCandidateSource::L2Completion,
+                )];
+                zbus::block_on(engine.apply_background_precognition(&mut output, proposals))
+                    .expect("late completion must not publish a hint");
+            } else {
+                zbus::block_on(engine.begin_pending_precognition_refresh(&mut output, true))
+                    .expect("pending refresh must hide a stale hint");
+            }
+            assert_eq!(builder.preedit_calls(), ["update-hidden", "hide"]);
+            assert!(!engine.composition.preedit_visible);
+            assert!(engine.composition.preedit_suffix.is_empty());
+            assert!(engine.composition.preedit_candidates.is_empty());
+            assert!(!engine.composition.preedit_display_only_pending);
+            assert_eq!(engine.selected_precognition_suffix(), None);
+        }
+    }
+}
+
+#[test]
 fn candidate_index_recovers_the_same_surface_from_a_shorter_suffix() {
     let candidates = vec!["ст".to_string(), "рошо".to_string()];
 
@@ -1339,8 +1417,7 @@ fn first_russian_word_prefix_gets_precognition_candidate() {
 }
 
 #[test]
-fn quoted_russian_prefix_gets_precognition_candidate() {
-    lay::nanda_wave::warm_up_l2_for_ime();
+fn quoted_russian_prefix_does_not_get_precognition_candidate() {
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),
         Arc::new(Mutex::new(Default::default())),
@@ -1358,14 +1435,7 @@ fn quoted_russian_prefix_gets_precognition_candidate() {
     }
     engine.refresh_precognition_candidates();
 
-    assert!(
-        engine.composition.preedit_candidates.iter().any(|suffix| {
-            let word = format!("писа{suffix}");
-            word == "писать" || word.starts_with("писа")
-        }),
-        "punctuation before Russian prefix must not silence IME: {:?}",
-        engine.composition.preedit_candidates
-    );
+    assert!(engine.composition.preedit_candidates.is_empty());
 }
 
 #[test]

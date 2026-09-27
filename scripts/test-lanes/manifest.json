@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2889,
+    "correctness": 2891,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 203,
-    "target": 2748
+    "target": 2750
   },
   "package_fixtures": [
     {
@@ -14361,6 +14361,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "preedit::tests::live_completion_requires_an_all_letter_current_token",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "preedit::tests::live_ime_does_not_project_typo_replacement_as_suffix",
       "target": "bin:lay-ibus-engine"
     },
@@ -14411,6 +14418,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "preedit::tests::mid_sentence_short_prefix_delegates_to_shared_candidate_gate",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "preedit::tests::nonletter_token_hides_stale_hint_before_and_after_background_work",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -14529,7 +14543,7 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "preedit::tests::quoted_russian_prefix_gets_precognition_candidate",
+      "name": "preedit::tests::quoted_russian_prefix_does_not_get_precognition_candidate",
       "target": "bin:lay-ibus-engine"
     },
     {
