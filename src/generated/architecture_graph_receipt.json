@@ -128,6 +128,6 @@
   "graph_links": 61792,
   "graph_nodes": 23291,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "fa57e8c4d57a06778dad24b21de3e9801954309454b78cb260416fa5baf163a5",
+  "source_fingerprint": "fd101af848e7ca5ddfac2f47d4898f7ff77057d4fcf8273c40d09383fdf9c1d1",
   "verdict": "PASS"
 }

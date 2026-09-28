@@ -17,7 +17,16 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.76`
+- `1.0.77`
+
+1.0.77: publishes the user-accepted short-word RU/EN auto-flip after Space.
+The exact installed IME accepted by the user remains SHA-256
+`58dcaacc5c1d403f095fb94aa9d88080a566361a3d4198ee3eb319cbc45accb5`.
+The source gate passed 2,940 selected tests; physical acceptance was 360/360
+transitions in owned local Firefox, Chrome, isolated Tor, GTK, Qt and Kitty
+fields. This source publication does not rebuild or reinstall the running
+binary. User WhatsApp, GitHub issue, WPS and existing Tor fields have separate
+untested or open behavior. See the [accepted contract](docs/architecture/accepted-space-autoflip-2026-09-28.md).
 
 1.0.76: repairs IBus context-admission bootstrap when a full restart starts
 Lay before IBus exposes GlobalEngine. The observer begins without text authority
