@@ -2447,3 +2447,837 @@ PID. CPUQuota L3 после перезапуска осталась 25%. Рез�
 `/home/ubu/.cache/lay/development/nonletter-suggestions-20260927/INSTALL.json`;
 сборка:
 `/home/ubu/.cache/lay/development/nonletter-suggestions-20260927/release-build.log`.
+
+### Native terminal: подготовка исправления стирается на отпускании буквы, 2026-09-28
+
+**Версия и наблюдение.** Установленный IME SHA-256 `309a1e623173b724`:
+`INSTALL.json` выше связывает его с коммитом `c6054456` и SHA файла
+`preedit.rs` `95f9a393a285d1e60af26937a6bf616726f8418c5241fb37d1e28570b215b420`.
+Этот SHA совпадает с `fe5877ed`, где исправление подсказок после небуквенных
+токенов зафиксировано. Поэтому источником правки выбран `fe5877ed`.
+Отдельная сборка из публичного `58d36e3d` сделана, но **не установлена**:
+она потеряла бы поздние принятые изменения CPU, фокуса и подсказок.
+
+В принадлежащем Lay Wayland-поле Kitty реальные клавиши дали `мир дфн `
+вместо `мир lay `. Трасса показала: после последней `н` готова точная
+подготовка Space с сертификатом и решением для epoch 8461; обычный release
+прошёл в том же владельце без изменения хвоста; worker стал `superseded`;
+на Space lane отсутствовала (`worker_generation=0`), выбран
+`terminal_fallback_native`. В GTK отдельное `vbh` корректировалось.
+Первый сломанный переход — `process_key_event_with_output`: любая
+необработанная release отзывала всю подготовку Space. Старый тест ставил
+готовый lease лишь после всех release и этого не обнаруживал. Перестановка
+установки lease перед последним release воспроизвела отказ на исходном
+`58d36e3d`: 602/603 теста IME прошли, один упал точно на Space; receipt
+`/home/ubu/.cache/lay/development/run-lzz_p7es/RESULT.json`.
+
+**Выбранное исправление и последствия.** Небольшой ограниченный журнал
+сопоставляет отпущенный keycode с ранее пропущенным буквенным нажатием в том
+же focus serial. Только такой release может сохранить уже подготовленный
+Space lane. Неизвестный release, команда, Reset, смена фокуса и неактуальный
+кадр по-прежнему отзывают право. Журнал не владеет словом и не выдаёт права
+редактирования: Space снова проверяет полный `InputFrameIdentity`, admission,
+сертификат, `DecisionCore`, verifier и `AuthorizedEdit`. Вторая ветка выбора
+или обход `SafetyGate` не добавлены. Проверки `paired_release` и
+`unpaired_release` добавлены к адаптерному контракту.
+
+Альтернатива «сохранять после каждого release» отвергнута из-за чужого
+release. Синхронно пересчитывать кандидата на Space означало бы нарушить
+deadline и увеличить хвостовую задержку. Объём решётки, ранжирование,
+ложная уверенность, пакеты и delta reload, обучение и feedback остаются
+прежними. На каждую native-букву добавляется одна ограниченная запись и
+удаление без модели; CPU/RSS и p95/p99 для этого пути пока не измерены.
+Фоновый старый результат всё ещё отвергается по поколению и точному кадру.
+Вероятная регрессия — если клиент редактирует текст именно на release без
+нового IBus-наблюдения; текущий terminal-контракт не даёт такого readback.
+Откат ограничен только этим IME-бинарником к сохранённому SHA; демон, GNOME,
+названия источников и пакеты не меняются. Если IBus позже даст точный receipt
+нулевого эффекта release, журнал можно удалить.
+
+**Промежуточная область вердикта.** На публичной базе узкая правка прошла
+603/603 IME-тестов и 2904 выбранных теста полного development-прогона;
+receipts `/home/ubu/.cache/lay/development/run-zynoxz68/RESULT.json` и
+`/home/ubu/.cache/lay/development/run-ijb9ckrr/RESULT.json`. Это доказывает
+механизм, но не совместимость с точными исходниками установленной ветки.
+Следующие обязательные границы: тот же адаптерный тест и затронутые контракты
+на `fe5877ed`, новая сборка, реальный текст и режим в Kitty и GTK, затем
+отдельные 20 трёхбуквенных и 20 четырёхбуквенных чередований и поля других
+окон. В данный момент installed runtime authority changed: **false**.
+
+### GTK: первое слово при неточном SurroundingText, исследование 2026-09-28
+
+**Наблюдение и первая потеря права.** На установленном IME с терминальной
+правкой собственное пустое GTK4 Entry при вводе `lay` в RU показало `дфн `.
+GTK сообщил `caps=41`: preedit и SurroundingText есть, но точного обновления
+окружающего текста нет. После букв trace сохранил `unknown_start`, не создал
+Space frame (`managed_word_start: missing`), на Space выбрал обычный commit.
+Контроль в том же типе поля после уже известного пробела исправил `lay` и
+переключил режим. Значит, отсутствие исправления первого слова здесь
+предшествует выбору кандидата, а не доказывает ошибку ранжирования.
+
+**Рассматриваемая правка.** Для пустого поля с актуальным начальным
+SurroundingText-снимком и поддержкой preedit можно владеть новыми буквами
+как одной незакоммиченной композицией IME. Тогда Space использует существующий
+`InputFrameIdentity → DecisionCore → AuthorizedEdit` и применяет только
+эту композицию, не удаляя текст клиента. Нельзя выводить право удалить
+уже вставленное слово из одного `caps=41` или геометрии. Отдельный
+полноценный SurroundingText-refresh в GTK здесь недоступен; безусловный
+preedit для любой позиции мог бы захватить фрагмент слова после курсора.
+RED-тест адаптера с `caps=41` и пустым начальным снимком воспроизвёл
+первую потерю: 625/626 тестов PASS, новый тест падает на первом
+`CommitText` вместо владения preedit; receipt
+`/home/ubu/.cache/lay/development/run-3uvlr7s4/RESULT.json`.
+Следом нужны отрицательные случаи выделения/середины слова, source и
+физический GTK. Риск: preedit может менять поведение Tab/Double Shift,
+поэтому эти границы проверяются отдельно. На этом этапе новых байтов для
+GTK нет; runtime authority changed: **false для GTK-правки**. Точные
+результаты и receipts будут записаны после проверки.
+
+**Первый source-результат.** Условие запуска owned preedit расширено только
+на `surrounding=true`, `exact_refresh=false` и снимок с границами слова по
+обе стороны курсора без выделения. Уже известный word-start сохраняет старый
+managed путь. Отрицательные адаптерные случаи середины слова и выделения
+остались `CommitText` без захвата preedit. Focused IME suite 627/627 PASS,
+receipt `/home/ubu/.cache/lay/development/run-6nqaoyot/RESULT.json`.
+Это **source-only**: реальный GTK, Tab, Double Shift, браузеры и full gate
+ещё не проверены. Новая версия в runtime не устанавливалась. Перед её
+установкой нужно удостовериться, что уже созданный GTK-owned preedit остаётся
+допущенным для Tab и ручного переворота через тот же живой context token,
+а выделение/потеря token запрещают их без обхода verifier.
+
+**Source-проверка Tab и Double Shift.** Два новых адаптерных теста на том же
+`caps=41` и начальном пустом снимке были RED: 628/630, отказ на допуске
+Tab и на первом из восьми переворотов; receipt
+`/home/ubu/.cache/lay/development/run-szkzw6wt/RESULT.json`. Проверка
+owned-preedit теперь опирается на живой context token, точное совпадение
+активной композиции с локальным хвостом, видимый чистый preedit и отсутствие
+выделения. Наличие SurroundingText само по себе не лишает IME права на его
+ещё незакоммиченный текст. Тесты выделения/потери token запрещают оба
+действия, восемь последовательных переключений остаются без CommitText и
+DeleteSurroundingText, после каждого публикуется штатный InputMode. Весь
+focused IME suite: 630/630 PASS; receipt
+`/home/ubu/.cache/lay/development/run-bwpmsdhk/RESULT.json`. Источник
+проверен, GTK runtime на этих байтах ещё **NOT TESTED**; runtime authority
+changed: **false для GTK-правки**.
+
+### Завершение native terminal-контроля на установленной паре
+
+IME из точного источника `fe5877ed` плюс парный-release patch собран удалённо
+и установлен поверх SHA `309a1e623173b724` как
+`bbccb82022eeb2d785a7d69923c968d3e88d1f63ddafd6a6803d0aabf1297b1c`.
+Транзакционная установка с сохранённым старым бинарником прошла PASS:
+`/home/ubu/.cache/lay/development/native-release-space-20260928/INSTALL.json`.
+Runtime authority changed: **true только для IME-бинарника**; daemon,
+глобальный IBus, L1.1 и L3 сохранили PID и байты. В своём Wayland Kitty
+реальный `дфн` на Space стал `lay` с US mode; обратный `vbh` стал `мир`
+с RU mode. Быстрый Space после `lay` также сработал. Поочерёдный физический
+ввод 20 трёхбуквенных и 20 четырёхбуквенных слов дал 20/20 и 20/20
+совпадений видимого слова и GNOME/IBus/InputMode после каждого Space:
+`/home/ubu/.cache/lay/development/native-release-space-20260928/KITTY_ALTERNATING_3.json`,
+`/home/ubu/.cache/lay/development/native-release-space-20260928/KITTY_ALTERNATING_4.json`.
+Это **PASS только для данного Kitty-поля**. Латентность p50/p95/p99,
+пакет/RSS, false accepts, прочие окна и восемь Double Shift этим
+контролем не измерены. GTK first-word failure выше — отдельный первый
+сломанный переход, который terminal patch не исправил.
+
+**Живой GTK-порядок опроверг первый fixture.** Гейт `check-lay-changed.sh`
+прошёл (`gtk-changed-gate.log` в каталоге native-release-space), release
+IME SHA `beb09e2bea7a855f9dbdff5224579567c9a5d8e5129c60509a3f3d99e77f1f2e`
+установлен с проверкой PID и исходников; install receipt
+`/home/ubu/.cache/lay/development/gtk-owned-firstword-20260928/INSTALL.json`.
+В собственном пустом GTK4 Entry первый физический `lay` в RU остался `дфн `,
+режим RU. Трасса показывает `caps=41` **до** первой буквы, но первый
+`SetSurroundingText` пришёл лишь **после** её `CommitText`. Условие для
+снимка до первой буквы было корректным для такого порядка, но не покрывало
+этот клиент. Точный первый отказ: строка trace 2668
+`printable_managed_commit`, 2671 первый `ibus_surrounding_text`; весь receipt
+`/home/ubu/.cache/lay/development/gtk-owned-firstword-20260928/GTK_FIRST_WORD_FAIL.json`.
+Функциональный вердикт GTK: **FAIL**, несмотря на source PASS. IME откатан
+строго к терминальной версии `bbccb82022eeb2d785a7d69923c968d3e88d1f63ddafd6a6803d0aabf1297b1c`;
+receipt `/home/ubu/.cache/lay/development/gtk-owned-firstword-20260928/ROLLBACK.json`.
+Runtime authority changed: **true на время опыта, затем восстановлена
+исходная терминальная версия**; daemon и глобальный IBus не менялись.
+
+**Следующий причинный вариант.** Пока точного снимка нет, но есть preedit,
+новый текст можно удерживать только как незакоммиченную собственную
+композицию IME с `UnknownStart`. Это не создаёт права удалить клиентский
+текст. После запоздалого снимка проверить поведение GTK; если он показывает
+уже вставленный текст при ещё активной композиции, не разрешать второе
+применение. Добавить regression для реального порядка `caps41 → первая
+буква → SetSurroundingText`, сохранить отрицательные случаи выделения и
+середины слова. Этот второй вариант пока **не реализован и не установлен**.
+
+**Второй RED и source-изменение.** Тот же adapter-тест переставлен на
+установленный порядок: `caps=41`, первая буква без снимка, затем первый
+`SetSurroundingText`. Без второго исправления 629/630 PASS, новый тест падает
+на первом `CommitText`; receipt
+`/home/ubu/.cache/lay/development/run-_sseehfg/RESULT.json`. Условие
+начала owned preedit теперь допускает отсутствие снимка при `UnknownStart`
+и preedit-capability. Появившийся снимок с выделением или курсором внутри
+слова всё ещё запрещает начало новой композиции; уже начатая композиция
+остаётся связана с context token и точным локальным хвостом. Замена
+вставленного текста по этому условию не разрешается. Следом нужны focused,
+full, граф, changed gate и повтор живого GTK; на момент записи runtime
+authority changed: **false для второго варианта**.
+
+**Второй вариант отклонён.** Расширение preedit на любое поле `caps=41`
+без снимка дало 621/630 focused PASS: восемь Firefox/TD-121 тестов
+ожидали `CommitText`, а получили `UpdatePreeditText`; суммарно отчёт
+зафиксировал девять отказов. Общий первый механизм — смена маршрута
+первой буквы при отсутствии снимка, что ломает Reset/передачу точного хвоста.
+Receipt `/home/ubu/.cache/lay/development/run-kmwfr4bv/RESULT.json`.
+Условие отменено, эти тесты не ослаблялись.
+
+**Третий вариант и RED.** Живой GTK после каждого `CommitText` прислал
+точный снимок длиной 1, 2 и 3 символа, последний до Space. Поэтому
+автокоррекция может опираться на *полученный после последнего CommitText*
+снимок, а не на заявленную возможность синхронно обновить SurroundingText.
+Firefox без такого нового точного снимка остаётся на прежнем маршруте.
+Адаптерный тест теперь воспроизводит `caps41 → CommitText → снимок` для
+каждой буквы и требует, чтобы старый снимок до последней буквы не давал
+Space-права. Без нового свидетельства тест RED при 629/630 PASS, receipt
+`/home/ubu/.cache/lay/development/run-q6jv8gm8/RESULT.json`.
+Предлагаемая реализация привязывает новый receipt к тому же focus serial,
+epoch локального хвоста и revision снимка; снимок должен полностью совпасть
+со словом и обеими его границами, без выделения и при живом token. Она
+переиспользует существующие `InputFrameIdentity`, DecisionCore, verifier и
+AuthorizedEdit. Никакой новый исполнитель, fallback, app-name branch или
+право из одного `caps=41` не добавляются. Риск — клиент может прислать
+запоздалый совпадающий снимок; точный epoch/focus/revision и полный suffix
+снижают риск, но физические Firefox и GTK ещё обязаны пройти. Runtime
+authority changed: **false для третьего варианта**.
+
+**Source-проверка третьего варианта.** `ClientContextState` хранит только
+нижнюю границу свежести снимка для последнего локального managed `CommitText`:
+focus serial, tail epoch и revision до нового callback. При отсутствии
+синхронного exact-refresh маршрут требует более поздний снимок, живой token,
+совпадающие слово и границы; старый снимок перед последней буквой и потеря
+token дают отказ. Проверка не создаёт владельца слова и не меняет ветвь
+Firefox без точного послебуквенного снимка. Focused IME suite 630/630 PASS,
+включая отрицательный token case; receipt
+`/home/ubu/.cache/lay/development/run-qu_zs_vg/RESULT.json`. Full gate,
+граф и установленный GTK на этих байтах ещё **NOT TESTED**. Runtime authority
+changed: **false для третьего варианта**.
+
+### Плавающий отказ на втором слове после смены Lay-engine
+
+Затронуты C03, C08, C09 и C10. Третий вариант IME был проверен удалённо:
+focused 630/630, полный development gate 2 932 выбранных теста и
+`check-lay-changed.sh` PASS без unsafe edit gate failures. Receipts:
+`/home/ubu/.cache/lay/development/run-qu_zs_vg/RESULT.json`,
+`/home/ubu/.cache/lay/development/run-2fqk2676/RESULT.json`,
+`/home/ubu/.cache/lay/development/gtk-owned-firstword-20260928/managed-snapshot-changed-gate.log`.
+IME SHA `318fd6580cf99e40be82b6d74fd9e2dfa833d97cdd52079e98054a485410c200`
+установлен с сохранением терминального предшественника; receipt
+`/home/ubu/.cache/lay/development/managed-snapshot-20260928/INSTALL.json`.
+В собственном пустом GTK4 Entry первое физическое `дфн` на Space стало
+`lay ` и mode US: `.../managed-snapshot-20260928/GTK_FIRST_WORD_PASS.json`.
+
+Непрерывная серия того же GTK-поля остановилась на втором слове: после
+`lay ` физическое `vbh ` осталось `vbh `, mode US; receipt
+`/home/ubu/.cache/lay/development/gtk-owned-firstword-20260928/GTK_ALTERNATING_3.json`.
+Ограниченная серия повторов также дала 1/2 на первой попытке, точная трасса
+`/home/ubu/.cache/lay/development/managed-snapshot-20260928/GTK_RACE_ATTEMPT_01.jsonl`
+и результат `.../managed-snapshot-20260928/GTK_RACE_SERIES.json`. При паузе
+3 с после первого слова оба слова прошли 2/2, receipt
+`.../gtk-owned-firstword-20260928/GTK_ALTERNATING_3_delay3000.json`.
+Это **FAIL для непрерывного GTK-ввода**; пауза лишь различает порядок событий.
+Другие окна на этом IME не объявляются проверенными.
+
+Наблюдаемый первый сломанный переход: после подтверждённого `lay ` началась
+смена RU → US engine. Native FocusIn нового path создал пустой source-free
+запрос при ещё старом профиле RU; marker был отправлен, но публикация получила
+`refused_not_current` (trace 1401–1411). Каждая буква `vbh` получила
+`legacy_callback_admission=refused` и прошла через plain preedit, поэтому
+Space не получил корректирующий кадр (trace 1420–1471). `in_flight_context_conflict`
+зафиксирован при завершении смены. По коду reducer после отзыва переноса
+старого слова берёт для нового source-free запроса текущий профиль RU;
+поздний `GlobalEngineChanged` на US отзывает этот запрос как несоответствие.
+Это причинное объяснение именно повторного отказа GTK, а не всех окон.
+
+Исправление сохраняет **только идентичность профиля** из отозванного factory
+ticket при точном совпадении нового engine path, более позднем FocusIn и всё
+ещё выбранном Lay. Старый tail и право переноса не сохраняются: новый владелец
+получает `UnknownStart` с пустым tail лишь после marker, context reply и
+совпадающего сигнала глобального профиля. Иной профиль или чужой источник
+отказываются. Регрессионный reducer-тест воспроизводит потерю factory
+handoff до позднего RU → US сигнала и запрещает неправильный профиль.
+Первый source-снимок с этим тестом прошёл focused 631/631, receipt
+`/home/ubu/.cache/lay/development/run-td0vcs5p/RESULT.json`;
+после него добавлена проверка текущего Lay-профиля. Финальный gate и
+физический GTK на новых байтах ещё **NOT TESTED**. Runtime authority changed:
+**false для этой reducer-правки**; установленным остаётся IME SHA `318fd658...`.
+
+### 2026-09-28 — непрерывная серия коротких слов после source-free правки
+
+На IME SHA `984cbc120f56612d6f19fea9ea04e18bc4b07b5793b20436942038850cbee145`
+собственное GTK4 Entry дало 16/20 точных переворотов слова и режима подряд;
+17-е физическое `web` в RU осталось `цуи` и режим RU. Измерение:
+`/home/ubu/.cache/lay/development/revoked-profile-20260928/GTK_ALTERNATING_3.json`;
+полная трасса:
+`/home/ubu/.cache/lay/development/revoked-profile-20260928/GTK_ALTERNATING_3_FAIL.jsonl`.
+Первые два слова без паузы прошли 2/2:
+`/home/ubu/.cache/lay/development/revoked-profile-20260928/GTK_ALTERNATING_3_delay0.json`.
+Полный development gate исполнил 2933 теста без тестовых ошибок, но общий
+вердикт FAIL из-за устаревшего хеша known-failures manifest; после исправления
+хеша remote `load_known_failures` прошёл. Changed gate прошёл; лог:
+`/home/ubu/.cache/lay/development/revoked-profile-20260928/changed-gate.log`.
+Установлена именно указанная SHA; установка:
+`/home/ubu/.cache/lay/development/revoked-profile-20260928/INSTALL.json`.
+Runtime authority changed: **true** только для IME; глобальный IBus, daemon,
+L1.1 и L3 не перезапускались.
+
+На отказавшем переходе замена `нос` была подтверждена клиентом, затем observer
+получил CreateEngine, FocusOutId, Disable и FocusInId. FocusOutId получил
+typed stamp, но Disable и FocusInId завершились `refused_timeout`; следующий
+ключ получил passive stamp и пошёл в legacy preedit. Это локализует первый
+наблюдаемый отказ на допуске lifecycle, до выбора кандидата `web`.
+Какое именно условие отозвало старый seal, пока не измерено. Следующий
+эксперимент добавляет только метаданные предикатов seal (owner, unsettled,
+ticket, epoch, position) без текста и без права на mutation. На этом этапе
+GTK 20/20, GTK 4 буквы, Kitty, браузеры и прочие окна: **NOT TESTED на
+следующем кандидате** до его установки.
+
+Диагностическая SHA `d1106aa8844e50d9086575a690bad8bb8828978827ebce1a88955fe3d5ebb9e4`
+прошла focused 631/631 (`/home/ubu/.cache/lay/development/run-zs7xmn40/RESULT.json`)
+и шесть повторов собственной GTK-серии по 20/20. Отдельные receipts и traces:
+`/home/ubu/.cache/lay/development/source-seal-diagnostic-20260928/GTK_3_RUN_01.json`
+… `GTK_3_RUN_06.json` и соответствующие `GTK_3_TRACE_*.jsonl` в том же каталоге.
+Эти успешные повторы не снимают ранее наблюдённый плавающий отказ.
+Установка диагностики:
+`/home/ubu/.cache/lay/development/source-seal-diagnostic-20260928/INSTALL.json`.
+Runtime authority changed: **true** только для IME. Следующий диагностический
+снимок различает отказ stamp старого FocusOut/Disable и поздний
+`GlobalEngineChanged`; содержимое поля по-прежнему не записывается новой
+диагностикой. Физический отказ на следующем снимке: **NOT TESTED**.
+
+На следующей диагностической SHA `1d991a52837efe2a297002fddce67875e4cfe21eaa38e969d5c2232f518f115a`
+корректный замер слова и режима выявил иной отказ: пятое физическое `git` в
+собственном GTK-поле осталось `пше`, режим RU. Receipt:
+`/home/ubu/.cache/lay/development/lifecycle-diagnostic-20260928/GTK_3_RUN_05.json`;
+trace:
+`/home/ubu/.cache/lay/development/lifecycle-diagnostic-20260928/GTK_3_TRACE_05.jsonl`.
+Предыдущие четыре слова в этом запуске прошли. В трассе Space получил
+`ibus_space_autocorrect=authorized`, но исполнитель ответил
+`exact_surrounding_snapshot_unavailable`, после чего отправил исходное слово.
+После переключения RU-engine клиент прислал снимок перед первым и после первого
+символа, затем не обновил его на следующих двух буквах. Это первый
+наблюдаемый сломанный переход для `git`: отсутствие актуального снимка у
+коммитившего посимвольно IME; SafetyGate отработал штатно. Это не ошибка
+кандидатной решётки. Причина отсутствия очередного снимка на стороне GTK/IBus
+не установлена и не нужна для объяснения безопасного отказа замены.
+
+В уже существующем маршруте `legacy_word_preedit_active` IME держит новое
+слово до Space и завершает проверенную замену одним CommitText, не удаляя
+текст клиента. Сейчас этот путь включается для клиента с SurroundingText без
+точного refresh лишь при `UnknownStart`, хотя в трассе после переноса есть
+`KnownStart` и снимок явной границы перед новой буквой. Предлагаемая правка:
+допустить тот же preedit при наблюдённой границе и KnownStart; не ослаблять
+проверку слова, edit-plan или postcondition. RED/green тест, реальный GTK,
+четырёхбуквенная серия и остальные окна пока **NOT TESTED**. Runtime authority
+changed для этой правки: **false до отдельной установки**.
+
+Контроль причины: новый `td125_known_boundary_without_exact_refresh_keeps_next_word_in_owned_preedit`
+дал ожидаемый RED на прежнем выборе маршрута (631 PASS, 1 FAIL):
+`/home/ubu/.cache/lay/development/run-usf7xhfy/RESULT.json`.
+После удаления только ограничения `!context_word_is_known()` тест и весь
+focused IME набор дали 632/632 PASS:
+`/home/ubu/.cache/lay/development/run-7pl7qlw_/RESULT.json`.
+Тест проверяет полностью IME-owned preedit и один CommitText `привет ` без
+surrounding delete после известной границы с неточным refresh. Проверка
+восемнадцати остальных слов, всех окон и физической версии остаётся
+**NOT TESTED**. Runtime authority changed: **false**, этот source ещё не
+установлен. Решение использует прежние DecisionCore, verifier,
+SafetyGate и AuthorizedEdit, отдельный обработчик раскладки не добавлен.
+
+### 2026-09-28 — подтверждение preedit и отказ постусловия Firefox
+
+Правка известной границы прошла полный development gate: 2934 selected,
+PASS (`/home/ubu/.cache/lay/development/run-dn0zienb/RESULT.json`),
+changed gate с `gate_failures=0`
+(`/home/ubu/.cache/lay/development/known-boundary-preedit-20260928/changed-gate.log`).
+Установлена только IME SHA
+`5225bbd645c1528cca14eadca1a38df5f8638e67633c159a743e0ab24ff77dce`;
+receipt `/home/ubu/.cache/lay/development/known-boundary-preedit-20260928/INSTALL.json`.
+Физические серии в собственных полях прошли: GTK4 Entry 3 буквы 20/20 и
+4 буквы 20/20, Kitty `read` 3 буквы 20/20 и 4 буквы 20/20. Каждый шаг
+проверял видимое слово и режим RU/EN после Space. Receipts:
+`/home/ubu/.cache/lay/development/known-boundary-preedit-20260928/GTK_ALTERNATING_3.json`,
+`GTK_ALTERNATING_4.json`, `KITTY_ALTERNATING_3.json`, `KITTY_ALTERNATING_4.json`
+в том же каталоге. Runtime authority changed: **true**, только IME; daemon,
+глобальный IBus и L1.1/L3 не перезапускались. Другие окна этой серией не
+проверены.
+
+В собственном Firefox textarea первая физическая `lay` при RU стала `lay `,
+но режим остался RU за 1,2 с: 0/20 полных переходов. Receipt:
+`/home/ubu/.cache/lay/development/firefox-postcommit-refresh-20260928/FIREFOX_TEXTAREA_3_PRE_FIX.json`;
+trace `FIREFOX_TEXTAREA_3_FAIL.jsonl` рядом. Space прошёл DecisionCore и
+AuthorizedEdit; IME отправил DeleteSurroundingText и CommitText. Firefox
+послал только промежуточный SetSurroundingText после удаления (три символа,
+курсор 0), но не точный финальный снимок `lay `. Causal outcome остался
+`pending_stale_observation`; layout sync правильно ждал подтверждения. Это
+отказ постусловия, не кандидатного выбора. Утверждение ограничено указанным
+полем и одним словом; причина отсутствия финального callback на стороне
+Firefox пока не доказана.
+
+Экспериментальная правка запрашивает RequireSurroundingText после CommitText,
+сохраняя точное подтверждение перед сменой режима. Контрактный тест на старом
+коде дал ожидаемый RED: одна ошибка IME в полном прогоне
+`/home/ubu/.cache/lay/development/run-5cmbgvi1/RESULT.json`. Новый исходник,
+физический Firefox и остальные браузеры на нём пока **NOT TESTED**. Runtime
+authority changed для этого эксперимента: **false до отдельной установки**.
+
+### 2026-09-28 — Firefox: ответ на refresh и два Reset-перехода
+
+RequireSurroundingText после CommitText прошёл полный development gate:
+2934 selected, PASS (`/home/ubu/.cache/lay/development/run-ruqn_6uo/RESULT.json`),
+changed gate PASS с `gate_failures=0`
+(`/home/ubu/.cache/lay/development/firefox-postcommit-refresh-20260928/changed-gate.log`).
+IME SHA `0c4b9b0cbb0125c1ce0b92c1b64c66df08746c74efb63bd9ccd8ebd78f5b0191`
+установлена без перезапуска daemon/глобального IBus/L1.1/L3; receipt
+`/home/ubu/.cache/lay/development/firefox-postcommit-refresh-20260928/INSTALL.json`.
+Runtime authority changed: **true**, только IME.
+
+В собственном Firefox textarea первое физическое `lay` при RU теперь даёт
+`lay ` и EN за 22 мс: точный финальный SetSurroundingText пришёл после
+RequireSurroundingText, что подтверждено трассой. При обычной паузе 150 мс
+второе физическое `vbh` осталось `vbh ` и EN. Trace показывает
+`ibus_preedit=clear`, затем Reset с сохранённым билетом rereceipt; рабочий
+prefetch (`worker_generation=3`) стал `superseded`, а Space получил
+`prefetch_not_ready`. Receipt и trace:
+`/home/ubu/.cache/lay/development/firefox-postcommit-refresh-20260928/FIREFOX_TEXTAREA_3_FAIL.json`
+и `FIREFOX_TEXTAREA_3_FAIL.jsonl`.
+
+При диагностической паузе 500 мс то же второе слово уже стало `мир `, но
+режим остался EN: Firefox прислал Reset после CommitText и перед финальным
+SetSurroundingText. Reset повторно опубликовал тот же tail с новым epoch,
+поэтому подтверждение точного снимка `lay мир ` было цензурировано как
+другое поколение. Receipt и trace: `FIREFOX_TEXTAREA_3_SLOW_FAIL.json` и
+`FIREFOX_TEXTAREA_3_SLOW_FAIL.jsonl` в том же каталоге. Эти наблюдения
+разделяют отказ подготовки решения до Space и отказ подтверждения после
+Space; они не доказывают сбой кандидата или SafetyGate.
+
+Следующая системная правка запрашивает точный снимок после Reset открытого
+слова с rereceipt и сохраняет epoch только у уже отправленной авторизованной
+замены с точным ожидаемым postcondition того же поля/epoch. Новый снимок
+по-прежнему обязан точно совпасть до layout sync и feedback; при ином
+снимке действует прежний отказ. Новый исходник, быстрый Firefox, GTK/Kitty и
+остальные окна: **NOT TESTED**. Runtime authority changed для этой правки:
+**false до отдельной установки**.
+
+### 2026-09-28 — точный Reset закрыт, Firefox задерживает финальный снимок
+
+Правка Reset прошла 2935 selected, PASS:
+`/home/ubu/.cache/lay/development/run-bzvl6udk/RESULT.json`;
+архитектурный graph gate PASS:
+`/home/e/projects/lay-development-runner/firefox-reset-graph-20260928.log`.
+Установлена только IME SHA
+`a984b1ba8765fcf5fb53a866feaa22820b1bd354e9117ce94024245dfffd2cfb`;
+receipt `/home/ubu/.cache/lay/development/firefox-reset-refresh-20260928/INSTALL.json`.
+Runtime authority changed: **true**, только IME.
+
+В быстром собственном Firefox textarea первые `lay ` и EN подтвердились за
+25 мс. Второе физическое `vbh` заменилось на `мир `, но значок остался EN:
+полных переходов 1/20. Receipt и trace:
+`/home/ubu/.cache/lay/development/firefox-reset-refresh-20260928/FIREFOX_TEXTAREA_3_FAIL.json`
+и `FIREFOX_TEXTAREA_3_FAIL.jsonl`. На этом шаге Firefox прислал точный снимок
+после удаления (`lay `, cursor 4), но не финальный снимок после CommitText.
+Итог `pending_stale_observation` остался ожидающим. Прежний Reset после
+CommitText здесь уже не наблюдался; word correction и SafetyGate прошли.
+
+Следующая правка делает ровно один дополнительный RequireSurroundingText
+после промежуточного снимка. Счётчик привязан к pending postcondition той же
+замены; повторные промежуточные снимки не создают цикл запросов. Только
+точный финальный снимок разрешает layout sync/feedback. Новый тест проверяет
+один запрос, повторный stale без второго запроса и подтверждение RU после
+финального снимка. Исходный gate и физический Firefox на этой правке:
+**NOT TESTED**. Runtime authority changed: **false до установки**.
+
+### 2026-09-28 — Firefox не выдаёт финальный снимок после двух запросов
+
+Однократный повторный refresh прошёл 2936 selected, PASS:
+`/home/ubu/.cache/lay/development/run-zd80gemu/RESULT.json`;
+архитектурный graph gate PASS:
+`/home/e/projects/lay-development-runner/firefox-retry-graph-20260928.log`.
+IME SHA `448b48481e2a422a7276a55177cbee77a93a47e5ef672774668d3c3d2540149a`
+установлена отдельно; receipt
+`/home/ubu/.cache/lay/development/firefox-final-refresh-20260928/INSTALL.json`.
+Runtime authority changed: **true**, только IME.
+
+Физический собственный Firefox textarea дал `lay `, но режим RU: 0/20
+полных переходов. Trace содержит два успешных сигнала
+`RequireSurroundingText`: сразу после CommitText и после промежуточного
+SetSurroundingText (`text_chars=3, cursor=0`). Точного финального
+SetSurroundingText не пришло в течение 1,2 с, хотя DOM показывает `lay `.
+Receipt и trace:
+`/home/ubu/.cache/lay/development/firefox-final-refresh-20260928/FIREFOX_TEXTAREA_3_FAIL.json`
+и `FIREFOX_TEXTAREA_3_FAIL.jsonl`. Это ограниченный вывод для этого поля;
+не доказано, что все версии Firefox или все поля ведут себя так же.
+
+Следующий эксперимент переводит новое слово в существующую IME-owned
+композицию при наблюдённой границе даже если клиент заявил exact
+SurroundingText. Проверенный результат тогда отправляется одним CommitText,
+без удаления уже вставленного текста клиента. Право на прежний
+`managed_word_start` при старте композиции отзывается. При отсутствии
+точной границы остаётся прежний консервативный маршрут. DecisionCore,
+SafetyGate, AuthorizedEdit и verifier не ослаблены. Новый тест и физический
+Firefox на этой правке: **NOT TESTED**. Runtime authority changed:
+**false до установки**.
+
+### 2026-09-28 — IME-owned preedit: восемь подтверждённых переходов, затем stale snapshot
+
+Маршрут preedit с точной наблюдённой границей прошёл 2937 selected, PASS:
+`/home/ubu/.cache/lay/development/run-3k12kw6c/RESULT.json`;
+graph gate PASS: `/home/e/projects/lay-development-runner/exact-preedit-graph-20260928.log`.
+Установлена только IME SHA
+`2d59b67aef76bd66dd26d0e892cf848f605b6add210242555ad8c16aae5647d4`;
+receipt `/home/ubu/.cache/lay/development/exact-boundary-preedit-20260928/INSTALL.json`.
+Runtime authority changed: **true**, только IME.
+
+В собственном Firefox textarea физическое чередование трёхбуквенных слов
+подтвердило 8/20 переходов подряд: слово и реальный RU/EN режим менялись после
+каждого Space. На девятом `run ` виден в DOM, но режим остался RU. IME отправил
+один CommitText через проверенный `AuthorizedEdit`, без удаления клиентского
+текста. Первый последующий SetSurroundingText имел длину 36 и cursor 36, но
+не совпал с ожидаемым суффиксом; следующий имел длину 32 и cursor 32, то есть
+старое поле до этого слова. Финального подтверждённого суффикса в течение
+1,2 с не было. Следовательно, решение и применение слова прошли, а layout
+sync остался правильно заблокирован на неподтверждённом postcondition.
+Receipt и trace:
+`/home/ubu/.cache/lay/development/exact-boundary-preedit-20260928/FIREFOX_TEXTAREA_3_FAIL.json`
+и `FIREFOX_TEXTAREA_3_FAIL.jsonl`. GTK, Kitty и другие браузеры на этих байтах:
+**NOT TESTED**.
+
+Следующий ограниченный эксперимент использует существующий счётчик одного
+`RequireSurroundingText` и для ожидающего результата IME-owned preedit.
+Неподтверждённый ответ не синхронизирует раскладку и не даёт положительное
+обучение. Новый исходный и физический результат: **NOT TESTED**. Runtime
+authority changed для этой правки: **false до отдельной установки**.
+
+### 2026-09-28 — подтверждённые Firefox/Chrome/GTK и отказ Qt без снимка
+
+Однократный refresh для ожидающего результата IME-owned preedit прошёл
+636 targeted IME tests, PASS:
+`/home/ubu/.cache/lay/development/run-_sy8k9qo/RESULT.json`;
+graph gate PASS:
+`/home/e/projects/lay-development-runner/active-preedit-refresh-graph-20260928.log`.
+Полный исходный gate на этих байтах: **NOT TESTED**. Установлена только IME
+SHA `212cad5eec2b07c49fd6e46960b396dde22cf55a63bfd8f1a9496bcd166719d4`;
+receipt `/home/ubu/.cache/lay/development/active-preedit-refresh-20260928/INSTALL.json`.
+Runtime authority changed: **true**, только IME.
+
+Физический ввод с проверкой слова и RU/EN после каждого Space: Firefox
+textarea и contenteditable по 20/20 для 3 и 4 букв (80/80), Chrome textarea
+и contenteditable так же 80/80, GTK4 Entry 20/20 для каждой длины (40/40),
+Qt QLineEdit 20/20 для 3 букв. Receipts:
+`/home/ubu/.cache/lay/development/active-preedit-refresh-20260928/*_PASS.json`.
+Трасса Firefox textarea 3 букв содержит четыре реальных
+`requested_after_intermediate_snapshot`; один из сценариев ранее падал на
+девятом слове. Это подтверждает срабатывание read-only механизма в данном
+поле, не доказывает отсутствие других гонок.
+
+Qt QLineEdit 4 букв подтвердил первые 10/20, затем видимое `work ` осталось
+при режиме RU. После `CommitText` не пришёл ни один SetSurroundingText; далее
+Qt прислал Reset и сменил input context. Receipt и trace:
+`/home/ubu/.cache/lay/development/active-preedit-refresh-20260928/QT_4_FAIL.json`
+и `QT_4_FAIL.jsonl`. Tor на пользовательском профиле: **NOT TESTED** —
+существующий Tor Browser ответил, что не отвечает; этот процесс не завершали.
+Kitty на этих байтах: **NOT TESTED**.
+
+Следующий эксперимент отправляет один `RequireSurroundingText` сразу после
+проверенного IME-owned CommitText при заявленной поддержке SurroundingText.
+Это только запрос чтения; layout sync и обратная связь по-прежнему требуют
+подтверждённый postcondition. Исходный и физический результат этой правки:
+**NOT TESTED**. Runtime authority changed: **false до установки**.
+
+### 2026-09-28 — Qt не отвечает и на немедленный read-only запрос
+
+Немедленный `RequireSurroundingText` после IME-owned CommitText прошёл
+636 targeted IME tests, PASS:
+`/home/ubu/.cache/lay/development/run-41h80d6w/RESULT.json`;
+graph gate PASS:
+`/home/e/projects/lay-development-runner/qt-preedit-request-graph-20260928.log`.
+Полный исходный gate: **NOT TESTED**. Установлена только IME SHA
+`d777df7c3c356a949a345960c963ca3bd6a94830297acf8d593b26746abba2f6`;
+receipt `/home/ubu/.cache/lay/development/qt-preedit-request-20260928/INSTALL.json`.
+Runtime authority changed: **true**, только IME.
+
+В собственном Qt QLineEdit на четырёхбуквенной последовательности вновь
+подтверждены первые 10/20, после чего `work ` виден, но выбран RU. Trace
+доказывает успешную отправку `requested_after_owned_preedit_commit`, за которой
+не последовало SetSurroundingText; далее пришли Reset и FocusOut/FocusIn
+input context. Receipt и trace:
+`/home/ubu/.cache/lay/development/qt-preedit-request-20260928/QT_4_FAIL.json`
+и `QT_4_FAIL.jsonl`. Другие окна на этой SHA: **NOT TESTED**. Отсутствие
+ответа Qt нельзя чинить новым утверждением об успешном отображении слова.
+
+Следующий эксперимент отделяет решение о режиме следующей клавиши от
+положительного подтверждения результата. Для IME-owned preedit
+`TransitionDecisionCore`/verifier/`AuthorizedEdit` уже выбрали точную замену;
+после одного CommitText IME может выполнить одну операцию layout sync как
+forward input intent. Pending postcondition сохраняет feedback без второго
+layout sync; обучение остаётся запрещённым до наблюдения. Это не переносит
+право редактирования другому владельцу и не меняет обработчик клавиш.
+Исходный и физический результат этого варианта: **NOT TESTED**. Runtime
+authority changed: **false до установки**.
+
+### 2026-09-28 — forward mode проходит Qt, затем обнаружен stale InputMode
+
+Forward-mode вариант прошёл 636 targeted IME tests, PASS:
+`/home/ubu/.cache/lay/development/run-ooxub323/RESULT.json`;
+graph gate PASS: `/home/e/projects/lay-development-runner/forward-layout-graph-20260928.log`.
+Полный исходный gate на этих байтах: **NOT TESTED**. Установлена только IME
+SHA `9f8aada2f7ce00219e60df4f465be4bf6b9a62164bd465919bf0f6b7ec319fe4`;
+receipt `/home/ubu/.cache/lay/development/forward-layout-20260928/INSTALL.json`.
+Runtime authority changed: **true**, только IME.
+
+Физический Qt QLineEdit 3/4 букв прошёл 40/40, включая прежний отказ на
+одиннадцатом четырёхбуквенном слове `work`. Firefox textarea/contenteditable
+на изолированном атомарном браузерном измерителе прошёл 80/80, Chrome textarea
+40/40, Chrome contenteditable 3 буквы 20/20. Receipts в
+`/home/ubu/.cache/lay/development/forward-layout-20260928/` с префиксами
+`QT_`, `FF2_`, `CH2_`. Ранний обрыв старого браузерного измерителя был вызван
+несколькими собственными окнами, писавшими в один неатомарный JSON; новый
+измеритель использует отдельный ID поля, точный FocusedWindowInfo и атомарную
+запись состояния.
+
+Chrome contenteditable 4 буквы прошёл 18/20; на девятнадцатом `game ` виден,
+GNOME и IBus выбрали `lay-ime-us`, но `CurrentInputMode` оставался RU дольше
+1,2 с. Trace показывает готовую активацию нового US engine и последующие два
+SetSurroundingText. Это отдельный разрыв публикации свойства `InputMode`, а
+не отказ Candidate/AuthorizedEdit. Receipt и trace:
+`/home/ubu/.cache/lay/development/forward-layout-20260928/CH2_EDITABLE_4_MODE_RACE.json`
+и `CH2_EDITABLE_4_MODE_RACE.jsonl`. GTK, Kitty и Tor на этих байтах:
+**NOT TESTED**.
+
+Следующий эксперимент повторно публикует штатное свойство IBus `InputMode`
+ровно один раз на первом допущенном SetSurroundingText после установленной
+`ActivationOutcome::Transfer` нового владельца.
+Первый FocusIn может выдать свойство до завершения выбора GNOME источника;
+повтор после фактического снимка принадлежит тому же IME и не запускает
+второго layout switch. При отсутствии снимка повторной публикации нет.
+Первая широкая версия, которая публиковала свойство на каждом новом focus
+serial, провалила 20 исходных fixture-тестов: она добавляла лишний D-Bus
+эффект в source-free маршруте. Receipt:
+`/home/ubu/.cache/lay/development/run-kiif4_7n/RESULT.json`. Узкая версия
+после `Transfer` прошла 636/636 тестов IME; receipt:
+`/home/ubu/.cache/lay/development/run-6ihknknn/RESULT.json`.
+Физический результат узкой версии, полный исходный gate и graph gate:
+**NOT TESTED** на момент записи. Runtime authority changed: **false до
+установки**. Исходный отказ относится к публикации режима после смены
+источника; подтверждённого отказа Candidate/AuthorizedEdit на этом шаге нет.
+
+### 2026-09-28 — первое слово в новом Firefox ждёт отсутствующий итоговый снимок
+
+Узкая повторная публикация `InputMode` прошла полный исходный gate:
+2938 тестов, PASS,
+`/home/ubu/.cache/lay/development/run-m04_2lvt/RESULT.json`;
+graph gate PASS:
+`/home/e/projects/lay-development-runner/input-mode-property-graph2-20260928.log`.
+Первая попытка полного gate останавливалась на production-сборке из-за
+тестового `cfg` экспорта `ObservationReceipt`; экспорт исправлен до PASS.
+IME SHA `1fcd833b0c8d3840951b1a000c9a81f4a7428ef0010c7ce59e8cd792047c0c14`
+установлен только через IME channel; receipt:
+`/home/ubu/.cache/lay/development/input-mode-property-20260928/INSTALL.json`.
+Runtime authority changed: **true, только IME**. Chrome contenteditable и
+textarea на чередующихся трёх- и четырёхбуквенных словах прошли 80/80,
+включая прежний отказ `game`; receipts
+`/home/ubu/.cache/lay/development/known-boundary-preedit-20260928/BROWSER_chrome_*_ALTERNATING_*.json`.
+
+В новом Firefox textarea первое `дфн` → `lay ` было видимо правильно, но режим
+остался RU дольше 1,2 с: 0/20 по требованию полного перехода. Receipt:
+`/home/ubu/.cache/lay/development/input-mode-property-20260928/FIREFOX_TEXTAREA_3_FIRST_FAIL.json`;
+trace:
+`/home/ubu/.cache/lay/development/input-mode-property-20260928/FIREFOX_TEXTAREA_3_FIRST_FAIL.jsonl`.
+Trace содержит `ImeAutocorrect` → `AuthorizedEdit`, точный
+`surrounding_text_immediate_delete_commit`, `CommitText("lay ")`, затем лишь
+промежуточное наблюдение удаления. Два успешных read-only
+`RequireSurroundingText` не дали итогового SetSurroundingText. Из-за
+`layout_sync_text` в pending postcondition смена режима не исполнилась,
+хотя слово уже видно. Этот отказ отличается от Chrome stale `InputMode`:
+там был выбран US engine с устаревшим свойством, здесь сам источник RU.
+
+IME восстановлен до SHA `9f8aada2f7ce00219e60df4f465be4bf6b9a62164bd465919bf0f6b7ec319fe4`;
+receipt:
+`/home/ubu/.cache/lay/development/input-mode-property-20260928/ROLLBACK_AFTER_FIREFOX.json`.
+Runtime authority changed: **true, IME возвращён**. Остальные окна на SHA
+`1fcd833...`: **NOT TESTED** после первого отказа Firefox.
+
+Следующий эксперимент выбирает режим следующей клавиши сразу после успешной
+диспетчеризации уже проверенного exact legacy autocorrect. Он ограничен
+`ImeAutocorrect` с точным дооперационным снимком и не меняет маршрут
+`AuthorizedEdit`, delete/commit, ручной Double Shift или право учить L4.
+Pending exact postcondition и feedback остаются до реального подтверждения
+клиента; несовпадение либо отсутствие ответа не становится успехом. Исходный
+и физический результат варианта: **NOT TESTED** на момент записи. Runtime
+authority changed: **false до установки**.
+
+### 2026-09-28 — GNOME выбрал Lay EN, IBus сохранил системный US
+
+Forward exact autocorrect прошёл 637/637 тестов IME:
+`/home/ubu/.cache/lay/development/run-m4nx1eup/RESULT.json`;
+graph gate PASS:
+`/home/e/projects/lay-development-runner/forward-exact-autocorrect-graph-20260928.log`.
+Тестовый manifest пополнен одним новым тестом и перебинджен с
+`known_failures.json`; первая попытка полного gate остановилась именно на
+drift реестра, до выполнения тестов. После обновления реестра полный gate
+прошёл 2939 тестов: `/home/ubu/.cache/lay/development/run-bh3bd76i/RESULT.json`.
+IME SHA
+`c07c0b9ddb979f1c2cb6f813abc5845e49372eaf71020de8cd0847c009e4721e`
+временно установлен только через IME channel; receipt:
+`/home/ubu/.cache/lay/development/forward-exact-autocorrect-20260928/INSTALL.json`.
+Runtime authority changed: **true, только IME**.
+
+В новом Firefox textarea первое `дфн` → `lay ` стало видимым, GNOME и
+`CurrentInputMode` показывали US, но `ibus engine` остался `xkb:us::eng`.
+Тест остановлен до следующего слова: 0/20 подтверждённых переходов. Receipt:
+`/home/ubu/.cache/lay/development/forward-exact-autocorrect-20260928/FIREFOX_TEXTAREA_3_FIRST_FAIL.json`;
+trace:
+`/home/ubu/.cache/lay/development/forward-exact-autocorrect-20260928/FIREFOX_TEXTAREA_3_FIRST_FAIL.jsonl`.
+Trace подтвердил `authorized_surrounding_autocorrect_forward_mode`, затем
+`in_flight_context_conflict` при переключении GNOME. Проверенное ручное
+выполнение уже существующей операции `ibus engine lay-ime-us` восстановило
+соответствие IBus выбранному GNOME источнику без новой правки текста.
+Следовательно, оставшийся отказ в завершении **той же** операции смены
+источника, а не в выборе слова или втором `AuthorizedEdit`.
+
+IME восстановлен до SHA `9f8aada2f7ce00219e60df4f465be4bf6b9a62164bd465919bf0f6b7ec319fe4`;
+receipt:
+`/home/ubu/.cache/lay/development/forward-exact-autocorrect-20260928/ROLLBACK_AFTER_FIREFOX.json`.
+Runtime authority changed: **true, IME возвращён**. Остальные окна на SHA
+`c07c0b9...`: **NOT TESTED** после первого отказа Firefox.
+
+Следующий эксперимент оставляет существующий инициатор и маршрут GNOME.
+`switch_complete_layout_stack` после `ActivateLayout` проверяет фактический
+IBus engine и вызывает уже существующий `switch_active_ime_engine` только при
+расхождении. Это завершение одного перехода RU/EN; нового текстового
+исполнителя, второго выбора кандидата или обхода verifier нет. Исходный и
+физический результат этой правки: **NOT TESTED** на момент записи. Runtime
+authority changed: **false до установки**.
+
+### 2026-09-28 — завершение GNOME/IBus и чередование коротких слов
+
+Что проверено: точный IME с conditional IBus sync после GNOME activation,
+новый Firefox textarea с холодным первым словом, Firefox contenteditable,
+Chrome textarea/contenteditable, GTK Entry, Qt QLineEdit и Kitty. В каждом
+поле по 20 чередующихся слов длиной 3 и 4 буквы; каждый Space проверен по
+видимому тексту, GNOME source, IBus engine и `CurrentInputMode`. Использованы
+общие наборы с `lay`, `max`, `work`, `game` и парными русскими словами.
+
+Измерено: targeted IME 637/637 PASS:
+`/home/ubu/.cache/lay/development/run-lenhw45u/RESULT.json`;
+полный исходный gate 2939 PASS:
+`/home/ubu/.cache/lay/development/run-v0jwhi5k/RESULT.json`;
+graph gate PASS:
+`/home/e/projects/lay-development-runner/layout-stack-sync-graph-20260928.log`.
+IME SHA `58dcaacc5c1d403f095fb94aa9d88080a566361a3d4198ee3eb319cbc45accb5`
+установлен только через IME channel, receipt:
+`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/INSTALL.json`.
+Runtime authority changed: **true, только IME**. Процессы демона, IBus,
+L1.1 и L3 остались прежними по receipt установщика.
+
+Физические итоги на этой SHA: Firefox 80/80, Chrome 80/80, GTK 40/40,
+Qt 40/40, Kitty 40/40; всего **280/280** подтверждённых переходов.
+Полный список 14 отдельных receipts, SHA каждого и статус:
+`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/ACCEPTANCE.json`.
+Ранее воспроизведённые Firefox `дфн` → `lay ` без смены режима и Chrome
+`game ` с устаревшим InputMode на этих тестовых полях не повторились.
+
+Что не проверено: Tor Browser. Новый изолированный профиль остановился на
+странице `Connect to Tor`: доступный диалог `Tor Launcher` сообщил `Tor exited
+during startup`. Локальный тестовый URL не открылся; receipt:
+`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/TOR_ATTEMPT.json`.
+Все собственные тестовые процессы Tor закрыты, пользовательский процесс
+PID 776563 не завершали. Собственные тестовые окна Firefox/Chrome/Kitty и
+два локальных браузерных сервера после записи receipts тоже закрыты.
+Также на этой SHA не проверялись реальные WhatsApp/GitHub/WPS поля, Tab,
+удержание Shift и восемь Double Shift; они вне данного 3/4-буквенного
+Space-теста. Вердикт: **PASS на перечисленных тестовых полях**, Tor и реальные
+поля — **NOT TESTED**. Нельзя объявлять all-window PASS по этим receipts.
+
+### 2026-09-28 — восемь Double Shift в изолированном Kitty
+
+Что проверено: на установленном IME SHA
+`58dcaacc5c1d403f095fb94aa9d88080a566361a3d4198ee3eb319cbc45accb5`
+в собственном Kitty с явной границей перед `ghbdtn` запущен отдельный
+диагностический экземпляр **уже установленного** daemon с `--device` на
+собственной виртуальной клавиатуре. Основной daemon PID 1267796 не
+перезапускался. После каждой из восьми быстрых пар Shift отдельно сверялись
+видимое `ghbdtn`/`привет`, GNOME `CurrentLayout`, фактический `ibus engine`
+и `CurrentInputMode`; все восемь переходов прошли за 60–179 мс после второй
+клавиши. Изолированный daemon завершился штатно, основного PID не меняли.
+Точный receipt:
+`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/EIGHT_SHIFT_ATTACHED_KITTY.json`.
+
+Первый вспомогательный опыт не был проверкой демона: тестовый uinput создан
+после запуска основного daemon, который перечисляет клавиатуры только при
+старте; его Shift видел IBus, но не daemon. Во втором опыте отдельный daemon
+уже слушал устройство, однако `Ctrl+C` в терминале не завершил прежний IME
+tail: трасса содержала 12 символов после повторного шестисимвольного ввода,
+и `ManualToggleV3` обоснованно отказал с `context_authority`. Третий опыт
+добавил явную границу Enter, получил полный tail из шести символов и
+**8/8 PASS**. Эти два неудачных вспомогательных опыта не являются регрессией
+переключения. Журнал итогового отдельного daemon:
+`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/EIGHT_SHIFT_ATTACHED_DAEMON.log`;
+снимок трассы IME:
+`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/EIGHT_SHIFT_ATTACHED_IME.jsonl`.
+
+Что не проверено: восемь Double Shift на физической клавиатуре и в остальных
+окнах, а также Tab и удержание Shift на этой SHA. Вердикт этого опыта:
+**PASS только для собственного Kitty с подключённым устройством**. Runtime
+authority changed: **false для постоянного маршрута**; отдельный тестовый
+daemon и uinput завершены, исходные процессы daemon/IBus/IME сохранены.
+
+### 2026-09-28 — Tab и удержанный Shift на том же IME
+
+Что проверено: отдельное собственное GTK Entry и собственное Firefox
+`textarea` с изолированным профилем. GTK: `п`→Tab вставило ровно `почему `,
+сохранило фокус и RU в GNOME/IBus/InputMode. В новом GTK поле физически
+удержанный Shift с `ghj` ввёл `ПРО`; IME трасса после третьей буквы
+опубликовала верхнерегистровый суффикс `ДАТЬ`. Саму отрисовку этой
+подсказки отдельным экранным снимком не проверяли. Firefox: перед Tab DOM
+сообщил композицию `почему` с курсором 1, после Tab — обычный текст
+`почему ` с курсором 7 и прежним фокусом. Точные receipts:
+`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/GTK_TAB_SHIFT.json`,
+`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/FIREFOX_TAB.json`;
+снимок GTK IME трассы:
+`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/GTK_TAB_SHIFT_IME.jsonl`;
+DOM события Firefox:
+`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/firefox-tab-owned/FIREFOX-DOM-EVENTS.json`.
+
+Что не проверено: Tab и удержанный Shift в WhatsApp, GitHub, Tor, WPS,
+Chrome и Qt; удержанный Shift в Firefox. Вердикт: **PASS только в названных
+полях**; общего all-window вывода этот опыт не даёт. Runtime authority
+changed: **false**; установленные бинарники и основной daemon PID 1267796
+не менялись, собственные тестовые окна закрыты.
+
+### 2026-09-28 — локальные поля Tor Browser и общий итог коротких слов
+
+Что проверено: после ранней ошибки Tor Launcher открыт отдельный профиль Tor
+Browser с отключённым запуском собственного Tor только для локального HTML
+файла. Пользовательский Tor PID 776563 и его профиль не менялись. В
+собственных `textarea` и `contenteditable` набраны те же 20 чередующихся
+RU/EN слов длиной 3 и 4 буквы на поле и длину, включая `lay` из физического
+`lay` при RU и `max`. Каждый Space проверен по всему накопленному тексту,
+видимому слову, GNOME source, IBus engine и `CurrentInputMode`.
+
+Измерено: Tor `textarea` 40/40, Tor `contenteditable` 40/40, вместе
+**80/80 PASS** на установленном IME SHA
+`58dcaacc5c1d403f095fb94aa9d88080a566361a3d4198ee3eb319cbc45accb5`.
+Tor `contenteditable` представлял часть пробелов как U+00A0; при сравнении
+текста это нормализовано к пробелу, сырой счёт U+00A0 сохранён в каждой
+строке receipt. Первый отказ проверки такого поля был только несовпадением
+формата пробела в тестовом сравнении: слово `lay` и переход RU→EN уже тогда
+были верны. Исходный маршрут текста не менялся. Точный Tor receipt:
+`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/TOR_ALTERNATING.json`.
+Новый агрегат проверяет SHA всех 15 receipts: **360/360 PASS** в локальных
+полях Firefox, Chrome, Tor, GTK, Qt и Kitty:
+`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/ACCEPTANCE_ALL_CLIENTS.json`.
+
+Что не проверено: конкретные поля пользовательского Tor, WhatsApp, GitHub
+issue и WPS на этой SHA; Tor Tab, удержанный Shift и восемь Double Shift.
+Локальный файл в отдельном Tor профиле не доказывает поведение всех сайтов
+или уже открытых вкладок. Вердикт: **PASS для перечисленных локальных полей**,
+не all-window acceptance. Runtime authority changed: **false**; основной
+daemon PID 1267796, IBus и установленный IME остались прежними; собственный
+Tor процесс закрыт, пользовательский PID остался жив.

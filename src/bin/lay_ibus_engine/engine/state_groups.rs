@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 #[cfg(test)]
 use std::sync::atomic::AtomicUsize;
 #[cfg(test)]
@@ -74,6 +74,9 @@ pub(crate) struct LayoutGestureState {
     pub(crate) alt_completion_active: bool,
     pub(crate) alt_used_as_modifier: bool,
     pub(crate) handled_press_keycodes: BTreeSet<u32>,
+    /// Releases of native letters already observed on this exact focus.
+    /// This is pairing evidence, never text-edit authority.
+    pub(crate) native_letter_release_focus: BTreeMap<u32, u64>,
     pub(crate) last_shift_release_at: Option<Instant>,
     pub(crate) pending_manual_toggle: bool,
     /// A Firefox preedit refresh may deliver its exact receipt after the
@@ -92,6 +95,7 @@ impl LayoutGestureState {
             alt_completion_active: false,
             alt_used_as_modifier: false,
             handled_press_keycodes: BTreeSet::new(),
+            native_letter_release_focus: BTreeMap::new(),
             last_shift_release_at: None,
             pending_manual_toggle: false,
             pending_manual_refresh_at: None,

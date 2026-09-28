@@ -200,6 +200,11 @@ impl LayIbusEngine {
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         self.committed_tail.last_commit_at = Some(Instant::now());
         self.push_tail_char(ch);
+        self.client_context.managed_commit_snapshot_floor = (!ch.is_whitespace()).then_some((
+            self.client_context.focus_serial,
+            self.committed_tail.epoch,
+            self.client_context.surrounding_observation_revision,
+        ));
         if !ch.is_whitespace() {
             self.arm_managed_commit_reset_echo();
         }

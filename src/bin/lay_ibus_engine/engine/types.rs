@@ -393,6 +393,9 @@ pub(crate) struct PendingVisiblePostcondition {
     pub(crate) snapshot: SnapshotIdentity,
     pub(crate) dispatched_epoch: u64,
     pub(crate) dispatched_at: Instant,
+    /// One read-only retry after a client reports the intermediate delete
+    /// state instead of the final CommitText state.
+    pub(crate) final_refresh_retry_sent: bool,
     pub(crate) feedback: Option<PendingSystemOutcomeFeedback>,
     /// IME layout ownership follows the externally confirmed committed text.
     /// Keeping it on the receipt prevents an engine switch from destroying the

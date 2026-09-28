@@ -1448,6 +1448,17 @@ where
                 return None;
             }
             reservation.expected_target_profile.clone()
+        } else if let Some(factory) = self.ticket.as_ref().filter(|ticket| {
+            matches!(&self.profile, GlobalProfile::Lay(_))
+                && ticket.status == TicketStatus::Revoked
+                && ticket.kind == TicketKind::Factory
+                && ticket.target_path.as_ref() == Some(&target_path)
+                && position > ticket.factory_position
+        }) {
+            // A lost word handoff revokes its text authority, but the exact
+            // factory path still identifies the new engine's profile. GNOME
+            // may publish GlobalEngineChanged after this native FocusIn.
+            factory.expected_target_profile.clone()
         } else {
             match &self.profile {
                 GlobalProfile::Lay(profile) => profile.clone(),

@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2891,
+    "correctness": 2903,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 203,
-    "target": 2750
+    "process": 208,
+    "target": 2757
   },
   "package_fixtures": [
     {
@@ -1096,6 +1096,27 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::surrounding_without_refresh_accepts_live_owned_preedit_completion",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::surrounding_without_refresh_owned_preedit_publishes_eight_modes_without_committing",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::surrounding_without_refresh_owned_preedit_rejects_stale_token_and_selection",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::td121_alt_before_exact_receipt_cannot_accept_later_cached_hint",
       "target": "bin:lay-ibus-engine"
     },
@@ -1468,6 +1489,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_first_atomic_frame_retires_legacy_native_word_mode",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_gtk_first_word_preedit_rejects_selection_and_word_fragment",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_gtk_late_snapshots_autocorrect_first_committed_word",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -2581,6 +2616,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::tests::repeated_content_type_requires_settled_provenance_and_exact_target",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::tests::revoked_factory_handoff_retains_only_exact_target_profile_for_empty_activation",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -15425,6 +15467,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "state::tests::exact_legacy_autocorrect_selects_next_mode_before_missing_final_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "state::tests::exact_surrounding_final_snapshot_preserves_context_and_cursor_geometry",
       "target": "bin:lay-ibus-engine"
     },
@@ -15615,6 +15664,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "tail_memory::tests::exact_manual_toggle_suppression_requires_and_consumes_the_exact_handoff",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tail_memory::tests::exact_postcommit_reset_keeps_one_pending_receipt_until_final_snapshot",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -16125,6 +16181,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_exact_refresh_at_observed_boundary_uses_owned_word_preedit",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "td125_legacy_preedit_tests::td125_exact_refresh_marker_keeps_typed_prefix_committed_and_out_of_preedit",
       "target": "bin:lay-ibus-engine"
     },
@@ -16133,6 +16196,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "td125_legacy_preedit_tests::td125_focus_reset_cannot_transfer_owned_preedit_as_committed_tail",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_known_boundary_without_exact_refresh_keeps_next_word_in_owned_preedit",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -20326,6 +20396,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "window_interaction::observation::tests::td121_unknown_start_actual_tab_refuses_active_composition_without_output_or_feedback",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::active_composition_stale_snapshot_requests_one_final_refresh_before_layout_sync",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::tests::exact_intermediate_snapshot_requests_one_final_refresh_before_layout_sync",
       "target": "bin:lay-ibus-engine"
     },
     {

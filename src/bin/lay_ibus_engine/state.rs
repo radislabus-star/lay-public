@@ -328,6 +328,7 @@ impl LayIbusEngine {
         self.layout_gesture.alt_completion_active = false;
         self.layout_gesture.alt_used_as_modifier = false;
         self.layout_gesture.handled_press_keycodes.clear();
+        self.layout_gesture.native_letter_release_focus.clear();
         if !preserve_tail {
             self.committed_tail.buffer.clear();
             self.composition.preedit_fast.reset();
@@ -424,6 +425,7 @@ impl LayIbusEngine {
         if !preserves_managed_commit_reset {
             self.layout_gesture.handled_press_keycodes.clear();
         }
+        self.layout_gesture.native_letter_release_focus.clear();
         self.client_context.surrounding_text_snapshot = None;
         if !preserves_pending_manual_refresh {
             self.layout_gesture.pending_manual_toggle = false;
@@ -436,10 +438,27 @@ impl LayIbusEngine {
         let preserves_admission_seal =
             self.context_admission_required && self.context_handoff_sealed;
         let preserves_reset_rereceipt = self.context_reset_rereceipt.is_some();
+        // A client may Reset after our authorized DeleteSurroundingText +
+        // CommitText, before publishing the final surrounding snapshot. The
+        // shared tail was already published by that edit. Keep only its exact
+        // pending postcondition at the same epoch; the next client snapshot
+        // must still match before feedback or layout sync can proceed.
+        let preserves_exact_postcondition = self
+            .committed_tail
+            .pending_visible_postcondition
+            .as_ref()
+            .is_some_and(|pending| {
+                pending.expected_external_snapshot.is_some()
+                    && pending.dispatched_epoch == self.committed_tail.epoch
+                    && pending.dispatched_at.elapsed() <= Duration::from_millis(500)
+                    && pending.expected_suffix == self.committed_tail.buffer
+                    && pending.snapshot.focus_id.as_deref() == Some(self.path.as_str())
+            });
         if discarded_owned_preedit
             || !preserves_admission_seal
                 && !preserves_reset_rereceipt
                 && !preserves_managed_commit_reset
+                && !preserves_exact_postcondition
                 && !self.exact_manual_toggle_handoff_is_live()
                 && !preserves_exact_replay
         {
@@ -749,15 +768,31 @@ impl LayIbusEngine {
         self.composition.cursor = 0;
         self.composition.legacy_word_preedit_active = false;
         self.clear_preedit_completion_state();
+        // In an exact legacy autocorrect, the verifier authorized the edit
+        // against this field's pre-dispatch snapshot. Firefox may report only
+        // the intermediate delete state and never answer the final read-only
+        // request. Treat the selected next-key mode as forward input intent;
+        // keep outcome feedback pending until the exact final state is seen.
+        let forward_autocorrect_layout = ime_owns_layout_postcondition
+            && intent == TextTransitionIntent::ImeAutocorrect
+            && exact_final_snapshot.is_some();
         let deferred_layout_sync_text = (ime_owns_layout_postcondition
-            && surrounding_postcondition_available)
+            && surrounding_postcondition_available
+            && !forward_autocorrect_layout)
             .then(|| logical_text.clone());
         trace::record(format!(
             r#"{{"kind":"ibus_layout_postcondition_route","intent":"{intent:?}","surrounding_dispatch":{surrounding_postcondition_available},"deferred":{}}}"#,
             deferred_layout_sync_text.is_some(),
         ));
         if ime_owns_layout_postcondition && deferred_layout_sync_text.is_none() {
-            self.sync_layout_after_committed_text(&logical_text, "committed_tail_immediate");
+            self.sync_layout_after_committed_text(
+                &logical_text,
+                if forward_autocorrect_layout {
+                    "authorized_surrounding_autocorrect_forward_mode"
+                } else {
+                    "committed_tail_immediate"
+                },
+            );
         }
         let state_us = state_started.elapsed().as_micros();
         trace::record_committed_tail_replace_timing(
@@ -787,6 +822,20 @@ impl LayIbusEngine {
             trace::record(
                 r#"{"kind":"ibus_surrounding_replace","stage":"delete_commit_dispatched_waiting_exact_final"}"#,
             );
+            // Firefox can publish the intermediate post-delete snapshot and
+            // omit the post-commit one. Ask for a fresh client observation
+            // after CommitText; only the exact receipt can confirm the edit
+            // and release the pending layout transition.
+            if emitter.is_legacy() {
+                let stage = if emitter.require_surrounding_text().await.is_ok() {
+                    "requested_final_snapshot"
+                } else {
+                    "final_snapshot_request_failed"
+                };
+                trace::record(format!(
+                    r#"{{"kind":"ibus_surrounding_replace","stage":"{stage}"}}"#
+                ));
+            }
         } else if surrounding_postcondition_available {
             self.arm_visible_postcondition_from_surrounding_dispatch(
                 now,
@@ -1000,7 +1049,12 @@ mod tests {
         CommittedTailExternalObservation, CommittedTailReplaceRequest, LayIbusEngine,
         RecentCommittedTailReplace, SurroundingTextSnapshot,
     };
+    use crate::engine::{PendingSystemOutcomeFeedback, SystemOutcomeKind};
+    use crate::output::{EngineOutput, TestEngineOutput};
     use crate::window_interaction::TextTargetEditRoute;
+    use crate::window_interaction::{
+        IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH, IBUS_CAP_SURROUNDING_TEXT,
+    };
     use lay::config::LayConfig;
     use lay::manual_toggle::VisibleTailSource;
     use lay::text_edit::TextTransitionIntent;
@@ -1015,6 +1069,50 @@ mod tests {
             true,
             LayConfig::default(),
         )
+    }
+
+    #[test]
+    fn exact_legacy_autocorrect_selects_next_mode_before_missing_final_receipt() {
+        let mut engine = engine();
+        engine.config.auto_switch_layout = true;
+        engine.set_client_capabilities(
+            IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
+        );
+        engine.committed_tail.buffer = "дфн".to_string();
+        engine.client_context.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("дфн".to_string(), 3, 3));
+        let mut effects = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+
+        let applied = zbus::block_on(
+            engine.replace_committed_tail(
+                &mut EngineOutput::test(&mut effects),
+                CommittedTailReplaceRequest::ime_autocorrect(3, "lay ".to_string())
+                    .with_outcome_feedback(PendingSystemOutcomeFeedback {
+                        original: "дфн".to_string(),
+                        replacement: "lay ".to_string(),
+                        source: VisibleTailSource::ImeCommittedTail,
+                        kind: SystemOutcomeKind::LayoutProjection,
+                    }),
+            ),
+        )
+        .expect("authorized legacy replacement");
+
+        assert!(applied);
+        assert_eq!(effects.surrounding_deletes, [(-3, 3)]);
+        assert_eq!(effects.committed_texts, ["lay "]);
+        assert!(!engine.layout_gesture.layout_is_ru);
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .as_ref()
+            .is_some_and(|pending| {
+                pending.feedback.is_some()
+                    && pending.layout_sync_text.is_none()
+                    && pending.expected_external_snapshot.is_some()
+            }));
     }
 
     #[test]

@@ -539,8 +539,15 @@ fn switch_active_ime_engine(engine: &str) -> Result<(), String> {
 }
 
 fn switch_complete_layout_stack(target_is_ru: bool, engine: &str) -> Result<(), String> {
-    let _ = engine;
-    activate_gnome_layout_for_ime(target_is_ru)
+    activate_gnome_layout_for_ime(target_is_ru)?;
+    // GNOME may select the Lay source while IBus still reports its fallback
+    // XKB engine, especially when Firefox resets the context during the same
+    // Space callback. Complete this one layout operation at the IBus boundary
+    // only if the selected engine has not followed GNOME yet.
+    if current_active_ime_layout_is_ru() != Some(target_is_ru) {
+        switch_active_ime_engine(engine)?;
+    }
+    Ok(())
 }
 
 fn current_active_ime_layout_is_ru() -> Option<bool> {

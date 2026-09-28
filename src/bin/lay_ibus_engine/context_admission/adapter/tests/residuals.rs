@@ -6154,6 +6154,76 @@ fn no_surrounding_browser_accepts_only_its_live_owned_preedit_completion() {
 }
 
 #[test]
+fn surrounding_without_refresh_accepts_live_owned_preedit_completion() {
+    zbus::block_on(bounded(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_client_capabilities(41);
+        engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+            String::new(),
+            0,
+            0,
+        )));
+        engine.config.nanda_precognition = false;
+        engine.config.ime_bracket_candidates = false;
+
+        assert!(legacy_key(&mut harness, &mut engine, 12_877, 'a' as u32, 30, 0).await);
+        let initial = drain_output_to_proof(&mut harness).await;
+        assert!(initial.iter().any(|member| member == "UpdatePreeditText"));
+        assert!(!initial.iter().any(|member| member == "CommitText"));
+        assert!(engine.composition.legacy_word_preedit_active);
+        set_fixture_append_completion(&mut engine, "bc");
+        let emitter =
+            zbus::object_server::SignalEmitter::new(&harness.connection, engine.path.clone())
+                .unwrap();
+        engine
+            .publish_selected_precognition_candidate(&mut EngineOutput::legacy(&emitter))
+            .await
+            .unwrap();
+        let _ = bounded(next_peer_message(&mut harness.peer)).await;
+
+        assert!(engine.context_owns_active_preedit_append_completion());
+        assert!(legacy_key(&mut harness, &mut engine, 12_878, KEY_TAB, 15, 0).await);
+        td121_expect_legacy_commit_text(&mut harness.peer, "abc ").await;
+        assert_eq!(engine.committed_tail.buffer, "abc ");
+    }));
+}
+
+#[test]
+fn surrounding_without_refresh_owned_preedit_rejects_stale_token_and_selection() {
+    zbus::block_on(bounded(async {
+        for stale_token in [false, true] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = new_engine(&harness);
+            start_source_free_unknown(&mut harness, &mut engine).await;
+            engine.set_client_capabilities(41);
+            engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+                String::new(),
+                0,
+                0,
+            )));
+            engine.config.nanda_precognition = false;
+            assert!(legacy_key(&mut harness, &mut engine, 12_879, 'a' as u32, 30, 0).await);
+            drain_output_to_proof(&mut harness).await;
+            assert!(engine.composition.legacy_word_preedit_active);
+            if stale_token {
+                engine.context_token = None;
+            } else {
+                engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+                    "selected".to_string(),
+                    8,
+                    0,
+                )));
+            }
+            set_fixture_append_completion(&mut engine, "bc");
+            assert!(!engine.context_owns_active_preedit_append_completion());
+            assert!(!engine.context_owns_active_preedit_manual_toggle());
+        }
+    }));
+}
+
+#[test]
 fn no_surrounding_owned_preedit_cannot_accept_after_context_token_loss() {
     zbus::block_on(bounded(async {
         let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
@@ -6265,6 +6335,52 @@ fn no_surrounding_owned_preedit_publishes_each_of_eight_modes_without_committing
         assert_eq!(engine.composition.buffer, "a");
         assert_eq!(engine.committed_tail.buffer, "a");
         assert!(!engine.layout_gesture.layout_is_ru);
+    }));
+}
+
+#[test]
+fn surrounding_without_refresh_owned_preedit_publishes_eight_modes_without_committing() {
+    zbus::block_on(bounded(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_client_capabilities(41);
+        engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+            String::new(),
+            0,
+            0,
+        )));
+        engine.config.nanda_precognition = false;
+        assert!(legacy_key(&mut harness, &mut engine, 12_882, 'a' as u32, 30, 0).await);
+        drain_output_to_proof(&mut harness).await;
+        assert_eq!(engine.composition.buffer, "a");
+
+        for gesture in 0..8 {
+            let expected_ru = gesture % 2 == 0;
+            let expected = if expected_ru { "ф" } else { "a" };
+            let mut effects = crate::output::TestEngineOutput {
+                legacy_transport: true,
+                ..Default::default()
+            };
+            let target = engine
+                .manual_toggle_active_text_target(&mut EngineOutput::test(&mut effects))
+                .await
+                .expect("exact owned preedit gesture");
+            assert_eq!(target, Some(expected_ru), "gesture {}", gesture + 1);
+            assert_eq!(effects.input_mode_updates, [expected_ru]);
+            assert_eq!(
+                effects
+                    .preedit_updates
+                    .last()
+                    .map(|update| update.0.as_str()),
+                Some(expected)
+            );
+            assert!(effects.committed_texts.is_empty());
+            assert!(effects.surrounding_deletes.is_empty());
+            assert_eq!(engine.composition.buffer, expected);
+            assert_eq!(engine.committed_tail.buffer, expected);
+            assert_eq!(engine.layout_gesture.layout_is_ru, expected_ru);
+        }
     }));
 }
 

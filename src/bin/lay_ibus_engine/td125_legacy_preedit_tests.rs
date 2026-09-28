@@ -91,6 +91,97 @@ fn td125_legacy_preedit_word_commits_ready_space_correction_without_delete() {
 }
 
 #[test]
+fn td125_known_boundary_without_exact_refresh_keeps_next_word_in_owned_preedit() {
+    lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
+        .expect("warm exact-layout authority");
+    let mut engine = legacy_engine(
+        "/td125/legacy-preedit/known-boundary",
+        IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_FOCUS,
+    );
+    engine.committed_tail.buffer = "дом ".to_string();
+    engine.client_context.surrounding_text_snapshot =
+        Some(SurroundingTextSnapshot::new("дом ".to_string(), 4, 4));
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+
+    for ch in "ghbdtn".chars() {
+        assert!(press(&mut engine, &mut output, ch as u32));
+    }
+    assert!(engine.composition.legacy_word_preedit_active);
+    assert_eq!(engine.composition.buffer, "ghbdtn");
+    assert!(output.committed_texts.is_empty());
+
+    let identity = engine
+        .capture_input_frame_identity()
+        .expect("known word has an input frame");
+    install_exact_lease(&identity, &engine.config);
+    assert!(press(&mut engine, &mut output, KEY_SPACE));
+    assert_eq!(output.committed_texts, ["привет "]);
+    assert!(output.surrounding_deletes.is_empty());
+}
+
+#[test]
+fn td125_exact_refresh_at_observed_boundary_uses_owned_word_preedit() {
+    lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
+        .expect("warm exact-layout authority");
+    let mut engine = legacy_engine(
+        "/td125/legacy-preedit/exact-boundary",
+        IBUS_CAP_PREEDIT_TEXT
+            | IBUS_CAP_SURROUNDING_TEXT
+            | IBUS_CAP_FOCUS
+            | IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
+    );
+    engine.client_context.surrounding_text_snapshot =
+        Some(SurroundingTextSnapshot::new(String::new(), 0, 0));
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+
+    for ch in "ghbdtn".chars() {
+        assert!(press(&mut engine, &mut output, ch as u32));
+    }
+    assert!(engine.composition.legacy_word_preedit_active);
+    assert!(engine.client_context.managed_word_start.is_none());
+    assert_eq!(engine.composition.buffer, "ghbdtn");
+    assert!(output.committed_texts.is_empty());
+
+    let identity = engine
+        .capture_space_autocorrect_frame_identity()
+        .expect("owned preedit has a complete Space frame");
+    install_exact_lease(&identity, &engine.config);
+    assert!(press(&mut engine, &mut output, KEY_SPACE));
+    assert_eq!(output.committed_texts, ["привет "]);
+    assert!(output.surrounding_deletes.is_empty());
+    assert_eq!(
+        output
+            .effects
+            .iter()
+            .filter(|effect| **effect == "require-surrounding")
+            .count(),
+        1
+    );
+    // The authorized edit chooses the next decoder. It is not positive
+    // outcome evidence until the client reports the committed surface.
+    assert!(engine.layout_gesture.layout_is_ru);
+    assert!(engine
+        .committed_tail
+        .pending_visible_postcondition
+        .as_ref()
+        .is_some_and(|pending| pending.feedback.is_some() && pending.layout_sync_text.is_none()));
+    engine.client_context.surrounding_text_snapshot =
+        Some(SurroundingTextSnapshot::new("привет ".to_string(), 7, 7));
+    let _ = engine.observe_visible_postcondition();
+    assert!(engine.layout_gesture.layout_is_ru);
+    assert!(engine
+        .committed_tail
+        .pending_visible_postcondition
+        .is_none());
+}
+
+#[test]
 fn td125_without_preedit_capability_keeps_per_character_managed_commits() {
     let mut engine = legacy_engine("/td125/legacy-preedit/no-cap", IBUS_CAP_FOCUS);
     let mut output = TestEngineOutput {
@@ -167,6 +258,13 @@ fn td125_exact_refresh_marker_keeps_typed_prefix_committed_and_out_of_preedit() 
         ["g", "h", "b", "d", "t", "n", "привет "]
     );
     assert_eq!(output.surrounding_deletes, [(-6, 6)]);
+    assert!(
+        output
+            .effects
+            .ends_with(&["delete", "commit", "require-surrounding"]),
+        "an exact client edit must request its final post-commit snapshot: {:?}",
+        output.effects
+    );
     assert!(!output.effects.contains(&"forward-key"));
     assert_eq!(engine.committed_tail.buffer, "привет ");
 

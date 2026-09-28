@@ -1111,6 +1111,71 @@ fn source_free_initial_activation_stays_unknown_until_a_real_boundary() {
 }
 
 #[test]
+fn revoked_factory_handoff_retains_only_exact_target_profile_for_empty_activation() {
+    let epoch = ConnectionGeneration(401);
+    let target = engine_path("/org/freedesktop/IBus/Engine/Lay/profile_target");
+    for next_profile in ["lay-us", "lay-ru"] {
+        let mut reducer = ContextAdmissionReducer::<u64>::new(
+            epoch,
+            GlobalEngineMode::Verified,
+            GlobalProfile::Lay(profile("lay-ru")),
+        );
+        let source = reducer
+            .establish_source(
+                engine_path("/org/freedesktop/IBus/Engine/Lay/profile_source"),
+                context(epoch, "/org/freedesktop/IBus/InputContext_profile"),
+                WordCompleteness::KnownStart,
+                7,
+            )
+            .unwrap();
+        let old_token = reducer.admission_token().unwrap();
+        open_bound_factory(&mut reducer, target.clone(), profile("lay-us"), 10);
+        assert!(reducer.focus_out(&source, 11).is_some());
+        assert!(reducer.disable(&source, 12));
+        reducer.malformed_or_unobserved_lifecycle();
+        assert_eq!(
+            reducer.ticket.as_ref().unwrap().status,
+            TicketStatus::Revoked
+        );
+
+        let nonce = BarrierNonce(402);
+        let request = reducer
+            .begin_source_free_activation(target.clone(), nonce, ReceiptOrigin::Native, 20)
+            .expect("same factory target can reacquire an empty field");
+        assert!(!reducer.revalidate(&old_token));
+        assert_eq!(
+            reducer
+                .source_free
+                .as_ref()
+                .unwrap()
+                .expected_target_profile,
+            profile("lay-us")
+        );
+        assert!(reducer.context_reply(
+            request,
+            nonce,
+            context(epoch, "/org/freedesktop/IBus/InputContext_profile"),
+            21,
+        ));
+        assert!(!reducer.marker(request, nonce, 22));
+        assert!(reducer.consume_source_free_activation().is_none());
+        reducer.global_engine_changed(GlobalProfile::Lay(profile(next_profile)));
+        if next_profile == "lay-us" {
+            let grant = reducer
+                .consume_source_free_activation()
+                .expect("matching later profile admits empty target only");
+            assert_eq!(grant.target_owner.path, target);
+            assert_eq!(grant.lineage.completeness, WordCompleteness::UnknownStart);
+            assert_eq!(grant.tail_epoch, 0);
+            assert!(reducer.consume().is_none());
+        } else {
+            assert!(reducer.request.is_none());
+            assert!(reducer.consume_source_free_activation().is_none());
+        }
+    }
+}
+
+#[test]
 fn source_free_epoch_binding_survives_next_factory_before_source_handler() {
     let epoch = ConnectionGeneration(42);
     let source = engine_path("/org/freedesktop/IBus/Engine/Lay/source");

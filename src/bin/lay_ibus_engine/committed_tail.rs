@@ -428,11 +428,30 @@ impl LayIbusEngine {
         self.commit_verified_active_composition(emitter, authorized_edit, false)
             .await?;
         self.retire_legacy_word_preedit_ownership_if_empty();
+        // The verified edit of an IME-owned word also chooses the decoder for
+        // the next key. This is forward input intent, not positive evidence
+        // that the client displayed CommitText: feedback still waits for the
+        // visible postcondition below. Perform one layout operation here so
+        // clients that Reset before reporting surrounding text can keep typing.
+        self.sync_layout_after_committed_text(
+            &replacement,
+            "authorized_owned_preedit_forward_mode",
+        );
         self.arm_active_composition_visible_postcondition_with_effects(
             Instant::now(),
             Some(feedback),
-            Some(replacement.clone()),
+            None,
         );
+        if self.client_context.surrounding_text_supported {
+            let stage = if emitter.require_surrounding_text().await.is_ok() {
+                "requested_after_owned_preedit_commit"
+            } else {
+                "owned_preedit_commit_request_failed"
+            };
+            trace::record(format!(
+                r#"{{"kind":"ibus_surrounding_refresh","stage":"{stage}"}}"#
+            ));
+        }
         let replacement_us = replacement_started.elapsed().as_micros();
         trace::record_space_autocorrect_timing(
             "active_composition_applied",

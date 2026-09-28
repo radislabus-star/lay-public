@@ -370,6 +370,9 @@ impl LayIbusEngine {
                 return Ok(false);
             }
             if self.should_start_legacy_word_preedit(emitter, mode, ch) {
+                // This word has not entered the widget. Retire any projected
+                // committed-word witness from an earlier boundary.
+                self.client_context.managed_word_start = None;
                 self.composition.legacy_word_preedit_active = true;
                 self.insert_composition_char(ch);
                 let frame = self.capture_space_autocorrect_frame_identity();
@@ -430,11 +433,36 @@ impl LayIbusEngine {
         mode: WordInputMode,
         ch: char,
     ) -> bool {
+        // A current boundary observation establishes where a new, entirely
+        // IME-owned preedit begins even if the client advertises exact
+        // SurroundingText. It never grants deletion of client-owned text.
+        let observed_preedit_boundary = self.client_context.surrounding_text_supported
+            && self
+                .client_context
+                .surrounding_text_snapshot
+                .as_ref()
+                .is_some_and(|snapshot| {
+                    let cursor = snapshot.cursor_pos as usize;
+                    let chars = snapshot.text.chars().count();
+                    !snapshot.has_selection()
+                        && cursor <= chars
+                        && (cursor == 0
+                            || snapshot
+                                .text
+                                .chars()
+                                .nth(cursor - 1)
+                                .is_some_and(crate::preedit::is_observed_word_boundary))
+                        && (cursor == chars
+                            || snapshot
+                                .text
+                                .chars()
+                                .nth(cursor)
+                                .is_some_and(crate::preedit::is_observed_word_boundary))
+                });
         emitter.is_legacy()
             && mode == WordInputMode::ManagedCommit
             && self.client_context.preedit_text_supported
-            && !self.client_context.surrounding_text_supported
-            && !self.client_context.exact_surrounding_refresh_available
+            && (!self.client_context.surrounding_text_supported || observed_preedit_boundary)
             && self.content_allows_text_assistance()
             && ch.is_alphabetic()
             && self

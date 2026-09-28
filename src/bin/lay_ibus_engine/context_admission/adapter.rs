@@ -996,11 +996,25 @@ impl ContextAdmissionAdapter {
         tail_epoch: u64,
         stamp: &ObservedCallback,
     ) -> bool {
-        let sealed = self
-            .shared
-            .reducer
-            .lock()
-            .is_ok_and(|mut reducer| reducer.seal_source(owner, tail_epoch, stamp.position));
+        let sealed = self.shared.reducer.lock().is_ok_and(|mut reducer| {
+            if trace::enabled() {
+                let status = reducer.diagnostic_snapshot();
+                let ticket = reducer.ticket.as_ref();
+                trace::record(format!(
+                    r#"{{"kind":"ibus_context_admission","stage":"source_seal_precondition","serial":{},"owner_matches":{},"unsettled":{},"status":"{}","ticket_source_matches":{},"ticket_pending":{},"ticket_already_sealed":{},"tail_epoch_matches":{},"focus_out_matches":{}}}"#,
+                    stamp.header.serial,
+                    reducer.owner() == Some(owner),
+                    status.unsettled_count,
+                    status.reducer_status,
+                    ticket.is_some_and(|ticket| ticket.source_owner == *owner),
+                    ticket.is_some_and(|ticket| ticket.status == TicketStatus::Pending),
+                    ticket.is_some_and(|ticket| ticket.source_seal.is_some()),
+                    tail_epoch == reducer.latest_tail_epoch,
+                    ticket.is_some_and(|ticket| ticket.focus_out_position.as_ref().is_some_and(|focus_out| stamp.position <= *focus_out)),
+                ));
+            }
+            reducer.seal_source(owner, tail_epoch, stamp.position)
+        });
         if sealed {
             self.refresh_acquisition_fence_ready();
         }
@@ -2511,8 +2525,29 @@ impl ContextAdmissionObserver {
             let profile = classify_profile(&self.shared.lay_profiles, &name)?;
             let revoked = if let Ok(mut reducer) = self.shared.reducer.lock() {
                 let before = reducer.revocation_generation();
+                let ticket = reducer.ticket.as_ref();
+                let ticket_pending =
+                    ticket.is_some_and(|ticket| ticket.status == TicketStatus::Pending);
+                let profile_matches_ticket = ticket.is_some_and(|ticket| {
+                    matches!(&profile, GlobalProfile::Lay(actual) if actual == &ticket.expected_target_profile)
+                });
                 reducer.global_engine_changed(profile);
-                reducer.revocation_generation() != before
+                let revoked = reducer.revocation_generation() != before;
+                trace::record(format!(
+                    r#"{{"kind":"ibus_context_admission","stage":"global_engine_changed","serial":{},"profile":"{}","ticket_pending":{},"profile_matches_ticket":{},"revoked":{}}}"#,
+                    key.serial,
+                    if name == "lay-ime-ru" {
+                        "ru"
+                    } else if name == "lay-ime-us" {
+                        "us"
+                    } else {
+                        "other"
+                    },
+                    ticket_pending,
+                    profile_matches_ticket,
+                    revoked,
+                ));
+                revoked
             } else {
                 true
             };

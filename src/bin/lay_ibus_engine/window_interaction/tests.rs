@@ -297,6 +297,123 @@ fn window_interaction_gui_uses_existing_later_postcondition_receipt() {
 }
 
 #[test]
+fn exact_intermediate_snapshot_requests_one_final_refresh_before_layout_sync() {
+    let mut engine = engine();
+    assert!(engine.bind_focus_path());
+    engine.set_client_capabilities(
+        IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
+    );
+    engine.committed_tail.buffer = "lay мир ".to_string();
+    engine.publish_tail_handoff();
+    engine.arm_exact_visible_postcondition_from_surrounding_dispatch(
+        Instant::now(),
+        None,
+        Some("мир ".to_string()),
+        SurroundingTextSnapshot::new("lay мир ".to_string(), 8, 8),
+    );
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    for _ in 0..2 {
+        assert_eq!(
+            zbus::block_on(WindowInteraction::observe_facts(
+                &mut engine,
+                WindowFactEvent::SurroundingText(Some(SurroundingTextSnapshot::new(
+                    "lay ".to_string(),
+                    4,
+                    4,
+                ))),
+                Some(&mut EngineOutput::test(&mut output)),
+            ))
+            .unwrap(),
+            ObservationReceipt::SurroundingText(OutcomeProof::ExistingPostconditionPending)
+        );
+        assert!(!engine.layout_gesture.layout_is_ru);
+    }
+    assert_eq!(
+        output
+            .effects
+            .iter()
+            .filter(|effect| **effect == "require-surrounding")
+            .count(),
+        1
+    );
+    assert_eq!(
+        zbus::block_on(WindowInteraction::observe_facts(
+            &mut engine,
+            WindowFactEvent::SurroundingText(Some(SurroundingTextSnapshot::new(
+                "lay мир ".to_string(),
+                8,
+                8,
+            ))),
+            Some(&mut EngineOutput::test(&mut output)),
+        ))
+        .unwrap(),
+        ObservationReceipt::SurroundingText(OutcomeProof::ExistingPostconditionConfirmed)
+    );
+    assert!(engine.layout_gesture.layout_is_ru);
+}
+
+#[test]
+fn active_composition_stale_snapshot_requests_one_final_refresh_before_layout_sync() {
+    let mut engine = engine();
+    assert!(engine.bind_focus_path());
+    engine.set_client_capabilities(
+        IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
+    );
+    engine.committed_tail.buffer = "lay мир ".to_string();
+    engine.publish_tail_handoff();
+    engine.arm_active_composition_visible_postcondition_with_effects(
+        Instant::now(),
+        None,
+        Some("мир ".to_string()),
+    );
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    for _ in 0..2 {
+        assert_eq!(
+            zbus::block_on(WindowInteraction::observe_facts(
+                &mut engine,
+                WindowFactEvent::SurroundingText(Some(SurroundingTextSnapshot::new(
+                    "lay ".to_string(),
+                    4,
+                    4,
+                ))),
+                Some(&mut EngineOutput::test(&mut output)),
+            ))
+            .unwrap(),
+            ObservationReceipt::SurroundingText(OutcomeProof::ExistingPostconditionPending)
+        );
+        assert!(!engine.layout_gesture.layout_is_ru);
+    }
+    assert_eq!(
+        output
+            .effects
+            .iter()
+            .filter(|effect| **effect == "require-surrounding")
+            .count(),
+        1
+    );
+    assert_eq!(
+        zbus::block_on(WindowInteraction::observe_facts(
+            &mut engine,
+            WindowFactEvent::SurroundingText(Some(SurroundingTextSnapshot::new(
+                "lay мир ".to_string(),
+                8,
+                8,
+            ))),
+            Some(&mut EngineOutput::test(&mut output)),
+        ))
+        .unwrap(),
+        ObservationReceipt::SurroundingText(OutcomeProof::ExistingPostconditionConfirmed)
+    );
+    assert!(engine.layout_gesture.layout_is_ru);
+}
+
+#[test]
 fn window_interaction_exact_tail_is_delegation_without_client_receipt() {
     let mut engine = engine();
     engine.committed_tail.buffer = "ghbdtn".into();

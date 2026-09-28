@@ -9,10 +9,13 @@ use super::atomic::{AtomicCapability, AtomicEnvelope, AtomicPriorReceipt};
 use super::engine::{LayIbusEngine, SurroundingTextSnapshot};
 use super::output::{AtomicProposal, EngineOutput};
 use super::protocol::{
-    is_accept_completion_with_space_key, is_key_press, is_shift_key, KEY_LEFT_SHIFT,
+    has_command_modifier, is_accept_completion_with_space_key, is_key_press, is_shift_key,
+    KEY_LEFT_SHIFT,
 };
 use super::trace;
-use super::window_interaction::{WindowFactEvent, WindowInteraction, WindowLifecycleEvent};
+use super::window_interaction::{
+    ObservationReceipt, WindowFactEvent, WindowInteraction, WindowLifecycleEvent,
+};
 
 // Keys, resets and surrounding receipts mutate one ordered client stream.
 // The independent admission observer still runs while a callback awaits its stamp.
@@ -237,12 +240,30 @@ impl LayIbusEngine {
         let snapshot = ibus_text_value_to_string(&text)
             .map(|text| SurroundingTextSnapshot::new(text, cursor_pos, anchor_pos));
         let mut output = EngineOutput::legacy(&emitter);
-        WindowInteraction::observe_facts(
+        let receipt = WindowInteraction::observe_facts(
             self,
             WindowFactEvent::SurroundingText(snapshot),
             Some(&mut output),
         )
         .await?;
+        if matches!(receipt, ObservationReceipt::SurroundingText(_))
+            && self.context_owner.is_some()
+            && self.client_context.input_mode_property_refresh_pending
+        {
+            // The FocusIn property can arrive before GNOME selects this source.
+            // Re-publish once after the first admitted field receipt so the
+            // selected source's indicator describes this engine's decoder.
+            if Self::register_properties(
+                &emitter,
+                super::text::make_ibus_input_mode_properties(self.layout_gesture.layout_is_ru),
+            )
+            .await
+            .is_ok()
+            {
+                self.client_context.input_mode_property_refresh_pending = false;
+                trace::record(r#"{"kind":"ibus_input_mode","stage":"post_activation_refresh"}"#);
+            }
+        }
         Ok(())
     }
 
@@ -793,6 +814,11 @@ impl LayIbusEngine {
         keycode: u32,
         state: u32,
     ) -> fdo::Result<bool> {
+        if is_key_press(state) {
+            self.layout_gesture
+                .native_letter_release_focus
+                .remove(&keycode);
+        }
         if !self.client_context.managed_input {
             self.revoke_managed_word_start_before_client_key();
             return Ok(false);
@@ -901,6 +927,20 @@ impl LayIbusEngine {
             return Ok(false);
         }
         if !is_key_press(state) {
+            let paired_native_letter = self
+                .layout_gesture
+                .native_letter_release_focus
+                .remove(&keycode)
+                == Some(self.client_context.focus_serial);
+            if paired_native_letter
+                && !has_command_modifier(state)
+                && self.uses_native_terminal_input()
+                && self.capture_space_autocorrect_frame_identity().is_some()
+            {
+                // The native letter was observed at press. This paired release
+                // adds no text; Space still must match its complete frame.
+                return Ok(false);
+            }
             self.revoke_managed_word_start_before_client_key();
             return Ok(false);
         }
@@ -915,6 +955,19 @@ impl LayIbusEngine {
             .process_pressed_key(output, keyval, keycode, state)
             .await?;
         self.remember_handled_press(keycode, handled);
+        if !handled
+            && !has_command_modifier(state)
+            && self.uses_native_terminal_input()
+            && self
+                .physical_char(keyval, keycode)
+                .is_some_and(|ch| ch.is_alphabetic() && self.committed_tail.buffer.ends_with(ch))
+        {
+            let releases = &mut self.layout_gesture.native_letter_release_focus;
+            if releases.len() >= 16 {
+                releases.clear();
+            }
+            releases.insert(keycode, self.client_context.focus_serial);
+        }
         Ok(handled)
     }
 }

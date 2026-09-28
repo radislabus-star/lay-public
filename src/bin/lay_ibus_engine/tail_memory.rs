@@ -1753,6 +1753,54 @@ mod tests {
     }
 
     #[test]
+    fn exact_postcommit_reset_keeps_one_pending_receipt_until_final_snapshot() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            false,
+            true,
+            LayConfig::default(),
+        );
+        assert!(engine.bind_focus_path());
+        engine.client_context.surrounding_text_supported = true;
+        engine.client_context.exact_surrounding_refresh_available = true;
+        engine.committed_tail.buffer = "lay мир ".to_string();
+        engine.publish_tail_handoff();
+        let dispatched_epoch = engine.committed_tail.epoch;
+        engine.arm_exact_visible_postcondition_from_surrounding_dispatch(
+            Instant::now(),
+            None,
+            Some("мир ".to_string()),
+            SurroundingTextSnapshot::new("lay мир ".to_string(), 8, 8),
+        );
+
+        engine.reset_for_ibus_soft_reset();
+        assert_eq!(engine.committed_tail.epoch, dispatched_epoch);
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_some());
+
+        engine.client_context.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("lay ".to_string(), 4, 4));
+        engine.observe_visible_postcondition();
+        assert!(!engine.layout_gesture.layout_is_ru);
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_some());
+
+        engine.client_context.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("lay мир ".to_string(), 8, 8));
+        engine.observe_visible_postcondition();
+        assert!(engine.layout_gesture.layout_is_ru);
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_none());
+    }
+
+    #[test]
     fn exact_postcondition_rejects_the_transient_appended_replacement() {
         let mut engine = LayIbusEngine::new(
             "/test".to_string(),
