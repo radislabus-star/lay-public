@@ -2,6 +2,9 @@
 use std::process::Command;
 use std::sync::{Arc, Condvar, Mutex, OnceLock};
 
+#[cfg(test)]
+use std::cell::RefCell;
+
 use lay::keyboard::preferred_layout_for_text;
 
 use super::context_admission::{ContextAdmissionAdapter, LayoutIntentToken};
@@ -10,6 +13,20 @@ use super::trace;
 
 const RU_ENGINE: &str = "lay-ime-ru";
 const US_ENGINE: &str = "lay-ime-us";
+
+#[cfg(test)]
+#[derive(Default)]
+struct LayoutStackProbe {
+    active_engine: Option<String>,
+    activations: Vec<bool>,
+    ibus_switches: Vec<String>,
+}
+
+#[cfg(test)]
+thread_local! {
+    static LAYOUT_STACK_PROBE: RefCell<Option<LayoutStackProbe>> = const { RefCell::new(None) };
+}
+
 impl LayIbusEngine {
     pub(super) fn sync_layout_after_committed_text(&mut self, text: &str, owner: &'static str) {
         self.invalidate_input_frame_background_work();
@@ -515,7 +532,12 @@ fn ime_engine_for_layout(target_is_ru: bool) -> &'static str {
 fn switch_active_ime_engine(engine: &str) -> Result<(), String> {
     #[cfg(test)]
     {
-        let _ = engine;
+        LAYOUT_STACK_PROBE.with(|probe| {
+            if let Some(probe) = probe.borrow_mut().as_mut() {
+                probe.ibus_switches.push(engine.to_string());
+                probe.active_engine = Some(engine.to_string());
+            }
+        });
         Ok(())
     }
 
@@ -575,13 +597,22 @@ fn read_active_ime_engine() -> Option<String> {
 
 #[cfg(test)]
 fn read_active_ime_engine() -> Option<String> {
-    None
+    LAYOUT_STACK_PROBE.with(|probe| {
+        probe
+            .borrow()
+            .as_ref()
+            .and_then(|probe| probe.active_engine.clone())
+    })
 }
 
 fn activate_gnome_layout_for_ime(target_is_ru: bool) -> Result<(), String> {
     #[cfg(test)]
     {
-        let _ = target_is_ru;
+        LAYOUT_STACK_PROBE.with(|probe| {
+            if let Some(probe) = probe.borrow_mut().as_mut() {
+                probe.activations.push(target_is_ru);
+            }
+        });
         Ok(())
     }
 

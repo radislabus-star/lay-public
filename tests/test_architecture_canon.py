@@ -104,6 +104,16 @@ class CanonGuardTest(unittest.TestCase):
     def test_regular_source_change_remains_owned_by_semantic_gates(self):
         self.assertEqual([], gate.check_decisions(self.root, {"src/input_gate.rs"}, set()))
 
+    def test_space_autoflip_runtime_change_requires_new_decision(self):
+        name = "src/bin/lay_ibus_engine/layout_sync.rs"
+        self.assertEqual([f"protected_change_without_new_decision:{name}"],
+                         gate.check_decisions(self.root, {name}, set()))
+
+    def test_space_autoflip_test_removal_requires_new_decision(self):
+        name = "src/bin/lay_ibus_engine/layout_sync/tests.rs"
+        self.assertEqual([f"protected_change_without_new_decision:{name}"],
+                         gate.check_decisions(self.root, {name}, set()))
+
     def test_git_diff_includes_deletions_and_untracked_records(self):
         def git(*args):
             return subprocess.run(["git", "-C", str(self.root), *args], check=True,

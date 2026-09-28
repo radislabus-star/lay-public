@@ -1,0 +1,20 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Preserve the accepted short-word Space auto-flip as a C09/C10 contract with an IME layout-stack regression and explicit review of its owner, fixture, and test-lane changes.",
+  "reason": "The accepted physical 360/360 result can regress if GNOME activates the new Lay source while IBus retains an old or XKB engine. The old source tests covered lexical choice and IME internal mode, but did not assert conditional completion of that external engine transition.",
+  "invariants": ["C03", "C05", "C09", "C10"],
+  "protected_paths": [
+    "ARCHITECTURE.md",
+    "AGENTS.md",
+    "scripts/check_architecture_canon.py",
+    "tests/test_architecture_canon.py",
+    "src/bin/lay_ibus_engine/layout_sync.rs",
+    "src/bin/lay_ibus_engine/layout_sync/tests.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "docs/architecture/accepted-space-autoflip-2026-09-28.md"
+  ],
+  "verification": "Accepted installed IME SHA and 360/360 local-field receipt are pinned in docs/architecture/accepted-space-autoflip-2026-09-28.md. Remote full source gate PASS selected=2940, known semantic failures=0, infrastructure failures=0: /home/ubu/.cache/lay/development/run-ws9i1g1b/RESULT.json. Remote canon guard unit tests 15/15 PASS and changed-path decision coverage PASS. Remote update-architecture-graph.sh PASS with refreshed src/generated/architecture_graph_receipt.json. The owning document records the distinct scopes.",
+  "not_tested": "This guard change has not been installed in Lay or physically retested. The accepted local-field receipt does not cover user WhatsApp, GitHub, Tor tabs or WPS, and does not prove future versions. Server-side required checks and independent review are unavailable on the current private repository plan (GitHub branch-protection API returned HTTP 403).",
+  "runtime_authority_changed": false
+}

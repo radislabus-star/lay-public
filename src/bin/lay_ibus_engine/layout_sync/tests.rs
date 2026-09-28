@@ -50,6 +50,37 @@ fn chooses_managed_ime_engine_label_for_target_layout() {
 }
 
 #[test]
+fn space_layout_stack_completes_stale_ibus_once_in_both_directions() {
+    use super::{switch_complete_layout_stack, LayoutStackProbe, LAYOUT_STACK_PROBE};
+
+    for (target_is_ru, observed_engine, expected_switches) in [
+        (false, "lay-ime-ru", vec!["lay-ime-us"]),
+        (true, "lay-ime-us", vec!["lay-ime-ru"]),
+        (false, "xkb:us::eng", vec!["lay-ime-us"]),
+        (false, "lay-ime-us", vec![]),
+        (true, "lay-ime-ru", vec![]),
+    ] {
+        LAYOUT_STACK_PROBE.with(|probe| {
+            *probe.borrow_mut() = Some(LayoutStackProbe {
+                active_engine: Some(observed_engine.to_string()),
+                ..Default::default()
+            });
+        });
+        let target_engine = ime_engine_for_layout(target_is_ru);
+        let result = switch_complete_layout_stack(target_is_ru, target_engine);
+        let observed = LAYOUT_STACK_PROBE.with(|probe| probe.borrow_mut().take().unwrap());
+
+        assert!(
+            result.is_ok(),
+            "target={target_engine} observed={observed_engine}"
+        );
+        assert_eq!(observed.activations, [target_is_ru]);
+        assert_eq!(observed.ibus_switches, expected_switches);
+        assert_eq!(observed.active_engine.as_deref(), Some(target_engine));
+    }
+}
+
+#[test]
 fn manual_toggle_syncs_internal_layout_both_directions() {
     let mut engine = super::LayIbusEngine::new(
         "/test".to_string(),

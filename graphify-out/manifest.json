@@ -905,8 +905,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/layout_sync.rs": {
-    "mtime": 1790568856.1627111,
-    "ast_hash": "a8c0767a363c469fa2c920cb594cd341",
+    "mtime": 1790579541.296541,
+    "ast_hash": "f59ec3179e782759925e364f0aebb347",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/managed.rs": {
@@ -2480,8 +2480,8 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1790547072.8641975,
-    "ast_hash": "58f59f017a16b5a6f33dae5850c26b05",
+    "mtime": 1790579650.235838,
+    "ast_hash": "1508be36b991f7fcb4d19b91f5d3d360",
     "semantic_hash": ""
   },
   "HOW_IT_WORKS.md": {
@@ -3230,8 +3230,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1790571072.0,
-    "ast_hash": "adee0b3f7b23115e73f33a51452ed8d1",
+    "mtime": 1790580773.1784332,
+    "ast_hash": "d951a1c6a7e6bf82f71a3af6d6f38347",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5050,13 +5050,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1790568590.3162768,
-    "ast_hash": "fc18fddf40153383dd07d866f52ecb7f",
+    "mtime": 1790580248.1999702,
+    "ast_hash": "7aeebcb5c3bff35e7da11bebca2c09ef",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1790568582.9096603,
-    "ast_hash": "ef0e5177d27c14c36f3d476f4e7f3424",
+    "mtime": 1790579829.9529793,
+    "ast_hash": "e77265d4fb9600b97f3facfefbd87beb",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -5475,8 +5475,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/layout_sync/tests.rs": {
-    "mtime": 1790547073.5560176,
-    "ast_hash": "75ac77d1fc8d9cc238c7b9645706490e",
+    "mtime": 1790579768.6262484,
+    "ast_hash": "bbbc3a089dec83c4f5b15e573cde1830",
     "semantic_hash": ""
   },
   "tech_debt/evidence/td121-code-review-pass2.md": {
@@ -5910,13 +5910,13 @@
     "semantic_hash": ""
   },
   "scripts/check_architecture_canon.py": {
-    "mtime": 1790547073.5328076,
-    "ast_hash": "d31ee47250475d368b8d46db5bcbad5c",
+    "mtime": 1790580248.2009702,
+    "ast_hash": "28c2f7ddb42ef92e68a30b77817aad58",
     "semantic_hash": ""
   },
   "tests/test_architecture_canon.py": {
-    "mtime": 1790547073.6178741,
-    "ast_hash": "8b5aeb287357e09cc797ef49e520a855",
+    "mtime": 1790579687.8212855,
+    "ast_hash": "e14e0ed105320c850bb2c2093d587792",
     "semantic_hash": ""
   },
   ".github/copilot-instructions.md": {
@@ -5930,8 +5930,8 @@
     "semantic_hash": ""
   },
   "ARCHITECTURE.md": {
-    "mtime": 1790547072.8641975,
-    "ast_hash": "a51746a63c9211b284a703c2501f584e",
+    "mtime": 1790579597.3862085,
+    "ast_hash": "e262d0420d57e4b90937a740b71da913",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -5974,24 +5974,14 @@
     "ast_hash": "6e576be6c0075b89b7c9064456608554",
     "semantic_hash": ""
   },
-  "graphify-out/memory/query_20260904_003324_trace_the_complete_td_117_authority_path_from_cano.md": {
-    "mtime": 1790547073.5308075,
-    "ast_hash": "77afea01f5a6f6f675a281124516d1fe",
+  "docs/architecture/decisions/2026-09-28-accepted-space-autoflip-guard.json": {
+    "mtime": 1790580870.7314072,
+    "ast_hash": "9e8b94d0b06c1fafb25e489348682445",
     "semantic_hash": ""
   },
-  "graphify-out/memory/query_20260905_121607_wave_\u0441\u0442\u0430\u043b\u0430_\u0443\u043c\u043d\u0435\u0435_\u0432\u043e\u043e\u0431\u0449\u0435___\u0446\u0435\u043b\u044c_1_0_67_\u043f\u043e\u0441\u043b\u0435_\u0440\u0435\u043b\u0438\u0437\u0430.md": {
-    "mtime": 1790547073.5308075,
-    "ast_hash": "ba64522c2f08343d727af32d419c8a81",
-    "semantic_hash": ""
-  },
-  "graphify-out/memory/query_20260906_192036_td_120_suppression_and_td_121_handoff_integration.md": {
-    "mtime": 1790547073.5308075,
-    "ast_hash": "1c2e2723ce60f03ffc79105834c08d16",
-    "semantic_hash": ""
-  },
-  "graphify-out/memory/query_20260907_113448_\u0433\u0434\u0435_\u0437\u0430\u0444\u0438\u043a\u0441\u0438\u0440\u043e\u0432\u0430\u043d\u0430_\u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u044f_lay_1_0_66.md": {
-    "mtime": 1790547073.5308075,
-    "ast_hash": "65daecbe3683c60add37e9bd1d7d22e2",
+  "docs/architecture/accepted-space-autoflip-2026-09-28.md": {
+    "mtime": 1790580870.7314072,
+    "ast_hash": "ef5c566485bf92b56b72c4b160c9b0ee",
     "semantic_hash": ""
   }
 }

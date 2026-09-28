@@ -1,7 +1,7 @@
 {
   "failure_count": 0,
   "failures": [],
-  "manifest_sha256": "d0e3042a4fe41eecb9520bad3a5435c77a6099f3b9dcfbf1528eb693bf984839",
+  "manifest_sha256": "197f509dd59c7b0da6968efb01f8d1384f4b5b95f1116d9321936f3e700a06f7",
   "observation_path": "tech_debt/evidence/v28-ru-en-zero-failure-observation-v1.json",
   "observation_sha256": "8048cf822faf8a64928a7fa9131d625331a0ca4a187153588fe7f85da793a384",
   "schema": "lay.test-known-failures.v1"

@@ -177,6 +177,26 @@ Rules:
   `physical_double_shift_owner_` tests must pass, followed by a single-owner
   client-visible smoke and one real-keyboard confirmation.
 
+## Accepted Space auto-flip route
+
+- Read the [accepted Space auto-flip contract](docs/architecture/accepted-space-autoflip-2026-09-28.md)
+  before changing short-word correction, IME layout sync or their tests. The
+  accepted source is `ad6f73a7cdfa41a502c85244c6344f5969aea4ad`; the
+  accepted installed IME SHA-256 is recorded there. Check the actual checkout
+  and installed bytes before claiming parity.
+- After each authorized RU/EN word correction on Space, preserve the corrected
+  word, one space, GNOME source, actual IBus engine, `InputMode` and decoding of
+  the next letter. Complete a stale IBus transition within the same GNOME/IBus
+  operation. Do not add a second text editor or a second layout initiator.
+- Existing source tests cover the lexical alternation, IME next-mode handoff
+  and conditional IBus completion. Reuse the accepted 360/360 physical receipt
+  only for its exact installed SHA and listed local fields; a changed runtime
+  needs new evidence before claiming those fields pass.
+- The architecture guard requires a new decision for edits to this route,
+  contract, test fixture or test manifest. A decision records what was tested,
+  what remains untested and whether runtime authority changed. It does not
+  itself establish physical-client success.
+
 ## Architecture evidence discipline
 
 - After every architecture experiment, update the owning architecture document in the same change. Do not leave the result only in terminal output or a receipt.

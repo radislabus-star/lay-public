@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2903,
+    "correctness": 2904,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 208,
-    "target": 2757
+    "target": 2758
   },
   "package_fixtures": [
     {
@@ -5787,6 +5787,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "layout_sync::tests::modifier_hotkey_toggles_internal_layout_state",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_sync::tests::space_layout_stack_completes_stale_ibus_once_in_both_directions",
       "target": "bin:lay-ibus-engine"
     },
     {
