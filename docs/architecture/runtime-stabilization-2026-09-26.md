@@ -3281,3 +3281,76 @@ issue и WPS на этой SHA; Tor Tab, удержанный Shift и восе�
 не all-window acceptance. Runtime authority changed: **false**; основной
 daemon PID 1267796, IBus и установленный IME остались прежними; собственный
 Tor процесс закрыт, пользовательский PID остался жив.
+
+### Instagram Direct: reproduced C06 Tab refusal — 2026-10-04
+
+Root performed the user-authorized typing diagnosis in the existing authenticated
+Firefox Direct message field, without sending a message. The selected field is
+an accessible `div`/textbox with a paragraph, not a plain input/textarea. Before
+input the paragraph exposed only its terminal accessibility LF, with no draft;
+all test input stayed in that exact field and window. Native uinput supplied
+`KEY_G` under RU and then `KEY_TAB`; no DOM text insertion substituted for IME
+input. No client JavaScript listener was installed and iframe presence was not
+established.
+
+One physical case executed, one failed, at 2026-10-04 16:55:30 UTC / 19:55:30
+Europe/Tallinn. Before and after Tab, the raw paragraph text was
+`почему\u200b`, its caret was1, selection count0 and field focus remained true.
+The candidate wire payload was `почему`, cursor1/visible=true. The client added
+an observable trailing U+200B, which is retained in the receipt rather than
+silently normalized away. The logical typed prefix was `п` and proposed suffix
+`очему`; no accepted completion or ASCII space appeared.
+
+The actual legacy `ProcessKeyEvent` Tab press, serial14494, passed callback
+admission under owner291/activation291. `ibus_key` recorded stage=tab,
+keyval65289/keycode15, handled=false, tail_chars1/preedit_chars0. The same
+owner's settled completeness remained `unknown_start`. No Reset or FocusOut
+occurs between the captured first letter and Tab. This case therefore does not
+establish the earlier Reset-race hypothesis. A passive IBus monitor observed
+preedit publication and later cleanup output, but no output signal in the
+bounded interval from Tab1791132930049316479ns to final field observation
+1791132930640703843ns. The subsequent one-character CommitText(`п`) occurred
+23.871199ms after that observation, during explicit Escape cleanup; it is not
+completion acceptance. Capture used the existing bus's EAVESDROP_ADDMATCH
+surface and remains limited to the recorded interval.
+
+First demonstrated failure: Lay declines acceptance before committing the
+completion. This is not evidence that Instagram prevented Tab from reaching
+Lay. A site's later handling of the unhandled key remains unmeasured. Source
+analysis localizes the matching refusal to the initial current-word/owned
+preedit admission in `composition_commit.rs::accept_completion`; the
+unknown-start owned-preedit path additionally requires a current captured start
+witness when exact surrounding refresh is available. The start capture in
+`window_interaction/observation.rs::managed_word_start_from_current_snapshot`
+checks the right character using `preedit::is_observed_word_boundary`, whose
+predicate does not accept U+200B. Missing/revoked start evidence and that
+sentinel are the next discriminating source hypothesis, not a completed
+counterfactual proof. No broad change to word separators or SafetyGate is
+justified by this receipt. Which internal start-witness predicate failed has
+not been directly instrumented or reproduced with the production reducer yet.
+
+Receipt:
+`/home/ubu/.cache/lay/development/ranker-release-20261004/instagram-tab-confirmed-20261004T195528-e3aae984/DIAGNOSIS.json`
+SHA2563e70f03d66e896e39ff5303fa42cb0d2998841a777e2325de2a96e387e25c204.
+It binds RESULT, empty/before/after/cleanup observations, WIRE and both runtime
+identity receipts. Earlier blocked helper/field observation attempts remain
+under `instagram-tab-20261004T194049-32af494e`: no Tab was executed there. Their
+first observer did not retain its rejected raw post-key snapshot, so those
+blocks cannot establish either parallel user input or the exact sentinel cause.
+The separate bounded observation found additional non-test text and a trailing
+U+200B; that draft was not cleared. The successful reproduction began only
+after the user's explicit empty-field/uninterrupted-input readiness reply.
+
+Cleanup restored the tested message field to empty. All virtual input devices
+and the passive monitor closed; zero send actions were invoked. IME and daemon
+loaded bytes/PIDs, global IBus PID and selected source/decoder/engine were
+identical before and after the complete reproduction. IME SHA remains
+8ef1f4de69a19d580bd0d9af1ff273294dc1b5ecff14f1f526ecbf9445440616,
+daemon SHA remains f3cbbfb2257be9793687cd5d9125769925c6fde6c265c1c4d6461ae82bb8ec05;
+source checkout remains `79b09d06306a018961ace783e2542eb817de7b30` plus the
+preserved release working tree. No process restart, installation, runtime
+source/config edit, ownership/protocol migration or SafetyGate change occurred.
+Only this Instagram case is established; no fresh all-window acceptance,
+rendered-decoration pixel proof, code fix, release or publication is claimed.
+Research remains paused. The owning-document-only change requires the existing
+remote AST/source binding refresh; it does not reopen functional checks.
