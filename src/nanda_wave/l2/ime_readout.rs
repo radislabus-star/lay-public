@@ -473,6 +473,16 @@ fn cached_lexical_candidates(
     mode: LexicalReadoutMode,
 ) -> CachedLexicalCandidates {
     let cache = LEXICAL_READOUT_CACHE.get_or_init(|| Mutex::new(VecDeque::new()));
+    lexical_candidates_with_cache(cache, memory, normalized, material_limit, mode)
+}
+
+fn lexical_candidates_with_cache(
+    cache: &Mutex<LexicalReadoutCache>,
+    memory: &super::super::lexical_phase::LexicalPhaseMemory,
+    normalized: &str,
+    material_limit: usize,
+    mode: LexicalReadoutMode,
+) -> CachedLexicalCandidates {
     if let Some(candidates) = cache.lock().ok().and_then(|cache| {
         cache
             .iter()
@@ -483,10 +493,8 @@ fn cached_lexical_candidates(
     }) {
         return candidates;
     }
-    if let Some(candidates) = projected_lexical_candidates(cache, normalized, material_limit, mode)
-    {
-        return candidates;
-    }
+    // A bounded parent lattice is not a complete child frontier. Reuse only
+    // exact keys; a new prefix needs its own material and phase scores.
 
     let mut candidates = Vec::new();
     if mode.includes_completion() {
@@ -507,11 +515,7 @@ fn cached_lexical_candidates(
             candidates.extend(memory.surface_candidates(normalized, material_limit));
         }
         if should_probe_typo_tolerant_prefix(normalized, exact_prefix_count) {
-            let fuzzy = projected_fuzzy_lexical_candidates(cache, normalized, material_limit, mode)
-                .map(|candidates| candidates.as_ref().clone())
-                .unwrap_or_else(|| {
-                    typo_tolerant_completion_candidates(memory, normalized, material_limit)
-                });
+            let fuzzy = typo_tolerant_completion_candidates(memory, normalized, material_limit);
             candidates.extend(fuzzy);
         }
     } else {
@@ -584,53 +588,6 @@ fn typo_tolerant_completion_candidates(
         .collect()
 }
 
-fn projected_fuzzy_lexical_candidates(
-    cache: &Mutex<LexicalReadoutCache>,
-    normalized: &str,
-    material_limit: usize,
-    mode: LexicalReadoutMode,
-) -> Option<CachedLexicalCandidates> {
-    let projected = cache.lock().ok().and_then(|cache| {
-        cache
-            .iter()
-            .filter(|(surface, limit, cached_mode, _)| {
-                *limit == material_limit
-                    && *cached_mode == mode
-                    && normalized.starts_with(surface)
-                    && normalized.len() > surface.len()
-            })
-            .max_by_key(|(surface, _, _, _)| surface.len())
-            .map(|(_, _, _, candidates)| {
-                candidates
-                    .iter()
-                    .filter(|candidate| {
-                        !candidate.word.starts_with(normalized)
-                            && candidate.word.chars().count() > normalized.chars().count()
-                            && prefix_is_one_edit_from_surface(normalized, &candidate.word)
-                    })
-                    .cloned()
-                    .collect::<Vec<_>>()
-            })
-    })?;
-    (!projected.is_empty()).then(|| Arc::new(projected))
-}
-
-fn prefix_is_one_edit_from_surface(prefix: &str, surface: &str) -> bool {
-    let prefix_len = prefix.chars().count();
-    let surface_chars = surface.chars().collect::<Vec<_>>();
-    [
-        prefix_len.saturating_sub(1),
-        prefix_len,
-        prefix_len.saturating_add(1),
-    ]
-    .into_iter()
-    .filter(|candidate_len| *candidate_len >= 2 && *candidate_len <= surface_chars.len())
-    .any(|candidate_len| {
-        let surface_prefix = surface_chars[..candidate_len].iter().collect::<String>();
-        damerau_levenshtein(prefix, &surface_prefix) == 1
-    })
-}
-
 pub(super) fn warm_up_lexical_readout_cache(prefixes: &[String], material_limit: usize) -> bool {
     let Some(memory) = surface_motif_memory() else {
         return false;
@@ -643,50 +600,6 @@ pub(super) fn warm_up_lexical_readout_cache(prefixes: &[String], material_limit:
             cached_lexical_candidates(memory, prefix, material_limit, LexicalReadoutMode::FullIme);
     }
     true
-}
-
-/// Projects a previously settled L2 lattice into the next typed prefix. This
-/// is a phase-field continuation, not a second prefix index: every returned
-/// surface was already born by the same lexical centers. A thin projection
-/// falls back to the full lattice so it cannot silently reduce coverage.
-fn projected_lexical_candidates(
-    cache: &Mutex<LexicalReadoutCache>,
-    normalized: &str,
-    material_limit: usize,
-    mode: LexicalReadoutMode,
-) -> Option<CachedLexicalCandidates> {
-    let mut projected = cache.lock().ok().and_then(|cache| {
-        cache
-            .iter()
-            .filter(|(surface, limit, cached_mode, _)| {
-                *limit == material_limit
-                    && *cached_mode == mode
-                    && normalized.starts_with(surface)
-                    && normalized.len() > surface.len()
-            })
-            .max_by_key(|(surface, _, _, _)| surface.len())
-            .map(|(_, _, _, candidates)| {
-                candidates
-                    .iter()
-                    .filter(|candidate| candidate.word.starts_with(normalized))
-                    .cloned()
-                    .collect::<Vec<_>>()
-            })
-    })?;
-    let minimum = material_limit.min(12);
-    if projected.len() < minimum {
-        return None;
-    }
-    projected.truncate(material_limit);
-    let projected = Arc::new(projected);
-    store_lexical_candidates(
-        cache,
-        normalized,
-        material_limit,
-        mode,
-        Arc::clone(&projected),
-    );
-    Some(projected)
 }
 
 fn store_lexical_candidates(
@@ -1352,10 +1265,46 @@ mod tests {
     }
 
     #[test]
-    fn projects_settled_lattice_only_when_the_next_prefix_stays_dense() {
+    fn exact_lexical_cache_keys_separate_prefix_limit_and_mode() {
+        let bytes = crate::nanda_wave::lexical_phase::compile_words([
+            "остановка",
+            "остановить",
+            "остановлю",
+        ])
+        .expect("fixture compiles");
+        let memory = crate::nanda_wave::lexical_phase::LexicalPhaseMemory::from_bytes(bytes)
+            .expect("fixture loads");
         let cache = Mutex::new(VecDeque::new());
+        let first =
+            lexical_candidates_with_cache(&cache, &memory, "оста", 3, LexicalReadoutMode::FullIme);
+        let repeat =
+            lexical_candidates_with_cache(&cache, &memory, "оста", 3, LexicalReadoutMode::FullIme);
+        assert!(Arc::ptr_eq(&first, &repeat));
+        for (prefix, limit, mode) in [
+            ("остан", 3, LexicalReadoutMode::FullIme),
+            ("оста", 2, LexicalReadoutMode::FullIme),
+            ("оста", 3, LexicalReadoutMode::Correction),
+        ] {
+            let distinct = lexical_candidates_with_cache(&cache, &memory, prefix, limit, mode);
+            assert!(!Arc::ptr_eq(&first, &distinct));
+        }
+        assert_eq!(cache.lock().unwrap().len(), 4);
+    }
+
+    #[test]
+    fn lexical_cache_recomputes_dense_child_prefix() {
+        let bytes = crate::nanda_wave::lexical_phase::compile_words([
+            "остановка",
+            "остановить",
+            "остановлю",
+            "останется",
+        ])
+        .expect("fixture compiles");
+        let memory = crate::nanda_wave::lexical_phase::LexicalPhaseMemory::from_bytes(bytes)
+            .expect("fixture loads");
+        let inherited = Mutex::new(VecDeque::new());
         store_lexical_candidates(
-            &cache,
+            &inherited,
             "оста",
             3,
             LexicalReadoutMode::FullIme,
@@ -1365,16 +1314,89 @@ mod tests {
                 candidate("остановлю"),
             ]),
         );
-
-        let projected =
-            projected_lexical_candidates(&cache, "остан", 3, LexicalReadoutMode::FullIme)
-                .expect("dense continuation must reuse the already born lattice");
-        assert!(projected.iter().all(|item| item.word.starts_with("остан")));
-
-        assert!(
-            projected_lexical_candidates(&cache, "остановк", 3, LexicalReadoutMode::FullIme)
-                .is_none()
+        let fresh = Mutex::new(VecDeque::new());
+        let expected =
+            lexical_candidates_with_cache(&fresh, &memory, "остан", 3, LexicalReadoutMode::FullIme);
+        let actual = lexical_candidates_with_cache(
+            &inherited,
+            &memory,
+            "остан",
+            3,
+            LexicalReadoutMode::FullIme,
         );
+        let project = |rows: &CachedLexicalCandidates| {
+            rows.iter()
+                .map(|row| {
+                    (
+                        row.word.clone(),
+                        row.score,
+                        row.l1_overlap,
+                        row.l2_overlap,
+                        row.motif_overlap,
+                        row.prefix_match,
+                        row.reconstructed,
+                    )
+                })
+                .collect::<Vec<_>>()
+        };
+        assert!(!expected.is_empty());
+        assert_eq!(project(&actual), project(&expected));
+        let repeated = lexical_candidates_with_cache(
+            &inherited,
+            &memory,
+            "остан",
+            3,
+            LexicalReadoutMode::FullIme,
+        );
+        assert!(
+            Arc::ptr_eq(&actual, &repeated),
+            "exact cache key must still reuse material"
+        );
+    }
+
+    #[test]
+    fn lexical_cache_recomputes_fuzzy_child_prefix() {
+        let bytes = crate::nanda_wave::lexical_phase::compile_words([
+            "остановка",
+            "остановить",
+            "остановлю",
+            "останется",
+        ])
+        .expect("fixture compiles");
+        let memory = crate::nanda_wave::lexical_phase::LexicalPhaseMemory::from_bytes(bytes)
+            .expect("fixture loads");
+        let inherited = Mutex::new(VecDeque::new());
+        store_lexical_candidates(
+            &inherited,
+            "ост",
+            3,
+            LexicalReadoutMode::FullIme,
+            Arc::new(vec![candidate("остановка")]),
+        );
+        let fresh = Mutex::new(VecDeque::new());
+        let expected =
+            lexical_candidates_with_cache(&fresh, &memory, "остн", 3, LexicalReadoutMode::FullIme);
+        let actual = lexical_candidates_with_cache(
+            &inherited,
+            &memory,
+            "остн",
+            3,
+            LexicalReadoutMode::FullIme,
+        );
+        let project = |rows: &CachedLexicalCandidates| {
+            rows.iter()
+                .map(|row| {
+                    (
+                        row.word.clone(),
+                        row.score,
+                        row.prefix_match,
+                        row.reconstructed,
+                    )
+                })
+                .collect::<Vec<_>>()
+        };
+        assert!(!expected.is_empty());
+        assert_eq!(project(&actual), project(&expected));
     }
 
     #[test]

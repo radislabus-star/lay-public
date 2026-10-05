@@ -17,7 +17,23 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.77`
+- `1.0.79`
+
+1.0.79: installed contextual-completion and terminal-command-preference release.
+Repairs current-prefix evidence, preserves confirmed L4 ordering and refreshes
+shared usage memory on the existing worker. Full source gate: 2981/2981; fresh
+Kitty command acceptance and 46 ordinary client controls pass. Physical scope is
+partial: repeated Double Shift still fails in Firefox textarea; observer gaps
+remain. Inherits experimental 1.0.78 agreement/native input fixes.
+The positive-only last1/tail2 corpus pilot is not included: validation has no
+attestation gains. Do not advertise full-sentence semantic understanding.
+See [release evidence](docs/architecture/contextual-completion-release-2026-10-05.md).
+
+1.0.78: experimental native agreement ordering after existing candidate admissions.
+Release/install preparation is authorized by the user; live installation and
+publication are pending. Offline research percentages do not certify this native
+provider, scorer or current-prefix context. Full quality gates remain unmet.
+See [deployment scope](docs/architecture/ranker-release-preflight-2026-10-04.md).
 
 1.0.77: publishes the user-accepted short-word RU/EN auto-flip after Space.
 The exact installed IME accepted by the user remains SHA-256

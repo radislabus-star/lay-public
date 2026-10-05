@@ -37,6 +37,7 @@ pub(crate) struct PrecognitionInput {
     tail: String,
     context_prefix: String,
     partial: String,
+    scene: lay::typing_cpu::LiveCompletionScene,
     max_suffix_chars: usize,
     active_composition: bool,
     correction_safety: lay::config::CorrectionSafety,
@@ -183,6 +184,7 @@ impl PreeditFastState {
         }
     }
 
+    #[cfg(test)]
     fn observed_prediction_target(&self) -> Option<&str> {
         self.observed_prediction
             .as_ref()
@@ -481,12 +483,21 @@ impl LayIbusEngine {
         cursor_pos: u32,
     ) -> fdo::Result<()> {
         let show_transition = !self.composition.preedit_visible;
+        // Styling follows the untyped suffix, independently of the caret.
+        // An owned payload may contain the whole word; native payloads have
+        // an empty owned buffer and contain only the suggested continuation.
+        // A replacement which is not an exact extension has no suffix hint.
+        let suggestion_start = if text.starts_with(&self.composition.buffer) {
+            self.composition.buffer.chars().count()
+        } else {
+            text.chars().count()
+        } as u32;
         // UpdatePreeditText owns the visible frame. Install the new payload
         // before ShowPreeditText so a client cannot expose an empty or stale
         // frame while a previous completion is being replaced.
         emitter
             .update_preedit_text(
-                make_preedit_ibus_text(text.clone()),
+                make_preedit_ibus_text(text.clone(), suggestion_start),
                 cursor_pos,
                 true,
                 PREEDIT_MODE_CLEAR,
@@ -575,6 +586,7 @@ impl LayIbusEngine {
         Ok(())
     }
 
+    #[cfg(test)]
     pub(super) fn precognition_suffix(&self) -> Option<String> {
         self.precognition_suffix_candidates().into_iter().next()
     }
@@ -1288,6 +1300,11 @@ impl LayIbusEngine {
             tail,
             context_prefix,
             partial,
+            scene: if self.has_proven_terminal_input() {
+                lay::typing_cpu::LiveCompletionScene::Terminal
+            } else {
+                lay::typing_cpu::LiveCompletionScene::General
+            },
             max_suffix_chars: self.precognition_max_suffix_chars(),
             active_composition: self.live_completion_input_is_active(),
             correction_safety: self.config.active_correction_safety(),
@@ -1305,6 +1322,7 @@ impl LayIbusEngine {
             .unwrap_or_default()
     }
 
+    #[cfg(test)]
     fn precognition_suffix_candidates(&self) -> Vec<String> {
         self.precognition_candidates()
             .into_iter()

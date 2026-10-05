@@ -113,8 +113,105 @@ fn td121_late_boundary_receipt_cannot_restore_contradiction_or_intervening_input
     }));
 }
 
-fn td121_prime_completion_material() {
+struct Td121CompletionMemory {
+    directory: std::path::PathBuf,
+    previous_environment: [(&'static str, Option<std::ffi::OsString>); 4],
+}
+
+impl Td121CompletionMemory {
+    fn seed() -> Self {
+        use std::sync::atomic::{AtomicU64, Ordering};
+
+        static NEXT_DIRECTORY: AtomicU64 = AtomicU64::new(0);
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("fixture clock after epoch")
+            .as_nanos();
+        let sequence = NEXT_DIRECTORY.fetch_add(1, Ordering::Relaxed);
+        let directory = std::env::temp_dir().join(format!(
+            "lay-td121-completion-memory-{}-{stamp}-{sequence}",
+            std::process::id()
+        ));
+        let mut builder = std::fs::DirBuilder::new();
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::DirBuilderExt;
+            builder.mode(0o700);
+        }
+        // create(), not create_dir_all(): never take ownership of an existing
+        // directory. Drop removes only the directory created by this guard.
+        builder
+            .create(&directory)
+            .expect("create private fixture directory");
+        let guard = Self {
+            directory,
+            previous_environment: [
+                "LAY_NANDA_WORD_USAGE_EVENTS",
+                "LAY_NANDA_WORD_USAGE_COUNTS",
+                "LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS",
+                "LAY_NANDA_USAGE_PRIOR",
+            ]
+            .map(|name| (name, std::env::var_os(name))),
+        };
+
+        let seed_input = guard.directory.join("accepted-completion.jsonl");
+        let live_events = guard.directory.join("runtime-events.jsonl");
+        let live_counts = guard.directory.join("runtime-counts.json");
+        let feedback = guard.directory.join("feedback-counts.json");
+        let legacy_prior = guard.directory.join("legacy-prior.json");
+        // The compiler input and runtime event journal MUST differ: loading
+        // both the seed JSONL and its compiled snapshot would count it twice.
+        std::fs::write(
+            &seed_input,
+            concat!(
+                "{\"ts\":1,\"kind\":\"accepted_ime\",\"word\":\"проверка\",",
+                "\"context\":[],\"to\":\"проверка\",\"source\":\"ime\",",
+                "\"operation\":\"completion\"}\n"
+            ),
+        )
+        .expect("write one independently declared acceptance event");
+        std::fs::write(&live_events, "").expect("create empty runtime event journal");
+        let report = lay::nanda_wave::compile_usage_feedback_snapshot(&seed_input, &feedback)
+            .expect("compile acceptance with existing canonical snapshot compiler");
+        assert_eq!(report["status"], "ok");
+        assert_eq!(report["parsed_events"], 1);
+        assert_eq!(report["usage_events"], 1);
+        assert_eq!(report["correction_receipts"], 0);
+        assert_eq!(report["correction_events"], 0);
+
+        // Missing private counts/prior are intentional: no inherited profile
+        // may supplement this one-event fixture. These bindings precede the
+        // first memory warm/readout and remain active for the whole test.
+        for (name, path) in [
+            ("LAY_NANDA_WORD_USAGE_EVENTS", &live_events),
+            ("LAY_NANDA_WORD_USAGE_COUNTS", &live_counts),
+            ("LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS", &feedback),
+            ("LAY_NANDA_USAGE_PRIOR", &legacy_prior),
+        ] {
+            std::env::set_var(name, path);
+        }
+        guard
+    }
+}
+
+impl Drop for Td121CompletionMemory {
+    fn drop(&mut self) {
+        for (name, previous) in &self.previous_environment {
+            match previous {
+                Some(value) => std::env::set_var(name, value),
+                None => std::env::remove_var(name),
+            }
+        }
+        // Best-effort teardown must not replace the original assertion failure
+        // with a panic during unwinding. Canonical process isolation also
+        // retires the worker and all OnceLock/cache state after this fixture.
+        let _ = std::fs::remove_dir_all(&self.directory);
+    }
+}
+
+fn td121_prime_completion_material() -> Td121CompletionMemory {
     use lay::typing_cpu::{LiveCompletionRequest, TypingCpu};
+    let memory = Td121CompletionMemory::seed();
     assert!(TypingCpu::warm_l2_for_ime());
     let candidates = TypingCpu::live_completion_candidates(LiveCompletionRequest {
         context_prefix: "",
@@ -130,6 +227,7 @@ fn td121_prime_completion_material() {
             .map(|candidate| candidate.surface.as_str()),
         Some("проверка")
     );
+    memory
 }
 
 async fn td121_readout_key(
@@ -252,6 +350,7 @@ async fn td121_current_completion_receipt(
 #[test]
 fn td121_pending_worker_fills_missing_material_before_exact_receipt() {
     use lay::typing_cpu::{LiveCompletionRequest, TypingCpu};
+    let _memory = Td121CompletionMemory::seed();
     assert!(TypingCpu::warm_l2_for_ime());
     zbus::block_on(bounded(async {
         let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
@@ -312,7 +411,7 @@ fn td121_pending_worker_fills_missing_material_before_exact_receipt() {
 
 #[test]
 fn td121_pending_reset_schedules_material_without_publication_authority() {
-    td121_prime_completion_material();
+    let _memory = td121_prime_completion_material();
     zbus::block_on(bounded(async {
         let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
         let mut engine = td121_pending_current_completion(&mut harness).await;
@@ -335,7 +434,7 @@ fn td121_pending_reset_schedules_material_without_publication_authority() {
 
 #[test]
 fn td121_exact_receipt_publishes_cached_current_suffix_before_alt() {
-    td121_prime_completion_material();
+    let _memory = td121_prime_completion_material();
     zbus::block_on(bounded(async {
         for retain_reset_lineage in [true, false] {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
@@ -411,7 +510,7 @@ fn td121_exact_receipt_publishes_cached_current_suffix_before_alt() {
 
 #[test]
 fn td121_alt_before_exact_receipt_cannot_accept_later_cached_hint() {
-    td121_prime_completion_material();
+    let _memory = td121_prime_completion_material();
     zbus::block_on(bounded(async {
         let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
         let mut engine = td121_pending_current_completion(&mut harness).await;
@@ -815,8 +914,9 @@ fn firefox_readonly_shift_keeps_callback_queue_bound() {
 async fn known_engine(harness: &mut Harness) -> LayIbusEngine {
     let mut engine = new_engine(harness);
     start_source_free_unknown(harness, &mut engine).await;
+    let input_mode_before_key = engine.layout_gesture.layout_is_ru;
     assert!(legacy_key(harness, &mut engine, 3_000, KEY_SPACE, 57, 0).await);
-    expect_legacy_commit(&mut harness.peer).await;
+    expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
     assert!(legacy_key(harness, &mut engine, 3_001, KEY_SPACE, 57, RELEASE_MASK).await);
     assert!(engine.context_word_is_known());
     engine
@@ -943,8 +1043,9 @@ fn residual_repeated_focus_out_revokes_locally_and_recovers_fresh_unknown_start(
         );
         assert!(!harness.adapter.revalidate(&old_token));
 
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(&mut harness, &mut engine, 3_007, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert!(
             legacy_key(
                 &mut harness,
@@ -1313,7 +1414,9 @@ async fn held_compatibility_get_word_loss_case(word_loss: PendingWordLoss) {
     harness.peer.connection.send(&forwarded).await.unwrap();
     assert!(bounded(harness.observer.process_next()).await.unwrap());
 
+    let activation_mode = engine.layout_gesture.layout_is_ru;
     assert!(!legacy_key(&mut harness, &mut engine, 3_216, KEY_LEFT_SHIFT, 42, 0,).await);
+    expect_activation_input_mode_update(&mut harness, &engine, activation_mode).await;
     assert!(
         !legacy_key(
             &mut harness,
@@ -1346,9 +1449,10 @@ async fn held_compatibility_get_word_loss_case(word_loss: PendingWordLoss) {
         .is_empty());
     assert!(bridge_fence(&mut harness).await.is_ok());
 
+    let input_mode_before_key = engine.layout_gesture.layout_is_ru;
     let handled = legacy_key(&mut harness, &mut engine, 3_218, KEY_SPACE, 57, 0).await;
     if handled {
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
     }
     assert!(engine.context_word_is_known());
     assert!(bridge_fence(&mut harness).await.is_ok());
@@ -1447,7 +1551,9 @@ fn residual_compatibility_refocus_without_disable_keeps_original_get_and_word() 
         harness.peer.connection.send(&forwarded).await.unwrap();
         assert!(bounded(harness.observer.process_next()).await.unwrap());
 
+        let activation_mode = engine.layout_gesture.layout_is_ru;
         assert!(!legacy_key(&mut harness, &mut engine, 3_222, KEY_LEFT_SHIFT, 42, 0,).await);
+        expect_activation_input_mode_update(&mut harness, &engine, activation_mode).await;
         assert!(
             !legacy_key(
                 &mut harness,
@@ -1732,7 +1838,9 @@ async fn default_activation_survives_delayed_marker(native: bool) {
         "authenticated activation must remain publishable beyond the 5 ms bridge budget"
     );
     let mut engine = new_engine(&harness);
+    let activation_mode = engine.layout_gesture.layout_is_ru;
     assert!(!legacy_key(&mut harness, &mut engine, 14_300, KEY_LEFT_SHIFT, 42, 0).await);
+    expect_activation_input_mode_update(&mut harness, &engine, activation_mode).await;
     let token = engine
         .live_context_token()
         .expect("real legacy callback consumes the published activation");
@@ -1994,7 +2102,9 @@ async fn empty_factory_stale_focus_case(predecessor_bound: bool) {
     current.config = ime_config();
     forward_marker_bounded(&mut harness.peer).await;
     assert!(bounded(harness.observer.process_next()).await.unwrap());
+    let activation_mode = current.layout_gesture.layout_is_ru;
     assert!(!legacy_key(&mut harness, &mut current, 3_234, KEY_LEFT_SHIFT, 42, 0,).await);
+    expect_activation_input_mode_update(&mut harness, &current, activation_mode).await;
     assert!(
         !legacy_key(
             &mut harness,
@@ -2012,8 +2122,9 @@ async fn empty_factory_stale_focus_case(predecessor_bound: bool) {
     assert_eq!(token.lineage.completeness, WordCompleteness::UnknownStart);
     assert!(current.committed_tail.buffer.is_empty());
     assert!(bridge_fence(&mut harness).await.is_ok());
+    let input_mode_before_key = current.layout_gesture.layout_is_ru;
     assert!(legacy_key(&mut harness, &mut current, 3_236, KEY_SPACE, 57, 0).await);
-    expect_legacy_commit(&mut harness.peer).await;
+    expect_legacy_commit(&mut harness.peer, &current, input_mode_before_key).await;
     assert!(current.context_word_is_known());
 
     let live_token = current.live_context_token().unwrap();
@@ -2151,6 +2262,7 @@ fn residual_declined_authenticated_factory_is_passive_and_later_factory_recovers
         forward_marker_bounded(&mut harness.peer).await;
         assert!(bounded(harness.observer.process_next()).await.unwrap());
 
+        let activation_mode = recovered.layout_gesture.layout_is_ru;
         assert!(
             !legacy_key_at(
                 &mut harness,
@@ -2163,6 +2275,7 @@ fn residual_declined_authenticated_factory_is_passive_and_later_factory_recovers
             )
             .await
         );
+        expect_activation_input_mode_update(&mut harness, &recovered, activation_mode).await;
         let recovered_token = recovered
             .live_context_token()
             .expect("fresh focus and key install a source-free owner");
@@ -2410,6 +2523,7 @@ fn residual_later_factory_retires_revoked_transfer_and_recovers_source_free() {
             .await
             .unwrap();
         assert!(bounded(harness.observer.process_next()).await.unwrap());
+        let source_free_mode_before_key = recovered.layout_gesture.layout_is_ru;
         assert!(
             !legacy_key_at(
                 &mut harness,
@@ -2436,9 +2550,12 @@ fn residual_later_factory_retires_revoked_transfer_and_recovers_source_free() {
         );
         assert!(recovered.committed_tail.buffer.is_empty());
         assert!(!recovered.context_word_is_known());
+        let property = bounded(next_peer_message(&mut harness.peer)).await;
+        assert_input_mode_update(&property, &recovered, source_free_mode_before_key);
         assert!(!harness.adapter.revalidate(&old_token));
         assert!(bridge_fence(&mut harness).await.is_ok());
 
+        let input_mode_before_key = recovered.layout_gesture.layout_is_ru;
         assert!(
             legacy_key_at(
                 &mut harness,
@@ -2451,7 +2568,7 @@ fn residual_later_factory_retires_revoked_transfer_and_recovers_source_free() {
             )
             .await
         );
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &recovered, input_mode_before_key).await;
         assert!(recovered.context_word_is_known());
         assert!(bridge_fence(&mut harness).await.is_ok());
     }));
@@ -2927,8 +3044,9 @@ async fn observer_first_reset_unknown_tail(harness: &mut Harness, serial: u32) -
         .enumerate()
     {
         let press_serial = serial + (offset as u32 * 2);
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(harness, &mut engine, press_serial, ch as u32, code, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert!(
             legacy_key(
                 harness,
@@ -3235,8 +3353,9 @@ async fn initial_observed_tail_reset(
     engine.client_context.surrounding_text_supported = true;
     for (offset, &(ch, code)) in keys.iter().enumerate() {
         let serial = serial + offset as u32 * 2;
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(harness, &mut engine, serial, ch as u32, code, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert!(
             legacy_key(
                 harness,
@@ -3324,6 +3443,7 @@ fn firefox_initial_delayed_prefix_recovers_only_after_append_reset_and_exact_rec
                     // separately at bridge level.
                 }
 
+                let input_mode_before_key = engine.layout_gesture.layout_is_ru;
                 if delayed {
                     // cycle09_visible_tail starts zbus's dispatcher. Drive the
                     // now-detached callback explicitly in this branch.
@@ -3336,7 +3456,7 @@ fn firefox_initial_delayed_prefix_recovers_only_after_append_reset_and_exact_rec
                 } else {
                     assert!(legacy_key(&mut harness, &mut engine, 9_620, 'f' as u32, 33, 0).await);
                 }
-                expect_legacy_commit(&mut harness.peer).await;
+                expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
                 let appended = format!("{initial}f");
                 assert_eq!(engine.committed_tail.buffer, appended);
                 let retained_after_append = engine.context_reset_rereceipt.is_some();
@@ -3425,8 +3545,9 @@ fn firefox_initial_delayed_prefix_cannot_survive_contradiction_or_input_gap() {
                         legacy_key(&mut harness, &mut engine, 9_710, KEY_BACKSPACE, 14, 0).await;
                 }
                 "boundary" => {
+                    let input_mode_before_key = engine.layout_gesture.layout_is_ru;
                     assert!(legacy_key(&mut harness, &mut engine, 9_710, KEY_SPACE, 57, 0).await);
-                    expect_legacy_commit(&mut harness.peer).await;
+                    expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
                 }
                 "focus_out" => actual_focus_out(&mut harness, &mut engine, 9_710).await,
                 "caps9" => engine.set_client_capabilities(1 | 1 << 3),
@@ -3472,10 +3593,11 @@ fn firefox_observed_reset_after_release_preserves_prefix_in_both_callback_orders
                 engine.client_context.surrounding_text_supported = true;
                 for (i, &(ch, code)) in keys[..prefix_len].iter().enumerate() {
                     let serial = 13_300 + i as u32 * 2;
+                    let input_mode_before_key = engine.layout_gesture.layout_is_ru;
                     assert!(
                         legacy_key(&mut harness, &mut engine, serial, ch as u32, code, 0).await
                     );
-                    expect_legacy_commit(&mut harness.peer).await;
+                    expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
                     if i + 1 < prefix_len {
                         let _ = legacy_key(
                             &mut harness,
@@ -4194,8 +4316,9 @@ fn firefox_fresh_surrounding_after_confirmed_append_rearms_next_reset() {
 
             for (offset, (ch, code)) in confirmed_prefix.chars().zip([30, 48, 46, 32]).enumerate() {
                 let serial = base + offset as u32 * 10;
+                let input_mode_before_key = engine.layout_gesture.layout_is_ru;
                 assert!(legacy_key(&mut harness, &mut engine, serial, ch as u32, code, 0).await);
-                expect_legacy_commit(&mut harness.peer).await;
+                expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
 
                 let reset = receive(&mut harness, serial + 1, "Reset").await;
                 engine
@@ -4225,6 +4348,7 @@ fn firefox_fresh_surrounding_after_confirmed_append_rearms_next_reset() {
             }
 
             let append_serial = base + 50;
+            let input_mode_before_key = engine.layout_gesture.layout_is_ru;
             assert!(
                 legacy_key(
                     &mut harness,
@@ -4236,7 +4360,7 @@ fn firefox_fresh_surrounding_after_confirmed_append_rearms_next_reset() {
                 )
                 .await
             );
-            expect_legacy_commit(&mut harness.peer).await;
+            expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
             assert_eq!(
                 engine.committed_tail.buffer,
                 format!("{confirmed_prefix}{appended}")
@@ -4317,6 +4441,7 @@ fn firefox_shortened_preedit_does_not_erase_prior_stale_surface_witness() {
             engine.committed_tail.buffer = tail_before;
             engine.committed_tail.epoch = epoch_before;
 
+            let input_mode_before_key = engine.layout_gesture.layout_is_ru;
             assert!(
                 legacy_key(
                     &mut harness,
@@ -4328,7 +4453,7 @@ fn firefox_shortened_preedit_does_not_erase_prior_stale_surface_witness() {
                 )
                 .await
             );
-            expect_legacy_commit(&mut harness.peer).await;
+            expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
             assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
             // Firefox can still report the previous displayed completion after
             // the append shortens it. That surface remains inert until a fresh
@@ -4372,6 +4497,10 @@ fn firefox_zero_width_visible_completion_tab_appends_once_with_space() {
     zbus::block_on(bounded(async {
         let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
         let mut engine = initial_observed_tail_reset(&mut harness, 9_515, &[('a', 30)]).await;
+        assert!(
+            engine.live_context_token().is_some(),
+            "Reset must install a live settled token independently of the lost pending range"
+        );
         exact_surrounding_receipt(&mut harness, &mut engine, "a").await;
         assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
         engine.record_context_reset_preedit_publication("bc", 0);
@@ -4546,8 +4675,9 @@ fn firefox_zero_width_space_then_owned_append_requires_new_exact_token() {
 
             surrounding_receipt(&mut harness, &mut engine, "a\u{200b}", 1, 1).await;
             assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            let input_mode_before_key = engine.layout_gesture.layout_is_ru;
             assert!(legacy_key(&mut harness, &mut engine, 9_533, 'x' as u32, 45, 0).await);
-            expect_legacy_commit(&mut harness.peer).await;
+            expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
             assert_eq!(engine.committed_tail.buffer, "ax");
             assert!(engine.context_reset_rereceipt.is_some());
             assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
@@ -4590,8 +4720,9 @@ fn firefox_deferred_manual_refresh_retains_retired_preedit_from_previous_prefix(
         engine.config.nanda_precognition = true;
         publish_fixture_append_completion(&mut harness, &mut engine, "cde").await;
         surrounding_receipt(&mut harness, &mut engine, "ab\u{200b}", 2, 2).await;
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(&mut harness, &mut engine, 19_210, 'c' as u32, 46, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert_eq!(engine.committed_tail.buffer, "abc");
         // The third owned letter shortens the displayed completion. Firefox
         // may still echo the publication made when only two letters existed.
@@ -4625,7 +4756,7 @@ fn firefox_deferred_manual_refresh_retains_retired_preedit_from_previous_prefix(
         }))
         .await;
         assert_eq!(outcome.unwrap(), (4, false));
-        let mut current = cycle09_take_registered_engine(&mut harness, &path).await;
+        let mut current = cycle09_take_registered_engine(&harness, &path).await;
         actual_reset(&mut harness, &mut current, 19_215, false).await;
         assert!(current.layout_gesture.pending_manual_toggle);
         surrounding_receipt(&mut harness, &mut current, "abcde\u{200b}", 3, 3).await;
@@ -4695,7 +4826,7 @@ fn firefox_manual_toggle_defers_until_the_client_replies_after_rpc() {
         // Firefox can wait for the RPC to finish before reporting the exact
         // text. No Delete/Commit is authorized by the stale preedit above.
         assert_eq!(outcome.unwrap(), (4, false));
-        let mut current = cycle09_take_registered_engine(&mut harness, &path).await;
+        let mut current = cycle09_take_registered_engine(&harness, &path).await;
         assert!(current.layout_gesture.pending_manual_toggle);
         assert_eq!(current.committed_tail.buffer, "ax");
         // Firefox can Reset after HidePreeditText and before echoing the
@@ -4803,7 +4934,7 @@ fn firefox_manual_toggle_defers_until_the_client_replies_after_rpc() {
         }))
         .await;
         assert_eq!(outcome.unwrap(), (4, false));
-        let mut current = cycle09_take_registered_engine(&mut harness, &path).await;
+        let mut current = cycle09_take_registered_engine(&harness, &path).await;
         actual_reset(&mut harness, &mut current, 19_415, false).await;
         assert!(current.layout_gesture.pending_manual_toggle);
         current
@@ -4840,8 +4971,9 @@ fn firefox_retired_preedit_survives_next_publication_until_exact_append_receipt(
             surrounding_receipt(&mut harness, &mut engine, "a\u{200b}", 1, 1).await;
             assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
 
+            let input_mode_before_key = engine.layout_gesture.layout_is_ru;
             assert!(legacy_key(&mut harness, &mut engine, 9_543, appended as u32, code, 0).await);
-            expect_legacy_commit(&mut harness.peer).await;
+            expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
             let committed = format!("a{appended}");
             assert_eq!(engine.committed_tail.buffer, committed);
             engine.record_context_reset_preedit_publication(next_preedit, 0);
@@ -4998,7 +5130,11 @@ async fn manual_toggle_bridge_round_trips(leading_boundary: bool) {
         source.client_context.content_purpose = 10;
         source.client_context.cursor_cell_width = 11;
         source.client_context.surrounding_text_supported = false;
+        let activation_mode = source.layout_gesture.layout_is_ru;
         assert!(!legacy_key(&mut harness, &mut source, 8_000, 'a' as u32, 30, 0).await);
+        if !leading_boundary {
+            expect_activation_input_mode_update(&mut harness, &source, activation_mode).await;
+        }
         super::terminal_delivery::no_legacy_text_output(&mut harness).await;
         assert!(source.committed_tail.buffer.ends_with('a'));
         if boundary {
@@ -5119,7 +5255,11 @@ fn residual_first_word_suffix_tracks_unicode_backspace_and_rejects_retained_pref
         engine.client_context.cursor_cell_width = 11;
         engine.layout_gesture.layout_is_ru = true;
         for (index, code) in [30, 48, 46].into_iter().enumerate() {
+            let activation_mode = engine.layout_gesture.layout_is_ru;
             assert!(!legacy_key(&mut harness, &mut engine, 9_000 + index as u32, 0, code, 0).await);
+            if index == 0 {
+                expect_activation_input_mode_update(&mut harness, &engine, activation_mode).await;
+            }
             super::terminal_delivery::no_legacy_text_output(&mut harness).await;
             assert_eq!(
                 engine
@@ -5201,7 +5341,9 @@ fn residual_first_word_manual_admission_is_terminal_only_and_revoked_with_contex
             engine.config.auto_replace = false;
             engine.client_context.content_purpose = 10;
             engine.client_context.cursor_cell_width = 11;
+            let activation_mode = engine.layout_gesture.layout_is_ru;
             assert!(!legacy_key(&mut harness, &mut engine, 9_100, 'a' as u32, 30, 0).await);
+            expect_activation_input_mode_update(&mut harness, &engine, activation_mode).await;
             super::terminal_delivery::no_legacy_text_output(&mut harness).await;
             assert!(engine.context_allows_manual_toggle());
             engine.client_context.surrounding_text_supported = true;
@@ -5354,7 +5496,11 @@ fn residual_first_numeric_word_bridge_refuses_without_delegation_or_output() {
         engine.client_context.content_purpose = 10;
         engine.client_context.cursor_cell_width = 11;
         for (index, code) in [2, 3, 4].into_iter().enumerate() {
+            let activation_mode = engine.layout_gesture.layout_is_ru;
             assert!(!legacy_key(&mut harness, &mut engine, 9_400 + index as u32, 0, code, 0).await);
+            if index == 0 {
+                expect_activation_input_mode_update(&mut harness, &engine, activation_mode).await;
+            }
             super::terminal_delivery::no_legacy_text_output(&mut harness).await;
         }
         assert_eq!(engine.committed_tail.buffer, "123");
@@ -5523,7 +5669,9 @@ async fn native_refocus_case(next_context: &str) {
     );
     forward_marker_bounded(&mut harness.peer).await;
     assert!(bounded(harness.observer.process_next()).await.unwrap());
+    let activation_mode = engine.layout_gesture.layout_is_ru;
     assert!(!legacy_key(&mut harness, &mut engine, 3_033, KEY_LEFT_SHIFT, 42, 0).await);
+    expect_activation_input_mode_update(&mut harness, &engine, activation_mode).await;
     assert!(
         !legacy_key(
             &mut harness,
@@ -5570,8 +5718,9 @@ async fn native_refocus_case(next_context: &str) {
         .is_none());
     assert!(bridge_fence(&mut harness).await.is_ok());
     if next_context != CONTEXT_PATH {
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(&mut harness, &mut engine, 3_034, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert!(
             engine.context_word_is_known(),
             "next actual boundary rearms new context"
@@ -5742,6 +5891,7 @@ fn residual_reset_before_ready_install_does_not_leak_ownerless_key_settlements()
         // Every callback runs to completion through the production engine and
         // observer paths. None may leak an ownerless ingress entry into the
         // reducer's bounded unsettled queue or cancel future observation.
+        let activation_mode = engine.layout_gesture.layout_is_ru;
         for index in 0..(MAX_UNSETTLED_KEYS + 2) {
             assert!(
                 !legacy_key(
@@ -5755,6 +5905,7 @@ fn residual_reset_before_ready_install_does_not_leak_ownerless_key_settlements()
                 .await
             );
             if index == 0 {
+                expect_activation_input_mode_update(&mut harness, &engine, activation_mode).await;
                 assert!(engine.committed_tail.buffer.is_empty());
                 assert!(engine.live_context_token().is_some());
                 assert!(!engine.context_word_is_known());
@@ -5795,8 +5946,9 @@ fn residual_reset_before_ready_install_does_not_leak_ownerless_key_settlements()
         assert!(!harness.adapter.revalidate(&published_token));
         assert!(bridge_fence(&mut harness).await.is_ok());
 
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(&mut harness, &mut engine, 3_500, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert!(engine.context_word_is_known());
         assert!(bridge_fence(&mut harness).await.is_ok());
     }));
@@ -5847,8 +5999,9 @@ fn residual_established_owner_reset_burst_rearms_on_first_real_boundary() {
             .unwrap()
             .unsettled
             .is_empty());
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(&mut harness, &mut engine, 3_603, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert!(engine.context_word_is_known());
         assert!(bridge_fence(&mut harness).await.is_ok());
     }));
@@ -5982,8 +6135,9 @@ fn residual_legacy_enter_backspace_revokes_beyond_the_observed_mirror() {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = new_engine(&harness);
             start_source_free_unknown(&mut harness, &mut engine).await;
+            let input_mode_before_key = engine.layout_gesture.layout_is_ru;
             assert!(legacy_key(&mut harness, &mut engine, 3_050, u32::from(b'l'), 38, 0).await);
-            expect_legacy_commit(&mut harness.peer).await;
+            expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
             assert!(!engine.context_word_is_known());
             assert!(!legacy_key(&mut harness, &mut engine, 3_051, enter, 28, 0).await);
             assert!(engine.committed_tail.buffer.is_empty());
@@ -6008,8 +6162,9 @@ fn residual_legacy_enter_backspace_revokes_beyond_the_observed_mirror() {
                 (PROPOSAL_NATIVE_UNHANDLED, Vec::new())
             );
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
+            let input_mode_before_key = engine.layout_gesture.layout_is_ru;
             assert!(legacy_key(&mut harness, &mut engine, 3_054, KEY_SPACE, 57, 0).await);
-            expect_legacy_commit(&mut harness.peer).await;
+            expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
             assert!(
                 engine.context_word_is_known(),
                 "a new actual boundary restores authority"
@@ -6032,9 +6187,11 @@ async fn retained_boundary_literal_keys(
             ' ' => 57,
             _ => unreachable!("fixture key"),
         };
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(harness, engine, *serial, ch as u32, keycode, 0).await);
         *serial += 1;
-        let commit = bounded(next_peer_message(&mut harness.peer)).await;
+        let commit =
+            next_legacy_text_effect(&mut harness.peer, engine, input_mode_before_key).await;
         assert_eq!(commit.header().member().unwrap().as_str(), "CommitText");
         let body = commit.body();
         let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
@@ -6188,6 +6345,326 @@ fn surrounding_without_refresh_accepts_live_owned_preedit_completion() {
         td121_expect_legacy_commit_text(&mut harness.peer, "abc ").await;
         assert_eq!(engine.committed_tail.buffer, "abc ");
     }));
+}
+
+async fn c06_exact_refresh_owned_second_word(harness: &mut Harness, serial: u32) -> LayIbusEngine {
+    let mut engine =
+        initial_observed_tail_reset(harness, serial, &[('a', 30), ('b', 48), ('c', 46)]).await;
+    engine.set_client_capabilities(1_073_741_865);
+    engine.config.ime_bracket_candidates = false;
+    exact_surrounding_receipt(harness, &mut engine, "abc").await;
+    assert!(legacy_key(harness, &mut engine, serial + 10, KEY_SPACE, 57, 0).await);
+    td121_expect_legacy_commit_text(&mut harness.peer, " ").await;
+    // Model Reset as the next callback after that local Space, not after
+    // wall time spent by the controlled peer serving its output.
+    engine.committed_tail.last_input_at = Some(Instant::now());
+    actual_reset(harness, &mut engine, serial + 11, false).await;
+    drain_output_to_proof(harness).await;
+    exact_surrounding_receipt(harness, &mut engine, "abc ").await;
+    assert!(!engine.context_word_is_known());
+    assert_eq!(engine.committed_tail.buffer, "abc ");
+
+    assert!(legacy_key(harness, &mut engine, serial + 12, 'a' as u32, 30, 0).await);
+    let effects = drain_output_to_proof(harness).await;
+    assert!(effects.iter().any(|member| member == "UpdatePreeditText"));
+    assert!(!effects.iter().any(|member| member == "CommitText"));
+    assert_eq!(engine.composition.buffer, "a");
+    assert_eq!(engine.committed_tail.buffer, "abc a");
+    assert!(engine.composition.legacy_word_preedit_active);
+    assert!(engine.composition.legacy_preedit_start_boundary.is_some());
+    assert!(engine.client_context.surrounding_text_snapshot.is_none());
+    assert!(engine.client_context.managed_word_start.is_none());
+    assert!(engine.live_context_token().is_some());
+    assert!(!engine.context_word_is_known());
+
+    // The candidate is controlled; publication and Tab use the actual legacy
+    // callback/output transport and existing backend verifier.
+    set_fixture_append_completion(&mut engine, "bc");
+    let emitter =
+        zbus::object_server::SignalEmitter::new(&harness.connection, engine.path.clone()).unwrap();
+    engine
+        .publish_selected_precognition_candidate(&mut EngineOutput::legacy(&emitter))
+        .await
+        .unwrap();
+    let effects = super::terminal_delivery::legacy_effects(harness).await;
+    let updates = effects
+        .iter()
+        .filter(|effect| effect.header().member().unwrap().as_str() == "UpdatePreeditText")
+        .collect::<Vec<_>>();
+    assert_eq!(updates.len(), 1);
+    let body = updates[0].body();
+    let (text, cursor, visible, _) = body
+        .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+        .unwrap();
+    assert_eq!(
+        crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
+        Some("abc")
+    );
+    assert_eq!((cursor, visible), (1, true));
+    assert_eq!(
+        crate::text::preedit_attribute_geometry(&text),
+        [(1, 0, 0, 1), (2, 0x888888, 1, 3), (1, 1, 1, 3)],
+        "the actual legacy signal must leave its owned typed prefix neutral"
+    );
+    assert!(effects.iter().all(|effect| !matches!(
+        effect.header().member().unwrap().as_str(),
+        "CommitText" | "DeleteSurroundingText"
+    )));
+    engine
+}
+
+#[test]
+fn c06_exact_refresh_observed_second_word_accepts_live_owned_append_once() {
+    zbus::block_on(bounded(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = c06_exact_refresh_owned_second_word(&mut harness, 28_100).await;
+        // This grant remains specific to explicit append acceptance.
+        assert!(!engine.context_owns_active_preedit_manual_toggle());
+
+        assert!(legacy_key(&mut harness, &mut engine, 28_120, KEY_TAB, 15, 0).await);
+        let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
+        let commits = effects
+            .iter()
+            .filter(|effect| effect.header().member().unwrap().as_str() == "CommitText")
+            .map(|effect| {
+                let body = effect.body();
+                let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+                crate::ibus_interface::ibus_text_value_to_string(&value).unwrap()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(commits, ["abc "]);
+        assert!(effects.iter().all(|effect| {
+            effect.header().member().unwrap().as_str() != "DeleteSurroundingText"
+        }));
+        assert_eq!(engine.committed_tail.buffer, "abc abc ");
+        assert!(engine.composition.buffer.is_empty());
+        assert!(engine.composition.legacy_preedit_start_boundary.is_none());
+        // Append acceptance does not promote the preexisting UnknownStart
+        // lineage into completion-learning authority during this edit.
+        assert!(engine.committed_tail.pending_completion_learning.is_none());
+        assert!(!legacy_key(&mut harness, &mut engine, 28_121, KEY_TAB, 15, 0).await);
+        let after = drain_output_to_proof(&mut harness).await;
+        assert!(after
+            .iter()
+            .all(|member| !matches!(member.as_str(), "CommitText" | "DeleteSurroundingText")));
+        assert_eq!(engine.committed_tail.buffer, "abc abc ");
+    }));
+}
+
+#[test]
+fn c06_exact_refresh_owned_append_refuses_unproved_or_revoked_start() {
+    for gap in [
+        "missing_boundary",
+        "stale_token",
+        "focus",
+        "owner",
+        "layout",
+        "tail_epoch",
+        "tail_prefix",
+        "observation_revision",
+        "selection",
+        "reset",
+        "replacement",
+        "dirty_hint",
+        "display_only",
+        "caret",
+        "sensitive",
+    ] {
+        zbus::block_on(bounded(async {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = c06_exact_refresh_owned_second_word(&mut harness, 28_200).await;
+            match gap {
+                "missing_boundary" => engine.composition.legacy_preedit_start_boundary = None,
+                "stale_token" => engine.context_token = None,
+                "focus" => engine.client_context.focus_serial += 1,
+                "owner" => engine.client_context.runtime_owner_lease_identity += 1,
+                "layout" => engine.layout_gesture.layout_generation += 1,
+                "tail_epoch" => engine.committed_tail.epoch += 1,
+                "tail_prefix" => engine.committed_tail.buffer = "xyz a".into(),
+                "observation_revision" => {
+                    exact_surrounding_receipt(&mut harness, &mut engine, "abc ").await;
+                }
+                "selection" => {
+                    surrounding_receipt(&mut harness, &mut engine, "abc ", 4, 0).await;
+                }
+                "reset" => {
+                    actual_reset(&mut harness, &mut engine, 28_220, false).await;
+                    drain_output_to_proof(&mut harness).await;
+                }
+                "replacement" => {
+                    engine.composition.preedit_replacement_targets[0] = Some("xyz".into());
+                }
+                "dirty_hint" => engine.composition.preedit_dirty = true,
+                "display_only" => engine.composition.preedit_display_only_pending = true,
+                "caret" => engine.composition.cursor = 0,
+                "sensitive" => {
+                    engine.client_context.content_purpose =
+                        crate::window_interaction::IBUS_INPUT_PURPOSE_PASSWORD;
+                }
+                _ => unreachable!(),
+            }
+            assert!(
+                !engine.context_owns_active_preedit_append_completion(),
+                "{gap}"
+            );
+            let tail_before_tab = engine.committed_tail.buffer.clone();
+            assert!(
+                !legacy_key(&mut harness, &mut engine, 28_221, KEY_TAB, 15, 0).await,
+                "{gap}"
+            );
+            let effects = drain_output_to_proof(&mut harness).await;
+            assert!(
+                effects.iter().all(|member| !matches!(
+                    member.as_str(),
+                    "CommitText" | "DeleteSurroundingText"
+                )),
+                "{gap}: {effects:?}"
+            );
+            assert_eq!(engine.committed_tail.buffer, tail_before_tab, "{gap}");
+        }));
+    }
+}
+
+#[test]
+fn c06_exact_refresh_capability_alone_cannot_admit_an_unproved_owned_start() {
+    zbus::block_on(bounded(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.config.nanda_precognition = false;
+        engine.set_client_capabilities(9);
+        assert!(legacy_key(&mut harness, &mut engine, 28_300, 'a' as u32, 30, 0).await);
+        drain_output_to_proof(&mut harness).await;
+        assert!(engine.composition.legacy_word_preedit_active);
+        // A later capability notification supplies neither a field boundary
+        // nor authority to replace the already displayed word.
+        engine.set_client_capabilities(1_073_741_865);
+        set_fixture_append_completion(&mut engine, "bc");
+        assert!(engine.composition.legacy_preedit_start_boundary.is_none());
+        assert!(!engine.context_owns_active_preedit_append_completion());
+        assert!(!legacy_key(&mut harness, &mut engine, 28_301, KEY_TAB, 15, 0).await);
+        let effects = drain_output_to_proof(&mut harness).await;
+        assert!(effects
+            .iter()
+            .all(|member| !matches!(member.as_str(), "CommitText" | "DeleteSurroundingText")));
+        assert_eq!(engine.composition.buffer, "a");
+    }));
+}
+
+#[test]
+fn c06_owned_backspace_retype_accepts_live_append_without_client_edit() {
+    zbus::block_on(bounded(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = c06_exact_refresh_owned_second_word(&mut harness, 28_400).await;
+        assert!(legacy_key(&mut harness, &mut engine, 28_420, 'b' as u32, 48, 0).await);
+        drain_output_to_proof(&mut harness).await;
+        let before_epoch = engine.committed_tail.epoch;
+        assert!(legacy_key(&mut harness, &mut engine, 28_421, KEY_BACKSPACE, 14, 0).await);
+        let edits = drain_output_to_proof(&mut harness).await;
+        assert!(edits
+            .iter()
+            .all(|member| !matches!(member.as_str(), "CommitText" | "DeleteSurroundingText")));
+        assert_eq!(engine.composition.buffer, "a");
+        assert_eq!(engine.committed_tail.buffer, "abc a");
+        assert_eq!(engine.committed_tail.epoch, before_epoch.wrapping_add(1));
+        assert!(legacy_key(&mut harness, &mut engine, 28_422, 'b' as u32, 48, 0).await);
+        drain_output_to_proof(&mut harness).await;
+        set_fixture_append_completion(&mut engine, "c");
+        let emitter =
+            zbus::object_server::SignalEmitter::new(&harness.connection, engine.path.clone())
+                .unwrap();
+        engine
+            .publish_selected_precognition_candidate(&mut EngineOutput::legacy(&emitter))
+            .await
+            .unwrap();
+        let visible = super::terminal_delivery::legacy_effects(&mut harness).await;
+        assert!(visible
+            .iter()
+            .any(|message| message.header().member().unwrap().as_str() == "UpdatePreeditText"));
+        // Exercise the real accept callback; a missing local-edit receipt must
+        // fail here, even if the same append hint has been displayed.
+        assert!(legacy_key(&mut harness, &mut engine, 28_423, KEY_TAB, 15, 0).await);
+        let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
+        let commits = effects
+            .iter()
+            .filter(|message| message.header().member().unwrap().as_str() == "CommitText")
+            .map(|message| {
+                let body = message.body();
+                let text = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+                crate::ibus_interface::ibus_text_value_to_string(&text).unwrap()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(commits, ["abc "]);
+        assert!(effects
+            .iter()
+            .all(|message| message.header().member().unwrap().as_str() != "DeleteSurroundingText"));
+        assert_eq!(engine.committed_tail.buffer, "abc abc ");
+        assert!(engine.composition.buffer.is_empty());
+        assert!(engine.composition.legacy_preedit_start_boundary.is_none());
+        assert!(engine.committed_tail.pending_completion_learning.is_none());
+    }));
+}
+
+#[test]
+fn c06_owned_backspace_cannot_repair_external_epoch_or_revoked_start() {
+    for gap in [
+        "external_epoch",
+        "missing_boundary",
+        "owner",
+        "layout",
+        "surrounding_revision",
+        "selection",
+    ] {
+        zbus::block_on(bounded(async {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = c06_exact_refresh_owned_second_word(&mut harness, 28_500).await;
+            assert!(legacy_key(&mut harness, &mut engine, 28_520, 'b' as u32, 48, 0).await);
+            drain_output_to_proof(&mut harness).await;
+            match gap {
+                "external_epoch" => engine.committed_tail.epoch += 1,
+                "missing_boundary" => engine.composition.legacy_preedit_start_boundary = None,
+                "owner" => engine.client_context.runtime_owner_lease_identity += 1,
+                "layout" => engine.layout_gesture.layout_generation += 1,
+                "surrounding_revision" => {
+                    exact_surrounding_receipt(&mut harness, &mut engine, "abc ").await
+                }
+                "selection" => surrounding_receipt(&mut harness, &mut engine, "abc ", 4, 0).await,
+                _ => unreachable!(),
+            }
+            let _ = legacy_key(&mut harness, &mut engine, 28_521, KEY_BACKSPACE, 14, 0).await;
+            let edits = drain_output_to_proof(&mut harness).await;
+            assert!(
+                edits.iter().all(|member| !matches!(
+                    member.as_str(),
+                    "CommitText" | "DeleteSurroundingText"
+                )),
+                "{gap}: {edits:?}"
+            );
+            assert!(
+                engine.composition.legacy_preedit_start_boundary.is_none(),
+                "{gap}"
+            );
+            let _ = legacy_key(&mut harness, &mut engine, 28_522, 'b' as u32, 48, 0).await;
+            drain_output_to_proof(&mut harness).await;
+            set_fixture_append_completion(&mut engine, "c");
+            assert!(
+                !engine.context_owns_active_preedit_append_completion(),
+                "{gap}"
+            );
+            assert!(
+                !legacy_key(&mut harness, &mut engine, 28_523, KEY_TAB, 15, 0).await,
+                "{gap}"
+            );
+            let effects = drain_output_to_proof(&mut harness).await;
+            assert!(
+                effects.iter().all(|member| !matches!(
+                    member.as_str(),
+                    "CommitText" | "DeleteSurroundingText"
+                )),
+                "{gap}: {effects:?}"
+            );
+        }));
+    }
 }
 
 #[test]
@@ -6397,26 +6874,78 @@ fn no_surrounding_owned_preedit_emits_native_ibus_input_mode_signal() {
         let emitter =
             zbus::object_server::SignalEmitter::new(&harness.connection, engine.path.clone())
                 .unwrap();
-        let result = engine
-            .manual_toggle_active_text_target(&mut EngineOutput::legacy(&emitter))
-            .await
-            .unwrap();
-        assert_eq!(result, Some(true));
-        let preedit = bounded(next_peer_message(&mut harness.peer)).await;
+        // Initial registration remains a property list; neither physical
+        // gesture may re-register that list on the same engine transport.
+        LayIbusEngine::register_properties(
+            &emitter,
+            crate::text::make_ibus_input_mode_properties(false),
+        )
+        .await
+        .unwrap();
+        let registration = bounded(next_peer_message(&mut harness.peer)).await;
         assert_eq!(
-            preedit.header().member().unwrap().as_str(),
-            "UpdatePreeditText"
-        );
-        let property = bounded(next_peer_message(&mut harness.peer)).await;
-        assert_eq!(
-            property.header().member().unwrap().as_str(),
+            registration.header().member().unwrap().as_str(),
             "RegisterProperties"
         );
-        let body = property.body();
+        let body = registration.body();
         let (value,): (zbus::zvariant::Value<'_>,) = body.deserialize().unwrap();
         assert_eq!(value.value_signature().to_string(), "(sa{sv}av)");
-        assert_eq!(engine.composition.buffer, "ф");
-        assert!(engine.layout_gesture.layout_is_ru);
+
+        for (expected_ru, expected_text, expected_symbol) in [(true, "ф", "RU"), (false, "a", "EN")]
+        {
+            let result = engine
+                .manual_toggle_active_text_target(&mut EngineOutput::legacy(&emitter))
+                .await
+                .unwrap();
+            assert_eq!(result, Some(expected_ru));
+            let preedit = bounded(next_peer_message(&mut harness.peer)).await;
+            assert_eq!(
+                preedit.header().member().unwrap().as_str(),
+                "UpdatePreeditText"
+            );
+            let body = preedit.body();
+            let (text, cursor, visible, _mode): (zbus::zvariant::Value<'_>, u32, bool, u32) =
+                body.deserialize().unwrap();
+            assert_eq!(
+                crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
+                Some(expected_text)
+            );
+            assert_eq!(cursor, 1);
+            assert!(visible);
+
+            let property = bounded(next_peer_message(&mut harness.peer)).await;
+            let header = property.header();
+            assert_eq!(header.member().unwrap().as_str(), "UpdateProperty");
+            assert_eq!(
+                header.interface().unwrap().as_str(),
+                "org.freedesktop.IBus.Engine"
+            );
+            assert_eq!(header.path().unwrap().as_str(), engine.path);
+            let body = property.body();
+            let (value,): (zbus::zvariant::Value<'_>,) = body.deserialize().unwrap();
+            let zbus::zvariant::Value::Structure(property) = value else {
+                panic!("UpdateProperty must carry a single IBusProperty");
+            };
+            let fields = property.fields();
+            assert_eq!(fields.len(), 12);
+            assert!(
+                matches!(&fields[0], zbus::zvariant::Value::Str(name) if name.as_str() == "IBusProperty")
+            );
+            assert!(
+                matches!(&fields[2], zbus::zvariant::Value::Str(key) if key.as_str() == "InputMode")
+            );
+            let zbus::zvariant::Value::Value(symbol) = &fields[11] else {
+                panic!("InputMode symbol must be an IBusText variant");
+            };
+            assert_eq!(
+                crate::ibus_interface::ibus_text_value_to_string(symbol.as_ref()).as_deref(),
+                Some(expected_symbol)
+            );
+            assert_eq!(engine.composition.buffer, expected_text);
+            assert_eq!(engine.committed_tail.buffer, expected_text);
+            assert_eq!(engine.layout_gesture.layout_is_ru, expected_ru);
+            assert!(drain_output_to_proof(&mut harness).await.is_empty());
+        }
     }));
 }
 
@@ -6477,7 +7006,9 @@ fn late_surrounding_capability_keeps_newly_published_native_completion_for_tab()
         engine.client_context.content_purpose = 10;
         engine.client_context.cursor_cell_width = 11;
 
+        let activation_mode = engine.layout_gesture.layout_is_ru;
         assert!(!legacy_key(&mut harness, &mut engine, 12_880, 'a' as u32, 30, 0).await);
+        expect_activation_input_mode_update(&mut harness, &engine, activation_mode).await;
         super::terminal_delivery::no_legacy_text_output(&mut harness).await;
         assert_eq!(engine.committed_tail.buffer, "a");
         assert!(!engine.composition.preedit_visible);
@@ -7017,6 +7548,7 @@ async fn cycle09_source(harness: &mut Harness) -> LayIbusEngine {
     source.set_client_capabilities(41);
     source.set_content_type_state(0, 0);
     for (offset, (ch, code)) in [('a', 30), ('b', 48), ('c', 46)].into_iter().enumerate() {
+        let input_mode_before_key = source.layout_gesture.layout_is_ru;
         assert!(
             legacy_key(
                 harness,
@@ -7028,7 +7560,7 @@ async fn cycle09_source(harness: &mut Harness) -> LayIbusEngine {
             )
             .await
         );
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &source, input_mode_before_key).await;
     }
     assert_eq!(source.committed_tail.buffer, " abc");
     assert!(source.context_word_is_known());
@@ -7041,8 +7573,9 @@ async fn cycle09_source(harness: &mut Harness) -> LayIbusEngine {
 }
 
 async fn cycle09_add_trailing_boundary(harness: &mut Harness, source: &mut LayIbusEngine) {
+    let input_mode_before_key = source.layout_gesture.layout_is_ru;
     assert!(legacy_key(harness, source, 11_910, KEY_SPACE, 57, 0).await);
-    expect_legacy_commit(&mut harness.peer).await;
+    expect_legacy_commit(&mut harness.peer, source, input_mode_before_key).await;
     assert_eq!(source.committed_tail.buffer, " abc ");
 }
 
@@ -7164,6 +7697,7 @@ async fn td121_no_target_snapshot_handoff(
     source.set_client_capabilities(41);
     source.set_content_type_state(0, 0);
     for (offset, (ch, code)) in [('a', 30), ('b', 48), ('c', 46)].into_iter().enumerate() {
+        let input_mode_before_key = source.layout_gesture.layout_is_ru;
         assert!(
             legacy_key(
                 &mut harness,
@@ -7175,7 +7709,7 @@ async fn td121_no_target_snapshot_handoff(
             )
             .await
         );
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &source, input_mode_before_key).await;
     }
     assert_eq!(source.committed_tail.buffer, "abc");
     assert!(!source.context_word_is_known());
@@ -7547,6 +8081,7 @@ fn firefox_source_free_first_word_after_space_delegates_exact_tail() {
             source.set_client_capabilities(41);
             source.set_content_type_state(0, 0);
             for (offset, (ch, code)) in [('a', 30), ('b', 48), ('c', 46)].into_iter().enumerate() {
+                let input_mode_before_key = source.layout_gesture.layout_is_ru;
                 assert!(
                     legacy_key(
                         &mut harness,
@@ -7558,13 +8093,14 @@ fn firefox_source_free_first_word_after_space_delegates_exact_tail() {
                     )
                     .await
                 );
-                expect_legacy_commit(&mut harness.peer).await;
+                expect_legacy_commit(&mut harness.peer, &source, input_mode_before_key).await;
             }
             assert_eq!(source.committed_tail.buffer, "abc");
             assert!(!source.context_word_is_known());
             cycle09_surrounding_receipt(&mut harness, &mut source, "abc", 3, 3).await;
+            let input_mode_before_key = source.layout_gesture.layout_is_ru;
             assert!(legacy_key(&mut harness, &mut source, 27_010, KEY_SPACE, 57, 0).await);
-            expect_legacy_commit(&mut harness.peer).await;
+            expect_legacy_commit(&mut harness.peer, &source, input_mode_before_key).await;
             assert_eq!(source.committed_tail.buffer, "abc ");
             cycle09_surrounding_receipt(&mut harness, &mut source, "abc ", 4, 4).await;
             if reset_before_toggle {
@@ -7604,8 +8140,9 @@ fn firefox_first_word_space_retires_published_preedit_before_exact_receipt() {
             source.config.nanda_precognition = false;
             source.set_client_capabilities(41);
             source.set_content_type_state(0, 0);
+            let input_mode_before_key = source.layout_gesture.layout_is_ru;
             assert!(legacy_key(&mut harness, &mut source, 27_100, 'a' as u32, 30, 0).await);
-            expect_legacy_commit(&mut harness.peer).await;
+            expect_legacy_commit(&mut harness.peer, &source, input_mode_before_key).await;
             assert_eq!(source.committed_tail.buffer, "a");
             actual_reset(&mut harness, &mut source, 27_101, false).await;
             cycle09_surrounding_receipt(&mut harness, &mut source, "a", 1, 1).await;
@@ -8079,5 +8616,860 @@ fn exact_replay_requires_current_unselected_external_tail_at_each_lease() {
             "current external-tail authority violations: {}",
             false_accepts.join("; ")
         );
+    }));
+}
+
+#[test]
+fn managed_no_surrounding_command_retires_mirror_before_fresh_owned_word_toggle() {
+    zbus::block_on(bounded(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_client_capabilities(9);
+        engine.config.auto_replace = false;
+        engine.config.auto_switch_layout = true;
+        engine.config.nanda_precognition = false;
+        assert!(!engine.client_context.surrounding_text_supported);
+
+        for (index, (key, code)) in [('a', 30), ('b', 48), ('c', 46)].into_iter().enumerate() {
+            assert!(
+                legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    40_000 + index as u32,
+                    key as u32,
+                    code,
+                    0,
+                )
+                .await
+            );
+        }
+        let (members, committed) = drain_output_to_text_proof(&mut harness).await;
+        assert!(committed.is_empty());
+        assert!(!members
+            .iter()
+            .any(|member| member == "DeleteSurroundingText"));
+        assert_eq!(engine.composition.buffer, "abc");
+        assert!(engine.composition.legacy_word_preedit_active);
+
+        // Control_L itself commits the owned preedit through the existing
+        // non-printable callback. The client then owns Ctrl+A and Backspace;
+        // no surrounding receipt proves what those two commands deleted.
+        assert!(!legacy_key(&mut harness, &mut engine, 40_003, 0xffe3, 29, 0).await);
+        let (members, committed) = drain_output_to_text_proof(&mut harness).await;
+        assert_eq!(committed, ["abc"]);
+        assert!(!members
+            .iter()
+            .any(|member| member == "DeleteSurroundingText"));
+        assert!(engine.composition.buffer.is_empty());
+        assert!(!engine.composition.legacy_word_preedit_active);
+        assert_eq!(engine.committed_tail.buffer, "abc");
+        assert_eq!(
+            engine.composition.word_input_mode,
+            Some(WordInputMode::ManagedCommit)
+        );
+
+        assert!(!legacy_key(&mut harness, &mut engine, 40_004, 'a' as u32, 30, 1 << 2).await);
+        // The old SurroundingText-only guard retains "abc" here.
+        assert!(engine.committed_tail.buffer.is_empty());
+        assert!(engine.composition.word_input_mode.is_none());
+        assert!(engine.client_context.managed_word_start.is_none());
+        assert!(engine.client_context.surrounding_text_snapshot.is_none());
+        assert!(engine.shared.lock().unwrap().handoff_tail_buffer.is_empty());
+        assert!(!legacy_key(&mut harness, &mut engine, 40_005, KEY_BACKSPACE, 14, 0).await);
+        let (members, committed) = drain_output_to_text_proof(&mut harness).await;
+        assert!(committed.is_empty());
+        assert!(!members
+            .iter()
+            .any(|member| member == "DeleteSurroundingText"));
+        assert!(engine.committed_tail.buffer.is_empty());
+        assert!(!engine.context_word_is_known());
+        assert!(!engine.context_allows_manual_toggle());
+        assert!(!engine.context_owns_active_preedit_manual_toggle());
+        let (mut engine, outcome) = cycle09_manual_toggle(&mut harness, engine).await;
+        assert_eq!(
+            outcome,
+            Ok(lay::manual_toggle::ImeManualToggleOutcome::NotHandled.as_v3())
+        );
+
+        for (index, (key, code)) in [
+            ('g', 34),
+            ('h', 35),
+            ('b', 48),
+            ('d', 32),
+            ('t', 20),
+            ('n', 49),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            assert!(
+                legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    40_006 + index as u32,
+                    key as u32,
+                    code,
+                    0,
+                )
+                .await
+            );
+        }
+        let (members, committed) = drain_output_to_text_proof(&mut harness).await;
+        assert!(committed.is_empty());
+        assert!(!members
+            .iter()
+            .any(|member| member == "DeleteSurroundingText"));
+        assert_eq!(engine.composition.buffer, "ghbdtn");
+        assert_eq!(engine.committed_tail.buffer, "ghbdtn");
+        assert!(engine.composition.legacy_word_preedit_active);
+        assert!(!engine.context_word_is_known());
+        assert!(!engine.context_allows_manual_toggle());
+        assert!(engine.context_owns_active_preedit_manual_toggle());
+
+        // Actual bridge admission and the existing exact owned-preedit edit
+        // route must succeed; the helper forbids CommitText/DeleteSurroundingText.
+        for (expected_ru, expected) in [(true, "привет"), (false, "ghbdtn")] {
+            let (toggled, outcome) = cycle09_manual_toggle(&mut harness, engine).await;
+            engine = toggled;
+            assert_eq!(
+                outcome,
+                Ok(lay::manual_toggle::ImeManualToggleOutcome::handled(expected_ru).as_v3())
+            );
+            assert_eq!(engine.composition.buffer, expected);
+            assert_eq!(engine.committed_tail.buffer, expected);
+            assert_eq!(engine.composition.cursor, expected.chars().count());
+            assert_eq!(engine.layout_gesture.layout_is_ru, expected_ru);
+            assert!(engine.composition.preedit_visible);
+            assert!(engine.composition.legacy_word_preedit_active);
+            assert!(engine.context_owns_active_preedit_manual_toggle());
+            assert!(!engine.context_word_is_known());
+        }
+    }));
+}
+
+#[test]
+fn terminal_passthrough_command_preserves_native_mirror_without_owned_preedit_grant() {
+    zbus::block_on(bounded(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_content_type_state(10, 0);
+        engine.set_client_capabilities(9);
+        engine.client_context.cursor_cell_width = 11;
+        engine.config.auto_replace = false;
+        engine.config.nanda_precognition = false;
+
+        for (index, (key, code)) in [('a', 30), ('b', 48), ('c', 46)].into_iter().enumerate() {
+            assert!(
+                !legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    40_100 + index as u32,
+                    key as u32,
+                    code,
+                    0,
+                )
+                .await
+            );
+        }
+        assert_eq!(engine.committed_tail.buffer, "abc");
+        assert_eq!(
+            engine.composition.word_input_mode,
+            Some(WordInputMode::TerminalPassthrough)
+        );
+        assert!(engine.composition.buffer.is_empty());
+        assert!(!engine.composition.legacy_word_preedit_active);
+        assert!(!legacy_key(&mut harness, &mut engine, 40_103, 'a' as u32, 30, 1 << 2).await);
+        assert_eq!(engine.committed_tail.buffer, "abc");
+        assert_eq!(
+            engine.composition.word_input_mode,
+            Some(WordInputMode::TerminalPassthrough)
+        );
+        assert!(!engine.context_word_is_known());
+        assert!(!engine.context_allows_manual_toggle());
+        assert!(!engine.context_owns_active_preedit_manual_toggle());
+
+        assert!(!legacy_key(&mut harness, &mut engine, 40_104, KEY_BACKSPACE, 14, 0).await);
+        assert_eq!(engine.committed_tail.buffer, "ab");
+        assert!(!legacy_key(&mut harness, &mut engine, 40_105, 'd' as u32, 32, 0).await);
+        assert_eq!(engine.committed_tail.buffer, "abd");
+        assert_eq!(
+            engine.composition.word_input_mode,
+            Some(WordInputMode::TerminalPassthrough)
+        );
+        assert!(!engine.context_owns_active_preedit_manual_toggle());
+        let (members, committed) = drain_output_to_text_proof(&mut harness).await;
+        assert!(committed.is_empty());
+        assert!(!members
+            .iter()
+            .any(|member| member == "DeleteSurroundingText"));
+        assert!(!members.iter().any(|member| member == "UpdatePreeditText"));
+    }));
+}
+
+async fn c09_caps9_installed_mode_release_case(transfer: bool) {
+    let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+    let mut engine = new_engine(&harness);
+    start_source_free_unknown(&mut harness, &mut engine).await;
+    engine.set_client_capabilities(9);
+    engine.config.nanda_precognition = false;
+    if transfer {
+        // Check the new native metadata explicitly while preparing a known
+        // source. The existing first-CommitText fixture is intentionally not
+        // weakened to skip arbitrary signals.
+        assert!(legacy_key(&mut harness, &mut engine, 41_000, KEY_SPACE, 57, 0).await);
+        let initial = super::terminal_delivery::legacy_effects(&mut harness).await;
+        let members: Vec<_> = initial
+            .iter()
+            .map(|message| message.header().member().unwrap().as_str().to_string())
+            .collect();
+        assert_eq!(
+            members
+                .iter()
+                .filter(|name| *name == "UpdateProperty")
+                .count(),
+            1
+        );
+        assert_eq!(
+            members.iter().filter(|name| *name == "CommitText").count(),
+            1
+        );
+        assert!(
+            members.iter().position(|name| name == "UpdateProperty")
+                < members.iter().position(|name| name == "CommitText")
+        );
+        let commit = initial
+            .iter()
+            .find(|message| message.header().member().unwrap().as_str() == "CommitText")
+            .unwrap();
+        let body = commit.body();
+        let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+        assert_eq!(
+            crate::ibus_interface::ibus_text_value_to_string(&value).as_deref(),
+            Some(" ")
+        );
+        legacy_key(
+            &mut harness,
+            &mut engine,
+            41_003,
+            KEY_SPACE,
+            57,
+            RELEASE_MASK,
+        )
+        .await;
+        let released = super::terminal_delivery::legacy_effects(&mut harness).await;
+        assert!(!released
+            .iter()
+            .any(|message| message.header().member().unwrap().as_str() == "UpdateProperty"));
+        assert!(engine.context_word_is_known());
+        leave_context(&mut harness, &mut engine).await;
+        let focus_in = receive(&mut harness, 41_004, "FocusInId").await;
+        let observed = harness
+            .adapter
+            .observe_callback(&focus_in.header(), Instant::now())
+            .await
+            .unwrap();
+        harness
+            .adapter
+            .start_native_activation(
+                engine_path(TARGET_PATH),
+                context(CONTEXT_PATH),
+                observed.position,
+            )
+            .unwrap();
+        forward_marker_bounded(&mut harness.peer).await;
+        assert!(bounded(harness.observer.process_next()).await.unwrap());
+        assert!(matches!(
+            harness
+                .adapter
+                .shared
+                .ready_activation
+                .lock()
+                .unwrap()
+                .as_ref()
+                .map(|ready| &ready.outcome),
+            Some(ActivationOutcome::Transfer(_))
+        ));
+    }
+    assert!(!engine.client_context.surrounding_text_supported);
+    assert!(engine.client_context.surrounding_text_snapshot.is_none());
+    let before_mode = engine.layout_gesture.layout_is_ru;
+    let before_tail = engine.committed_tail.buffer.clone();
+    let expected_owner = harness.adapter.current_owner().unwrap();
+    let _ = super::terminal_delivery::legacy_effects(&mut harness).await;
+
+    // The already sent Space release is sufficient. This is the actual
+    // production legacy callback with an observed stamp and native emitter;
+    // no SetSurroundingText or next press is supplied.
+    legacy_key(
+        &mut harness,
+        &mut engine,
+        41_001,
+        KEY_SPACE,
+        57,
+        RELEASE_MASK,
+    )
+    .await;
+    let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
+    let updates: Vec<_> = effects
+        .iter()
+        .filter(|message| message.header().member().unwrap().as_str() == "UpdateProperty")
+        .collect();
+    assert_eq!(updates.len(), 1, "installed owner must publish InputMode");
+    let header = updates[0].header();
+    assert_eq!(header.path().unwrap().as_str(), engine.path);
+    assert_eq!(header.interface().unwrap().as_str(), ENGINE_INTERFACE);
+    let body = updates[0].body();
+    let (value,): (zbus::zvariant::Value<'_>,) = body.deserialize().unwrap();
+    let zbus::zvariant::Value::Structure(property) = value else {
+        panic!("UpdateProperty must carry a single IBusProperty");
+    };
+    let fields = property.fields();
+    assert_eq!(fields.len(), 12);
+    assert!(matches!(&fields[2], zbus::zvariant::Value::Str(key) if key.as_str() == "InputMode"));
+    let zbus::zvariant::Value::Value(symbol) = &fields[11] else {
+        panic!("InputMode symbol must be an IBusText variant");
+    };
+    assert_eq!(
+        crate::ibus_interface::ibus_text_value_to_string(symbol.as_ref()).as_deref(),
+        Some(if before_mode { "RU" } else { "EN" })
+    );
+    assert!(!effects.iter().any(|message| matches!(
+        message.header().member().unwrap().as_str(),
+        "CommitText" | "DeleteSurroundingText" | "ForwardKeyEvent"
+    )));
+    assert_eq!(engine.context_owner.as_ref(), Some(&expected_owner));
+    assert_eq!(engine.layout_gesture.layout_is_ru, before_mode);
+    assert_eq!(engine.committed_tail.buffer, before_tail);
+    assert!(engine.client_context.surrounding_text_snapshot.is_none());
+    assert!(!engine.client_context.input_mode_property_refresh_pending);
+
+    legacy_key(
+        &mut harness,
+        &mut engine,
+        41_002,
+        KEY_SPACE,
+        57,
+        RELEASE_MASK,
+    )
+    .await;
+    let repeated = super::terminal_delivery::legacy_effects(&mut harness).await;
+    assert!(!repeated
+        .iter()
+        .any(|message| { message.header().member().unwrap().as_str() == "UpdateProperty" }));
+}
+
+#[test]
+fn c09_source_free_caps9_release_publishes_installed_mode_without_surrounding() {
+    zbus::block_on(bounded(c09_caps9_installed_mode_release_case(false)));
+}
+
+#[test]
+fn c09_transfer_caps9_release_publishes_installed_mode_without_surrounding() {
+    zbus::block_on(bounded(c09_caps9_installed_mode_release_case(true)));
+}
+
+#[test]
+fn c09_post_install_mode_refuses_revoked_or_mismatched_owner() {
+    zbus::block_on(bounded(async {
+        for loss in ["revoked", "path", "shared_path", "shared_generation"] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = new_engine(&harness);
+            start_source_free_unknown(&mut harness, &mut engine).await;
+            engine.set_client_capabilities(9);
+            engine.config.nanda_precognition = false;
+            // Receive the actual release callback and install its authenticated
+            // owner before the production publisher can consume pending mode.
+            let release = receive(&mut harness, 41_100, "ProcessKeyEvent").await;
+            assert!(engine
+                .begin_context_key_callback(&release.header(), Instant::now(), false)
+                .await
+                .is_some());
+            let owner = engine
+                .context_owner
+                .clone()
+                .expect("installed release owner");
+            assert_eq!(harness.adapter.current_owner().as_ref(), Some(&owner));
+            assert!(engine.live_context_token().is_some());
+            assert!(engine.client_context.input_mode_property_refresh_pending);
+            let before_mode = engine.layout_gesture.layout_is_ru;
+            match loss {
+                "revoked" => assert!(harness.adapter.revoke_current_owner(&owner)),
+                "path" => engine.path = "/engine/foreign".to_string(),
+                "shared_path" => {
+                    engine.shared.lock().unwrap().active_path = Some("/engine/foreign".into());
+                }
+                "shared_generation" => {
+                    engine.shared.lock().unwrap().context_owner_generation =
+                        Some(owner.generation.0 + 1);
+                }
+                _ => unreachable!(),
+            }
+            // Do not begin a new activation after corruption. Exercise the
+            // same production publisher directly on the installed owner.
+            let emitter = zbus::object_server::SignalEmitter::new(&harness.connection, TARGET_PATH)
+                .expect("legacy signal emitter");
+            engine
+                .publish_pending_input_mode_property(&mut EngineOutput::legacy(&emitter))
+                .await;
+            let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
+            assert!(
+                !effects.iter().any(|message| {
+                    message.header().member().unwrap().as_str() == "UpdateProperty"
+                }),
+                "must not publish stale mode: {loss}"
+            );
+            assert_eq!(engine.layout_gesture.layout_is_ru, before_mode);
+        }
+    }));
+}
+
+#[test]
+fn c09_post_install_mode_transport_failure_preserves_authority_and_pending() {
+    zbus::block_on(bounded(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_client_capabilities(9);
+        // The existing install path establishes pending mode without running
+        // a successful publisher before transport-failure injection.
+        engine.try_install_pending_context_activation();
+        assert!(engine.context_owner.is_some());
+        assert_eq!(engine.context_owner, harness.adapter.current_owner());
+        assert!(engine.live_context_token().is_some());
+        assert!(engine.client_context.input_mode_property_refresh_pending);
+        let owner = engine.context_owner.clone();
+        let token = engine.context_token.clone();
+        let tail = engine.committed_tail.buffer.clone();
+        let mode = engine.layout_gesture.layout_is_ru;
+        let mut failed = crate::output::TestEngineOutput {
+            legacy_transport: true,
+            fail_input_mode_publication: true,
+            ..Default::default()
+        };
+        // Use the production passive callback route; zero-width geometry
+        // does not request any external window probe or text observation.
+        crate::window_interaction::WindowInteraction::observe_facts(
+            &mut engine,
+            crate::window_interaction::WindowFactEvent::CursorGeometry {
+                x: 0,
+                y: 0,
+                width: 0,
+                height: 0,
+            },
+            Some(&mut EngineOutput::test(&mut failed)),
+        )
+        .await
+        .unwrap();
+        assert!(failed.input_mode_updates.is_empty());
+        assert!(engine.client_context.input_mode_property_refresh_pending);
+        assert_eq!(engine.context_owner, owner);
+        assert_eq!(engine.context_token, token);
+        assert_eq!(engine.committed_tail.buffer, tail);
+        assert_eq!(engine.layout_gesture.layout_is_ru, mode);
+        let mut output = crate::output::TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        engine
+            .publish_pending_input_mode_property(&mut EngineOutput::test(&mut output))
+            .await;
+        assert_eq!(output.input_mode_updates, [mode]);
+        assert!(!engine.client_context.input_mode_property_refresh_pending);
+    }));
+}
+
+#[test]
+fn c06_native_backspace_preserves_only_inert_confirmed_reset_predecessor() {
+    zbus::block_on(bounded(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine =
+            initial_observed_tail_reset(&mut harness, 21_000, &[('a', 30), ('b', 48)]).await;
+        exact_surrounding_receipt(&mut harness, &mut engine, "ab").await;
+        assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+        assert_eq!(
+            engine
+                .context_word_scope
+                .as_ref()
+                .unwrap()
+                .lineage()
+                .observed_suffix_chars,
+            0
+        );
+        let prior = engine.context_reset_rereceipt.as_ref().unwrap().clone();
+        assert!(prior.confirmed);
+        assert_eq!(prior.observed_suffix_chars, 2);
+        assert!(engine.composition.buffer.is_empty());
+        publish_fixture_append_completion(&mut harness, &mut engine, "cde").await;
+        let epoch = engine.committed_tail.epoch;
+        assert!(!legacy_key(&mut harness, &mut engine, 21_020, KEY_BACKSPACE, 14, 0).await);
+        assert_eq!(engine.committed_tail.buffer, "a");
+        assert_eq!(engine.committed_tail.epoch, epoch.wrapping_add(1));
+        let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
+        assert_eq!(
+            effects.len(),
+            2,
+            "published native hint must clear exactly once"
+        );
+        assert_eq!(
+            effects[0].header().member().unwrap().as_str(),
+            "UpdatePreeditText"
+        );
+        assert_eq!(
+            effects[1].header().member().unwrap().as_str(),
+            "HidePreeditText"
+        );
+        for effect in &effects {
+            let header = effect.header();
+            let member = header.member().unwrap().as_str();
+            assert!(
+                matches!(member, "UpdatePreeditText" | "HidePreeditText"),
+                "native BSP emitted {member}"
+            );
+            if member == "UpdatePreeditText" {
+                let body = effect.body();
+                let (text, _, visible, _) = body
+                    .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+                    .unwrap();
+                assert_eq!(
+                    crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
+                    Some("")
+                );
+                assert!(!visible);
+            }
+        }
+        eprintln!(
+            "NATIVE_BSP old_count={} scope={} pending={:?}",
+            prior.observed_suffix_chars,
+            engine
+                .context_word_scope
+                .as_ref()
+                .unwrap()
+                .lineage()
+                .observed_suffix_chars,
+            engine.context_reset_rereceipt
+        );
+        actual_reset(&mut harness, &mut engine, 21_021, false).await;
+        eprintln!(
+            "NATIVE_RESET scope={} pending={:?}",
+            engine
+                .context_word_scope
+                .as_ref()
+                .unwrap()
+                .lineage()
+                .observed_suffix_chars,
+            engine.context_reset_rereceipt
+        );
+        assert!(
+            engine.live_context_token().is_some(),
+            "Reset must install a live settled token independently of the lost pending range"
+        );
+        exact_surrounding_receipt(&mut harness, &mut engine, "a").await;
+        assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed(), "fresh exact shortened receipt lost confirmed predecessor (old_count=2, settled scope=0)");
+        publish_fixture_append_completion(&mut harness, &mut engine, "bcde").await;
+        assert!(legacy_key(&mut harness, &mut engine, 21_022, KEY_TAB, 15, 0).await);
+        let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
+        let commits: Vec<_> = effects
+            .iter()
+            .filter(|effect| effect.header().member().unwrap().as_str() == "CommitText")
+            .map(|effect| {
+                let body = effect.body();
+                let (text,) = body.deserialize::<(zbus::zvariant::Value<'_>,)>().unwrap();
+                crate::ibus_interface::ibus_text_value_to_string(&text).unwrap()
+            })
+            .collect();
+        assert_eq!(commits, ["bcde "]);
+        assert!(effects
+            .iter()
+            .all(|effect| effect.header().member().unwrap().as_str() != "DeleteSurroundingText"));
+        assert_eq!(engine.committed_tail.buffer, "abcde ");
+    }));
+}
+
+async fn c06_native_confirmed_prefix_fixture(
+    harness: &mut Harness,
+    serial: u32,
+    later_word: bool,
+    russian: bool,
+) -> (LayIbusEngine, String) {
+    let mut engine = new_engine(harness);
+    engine.layout_gesture.layout_is_ru = russian;
+    start_source_free_unknown(harness, &mut engine).await;
+    engine.config.auto_replace = false;
+    engine.config.typing_assist = false;
+    engine.config.nanda_precognition = false;
+    engine.client_context.surrounding_text_supported = true;
+    let keys: &[(char, u32)] = if later_word {
+        &[('c', 46), (' ', 57), ('a', 30), ('b', 48)]
+    } else {
+        &[('a', 30), ('b', 48)]
+    };
+    for (i, &(ch, code)) in keys.iter().enumerate() {
+        let mode = engine.layout_gesture.layout_is_ru;
+        assert!(
+            legacy_key(
+                harness,
+                &mut engine,
+                serial + i as u32 * 2,
+                ch as u32,
+                code,
+                0
+            )
+            .await
+        );
+        expect_legacy_commit(&mut harness.peer, &engine, mode).await;
+        let _ = legacy_key(
+            harness,
+            &mut engine,
+            serial + i as u32 * 2 + 1,
+            ch as u32,
+            code,
+            RELEASE_MASK,
+        )
+        .await;
+    }
+    let prefix = match (later_word, russian) {
+        (false, false) => "ab",
+        (true, false) => "c ab",
+        (false, true) => "фи",
+        (true, true) => "с фи",
+    }
+    .to_string();
+    assert_eq!(engine.committed_tail.buffer, prefix);
+    engine.committed_tail.last_input_at = Some(Instant::now());
+    actual_reset(harness, &mut engine, serial + 10, false).await;
+    exact_surrounding_receipt(harness, &mut engine, &prefix).await;
+    assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+    assert_eq!(
+        engine
+            .context_reset_rereceipt
+            .as_ref()
+            .unwrap()
+            .observed_suffix_chars,
+        2
+    );
+    assert_eq!(
+        engine
+            .context_word_scope
+            .as_ref()
+            .unwrap()
+            .lineage()
+            .observed_suffix_chars,
+        0
+    );
+    (engine, prefix)
+}
+
+async fn c06_native_backspace_clear_only(harness: &mut Harness) {
+    let effects = super::terminal_delivery::legacy_effects(harness).await;
+    assert_eq!(
+        effects.len(),
+        2,
+        "one native empty update and one hide, no work republished during deletion"
+    );
+    assert_eq!(
+        effects[0].header().member().unwrap().as_str(),
+        "UpdatePreeditText"
+    );
+    assert_eq!(
+        effects[1].header().member().unwrap().as_str(),
+        "HidePreeditText"
+    );
+    let body = effects[0].body();
+    let (text, cursor, visible, mode) = body
+        .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+        .unwrap();
+    assert_eq!(
+        crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
+        Some("")
+    );
+    assert_eq!((cursor, visible, mode), (0, false, 0));
+}
+
+#[test]
+fn c06_native_backspace_retype_first_and_later_words_uses_fresh_client_receipts() {
+    zbus::block_on(bounded(async {
+        for (later_word, russian) in [(false, false), (true, false), (false, true), (true, true)] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let (mut engine, prefix) =
+                c06_native_confirmed_prefix_fixture(&mut harness, 22_000, later_word, russian)
+                    .await;
+            let predecessor = engine
+                .context_reset_rereceipt
+                .as_ref()
+                .unwrap()
+                .predecessor_token
+                .clone();
+            let epoch = engine.committed_tail.epoch;
+            publish_fixture_append_completion(&mut harness, &mut engine, "xyz").await;
+            engine.config.nanda_precognition = true;
+            assert!(!legacy_key(&mut harness, &mut engine, 22_020, KEY_BACKSPACE, 14, 0).await);
+            c06_native_backspace_clear_only(&mut harness).await;
+            assert!(!engine.composition.preedit_display_only_pending);
+            assert!(engine.composition.pending_display_frame.is_none());
+            engine.config.nanda_precognition = false;
+            let shortened: String = prefix.chars().take(prefix.chars().count() - 1).collect();
+            assert_eq!(engine.committed_tail.buffer, shortened);
+            assert_eq!(engine.committed_tail.epoch, epoch + 1);
+            let pending = engine.context_reset_rereceipt.as_ref().unwrap();
+            assert!(!pending.confirmed);
+            assert_eq!(pending.predecessor_token, predecessor);
+            assert_eq!(pending.observed_suffix_chars, 1);
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            let _ = legacy_key(
+                &mut harness,
+                &mut engine,
+                22_021,
+                KEY_BACKSPACE,
+                14,
+                RELEASE_MASK,
+            )
+            .await;
+            assert!(super::terminal_delivery::legacy_effects(&mut harness)
+                .await
+                .is_empty());
+            actual_reset(&mut harness, &mut engine, 22_022, false).await;
+            assert!(engine.live_context_token().is_some());
+            exact_surrounding_receipt(&mut harness, &mut engine, &shortened).await;
+            assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            let mode = engine.layout_gesture.layout_is_ru;
+            assert!(legacy_key(&mut harness, &mut engine, 22_023, 'b' as u32, 48, 0).await);
+            expect_legacy_commit(&mut harness.peer, &engine, mode).await;
+            assert_eq!(engine.committed_tail.buffer, prefix);
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            actual_reset(&mut harness, &mut engine, 22_024, false).await;
+            exact_surrounding_receipt(&mut harness, &mut engine, &prefix).await;
+            assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            publish_fixture_append_completion(&mut harness, &mut engine, "xyz").await;
+            assert!(legacy_key(&mut harness, &mut engine, 22_025, KEY_TAB, 15, 0).await);
+            let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
+            let commits: Vec<_> = effects
+                .iter()
+                .filter(|e| e.header().member().unwrap().as_str() == "CommitText")
+                .map(|e| {
+                    let body = e.body();
+                    let (text,) = body.deserialize::<(zbus::zvariant::Value<'_>,)>().unwrap();
+                    crate::ibus_interface::ibus_text_value_to_string(&text).unwrap()
+                })
+                .collect();
+            assert_eq!(commits, ["xyz "]);
+            assert!(effects
+                .iter()
+                .all(|e| e.header().member().unwrap().as_str() != "DeleteSurroundingText"));
+            assert_eq!(engine.committed_tail.buffer, format!("{prefix}xyz "));
+            assert!(engine.composition.preedit_suffix.is_empty());
+        }
+    }));
+}
+
+#[test]
+fn c06_native_backspace_carry_cannot_accept_before_fresh_exact_client_confirmation() {
+    zbus::block_on(bounded(async {
+        for fresh_before_tab in [true, false] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let (mut engine, _) =
+                c06_native_confirmed_prefix_fixture(&mut harness, 23_000, false, false).await;
+            publish_fixture_append_completion(&mut harness, &mut engine, "cde").await;
+            assert!(!legacy_key(&mut harness, &mut engine, 23_020, KEY_BACKSPACE, 14, 0).await);
+            c06_native_backspace_clear_only(&mut harness).await;
+            assert!(engine
+                .context_reset_rereceipt
+                .as_ref()
+                .is_some_and(|p| !p.confirmed));
+            assert!(!engine.context_word_is_known());
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            if fresh_before_tab {
+                // The actual client receipt supplies the shortened range. A
+                // separate Reset is tested elsewhere but is not mandatory.
+                exact_surrounding_receipt(&mut harness, &mut engine, "a").await;
+                assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+                assert!(!engine.context_word_is_known());
+            } else {
+                assert!(!legacy_key(&mut harness, &mut engine, 23_021, KEY_TAB, 15, 0).await);
+                let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
+                assert!(effects.iter().all(|e| !matches!(
+                    e.header().member().unwrap().as_str(),
+                    "CommitText" | "DeleteSurroundingText"
+                )));
+                assert_eq!(engine.committed_tail.buffer, "a");
+                assert!(engine.committed_tail.pending_completion_learning.is_none());
+                assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
+                // A refused client-side Tab is an input gap; the old shortened
+                // provenance cannot be revived by matching text after that gap.
+                exact_surrounding_receipt(&mut harness, &mut engine, "a").await;
+                assert!(engine.context_reset_rereceipt.is_none());
+                assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            }
+        }
+    }));
+}
+
+#[test]
+fn c06_native_backspace_refuses_unconfirmed_drift_selection_and_whole_erase() {
+    zbus::block_on(bounded(async {
+        for gap in [
+            "unconfirmed",
+            "wrong_text",
+            "selection",
+            "middle_caret",
+            "epoch",
+            "focus",
+            "capability",
+            "whole",
+            "repeat",
+        ] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let keys: &[(char, u32)] = if gap == "whole" {
+                &[('a', 30)]
+            } else {
+                &[('a', 30), ('b', 48), ('c', 46)]
+            };
+            let mut engine = initial_observed_tail_reset(&mut harness, 24_000, keys).await;
+            let prefix: String = keys.iter().map(|(ch, _)| *ch).collect();
+            if gap != "unconfirmed" {
+                exact_surrounding_receipt(&mut harness, &mut engine, &prefix).await;
+            }
+            match gap {
+                "wrong_text" => exact_surrounding_receipt(&mut harness, &mut engine, "abx").await,
+                "selection" => surrounding_receipt(&mut harness, &mut engine, &prefix, 3, 1).await,
+                "middle_caret" => {
+                    surrounding_receipt(&mut harness, &mut engine, "abc rest", 3, 3).await
+                }
+                "epoch" => engine.committed_tail.epoch += 1,
+                "focus" => actual_focus_out(&mut harness, &mut engine, 24_010).await,
+                "capability" => engine.set_client_capabilities(1 | 1 << 3),
+                _ => (),
+            }
+            let _ = legacy_key(&mut harness, &mut engine, 24_020, KEY_BACKSPACE, 14, 0).await;
+            let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
+            assert!(
+                effects.iter().all(|e| !matches!(
+                    e.header().member().unwrap().as_str(),
+                    "CommitText" | "DeleteSurroundingText"
+                )),
+                "gap {gap}"
+            );
+            if gap == "repeat" {
+                assert!(engine
+                    .context_reset_rereceipt
+                    .as_ref()
+                    .is_some_and(|p| !p.confirmed));
+                let _ = legacy_key(&mut harness, &mut engine, 24_021, KEY_BACKSPACE, 14, 0).await;
+                let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
+                assert!(effects.iter().all(|e| !matches!(
+                    e.header().member().unwrap().as_str(),
+                    "CommitText" | "DeleteSurroundingText"
+                )));
+            }
+            assert!(
+                engine.context_reset_rereceipt.is_none(),
+                "gap {gap} must retire native carried provenance"
+            );
+            assert!(
+                !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                "gap {gap}"
+            );
+        }
     }));
 }

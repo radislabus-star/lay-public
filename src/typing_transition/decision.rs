@@ -307,20 +307,24 @@ impl TransitionDecisionCore {
                 }
             })
             .collect::<Vec<_>>();
-        let ranked_selected_index = candidates
-            .iter()
-            .enumerate()
-            .filter(|(index, _)| surface_authority_admissions[*index].is_some())
-            .max_by(|(left, _), (right, _)| {
-                compare_candidate_decision_order(*left, *right, candidates, &evaluations)
-            })
-            .map(|(index, _)| index);
+        // Ordering observes frozen admission results. It cannot manufacture
+        // authority, alter a surface evaluation or interfere with retained
+        // exact-layout precedence below.
+        let agreement_order = agreement_order::select(
+            event,
+            candidates,
+            &evaluations,
+            &surface_authority_admissions,
+        );
+        let ranked_selected_index = agreement_order.selected;
         let retained_exact = retained_exact_disposition(event, candidates, &evaluations);
-        let selected_index = match retained_exact {
-            RetainedExactDisposition::Absent => ranked_selected_index,
-            RetainedExactDisposition::Valid(index) => Some(index),
-            RetainedExactDisposition::Invalid => None,
-        };
+        let selected_index = retained_exact_selection(ranked_selected_index, retained_exact);
+        if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
+            eprintln!(
+                "decision-core-agreement-order reason={} ranked={:?} selected={:?}",
+                agreement_order.reason, ranked_selected_index, selected_index,
+            );
+        }
         let selection_ready = std::time::Instant::now();
         let selected_authority_lane = match retained_exact {
             RetainedExactDisposition::Absent => {
@@ -480,6 +484,17 @@ enum RetainedExactDisposition {
     Absent,
     Valid(usize),
     Invalid,
+}
+
+fn retained_exact_selection(
+    ranked: Option<usize>,
+    retained: RetainedExactDisposition,
+) -> Option<usize> {
+    match retained {
+        RetainedExactDisposition::Absent => ranked,
+        RetainedExactDisposition::Valid(index) => Some(index),
+        RetainedExactDisposition::Invalid => None,
+    }
 }
 
 fn retained_exact_disposition(
@@ -931,6 +946,7 @@ fn compare_candidate_decision_order(
         })
 }
 
+mod agreement_order;
 mod apply_policy;
 mod calibration;
 mod hard_structural_veto;

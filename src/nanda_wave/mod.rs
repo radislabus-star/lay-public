@@ -51,6 +51,8 @@ pub use eval::{evaluate_wave, evaluate_wave_with_options, WaveEvalResult, WaveEv
 pub use ime_runtime_lifecycle::ensure_ime_runtime_warmup_started;
 pub use l2_candidate_phase::L2PhaseTrainingEntry;
 pub(crate) use l2_candidate_phase::{PhaseReadout, PhaseVerdict};
+#[cfg(any(test, feature = "research-tools"))]
+pub use l2_field::probe_cached_morphology_slots;
 pub use l2_field::{
     audit_productive_anchor_recovery_v1, candidate_material_generation, canonical_l2_status,
     compact_canonical_l2_package, compile_canonical_l2_package, compile_exact_v13_sidecar,
@@ -1269,6 +1271,10 @@ pub fn cached_context_word_usage_prior(context: &[String], word: &str) -> f32 {
     usage_prior::context_word_usage_prior_cached(context, word)
 }
 
+pub fn refresh_usage_prior_for_live_worker() {
+    usage_prior::refresh_usage_prior_for_live_worker();
+}
+
 pub fn cached_usage_prior_snapshot() -> UsagePriorSnapshot {
     usage_prior::cached_usage_prior_snapshot()
 }
@@ -1704,6 +1710,7 @@ pub fn warm_up_l2_for_ime() -> bool {
             l2::ime_word_candidate_memory_is_warm(),
         )
     });
+    usage_prior::refresh_usage_prior_for_live_worker();
     candidate_gate::warm_up_live_candidate_readout();
     record_ime_runtime_trace(|| {
         let thread = std::thread::current();

@@ -1,0 +1,29 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-04",
+  "status": "SOURCE_STYLE_PROOF_ONLY_NOT_INSTALLED",
+  "decision": "Apply the five Clippy style suggestions in IME observation and existing test call sites without changing polling, Reset, output, admission or verifier behavior.",
+  "reason": "The exact accepted77 source already contains two production style lints and three unnecessary mutable test references. The existing -D warnings style policy rejects them and therefore blocks the release check.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "owning_document": "docs/architecture/ranker-release-preflight-2026-10-04.md",
+  "verification": "Both original all-targets Clippy style-policy commands (default and research-tools, -D warnings -A dead-code) PASS on the exact1445-file source manifest d633dbd2866d68ef778c1633d6ce2c0e7453c282077a45e16c088142d17d5fac. The independent dead-code baseline is a separate retained blocker, not waived. Poll result is Instant without Drop, preserving timer/request polling and owner destruction order; only the final Option<&mut EngineOutput> reference is moved after the earlier reborrow ends. Three test references become shared without assertion changes.",
+  "not_tested": "No changed-byte install or physical acceptance. Full public release and dead-code baseline are not certified by this style proof. Canonical affected-IME closure and architecture refresh are recorded separately.",
+  "runtime_authority_changed": false,
+  "runtime_bytes_changed": false,
+  "parent_source_head": "79b09d06306a018961ace783e2542eb817de7b30",
+  "before_observation_sha256": "eee7c10c8b44e7c739f39d4cf2094ee56ec775b7f306e4491eef3e94f8fc8812",
+  "after_observation_sha256": "a411efcb9ff6976bf8c4dcbf87163b5645b8b7644677cd072737bccd6eaf4af6",
+  "receipt": "/home/ubu/.cache/lay/development/ranker-release-20261004/revision4/style-and-c03/STYLE_C03_EXECUTION.json",
+  "receipt_scope": "The overall worker remains FAIL because a later incorrectly named test executed zero; its two independent Clippy command return codes are both zero. The corrected discovered test receipt is separate.",
+  "rollback": "Restore only the two observation expressions and the three original test call references; preserve all C09, C03 and ranker changes."
+}

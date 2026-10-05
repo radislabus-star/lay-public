@@ -3,6 +3,92 @@ use lay::config::LayConfig;
 use std::sync::{Arc, Mutex};
 
 #[test]
+fn published_preedit_suggestion_style_respects_owned_buffer_and_not_caret() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+
+    for (buffer, payload, cursor, expected) in [
+        ("", "очему", 0, vec![(2, 0x888888, 0, 5), (1, 1, 0, 5)]),
+        (
+            "по",
+            "почему",
+            2,
+            vec![(1, 0, 0, 2), (2, 0x888888, 2, 6), (1, 1, 2, 6)],
+        ),
+        ("проверка", "проверка", 2, vec![(1, 0, 0, 8)]),
+        ("1", "1", 1, vec![(1, 0, 0, 1)]),
+        ("слово", "word", 4, vec![(1, 0, 0, 4)]),
+    ] {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.composition.buffer = buffer.to_string();
+        engine.composition.cursor = cursor as usize;
+        let mut observed = TestEngineOutput::default();
+        zbus::block_on(engine.publish_preedit_payload(
+            &mut EngineOutput::Test(&mut observed),
+            payload.to_string(),
+            cursor,
+        ))
+        .expect("production publisher must emit the existing payload");
+        assert_eq!(
+            observed.preedit_attribute_updates,
+            vec![expected],
+            "buffer={buffer:?}"
+        );
+        assert_eq!(
+            observed.preedit_updates,
+            vec![(payload.to_string(), cursor, true, PREEDIT_MODE_CLEAR)]
+        );
+        assert_eq!(observed.effects, ["update-preedit", "show-preedit"]);
+        assert_eq!(engine.composition.buffer, buffer);
+        assert!(observed.committed_texts.is_empty());
+        assert!(observed.surrounding_deletes.is_empty());
+    }
+}
+
+#[test]
+fn terminal_completion_scene_requires_existing_terminal_evidence() {
+    let mut engine = LayIbusEngine::new(
+        "/test".to_string(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig {
+            text_backend: "ime".to_string(),
+            nanda_precognition: true,
+            ..LayConfig::default()
+        },
+    );
+    engine.committed_tail.buffer = "gi".into();
+    assert_eq!(
+        engine.precognition_input().unwrap().scene,
+        lay::typing_cpu::LiveCompletionScene::General
+    );
+    // The initial passthrough geometry heuristic is not terminal evidence.
+    engine.client_context.cursor_cell_width = 1;
+    assert_eq!(
+        engine.precognition_input().unwrap().scene,
+        lay::typing_cpu::LiveCompletionScene::General
+    );
+    engine.client_context.content_purpose = super::super::engine::IBUS_INPUT_PURPOSE_TERMINAL;
+    assert_eq!(
+        engine.precognition_input().unwrap().scene,
+        lay::typing_cpu::LiveCompletionScene::Terminal
+    );
+    engine.client_context.surrounding_text_supported = true;
+    assert_eq!(
+        engine.precognition_input().unwrap().scene,
+        lay::typing_cpu::LiveCompletionScene::General
+    );
+    engine.committed_tail.buffer = "2gi".into();
+    assert!(engine.precognition_input().is_none());
+}
+
+#[test]
 fn live_completion_requires_an_all_letter_current_token() {
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),

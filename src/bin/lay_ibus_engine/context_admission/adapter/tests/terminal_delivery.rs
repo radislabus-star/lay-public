@@ -8,8 +8,9 @@ async fn known_terminal(width: i32) -> (Harness, LayIbusEngine) {
     engine.config.auto_replace = false;
     engine.config.nanda_precognition = false;
     start_source_free_unknown(&mut harness, &mut engine).await;
+    let input_mode_before_key = engine.layout_gesture.layout_is_ru;
     assert!(legacy_key(&mut harness, &mut engine, 20_000, KEY_SPACE, 57, 0).await);
-    expect_legacy_commit(&mut harness.peer).await;
+    expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
     assert!(
         legacy_key(
             &mut harness,
@@ -41,8 +42,9 @@ async fn armed_exact_replay(
     engine.config.nanda_precognition = false;
     start_source_free_unknown(&mut harness, &mut engine).await;
     if !reset_choreography {
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(&mut harness, &mut engine, 21_000, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert!(
             legacy_key(
                 &mut harness,
@@ -69,8 +71,9 @@ async fn armed_exact_replay(
                 _ => panic!("reset choreography fixture uses the exact ghbdtn source"),
             };
             let serial = 21_002 + offset as u32 * 2;
+            let input_mode_before_key = engine.layout_gesture.layout_is_ru;
             assert!(legacy_key(&mut harness, &mut engine, serial, ch as u32, keycode, 0).await);
-            expect_legacy_commit(&mut harness.peer).await;
+            expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
             assert!(
                 legacy_key(
                     &mut harness,
@@ -572,8 +575,9 @@ fn ordinary_unknown_start_input_reaches_the_precognition_schedule_probe() {
         assert!(!engine.context_word_is_known());
         engine.reset_precognition_causal_counts();
 
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(&mut harness, &mut engine, 20_900, 'g' as u32, 34, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert!(
             legacy_key(
                 &mut harness,
@@ -1226,8 +1230,9 @@ fn td121_completed_replay_prior_surface_cannot_hide_contradiction() {
                     super::residuals::actual_focus_out(&mut harness, &mut engine, 21_861).await;
                 }
                 "printable" => {
+                    let input_mode_before_key = engine.layout_gesture.layout_is_ru;
                     assert!(legacy_key(&mut harness, &mut engine, 21_862, 'ф' as u32, 30, 0).await);
-                    expect_legacy_commit(&mut harness.peer).await;
+                    expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
                     assert!(engine.committed_tail.buffer.ends_with('ф'));
                     assert!(
                         legacy_key(
@@ -2175,7 +2180,11 @@ fn terminal_delivery_unknown_first_word_stays_native_and_autocorrects_exact_suff
         .enumerate()
         {
             let serial = 24_500 + index as u32 * 2;
+            let activation_mode = engine.layout_gesture.layout_is_ru;
             assert!(!legacy_key(&mut harness, &mut engine, serial, key as u32, code, 0).await);
+            if index == 0 {
+                expect_activation_input_mode_update(&mut harness, &engine, activation_mode).await;
+            }
             no_legacy_output(&mut harness).await;
             if index == 5 {
                 let frame = engine
@@ -2276,7 +2285,11 @@ fn terminal_delivery_unknown_first_word_stays_native_and_runs_full_typo_correcti
         {
             let serial = 24_600 + index as u32 * 2;
             let keyval = replay_keyval(ch);
+            let activation_mode = engine.layout_gesture.layout_is_ru;
             assert!(!legacy_key(&mut harness, &mut engine, serial, keyval, code, 0).await);
+            if index == 0 {
+                expect_activation_input_mode_update(&mut harness, &engine, activation_mode).await;
+            }
             no_legacy_output(&mut harness).await;
             assert!(
                 !legacy_key(
@@ -3103,7 +3116,9 @@ fn terminal_delivery_firefox_reset_keeps_physically_held_shift() {
         engine.set_layout_is_ru(true);
         exact_replay_surrounding_receipt(&mut harness, &mut engine, "").await;
 
+        let activation_mode = engine.layout_gesture.layout_is_ru;
         assert!(!legacy_key(&mut harness, &mut engine, 26_100, KEY_LEFT_SHIFT, 42, 0).await);
+        expect_activation_input_mode_update(&mut harness, &engine, activation_mode).await;
         no_legacy_output(&mut harness).await;
         assert!(legacy_key(&mut harness, &mut engine, 26_101, replay_keyval('А'), 33, 0,).await);
         let effects = legacy_effects(&mut harness).await;

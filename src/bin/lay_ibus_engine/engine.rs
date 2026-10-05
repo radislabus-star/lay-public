@@ -252,6 +252,7 @@ impl LayIbusEngine {
     pub(super) fn retire_legacy_word_preedit_ownership_if_empty(&mut self) {
         if self.composition.buffer.is_empty() {
             self.composition.legacy_word_preedit_active = false;
+            self.composition.legacy_preedit_start_boundary = None;
         }
     }
 
@@ -267,6 +268,7 @@ impl LayIbusEngine {
         }
         self.composition.cursor = 0;
         self.composition.legacy_word_preedit_active = false;
+        self.composition.legacy_preedit_start_boundary = None;
         self.rebuild_preedit_fast_from_tail();
         true
     }

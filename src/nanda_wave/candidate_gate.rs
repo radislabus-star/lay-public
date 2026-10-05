@@ -34,6 +34,14 @@ fn is_live_lexical_surface(surface: &str) -> bool {
             || crate::layout_autoswitch::is_ascii_layout_letter_surface(surface))
 }
 
+/// Advisory scene evidence; it never authorizes a text edit or proves a shell role.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum LiveCompletionScene {
+    #[default]
+    General,
+    Terminal,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct LiveCompletionRequest<'a> {
     pub context_prefix: &'a str,
@@ -102,8 +110,15 @@ pub fn last_live_completion_timing() -> LiveCompletionTiming {
 }
 
 pub fn live_completion_readout(request: LiveCompletionRequest<'_>) -> LiveCompletionReadout {
+    live_completion_readout_for_scene(request, LiveCompletionScene::General)
+}
+
+pub fn live_completion_readout_for_scene(
+    request: LiveCompletionRequest<'_>,
+    scene: LiveCompletionScene,
+) -> LiveCompletionReadout {
     clear_last_live_completion_timing();
-    let candidates = live_completion_candidates(request);
+    let candidates = live_completion_candidates_for_scene(request, scene);
     LiveCompletionReadout {
         candidates,
         timing: last_live_completion_timing(),
@@ -154,6 +169,7 @@ struct LiveCandidateGateStats {
 
 fn live_completion_cache_key(
     request: &LiveCompletionRequest<'_>,
+    scene: LiveCompletionScene,
 ) -> Option<LiveCompletionCacheKey> {
     let partial = request.partial.to_lowercase();
     if request.limit == 0
@@ -166,6 +182,7 @@ fn live_completion_cache_key(
     }
     Some(LiveCompletionCacheKey {
         identity: cache::identity()?,
+        scene,
         context_tail: live_completion_context_tail(request.context_prefix),
         partial,
         max_suffix_chars: request.max_suffix_chars,
@@ -179,11 +196,28 @@ fn live_completion_cache_key(
 pub fn cached_live_completion_candidates(
     request: LiveCompletionRequest<'_>,
 ) -> Option<Vec<LiveCompletionCandidate>> {
-    cache::get(&live_completion_cache_key(&request)?)
+    cached_live_completion_candidates_for_scene(request, LiveCompletionScene::General)
+}
+
+pub fn cached_live_completion_candidates_for_scene(
+    request: LiveCompletionRequest<'_>,
+    scene: LiveCompletionScene,
+) -> Option<Vec<LiveCompletionCandidate>> {
+    if super::usage_prior::usage_prior_refresh_due() {
+        return None;
+    }
+    cache::get(&live_completion_cache_key(&request, scene)?)
 }
 
 pub fn live_completion_candidates(
     request: LiveCompletionRequest<'_>,
+) -> Vec<LiveCompletionCandidate> {
+    live_completion_candidates_for_scene(request, LiveCompletionScene::General)
+}
+
+pub fn live_completion_candidates_for_scene(
+    request: LiveCompletionRequest<'_>,
+    scene: LiveCompletionScene,
 ) -> Vec<LiveCompletionCandidate> {
     let started = Instant::now();
     if request.limit == 0 || request.max_suffix_chars == 0 {
@@ -219,7 +253,7 @@ pub fn live_completion_candidates(
         );
         return Vec::new();
     }
-    let Some(cache_key) = live_completion_cache_key(&request) else {
+    let Some(cache_key) = live_completion_cache_key(&request, scene) else {
         return Vec::new();
     };
     if let Some(cached) = cache::get(&cache_key) {
@@ -424,6 +458,12 @@ pub fn live_completion_candidates(
             field_score.score = field_score.rank_score.clamp(0.0, 1.0);
             Some(LiveCompletionProposal {
                 state_before: hidden_state_before,
+                scene,
+                terminal_command: scene == LiveCompletionScene::Terminal
+                    && lane == LiveCandidateLane::ExactCompletion
+                    && !is_replacement
+                    && candidate.surface.starts_with(&partial)
+                    && crate::lexicon::is_linux_command_name(&candidate.surface),
                 surface: candidate.surface,
                 suffix,
                 replacement: is_replacement,
@@ -1766,6 +1806,8 @@ mod tests {
     fn authority_proposal() -> LiveCompletionProposal {
         LiveCompletionProposal {
             state_before: crate::nanda_wave::phase_field::hash_text("test-state"),
+            scene: LiveCompletionScene::General,
+            terminal_command: false,
             surface: "пример".to_string(),
             suffix: "мер".to_string(),
             replacement: false,

@@ -45,7 +45,9 @@ fn live_cache_owns_only_numeric_hot_state() {
     assert!(!cache_body.contains("String"));
     assert_eq!(
         mem::size_of::<UsageCache>(),
-        mem::size_of::<Option<Instant>>() + mem::size_of::<Arc<UsageHotState>>()
+        mem::size_of::<Option<Instant>>()
+            + mem::size_of::<Arc<UsageHotState>>()
+            + mem::size_of::<usize>()
     );
 }
 
@@ -1014,4 +1016,158 @@ fn tail_compaction_never_keeps_half_of_an_episode() {
 
     assert_eq!(compacted, c);
     assert!(!compacted.contains("\"episode_id\":\"b\""));
+}
+
+fn worker_refresh_confirmed_event_fixture() -> UsageEvent {
+    let events = TypingMemoryEvent::confirmed_ime_prediction("сильный", "дождь");
+    assert_eq!(events.len(), 1, "use one attested production confirmation");
+    let event = UsageEvent::from_typing_memory_event(&events[0]);
+    assert!(event.typed_v3_is_consistent());
+    event
+}
+
+fn worker_refresh_foreign_hot_fixture() -> Arc<UsageHotState> {
+    let event = TypingMemoryEvent::typed_tail("сильный ветер")
+        .expect("production raw typing preserves the word and context");
+    let event = UsageEvent::from_typing_memory_event(&event);
+    assert!(event.typed_v3_is_consistent());
+    let mut counts = UsageCounts::default();
+    add_usage_event_count(&mut counts, &event);
+    Arc::new(UsageHotState::from_counts(&counts))
+}
+
+fn worker_refresh_initialized_fixture() -> UsageCache {
+    let mut cache = UsageCache::default();
+    ensure_usage_cache_initialized(&mut cache, UsageCounts::default);
+    cache.loaded_at = Some(Instant::now() - Duration::from_secs(2));
+    cache
+}
+
+#[test]
+fn worker_refresh_preserves_unpersisted_local_confirmation() {
+    let mut cache = worker_refresh_initialized_fixture();
+    let disk_time = cache.loaded_at;
+    let event = worker_refresh_confirmed_event_fixture();
+    apply_usage_event_to_cache(&mut cache, &event, || {
+        panic!("an initialized cache must not reload during local apply")
+    });
+    cache.unpersisted_local_events = 1;
+    let local_prior = cache.hot.word_prior("дождь");
+    let local_accepted = cache.hot.accepted_word_count("дождь");
+    assert!(local_prior > 0.0);
+    assert!(local_accepted > 0);
+    assert!(usage_refresh_baseline(&cache, false).is_none());
+    assert!(usage_refresh_baseline(&cache, true).is_none());
+
+    // Independently exercise publication's defensive pending check, even with
+    // an otherwise matching baseline. The capture helper refuses this state.
+    let retained = Arc::clone(&cache.hot);
+    let foreign = worker_refresh_foreign_hot_fixture();
+    let foreign_identity = Arc::clone(&foreign);
+    let readout_revision = super::super::candidate_gate::live_completion_cache_revision_for_tests();
+    let rejected = publish_usage_refresh(&mut cache, &retained, foreign)
+        .expect_err("foreign disk evidence must not erase unpersisted confirmation");
+    assert!(Arc::ptr_eq(&rejected, &foreign_identity));
+    assert!(Arc::ptr_eq(&cache.hot, &retained));
+    assert_eq!(cache.hot.word_prior("дождь"), local_prior);
+    assert_eq!(cache.hot.accepted_word_count("дождь"), local_accepted);
+    assert_eq!(cache.hot.word_prior("ветер"), 0.0);
+    assert_eq!(cache.loaded_at, disk_time);
+    assert_eq!(cache.unpersisted_local_events, 1);
+    assert_eq!(
+        super::super::candidate_gate::live_completion_cache_revision_for_tests(),
+        readout_revision,
+        "a refused refresh must not invalidate the current completed readout"
+    );
+}
+
+#[test]
+fn worker_refresh_rejects_local_cow_even_after_persistence_ack() {
+    let mut cache = worker_refresh_initialized_fixture();
+    let disk_time = cache.loaded_at;
+    let retained = usage_refresh_baseline(&cache, false).expect("stale clean baseline");
+    assert_eq!(retained.word_prior("дождь"), 0.0);
+    cache.unpersisted_local_events = 1;
+    apply_usage_event_to_cache(
+        &mut cache,
+        &worker_refresh_confirmed_event_fixture(),
+        || panic!("a concurrent local update cannot reload disk"),
+    );
+    // The successful writer acknowledgement can complete before publication;
+    // this local state models that ordering without performing filesystem I/O.
+    cache.unpersisted_local_events = 0;
+    let changed = Arc::clone(&cache.hot);
+    let local_prior = cache.hot.word_prior("дождь");
+    let local_accepted = cache.hot.accepted_word_count("дождь");
+    assert!(local_prior > 0.0);
+    assert!(local_accepted > 0);
+    assert!(!Arc::ptr_eq(&changed, &retained));
+    assert_eq!(retained.word_prior("дождь"), 0.0);
+    let foreign = worker_refresh_foreign_hot_fixture();
+    let foreign_identity = Arc::clone(&foreign);
+    let rejected = publish_usage_refresh(&mut cache, &retained, foreign)
+        .expect_err("pending zero cannot authorize replacing a changed COW snapshot");
+    assert!(Arc::ptr_eq(&rejected, &foreign_identity));
+    assert!(Arc::ptr_eq(&cache.hot, &changed));
+    assert_eq!(cache.hot.word_prior("дождь"), local_prior);
+    assert_eq!(cache.hot.accepted_word_count("дождь"), local_accepted);
+    assert_eq!(cache.loaded_at, disk_time);
+    assert_eq!(cache.unpersisted_local_events, 0);
+}
+
+#[test]
+fn worker_refresh_publishes_foreign_hot_and_invalidates_completed_readouts() {
+    let mut cache = worker_refresh_initialized_fixture();
+    let retained = usage_refresh_baseline(&cache, false).expect("stale clean baseline");
+    let foreign = worker_refresh_foreign_hot_fixture();
+    let foreign_identity = Arc::clone(&foreign);
+    let foreign_prior = foreign.word_prior("ветер");
+    assert!(foreign_prior > 0.0);
+    assert_eq!(cache.hot.word_prior("ветер"), 0.0);
+    let readout_revision = super::super::candidate_gate::live_completion_cache_revision_for_tests();
+    let publication_started = Instant::now();
+    assert!(publish_usage_refresh(&mut cache, &retained, foreign).is_ok());
+    assert!(Arc::ptr_eq(&cache.hot, &foreign_identity));
+    assert_eq!(retained.word_prior("ветер"), 0.0);
+    assert_eq!(cache.hot.word_prior("ветер"), foreign_prior);
+    assert_eq!(cache.hot.accepted_word_count("ветер"), 0);
+    assert!(cache.loaded_at.expect("new disk snapshot time") >= publication_started);
+    assert_eq!(cache.unpersisted_local_events, 0);
+    assert_ne!(
+        super::super::candidate_gate::live_completion_cache_revision_for_tests(),
+        readout_revision,
+        "foreign evidence must retire scores computed against old usage"
+    );
+    assert!(usage_refresh_baseline(&cache, false).is_none());
+    assert!(usage_refresh_baseline(&cache, true).is_some());
+}
+
+#[test]
+fn worker_refresh_force_cannot_bypass_pending_or_local_reset_disk_age() {
+    let mut cache = worker_refresh_initialized_fixture();
+    cache.loaded_at = Some(Instant::now());
+    assert!(usage_refresh_baseline(&cache, false).is_none());
+    assert!(usage_refresh_baseline(&cache, true).is_some());
+    cache.unpersisted_local_events = 1;
+    assert!(usage_refresh_baseline(&cache, false).is_none());
+    assert!(usage_refresh_baseline(&cache, true).is_none());
+    cache.unpersisted_local_events = 0;
+    cache.loaded_at = Some(Instant::now() - Duration::from_secs(2));
+    let disk_time = cache.loaded_at;
+    assert!(usage_refresh_baseline(&cache, false).is_some());
+    cache.unpersisted_local_events = 1;
+    apply_usage_event_to_cache(
+        &mut cache,
+        &worker_refresh_confirmed_event_fixture(),
+        || panic!("local apply cannot disguise stale disk evidence with a new load"),
+    );
+    assert_eq!(
+        cache.loaded_at, disk_time,
+        "typing must not reset foreign-refresh age"
+    );
+    assert!(usage_refresh_baseline(&cache, false).is_none());
+    // Simulated successful persistence acknowledgement exposes the same stale
+    // disk time; a recent local apply must not impose another one-second delay.
+    cache.unpersisted_local_events = 0;
+    assert!(usage_refresh_baseline(&cache, false).is_some());
 }

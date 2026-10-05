@@ -3,7 +3,8 @@ use crate::nanda_wave::{candidate_gate, llmwave};
 pub use crate::nanda_wave::L11ServiceEnsureReport;
 pub use crate::nanda_wave::WaveOptions as TypingCpuOptions;
 pub use candidate_gate::{
-    LiveCompletionCandidate, LiveCompletionReadout, LiveCompletionRequest, LiveCompletionTiming,
+    LiveCompletionCandidate, LiveCompletionReadout, LiveCompletionRequest, LiveCompletionScene,
+    LiveCompletionTiming,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -46,6 +47,21 @@ impl TypingCpu {
 
     pub fn live_completion_readout(request: LiveCompletionRequest<'_>) -> LiveCompletionReadout {
         candidate_gate::live_completion_readout(request)
+    }
+
+    /// Same DecisionCore with advisory scene evidence; no text authority changes.
+    pub fn live_completion_readout_for_scene(
+        request: LiveCompletionRequest<'_>,
+        scene: LiveCompletionScene,
+    ) -> LiveCompletionReadout {
+        candidate_gate::live_completion_readout_for_scene(request, scene)
+    }
+
+    pub fn cached_live_completion_candidates_for_scene(
+        request: LiveCompletionRequest<'_>,
+        scene: LiveCompletionScene,
+    ) -> Option<Vec<LiveCompletionCandidate>> {
+        candidate_gate::cached_live_completion_candidates_for_scene(request, scene)
     }
 
     /// Cache-only material lookup. Context and publication authority belong to the caller.
@@ -109,6 +125,11 @@ impl TypingCpu {
                 })
                 .collect()
         })
+    }
+
+    /// Refreshes shared usage only on the existing background worker.
+    pub fn refresh_usage_memory_for_live_worker() {
+        crate::nanda_wave::refresh_usage_prior_for_live_worker();
     }
 
     pub fn record_typed_tail(tail: &str) {

@@ -1,0 +1,31 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Limit suggestion colour and underline to the untyped suffix of the existing preedit payload.",
+  "reason": "The user reports the whole current word styled as IME in Firefox. The installed source serializes gray and single underline over every scalar in both suffix-only and full owned compositions. Source/client text acceptance never certified pixels or prefix decoration.",
+  "invariants": ["C01", "C03", "C05", "C06", "C07", "C10"],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "src/bin/lay_ibus_engine/preedit/tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/text.rs",
+    "src/bin/lay_ibus_engine/text/attrs.rs",
+    "src/bin/lay_ibus_engine/output.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "verification": "Planned: exact serialized prefix/suffix attributes, production publication with native and owned buffers, Unicode scalars, no candidate, mid-word caret and replacement; controlled old-boundary failure; original nonzero IME closure, unchanged style gates, architecture graph/canon and one IME build; physical owned Firefox and Chrome fields with pixels plus Backspace/retype/Tab.",
+  "not_tested": "The new boundary is not implemented or installed at recording time. No changed-byte physical acceptance, Firefox default-decoration suppression, all-window or complete release PASS.",
+  "runtime_authority_changed": false,
+  "source_head": "79b09d06306a018961ace783e2542eb817de7b30",
+  "installed_ime_sha256": "2f813878b8cb86d7144ee845f462acde49ffa3be35fd72ee0a5862296ff4aac8",
+  "consequences": {
+    "candidates_rank_authority": "No candidate generation, retention, ranking, target, acceptance lease or verifier change. Colour is a rendering property and never grants Tab or mutation authority.",
+    "boundary": "A payload with an exact current composition-buffer prefix marks only its remaining suffix. Empty owned buffer means native suffix-only display. Nonmatching replacement payload is neutral. Typed prefix receives explicit IBus Underline.NONE to suppress client defaults. The caret is not the suffix boundary; a mid-word caret must not style typed trailing characters as prediction.",
+    "latency_cpu_memory": "One bounded existing string-prefix comparison and scalar count per publication; at most one additional fixed-size wire attribute. No worker, corpus scan, timer, cache, queue or persistent allocation.",
+    "identity_packages_learning": "Existing generation, context reset, cache invalidation, package/delta reload and learning/feedback identities remain unchanged. Future candidate packages use the same exact prefix boundary; mismatching surfaces remain neutral rather than acquire false suggestion decoration.",
+    "concurrency": "Decoration derives synchronously from the same engine state and payload. Retained display remains inert under the existing freshness checks. No new callbacks, stale-result admission or ownership transfer.",
+    "compatibility": "Keep full owned and native suffix-only payloads, cursor, signal order and all transport protocols. Legacy clients consume the new attribute ranges; atomic transport currently extracts plain text and remains unchanged. Actual Firefox rendering needs physical evidence because wire attributes alone cannot prove pixels.",
+    "failure_rollback": "Retain exact installed IME rollback and other daemon/model/config/global-IBus identities. Only root may reload the existing IME channel after source gates and independent review. If Firefox ignores neutral prefix attributes, reanalyse the rendering boundary; never convert owned text into a second editor to obtain a screenshot PASS.",
+    "maintenance": "Extend the existing serializer and publisher; no new owner, detector, executor, mode initiator, fallback or alternate source of truth. Preserve native suffix formatting and add a production publisher assertion so full-word decoration cannot be certified by DOM-only acceptance again."
+  }
+}

@@ -467,7 +467,9 @@ fn usage_learning_keeps_disk_io_out_of_the_hot_path() {
 
     assert!(
         append_body.contains("refresh_usage_cache_after_write(&event);")
-            && append_body.contains("enqueue_usage_persist(path, line);")
+            && append_body.contains("enqueue_usage_persist(path, line, tracks_local_hot);")
+            && !append_body.contains("ingest_usage_hot_state_if_stale")
+            && !append_body.contains("refresh_usage_counts_from_disk")
             && !append_body.contains("append_private_text"),
         "the typing hot path must update memory and enqueue persistence without disk IO"
     );
@@ -477,8 +479,20 @@ fn usage_learning_keeps_disk_io_out_of_the_hot_path() {
             && usage
                 .contains("mpsc::sync_channel::<UsagePersistLine>(USAGE_PERSIST_CHANNEL_CAPACITY)")
             && usage.contains("sender.try_send")
-            && usage.contains("append_private_text(&path, &text)"),
+            && usage.contains("append_private_text(&path, &batch.text)"),
         "one named bounded persistence worker must own batched disk writes"
+    );
+    let flush = usage
+        .split_once("fn flush_usage_persist(")
+        .and_then(|(_, tail)| tail.split_once("fn compact_usage_events_if_needed("))
+        .map(|(body, _)| body)
+        .expect("the existing persistence owner must retain its flush boundary");
+    assert!(
+        flush.contains("append_private_text(&path, &batch.text).is_err()")
+            && flush.contains("continue;")
+            && flush.contains("acknowledge_usage_persist(&path, batch.local_hot_events);")
+            && flush.find("continue;") < flush.find("acknowledge_usage_persist("),
+        "a failed append must skip acknowledgement of local hot evidence"
     );
 }
 

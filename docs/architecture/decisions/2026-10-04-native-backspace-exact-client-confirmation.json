@@ -1,0 +1,37 @@
+{
+  "status": "EXPLICIT_PROPOSAL_CLARIFICATION_AND_BOUNDED_REPAIR",
+  "revises": "2026-10-04-native-backspace-rereceipt-rebind.json",
+  "confirmed_requirement": "Fresh exact same-owner client receipt is mandatory before completion acceptance. Another authenticated Reset is exercised in the reproduced Firefox order, but existing SetSurroundingText confirmation can also prove the result without an additional Reset.",
+  "current_scope": "Native single-scalar end-of-document Backspace on an already confirmed exact current pending receipt; nonempty shortened word; no selection; same owner/focus/layout/lineage; one epoch advance. Mid-document caret support is not established.",
+  "functional_repair": "Remove the mistaken equality between the old pending arm revision and current confirmed revision. Existing confirmation sets confirmed when current=arm+1 without rewriting arm. The freshly captured candidate records current revision, and the post-key guard still requires that exact revision unchanged.",
+  "first_private_result": "One exact positive compiled but failed with pending=None on private a99a56ab; not a passing repair. Root and independent review identify the impossible confirmed-revision predicate.",
+  "safety_preserved": [
+    "New pending is unconfirmed and has no published stale preedit; fresh exact client snapshot/identity/revision is required.",
+    "The old predecessor remains revoked; only the new settled current token may authorize subsequent acceptance.",
+    "No nonempty preedit, CommitText or DeleteSurroundingText in the native Backspace callback; native deletion remains handled=false.",
+    "Full erase, repeated unconfirmed deletion and snapshot/owner/layout/epoch/selection drift retire the transfer.",
+    "No new owner, layout initiator, detector, executor, timer, cache or fallback; existing verifier and SafetyGate remain strict."
+  ],
+  "consequence_analysis": "The repair corrects revision interpretation while retaining the fresh candidate revision check. Candidate generation/ranking/packages/learning/deadlines/resources remain unchanged. Main risk is treating old arm revision as current observation; fresh captured revision and exact client verification prevent this. No extra Reset is introduced as a second mechanism. Original conservative scope and rollback boundary remain.",
+  "gates": "Corrected exact positive, first/later word retype/full erase and negative drift/no-confirmation proofs; controlled old-source failure; fixed canonical/style/graph/canon/build; physical windows",
+  "runtime_authority_changed": false,
+  "installed_ime_sha256": "a1bdffe17771e241234b6bf130babde052e4bac31578741c0d7de780df6ebaee",
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Require fresh same-owner exact client confirmation; test the observed additional Reset without making another Reset mandatory. Compare captured current observation revision, not the historical pre-confirmation arm revision.",
+  "reason": "The first private positive failed because confirmation advances current revision without rewriting the old arm revision; existing verifier already supports direct fresh-client confirmation.",
+  "verification": "Nine exact native Backspace focused PASS; controlled background-suppression failure and restored retype PASS. Final native-final-PTmtHdcv canonical653/653, original two style configurations PASS. Changed-byte physical acceptance remains required.",
+  "not_tested": "Changed-byte installation and client acceptance; mid-document support.",
+  "invariants": [
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "record_format_repair": "2026-10-04: required guard schema/fields added; previous historical fields, design and guard preserved. No runtime deployment or authority change."
+}

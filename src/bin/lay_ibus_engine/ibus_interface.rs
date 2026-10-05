@@ -13,9 +13,7 @@ use super::protocol::{
     KEY_LEFT_SHIFT,
 };
 use super::trace;
-use super::window_interaction::{
-    ObservationReceipt, WindowFactEvent, WindowInteraction, WindowLifecycleEvent,
-};
+use super::window_interaction::{WindowFactEvent, WindowInteraction, WindowLifecycleEvent};
 
 // Keys, resets and surrounding receipts mutate one ordered client stream.
 // The independent admission observer still runs while a callback awaits its stamp.
@@ -240,30 +238,13 @@ impl LayIbusEngine {
         let snapshot = ibus_text_value_to_string(&text)
             .map(|text| SurroundingTextSnapshot::new(text, cursor_pos, anchor_pos));
         let mut output = EngineOutput::legacy(&emitter);
-        let receipt = WindowInteraction::observe_facts(
+        WindowInteraction::observe_facts(
             self,
             WindowFactEvent::SurroundingText(snapshot),
             Some(&mut output),
         )
         .await?;
-        if matches!(receipt, ObservationReceipt::SurroundingText(_))
-            && self.context_owner.is_some()
-            && self.client_context.input_mode_property_refresh_pending
-        {
-            // The FocusIn property can arrive before GNOME selects this source.
-            // Re-publish once after the first admitted field receipt so the
-            // selected source's indicator describes this engine's decoder.
-            if Self::register_properties(
-                &emitter,
-                super::text::make_ibus_input_mode_properties(self.layout_gesture.layout_is_ru),
-            )
-            .await
-            .is_ok()
-            {
-                self.client_context.input_mode_property_refresh_pending = false;
-                trace::record(r#"{"kind":"ibus_input_mode","stage":"post_activation_refresh"}"#);
-            }
-        }
+        self.publish_pending_input_mode_property(&mut output).await;
         Ok(())
     }
 
@@ -310,6 +291,12 @@ impl LayIbusEngine {
     pub(crate) async fn register_properties(
         emitter: &SignalEmitter<'_>,
         properties: Value<'_>,
+    ) -> zbus::Result<()>;
+
+    #[zbus(signal, name = "UpdateProperty")]
+    pub(crate) async fn update_property(
+        emitter: &SignalEmitter<'_>,
+        property: Value<'_>,
     ) -> zbus::Result<()>;
 
     #[zbus(signal, name = "ShowPreeditText")]

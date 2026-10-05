@@ -10,12 +10,12 @@ pub(crate) use authority::{
     TextTargetCapabilityFacts, TextTargetDecision, TextTargetDecisionReason,
 };
 pub(crate) use execution::{ExecutionReceipt, LocalEffectProgress, LocalExecutionFailure};
-#[cfg(test)]
-pub(crate) use observation::LifecycleReceipt;
 pub(crate) use observation::{
-    ClientContextState, ObservationReceipt, PendingContextResetRereceipt, SurroundingTextSnapshot,
-    WindowFactEvent, WindowInteraction, WindowLifecycleEvent,
+    ClientContextState, ManagedWordStartWitness, PendingContextResetRereceipt,
+    SurroundingTextSnapshot, WindowFactEvent, WindowInteraction, WindowLifecycleEvent,
 };
+#[cfg(test)]
+pub(crate) use observation::{LifecycleReceipt, ObservationReceipt};
 
 pub(crate) const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
 pub(crate) const IBUS_CAP_PREEDIT_TEXT: u32 = 1;

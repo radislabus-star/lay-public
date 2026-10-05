@@ -4,7 +4,7 @@
 //! L2/L3/L4 scoring or `TransitionDecisionCore`, so a cache hit cannot invent
 //! a new decision route.
 
-use super::LiveCompletionCandidate;
+use super::{LiveCompletionCandidate, LiveCompletionScene};
 use std::collections::VecDeque;
 use std::sync::{Mutex, OnceLock};
 
@@ -13,6 +13,7 @@ const LIVE_COMPLETION_CACHE_LIMIT: usize = 128;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct LiveCompletionCacheKey {
     pub(super) identity: CacheIdentity,
+    pub(super) scene: LiveCompletionScene,
     pub(super) context_tail: String,
     pub(super) partial: String,
     pub(super) max_suffix_chars: usize,
@@ -129,6 +130,7 @@ mod tests {
     fn key() -> LiveCompletionCacheKey {
         LiveCompletionCacheKey {
             identity: identity().unwrap(),
+            scene: LiveCompletionScene::General,
             context_tail: String::new(),
             partial: "про".into(),
             max_suffix_chars: 16,
@@ -136,6 +138,24 @@ mod tests {
             allow_short_lexical: true,
             limit: 12,
         }
+    }
+
+    #[test]
+    fn terminal_scene_cache_is_disjoint_from_general_scene() {
+        let general = key();
+        let mut terminal = general.clone();
+        terminal.scene = LiveCompletionScene::Terminal;
+        let mut cache = LiveCompletionCache {
+            revision: general.identity.revision,
+            ..LiveCompletionCache::default()
+        };
+        cache.store(general.clone(), &[]);
+        assert!(cache.get(&terminal).is_none());
+        assert_eq!(cache.get(&general), Some(Vec::new()));
+        cache.entries.clear();
+        cache.store(terminal.clone(), &[]);
+        assert!(cache.get(&general).is_none());
+        assert_eq!(cache.get(&terminal), Some(Vec::new()));
     }
 
     #[test]

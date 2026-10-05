@@ -37,6 +37,7 @@ async fn establish_known_source(
     harness.peer.connection.send(&space).await.unwrap();
     let emitter = zbus::object_server::SignalEmitter::new(&harness.connection, SOURCE_PATH)
         .expect("source signal emitter");
+    let input_mode_before_key = source.layout_gesture.layout_is_ru;
     let (handled, observed) = bounded(future::zip(
         source.process_key_event(space.header(), emitter, KEY_SPACE, 57, 0),
         harness.observer.process_next(),
@@ -44,7 +45,12 @@ async fn establish_known_source(
     .await;
     assert!(observed.unwrap());
     assert!(handled.unwrap());
-    let commit = bounded(next_peer_message(&mut harness.peer)).await;
+    let commit = super::word_scope::next_legacy_text_effect(
+        &mut harness.peer,
+        &source,
+        input_mode_before_key,
+    )
+    .await;
     assert_eq!(commit.header().member().unwrap().as_str(), "CommitText");
     assert!(source.context_word_is_known());
 

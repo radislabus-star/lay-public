@@ -9,9 +9,38 @@ pub(crate) fn make_ibus_text(text: String) -> Value<'static> {
     ibus_text(text, attrs::empty())
 }
 
-pub(crate) fn make_preedit_ibus_text(text: String) -> Value<'static> {
+pub(crate) fn make_preedit_ibus_text(text: String, suggestion_start: u32) -> Value<'static> {
     let chars = text.chars().count() as u32;
-    ibus_text(text, attrs::preedit(chars))
+    ibus_text(text, attrs::preedit(chars, suggestion_start))
+}
+
+#[cfg(test)]
+pub(crate) fn preedit_attribute_geometry(text: &Value<'_>) -> Vec<(u32, u32, u32, u32)> {
+    let Value::Structure(text) = text else {
+        panic!("IBus text must be a structure");
+    };
+    let Some(Value::Value(attributes)) = text.fields().get(3) else {
+        panic!("IBus text must contain an attribute-list variant");
+    };
+    let Value::Structure(attributes) = attributes.as_ref() else {
+        panic!("IBus attribute list must be a structure");
+    };
+    let Some(Value::Array(attributes)) = attributes.fields().get(2) else {
+        panic!("IBus attribute list must contain an array");
+    };
+    attributes.inner().iter().map(|attribute| {
+        let Value::Value(attribute) = attribute else {
+            panic!("IBus attribute must be a variant");
+        };
+        let Value::Structure(attribute) = attribute.as_ref() else {
+            panic!("IBus attribute variant must contain a structure");
+        };
+        let [Value::Str(name), _, Value::U32(kind), Value::U32(value), Value::U32(start), Value::U32(end)] = attribute.fields() else {
+            panic!("IBus attribute has unexpected fields");
+        };
+        assert_eq!(name.as_str(), "IBusAttribute");
+        (*kind, *value, *start, *end)
+    }).collect()
 }
 
 pub(crate) fn make_ibus_input_mode_property(is_ru: bool) -> Value<'static> {
@@ -115,7 +144,7 @@ mod tests {
 
     #[test]
     fn retained_preedit_payload_has_exact_cursor_and_visual_attributes() {
-        let Value::Structure(text) = make_preedit_ibus_text("ерка".to_string()) else {
+        let Value::Structure(text) = make_preedit_ibus_text("ерка".to_string(), 0) else {
             panic!("IBus text must be a structure");
         };
         let fields = text.fields();
@@ -137,5 +166,27 @@ mod tests {
                 .collect::<Vec<_>>(),
             [(2, 0x888888, 0, 4), (1, 1, 0, 4)]
         );
+    }
+
+    #[test]
+    fn preedit_visual_ranges_exclude_typed_prefix_in_unicode_scalar_units() {
+        for (text, start, expected) in [
+            (
+                "почему",
+                2,
+                vec![(1, 0, 0, 2), (2, 0x888888, 2, 6), (1, 1, 2, 6)],
+            ),
+            (
+                "a𐐀бв",
+                2,
+                vec![(1, 0, 0, 2), (2, 0x888888, 2, 4), (1, 1, 2, 4)],
+            ),
+            ("проверка", 8, vec![(1, 0, 0, 8)]),
+            ("проверка", u32::MAX, vec![(1, 0, 0, 8)]),
+            ("", 0, vec![]),
+        ] {
+            let value = make_preedit_ibus_text(text.to_string(), start);
+            assert_eq!(preedit_attribute_geometry(&value), expected, "{text:?}");
+        }
     }
 }

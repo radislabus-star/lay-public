@@ -6,9 +6,9 @@
         "src/typing_transition/decision.rs:L103:.evaluate_candidates()",
         "src/typing_transition/decision.rs:L61:TransitionDecisionCore",
         "src/typing_transition/decision/live_field.rs:L44:TransitionDecisionCore",
-        "src/typing_transition/live_candidate.rs:L176:.select_ime_readout()",
-        "src/typing_transition/live_candidate.rs:L80:TransitionDecisionCore",
-        "src/typing_transition/live_candidate.rs:L81:.select_live_completions()"
+        "src/typing_transition/live_candidate.rs:L166:.select_ime_readout()",
+        "src/typing_transition/live_candidate.rs:L84:TransitionDecisionCore",
+        "src/typing_transition/live_candidate.rs:L85:.select_live_completions()"
       ],
       "id": "decision-authority",
       "status": "PASS",
@@ -61,8 +61,8 @@
     {
       "evidence": [
         "src/bin/lay_ibus_engine/engine/types.rs:L409:PendingSystemOutcomeFeedback",
-        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L3402:.arm_visible_postcondition_from_surrounding_dispatch()",
-        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L3471:.observe_visible_postcondition()"
+        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L3659:.arm_visible_postcondition_from_surrounding_dispatch()",
+        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L3728:.observe_visible_postcondition()"
       ],
       "id": "observed-outcome-feedback",
       "status": "PASS",
@@ -108,8 +108,8 @@
     },
     {
       "evidence": [
-        "graph_links:61792",
-        "graph_nodes:23291"
+        "graph_links:62434",
+        "graph_nodes:23557"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -123,11 +123,11 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_binding_fingerprint": "23e4b4111dbe674765a1234d84a5497089623c3cb2f8904fa8d520918326ed5b",
-  "graph_fingerprint": "57c47ddc1535922a9339c0bc8df64cb48589840731d6485db061ca1b49003bf3",
-  "graph_links": 61792,
-  "graph_nodes": 23291,
+  "graph_binding_fingerprint": "c726c6fe88c4a15c9c42d817156ec630e9b2178a08d4502d308918bc44555912",
+  "graph_fingerprint": "225b1b34a50186416f2a183c273fb24a4121b807afeda3a05ea0d478a5e7311c",
+  "graph_links": 62434,
+  "graph_nodes": 23557,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "fd101af848e7ca5ddfac2f47d4898f7ff77057d4fcf8273c40d09383fdf9c1d1",
+  "source_fingerprint": "257f8caf509111309255a3e30a2d44d8f34825b602e698c8f9c6b40c8984e3d4",
   "verdict": "PASS"
 }

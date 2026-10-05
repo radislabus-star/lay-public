@@ -1,0 +1,30 @@
+{
+  "status": "EXPLICIT_TEST_ONLY_REPLAN_BEFORE_EDIT",
+  "measured": "Final focused suite first two identities PASS (native core and first/later RU/EN delete/retype/Tab). Third identity correctly refuses Tab without fresh confirmation and emits no edit/learning, then fails an invalid expectation of later recovery after unhandled Tab. Remaining identities not executed.",
+  "first_failed_assumption": "Unhandled native Tab is an external input/navigation gap, so existing admission invalidates word lineage. A later surrounding receipt cannot revive the old pending provenance.",
+  "chosen_fixture_change": "Use two fresh independent actual callback preparations: Backspace then fresh exact receipt may confirm without extra Reset; Backspace then unconfirmed Tab must refuse edit/learning and remain refused even after a later exact receipt.",
+  "production_changed": false,
+  "production_candidate_sha_prefix": "c118fece",
+  "assertions_preserved": "No unconfirmed Tab acceptance, text edits, learning or post-gap revival. Generic collectors remain strict; positive client-only confirmation is tested before any input gap.",
+  "rejected_alternative": "Changing production to revive state after Tab would erase the existing navigation/input-gap safety boundary.",
+  "consequences": "Fixture preparation only. Candidate/rank/authority/latency/CPU/RSS/cache/package/learning/concurrency/rollback contracts unchanged. Independent setups prevent a legitimate gap from contaminating the positive confirmation case.",
+  "gates": "Complete all exact focused identities, controlled suppression rejection/restored PASS, original style and fixed canonical closure, graph/canon/build and physical client acceptance",
+  "runtime_authority_changed": false,
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Use independent callback preparations for direct fresh receipt confirmation and for refusal after an unconfirmed client-owned Tab.",
+  "reason": "An unhandled native Tab is an input/navigation gap and must revoke provenance; expecting later revival confused a positive confirmation case with a genuine gap.",
+  "verification": "Nine exact native Backspace focused PASS; controlled background-suppression failure and restored retype PASS. Final native-final-PTmtHdcv canonical653/653, original two style configurations PASS. Changed-byte physical acceptance remains required.",
+  "not_tested": "Changed-byte physical acceptance and full release acceptance.",
+  "invariants": [
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "record_format_repair": "2026-10-04: required guard schema/fields added; previous historical fields, design and guard preserved. No runtime deployment or authority change."
+}

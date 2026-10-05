@@ -1,0 +1,22 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-05",
+  "status": "IMPLEMENTED_PENDING_PROOF",
+  "affected_invariants": ["C01", "C03", "C08", "C10"],
+  "invariants": ["C01", "C03", "C08", "C10"],
+  "owning_document": "docs/architecture/contextual-completion-release-2026-10-05.md",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter.rs",
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "scripts/lint-baseline/dead_code.default.json",
+    "scripts/lint-baseline/dead_code.json"
+  ],
+  "reason": "Actual strict default lint has two genuinely unused acquisition declarations and three preexisting moved inventory entries. Do not admit the new warnings or restore an unused deadline into runtime.",
+  "decision": "Remove only unused acquisition fields/initializers/const/function. Preserve bridge20ms and activation50ms deadlines and test setter assignments. Gate test-only preedit observers behind cfg(test). Rebind the unchanged Owned enum warning byte location; remove exactly the obsolete preedit observer inventory entries in each affected scope after current compiler discovery.",
+  "what_was_tested": "Read-only independent reference audit proves acquisition_deadline is never called and the test-only setter also updates both live fence budgets. Current exact native2 strict lint rejects added5/removed3 default inventory differences before Clippy.",
+  "what_was_not_tested": ["full source/physical release gates"],
+  "not_tested": "Full source gate and physical acceptance remain pending.",
+  "verification": "Remote RELEASE_LINT.log rejects the old inventory. release79-gates/LINT_CLOSURE_RESULT.json then proves reviewed removals/only Owned location rebind and strict default/research Clippy PASS74.412s; no warnings waived, all other subjects preserved.",
+  "runtime_authority_changed": false,
+  "constraints": ["No new deadline branch", "No change to pending fence times", "Preserve both test setter assignments", "Strict Clippy remains enabled", "All other inventory identities preserved"]
+}

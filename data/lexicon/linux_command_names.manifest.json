@@ -1,0 +1,23 @@
+{
+  "schema": "lay.linux-command-inventory.v1",
+  "scope": "immutable packaged advisory membership, not availability on every target, use frequency, command position or execution authority",
+  "generated_at": "2026-10-05",
+  "source_os": "PRETTY_NAME=\"Ubuntu 26.04.1 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"26.04\"\nVERSION=\"26.04.1 LTS (Resolute Raccoon)\"\nVERSION_CODENAME=resolute\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=resolute\nLOGO=ubuntu-logo\n",
+  "sources": [
+    "executable basename membership in /usr/bin /usr/sbin /bin /sbin",
+    "bash builtin names, no profile/rc"
+  ],
+  "builtin_query_argv": [
+    "bash",
+    "--noprofile",
+    "--norc",
+    "-c",
+    "compgen -b"
+  ],
+  "filter": "ASCII alphabetic names only, sorted, exact case; follows executable symlinks; no private history",
+  "entries": 1877,
+  "bytes": 15093,
+  "sha256": "90d7cf01d4ba6704246c09721d6c95d7463493ab277c02f9438751ec7a2339a8",
+  "runtime_io": "none; packaged binary immutable",
+  "candidate_generation": "not added; only existing admitted exact-prefix completions may prefer"
+}

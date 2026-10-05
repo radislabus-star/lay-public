@@ -4,6 +4,7 @@
 //! admit, merge, and order candidates for a live IME readout.
 
 use super::decision::TransitionDecisionCore;
+use crate::nanda_wave::candidate_gate::LiveCompletionScene;
 use crate::typing_cpu::{ImeCandidateProposal, ImeCandidateSource};
 use std::collections::HashSet;
 
@@ -22,6 +23,9 @@ pub(crate) enum LiveCandidateLane {
 #[derive(Debug, Clone)]
 pub(crate) struct LiveCompletionProposal {
     pub(crate) state_before: u64,
+    pub(crate) scene: LiveCompletionScene,
+    /// Inventory membership only; effective after existing admission checks.
+    pub(crate) terminal_command: bool,
     pub(crate) surface: String,
     pub(crate) suffix: String,
     /// True when explicit Tab replaces the active token instead of appending.
@@ -96,14 +100,7 @@ impl TransitionDecisionCore {
         // Space/Tab apply route retains verifier and authority ownership.
         let mut selected = proposals;
 
-        selected.sort_by(|left, right| {
-            right
-                .rank_score
-                .total_cmp(&left.rank_score)
-                .then_with(|| right.field_strength.cmp(&left.field_strength))
-                .then_with(|| left.suffix_len.cmp(&right.suffix_len))
-                .then_with(|| left.surface.cmp(&right.surface))
-        });
+        selected.sort_by(live_completion_order);
         let mut seen_surfaces = HashSet::new();
         let mut seen_suffixes = HashSet::new();
         selected.retain(|candidate| {
@@ -152,14 +149,7 @@ impl TransitionDecisionCore {
                 break;
             }
         }
-        bounded.sort_by(|left, right| {
-            right
-                .rank_score
-                .total_cmp(&left.rank_score)
-                .then_with(|| right.field_strength.cmp(&left.field_strength))
-                .then_with(|| left.suffix_len.cmp(&right.suffix_len))
-                .then_with(|| left.surface.cmp(&right.surface))
-        });
+        bounded.sort_by(live_completion_order);
         bounded
             .into_iter()
             .map(|candidate| SelectedLiveCompletion {
@@ -232,6 +222,33 @@ impl TransitionDecisionCore {
         selected.truncate(limit);
         selected.into_iter().map(|(proposal, _)| proposal).collect()
     }
+}
+
+fn live_completion_order(
+    left: &LiveCompletionProposal,
+    right: &LiveCompletionProposal,
+) -> std::cmp::Ordering {
+    // A confirmed choice for this exact transition outranks the terminal default.
+    // Ordinary scene keeps the original score ordering. No calibrated probability
+    // or new evidence is invented from inventory membership.
+    let confirmed = |p: &LiveCompletionProposal| {
+        p.scene == LiveCompletionScene::Terminal
+            && p.l4_transition_state_specific
+            && p.l4_transition_attract_count > p.l4_transition_repel_count
+    };
+    let command = |p: &LiveCompletionProposal| {
+        p.scene == LiveCompletionScene::Terminal
+            && p.lane == LiveCandidateLane::ExactCompletion
+            && !p.replacement
+            && p.terminal_command
+    };
+    confirmed(right)
+        .cmp(&confirmed(left))
+        .then_with(|| command(right).cmp(&command(left)))
+        .then_with(|| right.rank_score.total_cmp(&left.rank_score))
+        .then_with(|| right.field_strength.cmp(&left.field_strength))
+        .then_with(|| left.suffix_len.cmp(&right.suffix_len))
+        .then_with(|| left.surface.cmp(&right.surface))
 }
 
 fn lane_reserve(
@@ -331,6 +348,8 @@ mod tests {
     fn completion(surface: &str, suffix: &str, rank_score: f32) -> LiveCompletionProposal {
         LiveCompletionProposal {
             state_before: crate::nanda_wave::phase_field::hash_text("test-state"),
+            scene: LiveCompletionScene::General,
+            terminal_command: false,
             surface: surface.to_string(),
             suffix: suffix.to_string(),
             replacement: suffix.is_empty(),
@@ -378,6 +397,60 @@ mod tests {
             8,
         );
         assert_eq!(selected[0].surface, "проверка");
+    }
+
+    #[test]
+    fn terminal_command_preference_keeps_confirmed_l4_and_general_order() {
+        let mut ordinary = completion("gif", "f", 0.9);
+        let mut command = completion("git", "t", 0.4);
+        ordinary.partial_len = 2;
+        command.partial_len = 2;
+        command.terminal_command = true;
+        let general = TransitionDecisionCore::select_live_completions(
+            vec![ordinary.clone(), command.clone()],
+            2,
+        );
+        assert_eq!(general[0].surface, "gif");
+        ordinary.scene = LiveCompletionScene::Terminal;
+        command.scene = LiveCompletionScene::Terminal;
+        let terminal = TransitionDecisionCore::select_live_completions(
+            vec![ordinary.clone(), command.clone()],
+            2,
+        );
+        assert_eq!(terminal[0].surface, "git");
+        ordinary.l4_transition_state_specific = true;
+        ordinary.l4_transition_attract_count = 2;
+        ordinary.l4_transition_repel_count = 1;
+        let confirmed = TransitionDecisionCore::select_live_completions(
+            vec![ordinary.clone(), command.clone()],
+            2,
+        );
+        assert_eq!(confirmed[0].surface, "gif");
+        ordinary.l4_transition_repel_count = 2;
+        let tied = TransitionDecisionCore::select_live_completions(vec![ordinary, command], 2);
+        assert_eq!(tied[0].surface, "git");
+    }
+
+    #[test]
+    fn terminal_command_preference_cannot_admit_ungrounded_or_replacement() {
+        let ordinary = completion("git", "t", 0.4);
+        let mut ungrounded = completion("unknown", "nown", 1.0);
+        ungrounded.scene = LiveCompletionScene::Terminal;
+        ungrounded.terminal_command = true;
+        ungrounded.common = false;
+        ungrounded.l2_center_grounded = false;
+        ungrounded.completed_state_known = false;
+        ungrounded.structural = 0.0;
+        let mut replacement = completion("replacement", "", 1.0);
+        replacement.scene = LiveCompletionScene::Terminal;
+        replacement.terminal_command = true;
+        let selected = TransitionDecisionCore::select_live_completions(
+            vec![ordinary, ungrounded, replacement],
+            4,
+        );
+        assert_eq!(selected.len(), 1);
+        assert_eq!(selected[0].surface, "git");
+        assert!(!selected[0].replacement);
     }
 
     #[test]

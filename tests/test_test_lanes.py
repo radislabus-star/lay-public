@@ -83,6 +83,13 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual("correctness", discovery.classify("lib:lay", "case", "test", False))
         isolated = next(iter(discovery.PROCESS_ISOLATED_TESTS))
         self.assertEqual("process", discovery.isolation(*isolated, "correctness"))
+        for name in (
+            "tests::runtime_state::terminal_enter_records_bounded_raw_typed_context_before_reset",
+            "tests::runtime_state::terminal_enter_raw_observation_does_not_repeat_or_learn_other_boundaries",
+        ):
+            self.assertEqual(
+                "process", discovery.isolation("bin:lay-daemon", name, "correctness")
+            )
         isolated_target, isolated_prefix = discovery.PROCESS_ISOLATED_PREFIXES[0]
         self.assertEqual(
             "process",

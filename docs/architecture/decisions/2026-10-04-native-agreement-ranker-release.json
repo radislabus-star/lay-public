@@ -1,0 +1,74 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-04",
+  "status": "INSTALLED_EXPERIMENTAL_78_BROAD_CLIENT_MATRIX_IN_PROGRESS",
+  "reason": "Explicit ranker release/install request; offline hybrid artifact is not directly executable by live Lay. Native adaptation through existing ordering owner is selected.",
+  "affected_invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C10",
+    "C09"
+  ],
+  "owning_document": "docs/architecture/ranker-release-preflight-2026-10-04.md",
+  "protected_paths": [
+    "src/typing_transition/decision.rs",
+    "src/typing_transition/decision/agreement_order.rs",
+    "src/typing_transition/decision/agreement_order/tests.rs",
+    "src/nanda_wave/l2_field/mod.rs",
+    "src/nanda_wave/l2_field/runtime.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "src/bin/lay_ibus_engine/output.rs",
+    "src/bin/lay_ibus_engine/ibus_interface.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "constraints": [
+    "immutable existing admissions and no new Apply authority",
+    "all candidates retained",
+    "ClosedExact and retained-exact precedence retained",
+    "canonical full-mask point lookup; no corpus/model work or cold package load in rank path",
+    "exact observed context only, no future words",
+    "SafetyGate/verifier/input/gesture/output routes unchanged",
+    "remote guarded proofs and actual installed-byte scope"
+  ],
+  "what_was_tested": "Independent source review found no authority defects; guarded remote architecture refresh passed. First full gate failed at compile with E0603 private morphology module access and E0277 test fixture reference. Runtime unchanged. Fix those references and add the eleven new tests with the existing canonical classifier, then verify against actual Cargo discovery; preserve every previous test, lane and assertion. Actual Cargo discovery confirms all 2977 inventory rows, with original rows preserved. Graph cache relocation caused a WATCH; invalidate copied cache and use existing strict wrapper, keeping rejected evidence. Native non-timing targets completed with zero reported test failures, including11 new tests; final ledger gate blocked because its manifest SHA still referenced the old inventory. Rebind that SHA only; preserve all zero failure entries and historical observation bytes. Fresh AST-cache refresh passed with all capability links restored. Guarded full correctness+package lane PASS2951; subsequent lint stopped on uppercase C in one cfg(test) function name. Rename identifier/inventory row only, keep production sources/assertions unchanged. Latest user explicitly requests experimental1.0.78 test-install before final publication; build/strict graph/lint and loaded-byte/rollback checks remain required.",
+  "what_was_not_tested": [
+    "native independent per-class ranker quality",
+    "new C09 installed-byte physical acceptance",
+    "all-window completion and resource gates"
+  ],
+  "runtime_authority_changed": false,
+  "decision": "Implement native compatible-reading ranking only after existing candidate admissions; preserve exact authority and record the new native scope.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C10",
+    "C09"
+  ],
+  "verification": "Independent source review found no authority defects; guarded remote architecture refresh passed. First full gate failed at compile with E0603 private morphology module access and E0277 test fixture reference. Runtime unchanged. Fix those references and add the eleven new tests with the existing canonical classifier, then verify against actual Cargo discovery; preserve every previous test, lane and assertion. Actual Cargo discovery confirms all 2977 inventory rows, with original rows preserved. Graph cache relocation caused a WATCH; invalidate copied cache and use existing strict wrapper, keeping rejected evidence. Native non-timing targets completed with zero reported test failures, including11 new tests; final ledger gate blocked because its manifest SHA still referenced the old inventory. Rebind that SHA only; preserve all zero failure entries and historical observation bytes. Fresh AST-cache refresh passed with all capability links restored. Guarded full correctness+package lane PASS2951; subsequent lint stopped on uppercase C in one cfg(test) function name. Rename identifier/inventory row only, keep production sources/assertions unchanged. Latest user explicitly requests experimental1.0.78 test-install before final publication; build/strict graph/lint and loaded-byte/rollback checks remain required. Exact experimental install PASS10 installed/4loaded with rollback, global IBus/config/source preserved. Full lint/Clippy FAIL on unchanged accepted77 source, not waived as PASS. Broad local physical client testing explicitly requested; first Boolean/focus harness attempts excluded; seven-field native437 steps/groups423PASS14 misses pending failure-class separation. Browser/icon/all-window acceptance pending.",
+  "not_tested": "Native independent ranker quality, new C09 installed-byte physical acceptance, complete available-window scope and resources remain pending.",
+  "runtime_bytes_changed": true,
+  "full_release_acceptance": "BLOCKED_LINT",
+  "installed_ime_sha256": "e64ccde4e7e495ac7ea4479c3f353fb4b64e54cc087be17ebe67daa31f33adac",
+  "c09_publication_repair": {
+    "status": "INSTALLED_EXACT_BYTES_CHROME_EIGHT_PAIR_PASS_OTHER_FIELDS_PENDING",
+    "invariant": "C09",
+    "existing_owner": "Legacy EngineOutput mode publication",
+    "change": "standard native UpdateProperty; initial RegisterProperties preserved",
+    "first_failed_transition": "Chrome actual decoded next letter RU while GNOME property/icon remained EN after a visible manual word toggle",
+    "source_manifest_sha256": "48aea1e44019787a353ef42da5f7ca73b3e6e84a3ff27a15b75464dd311deb99",
+    "fresh_source_proof": "R3 C09_CANONICAL_IME_EXECUTION.json:638/638 correctness PASS",
+    "controlled_mutation": "old publication function causes expected UpdateProperty assertion failure; exact restore",
+    "preserved_failure": "R3 C09_PROBE_FMT1.json unfiltered637/4 FAIL bypassed required process isolation",
+    "runtime_authority_changed": false,
+    "physical_new_byte_acceptance": "Bound V3 Chrome editable: eight word/icon pairs and next physical letter PASS; broad V3 abort263 diagnostic rows and REJECT_BINDING, no final matrix",
+    "installed_ime_sha256": "71ad8f2e5a2d72df813881c89a5a26085ce8d047a1df60d2f98597d26dbd69f6",
+    "install_receipt": "/home/ubu/.cache/lay/development/ranker-release-20261004/revision3/C09_INSTALL.json",
+    "observer_abort_audit": "/home/ubu/.cache/lay/development/ranker-release-20261004/windows/BROWSER_PAGE_IDENTITY_AUDIT.md",
+    "cleanup_receipt": "/home/ubu/.cache/lay/development/ranker-release-20261004/revision3/C09_ABORT_TEST_DEVICE_CLEANUP.json"
+  }
+}

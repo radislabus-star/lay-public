@@ -113,7 +113,7 @@ fn word_candidate_readout_for_input(
     let Some(request) = word_completion_request(input) else {
         return (Vec::new(), LiveCompletionTiming::default());
     };
-    let readout = TypingCpu::live_completion_readout(request);
+    let readout = TypingCpu::live_completion_readout_for_scene(request, input.scene);
     let timing = readout.timing;
     (
         project_word_completion_candidates(readout.candidates),
@@ -260,7 +260,7 @@ fn cached_precognition_candidates(input: &PrecognitionInput) -> Option<Vec<ImeCa
     if semantic_phrase_readout_applicable(input) {
         return None;
     }
-    let candidates = TypingCpu::cached_live_completion_candidates(word_completion_request(input)?)?;
+    let candidates = TypingCpu::cached_live_completion_candidates_for_scene(word_completion_request(input)?, input.scene)?;
     Some(select_precognition_material(
         input,
         project_word_completion_candidates(candidates),
@@ -299,6 +299,7 @@ mod preedit_readout_contract {
             tail: tail.into(),
             context_prefix: context_prefix.into(),
             partial: partial.into(),
+            scene: lay::typing_cpu::LiveCompletionScene::General,
             max_suffix_chars: 16,
             active_composition: true,
             correction_safety: lay::config::CorrectionSafety::Normal,
@@ -344,12 +345,15 @@ mod preedit_readout_contract {
     fn preedit_rendering_does_not_own_l2_l3_material_acquisition() {
         let render = include_str!("preedit.rs");
         let readout = include_str!("preedit_readout.rs");
-        let observed_field_call = concat!("TypingCpu::live_", "completion_readout(");
+        let observed_field_call = concat!("TypingCpu::live_", "completion_readout_for_scene(");
+        let old_observed_field_call = concat!("TypingCpu::live_", "completion_readout(");
         let legacy_field_call = concat!("TypingCpu::live_", "completion_candidates(");
 
         assert!(
             !render.contains(legacy_field_call)
                 && !readout.contains(legacy_field_call)
+                && !render.contains(observed_field_call)
+                && !readout.contains(old_observed_field_call)
                 && readout.matches(observed_field_call).count() == 1
                 && !render.contains("semantic_phrase_candidates_for_input(")
                 && !render.contains("word_candidate_proposals_for_input(")

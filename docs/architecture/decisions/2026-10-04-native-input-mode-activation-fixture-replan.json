@@ -1,0 +1,40 @@
+{
+  "status": "RECORDED_TEST_ONLY_REPLAN_BEFORE_EDIT",
+  "first_failed_transition": "Intentional post-activation InputMode UpdateProperty reaches a strict old fixture consumer before its expected Ping, preedit, or empty-output assertion.",
+  "evidence": "combined-c06-c09-pipeline/continuation/failure/FAILURE_PACKET.json; SHA256 c37d277e849f8befd9c5177c732d4dc94df5f5575a705b971bfbd967425b3df5; 649 executed, 628 passed, 21 failed; all nine new C06/C09 tests passed",
+  "scope": "Only fixture preparation at the actual authenticated activation callback; assert and consume exactly one expected current-owner InputMode property before the unchanged functional assertion.",
+  "implementation_owner": "h7_full_pool isolated variant; root reviews/imports; root alone installs and performs physical input",
+  "constraints": [
+    "Keep generic serve_ping_and_marker, legacy_effects, drain, count and no-output collectors strict and unfiltered.",
+    "Use the existing exact path/interface/schema/type/state/label/symbol and installed owner/token/shared-state validator.",
+    "Prove the added property at the actual callback boundary. An unprinted signal body is not evidence that it is harmless metadata.",
+    "Consume at most one property at the first activation; later loop iterations retain original strict assertions.",
+    "Preserve all text, completion, edit, absence-of-edit and safety assertions; production code and canonical test identities stay unchanged."
+  ],
+  "alternatives": [
+    "Global filtering rejected because it hides duplicate, misplaced or unauthorized output.",
+    "Suppressing publication or clearing pending state in fixtures rejected because it bypasses production activation behavior."
+  ],
+  "gates": "Nonzero exact 21 focused failures first; complete 649 canonical closure after positive result; original format/style policy; mandatory graph/canon; exact only-IME release build; changed-byte physical acceptance",
+  "runtime_authority_changed": false,
+  "installed_ime_sha256": "a1bdffe17771e241234b6bf130babde052e4bac31578741c0d7de780df6ebaee",
+  "schema": "lay.architecture-decision.v1",
+  "decision": "At the authenticated activation preparation boundary consume and strictly validate at most one expected InputMode property before the original functional assertion.",
+  "reason": "Actual canonical649 execution exposed21 strict fixture consumers receiving the intentional activation metadata before Ping, preedit or empty-output checks. Generic collectors remain unfiltered.",
+  "verification": "Exact21 focused PASS; final canonical653/653 PASS including four native property-publication regressions. Existing metadata path/interface/schema/owner/type/state/label/symbol validation retained.",
+  "not_tested": "Changed-byte client rendered icon acceptance and full release acceptance.",
+  "invariants": [
+    "C03",
+    "C04",
+    "C05",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs"
+  ],
+  "record_format_repair": "2026-10-04: required guard schema/fields added; previous historical fields, design and guard preserved. No runtime deployment or authority change."
+}

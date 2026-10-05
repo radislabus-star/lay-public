@@ -1,0 +1,64 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-04",
+  "status": "ISOLATED_PRECISE_LOCAL_EDIT_RECEIPT_NOT_INSTALLED",
+  "parent_decision": "2026-10-04-owned-preedit-append-boundary.json",
+  "decision": "Retain the existing owned start only across a proven local end-caret deletion inside the same nonempty uncommitted word.",
+  "existing_owner": "CompositionState.legacy_preedit_start_boundary and current admission token",
+  "preconditions": [
+    "exact-refresh capability",
+    "same focus receipt/serial, runtime owner lease, layout generation, observation revision",
+    "current exact tail epoch and typed-buffer prefix equality",
+    "current UnknownStart scope with revalidated matching admission token",
+    "last-char deletion with at least two owned characters and no selection/handoff/atomic/sensitive state"
+  ],
+  "postconditions": [
+    "existing Backspace callback handled the event",
+    "exactly one tail epoch advance",
+    "buffer equals previous buffer with one final scalar removed and remains nonempty",
+    "same boundary/owner/revision/input token revalidated",
+    "reanchor only stored start_tail_epoch; strict equality remains unchanged"
+  ],
+  "refusals": [
+    "client/cursor-zero deletion",
+    "whole-word erasure",
+    "external epoch drift",
+    "selection, Reset, new surrounding revision",
+    "revoked/stale/missing boundary or owner/token"
+  ],
+  "source_paths": [
+    "src/bin/lay_ibus_engine/managed.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/window_interaction/mod.rs",
+    "src/bin/lay_ibus_engine/engine/state_groups.rs",
+    "src/bin/lay_ibus_engine/engine.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "proof": "Real Legacy Backspace then retype, actual published append hint and Tab commit; controlled removal of the receipt update must fail at Tab. Existing default exactRefresh negative and manual predicate unchanged.",
+  "initial_focused_proof": {
+    "tests": 9,
+    "old_predicate_failure": "actual Tab rc101",
+    "restored_positive": "PASS",
+    "archive_sha256": "cf83c83791d0a0e0923b82193c3df6922b16d45431bb3b77a0f043c64c66424d"
+  },
+  "runtime_authority_changed": false,
+  "runtime_bytes_changed": false,
+  "physical_acceptance": "NOT_TESTED",
+  "reason": "A local handled end-caret Backspace changed the tail epoch, invalidating the otherwise intact owned word-start witness and preventing later explicit append completion.",
+  "verification": "Actual Legacy Backspace then retype/Tab focused proof, controlled missing receipt-update failure and restored PASS; eleven combined owned-preedit tests and final canonical653/653 PASS.",
+  "not_tested": "Changed-byte installation and physical client acceptance; native unhandled deletion requires its separate confirmed receipt contract.",
+  "invariants": [
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/managed.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "record_format_repair": "2026-10-04: required guard schema/fields added; previous historical fields, design and guard preserved. No runtime deployment or authority change."
+}

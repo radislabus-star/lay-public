@@ -1,0 +1,88 @@
+{
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_PROOF_ONLY",
+  "affected_invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C06",
+    "C07",
+    "C10"
+  ],
+  "source": "codex/lay-contextual-completion-20261005 HEAD8bede373 plus preserved dirty release source",
+  "owner": "existing TransitionDecisionCore live candidate owner; existing IBus adapter supplies advisory scene",
+  "first_failed_transition": "proven terminal input -> completion request: terminal evidence omitted; generic gi readout ranks gif before admitted git",
+  "selected_change": "Preserve default General APIs; pass explicit advisory Terminal scene from has_proven_terminal_input into current request/cache path. Immutable packaged command membership tags only alreadyadmitted ASCII exact-prefix completions. Same DecisionCore comparator at both sort points: positive exact-transition confirmed L4 tier, command class, prior rank/ties. Preserve admission, settled-state checks, material/lane reserves and current Tab/verifier/output paths. No command-position or foreground-shell claim.",
+  "inventory": {
+    "path": "data/lexicon/linux_command_names.txt",
+    "manifest": "data/lexicon/linux_command_names.manifest.json",
+    "sha256": "90d7cf01d4ba6704246c09721d6c95d7463493ab277c02f9438751ec7a2339a8",
+    "entries": 1877,
+    "scope": "executable/builtin membership from full filtered host inventory, no personal history, frequency counts or literal fixture-specific branches",
+    "identity": "immutable compiled binary data; no runtime refresh/generation/file scan"
+  },
+  "learning": "L4 exact-transition positive confirmed tier takes precedence; signed memory and usage rank remain within each class. No fabricated confirmed evidence or user-memory seeding.",
+  "guards": "no admission, SafetyGate, AuthorizedEdit, output, layout or gesture guard weakened; four new regression identities extend existing manifest without waived failures",
+  "evidence": {
+    "status": "FOCUSED_PASS_RELEASE_PENDING",
+    "planned": {
+      "bin:lay-ibus-engine": [
+        "preedit::tests::terminal_completion_scene_requires_existing_terminal_evidence"
+      ],
+      "lib:lay": [
+        "typing_transition::live_candidate::tests::terminal_command_preference_keeps_confirmed_l4_and_general_order",
+        "typing_transition::live_candidate::tests::terminal_command_preference_cannot_admit_ungrounded_or_replacement",
+        "nanda_wave::candidate_gate::cache::tests::terminal_scene_cache_is_disjoint_from_general_scene"
+      ]
+    },
+    "receipt": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/TERMINAL_PRIORITY_FINAL_RESULT.json",
+    "sha256": "803dfa8438a1e6d8beeaf91c154eb0e62207f1a9f9134900de47b35e45e0f043",
+    "executed": 32,
+    "passed": 32,
+    "seconds": 28.477,
+    "old_control": "One actual regression fails gif vs git when both canonical sort points use the earlier general comparator; controlled missing-preference violation, not reconstructed installed bytes."
+  },
+  "runtime_authority_changed": false,
+  "limits": [
+    "Installed79 unchanged",
+    "Shell foreground/command position UNKNOWN; preference advisory in proven terminal input",
+    "Missing command candidates are not restored by this ordering change",
+    "No measured usefrequency claim",
+    "Physical terminal and Firefox acceptance pending",
+    "Whole release gate must certify changed bytes"
+  ],
+  "guard_change": {
+    "path": "src/bin/lay_ibus_engine/preedit_readout.rs",
+    "test": "preedit_rendering_does_not_own_l2_l3_material_acquisition",
+    "reason": "Source-structure guard matched old completion_readout spelling after legitimate typed scene API replacement. Keep exactlyone asynchronous materialized readout, now require scene-aware call, explicitly forbid old call and render-side scene acquisition. No ownership assertion or failure waived."
+  },
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-05",
+  "decision": "Preserve default General APIs; pass explicit advisory Terminal scene from has_proven_terminal_input into current request/cache path. Immutable packaged command membership tags only alreadyadmitted ASCII exact-prefix completions. Same DecisionCore comparator at both sort points: positive exact-transition confirmed L4 tier, command class, prior rank/ties. Preserve admission, settled-state checks, material/lane reserves and current Tab/verifier/output paths. No command-position or foreground-shell claim.",
+  "reason": "proven terminal input -> completion request: terminal evidence omitted; generic gi readout ranks gif before admitted git",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C06",
+    "C07",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/contextual-completion-release-2026-10-05.md",
+  "protected_paths": [
+    "src/nanda_wave/candidate_gate.rs",
+    "src/nanda_wave/candidate_gate/cache.rs",
+    "src/typing_cpu/runtime.rs",
+    "src/typing_cpu/mod.rs",
+    "src/typing_transition/live_candidate.rs",
+    "src/typing_transition/decision/live_field.rs",
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "src/bin/lay_ibus_engine/preedit_readout.rs",
+    "src/bin/lay_ibus_engine/preedit/tests.rs",
+    "src/lexicon.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "verification": "{\"status\": \"FOCUSED_PASS_RELEASE_PENDING\", \"planned\": {\"bin:lay-ibus-engine\": [\"preedit::tests::terminal_completion_scene_requires_existing_terminal_evidence\"], \"lib:lay\": [\"typing_transition::live_candidate::tests::terminal_command_preference_keeps_confirmed_l4_and_general_order\", \"typing_transition::live_candidate::tests::terminal_command_preference_cannot_admit_ungrounded_or_replacement\", \"nanda_wave::candidate_gate::cache::tests::terminal_scene_cache_is_disjoint_from_general_scene\"]}, \"receipt\": \"/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/TERMINAL_PRIORITY_FINAL_RESULT.json\", \"sha256\": \"803dfa8438a1e6d8beeaf91c154eb0e62207f1a9f9134900de47b35e45e0f043\", \"executed\": 32, \"passed\": 32, \"seconds\": 28.477, \"old_control\": \"One actual regression fails gif vs git when both canonical sort points use the earlier general comparator; controlled missing-preference violation, not reconstructed installed bytes.\"}",
+  "not_tested": "Actual new cross-process worker proof, full release gate, latency/RSS and changed installed physical clients remain pending.",
+  "lint_test_fixture_repair": "Clippy requires revision inside the Default struct initializer in the scene-disjointness fixture. Same initial revision, same assertions and production comparator/cache unchanged; no allow attribute."
+}

@@ -598,12 +598,22 @@ struct PersistedUsageCounts {
 struct UsageCache {
     loaded_at: Option<Instant>,
     hot: Arc<UsageHotState>,
+    // Applied local evidence may not yet be visible in the shared journal.
+    unpersisted_local_events: usize,
 }
 
 #[cfg(not(test))]
 struct UsagePersistLine {
     path: PathBuf,
     line: String,
+    tracks_local_hot: bool,
+}
+
+#[cfg(not(test))]
+#[derive(Default)]
+struct UsagePersistBatch {
+    text: String,
+    local_hot_events: usize,
 }
 
 #[cfg(not(test))]
@@ -788,19 +798,75 @@ fn usage_learning_enabled() -> bool {
     crate::config::runtime_usage_learning_enabled()
 }
 
-fn ingest_usage_hot_state_if_stale() -> Arc<UsageHotState> {
-    let Ok(mut cache) = usage_cache().lock() else {
-        return Arc::new(UsageHotState::default());
-    };
-    if cache
-        .loaded_at
-        .is_some_and(|loaded_at| loaded_at.elapsed() < USAGE_REFRESH_INTERVAL)
+/// Pure hot-state age check: the inline cache path performs no journal I/O.
+pub(crate) fn usage_prior_refresh_due() -> bool {
+    usage_cache().lock().is_ok_and(|cache| {
+        cache.unpersisted_local_events == 0
+            && cache
+                .loaded_at
+                .is_none_or(|loaded| loaded.elapsed() >= USAGE_REFRESH_INTERVAL)
+    })
+}
+
+/// Called by the existing background materialization worker, never key handling.
+pub(crate) fn refresh_usage_prior_for_live_worker() {
+    let _ = ingest_usage_hot_state_if_stale();
+}
+
+fn usage_refresh_baseline(cache: &UsageCache, force: bool) -> Option<Arc<UsageHotState>> {
+    if cache.unpersisted_local_events != 0
+        || (!force
+            && cache
+                .loaded_at
+                .is_some_and(|loaded| loaded.elapsed() < USAGE_REFRESH_INTERVAL))
     {
-        return Arc::clone(&cache.hot);
+        return None;
     }
-    set_usage_cache_hot_from_counts(&mut cache, &load_usage_counts());
+    Some(Arc::clone(&cache.hot))
+}
+
+fn publish_usage_refresh(
+    cache: &mut UsageCache,
+    baseline: &Arc<UsageHotState>,
+    hot: Arc<UsageHotState>,
+) -> Result<(), Arc<UsageHotState>> {
+    // Retaining baseline forces Arc::make_mut to fork on concurrent local writes,
+    // including a write that has already persisted by the time staging finishes.
+    if cache.unpersisted_local_events != 0 || !Arc::ptr_eq(&cache.hot, baseline) {
+        return Err(hot);
+    }
+    cache.hot = hot;
     cache.loaded_at = Some(Instant::now());
-    Arc::clone(&cache.hot)
+    super::candidate_gate::clear_live_completion_cache();
+    Ok(())
+}
+
+fn ingest_usage_hot_state_if_stale() -> Arc<UsageHotState> {
+    let path = usage_events_path();
+    let baseline = {
+        let Ok(cache) = usage_cache().lock() else {
+            return Arc::new(UsageHotState::default());
+        };
+        let Some(baseline) = usage_refresh_baseline(&cache, false) else {
+            return Arc::clone(&cache.hot);
+        };
+        baseline
+    };
+    // Both file loading and full hot-state construction stay outside the mutex.
+    let hot = Arc::new(UsageHotState::from_counts(&load_usage_counts()));
+    let Ok(mut cache) = usage_cache().lock() else {
+        return baseline;
+    };
+    let staged = if path == usage_events_path() {
+        publish_usage_refresh(&mut cache, &baseline, hot)
+    } else {
+        Err(hot)
+    };
+    let current = Arc::clone(&cache.hot);
+    drop(cache);
+    // A refused large staged state is also destroyed outside the hot mutex.
+    drop(staged);
+    current
 }
 
 pub(crate) fn word_usage_prior_cached(word: &str) -> f32 {
@@ -1043,10 +1109,23 @@ fn increment_optional_count(target: &mut HashMap<String, u32>, value: Option<&st
 }
 
 fn refresh_usage_counts_from_disk() -> UsageCounts {
+    let path = usage_events_path();
+    let baseline = usage_cache()
+        .lock()
+        .ok()
+        .and_then(|cache| usage_refresh_baseline(&cache, true));
     let counts = load_usage_counts();
-    if let Ok(mut cache) = usage_cache().lock() {
-        set_usage_cache_hot_from_counts(&mut cache, &counts);
-        cache.loaded_at = Some(Instant::now());
+    if let Some(baseline) = baseline {
+        let hot = Arc::new(UsageHotState::from_counts(&counts));
+        if let Ok(mut cache) = usage_cache().lock() {
+            let staged = if path == usage_events_path() {
+                publish_usage_refresh(&mut cache, &baseline, hot)
+            } else {
+                Err(hot)
+            };
+            drop(cache);
+            drop(staged);
+        }
     }
     counts
 }
@@ -1527,15 +1606,27 @@ fn append_usage_event(event: UsageEvent) {
         return;
     };
     line.push('\n');
-    refresh_usage_cache_after_write(&event);
-    enqueue_usage_persist(path, line);
+    let tracks_local_hot = refresh_usage_cache_after_write(&event);
+    enqueue_usage_persist(path, line, tracks_local_hot);
 }
 
-fn refresh_usage_cache_after_write(event: &UsageEvent) {
+fn refresh_usage_cache_after_write(event: &UsageEvent) -> bool {
     let Ok(mut cache) = usage_cache().lock() else {
-        return;
+        return false;
     };
+    // Same existing lock as hot apply, before any enqueue can acknowledge it.
+    cache.unpersisted_local_events = cache.unpersisted_local_events.saturating_add(1);
     apply_usage_event_to_cache(&mut cache, event, load_usage_counts);
+    true
+}
+
+fn acknowledge_usage_persist(path: &Path, count: usize) {
+    if count == 0 || usage_events_path().as_deref() != Some(path) {
+        return;
+    }
+    if let Ok(mut cache) = usage_cache().lock() {
+        cache.unpersisted_local_events = cache.unpersisted_local_events.saturating_sub(count);
+    }
 }
 
 fn apply_usage_event_to_cache(
@@ -1546,7 +1637,7 @@ fn apply_usage_event_to_cache(
     ensure_usage_cache_initialized(cache, load);
     super::candidate_gate::clear_live_completion_cache();
     Arc::make_mut(&mut cache.hot).apply_event(event);
-    cache.loaded_at = Some(Instant::now());
+    // loaded_at tracks the last disk snapshot, not local typing activity.
 }
 
 fn adjacent_usage_event_is_duplicate(path: &Path, event: &UsageEvent) -> bool {
@@ -1617,16 +1708,21 @@ fn usage_event_payload_eq(left: &UsageEvent, right: &UsageEvent) -> bool {
 }
 
 #[cfg(not(test))]
-fn enqueue_usage_persist(path: PathBuf, line: String) {
+fn enqueue_usage_persist(path: PathBuf, line: String, tracks_local_hot: bool) {
     let sender = USAGE_PERSIST_SENDER.get_or_init(spawn_usage_persist_writer);
-    match sender.try_send(UsagePersistLine { path, line }) {
+    match sender.try_send(UsagePersistLine {
+        path,
+        line,
+        tracks_local_hot,
+    }) {
         Ok(()) | Err(TrySendError::Full(_)) | Err(TrySendError::Disconnected(_)) => {}
     }
 }
 
 #[cfg(test)]
-fn enqueue_usage_persist(path: PathBuf, line: String) {
+fn enqueue_usage_persist(path: PathBuf, line: String, tracks_local_hot: bool) {
     if crate::private_file::append_private_text(&path, &line).is_ok() {
+        acknowledge_usage_persist(&path, usize::from(tracks_local_hot));
         compact_usage_events_if_needed(&path);
     }
 }
@@ -1637,7 +1733,7 @@ fn spawn_usage_persist_writer() -> SyncSender<UsagePersistLine> {
     std::thread::Builder::new()
         .name("lay-usage-persist".to_string())
         .spawn(move || {
-            let mut pending = HashMap::<PathBuf, String>::new();
+            let mut pending = HashMap::<PathBuf, UsagePersistBatch>::new();
             let mut pending_bytes = 0usize;
             let mut next_flush = Instant::now() + USAGE_PERSIST_INTERVAL;
             loop {
@@ -1645,10 +1741,11 @@ fn spawn_usage_persist_writer() -> SyncSender<UsagePersistLine> {
                 match receiver.recv_timeout(timeout) {
                     Ok(record) => {
                         pending_bytes = pending_bytes.saturating_add(record.line.len());
-                        pending
-                            .entry(record.path)
-                            .or_default()
-                            .push_str(&record.line);
+                        let batch = pending.entry(record.path).or_default();
+                        batch.text.push_str(&record.line);
+                        batch.local_hot_events = batch
+                            .local_hot_events
+                            .saturating_add(usize::from(record.tracks_local_hot));
                         if pending_bytes >= USAGE_PERSIST_PENDING_MAX_BYTES {
                             flush_usage_persist(&mut pending);
                             pending_bytes = 0;
@@ -1672,11 +1769,13 @@ fn spawn_usage_persist_writer() -> SyncSender<UsagePersistLine> {
 }
 
 #[cfg(not(test))]
-fn flush_usage_persist(pending: &mut HashMap<PathBuf, String>) {
-    for (path, text) in std::mem::take(pending) {
-        if crate::private_file::append_private_text(&path, &text).is_err() {
+fn flush_usage_persist(pending: &mut HashMap<PathBuf, UsagePersistBatch>) {
+    for (path, batch) in std::mem::take(pending) {
+        if crate::private_file::append_private_text(&path, &batch.text).is_err() {
+            // Unsaved local evidence stays hot; never acknowledge a failed write.
             continue;
         }
+        acknowledge_usage_persist(&path, batch.local_hot_events);
         compact_usage_events_if_needed(&path);
         let _ = load_usage_event_counts();
     }

@@ -930,3 +930,249 @@ fn typing_after_replay_clears_toggle_shortcut() {
 
     assert!(!buffer.replay_toggle_ready());
 }
+
+// These tests must execute in separate hermetic processes: the library usage
+// writer/cache is process-global. Every persistent input is private to this guard.
+struct TerminalUsageFixture {
+    directory: std::path::PathBuf,
+    environment: [(&'static str, Option<std::ffi::OsString>); 5],
+    previous_config: LayConfig,
+}
+
+impl TerminalUsageFixture {
+    fn new() -> Self {
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("fixture clock after epoch")
+            .as_nanos();
+        let directory =
+            std::env::temp_dir().join(format!("lay-terminal-typed-{}-{stamp}", std::process::id()));
+        let mut builder = std::fs::DirBuilder::new();
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::DirBuilderExt;
+            builder.mode(0o700);
+        }
+        builder
+            .create(&directory)
+            .expect("create private fixture directory");
+        let fixture = Self {
+            directory,
+            environment: [
+                "LAY_NANDA_WORD_USAGE_EVENTS",
+                "LAY_NANDA_WORD_USAGE_COUNTS",
+                "LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS",
+                "LAY_NANDA_USAGE_PRIOR",
+                "LAY_L4_CROSS_SCENE_INBOX",
+            ]
+            .map(|name| (name, std::env::var_os(name))),
+            previous_config: LayConfig::load(),
+        };
+        for (name, file) in [
+            ("LAY_NANDA_WORD_USAGE_EVENTS", "events.jsonl"),
+            ("LAY_NANDA_WORD_USAGE_COUNTS", "counts.json"),
+            ("LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS", "feedback.json"),
+            ("LAY_NANDA_USAGE_PRIOR", "legacy.json"),
+            ("LAY_L4_CROSS_SCENE_INBOX", "l4-inbox"),
+        ] {
+            std::env::set_var(name, fixture.directory.join(file));
+        }
+        let mut config = fixture.previous_config.clone();
+        config.learning_log = true;
+        config.nanda_precognition = false;
+        config.nanda_autocorrect = false;
+        lay::config::publish_runtime_config(&config);
+        fixture
+    }
+
+    fn events(&self) -> Vec<serde_json::Value> {
+        let text = match std::fs::read_to_string(self.directory.join("events.jsonl")) {
+            Ok(text) => text,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => String::new(),
+            Err(error) => panic!("read private usage journal: {error}"),
+        };
+        // A production append can race this read. Ignore only an unfinished
+        // trailing line; a malformed newline-terminated record still fails.
+        let complete = text.rfind('\n').map_or(0, |last| last + 1);
+        text[..complete]
+            .lines()
+            .map(|line| serde_json::from_str(line).expect("complete usage JSONL"))
+            .collect()
+    }
+
+    fn wait_for_events(&self, count: usize) -> Vec<serde_json::Value> {
+        let deadline = Instant::now() + Duration::from_secs(3);
+        loop {
+            let events = self.events();
+            if events.len() >= count || Instant::now() >= deadline {
+                return events;
+            }
+            std::thread::sleep(Duration::from_millis(10));
+        }
+    }
+}
+
+impl Drop for TerminalUsageFixture {
+    fn drop(&mut self) {
+        lay::config::publish_runtime_config(&self.previous_config);
+        for (name, old) in &self.environment {
+            match old {
+                Some(value) => std::env::set_var(name, value),
+                None => std::env::remove_var(name),
+            }
+        }
+        let _ = std::fs::remove_dir_all(&self.directory);
+    }
+}
+
+fn terminal_usage_dispatch(buffer: &mut WordBuffer, key: KeyCode, value: i32) -> bool {
+    let mut pending = None;
+    let mut events = buffer.current_len() as u32;
+    let modifiers = default_shift_state();
+    let mut clear = false;
+    let handled = handle_hard_boundary_if_needed(
+        key,
+        value,
+        hard_context(buffer, &mut pending, &mut events, &modifiers, &mut clear),
+    );
+    if handled && value == 1 {
+        assert!(
+            buffer.is_empty(),
+            "hard boundary still retires the original buffer"
+        );
+        assert_eq!(events, 0);
+        assert!(pending.is_none());
+    }
+    handled
+}
+
+#[test]
+fn terminal_enter_records_bounded_raw_typed_context_before_reset() {
+    let fixture = TerminalUsageFixture::new();
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(
+        &mut buffer,
+        "code data cache event owner input release",
+        false,
+    );
+    assert_eq!(
+        buffer.visible_tail_text(6).as_deref(),
+        Some("data cache event owner input release")
+    );
+    assert!(terminal_usage_dispatch(&mut buffer, KeyCode::KEY_ENTER, 1));
+    let events = fixture.wait_for_events(1);
+    assert_eq!(
+        events.len(),
+        1,
+        "one terminal typed observation is required"
+    );
+    let event = &events[0];
+    assert_eq!(event["kind"], "typed");
+    assert_eq!(event["schema"], 3);
+    assert_eq!(event["word"], "release");
+    assert_eq!(
+        event["context"],
+        serde_json::json!(["data", "cache", "event", "owner", "input"])
+    );
+    assert_eq!(event["source"], "user");
+    assert_eq!(event["operation"], "typed");
+    assert_eq!(event["outcome"], "censored");
+    assert_eq!(event["outcome_code"], 5);
+    assert!(event.get("episode_id").is_none());
+    assert!(event.get("to").is_none());
+    // This event is not an AcceptedIme / ConfirmedImePrediction L4 episode.
+    assert!(
+        lay::nanda_wave::cached_context_word_usage_prior(
+            &[
+                "data".into(),
+                "cache".into(),
+                "event".into(),
+                "owner".into(),
+                "input".into()
+            ],
+            "release",
+        ) > 0.0,
+        "raw typed context still supplies a prior"
+    );
+    assert!(
+        !fixture.directory.join("l4-inbox").exists(),
+        "censored typing creates no L4 episode"
+    );
+}
+
+#[test]
+fn terminal_enter_raw_observation_does_not_repeat_or_learn_other_boundaries() {
+    let fixture = TerminalUsageFixture::new();
+    for key in [
+        KeyCode::KEY_ENTER,
+        KeyCode::KEY_TAB,
+        KeyCode::KEY_ESC,
+        KeyCode::KEY_LEFT,
+        KeyCode::KEY_RIGHT,
+        KeyCode::KEY_UP,
+        KeyCode::KEY_DOWN,
+    ] {
+        let mut buffer = WordBuffer::new();
+        assert!(terminal_usage_dispatch(&mut buffer, key, 1));
+    }
+    // Release and repeat never produce the new Enter observation.
+    for value in [0, 2] {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "unsubmitted input", false);
+        assert!(terminal_usage_dispatch(
+            &mut buffer,
+            KeyCode::KEY_ENTER,
+            value
+        ));
+        if value == 0 {
+            assert!(!buffer.is_empty());
+        }
+    }
+    for key in [
+        KeyCode::KEY_TAB,
+        KeyCode::KEY_ESC,
+        KeyCode::KEY_LEFT,
+        KeyCode::KEY_RIGHT,
+        KeyCode::KEY_UP,
+        KeyCode::KEY_DOWN,
+    ] {
+        let mut buffer = WordBuffer::new();
+        push_text_as_layout(&mut buffer, "unsubmitted input", false);
+        assert!(terminal_usage_dispatch(&mut buffer, key, 1));
+    }
+    // Execute the actual existing Space producer, without submitting correction
+    // work. Enter then sees empty current: the completed word is not learned twice.
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "owner context commit", false);
+    let mut pending = None;
+    let mut worker = crate::typing_assist_worker::TypingAssistWorker::new();
+    let mut events = buffer.current_len() as u32;
+    let mut suppress = true;
+    crate::boundary_runtime::handle_space_press(crate::boundary_runtime::SpacePressContext {
+        buffer: &mut buffer,
+        pending_typing_assist_after_space: &mut pending,
+        typing_assist_worker: &mut worker,
+        events_since_word_start: &mut events,
+        suppress_next_typing_assist_after_manual_replay: &mut suppress,
+        verbose: false,
+        text_context: test_text_context(),
+    });
+    assert!(pending.is_none());
+    assert!(buffer.current_is_empty());
+    let before_enter = fixture.wait_for_events(1);
+    assert_eq!(before_enter.len(), 1);
+    assert_eq!(before_enter[0]["word"], "commit");
+    assert_eq!(
+        before_enter[0]["context"],
+        serde_json::json!(["owner", "context"])
+    );
+    assert!(terminal_usage_dispatch(&mut buffer, KeyCode::KEY_ENTER, 1));
+    assert!(terminal_usage_dispatch(&mut buffer, KeyCode::KEY_ENTER, 0));
+    assert!(terminal_usage_dispatch(&mut buffer, KeyCode::KEY_ENTER, 1));
+    // Allow the production asynchronous writer's one-second flush interval.
+    std::thread::sleep(Duration::from_millis(1200));
+    let after_enter = fixture.events();
+    assert_eq!(after_enter, before_enter);
+    assert_eq!(after_enter[0]["outcome"], "censored");
+    assert!(!fixture.directory.join("l4-inbox").exists());
+}

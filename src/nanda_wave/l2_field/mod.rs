@@ -20,6 +20,15 @@ mod runtime_storage;
 mod teacher;
 mod v13_typed_peak;
 
+// Expose only the typed feature decoders needed by the decision owner; the
+// morphology implementation and its loading/proof API remain private.
+#[cfg(test)]
+pub(crate) use super::morphology_phase::parse_features as parse_canonical_morphology_features;
+pub(crate) use super::morphology_phase::{
+    canonical_feature_labels as canonical_morphology_feature_labels,
+    feature_primary_pos as canonical_morphology_primary_pos,
+};
+
 pub(crate) use bridge::{
     canonical_ime_candidates_observed, canonical_text_candidates,
     canonical_text_readout_observed_with_frame, cold_probe_surfaces,
@@ -366,10 +375,15 @@ pub fn reload_productive_l2_sidecar() -> serde_json::Value {
     }
 }
 
-fn installed_l2_field() -> Result<&'static runtime::StandaloneL2Field, &'static str> {
+fn installed_l2_field_state(
+) -> &'static std::sync::OnceLock<Result<runtime::StandaloneL2Field, String>> {
     static FIELD: std::sync::OnceLock<Result<runtime::StandaloneL2Field, String>> =
         std::sync::OnceLock::new();
-    FIELD
+    &FIELD
+}
+
+fn installed_l2_field() -> Result<&'static runtime::StandaloneL2Field, &'static str> {
+    installed_l2_field_state()
         .get_or_init(|| {
             let path = discover_installed_l2_package()
                 .map_err(|error| error.to_string())?
@@ -378,6 +392,65 @@ fn installed_l2_field() -> Result<&'static runtime::StandaloneL2Field, &'static 
         })
         .as_ref()
         .map_err(String::as_str)
+}
+
+/// Point lookup in the existing admitted generation only. In particular this
+/// must not call `installed_l2_field()` and charge cold package admission to
+/// candidate ordering. `None` includes cold/failed admission and work overflow;
+/// an empty vector means a warmed dictionary has no reading for this surface.
+pub(crate) fn cached_morphology_slot_identities_for_surface(
+    surface: &str,
+    reading_limit: usize,
+) -> Option<Vec<crate::correction_core::MorphologySlotIdentity>> {
+    let field = installed_l2_field_state().get()?.as_ref().ok()?;
+    let Some(form_ref) = field.form_ref_for_surface(surface) else {
+        return Some(Vec::new());
+    };
+    let mut identities = field
+        .imported_binding_identities_for_form_bounded(form_ref, reading_limit)?
+        .into_iter()
+        .map(
+            |(lemma_id, feature_mask)| crate::correction_core::MorphologySlotIdentity {
+                domain: crate::correction_core::MorphologySlotIdentityDomain::CanonicalFeature,
+                lemma_id,
+                slot_id: feature_mask,
+            },
+        )
+        .collect::<Vec<_>>();
+    identities.sort_unstable();
+    identities.dedup();
+    Some(identities)
+}
+
+/// Bounded research metadata from the same warmed canonical generation used
+/// by ranking. This does not load a package, generate candidates or grant edit
+/// authority. Missing readings and work overflow remain distinct from a
+/// confirmed empty surface readout.
+#[cfg(any(test, feature = "research-tools"))]
+pub fn probe_cached_morphology_slots(
+    surfaces: &[String],
+) -> Result<serde_json::Value, &'static str> {
+    if surfaces.len() > 256 {
+        return Err("morphology_probe_batch_limit");
+    }
+    Ok(serde_json::json!(surfaces
+        .iter()
+        .map(|surface| {
+            let readings =
+                cached_morphology_slot_identities_for_surface(&surface.to_lowercase(), 32).map(
+                    |readings| {
+                        readings.into_iter().map(|reading| serde_json::json!({
+                    "lemma_id": reading.lemma_id,
+                    "slot_id": reading.slot_id,
+                    "domain": "canonical_feature",
+                    "primary_pos": canonical_morphology_primary_pos(reading.slot_id),
+                    "features": canonical_morphology_feature_labels(reading.slot_id).ok(),
+                })).collect::<Vec<_>>()
+                    },
+                );
+            serde_json::json!({"surface": surface, "readings": readings})
+        })
+        .collect::<Vec<_>>()))
 }
 
 pub(crate) fn surfaces_share_morphology_identity(left: &str, right: &str) -> bool {

@@ -1,0 +1,15 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-05",
+  "status": "FIXTURE_INPUT_REPAIR_PENDING_FULL_GATE",
+  "decision": "Declare one independently accepted IME episode in the four process-isolated TD121 completion transport fixtures before their first warm/readout. Compile it through the existing L4 snapshot compiler, isolate and restore all four memory paths, preserve every original literal word/suffix and safety/output assertion.",
+  "reason": "The first full gate exposed uncontrolled bare-prefix popularity: repaired current-prefix material selects prosto for pro rather than the fixtures' fixed proverka. Old-cache-only causal control restores all four original tests; a single fixed confirmation restores all four with repaired cache. This is a deterministic input correction, not a ranking-quality or authority waiver.",
+  "invariants": ["C01", "C02", "C03", "C06", "C10"],
+  "protected_paths": ["src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"],
+  "owning_document": "docs/architecture/contextual-completion-release-2026-10-05.md",
+  "verification": "First full source gate FAILED four TD121 residual tests. Same-source old-cache-only control4/4PASS28.643s and repaired-cache single-confirmation input control4/4PASS28.533s, using the existing hermetic fresh-process harness. Exact receipts CACHE_HISTORY_CONTROL_RESULT.json and CONFIRMED_FIXTURE_CONTROL_RESULT.json under /home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/. Independent source audits agree that no unique linguistic gold follows from empty context. All original expected word, suffix, transport and no-edit-before-exact assertions retained.",
+  "not_tested": "Final RAII fixture and full source release gate pending. Natural semantic quality, single-client150ms latency and physical acceptance remain separate gates.",
+  "consequences": "Candidate generation, ranking coefficients, native cache identity, package admission, worker scheduling, SafetyGate/verifier and output authority remain unchanged. Exactly one preexisting confirmation uses the compiler's standard weight; no manually assigned count or repeated calibration. Compiler input and empty runtime journal are distinct to avoid double counting. Drop restores the four environment variables and removes only its newly created private directory. It cannot reset library OnceLock or worker state, so existing canonical process isolation remains mandatory. No production token or phrase condition is introduced. This fixture does not certify lexical or semantic ranking quality.",
+  "runtime_authority_changed": false,
+  "runtime_bytes_changed": false
+}

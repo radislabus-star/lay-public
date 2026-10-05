@@ -435,8 +435,91 @@ async fn legacy_key(
         .expect("legacy ProcessKeyEvent result")
 }
 
-async fn expect_legacy_commit(peer: &mut ControlledPeer) {
-    let commit = bounded(next_peer_message(peer)).await;
+pub(super) fn assert_input_mode_update(
+    message: &Message,
+    engine: &LayIbusEngine,
+    expected_mode: bool,
+) {
+    let header = message.header();
+    assert_eq!(header.message_type(), zbus::message::Type::Signal);
+    assert_eq!(header.path().unwrap().as_str(), engine.path);
+    assert_eq!(header.interface().unwrap().as_str(), ENGINE_INTERFACE);
+    assert_eq!(header.member().unwrap().as_str(), "UpdateProperty");
+    let owner = engine.context_owner.as_ref().expect("installed mode owner");
+    assert_eq!(owner.path.as_str(), engine.path);
+    assert_eq!(
+        engine
+            .context_admission
+            .as_ref()
+            .unwrap()
+            .current_owner()
+            .as_ref(),
+        Some(owner)
+    );
+    assert!(engine.live_context_token().is_some());
+    let shared = engine.shared.lock().unwrap();
+    assert_eq!(shared.active_path.as_deref(), Some(engine.path.as_str()));
+    assert_eq!(shared.context_owner_generation, Some(owner.generation.0));
+    let body = message.body();
+    let (value,): (zbus::zvariant::Value<'_>,) = body.deserialize().unwrap();
+    let zbus::zvariant::Value::Structure(property) = value else {
+        panic!("UpdateProperty must carry a single IBusProperty");
+    };
+    let fields = property.fields();
+    assert_eq!(fields.len(), 12);
+    assert!(matches!(&fields[0], zbus::zvariant::Value::Str(v) if v.as_str() == "IBusProperty"));
+    assert!(matches!(&fields[2], zbus::zvariant::Value::Str(v) if v.as_str() == "InputMode"));
+    assert!(matches!(&fields[3], zbus::zvariant::Value::U32(0)));
+    assert!(matches!(&fields[7], zbus::zvariant::Value::Bool(true)));
+    assert!(matches!(&fields[8], zbus::zvariant::Value::Bool(false)));
+    assert!(matches!(&fields[9], zbus::zvariant::Value::U32(0)));
+    for index in [4, 11] {
+        let zbus::zvariant::Value::Value(text) = &fields[index] else {
+            panic!("InputMode label and symbol must be IBusText variants");
+        };
+        assert_eq!(
+            crate::ibus_interface::ibus_text_value_to_string(text.as_ref()).as_deref(),
+            Some(if expected_mode { "RU" } else { "EN" })
+        );
+    }
+}
+
+pub(super) async fn expect_activation_input_mode_update(
+    harness: &mut Harness,
+    engine: &LayIbusEngine,
+    expected_mode: bool,
+) {
+    let update = bounded(next_peer_message(&mut harness.peer)).await;
+    assert_input_mode_update(&update, engine, expected_mode);
+}
+
+pub(super) async fn next_legacy_text_effect(
+    peer: &mut ControlledPeer,
+    engine: &LayIbusEngine,
+    expected_mode: bool,
+) -> Message {
+    let first = bounded(next_peer_message(peer)).await;
+    if first
+        .header()
+        .member()
+        .is_some_and(|member| member.as_str() == "UpdateProperty")
+    {
+        assert_input_mode_update(&first, engine, expected_mode);
+        // Exactly one admitted metadata frame may precede the text effect.
+        // A second property or any other signal is returned to the unchanged
+        // CommitText assertion and fails there; no arbitrary skip loop.
+        bounded(next_peer_message(peer)).await
+    } else {
+        first
+    }
+}
+
+async fn expect_legacy_commit(
+    peer: &mut ControlledPeer,
+    engine: &LayIbusEngine,
+    expected_mode: bool,
+) {
+    let commit = next_legacy_text_effect(peer, engine, expected_mode).await;
     assert_eq!(commit.header().message_type(), zbus::message::Type::Signal);
     assert_eq!(
         commit.header().interface().unwrap().as_str(),
@@ -558,8 +641,9 @@ fn legacy_marker_before_space_press_promotes_known_start() {
         let mut engine = new_engine(&harness);
         start_source_free_unknown(&mut harness, &mut engine).await;
 
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(&mut harness, &mut engine, 1_780, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert_eq!(engine.committed_tail.buffer, " ");
         assert!(engine.live_context_token().is_some());
         assert!(engine.context_word_is_known());
@@ -568,6 +652,7 @@ fn legacy_marker_before_space_press_promotes_known_start() {
         let mut engine = new_engine(&harness);
         start_source_free_unknown(&mut harness, &mut engine).await;
 
+        let shift_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(!legacy_key(&mut harness, &mut engine, 1_798, KEY_LEFT_SHIFT, 42, 0,).await);
         assert!(
             !legacy_key(
@@ -583,6 +668,8 @@ fn legacy_marker_before_space_press_promotes_known_start() {
         assert!(engine.committed_tail.buffer.is_empty());
         assert!(engine.live_context_token().is_some());
         assert!(!engine.context_word_is_known());
+        let property = bounded(next_peer_message(&mut harness.peer)).await;
+        assert_input_mode_update(&property, &engine, shift_mode_before_key);
 
         let (fence, ()) = future::zip(
             harness.adapter.begin_bridge_fence(),
@@ -600,8 +687,9 @@ fn legacy_marker_before_space_press_promotes_known_start() {
         assert!(harness.adapter.revalidate(&token));
         assert!(!engine.context_word_is_known());
 
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(&mut harness, &mut engine, 1_800, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert_eq!(engine.committed_tail.buffer, " ");
         assert!(engine.live_context_token().is_some());
         assert!(engine.context_word_is_known());
@@ -627,14 +715,16 @@ fn legacy_pre_marker_space_schedules_remain_unknown_until_next_boundary() {
             .await
             .expect("marker observer result"));
 
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(run_received_legacy_key(&harness, &mut engine, &key, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert_eq!(engine.committed_tail.buffer, " ");
         assert!(engine.live_context_token().is_some());
         assert!(!engine.context_word_is_known());
 
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(&mut harness, &mut engine, 1_901, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert!(engine.context_word_is_known());
 
         // The private-client trace also permits a tighter schedule: the press
@@ -644,6 +734,7 @@ fn legacy_pre_marker_space_schedules_remain_unknown_until_next_boundary() {
         let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
         let mut engine = new_engine(&harness);
         start_source_free_pending(&harness).await;
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(&mut harness, &mut engine, 1_910, KEY_SPACE, 57, 0).await);
         assert_eq!(engine.committed_tail.buffer, " ");
         assert!(engine.live_context_token().is_none());
@@ -652,7 +743,7 @@ fn legacy_pre_marker_space_schedules_remain_unknown_until_next_boundary() {
         assert!(bounded(harness.observer.process_next())
             .await
             .expect("marker observer result"));
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert!(
             legacy_key(
                 &mut harness,
@@ -668,8 +759,9 @@ fn legacy_pre_marker_space_schedules_remain_unknown_until_next_boundary() {
         assert!(engine.live_context_token().is_some());
         assert!(!engine.context_word_is_known());
 
+        let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(&mut harness, &mut engine, 1_912, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer).await;
+        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
         assert_eq!(engine.committed_tail.buffer, " ");
         assert!(engine.context_word_is_known());
     }));

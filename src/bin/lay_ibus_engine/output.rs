@@ -208,6 +208,7 @@ pub(crate) struct TestEngineOutput {
     pub(crate) committed_texts: Vec<String>,
     pub(crate) surrounding_deletes: Vec<(i32, u32)>,
     pub(crate) preedit_updates: Vec<(String, u32, bool, u32)>,
+    pub(crate) preedit_attribute_updates: Vec<Vec<(u32, u32, u32, u32)>>,
     pub(crate) input_mode_updates: Vec<bool>,
     pub(crate) legacy_transport: bool,
     pub(crate) fail_commit: bool,
@@ -348,6 +349,9 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
             #[cfg(test)]
             Self::Test(output) => {
                 output.effects.push("update-preedit");
+                output
+                    .preedit_attribute_updates
+                    .push(super::text::preedit_attribute_geometry(&text));
                 let text = ibus_text_value_to_string(&text)
                     .ok_or_else(|| fdo::Error::InvalidArgs("invalid IBusText preedit".into()))?;
                 output
@@ -360,9 +364,12 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
 
     pub(crate) async fn register_input_mode(&mut self, is_ru: bool) -> fdo::Result<()> {
         match self {
-            Self::Legacy(emitter) => LayIbusEngine::register_properties(
+            // FocusIn/Enable register the initial property list. GNOME accepts
+            // that registration once per engine activation; subsequent mode
+            // changes must update the existing InputMode property.
+            Self::Legacy(emitter) => LayIbusEngine::update_property(
                 emitter,
-                super::text::make_ibus_input_mode_properties(is_ru),
+                super::text::make_ibus_input_mode_property(is_ru),
             )
             .await
             .map_err(|error| fdo::Error::Failed(error.to_string())),

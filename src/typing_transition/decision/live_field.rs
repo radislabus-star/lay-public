@@ -177,6 +177,8 @@ mod tests {
     fn proposal(partial_len: usize, suffix: &str) -> LiveCompletionProposal {
         LiveCompletionProposal {
             state_before: crate::nanda_wave::phase_field::hash_text("live-field-test"),
+            scene: crate::nanda_wave::candidate_gate::LiveCompletionScene::General,
+            terminal_command: false,
             surface: "проверка".to_string(),
             suffix: suffix.to_string(),
             replacement: suffix.is_empty(),

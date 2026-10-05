@@ -1,0 +1,70 @@
+{
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_PROOF_ONLY",
+  "affected_invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C10"
+  ],
+  "source": "codex/lay-contextual-completion-20261005 HEAD8bede373 plus preserved dirty release source",
+  "owner": "existing daemon raw typed usage owner",
+  "first_failed_transition": "KEY_ENTER press -> hard boundary reset_all: current word and last5context words were cleared without Typed observation; controlled old callback regression fails left0/right1",
+  "selected_change": "Before original hard boundary reset, record one bounded6word tail only for Enter press with nonempty current word through existing TypingCpu.record_typed_tail. Repeat/release, Space-to-Enter, cursor/Esc/Tab do not produce the added observation. No edit, gesture, layout or IME transport change.",
+  "evidence": {
+    "receipt": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/RAW_TYPED_ENTER_RESULT.json",
+    "sha256": "375e48dd55c75490b107ca1323a24cfbaa662b83f2ba35c7dce654bf244ee555",
+    "old_executed": 1,
+    "old_failed": 1,
+    "new_executed": 8,
+    "new_passed": 8,
+    "scope": "production daemon hard boundary callback and six unchanged controls; not physical client or whole release",
+    "separate_process_closure": {
+      "receipt": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/ISOLATION_RESULT.json",
+      "sha256": "fa8dfa91af715ddbc110df3ad8b5c21fa672c60815fcb0f1f23536aa77954a5b",
+      "executed": 2,
+      "passed": 2,
+      "python_controls": 2,
+      "seconds": 3.659
+    }
+  },
+  "learning": "Typed/Censored weight and priors preserved; no confirmed choice/episode created; daemon remains sole raw typed owner",
+  "limits": [
+    "Installed79 not changed",
+    "IME cross-process usage freshness remains open",
+    "IME Enter manually completed prediction confirmation not repaired",
+    "Firefox Reset authority and physical window acceptance remain open"
+  ],
+  "runtime_authority_changed": false,
+  "guard_change": {
+    "paths": [
+      "scripts/test_lanes/discovery.py",
+      "scripts/test-lanes/manifest.json",
+      "tests/test_test_lanes.py"
+    ],
+    "reason": "New two fixtures use process-global persistence/cache and environment; classify exact identities as process isolation instead of default target grouping. Strengthens hermetic execution; no waived assertions/known failures.",
+    "initial_evidence_limit": "Old positive executed alone; initial new8 used target grouping. Separate hermetic-process closure subsequently passed 2/2 and both Python classification/execution controls."
+  },
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-05",
+  "decision": "Before original hard boundary reset, record one bounded6word tail only for Enter press with nonempty current word through existing TypingCpu.record_typed_tail. Repeat/release, Space-to-Enter, cursor/Esc/Tab do not produce the added observation. No edit, gesture, layout or IME transport change.",
+  "reason": "KEY_ENTER press -> hard boundary reset_all: current word and last5context words were cleared without Typed observation; controlled old callback regression fails left0/right1",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/contextual-completion-release-2026-10-05.md",
+  "protected_paths": [
+    "src/bin/lay_daemon/boundary_runtime/hard.rs",
+    "src/bin/lay_daemon/tests/runtime_state.rs",
+    "scripts/test_lanes/discovery.py",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "tests/test_test_lanes.py"
+  ],
+  "verification": "{\"receipt\": \"/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/RAW_TYPED_ENTER_RESULT.json\", \"sha256\": \"375e48dd55c75490b107ca1323a24cfbaa662b83f2ba35c7dce654bf244ee555\", \"old_executed\": 1, \"old_failed\": 1, \"new_executed\": 8, \"new_passed\": 8, \"scope\": \"production daemon hard boundary callback and six unchanged controls; not physical client or whole release\", \"separate_process_closure\": {\"receipt\": \"/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/ISOLATION_RESULT.json\", \"sha256\": \"fa8dfa91af715ddbc110df3ad8b5c21fa672c60815fcb0f1f23536aa77954a5b\", \"executed\": 2, \"passed\": 2, \"python_controls\": 2, \"seconds\": 3.659}}",
+  "not_tested": "Actual new cross-process worker proof, full release gate, latency/RSS and changed installed physical clients remain pending."
+}

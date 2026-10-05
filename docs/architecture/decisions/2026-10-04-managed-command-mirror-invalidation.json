@@ -1,0 +1,57 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-04",
+  "status": "INSTALLED_EXPERIMENTAL_RAW_PHYSICAL_16_PASS_1_SETUP_BLOCKED",
+  "decision": "Extend the existing empty-composition command invalidation to Legacy preedit-capable ManagedCommit words without SurroundingText; retain the existing revocation body and TerminalPassthrough boundary.",
+  "reason": "Saved owned Gost readback shows client selection deletion while the caps9 managed mirror survives Ctrl+A, shrinks by one on Backspace, and contaminates subsequent input. The live bridge correctly rejects context_authority before plan/verifier. The first source loss is the SurroundingText-only managed command guard, not ranker or mode publication. Exact live WordInputMode eligibility for this conditional is not recorded and remains UNKNOWN; the candidate requires its own source and physical proof.",
+  "invariants": [
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/managed.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "owning_document": "docs/architecture/runtime-stabilization-2026-09-26.md",
+  "verification": "Three exact discovered callback tests PASS1 each. The original predicate executes1 and fails exactly at the empty-tail assert; bytes restore exactly and regression PASS1. First output-parser FAIL and missing-Git source-closure BLOCKED are retained. Actual79 donor HEAD/index plus exact source snapshot yield canonical643 discovered/640 selected/640 executed/640 PASS/0 failed, with3 existing performance exclusions; no rule or assertion weakened.",
+  "not_tested": "No changed-byte release build/install or Gost/Qt physical acceptance. Independent dead-code baseline, full release quality and all-window acceptance remain blocked. Direct live guard-entry tuple remains UNKNOWN. Latest code graph and actual79 canon PASS; source/result owning entries appended with receipt scope.",
+  "runtime_authority_changed": false,
+  "runtime_bytes_changed": true,
+  "source_authority_scope": "Conservative mirror retirement only. No KnownStart promotion, committed-text mutation, client-name rule, replay route, SafetyGate relaxation, reducer change, or new owner.",
+  "parent_source_head": "79b09d06306a018961ace783e2542eb817de7b30",
+  "parent_managed_sha256": "cf77ba561e8fae3fc6274ac9873318b81baaeae7448005624374b6f49fd5daee",
+  "preserved_residual_prefix_sha256": "06be99c5e9824fce9dd71efcfebcd0672bd9be490f36fd45ff4f7b918edbc482",
+  "installed_ime_sha256_at_observation": "71ad8f2e5a2d72df813881c89a5a26085ce8d047a1df60d2f98597d26dbd69f6",
+  "measured_evidence": {
+    "path": "/home/ubu/.cache/lay/development/ranker-release-20261004/windows/GOST_MANUAL_OWNER_CAUSAL_AUDIT.md",
+    "sha256": "ba6fdd911b3990b38dcdffb9ee71c2c6897bd21464b0bb9cec8919be28bfeefd",
+    "scope": "Existing installed-byte physical readback only; not a proof of this source candidate."
+  },
+  "focused_test_identities": [
+    "context_admission::adapter::tests::word_scope::residuals::managed_no_surrounding_command_retires_mirror_before_fresh_owned_word_toggle",
+    "context_admission::adapter::tests::word_scope::residuals::terminal_passthrough_command_preserves_native_mirror_without_owned_preedit_grant",
+    "context_admission::adapter::tests::word_scope::residuals::unhandled_command_selection_deletion_starts_a_fresh_observed_word"
+  ],
+  "proof_target": "lay-ibus-engine",
+  "proof_status": "THREE_FOCUSED_PASS_ORIGINAL_GUARD_FAIL_RESTORED_PASS_640_CANONICAL_PASS",
+  "architecture_refresh_status": "PASS_ACTUAL_AST_AND_CANON_AGAINST_ACTUAL79",
+  "rollback": "Restore only the previous managed command predicate/comments and remove the two appended tests; preserve all preexisting C09 and other source changes.",
+  "residual_prefix_delta": "Three Clippy-only &mut harness -> &harness call-site substitutions; every preexisting C09 assertion is preserved.",
+  "format_history": {
+    "first_attempt": "FAIL_BEFORE_FUNCTIONAL_EXECUTION",
+    "receipt": "ranker-release-20261004-r4-nmoimizp/C03_PROBE_EXECUTION.json",
+    "corrected_remote_formatter": "PASS_LAYOUT_ONLY",
+    "receipt2": "ranker-release-20261004-r4c-qayjcpz5/FORMAT_EXECUTION_1.json"
+  },
+  "focused_receipt": "/home/ubu/.cache/lay/development/ranker-release-20261004/revision4/style-and-c03/C03_FOCUSED_V2_EXECUTION.json",
+  "canonical_remote_namespace": "ranker-release-20261004-c03-canon79-3ppevcj2",
+  "architecture_refresh_receipt": "/home/ubu/.cache/lay/development/ranker-release-20261004/revision4/graph-final/GRAPH_EXECUTION.json",
+  "installed_ime_sha256": "a1bdffe17771e241234b6bf130babde052e4bac31578741c0d7de780df6ebaee",
+  "physical_c03_receipt": "/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V8_RUN_20261004T124423_bb1e553d2a8d/WIDE_MATRIX_V7_20261004T124423_bb1e553d2a8d.json",
+  "runtime_authority_policy_changed": false
+}

@@ -1,0 +1,44 @@
+{
+  "scope": "C09 existing-owner post-activation native InputMode publication",
+  "status": "SOURCE_FOCUSED4_PASS_NOT_INSTALLED",
+  "first_loss": "The native correct initial registration precedes activation installation; caps9 no-surrounding callbacks never consume the Transfer-only SetSurroundingText refresh, and SourceFree never arms it.",
+  "change": "Use the existing pending property flag for every successful installed activation and drain through existing live legacy callback emitters only after exact owner/path/token/shared generation validation.",
+  "authority_changes": false,
+  "new_owners_or_timers_or_RPCs": false,
+  "preserved": "ContextAdmissionReducer, text/edit authority, decoder, Space and Double Shift initiator, atomic transport, C06 witnesses and snapshots",
+  "proof": {
+    "selected": 4,
+    "passed": 4,
+    "discovered": 652,
+    "elapsed_seconds": 43.303134373156354,
+    "controlled_missing_callback_publication_rc": 101,
+    "restored_positive": "PASS",
+    "execution_sha256": "3a2f4e96e30724c55e0777b079bce9c49a0594fc2ef1e3c941fddfc80bd24568",
+    "archive_sha256": "0f65d05361f2f9c55aaa0531973c83024356d1b1cef93ab1ad4be1120af00594"
+  },
+  "physical_acceptance": "UNKNOWN until root sole-owner client readout",
+  "GNOME_forwarding_loss": "UNKNOWN; post-install publication is a bounded causal treatment, not a proved receiver diagnosis",
+  "fixture_replan": "C09_FIXTURE_REPLAN.json",
+  "owning_document": "docs/architecture/ranker-release-preflight-2026-10-04.md",
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Arm the existing InputMode property refresh for every successfully installed activation; publish through existing accepted native callbacks only after current owner/path/token/shared-generation validation.",
+  "reason": "The initial native property registration precedes activation, SourceFree did not arm the refresh, and caps9 without surrounding text could not drain a Transfer-only SetSurroundingText refresh.",
+  "verification": "Four exact native SourceFree/Transfer callback, stale-owner and failed-transport fixtures PASS; controlled missing publication fails and restored PASS. Final canonical653/653 and original styles PASS.",
+  "not_tested": "Changed-byte native rendered icon forwarding and broad physical windows; receiver-side cause remains UNKNOWN.",
+  "invariants": [
+    "C03",
+    "C04",
+    "C05",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/ibus_interface.rs",
+    "src/bin/lay_ibus_engine/output.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "runtime_authority_changed": false,
+  "record_format_repair": "2026-10-04: required guard schema/fields added; previous historical fields, design and guard preserved. No runtime deployment or authority change."
+}

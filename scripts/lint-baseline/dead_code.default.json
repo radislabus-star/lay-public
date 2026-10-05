@@ -6674,58 +6674,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 17820,
-          "byte_start": 17801,
-          "file": "src/bin/lay_ibus_engine/preedit.rs"
-        },
-        {
-          "byte_end": 44631,
-          "byte_start": 44601,
-          "file": "src/bin/lay_ibus_engine/preedit.rs"
-        }
-      ],
-      "message": "methods `precognition_suffix` and `precognition_suffix_candidates` are never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/bin/lay_ibus_engine/preedit.rs",
-          "is_primary": false,
-          "label": "methods in this implementation",
-          "text": [
-            "impl LayIbusEngine {"
-          ]
-        },
-        {
-          "file": "src/bin/lay_ibus_engine/preedit.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "fn precognition_suffix_candidates(&self) -> Vec<String> {"
-          ]
-        },
-        {
-          "file": "src/bin/lay_ibus_engine/preedit.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(super) fn precognition_suffix(&self) -> Option<String> {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "bin"
-        ],
-        "kind": [
-          "bin"
-        ],
-        "name": "lay-ibus-engine"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 1793,
           "byte_start": 1782,
           "file": "src/nanda_wave/l2_field/v13_typed_peak/typed_exact.rs"
@@ -8489,71 +8437,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 2308,
-          "byte_start": 2281,
-          "file": "src/typing_transition/live_candidate.rs"
-        },
-        {
-          "byte_end": 2348,
-          "byte_start": 2331,
-          "file": "src/typing_transition/live_candidate.rs"
-        },
-        {
-          "byte_end": 765,
-          "byte_start": 753,
-          "file": "src/typing_transition/live_candidate.rs"
-        }
-      ],
-      "message": "fields `state_before`, `corrected_prefix_completion`, and `l3_relation_class` are never read",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/typing_transition/live_candidate.rs",
-          "is_primary": false,
-          "label": "fields in this struct",
-          "text": [
-            "pub(crate) struct LiveCompletionProposal {"
-          ]
-        },
-        {
-          "file": "src/typing_transition/live_candidate.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) corrected_prefix_completion: bool,"
-          ]
-        },
-        {
-          "file": "src/typing_transition/live_candidate.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) l3_relation_class: u64,"
-          ]
-        },
-        {
-          "file": "src/typing_transition/live_candidate.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) state_before: u64,"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 23089,
           "byte_start": 23080,
           "file": "src/typing_transition/target_evidence.rs"
@@ -8726,58 +8609,6 @@
           "label": "",
           "text": [
             "fn percentile(values: &[u64], percentile: usize) -> u64 {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
-          "byte_end": 2348,
-          "byte_start": 2331,
-          "file": "src/typing_transition/live_candidate.rs"
-        },
-        {
-          "byte_end": 765,
-          "byte_start": 753,
-          "file": "src/typing_transition/live_candidate.rs"
-        }
-      ],
-      "message": "fields `state_before` and `l3_relation_class` are never read",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/typing_transition/live_candidate.rs",
-          "is_primary": false,
-          "label": "fields in this struct",
-          "text": [
-            "pub(crate) struct LiveCompletionProposal {"
-          ]
-        },
-        {
-          "file": "src/typing_transition/live_candidate.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) l3_relation_class: u64,"
-          ]
-        },
-        {
-          "file": "src/typing_transition/live_candidate.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) state_before: u64,"
           ]
         }
       ],
@@ -9268,6 +9099,71 @@
       "code": "dead_code",
       "locations": [
         {
+          "byte_end": 2528,
+          "byte_start": 2501,
+          "file": "src/typing_transition/live_candidate.rs"
+        },
+        {
+          "byte_end": 2568,
+          "byte_start": 2551,
+          "file": "src/typing_transition/live_candidate.rs"
+        },
+        {
+          "byte_end": 825,
+          "byte_start": 813,
+          "file": "src/typing_transition/live_candidate.rs"
+        }
+      ],
+      "message": "fields `state_before`, `corrected_prefix_completion`, and `l3_relation_class` are never read",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/typing_transition/live_candidate.rs",
+          "is_primary": false,
+          "label": "fields in this struct",
+          "text": [
+            "pub(crate) struct LiveCompletionProposal {"
+          ]
+        },
+        {
+          "file": "src/typing_transition/live_candidate.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) corrected_prefix_completion: bool,"
+          ]
+        },
+        {
+          "file": "src/typing_transition/live_candidate.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) l3_relation_class: u64,"
+          ]
+        },
+        {
+          "file": "src/typing_transition/live_candidate.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) state_before: u64,"
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "kind": [
+          "lib"
+        ],
+        "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
           "byte_end": 25330,
           "byte_start": 25323,
           "file": "src/nanda_wave/l4_cross_scene/format.rs"
@@ -9457,20 +9353,25 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 2575,
-          "byte_start": 2553,
+          "byte_end": 2568,
+          "byte_start": 2551,
+          "file": "src/typing_transition/live_candidate.rs"
+        },
+        {
+          "byte_end": 825,
+          "byte_start": 813,
           "file": "src/typing_transition/live_candidate.rs"
         }
       ],
-      "message": "method `common_target_evidence` is never used",
+      "message": "fields `state_before` and `l3_relation_class` are never read",
       "occurrence": 1,
       "subjects": [
         {
           "file": "src/typing_transition/live_candidate.rs",
           "is_primary": false,
-          "label": "method in this implementation",
+          "label": "fields in this struct",
           "text": [
-            "impl LiveCompletionProposal {"
+            "pub(crate) struct LiveCompletionProposal {"
           ]
         },
         {
@@ -9478,7 +9379,15 @@
           "is_primary": true,
           "label": "",
           "text": [
-            "pub(crate) fn common_target_evidence(&self) -> super::target_evidence::TargetEvidenceSetV1 {"
+            "pub(crate) l3_relation_class: u64,"
+          ]
+        },
+        {
+          "file": "src/typing_transition/live_candidate.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) state_before: u64,"
           ]
         }
       ],
@@ -9971,6 +9880,45 @@
           "label": "",
           "text": [
             "struct FaultJournalIoV1 {"
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "kind": [
+          "lib"
+        ],
+        "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 2795,
+          "byte_start": 2773,
+          "file": "src/typing_transition/live_candidate.rs"
+        }
+      ],
+      "message": "method `common_target_evidence` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/typing_transition/live_candidate.rs",
+          "is_primary": false,
+          "label": "method in this implementation",
+          "text": [
+            "impl LiveCompletionProposal {"
+          ]
+        },
+        {
+          "file": "src/typing_transition/live_candidate.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) fn common_target_evidence(&self) -> super::target_evidence::TargetEvidenceSetV1 {"
           ]
         }
       ],
@@ -15435,45 +15383,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 5859,
-          "byte_start": 5833,
-          "file": "src/bin/lay_ibus_engine/preedit.rs"
-        }
-      ],
-      "message": "method `observed_prediction_target` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/bin/lay_ibus_engine/preedit.rs",
-          "is_primary": false,
-          "label": "method in this implementation",
-          "text": [
-            "impl PreeditFastState {"
-          ]
-        },
-        {
-          "file": "src/bin/lay_ibus_engine/preedit.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "fn observed_prediction_target(&self) -> Option<&str> {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "bin"
-        ],
-        "kind": [
-          "bin"
-        ],
-        "name": "lay-ibus-engine"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 586,
           "byte_start": 581,
           "file": "src/nanda_wave/l2_field/productive_v1/phase.rs"
@@ -16981,37 +16890,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 66330,
-          "byte_start": 66291,
-          "file": "src/nanda_wave/usage_prior.rs"
-        }
-      ],
-      "message": "function `exact_reverted_system_apply_usage_jsonl` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/nanda_wave/usage_prior.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn exact_reverted_system_apply_usage_jsonl(text: &str) -> (String, u32) {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 666,
           "byte_start": 634,
           "file": "src/text_edit/output_transaction.rs"
@@ -17493,8 +17371,39 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 71010,
-          "byte_start": 71005,
+          "byte_end": 69975,
+          "byte_start": 69936,
+          "file": "src/nanda_wave/usage_prior.rs"
+        }
+      ],
+      "message": "function `exact_reverted_system_apply_usage_jsonl` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/nanda_wave/usage_prior.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) fn exact_reverted_system_apply_usage_jsonl(text: &str) -> (String, u32) {"
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "kind": [
+          "lib"
+        ],
+        "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 70980,
+          "byte_start": 70975,
           "file": "src/nanda_wave/lexical_phase/runtime.rs"
         }
       ],

@@ -1,0 +1,35 @@
+{
+  "status": "AUTHORIZED_SCOPED_TEST_OUTPUT_EXPECTATION_UPDATE",
+  "scope": "C09 standard post-install native InputMode metadata before existing text output",
+  "change": "At most one immediately preceding exact standard UpdateProperty; explicit engine path/interface/property schema/key/type/state/RU-EN label and symbol/current owner validation before requiring the unchanged next CommitText. First activation Shift fixture drains this exact expected metadata before its RPC marker. Existing legacy_effects/no-output/count/order collectors stay unfiltered. No arbitrary skip loop introduced.",
+  "production_changed": false,
+  "text_or_edit_assertions_weakened": false,
+  "architecture_invariants": "C03 C04 C05 C08 C09 C10 preserved",
+  "rationale": "Actual4 production callback tests prove intentional added standard metadata. Literal first-message CommitText fixtures need to assert the new preceding metadata rather than fail before testing unchanged text semantics.",
+  "alternatives": [
+    "Global filtering of metadata rejected because it conceals output order/count/negative violations.",
+    "Manual pending clearing/bootstrap publication rejected because it bypasses actual activation callback preparation."
+  ],
+  "remaining_gates": "Original style commands; complete canonical IME closure; genuine79 graph/canon; exact singleIME build/install; physical windows",
+  "runtime_authority_changed": false,
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Assert one exact standard InputMode signal, when expected, before existing CommitText or marker expectations; preserve strict output order and generic collectors.",
+  "reason": "The four real C09 callback positives establish intentional metadata publication; tests must verify it explicitly without filtering arbitrary signals or manually clearing production pending state.",
+  "verification": "Four exact C09 callbacks PASS, controlled missing-publication failure/restored PASS, strict first-message helper adaptation, exact21 activation fixtures and final canonical653/653 PASS.",
+  "not_tested": "Installation, changed-byte physical native GNOME icon forwarding, full release acceptance.",
+  "invariants": [
+    "C03",
+    "C04",
+    "C05",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/native_transfer.rs"
+  ],
+  "record_format_repair": "2026-10-04: required guard schema/fields added; previous historical fields, design and guard preserved. No runtime deployment or authority change."
+}

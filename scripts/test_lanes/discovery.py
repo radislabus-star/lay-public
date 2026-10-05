@@ -64,6 +64,14 @@ PACKAGE_FIXTURE_PATHS = (
 
 PROCESS_ISOLATED_TESTS = {
     (
+        "bin:lay-daemon",
+        "tests::runtime_state::terminal_enter_records_bounded_raw_typed_context_before_reset",
+    ),
+    (
+        "bin:lay-daemon",
+        "tests::runtime_state::terminal_enter_raw_observation_does_not_repeat_or_learn_other_boundaries",
+    ),
+    (
         "lib:lay",
         "action_log::tests::action_log_is_disabled_by_default_and_enabled_by_config",
     ),

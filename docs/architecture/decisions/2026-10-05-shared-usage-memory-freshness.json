@@ -1,0 +1,90 @@
+{
+  "status": "SOURCE_FOCUSED_PROOF_PASS_RELEASE_PENDING",
+  "affected_invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C06",
+    "C08",
+    "C10"
+  ],
+  "owner": "existing UsageCache plus existing usage persistence writer; existing precognition worker materializes current frame",
+  "first_failed_transition": "daemon persists exact contextual Typed observations -> warm IME cached snapshot never re-ingests; actual two-process control proves all7target prefixes rank1 only after explicit refresh",
+  "cause_receipt": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/CROSS_PROCESS_USAGE_RESULT.json",
+    "sha256": "b15783158e0b1c6010011336464b4a224d449be3bbdc4d133ad4ccc8efc0264d"
+  },
+  "selected_change": "Existing1s age expires inline cache lookup via pure hot check, causing existing worker scheduling. Worker and existing background warmup stage disk counts and newhot Arc outside UsageCache mutex. Publish only when local pending count zero before/after, retained Arc identity equal and journal path unchanged. Existing writer batch metadata acknowledges only successful appended local records; cache holds a scalar count, no new owner/queue/timer/cache/generation. Local writes no longer masquerade as fresh disk snapshots. Refused staged state is destroyed outside mutex. Existing candidate revision invalidation is reused.",
+  "why_pending_accounting_is_needed": "Existing writer has no flush acknowledgement: blindly reloading the demonstrated API can erase applied-but-notpersisted confirmed local evidence. loaded_at cannot prove persistence and existing async channel only reports enqueue. Scalar accounting and batch ack extend current owners; no parallel memory route.",
+  "learning": "Raw Typed/Censored, positive/negative classifications and weights unchanged. No accepted evidence is manufactured, no word literal runtime condition.",
+  "failure_boundary": "Queue Full/Disconnected or append error does not acknowledge the local event; retain local hot state and defer cold replacement rather than erase unsaved evidence. No retry loop or new fallback.",
+  "proofs_pending": [
+    "newcompiled actualcrossprocess21readouts",
+    "fixed full release gate/latency and physical clients"
+  ],
+  "runtime_authority_changed": false,
+  "limits": [
+    "Installed79 unchanged",
+    "Data semantics and L1/L2/L3/L4 decision/edit routes unchanged",
+    "Physical Firefox and terminal acceptance not yet established",
+    "Full/Disconnected/append failure that permanently drops a record pins local pending state for that process, hence defers foreign refresh indefinitely. This is evidence preservation, not fault-recovery success.",
+    "Journal profile/path identity assumes stable process environment; concurrent live reconfiguration is not proved."
+  ],
+  "guard_change": {
+    "path": "src/nanda_wave/usage_prior_tests.rs",
+    "test": "live_cache_owns_only_numeric_hot_state",
+    "reason": "Account for the explicitly justified usize pending scalar. Preserve exact expected total size and prohibitions on String/cold UsageCounts ownership. No assertion waived or replaced by looser bound.",
+    "authority_contract": {
+      "test": "usage_learning_keeps_disk_io_out_of_the_hot_path",
+      "reason": "First full gate2980/2981: source guard still expects old two-argument enqueue and string batch. Adapt exact call shapes to existing tracked pending scalar/batch; preserve all IO/queue/worker assertions, add prohibition of cold refresh from append and successful-write-before-ack requirement. No runtime source or test semantics waived."
+    }
+  },
+  "tests": [
+    "worker_refresh_preserves_unpersisted_local_confirmation",
+    "worker_refresh_rejects_local_cow_even_after_persistence_ack",
+    "worker_refresh_publishes_foreign_hot_and_invalidates_completed_readouts",
+    "worker_refresh_force_cannot_bypass_pending_or_local_reset_disk_age"
+  ],
+  "source_proof": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/MEMORY_FRESHNESS_RESULT.json",
+    "sha256": "62644a848f399e67a95dd4e30b0bd7c0ad2d6dceac06ae82fa8d6c965975b8a4",
+    "passed": 78,
+    "executed": 78,
+    "controlled_violation": "Removing only pending guard fails actual regression before any replacement; repaired closure passes.",
+    "fixture_repair": "Malformed authored schema3 record was rejected correctly; replaced with production TypingMemoryEvent constructors and asserted schema consistency. No runtime rule/weight changed."
+  },
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-05",
+  "decision": "Existing1s age expires inline cache lookup via pure hot check, causing existing worker scheduling. Worker and existing background warmup stage disk counts and newhot Arc outside UsageCache mutex. Publish only when local pending count zero before/after, retained Arc identity equal and journal path unchanged. Existing writer batch metadata acknowledges only successful appended local records; cache holds a scalar count, no new owner/queue/timer/cache/generation. Local writes no longer masquerade as fresh disk snapshots. Refused staged state is destroyed outside mutex. Existing candidate revision invalidation is reused.",
+  "reason": "daemon persists exact contextual Typed observations -> warm IME cached snapshot never re-ingests; actual two-process control proves all7target prefixes rank1 only after explicit refresh",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C06",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/contextual-completion-release-2026-10-05.md",
+  "protected_paths": [
+    "src/nanda_wave/usage_prior.rs",
+    "src/nanda_wave/usage_prior_tests.rs",
+    "src/nanda_wave/mod.rs",
+    "src/typing_cpu/runtime.rs",
+    "src/nanda_wave/candidate_gate.rs",
+    "src/bin/lay_ibus_engine/precognition_worker.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "tests/typing_transition_authority_contract.rs",
+    "scripts/lint-baseline/dead_code.default.json",
+    "scripts/lint-baseline/dead_code.json"
+  ],
+  "verification": "{\"path\": \"/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/MEMORY_FRESHNESS_RESULT.json\", \"sha256\": \"62644a848f399e67a95dd4e30b0bd7c0ad2d6dceac06ae82fa8d6c965975b8a4\", \"passed\": 78, \"executed\": 78, \"controlled_violation\": \"Removing only pending guard fails actual regression before any replacement; repaired closure passes.\", \"fixture_repair\": \"Malformed authored schema3 record was rejected correctly; replaced with production TypingMemoryEvent constructors and asserted schema consistency. No runtime rule/weight changed.\"}",
+  "not_tested": "Actual new cross-process worker proof, full release gate, latency/RSS and changed installed physical clients remain pending.",
+  "lint_metadata": {
+    "reason": "Second full gate2981/2981 functional/package PASS; lint inventory compared exact byte spans after new fields/functions shifted old declarations. Use existing monotonic --write-baseline guard only; no new warnings, changed allow policy or code suppression. Record logical inventories and changed-span counts before full gate retry.",
+    "proof_pending": false,
+    "receipt_sha256": "6e922c5c2e72f1f9a3bfb495c239903be88ad026042c34a18bdef51704888ce4",
+    "logical_equal": true
+  }
+}

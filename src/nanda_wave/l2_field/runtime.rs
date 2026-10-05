@@ -799,6 +799,21 @@ impl StandaloneL2Field {
             .collect()
     }
 
+    pub(super) fn imported_binding_identities_for_form_bounded(
+        &self,
+        form_ref: u32,
+        limit: usize,
+    ) -> Option<Vec<(u32, u32)>> {
+        let mut readings = Vec::new();
+        for binding in self.bindings_for_form(form_ref).take(limit.checked_add(1)?) {
+            if readings.len() == limit {
+                return None;
+            }
+            readings.push((binding.lemma_center_id, binding.feature_mask));
+        }
+        Some(readings)
+    }
+
     pub(super) fn imported_surface_for_form(&self, form_ref: u32) -> Option<String> {
         self.package
             .surface(form_ref as usize)

@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2904,
+    "correctness": 2945,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 208,
-    "target": 2758
+    "process": 225,
+    "target": 2782
   },
   "package_fixtures": [
     {
@@ -557,6 +557,97 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::c06_exact_refresh_capability_alone_cannot_admit_an_unproved_owned_start",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::c06_exact_refresh_observed_second_word_accepts_live_owned_append_once",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::c06_exact_refresh_owned_append_refuses_unproved_or_revoked_start",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::c06_native_backspace_carry_cannot_accept_before_fresh_exact_client_confirmation",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::c06_native_backspace_preserves_only_inert_confirmed_reset_predecessor",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::c06_native_backspace_refuses_unconfirmed_drift_selection_and_whole_erase",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::c06_native_backspace_retype_first_and_later_words_uses_fresh_client_receipts",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::c06_owned_backspace_cannot_repair_external_epoch_or_revoked_start",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::c06_owned_backspace_retype_accepts_live_append_without_client_edit",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::c09_post_install_mode_refuses_revoked_or_mismatched_owner",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::c09_post_install_mode_transport_failure_preserves_authority_and_pending",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::c09_source_free_caps9_release_publishes_installed_mode_without_surrounding",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::c09_transfer_caps9_release_publishes_installed_mode_without_surrounding",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::delayed_focus_out_after_later_word_revocation_preserves_successor_stamps",
       "target": "bin:lay-ibus-engine"
     },
@@ -775,6 +866,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::late_surrounding_capability_keeps_newly_published_native_completion_for_tab",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::managed_no_surrounding_command_retires_mirror_before_fresh_owned_word_toggle",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -1271,6 +1369,13 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::terminal_passthrough_command_preserves_native_mirror_without_owned_preedit_grant",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::transient_boundary_tab_rejects_changed_surface_or_authority",
       "target": "bin:lay-ibus-engine"
     },
@@ -1623,6 +1728,20 @@
       "lane": "correctness",
       "name": "space_autocorrect_keeps_existing_public_gate_contract",
       "target": "test:input_gate_space_contract"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::terminal_enter_raw_observation_does_not_repeat_or_learn_other_boundaries",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tests::runtime_state::terminal_enter_records_bounded_raw_typed_context_before_reset",
+      "target": "bin:lay-daemon"
     },
     {
       "isolation": "process",
@@ -6416,6 +6535,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "nanda_wave::candidate_gate::cache::tests::terminal_scene_cache_is_disjoint_from_general_scene",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "nanda_wave::candidate_gate::tests::ascii_lexical_neighbor_cannot_outrank_exact_layout_replacement",
       "target": "lib:lay"
     },
@@ -7466,7 +7592,28 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "nanda_wave::l2::ime_readout::tests::exact_lexical_cache_keys_separate_prefix_limit_and_mode",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "nanda_wave::l2::ime_readout::tests::exact_prefix_field_suppresses_only_the_redundant_fuzzy_fallback",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::l2::ime_readout::tests::lexical_cache_recomputes_dense_child_prefix",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::l2::ime_readout::tests::lexical_cache_recomputes_fuzzy_child_prefix",
       "target": "lib:lay"
     },
     {
@@ -7509,13 +7656,6 @@
       "kind": "test",
       "lane": "correctness",
       "name": "nanda_wave::l2::ime_readout::tests::one_edit_prefix_field_keeps_ranked_missing_letter_basin",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "nanda_wave::l2::ime_readout::tests::projects_settled_lattice_only_when_the_next_prefix_stays_dense",
       "target": "lib:lay"
     },
     {
@@ -12912,6 +13052,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "nanda_wave::lexical_phase::runtime::tests::completion_retains_decoder_only_prefix_without_hot_terminal",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "nanda_wave::lexical_phase::runtime::tests::concurrent_surface_readers_preserve_fields_during_reconstruction_eviction",
       "target": "lib:lay"
     },
@@ -13829,6 +13976,34 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "nanda_wave::usage_prior::tests::worker_refresh_force_cannot_bypass_pending_or_local_reset_disk_age",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::usage_prior::tests::worker_refresh_preserves_unpersisted_local_confirmation",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::usage_prior::tests::worker_refresh_publishes_foreign_hot_and_invalidates_completed_readouts",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::usage_prior::tests::worker_refresh_rejects_local_cow_even_after_persistence_ack",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "ngram::cache::tests::explicit_cache_without_source_is_not_auto_runtime_authority",
       "target": "lib:lay"
     },
@@ -14585,6 +14760,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "preedit::tests::published_preedit_suggestion_style_respects_owned_buffer_and_not_caret",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "preedit::tests::punctuation_closes_inactive_completion_for_previous_word",
       "target": "bin:lay-ibus-engine"
     },
@@ -14691,6 +14873,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "preedit::tests::tail_buffer_stays_bounded",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "preedit::tests::terminal_completion_scene_requires_existing_terminal_evidence",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -17749,6 +17938,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "text::tests::preedit_visual_ranges_exclude_typed_prefix_in_unicode_scalar_units",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "text::tests::retained_preedit_payload_has_exact_cursor_and_visual_attributes",
       "target": "bin:lay-ibus-engine"
     },
@@ -19303,6 +19499,83 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "typing_transition::decision::agreement_order::tests::actual_last_word_punctuation_window_and_left_context_replacements_are_preserved",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::agreement_order::tests::adjective_event_has_no_fabricated_future_noun",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::agreement_order::tests::admitted_native_adapter_reorders_without_mutating_candidates_evaluations_or_receipts",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::agreement_order::tests::completed101_selects_unique_native_top_among_multiple_supported_surfaces",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::agreement_order::tests::full_mask_domains_family_identity_and_missing_person_remain_distinct",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::agreement_order::tests::old_any_partner_veto_and_literal_personal_exception_are_preserved",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::agreement_order::tests::only_existing_admissions_participate_and_no_edit_never_gains_authority",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::agreement_order::tests::retained_exact_and_closed_exact_absence_keep_original_precedence",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::agreement_order::tests::signature_cardinality_is_not_full_reading_cardinality",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::agreement_order::tests::ties_nearest_and_candidate_ambiguity_do_not_relax_legacy_c",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::agreement_order::tests::unknown_provider_nonfinite_and_score_ties_preserve_original_decision_order",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "typing_transition::decision::hard_structural_veto::tests::boundary_shift_rejects_non_tail_pair_mutation",
       "target": "lib:lay"
     },
@@ -19857,6 +20130,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "typing_transition::live_candidate::tests::settled_exact_state_keeps_independently_supported_continuation",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::live_candidate::tests::terminal_command_preference_cannot_admit_ungrounded_or_replacement",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::live_candidate::tests::terminal_command_preference_keeps_confirmed_l4_and_general_order",
       "target": "lib:lay"
     },
     {

@@ -1,0 +1,51 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-05",
+  "status": "IMPLEMENTED_PENDING_REPAIRED_PROOF",
+  "reason": "Controlled old-algorithm proof detects both incomplete parent caches and no-hot-node decoder suppression; exact-key semantics restore current-prefix evidence.",
+  "decision": "Remove both dense and fuzzy parent projections; preserve exact-key bounded cache and independently traverse decoder under existing bounds. Replace invalid projection performance requirement with exact key identity and controlled history parity proof.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C06",
+    "C10"
+  ],
+  "affected_invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C06",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/contextual-completion-release-2026-10-05.md",
+  "protected_paths": [
+    "src/nanda_wave/l2/ime_readout.rs",
+    "src/nanda_wave/lexical_phase/runtime.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "src/nanda_wave/l2_field/mod.rs",
+    "src/nanda_wave/mod.rs"
+  ],
+  "verification": "Old-algorithm guarded remote lib proof:1809 selected/executed,1806 PASS,3 expected regression FAIL. /home/ubu/.cache/lay/development/run-yi9hutwk/RESULT.json. Cache parameter extraction only; old algorithms intact in snapshot. Repaired lib proof1809/1809 PASS run-3ri26fio. First exact8b native library build completed; external metadata probe failed E0463 because dependency lookup used release/ instead of release/deps/. A source review also caught private l2_field/identity access before the next compilation. Keep modules/types private and expose bounded structured read-only metadata through existing research fa\u00e7ade; fresh source snapshot required.",
+  "what_was_tested": "Controlled dense material+score, fuzzy material+score, decoder-only prefix witnesses detect old failure.",
+  "not_tested": "Full release proof, single-client resource/latency, installed changed bytes and physical acceptance pending.",
+  "what_was_not_tested": [
+    "full release gate",
+    "natural conditional ranking quality",
+    "new installed physical scope"
+  ],
+  "runtime_authority_changed": false,
+  "runtime_bytes_changed": false,
+  "constraints": [
+    "No literal runtime word or phrase rules",
+    "No new owner/cache/worker/traversal limits",
+    "Exact-key repeat reuse retained",
+    "L4, DecisionCore and verifier admissions unchanged",
+    "Correction mode shortcut behavior unchanged",
+    "No old or oracle receipt promotion"
+  ],
+  "research_metadata": "Research-only probe of warmed cached canonical readings:256 surfaces/32 readings bounds, no cold load, candidates or authority. Required to keep pilot classifier inputs equal to native feature masks; missing/overflow remains UNKNOWN."
+}

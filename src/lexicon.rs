@@ -25,6 +25,8 @@ const RU_TECHNICAL_LOANWORD_SUFFIXES_DATA: &str =
     include_str!("../data/lexicon/ru_technical_loanword_suffixes.txt");
 const RU_LIVE_PROTECTED_WORDS_DATA: &str =
     include_str!("../data/lexicon/ru_live_protected_words.txt");
+const LINUX_COMMAND_DATA: &str = include_str!("../data/lexicon/linux_command_names.txt");
+
 const COMMON_EN_TECHNICAL_DATA: &str = include_str!("../data/lexicon/common_en_technical.txt");
 const COMMON_EN_GUARD_PREFIX_DATA: &str =
     include_str!("../data/lexicon/common_en_guard_prefixes.txt");
@@ -51,6 +53,7 @@ pub fn warm_up() {
     let _ = ru_technical_loanwords().len();
     let _ = ru_live_protected_words().len();
     let _ = common_en_technical_words().len();
+    let _ = linux_command_names().len();
     let _ = common_en_guard_prefixes().len();
     let _ = ru_one_letter_function_words().len();
     let _ = ru_single_letter_pronouns().len();
@@ -68,6 +71,7 @@ pub fn warm_up() {
 pub fn warm_up_for_ime() {
     let _ = common_ru_words().len();
     let _ = common_en_technical_words().len();
+    let _ = linux_command_names().len();
     let _ = common_en_guard_prefixes().len();
     let _ = ru_one_letter_function_words().len();
     let _ = ru_single_letter_pronouns().len();
@@ -98,6 +102,16 @@ pub fn is_ru_technical_loanword(word: &str) -> bool {
 
 pub fn is_ru_live_protected_word(word: &str) -> bool {
     ru_live_protected_words().contains(&word.trim().to_lowercase())
+}
+
+/// Immutable packaged inventory membership, not command role or use frequency.
+pub fn is_linux_command_name(word: &str) -> bool {
+    linux_command_names().binary_search(&word).is_ok()
+}
+
+fn linux_command_names() -> &'static Vec<&'static str> {
+    static WORDS: OnceLock<Vec<&'static str>> = OnceLock::new();
+    WORDS.get_or_init(|| data_lines(LINUX_COMMAND_DATA).collect())
 }
 
 pub fn is_common_en_technical_word(word: &str) -> bool {

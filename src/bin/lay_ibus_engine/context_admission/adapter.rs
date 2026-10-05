@@ -37,7 +37,6 @@ const MARKER_MEMBER: &str = "Barrier";
 const LIFECYCLE_QUEUE: usize = 8;
 const KEY_QUEUE: usize = 64;
 const MAX_LAY_PROFILES: usize = 8;
-pub(crate) const ACQUISITION_BUDGET: Duration = Duration::from_millis(5);
 // A bridge fence verifies an already acquired field across a synchronous
 // daemon/IME handoff. It must tolerate a bounded IBus marker round trip
 // without changing the shorter callback acquisition deadline.
@@ -136,7 +135,6 @@ impl From<zbus::Error> for AdapterError {
 pub(crate) struct AdapterConfig {
     connection: ConnectionGeneration,
     lay_profiles: Vec<EngineProfile>,
-    acquisition_budget: Duration,
     bridge_budget: Duration,
     activation_budget: Duration,
 }
@@ -160,7 +158,6 @@ impl AdapterConfig {
         Ok(Self {
             connection,
             lay_profiles,
-            acquisition_budget: ACQUISITION_BUDGET,
             bridge_budget: BRIDGE_BUDGET,
             activation_budget: ACTIVATION_BUDGET,
         })
@@ -168,7 +165,6 @@ impl AdapterConfig {
 
     #[cfg(test)]
     pub(super) fn with_acquisition_budget(mut self, budget: Duration) -> Self {
-        self.acquisition_budget = budget;
         self.bridge_budget = budget;
         self.activation_budget = budget;
         self
@@ -341,7 +337,6 @@ impl PendingContextAdapter {
             connection: self.connection,
             connection_generation: self.config.connection,
             lay_profiles: self.config.lay_profiles,
-            acquisition_budget: self.config.acquisition_budget,
             bridge_budget: self.config.bridge_budget,
             activation_budget: self.config.activation_budget,
             bindings,
@@ -374,7 +369,6 @@ struct AdapterState {
     connection: Connection,
     connection_generation: ConnectionGeneration,
     lay_profiles: Vec<EngineProfile>,
-    acquisition_budget: Duration,
     bridge_budget: Duration,
     activation_budget: Duration,
     bindings: SenderBindings,
@@ -563,7 +557,6 @@ impl ContextAdmissionAdapter {
             connection,
             connection_generation,
             lay_profiles: vec![profile],
-            acquisition_budget: ACQUISITION_BUDGET,
             bridge_budget: BRIDGE_BUDGET,
             activation_budget: ACTIVATION_BUDGET,
             bindings,
@@ -2303,12 +2296,6 @@ impl ContextAdmissionAdapter {
             );
         }
         Ok(token)
-    }
-
-    fn acquisition_deadline(&self) -> Instant {
-        let now = Instant::now();
-        now.checked_add(self.shared.acquisition_budget)
-            .unwrap_or(now)
     }
 
     fn bridge_deadline(&self) -> Instant {

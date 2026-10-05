@@ -99,6 +99,7 @@ fn run_worker(shared: Arc<(Mutex<WorkerState>, Condvar)>) {
         let candidate_memory_warm_before =
             trace_enabled && TypingCpu::ime_candidate_memory_is_warm();
         let started = Instant::now();
+        TypingCpu::refresh_usage_memory_for_live_worker();
         let materialized = materialize_precognition_candidates_observed(&work.input);
         let candidate_memory_warm_after =
             trace_enabled && TypingCpu::ime_candidate_memory_is_warm();

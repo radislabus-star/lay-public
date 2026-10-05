@@ -47,6 +47,11 @@ pub(crate) struct CompositionState {
     /// The unfinished word is owned as legacy IBus preedit, so its boundary
     /// may commit a verified replacement without editing application text.
     pub(crate) legacy_word_preedit_active: bool,
+    /// Exact observed start transferred before this uncommitted word's first
+    /// key clears the surrounding snapshot. It grants append-only acceptance
+    /// only in the same current owner and uninterrupted local input chain.
+    pub(crate) legacy_preedit_start_boundary:
+        Option<crate::window_interaction::ManagedWordStartWitness>,
     pub(crate) preedit_visible: bool,
     pub(crate) preedit_suffix: String,
     pub(crate) preedit_candidates: Vec<String>,

@@ -721,14 +721,13 @@ impl LexicalPhaseMemory {
         let Some(prefix) = normalize_surface(prefix) else {
             return Vec::new();
         };
-        let Some(prefix_node) = self.node_for_normalized_surface(&prefix) else {
-            return Vec::new();
-        };
         let prefix_len = prefix.chars().count();
         let field = SurfaceFieldEncoder::encode(&prefix);
         let (query_phase, _) = surface_phase(&field);
         let mut heap = BinaryHeap::new();
-        self.push_frontier(&mut heap, prefix_node);
+        if let Some(prefix_node) = self.node_for_normalized_surface(&prefix) {
+            self.push_frontier(&mut heap, prefix_node);
+        }
         let mut visited = 0usize;
         let mut emitted = std::collections::BTreeSet::new();
         let mut candidates = Vec::new();
@@ -2511,6 +2510,33 @@ mod tests {
                 .any(|candidate| candidate.word == "работает" && candidate.reconstructed),
             "candidates={candidates:?}"
         );
+    }
+
+    #[test]
+    fn completion_retains_decoder_only_prefix_without_hot_terminal() {
+        let bytes = compile_words_with_training(
+            ["проверка", "загрузить"],
+            ["проверка", "загрузить", "работает", "работаем"],
+        )
+        .expect("fixture compiles");
+        let memory = LexicalPhaseMemory::from_bytes(bytes).expect("fixture loads");
+        assert!(memory.node_for_normalized_surface("раб").is_none());
+        assert!(!memory.contains_surface("работает"));
+        assert!(memory.decoder_contains_surface("работает"));
+        let candidates = memory.completion_candidates("раб", 12, 24);
+        assert!(candidates
+            .iter()
+            .any(|candidate| candidate.word == "работает"
+                && candidate.reconstructed
+                && candidate.prefix_match));
+        assert!(candidates
+            .iter()
+            .all(|candidate| candidate.word.starts_with("раб")));
+        assert!(memory.completion_candidates("раб", 0, 24).is_empty());
+        assert!(memory.completion_candidates("раб", 12, 0).is_empty());
+        assert!(memory
+            .completion_candidates("несуществующий", 12, 24)
+            .is_empty());
     }
 
     #[test]

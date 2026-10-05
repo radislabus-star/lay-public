@@ -1,0 +1,61 @@
+{
+  "status": "RECORDED_BOUNDED_NATIVE_DELETE_HYPOTHESIS_BEFORE_IMPLEMENTATION",
+  "affected_invariants": [
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "source": "lay-ranker-release-20261004; actual HEAD 79b09d06306a018961ace783e2542eb817de7b30; preserved dirty source; observation SHA687de75c341206facde246f398fb85fd601d8951f3f77ea4e08cbf39bee86800",
+  "observed_failure": "V13 current C03 owner369: committed prefix po in Cyrillic, virtual suffix; accepted native Backspace18212 shortens mirror2 to1 and returns false; Reset18213 rejects rereceipt; exact client receipt and retype18216 do not recover hint. Tab not sent. Adjacent boundary_backspace false belongs to preceding owner368 and is excluded.",
+  "scope_gap": "C06 local owned-preedit proof requires nonempty composition and handled=true, so does not execute on this native client deletion.",
+  "hypothesis": "Unconditional Backspace retirement loses the already confirmed Reset predecessor whose observed word range exceeds the reset lineage. Preserve only inert shortened provenance across one native deletion, then require a fresh exact client receipt for authority.",
+  "chosen_route": "Use existing PendingContextResetRereceipt, existing reducer settlement and snapshot verifier. Start with an actual legacy callback regression that fails on current source. Bound rebind to an already confirmed owner-matched exact old client receipt, end-caret/no selection, exact one-scalar mirror deletion and one epoch advance, unchanged owner/focus/layout/lineage identity. New state is unconfirmed, has no published stale preedit and no text edit authority. Fresh actual Reset and exact surrounding receipt must prove shortened token before completion acceptance; retire on drift/mismatch/no receipt.",
+  "constraints": [
+    "Native Backspace remains handled=false and causes exactly one client deletion; no duplicate CommitText/DeleteSurroundingText or physical replay.",
+    "Hide preedit before handing Backspace to client, and do not republish a hint during that Backspace callback. Preserve the existing WeChat contract.",
+    "Use no application-name, word, suffix or fixture-specific runtime condition.",
+    "No generic unknown-start promotion, no removal of snapshot/owner checks, no SafetyGate weakening.",
+    "A wholly erased word does not carry prior provenance; exact empty client boundary must establish the next word through existing mechanisms.",
+    "No new owner, detector, executor, layout operation, cache, timer, polling, callback or fallback."
+  ],
+  "alternatives": [
+    "Reconstruct arbitrary unknown word authority directly from later text rejected because it loses the original owner/input/epoch provenance.",
+    "Keep the old receipt confirmed after client Backspace rejected because the client may delete a selection, move its caret, or reject the edit.",
+    "Native single-deletion inert rebind selected because it reuses the existing causal receipt and independently verifies the actual client result."
+  ],
+  "consequences": {
+    "candidates_and_rank": "No candidate removal, ranking, Keep or edit-decision change; fresh prefix gets existing candidates only after current-state evidence.",
+    "false_authority": "Primary risk is treating a mirror as applied client text. New pending state must be unconfirmed and have no stale publication; exact current client receipt is mandatory before Tab.",
+    "latency_and_resources": "No new waits or workers; bounded existing word/receipt cloning only, no corpus scan, package growth or persistent memory. Verify no duplicate background scheduling/publication in Backspace.",
+    "cache_packages_learning": "Existing generation invalidation and completion clearing remain; no model/package/reload/cache source identity change and no learning from unconfirmed deletion.",
+    "concurrency": "Reset may arrive after the key or before its settlement; actual production observer/callback ordering must be tested. Owner/focus/layout/epoch/selection drift must revoke.",
+    "compatibility": "Preserve managed owned-preedit C06, terminal native route, single text executor and native Backspace release; generic negative tests remain strict.",
+    "failure_rollback": "Refuse stale/missing/mismatched client confirmation. Only root may install a proved IME, with exact C03 rollback and unchanged daemon/global IBus/model bytes.",
+    "maintenance": "Extend existing receipt transfer, no second controller. Remove nothing by weakening; future source changes must retain causal negative guards."
+  },
+  "proof": "Actual native BSP/Reset/surrounding/retype/Tab first and later words, partial delete and full erase, current candidate plus exactly one space; stale/no receipt and identity/selection/epoch drift negatives; no hint or edit in native Backspace itself; controlled old-code failure/restored PASS; nonzero focused identities; fixed canonical closure/style/graph/canon/build; changed-byte physical browser and remaining windows",
+  "implementation_owner": "h7_full_pool; independent source review grammar_label_audit; root sole import/install/GUI",
+  "runtime_authority_changed": false,
+  "installed_ime_sha256": "a1bdffe17771e241234b6bf130babde052e4bac31578741c0d7de780df6ebaee",
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Retain only inert shortened provenance across one already-confirmed exact native Backspace; require a fresh exact client receipt before completion acceptance.",
+  "reason": "The actual legacy Backspace loses an already confirmed predecessor while the following Reset does install a live token; physical owner369 and old-source one-test failure isolate that first loss.",
+  "verification": "Nine exact native Backspace focused PASS; controlled background-suppression failure and restored retype PASS. Final native-final-PTmtHdcv canonical653/653, original two style configurations PASS. Changed-byte physical acceptance remains required.",
+  "not_tested": "Installation, changed-byte physical windows, mid-document caret support, complete release gates.",
+  "invariants": [
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "record_format_repair": "2026-10-04: required guard schema/fields added; previous historical fields, design and guard preserved. No runtime deployment or authority change."
+}

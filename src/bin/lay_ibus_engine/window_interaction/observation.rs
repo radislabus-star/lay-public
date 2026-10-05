@@ -53,7 +53,7 @@ async fn focused_window_is_kitty() -> bool {
         if let Poll::Ready(result) = request.as_mut().poll(cx) {
             return Poll::Ready(result.unwrap_or(false));
         }
-        if let Poll::Ready(_) = timeout.as_mut().poll(cx) {
+        if timeout.as_mut().poll(cx).is_ready() {
             return Poll::Ready(false);
         }
         Poll::Pending
@@ -525,14 +525,15 @@ impl LayIbusEngine {
     }
 
     /// A client can accept an append-only completion while the whole
-    /// uncommitted word is this IME's live preedit, even if it advertises
-    /// SurroundingText without an exact refresh.
+    /// uncommitted word is this IME's live preedit. An exact-refresh client
+    /// additionally requires the observed start transferred at the first key.
     /// This does not authorize replacement of already committed client text.
     pub(crate) fn context_owns_active_preedit_append_completion(&self) -> bool {
         if self.context_handoff_sealed
             || self.atomic.active
             || self.content_is_sensitive()
-            || self.client_context.exact_surrounding_refresh_available
+            || (self.client_context.exact_surrounding_refresh_available
+                && !self.owned_preedit_start_boundary_is_current())
             || self
                 .client_context
                 .surrounding_text_snapshot
@@ -898,7 +899,126 @@ impl LayIbusEngine {
         }
     }
 
+    /// Transfer an already observed start into the composition owner before
+    /// its first local key clears the widget snapshot. This never projects an
+    /// uncommitted character into the managed CommitText witness.
+    pub(crate) fn capture_legacy_preedit_start_boundary(&self) -> Option<ManagedWordStartWitness> {
+        if self.composition.word_input_mode != Some(WordInputMode::ManagedCommit)
+            || (!self.committed_tail.buffer.is_empty()
+                && !self.committed_tail.buffer.ends_with(char::is_whitespace))
+        {
+            return None;
+        }
+        self.managed_word_start_from_current_snapshot("")
+    }
+
+    fn owned_preedit_start_boundary_is_current(&self) -> bool {
+        let Some(witness) = self.composition.legacy_preedit_start_boundary.as_ref() else {
+            return false;
+        };
+        self.owned_preedit_start_boundary_matches(witness)
+    }
+
+    fn owned_preedit_start_boundary_matches(&self, witness: &ManagedWordStartWitness) -> bool {
+        let word = &self.composition.buffer;
+        let chars = word.chars().count() as u64;
+        self.client_context.managed_input
+            && self.composition.word_input_mode == Some(WordInputMode::ManagedCommit)
+            && self.client_context.surrounding_text_supported
+            && self.composition.legacy_word_preedit_active
+            && chars > 0
+            && witness.anchored_token_chars == 0
+            && witness.focus_receipt == self.client_context.focus_receipt
+            && witness.focus_serial == self.client_context.focus_serial
+            && witness.runtime_owner_lease_identity
+                == self.client_context.runtime_owner_lease_identity
+            && witness.layout_generation == self.layout_gesture.layout_generation
+            && witness.armed_revision == self.client_context.surrounding_observation_revision
+            && self.committed_tail.epoch == witness.start_tail_epoch.wrapping_add(chars)
+            && self.committed_tail.buffer == format!("{}{}", witness.start_committed_tail, word)
+    }
+
+    /// A local end-caret Backspace may shorten this owner's uncommitted word.
+    /// Capture only the already current boundary and token; a client deletion
+    /// or stale input chain cannot manufacture a new observed start.
+    pub(crate) fn prepare_owned_preedit_local_backspace(
+        &self,
+    ) -> Option<(ManagedWordStartWitness, String, u64)> {
+        if !self.client_context.exact_surrounding_refresh_available
+            || !self.owned_preedit_start_boundary_is_current()
+            || !self.exact_owned_legacy_preedit_is_current()
+            || self.context_handoff_sealed
+            || self.atomic.active
+            || self.content_is_sensitive()
+            || self.composition.buffer.chars().count() <= 1
+            || self.composition.cursor != self.composition.buffer.chars().count()
+            || self
+                .client_context
+                .surrounding_text_snapshot
+                .as_ref()
+                .is_some_and(SurroundingTextSnapshot::has_selection)
+        {
+            return None;
+        }
+        let scope = self.context_word_scope.as_ref()?;
+        let token = self.live_context_token()?;
+        if scope.lineage().completeness != WordCompleteness::UnknownStart
+            || !token.matches_word_scope(scope)
+        {
+            return None;
+        }
+        Some((
+            self.composition.legacy_preedit_start_boundary.clone()?,
+            self.composition.buffer.clone(),
+            self.committed_tail.epoch,
+        ))
+    }
+
+    pub(crate) fn finish_owned_preedit_local_backspace(
+        &mut self,
+        receipt: Option<(ManagedWordStartWitness, String, u64)>,
+    ) {
+        let Some((mut witness, mut before, before_epoch)) = receipt else {
+            return;
+        };
+        before.pop();
+        if self.composition.buffer != before
+            || before.is_empty()
+            || self.composition.cursor != before.chars().count()
+            || self.committed_tail.epoch != before_epoch.wrapping_add(1)
+        {
+            return;
+        }
+        witness.start_tail_epoch = self
+            .committed_tail
+            .epoch
+            .wrapping_sub(before.chars().count() as u64);
+        let Some(scope) = self.context_word_scope.as_ref() else {
+            return;
+        };
+        let Some(token) = self.live_context_token() else {
+            return;
+        };
+        if self.owned_preedit_start_boundary_matches(&witness)
+            && scope.lineage().completeness == WordCompleteness::UnknownStart
+            && token.matches_word_scope(scope)
+        {
+            self.composition.legacy_preedit_start_boundary = Some(witness);
+        }
+    }
+
     fn arm_managed_word_start_from_current_snapshot(&mut self) {
+        if let Some(witness) =
+            self.managed_word_start_from_current_snapshot(&self.last_tail_token_text())
+        {
+            self.client_context.managed_word_start = Some(witness);
+        }
+    }
+
+    fn managed_word_start_from_current_snapshot(
+        &self,
+        token: &str,
+    ) -> Option<ManagedWordStartWitness> {
         if !self.client_context.managed_input
             || !self.client_context.exact_surrounding_refresh_available
             || !self.client_context.surrounding_text_supported
@@ -907,21 +1027,16 @@ impl LayIbusEngine {
             || !self.composition.buffer.is_empty()
             || self.content_is_sensitive()
         {
-            return;
+            return None;
         }
-        let Some(snapshot) = self.client_context.surrounding_text_snapshot.as_ref() else {
-            return;
-        };
+        let snapshot = self.client_context.surrounding_text_snapshot.as_ref()?;
         let text_chars = snapshot.text.chars().collect::<Vec<_>>();
         let cursor = snapshot.cursor_pos as usize;
         if snapshot.has_selection() || cursor > text_chars.len() {
-            return;
+            return None;
         }
-        let token = self.last_tail_token_text();
         let token_chars = token.chars().count();
-        let Some(start) = cursor.checked_sub(token_chars) else {
-            return;
-        };
+        let start = cursor.checked_sub(token_chars)?;
         let left_is_boundary = start == 0
             || text_chars
                 .get(start - 1)
@@ -941,12 +1056,10 @@ impl LayIbusEngine {
                 .as_deref()
                 != Some(self.committed_tail.buffer.as_str())
         {
-            return;
+            return None;
         }
-        let Some(start_committed_tail) = self.committed_tail.buffer.strip_suffix(&token) else {
-            return;
-        };
-        self.client_context.managed_word_start = Some(ManagedWordStartWitness {
+        let start_committed_tail = self.committed_tail.buffer.strip_suffix(token)?;
+        Some(ManagedWordStartWitness {
             identity: crate::engine::next_input_identity(),
             focus_receipt: self.client_context.focus_receipt.clone(),
             focus_serial: self.client_context.focus_serial,
@@ -960,7 +1073,7 @@ impl LayIbusEngine {
             start_cursor: start as u32,
             armed_revision: self.client_context.surrounding_observation_revision,
             reset_echo_epoch: None,
-        });
+        })
     }
 
     fn current_snapshot_matches_managed_word_start(&self) -> bool {
@@ -1396,8 +1509,7 @@ impl LayIbusEngine {
             self.discard_context_activation();
             return false;
         }
-        self.client_context.input_mode_property_refresh_pending =
-            matches!(installed_outcome, ActivationOutcome::Transfer(_));
+        self.client_context.input_mode_property_refresh_pending = true;
         trace::record_context_admission(
             "activation_install",
             "",
@@ -1442,6 +1554,7 @@ impl LayIbusEngine {
 
     fn fail_context_activation_local(&mut self) {
         self.exact_manual_target_snapshot = None;
+        self.client_context.input_mode_property_refresh_pending = false;
         self.context_owner = None;
         self.context_token = None;
         self.context_word_scope = None;
@@ -1451,6 +1564,52 @@ impl LayIbusEngine {
         self.committed_tail.autocorrect_suppression = None;
         self.committed_tail.pending_completion_learning = None;
         self.clear_preedit_completion_state();
+    }
+
+    pub(crate) async fn publish_pending_input_mode_property(
+        &mut self,
+        output: &mut EngineOutput<'_, '_>,
+    ) {
+        if !self.client_context.input_mode_property_refresh_pending || !output.is_legacy() {
+            return;
+        }
+        let Some(owner) = self.context_owner.as_ref() else {
+            self.client_context.input_mode_property_refresh_pending = false;
+            return;
+        };
+        let owner_generation = owner.generation.0;
+        let current = owner.path.as_str() == self.path
+            && self.context_admission.as_ref().is_some_and(|admission| {
+                admission.current_owner().as_ref() == Some(owner)
+                    && self.context_token.as_ref().is_some_and(|token| {
+                        token.matches_owner(owner) && admission.revalidate(token)
+                    })
+            })
+            && self.shared.lock().is_ok_and(|shared| {
+                shared.active_path.as_deref() == Some(self.path.as_str())
+                    && shared.context_owner_generation == Some(owner_generation)
+            });
+        if !current {
+            self.client_context.input_mode_property_refresh_pending = false;
+            return;
+        }
+        // The initial FocusIn/Enable registration can precede selected-source
+        // installation. Publish the installed decoder using the existing
+        // legacy callback emitter, including clients without surrounding text.
+        // Property transport failure does not change key or edit authority.
+        let published = output
+            .register_input_mode(self.layout_gesture.layout_is_ru)
+            .await
+            .is_ok();
+        if published {
+            self.client_context.input_mode_property_refresh_pending = false;
+        }
+        if trace::enabled() {
+            trace::record(format!(
+                r#"{{"kind":"ibus_input_mode","stage":"post_activation_update","engine_path":{:?},"owner_generation":{owner_generation},"layout_is_ru":{},"published":{published}}}"#,
+                self.path, self.layout_gesture.layout_is_ru,
+            ));
+        }
     }
 
     pub(crate) async fn begin_context_key_callback(
@@ -1696,6 +1855,58 @@ impl LayIbusEngine {
     ) {
         let owned_append = handled
             || (self.exact_replay_tail_change_quarantined && self.exact_replay_quarantine_active());
+        if is_key_press(state) && keyval == KEY_BACKSPACE {
+            // A native deletion carries only the already confirmed predecessor.
+            // The client still owns the edit; a later exact receipt must confirm
+            // the shortened range before it can authorize completion acceptance.
+            let shortened = (|| {
+                let candidate = boundary_candidate?;
+                let pending = self.context_reset_rereceipt.as_ref()?;
+                let (last, _) = tail_before.char_indices().next_back()?;
+                let token = self.live_context_token()?;
+                let scope = self.context_word_scope.as_ref()?;
+                let owner = self.context_owner.as_ref()?;
+                let token_text = self.last_tail_token_text();
+                let chars = token_text.chars().count();
+                if handled
+                    || has_command_modifier(state)
+                    || !self.composition.buffer.is_empty()
+                    || !pending.confirmed
+                    || candidate.token != pending.predecessor_token
+                    || candidate.tail_epoch != pending.tail_epoch
+                    || candidate.token_text != pending.token_text
+                    || candidate.observed_suffix_chars != pending.observed_suffix_chars
+                    || candidate.armed_revision
+                        != self.client_context.surrounding_observation_revision
+                    || tail_before[..last] != self.committed_tail.buffer
+                    || !tail_before.ends_with(pending.token_text.as_str())
+                    || chars == 0
+                    || chars + 1 != pending.observed_suffix_chars as usize
+                    || pending.tail_epoch.checked_add(1) != Some(self.committed_tail.epoch)
+                    || !pending.token_text.starts_with(&token_text)
+                    || !token.matches_owner(owner)
+                    || !pending.token.matches_owner(owner)
+                    || !token.matches_word_scope(scope)
+                    || pending.token.word_scope().lineage().generation != scope.lineage().generation
+                    || scope.lineage().completeness != WordCompleteness::UnknownStart
+                    || scope.lineage().observed_suffix_chars >= chars as u32
+                {
+                    return None;
+                }
+                Some(PendingContextResetRereceipt {
+                    token,
+                    predecessor_token: pending.predecessor_token.clone(),
+                    tail_epoch: self.committed_tail.epoch,
+                    token_text,
+                    observed_suffix_chars: chars as u32,
+                    armed_revision: self.client_context.surrounding_observation_revision,
+                    confirmed: false,
+                    published_preedit: None,
+                })
+            })();
+            self.context_reset_rereceipt = shortened;
+            return;
+        }
         // Alt's release may still carry its own modifier bit. The accepted
         // append below is the effect witness; all other command bits remain.
         let boundary_modifier_state =
@@ -1840,6 +2051,20 @@ impl LayIbusEngine {
             .find_map(|(index, ch)| ch.is_whitespace().then_some(index + ch.len_utf8()))
             .unwrap_or(0);
         tail[start..].to_string()
+    }
+
+    fn capture_native_backspace_reset_rereceipt_candidate(
+        &self,
+    ) -> Option<ContextResetRereceiptCandidate> {
+        let pending = self.context_reset_rereceipt.as_ref()?;
+        let snapshot = self.client_context.surrounding_text_snapshot.as_ref()?;
+        if !self.context_reset_rereceipt_exact_manual_handoff_allowed()
+            || self.context_token.as_ref() != Some(&pending.token)
+            || snapshot.cursor_pos as usize != snapshot.text.chars().count()
+        {
+            return None;
+        }
+        self.capture_context_reset_rereceipt_candidate()
     }
 
     fn capture_context_reset_rereceipt_candidate(&self) -> Option<ContextResetRereceiptCandidate> {
@@ -2569,6 +2794,7 @@ impl LayIbusEngine {
                 != self.client_context.exact_surrounding_refresh_available
         {
             self.client_context.managed_word_start = None;
+            self.composition.legacy_preedit_start_boundary = None;
             self.invalidate_space_autocorrect_path();
             if preedit_text_was_supported
                 && !self.client_context.preedit_text_supported
@@ -2720,8 +2946,8 @@ pub(crate) struct ClientContextState {
     pub(crate) managed_commit_snapshot_floor: Option<(u64, u64, u64)>,
     pub(crate) managed_word_start: Option<ManagedWordStartWitness>,
     pub(crate) surrounding_text_callback_observed: bool,
-    /// A transferred engine may publish InputMode before GNOME selects it.
-    /// One admitted field receipt may repeat that property publication.
+    /// Initial registration can precede installed activation. The next live
+    /// legacy callback publishes the installed mode without requiring text.
     pub(crate) input_mode_property_refresh_pending: bool,
     pub(crate) factory_engine_profile: lay::exact_layout_authority::FactoryEngineProfile,
     pub(crate) managed_input: bool,
@@ -2873,6 +3099,9 @@ impl WindowInteraction {
         let callback = engine
             .begin_context_key_callback(header, callback_entered, false)
             .await;
+        if callback.is_some() {
+            engine.publish_pending_input_mode_property(output).await;
+        }
         if trace::enabled() {
             trace::record_context_admission(
                 "legacy_callback_admission",
@@ -2895,22 +3124,36 @@ impl WindowInteraction {
             );
         }
         let tail_before = engine.committed_tail.buffer.clone();
-        let boundary_candidate = (callback.is_some()
-            && (matches!(keyval, KEY_SPACE | KEY_TAB)
-                || is_accept_completion_with_space_key(keyval))
-            && (engine.context_word_is_known()
-                || engine.context_observed_suffix_exact_manual_handoff_allowed()
-                || engine.context_reset_rereceipt_exact_manual_handoff_allowed()
-                || (keyval == KEY_SPACE
-                    && is_key_press(state)
-                    && engine
-                        .context_reset_rereceipt
-                        .as_ref()
-                        .is_some_and(|pending| pending.confirmed)
-                    && engine.context_reset_rereceipt_computation_allowed())
-                || engine.exact_replay_quarantine_active()))
-        .then(|| engine.capture_context_reset_rereceipt_candidate())
+        let native_backspace_identity = (callback.is_some()
+            && is_key_press(state)
+            && keyval == KEY_BACKSPACE
+            && !has_command_modifier(state))
+        .then(|| {
+            engine
+                .live_layout_intent_token()
+                .map(|token| (token, engine.layout_gesture.layout_is_ru))
+        })
         .flatten();
+        let boundary_candidate = if native_backspace_identity.is_some() {
+            engine.capture_native_backspace_reset_rereceipt_candidate()
+        } else {
+            (callback.is_some()
+                && (matches!(keyval, KEY_SPACE | KEY_TAB)
+                    || is_accept_completion_with_space_key(keyval))
+                && (engine.context_word_is_known()
+                    || engine.context_observed_suffix_exact_manual_handoff_allowed()
+                    || engine.context_reset_rereceipt_exact_manual_handoff_allowed()
+                    || (keyval == KEY_SPACE
+                        && is_key_press(state)
+                        && engine
+                            .context_reset_rereceipt
+                            .as_ref()
+                            .is_some_and(|pending| pending.confirmed)
+                        && engine.context_reset_rereceipt_computation_allowed())
+                    || engine.exact_replay_quarantine_active()))
+            .then(|| engine.capture_context_reset_rereceipt_candidate())
+            .flatten()
+        };
         engine.exact_replay_tail_change_quarantined = false;
         engine.context_callback_entered = Some(callback_entered);
         engine.consume_shift_gesture_handoff();
@@ -2927,6 +3170,18 @@ impl WindowInteraction {
                 &tail_before,
                 handled,
             );
+            let boundary_candidate = if keyval == KEY_BACKSPACE {
+                boundary_candidate.filter(|_| {
+                    native_backspace_identity
+                        .as_ref()
+                        .is_some_and(|(token, layout)| {
+                            engine.live_layout_intent_token().as_ref() == Some(token)
+                                && engine.layout_gesture.layout_is_ru == *layout
+                        })
+                })
+            } else {
+                boundary_candidate
+            };
             engine.advance_context_reset_rereceipt_after_key(
                 keyval,
                 keycode,
@@ -2938,6 +3193,7 @@ impl WindowInteraction {
             if is_key_press(state)
                 && tail_before != engine.committed_tail.buffer
                 && !std::mem::take(&mut engine.exact_replay_tail_change_quarantined)
+                && !(keyval == KEY_BACKSPACE && !handled)
             {
                 let correction_frame = if (engine.uses_native_terminal_input()
                     || engine.composition.legacy_word_preedit_active)
@@ -3116,7 +3372,7 @@ impl WindowInteraction {
                     && engine.client_context.exact_surrounding_refresh_available
                     && engine.client_context.surrounding_text_supported
                 {
-                    if let Some(output) = output.as_deref_mut() {
+                    if let Some(output) = output {
                         let stage = if output.require_surrounding_text().await.is_ok() {
                             "requested_after_reset"
                         } else {
@@ -3214,6 +3470,7 @@ impl WindowInteraction {
                         fdo::Error::Failed("cursor observation requires output".into())
                     })?;
                     engine.flush_dirty_preedit(output).await?;
+                    engine.publish_pending_input_mode_property(output).await;
                 }
                 Ok(ObservationReceipt::CursorGeometry)
             }

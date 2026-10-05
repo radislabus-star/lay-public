@@ -24,9 +24,13 @@ impl LayIbusEngine {
         }
         self.clear_pending_ime_auto_undo("next_pressed_key");
         if keyval == KEY_BACKSPACE {
+            let owned_backspace = self.prepare_owned_preedit_local_backspace();
             self.revoke_managed_word_start_before_client_key();
             self.begin_pending_ime_completion_edit_before_backspace();
             let handled = self.backspace(emitter).await?;
+            if handled {
+                self.finish_owned_preedit_local_backspace(owned_backspace);
+            }
             self.trace_key("backspace", keyval, keycode, handled, None);
             return Ok(handled);
         }
@@ -55,13 +59,19 @@ impl LayIbusEngine {
         }
         if has_command_modifier(state) {
             self.revoke_managed_word_start_before_client_key();
-            if self.composition.buffer.is_empty() && self.client_context.surrounding_text_supported
+            let managed_legacy_mirror = emitter.is_legacy()
+                && self.client_context.preedit_text_supported
+                && self.composition.word_input_mode == Some(WordInputMode::ManagedCommit);
+            if self.composition.buffer.is_empty()
+                && (self.client_context.surrounding_text_supported || managed_legacy_mirror)
             {
                 // The client owns an unhandled shortcut. Ctrl+A followed by
                 // Backspace can delete the whole field while a one-scalar
                 // local mirror would otherwise survive and contaminate the
-                // next word. Discard that mirror; a fresh client receipt and
-                // later keys can establish only their own observed suffix.
+                // next word. Discard the managed mirror even when the client
+                // cannot refresh SurroundingText; TerminalPassthrough retains
+                // its native word contract. Clearing proves no word boundary:
+                // a fresh receipt or newly owned preedit must supply authority.
                 self.cancel_precognition_display_generation();
                 self.clear_preedit(emitter).await?;
                 self.close_committed_tail_field();
@@ -370,6 +380,8 @@ impl LayIbusEngine {
                 return Ok(false);
             }
             if self.should_start_legacy_word_preedit(emitter, mode, ch) {
+                self.composition.legacy_preedit_start_boundary =
+                    self.capture_legacy_preedit_start_boundary();
                 // This word has not entered the widget. Retire any projected
                 // committed-word witness from an earlier boundary.
                 self.client_context.managed_word_start = None;
@@ -414,6 +426,7 @@ impl LayIbusEngine {
     /// the projected word-start witness and any prepared Space work first.
     pub(super) fn revoke_managed_word_start_before_client_key(&mut self) {
         self.client_context.managed_word_start = None;
+        self.composition.legacy_preedit_start_boundary = None;
         self.invalidate_space_autocorrect_path();
     }
 
