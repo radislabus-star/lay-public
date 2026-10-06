@@ -14,7 +14,15 @@
   "protected_paths": [
     "ARCHITECTURE.md"
   ],
-  "verification": "Remote focused IME proof passed 621/621 at /home/ubu/.cache/lay/development/run-sur7up7y/RESULT.json; the amended full source gate passed 2923/2923 correctness/package tests plus check/replay/safety at /home/ubu/.cache/lay/development/tab-changed-bl8f8rpm/RESULT.json. The accepted-runtime IBus clear probe is /home/ubu/.cache/lay/development/live-pair-candidate-20260926/ibus-preedit-clear-probe-20260926/RESULT.json. Installed-client proof is still required.",
+  "verification": "Remote focused IME proof passed 621/621 at /home/local-user/.cache/lay/development/run-sur7up7y/RESULT.json; the amended full source gate passed 2923/2923 correctness/package tests plus check/replay/safety at /home/local-user/.cache/lay/development/tab-changed-bl8f8rpm/RESULT.json. The accepted-runtime IBus clear probe is /home/local-user/.cache/lay/development/live-pair-candidate-20260926/ibus-preedit-clear-probe-20260926/RESULT.json. Installed-client proof is still required.",
   "not_tested": "The deferred-source candidate has no installed client acceptance. Whether the user requires the GNOME indicator to change after each pair is awaiting clarification. The full eight-gesture client sequence, painted frames, Tab, held Shift, focus/Reset behavior in actual clients, terminals, other browsers and WhatsApp remain untested on this candidate.",
-  "runtime_authority_changed": false
+  "runtime_authority_changed": false,
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "274ad5530c7ccdb78c4bb4a0b3477f0a46ff3d3b51af92fe3e91c8998adc0a00",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

@@ -59,11 +59,11 @@ Source inspection established four facts.
 
 Evidence owners:
 
-- `/home/ubu/projects/ibus-lay-atomic-proof/src/ibusinputcontext.c`
-- `/home/ubu/projects/ibus-lay-atomic-proof/client/gtk3/ibusimcontext.c`
-- `/home/ubu/projects/ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c`
-- `/home/ubu/projects/ibus-lay-atomic-proof/client/wayland/input-method-unstable-v2-client-protocol.h`
-- `/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs`
+- `/workspace/local/ibus-lay-atomic-proof/src/ibusinputcontext.c`
+- `/workspace/local/ibus-lay-atomic-proof/client/gtk3/ibusimcontext.c`
+- `/workspace/local/ibus-lay-atomic-proof/client/wayland/ibuswaylandim.c`
+- `/workspace/local/ibus-lay-atomic-proof/client/wayland/input-method-unstable-v2-client-protocol.h`
+- `/workspace/local/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs`
 
 ## 3. Rejected Alternatives
 
@@ -690,15 +690,15 @@ capability codec and direct engine-reply contract pass a fresh preflight.
 
 Implemented isolated source:
 
-- `/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframeprivate.h`
-- `/home/ubu/projects/ibus-lay-atomic-proof/src/ibusatomicframe.c`
-- `/home/ubu/projects/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c`
+- `/workspace/local/ibus-lay-atomic-proof/src/ibusatomicframeprivate.h`
+- `/workspace/local/ibus-lay-atomic-proof/src/ibusatomicframe.c`
+- `/workspace/local/ibus-lay-atomic-proof/src/tests/ibus-atomic-frame.c`
 - private source/test registration in the two existing `Makefile.am` files
 
 What was tested:
 
 ```text
-remote host                         e@192.168.3.94, 20 logical CPUs
+remote host                         builder@worker.example, 20 logical CPUs
 compiler                            gcc 11.4.0, gnu11, warnings as errors
 registered tests                    12
 tag sequences length 0..4           341
@@ -1750,7 +1750,7 @@ Implemented source scope:
 
 Measured facts:
 
-- all compilation ran on `e@192.168.3.94`, which exposed 20 logical CPUs; no
+- all compilation ran on `builder@worker.example`, which exposed 20 logical CPUs; no
   local Mutter build directory or local Mutter compiler process was created;
 - the isolated Ubuntu 26.04 toolchain used Meson `1.10.1`, Ninja `1.13.2`,
   GLib `2.88.0` and GCC `15.2.0`; `dpkg-checkbuilddeps` returned clean;
@@ -1822,18 +1822,18 @@ What was not tested:
 
 Exact evidence:
 
-- remote sandbox: `/home/e/lay-proof/mutter-slice3a-20260821`;
+- remote sandbox: `/home/worker/lay-proof/mutter-slice3a-20260821`;
 - normal setup/build/test logs:
-  `/home/e/lay-proof/mutter-slice3a-20260821/logs/meson-normal-setup.log`,
-  `/home/e/lay-proof/mutter-slice3a-20260821/logs/normal-final-build-v4.log`,
-  `/home/e/lay-proof/mutter-slice3a-20260821/logs/normal-final-test-v4.log`,
-  `/home/e/lay-proof/mutter-slice3a-20260821/logs/normal-final-test-detail-v4.log`;
+  `/home/worker/lay-proof/mutter-slice3a-20260821/logs/meson-normal-setup.log`,
+  `/home/worker/lay-proof/mutter-slice3a-20260821/logs/normal-final-build-v4.log`,
+  `/home/worker/lay-proof/mutter-slice3a-20260821/logs/normal-final-test-v4.log`,
+  `/home/worker/lay-proof/mutter-slice3a-20260821/logs/normal-final-test-detail-v4.log`;
 - sanitized setup/build/test logs:
-  `/home/e/lay-proof/mutter-slice3a-20260821/logs/meson-sanitized-setup.log`,
-  `/home/e/lay-proof/mutter-slice3a-20260821/logs/sanitized-final-build-v3.log`,
-  `/home/e/lay-proof/mutter-slice3a-20260821/logs/direct-sanitized-final-test-v3.log`;
+  `/home/worker/lay-proof/mutter-slice3a-20260821/logs/meson-sanitized-setup.log`,
+  `/home/worker/lay-proof/mutter-slice3a-20260821/logs/sanitized-final-build-v3.log`,
+  `/home/worker/lay-proof/mutter-slice3a-20260821/logs/direct-sanitized-final-test-v3.log`;
 - final source hash log:
-  `/home/e/lay-proof/mutter-slice3a-20260821/logs/source-sha256-final-v3.txt`;
+  `/home/worker/lay-proof/mutter-slice3a-20260821/logs/source-sha256-final-v3.txt`;
 - implementation proof receipt:
   `docs/structural_gates/receipts/LAY_IME_BACKEND_ATOMIC_FRAME_PRODUCTION_OWNER_2026-08-21/mutter-slice3a-implementation-proof-v1.json`.
 
@@ -1928,7 +1928,7 @@ Measured remote proof facts:
 
 | Dimension | Result |
 |---|---:|
-| remote host | `e@192.168.3.94`, 20 logical CPUs |
+| remote host | `builder@worker.example`, 20 logical CPUs |
 | normal incremental build | `5/5`, no compiler warning |
 | normal semantic proof | `13/13 PASS` |
 | normal Meson wrapper | `1/1 PASS`, `1.80 s` |
@@ -1949,11 +1949,11 @@ Final changed-source identities:
 
 Exact new logs:
 
-- `/home/e/lay-proof/mutter-slice3a-20260821/logs/normal-replay-copy-v5-build.log`;
-- `/home/e/lay-proof/mutter-slice3a-20260821/logs/normal-replay-copy-v5-test.log`;
-- `/home/e/lay-proof/mutter-slice3a-20260821/logs/normal-replay-copy-v5-test-detail.log`;
-- `/home/e/lay-proof/mutter-slice3a-20260821/logs/sanitized-replay-copy-v5-build.log`;
-- `/home/e/lay-proof/mutter-slice3a-20260821/logs/direct-sanitized-replay-copy-v5-test.log`.
+- `/home/worker/lay-proof/mutter-slice3a-20260821/logs/normal-replay-copy-v5-build.log`;
+- `/home/worker/lay-proof/mutter-slice3a-20260821/logs/normal-replay-copy-v5-test.log`;
+- `/home/worker/lay-proof/mutter-slice3a-20260821/logs/normal-replay-copy-v5-test-detail.log`;
+- `/home/worker/lay-proof/mutter-slice3a-20260821/logs/sanitized-replay-copy-v5-build.log`;
+- `/home/worker/lay-proof/mutter-slice3a-20260821/logs/direct-sanitized-replay-copy-v5-test.log`.
 
 Not tested in this correction: a production `MetaWaylandTextInputFocus`, a real
 text-input-v3 client, Shell or IBus integration, physical application typing,
@@ -2337,7 +2337,7 @@ production latency. Runtime authority changed: **no**. Deployment authority:
 #### 21.14.12 Slice 3B isolated implementation proof
 
 Preflight V6 returned `READY_TO_IMPLEMENT`, `safe_to_implement=true`, with zero
-blockers. The final source was built only on `e@192.168.3.94` with 20 jobs. All
+blockers. The final source was built only on `builder@worker.example` with 20 jobs. All
 eleven allowlisted local source files exactly match the remote proof sandbox by
 SHA-256. The installed Mutter, GNOME Shell, IBus and Lay binaries remain
 byte-identical to the frozen baseline.
@@ -2388,7 +2388,7 @@ The complete measured receipt is
 with SHA-256
 `7a935e8fc62577b0a22cb44d307675ec3a199244fa6baa5fce010ae2f2863716`.
 Remote raw logs remain under
-`/home/e/lay-proof/mutter-slice3a-20260821/logs/`.
+`/home/worker/lay-proof/mutter-slice3a-20260821/logs/`.
 
 This proof establishes the real Mutter text-input-v3 owner in isolation. It
 does not establish the GNOME Shell to Mutter capability hop, the IBus to Shell
@@ -2499,7 +2499,7 @@ focus lineage or native epoch.
 
 Implementation may begin only after separate READY preflights for the IBus
 epoch correction and Shell adapter. Build and dynamic proof run only on
-`e@192.168.3.94` using all 20 CPUs. The isolated denominator must prove:
+`builder@worker.example` using all 20 CPUs. The isolated denominator must prove:
 
 ```text
 unchanged-capability consecutive keys accepted                    PASS
@@ -2532,7 +2532,7 @@ strictly increasing. The focused proof now contains two consecutive admitted
 events with one unchanged capability epoch, plus lower-capability, repeated
 event and repeated-native refusal cases.
 
-All compilation and proof ran on `e@192.168.3.94` using the existing isolated
+All compilation and proof ran on `builder@worker.example` using the existing isolated
 normal and private build profiles with 20 jobs:
 
 ```text
@@ -4009,7 +4009,7 @@ v25 concurrent-preedit undo v2            3f37217c...     6,491,216  0
 The `011bc0f1...` engine accepted all seven non-modifier events and applied
 `ghbdtn -> привет`. The replacement `3f37217c...` engine came from the older
 August 16 build tree
-`/home/e/build/lay-immediate-space-material-reuse-20260816-v1`. That source
+`/home/worker/build/lay-immediate-space-material-reuse-20260816-v1`. That source
 tree contains neither `src/bin/lay_ibus_engine/atomic.rs`, the `mod atomic`
 declaration nor the `ProcessKeyEventAtomicV1` method. A later daemon release
 build reused its mutable `target/release` directory and overwrote the atomic

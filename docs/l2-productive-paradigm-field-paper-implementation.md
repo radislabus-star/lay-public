@@ -7,7 +7,7 @@ Status: `PAPER_IMPLEMENTATION_COMPLETE`, `COMPILER_CONTOUR_IMPLEMENTED`,
 Date: 2026-08-11.
 
 Owning design:
-`/home/ubu/projects/lay/docs/l2-productive-paradigm-field-canonical-design.md`.
+`/workspace/local/lay/docs/l2-productive-paradigm-field-canonical-design.md`.
 
 This document turns the canonical direction into an implementable specification.
 It closes the twelve open design decisions in the owning design at paper level.
@@ -2998,7 +2998,7 @@ canonical ownership reduce, context replay, and context sort. It did not
 rebuild or mutate L1.1 or canonical L2. The resulting package was:
 
 ```text
-path       /home/e/projects/lay-productive-v1-build-20260811/out/LAY-L2-PRODUCTIVE-PARADIGM-V1-SHADOW-V63.p2m
+path       /workspace/worker/lay-productive-v1-build-20260811/out/LAY-L2-PRODUCTIVE-PARADIGM-V1-SHADOW-V63.p2m
 bytes      17,309,944
 sha256     5b80513cb33d3b82b4b9829742ecab6e4fc3248694f215d252901b630b122238
 mmap       true

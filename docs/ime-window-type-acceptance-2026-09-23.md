@@ -18,7 +18,7 @@ The 2026-09-23 candidate `f17191f4…321548c` physically failed in Firefox:
 Tab returned `handled=false` with a visible completion, and the user reported
 only one direction of Double Shift. It was rolled back to the accepted binary
 `daaa47bf…687b88`. The revised source is **not persistently installed**. Incident receipt:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/incident-receipt.json`.
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/incident-receipt.json`.
 
 | Window/input class | Local representative | Visible IME + Tab | Double Shift round trip | Double Shift autocorrection undo | Exact installed candidate receipt |
 | --- | --- | --- | --- | --- | --- |
@@ -47,9 +47,9 @@ The Firefox row ran on temporarily installed and loaded engine SHA-256
 Each scoped test restored installed and loaded SHA-256
 `daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88`
 and the active Lay daemon afterwards. The two receipts are in
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-td121_tab_two_toggles-20260923-044512/`
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-td121_tab_two_toggles-20260923-044512/`
 and
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-td121_known_autocorrect_undo-20260923-044418/`.
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-td121_known_autocorrect_undo-20260923-044418/`.
 The owned fresh Firefox window is one textarea representative; the user's
 existing Firefox window and other input classes remain untested on these bytes.
 
@@ -63,9 +63,9 @@ unchanged. GTK reported IBus capabilities 41, with surrounding text but without
 the exact-refresh capability; the Firefox adapter reported 1073741865 with
 that capability. The following Double Shift converted it to `ge,ktretn `. The two
 receipts are at
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gtk-td121_tab_two_toggles-20260923-044838/`
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gtk-td121_tab_two_toggles-20260923-044838/`
 and
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gtk-td121_known_autocorrect_undo-20260923-044900/`.
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gtk-td121_known_autocorrect_undo-20260923-044900/`.
 This is an open GTK autocorrection precondition, not evidence that undo
 itself failed. The installed and loaded baseline was restored after both runs.
 
@@ -73,9 +73,9 @@ An owned Firefox `contenteditable` div used the same browser release adapter.
 Its Tab and two-toggle case passed (`просто` after the full round trip), but a
 second case retained `публекует ` at Space with `full_no_apply` at rank. The
 following Shift made an ordinary layout conversion. Receipts:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-contenteditable-td121_tab_two_toggles-20260923-045217/`
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-contenteditable-td121_tab_two_toggles-20260923-045217/`
 and
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-contenteditable-td121_known_autocorrect_undo-20260923-045242/`.
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-contenteditable-td121_known_autocorrect_undo-20260923-045242/`.
 The installed and loaded baseline was restored after both runs.
 
 Both owned Chrome input classes accepted Tab and completed two Double Shift
@@ -86,10 +86,10 @@ stopped before any input while that identity rule was too narrow. Neither
 Chrome undo case applied autocorrection before Shift; both reported a normal
 word followed by an ordinary layout conversion. Chrome advertised IBus
 capabilities 41 (surrounding text present, exact refresh absent). Receipts:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-chrome-td121_tab_two_toggles-20260923-045527/`,
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-chrome-td121_known_autocorrect_undo-20260923-045555/`,
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-chrome-contenteditable-td121_tab_two_toggles-20260923-045641/`, and
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-chrome-contenteditable-td121_known_autocorrect_undo-20260923-045706/`.
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-chrome-td121_tab_two_toggles-20260923-045527/`,
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-chrome-td121_known_autocorrect_undo-20260923-045555/`,
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-chrome-contenteditable-td121_tab_two_toggles-20260923-045641/`, and
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-chrome-contenteditable-td121_known_autocorrect_undo-20260923-045706/`.
 The user's existing Chrome profile and focus-transfer case remain untested on
 this candidate. The accepted installed and loaded engine was restored after
 every run.
@@ -99,9 +99,9 @@ dynamic Tab check reported `handled=true`, one completion acceptance and two
 status-3 exact-tail delegations. Its separate correction attempt left
 `публекует ` unchanged before Shift and therefore could not exercise undo.
 Receipts:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gtk-textview-td121_tab_two_toggles-20260923-045845/`
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gtk-textview-td121_tab_two_toggles-20260923-045845/`
 and
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gtk-textview-td121_known_autocorrect_undo-20260923-045907/`.
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gtk-textview-td121_known_autocorrect_undo-20260923-045907/`.
 Gedit itself was not opened; this row does not assert Gedit-specific behavior.
 
 An owned GNOME Terminal VTE window used a timeout-limited `read` command to
@@ -110,9 +110,9 @@ and two Double Shift gestures completed locally inside IME (`ManualToggleV3`
 status 1 twice, with opposite layout plans). Its undo stimulus did not apply
 correction: Space reported `prefetch_not_ready`, then ordinary layout
 conversion occurred. Receipts:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gnome-terminal-td121_tab_two_toggles-20260923-050152/`
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gnome-terminal-td121_tab_two_toggles-20260923-050152/`
 and
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gnome-terminal-td121_known_autocorrect_undo-20260923-050218/`.
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gnome-terminal-td121_known_autocorrect_undo-20260923-050218/`.
 The candidate was temporarily loaded and the accepted binary restored after
 each run. Other terminal emulators are separate rows.
 
@@ -120,22 +120,22 @@ An owned Kitty window ran the same timeout-limited text capture. Tab accepted
 the visible suffix and two IME-local Double Shift plans made a round trip;
 the applied-correction undo stimulus again received `prefetch_not_ready` at
 Space, leaving no correction to cancel. Receipts:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-kitty-td121_tab_two_toggles-20260923-050327/`
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-kitty-td121_tab_two_toggles-20260923-050327/`
 and
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-kitty-td121_known_autocorrect_undo-20260923-050351/`.
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-kitty-td121_known_autocorrect_undo-20260923-050351/`.
 The accepted installed and loaded engine was restored after both runs.
 
 Gedit 48.1 standalone launch was attempted separately for the same row, but
 its process exited with SIGSEGV before window focus or any injected input;
 GLib-GIO reported a `g_dbus_action_group_get` assertion. This is a client
 startup blocker, not a Tab/Shift result. Scoped no-input receipt:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gedit-td121_tab_two_toggles-20260923-050642/`.
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-gedit-td121_tab_two_toggles-20260923-050642/`.
 
 The isolated LibreOffice Writer fixture could not be prepared: headless ODT
 conversion exited 1 with `com::sun::star::deployment::DeploymentException`
 and no file. No Writer input was sent; this remains a startup blocker, not a
 Tab/Shift result. Receipt:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/writer-fixture/LAUNCH-RECEIPT.json`
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/writer-fixture/LAUNCH-RECEIPT.json`
 (SHA-256 `7d802cac8d45335b0cd6ac030f00231fc6b84b5168f64b0187ed60d9edfb1e09`).
 
 VS Code was launched with a distinct temporary Snap profile and local empty
@@ -143,20 +143,20 @@ file. Its window appeared after the sender's readiness deadline, so the guard
 sent **no** test input. The Snap main process detached from the launcher; its
 exact test-profile process group was terminated and verified absent. This is
 a harness/startup attempt, not a VS Code IME verdict. Receipt:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-code-td121_tab_two_toggles-20260923-051019/`.
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-code-td121_tab_two_toggles-20260923-051019/`.
 The accepted installed and loaded engine remains active.
 
 An owned local PySide6 `QTextEdit` supplied a Qt multiline-widget
 representative. Tab accepted the actually visible `про` + `верка` suggestion
 as `проверка`, then two Double Shift gestures completed a text round trip
 through status-3 exact-tail delegations. Passed receipt:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-qt-textedit-td121_tab_two_toggles-20260923-051244/`
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-qt-textedit-td121_tab_two_toggles-20260923-051244/`
 (trace SHA-256 `c00a316242f87d135128e2913ccae29eaad4182b53a8ab3f1a0564c54deb1c3e`).
 The separate `публекует` attempt left the typo unchanged at Space because
 autocorrection reported `prefetch_not_ready`; the following Double Shift made
 an ordinary layout conversion. This is no applied-correction undo verdict.
 Negative receipt:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-qt-textedit-td121_known_autocorrect_undo-20260923-051308/`
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-qt-textedit-td121_known_autocorrect_undo-20260923-051308/`
 (trace SHA-256 `7b4656cf7e11559fc0fb5ccf09f70a7a264d9c95189bfe8abcd24c73ecc1d8d9`).
 The accepted installed and loaded engine SHA was restored after both runs.
 This local widget does not establish Telegram Desktop behavior.
@@ -166,13 +166,13 @@ textarea typed `про`, then Tab returned `handled=false` and moved DOM focus
 out of the field. The guarded run stopped before either Double Shift; this
 contradicts the earlier Tab PASS for that input class, so the class is not
 stable. Failed receipt:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-td121_tab_two_toggles-20260923-103142/`.
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/installed-candidate-firefox-td121_tab_two_toggles-20260923-103142/`.
 
 The persistent owned Firefox window PID 1702519 was then left open for the
 user. In its browser address bar, a controlled physical-uinput run after
 `Ctrl+L` and selection made two layout conversions, but case drift changed
 `просто` to `ПрОсТо`; it is not a clean acceptance result. Receipt:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/persistent-firefox-window-20260923-103450/addressbar-physical-receipt.json`.
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/persistent-firefox-window-20260923-103450/addressbar-physical-receipt.json`.
 The closer reproduction opened a fresh neighboring tab in the **same** window
 and used the newly focused address bar without `Ctrl+L` or selection. The
 first Double Shift was handled (`ManualToggleV3` status 1); Firefox then sent
@@ -182,7 +182,7 @@ Shift; the second RPC returned `not_handled`, `reason=context_authority`,
 `bridge_token_live=true`, `manual_toggle_allowed=false`. The daemon did
 recognize both physical double taps. The sampled accessibility text stayed
 empty, so no visually correct two-way cycle is established. Exact receipt:
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/persistent-firefox-window-20260923-103450/addressbar-neighbor-physical-receipt.json`.
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/persistent-firefox-window-20260923-103450/addressbar-neighbor-physical-receipt.json`.
 The trace and daemon log are in the same directory. The candidate was
 automatically rolled back to installed and loaded `daaa47bf…687b88` after
 the probe, and the window was not closed.

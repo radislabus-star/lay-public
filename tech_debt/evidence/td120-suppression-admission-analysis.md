@@ -1,7 +1,7 @@
 # TD-120: admission analysis and selected ordinary-word lifecycle contract
 
 Date: 2026-09-05. Source baseline: `cc1e2207519801ca0f9b7c6963897b55953a7751`.
-Worktree: `/home/ubu/projects/lay-tech-debt-20260831`.
+Worktree: `/workspace/local/lay-tech-debt-20260831`.
 This is source/design evidence, not a test receipt or production admission by
 itself. No Cargo, probe, service, installed binary, configuration or production
 source changes were performed. `runtime_authority_changed=false`.
@@ -338,7 +338,7 @@ existing daemon route tests for V1 reachability/text-branch characterization.
 The parent reported a successful installed-byte private baseline after this
 source analysis: 6 executed cases, manual toggle then deletion and a new
 `gjxbnfq` ended in `manual_toggle_suppressed_OBSERVED`. Receipt path:
-`/home/ubu/.cache/lay/layout-phase2-private-31hE0X/receipt.json`, parent-reported
+`/home/local-user/.cache/lay/layout-phase2-private-31hE0X/receipt.json`, parent-reported
 SHA-256 `d75822dd10425f422b5f7a2d5b942eeb79e8f742c913446936bd740483acd82c`.
 This agent did not rerun or independently hash that receipt. The probe disabled
 autocorrect/model work, so it strengthens mechanism reproduction only; it does

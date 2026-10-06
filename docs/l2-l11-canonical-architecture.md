@@ -76,7 +76,7 @@ Verdict: `PASS_canonical_live_owner`.
 
 Exact receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_CANONICAL_LIVE_OWNER_CUTOVER_2026-08-01.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_CANONICAL_LIVE_OWNER_CUTOVER_2026-08-01.json`
 
 Runtime authority changed: `false`.
 
@@ -103,9 +103,9 @@ Verdict: `PASS_optimization_FAIL_latency`. Runtime authority changed: `false`.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WORKER_CACHE_V32_WORKERS20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WORKER_CACHE_V32_WORKERS1_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WORKER_CACHE_V32_BUILD_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WORKER_CACHE_V32_WORKERS20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WORKER_CACHE_V32_WORKERS1_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WORKER_CACHE_V32_BUILD_2026-08-10.time.txt
 ```
 
 ## 26. 2026-08-10 Productive Normalized Geometry V33
@@ -145,9 +145,9 @@ preservation, live L3 selection, daemon/IBus latency and installed clients.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_WORKERS20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_WORKERS1_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_BUILD_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_WORKERS20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_WORKERS1_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_NORMALIZED_GEOMETRY_V33_BUILD_2026-08-10.time.txt
 ```
 
 ## 27. 2026-08-10 Rejected Per-Rule Bound V34
@@ -183,9 +183,9 @@ daemon/IBus latency and installed clients.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_WORKERS20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_WORKERS1_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_BUILD_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_WORKERS20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_WORKERS1_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_EXPANSION_V34_BUILD_2026-08-10.time.txt
 ```
 
 ## 28. 2026-08-10 Rejected Lemma Bound V35
@@ -218,9 +218,9 @@ daemon/IBus latency and installed clients.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_WORKERS20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_WORKERS1_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_BUILD_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_WORKERS20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_WORKERS1_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BOUND_V35_BUILD_2026-08-10.time.txt
 ```
 
 ## 24. 2026-08-10 Productive Warm Repeat V31
@@ -249,9 +249,9 @@ fix. The proof-only warmup must not enter the runtime route.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WARM_REPEAT_V31_WORKERS20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WARM_REPEAT_V31_WORKERS1_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WARM_REPEAT_V31_BUILD_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WARM_REPEAT_V31_WORKERS20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WARM_REPEAT_V31_WORKERS1_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_WARM_REPEAT_V31_BUILD_2026-08-10.time.txt
 ```
 
 Runtime authority changed: `false`.
@@ -295,11 +295,11 @@ Verdict: `PASS_optimization_FAIL_latency`. Runtime authority changed: `false`.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS20_13X10_2026-08-10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS1_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS1_13X10_2026-08-10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_BUILD_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS20_13X10_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS1_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_WORKERS1_13X10_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_CACHE_V30_BUILD_2026-08-10.time.txt
 ```
 
 ## 22. 2026-08-10 Associative Cache V28 And Parallelism Probe V29
@@ -341,11 +341,11 @@ final bounded readout. Package/frontier/evidence must remain unchanged.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_ASSOCIATIVE_CACHE_V28_WORKERS20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_ASSOCIATIVE_CACHE_V28_WORKERS1_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_ASSOCIATIVE_CACHE_V28_BUILD_2026-08-10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_PARALLELISM_V29_OUTER20_INNER1_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_PARALLELISM_V29_OUTER1_INNER1_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_ASSOCIATIVE_CACHE_V28_WORKERS20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_ASSOCIATIVE_CACHE_V28_WORKERS1_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_ASSOCIATIVE_CACHE_V28_BUILD_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_PARALLELISM_V29_OUTER20_INNER1_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_PARALLELISM_V29_OUTER1_INNER1_13X10_2026-08-10.json
 ```
 
 Runtime authority changed: `false`.
@@ -382,11 +382,11 @@ replacement only on misses. Runtime authority changed: `false`.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS20_13X10_2026-08-10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS1_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS1_13X10_2026-08-10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_BUILD_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS20_13X10_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS1_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_WORKERS1_13X10_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECT_CACHE_V27_BUILD_2026-08-10.time.txt
 ```
 
 ## 20. 2026-08-10 Productive Decoder Cache V26
@@ -420,7 +420,7 @@ directional pairs.
 
 ### Measured Facts
 
-Remote release build on `e@192.168.3.94` completed with exit `0`:
+Remote release build on `builder@worker.example` completed with exit `0`:
 
 ```text
 build wall                       2:16.52
@@ -472,11 +472,11 @@ physical application behavior.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS20_13X10_2026-08-10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS1_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS1_13X10_2026-08-10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_BUILD_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS20_13X10_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS1_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_WORKERS1_13X10_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DECODER_CACHE_V26_BUILD_2026-08-10.time.txt
 ```
 
 Runtime authority changed: `false`.
@@ -582,10 +582,10 @@ Not tested in V22:
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_RAW_V20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_TWO_LANE_V21_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_EXACT_V22_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_EXACT_V22_13X10_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_RAW_V20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_TWO_LANE_V21_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_EXACT_V22_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_EXACT_V22_13X10_2026-08-10.time.txt
 ```
 
 Runtime authority changed: `false`.
@@ -636,7 +636,7 @@ Not tested: larger denominator, clean/ambiguity retention, live L3 handoff,
 release latency, compact sidecar size, daemon or IBus behavior.
 
 Exact receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BASIN_PARETO_V7_DEBUG_13X10_2026-08-10.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEMMA_BASIN_PARETO_V7_DEBUG_13X10_2026-08-10.json`.
 
 Runtime authority changed: `false`.
 
@@ -688,7 +688,7 @@ Not tested: larger denominator, clean/ambiguity retention, live L3 handoff,
 release latency, compact sidecar size, daemon or IBus behavior.
 
 Exact receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_PARETO_READOUT_V6_DEBUG_13X10_2026-08-10.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_PARETO_READOUT_V6_DEBUG_13X10_2026-08-10.json`.
 
 Runtime authority changed: `false`.
 
@@ -742,7 +742,7 @@ across independent axes; conflicting evidence remains a lattice for L3.
 - live IME authority.
 
 Exact receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_EDGE_MORPHEME_V5_DEBUG_13X10_2026-08-10.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_EDGE_MORPHEME_V5_DEBUG_13X10_2026-08-10.json`.
 
 Runtime authority changed: `false`.
 
@@ -800,7 +800,7 @@ anti-centers must be trained from actual competitor observations.
 - live runtime authority.
 
 Exact receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_COMPATIBILITY_V4_DEBUG_13X10_2026-08-10.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_COMPATIBILITY_V4_DEBUG_13X10_2026-08-10.json`.
 
 Runtime authority changed: `false`.
 
@@ -864,7 +864,7 @@ must come from actual competitor evidence, not from other positive labels.
 - live IME authority.
 
 Exact receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_CONTEXT_POSTERIOR_V3_DEBUG_13X10_2026-08-10.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_CONTEXT_POSTERIOR_V3_DEBUG_13X10_2026-08-10.json`.
 
 Runtime authority changed: `false`.
 
@@ -926,7 +926,7 @@ What was not tested:
 
 Receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEAVE_LEMMAS_OUT_MICRO_13X10_2026-08-10.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LEAVE_LEMMAS_OUT_MICRO_13X10_2026-08-10.json`
 
 Runtime authority changed: `false`.
 
@@ -946,14 +946,14 @@ deterministic candidates
 That is good enough for continued development, but it is not a clean final
 architecture. Right now:
 
-- `/home/ubu/projects/lay/src/nanda_wave/lexical_grokking/restoration.rs`
+- `/workspace/local/lay/src/nanda_wave/lexical_grokking/restoration.rs`
   owns true `L1.1` lexical restoration readout;
-- `/home/ubu/projects/lay/src/correction_core/candidate_sources.rs`
+- `/workspace/local/lay/src/correction_core/candidate_sources.rs`
   still owns the live candidate merge, but the live route now resolves through
   `CandidateReadoutRoute::L2FieldShadow`;
-- `/home/ubu/projects/lay/src/nanda_wave/morphology_phase/field.rs`
+- `/workspace/local/lay/src/nanda_wave/morphology_phase/field.rs`
   is a shadow morphology teacher, not the live canonical `L2`;
-- `/home/ubu/projects/lay/src/nanda_wave/l2_candidate_phase.rs`
+- `/workspace/local/lay/src/nanda_wave/l2_candidate_phase.rs`
   is a transition-phase package, not the final `L2` above `L1.1`.
 
 The new `L2` must become one explicit owner:
@@ -1009,7 +1009,7 @@ Implementation status on 2026-07-26:
 - `CandidateReadoutRoute::compare_reference()` now resolves to
   `CandidateReadoutRoute::FullWave`;
 - the new route lives under
-  `/home/ubu/projects/lay/src/nanda_wave/l2_field/`;
+  `/workspace/local/lay/src/nanda_wave/l2_field/`;
 - `L2FieldShadow` no longer requires an injected
   `L2CorrectionPeakContext` for candidate birth;
 - `L2FieldShadow` now self-prepares its local lexical / boundary contour
@@ -1023,7 +1023,7 @@ Implementation status on 2026-07-26:
   candidates, and only activates when exactly one same-lemma cohort exists
   inside the bounded shadow field;
 - the donor is backed by the existing 462k-form morphology package through
-  `/home/ubu/projects/lay/src/nanda_wave/morphology_phase/runtime.rs`;
+  `/workspace/local/lay/src/nanda_wave/morphology_phase/runtime.rs`;
 - short low-entropy tokens of length `<= 3` currently bypass `L1.1` seeded
   birth and stay on the plain lexical field to preserve abstain parity on
   ambiguous local signals;
@@ -1031,7 +1031,7 @@ Implementation status on 2026-07-26:
   `L2FieldShadowBoundary` on the live route rather than `BoundaryCell32`;
 - the local donor winner multiplier is now explicit as
   `SHADOW_DONOR_WINNER_WEIGHT = 5` in
-  `/home/ubu/projects/lay/src/nanda_wave/l2_field/bridge.rs`;
+  `/workspace/local/lay/src/nanda_wave/l2_field/bridge.rs`;
 - it is still donor-based and currently reuses the existing lexical-phase,
   boundary, layout, and `L1.1` donor packages rather than a standalone
   canonical `L2` package;
@@ -1066,7 +1066,7 @@ What was tested for this code step:
 - `scripts/cargo-guard.sh run --bin lay -- --help`: shows
   `--compare-candidate-routes`;
 - `target/debug/lay-nanda-wave-eval --l2-route-compare-report --limit 200 --examples 0`
-  on `/home/ubu/.local/share/lay/corrections.jsonl`:
+  on `/home/local-user/.local/share/lay/corrections.jsonl`:
   `records_seen = 2939`,
   `records_used = 134`,
   `surface_diverged = 18 / 134`,
@@ -1101,8 +1101,8 @@ Verdict scope:
 
 Receipt path:
 
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_LIVE_OWNER_IME_DAEMON_GATE_2026-07-26.json`
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_LEGACY_ROUTE_REMOVAL_2026-07-26.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_LIVE_OWNER_IME_DAEMON_GATE_2026-07-26.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_LEGACY_ROUTE_REMOVAL_2026-07-26.json`
 
 Runtime authority changed:
 
@@ -1122,7 +1122,7 @@ What was tested for this code step:
 - `scripts/cargo-guard.sh test --lib same_lemma_`: passed;
 - `scripts/cargo-guard.sh test --lib l2_field_shadow_route_`: passed;
 - `target/debug/lay-nanda-wave-eval --l2-route-compare-report --limit 200 --examples 0`
-  on `/home/ubu/.local/share/lay/corrections.jsonl`:
+  on `/home/local-user/.local/share/lay/corrections.jsonl`:
   `records_seen = 2938`,
   `records_used = 134`,
   `surface_diverged = 0 / 134`,
@@ -1137,9 +1137,9 @@ What was tested for this code step:
 Measured implementation facts:
 
 - the morphology donor now lives in
-  `/home/ubu/projects/lay/src/nanda_wave/l2_field/bridge.rs`;
+  `/workspace/local/lay/src/nanda_wave/l2_field/bridge.rs`;
 - it calls
-  `/home/ubu/projects/lay/src/nanda_wave/morphology_phase/runtime.rs`
+  `/workspace/local/lay/src/nanda_wave/morphology_phase/runtime.rs`
   lazily through `shadow_same_lemma_surface_readout(...)`;
 - it only evaluates already-born shadow surface candidates;
 - it only runs for Cyrillic local candidates;
@@ -1165,7 +1165,7 @@ Verdict scope:
 
 Receipt path:
 
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_CORRECTIONS_200_SAME_LEMMA_MORPHOLOGY_2026-07-26.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_CORRECTIONS_200_SAME_LEMMA_MORPHOLOGY_2026-07-26.json`
 
 Runtime authority changed:
 
@@ -1258,7 +1258,7 @@ PASS does not prove a cold unknown token can finish inside `8 ms`.
 
 Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-replay-attempt2.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-replay-attempt2.json`
 
 Runtime authority changed:
 
@@ -1316,7 +1316,7 @@ mechanism. Slice 2 permits the shared GUI identity and scheduling work in Slice
 
 Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice2-single-flight-reuse.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice2-single-flight-reuse.json`
 
 ## 13. 2026-08-16 Productive V90 Active-Binding Rebuild
 
@@ -1376,8 +1376,8 @@ unknown digests remain rejected. The frozen manifest is not rewritten.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/resume-build-receipt.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/resume-build.time.txt
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/resume-build-receipt.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/resume-build.time.txt
 ```
 
 ### Fixed Proof And Semantic Identity
@@ -1418,11 +1418,11 @@ authority rule or runtime route changed.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-full-13x100.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-semantic-full-13x100.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-semantic-normative-clean-workers1-13x100.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/baseline-v90-semantic-normative-clean-workers1-13x100.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_DEPLOY_DECISION_2026-08-16.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-full-13x100.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-semantic-full-13x100.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-semantic-normative-clean-workers1-13x100.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/baseline-v90-semantic-normative-clean-workers1-13x100.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_DEPLOY_DECISION_2026-08-16.json
 ```
 
 ### Live Active-Binding Deployment
@@ -1439,7 +1439,7 @@ recovery SHA-256                            de7972c80448dc792759d70de99cda6ec48c
 daemon PID / package maps                   1447582 / 2
 managed engine PID / package maps           1447607 / 2
 global IBus PID                             3702
-rollback                                    /home/ubu/.local/lib/lay/rollback/1.0.33-pre-v90-v9-20260816-064416
+rollback                                    /home/local-user/.local/lib/lay/rollback/1.0.33-pre-v90-v9-20260816-064416
 ```
 
 Installed direct-query measurements exposed a route mismatch:
@@ -1464,7 +1464,7 @@ dedicated same-process live-owner benchmark exists.
 
 Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_LIVE_DEPLOY_2026-08-16.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_LIVE_DEPLOY_2026-08-16.json`
 
 ## 46. 2026-08-16 Unified IME Token Field Plan
 
@@ -1509,15 +1509,15 @@ remove candidate competition.
 Full consequence analysis, state machines, file slices, rollback policy and
 promotion gates:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-unified-token-field-implementation-plan-2026-08-16.md`
+`/workspace/local/lay-l1-exact-peak-search/docs/ime-unified-token-field-implementation-plan-2026-08-16.md`
 
 Design route contract:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_UNIFIED_TOKEN_FIELD_ROUTE_2026-08-16.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_UNIFIED_TOKEN_FIELD_ROUTE_2026-08-16.json`
 
 Exact structural receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_ROUTE_DESIGN_2026-08-16.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_ROUTE_DESIGN_2026-08-16.json`
 
 ### 46.1 Implemented GUI identity and Space lease
 
@@ -1555,7 +1555,7 @@ not changed.
 
 Exact measured receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice3-shared-gui-identity.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice3-shared-gui-identity.json`
 
 What was tested:
 
@@ -1661,9 +1661,9 @@ Not yet proved:
 
 Exact receipts:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observability-and-duplicate-removal.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observability-and-duplicate-removal.json`
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observed-source-route.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observed-source-route.json`
 
 ### 46.3 Canonical-only correction route and physical-token ownership
 
@@ -1745,11 +1745,11 @@ Verdict scope: route diagnosis and design only. Runtime authority changed:
 
 Design contract:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_CANONICAL_LAYOUT_TOKEN_OWNERSHIP_ROUTE_V1_2026-08-16.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_CANONICAL_LAYOUT_TOKEN_OWNERSHIP_ROUTE_V1_2026-08-16.json`
 
 The exact design receipt and direct V9 query receipt are written under:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_CANONICAL_LAYOUT_TOKEN_OWNERSHIP_2026-08-16/`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_CANONICAL_LAYOUT_TOKEN_OWNERSHIP_2026-08-16/`
 
 ### 46.4 Typed contour field after hybrid removal
 
@@ -1833,8 +1833,8 @@ timeout, package failure, tie, or abstention.
 Measured evidence retained for this checkpoint:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TYPED_CONTOUR_FIELD_2026-08-16/hybrid-removed-compatible-package.log
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TYPED_CONTOUR_FIELD_2026-08-16/compatible-package-debug.log
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TYPED_CONTOUR_FIELD_2026-08-16/hybrid-removed-compatible-package.log
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TYPED_CONTOUR_FIELD_2026-08-16/compatible-package-debug.log
 ```
 
 What has not been tested at this checkpoint:
@@ -1913,7 +1913,7 @@ package still requires its own package proof and explicit reload.
 
 ### 13.4 Measured Software Proof
 
-Remote host: `e@192.168.3.94`, 20 logical CPUs.
+Remote host: `builder@worker.example`, 20 logical CPUs.
 
 ```text
 full IME tests                     195 / 195 PASS
@@ -1968,7 +1968,7 @@ Runtime authority changed at this checkpoint:
 
 Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_NONBLOCKING_PRECOGNITION_SOFTWARE_PROOF_2026-08-16.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_NONBLOCKING_PRECOGNITION_SOFTWARE_PROOF_2026-08-16.json`
 
 ## 2026-08-15 IBus Space Boundary And Physical Layout Recovery
 
@@ -2141,7 +2141,7 @@ changed-suite verdict                                           PASS
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_LIVE_OWNER_HANDOFF_2026-08-12.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_LIVE_OWNER_HANDOFF_2026-08-12.json
 ```
 
 ### What was not tested
@@ -2167,7 +2167,7 @@ owner. No V91 package was built and no morphology corpus was recrystallized.
 The release was built from the isolated remote source snapshot:
 
 ```text
-/home/e/projects/lay-v90-live-source-20260812
+/workspace/worker/lay-v90-live-source-20260812
 ```
 
 The fixed `13 x 100 x 2 cohorts` proof over the release source produced:
@@ -2193,11 +2193,11 @@ V90 runtime result as a release exception.
 Installed artifacts:
 
 ```text
-/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m
+/home/local-user/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2m
 bytes        17,309,944
 sha256       9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438
 
-/home/ubu/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r
+/home/local-user/.local/share/lay/nanda_wave/l2/LAY-L2-PRODUCTIVE-PARADIGM-v90.p2r
 bytes         2,123,112
 sha256       44a20f7aaf7578a960477fbfb1d30c9828b9d71f037e3ad1b2d57bc7fa5568c4
 ```
@@ -2231,14 +2231,14 @@ The physical ordinary-input and double-Shift rollback checks remain explicitly
 pending user confirmation. The rollback snapshot is:
 
 ```text
-/home/ubu/.local/lib/lay/rollback/1.0.20-pre-v90-20260812-130206
+/home/local-user/.local/lib/lay/rollback/1.0.20-pre-v90-20260812-130206
 ```
 
 Exact deployment receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_LIVE_DEPLOY_2026-08-12.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_LIVE_DEPLOY_FIXED_PROOF_2026-08-12.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_LIVE_DEPLOY_2026-08-12.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_LIVE_DEPLOY_FIXED_PROOF_2026-08-12.json
 ```
 
 ## 14. 2026-08-12 Atomic IME Readout Publication
@@ -2260,7 +2260,7 @@ through `LayIbusEngine::publish_preedit_payload`. A fresh candidate cannot be
 exposed as an empty or stale intermediate frame while replacing the previous
 suffix.
 
-Measured gate on `e@192.168.3.94`, `20` logical CPUs:
+Measured gate on `builder@worker.example`, `20` logical CPUs:
 
 ```text
 focused candidate rebirth                  1 / 1 PASS
@@ -2290,7 +2290,7 @@ restarted. Both active processes still mmap Productive V90 `.p2m/.p2r`.
 
 Receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_PREEDIT_ATOMIC_REBIRTH_2026-08-12.json`
+`/workspace/local/lay/docs/structural_gates/receipts/IME_PREEDIT_ATOMIC_REBIRTH_2026-08-12.json`
 
 ## 17. Unified Live IME Candidate Field, 2026-08-12
 
@@ -2394,7 +2394,7 @@ settlement route.
 
 ### 17.6 Proof and baseline comparison
 
-All Cargo work was run on `e@192.168.3.94` through
+All Cargo work was run on `builder@worker.example` through
 `scripts/cargo-guard.sh`.
 
 ```text
@@ -2437,7 +2437,7 @@ Not tested before installation:
 
 ### 17.8 Installed release result
 
-Release `1.0.23` was built on `e@192.168.3.94` and installed on 2026-08-12.
+Release `1.0.23` was built on `builder@worker.example` and installed on 2026-08-12.
 
 ```text
 remote release elapsed          204.18 s
@@ -2476,7 +2476,7 @@ Software and runtime promotion are complete. Physical `Tab`, morphology
 rerank, responsive `Space`, and double-Shift rollback remain user-observed
 gates. Rollback:
 
-`/home/ubu/.local/lib/lay/rollback/1.0.22-pre-1.0.23-20260812-194801`
+`/home/local-user/.local/lib/lay/rollback/1.0.22-pre-1.0.23-20260812-194801`
 
 ### 17.9 Physical smoke result
 
@@ -2488,7 +2488,7 @@ unrecorded rather than being inferred from the broad positive result.
 
 Receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_UNIFIED_CANDIDATE_FIELD_2026-08-12.json`
+`/workspace/local/lay/docs/structural_gates/receipts/IME_UNIFIED_CANDIDATE_FIELD_2026-08-12.json`
 
 ## 20. 2026-08-10 Productive Geometry And Slot Preparation V33-V38
 
@@ -2569,18 +2569,18 @@ sample measured `9.974 / 85.832 ms`, so the concurrent tail is not promoted.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V33_PERF_SELF_2026-08-10.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V33_PERF_WORKERS1_13X100_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V33_PERF_BUILD_2026-08-10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_WORKERS1_13X100_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_WORKERS20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_BUILD_2026-08-10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_WORKERS1_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_WORKERS20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_BUILD_2026-08-10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS1_13X100_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_BUILD_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V33_PERF_SELF_2026-08-10.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V33_PERF_WORKERS1_13X100_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V33_PERF_BUILD_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_WORKERS1_13X100_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_WORKERS20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GEOMETRY_SCRATCH_V36_BUILD_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_WORKERS1_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_WORKERS20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SLOT_CACHE_V37_BUILD_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS1_13X100_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_BUILD_2026-08-10.time.txt
 ```
 
 ## 21. 2026-08-10 Productive Small-Range Dedup V39
@@ -2634,7 +2634,7 @@ single-client nor concurrent p99 is promoted.
 
 Exact receipts:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/`.
 
 The unstripped V39 profile measured the next self-costs as:
 
@@ -2696,7 +2696,7 @@ The twenty-worker V40 `13 x 10` probe measured `15.114 / 97.993 ms`.
 
 Exact receipts:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/`.
 
 ## 23. 2026-08-10 Productive Common-Edge Damerau V41
 
@@ -2739,7 +2739,7 @@ V39 median                  ~2.240    ~5.956 ms
 
 Exact receipts:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/`.
 
 ## 24. 2026-08-10 Productive Paradigm Field Design Boundary
 
@@ -2761,16 +2761,16 @@ baseline.
 The next canonical kernel must remove repeated per-surface representation
 rather than redistribute it. The detailed design is:
 
-`/home/ubu/projects/lay/docs/l2-productive-paradigm-field-canonical-design.md`.
+`/workspace/local/lay/docs/l2-productive-paradigm-field-canonical-design.md`.
 
 The build-ready paper implementation, including typed records, exact algorithms,
 calibration, package format, delta protocol, and proof denominators, is:
 
-`/home/ubu/projects/lay/docs/l2-productive-paradigm-field-paper-implementation.md`.
+`/workspace/local/lay/docs/l2-productive-paradigm-field-paper-implementation.md`.
 
 Paper review and defect-closure matrix:
 
-`/home/ubu/projects/lay/docs/l2-productive-paradigm-field-paper-review-2026-08-10.md`.
+`/workspace/local/lay/docs/l2-productive-paradigm-field-paper-review-2026-08-10.md`.
 
 Its fixed route is:
 
@@ -2798,7 +2798,7 @@ pass.
 
 Exact V42 receipts:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/`.
 
 ## 13. 2026-08-10 Productive Context-Axis Backoff V8
 
@@ -2845,14 +2845,14 @@ Generated forms remain `SuggestOnly`.
 Remote host:
 
 ```text
-e@192.168.3.94
-/home/e/build/lay-l1-shadow
+builder@worker.example
+/home/worker/build/lay-l1-shadow
 ```
 
 Final compact sidecar:
 
 ```text
-/home/e/build/lay-l1-shadow/artifacts/l2-productive-sidecar-v4-axis-context-backoff-2026-08-10/package.bin
+/home/worker/build/lay-l1-shadow/artifacts/l2-productive-sidecar-v4-axis-context-backoff-2026-08-10/package.bin
 bytes             79,424,614 B, approximately 76 MiB
 sha256            ae4e2764febead3517329d7532f504a8e4701e6abef89d4631d5a540bffacd52
 known contexts    194
@@ -2946,9 +2946,9 @@ They are retained as a performance blocker, not presented as live IME latency.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_CONTEXT_AXIS_BACKOFF_V8_FORMAT_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_CONTEXT_AXIS_BACKOFF_V8_MICRO_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_CONTEXT_AXIS_BACKOFF_V8_DEBUG_13X100_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_CONTEXT_AXIS_BACKOFF_V8_FORMAT_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_CONTEXT_AXIS_BACKOFF_V8_MICRO_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_CONTEXT_AXIS_BACKOFF_V8_DEBUG_13X100_2026-08-10.json
 ```
 
 Tested:
@@ -3037,7 +3037,7 @@ names, and rank generated surfaces by independent joint evidence.
 - live IME authority or automatic application.
 
 Exact receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_FAMILY_INDEX_V2_DEBUG_13X10_2026-08-10.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_FAMILY_INDEX_V2_DEBUG_13X10_2026-08-10.json`.
 
 Runtime authority changed: `false`.
 
@@ -3127,7 +3127,7 @@ What was tested:
 
 - incremental feature extraction against complete-surface extraction;
 - exact old/new decoded candidate parity for the final-package prefix set;
-- release-optimized execution on `e@192.168.3.94`;
+- release-optimized execution on `builder@worker.example`;
 - preservation of all `96 / 576` candidate limits and score/evidence fields.
 
 What was not tested:
@@ -3166,13 +3166,13 @@ bytes and SHA-256 remained unchanged.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_DAFSA_INCREMENTAL_COMPLETION_1_0_17_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_DAFSA_INCREMENTAL_COMPLETION_1_0_17_2026-08-10.json
 ```
 
 ## 13. 2026-08-10 Canonical Live Hot Deployment Gate
 
 The current canonical L2 worktree was synchronized byte-for-byte to
-`e@192.168.3.94`, compiled with the optimized Cargo `metrics` profile on `19`
+`builder@worker.example`, compiled with the optimized Cargo `metrics` profile on `19`
 build jobs, and measured in three independent processes on CPU set `4-11`.
 The complete bounded lattice remained enabled.
 
@@ -3204,7 +3204,7 @@ reduction was justified by that debug-only result.
 This experiment did not test diverse first touch, the fixed 13-class quality
 proof, or the physical multi-client matrix. Runtime authority did not change.
 Exact receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_CANONICAL_LIVE_HOT_METRICS_3X50_2026-08-10.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_V13_CANONICAL_LIVE_HOT_METRICS_3X50_2026-08-10.json`.
 
 ## 14. 2026-08-10 Canonical L2 Fixed Retention Proof
 
@@ -3284,7 +3284,7 @@ Verdict scope:
 
 Exact receipt:
 
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_CANONICAL_FIXED_RETENTION_13X20000_2026-08-10.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2_V13_CANONICAL_FIXED_RETENTION_13X20000_2026-08-10.json`
 - SHA-256 `9323ba9d65d9bc85a59eda07ab4fd0892286bcb23bcd5b2fe238919929e5c157`
 
 ## 18. Compositional Exact-Form Birth V2 Micro-Proof, 2026-08-09
@@ -3392,7 +3392,7 @@ Verdict: `FAIL_center_compression_target_retention`.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_COMPOSITIONAL_V2_MICRO_100_2026-08-09.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_V13_COMPOSITIONAL_V2_MICRO_100_2026-08-09.json
 ```
 
 Runtime authority changed by this experiment: `false`.
@@ -3473,7 +3473,7 @@ Verdict: `FAIL_lossy_simhash_primary_birth`.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_COMPOSITIONAL_ALL_CENTERS_MATRIX_2026-08-09.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_V13_COMPOSITIONAL_ALL_CENTERS_MATRIX_2026-08-09.json
 ```
 
 Runtime authority changed by this experiment: `false`.
@@ -3569,7 +3569,7 @@ Verdict: `REJECT_materialized_decoder_no_p99_gain`.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_DECODER_MATERIALIZATION_AB_REJECTED_2026-08-09.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_V13_DECODER_MATERIALIZATION_AB_REJECTED_2026-08-09.json
 ```
 
 Runtime authority changed by this experiment: `false`.
@@ -3648,8 +3648,8 @@ are `REJECT_context_reduction_cost`.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_EXACT_BOUNDED_REL65536_FULL_REJECTED_2026-08-09.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_EXACT_BOUNDED_ATOM_RELATION_MATRIX_2026-08-09.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_V13_EXACT_BOUNDED_REL65536_FULL_REJECTED_2026-08-09.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_V13_EXACT_BOUNDED_ATOM_RELATION_MATRIX_2026-08-09.json
 ```
 
 Runtime authority changed by these experiments: `false`.
@@ -3742,7 +3742,7 @@ Verdict: `PASS_shadow_retention`. The canonical runtime capacities are
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_EXACT_BOUNDED_REL196608_FULL_20K_2026-08-09.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_V13_EXACT_BOUNDED_REL196608_FULL_20K_2026-08-09.json
 ```
 
 Runtime authority changed by this proof: `false`.
@@ -3882,10 +3882,10 @@ requires the daemon/IME and release-package gates.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_MMAP_ZERO_COPY_13X100_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_MMAP_ZERO_COPY_13X100_2026-08-10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_MMAP_ZERO_COPY_FIXED_RETENTION_13X20000_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_MMAP_ZERO_COPY_FIXED_RETENTION_13X20000_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_V13_MMAP_ZERO_COPY_13X100_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_V13_MMAP_ZERO_COPY_13X100_2026-08-10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_V13_MMAP_ZERO_COPY_FIXED_RETENTION_13X20000_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_V13_MMAP_ZERO_COPY_FIXED_RETENTION_13X20000_2026-08-10.time.txt
 ```
 
 Installed daemon and managed-IBus runtime measurement:
@@ -3913,7 +3913,7 @@ being hidden by the aggregate PASS.
 Exact installed-runtime receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_MMAP_LIVE_RUNTIME_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_V13_MMAP_LIVE_RUNTIME_2026-08-10.json
 ```
 
 Runtime authority changed by this experiment: `false`.
@@ -4023,7 +4023,7 @@ Verdict scope:
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_COMPACT_FORMAT_V1_2026-08-09.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_V13_COMPACT_FORMAT_V1_2026-08-09.json
 ```
 
 ### 17.1 Compact direct-backed runtime V1, 2026-08-09
@@ -4139,7 +4139,7 @@ Verdict scope:
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V13_COMPACT_RUNTIME_V1_2026-08-09.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_V13_COMPACT_RUNTIME_V1_2026-08-09.json
 ```
 
 ## 13. 2026-08-09 L2+L3 Live Prediction Axis
@@ -4237,7 +4237,7 @@ Verdict scope: targeted L2+L3 prediction-axis pass. This is not a claim of a
 broad IME-quality pass.
 
 Exact receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_L3_LIVE_PREDICTION_AXIS_2026-08-09.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_L3_LIVE_PREDICTION_AXIS_2026-08-09.json`.
 
 Runtime authority changed:
 
@@ -4261,7 +4261,7 @@ Tcnm
 ```
 
 Measured pre-fix facts from
-`/home/ubu/.local/share/lay/ibus_engine_debug.jsonl`:
+`/home/local-user/.local/share/lay/ibus_engine_debug.jsonl`:
 
 ```text
 prefetch for Tcnm                         486 us
@@ -4317,7 +4317,7 @@ Verdict scope:
 Receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/IBUS_AUTOCORRECT_LAYOUT_HANDOFF_NONBLOCKING_2026-08-06.json
+/workspace/local/lay/docs/structural_gates/receipts/IBUS_AUTOCORRECT_LAYOUT_HANDOFF_NONBLOCKING_2026-08-06.json
 ```
 
 Runtime authority changed:
@@ -4408,7 +4408,7 @@ Verdict scope:
 Receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/IBUS_L3_SHARED_SCENE_PREEDIT_2026-08-08.json
+/workspace/local/lay/docs/structural_gates/receipts/IBUS_L3_SHARED_SCENE_PREEDIT_2026-08-08.json
 ```
 
 ## 19. 2026-08-08 Leading-Pronoun Boundary Recovery
@@ -4467,7 +4467,7 @@ Verdict scope:
 Receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_LEADING_PRONOUN_BOUNDARY_2026-08-08.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_LEADING_PRONOUN_BOUNDARY_2026-08-08.json
 ```
 
 Runtime authority changed:
@@ -4547,7 +4547,7 @@ passed.
 What was tested or measured:
 
 - the live physical sequence and committed-tail surfaces were read from
-  `/home/ubu/.local/share/lay/ibus_engine_debug.jsonl`;
+  `/home/local-user/.local/share/lay/ibus_engine_debug.jsonl`;
 - `moved_prefix_pair` produced the expected boundary-shift candidate in the
   diagnostic route;
 - release binaries `1.0.11` were built, installed and the Lay runtime was
@@ -4570,7 +4570,7 @@ Verdict scope:
 
 Exact receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/IBUS_SPACE_BOUNDARY_SHIFT_TIMING_2026-08-06.json`
+`/workspace/local/lay/docs/structural_gates/receipts/IBUS_SPACE_BOUNDARY_SHIFT_TIMING_2026-08-06.json`
 
 Runtime authority changed:
 
@@ -4656,7 +4656,7 @@ Verdict scope:
 
 Exact receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/IBUS_SPACE_NONBLOCKING_PREFETCH_2026-08-06.json`
+`/workspace/local/lay/docs/structural_gates/receipts/IBUS_SPACE_NONBLOCKING_PREFETCH_2026-08-06.json`
 
 Runtime authority changed:
 
@@ -4726,7 +4726,7 @@ reported as proof of this focused executor/latency change.
 
 Exact receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_ATOMIC_SPACE_NONBLOCKING_L3_2026-08-05.json`
+`/workspace/local/lay/docs/structural_gates/receipts/IME_ATOMIC_SPACE_NONBLOCKING_L3_2026-08-05.json`
 
 Runtime authority changed:
 
@@ -4788,7 +4788,7 @@ claim.
 
 Exact receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_BOUNDED_TYPO_BOUNDARY_REPAIR_2026-08-05.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_BOUNDED_TYPO_BOUNDARY_REPAIR_2026-08-05.json`
 
 Runtime authority changed:
 
@@ -4839,7 +4839,7 @@ latency lifecycle result, not a broad quality claim.
 
 Exact receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_FIRST_SPACE_BACKGROUND_WARMUP_2026-08-04.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_FIRST_SPACE_BACKGROUND_WARMUP_2026-08-04.json`
 
 Runtime authority changed:
 
@@ -4908,7 +4908,7 @@ Verdict scope:
 
 Exact receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_TWO_CONTENT_GLUED_BOUNDARY_2026-08-04.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_TWO_CONTENT_GLUED_BOUNDARY_2026-08-04.json`.
 
 ## 14. 2026-08-04 Class-Conditioned Sparse-Omission Reserve
 
@@ -5010,7 +5010,7 @@ global ibus-daemon PID       3702 -> 3702
 
 Exact receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_SPARSE_OMISSION_RESERVE_2026-08-04.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_SPARSE_OMISSION_RESERVE_2026-08-04.json`.
 
 ## 15. 2026-08-04 Reference-Backed Short-Participle Ambiguity
 
@@ -5101,7 +5101,7 @@ global ibus-daemon PID     3702 -> 3702
 
 Exact receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_REFERENCE_BACKED_SHORT_PARTICIPLE_AMBIGUITY_2026-08-04.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_REFERENCE_BACKED_SHORT_PARTICIPLE_AMBIGUITY_2026-08-04.json`.
 
 ## 13. 2026-08-04 Internal Layout-Key Projection Contract
 
@@ -5180,7 +5180,7 @@ changed-file gate              PASS
 
 Exact receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_INTERNAL_LAYOUT_KEY_PROJECTION_2026-08-04.json`
+`/workspace/local/lay/docs/structural_gates/receipts/IME_INTERNAL_LAYOUT_KEY_PROJECTION_2026-08-04.json`
 
 Runtime authority changed at this documentation point:
 
@@ -5245,7 +5245,7 @@ active engine                       lay-ime-ru
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_IME_TYPO_TOLERANT_COMPLETION_2026-08-04.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_IME_TYPO_TOLERANT_COMPLETION_2026-08-04.json
 ```
 
 ## 13. 2026-08-04 Single-Edit Inverse Lane And Tied Readout
@@ -5301,7 +5301,7 @@ active engine                       lay-ime-us
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_SINGLE_EDIT_INVERSE_AND_FEEDBACK_SANITATION_2026-08-04.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_SINGLE_EDIT_INVERSE_AND_FEEDBACK_SANITATION_2026-08-04.json
 ```
 
 ## 13. 2026-08-03 Inverse Length Birth and Tied-Cohort Authority
@@ -5375,7 +5375,7 @@ removed from the code. Verdict: `NO_EFFECT_NOT_RETAINED`.
 - L2 tied-cohort authority handling changed: `true`, narrowly for independently
   verified members of the reported tied cohort;
 - exact receipt:
-  `/home/ubu/projects/lay/docs/structural_gates/receipts/L2_INVERSE_LENGTH_TIED_AUTHORITY_2026-08-03.json`.
+  `/workspace/local/lay/docs/structural_gates/receipts/L2_INVERSE_LENGTH_TIED_AUTHORITY_2026-08-03.json`.
 
 ### Installed state
 
@@ -5392,10 +5392,10 @@ removed from the code. Verdict: `NO_EFFECT_NOT_RETAINED`.
 
 What was inspected:
 
-- `/home/ubu/.local/share/lay/recent_actions.jsonl`;
-- `/home/ubu/.local/share/lay/nanda_wave/word_usage_events.jsonl`;
-- `/home/ubu/.local/share/lay/ibus_engine_debug.jsonl`;
-- `/home/ubu/.local/share/lay/nanda_wave/l3-online/state.json`.
+- `/home/local-user/.local/share/lay/recent_actions.jsonl`;
+- `/home/local-user/.local/share/lay/nanda_wave/word_usage_events.jsonl`;
+- `/home/local-user/.local/share/lay/ibus_engine_debug.jsonl`;
+- `/home/local-user/.local/share/lay/nanda_wave/l3-online/state.json`.
 
 Measured facts:
 
@@ -5455,7 +5455,7 @@ Verification update:
 
 Exact receipt:
 
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2_LIVE_INPUT_LOG_FEEDBACK_2026-07-31.json`.
+- `/workspace/local/lay/docs/structural_gates/receipts/L2_LIVE_INPUT_LOG_FEEDBACK_2026-07-31.json`.
 
 Runtime authority changed:
 
@@ -5595,7 +5595,7 @@ Verdict scope:
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_CANONICAL_RUSLIT_FULL_NEIGHBORS_V13_2026-07-30.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_CANONICAL_RUSLIT_FULL_NEIGHBORS_V13_2026-07-30.json
 ```
 
 ### 13.1 Release cutover 0.2.333
@@ -5696,7 +5696,7 @@ Verdict scope: `PASS_public_install`. Runtime authority changed: `false`.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/PUBLIC_INSTALL_CANONICAL_L2_V13_2026-08-01.json
+/workspace/local/lay/docs/structural_gates/receipts/PUBLIC_INSTALL_CANONICAL_L2_V13_2026-08-01.json
 ```
 
 ## 13. Pairwise Context Witness Boundary
@@ -5725,7 +5725,7 @@ may mutate visible text.
 Receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_LAYOUT_RUNTIME_CLOSURE_2026-07-30.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_LAYOUT_RUNTIME_CLOSURE_2026-07-30.json
 ```
 
 ## 13. Canonical V7 full-lemma package, 2026-07-30
@@ -5814,7 +5814,7 @@ semantic-drift owner regression passes. No new wide failure was introduced.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_CANONICAL_RU_FULL_V7_ALL_LEMMAS_2026-07-30.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_CANONICAL_RU_FULL_V7_ALL_LEMMAS_2026-07-30.json
 ```
 
 ## 13. 2026-07-29 Standalone RU L2 V6 Evidence Authority
@@ -5855,7 +5855,7 @@ No word-specific exception list or target surface rule was added.
 
 ### 13.2 Compiled Package
 
-Measured on `e@192.168.3.94`:
+Measured on `builder@worker.example`:
 
 ```text
 source morphology bindings       3,255,785
@@ -5885,7 +5885,7 @@ compile swap bytes                       0
 Artifact:
 
 ```text
-/home/e/build/lay-l1-shadow/artifacts/l2-v6-evidence-authority-2026-07-29/LAY-L2-RU-FULL-v6.bin
+/home/worker/build/lay-l1-shadow/artifacts/l2-v6-evidence-authority-2026-07-29/LAY-L2-RU-FULL-v6.bin
 SHA-256 b9b0d43c17dfd55562a42d325ff529d5d070c571dd1ca046ca5135f8b7f0093d
 ```
 
@@ -5894,7 +5894,7 @@ SHA-256 b9b0d43c17dfd55562a42d325ff529d5d070c571dd1ca046ca5135f8b7f0093d
 Proof artifact:
 
 ```text
-/home/e/build/lay-l1-shadow/artifacts/l2-v6-evidence-authority-2026-07-29/proof-final-zero-authority.json
+/home/worker/build/lay-l1-shadow/artifacts/l2-v6-evidence-authority-2026-07-29/proof-final-zero-authority.json
 ```
 
 Measured facts:
@@ -5967,7 +5967,7 @@ running IME/daemon authority changed             false
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_CANONICAL_RU_FULL_V6_EVIDENCE_AUTHORITY_2026-07-29.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_CANONICAL_RU_FULL_V6_EVIDENCE_AUTHORITY_2026-07-29.json
 ```
 
 ### 13.6 Full L1.1 -> L2 -> L3 -> Verifier Replay
@@ -6056,16 +6056,16 @@ Verdict scope:
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_V6_LIVE_OWNER_SIGNED_FEEDBACK_2026-07-29.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_V6_LIVE_OWNER_SIGNED_FEEDBACK_2026-07-29.json
 ```
 
 Remote replay evidence:
 
 ```text
-/home/e/build/lay-runtime-replay/v6-default-full-owner-schema14.json
-/home/e/build/lay-runtime-replay/v6-default-full-owner-schema14.time
-/home/e/build/lay-runtime-replay/baseline-0.2.328-nanda-wave.log
-/home/e/build/lay-runtime-replay/current-0.2.329-nanda-wave.log
+/home/worker/build/lay-runtime-replay/v6-default-full-owner-schema14.json
+/home/worker/build/lay-runtime-replay/v6-default-full-owner-schema14.time
+/home/worker/build/lay-runtime-replay/baseline-0.2.328-nanda-wave.log
+/home/worker/build/lay-runtime-replay/current-0.2.329-nanda-wave.log
 ```
 
 ## 13. 2026-07-28 IBus L2 Cache Budget
@@ -6221,7 +6221,7 @@ Verdict scope:
 
 Exact receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_IBUS_CACHE_BUDGET_2026-07-28.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_IBUS_CACHE_BUDGET_2026-07-28.json`.
 
 Runtime authority changed:
 
@@ -6391,7 +6391,7 @@ Verdict scope:
 
 Exact receipt:
 
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L11_L2_SOCKET_POOL_AND_LATTICE_BUDGET_2026-07-27.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L11_L2_SOCKET_POOL_AND_LATTICE_BUDGET_2026-07-27.json`
 
 Exact receipts:
 
@@ -6417,7 +6417,7 @@ Runtime authority changed:
 What was tested:
 
 - deterministic rebuild of
-  `/home/ubu/projects/lay/data/l2/LAY-L2-RU462K-NOUN-v1.bin`;
+  `/workspace/local/lay/data/l2/LAY-L2-RU462K-NOUN-v1.bin`;
 - fixed heldout readout over every available noun scene;
 - per-feature winner, tied-target coverage, abstain, and false-authority
   denominators;
@@ -6495,8 +6495,8 @@ Verdict scope:
 
 Exact receipts:
 
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2_CANONICAL_RU462K_NOUN_COMPILE_CONTEXT_V2_2026-07-27.json`
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2_CANONICAL_RU462K_NOUN_PROOF_FULL_V6_2026-07-27.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2_CANONICAL_RU462K_NOUN_COMPILE_CONTEXT_V2_2026-07-27.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2_CANONICAL_RU462K_NOUN_PROOF_FULL_V6_2026-07-27.json`
 
 ## 14. 2026-07-27 Full Russian POS Teacher And Cross-Lemma Contract
 
@@ -6542,7 +6542,7 @@ generation peak RSS                      1,495,744 KiB
 
 The corpus artifact is:
 
-`/home/e/projects/lay-l2-build/data/morphology/lay_ru_l2_full_pos_v1.tsv`
+`/workspace/worker/lay-l2-build/data/morphology/lay_ru_l2_full_pos_v1.tsv`
 
 Measured facts do not yet imply package/runtime promotion. At this point:
 
@@ -6560,7 +6560,7 @@ What was tested for this code step:
 - `scripts/cargo-guard.sh test --lib near_neighbor_`: passed;
 - `scripts/cargo-guard.sh test --lib l2_field_shadow_route_`: passed;
 - `target/debug/lay-nanda-wave-eval --l2-route-compare-report --limit 200 --examples 0`
-  on `/home/ubu/.local/share/lay/corrections.jsonl`:
+  on `/home/local-user/.local/share/lay/corrections.jsonl`:
   `records_seen = 2938`,
   `records_used = 134`,
   `surface_diverged = 0 / 134`,
@@ -6575,7 +6575,7 @@ What was tested for this code step:
 Measured implementation facts:
 
 - the near-neighbor donor also lives in
-  `/home/ubu/projects/lay/src/nanda_wave/l2_field/bridge.rs`;
+  `/workspace/local/lay/src/nanda_wave/l2_field/bridge.rs`;
 - it runs after same-lemma morphology filtering and before unified candidate
   materialization;
 - it only inspects already-born shadow lexical candidates;
@@ -6604,7 +6604,7 @@ Verdict scope:
 
 Receipt path:
 
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_CORRECTIONS_200_NEAR_NEIGHBOR_LEXICAL_2026-07-26.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_CORRECTIONS_200_NEAR_NEIGHBOR_LEXICAL_2026-07-26.json`
 
 Runtime authority changed:
 
@@ -6661,7 +6661,7 @@ Runtime authority changed during this experiment: `false`.
 Receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_LAYOUT_PAIRWISE_DELTA_2026-07-30.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_LAYOUT_PAIRWISE_DELTA_2026-07-30.json
 ```
 
 ## 2.3 Local Readout Safety Gate Inside `L2FieldShadow`
@@ -6674,7 +6674,7 @@ What was tested for this code step:
   `докурчиват`, `ЯДРА`, `ене`, `смеа`, `сделам`, `сли,`, `вошеьные`:
   selected surface parity restored;
 - `scripts/cargo-guard.sh run --bin lay-nanda-wave-eval -- --l2-route-compare-report --limit 200 --examples 0`
-  on `/home/ubu/.local/share/lay/corrections.jsonl`:
+  on `/home/local-user/.local/share/lay/corrections.jsonl`:
   `records_seen = 2939`,
   `records_used = 134`,
   `surface_diverged = 0 / 134`,
@@ -6689,7 +6689,7 @@ What was tested for this code step:
 Measured implementation facts:
 
 - the generic local readout shell still lives in
-  `/home/ubu/projects/lay/src/nanda_wave/l2_field/bridge.rs`;
+  `/workspace/local/lay/src/nanda_wave/l2_field/bridge.rs`;
 - the near-neighbor donor is now explicitly prevented from collapsing the field
   when its internal winner is not the current lexical leader;
 - the same donor may still return `Tied` or `Abstain`, but no longer upgrades a
@@ -6698,7 +6698,7 @@ Measured implementation facts:
   measured real regressions where compact `L2` remained tied or selected a
   different surface through the shared lattice;
 - the route-level tests now lock parity on those cases through
-  `/home/ubu/projects/lay/src/correction_core/candidate_sources.rs`;
+  `/workspace/local/lay/src/correction_core/candidate_sources.rs`;
 - runtime authority did not change.
 
 What was not tested in this step:
@@ -6723,8 +6723,8 @@ Verdict scope:
 
 Receipt path:
 
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_CORRECTIONS_200_LOCAL_READOUT_GATED_2026-07-26.json`
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_TARGETED_NONLEADER_CASES_2026-07-26.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_CORRECTIONS_200_LOCAL_READOUT_GATED_2026-07-26.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_TARGETED_NONLEADER_CASES_2026-07-26.json`
 
 Runtime authority changed:
 
@@ -6743,7 +6743,7 @@ What was tested for this code step:
   restored abstain parity on the short ambiguous token after adding the short
   seeded-birth guard;
 - `scripts/cargo-guard.sh run --bin lay-nanda-wave-eval -- --l2-route-compare-report --limit 200 --examples 0`
-  on `/home/ubu/.local/share/lay/corrections.jsonl`:
+  on `/home/local-user/.local/share/lay/corrections.jsonl`:
   `records_seen = 2939`,
   `records_used = 134`,
   `surface_diverged = 0 / 134`,
@@ -6758,7 +6758,7 @@ What was tested for this code step:
 Measured implementation facts:
 
 - the seeded birth merge lives in
-  `/home/ubu/projects/lay/src/nanda_wave/l2_field/bridge.rs` inside
+  `/workspace/local/lay/src/nanda_wave/l2_field/bridge.rs` inside
   `shadow_surface_seed_candidates(...)`;
 - `L2FieldShadow` no longer emits a separate shadow-side `L2FieldShadowL11`
   candidate during route materialization;
@@ -6799,9 +6799,9 @@ Verdict scope:
 
 Receipt path:
 
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_CORRECTIONS_200_L11_SEEDED_BIRTH_2026-07-26.json`
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_VRMEYA_L11_SEEDED_BIRTH_2026-07-26.json`
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_PKU_L11_SEEDED_BIRTH_2026-07-26.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_CORRECTIONS_200_L11_SEEDED_BIRTH_2026-07-26.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_VRMEYA_L11_SEEDED_BIRTH_2026-07-26.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_PKU_L11_SEEDED_BIRTH_2026-07-26.json`
 
 Runtime authority changed:
 
@@ -6818,14 +6818,14 @@ What was tested for this code step:
 
 Measured implementation facts:
 
-- `/home/ubu/projects/lay/src/candidate_contract.rs` now makes
+- `/workspace/local/lay/src/candidate_contract.rs` now makes
   `CandidateReadoutRoute::live_default()` return `L2FieldShadow`;
 - the live local IME route under
-  `/home/ubu/projects/lay/src/ime_correction.rs` now expects boundary-owned
+  `/workspace/local/lay/src/ime_correction.rs` now expects boundary-owned
   Space/autocorrect authority as `L2FieldShadowBoundary`;
-- `/home/ubu/projects/lay/src/nanda_wave/l2_field/bridge.rs` no longer carries
+- `/workspace/local/lay/src/nanda_wave/l2_field/bridge.rs` no longer carries
   temporary `LAY_DEBUG_SHADOW_L2_FIELD` logging;
-- `/home/ubu/projects/lay/src/ime_correction.rs` no longer carries temporary
+- `/workspace/local/lay/src/ime_correction.rs` no longer carries temporary
   `LAY_DEBUG_IME_CORRECTION` logging;
 - the shadow local donor winner multiplier is explicit and fixed as
   `SHADOW_DONOR_WINNER_WEIGHT = 5`;
@@ -6854,7 +6854,7 @@ Verdict scope:
 
 Receipt path:
 
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_LIVE_OWNER_IME_DAEMON_GATE_2026-07-26.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_LIVE_OWNER_IME_DAEMON_GATE_2026-07-26.json`
 
 Runtime authority changed:
 
@@ -6865,7 +6865,7 @@ Runtime authority changed:
 What was tested for this code step:
 
 - `scripts/cargo-guard.sh run --bin lay-nanda-wave-eval -- --l2-route-compare-report --limit 200 --examples 200`
-  on `/home/ubu/.local/share/lay/corrections.jsonl`.
+  on `/home/local-user/.local/share/lay/corrections.jsonl`.
 
 Measured implementation facts on Monday, July 27, 2026:
 
@@ -6914,7 +6914,7 @@ Verdict scope:
 
 Receipt path:
 
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_DIVERGENCE_BUCKETS_CORRECTIONS_200_2026-07-27.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_DIVERGENCE_BUCKETS_CORRECTIONS_200_2026-07-27.json`
 
 Runtime authority changed:
 
@@ -7129,7 +7129,7 @@ For Russian the slot must encode at least:
 - infinitive / finite / imperative distinction.
 
 The existing shadow teacher in
-`/home/ubu/projects/lay/src/nanda_wave/morphology_phase/field.rs` is the
+`/workspace/local/lay/src/nanda_wave/morphology_phase/field.rs` is the
 starting donor for this layer.
 
 ### 5.5 LocalContextMode
@@ -7554,11 +7554,11 @@ What was tested:
 - direct `lay --compare-candidate-routes` probes for
   `смеа `, `докурчиват `, `сли, `, `слои `, `ене `, `сделам `;
 - focused unit coverage in
-  `/home/ubu/projects/lay/src/nanda_wave/l2_field/bridge.rs`
+  `/workspace/local/lay/src/nanda_wave/l2_field/bridge.rs`
   for dense missing-letter and long-form tie clusters;
 - focused daemon/lib undo checks for double-`Shift` rollback memory.
 - exact receipt:
-  `/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_SHORT_GROWTH_GATES_2026-07-27.json`.
+  `/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_SHORT_GROWTH_GATES_2026-07-27.json`.
 
 What was not yet completed:
 
@@ -7776,7 +7776,7 @@ runtime authority changed                  false
 The complete evidence model, state machine, operator matrix, cache and learning
 semantics, proof denominators, migration slices and rollback boundary are in:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-canonical-target-authority-paper-2026-08-17.md`
+`/workspace/local/lay-l1-exact-peak-search/docs/ime-canonical-target-authority-paper-2026-08-17.md`
 
 Source-bound review result:
 
@@ -7841,7 +7841,7 @@ The 2026-08-20 immutable attempt-3 run provides complete execution identity,
 not a promotion result. Its exact external evidence root is:
 
 ```text
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820
 ```
 
 The source archive contains 2,214 hash-valid files and is bound to 97 exact
@@ -7892,7 +7892,7 @@ Neither deployment nor a runtime-owner change follows from it.
 Exact first-loss receipt:
 
 ```text
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/baseline49-boundary-first-loss-analysis.json
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/baseline49-boundary-first-loss-analysis.json
 ```
 
 Exact active design receipts:
@@ -8034,8 +8034,8 @@ Runtime authority changed: `false`. Deployment actions: `0`.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_WORK_MEASUREMENT_2026-08-20/final-receipt.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_WORK_MEASUREMENT_2026-08-20/slice2-work-full-13x100.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_WORK_MEASUREMENT_2026-08-20/final-receipt.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_WORK_MEASUREMENT_2026-08-20/slice2-work-full-13x100.json
 ```
 
 Verdict: `PASS_WORK_BUDGET_FREEZE_RUNTIME_UNCHANGED`. This closes only the
@@ -8087,7 +8087,7 @@ hot-path latency or promotion PASS is claimed. Runtime authority changed:
 
 Receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_MATERIAL_FRAME_2026-08-20/final-receipt.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_MATERIAL_FRAME_2026-08-20/final-receipt.json`
 
 The next gate is Slice 3 candidate-state implementation preflight. It must
 consume the material completeness state without weakening it and must not add a
@@ -8135,7 +8135,7 @@ is a shadow-only semantic PASS; runtime authority, packages, installed version
 
 Receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE3_CANDIDATE_STATE_2026-08-20/final-receipt.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE3_CANDIDATE_STATE_2026-08-20/final-receipt.json`
 
 Next gate: Slice 4 complete conflict-cohort construction and deterministic
 `Winner | Tied | ABSTAIN` shadow verdict.
@@ -8160,7 +8160,7 @@ packages, daemon/IBus and version `1.0.33` were unchanged.
 
 Receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE4_CONFLICT_COHORT_2026-08-20/final-receipt.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE4_CONFLICT_COHORT_2026-08-20/final-receipt.json`
 
 Next gate: Slice 5 missing-target birth and retention shadow.
 
@@ -8506,8 +8506,8 @@ it. The failed assertion remains recorded; no rebuild or runtime workaround
 was used. candidate-identity.json instead binds every Rust file and labels the
 receipt generated_source_architecture_receipt, architecture_receipt_embedded_in_ime=false.
 Mandatory source architecture and release gates remain required separately.
-Exact build evidence: /home/ubu/.cache/lay/development/run-c1abdlhw/{preflight.json,preflight.log,candidate-identity.json};
-remote /home/e/projects/lay-development-runner/run-UgV9rU/.
+Exact build evidence: /home/local-user/.cache/lay/development/run-c1abdlhw/{preflight.json,preflight.log,candidate-identity.json};
+remote /workspace/worker/lay-development-runner/run-UgV9rU/.
 
 Actual private IBus/GNU Readline uses original feedback, all9 core roles,
 12 persisted inputs,5 system dictionary/ngram inputs and verified loaded
@@ -8560,9 +8560,9 @@ L1 algorithm/package/calibration remain unchanged; all conjunctive dimensions
 retain their previous scope. No model training, feedback editing, new owner,
 SafetyGate/verifier weakening or production installation occurred. Candidate
 runtime source remains frozen after review. Mandatory release gates are next.
-Exact native evidence: /home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/phrase-domain-after/receipt.json,
-/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/matrix-domain-paired-summary.json,
-/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/fixed-fixtures-v3-comparison.json and fixed-fixtures-v3-{before,after}-0..4/.
+Exact native evidence: /home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/phrase-domain-after/receipt.json,
+/home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/matrix-domain-paired-summary.json,
+/home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/fixed-fixtures-v3-comparison.json and fixed-fixtures-v3-{before,after}-0..4/.
 
 ## TD-123 candidate995b6093 installed2026-09-08
 
@@ -8573,18 +8573,18 @@ with exact candidate/dependency/driver identities and completed cleanup. Four
 physical_double_shift_owner_ tests passed; this is code evidence, not a new
 physical-keyboard observation. Before/after697-file Rust identity is unchanged.
 Target9,397,526,528/12,884,901,888 bytes. Source architecture gate passed42.929s.
-Exact receipts: /home/ubu/.cache/lay/development/run-c1abdlhw/{gates.json,changed-test-summary.json,full-test-summary.json,
+Exact receipts: /home/local-user/.cache/lay/development/run-c1abdlhw/{gates.json,changed-test-summary.json,full-test-summary.json,
 physical-owner-test-identities.json,client-proof-validation.json,budget-after.log}.
 
 Installed the SAME tested file at 2026-09-08T12:28:55.649410+00:00; file and running
 /proc executable SHA995b609343aa7b3bc9fad628cc80df09ea1b2125753c4d62c42b3b0790d50fb0.
 IME PID3983217/start49187106,unitlay-ime-release-995b6093.service. The previous
-6dc95148 binary is saved at /home/ubu/.local/state/lay/release-backups/ime-autocorrect-20260908-71oibez0/lay-ibus-engine.
+6dc95148 binary is saved at /home/local-user/.local/state/lay/release-backups/ime-autocorrect-20260908-71oibez0/lay-ibus-engine.
 Selected Lay RU and the two configured input sources were restored/verified.
 IBus4715,daemon3757261,L1.1service271400 retained exact process start identities.
 Only the IME process was replaced. D-Bus Ping proves liveness only (no focus
 at installation). Physical normal-tempo phrase confirmation was requested
-and remains PENDING. Exact installation receipt: /home/ubu/.cache/lay/development/run-c1abdlhw/installation.json.
+and remains PENDING. Exact installation receipt: /home/local-user/.cache/lay/development/run-c1abdlhw/installation.json.
 
 Installed runtime authority changed=true, bounded to cold V90 publication
 and corrected L4 transition-negative interpretation in the IME. Package/model
@@ -8698,7 +8698,7 @@ is permitted. Outputs: `phrase-cadence-quiet-{0,80,150}/` under the same cache
 and remote run root. Independent review is inspecting semantic-preserving
 ways to remove repeated candidate work before any production implementation.
 
-Exact evidence: `/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/cadence-summary-v1.json`
+Exact evidence: `/home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/cadence-summary-v1.json`
 and `phrase-cadence-{0,80,150}/{receipt.json,run-metadata.json,ibus-engine-trace.jsonl,engine.stderr}`.
 The initial stdin batch transport executed no scenario; its retained record
 is `cadence-batch-stdin-not-executed.json`, not a PASS or product failure.
@@ -8778,7 +8778,7 @@ rounded component sums may differ from total by at most2us.
 
 Implementation review pass1:9/10,H0/M0/L0. First explicit IME development
 check stopped at rustfmt only (2.619s), before test compilation/execution:
-`/home/ubu/.cache/lay/development/run-c5qnf70s/RESULT.json`, remote run-0249bu.
+`/home/local-user/.cache/lay/development/run-c5qnf70s/RESULT.json`, remote run-0249bu.
 Applied exactly its two expression-wrapping changes; no semantic repair.
 The next fresh focused check retains this failed formatting receipt.
 
@@ -8788,9 +8788,9 @@ is present in discovered, selected and executed manifests. Fresh-context
 independent implementation review9/10,H0/M0/L0. Architecture refresh41.201s
 PASS; private release build59.023s PASS. Candidate
 `9f8e99e0fa3836485a785344e06b02d816812b0c936b65919f4f224d32453361`
-is at remote `/home/e/projects/lay-development-runner/run-YMQqMd/lay-ibus-engine-timing`.
+is at remote `/workspace/worker/lay-development-runner/run-YMQqMd/lay-ibus-engine-timing`.
 Source697 hashes match the reviewed snapshot. This file is NOT installed.
-Receipts: `/home/ubu/.cache/lay/development/run-by567ovy/queue-candidate-identity.json`,
+Receipts: `/home/local-user/.cache/lay/development/run-by567ovy/queue-candidate-identity.json`,
 `queue-focused-summary.json`, `queue-focused-discovered.json` and
 `queue-graph-copy.json`; source architecture receipt was copied and verified.
 
@@ -8798,7 +8798,7 @@ The three quiet native schedules completed15/15 words, private cleanup and
 candidate/input identity checks. Outcomes remain dirty0/2,0/2,1/2 and clean3/3
 each at0/80/150ms. New timing events7/27/28 match existing correction records
 by engine path, epoch, generation and outcome. Exact evidence:
-`/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/cadence-queue-summary-v1.json`
+`/home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/cadence-queue-summary-v1.json`
 and `phrase-cadence-queue-{0,80,150}/`.
 
 At80ms the previous prefix (epoch35,generation6) computed for127,614us and
@@ -8903,7 +8903,7 @@ three pair banks (compiled,early exact hit,cycle), reversed input and duplicates
 An exact two-test observation using the existing discovery and sandbox runners
 with --show-output recorded all126 readout digests in2.361s; expected RED, not
 quality PASS. Receipt: remote
-`/home/e/projects/lay-development-runner/run-bkIYLX/pair-memo-exact-baseline/receipt.json`;
+`/workspace/worker/lay-development-runner/run-bkIYLX/pair-memo-exact-baseline/receipt.json`;
 focused summary: local run-g0ojw_ge/pair-memo-baseline-summary.json.
 These results authorize the selected minimal implementation under the written
 preflight; they do not yet establish native latency or restoration improvement.
@@ -9042,7 +9042,7 @@ the existing helper because live_authority does not return it. No production
 authority code changed at this preflight stage.
 
 RED proved the actual old defect: remote run-R64JF0, local
-`/home/ubu/.cache/lay/development/run-djbc5viq/short-layout-baseline-summary.json`
+`/home/local-user/.cache/lay/development/run-djbc5viq/short-layout-baseline-summary.json`
 and `short-layout-baseline-lib.log`. Exactly1762 selected/executed:1760 passed,
 only the two new authority regressions failed. The materialization test reached
 the real DecisionCore: `ии → bb`, L2 Abstain, valid physical edit proof, no L3
@@ -9071,7 +9071,7 @@ Private candidatefa15601fe2289adcd168e553a0b8ef1afa6d720179caf32bddf376fbc331fdf
 architecture41.343s,release176.313s,budget PASS,total217.925s. All697 Rust files
 match the reviewed local tree. No runtime install, package/delta/config or
 daemon/manual source change. Build and focused/native receipts are in
-`/home/ubu/.cache/lay/development/run-xqb_96ka/`, notably
+`/home/local-user/.cache/lay/development/run-xqb_96ka/`, notably
 `short-layout-candidate-identity.json`, `short-layout-focused-summary.json`,
 `short-layout-native-controls.json` and its five client directories.
 The unchanged versioned native driver passes13/13: US first-word1,RU first-word1,
@@ -9101,7 +9101,7 @@ inputs, resource envelope and loaded L3 content/counts match. The initial
 comparison stopped on different copied-file manifest_stamp values; normalization
 excludes only that mtime/length-derived field, retaining content SHA checks.
 No case or product run was retried. Exact comparison:
-`/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/fixed-fixtures-v5-short-layout-comparison.json`
+`/home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/fixed-fixtures-v5-short-layout-comparison.json`
 and five `fixed-fixtures-v5-short-layout-{0..4}/` directories.
 
 Verdict: the demonstrated short-layout authority bypass is repaired and the
@@ -9158,7 +9158,7 @@ current77,378..85,619us, median81,443. Driver/config/content identities, initial
 learning, resource envelopes and all80 output statuses verified. All five
 optional stderr diagnostic flags absent. Every private process was reaped.
 Exact receipt:
-`/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/cadence-stability-summary-v1.json`;
+`/home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/cadence-stability-summary-v1.json`;
 raw evidence in `phrase-cadence-stability-{queue,short-layout}-{0..7}/`, including
 each receipt, actual-input, trace, run metadata and actual engine environment.
 
@@ -9294,7 +9294,7 @@ Raw reconstruction consumes5,515,208us of8,045,188us over that component matrix.
 These are unoptimized test timings, not native latency percentiles. The package
 SHA3ff9de4d785aed1b547c56da67dd3cf27644af8968bd0e3bb55a252074cf0268,
 245,116 source words, matches the native frozen62,424,748-byte dependency exactly.
-Evidence: `/home/ubu/.cache/lay/development/run-r164go50/reconstruction-baseline-summary.json`
+Evidence: `/home/local-user/.cache/lay/development/run-r164go50/reconstruction-baseline-summary.json`
 and `reconstruction-exact-baseline.json`; canonical manifest drift reported,
 not rewritten. Added counters are per-instance and cfg(test) only.
 
@@ -9325,7 +9325,7 @@ first/final computations across changing limits. Peak retained store16 entries,
 whole-process RSS. Timings are unoptimized test observations, not native IME
 percentiles or a recognition-quality percentage.
 Exact final receipts:
-`/home/ubu/.cache/lay/development/run-bcgsiu73/reconstruction-exact-candidate.json`
+`/home/local-user/.cache/lay/development/run-bcgsiu73/reconstruction-exact-candidate.json`
 and `reconstruction-component-comparison.json`; initial broad summary is
 `run-pgepa9wm/reconstruction-first-green-summary.json`.
 
@@ -9608,7 +9608,7 @@ exit intervals are not a claim of exact final process peak. The separate quiet
 eight-pair timing gate has no resource sampler. The enforced1536MiB client
 memory envelope and cache-accounted payload remain separate measurements.
 
-Exact private artifacts under `/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/`:
+Exact private artifacts under `/home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/`:
 `fixed89-ready-path-audit-v1.json`, `l11-and-native-first-loss-v1.json`,
 `l11-fixed-audit/{l11-fixed-audit-results.json,run-metadata.json,run.log}`,
 `l11-known-target/{l11-known-target-results.json,run-metadata.json,run.log}`,
@@ -10474,7 +10474,7 @@ is limited to the identical Rust, Cargo, test-manifest, fixture, toolchain and
 environment identities after the byte-location-only inventory repair.
 
 Exact evidence: local `~/.cache/lay/development/run-o0dqrl5c/`, remote
-`/home/e/projects/lay-development-runner/run-tovK3y/`: `full-test-lanes/SUMMARY.json`,
+`/workspace/worker/lay-development-runner/run-tovK3y/`: `full-test-lanes/SUMMARY.json`,
 `td123-full-acceptance-candidate-identity.json` (original FAIL),
 `full-acceptance-continuation/` and
 `td123-full-acceptance-completed-identity.json` (completed mandatory gates).
@@ -10590,7 +10590,7 @@ Exact local evidence: `~/.cache/lay/development/run-o0dqrl5c/`:
 `td123-full-model-proof-comparison-v1.json`, `full-model-proof/receipt.json`,
 `full-model-proof/l1-full.json`, `full-model-proof/l2-semantic-full.json`,
 the corresponding `.time.txt` files and `full-model-proof/performance-test-lanes/`.
-Remote owner: `/home/e/projects/lay-development-runner/run-tovK3y/`.
+Remote owner: `/workspace/worker/lay-development-runner/run-tovK3y/`.
 
 
 ### TD123 final native profiles and installed runtime, 2026-09-09
@@ -10729,7 +10729,7 @@ as liveness only and do not prove the physical behavior.
 Runtime authority changed: **true for this installation**; the preceding
 private proofs and final graph refresh do not themselves change authority.
 Rollback is the complete snapshot at
-`/home/ubu/.local/state/lay/release-backups/1.0.67-td123-1p1e47xu/`.
+`/home/local-user/.local/state/lay/release-backups/1.0.67-td123-1p1e47xu/`.
 Status is **INSTALLED_VERIFIED_PHYSICAL_PENDING**. The user has already been
 asked to type the ordinary-tempo phrase and confirm physical Double Shift;
 no response has been received. Do not repeat the installation or promote this
@@ -10752,8 +10752,8 @@ Exact evidence, local root `~/.cache/lay/development/`:
 - `run-o0dqrl5c/installation-1.0.67.json` and `release-binaries/`.
 
 The corresponding remote roots are
-`/home/e/projects/lay-development-runner/run-tovK3y/` and
-`/home/e/projects/lay-development-runner/autocorrect-ojoasco5/`.
+`/workspace/worker/lay-development-runner/run-tovK3y/` and
+`/workspace/worker/lay-development-runner/autocorrect-ojoasco5/`.
 Raw typing logs stay private. Source documentation and the architecture graph
 are updated after these measurements; accepted binaries are not rebuilt for
 prose-only changes.
@@ -10773,7 +10773,7 @@ candidate authority, rank, evidence, safety effects, or any deadline.
 Not tested by C17: manifest discovery, semantic tests, research-feature Clippy,
 full release acceptance, clients, installation, or physical delivery. Verdict
 scope: **ACCEPTED MECHANICAL LINT CORRECTION ONLY**. Exact receipt:
-`/home/ubu/.cache/lay/development/release-1.0.72-td121-prepared/c17-diagnostic/RESULT.json`
+`/home/local-user/.cache/lay/development/release-1.0.72-td121-prepared/c17-diagnostic/RESULT.json`
 (SHA-256 `70687be0554d15a050e2868874a7017bec5e0234f0a73728a8f8a6e76af63423`).
 Runtime authority changed: **false**.
 
@@ -10811,7 +10811,7 @@ Terminal single erase/commit is a distinct route and has no GTK quarantine.
 The release result SHA-256 is
 `02458047a539fb85be82b301fd1cf38b19af1f71241f34260713cf5c5dd90534`.
 The GTK receipt is
-`/home/ubu/.cache/lay/development/release-1.0.72-td121-c20-20260913/gui-smoke-owned-c20/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/release-1.0.72-td121-c20-20260913/gui-smoke-owned-c20/RECEIPT.json`,
 SHA-256 `27bf83fccd5a15e552dabd9afeada8f1bacfd9038b8f9a0046f2cb3d0fcd1eaf`.
 Its `case_results_sha256` is the canonical v3 projection hash over selected case
 identity, exact output and semantic trace fields; it is intentionally distinct
@@ -10821,7 +10821,7 @@ Release 1.0.72 is installed. All ten installed artifacts and the four loaded
 owners match the C20 manifest, and the loaded extension reports 1.0.72. The
 transaction preserved global IBus identity, configuration, input sources, model
 dependencies, journals and learner state. Installation receipt:
-`/home/ubu/.cache/lay/development/release-1.0.72-td121-c20-20260913/installation-1.0.72.json`,
+`/home/local-user/.cache/lay/development/release-1.0.72-td121-c20-20260913/installation-1.0.72.json`,
 SHA-256 `ca7b0cb622f862cdb9a51678e640d27953fe798f3b37f291bdebce4f5e4735a4`.
 Runtime authority changed: **true**, by installation of the accepted C20 bytes.
 

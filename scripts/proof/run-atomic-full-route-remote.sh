@@ -2,7 +2,20 @@
 # shellcheck disable=SC2029
 set -eu
 
-remote=${LAY_PROOF_REMOTE:-e@192.168.3.94}
+script_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+. "$script_dir/remote-config.sh"
+remote=${LAY_PROOF_REMOTE:?set LAY_PROOF_REMOTE to your SSH host or alias}
+remote_root=${LAY_PROOF_ROOT:?set LAY_PROOF_ROOT to your isolated proof directory}
+mutter_root=${LAY_PROOF_MUTTER_ROOT:?set LAY_PROOF_MUTTER_ROOT}
+shell_root=${LAY_PROOF_SHELL_ROOT:?set LAY_PROOF_SHELL_ROOT}
+ibus_build_root=${LAY_PROOF_IBUS_BUILD:?set LAY_PROOF_IBUS_BUILD}
+models_root=${LAY_PROOF_MODELS_ROOT:?set LAY_PROOF_MODELS_ROOT}
+lay_proof_validate_host "$remote"
+lay_proof_validate_path LAY_PROOF_ROOT "$remote_root"
+lay_proof_validate_path LAY_PROOF_MUTTER_ROOT "$mutter_root"
+lay_proof_validate_path LAY_PROOF_SHELL_ROOT "$shell_root"
+lay_proof_validate_path LAY_PROOF_IBUS_BUILD "$ibus_build_root"
+lay_proof_validate_path LAY_PROOF_MODELS_ROOT "$models_root"
 run_id=${1:-v17-bwrap-full-route}
 scope=${2:-route}
 
@@ -25,9 +38,6 @@ case "$scope" in
         ;;
 esac
 
-script_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
-remote_root=/home/e/projects/lay-atomic-full-route-20260821
-
 ssh "$remote" "mkdir -p '$remote_root/runtime/bin' '$remote_root/runtime/config' \
     '$remote_root/runtime/share/gnome-shell/modes' \
     '$remote_root/runtime/engines' '$remote_root/runtime/manifests' \
@@ -47,18 +57,18 @@ ssh "$remote" "cp '$remote_root/runtime/bin/reuse-prelaunched-ibus-daemon.sh' \
     '$remote_root/runtime/bin/ibus-daemon' && \
     chmod 0755 '$remote_root/runtime/bin/'*.sh '$remote_root/runtime/bin/ibus-daemon'"
 
-ssh "$remote" "LAY_PROOF_RUN_ID='$run_id' LAY_PROOF_SCOPE='$scope' bash -s" <<'REMOTE'
+ssh "$remote" "bash -s -- '$remote_root' '$mutter_root' '$shell_root' '$ibus_build_root' '$models_root' '$run_id' '$scope'" <<'REMOTE'
 set -eu
 
-proof=/home/e/projects/lay-atomic-full-route-20260821
-mutter=/home/e/lay-proof/mutter-slice3a-20260821
+proof=$1
+mutter=$2
 rootfs=$mutter/rootfs
 bwrap=/usr/bin/bwrap
-shell=/home/e/projects/gnome-shell-lay-atomic-20260821
-ibus_build=/home/e/projects/ibus-lay-atomic-epoch-20260821/build-normal-dynamic
-models=/home/e/.local/share/lay/nanda_wave
-run_id=${LAY_PROOF_RUN_ID:?LAY_PROOF_RUN_ID is required}
-scope=${LAY_PROOF_SCOPE:?LAY_PROOF_SCOPE is required}
+shell=$3
+ibus_build=$4
+models=$5
+run_id=$6
+scope=$7
 
 active_engine=$proof/runtime/manifests/active-engine
 [ -f "$active_engine" ] || {

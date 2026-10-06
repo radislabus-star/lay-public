@@ -25,9 +25,9 @@ matched the accepted source. The authoritative machine-readable record is the
 
 - Git root at freeze: `83ba0f42db5c87cdc4f17abf42197396566cb05b`.
 - Immutable local root:
-  `/home/ubu/.cache/lay/development/td126-final4-20260912-LHBMzvAX/`.
+  `/home/local-user/.cache/lay/development/td126-final4-20260912-LHBMzvAX/`.
 - Immutable remote root:
-  `/home/e/projects/lay-development-runner/td126-final4-LHBMzvAX/`.
+  `/workspace/worker/lay-development-runner/td126-final4-LHBMzvAX/`.
 - Source archive SHA-256:
   `d6ab293cae9cab6542448933f8bb86542ba4d3d323a8e1aa724e4c89c6d2c6ba`.
 - Accepted 928-path source/test manifest SHA-256:
@@ -55,7 +55,7 @@ identity. The checkpoint does not claim a new quality result or an installation.
 
 Source acceptance is complete. Git publication status, exact commit, verified
 remote ref and clean post-push worktree belong to the external receipt
-`/home/ubu/.cache/lay/development/td126-publication-20260913/publication.json`.
+`/home/local-user/.cache/lay/development/td126-publication-20260913/publication.json`.
 On continuation, inspect that receipt first. If it does not prove the checkpoint,
 the authorized publication must target only `origin/codex/cleanup-20260908` and
 then update the receipt. No self-referential commit SHA is stored in committed

@@ -3,7 +3,7 @@
   "date": "2026-07-29",
   "scope": "full RU535410+EN300000 V8 working gate and bounded shadow service runtime",
   "artifact": {
-    "path": "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard-sweep-2026-07-29/shard-1/package.v8.bin",
+    "path": "/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard-sweep-2026-07-29/shard-1/package.v8.bin",
     "sha256": "03e320857cafc7d661a1893f728f8777c5e0b755ee01214502548779fbee6494",
     "bytes": 198233790,
     "mib": 189.05,
@@ -144,10 +144,18 @@
   "runtime_authority_changed": false,
   "verdict": "PASS_SHADOW_RUNTIME_MODEL_AUTHORITY_WATCH",
   "evidence": [
-    "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard-sweep-2026-07-29/shard-1/build-report.json",
-    "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/proof-full-batch/report.json",
-    "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/proof-full-batch/run.log",
-    "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/proof-full-batch/time.txt",
-    "/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/batch-cache/"
-  ]
+    "/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard-sweep-2026-07-29/shard-1/build-report.json",
+    "/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/proof-full-batch/report.json",
+    "/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/proof-full-batch/run.log",
+    "/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/proof-full-batch/time.txt",
+    "/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/batch-cache/"
+  ],
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "f49ce404111b32249c66e9d48c84b34c173627d6ef42757ff8c08e6b544c75ad",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

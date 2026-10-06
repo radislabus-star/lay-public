@@ -194,7 +194,7 @@ Positive `firefox_observer_first_native_insert_reset_recovers_only_after_exact_r
 actually FAIL1/1 with expected `observer-ahead Reset lost validated replay provenance`.
 Negative selection/wrong-surface/FocusOut each PASS1/1; three unchanged FULL_V2
 sequential controls each PASS1/1. Compile/discovery4/nonzero/source closure PASS.
-Local receipt: /home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/observer-first-import/RESULT.json.
+Local receipt: /home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/observer-first-import/RESULT.json.
 This proves the original adapter schedule, not a repaired build, quality or physical acceptance.
 No runtime authority changed.
 
@@ -483,7 +483,7 @@ and changed-byte client acceptance remain pending.
 Measured full v8 PASS_FULL_SOURCE_RELEASE_GATE,1258.344s; canonical correctness
 and package selection2993/2993 PASS, strict default/research lint, source canon,
 installer/public-issue regressions and Rust1.88 compatibility PASS. Exact receipt:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v8-import/RELEASE_GATE_RESULT.json`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v8-import/RELEASE_GATE_RESULT.json`.
 Immutable IME SHA2566a01e6b73374c9eb9ecd7ee5380f4b9f08a8da684d8f4f6a3043e065cd25537d.
 This is source proof, not physical acceptance.
 
@@ -495,9 +495,9 @@ first key already passive/refused, before any replay in that field. Thus the
 prior observer-ahead native-replay repair has a positive bounded physical result,
 but this candidate is not admitted for stable installation or publication.
 Matrix receipt:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/REQUIRED79_COMPOSITION_PROBE_V2_RUN_20261006T002610_eea0ca2f31d2/WIDE_MATRIX_V2_20261006T002647.json`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/REQUIRED79_COMPOSITION_PROBE_V2_RUN_20261006T002610_eea0ca2f31d2/WIDE_MATRIX_V2_20261006T002647.json`.
 Trial receipt:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/repair80-trial-c1c6f978f9a2499e866f1f53d7d7b6b0/TRIAL_RESULT.json`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/repair80-trial-c1c6f978f9a2499e866f1f53d7d7b6b0/TRIAL_RESULT.json`.
 Finally rollback PASS_EXACT79_RESTORED; source/protected runtime identities
 unchanged. Scope was temporary IME80 with79 CLI/extension/services. No global
 IBus restart, input-source migration or stable80 installation occurred.
@@ -508,7 +508,7 @@ L2735 precedes observer ingress L2737; observer Disable606 L2738 and FocusIn608
 L2739 arrive; Disable callback L2741 precedes FocusIn608 timeout L2744. First
 key612 passive/refused L2749–2751; ManualToggle later rejects bridge_admission,
 lifecycle_pending/revoked with zero unsettled keys. Trace source:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/REQUIRED79_COMPOSITION_PROBE_V2_RUN_20261006T002610_eea0ca2f31d2/traces/20261006T002634_firefox.textarea_each_shift_pair_real_letter_delete_composition/after_flush_ibus_engine_debug.jsonl`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/REQUIRED79_COMPOSITION_PROBE_V2_RUN_20261006T002610_eea0ca2f31d2/traces/20261006T002634_firefox.textarea_each_shift_pair_real_letter_delete_composition/after_flush_ibus_engine_debug.jsonl`.
 Exact interleaving of cleanup and observer publication is not logged. Hypothesis:
 delayed source callback globally revokes the same retained owner and clears the
 later authenticated FocusIn stamp. Require deterministic production-entrypoint
@@ -532,7 +532,7 @@ Controlled old-v8 production RED reproduced34.896s,7 exact tests: expected
 positive FAIL with `retired Disable erased successor FocusIn stamp`,6 existing
 focus/DoubleShift controls PASS. Original residuals preserved byte-for-byte;
 only a new fixture appended. Receipt:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/disable-red-v1-import/RESULT.json`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/disable-red-v1-import/RESULT.json`.
 The fixture uses real expired FocusOut callback and actual observer ingress,
 valid-wire FocusInId, then controlled Reset retiring the source before delayed
 Disable. Reset is a mechanism discriminator, not an assertion about the physical
@@ -548,7 +548,7 @@ First callback timeout remains a refusal. No seal/transfer/token/output granted,
 no deadline increase, retry, queue, detector, transport or new input owner.
 New activation still uses existing native reply+marker SourceFree UnknownStart.
 Independent causal/safety audit:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/TEXTAREA_FIRST_LIFECYCLE_AUDIT.md`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/TEXTAREA_FIRST_LIFECYCLE_AUDIT.md`.
 Current changed production bytes are NOT_TESTED; focused/full/physical proofs
 remain required. Installed exact79 unchanged.
 
@@ -559,7 +559,7 @@ GREEN28/28 PASS46.971s, including the formerly failing real-callback fixture,
 all25 previous replay/cancellation contracts and two existing focus controls.
 Original assertions and fixed callback/activation budgets unchanged. Exact
 focused source1476 rows imported, only guarded rustfmt changes admitted; proof:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/disable-green-v1-import/RESULT.json`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/disable-green-v1-import/RESULT.json`.
 Independent runtime-delta review found blockers0: deleting the21-line adapter
 helper and10-line observation branch restores exact v8 production hashes.
 Shared cleanup still requires matching path and source owner generation, so a
@@ -585,7 +585,7 @@ infrastructure failures, changed correctness/package, strict lints, public-issue
 and installer regressions, MSRV, fresh graph/canon. Exact1476-row source and
 10 generated outputs imported. New immutable IME SHA256
 `0902a3b87efd8b9398a4c6a49323731ed95c86775e422f3d1e3d338700eaecce`.
-Gate: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v10-import/RELEASE_GATE_RESULT.json`.
+Gate: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v10-import/RELEASE_GATE_RESULT.json`.
 This establishes source/build acceptance only.
 
 Three finite diagnostic exchanges ran the same new IME with accepted79
@@ -593,7 +593,7 @@ CLI/daemon/extension/services; all ended PASS_EXACT79_RESTORED. No global IBus
 restart, source migration, new input owner or stable80 installation occurred.
 Same-byte daemon UInput attach/detach bookkeeping PID changes are retained in
 trial receipts; L3/L1.1/global IBus/config/model/proof guards remain unchanged.
-Summary with exact three trial receipts: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/V10_PHYSICAL_SUMMARY.json`.
+Summary with exact three trial receipts: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/V10_PHYSICAL_SUMMARY.json`.
 
 | Actual client proof | PASS / executed | Scope and remaining limitation |
 |---|---:|---|
@@ -623,7 +623,7 @@ at2784. Manual bridge later succeeds, but context_authority is false at2819.
 Exact full-surface equality is not logged; gap2 alone proves sufficient rejection.
 The strict-prefix branch intentionally retains inert lineage but does not advance
 its revision witness; the following full receipt therefore cannot confirm it.
-Trace: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/REQUIRED79_COMPOSITION_PROBE_V2_RUN_20261006T012112_32d2d404ae1e/traces/20261006T012129_firefox.textarea_each_shift_pair_real_letter_delete_composition/after_flush_ibus_engine_debug.jsonl`.
+Trace: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/REQUIRED79_COMPOSITION_PROBE_V2_RUN_20261006T012112_32d2d404ae1e/traces/20261006T012129_firefox.textarea_each_shift_pair_real_letter_delete_composition/after_flush_ibus_engine_debug.jsonl`.
 
 Previous native-replay and retired-Disable repair rounds are closed at their
 recorded limits; start a distinct bounded causal repair, not retry-until-green.
@@ -653,7 +653,7 @@ is not coverage proof. Overall wrapper FAIL_BINDINGS, because actual input
 updated word_usage_events.jsonl and word_usage_counts.json. All other protected
 bytes/helper/sourceIDs/IME/L3/L1.1/global IBus checks passed. This is not a PASS
 receipt or a product latency result; statistics were not rolled back over user
-events. Readout: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/SPACE_READY_WAIT79_V2_RANK_READOUT.md`.
+events. Readout: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/SPACE_READY_WAIT79_V2_RANK_READOUT.md`.
 
 
 ## Confirmed managed prefix echo causal RED and narrow implementation
@@ -662,7 +662,7 @@ RED on unchanged production v10: expected1FAIL29PASS48.161s. The positive
 actual-key/CommitText/Reset/surrounding fixture fails with the exact marker
 `confirmed native append delayed prefix lost next exact receipt authority`,
 before bridge/RPC preparation. Seven negative scenarios and original28 replay,
-lifecycle and physical-owner guards pass. Receipt: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/prefix-red-v1-import/RESULT.json`.
+lifecycle and physical-owner guards pass. Receipt: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/prefix-red-v1-import/RESULT.json`.
 The controlled fixture supplies full exact equality absent from metadata.
 
 Choose one inert revision witness in existing PendingContextResetRereceipt.
@@ -681,7 +681,7 @@ source awaits focused/full/physical proof, installed79 unchanged.
 
 ## Managed prefix echo GREEN v1: causal assertion passes, new dependent oracle fails
 
-Focused30 executed48.110s:29PASS1FAIL; receipt `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/prefix-green-v1-import/RESULT.json`.
+Focused30 executed48.110s:29PASS1FAIL; receipt `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/prefix-green-v1-import/RESULT.json`.
 The new positive reaches and passes exact_manual_handoff confirmation, then
 fails its added cycle09_tail_is_authoritative check before manual consumption.
 All seven negative scenarios and original28 controls pass. Keep complete FAIL;
@@ -716,7 +716,7 @@ keeps UnknownStart and bounds its observed suffix; no KnownStart grant claimed.
 Seven negative scenarios and all original28 controls pass. Independent V1
 production delta review hard blockers0; unchanged production reused for v2.
 Exact1477-row focused source imported, only guarded formatted2 Rust outputs.
-Receipt: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/prefix-green-v2-import/RESULT.json`; import: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/prefix-green-v2-import/IMPORT_RESULT.json`.
+Receipt: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/prefix-green-v2-import/RESULT.json`; import: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/prefix-green-v2-import/IMPORT_RESULT.json`.
 New bytes still require full source release gate and changed-byte physical
 acceptance; exact79 remains installed. V1 FAIL and old physical outcomes retained.
 
@@ -742,7 +742,7 @@ protocol. Verdict FAIL_ADMISSION_OR_EXECUTION, not accepted causal RED and not
 permission to promote the delivery patch. First wire message type/phase of the
 older failure remains UNKNOWN pending bounded audit; no old assertion, deadline
 or membership filter has changed. Production delivery patch remains unapplied.
-Receipt: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-red-v1-failed-import/RESULT.json`.
+Receipt: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-red-v1-failed-import/RESULT.json`.
 Installed exact79 unchanged; runtime authority false.
 
 Independent V17 editable boundary audit identifies the actual missing delimiter
@@ -751,7 +751,7 @@ await precede the local tail becoming5, but client receipt remains4/4; final
 fresh DOM is5/5. The signal send does not prove insertion acknowledgment.
 Exact wire delivery/client application remains UNKNOWN. This is a separate
 Space boundary failure, not a proved nonletter hint failure.
-Audit: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/V17_012249_FIREFOX_EDITABLE_NO_HINT_BOUNDARY_AUDIT.md`.
+Audit: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/V17_012249_FIREFOX_EDITABLE_NO_HINT_BOUNDARY_AUDIT.md`.
 No field-specific exception, probe, timer or authority change applied.
 
 
@@ -762,7 +762,7 @@ assertion: ALL_PASS1/1,32.134s. All five Ping stages receive MethodCall/Ping.
 The earlier headerless offender was not reproduced and its type remains UNKNOWN.
 This prospective PASS does not rewrite the earlier35-test FAIL. No assertion,
 reply filter, timeout or production source changed; no runtime import occurred.
-Receipt: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/test29-header-v1-import/RESULT.json`.
+Receipt: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/test29-header-v1-import/RESULT.json`.
 Next controlled witness will exercise an actually unregistered engine and its
 exact detached Reset reply serial before any bridge; not a blind retry.
 
@@ -774,7 +774,7 @@ and existing changed listener. Generic Bridge wait remains unchanged. The
 initial pending.ready suspicion was withdrawn: Acquisition marker processing
 returns before the Bridge-only ready flag. No implementation based on that
 withdrawn suspicion was made.
-Review: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/ACTIVATION_COMPLETION_DELIVERY_INDEPENDENT_REVIEW.md`.
+Review: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/ACTIVATION_COMPLETION_DELIVERY_INDEPENDENT_REVIEW.md`.
 Observed Acquisition/ready grants deliberately survive fence expiry in the old
 callback contract. Activation deadline is not a new token wall-clock expiry;
 autonomous delivery latency beyond blocked engine interface remains unmeasured.
@@ -792,7 +792,7 @@ a concrete scheduling-dependent harness gap; the historical header itself
 remains UNKNOWN. Correct only the two absent-engine helper flags through
 the existing exact-serial consumer; all prior assertions/deadlines stay literal.
 Decision: 2026-10-06-detached-reset-controlled-peer-reply.json.
-Receipt: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/test29-detached-v1-import/RESULT.json`.
+Receipt: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/test29-detached-v1-import/RESULT.json`.
 No blanket filter, sleep, authority or runtime change. A fresh strict causal
 RED over the corrected source-control schedule is required; prior REDv1 FAIL
 and header-diagnostic PASS retain their original separate scopes.
@@ -810,7 +810,7 @@ residuals imported, then appended GREEN-only delayed-predecessor listener.
 A local length-based import assertion initially counted the two false→true
 character reductions incorrectly and stopped before fixture mutation; corrected
 exact transformed-prefix comparison passed. No source proof result changed.
-Receipt: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-red-v2-import/RESULT.json`.
+Receipt: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-red-v2-import/RESULT.json`.
 V1 rejected control set and historical UNKNOWN header remain recorded.
 
 Applied independently reviewed V2 same-task acquisition delivery. Consistent
@@ -820,7 +820,7 @@ and cancellation retained, generic Bridge wait unchanged. The served engine
 revalidates full current outcome after awaits, respects atomic exclusivity,
 uses original install/ACK and guarded native InputMode publisher. No new
 owner, queue, detector, RPC, source migration, model or text-edit capability.
-Review: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/V2_REVIEW.md`.
+Review: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/V2_REVIEW.md`.
 
 Applied separate opt-in existing-gate Clear/Hide/Commit metadata diagnostic
 plus legacy callback serial binding and preserved output/error-order unit.
@@ -840,7 +840,7 @@ header import and existing owning-section import. Remove only the duplicate
 new import; no predicate, assertion, timeout, identity or test selection changes.
 No test executed, so no semantic PASS/FAIL denominator claimed. Static design
 reviews did not claim compilation. Original failed receipt retained:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-green-v1-failed-import/RESULT.json`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-green-v1-failed-import/RESULT.json`.
 Installed exact79 unchanged.
 
 Opt-in prepared InputGate diagnostic independently reviewed blockers0: borrow
@@ -852,7 +852,7 @@ of complete authority-admitted pool. final_decision_present is prepared
 conversion, not physical Apply. Existing source/generation/prepared-vs-superseded
 trace binds observations; no late edit permission. Debug/log overhead is outside
 original route.total_us and still needs runtime latency measurement.
-Review: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/space-gate-metadata/SPACE_GATE_METADATA_INDEPENDENT_REVIEW.md`.
+Review: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/space-gate-metadata/SPACE_GATE_METADATA_INDEPENDENT_REVIEW.md`.
 
 
 ## Combined GREEN v2: positives pass; explicit harness replan
@@ -864,7 +864,7 @@ the causal repair only in those source fixtures, not full source or client
 acceptance. Twelve older/new listener controls encounter TypeError where Signal
 or Ping is expected. Terminal excerpts expose reply serials21020,22600,41100.
 The exact error names of these unseen headers remain UNKNOWN.
-Receipt: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-green-v2-failed-import/RESULT.json`.
+Receipt: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-green-v2-failed-import/RESULT.json`.
 
 Explicit replan before further changes: new delivery must obtain the actual
 served interface. Existing harness often sends synthetic callbacks to an
@@ -891,7 +891,7 @@ Error/UnknownObject/memberNone with replyserial30100 in forward_marker,
 21020 and41100 in legacy_effects. This confirms those three first failures
 are synthetic detached callback transport, not rejected engine output. Remaining
 nine failure headers are not individually labelled by this sample.
-Receipt: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/fifo-header-v1-failed-import/RESULT.json`.
+Receipt: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/fifo-header-v1-failed-import/RESULT.json`.
 
 Dependency source zbus5.15.0 public object_server() starts lazy dispatch.
 No public existing-server-only lookup is available; private ensure/root APIs
@@ -918,27 +918,27 @@ Applied reviewed patch735a2643d6593da7decacf39e343f80b78f06b0053b0480db5c98ef752
 
 ## Combined GREEN v3: 42/43, residual first transition differs
 
-FAIL_ADMISSION_OR_EXECUTION43 executed/42PASS/1FAIL,53.947s. Native/compatibility no-key positives, new repeated-serial accounting, post-interface-wait atomic/foreign/consumed-grant refusals and registered48 boolean replies PASS. All prior twelve transport-failing cases except one now pass; remaining read-only exclusion control fails at observer Denied, before original bridge-revocation assertion. Exact member not yet known. Receipt: /home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-green-v3-failed-import/RESULT.json. No failed-source import, installation or promotion. Explicit replan: instrument only the existing fixture before its unchanged observer assertion to identify member/key/release and first denial. Do not weaken assertions, change deadlines or repeat until green. Private diagnostic remains source-only; accepted exact79 unchanged.
+FAIL_ADMISSION_OR_EXECUTION43 executed/42PASS/1FAIL,53.947s. Native/compatibility no-key positives, new repeated-serial accounting, post-interface-wait atomic/foreign/consumed-grant refusals and registered48 boolean replies PASS. All prior twelve transport-failing cases except one now pass; remaining read-only exclusion control fails at observer Denied, before original bridge-revocation assertion. Exact member not yet known. Receipt: /home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-green-v3-failed-import/RESULT.json. No failed-source import, installation or promotion. Explicit replan: instrument only the existing fixture before its unchanged observer assertion to identify member/key/release and first denial. Do not weaken assertions, change deadlines or repeat until green. Private diagnostic remains source-only; accepted exact79 unchanged.
 
 
 ## Remaining control diagnostic and bounded wire-type correction
 
-Diagnostic0/1FAIL31.740s: first packet ProcessKeyEvent/keyval97/keycode30/state0 reaches observer Denied. Receipt: /home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-denied-diagnostic-failed-import/RESULT.json. Static source analysis identifies manual inline builder lost the original typed_key_message u32 argument constraint: keycode literals default to i32, while strict ingress requires (u32,u32,u32). This type-inference explanation is distinct from the measured denial; historical wire signature was not logged. Restore exact original unsigned tuple constraint in this test branch only. All prior assertion/deadline/callback values remain literal; production unchanged. Following explicit replan, run all43 again to verify the corrected seam, not retry unchanged bytes. Exact79 remains installed.
+Diagnostic0/1FAIL31.740s: first packet ProcessKeyEvent/keyval97/keycode30/state0 reaches observer Denied. Receipt: /home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-denied-diagnostic-failed-import/RESULT.json. Static source analysis identifies manual inline builder lost the original typed_key_message u32 argument constraint: keycode literals default to i32, while strict ingress requires (u32,u32,u32). This type-inference explanation is distinct from the measured denial; historical wire signature was not logged. Restore exact original unsigned tuple constraint in this test branch only. All prior assertion/deadline/callback values remain literal; production unchanged. Following explicit replan, run all43 again to verify the corrected seam, not retry unchanged bytes. Exact79 remains installed.
 
 
 ## Combined GREEN v4: causal repair and controls all pass
 
-ALL_PASS43/43,zero failed/ignored,53.950s. Original40 identities, exact repeated-serial witness, three post-interface-wait delivery refusal subcases and actual registered48 boolean replies pass. Both native and compatibility served no-key InputMode positives pass; prefix rereceipt and original rejection controls pass. Corrected unsigned tuple restores old wire contract without assertion/deadline changes. Exact formatted declared Rust source imported only after full input/parent/after closure; all source rows match. Receipt: /home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-green-v4-import/RESULT.json. Scope: focused source only; new full release/physical gates NOT_RUN. Current production implementation remains uninstalled; accepted79 bytes unchanged. Next: one guarded full source gate with all new identities and fresh graph/canon, then finite native Firefox input trials with exact79 rollback.
+ALL_PASS43/43,zero failed/ignored,53.950s. Original40 identities, exact repeated-serial witness, three post-interface-wait delivery refusal subcases and actual registered48 boolean replies pass. Both native and compatibility served no-key InputMode positives pass; prefix rereceipt and original rejection controls pass. Corrected unsigned tuple restores old wire contract without assertion/deadline changes. Exact formatted declared Rust source imported only after full input/parent/after closure; all source rows match. Receipt: /home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/activation-green-v4-import/RESULT.json. Scope: focused source only; new full release/physical gates NOT_RUN. Current production implementation remains uninstalled; accepted79 bytes unchanged. Next: one guarded full source gate with all new identities and fresh graph/canon, then finite native Firefox input trials with exact79 rollback.
 
 
 ## Full source v11: canon documentation rejection, no promotion
 
-FAILED83.682s: compile/discovery and fresh architecture graph PASS; CANON refuses two new decision records missing reason and uncovered composition_commit metadata. No full suite or immutable release artifact was produced. Receipt: /home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v11-failed-import/RELEASE_GATE_RESULT.json. Explicit bounded documentation correction: complete original detached-Reset and manual-transport record schema and add separate Space-boundary metadata observation decision. Runtime Rust, old guards/assertions/deadlines and focused43/43 proof stay literal. New full gate must run from that proven exact parent plus only these docs; no failed generated output imported. Installed exact79 unchanged.
+FAILED83.682s: compile/discovery and fresh architecture graph PASS; CANON refuses two new decision records missing reason and uncovered composition_commit metadata. No full suite or immutable release artifact was produced. Receipt: /home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v11-failed-import/RELEASE_GATE_RESULT.json. Explicit bounded documentation correction: complete original detached-Reset and manual-transport record schema and add separate Space-boundary metadata observation decision. Runtime Rust, old guards/assertions/deadlines and focused43/43 proof stay literal. New full gate must run from that proven exact parent plus only these docs; no failed generated output imported. Installed exact79 unchanged.
 
 
 ## Full source v12: additional manual transport coverage failures
 
-FAILED472.934s at CHECK_CHANGED388.942s. Canon/schema and fresh graph PASS; all original canonical rows preserved plus exactly9 new identities. Engine target678 selected reports11 failures; focused43/43 is not full acceptance. First excerpts: expected Signal receives Error in generic forward/drain helpers and native_transfer boundary; some residuals instead unwrap absent header member. Those error names are UNKNOWN until exact header capture. Raw11 process logs retained in /home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/v12-engine-partial-failures; full receipt /home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v12-failed-import/RELEASE_GATE_RESULT.json; canonical summary /home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v12-failed-import/CHECK_CHANGED_SUMMARY.json. No final generated import or immutable artifact; no live changes.
+FAILED472.934s at CHECK_CHANGED388.942s. Canon/schema and fresh graph PASS; all original canonical rows preserved plus exactly9 new identities. Engine target678 selected reports11 failures; focused43/43 is not full acceptance. First excerpts: expected Signal receives Error in generic forward/drain helpers and native_transfer boundary; some residuals instead unwrap absent header member. Those error names are UNKNOWN until exact header capture. Raw11 process logs retained in /home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/v12-engine-partial-failures; full receipt /home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v12-failed-import/RELEASE_GATE_RESULT.json; canonical summary /home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v12-failed-import/CHECK_CHANGED_SUMMARY.json. No final generated import or immutable artifact; no live changes.
 
 Explicit replan: earlier22 manual callsite mapping was incomplete. Classify every actual send/build/handler ownership in five controlled fixture files, preserving all real served RPC/48bool routes. Confirm one representative remaining header class, then extend the existing explicit per-emission declaration seam systematically. Do not automatically declare all NoReply packets, blanket-filter errors, change old assertions/deadlines, or add production ownership/cache/bypass. Production patch freezes while test transport closure is established. This replaces selective failure-by-failure repair; ROOT owns the next sealed source-only run and requires full fixed proof. Exact79 remains installed.
 
@@ -947,7 +947,7 @@ Explicit replan: earlier22 manual callsite mapping was incomplete. Classify ever
 
 CHECK_CHANGED target log totals:3003 selected,11 failures,2992 passes across32 target rows. Hermetic summary BLOCKED_CONTRACT because the original empty known-failure ledger refuses those11 unexpected failures; infrastructure_failures0 and no ledger edits. Other later release gates remain NOT_RUN.
 
-Private source-only header diagnostic repeats exactly11 original failing identities:0/11PASS,11FAIL36.710s. Original assertions and exact receive filter unchanged. Every first unexpected header is measured TypeError/UnknownObject/memberNone with reply serial respectively3219,3224,7504,7604,3400,3600,3237,3200,3180,3215,3215. This proves the common unaccounted manual transport transition for these exact fixtures; subsequent unseen behavior remains UNKNOWN. Receipt /home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/manual-transport-closure-diagnostic-failed-import/RESULT.json; per-identity headers /home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/manual-transport-closure-diagnostic-failed-import/HEADER_PACKET.json. Diagnostic tests.rs remains private and unimported. Complete manual-versus-served callsite inventory is being built before any extension of the existing declaration helper. Accepted exact79 remains installed; no new production change or runtime authority.
+Private source-only header diagnostic repeats exactly11 original failing identities:0/11PASS,11FAIL36.710s. Original assertions and exact receive filter unchanged. Every first unexpected header is measured TypeError/UnknownObject/memberNone with reply serial respectively3219,3224,7504,7604,3400,3600,3237,3200,3180,3215,3215. This proves the common unaccounted manual transport transition for these exact fixtures; subsequent unseen behavior remains UNKNOWN. Receipt /home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/manual-transport-closure-diagnostic-failed-import/RESULT.json; per-identity headers /home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/manual-transport-closure-diagnostic-failed-import/HEADER_PACKET.json. Diagnostic tests.rs remains private and unimported. Complete manual-versus-served callsite inventory is being built before any extension of the existing declaration helper. Accepted exact79 remains installed; no new production change or runtime authority.
 
 
 ## Complete explicit manual transport closure imported for execution
@@ -957,7 +957,7 @@ Final patchc4101c04457a02b3c506454711dcedf5d339eb7eeb697226042860d63bf6b67b appl
 
 ## Complete manual closure GREEN: all fixed54 pass
 
-ALL_PASS54/54,zero failures/ignored,59.313s. Includes the prior43 authority/mode/Space/error-order/normal48 controls and every11 previously failing full-proof identity. Exact source closure and formatted three-test-file import completed, all other source rows literal. Receipt: /home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/manual-closure-green-v1-import/RESULT.json. This establishes the common harness transport repair in its fixed scoped set; full3003 and later release gates must still pass. Current production changes remain uninstalled, physical Firefox for these bytes NOT_RUN. Exact79 remains live.
+ALL_PASS54/54,zero failures/ignored,59.313s. Includes the prior43 authority/mode/Space/error-order/normal48 controls and every11 previously failing full-proof identity. Exact source closure and formatted three-test-file import completed, all other source rows literal. Receipt: /home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/manual-closure-green-v1-import/RESULT.json. This establishes the common harness transport repair in its fixed scoped set; full3003 and later release gates must still pass. Current production changes remain uninstalled, physical Firefox for these bytes NOT_RUN. Exact79 remains live.
 
 ## Full source v13: semantic gates pass, new test lint refuses release
 
@@ -969,7 +969,7 @@ then refuses two clone_on_copy calls on Option<WordScope> in the new
 post-interface-wait refusal fixture; no production lint failure is reported.
 The original lint wrapper discarded its temporary JSON; a separately guarded,
 read-only scoped Clippy diagnostic establishes both exact locations12144/12186.
-Receipt: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v13-failed-import/RELEASE_GATE_RESULT.json`.
+Receipt: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v13-failed-import/RELEASE_GATE_RESULT.json`.
 Exact diagnostic: same directory `CLIPPY_DIAGNOSTIC.err`.
 
 Bounded correction removes only those two redundant clones in the new test.
@@ -983,7 +983,7 @@ artifact was admitted. Exact79 installed bytes remain unchanged.
 
 The changed post-interface-wait refusal fixture passes1/1,31.778s; exact
 formatted source closure1482 rows matches ROOT without a formatter import.
-Receipt: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/lint-clone-green-v1-import/RESULT.json`.
+Receipt: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/lint-clone-green-v1-import/RESULT.json`.
 Separate guarded strict lint then PASS for default and research-tools profiles:
 non_dead_diagnostics0 in each; unchanged dead-code inventories532/356.
 Receipt in the same directory: `STRICT_LINT.out` and `STRICT_LINT.err`.
@@ -1002,7 +1002,7 @@ DeleteSurroundingText/CommitText denial assertion passes; the subsequent
 unchanged local-tail assertion fails at3314: after="", before="abcde".
 The seven-case gap identity and first state mutation are not yet measured.
 This is different evidence from earlier UnknownObject transport failures.
-Receipt: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v14-failed-import/RELEASE_GATE_RESULT.json`.
+Receipt: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v14-failed-import/RELEASE_GATE_RESULT.json`.
 Raw exact case: same directory `REFUSED_MANUAL_TAIL_FAILURE.log`;
 hermetic summary `FULL_GATE_SUMMARY.json` retains BLOCKED_CONTRACT and the
 original empty known-failure ledger. No failed source/generated/artifact import.
@@ -1024,7 +1024,7 @@ One private logging-only source run of the unchanged seven-gap test passes
 unchanged abcde for mismatch/selection/second_receipt/focus_out/caps9;
 navigation/sensitive already have empty tails before the bridge. Original
 assertions, callback order and budgets stay literal. Receipt:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/refused-tail-gap-diagnostic-v1-import/RESULT.json`;
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/refused-tail-gap-diagnostic-v1-import/RESULT.json`;
 raw metadata in the same directory `TEST_0.err`. Diagnostic source is private,
 never imported. Logging may perturb scheduling; this passing sample does not
 identify the original failed gap or establish a repair.
@@ -1484,7 +1484,7 @@ The real-keyboard check is **NOT_PERFORMED_BY_USER_DIRECTION**, not PASS. The no
 AGENTS requirement and immutable original installer remain unchanged for future work.
 
 Evidence directory:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005`.
 
 - Full `release80-v20-import/RELEASE_GATE_RESULT.json`: PASS,15 command stages,
   both canonical3010 PASS, no failures; SHA7685d75b6da165cae6c7eda937d58a29971299ce9b0d6fcc1a6f7db05e629767.

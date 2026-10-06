@@ -47,7 +47,7 @@ keyboard acceptance remain outside this verdict. Commit/push were outside the
 authorization active during implementation, but the user has now authorized
 the complete task loop. Git checkpoint status, the exact commit, verified remote
 ref and clean-worktree result belong to
-`/home/ubu/.cache/lay/development/td126-publication-20260913/publication.json`.
+`/home/local-user/.cache/lay/development/td126-publication-20260913/publication.json`.
 On continuation, inspect that receipt first. If the checkpoint is not verified,
 run the one bounded graph/compiled-receipt/diff identity check, commit the
 accepted final4 composition, push only to `origin/codex/cleanup-20260908`, verify
@@ -143,9 +143,9 @@ Firefox/Tor focus proof, no browser text mutation proof, and no quality,
 heldout, RSS, or latency claim. Tests/CI denominator is 0.
 
 Build receipt:
-`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2`.
+`/home/local-user/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2`.
 Remote run:
-`/home/e/projects/lay-development-runner/browser-receipt-XQR6ov`. Source archive
+`/workspace/worker/lay-development-runner/browser-receipt-XQR6ov`. Source archive
 SHA `bf8665188a62e077b7095843480b67b1d67aefc835ad4760fa024dee04d407a6`,
 1382 files. Build result SHA
 `5cd763bc62c31af68b8c53351a89d7b86837f842d46a4d1143b8159da910163b`; status
@@ -163,14 +163,14 @@ installation on E0063 because `state.rs` was missing the new
 initializer was then fixed before the `receipt-fix-build-v3-compile2` build.
 
 Installation receipt:
-`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/installation-v3.json`.
+`/home/local-user/.cache/lay/development/double-shift-window-20260912-49o8j3j9/installation-v3.json`.
 Old IME PID `4051893` SHA
 `994485bf9d7379c8d820171960c61e5980e59f88341ab51d6a8b7741c08eec80`; new IME
 PID `911924`, PPID `4715`, start `80439768`. `ibus-daemon` stayed PID `4715`,
 start `2261`; `lay-daemon` stayed PID `3880511`, start `79007142`, SHA
 `7680d8680563d48d8591106cc852960137339535d4ee377d86a7b5763f63780e`. Selected
 engine `lay-ime-ru` and settings were preserved. Rollback backup root:
-`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2/install-backup`.
+`/home/local-user/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2/install-backup`.
 
 Installed V3 invariant: an authenticated soft Reset may keep one manual-only
 reset re-receipt witness without republishing the tail epoch. The already-handled
@@ -202,21 +202,21 @@ browser-focus proof, no text mutation proof, and no quality/heldout/RSS/latency
 claim. Tests/CI denominator is 0.
 
 Build receipt:
-`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v2/build-result.json`
+`/home/local-user/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v2/build-result.json`
 with status `PASS_RUNTIME_BUILD_ONLY_GRAPH_UPDATED`, elapsed 78.86 s, transport
 79.29 s / worker 78.86 s as reported by root, source snapshot 1382 files,
 archive SHA
 `ce1e223ae79cff15064c349f6a07257bfba1fd36e5bb71d9f022aa2838b8a7c0`. Fetch
 verification:
-`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v2/fetch-verification.json`
+`/home/local-user/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v2/fetch-verification.json`
 with status `FETCH_HASH_VERIFIED`, build receipt SHA
 `cf52594b41cdc2e182fc29e2bddc01d699ac4bc35e4947f087157a78000d514f`.
 
 Installation receipt:
-`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/installation.json`
+`/home/local-user/.cache/lay/development/double-shift-window-20260912-49o8j3j9/installation.json`
 with SHA
 `abc0b753a6f676fc7b6ce91c0f09405f8749244f9c871b5beae867f9a5943a22`. Runtime identity receipt:
-`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/runtime-after.json`
+`/home/local-user/.cache/lay/development/double-shift-window-20260912-49o8j3j9/runtime-after.json`
 with status `INSTALLED_PROCESS_IDENTITY_VERIFIED`; all 11 recorded identity and
 configuration checks are true, including loaded process hashes/PIDs, DBus owner,
 config/sources/bindings/XKB/selected engine, and temporary debug removal. Only
@@ -227,7 +227,7 @@ PID `3880511` SHA
 `ibus-daemon` PID `4715` stayed unchanged during install. Selected
 `lay-ime-us`, input sources, config SHA, direct Alt+Shift binding state, backward
 bindings, and XKB options were preserved. Rollback backup root:
-`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/backup`.
+`/home/local-user/.cache/lay/development/double-shift-window-20260912-49o8j3j9/backup`.
 The temporary diagnostic override had already been removed before this final
 install.
 
@@ -250,7 +250,7 @@ user clarification.
 Fresh physical report on 2026-09-11: `djn` was typed, the IME later delegated
 Double Shift through exact committed-tail, and daemon replay was rejected before
 mutation because `VisibleTailV3` had no field focus receipt. Frozen evidence:
-`/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/user-failed-djn-20260911T231756Z/`.
+`/home/local-user/.cache/lay/development/double-shift-window-20260912-49o8j3j9/user-failed-djn-20260911T231756Z/`.
 
 Bounded source fix prepared for review only: context-admission `VisibleTailV3`
 projects an opaque receipt from the current live `AdmissionToken` / admitted
@@ -269,7 +269,7 @@ current instruction. Runtime authority changed: false.
 The first 2026-09-11 GNOME-owner Alt+Shift hotfix failed physical recheck:
 after each manual Alt+Shift the first word still entered source-free
 `UnknownStart`, while the next word applied normally. Fresh evidence:
-`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/ibus_engine_debug.jsonl`.
+`/home/local-user/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/ibus_engine_debug.jsonl`.
 
 The follow-up source/runtime fix is installed with status
 `INSTALLED_LOADED_HASH_VERIFIED_PHYSICAL_PENDING`. GNOME now keeps only
@@ -281,15 +281,15 @@ readout closes stale `preedit_fast` after whitespace-terminated handoff rebuilds
 while preserving whole ASCII layout tokens with punctuation-shaped letter keys.
 
 Build receipt:
-`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/build-result.json`
+`/home/local-user/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/build-result.json`
 with `PASS_RUNTIME_BUILD_ONLY_GRAPH_UPDATED` in 136.82 s. Installation receipt:
-`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/installation.json`.
+`/home/local-user/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/installation.json`.
 Loaded daemon PID `2128412` SHA
 `7680d8680563d48d8591106cc852960137339535d4ee377d86a7b5763f63780e`; loaded IME
 PID `2128417` SHA
 `86f5ea13549ffeb473bc70959b934d734406c9ed336fb5c3a06b71415ed6b96b`; global
 `ibus-daemon` PID `4715` was preserved. Rollback backup for this installation:
-`/home/ubu/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/backup/`.
+`/home/local-user/.cache/lay/development/layout-recheck-20260911-sy8bmz8b/backup/`.
 Tests/CI denominator is 0; physical acceptance remains `PENDING`; no quality,
 latency, RSS, or heldout claim is made.
 
@@ -328,9 +328,9 @@ no command failures. The first failed attempt and recovery receipts remain a
 truthful incident record, not the final state.
 
 Exact graph completion is established only by
-`/home/ubu/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/final-document-graph/fetch-receipt.json`
+`/home/local-user/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/final-document-graph/fetch-receipt.json`
 with `PASS`. Exact publication refs are established only by
-`/home/ubu/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/publication.json`.
+`/home/local-user/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/publication.json`.
 
 Current owning release evidence:
 [release 1.0.71](docs/release-1.0.71-preflight-2026-09-11.md).
@@ -361,7 +361,7 @@ sha256 `706022c30e9f9bd3423db36340be6dcfe17ffdb41f1a4f87241ae88ae6af4551`.
 Runtime receipt:
 `~/.cache/lay/development/poor-input-20260911-xoi17mif/post-install-runtime.json`
 sha256 `858931b908302163a85a92372ad3fb70b96df821870941383e2d412b87be55bb`.
-Backup: `/home/ubu/.local/state/lay/release-backups/poor-input-20260911-bgoa6qf_`.
+Backup: `/home/local-user/.local/state/lay/release-backups/poor-input-20260911-bgoa6qf_`.
 Installation review: `9/10`, H0/M0/L0. Physical keyboard acceptance remains
 `NOT_TESTED`; no general quality, RSS, latency, heldout, or physical PASS is
 claimed. Final document-graph verification is recorded at
@@ -582,7 +582,7 @@ USB 1ea7:0066. Поэтому физическое происхождение п
 L1.1 service `db825d2f`. SHA файлов и /proc четырёх процессов совпали;
 CLI и загруженное расширение показывают 1.0.67. Глобальный IBus PID 4715,
 восемь модельных зависимостей, config и список источников ввода сохранены.
-Backup: /home/ubu/.local/state/lay/release-backups/1.0.67-td123-1p1e47xu/.
+Backup: /home/local-user/.local/state/lay/release-backups/1.0.67-td123-1p1e47xu/.
 
 Все 2711 correctness/package, lint и обязательные build gates прошли.
 Исходный full-вызов и продолжение после исправления только byte-location
@@ -615,7 +615,7 @@ install/restart соблюдено; последующая проверенна�
 отдельно порученному этапу TD-123.
 
 Полная точка восстановления и продолжения:
-/home/ubu/.local/state/lay/project-snapshots/20260908-before-cleanup/RESTORE_AND_CONTINUE.md
+/home/local-user/.local/state/lay/project-snapshots/20260908-before-cleanup/RESTORE_AND_CONTINUE.md
 
 [План и результат очистки](docs/project-cleanup-2026-09-08.md) ·
 [Восстановление истории](ARCHIVE.md) ·

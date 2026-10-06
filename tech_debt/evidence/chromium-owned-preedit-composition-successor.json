@@ -9,7 +9,7 @@
   "predecessor": {
     "task": "IME-terminal-native-delivery-2026-09-10",
     "binding": "tech_debt/evidence/ime-terminal-native-delivery-composition-successor.json",
-    "binding_sha256": "aec7150a385c0d9fc90f2a5b6b525adb23bc5f48768da8d2d3d6aa67fb1ff308",
+    "binding_sha256": "58dbb98bff4ea042927e8d00809fad75880def52c4214c735415cc5c8d1d089a",
     "path": "src/bin/lay_ibus_engine/composition_commit.rs",
     "sha256": "344a525b388879af088ff8afaa5ec7bf8ddc9fd96c83c7ce6daa8281fa28efd7",
     "mode": "0664"
@@ -30,5 +30,17 @@
     "medium_findings": 0,
     "low_findings": 1
   },
-  "runtime_authority_changed": false
+  "runtime_authority_changed": false,
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "6a645d7e655837d93ddd5fedeee845ec9a96154d3dab8b53787f5aab3b9aa766",
+    "fields": "document reference hashes refreshed after public redaction",
+    "authority": "historical source and review verdicts retained; public file references identify projections",
+    "original_retention": "independent private archive; previous Git snapshot",
+    "original_references": {
+      "/predecessor/binding_sha256": "aec7150a385c0d9fc90f2a5b6b525adb23bc5f48768da8d2d3d6aa67fb1ff308"
+    },
+    "reference_semantics": "binding/report hashes identify current public files; original references retained here; runtime source SHA256 and verdict fields unchanged"
+  }
 }

@@ -9,7 +9,7 @@
   "predecessor": {
     "task": "Chromium-owned-preedit-Space-1.0.74",
     "binding": "tech_debt/evidence/chromium-owned-preedit-composition-successor.json",
-    "binding_sha256": "6a645d7e655837d93ddd5fedeee845ec9a96154d3dab8b53787f5aab3b9aa766",
+    "binding_sha256": "5ed5b4c8315623a33b78648c5b0ab52b23c997eff3165fda927c811ab7c815e5",
     "path": "src/bin/lay_ibus_engine/composition_commit.rs",
     "sha256": "f615fc1af80c9a8c64b64dfb435ce55776d80321e3e650435a84aa2a1fc04659",
     "mode": "0664"
@@ -24,7 +24,7 @@
   "review": {
     "state": "PASS",
     "report": "tech_debt/evidence/browser-delayed-snapshot-source-review.md",
-    "report_sha256": "62e9594442572f6f27c1943122a332909e41a4e02698a7d5d5ed922a34006d83",
+    "report_sha256": "ad144fcf0ae2fcf2ae959ac6ccbaaa52a13d0bf462d756da99bc0db54a92586c",
     "score": "9/10",
     "high_findings": 0,
     "medium_findings": 0,
@@ -35,10 +35,23 @@
     "selected": 590,
     "passed": 590,
     "failed": 0,
-    "result": "/home/ubu/.cache/lay/development/run-ekb6jas1/RESULT.json",
+    "result": "/home/local-user/.cache/lay/development/run-ekb6jas1/RESULT.json",
     "result_sha256": "ad9442d37e357d27f1c6a9aede2cd0ae6695961dc0efe16c91277da2627dcfa9",
     "log_sha256": "b9f264e409f61b8779bfe351db34d64d3927cef228b52cf05107d04bc1c4b972",
     "archive_sha256": "9c22a693763a8f9130b1325eaa7b4f6e77df54055055882b23b2b81695b3e2d1"
   },
-  "runtime_authority_changed": true
+  "runtime_authority_changed": true,
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "92c0efd44c322a739dfc59d053a89fbfd0bc1f1f60f19b3c62269eadd05b2c9d",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot",
+    "original_references": {
+      "/predecessor/binding_sha256": "6a645d7e655837d93ddd5fedeee845ec9a96154d3dab8b53787f5aab3b9aa766",
+      "/review/report_sha256": "62e9594442572f6f27c1943122a332909e41a4e02698a7d5d5ed922a34006d83"
+    },
+    "reference_semantics": "binding/report hashes identify current public files; original references retained here; runtime source SHA256 and verdict fields unchanged"
+  }
 }

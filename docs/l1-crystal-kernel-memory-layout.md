@@ -1393,7 +1393,7 @@ runtime authority                           unchanged
 ```
 
 Artifact:
-`/home/e/build/lay-l1-shadow/artifacts/l11-final-hybrid5-bounded1-evidence-only-762314-2026-07-25/package.bin`.
+`/home/worker/build/lay-l1-shadow/artifacts/l11-final-hybrid5-bounded1-evidence-only-762314-2026-07-25/package.bin`.
 SHA-256:
 `259f0a528ed64bcb31ed6f57c0c7277e1e92d076594c789a56aa227d38a16e35`.
 Receipt:
@@ -1756,15 +1756,15 @@ streaming crystallizer. Runtime authority remains unchanged.
 Runtime authority did not change. Exact evidence:
 
 ```text
-/home/e/build/lay-l1-shadow/artifacts/l11-depth0-sparse32-10k-2026-07-26/proof.json
-/home/e/build/lay-l1-shadow/artifacts/l11-depth0-sparse32-10k-2026-07-26/proof.log
-/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-2026-07-26/package.bin
-/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-2026-07-26-compaction.json
-/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-2026-07-26-compaction.time
-/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-proof-2026-07-26/report.json
-/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-proof-2026-07-26/run.log
-/home/ubu/projects/lay/artifacts/l11-depth0-implicit-v7-10k-proof-2026-07-26/time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_DEPTH0_IMPLICIT_V7_10K_2026-07-26.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-depth0-sparse32-10k-2026-07-26/proof.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-depth0-sparse32-10k-2026-07-26/proof.log
+/workspace/local/lay/artifacts/l11-depth0-implicit-v7-10k-2026-07-26/package.bin
+/workspace/local/lay/artifacts/l11-depth0-implicit-v7-10k-2026-07-26-compaction.json
+/workspace/local/lay/artifacts/l11-depth0-implicit-v7-10k-2026-07-26-compaction.time
+/workspace/local/lay/artifacts/l11-depth0-implicit-v7-10k-proof-2026-07-26/report.json
+/workspace/local/lay/artifacts/l11-depth0-implicit-v7-10k-proof-2026-07-26/run.log
+/workspace/local/lay/artifacts/l11-depth0-implicit-v7-10k-proof-2026-07-26/time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_DEPTH0_IMPLICIT_V7_10K_2026-07-26.json
 ```
 
 #### Immutable proof gate
@@ -1813,7 +1813,7 @@ prefix truncation                      66.127%
 suffix truncation                      68.210%
 verdict                           REJECTED_shadow
 receipt
-/home/e/build/lay-l1-shadow/artifacts/l11-v7-typed-inverse-probe-2k-762314-2026-07-26/report.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-v7-typed-inverse-probe-2k-762314-2026-07-26/report.json
 ```
 
 A single cross-distance energy lease of `1,500` was also rejected. It restored
@@ -1828,7 +1828,7 @@ prefix truncation                      94.985%
 suffix truncation                      80.864%
 verdict                           REJECTED_shadow
 receipt
-/home/e/build/lay-l1-shadow/artifacts/l11-v7-typed-lease1500-probe-2k-762314-2026-07-26/report.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-v7-typed-lease1500-probe-2k-762314-2026-07-26/report.json
 ```
 
 This experiment did not test a full `13 x 20,000` matrix and did not alter
@@ -1859,7 +1859,7 @@ lowest lattice coverage:
 omission + transposition                98.900%
 verdict                    PASS_probe_top1_only
 receipt
-/home/e/build/lay-l1-shadow/artifacts/l11-v7-operator-aware-probe-2k-762314-2026-07-26/report.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-v7-operator-aware-probe-2k-762314-2026-07-26/report.json
 ```
 
 The short probe proves the strict per-class top-1, clean, false-certainty and
@@ -1917,7 +1917,7 @@ crystallizer.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_FINAL_762314_2026-07-26.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_FINAL_762314_2026-07-26.json
 ```
 
 #### Split-language V7 proof and promotion veto
@@ -1996,8 +1996,8 @@ stored V7 field.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_RU462314_2026-07-26.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_EN300000_2026-07-26.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_RU462314_2026-07-26.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_EN300000_2026-07-26.json
 ```
 
 #### Certificate-preserving bounded tail
@@ -2065,7 +2065,7 @@ verdict                         PASS_shadow
 Measured artifact:
 
 ```text
-/home/e/build/lay-l1-shadow/artifacts/l11-v7-en-certificate-preserving-tail-probe-2k-2026-07-26/report.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-v7-en-certificate-preserving-tail-probe-2k-2026-07-26/report.json
 ```
 
 This probe did not test the final `13 x 20,000` split denominator. Runtime
@@ -2116,15 +2116,15 @@ shadow installation only. `runtime_authority=false`; daemon, IME and
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_RU462314_2026-07-26.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_EN300000_2026-07-26.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_RU462314_2026-07-26.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_EN300000_2026-07-26.json
 ```
 
 Exact proof reports:
 
 ```text
-/home/e/build/lay-l1-shadow/artifacts/l11-v7-ru-certificate-preserving-tail-full-20k-2026-07-26/report.json
-/home/e/build/lay-l1-shadow/artifacts/l11-v7-en-certificate-preserving-tail-full-20k-2026-07-26/report.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-v7-ru-certificate-preserving-tail-full-20k-2026-07-26/report.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-v7-en-certificate-preserving-tail-full-20k-2026-07-26/report.json
 ```
 
 The full split proof did not test live authority or the future single-pass
@@ -2234,9 +2234,9 @@ Local shadow installation was verified separately:
 
 ```text
 installed package
-  /home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v2.v7.bin
+  /home/local-user/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v2.v7.bin
 installed CLI
-  /home/ubu/.local/lib/lay/bin/lay-l1.1-restore
+  /home/local-user/.local/lib/lay/bin/lay-l1.1-restore
 installed/source SHA-256 parity                    true
 врмея candidate rank                                  1
 candidate surface                                 время
@@ -2274,7 +2274,7 @@ thread. While the package is loading, `health` and `stats` report
 caller invisibly. The daemon now discovers the installed shadow package from:
 
 ```text
-/home/ubu/.local/share/lay/nanda_wave/l1.1/*.installed.json
+/home/local-user/.local/share/lay/nanda_wave/l1.1/*.installed.json
 ```
 
 and starts or reloads `lay-l1.1-serve` during startup warmup without waiting
@@ -2340,18 +2340,18 @@ promote runtime authority or change the IME route.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_FINAL_835410_2026-07-26.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_RU535410_2026-07-26.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_EN300000_2026-07-26.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_FINAL_835410_2026-07-26.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_RU535410_2026-07-26.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_COMPOSITE_V2_V7_EN300000_2026-07-26.json
 ```
 
 Exact remote reports:
 
 ```text
-/home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/crystallize-v6.log
-/home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/compact-v7.log
-/home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/proof-ru-20k.log
-/home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/proof-en-20k.log
+/home/worker/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/crystallize-v6.log
+/home/worker/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/compact-v7.log
+/home/worker/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/proof-ru-20k.log
+/home/worker/build/lay-l1-shadow/artifacts/l11-final-depth0-v2-835410-2026-07-26/proof-en-20k.log
 ```
 
 The measured verdict is `PASS_SHADOW_ONLY`. This experiment did not promote or
@@ -2526,17 +2526,17 @@ promotion into daemon, IME or AuthorizedEdit ownership
 Exact remote evidence:
 
 ```text
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-full-2026-07-29/package.v8.bin
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-full-2026-07-29/proof-smoke/report.json
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-full-2026-07-29/proof-smoke/run.log
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard256-v2-2026-07-29/package.v8.bin
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard256-v2-2026-07-29/build-report.json
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard256-v2-2026-07-29/build.log
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/package.v8.bin
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/build-report.json
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/build.log
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/proof-smoke/report.json
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/proof-smoke/run.log
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-full-2026-07-29/package.v8.bin
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-full-2026-07-29/proof-smoke/report.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-full-2026-07-29/proof-smoke/run.log
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard256-v2-2026-07-29/package.v8.bin
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard256-v2-2026-07-29/build-report.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard256-v2-2026-07-29/build.log
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/package.v8.bin
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/build-report.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/build.log
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/proof-smoke/report.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/proof-smoke/run.log
 ```
 
 ### Append-only V8 composite overlay, 2026-07-29
@@ -2696,10 +2696,10 @@ authority promotion of any composite snapshot
 Implementation ownership:
 
 ```text
-/home/ubu/projects/lay/src/nanda_wave/lexical_grokking/composite.rs
-/home/ubu/projects/lay/src/nanda_wave/lexical_grokking/runtime.rs
-/home/ubu/projects/lay/src/bin/lay_l1_1_serve.rs
-/home/ubu/projects/lay/src/bin/lay_nanda_wave_train.rs
+/workspace/local/lay/src/nanda_wave/lexical_grokking/composite.rs
+/workspace/local/lay/src/nanda_wave/lexical_grokking/runtime.rs
+/workspace/local/lay/src/bin/lay_l1_1_serve.rs
+/workspace/local/lay/src/bin/lay_nanda_wave_train.rs
 ```
 
 Operator route:
@@ -2878,12 +2878,12 @@ live daemon or IBus touched                 false
 Exact evidence:
 
 ```text
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/proof-full-anchor-layout/report.json
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/proof-full-anchor-layout/run.log
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/runtime-final/hot-vreyam-2000.json
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/runtime-final/hot-vreyam-2000.time
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/overlay-scale/
-/home/e/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/service-reload-v2/
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/proof-full-anchor-layout/report.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/proof-full-anchor-layout/run.log
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/runtime-final/hot-vreyam-2000.json
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/runtime-final/hot-vreyam-2000.time
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/overlay-scale/
+/home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard32-2026-07-29/service-reload-v2/
 ```
 
 The stricter formal target remains:
@@ -3023,7 +3023,7 @@ delta compaction into a replacement V8 base
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_V8_SHARD1_BATCH_RUNTIME_2026-07-29.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_V8_SHARD1_BATCH_RUNTIME_2026-07-29.json
 ```
 
 ### Global L1.1 + L2 seed compaction, 2026-07-30
@@ -3125,8 +3125,8 @@ long-running cache behavior over multiple days
 Runtime authority did not change. Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_GLOBAL_COMPACTION_852582_2026-07-30.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_V8_GROUPED_CACHE_RUNTIME_2026-07-30.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_GLOBAL_COMPACTION_852582_2026-07-30.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_V8_GROUPED_CACHE_RUNTIME_2026-07-30.json
 ```
 
 ### Phase 6 canonical first-touch runtime, 2026-08-02
@@ -3138,7 +3138,7 @@ relations or rebuild the learned field.
 Canonical immutable inputs:
 
 ```text
-package                                  /home/e/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/package.v8.bin
+package                                  /home/worker/build/lay-l1-shadow/artifacts/l11-v8-shard1-final-2026-07-29/package.v8.bin
 package bytes                            198,233,790 = 189.05 MiB
 package SHA-256                          03e320857cafc7d661a1893f728f8777c5e0b755ee01214502548779fbee6494
 forward relations                       108,156,559, all retained
@@ -3218,5 +3218,5 @@ non-hybrid deployment CPUs
 Runtime authority did not change. Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_FIRST_TOUCH_PHASE6_2026-08-02.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_FIRST_TOUCH_PHASE6_2026-08-02.json
 ```

@@ -49,7 +49,7 @@ Baseline checkout: `cc1e2207519801ca0f9b7c6963897b55953a7751`.
 ## Артефакты и границы утверждений
 
 Временный writable root:
-`/home/ubu/.cache/lay/layout-phase1-private-WTVpDE` (создан mode 0700).
+`/home/local-user/.cache/lay/layout-phase1-private-WTVpDE` (создан mode 0700).
 Driver, config, shim, stdout/RPC receipt и trace остаются в этом каталоге;
 проверенные результаты и reproducible inputs переносятся в `tech_debt/evidence/`.
 Команда, хеши, число кейсов, наблюдаемые исходы, неиспытанные ветки и статус

@@ -38,7 +38,7 @@ learning, and reload ownership.
 
 Focused discovery found498 tests:495 correctness tests were selected, executed,
 and passed; three performance tests were excluded. The discovered manifest is
-`/home/ubu/.cache/lay/development/td121-startup-gate-20260913-bgytxm2w/focused-results/DISCOVERED_MANIFEST.json`,
+`/home/local-user/.cache/lay/development/td121-startup-gate-20260913-bgytxm2w/focused-results/DISCOVERED_MANIFEST.json`,
 SHA-256 `0f308bbc4fbbf189a4374cc4b079b74ae76e47254e6ae6a731c87c87de567616`.
 The summary SHA-256 is
 `1976dde01fd1e7dbc23eccc7a2ea8851db32f7f114a1eb9b95d9e74f9e0c533e`;
@@ -69,7 +69,7 @@ log marker and artifact binding must not be relabelled as a recorded rc0.
 
 The immutable continuation reused those exact bytes without another focused
 run or build. Result:
-`/home/ubu/.cache/lay/development/td121-startup-continuation-20260913-bgytxm2w-c1/RESULT.json`,
+`/home/local-user/.cache/lay/development/td121-startup-continuation-20260913-bgytxm2w-c1/RESULT.json`,
 SHA-256 `d437dd398a403201e7971e4023f4f27bcc46516c3909be12035c56a5fd522a80`.
 The fresh config SHA-256 is
 `1c81328d929c9d58dc47969f25f1b793de87928581d2cd190950a4c1ce0a259d`;
@@ -223,13 +223,13 @@ proof.
 Receipts:
 
 - local result:
-  `/home/ubu/.cache/lay/development/td121-baseline-20260913-2NIV8vuY/RESULT.json`,
+  `/home/local-user/.cache/lay/development/td121-baseline-20260913-2NIV8vuY/RESULT.json`,
   SHA-256 `257e9c50f5d1c7750f2106d5e6dca79b1ea44a898a267f5273377ab610cd3a8c`;
 - local case packet with exact trace paths:
-  `/home/ubu/.cache/lay/development/td121-baseline-20260913-2NIV8vuY/case-packet.json`,
+  `/home/local-user/.cache/lay/development/td121-baseline-20260913-2NIV8vuY/case-packet.json`,
   SHA-256 `a0e4f89eb6b14d0b74579b455d7a04d255f7359fd19d3d9ad16b70d98bbc317f`;
 - remote root:
-  `/home/e/projects/lay-development-runner/td121-baseline-20260913-2NIV8vuY`.
+  `/workspace/worker/lay-development-runner/td121-baseline-20260913-2NIV8vuY`.
 
 The initial extraction-mode preflight and the aggregate `FileExistsError`
 after all declared commands are preserved as separate administrative failures.
@@ -244,7 +244,7 @@ nine dependency files. It ran only `manual-toggle` and `restoration` with the
 existing `post-exact-ready` schedule, under one fresh outer lease and without a
 build. Request:
 
-`/home/e/projects/lay-development-runner/td121-schedule-comparison-20260913-5emnCC/request.json`
+`/workspace/worker/lay-development-runner/td121-schedule-comparison-20260913-5emnCC/request.json`
 
 Request SHA-256:
 `effca546111d3be15fb69a1eeeb001b49139d112d112a7bf54b0fb47fac03b31`.
@@ -261,7 +261,7 @@ Both actual commands passed:
 
 Result:
 
-`/home/ubu/.cache/lay/development/td121-schedule-comparison-20260913-5emnCC/RESULT.json`
+`/home/local-user/.cache/lay/development/td121-schedule-comparison-20260913-5emnCC/RESULT.json`
 
 Result SHA-256:
 `e0d3d06d412cd8d3aa6edb6ca8159e117cf72600c06d83820691a428c23c50c4`.
@@ -435,14 +435,14 @@ authority.
 Receipts:
 
 - result:
-  `/home/ubu/.cache/lay/development/td121-diagnostic-compilefix-20260913-m03hzil4/RESULT.json`,
+  `/home/local-user/.cache/lay/development/td121-diagnostic-compilefix-20260913-m03hzil4/RESULT.json`,
   SHA-256 `776610ccfc16ea9d3f6c58d07ea50c37c14c6f1af8beece18cde169dfaafa0f7`;
 - manual receipt SHA-256
   `8763967a565f7ab3b85a99d0a40a7fe7f052de2506f926d3958bea9f1c27fe5f`;
 - restoration receipt SHA-256
   `87877b79afa157caa23fac7674519cd9de1941024acbbdf107a0dd0f24158d28`;
 - remote root:
-  `/home/e/projects/lay-development-runner/td121-diagnostic-compilefix-20260913-m03hzil4`.
+  `/workspace/worker/lay-development-runner/td121-diagnostic-compilefix-20260913-m03hzil4`.
 
 Three non-product execution incidents remain separate. The first remote root
 had one pre-launch SSH path typo and then a focused-run refusal because the

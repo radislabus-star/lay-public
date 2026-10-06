@@ -67,9 +67,9 @@ lease.
 ## Setup receipt: closure transferred, transport not yet run
 
 Fresh local source root:
-`/home/ubu/.cache/lay/td121-remote-deployed-ibus.aB8ULb`.
+`/home/local-user/.cache/lay/td121-remote-deployed-ibus.aB8ULb`.
 Fresh remote proof root:
-`/home/e/.cache/lay/td121-remote-deployed-ibus.qFnUzG`.
+`/home/worker/.cache/lay/td121-remote-deployed-ibus.qFnUzG`.
 The transferred tar was created with `--mtime=now`, SHA-256
 `e49353d08ebe87529f2efe20c4c016c6904e1ef28e8ee79432cff120d174ddc9`.
 
@@ -147,7 +147,7 @@ The unique-unit run entered the private D-Bus session but stopped before
 fixture asserted `HOME=/home/ubu`. The remote user correctly retained its
 unmodified `HOME=/home/e`; the launcher does not set or otherwise repurpose
 HOME. The durable raw log is
-`/home/e/.cache/lay/td121-remote-deployed-ibus.qFnUzG/run3.log`, SHA-256
+`/home/worker/.cache/lay/td121-remote-deployed-ibus.qFnUzG/run3.log`, SHA-256
 `e43abc6c700d1dd898a072aaf5cd80f58c16b5d63331c46e13ddb552f1bf2768`.
 
 The bounded repair removes only that host-specific assertion and records the
@@ -173,7 +173,7 @@ remains a non-active systemd record; it owns no daemon and is not treated as a
 successful or cleaned proof unit.
 
 Durable remote artifacts in
-`/home/e/.cache/lay/td121-remote-deployed-ibus.qFnUzG`:
+`/home/worker/.cache/lay/td121-remote-deployed-ibus.qFnUzG`:
 
 | Artifact | SHA-256 |
 | --- | --- |

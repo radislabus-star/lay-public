@@ -319,7 +319,7 @@ admitted Phase 8F hypothesis is an impact-ordered threshold search:
 Raw evidence:
 
 ```text
-/home/ubu/.cache/lay/l1-peak-search-phase8e-2026-08-14/
+/home/local-user/.cache/lay/l1-peak-search-phase8e-2026-08-14/
 
 best raw receipt
   epoch-s16-13x1.json

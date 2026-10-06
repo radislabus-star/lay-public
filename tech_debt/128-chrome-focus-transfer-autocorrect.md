@@ -9,7 +9,7 @@ fresh-field Chrome runs and in two direct same-word runs in one field. In a
 single ordinary Chrome window, typing `пу` in
 one textarea, moving by Tab to another, then typing `публекует ` leaves the
 second field unchanged. Receipt:
-`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-chrome-final-accepted-combined/receipt.json`
+`/home/local-user/.cache/lay/development/browser-autocorrect-20260922/physical-chrome-final-accepted-combined/receipt.json`
 (SHA-256 `6f469b2ae96974462c25c3e1436e0d7257dd97336274f6516ee721ec547960fa`).
 The second field advertises capabilities 41 before its first printable,
 receives managed per-character CommitText, and lacks an exact word-start

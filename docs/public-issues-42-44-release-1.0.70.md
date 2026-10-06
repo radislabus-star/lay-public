@@ -33,7 +33,7 @@ authorizes publication after the additional fixes and required verification.
   pushing that branch alone does not update the public install URL.
 
 Raw issue JSON and complete attachment bytes are private, under
-`/home/ubu/.cache/lay/development/github-issues-70-3ps08xs0/`.
+`/home/local-user/.cache/lay/development/github-issues-70-3ps08xs0/`.
 `issue-evidence.json` records URLs, hashes, line counts and diagnostic excerpts.
 The ARM log is 2089 lines / 79576 bytes; the AMD log is 74 lines / 4438 bytes.
 The older warning flood is not an independently established architecture bug.

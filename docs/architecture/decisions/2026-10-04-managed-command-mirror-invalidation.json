@@ -28,7 +28,7 @@
   "preserved_residual_prefix_sha256": "06be99c5e9824fce9dd71efcfebcd0672bd9be490f36fd45ff4f7b918edbc482",
   "installed_ime_sha256_at_observation": "71ad8f2e5a2d72df813881c89a5a26085ce8d047a1df60d2f98597d26dbd69f6",
   "measured_evidence": {
-    "path": "/home/ubu/.cache/lay/development/ranker-release-20261004/windows/GOST_MANUAL_OWNER_CAUSAL_AUDIT.md",
+    "path": "/home/local-user/.cache/lay/development/ranker-release-20261004/windows/GOST_MANUAL_OWNER_CAUSAL_AUDIT.md",
     "sha256": "ba6fdd911b3990b38dcdffb9ee71c2c6897bd21464b0bb9cec8919be28bfeefd",
     "scope": "Existing installed-byte physical readback only; not a proof of this source candidate."
   },
@@ -48,10 +48,18 @@
     "corrected_remote_formatter": "PASS_LAYOUT_ONLY",
     "receipt2": "ranker-release-20261004-r4c-qayjcpz5/FORMAT_EXECUTION_1.json"
   },
-  "focused_receipt": "/home/ubu/.cache/lay/development/ranker-release-20261004/revision4/style-and-c03/C03_FOCUSED_V2_EXECUTION.json",
+  "focused_receipt": "/home/local-user/.cache/lay/development/ranker-release-20261004/revision4/style-and-c03/C03_FOCUSED_V2_EXECUTION.json",
   "canonical_remote_namespace": "ranker-release-20261004-c03-canon79-3ppevcj2",
-  "architecture_refresh_receipt": "/home/ubu/.cache/lay/development/ranker-release-20261004/revision4/graph-final/GRAPH_EXECUTION.json",
+  "architecture_refresh_receipt": "/home/local-user/.cache/lay/development/ranker-release-20261004/revision4/graph-final/GRAPH_EXECUTION.json",
   "installed_ime_sha256": "a1bdffe17771e241234b6bf130babde052e4bac31578741c0d7de780df6ebaee",
-  "physical_c03_receipt": "/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V8_RUN_20261004T124423_bb1e553d2a8d/WIDE_MATRIX_V7_20261004T124423_bb1e553d2a8d.json",
-  "runtime_authority_policy_changed": false
+  "physical_c03_receipt": "/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V8_RUN_20261004T124423_bb1e553d2a8d/WIDE_MATRIX_V7_20261004T124423_bb1e553d2a8d.json",
+  "runtime_authority_policy_changed": false,
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "5c4c0f23b5567a0c2f92cdde3f89d6b25abd5c94517a33d545f3e8b1bb223239",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

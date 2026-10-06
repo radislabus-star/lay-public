@@ -942,8 +942,8 @@ Release build and installation facts:
 
 ```text
 source commit                 773fae2b9f6f223f63283b610b779d506e94a95f
-remote build host             e@192.168.3.94
-remote source root            /home/e/builds/lay-release-1.0.24-20260813-033012-git
+remote build host             builder@worker.example
+remote source root            /home/worker/builds/lay-release-1.0.24-20260813-033012-git
 Cargo jobs                    20
 release wall time             185.01 s
 release CPU time              532.53 s
@@ -964,7 +964,7 @@ DBus Ping                     pong from lay-extension
 Rollback snapshot:
 
 ```text
-/home/ubu/.local/lib/lay/rollback/1.0.23-pre-1.0.24-20260813-033957
+/home/local-user/.local/lib/lay/rollback/1.0.23-pre-1.0.24-20260813-033957
 ```
 
 The transient `Set global engine failed: connection interrupted` journal entry
@@ -980,7 +980,7 @@ target and permits a fresh candidate.
 Exact release receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_RELEASE_1_0_24_INSTALLED_2026-08-13.json
+/workspace/local/lay/docs/structural_gates/receipts/LAY_RELEASE_1_0_24_INSTALLED_2026-08-13.json
 ```
 
 ## Release 1.0.26: Target-Bound Replacement Authority
@@ -1070,8 +1070,8 @@ become visible replacements.
 Release build and installation facts:
 
 ```text
-remote build host             e@192.168.3.94
-remote source root            /home/e/builds/lay-release-1.0.26-20260813-target-bound
+remote build host             builder@worker.example
+remote source root            /home/worker/builds/lay-release-1.0.26-20260813-target-bound
 Cargo jobs                    20
 release wall time             203.47 s
 release CPU time              795.12 s
@@ -1092,7 +1092,7 @@ managed processes             1 daemon + 1 IBus engine
 Rollback snapshot:
 
 ```text
-/home/ubu/.local/lib/lay/rollback/1.0.25-pre-1.0.26-20260813-075855
+/home/local-user/.local/lib/lay/rollback/1.0.25-pre-1.0.26-20260813-075855
 ```
 
 Tested: source route, target evidence, candidate admission, fixed replacement
@@ -1107,6 +1107,6 @@ check rather than a software claim.
 Exact software receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_IME_TARGET_BOUND_REPLACEMENT_EVIDENCE_SOFTWARE_PROOF_2026-08-13.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_RELEASE_1_0_26_INSTALLED_2026-08-13.json
+/workspace/local/lay/docs/structural_gates/receipts/LAY_IME_TARGET_BOUND_REPLACEMENT_EVIDENCE_SOFTWARE_PROOF_2026-08-13.json
+/workspace/local/lay/docs/structural_gates/receipts/LAY_RELEASE_1_0_26_INSTALLED_2026-08-13.json
 ```

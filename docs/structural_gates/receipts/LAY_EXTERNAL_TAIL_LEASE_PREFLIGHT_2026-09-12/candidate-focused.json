@@ -3,7 +3,7 @@
   "status": "CANDIDATE_FOCUSED_PASS_RUNTIME_UNCHANGED",
   "date": "2026-09-12",
   "installed_v3_source": {
-    "archive": "/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2/source.tar",
+    "archive": "/home/local-user/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2/source.tar",
     "archive_sha256": "bf8665188a62e077b7095843480b67b1d67aefc835ad4760fa024dee04d407a6",
     "immutable": true
   },
@@ -71,8 +71,8 @@
   "remote_check": {
     "command": "python3 scripts/dev-check.py check --target bin:lay-ibus-engine",
     "resource_profile": "dedicated-20cpu",
-    "local_receipt": "/home/ubu/.cache/lay/development/run-6yjp8x5k",
-    "remote_run": "/home/e/projects/lay-development-runner/run-8f5G0o",
+    "local_receipt": "/home/local-user/.cache/lay/development/run-6yjp8x5k",
+    "remote_run": "/workspace/worker/lay-development-runner/run-8f5G0o",
     "remote_snapshot_sha256": "dbcdcc58e2bd8c27966f5df7ef3e937c339d85730cfb73227a0d3c3234aafcf7",
     "format_check": "PASS",
     "focused_selected": 470,
@@ -87,5 +87,13 @@
     "latency, RSS, package size",
     "installed runtime"
   ],
-  "runtime_authority_changed": false
+  "runtime_authority_changed": false,
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "89d5edc3918ab076f3443ea85fcf4fab5d0aee2cd492c9be3aa39e3c98af0b23",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

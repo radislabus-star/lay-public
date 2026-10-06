@@ -1676,7 +1676,7 @@ idle/hot baseline; per-process RSS is also reported but is not summed as if
 shared pages were private. Cache growth must reach a bounded plateau during the
 fixed soak instead of passing only at startup.
 
-Cargo and large lexical proofs run on `e@192.168.3.94`, but local IBus/WeChat/
+Cargo and large lexical proofs run on `builder@worker.example`, but local IBus/WeChat/
 Telegram event latency is measured on the desktop that receives the physical
 input. Remote compute numbers cannot prove local compositor latency. A failed
 gate blocks promotion; neither the denominator nor threshold may be changed
@@ -2173,24 +2173,24 @@ What was not tested or authorized:
 Exact external evidence root:
 
 ```text
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820
 ```
 
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/source-at-execution.sha256-manifest.json
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/output/run-summary.json
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/remote-run-validation.json
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/future59-source-absence.json
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/local-event-runtime-baseline.partial.json
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/baseline49-boundary-first-loss-analysis.json
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/partial-results-manifest.json
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-v3.py
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-execution-plan-v3.json
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-preflight-v3-receipt.json
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-run-v3.json
-/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-run-v3.trace.jsonl
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/source-at-execution.sha256-manifest.json
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/output/run-summary.json
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/remote-run-validation.json
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/future59-source-absence.json
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/local-event-runtime-baseline.partial.json
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/baseline49-boundary-first-loss-analysis.json
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/partial-results-manifest.json
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-v3.py
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-execution-plan-v3.json
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-preflight-v3-receipt.json
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-run-v3.json
+/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/private-ibus-latency-probe-run-v3.trace.jsonl
 ```
 
 The historical partial manifest SHA-256 is
@@ -2281,7 +2281,7 @@ destructuring test prevents frame-bound fields from entering
 
 Final receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE1_EVIDENCE_VOCABULARY_2026-08-20/final-receipt.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE1_EVIDENCE_VOCABULARY_2026-08-20/final-receipt.json`
 
 Runtime authority changed: `false`. Deployment actions: `0`. Slice 1 does not
 authorize Slice 2; the next source mutation requires a new implementation
@@ -2400,7 +2400,7 @@ inside every client.
 
 Measured receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-smoke-13x1.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-smoke-13x1.json`
 
 Measured scope: fixed `8` birth cases plus `13x1` shadow material/cohort smoke.
 Not tested: fixed `13x100`, live latency, daemon/IBus, display, authorization or
@@ -2443,7 +2443,7 @@ daemon, IBus and installed runtime remain unchanged.
 
 Measured receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-smoke-exact-union-13x1.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-smoke-exact-union-13x1.json`
 
 Verdict scope: exact identity union PASS for birth, typed contour storage
 retention FAIL pending the lane-reserve correction; runtime authority remains
@@ -2480,8 +2480,8 @@ remains open for Slice 11 and blocks deployment.
 
 Receipts:
 
-- `/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-full-typed-reserve-13x100.json`
-- `/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-paired-baseline-no-contour-13x100.json`
+- `/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-full-typed-reserve-13x100.json`
+- `/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE5_CONTOUR_BIRTH_2026-08-20/slice5-paired-baseline-no-contour-13x100.json`
 
 Verdict scope: `PASS_SLICE5_BIRTH_RETENTION_NO_LATENCY_REGRESSION`; overall
 release verdict remains FAIL because the inherited absolute latency gate is not
@@ -2629,7 +2629,7 @@ with no permanent dual computation.
 
 ### Slice 11: performance, cache and failure proof
 
-- run Cargo and large lexical proofs only on `e@192.168.3.94` through
+- run Cargo and large lexical proofs only on `builder@worker.example` through
   `scripts/cargo-guard.sh`;
 - run local IBus/WeChat/Telegram latency and physical event accounting on the
   desktop receiving the exact installed candidate bytes;
@@ -2950,8 +2950,8 @@ Runtime authority changed: `false`. Deployment actions: `0`.
 Exact evidence:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_WORK_MEASUREMENT_2026-08-20/final-receipt.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_WORK_MEASUREMENT_2026-08-20/slice2-work-full-13x100.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_WORK_MEASUREMENT_2026-08-20/final-receipt.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_WORK_MEASUREMENT_2026-08-20/slice2-work-full-13x100.json
 ```
 
 ## 18. Current Verdict
@@ -3085,7 +3085,7 @@ remains `1.0.33`. Slice 3 cannot reinterpret `UPSTREAM_INCOMPLETE` as complete.
 
 Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_MATERIAL_FRAME_2026-08-20/final-receipt.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE2_MATERIAL_FRAME_2026-08-20/final-receipt.json`
 
 ## 20. Slice 3 Frame-Bound Candidate Validity Result, 2026-08-20
 
@@ -3149,7 +3149,7 @@ installed version remains `1.0.33`.
 
 Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE3_CANDIDATE_STATE_2026-08-20/final-receipt.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE3_CANDIDATE_STATE_2026-08-20/final-receipt.json`
 
 The next permitted change is Slice 4 conflict-cohort and
 `Winner | Tied | ABSTAIN` shadow settlement under a new implementation
@@ -3199,7 +3199,7 @@ unchanged.
 
 Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE4_CONFLICT_COHORT_2026-08-20/final-receipt.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE4_CONFLICT_COHORT_2026-08-20/final-receipt.json`
 
 Next gate: Slice 5 bounded missing-target birth and retention shadow.
 
@@ -3227,7 +3227,7 @@ observed only for coverage comparison. Its non-match is explicitly not a
 promotion gate because Slice 6 is intended to internalize package-derived
 coverage that the old route does not own.
 
-The final remote `13x100` run on `e@192.168.3.94` used 20 workers and produced:
+The final remote `13x100` run on `builder@worker.example` used 20 workers and produced:
 
 ```text
 boundary shadow verdict                    PASS_SLICE6_BOUNDARY_SHADOW
@@ -3263,7 +3263,7 @@ mutation, queue-inclusive product latency, physical applications or deployment.
 
 Exact receipt directory:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE6_BOUNDARY_INTERNALIZATION_2026-08-20`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE6_BOUNDARY_INTERNALIZATION_2026-08-20`
 
 Next gate: Slice 7A isolated crash-safe durability-strategy microproof. The
 `<=5 ms` latency blocker remains conjunctive and cannot be waived by the Slice 6
@@ -3314,7 +3314,7 @@ version remains `1.0.33`.
 
 Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE7A_DURABILITY_MICROPROOF_2026-08-20/final-ext4-preallocated-receipt.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE7A_DURABILITY_MICROPROOF_2026-08-20/final-ext4-preallocated-receipt.json`
 
 ### Next storage primitive
 
@@ -3399,7 +3399,7 @@ version remains `1.0.33`.
 
 Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE7A_DURABILITY_MICROPROOF_2026-08-20/final-direct-aligned-slot-receipt.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE7A_DURABILITY_MICROPROOF_2026-08-20/final-direct-aligned-slot-receipt.json`
 
 Exact receipt SHA-256:
 
@@ -3443,4 +3443,4 @@ behavior, kill points, client atomicity and runtime latency remain unproved.
 
 Owning design:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/ime-backend-atomic-receipt-v1-2026-08-20.md`
+`/workspace/local/lay-l1-exact-peak-search/docs/ime-backend-atomic-receipt-v1-2026-08-20.md`

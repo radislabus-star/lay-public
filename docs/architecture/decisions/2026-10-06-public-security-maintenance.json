@@ -1,0 +1,23 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-06",
+  "status": "SOURCE_SECURITY_MAINTENANCE_PASS_INSTALLED_RUNTIME_UNCHANGED",
+  "decision": "Redact machine metadata in public historical documents; retain exact originals separately; patch three known dependencies and add recurring security checks.",
+  "reason": "User explicitly requested documentary cleanup, dependency updates and recurring security checks after confirmed public worker identifiers and RustSec findings.",
+  "invariants": ["C01", "C10"],
+  "protected_paths": ["Cargo.toml", "Cargo.lock", "scripts/check-security.sh", ".github/workflows/security.yml", ".github/dependabot.yml", "docs/architecture/accepted-space-autoflip-2026-09-28.md", "scripts/test-lanes/known_failures.json"],
+  "change_scope": "Documentation and historical receipt projections, old isolated proof helper private configuration, dependency patch versions, and security CI. No runtime authority or input-route changes.",
+  "alternatives": [
+    "Leaving published identifiers conflicts with explicit cleanup authorization.",
+    "Discarding sealed original bytes is rejected; retain a verified independent private archive and original hashes.",
+    "Rewriting Git history is outside this authorization and does not retract third-party copies.",
+    "Suppressing advisories or weakening existing gates is rejected."
+  ],
+  "first_failed_transition": "Current public documentary content contains real SSH worker metadata; locked dependencies include one vulnerability and two unsoundness advisories.",
+  "evidence_retention": "Every redacted JSON has public_redaction and the original SHA-256. Historic runtime/source/result hashes retain original semantics. Seven current fixture binding documents refresh binding/report hashes to actual public files, retaining each original reference in public_redaction.original_references. The zero-failure contract refreshes only observation_sha256; no failure ID, count, test manifest, assertion or validator changes. Independently archived originals remain immutable; projections are not original execution proof.",
+  "replan": "After two read-only review passes and the first broad run exposed physical-document hash dependencies, use a uniform projection label and refresh the current public fixture reference DAG. Reject any runtime SHA/verdict/known-failure-list change; verify existing guards unchanged and rerun the complete source set once.",
+  "owning_document": "docs/security-maintenance-2026-10-06.md",
+  "runtime_authority_changed": false,
+  "verification": "Remote cargo-audit0.22.2:0 vulnerabilities/0 warnings; exact four package lock updates; architecture refresh/11 dimensions PASS; broad remote gate3010 PASS378.3s; final canon0 errors/18 tests PASS; independent review0 blockers, source pins/assertions preserved. Exact receipts/hashes in owning document. No installation or physical-client claim.",
+  "not_tested": "New binary installation, physical clients, all secret formats and removal of old Git history."
+}

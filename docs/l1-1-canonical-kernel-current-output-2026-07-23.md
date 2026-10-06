@@ -246,7 +246,7 @@ OS                                  Linux x86_64
 Канонический package:
 
 ```text
-/home/ubu/projects/lay/data/lexical_grokking/l1_l11_crystallization_10k.bin
+/workspace/local/lay/data/lexical_grokking/l1_l11_crystallization_10k.bin
 ```
 
 Его точная дисковая раскладка:
@@ -354,7 +354,7 @@ frontier и фазовые аккумуляторы. На этом T480 общи
 Текущий standalone release-бинарник:
 
 ```text
-/home/ubu/projects/lay/target/release/lay-l11-restore
+/workspace/local/lay/target/release/lay-l11-restore
 logical size                              890,408 bytes = 0.849 MiB
 allocated filesystem blocks               892,928 bytes
 binary + one canonical package         50,553,676 bytes = 48.21 MiB
@@ -364,7 +364,7 @@ binary + one canonical package         50,553,676 bytes = 48.21 MiB
 build-cache:
 
 ```text
-/home/ubu/projects/lay/target
+/workspace/local/lay/target
 allocated size                       7,827,763,200 bytes = 7.29 GiB
 configured budget                   12,884,901,888 bytes = 12.00 GiB
 ```

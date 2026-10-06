@@ -1,6 +1,6 @@
 # TD-121 — final engine wiring handoff
 
-Working checkout: `/home/ubu/projects/lay-tech-debt-20260831`.
+Working checkout: `/workspace/local/lay-tech-debt-20260831`.
 Target: release 1.0.66, not Wave-quality work for 1.0.67.
 
 This is an implementation handoff, not a PASS or a second architecture.
@@ -13,15 +13,15 @@ general actor/transaction migration or invent a new correction route.
 
 - Pure reducer/real-zbus merge/rendezvous gates have passed remotely: original
   17 plus two corrected-contract tests, 19/19 on exact zbus 5.15.0. Receipt:
-  `/home/e/projects/td121-proof-JGik2wUq/td121-test-zbus-5.15.0.log`, SHA-256
+  `/workspace/worker/td121-proof-JGik2wUq/td121-test-zbus-5.15.0.log`, SHA-256
   `78d533125613d56fe23453a08a768dd9edaae0a23e346221adfeef1e5cf9df3f`.
 - That result does NOT cover the subsequently staged observer/acquisition
   adapter, new-field activation or settled-lineage APIs. Read their separate
   exact-source results before relying on them.
 - The subsequent frozen stage passed 30/30 on exact zbus 5.15.0: 25 reducer,
   merge and rendezvous tests plus 5 controlled actual-zbus p2p adapter tests.
-  Manifest: `/home/ubu/.cache/lay/td121-prewire-7iGwHB/FROZEN_STAGE_MANIFEST.md`.
-  Remote log: `/home/e/projects/td121-proof-XU19ZyCn/td121-adapter-test-zbus-5.15.0.log`,
+  Manifest: `/home/local-user/.cache/lay/td121-prewire-7iGwHB/FROZEN_STAGE_MANIFEST.md`.
+  Remote log: `/workspace/worker/td121-proof-XU19ZyCn/td121-adapter-test-zbus-5.15.0.log`,
   SHA-256 `b56a1d7ec2d5b3f465e07c37d192a0bf154b971c787e437c759f108779e84300`.
   The parent read all 30 test statuses. This supersedes the 19-test helper-only
   checkpoint for staged code, not the pending runtime/client proof.

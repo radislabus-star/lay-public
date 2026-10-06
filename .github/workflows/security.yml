@@ -1,0 +1,42 @@
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependencies:
+    name: RustSec vulnerabilities and unsoundness
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      LAY_RESOURCE_GUARD_MODE: direct
+      CARGO_BUILD_JOBS: 2
+      CARGO_TARGET_DIR: target/security-audit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@89b12181fb390509a0842a86cc55eeb8eb928c1d # stable
+        with:
+          toolchain: stable
+      - name: Install current audit tool
+        run: scripts/cargo-guard.sh install cargo-audit --locked --force --root "$RUNNER_TEMP/audit-tool" --target-dir "$CARGO_TARGET_DIR"
+      - name: Audit locked dependencies
+        run: PATH="$RUNNER_TEMP/audit-tool/bin:$PATH" scripts/check-security.sh
+      - name: Check proof worker configuration
+        run: python3 -m unittest tests.test_proof_remote_config -v

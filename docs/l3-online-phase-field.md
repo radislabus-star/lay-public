@@ -569,7 +569,7 @@ any runtime temporary file.
 
 ### Payment Relation Delta Experiment: 2026-07-28
 
-Remote host: `e@192.168.3.94`, 20 hardware threads. Immutable base:
+Remote host: `builder@worker.example`, 20 hardware threads. Immutable base:
 `l3_context_phase_v1.nwpc`. The delta corpus contained 64 payment relation
 scenes with varied entities and no `Apple` training row.
 
@@ -835,7 +835,7 @@ or full 80k proof after a promoted delta.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SCHEMA4_ONLINE_DELTA_2026-07-30.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_SCHEMA4_ONLINE_DELTA_2026-07-30.json
 ```
 
 ## Pairwise-only layout delta checkpoint, 2026-07-30
@@ -907,9 +907,9 @@ The proof-gated installer repeats the targeted proof after copying the delta
 to its final runtime path, then admits it to the append-only manifest:
 
 ```bash
-/home/ubu/projects/lay/scripts/install-l3-context-delta.sh \
-  --delta /home/ubu/projects/lay/data/lexicon/l3_context_relation_layout_v1.nwpc \
-  --cases /home/ubu/projects/lay/data/test_input/l3_incremental_relation_delta_gate.tsv \
+/workspace/local/lay/scripts/install-l3-context-delta.sh \
+  --delta /workspace/local/lay/data/lexicon/l3_context_relation_layout_v1.nwpc \
+  --cases /workspace/local/lay/data/test_input/l3_incremental_relation_delta_gate.tsv \
   --scope relation-layout-pairwise-v1
 ```
 
@@ -936,7 +936,7 @@ Runtime authority changed during this experiment: `false`.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_LAYOUT_PAIRWISE_DELTA_2026-07-30.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_LAYOUT_PAIRWISE_DELTA_2026-07-30.json
 ```
 
 ## Mixed-case runtime closure, 2026-07-30
@@ -1009,7 +1009,7 @@ passed winner carrying a directed pairwise context certificate.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_LAYOUT_RUNTIME_CLOSURE_2026-07-30.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_LAYOUT_RUNTIME_CLOSURE_2026-07-30.json
 ```
 
 ## Append-only self-teacher promotion gate, 2026-07-30
@@ -1100,7 +1100,7 @@ Verdict scope:
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SELF_TEACHER_APPEND_ONLY_DELTA_2026-07-30.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_SELF_TEACHER_APPEND_ONLY_DELTA_2026-07-30.json
 ```
 
 ## Causal live-feedback reducer and mandatory full gate, 2026-07-31
@@ -1236,12 +1236,12 @@ state of record.
 The frozen sources installed outside the repository are:
 
 ```text
-/home/ubu/.local/share/lay/nanda_wave/l3-proof/fixed-base-corpus-80k.txt
+/home/local-user/.local/share/lay/nanda_wave/l3-proof/fixed-base-corpus-80k.txt
     80,000 lines
     5,638,191 bytes
     SHA-256 56243b510c93930632c069d440d49c49a5ec58422d622523a0d5130dd085eac7
 
-/home/ubu/.local/share/lay/nanda_wave/l3-proof/surface-geometry-exact.jsonl
+/home/local-user/.local/share/lay/nanda_wave/l3-proof/surface-geometry-exact.jsonl
     2,349 rows
     181,668 bytes
     SHA-256 9aef85b94831ea72e5027816f9a8258ef3039d218bfc20459a664259cd120673
@@ -1297,7 +1297,7 @@ Verdict scope:
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_CAUSAL_FEEDBACK_FULL_GATE_2026-07-31.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_ONLINE_CAUSAL_FEEDBACK_FULL_GATE_2026-07-31.json
 ```
 
 ## Same-inode journal compaction cursor, 2026-07-31
@@ -1427,7 +1427,7 @@ Verdict scope:
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_JOURNAL_CURSOR_2026-07-31.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_ONLINE_JOURNAL_CURSOR_2026-07-31.json
 ```
 
 ## Partial IME completion edits, 2026-07-31
@@ -1571,7 +1571,7 @@ restart preserved the global IBus PID and returned `lay-ime-ru`.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_PARTIAL_IME_COMPLETION_EDIT_2026-07-31.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_PARTIAL_IME_COMPLETION_EDIT_2026-07-31.json
 ```
 
 ## Partial IME edit live GTK closure, 2026-07-31
@@ -1679,7 +1679,7 @@ Verdict scope:
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_PARTIAL_IME_COMPLETION_EDIT_LIVE_2026-07-31.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_PARTIAL_IME_COMPLETION_EDIT_LIVE_2026-07-31.json
 ```
 
 ## Direct-only IME feedback sanitation, 2026-07-31
@@ -1848,7 +1848,7 @@ does not replace the full-artifact five-relation replay above.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_IME_FEEDBACK_SANITATION_2026-07-31.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_IME_FEEDBACK_SANITATION_2026-07-31.json
 ```
 
 ## WeChat preedit editing and synthetic-input containment, 2026-08-01
@@ -1945,7 +1945,7 @@ Verdict scope:
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/IME_WECHAT_PREEDIT_EDIT_CONTAINMENT_2026-08-01.json
+/workspace/local/lay/docs/structural_gates/receipts/IME_WECHAT_PREEDIT_EDIT_CONTAINMENT_2026-08-01.json
 ```
 
 ## Causal episode identity and impact-first L3 admission, 2026-08-01
@@ -2064,7 +2064,7 @@ Verdict scope:
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_CAUSAL_EPISODES_V3_2026-08-01.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_ONLINE_CAUSAL_EPISODES_V3_2026-08-01.json
 ```
 
 ## Sentence multiview field and portable delta proof, 2026-08-01
@@ -2132,7 +2132,7 @@ baseline logical SHA-256  8b2b319cddc6337f5e3bdc6c88c7a73258ad134853462f673e4633
 delta SHA-256             ec6b38f257302beb263ffef51380487e055f92edfd719cbfafa17497e9162cb5
 ```
 
-Measured frozen 80k differential on `e@192.168.3.94`:
+Measured frozen 80k differential on `builder@worker.example`:
 
 ```text
 heldout fragments                              15 704
@@ -2187,15 +2187,15 @@ Verdict scope:
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_TARGETED_2026-08-01.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_FULL_80K_2026-08-01.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_RELEASE_2026-08-01.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_TARGETED_2026-08-01.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_FULL_80K_2026-08-01.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_RELEASE_2026-08-01.json
 ```
 
 Remote artifact root:
 
 ```text
-/home/e/build/lay-l1-shadow/artifacts/l3-sentence-multiview-v1-2026-08-01
+/home/worker/build/lay-l1-shadow/artifacts/l3-sentence-multiview-v1-2026-08-01
 ```
 
 ### Installed runtime checkpoint
@@ -2215,7 +2215,7 @@ during installation.
 Exact installed-runtime receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_INSTALLED_2026-08-01.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_SENTENCE_MULTIVIEW_V1_INSTALLED_2026-08-01.json
 ```
 
 ## Delta-free live L3 memory, 2026-08-03
@@ -2285,8 +2285,8 @@ complete-runtime budget                       750.0 MiB PSS
 The compacted live state is:
 
 ```text
-manifest  /home/ubu/.local/share/lay/nanda_wave/l3_context_phase.runtime.json
-base      /home/ubu/.local/share/lay/nanda_wave/l3-online/compact-base-a.nwpc
+manifest  /home/local-user/.local/share/lay/nanda_wave/l3_context_phase.runtime.json
+base      /home/local-user/.local/share/lay/nanda_wave/l3-online/compact-base-a.nwpc
 base bytes                                         30 780 200
 runtime deltas                                              0
 semantic states                                        19 023
@@ -2325,7 +2325,7 @@ Verdict scope:
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_RUNTIME_MEMORY_COMPACT_L3_1_0_1_2026-08-03.json
+/workspace/local/lay/docs/structural_gates/receipts/LAY_RUNTIME_MEMORY_COMPACT_L3_1_0_1_2026-08-03.json
 ```
 
 ## Process-local manifest refresh, 2026-08-10
@@ -2390,8 +2390,8 @@ direct edit authority changed                false
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_PROCESS_REFRESH_L4_ROLLBACK_FEEDBACK_1_0_19_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_PROCESS_LOCAL_REFRESH_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_PROCESS_REFRESH_L4_ROLLBACK_FEEDBACK_1_0_19_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_PROCESS_LOCAL_REFRESH_2026-08-10.json
 ```
 
 ## Supervised sentence online delta closure, 2026-08-10
@@ -2460,7 +2460,7 @@ The append-only delta is `4 372` bytes with SHA-256
 `3dca1e61369d15490ee97a4ce54f401fb32de4c64bd256f5cd801ed234272cf6`.
 The immutable base was not rewritten and the full corpus was not recompiled.
 
-Remote telemetry on `e@192.168.3.94`:
+Remote telemetry on `builder@worker.example`:
 
 ```text
 release build      115.95 s   101% CPU   1 826 316 KiB peak RSS   swap 0
@@ -2485,7 +2485,7 @@ worker + proofs     31.53 s  1212% CPU     279 388 KiB peak RSS   swap 0
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_SUPERVISED_SENTENCE_ONLINE_DELTA_FULL_GATE_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_SUPERVISED_SENTENCE_ONLINE_DELTA_FULL_GATE_2026-08-10.json
 ```
 
 ## Proof pipeline revision and first live admission, 2026-08-10
@@ -2570,7 +2570,7 @@ The remote `1.0.18` release build used `20` Cargo jobs and completed in
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_ONLINE_PROOF_PIPELINE_REVISION_1_0_18_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_ONLINE_PROOF_PIPELINE_REVISION_1_0_18_2026-08-10.json
 ```
 
 ## 2026-08-04 Confirmed Prediction Operator Sanitation
@@ -2615,7 +2615,7 @@ matched the source probe exactly.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_SINGLE_EDIT_INVERSE_AND_FEEDBACK_SANITATION_2026-08-04.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_SINGLE_EDIT_INVERSE_AND_FEEDBACK_SANITATION_2026-08-04.json
 ```
 
 ## Compact standalone L2 runtime indexes, 2026-08-03
@@ -2720,5 +2720,5 @@ Verification:
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_RUNTIME_MEMORY_COMPACT_L3_1_0_1_2026-08-03.json
+/workspace/local/lay/docs/structural_gates/receipts/LAY_RUNTIME_MEMORY_COMPACT_L3_1_0_1_2026-08-03.json
 ```

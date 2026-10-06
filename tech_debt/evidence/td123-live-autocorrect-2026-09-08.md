@@ -104,7 +104,7 @@ The sample words had already rolled out before capture. `rank` means no Apply
 selected and can include an authority refusal inside DecisionCore. The old Wave
 cell journal is dated2026-08-30 and is not current evidence.
 
-Private snapshots: `/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/`.
+Private snapshots: `/home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/`.
 Do not publish these raw typing/action logs. The previous actual-client
 restoration proof covers layout `ljv -> дом` and lifecycle controls; it does not
 prove missing/extra-letter restoration. Cold preedit and the compound field/
@@ -358,7 +358,7 @@ must use matching v2 drivers on both candidates. No production code change.
 Build checks PASS, release2m55s; postbuild metadata recorder FAIL on incorrect
 embedded-architecture-JSON assumption. Failure retained, source identity
 supplemented by697 exact Rust hashes; candidate unchanged, not installed.
-/home/ubu/.cache/lay/development/run-c1abdlhw/{preflight.json,candidate-identity.json}.
+/home/local-user/.cache/lay/development/run-c1abdlhw/{preflight.json,candidate-identity.json}.
 
 Original phrase dirty0/2 ->1/2,clean3/3 unchanged. Matrix dirty2/6,clean1/1
 unchanged. Fixed89 existing fixtures: correct19/47 (40.43%),abstain25/47,
@@ -368,7 +368,7 @@ ordered learning-enabled experimental-profile behavior after preparation,
 not unseen/stateless/all-profile/physical/immediate-Space acceptance.
 Full per-class measurements and residual first authority loss are recorded
 in docs/l2-l11-canonical-architecture.md in the same change.
-Receipts: /home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/fixed-fixtures-v3-comparison.json,
+Receipts: /home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/fixed-fixtures-v3-comparison.json,
 matrix-domain-paired-summary.json,phrase-domain-after/receipt.json.
 Current code frozen after independent review. Mandatory changed/full/native
 client gates next. Installed IME6dc95148 and all production inputs unchanged.
@@ -377,12 +377,12 @@ client gates next. Installed IME6dc95148 and all production inputs unchanged.
 
 Changed/full2684/2684 PASS,414.006/651.982s;13 private client cases PASS,
 4 physical-owner code tests PASS. Rust697 identity unchanged; target9,397,526,528
-bytes below12GiB. /home/ubu/.cache/lay/development/run-c1abdlhw/gates.json owns complete stage receipts.
+bytes below12GiB. /home/local-user/.cache/lay/development/run-c1abdlhw/gates.json owns complete stage receipts.
 At 2026-09-08T12:28:55.649410+00:00 installed the same995b6093 file. PID3983217,
 start49187106,unitlay-ime-release-995b6093.service. File/process SHA match;
 Lay RU/two input sources restored; IBus4715,daemon3757261,L1.1service271400
-unchanged. Backup6dc95148: /home/ubu/.local/state/lay/release-backups/ime-autocorrect-20260908-71oibez0/lay-ibus-engine.
-/home/ubu/.cache/lay/development/run-c1abdlhw/installation.json. Ping was no-focus liveness only.
+unchanged. Backup6dc95148: /home/local-user/.local/state/lay/release-backups/ime-autocorrect-20260908-71oibez0/lay-ibus-engine.
+/home/local-user/.cache/lay/development/run-c1abdlhw/installation.json. Ping was no-focus liveness only.
 
 Runtime authority changed=true for this installed IME fix; no model, history,
 SafetyGate/verifier or daemon binary change. Physical normal-tempo phrase
@@ -401,7 +401,7 @@ generation; late superseded follows the timed-out lookup, not a proven race.
 Verbose debug output may affect these timings. Owning architecture records
 timing boundaries, identity parity, limitations and the next three-run control
 without optional stderr diagnostics. No code/deadline/authority change.
-Evidence: /home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/cadence-summary-v1.json
+Evidence: /home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/cadence-summary-v1.json
 and phrase-cadence-{0,80,150}/ receipts and traces. Physical input remains
 untested; this diagnostic completion does not close TD-123 or alter fixed89.
 
@@ -411,14 +411,14 @@ five flags absent in actual engine environment. Same outcomes; quiet80 core
 76ms still missed Space. Added opt-in queue/evaluation/publication metadata
 after preflight and review; no decision predicates or runtime authority change.
 Fresh-context review9/10,H0/M0/L0; focused449/449 and metadata test execution
-proved by /home/ubu/.cache/lay/development/run-by567ovy/queue-focused-summary.json.
+proved by /home/local-user/.cache/lay/development/run-by567ovy/queue-focused-summary.json.
 Private release9f8e99e0 built after architecture refresh; not installed.
 
 Queue measurements: old prefix127,614us; final80ms frame queue46,778us,
 evaluation73,615us,total120,394us,SpaceNotReady. At150ms queue76us and
 evaluation94,583us,applied. All15 words/cleanup completed; dirty0/2,0/2,1/2,
 clean3/3 each, composite ready-NoApply retained. Exact receipts:
-/home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/cadence-queue-summary-v1.json
+/home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/cadence-queue-summary-v1.json
 and phrase-cadence-queue-{0,80,150}/. Current prioritized tasks/options and
 the user's explicit workflow are recorded in the owning TD-123 task.
 
@@ -452,7 +452,7 @@ Actual DecisionCore RED1760/1762 (only2 new regressions fail); GREEN2211/2211;
 fresh-context review9/10,H0/M0/L0,pass1. Architecture/release/budget PASS and
 697 reviewed Rust hashes match; native13/13 PASS with private cleanup complete.
 No installation or model/config change. Component/build/native receipts:
-`/home/ubu/.cache/lay/development/run-xqb_96ka/`.
+`/home/local-user/.cache/lay/development/run-xqb_96ka/`.
 
 Whole fixed89 matches995b on every actual output and all8 classes:19/47 dirty
 correct,25 abstain,3 wrong;39/42 clean preserved. The three37073948 clean errors
@@ -472,14 +472,14 @@ NotReady and late superseded. L1.1 readout2,533us is inside this calculation.
 This is repeated-input delivery evidence, not independent-word recognition
 accuracy or crystallizer quality proof. No model/package/installed-authority
 change. The owning architecture records complete scope, intervals and limits.
-Exact local receipt: /home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/cadence-stability-summary-v1.json
+Exact local receipt: /home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/cadence-stability-summary-v1.json
 and phrase-cadence-stability-{queue,short-layout}-{0..7}/ raw artifacts.
 ## Decoder reconstruction reuse — component milestone
 
 The owning architecture's repeated-decoder section records baseline RED,
 complete224-row parity, resource/concurrency controls and final9/10 code review.
 Private build is pending native/fixed89 acceptance; no installation or model
-change. Final component receipts: /home/ubu/.cache/lay/development/run-bcgsiu73/.
+change. Final component receipts: /home/local-user/.cache/lay/development/run-bcgsiu73/.
 ## Decoder cache native milestone
 
 Privateeea32f44 preserves all89 outputs/classes and passes13 native controls.

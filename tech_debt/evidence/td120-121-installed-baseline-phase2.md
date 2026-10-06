@@ -7,7 +7,7 @@ Source baseline `cc1e2207519801ca0f9b7c6963897b55953a7751`.
 
 ## Запуск и результат
 
-Команда: `./launch.sh` из `/home/ubu/.cache/lay/layout-phase2-private-31hE0X`.
+Команда: `./launch.sh` из `/home/local-user/.cache/lay/layout-phase2-private-31hE0X`.
 Unit `lay-phase2-private-31hE0X.service`, invocation
 `950c60476e3847c1a16ee5692f2b066c`. Один запуск, repair не потребовался.
 `probe_status=COMPLETED`, выполнено **6/6** сценариев; это denominator
@@ -49,7 +49,7 @@ Live PID IBus4715/daemon3453123/IME3453154 сохранены.
 
 ## Артефакты и SHA-256
 
-Private root `/home/ubu/.cache/lay/layout-phase2-private-31hE0X`:
+Private root `/home/local-user/.cache/lay/layout-phase2-private-31hE0X`:
 
 | Файл | SHA-256 |
 |---|---|

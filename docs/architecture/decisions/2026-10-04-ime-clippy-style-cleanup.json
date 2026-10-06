@@ -23,7 +23,15 @@
   "parent_source_head": "79b09d06306a018961ace783e2542eb817de7b30",
   "before_observation_sha256": "eee7c10c8b44e7c739f39d4cf2094ee56ec775b7f306e4491eef3e94f8fc8812",
   "after_observation_sha256": "a411efcb9ff6976bf8c4dcbf87163b5645b8b7644677cd072737bccd6eaf4af6",
-  "receipt": "/home/ubu/.cache/lay/development/ranker-release-20261004/revision4/style-and-c03/STYLE_C03_EXECUTION.json",
+  "receipt": "/home/local-user/.cache/lay/development/ranker-release-20261004/revision4/style-and-c03/STYLE_C03_EXECUTION.json",
   "receipt_scope": "The overall worker remains FAIL because a later incorrectly named test executed zero; its two independent Clippy command return codes are both zero. The corrected discovered test receipt is separate.",
-  "rollback": "Restore only the two observation expressions and the three original test call references; preserve all C09, C03 and ranker changes."
+  "rollback": "Restore only the two observation expressions and the three original test call references; preserve all C09, C03 and ranker changes.",
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "978523c30fc8135e45d3958e50bff12785f9e5d348229824f0580d0460272370",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

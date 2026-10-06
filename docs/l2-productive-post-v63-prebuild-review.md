@@ -320,4 +320,4 @@ frontier, or authority change. The owning successor paper is
 
 Exact V64 evidence:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/`.

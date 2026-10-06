@@ -4,7 +4,7 @@
   "status": "CONTROLLED_WITNESS_AND_STRICT_RED_PASS_CORRECTION_IMPORTED",
   "decision": "After actual removal of a controlled test engine, consume its exact expected UnknownObject Reset reply by the existing exact-serial helper before the next bridge. Preserve all old assertions/deadlines and every production route.",
   "evidence": {
-    "receipt": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/test29-detached-v1-import/RESULT.json",
+    "receipt": "/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/test29-detached-v1-import/RESULT.json",
     "sha256": "fc3991079046d2622d483b8a1127cb340809d4f25b7c39bca85d76f084e10beb",
     "tests": "1/1 PASS; actual raw TypeError UnknownObject and exact serial19315/19415, member absent",
     "historical_offender": "UNKNOWN; this proves controlled harness gap, not unseen historical header identity"
@@ -27,5 +27,13 @@
     "C08",
     "C10"
   ],
-  "not_tested": "Historical unseen offending header identity and client behavior are not established by this controlled witness. Accepted79 runtime unchanged."
+  "not_tested": "Historical unseen offending header identity and client behavior are not established by this controlled witness. Accepted79 runtime unchanged.",
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "a20215c1c102cb3c9436048cf87aa1de2ade853eb789aec51fa64faf9322ef46",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

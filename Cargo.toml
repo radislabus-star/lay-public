@@ -86,7 +86,7 @@ required-features = ["research-tools"]
 clap = { version = "4", features = ["derive"] }
 arboard = "3"
 async-io = "2.6.0"
-event-listener = "5.4.1"
+event-listener = "5.4.2"
 ordered-stream = "0.2.0"
 ureq = { version = "2", features = ["json"] }
 serde = { version = "1", features = ["derive"] }

@@ -70,7 +70,7 @@ route. `FullWave` remains the compare reference only.
 
 Short local-surface safety tightening measured on 2026-07-27 is recorded in:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_SHORT_GROWTH_GATES_2026-07-27.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_SHORT_GROWTH_GATES_2026-07-27.json`
 
 Confirmed route facts from that receipt:
 
@@ -165,7 +165,7 @@ Verdict scope:
 
 Receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/DOUBLE_SHIFT_AUTO_UNDO_TRIGGER_OWNERSHIP_2026-07-27.json`
+`/workspace/local/lay/docs/structural_gates/receipts/DOUBLE_SHIFT_AUTO_UNDO_TRIGGER_OWNERSHIP_2026-07-27.json`
 
 ### 2026-07-27 first live check: FAIL
 
@@ -401,7 +401,7 @@ Verdict scope:
 
 Receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/DOUBLE_SHIFT_AUTO_UNDO_TRIGGER_OWNERSHIP_2026-07-27.json`
+`/workspace/local/lay/docs/structural_gates/receipts/DOUBLE_SHIFT_AUTO_UNDO_TRIGGER_OWNERSHIP_2026-07-27.json`
 
 ### 2026-07-27 L2 known inflection preservation: PASS
 
@@ -461,7 +461,7 @@ Not tested:
 
 Receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_KNOWN_INFLECTION_PRESERVATION_2026-07-27.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_KNOWN_INFLECTION_PRESERVATION_2026-07-27.json`
 
 ## Scoreboard
 
@@ -539,7 +539,7 @@ Telegram or WeChat message was sent. Runtime authority changed only at backend
 selection before dispatch; text-decision authority did not change.
 
 Receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_1_0_PHYSICAL_APPLICATION_MATRIX_2026-08-02.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/LAY_1_0_PHYSICAL_APPLICATION_MATRIX_2026-08-02.json`.
 
 `src/keyboard/event_words/decision.rs` is route-critical because it decides
 manual replay layout, but it must remain outside candidate generation and text
@@ -604,7 +604,7 @@ Exact receipts:
 
 ```text
 /tmp/lay-phase7-full-gate-6-serial.log
-/home/ubu/projects/lay/docs/structural_gates/receipts/FINAL_PRODUCT_GATE_PHASE7_2026-08-02.json
+/workspace/local/lay/docs/structural_gates/receipts/FINAL_PRODUCT_GATE_PHASE7_2026-08-02.json
 ```
 
 ### 2026-08-03 managed key release pairing: PASS_CODE, WATCH_WECHAT
@@ -655,7 +655,7 @@ changed: `false`. IBus event ownership changed only for the release paired with
 an already handled managed press.
 
 Receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_MANAGED_KEY_RELEASE_PAIRING_2026-08-03.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/IME_MANAGED_KEY_RELEASE_PAIRING_2026-08-03.json`.
 
 Installed state:
 
@@ -725,7 +725,7 @@ only to veto an automatic layout-proven edit when independent lexical evidence
 and active-layout evidence both support preserving the original token.
 
 Receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_ACTIVE_LAYOUT_PRESERVATION_2026-08-03.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/IME_ACTIVE_LAYOUT_PRESERVATION_2026-08-03.json`.
 
 Installed state:
 
@@ -776,7 +776,7 @@ Not tested: a corpus-wide final-letter deletion sweep or the fixed L1.1
 extra-letter class above. Verdict scope: `PASS_CODE`, `WATCH_CLASS_SWEEP`.
 
 Receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_IMPERATIVE_FINAL_CONSONANT_REPAIR_2026-08-03.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/IME_IMPERATIVE_FINAL_CONSONANT_REPAIR_2026-08-03.json`.
 
 Installed verification:
 
@@ -827,7 +827,7 @@ proof, and corpus-wide clean-form preservation. Runtime authority changed:
 `yes`, only when canonical L2 was requested but unavailable.
 
 Receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/IME_L2_UNAVAILABLE_FAIL_CLOSED_2026-08-03.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/IME_L2_UNAVAILABLE_FAIL_CLOSED_2026-08-03.json`.
 
 The same live-log audit also found clean Russian forms that were absent from
 the installed L1.1 corpus and from the bounded morphology recognizer:
@@ -925,7 +925,7 @@ and backend selection are unchanged. Only the already-authorized uinput
 mutation is made closed per visible evdev frame, with fail-closed cleanup.
 
 Receipt:
-`/home/ubu/projects/lay/docs/structural_gates/receipts/LAY_UINPUT_STUCK_KEY_RECOVERY_2026-08-12.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/LAY_UINPUT_STUCK_KEY_RECOVERY_2026-08-12.json`.
 
 ### 2026-09-01 correction-safety Apply authority: PASS_CODE_REVIEWED
 
@@ -1166,7 +1166,7 @@ Subsequent full-wrapper chronology preserves each terminal boundary:
   integration `7/7 PASS`, default and research-tools Clippy `PASS`;
 - V5: `2,442/2,442` Rust correctness/package and lint `PASS`, then
   infrastructure `HOLD` with exit `127` at `node --check`; the installed
-  `/home/e/.local/bin/node` reports `v24.18.1`, but the non-login `PATH` omitted
+  `/home/worker/.local/bin/node` reports `v24.18.1`, but the non-login `PATH` omitted
   that directory. No install or system mutation occurred, and performance did
   not run. Full-log SHA-256:
   `a7198aa7f50b35d5254d32e62818adc9405d57490d046e94db9af4018259b7cf`;

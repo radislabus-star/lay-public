@@ -13,9 +13,9 @@ document update.
 
 The second installer attempt completed at `2026-09-11T09:54:08Z`.
 
-- Installation receipt: `/home/ubu/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/installation-1.0.71-attempt2.json`
+- Installation receipt: `/home/local-user/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/installation-1.0.71-attempt2.json`
 - Installation receipt SHA-256: `8e6124c06c0f41543be7c077d84964cfcb3f919cd73d84ddd4a2cc19a665b9be`
-- Post-install runtime receipt: `/home/ubu/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/post-install-runtime-1.0.71.json`
+- Post-install runtime receipt: `/home/local-user/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/post-install-runtime-1.0.71.json`
 - Post-install runtime receipt SHA-256: `fa9a979c2c1eefd367cbe7c7f24ebe15d655d0e85db0558fb32938449122d3a8`
 - Installed candidate: `2ee1479cfc84c40ce3e8673e573d2dbfc42226f0e4dbdeb7cc310f6f1a63fcc5`
 - CLI version: `lay 1.0.71`
@@ -56,16 +56,16 @@ The L1.1 readiness path on the successful second attempt observed
 receipt has `command_failures: []` by absence of the field.
 
 The first failed attempt remains recorded as an incident:
-`/home/ubu/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/installation-1.0.71.json`
+`/home/local-user/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/installation-1.0.71.json`
 SHA-256 `e7eebd08471600267822629223a736cf8909207d2bd4705344a29aab734c0278`.
 The recovery and provenance-correction receipts remain part of that incident
 history, not the final installed state.
 
 ## Proof receipts
 
-- Full identity: `/home/ubu/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/release-1.0.71-full-acceptance-completed-identity.json`
+- Full identity: `/home/local-user/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/release-1.0.71-full-acceptance-completed-identity.json`
 - Full identity SHA-256: `7585f7df394fa6d06c15181923d68b553f07f0bf788f3184a4b2baf5da7c36e7`
-- Acceptance summary: `/home/ubu/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/acceptance-summary-1.0.71.json`
+- Acceptance summary: `/home/local-user/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/acceptance-summary-1.0.71.json`
 - Acceptance summary SHA-256: `b08915f4bdf76e1951d25a98feb0abf4118fe308b189c3ddf41580ddf196a68d`
 - Installation review SHA-256: `69889a16f90fc6fb70f957b6103b655b1ea77be170274e021418b52cf57b276f`
 
@@ -117,10 +117,10 @@ stability, not general correctness. The diagnostic lane is the fixed private
 poor-input probe only.
 
 Exact final document graph completion is established only by
-`/home/ubu/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/final-document-graph/fetch-receipt.json`
+`/home/local-user/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/final-document-graph/fetch-receipt.json`
 with `PASS`.
 
 Exact publication refs are established only by
-`/home/ubu/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/publication.json`.
+`/home/local-user/.cache/lay/development/release-1.0.71-20260911-hiu22jcy/publication.json`.
 After publication, the public documentation path is:
 `https://github.com/radislabus-star/lay-public/blob/v1.0.71/docs/release-1.0.71-preflight-2026-09-11.md`.

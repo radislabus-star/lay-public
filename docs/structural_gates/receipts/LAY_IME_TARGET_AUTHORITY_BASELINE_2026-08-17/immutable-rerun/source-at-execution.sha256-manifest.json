@@ -4,7 +4,7 @@
   "created_at": "2026-08-20T07:53:50Z",
   "authority_scope": "immutable source and execution identity only; no result or runtime authority claim",
   "source": {
-    "worktree_at_snapshot": "/home/ubu/projects/lay-l1-exact-peak-search",
+    "worktree_at_snapshot": "/workspace/local/lay-l1-exact-peak-search",
     "branch": "codex/l1-exact-peak-search",
     "commit": "8b8f66bbf0f8a24b7edda670c67023083aa49e00",
     "submodules": [],
@@ -12,8 +12,8 @@
     "tracked_diff_binary_sha256": "2c6eeb29622dcced67c2a7133c602835c862fa9a65c5d1d43a5f386e07eea76f",
     "untracked_content_set_sha256": "b093f95d57b85954ae62096132308c10c3d05ac00ac757a4965be7ee05d416e8",
     "archive": {
-      "local_path": "/home/ubu/projects/lay-immutable-evidence/ime-target-authority-slice0-20260820/source.tar.zst",
-      "remote_path": "/home/e/build/lay-ime-target-authority-slice0-20260820/source.tar.zst",
+      "local_path": "/workspace/local/lay-immutable-evidence/ime-target-authority-slice0-20260820/source.tar.zst",
+      "remote_path": "/home/worker/build/lay-ime-target-authority-slice0-20260820/source.tar.zst",
       "mode": "664",
       "size_bytes": 167429239,
       "sha256": "9b49c1445df9e40f5a82d492b55a23dc71f5dbd5ca6bfb4fceb5cea467179427",
@@ -15621,7 +15621,7 @@
     ]
   },
   "execution_plan": {
-    "path": "/home/e/build/lay-ime-target-authority-slice0-20260820/execution-plan.json",
+    "path": "/home/worker/build/lay-ime-target-authority-slice0-20260820/execution-plan.json",
     "mode": "664",
     "size_bytes": 178034,
     "sha256": "da14a786e043b6a6a9fdfa753459cdb382c967bda8b8a7739a4765472a1b3361",
@@ -15630,7 +15630,7 @@
       "status": "FROZEN_BEFORE_EXECUTION_ATTEMPT3",
       "created_at": "2026-08-20T07:53:50Z",
       "source_archive": {
-        "path": "/home/e/build/lay-ime-target-authority-slice0-20260820/source.tar.zst",
+        "path": "/home/worker/build/lay-ime-target-authority-slice0-20260820/source.tar.zst",
         "sha256": "9b49c1445df9e40f5a82d492b55a23dc71f5dbd5ca6bfb4fceb5cea467179427"
       },
       "case_manifest": {
@@ -15651,11 +15651,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -15681,11 +15681,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -15711,11 +15711,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -15741,11 +15741,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -15771,11 +15771,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -15801,11 +15801,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -15831,11 +15831,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -15861,11 +15861,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -15891,11 +15891,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -15921,11 +15921,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -15951,11 +15951,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -15981,11 +15981,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16011,11 +16011,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16041,11 +16041,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16071,11 +16071,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16101,11 +16101,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16131,11 +16131,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16161,11 +16161,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16191,11 +16191,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16221,11 +16221,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16251,11 +16251,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16281,11 +16281,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16311,11 +16311,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16341,11 +16341,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16371,11 +16371,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16401,11 +16401,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16431,11 +16431,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16461,11 +16461,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16491,11 +16491,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16521,11 +16521,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16551,11 +16551,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16581,11 +16581,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16611,11 +16611,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16641,11 +16641,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16671,11 +16671,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16701,11 +16701,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16733,11 +16733,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16763,11 +16763,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16793,11 +16793,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16823,11 +16823,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16853,11 +16853,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16883,11 +16883,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16913,11 +16913,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16943,11 +16943,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -16973,11 +16973,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17003,11 +17003,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17033,11 +17033,11 @@
             "historical_reference_status": "PASS",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17063,11 +17063,11 @@
             "historical_reference_status": "FAIL",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17096,11 +17096,11 @@
             "expected_semantic_receipt": "publication identity changes for every visible frame dimension",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17128,11 +17128,11 @@
             "expected_semantic_receipt": "invalidated target cannot publish and fresh frame remains renderable",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17160,11 +17160,11 @@
             "expected_semantic_receipt": "mismatched focus tail or token result is discarded",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17192,11 +17192,11 @@
             "expected_semantic_receipt": "display cancellation grants no correction authority",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17224,11 +17224,11 @@
             "expected_semantic_receipt": "visible bytes and receipt payload are from one generation",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17256,11 +17256,11 @@
             "expected_semantic_receipt": "explicit acceptance uses the typed edit plan",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17288,11 +17288,11 @@
             "expected_semantic_receipt": "acceptance does not become durable before a stable boundary",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17320,11 +17320,11 @@
             "expected_semantic_receipt": "immediate edit revokes positive target learning",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17352,11 +17352,11 @@
             "expected_semantic_receipt": "focus loss cannot confirm a provisional acceptance",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17384,11 +17384,11 @@
             "expected_semantic_receipt": "only exact matching generation may be consumed within the fixed wait",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17416,11 +17416,11 @@
             "expected_semantic_receipt": "one lease cannot authorize two events",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17448,11 +17448,11 @@
             "expected_semantic_receipt": "stale material falls back to exactly one raw Space",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17480,11 +17480,11 @@
             "expected_semantic_receipt": "invalidated frame cannot publish or mutate",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17512,11 +17512,11 @@
             "expected_semantic_receipt": "supersession creates no parallel authority",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17544,11 +17544,11 @@
             "expected_semantic_receipt": "timeout cannot cause a late edit",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17576,11 +17576,11 @@
             "expected_semantic_receipt": "old package generation cannot mint a lease",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17608,11 +17608,11 @@
             "expected_semantic_receipt": "one DecisionCore owns automatic policy",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17640,11 +17640,11 @@
             "expected_semantic_receipt": "event ordering cannot invalidate its own matching lease",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17672,11 +17672,11 @@
             "expected_semantic_receipt": "physical active composition is committed with one Space without automatic completion",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17704,11 +17704,11 @@
             "expected_semantic_receipt": "stale worker result is discarded",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17736,11 +17736,11 @@
             "expected_semantic_receipt": "every named frame fault rejects authority",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17768,11 +17768,11 @@
             "expected_semantic_receipt": "invalidated work has no render or mutation effect",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17800,11 +17800,11 @@
             "expected_semantic_receipt": "superseded generation is terminal",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17832,11 +17832,11 @@
             "expected_semantic_receipt": "package reload invalidates late publication",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17864,11 +17864,11 @@
             "expected_semantic_receipt": "pending autocorrection rollback is checked before manual layout toggle",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17896,11 +17896,11 @@
             "expected_semantic_receipt": "rollback restores exact pre-autocorrection bytes",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17928,11 +17928,11 @@
             "expected_semantic_receipt": "only the exact causal postcondition authorizes inverse edit",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17960,11 +17960,11 @@
             "expected_semantic_receipt": "unrelated visible state cannot be mutated",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -17992,11 +17992,11 @@
             "expected_semantic_receipt": "changed visible tail invalidates rollback",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18024,11 +18024,11 @@
             "expected_semantic_receipt": "early observation defers without falling through to manual toggle",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18056,11 +18056,11 @@
             "expected_semantic_receipt": "backend refusal restores the exact pending receipt",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18088,11 +18088,11 @@
             "expected_semantic_receipt": "two exact lexical centers produce a separator-only target",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18119,11 +18119,11 @@
             "expected_semantic_receipt": "strong short-left evidence remains bounded and typed",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18150,11 +18150,11 @@
             "expected_semantic_receipt": "any typo plus split is one explicit compound operator",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18181,11 +18181,11 @@
             "expected_semantic_receipt": "trailing function split is grounded on both sides",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18212,11 +18212,11 @@
             "expected_semantic_receipt": "glued lexical centers birth the exact split",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18243,11 +18243,11 @@
             "expected_semantic_receipt": "both sides have independent lexical grounding",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18274,11 +18274,11 @@
             "expected_semantic_receipt": "Boundary evidence cannot authorize a different surface",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18305,11 +18305,11 @@
             "expected_semantic_receipt": "exact typed operator owns every changed scalar and separator",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18336,11 +18336,11 @@
             "expected_semantic_receipt": "known whole word is preserved",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18367,11 +18367,11 @@
             "expected_semantic_receipt": "phrase context cannot create a false split",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18398,11 +18398,11 @@
             "expected_semantic_receipt": "source label cannot impersonate Boundary geometry",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18429,11 +18429,11 @@
             "expected_semantic_receipt": "both sides require exact grounding",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18460,11 +18460,11 @@
             "expected_semantic_receipt": "clean existing boundary is preserved",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18491,11 +18491,11 @@
             "expected_semantic_receipt": "ambiguity cannot become automatic authority",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18522,11 +18522,11 @@
             "expected_semantic_receipt": "weak fragment is not exact grounding",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18553,11 +18553,11 @@
             "expected_semantic_receipt": "known inflected forms remain whole",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18584,11 +18584,11 @@
             "expected_semantic_receipt": "plausible prefix alone is insufficient",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -18615,11 +18615,11 @@
             "expected_semantic_receipt": "short ending shape cannot override clean preservation",
             "environment": {
               "LAY_L11_SOCKET": "/tmp/lay-l11-canonical-layout-metrics-proof-20260816.sock",
-              "LAY_L11_RECEIPT": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
-              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+              "LAY_L11_RECEIPT": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+              "LAY_L2_PRODUCTIVE_V1_PACKAGE": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
               "LAY_DEBUG_DECISION_CORE": "1",
               "LAY_L2_FIELD_TRACE": "1",
-              "CARGO_TARGET_DIR": "/home/e/build/lay-ime-target-authority-slice0-20260820/target",
+              "CARGO_TARGET_DIR": "/home/worker/build/lay-ime-target-authority-slice0-20260820/target",
               "CARGO_BUILD_JOBS": "20"
             },
             "command": [
@@ -19344,13 +19344,13 @@
     }
   },
   "runner": {
-    "path": "/home/e/build/lay-ime-target-authority-slice0-20260820/run-slice0.sh",
+    "path": "/home/worker/build/lay-ime-target-authority-slice0-20260820/run-slice0.sh",
     "mode": "775",
     "size_bytes": 8582,
     "sha256": "8ce3ca0b6bc7ebb9d63918708387921c5b5afdea6ac911ad456136c76d78a00f"
   },
   "build_host": {
-    "ssh_identity": "e@192.168.3.94",
+    "ssh_identity": "builder@worker.example",
     "hostname": "e-MEGA-MINI-M1-13th",
     "architecture": "x86_64",
     "cpu": "13th Gen Intel(R) Core(TM) i9-13900HK",
@@ -19359,34 +19359,34 @@
     "rustc": "rustc 1.97.1 (8bab26f4f 2026-07-14)",
     "cargo": "cargo 1.97.1 (c980f4866 2026-06-30)",
     "build_jobs": 20,
-    "run_root": "/home/e/build/lay-ime-target-authority-slice0-20260820"
+    "run_root": "/home/worker/build/lay-ime-target-authority-slice0-20260820"
   },
   "external_dependencies": {
     "files": [
       {
         "role": "productive_v90",
-        "path": "/home/e/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
+        "path": "/home/worker/build/lay-productive-v90-active-20260816/out/LAY-L2-PRODUCTIVE-PARADIGM-v90-L11v9-L2v13.p2m",
         "mode": "664",
         "size_bytes": 17309944,
         "sha256": "40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44"
       },
       {
         "role": "l11_receipt",
-        "path": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
+        "path": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/active.installed.json",
         "mode": "664",
         "size_bytes": 903,
         "sha256": "7846609fe96ecd24e347cc1e4b31bd5a738652309785b425c5c9ec605b3b2d0a"
       },
       {
         "role": "l11_memory",
-        "path": "/home/e/build/lay-l1-phase8i-integrity-20260815/runtime-model/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
+        "path": "/home/worker/build/lay-l1-phase8i-integrity-20260815/runtime-model/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin",
         "mode": "644",
         "size_bytes": 77962328,
         "sha256": "bf5a1619a89038466ef786305cf35eda5f4af5b9f12b9140f7d3cac407e2f2a7"
       },
       {
         "role": "l11_service_binary",
-        "path": "/home/e/build/lay-ime-boundary-layout-proof-20260815/target/metrics/lay-l11-serve",
+        "path": "/home/worker/build/lay-ime-boundary-layout-proof-20260815/target/metrics/lay-l11-serve",
         "mode": "775",
         "size_bytes": 2477616,
         "sha256": "159a05457d1c34a85c63f97e2d4f2f7d965b70f48c0daf0a304ad64971965f05"
@@ -19415,5 +19415,13 @@
     "source_manifest_sha256": "3e9326358ff65300c17d98302c62f738a84b71e7755245382f9de921f1bf31e0",
     "status": "REJECTED_PARSER_V1",
     "artifact": "source-at-execution-v2-rejected-parser.json"
+  },
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "45389cef6c5843473799a5e2df0c066c12ac77e43b5b598d2c3d91158f5af511",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
   }
 }

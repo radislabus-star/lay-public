@@ -20,7 +20,7 @@ git show cb40ef29f6c78c97757dd0059c0ba798cb1f0789:tech_debt/README.md
 Восстановить всё исходное дерево в новую папку для старого эксперимента:
 
 ```sh
-git worktree add --detach /home/ubu/projects/lay-before-cleanup-view \
+git worktree add --detach /workspace/local/lay-before-cleanup-view \
   cb40ef29f6c78c97757dd0059c0ba798cb1f0789
 ```
 
@@ -31,7 +31,7 @@ git worktree add --detach /home/ubu/projects/lay-before-cleanup-view \
 Независимая локальная копия:
 
 ```text
-/home/ubu/.local/state/lay/project-snapshots/20260908-before-cleanup/
+/home/local-user/.local/state/lay/project-snapshots/20260908-before-cleanup/
   project-files.tar
   source-manifest.json
   snapshot-receipt.json
@@ -43,12 +43,12 @@ git worktree add --detach /home/ubu/projects/lay-before-cleanup-view \
 SHA-256 tar:
 `e07e4e5d9f38917538571b268abdb461869a86fa05bbbbc94b01f0d75ac41996`.
 Содержимое всех файлов проверено. Исходная папка
-`/home/ubu/projects/lay-tech-debt-20260831` также сохранена.
+`/workspace/local/lay-tech-debt-20260831` также сохранена.
 
 Игнорируемые private/model/cache artifacts не входят в Git snapshot или tar.
 Они остались в исходной папке и по указанным в receipts внешним адресам.
 Ранее externalized evidence лежат в
-`/home/ubu/projects/lay-immutable-evidence/content-addressed-v1`; инструмент
+`/workspace/local/lay-immutable-evidence/content-addressed-v1`; инструмент
 `scripts/research-evidence-store.py` и два inventory TSV сохранены. Новая
 чистая копия не обещает наличие всех старых ignored symlink projections.
 Для старого воспроизведения используйте исходную папку и её исходный контекст.

@@ -47,8 +47,8 @@
       "correctness",
       "package"
     ],
-    "results_dir": "/home/e/codex-worktrees/lay-v28-ru-en-autoswitch-1.0.55/target/test-lanes-results",
-    "target_dir": "/home/e/codex-worktrees/lay-v28-ru-en-autoswitch-1.0.55/target/test-lanes"
+    "results_dir": "/home/worker/codex-worktrees/lay-v28-ru-en-autoswitch-1.0.55/target/test-lanes-results",
+    "target_dir": "/home/worker/codex-worktrees/lay-v28-ru-en-autoswitch-1.0.55/target/test-lanes"
   },
   "known_failure_contract": {
     "full_failure_count": 0,
@@ -87,5 +87,13 @@
     "performance",
     "ignored"
   ],
-  "verdict": "PASS"
+  "verdict": "PASS",
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "8048cf822faf8a64928a7fa9131d625331a0ca4a187153588fe7f85da793a384",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

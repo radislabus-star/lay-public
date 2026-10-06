@@ -434,8 +434,8 @@ and remains unauthorized.
 Remote receipts:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-estimator/heldout-owner-parity-13x10.json
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-estimator/heldout-owner-parity-13x10.time.txt
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-estimator/heldout-owner-parity-13x10.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-estimator/heldout-owner-parity-13x10.time.txt
 ```
 
 ### 12.1 Critical diagnosis
@@ -573,10 +573,10 @@ must leave runtime ordering and authority byte-for-byte unchanged.
 Canonical receipts:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-semantic-quality/full-13x100.json
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-semantic-quality/full-13x100.time.txt
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-semantic-quality-workers1/full-13x100.json
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-semantic-quality-workers1/full-13x100.time.txt
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-semantic-quality/full-13x100.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-semantic-quality/full-13x100.time.txt
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-semantic-quality-workers1/full-13x100.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-semantic-quality-workers1/full-13x100.time.txt
 ```
 
 The one-worker p99 is the product-latency denominator. The 20-worker run is a
@@ -694,8 +694,8 @@ verdict                                     FAIL_latency_gate
 Canonical receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-surface-node-allocation-v81-workers1/full-13x100.json
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-surface-node-allocation-v81-workers1/full-13x100.time.txt
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-surface-node-allocation-v81-workers1/full-13x100.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-surface-node-allocation-v81-workers1/full-13x100.time.txt
 ```
 
 The `7.8%` p99 reduction proves that per-terminal identity allocation was a
@@ -736,7 +736,7 @@ selected candidates               8,206
 Canonical receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-stage-telemetry-v82-13x10/profile.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-stage-telemetry-v82-13x10/profile.json
 ```
 
 The next lossless experiment replaced eager sorting after every frontier
@@ -751,7 +751,7 @@ maximum class p99                     5.815 -> 5.747 ms
 Canonical receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-bounded-selection-v83-13x10/profile.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-bounded-selection-v83-13x10/profile.json
 ```
 
 The change is retained as a small exact improvement. It is not sufficient for
@@ -834,7 +834,7 @@ traversal total                          232.689 -> 218.319 ms
 Canonical receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-invariant-slot-v84-13x10/profile.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-invariant-slot-v84-13x10/profile.json
 ```
 
 The factorization is retained because it is exact and reduces both traversal
@@ -871,7 +871,7 @@ verdict                                                   REJECT
 Canonical receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-surface-buffer-v85-13x10/profile.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-surface-buffer-v85-13x10/profile.json
 ```
 
 The buffer-reuse change is removed. It did not buy measured speed and therefore
@@ -951,7 +951,7 @@ The source was restored to V87; no rejected hasher remains in the runtime.
 Canonical V87 receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-dense-slot-frontier-v87-normative-13x100/full-13x100.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-dense-slot-frontier-v87-normative-13x100/full-13x100.json
 ```
 
 The next experiment is diagnostic, not a new runtime version. With
@@ -991,7 +991,7 @@ surface reduction.
 Canonical diagnostic receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-slow-call-telemetry-v87-13x100/profile.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-slow-call-telemetry-v87-13x100/profile.json
 ```
 
 The package-derived semantic census supplies an exact factorization:
@@ -1051,7 +1051,7 @@ quality and safety parity              exact             exact
 Receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v80-semantic-execution-cache-v89-13x10/profile.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v80-semantic-execution-cache-v89-13x10/profile.json
 ```
 
 The cache repeated a lookup for every owner relation while the existing batch
@@ -1099,8 +1099,8 @@ the shared work inside the owner loop.
 Receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v90-v87-cpu-clock-profile/profile.data
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v90-v87-cpu-clock-profile/children-report.txt
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v90-v87-cpu-clock-profile/profile.data
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v90-v87-cpu-clock-profile/children-report.txt
 ```
 
 V89 proved that a map lookup for every owner costs more than the saved direct
@@ -1189,7 +1189,7 @@ proof-only stage-clock fields. The traversal reduction was `10.603 ms`, or
 Micro receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v90-source-major-dense-execution-13x10/profile.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v90-source-major-dense-execution-13x10/profile.json
 ```
 
 The clean one-worker `13 x 100 x 2` proof, run without stage telemetry inside
@@ -1215,8 +1215,8 @@ Lay, daemon, package, and runtime authority remain unchanged.
 Canonical clean receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v90-source-major-dense-execution-normative-clean-13x100/full-13x100.json
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v90-source-major-dense-execution-normative-clean-13x100/full-13x100.time.txt
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v90-source-major-dense-execution-normative-clean-13x100/full-13x100.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v90-source-major-dense-execution-normative-clean-13x100/full-13x100.time.txt
 ```
 
 A separate diagnostic run with proof-only stage clocks showed that traversal
@@ -1231,7 +1231,7 @@ retention must not be guessed from terminal counts alone.
 Diagnostic receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v90-source-major-dense-execution-normative-13x100/full-13x100.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v90-source-major-dense-execution-normative-13x100/full-13x100.json
 ```
 
 ### 18.9 V91 source-group scratch theorem
@@ -1283,8 +1283,8 @@ clean one-worker `13 x 100 x 2` run decide the `<=5.000 ms` promotion gate.
 Profile receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v91-v90-symbolized-runtime-profile/profile.data
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v91-v90-symbolized-runtime-profile/self-report.txt
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v91-v90-symbolized-runtime-profile/profile.data
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v91-v90-symbolized-runtime-profile/self-report.txt
 ```
 
 ### 18.10 Measured V91 rejection and V90 owner acceptance
@@ -1329,5 +1329,5 @@ required for this promotion.
 V91 micro receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v91-source-group-scratch-13x10/profile.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v91-source-group-scratch-13x10/profile.json
 ```

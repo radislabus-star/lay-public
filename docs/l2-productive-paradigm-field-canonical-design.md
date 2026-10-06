@@ -7,10 +7,10 @@ Date: 2026-08-10.
 Owning layer: canonical L2 above the immutable L1.1 restoration lattice.
 
 Executable paper specification:
-`/home/ubu/projects/lay/docs/l2-productive-paradigm-field-paper-implementation.md`.
+`/workspace/local/lay/docs/l2-productive-paradigm-field-paper-implementation.md`.
 
 Paper completeness review:
-`/home/ubu/projects/lay/docs/l2-productive-paradigm-field-paper-review-2026-08-10.md`.
+`/workspace/local/lay/docs/l2-productive-paradigm-field-paper-review-2026-08-10.md`.
 
 This document is the design authority for the next productive Russian
 morphology kernel. It replaces scheduler-level experimentation as the active
@@ -1148,7 +1148,7 @@ The following routes are explicitly rejected unless new evidence reopens them:
 
 The twelve former open decisions are resolved normatively in:
 
-`/home/ubu/projects/lay/docs/l2-productive-paradigm-field-paper-implementation.md`.
+`/workspace/local/lay/docs/l2-productive-paradigm-field-paper-implementation.md`.
 
 The fixed resolutions are:
 
@@ -1173,46 +1173,46 @@ must first update the paper specification and state its proof obligation.
 Canonical architecture and plan:
 
 ```text
-/home/ubu/projects/lay/docs/l2-l11-canonical-architecture.md
-/home/ubu/projects/lay/docs/l2-l11-candidate-field-contract.md
-/home/ubu/projects/lay/docs/lay-development-plan-after-0.2.340.md
-/home/ubu/projects/lay/docs/l2-productive-paradigm-field-paper-implementation.md
-/home/ubu/projects/lay/docs/l2-productive-paradigm-field-paper-review-2026-08-10.md
+/workspace/local/lay/docs/l2-l11-canonical-architecture.md
+/workspace/local/lay/docs/l2-l11-candidate-field-contract.md
+/workspace/local/lay/docs/lay-development-plan-after-0.2.340.md
+/workspace/local/lay/docs/l2-productive-paradigm-field-paper-implementation.md
+/workspace/local/lay/docs/l2-productive-paradigm-field-paper-review-2026-08-10.md
 ```
 
 Current productive baseline:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS1_13X100_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS1_13X100_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_GLOBAL_SLOT_CACHE_V38_WORKERS20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_SMALL_DEDUP_V39_2026-08-10/
 ```
 
 Rejected V40/V41:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_LOWER_KEY_UNITS_V40_2026-08-10/
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_COMMON_EDGES_V41_2026-08-10/
 ```
 
 Rejected V42:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_BOUNDED_LEMMA_CHUNKS_V42_2026-08-10/
 ```
 
 Directional evidence:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_RAW_V20_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_TWO_LANE_V21_13X10_2026-08-10.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_EXACT_V22_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_RAW_V20_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_TWO_LANE_V21_13X10_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_DIRECTIONAL_NH_EXACT_V22_13X10_2026-08-10.json
 ```
 
 The exact raw V39 profile remains on the remote proof host:
 
 ```text
-/home/e/build/lay-l1-shadow/artifacts/l2-productive-v39-small-dedup-2026-08-10/perf.data
+/home/worker/build/lay-l1-shadow/artifacts/l2-productive-v39-small-dedup-2026-08-10/perf.data
 ```
 
 ## 22. Runtime Authority
@@ -1284,8 +1284,8 @@ installed daemon/IBus, and public release are unchanged.
 
 Exact evidence:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/`.
 
 The paper-approved successor micro is the sparse reverse-anchor recovery lane:
 
-`/home/ubu/projects/lay/docs/l2-productive-post-v64-anchor-recovery-paper.md`.
+`/workspace/local/lay/docs/l2-productive-post-v64-anchor-recovery-paper.md`.

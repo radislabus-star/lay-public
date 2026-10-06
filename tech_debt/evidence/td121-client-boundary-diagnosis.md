@@ -7,7 +7,7 @@ Runtime authority changed: false. Production binaries and processes unchanged.
 
 1. The portable private IBus client loses `io.github.radislabus_star.LayIme`
    after its first correction boundary. Existing receipt:
-   `/home/e/projects/lay-development-runner/run-MXjXRH/client/receipt.json`,
+   `/workspace/worker/lay-development-runner/run-MXjXRH/client/receipt.json`,
    SHA-256 `e3bfa54bffbf38a7e70168f8f23e7ea393a101a896b8e5d418b11f4609f7e4e7`.
    Completed 0/5. The same candidate previously refused correction with
    `prefetch_not_ready`; that is not evidence for this new process disappearance.
@@ -20,7 +20,7 @@ Runtime authority changed: false. Production binaries and processes unchanged.
    not prove what the terminal actually displayed after applying the command.
 
 Private source log snapshot:
-`/home/ubu/.cache/lay/replacement-boundary-aPcVzL/`.
+`/home/local-user/.cache/lay/replacement-boundary-aPcVzL/`.
 
 - `recent_actions.jsonl`: SHA-256
   `21742c1c3107b92aad8c3ba8dfbd60f78fe26bd75ea9ce40633e363ebab9ffad`;
@@ -80,7 +80,7 @@ No claim yet that the user's visible failure has been reproduced or fixed.
 
 One instrumented run used the unchanged runner SHA-256
 `8758da61b6a3727b43e9e25f3d1a13b94707f646e2f57cdcb81ce1423a1a3212`:
-`/home/e/projects/lay-development-runner/exit-diagnostic-3qM8Nq/client/`.
+`/workspace/worker/lay-development-runner/exit-diagnostic-3qM8Nq/client/`.
 `process-exit.trace.19` identifies the exact candidate exec and SIGABRT;
 `.32` identifies the aborting thread. Receipt SHA-256
 `a407c6588d12e0c0792b6bc7b8f626028ff7b53059a135e1d441dbcfc2fe9ae8`.
@@ -94,7 +94,7 @@ Source inspection found a missing declared dependency:
 `lexical_phase/runtime.rs` searches XDG data and the embedded build checkout;
 both locations are absent in the portable sandbox. The old broad HOME mount
 incidentally exposed the build checkout. Candidate build artifact:
-`/home/e/projects/lay-td120-121-SUdh2I/data/lexicon/l2_lexical_phase_v2.bin`,
+`/workspace/worker/lay-td120-121-SUdh2I/data/lexicon/l2_lexical_phase_v2.bin`,
 62,424,748 bytes, SHA-256
 `3ff9de4d785aed1b547c56da67dd3cf27644af8968bd0e3bb55a252074cf0268`.
 This is a strong hypothesis, not yet a completed causal comparison.
@@ -152,7 +152,7 @@ Frozen driver unchanged. No Rust runtime source changed in this investigation.
   RESULT SHA-256
   `258ceddacbf5f111b2256cc9fc10617e869a429b9129d05a9e285fdca35b27e0`.
 - New immutable dependency directory:
-  `/home/e/projects/lay-development-runner/boundary-deps-UjRxy5`.
+  `/workspace/worker/lay-development-runner/boundary-deps-UjRxy5`.
   Nine-role manifest SHA-256
   `ea6c07b1ddd0d504f87578a39a40b552f301c618195ab0e84df9d9acd2f21c76`.
   Old dependencies/manifests/receipts were not overwritten.
@@ -161,7 +161,7 @@ Frozen driver unchanged. No Rust runtime source changed in this investigation.
   the newly prepared config/file naming, not the runner's path validation.
 - Final ordinary entrypoint:
   `python3 scripts/dev-check.py client --client-config
-  /home/e/projects/lay-development-runner/boundary-deps-UjRxy5/client-config-admitted.json`.
+  /workspace/worker/lay-development-runner/boundary-deps-UjRxy5/client-config-admitted.json`.
   Local `run-imzbx7hc`, remote `run-FPUQW2`; candidate survives Space,
   cleanup confirms it remains alive until private daemon stop and none remain.
   Inner service1.757s. Client still0/5, explicit `prefetch_not_ready`, observed
@@ -191,6 +191,6 @@ No install, restart, training or local build/test execution occurred.
 Architecture refresh route: existing guarded remote
 `scripts/update-architecture-graph.sh` from the source-matched development
 mirror. Log destination:
-`/home/e/projects/lay-development-runner/exit-diagnostic-3qM8Nq/architecture.log`.
+`/workspace/worker/lay-development-runner/exit-diagnostic-3qM8Nq/architecture.log`.
 The generated architecture receipt and that log own the actual verdict;
 AST/document coverage must not be described as product correctness evidence.

@@ -21,7 +21,7 @@ and does not establish a defect in replay of an already accepted completion.
 ## Exact evidence and ownership
 
 Evidence root:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-c20-baseline`.
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-c20-baseline`.
 Its `RECEIPT.json` SHA-256 is
 `7f0d5702e1da7c4733c227d38e0e2b2276fd790f35df2e4c51bf364341ed9be2`:
 `all_passed=false`, `fatal_error=null`,
@@ -146,13 +146,13 @@ binaries and the same Firefox child environment. This run passes **1/3**:
 | Autocomplete then pair | `про` | 0 / 1 | FAIL before autocomplete acceptance |
 
 Receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-c1-diagnostics/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-c1-diagnostics/RECEIPT.json`,
 SHA-256 `47a9dfe427cf4ba4ba5856d0f7b129433ec3e02c024a1a011550a9e8c81f93c4`.
 It records `fatal_error=null` and `desktop_restoration_verified=true`.
 All three IME PIDs match their D-Bus bridge owners and the candidate hash
 `5f94d028d197a49c76d7dfd7eac034471ace0cee78762aa6b9da44553b993956`.
 Candidate build binding:
-`/home/ubu/.cache/lay/development/td121-diagnostics-candidate-20260913/artifact-binding.json`,
+`/home/local-user/.cache/lay/development/td121-diagnostics-candidate-20260913/artifact-binding.json`,
 SHA-256 `aab59360949d7bcd534af9c8724a891c8acb7e04ce922176d562b85f5a4ed2b1`.
 Root verified all referenced artifact/log hashes and identical local/remote
 706-row build manifests. The later documentation refresh changes only the
@@ -205,12 +205,12 @@ not actual wall-clock timeout. It does not reproduce the client refusal. Root
 independently verified its source archive SHA-256
 `cbb7ee1904ae95a46d08503540daf0a6d4e5741f9b4f14250c33730f015b265c`
 and receipt
-`/home/ubu/.cache/lay/development/run-01_htg7j/RESULT.json`, SHA-256
+`/home/local-user/.cache/lay/development/run-01_htg7j/RESULT.json`, SHA-256
 `5c243730ae16f5af7a9dad4bb83df891f82f0632ab3378c16a3d96a2af388d83`.
 The exact selected and executed identities match: **519/519** correctness and
 package tests pass from 522 discovered, with three performance tests excluded.
 Remote summary:
-`/home/e/projects/lay-development-runner/run-ZQsZs8/tests/SUMMARY.json`, SHA-256
+`/workspace/worker/lay-development-runner/run-ZQsZs8/tests/SUMMARY.json`, SHA-256
 `dcbb3cfabb558b192e799e5399ad0886196a55c8f32c7c2bf851eb67e110c289`.
 The Cargo manifest, lockfile, confirmed-append source and regression fixture
 match this frozen archive; the subsequent diagnostic changes require their own
@@ -229,7 +229,7 @@ fixed heldout restoration percentages remain unmeasured by this experiment.
 One preregistered Extra case used the same frozen diagnostic IME with
 `MOZ_LOG=timestamp,IMEHandler:4`. It failed **0/2** toggles before replay began,
 so it cannot establish the post-replay notification order. Receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-c1-native-log/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-c1-native-log/RECEIPT.json`,
 SHA-256 `a2a8cc63bee751bb06d4418ce60d59f246af5f630c2a05c54b0657a87e185ef8`.
 Restoration is verified and no fatal helper error occurred. The IME trace has
 211 rows, SHA-256

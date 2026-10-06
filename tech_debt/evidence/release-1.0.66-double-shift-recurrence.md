@@ -6,7 +6,7 @@ and reported that Double Shift works once, then cannot convert back.
 ## Observed failure and scope
 
 Production IME147597 is the installed12db8c00 candidate. Private trace snapshot:
-`/home/ubu/.cache/lay/development/double-shift-frjcffof/ibus_engine_debug.jsonl`.
+`/home/local-user/.cache/lay/development/double-shift-frjcffof/ibus_engine_debug.jsonl`.
 Do not commit that trace: it contains user text. The metadata sequence is one
 terminal `ManualToggleV3` replacement, an admitted factory transition, source
 FocusOut/Disable, then a target with no owner and an empty tail. Further Shift
@@ -85,11 +85,11 @@ setup failures, not causal runtime RED. Remote logs are retained in
 has not changed.
 
 Focused checkpoint: causal RED at
-`/home/e/projects/lay-development-runner/run-h1DqCR/tests/logs/bin-lay-ibus-engine.log`
+`/workspace/worker/lay-development-runner/run-h1DqCR/tests/logs/bin-lay-ibus-engine.log`
 refused the first source seal after successful real bridge output. Current
 focused PASS441/441 is
-`/home/e/projects/lay-development-runner/run-cihT4S/tests/SUMMARY.json`, local
-`/home/ubu/.cache/lay/development/run-ce2qo2om/RESULT.json` (15.030s guarded
+`/workspace/worker/lay-development-runner/run-cihT4S/tests/SUMMARY.json`, local
+`/home/local-user/.cache/lay/development/run-ce2qo2om/RESULT.json` (15.030s guarded
 checks;6.187s selected execution). The regression completes24 bridge toggles
 and factory transfers, boundary/no-boundary, matching ContentType before reply
 or after ready publication. It checks exact CommitText, transferred surface,
@@ -161,7 +161,7 @@ PASS, inventories535/359 unchanged except one preedit byte-span shift in each
 baseline (+47bytes); manifest refreshed; bound architecture graph/check PASS.
 Release IME build58.74s, SHA256
 `fe643c10d65a84be412f36c6c18bfe4439227df768e55478d2bc8743a35ffce7`.
-Artifact: `/home/e/projects/lay-development-runner/run-79ju1V/lay-ibus-engine`.
+Artifact: `/workspace/worker/lay-development-runner/run-79ju1V/lay-ibus-engine`.
 Target cache9397420032/12884901888bytes. Four accepted dead-code warnings;
 no added diagnostic or lint suppression.
 
@@ -230,11 +230,11 @@ Same IME bytes, exact current dependencies, fresh private-client results:
   restoration, both layout directions and different-field/UnknownStart refusals.
 
 Each path is under `run-79ju1V`; local copies and full-gate logs are under
-`/home/ubu/.cache/lay/development/run-97gag00j/`. No failed cold case is relabelled.
+`/home/local-user/.cache/lay/development/run-97gag00j/`. No failed cold case is relabelled.
 
 Installed at2026-09-08 04:31:50 +03:00 using the earlier verified candidate;
 no rebuild during installation. Only the IME file was replaced atomically:
-`/home/ubu/.local/lib/lay/bin/lay-ibus-engine`. File and process SHA256 both
+`/home/local-user/.local/lib/lay/bin/lay-ibus-engine`. File and process SHA256 both
 `fe643c10d65a84be412f36c6c18bfe4439227df768e55478d2bc8743a35ffce7`.
 New process634706/start45244635; unit `lay-ime-release-fe643c10.service`.
 Native `xkb:ru::rus` readback preceded the old IME stop; `lay-ime-ru` was then
@@ -243,7 +243,7 @@ are unchanged. Input-source list remains both Lay engines. Initial bridge
 Ping responds with `no-focus`; physical focus/input is not inferred from that.
 
 Backup of12db8c00:
-`/home/ubu/.local/state/lay/release-backups/1.0.66-ime-double-shift-51g4d9pn/lay-ibus-engine`.
+`/home/local-user/.local/state/lay/release-backups/1.0.66-ime-double-shift-51g4d9pn/lay-ibus-engine`.
 Installation receipt: local `run-97gag00j/installation.json`. Workstation
 runtime authority changed only through this explicitly authorized IME delivery.
 Physical verification was requested from the user and remains pending. TD-121
@@ -260,7 +260,7 @@ cases both began with a literal Space; their "no-boundary" name meant no
 Read-only diagnosis: bridge_actions.rs and shift.rs both reject UnknownStart
 before manual planning. The live accepted callbacks retain the typed tail
 while WordScope stays UnknownStart after Reset. Private trace snapshot:
-`/home/ubu/.cache/lay/development/first-word-9_azzl8s/live-before.jsonl`.
+`/home/local-user/.cache/lay/development/first-word-9_azzl8s/live-before.jsonl`.
 No user text is copied into this document. This is mechanism evidence, not a
 new physical PASS. The existing regression choreography is extended with a
 source-free first word without Space; expected result is exact manual output,
@@ -347,10 +347,10 @@ changed at this preflight step.
 ### First independent review — 7/10, one M and two L, repair required
 
 Focused runtime passed446/446 at
-`/home/e/projects/lay-development-runner/run-GoJXcP/tests`; harness30/30 passed
+`/workspace/worker/lay-development-runner/run-GoJXcP/tests`; harness30/30 passed
 in that run's `harness-tests.log`. On the exact installed fe643c10, the new
 private first-word lane reproduced the same no-op: immediate0/2, reply(0,false),
-`/home/e/projects/lay-development-runner/run-eNkWJR/first-word-baseline/receipt.json`.
+`/workspace/worker/lay-development-runner/run-eNkWJR/first-word-baseline/receipt.json`.
 The observed first-word regression helper has12 UnknownStart handoffs and12
 with a trailing Space, separately from the existing24 known-start handoffs.
 
@@ -391,7 +391,7 @@ allocation count are unmeasured. No optimization is required for this repair.
 The new448-test selection on pre-repair runtime failed exactly the two new
 regressions: retained count1 instead of0 after receipt5, and numeric bridge
 reply(3,false) instead of(0,false). Exact log:
-`/home/e/projects/lay-development-runner/run-YVebPE/tests/logs/bin-lay-ibus-engine.log`;
+`/workspace/worker/lay-development-runner/run-YVebPE/tests/logs/bin-lay-ibus-engine.log`;
 local wrapper `run-s4d4y5pc`,15.402s. The preceding run-OQAgHj stopped at fmt
 and is not causal evidence. With the two scoped repairs, run-TcpGeO/tests
 passed448/448,15.463s; local wrapper `run-ccp6ciuz`. The regression exercises
@@ -417,8 +417,8 @@ no allowed failures were added. Bound architecture graph PASS and exact release
 IME build PASS58.71s. Candidate SHA-256:
 `6dc951483c0e3f9122c995bd9b474bba1967d5e60dd4dba5f19f27b9fa7f4982`.
 Target cache9397604352/12884901888 bytes. Exact log is
-`/home/e/projects/lay-development-runner/run-TcpGeO/release-preflight.log`;
-local candidate/provenance is `/home/ubu/.cache/lay/development/run-ccp6ciuz/`.
+`/workspace/worker/lay-development-runner/run-TcpGeO/release-preflight.log`;
+local candidate/provenance is `/home/local-user/.cache/lay/development/run-ccp6ciuz/`.
 All9 installed dependency files match the private-client manifest again.
 Mandatory changed/full gates and final exact-client matrix are still pending;
 the candidate has not yet been installed at this checkpoint.
@@ -429,7 +429,7 @@ The changed gate passed2683/2683 in386.324s. The exact6dc95148 combined
 first-word lane completed first_word_us with8 exact GNU Readline round trips,
 then failed before ANY text in first_word_ru: InputState reported context
 admission denied. Original receipt remains FAIL,1/2:
-`/home/e/projects/lay-development-runner/run-TcpGeO/first-word-immediate/receipt.json`.
+`/workspace/worker/lay-development-runner/run-TcpGeO/first-word-immediate/receipt.json`.
 No full gate or installation followed that failure.
 
 Independent read-only diagnosis confirms CreateEngine184, source FocusOut186
@@ -489,9 +489,9 @@ Harness unit tests30/30 PASS after this change. No Rust source changed after
 the completed second runtime review and the accepted changed gate.
 
 Receipts and runner logs remain under
-`/home/e/projects/lay-development-runner/run-TcpGeO/`; compact aggregation is
+`/workspace/worker/lay-development-runner/run-TcpGeO/`; compact aggregation is
 `client-final.json`. Local copied receipt/metadata/actual-output proof is in
-`/home/ubu/.cache/lay/development/run-ccp6ciuz/client-proof-summary.json` and its
+`/home/local-user/.cache/lay/development/run-ccp6ciuz/client-proof-summary.json` and its
 sibling case directories. The original combined matrix and v1 wrapper failures
 retain their own artifacts. The final full code gate is running; installation
 has not yet occurred at this checkpoint. This is a scoped terminal first-word
@@ -513,7 +513,7 @@ Before installation, all697 Rust source hashes matched the accepted candidate
 identity, all9 installed dependencies matched client proof, five positive
 client lanes matched candidate6dc95148 and driver7deb6767, and the previous IME
 file/process identity matched fe643c10. The current IME was backed up at
-`/home/ubu/.local/state/lay/release-backups/1.0.66-ime-first-word-lz6lxv6e/lay-ibus-engine`.
+`/home/local-user/.local/state/lay/release-backups/1.0.66-ime-first-word-lz6lxv6e/lay-ibus-engine`.
 Native `xkb:ru::rus` selection/readback succeeded before stopping only
 lay-ime-release-fe643c10.service. The candidate was installed atomically and
 started as lay-ime-release-6dc95148.service; selected lay-ime-ru restored.
@@ -523,7 +523,7 @@ Installed and running SHA-256 both equal
 PID2836850/start47876044. IBus4715/start2261, daemon3757261/start44087079 and
 L1.1 service271400 were preserved, along with the two Lay input-source entries.
 Ping/InputState initially reported no-focus, proving bridge liveness only.
-Installation receipt: `/home/ubu/.cache/lay/development/run-ccp6ciuz/installation.json`.
+Installation receipt: `/home/local-user/.cache/lay/development/run-ccp6ciuz/installation.json`.
 Physical first-word round-trip confirmation was requested after installation
 and remains pending. No physical keys were synthesized, no commit/push made.
 

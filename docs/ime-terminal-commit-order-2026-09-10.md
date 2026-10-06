@@ -92,12 +92,12 @@ GCC's fortified `strncat` warning was an error. No callback scenario executed.
 The sink now uses an explicitly bounded `memcpy` and terminator; no production
 fragment, compiler warning level, payload, assertion, or event order changed.
 Exact failed setup receipt:
-`/home/e/projects/lay-development-runner/ime-replacement-cursor-20260910-7xc45bzi/delivery-proof-v1/receipt.json`.
+`/workspace/worker/lay-development-runner/ime-replacement-cursor-20260910-7xc45bzi/delivery-proof-v1/receipt.json`.
 The corrected experiment completed in 1.787221 seconds under the required
 remote guard. Exact receipt:
 `~/.cache/lay/development/ime-replacement-cursor-20260910-7xc45bzi/delivery-proof-v2/receipt.json`;
 remote counterpart:
-`/home/e/projects/lay-development-runner/ime-replacement-cursor-20260910-7xc45bzi/delivery-proof-v2/receipt.json`.
+`/workspace/worker/lay-development-runner/ime-replacement-cursor-20260910-7xc45bzi/delivery-proof-v2/receipt.json`.
 
 | Delivery order | Cases | Exact prefix/boundary/caret contract |
 | --- | ---: | --- |
@@ -216,7 +216,7 @@ and Kitty's native glyph encoder are not executed in that experiment.
 Exact receipt:
 `~/.cache/lay/development/ime-replacement-cursor-20260910-7xc45bzi/native-delivery-proof-v2/receipt.json`.
 The remote path has the same suffix under
-`/home/e/projects/lay-development-runner/`.
+`/workspace/worker/lay-development-runner/`.
 
 Native experiment v1 stopped at compilation due to a proof-glue class-variable
 name collision. Its exception reporter also had a tuple-key serialization
@@ -243,7 +243,7 @@ wide-terminal managed character consumption. The narrow-cursor native control
 passed before the wide-cursor failure. This is old-producer detection, not an
 intentional corrupted-output oracle. Exact receipt:
 `~/.cache/lay/development/run-ao2eo05h/TEST_SUMMARY.json`;
-remote `/home/e/projects/lay-development-runner/run-5sy6v0/tests/SUMMARY.json`.
+remote `/workspace/worker/lay-development-runner/run-5sy6v0/tests/SUMMARY.json`.
 The focused run took 14.198161 seconds including format/build/discovery.
 
 The first source check passes both new tests, including actual native glyph
@@ -251,7 +251,7 @@ mirrors and the first atomic frame. It reports 456/463 passed, with seven
 remaining failures: five legacy terminal fixtures still require per-character
 CommitText/handled=true, and two source-order tests search the old condition
 spelling. Receipt: `~/.cache/lay/development/run-b2dh_pvi/TEST_SUMMARY.json`;
-remote `/home/e/projects/lay-development-runner/run-MGSTih/tests/SUMMARY.json`.
+remote `/workspace/worker/lay-development-runner/run-MGSTih/tests/SUMMARY.json`.
 These failures are grouped by the changed transport contract. Update the five
 fixtures to require unhandled native input and a FIFO-fenced absence of text
 mutation; retain their exact suffix, completeness, refusal, manual projection,
@@ -274,7 +274,7 @@ change the production release owner. Receipt:
 
 The completed setup pair passes all 465 selected tests, with zero failures:
 `~/.cache/lay/development/run-borw2hgh/TEST_SUMMARY.json`, remote
-`/home/e/projects/lay-development-runner/run-bnyPTn/tests/SUMMARY.json`.
+`/workspace/worker/lay-development-runner/run-bnyPTn/tests/SUMMARY.json`.
 Elapsed focused check: 14.251360 seconds. The intermediate
 `run-g5_cx23q` stopped at rustfmt before any tests; its requested formatting was
 applied without changing semantics.
@@ -339,7 +339,7 @@ not installation or closure of the review's low validation finding.
 ## Final build and client evidence
 
 Frozen full build:
-`/home/e/projects/lay-development-runner/run-sNpxXU/terminal-full-acceptance-completed-identity.json`.
+`/workspace/worker/lay-development-runner/run-sNpxXU/terminal-full-acceptance-completed-identity.json`.
 The fetched copy and both lane summaries are under the private incident root's
 `full-acceptance/`. Candidate SHA-256:
 `4bfe47fa3db15def7a4e993198b0505a3bbbacd7e05f3139094aaadce570690e`.
@@ -468,7 +468,7 @@ dependencies remained unchanged. No user window was closed.
 
 Exact installation receipt:
 `~/.cache/lay/development/ime-replacement-cursor-20260910-7xc45bzi/installation-terminal-ime.json`.
-Rollback baseline is preserved at `/home/ubu/.local/state/lay/release-backups/terminal-native-20260910-7yeimo8o/lay-ibus-engine`.
+Rollback baseline is preserved at `/home/local-user/.local/state/lay/release-backups/terminal-native-20260910-7yeimo8o/lay-ibus-engine`.
 Runtime authority changed only by activating the accepted IME successor.
 No model, decision/verifier owner, package or scoring authority was promoted.
 This is a local repair with version label 1.0.70; no new tag or public release

@@ -92,10 +92,10 @@ exact source snapshot.
 Important evidence paths:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_FINAL_762314_2026-07-26.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_FIXED_13X20000_2026-08-02.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_FIRST_TOUCH_PHASE6_2026-08-02.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L1_L11_V8_GROUPED_CACHE_RUNTIME_2026-07-30.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_OPERATOR_AWARE_V7_FINAL_762314_2026-07-26.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_FIXED_13X20000_2026-08-02.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_FIRST_TOUCH_PHASE6_2026-08-02.json
+/workspace/local/lay/docs/structural_gates/receipts/L1_L11_V8_GROUPED_CACHE_RUNTIME_2026-07-30.json
 ```
 
 The current route truncates before final interference:
@@ -1345,11 +1345,11 @@ daemon, and IBus remain unchanged. The next boundary is the separate Phase 13
 physical package/runtime decision, followed by Gate D before M8/M9.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_EXACT_PEAK_SEARCH_PLAN_2026-08-13/route-design.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_EXACT_PEAK_SEARCH_PLAN_2026-08-13/route-gate.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_BASELINE_2026-08-13/baseline.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_BASELINE_2026-08-13/implementation-preflight-receipt.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v2-bounded-projection.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_EXACT_PEAK_SEARCH_PLAN_2026-08-13/route-design.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_EXACT_PEAK_SEARCH_PLAN_2026-08-13/route-gate.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_BASELINE_2026-08-13/baseline.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_BASELINE_2026-08-13/implementation-preflight-receipt.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-gate-c-13x20000-full-v2-bounded-projection.json
 ```
 
 Phase 0 measured facts:
@@ -1389,7 +1389,7 @@ length-framed streaming digest writes `19,961 B` and measured
 runtime residency.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_BEHAVIOR_2026-08-13/behavior-fingerprint.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_BEHAVIOR_2026-08-13/behavior-fingerprint.json
 ```
 
 Phase 2A is complete. Diagnostics and runtime configuration readers moved from
@@ -1423,7 +1423,7 @@ authority, installed package, daemon, and IBus remain unchanged; crystallization
 runs remain zero.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2A_2026-08-13/phase-2a.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2A_2026-08-13/phase-2a.json
 ```
 
 Phase 2B is complete. Eleven internal evidence/result types moved into
@@ -1448,7 +1448,7 @@ installed package, daemon, and IBus remain unchanged; crystallization runs
 remain zero.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2B_2026-08-13/phase-2b.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2B_2026-08-13/phase-2b.json
 ```
 
 Phase 2C is complete. Relation storage, V8 posting access, borrowed/shared
@@ -1477,7 +1477,7 @@ authority, installed package, daemon, and IBus remain unchanged;
 crystallization runs remain zero.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2C_2026-08-13/phase-2c.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2C_2026-08-13/phase-2c.json
 ```
 
 Phase 2D is complete. `L1RestorationHost`, composite overlay loading, terminal
@@ -1491,7 +1491,7 @@ Phase 0 monolith and below the Phase 2 `5%` budget.
 The frozen 616-case fingerprint, all six route SHA-256 values, semantic SHA,
 projection SHA, candidate SHA, and candidate permutation result match Phase 1
 exactly. The focused remote lexical gate passed `109/109` tests. Three
-sequential fixed-520 runs on `e@192.168.3.94` measured p99 `10.070`, `10.009`,
+sequential fixed-520 runs on `builder@worker.example` measured p99 `10.070`, `10.009`,
 and `9.572 ms`; every run preserved candidate SHA-256
 `2d99e87b685625d0791c857aecbfce022e6353d58aa5bc359c9d490b1a7c4a96`.
 Peak RSS was `418,128-418,452 KiB`. These measurements pass the move-only
@@ -1514,7 +1514,7 @@ installed package, daemon, and IBus remain unchanged; crystallization runs
 remain zero.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2D_2026-08-13/phase-2d.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2D_2026-08-13/phase-2d.json
 ```
 
 The next action is Phase 2E: move pure geometry and operator kernels without
@@ -1543,9 +1543,9 @@ sequential fixed-520 runs measured p99 `10.005`, `10.975`, and `10.272 ms`, all
 with the frozen candidate SHA. Peak RSS was `417,612-418,640 KiB`. This passes
 the move-only no-regression gate but does not claim the future `<=5 ms` target.
 
-All Cargo and proof work ran on `e@192.168.3.94` with
+All Cargo and proof work ran on `builder@worker.example` with
 `CARGO_BUILD_JOBS=20` and `RAYON_NUM_THREADS=20`. A temporary `bwrap` mount
-namespace exposed the immutable inputs at their original `/home/ubu/...` paths,
+namespace exposed the immutable inputs at their original `/home/local-user/...` paths,
 so path-bearing fingerprint JSON remained byte-comparable without creating
 persistent remote aliases. Two format checks stopped before compilation: the
 remote `1.97.1` toolchain lacked rustfmt, and the initial moved source needed
@@ -1561,7 +1561,7 @@ installed package, daemon, and IBus remain unchanged; training and
 crystallization runs remain zero.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2E_2026-08-13/phase-2e.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2E_2026-08-13/phase-2e.json
 ```
 
 Phase 2F is complete. Legacy atom selection, thread-local forward scratch,
@@ -1584,7 +1584,7 @@ sequential fixed-520 runs measured p99 `9.922`, `11.236`, and `13.397 ms`, all
 with the frozen candidate SHA. Peak RSS was `417,560-418,668 KiB`. This passes
 the move-only no-regression gate but does not claim the future `<=5 ms` target.
 
-All Cargo, proof, and benchmark work ran on `e@192.168.3.94` with
+All Cargo, proof, and benchmark work ran on `builder@worker.example` with
 `CARGO_BUILD_JOBS=20`, `RAYON_NUM_THREADS=20`, and 20 test threads. The final
 release codegen unit averaged `99%` CPU because the accepted release profile
 pins `codegen-units=1`; that profile was not changed. No CPU-heavy project work
@@ -1605,7 +1605,7 @@ authority, installed package, daemon, and IBus remain unchanged; training and
 crystallization runs remain zero.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2F_2026-08-13/phase-2f.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2F_2026-08-13/phase-2f.json
 ```
 
 Phase 2G is complete. Candidate settlement, phase evidence, restoration
@@ -1632,7 +1632,7 @@ p99 `11.520`, `9.864`, and `11.061 ms`, all with the frozen candidate SHA.
 Peak RSS was `417,284-418,232 KiB`. This passes the move-only no-regression
 gate but does not satisfy or claim the future `<=5 ms` promotion target.
 
-All Cargo, proof, and benchmark work ran on `e@192.168.3.94` with
+All Cargo, proof, and benchmark work ran on `builder@worker.example` with
 `CARGO_BUILD_JOBS=20`, `RAYON_NUM_THREADS=20`, and 20 test threads. The release
 build took `183.48 s`, peaked at `2,398,456 KiB`, and averaged `100%` CPU
 because the pinned release profile uses one final codegen unit. No CPU-heavy
@@ -1654,7 +1654,7 @@ deployment. Runtime authority, installed package, daemon, and IBus remain
 unchanged; training and crystallization runs remain zero.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2G_2026-08-14/phase-2g.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2G_2026-08-14/phase-2g.json
 ```
 
 The next action is Phase 2H: move the inline runtime tests into
@@ -1683,7 +1683,7 @@ p99 `10.131`, `10.199`, and `9.709 ms`, all with the frozen candidate SHA.
 Peak RSS was `417,584-418,564 KiB`. This closes the Phase 2 no-regression gate;
 it does not satisfy or claim the future `<=5 ms` promotion target.
 
-All Cargo, proof, and benchmark work ran on `e@192.168.3.94` with
+All Cargo, proof, and benchmark work ran on `builder@worker.example` with
 `CARGO_BUILD_JOBS=20`, `RAYON_NUM_THREADS=20`, and 20 test threads. The release
 build took `178.63 s`, peaked at `2,398,432 KiB`, and produced the exact Phase
 2G binary SHA-256. No CPU-heavy project work ran locally.
@@ -1698,7 +1698,7 @@ Runtime authority, installed package, daemon, and IBus remain unchanged;
 training and crystallization runs remain zero.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2H_2026-08-14/phase-2h.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_2H_2026-08-14/phase-2h.json
 ```
 
 The next action is Phase 3: introduce one internal `L1PeakSearch` owner
@@ -1755,7 +1755,7 @@ The incremental source graph was updated remotely with `20` workers in
 tracked graph outputs were returned to the local worktree.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/phase-3.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_3_2026-08-14/phase-3.json
 ```
 
 The next action is Phase 4: implement the dense proof-only oracle and prove it
@@ -1794,7 +1794,7 @@ was also preserved as `BLOCKED_BEFORE_CODE`: its test kind was not an admitted
 parity kind. The corrected preregistration returned `READY_TO_IMPLEMENT` with
 zero blockers before source code was changed.
 
-Remote gates on `e@192.168.3.94` passed: tiny oracle `5/5`, all focused lexical
+Remote gates on `builder@worker.example` passed: tiny oracle `5/5`, all focused lexical
 tests `114/114`, transition authority `20/20`, mutation monopoly `15/15`, all
 library/binary compile routes, and `scripts/check-lay-changed.sh`. The focused
 lexical run completed in `5.35 s`, averaged `1657%` CPU, and peaked at
@@ -1819,7 +1819,7 @@ authority, installed package, daemon, and IBus remain unchanged; training and
 crystallization runs remain zero.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_4_2026-08-14/phase-4.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_4_2026-08-14/phase-4.json
 ```
 
 Phase 5 is complete. The deterministic proof matrix covers exactly `260,000`
@@ -1876,8 +1876,8 @@ deployment. Runtime authority, installed package, daemon, and IBus remain
 unchanged; training and crystallization runs remain zero.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_5_2026-08-14/phase-5.json
-/home/ubu/.cache/lay/l1-peak-search-phase5-2026-08-14/full-13x20000.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_5_2026-08-14/phase-5.json
+/home/local-user/.cache/lay/l1-peak-search-phase5-2026-08-14/full-13x20000.json
 ```
 
 Phase 6 is complete. `forward_decoder_index.rs` derives one transient CSR
@@ -1954,8 +1954,8 @@ optimized exact-search quality/latency, package redesign, or deployment.
 Training and crystallization runs remain zero.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_6_2026-08-14/phase-6.json
-/home/ubu/.cache/lay/l1-peak-search-phase6-2026-08-14/forward-index.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_6_2026-08-14/phase-6.json
+/home/local-user/.cache/lay/l1-peak-search-phase6-2026-08-14/forward-index.json
 ```
 
 ### Phase 7A accepted result - 2026-08-14
@@ -1977,9 +1977,9 @@ is now `134/134`; authority `20/20` and mutation `15/15` remain PASS.
 Measured evidence and scope boundaries are recorded at:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/l1-l11-typed-edit-product-phase7.md
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7A_2026-08-14/phase-7a.json
-/home/ubu/.cache/lay/l1-peak-search-phase7a-2026-08-14/full-3x20000.json
+/workspace/local/lay-l1-exact-peak-search/docs/l1-l11-typed-edit-product-phase7.md
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7A_2026-08-14/phase-7a.json
+/home/local-user/.cache/lay/l1-peak-search-phase7a-2026-08-14/full-3x20000.json
 ```
 
 The next action is Phase 7B: extend the same owner with interior target
@@ -2007,9 +2007,9 @@ change runtime authority. Lexical regression is now `137/137`; authority
 Measured evidence and scope boundaries are recorded at:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/l1-l11-typed-edit-product-phase7.md
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7B_2026-08-14/phase-7b.json
-/home/ubu/.cache/lay/l1-peak-search-phase7b-2026-08-14/phase7b.json
+/workspace/local/lay-l1-exact-peak-search/docs/l1-l11-typed-edit-product-phase7.md
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7B_2026-08-14/phase-7b.json
+/home/local-user/.cache/lay/l1-peak-search-phase7b-2026-08-14/phase7b.json
 ```
 
 The next action is Phase 7C: add adjacent transposition, exact non-adjacent
@@ -2037,9 +2037,9 @@ changed-tree, formatting, and Cargo budget gates remained PASS.
 Measured evidence and scope boundaries are recorded at:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/l1-l11-typed-edit-product-phase7.md
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7C_2026-08-14/phase-7c.json
-/home/ubu/.cache/lay/l1-peak-search-phase7c-2026-08-14/phase7c.json
+/workspace/local/lay-l1-exact-peak-search/docs/l1-l11-typed-edit-product-phase7.md
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7C_2026-08-14/phase-7c.json
+/home/local-user/.cache/lay/l1-peak-search-phase7c-2026-08-14/phase7c.json
 ```
 
 The next action is Phase 7D: add exact double-substitution,
@@ -2074,9 +2074,9 @@ daemon, or IBus. The accepted proof required both the feature build and an
 explicit command-string check.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/l1-l11-typed-edit-product-phase7.md
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7D_2026-08-14/phase-7d.json
-/home/ubu/.cache/lay/l1-peak-search-phase7d-2026-08-14/phase7d.json
+/workspace/local/lay-l1-exact-peak-search/docs/l1-l11-typed-edit-product-phase7.md
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7D_2026-08-14/phase-7d.json
+/home/local-user/.cache/lay/l1-peak-search-phase7d-2026-08-14/phase7d.json
 ```
 
 Phase 8A-8G established exact posting algebra but rejected interval WAND,

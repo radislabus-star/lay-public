@@ -9,7 +9,7 @@ including inflected forms, rather than an exception for the reported word.
 ## Frozen observations and unresolved mechanism
 
 Installed IME SHA256 `4bfe47fa3db15def7a4e993198b0505a3bbbacd7e05f3139094aaadce570690e`.
-Private capture: `/home/ubu/.cache/lay/development/oknah-live-audit-20260911-xr139hq7/diagnosis.json`.
+Private capture: `/home/local-user/.cache/lay/development/oknah-live-audit-20260911-xr139hq7/diagnosis.json`.
 Three recorded decisions classify deletion from a valid inflected form as an
 extra-letter repair; a SuggestOnly proposal becomes Apply. One execution is
 separately observed in the IBus trace. Selected-candidate details are absent
@@ -17,7 +17,7 @@ from the bounded eight-of-33 log. That capture does not establish the original
 L1.1 verdict or the first loss of retention/authority.
 
 The earlier private capture
-`/home/ubu/.cache/lay/development/typing-l4-audit-20260910-dqzq9yh7/AUDIT.md`
+`/home/local-user/.cache/lay/development/typing-l4-audit-20260910-dqzq9yh7/AUDIT.md`
 contains a different valid-word substitution with a retained GroundedWinner
 KeepOriginal candidate. Retention alone did not protect the final text.
 This establishes a second clean-preservation failure, not proof that both
@@ -89,7 +89,7 @@ established by this preflight.
 ## First mechanism and selected repair
 
 Private frozen experiment root:
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/`.
 Baseline `diagnostic-baseline-v3-0/receipt.json` completed all 18 cases:
 17/18 clean preserved, one short-word substitution. L1.1 and the composite
 trace retain the original short word as GroundedWinner/KeepOriginal. The
@@ -161,8 +161,8 @@ This coverage limit and broader frame-bound-original evidence remain separate
 from the measured recurrence false-authority repair; do not claim universal
 lexical coverage from the regression corpus.
 
-RED receipt: `/home/ubu/.cache/lay/development/run-jzh8tisn/RESULT.json`,
-remote `/home/e/projects/lay-development-runner/run-ovvpvV/tests/SUMMARY.json`.
+RED receipt: `/home/local-user/.cache/lay/development/run-jzh8tisn/RESULT.json`,
+remote `/workspace/worker/lay-development-runner/run-ovvpvV/tests/SUMMARY.json`.
 All1786 selected library tests executed:1784 passed, exactly the two new
 regressions failed. They observed an unjustified recurrence certificate for
 an attested inflection, including replacement of an existing independent
@@ -179,8 +179,8 @@ reports and candidate ordering are unchanged. The positive unattested English
 control extends the existing one-edit test; two new regression identities cover
 producer semantics and final mutation receipts across all three safety profiles.
 
-GREEN: `/home/ubu/.cache/lay/development/run-k9dal3cr/RESULT.json`, remote
-`/home/e/projects/lay-development-runner/run-WUOdSg/tests/SUMMARY.json`.
+GREEN: `/home/local-user/.cache/lay/development/run-k9dal3cr/RESULT.json`, remote
+`/workspace/worker/lay-development-runner/run-WUOdSg/tests/SUMMARY.json`.
 Exactly1786/1786 selected library tests passed; the two new identities executed.
 Formatting passed. Test execution110.058s; complete development run137.017s.
 Ignored15 and performance6 library tests were explicitly excluded. This is
@@ -197,8 +197,8 @@ coverage and persisted-versus-in-memory state are the stated limits.
 ## Mandatory release gates and artifact closure
 
 Receipt:
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/full-acceptance/clean-surface-full-acceptance-completed-identity.json`.
-Remote frozen run: `/home/e/projects/lay-development-runner/run-YhrOV5`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/full-acceptance/clean-surface-full-acceptance-completed-identity.json`.
+Remote frozen run: `/workspace/worker/lay-development-runner/run-YhrOV5`.
 All stages passed: actual-client harness contracts, formatting, architecture
 refresh/check, exact manifest discovery, lint identity checks, changed/full
 gates, the ten-binary release builder and final default-feature IME build.
@@ -235,7 +235,7 @@ acceptance denominators; the full test result cannot substitute for them.
 ## Fixed, diagnostic and native acceptance
 
 Aggregate acceptance receipt:
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/acceptance-summary.json`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/acceptance-summary.json`.
 It binds baseline IME `4bfe47fa3db15def7a4e993198b0505a3bbbacd7e05f3139094aaadce570690e`
 and candidate IME `e5720ec292620c0554696834d2fa4381775e1c5eed013c8c37cfbe24fff4ffbd`.
 This acceptance receipt was produced before installation and has
@@ -243,7 +243,7 @@ This acceptance receipt was produced before installation and has
 the local runtime change.
 
 Fixed89 comparison receipt:
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/fixed89-comparison.json`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/fixed89-comparison.json`.
 Verdict `PASS_NO_CLASS_REGRESSION`. Each profile used the exact five
 baseline shards and five candidate shards; all candidate shard receipts bind
 to `e5720ec292620c0554696834d2fa4381775e1c5eed013c8c37cfbe24fff4ffbd`, all
@@ -287,14 +287,14 @@ Every profile has exactly zero changed cases.
 | experimental | clean_valid_word | 33/34 97.059% -> 33/34 97.059% | 1 -> 1 | 0 -> 0 |
 
 Paired diagnostic clean corpus:
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/diagnostic-resource-baseline-0/receipt.json`
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/diagnostic-resource-baseline-0/receipt.json`
 and
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/diagnostic-candidate-0/receipt.json`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/diagnostic-candidate-0/receipt.json`.
 The baseline preserved `17/18`; the candidate preserved `18/18`.
 Resource receipts:
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/diagnostic-baseline-resources.json`
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/diagnostic-baseline-resources.json`
 and
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/diagnostic-candidate-resources.json`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/diagnostic-candidate-resources.json`.
 Measured facts: startup warmup `115560 -> 117631 us`, worker `p50/max`
 `41235/189594 -> 41816/174041 us`, prepared boundary `p50/max`
 `3585/15860 -> 2876/4920 us`, observed `VmHWM`
@@ -303,30 +303,30 @@ OOM `0 -> 0`. These numbers do not establish a general latency improvement
 and do not isolate lexical-reader cold initialization.
 
 Native accepted summary:
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/SUMMARY.json`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/SUMMARY.json`.
 Accepted lanes are exactly:
 
 | Lane | Schedule | Cases | Receipt |
 | --- | --- | ---: | --- |
-| terminal-delivery | post-exact-ready | 4 | `/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/terminal-delivery/receipt.json` |
-| restoration | post-exact-ready | 5 | `/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/restoration/receipt.json` |
-| lifecycle | immediate | 3 | `/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/lifecycle/receipt.json` |
-| manual-toggle | post-exact-ready | 3 | `/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/manual-toggle/receipt.json` |
-| first-word-us | immediate | 1 | `/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/first-word-us/receipt.json` |
-| first-word-ru | immediate | 1 | `/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/first-word-ru/receipt.json` |
+| terminal-delivery | post-exact-ready | 4 | `/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/terminal-delivery/receipt.json` |
+| restoration | post-exact-ready | 5 | `/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/restoration/receipt.json` |
+| lifecycle | immediate | 3 | `/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/lifecycle/receipt.json` |
+| manual-toggle | post-exact-ready | 3 | `/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/manual-toggle/receipt.json` |
+| first-word-us | immediate | 1 | `/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/first-word-us/receipt.json` |
+| first-word-ru | immediate | 1 | `/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls/first-word-ru/receipt.json` |
 
 Total accepted native denominator is `17`, with receipt and metadata schedules
 bound for every lane. The initial native run remains archived at
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls-initial/SUMMARY.json`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls-initial/SUMMARY.json`.
 It passed terminal-delivery4, restoration5 and lifecycle3, then failed
 candidate immediate manual-toggle after two completed cases on
 `visible post-handoff suggestion`; exact receipt:
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls-initial/manual-toggle/receipt.json`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls-initial/manual-toggle/receipt.json`.
 The supplement archive
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls-supplement/SUMMARY.json`
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls-supplement/SUMMARY.json`
 records the installed baseline failing the same immediate manual cold path
 after two cases; exact receipt:
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls-supplement/baseline-manual-immediate/receipt.json`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/native-controls-supplement/baseline-manual-immediate/receipt.json`.
 Both cold immediate negatives have completed cleanup and are kept outside the
 accepted denominator.
 
@@ -354,7 +354,7 @@ which authorities were consumed; quality remains the separate per-class
 contract recorded above and in historical L1 receipts.
 
 Historical L1 quality reference:
-`/home/ubu/.cache/lay/development/run-o0dqrl5c/td123-full-model-proof-comparison-v1.json`.
+`/home/local-user/.cache/lay/development/run-o0dqrl5c/td123-full-model-proof-comparison-v1.json`.
 Its scope is quality-only with package V9 unchanged: unique top1
 `208739/210974 = 98.9406%`, all 13 classes above95 with minimum97.053,
 clean `852582 = 100%`, lattice99.868, retention100, false0, package77962328B.
@@ -365,7 +365,7 @@ it is not a new L1 promotion or latency PASS for the clean-source repair.
 ## Installation review and local install
 
 Final installation review:
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/installation-review.json`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/installation-review.json`.
 Verdict `PASS`, score9, H0/M0/L0. Review receipt SHA256
 `d9c50ca7572782e46cb7ba3cfc447d17717e33e71e25c3923cd86c343b664046`.
 It binds installer SHA256
@@ -374,11 +374,11 @@ and acceptance summary SHA256
 `b1e305ee9760cd271383f2e8cf2852ed69f118c02b13855abc83221c999999c3`.
 
 The reviewed installer was then executed locally without rebuild:
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/install-verified-clean-surface.py`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/install-verified-clean-surface.py`.
 Run log:
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/installation-run.log`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/installation-run.log`.
 Installation receipt:
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/installation-clean-surface.json`.
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/installation-clean-surface.json`.
 Receipt SHA256 `1c1a6be44ce50d6f4465590a575cb2cc77201d88102409b5c554e843b383f323`.
 Status `INSTALLED_VERIFIED_PHYSICAL_PENDING`.
 
@@ -400,9 +400,9 @@ The installer replaced exactly five verified changed consumers: `lay`,
 `lay-nanda-wave-train`. It restarted only the owned IME, daemon and L3
 processes. Global IBus, L1.1, config, input sources, extension, immutable
 dependencies and all ten release artifacts were verified. Backup:
-`/home/ubu/.local/state/lay/release-backups/clean-surface-20260911-rod7fhrw`.
+`/home/local-user/.local/state/lay/release-backups/clean-surface-20260911-rod7fhrw`.
 
 Physical keyboard acceptance is still PENDING. Final source-graph result is
 recorded in
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/final-graph/fetch-receipt.json`;
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/final-graph/fetch-receipt.json`;
 inspect that receipt for the verdict.

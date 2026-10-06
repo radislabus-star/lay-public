@@ -1,8 +1,8 @@
 # TD-120 — final scoped acceptance
 
 Date: 2026-09-06. Baseline: `cc1e2207519801ca0f9b7c6963897b55953a7751`.
-Source: `/home/ubu/projects/lay-tech-debt-20260831`.
-Remote source: `e@192.168.3.94:/home/e/projects/lay-td120-121-SUdh2I`.
+Source: `/workspace/local/lay-tech-debt-20260831`.
+Remote source: `builder@worker.example:/workspace/worker/lay-td120-121-SUdh2I`.
 
 ## Result and exact scope
 
@@ -34,8 +34,8 @@ code-review pass.
 All builds and tests ran remotely, using the existing resource and Cargo guards:
 
 ```sh
-cd /home/e/projects/lay-td120-121-SUdh2I
-env CARGO_TARGET_DIR=/home/e/projects/lay-td119-gate-v1/target \
+cd /workspace/worker/lay-td120-121-SUdh2I
+env CARGO_TARGET_DIR=/workspace/worker/lay-td119-gate-v1/target \
   LAY_RESOURCE_PROFILE=dedicated-20cpu CARGO_BUILD_JOBS=20 RUST_TEST_THREADS=1 \
   scripts/lay-resource-guard.sh -- scripts/check-lay-changed.sh
 ```
@@ -45,7 +45,7 @@ limits remain CPUQuota 2000%, MemoryHigh 24G, MemoryMax 28G, swap 1G, TasksMax
 512 and disposable target budget 12 GiB. No local build/test/training occurred.
 
 Raw receipt root, retained on the remote host:
-`/home/e/projects/lay-td119-gate-v1/target/verification-logs/td120-final-20260906T1900Z/`.
+`/workspace/worker/lay-td119-gate-v1/target/verification-logs/td120-final-20260906T1900Z/`.
 The directory's label is not the measured execution timestamp; individual
 receipts retain their original timestamps.
 
@@ -106,7 +106,7 @@ earlier three-contract RED in `05-check-lay-changed.log` remains retained.
   checks. This is production managed-output evidence, not general asynchronous
   Nanda/Wave heldout quality or a physical keyboard result.
 - The changed script's unsafe-edit scoreboard used the **remote host's**
-  `/home/e/.local/share/lay/recent_actions.jsonl`. It does not verify the local
+  `/home/worker/.local/share/lay/recent_actions.jsonl`. It does not verify the local
   user's current typing or desktop client.
 - `LegacyReplayV1` delayed/before-only identity limitations remain explicit
   TD-122 debt. Canonical-context handoff is TD-121, not implicitly closed here.

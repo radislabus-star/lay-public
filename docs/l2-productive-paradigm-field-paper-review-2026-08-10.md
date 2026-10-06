@@ -8,10 +8,10 @@ Date: 2026-08-10.
 Reviewed documents:
 
 ```text
-/home/ubu/projects/lay/docs/l2-productive-paradigm-field-canonical-design.md
-/home/ubu/projects/lay/docs/l2-productive-paradigm-field-paper-implementation.md
-/home/ubu/projects/lay/docs/l2-l11-canonical-architecture.md
-/home/ubu/projects/lay/docs/lay-development-plan-after-0.2.340.md
+/workspace/local/lay/docs/l2-productive-paradigm-field-canonical-design.md
+/workspace/local/lay/docs/l2-productive-paradigm-field-paper-implementation.md
+/workspace/local/lay/docs/l2-l11-canonical-architecture.md
+/workspace/local/lay/docs/lay-development-plan-after-0.2.340.md
 ```
 
 ## 1. Verdict
@@ -103,7 +103,7 @@ scientific foundations                            CLOSED
 The rejected V42 bounded-chunk code still exists locally at:
 
 ```text
-/home/ubu/projects/lay/src/nanda_wave/l2_field/runtime.rs:518
+/workspace/local/lay/src/nanda_wave/l2_field/runtime.rs:518
 ```
 
 The first code step remains restoration of V39 behavior while preserving V42

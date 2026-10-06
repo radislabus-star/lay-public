@@ -975,7 +975,7 @@ these source tests.
    `fee75b6982e497fd946aee99f3f38a17e35033e14024d162c91be0d6ea9ebc23`.
    Rust correctness/package passed `2,442/2,442` and lint passed. The wrapper
    then stopped with exit `127` at `node --check` because the remote non-login
-   `PATH` omitted `/home/e/.local/bin`; `/home/e/.local/bin/node` exists and
+   `PATH` omitted `/home/worker/.local/bin`; `/home/worker/.local/bin/node` exists and
    reports `v24.18.1`. No install or system mutation occurred, and performance
    did not run. Full-log SHA-256:
    `a7198aa7f50b35d5254d32e62818adc9405d57490d046e94db9af4018259b7cf`.
@@ -1316,6 +1316,6 @@ reported `FORWARD_INSTALL_1_0_62=PASS`. CLI and DBus report 1.0.62, DBus ping
 passes, daemon/L3/IME process hashes match the installed artifacts, exactly one
 managed IME is running, the selected engine remains `lay-ime-ru`, and the
 global IBus PID remains `4715`. The complete 1.0.61 rollback snapshot is
-`/home/ubu/.local/state/lay/release-backups/1.0.62-preinstall-20260903-j1OKv0`.
+`/home/local-user/.local/state/lay/release-backups/1.0.62-preinstall-20260903-j1OKv0`.
 
 TD-113 is `DONE`.

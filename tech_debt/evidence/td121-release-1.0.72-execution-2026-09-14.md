@@ -11,7 +11,7 @@ preserves literal trailing Space, and uses the verified synchronous Firefox
 launcher with the reset-notification compatibility library. Source consequence
 analysis and candidate failures remain in the owning evidence.
 
-Transaction directory: `/home/ubu/.cache/lay/development/release-1.0.72-td121-r12b-20260914`.
+Transaction directory: `/home/local-user/.cache/lay/development/release-1.0.72-td121-r12b-20260914`.
 Final release result: `raw/RESULT.json`, SHA-256 `1e505e20ff9379cc59b48d7d8c3d5c64fdfd51e71134dad400021d58c5c402f2`.
 Source archive SHA-256: `1d47883e939b2a90af7c1a751c8602b029a154395c6af7f89ce42833b9c1346b`.
 Source request SHA-256: `db092475a9803d236766467af60959ec37df04b6929656f4eec21dcaaf77d9ce`.
@@ -60,7 +60,7 @@ now loaded; the proof harness itself had no lasting runtime authority.
 
 The global IBus process, selected input source, config, immutable model payloads
 and input journals were preserved. Only owned Lay producers were restarted.
-Rollback artifacts are at `/home/ubu/.local/state/lay/release-backups/1.0.72-v5625qik`.
+Rollback artifacts are at `/home/local-user/.local/state/lay/release-backups/1.0.72-v5625qik`.
 
 Firefox was closed through its normal Quit command and restarted through the installed
 launcher. The existing profile restored 12 of
@@ -78,9 +78,9 @@ extracted. Activation receipt: `firefox-activation.json`, SHA-256
 
 The user explicitly authorized autonomous checking, installation and push while
 away. A human hardware-keyboard observation remains **NOT_TESTED**.
-The original `/home/ubu/projects/lay` checkout was outside the edit scope.
+The original `/workspace/local/lay` checkout was outside the edit scope.
 Publication targets `origin/codex/cleanup-20260908`; exact commit and verified
-remote ref are recorded separately in `/home/ubu/.cache/lay/development/release-1.0.72-td121-r12b-20260914/publication.json`.
+remote ref are recorded separately in `/home/local-user/.cache/lay/development/release-1.0.72-td121-r12b-20260914/publication.json`.
 
 This execution ledger is excluded from the graph's compiled source binding.
 All implementation and design inputs were frozen before the final gates.
@@ -92,14 +92,14 @@ post-build hash delta, rather than claiming that execution facts were compiled.
 ## Preserved failed final attempt and metadata correction
 
 The first R12 final attempt at
-`/home/ubu/.cache/lay/development/release-1.0.72-td121-r12-20260914/raw/RESULT.json`
+`/home/local-user/.cache/lay/development/release-1.0.72-td121-r12-20260914/raw/RESULT.json`
 remains **FAILED**: all 2862 correctness/package tests passed in both routes,
 then the full lint contract rejected moved positions of existing warnings.
 The guarded canonical baseline writer regenerated the two inventories; exact
 logical comparison with only byte offsets removed proved all 534 default and
 358 research warning entries unchanged. No new warning exceptions were admitted
 and no runtime source changed for the retry. Correction receipt:
-`/home/ubu/.cache/lay/development/td121-r12-lint-baseline-20260914/offset-only-proof.json`.
+`/home/local-user/.cache/lay/development/td121-r12-lint-baseline-20260914/offset-only-proof.json`.
 The R12b attempt reran the actual canonical gates and supplies final acceptance.
 
 

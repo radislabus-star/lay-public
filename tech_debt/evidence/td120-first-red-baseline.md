@@ -3,16 +3,16 @@
 Date2026-09-05; baseline production cc1e2207 (1.0.65). Only nine new tests and
 their cfg(test) registration differed. Production authority unchanged.
 
-Remote `e@192.168.3.94`, source
-`/home/e/projects/lay-td120-121-SUdh2I`; archive baseline local remote-only
+Remote `builder@worker.example`, source
+`/workspace/worker/lay-td120-121-SUdh2I`; archive baseline local remote-only
 Git commit `734f52ce881181582d82623e0b267745ae28e191` represents cc1e2207,
 not a new upstream release commit. External cache
-`/home/e/projects/lay-td119-gate-v1/target`, bytes3551731712 of12884901888.
+`/workspace/worker/lay-td119-gate-v1/target`, bytes3551731712 of12884901888.
 
 Command from that remote source directory:
 
 ```sh
-env CARGO_TARGET_DIR=/home/e/projects/lay-td119-gate-v1/target \
+env CARGO_TARGET_DIR=/workspace/worker/lay-td119-gate-v1/target \
     LAY_RESOURCE_PROFILE=dedicated-20cpu \
     scripts/lay-resource-guard.sh -- scripts/cargo-guard.sh \
     test --bin lay-ibus-engine td120_ -- --nocapture
@@ -37,7 +37,7 @@ to assert the legitimate minimal effect, use real ordinary focus binding and
 correct the duplicate fixture's already-closed first result expectation before
 production changes. These changes do not remove intended safety obligations.
 
-Raw remote log `/home/e/projects/lay-td120-121-SUdh2I-td120-red-v2.log`, SHA256
+Raw remote log `/workspace/worker/lay-td120-121-SUdh2I-td120-red-v2.log`, SHA256
 `06b88e7b6f9f70f35815777046ab0d8917877de0d9c8073c07d44724a207732e`.
 This is a first RED baseline, not the expanded O/E/V1/A/C acceptance suite or
 post-fix conversion proof. No local Cargo or live probe was run by this step.

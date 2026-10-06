@@ -1,7 +1,7 @@
 # TD-120 independent code review — pass 2
 
 Date: 2026-09-06. Baseline: `cc1e2207519801ca0f9b7c6963897b55953a7751`.
-Worktree: `/home/ubu/projects/lay-tech-debt-20260831`.
+Worktree: `/workspace/local/lay-tech-debt-20260831`.
 
 ## Findings and verdict
 
@@ -106,9 +106,9 @@ Receipts independently read over read-only SSH:
 
 | Receipt | Observed result | Scope |
 |---|---|---|
-| `/home/e/projects/lay-td120-repair-v3-ime.log` | 319/319 PASS, 0 ignored, 14.46 s | Earlier repair checkpoint, before final M2/fixture delta |
-| `/home/e/projects/lay-td120-repair-v3-daemon.log` | 234 PASS / 2 FAIL, 0 ignored, 142.11 s | Earlier raw host-environment run; not a final PASS |
-| `/home/e/projects/td120-neighbor-hermetic-2lbs0i_u/test.log` | 1/1 PASS, 2.20 s | Isolated neighboring typo test in the canonical hermetic harness |
+| `/workspace/worker/lay-td120-repair-v3-ime.log` | 319/319 PASS, 0 ignored, 14.46 s | Earlier repair checkpoint, before final M2/fixture delta |
+| `/workspace/worker/lay-td120-repair-v3-daemon.log` | 234 PASS / 2 FAIL, 0 ignored, 142.11 s | Earlier raw host-environment run; not a final PASS |
+| `/workspace/worker/td120-neighbor-hermetic-2lbs0i_u/test.log` | 1/1 PASS, 2.20 s | Isolated neighboring typo test in the canonical hermetic harness |
 
 The daemon source-ledger failure was the obsolete search for
 `if let Err(e) = replay_result`; its removal was inspected, with actual effect
@@ -251,13 +251,13 @@ tech_debt/evidence/td120-composition-mutation-successor.json  4768f19c1c1afa6651
 tech_debt/evidence/td120-repair-pass2.md               59fb7a77b6eb518fb6279a80363a7a894250cc37698ef2362eb5f90b3b24a4eb
 ```
 
-Independently read over read-only SSH to `e@192.168.3.94` and verified both
+Independently read over read-only SSH to `builder@worker.example` and verified both
 remote receipt hashes:
 
 ```text
-/home/e/projects/lay-td119-gate-v1/target/verification-logs/td120-final-20260906T1900Z/09-check-lay-changed-final.log
+/workspace/worker/lay-td119-gate-v1/target/verification-logs/td120-final-20260906T1900Z/09-check-lay-changed-final.log
 SHA-256 6fd091055a369e0d4b038f6885a635e8785f3cd07a54338df41e6b3f39ad2259
-/home/e/projects/lay-td119-gate-v1/target/test-lanes-results/SUMMARY.json
+/workspace/worker/lay-td119-gate-v1/target/test-lanes-results/SUMMARY.json
 SHA-256 53e2932a9737e3627fa8190250e0d6017ad2a0bcfb2e433145e08e786ae47858
 ```
 

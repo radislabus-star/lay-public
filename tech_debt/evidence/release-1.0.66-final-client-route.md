@@ -92,17 +92,17 @@ parity after this repair are prohibited. No installation is admitted by V2.
 
 The diagnostics-only IME source and accepted composition successor passed the
 remote union of IME402 and protected-source7 tests:409/409. Evidence:
-`/home/e/projects/lay-development-runner/run-xRje9K`; local transfer/result:
-`/home/ubu/.cache/lay/development/run-775_yi49`. The optimized diagnostic binary
+`/workspace/worker/lay-development-runner/run-xRje9K`; local transfer/result:
+`/home/local-user/.cache/lay/development/run-775_yi49`. The optimized diagnostic binary
 built in3m11s under the agreed guard. Immutable candidate:
-`/home/e/projects/lay-development-runner/release-1066-diagnostic-Ym0t7Y/lay-ibus-engine`,
+`/workspace/worker/lay-development-runner/release-1066-diagnostic-Ym0t7Y/lay-ibus-engine`,
 SHA256 `c8df6be51584b2f8ffaf55922abe7c413f7038c2cd0548141aee7820c962cd1e`.
 This is one diagnostic executable, not an accepted complete release bundle.
 
 One unchanged V1 run with that candidate and the nine-role dependency manifest
 `ea6c07b1ddd0d504f87578a39a40b552f301c618195ab0e84df9d9acd2f21c76`
 completed0/5 with clean private-process cleanup. Receipt:
-`/home/e/projects/lay-development-runner/release-1066-diagnostic-Ym0t7Y/client-v1/receipt.json`,
+`/workspace/worker/lay-development-runner/release-1066-diagnostic-Ym0t7Y/client-v1/receipt.json`,
 SHA256 `a9af127cce27a4ee7a28e39e43da961ad9335fac5a94dfa8c125f3937302c025`.
 The trace orders warmup start, exact preparation with snapshot/certificate/
 decision all absent, Space refusal (`not_ready`,3564us lookup), then successful
@@ -125,12 +125,12 @@ is admitted by this checkpoint.
 ### V2 first execution: binding error, not product behavior
 
 Remote tooling ran86 tests:85PASS,1optional cgroup skip,0failures,0.954s.
-`/home/e/projects/lay-development-runner/run-YrdDmO`, local
-`/home/ubu/.cache/lay/development/run-hf5r6gy4/run.log`.
+`/workspace/worker/lay-development-runner/run-YrdDmO`, local
+`/home/local-user/.cache/lay/development/run-hf5r6gy4/run.log`.
 The one V2 client run stopped before any product case: public Python
 `IBus.InputContext` has no `require-surrounding-text` signal. Private cleanup
 completed; candidate was not started. Receipt
-`/home/e/projects/lay-development-runner/release-1066-diagnostic-Ym0t7Y/client-v2/receipt.json`,
+`/workspace/worker/lay-development-runner/release-1066-diagnostic-Ym0t7Y/client-v2/receipt.json`,
 SHA256 `c2e23478e3a49e7ec43edf9883cd2cc8943962cbbc7e13a9122f5de3af552e63`.
 Guarded remote introspection confirms the public methods are
 `needs_surrounding_text()` and `set_surrounding_text()`. String/hash tests did
@@ -192,11 +192,11 @@ and installed-GI metadata checks. Post-ready behavior remains untested here.
 ## Post-ready measured result and scoped independent review
 
 The frozen8e520d3a source passed remote tooling in
-`/home/e/projects/lay-development-runner/run-0ayT63`, local
-`/home/ubu/.cache/lay/development/run-vhqrv4dq/run.log` (exact count in log).
+`/workspace/worker/lay-development-runner/run-0ayT63`, local
+`/home/local-user/.cache/lay/development/run-vhqrv4dq/run.log` (exact count in log).
 One explicitly post-exact-ready invocation used the same immutablec8df6be5
 binary/dependency manifest. Receipt:
-`/home/e/projects/lay-development-runner/release-1066-diagnostic-Ym0t7Y/client-v2-post-ready/receipt.json`,
+`/workspace/worker/lay-development-runner/release-1066-diagnostic-Ym0t7Y/client-v2-post-ready/receipt.json`,
 SHA256 `65c6c5f58032e8bb254ccd44de0e9d7bd7b988ee48f807917e52f8cf1d547fdd`.
 Candidate exact warmup111953us; batched-event observation997234us. These are
 different measurements. File creation/flush was observed successfully.
@@ -273,10 +273,10 @@ The pre-continuation snapshot ran all32 selected Cargo targets:2637 tests,
 0test failures,357.675s summed target execution (IME402 in5.740s;
 daemon239 in141.99s). This excludes the subsequently added local RED probe.
 Full-gate log
-`/home/ubu/.cache/lay/development/run-vhqrv4dq/full-release-gate.log`, SHA256
+`/home/local-user/.cache/lay/development/run-vhqrv4dq/full-release-gate.log`, SHA256
 `c85ce55c97185a5b8f8561cefb72f96bff7a83fe3fdcb2675925534da8c79dbf`.
 Remote raw per-target logs remain at
-`/home/e/projects/lay-development-runner/workspace/target/test-lanes-results/logs`.
+`/workspace/worker/lay-development-runner/workspace/target/test-lanes-results/logs`.
 The gate then refused the outdated known-failure-ledger manifest binding, so
 there is NO final SUMMARY/PASS and lint/release build were not reached.
 The ledger has0failures and must remain empty; final discovery must rebind its
@@ -288,7 +288,7 @@ refresh before this gate passed and was copied back; later test/docs make that
 receipt historical until the final remote refresh.
 
 RED is now measured: remote403selected,402PASS,1FAIL at the exact late epoch
-binding assertion, run `/home/e/projects/lay-development-runner/run-9CBD6R`;
+binding assertion, run `/workspace/worker/lay-development-runner/run-9CBD6R`;
 SUMMARY SHA256 `e1a6f726ed62613a022a780d99902be1e0b106273ef1162722c51a09a58f3c7d`.
 Independent bounded analysis found no veto to the minimal repair, with these
 required constraints: preserve only Consumed source-free binding; prune ready
@@ -302,7 +302,7 @@ wrong fence, old timer/new nonce and existing bridge negatives. These are the
 admitted bounded implementation/proof obligations, not additional runtime APIs.
 
 Initial lifetime implementation passed412/412 (IME405+protected7) remotely at
-`/home/e/projects/lay-development-runner/run-uvlsS0/tests/SUMMARY.json`, SHA256
+`/workspace/worker/lay-development-runner/run-uvlsS0/tests/SUMMARY.json`, SHA256
 `b5d394eac18ce78af4a4e5a9245385165d6af5bf67873202f6daa281000d4490`.
 The source-free RED and two new real-adapter schedule/API tests pass. Bounded
 review found H0/M1 (7/10): a next begin could mutate reducer between publishing
@@ -327,8 +327,8 @@ observer. This covers begin winning the publication lock without a racy
 precheck, extra queue or retry.
 
 Final synchronization delta:412/412 PASS at
-`/home/e/projects/lay-development-runner/run-7j9HLR/tests/SUMMARY.json`, local
-`/home/ubu/.cache/lay/development/run-udmxvaa6/run.log`; guarded worker14.076s,
+`/workspace/worker/lay-development-runner/run-7j9HLR/tests/SUMMARY.json`, local
+`/home/local-user/.cache/lay/development/run-udmxvaa6/run.log`; guarded worker14.076s,
 focused command11.186s. Prior run `run-yfkbzY` had411PASS/1FAIL because the new
 test inspected the pending slot before its detached arming task had emitted
 the marker. The corrected test advances the controlled P2P marker, then
@@ -351,7 +351,7 @@ now completes2/5: full `ljv -> дом` with preserved separator, then distinct
 US->RU mixed `lом` retention without edits. Third-case setup fails before its
 text with `metadata observer cancelled`; runtime trace records the observer
 stopping with `context admission denied` after FocusOutId117/FocusInId118.
-Receipt `/home/e/projects/lay-development-runner/release-1066-final-IFSMv9/client-v2-post-ready/receipt.json`,
+Receipt `/workspace/worker/lay-development-runner/release-1066-final-IFSMv9/client-v2-post-ready/receipt.json`,
 SHA256 `74ed0978b205beb73b5de66abb0127723ba45140dbd2c5e9b1a5deba62f700d2`.
 Private daemon and candidate cleanup complete. This is not5/5 acceptance.
 
@@ -502,7 +502,7 @@ service2.722s/CPU2.995s includes startup/trace drain and is not a key latency.
 Receipt `release-1066-final-IFSMv9/client-stale-arm-post-ready/receipt.json`, SHA256
 `c2f86ff3e69ad8ae5c6a2b1435a2584fff67dcc72d449d1be14e09236b0a56b8`.
 Private daemon reaped,0candidate processes remaining. All paths in this
-checkpoint are under `/home/e/projects/lay-development-runner/`.
+checkpoint are under `/workspace/worker/lay-development-runner/`.
 
 Verdict is PASS for that diagnostic candidate and explicit post-ready
 five-case contract. Mixed correction itself, cold immediate startup, physical
@@ -602,7 +602,7 @@ Cargo metadata reports14binary targets, not19; nineteen counts installed
 files. Fourteen binaries+sidecar+receipt transferred with16/16 hash parity.
 Prepared local `target/release/lay --version` is1.0.66; installed remains1.0.65.
 Rollback snapshot ready at
-`/home/ubu/.local/state/lay/release-backups/1.0.66-preinstall-b4bd39`.
+`/home/local-user/.local/state/lay/release-backups/1.0.66-preinstall-b4bd39`.
 No production restart, install, commit or push. Physical acceptance still
 requires user input; do not label TD121/TD125 DONE or waive the pre-install
 physical gate. Next action and exact cache paths are in the execution document.

@@ -197,10 +197,10 @@
         "-Wno-unused-parameter",
         "-fsanitize=address,undefined",
         "-fno-omit-frame-pointer",
-        "/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-k1FFeX/output/probe.c",
+        "/workspace/worker/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-k1FFeX/output/probe.c",
         "-Wl,-l:libglib-2.0.so.0",
         "-o",
-        "/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-k1FFeX/output/probe"
+        "/workspace/worker/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-k1FFeX/output/probe"
       ],
       "returncode": 0,
       "elapsed_seconds": 0.20928678754717112,
@@ -210,7 +210,7 @@
     {
       "name": "probe",
       "argv": [
-        "/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-k1FFeX/output/probe"
+        "/workspace/worker/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-k1FFeX/output/probe"
       ],
       "returncode": 0,
       "elapsed_seconds": 0.013334929943084717,
@@ -288,5 +288,13 @@
     }
   ],
   "binary_sha256": "d749727ea198c8f0193793630a57bac3e2cc6befb904efbaf882e5353fb8f958",
-  "elapsed_seconds": 0.2306111678481102
+  "elapsed_seconds": 0.2306111678481102,
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "72342c7d50a90d7780e0fe8240299c70594d10cc77f3898a806c30b1730e314e",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

@@ -10,7 +10,7 @@ receipt `revision4/c03-install/INSTALL.json` under the release evidence root.
 C06 and C09 post-install-publication source fixes are imported but NOT_INSTALLED.
 Publication/tag1.0.78 remains pending. Earlier entries below are historical.
 The authoritative research roadmap/owner remain in
-`/home/ubu/projects/lay-syntax-agreement-20260929`; this owns deployment only.
+`/workspace/local/lay-syntax-agreement-20260929`; this owns deployment only.
 
 ## Facts and first missing transition
 
@@ -117,7 +117,7 @@ Source inspection and whitespace/format preparation are complete; executable
 proof, native per-class quality and resource measurement remain untested.
 Version surfaces are1.0.78, intended as an experimental GitHub prerelease.
 Accepted1.0.77 bytes/config are backed up at
-`/home/ubu/.cache/lay/development/ranker-release-20261004/ROLLBACK.json`.
+`/home/local-user/.cache/lay/development/ranker-release-20261004/ROLLBACK.json`.
 No installed bytes or process have changed.
 
 
@@ -125,7 +125,7 @@ No installed bytes or process have changed.
 
 Frozen archive9415fbfd65bee0a278a22aa2aeca2b1ed96535f23f4b15b3e3d7ac55a3cd6cc4
 (1444 files) staged at
-`/home/e/projects/lay-development-runner/ranker-release-20261004-jyCWP8`.
+`/workspace/worker/lay-development-runner/ranker-release-20261004-jyCWP8`.
 Independent held-source review: zero authority/source design blockers, no claim
 of native quality/latency. Architecture refresh PASS44.906s;8 canonical graph
 files delivered (optional vocabulary cache was not generated). An initial
@@ -133,7 +133,7 @@ delivery helper expected that optional cache and failed; graph execution itself
 had passed, and eight-file hash-verified delivery completed without rerunning it.
 Full gate FAIL50.270s at compile before test discovery: private morphology
 module access (E0603) and fixture `&&str` versus `Into<String>` (E0277).
-Receipt: `/home/ubu/.cache/lay/development/ranker-release-20261004/ATTEMPT1_FULL_EXECUTION.json`.
+Receipt: `/home/local-user/.cache/lay/development/ranker-release-20261004/ATTEMPT1_FULL_EXECUTION.json`.
 No functional test or quality percentage established; no live authority/bytes
 changed. Next exact revision fixes the interface/reference and adds the
 canonical inventory using the existing classifier and verifies it against actual
@@ -164,7 +164,7 @@ Independent diagnosis located this in cache.py:378/extract.py:4247–4310.
 Fix: preserve rejected graph/cache outside active source and rerun the existing
 wrapper with a fresh AST cache under the same resource guard. No manual
 capability edge, relaxed rule or runtime authority change is permitted.
-Receipt remains `/home/e/projects/lay-development-runner/ranker-release-20261004-r2-vriyGa/GRAPH_EXECUTION.json`;
+Receipt remains `/workspace/worker/lay-development-runner/ranker-release-20261004-r2-vriyGa/GRAPH_EXECUTION.json`;
 new attempt uses a separate GRAPH_REPAIR_EXECUTION.json.
 
 Native non-timing target logs report zero functional failures; all eleven new
@@ -185,7 +185,7 @@ script stopped later at lint: the new test function ended in uppercase `_C`.
 Only that cfg(test) identifier is renamed `_c`, with its canonical inventory
 row and ledger SHA updated; every assertion and production Rust byte remain
 unchanged. Test-name metadata is not a runtime algorithm or safety bypass.
-Full receipt: `/home/ubu/.cache/lay/development/ranker-release-20261004/revision2/FULL_EXECUTION.json`.
+Full receipt: `/home/local-user/.cache/lay/development/ranker-release-20261004/revision2/FULL_EXECUTION.json`.
 
 User explicitly now requests replacing the runtime with1.0.78 for their own
 manual test. Test-install is distinct from final release acceptance. Run the
@@ -217,7 +217,7 @@ in TEST_INSTALL_SCOPE.json, not promoted to full acceptance.
 Ten exact candidate binaries and two version surfaces installed atomically,
 loaded SHA parity verified for IME/daemon/L3/L11; global IBus PID270775,
 configuration and selected Lay source preserved. Exact rollback77 is retained.
-Receipt: /home/ubu/.cache/lay/development/ranker-release-20261004/INSTALL.json.
+Receipt: /home/local-user/.cache/lay/development/ranker-release-20261004/INSTALL.json.
 IME SHA:e64ccde4e7e495ac7ea4479c3f353fb4b64e54cc087be17ebe67daa31f33adac.
 Runtime bytes changed:true; ranking activated, authority/gesture/output
 contracts unchanged. Native quality percentages remain unmeasured.
@@ -301,7 +301,7 @@ Origin guard. No Firefox user preference or Lay route changed. Normal-profile
 physical testing resumes on the repaired observer; earlier setup BLOCKED rows
 remain BLOCKED. The temporary fresh-profile retry created no product proof.
 
-Evidence root: /home/ubu/.cache/lay/development/ranker-release-20261004/windows.
+Evidence root: /home/local-user/.cache/lay/development/ranker-release-20261004/windows.
 Owning audits: NATIVE_FAILURE_CAUSAL_AUDIT.md, CHROME_SHIFT_CAUSAL_AUDIT.md and
 ICON_READBACK_AUDIT.md; exact receipt paths/hashes are inside those files.
 Runtime authority contract: unchanged. Full release remains BLOCKED_LINT;
@@ -317,7 +317,7 @@ The existing real P2P transport test now invokes two production manual toggles
 and checks the native preedit surface, cursor, RU/EN property shape and wire
 member. It does not substitute a mocked property helper for this path.
 
-Remote run: `/home/e/projects/lay-development-runner/ranker-release-20261004-r3-ef2jV3`.
+Remote run: `/workspace/worker/lay-development-runner/ranker-release-20261004-r3-ef2jV3`.
 `C09_PROBE_FMT1.json` records fmt PASS, the changed native transport test PASS
 (24.028s), and the expected failure when only the old publication function is
 temporarily restored (7.503s). The source was restored exactly after that
@@ -330,7 +330,7 @@ at the same lexical prerequisite (`про` selects `просто` instead of
 process isolation, which this diagnostic command bypassed. The exact global
 cache/package contribution remains UNKNOWN; this FAIL receipt is not rewritten.
 The saved source audit is
-`/home/ubu/.cache/lay/development/ranker-release-20261004/revision3/TD121_ISOLATION_SOURCE_AUDIT.md`.
+`/home/local-user/.cache/lay/development/ranker-release-20261004/revision3/TD121_ISOLATION_SOURCE_AUDIT.md`.
 
 The unchanged R3 source then passed the existing hermetic focused runner:
 638/638 correctness tests, no canonical inventory drift or failures, 63.871s
@@ -723,7 +723,7 @@ transitions show word/native GNOME icon before next pair, correct next letter,
 first/second Tab exactly one space, held Shift. Qt held-Shift proof retains
 explicit Escape settlement, not every active-preedit shortcut scenario.
 Gost contenteditable setup BLOCKED before input by OWNER_BIND_TIMEOUT; this
-is not physical PASS. Exact receipt `/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V8_RUN_20261004T124423_bb1e553d2a8d/WIDE_MATRIX_V7_20261004T124423_bb1e553d2a8d.json`, binding BOUND;
+is not physical PASS. Exact receipt `/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V8_RUN_20261004T124423_bb1e553d2a8d/WIDE_MATRIX_V7_20261004T124423_bb1e553d2a8d.json`, binding BOUND;
 unconditional own device teardown and global IBus preservation confirmed.
 Live direct guard-entry tuple is still not exported; physical repair plus
 source/callback proofs establish this tested sequence, not all client states.
@@ -735,10 +735,10 @@ remains paused.
 ## Additional C03 physical/setup evidence 2026-10-04T10:02:45.851519+00:00
 
 Installed byte identity remains `a1bdffe…baee`. These results do not promote all-window acceptance.
-- `/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V9_RUN_20261004T124859_73b2e1520ed5/WIDE_MATRIX_V7_20261004T124859_73b2e1520ed5.json`: 0/0 PASS; 8 BLOCKED; BOUND, own teardown/global IBus preserved.
-- `/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V9_RUN_20261004T125101_558d61b342d8/WIDE_MATRIX_V7_20261004T125101_558d61b342d8.json`: 2/8 PASS; 0 BLOCKED; BOUND, own teardown/global IBus preserved.
-- `/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T125525_943d930b82f5/WIDE_MATRIX_V7_20261004T125525_943d930b82f5.json`: 0/0 PASS; 1 BLOCKED; BOUND, own teardown/global IBus preserved.
-- `/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T125719_5b9235682f7f/WIDE_MATRIX_V7_20261004T125719_5b9235682f7f.json`: 32/35 PASS; 0 BLOCKED; BOUND, own teardown/global IBus preserved.
+- `/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V9_RUN_20261004T124859_73b2e1520ed5/WIDE_MATRIX_V7_20261004T124859_73b2e1520ed5.json`: 0/0 PASS; 8 BLOCKED; BOUND, own teardown/global IBus preserved.
+- `/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V9_RUN_20261004T125101_558d61b342d8/WIDE_MATRIX_V7_20261004T125101_558d61b342d8.json`: 2/8 PASS; 0 BLOCKED; BOUND, own teardown/global IBus preserved.
+- `/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T125525_943d930b82f5/WIDE_MATRIX_V7_20261004T125525_943d930b82f5.json`: 0/0 PASS; 1 BLOCKED; BOUND, own teardown/global IBus preserved.
+- `/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T125719_5b9235682f7f/WIDE_MATRIX_V7_20261004T125719_5b9235682f7f.json`: 32/35 PASS; 0 BLOCKED; BOUND, own teardown/global IBus preserved.
 
 GNOME Text Editor fresh standalone X11 automatic/forced IBus: exact own-XID activation succeeds. Escape-clean setup cannot observe preedit/composition, so8cases BLOCKED before keys. Separate raw run firstTab PASS both fields; next3cases each fail already at Ctrl+A/Backspace setup: previous `почему ` loses one character, not entire field. Their Tab/held/DoubleShift actions were not reached. This is a shortcut/clear first-transition audit, not three independent functional regressions. Default Wayland is NOT_TESTED by X11 evidence.
 Gedit standalone X11 owner-tree discovery exceeds its bound before keyboard input:0executed/1BLOCKED. No partial tree accepted or user document touched.
@@ -748,9 +748,9 @@ Metadata-only capture `C03_SPACE_WIRE_20261004_A/CAPTURE_RECEIPT.json` observed1
 
 ## C03 fresh GNOME/manual and browser negative proof 2026-10-04T10:15:48.892466+00:00
 
-`/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T125951_4e2ac0f46807/WIDE_MATRIX_V7_20261004T125951_4e2ac0f46807.json`: fresh separate GNOME X11 automatic/forced IBus fields, only Double Shift case requested to avoid earlier clear cascade.0/2PASS. Pair1 AT-SPI text reports `gпривет`, RU native icon/source/engine correct; diagnostic physical nextKEY_F reports `gпривета`. Rendered pixels and committed/preedit separation remain UNKNOWN; this is a current accessible-text failure, not a proven committed-duplicate cause. Exact raw traces are under that receipt; source ownership/commit/preedit path audit follows. Own app/device cleanup and global IBus preservation confirmed.
+`/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T125951_4e2ac0f46807/WIDE_MATRIX_V7_20261004T125951_4e2ac0f46807.json`: fresh separate GNOME X11 automatic/forced IBus fields, only Double Shift case requested to avoid earlier clear cascade.0/2PASS. Pair1 AT-SPI text reports `gпривет`, RU native icon/source/engine correct; diagnostic physical nextKEY_F reports `gпривета`. Rendered pixels and committed/preedit separation remain UNKNOWN; this is a current accessible-text failure, not a proven committed-duplicate cause. Exact raw traces are under that receipt; source ownership/commit/preedit path audit follows. Own app/device cleanup and global IBus preservation confirmed.
 
-`/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T130939_2391832ad083/WIDE_MATRIX_V7_20261004T130939_2391832ad083.json`: browser forbidden-prefix proof in Chrome/Firefox input/textarea/contenteditable119PASS/120attempted,0BLOCKED. One reported FAIL at Chrome input after-word `@g` occurs already in initial mode settlement, before that token is typed; not a observed forbidden hint. Other119 checks preserve expected text and no observable IME preedit for digits/special prefixes in first/later words. No all120PASS claim or all-window promotion. Installed bytes remain C03 `a1bdffe…baee`. Runtime policy/authority unchanged; no model fit.
+`/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T130939_2391832ad083/WIDE_MATRIX_V7_20261004T130939_2391832ad083.json`: browser forbidden-prefix proof in Chrome/Firefox input/textarea/contenteditable119PASS/120attempted,0BLOCKED. One reported FAIL at Chrome input after-word `@g` occurs already in initial mode settlement, before that token is typed; not a observed forbidden hint. Other119 checks preserve expected text and no observable IME preedit for digits/special prefixes in first/later words. No all120PASS claim or all-window promotion. Installed bytes remain C03 `a1bdffe…baee`. Runtime policy/authority unchanged; no model fit.
 
 
 ## C06 observed-start append proof imported; NOT_INSTALLED — 2026-10-04T10:17:23.595665+00:00
@@ -783,7 +783,7 @@ bytes or authority policy changed by this source import. Research paused.
 
 ## C09 focused proof failure and bounded fixture replanning — 2026-10-04
 
-Actual continuation `/home/e/projects/lay-development-runner/ranker-release-20261004-c09-mode-continuation-O3I6VHDV/C09_FOCUSED_EXECUTION.json`: fmt PASS, 652 discovered, two actual native release callback positives PASS. The third negative fixture panicked at `context_owner.unwrap()` before its stale-owner assertion; fourth was not executed. `start_source_free_unknown` prepares but does not install engine authority. This is a fixture preparation failure, not a passing negative proof. Earlier temporary-borrow compiler failure is retained; no further unreported repair pass.
+Actual continuation `/workspace/worker/lay-development-runner/ranker-release-20261004-c09-mode-continuation-O3I6VHDV/C09_FOCUSED_EXECUTION.json`: fmt PASS, 652 discovered, two actual native release callback positives PASS. The third negative fixture panicked at `context_owner.unwrap()` before its stale-owner assertion; fourth was not executed. `start_source_free_unknown` prepares but does not install engine authority. This is a fixture preparation failure, not a passing negative proof. Earlier temporary-borrow compiler failure is retained; no further unreported repair pass.
 
 Explicit replan: retain the unchanged bounded C09 production proposal, use the existing activation-install path to establish an asserted live owner before negative corruption, and establish installed pending publication without draining it before transport-failure injection. Compare preparation through an actual release callback with the direct existing installation path; choose the latter for the transport-failure fixture to avoid falsely consuming the pending flag. Native SourceFree/Transfer positive fixtures retain actual production callback and output ordering. No new reducer/owner/callback/timer or bypass is added; all stale-owner and failed-transport assertions remain required. Controlled removal of the publication must fail a positive fixture. Four nonzero focused positives, existing canonical closure, original style policy and fresh graph/canon precede one combined IME build.
 
@@ -822,7 +822,7 @@ Latest user clarifies the live Firefox failure trigger: ordinary Tab works now, 
 
 ## Combined source gate first pass: style failure before canonical/build — 2026-10-04
 
-Actual frozen combined1458-file source stage `/home/e/projects/lay-development-runner/ranker-release-20261004-combined-c06-c09-0j6crwhh/PIPELINE_EXECUTION.json`: canonical inventory discovery PASS (all old rows literal,9 added), default strict original style Clippy FAIL at five concrete sites; no canonical correctness test or release build executed. Total53.91s, discovery29.95s. Findings: now-unused ObservationReceipt re-export after C09 consumer replacement; three C06 Option early-return let-else sites; one unnecessary &source argument in a borrowed-engine test helper. No runtime bytes/authority changed.
+Actual frozen combined1458-file source stage `/workspace/worker/lay-development-runner/ranker-release-20261004-combined-c06-c09-0j6crwhh/PIPELINE_EXECUTION.json`: canonical inventory discovery PASS (all old rows literal,9 added), default strict original style Clippy FAIL at five concrete sites; no canonical correctness test or release build executed. Total53.91s, discovery29.95s. Findings: now-unused ObservationReceipt re-export after C09 consumer replacement; three C06 Option early-return let-else sites; one unnecessary &source argument in a borrowed-engine test helper. No runtime bytes/authority changed.
 
 First mechanical repair pass is permitted: make the obsolete re-export test-only if still required by tests, replace the exact None-return sites with equivalent Option ?, and remove only the redundant test reference. No lint waiver or suppression is added, no semantic assertion weakened, and no owner/token/lease/display/decoder/ranker behavior changes. Candidate retention/ranks/false authority/deadlines/caches/packages/learning/concurrency/failure rollback remain semantically identical. Rebind exact changed bytes plus owning docs, continue the original two style commands then full selected canonical IME, mandatory graph/canon and onlyIME build. Reuse inventory discovery only if names/manifest semantics remain unchanged. No silent repair loop or zero-test PASS.
 
@@ -993,17 +993,17 @@ Decision `decisions/2026-10-04-preedit-suggestion-visual-boundary.json` records 
 
 ### Visual-boundary source proof and final pipeline freeze — 2026-10-04
 
-Root imported six remote-formatted files with exact SHA/mode0664, ROOT_FORMAT_IMPORT.json; only two files changed under rustfmt. Independent finite review of all six files and actual legacy raw-attribute assertion is PASS_WITH_LIMITS, zero blockers. Ten exact production-focused tests passed; controlled publisher suggestion_start=0 produced two required FAILs: direct publisher whole range0..6 instead of neutral0..2/hint2..6, and actual legacy wire whole0..3 instead of neutral0..1/hint1..3. Exact restored source hashes and modes produced2/2PASS. This is a controlled reproduction of the old rendering boundary, not a historical runtime rerun. Execution42.977s: `/home/ubu/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/focused/proof/FOCUSED_EXECUTION.json` SHAe966ca5ce38ad5b53798410f1bd8bc4de9793f824235169490a42f1c8f829b47. Original manifest/ledger remain unchanged.
+Root imported six remote-formatted files with exact SHA/mode0664, ROOT_FORMAT_IMPORT.json; only two files changed under rustfmt. Independent finite review of all six files and actual legacy raw-attribute assertion is PASS_WITH_LIMITS, zero blockers. Ten exact production-focused tests passed; controlled publisher suggestion_start=0 produced two required FAILs: direct publisher whole range0..6 instead of neutral0..2/hint2..6, and actual legacy wire whole0..3 instead of neutral0..1/hint1..3. Exact restored source hashes and modes produced2/2PASS. This is a controlled reproduction of the old rendering boundary, not a historical runtime rerun. Execution42.977s: `/home/local-user/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/focused/proof/FOCUSED_EXECUTION.json` SHAe966ca5ce38ad5b53798410f1bd8bc4de9793f824235169490a42f1c8f829b47. Original manifest/ledger remain unchanged.
 
 Final source freeze authorizes one fresh discovery retaining every original row/lane/isolation and adding only the two new visual tests, original default/research-tools style gates, nonzero canonical IME closure, mandatory graph/canon and ONLYIME release build on the guarded remote host. Installer and NoKeyboard owned-empty-Chrome wrapper were independently reviewed source-only,0blockers; prior2f813 exact rollback and all service/config/source identity checks preserved. Root alone executes any later installation/GUI. Wire/source facts do not certify Firefox rendering; current installed2f813 remains unchanged, physical pixels and changed-byte Tab/Backspace checks still NOT_TESTED. No transport, authority, model, ranking or architecture-canon change.
 
 
 ### Visual-boundary installed source and client final effects — 2026-10-04
 
-Original final source gates: fmt PASS2.732s, fresh discovery29.825s retains all2992 old rows/lane/isolation and adds exactly2, both original Clippy configurations PASS20.783s/21.670s, canonical655selected/executed/PASS0failed39.539s, mandatory graph/canon PASS. Parent pipeline records prebuild FileExistsError for reused TARGET_BEFORE.log, before any release Cargo. ROOT_BUILD_NAMESPACE_REPLAN authorizes only a fresh private build namespace with all1463 tested/generated hashes AND modes exact; original FAIL receipts retained. Actual ONLYIME release build194.991s / worker195.487s PASS, binary8,073,960bytes SHA8ef1f4de69a19d580bd0d9af1ff273294dc1b5ecff14f1f526ecbf9445440616. Build manifest `/home/ubu/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/final/delivery/BUILD_MANIFEST.json` SHA0f03cc78853010cd69f7a7d73924f5242a0161e61f79dfeb2ef9802d6596be8a; original remote manifest and exact five path translations preserved. Root imported exact10 graph/canonical files and checked all1463 source hashes/modes before installation; ROOT_EXACT_IMPORT.json. Inherited build-wrapper baseline/full-release labels are historical scope labels, not failures of these two measured style configurations and not an all-window release certificate.
+Original final source gates: fmt PASS2.732s, fresh discovery29.825s retains all2992 old rows/lane/isolation and adds exactly2, both original Clippy configurations PASS20.783s/21.670s, canonical655selected/executed/PASS0failed39.539s, mandatory graph/canon PASS. Parent pipeline records prebuild FileExistsError for reused TARGET_BEFORE.log, before any release Cargo. ROOT_BUILD_NAMESPACE_REPLAN authorizes only a fresh private build namespace with all1463 tested/generated hashes AND modes exact; original FAIL receipts retained. Actual ONLYIME release build194.991s / worker195.487s PASS, binary8,073,960bytes SHA8ef1f4de69a19d580bd0d9af1ff273294dc1b5ecff14f1f526ecbf9445440616. Build manifest `/home/local-user/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/final/delivery/BUILD_MANIFEST.json` SHA0f03cc78853010cd69f7a7d73924f5242a0161e61f79dfeb2ef9802d6596be8a; original remote manifest and exact five path translations preserved. Root imported exact10 graph/canonical files and checked all1463 source hashes/modes before installation; ROOT_EXACT_IMPORT.json. Inherited build-wrapper baseline/full-release labels are historical scope labels, not failures of these two measured style configurations and not an all-window release certificate.
 
-Root-only NoKeyboard owned-empty-Chrome installation PASS: `/home/ubu/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/install/INSTALL.json` SHA09a640c10040734e17a7fd29c01ebb126bf34bfdb0efec593c124f73d0d1ef77. Only existing IME channel reloaded; exact installed2f813 rollback saved and hashed. Daemon/L3/L11/globalIBus PIDs/bytes, config/input sources, extension/model packages remained unchanged during the transaction; no input protocol, ownership, SafetyGate, gesture or layout route changed. Subsequent root owned acceptance device attach/detach changes daemon PID only, bytes unchanged. Final read-only `/home/ubu/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/ROOT_FINAL_RUNTIME_HEALTH.json` SHA38dd1f41ebdc12b5f2888c19c9a0e12f2efa6d467ca08329abce1086839f0ac1: installed and loaded8ef1 match, IME2598471/daemon2637875/L3 3296775/L11 3296699/globalIBus270775, GNOME/IBus coherent, sources/config preserved.
+Root-only NoKeyboard owned-empty-Chrome installation PASS: `/home/local-user/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/install/INSTALL.json` SHA09a640c10040734e17a7fd29c01ebb126bf34bfdb0efec593c124f73d0d1ef77. Only existing IME channel reloaded; exact installed2f813 rollback saved and hashed. Daemon/L3/L11/globalIBus PIDs/bytes, config/input sources, extension/model packages remained unchanged during the transaction; no input protocol, ownership, SafetyGate, gesture or layout route changed. Subsequent root owned acceptance device attach/detach changes daemon PID only, bytes unchanged. Final read-only `/home/local-user/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/ROOT_FINAL_RUNTIME_HEALTH.json` SHA38dd1f41ebdc12b5f2888c19c9a0e12f2efa6d467ca08329abce1086839f0ac1: installed and loaded8ef1 match, IME2598471/daemon2637875/L3 3296775/L11 3296699/globalIBus270775, GNOME/IBus coherent, sources/config preserved.
 
-Physical final effects: new-byte V17 48executed/45PASS/3FAIL76.319s; three Firefox after-word partial-delete cases stop before actual Tab because the same full-composition event remains unchanged. Exact preexisting V18 retained-full observer separately executes those three and yields3/3PASS8.447s. Root union covers48unique successful scenarios,8each in Firefox/Chrome input/textarea/editable; never claim one uninterrupted48PASS or rewrite oldFAIL. Each successful physical Tab observes exact current surface plus one ASCII space, ended composition, collapsed correct UTF16 caret and same owned field. Aggregate `/home/ubu/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/ROOT_TAB_BACKSPACE_ACCEPTANCE.json` SHAf61ea8e6593945122c2c30c472cc75d4415a6affd7f0dd2a3f83fceb8066ea3b binds the two immutable receipts and8ef1 bytes.
+Physical final effects: new-byte V17 48executed/45PASS/3FAIL76.319s; three Firefox after-word partial-delete cases stop before actual Tab because the same full-composition event remains unchanged. Exact preexisting V18 retained-full observer separately executes those three and yields3/3PASS8.447s. Root union covers48unique successful scenarios,8each in Firefox/Chrome input/textarea/editable; never claim one uninterrupted48PASS or rewrite oldFAIL. Each successful physical Tab observes exact current surface plus one ASCII space, ended composition, collapsed correct UTF16 caret and same owned field. Aggregate `/home/local-user/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/ROOT_TAB_BACKSPACE_ACCEPTANCE.json` SHAf61ea8e6593945122c2c30c472cc75d4415a6affd7f0dd2a3f83fceb8066ea3b binds the two immutable receipts and8ef1 bytes.
 
 Firefox rendered decoration remains UNKNOWN, awaiting user observation requested asynchronously after physical input cleanup. Wire proof establishes neutral typed prefix and gray/single-underlined untyped suffix; payload/cursor/owned composition are intentionally unchanged. Four bounded baseline capture attempts never sent Tab and never established pixels: first helper print injection error0cases; gnome-screenshot returns0/noPNG; ordinary application name already owned; normal direct ScreenshotWindow raises an error. Last stderr is truncated, so exact GNOME rejection cause is UNKNOWN. ROOT_SCREENSHOT_TRANSPORT_REPLAN, ROOT_DIRECT_SCREENSHOT_API_REPLAN and ROOT_CAPTURE_STOPPED preserve failures; no screenshot permission/unsafe-mode or trusted owner change. All owned fields/devices closed and globalIBus preserved. Source/Tab final-effect PASS does not establish visual Firefox, private WhatsApp/GitHub, other windows, complete ranker quality or remaining Double Shift acceptance. Research stays paused. Final owning-document AST/source binding refresh follows without tests/build/runtime change.

@@ -6,7 +6,7 @@ correction-quality verdicts remain `NOT_TESTED`.
 
 ## What ran
 
-Exact command: `bash /home/ubu/.cache/lay/td121-real-ibus-imX7Og/launch.sh`.
+Exact command: `bash /home/local-user/.cache/lay/td121-real-ibus-imX7Og/launch.sh`.
 Installed `/usr/bin/ibus-daemon` was launched only inside separate PID/net/IPC/
 mount namespaces, read-only host filesystem, private session bus, private XDG
 directories and socket. No Lay binary, keyboard/uinput, desktop bus, global
@@ -50,7 +50,7 @@ It does not authorize equality/TTL-only transfer or an increased Space timeout.
 
 ## Artifacts
 
-Private root `/home/ubu/.cache/lay/td121-real-ibus-imX7Og`;
+Private root `/home/local-user/.cache/lay/td121-real-ibus-imX7Og`;
 unit `lay-td121-real-ibus-imX7Og.service`, invocation
 `910d7c6f646c4a1cb86e455f4b62b751`.
 
@@ -70,7 +70,7 @@ after the concurrent TD-120 source patch settles.
 ## Header-contract follow-up (separate immutable run)
 
 Exact command:
-`bash /home/ubu/.cache/lay/td121-real-ibus-headers-xJm4MG/launch.sh`.
+`bash /home/local-user/.cache/lay/td121-real-ibus-headers-xJm4MG/launch.sh`.
 Same installed IBus hash and isolation/resource limits, fresh private root;
 unit `lay-td121-headers-xJm4MG.service`.23/23 cases passed: the previous
 bootstrap/20 ABA checks, actual sender-header spoof attempt and callback-header

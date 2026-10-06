@@ -5,7 +5,7 @@
       "id": "live-config-baseline",
       "kind": "file",
       "mode": "0664",
-      "path": "/home/ubu/.config/lay/config.json",
+      "path": "/home/local-user/.config/lay/config.json",
       "sha256": "0b080219015f3567125b75420319df0156243686445188bc44584b57849d531b",
       "size_bytes": 2978
     }
@@ -41,5 +41,13 @@
   "schema": "nanda.implementation-preflight.v1",
   "source_receipts": [],
   "task_id": "lay-menu-settings-1.0.27",
-  "verdict": "READY_TO_IMPLEMENT"
+  "verdict": "READY_TO_IMPLEMENT",
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "1dd7c895f0875d376cd47e599b752a18382fe93d807c954d02c13ebf7144464d",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

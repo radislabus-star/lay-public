@@ -221,7 +221,7 @@ The exact staged source identities at the passing run were:
 
 The tar was made with `--mtime=now`, then rehashed after extraction into the
 independent remote proof tree
-`/home/e/projects/lay-1066-controller-proof-pYa18kUp`. Remote-only command:
+`/workspace/worker/lay-1066-controller-proof-pYa18kUp`. Remote-only command:
 
 ```text
 LAY_RESOURCE_PROFILE=dedicated-20cpu CARGO_BUILD_JOBS=20 RUST_TEST_THREADS=1 \

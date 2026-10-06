@@ -9,7 +9,7 @@ to install and is NOT a full release PASS or a TD-120/TD-121 runtime verdict.
 
 ## Exact scope and artifact binding
 
-Worktree: `/home/ubu/projects/lay-tech-debt-20260831`.
+Worktree: `/workspace/local/lay-tech-debt-20260831`.
 Staging root: `/tmp/lay-release-1.0.66-controller-prep.5funTP`.
 
 Read scope:
@@ -30,7 +30,7 @@ Read scope:
   instructions. Its broad results supplied no additional adaptation evidence;
   the verdict uses direct source comparison. No graph output was written.
 - Remote proof file hashes, terminal log excerpts, and per-suite success counts
-  over read-only SSH to `e@192.168.3.94`.
+  over read-only SSH to `builder@worker.example`.
 
 Independently verified SHA-256 values:
 
@@ -84,7 +84,7 @@ installation or rollback. This distinction is preserved in the verdict.
 ## Independently inspected remote proof
 
 Remote proof root:
-`/home/e/projects/lay-1066-controller-proof-pYa18kUp`.
+`/workspace/worker/lay-1066-controller-proof-pYa18kUp`.
 
 - Initial `controller-tests.log`: 33 tests, 32 passed, 1 pre-existing opt-in
   systemd integration skip, 2.171 seconds.

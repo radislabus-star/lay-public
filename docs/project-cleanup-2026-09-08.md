@@ -11,14 +11,14 @@
 и продолжить их после очистки. Процент файлов, байтов и строк Rust считаем
 раздельно; один показатель не заменяет другой.
 
-- Исходное рабочее дерево: `/home/ubu/projects/lay-tech-debt-20260831`.
-- Новая копия: `/home/ubu/projects/lay-cleanup-20260908`, ветка
+- Исходное рабочее дерево: `/workspace/local/lay-tech-debt-20260831`.
+- Новая копия: `/workspace/local/lay-cleanup-20260908`, ветка
   `codex/cleanup-20260908`.
 - Полный исходный Git snapshot: `cb40ef29f6c78c97757dd0059c0ba798cb1f0789`.
   Он включает незакоммиченные изменения исходной папки.
 - До очистки: 6 173 отслеживаемых и неигнорируемых файлов; в `src/`
   697 Rust-файлов, 300 913 физических строк с комментариями и тестами.
-- Независимый архив: `/home/ubu/.local/state/lay/project-snapshots/20260908-before-cleanup/project-files.tar`.
+- Независимый архив: `/home/local-user/.local/state/lay/project-snapshots/20260908-before-cleanup/project-files.tar`.
   SHA-256: `e07e4e5d9f38917538571b268abdb461869a86fa05bbbbc94b01f0d75ac41996`.
   Все 6 173 файла проверены по содержимому, новая копия также проверена по
   содержимому, режимам и ссылкам. Исходная папка сохранена целиком.
@@ -184,7 +184,7 @@ directory/glob и generic manifest readers. В действующем L2 кон�
 Manifest SHA-256:
 `08c8840941e23fa4ba704ce555eb0d0628add2a4638856300b00dc95880885af`.
 Exact execution receipt:
-`/home/ubu/.local/state/lay/project-snapshots/20260908-before-cleanup/cleanup-execution.json`.
+`/home/local-user/.local/state/lay/project-snapshots/20260908-before-cleanup/cleanup-execution.json`.
 
 Первая попытка остановилась после 4 036 удалений на архивном каталоге с
 режимом 0555; неожиданных удалений не было. Все 764 оставшихся файла повторно
@@ -221,8 +221,8 @@ infrastructure failures 0. Manifest total 2 710: performance 11 и ignored 15
 проверки с одним штатным optional skip; fmt PASS.
 Worker time 377,912 s, correctness/package stage 373,923 s. Это measured
 время данного запуска; сравнения ускорения разработки не проводилось.
-Local: `/home/ubu/.cache/lay/development/run-xi6v16vi/{RESULT.json,run.log,request.json}`.
-Remote: `/home/e/projects/lay-development-runner/run-2FzzMW/`.
+Local: `/home/local-user/.cache/lay/development/run-xi6v16vi/{RESULT.json,run.log,request.json}`.
+Remote: `/workspace/worker/lay-development-runner/run-2FzzMW/`.
 
 Postcheck recorder v1 остановился **до первой проверки**: Python 3.10 не имеет
 `hashlib.file_digest`. Использован chunked SHA-256 с тем же expected hash,
@@ -250,10 +250,10 @@ physical-input acceptance, качество модели, latency/RSS и product
 После этой записи выполняется финальный remote graph refresh, чтобы сама
 документация результата вошла в граф; итоговый source binding и receipt
 остаются canonical. Его точный лог:
-`/home/e/projects/lay-development-runner/run-2FzzMW/cleanup-final-graph.log`.
+`/workspace/worker/lay-development-runner/run-2FzzMW/cleanup-final-graph.log`.
 Итоговые счётчики и новое дерево файлов сохраняются рядом с исходным архивом
 в `cleanup-final-metrics.json` и в
-`/home/ubu/Загрузки/lay-cleaned-tree-with-lines-2026-09-08.txt`.
+`/home/local-user/Загрузки/lay-cleaned-tree-with-lines-2026-09-08.txt`.
 
 Копии компактных результатов: `cleanup-evidence/` рядом с исходным tar.
 Source baseline, установленный IME, все текущие inputs и незавершённая

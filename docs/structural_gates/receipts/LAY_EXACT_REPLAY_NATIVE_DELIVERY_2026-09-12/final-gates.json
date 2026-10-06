@@ -4,8 +4,8 @@
   "date": "2026-09-12",
   "runtime_authority_changed": false,
   "source_snapshot": {
-    "local_root": "/home/ubu/.cache/lay/development/exact-replay-native-final2-20260912-F6zFecGQ",
-    "remote_root": "/home/e/projects/lay-development-runner/exact-replay-native-final2-F6zFecGQ",
+    "local_root": "/home/local-user/.cache/lay/development/exact-replay-native-final2-20260912-F6zFecGQ",
+    "remote_root": "/workspace/worker/lay-development-runner/exact-replay-native-final2-F6zFecGQ",
     "source_head": "83ba0f42db5c87cdc4f17abf42197396566cb05b",
     "archive_sha256": "84d194c04055b000c55f380cd8148a7a37af8bf9a2a114765f44fff7c5eff58d",
     "request_sha256": "9c0c42081c3e649d5215082a1f30a1391e19bb229540392b0bbcf73c365c1dbc",
@@ -78,8 +78,8 @@
     "resource_profile": "dedicated-20cpu",
     "returncode": 0,
     "log_sha256": "dec4f7062731e8b71f831058cb40b67a1635bfbf6af8a82eb164fb5f88b37e2b",
-    "remote_binary": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
-    "local_candidate": "/home/ubu/.cache/lay/development/exact-replay-native-final2-20260912-F6zFecGQ/candidate/lay-ibus-engine",
+    "remote_binary": "/workspace/worker/lay-td119-gate-v1/target/release/lay-ibus-engine",
+    "local_candidate": "/home/local-user/.cache/lay/development/exact-replay-native-final2-20260912-F6zFecGQ/candidate/lay-ibus-engine",
     "binary_sha256": "7cfe11ade4698efc822cc7a01cb7224753e2a7bc78df3844f8c7ef4d3a454d79",
     "bytes": 7813088,
     "rejected_invocation": {
@@ -90,7 +90,7 @@
   },
   "activation_review": {
     "status": "SECOND_REVIEW_PENDING_NOT_EXECUTED",
-    "directory": "/home/ubu/.cache/lay/development/exact-replay-native-final2-20260912-F6zFecGQ/activation-review",
+    "directory": "/home/local-user/.cache/lay/development/exact-replay-native-final2-20260912-F6zFecGQ/activation-review",
     "controller_sha256": "aeae71b8a4d60a840bc04fb2923c407925040e6d7580038eff6e1b9533adfb30",
     "passive_capture_sha256": "d8309ed007ffc0559cd8013f2a6ccac918d0e0e00f2516feb3a3a372408c4ddd",
     "readme_sha256": "34064de9be364bdffb6717777eaff67422ed2e05b3a16579726ebd5ac3991898",
@@ -103,5 +103,13 @@
     "post-replay client surrounding-text equality",
     "live latency or RSS",
     "answer quality"
-  ]
+  ],
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "013a8fcf3b349f1f8926541cdcd27713d3233fb4abcdbd4db10d17f617825a6b",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

@@ -9,7 +9,7 @@
   "predecessor": {
     "task": "Browser-owned-Reset-release-1.0.74",
     "binding": "tech_debt/evidence/browser-owned-reset-release-composition-successor.json",
-    "binding_sha256": "ec1b220996ec93122f0767180328457444438d70f8d0317cd5638d136042e96f",
+    "binding_sha256": "af170d458c6b09539f997896b870155ca35a2e44f85c890507e1b003dab05758",
     "path": "src/bin/lay_ibus_engine/composition_commit.rs",
     "sha256": "c7e8f604ced77488302e510bfb4c3df87ed05ac60efef67e78b568a4fe769358",
     "mode": "0664"
@@ -20,15 +20,15 @@
     "mode": "0664"
   },
   "source_proof": {
-    "red_receipt": "/home/ubu/.cache/lay/development/run-lq3ona66/RESULT.json",
+    "red_receipt": "/home/local-user/.cache/lay/development/run-lq3ona66/RESULT.json",
     "red_receipt_sha256": "7c58a6acbcd334eab49e763d16c765b64c7dc1f4bd99b17088514867e3d58228",
-    "green_receipt": "/home/ubu/.cache/lay/development/run-i_34q96o/RESULT.json",
+    "green_receipt": "/home/local-user/.cache/lay/development/run-i_34q96o/RESULT.json",
     "green_receipt_sha256": "c56afe4a611064c141ea10dfa22587881453290054d109f7697d15f0f0a21350",
-    "gost_owned_preedit_red_receipt": "/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-red-test.log",
+    "gost_owned_preedit_red_receipt": "/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-red-test.log",
     "gost_owned_preedit_red_receipt_sha256": "f099e31027396576fd27c1e301df223eab137d15b1e7fc23ef3880b77d2cba14",
-    "gost_owned_preedit_green_receipt": "/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-green-test.log",
+    "gost_owned_preedit_green_receipt": "/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-green-test.log",
     "gost_owned_preedit_green_receipt_sha256": "905c19b49be8bac7ae0c540cb380f053e8f0fc9f1c49f35c6da76e128e08a245",
-    "gost_owned_preedit_safety_receipt": "/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-safety-tests.log",
+    "gost_owned_preedit_safety_receipt": "/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-safety-tests.log",
     "gost_owned_preedit_safety_receipt_sha256": "4b043353d311f8a8c096f2a1a9851e56acc8b73cfb49cb6c782ca74088c3e832"
   },
   "review": {
@@ -38,5 +38,17 @@
     "state": "NOT_TESTED"
   },
   "source_append_authority_changed": true,
-  "installed_runtime_authority_changed": false
+  "installed_runtime_authority_changed": false,
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "05af0c186eddc6d21ad24aff519aa502e264790877109df8831aaa80790618f4",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot",
+    "original_references": {
+      "/predecessor/binding_sha256": "ec1b220996ec93122f0767180328457444438d70f8d0317cd5638d136042e96f"
+    },
+    "reference_semantics": "binding/report hashes identify current public files; original references retained here; runtime source SHA256 and verdict fields unchanged"
+  }
 }

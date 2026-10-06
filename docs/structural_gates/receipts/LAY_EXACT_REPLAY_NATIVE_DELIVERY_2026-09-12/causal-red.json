@@ -82,8 +82,8 @@
   "remote_check": {
     "command": "python3 scripts/dev-check.py check --target bin:lay-ibus-engine",
     "resource_profile": "dedicated-20cpu",
-    "local_receipt": "/home/ubu/.cache/lay/development/run-wb2os2hm",
-    "remote_run": "/home/e/projects/lay-development-runner/run-eRS2o6",
+    "local_receipt": "/home/local-user/.cache/lay/development/run-wb2os2hm",
+    "remote_run": "/workspace/worker/lay-development-runner/run-eRS2o6",
     "source_archive_sha256": "7d7c61e89fc8124a2c7c02b49d4d1781164619308afbfd28b0a5ce739700037d",
     "request_sha256": "0cd30099427e0b9a4a68e16cc9ebce2e6e82d354d5c5c7b58e8c9e4beb61deca",
     "result_sha256": "32450c91621253b9652fc74e36477367ee3c683ceaabbae3064338e34ee38050",
@@ -107,8 +107,8 @@
     "desired_native_delivery_verdict": "RED"
   },
   "predecessor": {
-    "local_receipt": "/home/ubu/.cache/lay/development/run-2am3tq7_",
-    "remote_run": "/home/e/projects/lay-development-runner/run-uenZNn",
+    "local_receipt": "/home/local-user/.cache/lay/development/run-2am3tq7_",
+    "remote_run": "/workspace/worker/lay-development-runner/run-uenZNn",
     "status": "BUILD_FAILED_E0716_NO_TEST_EXECUTION_NOT_ACCEPTANCE"
   },
   "not_tested": [
@@ -119,5 +119,13 @@
     "physical GNOME Text Editor final visible text",
     "installed runtime",
     "latency, RSS, package size"
-  ]
+  ],
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "9d120046a9f9113cf8e7387730a9779ed02e91cca52b77745ba2839868052f9e",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

@@ -8,8 +8,8 @@ must exclude them. Every run request owns its complete source snapshot.
 ## Public command and resources
 
 All execution below used `python3 scripts/dev-check.py ...` from
-`/home/ubu/projects/lay-tech-debt-20260831` and the configured SSH worker
-`e@192.168.3.94`. Local activity was source inspection/snapshot transfer only.
+`/workspace/local/lay-tech-debt-20260831` and the configured SSH worker
+`builder@worker.example`. Local activity was source inspection/snapshot transfer only.
 Heavy execution: existing host lease, dedicated-20cpu, jobs20, Rust test
 threads1, CPU2000%, MemoryHigh24G/Max28G, swap1G, Tasks512, target<=12GiB.
 Private client retained CPU200%,1536M,swap0,Tasks128,90s.
@@ -33,8 +33,8 @@ not Python3.11-only APIs or a new TOML dependency.
 - Final PID observer RED: bwrap and Python argument matches both fail the
   new negative assertion. GREEN12/12 harness tests after the exact-token fix.
 
-Local run prefix: `/home/ubu/.cache/lay/development/`.
-Remote accepted run prefix: `/home/e/projects/lay-development-runner/`.
+Local run prefix: `/home/local-user/.cache/lay/development/`.
+Remote accepted run prefix: `/workspace/worker/lay-development-runner/`.
 
 ## Actual focused Rust check
 
@@ -64,7 +64,7 @@ compare its time to the old399-test run (different exclusions/environment).
 ## Actual repository-owned client
 
 Command: `python3 scripts/dev-check.py client --client-config
-/home/e/.cache/lay/td124-client-config.json`.
+/home/worker/.cache/lay/td124-client-config.json`.
 Candidate release binary SHA:
 `6c480f399c62e0979b409c031c7669d74296a4c78be94082904d3cc163154ba3`.
 Dependency manifest SHA:
@@ -103,7 +103,7 @@ artifacts. First-vs-warm timings are not an old-vs-new workflow benchmark.
 
 Final remote gate command (inside the same existing guarded profile):
 `scripts/check-lay-tests.sh self-test && scripts/update-architecture-graph.sh`.
-Executed from `/home/e/projects/lay-development-runner/workspace`.
+Executed from `/workspace/worker/lay-development-runner/workspace`.
 
 - Final tooling aggregate83discovered,82passed,1optional real-cgroup skip,
   0failures,0.945s. Architecture-script suites26/26 and2/2 passed separately.
@@ -111,7 +111,7 @@ Executed from `/home/e/projects/lay-development-runner/workspace`.
   and `lay architecture check OK`.
 -814 sources yielded no nodes (mostly JSON/documents); AST refresh is not
   semantic documentation coverage. Existing file-size advisories remain.
-- Gate log `/home/ubu/.cache/lay/td124-final/td124-final-gates.log`, SHA
+- Gate log `/home/local-user/.cache/lay/td124-final/td124-final-gates.log`, SHA
   `db15e60c6135ee64a83e414e9e23661be1a2378b8839a62ba55a2e471add15ad`.
 - Cargo cache7,709,732,864bytes of12,884,901,888 budget after focused checks.
 - Local production PIDs remain IBus4715,daemon3453123,IME3453154.

@@ -23,7 +23,7 @@
   "owning_document": "docs/architecture/runtime-stabilization-2026-09-26.md",
   "source_scope": "One CompositionState proof field reuses ManagedWordStartWitness and existing boundary constructor. Live admission token remains mandatory; exact-refresh capability alone remains insufficient. Existing manual/committed-tail/atomic/terminal/verifier paths are unchanged.",
   "measured_evidence": {
-    "path": "/home/ubu/.cache/lay/development/ranker-release-20261004/windows/FIREFOX_SECOND_WORD_TAB_CAUSAL_AUDIT.md",
+    "path": "/home/local-user/.cache/lay/development/ranker-release-20261004/windows/FIREFOX_SECOND_WORD_TAB_CAUSAL_AUDIT.md",
     "sha256": "36a7a47904ec4b0d9a115b7e5b85f2a75604fef08c9a8a2215233317bfd749c9",
     "scope": "Installed C09 bytes; exact grant-vector refusal not directly serialized."
   },
@@ -39,5 +39,13 @@
   "runtime_bytes_changed": false,
   "rollback": "Remove only the isolated C06 proof field/capture/revalidator/test additions, restore the existing witness constructor and exact-refresh append refusal, preserving all C03/C09 changes.",
   "verification": "Eleven combined owned-preedit focused PASS, controlled old-predicate failures and restored PASS; final canonical653/653 and both original style configurations PASS. This does not certify changed-byte physical fields.",
-  "record_format_repair": "2026-10-04: required guard schema/fields added; previous historical fields, design and guard preserved. No runtime deployment or authority change."
+  "record_format_repair": "2026-10-04: required guard schema/fields added; previous historical fields, design and guard preserved. No runtime deployment or authority change.",
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "f333a72466afeda4f59fa349f32bfe57a4494dd4bd3bfc9ca21a22b7df034c26",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

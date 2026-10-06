@@ -59,10 +59,10 @@ resource measurements and client-visible restoration. No proof has run yet.
 The helper is staged outside the repository source tree so the concurrent
 TD-120 checkpoint does not bind uncommitted TD-121 source into its graph:
 
-`/home/ubu/.cache/lay/td121-prewire-7iGwHB/context_admission.rs`
+`/home/local-user/.cache/lay/td121-prewire-7iGwHB/context_admission.rs`
 
 with sibling modules under
-`/home/ubu/.cache/lay/td121-prewire-7iGwHB/context_admission/`.
+`/home/local-user/.cache/lay/td121-prewire-7iGwHB/context_admission/`.
 There are no copies under `src/bin/lay_ibus_engine/` yet.
 
 Implemented staged pure-helper pieces:
@@ -135,7 +135,7 @@ staged source, not in the repository checkout:
 
 Local proof harness and artifacts:
 
-- harness: `/home/ubu/.cache/lay/td121-proof-local-uDNdLD52/`;
+- harness: `/home/local-user/.cache/lay/td121-proof-local-uDNdLD52/`;
 - fresh archive: `td121-proof.tar`, SHA-256
   `a8400bcc56cc82822a685d4e64916ebe71602db234b8dcec458c4f11ae39030b`;
 - final transcript: `td121-test-zbus-5.15.0.log`, SHA-256
@@ -143,8 +143,8 @@ Local proof harness and artifacts:
 
 Remote extracted proof crate and matching transcript:
 
-- `/home/e/projects/td121-proof-JGik2wUq/` on `e@192.168.3.94`;
-- `/home/e/projects/td121-proof-JGik2wUq/td121-test-zbus-5.15.0.log`;
+- `/workspace/worker/td121-proof-JGik2wUq/` on `builder@worker.example`;
+- `/workspace/worker/td121-proof-JGik2wUq/td121-test-zbus-5.15.0.log`;
 - source and transcript SHA-256 values were checked after transfer and matched
   the local artifacts.
 
@@ -158,24 +158,24 @@ Exact static check:
 
 ```bash
 rustfmt --edition 2021 --check \
-  /home/ubu/.cache/lay/td121-prewire-7iGwHB/context_admission.rs \
-  /home/ubu/.cache/lay/td121-prewire-7iGwHB/context_admission/ordered_merge.rs \
-  /home/ubu/.cache/lay/td121-prewire-7iGwHB/context_admission/rendezvous.rs \
-  /home/ubu/.cache/lay/td121-prewire-7iGwHB/context_admission/tests.rs
+  /home/local-user/.cache/lay/td121-prewire-7iGwHB/context_admission.rs \
+  /home/local-user/.cache/lay/td121-prewire-7iGwHB/context_admission/ordered_merge.rs \
+  /home/local-user/.cache/lay/td121-prewire-7iGwHB/context_admission/rendezvous.rs \
+  /home/local-user/.cache/lay/td121-prewire-7iGwHB/context_admission/tests.rs
 ```
 
 Exact final remote proof command, run from the extracted proof crate:
 
 ```bash
-cd /home/e/projects/td121-proof-JGik2wUq
+cd /workspace/worker/td121-proof-JGik2wUq
 env \
   LAY_RESOURCE_PROFILE=dedicated-20cpu \
   CARGO_BUILD_JOBS=20 \
   RUST_TEST_THREADS=1 \
-  CARGO_TARGET_DIR=/home/e/projects/lay-td119-gate-v1/target \
-  /home/e/projects/lay-td120-121-SUdh2I/scripts/lay-resource-guard.sh -- \
-  /home/e/projects/lay-td120-121-SUdh2I/scripts/cargo-guard.sh \
-  test --manifest-path /home/e/projects/td121-proof-JGik2wUq/Cargo.toml -- \
+  CARGO_TARGET_DIR=/workspace/worker/lay-td119-gate-v1/target \
+  /workspace/worker/lay-td120-121-SUdh2I/scripts/lay-resource-guard.sh -- \
+  /workspace/worker/lay-td120-121-SUdh2I/scripts/cargo-guard.sh \
+  test --manifest-path /workspace/worker/td121-proof-JGik2wUq/Cargo.toml -- \
   --test-threads=1
 ```
 
@@ -343,9 +343,9 @@ independent review, release/install/push and graph refresh.
 ## Adapter implementation and controlled proof (2026-09-06)
 
 The admitted pre-code slice is now implemented and frozen outside the
-repository at `/home/ubu/.cache/lay/td121-prewire-7iGwHB/`. The exact-source
+repository at `/home/local-user/.cache/lay/td121-prewire-7iGwHB/`. The exact-source
 handoff is
-`/home/ubu/.cache/lay/td121-prewire-7iGwHB/FROZEN_STAGE_MANIFEST.md`.
+`/home/local-user/.cache/lay/td121-prewire-7iGwHB/FROZEN_STAGE_MANIFEST.md`.
 Repository source, Cargo files, README and graph artifacts were not changed;
 `runtime_authority_changed=false`.
 
@@ -380,15 +380,15 @@ Result: **30/30 passed** in 0.04 seconds: 25 reducer/merge/rendezvous cases and
 5 controlled adapter p2p cases.
 
 - Local immutable log:
-  `/home/ubu/.cache/lay/td121-proof-local-x3YPura4/td121-adapter-test-zbus-5.15.0.log`
+  `/home/local-user/.cache/lay/td121-proof-local-x3YPura4/td121-adapter-test-zbus-5.15.0.log`
 - Log SHA-256:
   `b56a1d7ec2d5b3f465e07c37d192a0bf154b971c787e437c759f108779e84300`
 - Exact proof archive:
-  `/home/ubu/.cache/lay/td121-proof-local-x3YPura4/td121-proof.tar`
+  `/home/local-user/.cache/lay/td121-proof-local-x3YPura4/td121-proof.tar`
 - Archive SHA-256:
   `de0ca6a875fcd86a9bdd4838615c2bd7e65b5387145cee253d1696ea3bf6be4a`
 - Remote tree and log:
-  `/home/e/projects/td121-proof-XU19ZyCn/`
+  `/workspace/worker/td121-proof-XU19ZyCn/`
 
 The proof-only Cargo manifest enables `bus-impl` so the controlled peer can
 assign and route explicit bus-style headers; that feature is not required by the

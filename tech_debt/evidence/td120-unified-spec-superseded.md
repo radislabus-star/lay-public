@@ -236,7 +236,7 @@ IME regression class; отсутствие suppression само по себе н
 
 ## Проверки и передача
 
-- Локально Cargo не запускать. Remote: `e@192.168.3.94`; из отдельного checkout
+- Локально Cargo не запускать. Remote: `builder@worker.example`; из отдельного checkout
   с проверенной source parity, через `scripts/cargo-guard.sh` и resource profile
   выделенного хоста. Не использовать unscoped `cargo test`.
 - Focused `--bin lay-ibus-engine` по новым тестовым группам, существующие

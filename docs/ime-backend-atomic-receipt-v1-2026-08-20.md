@@ -58,10 +58,10 @@ cursor-bearing committed-tail plan
 
 Source owners:
 
-- `/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/composition_commit.rs`
-- `/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs`
-- `/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/committed_tail.rs`
-- `/home/ubu/projects/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs`
+- `/workspace/local/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/composition_commit.rs`
+- `/workspace/local/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/state.rs`
+- `/workspace/local/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/committed_tail.rs`
+- `/workspace/local/lay-l1-exact-peak-search/src/bin/lay_ibus_engine/ibus_interface.rs`
 
 The standard IBus protocol defines `CommitText`, `DeleteSurroundingText`,
 `UpdatePreeditText` and `ForwardKeyEvent` as distinct signals. An unmodified

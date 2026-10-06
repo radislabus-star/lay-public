@@ -3,6 +3,6 @@
   "failures": [],
   "manifest_sha256": "bc860479bdbfb88c7e7b69c4dffc2dc0b35c2664846fecf70019e54e21331be0",
   "observation_path": "tech_debt/evidence/v28-ru-en-zero-failure-observation-v1.json",
-  "observation_sha256": "8048cf822faf8a64928a7fa9131d625331a0ca4a187153588fe7f85da793a384",
+  "observation_sha256": "0bcddcfabdb78fd2bbbaa8d37222eb076eed490a9b805e73dc4a73ccc99ecf3c",
   "schema": "lay.test-known-failures.v1"
 }

@@ -178,7 +178,7 @@ config value is reconstructed from `original: &str`. The same borrowed frame
 is carried through `ActiveCompositionAutocorrectRequest`, `InputGateRequest`
 and `CorrectionRequest`. Every non-IME caller explicitly supplies `None`.
 
-Measured on `e@192.168.3.94` through `scripts/cargo-guard.sh`:
+Measured on `builder@worker.example` through `scripts/cargo-guard.sh`:
 
 ```text
 cargo check --lib --bin lay-ibus-engine                         PASS
@@ -203,7 +203,7 @@ Runtime authority changed: `false`. Candidate packages changed: `false`.
 Installed processes changed: `false`. Global `ibus-daemon` PID `2076194` was
 not restarted. Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8a-frame-carrier-receipt.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8a-frame-carrier-receipt.json`
 
 ## Slice 8B V5 Diagnostic, 2026-08-24
 
@@ -213,7 +213,7 @@ reused the production lexical-token extractor in the fixed proof and moved
 canonical L2/Productive V90 admission before the timed workers. The legacy
 field authority remained the only live authority.
 
-Remote compilation and focused tests on `e@192.168.3.94` passed:
+Remote compilation and focused tests on `builder@worker.example` passed:
 
 ```text
 cargo check --lib --bin lay-nanda-wave-train                    PASS
@@ -276,10 +276,10 @@ upstream no-field observations remain visible and cannot become authority
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-smoke-13x1.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-smoke-13x1.time.txt
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-fixed-13x100.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-fixed-13x100.time.txt
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-smoke-13x1.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-smoke-13x1.time.txt
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-fixed-13x100.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-fixed-13x100.time.txt
 ```
 
 ## Slice 8B V6 Denominator Separation, 2026-08-24
@@ -298,7 +298,7 @@ complete fixed denominator. `promotion_eligible` remains hard-coded `false` in
 this observation-only slice.
 
 The implementation preflight returned `READY_TO_IMPLEMENT`. Remote checks on
-`e@192.168.3.94`, all through `scripts/cargo-guard.sh`, passed:
+`builder@worker.example`, all through `scripts/cargo-guard.sh`, passed:
 
 ```text
 cargo check --lib --bin lay-nanda-wave-train                    PASS
@@ -369,14 +369,14 @@ modified.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/implementation-preflight-v6-denominator-separation.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-smoke-13x1-attempt1-identity-key-fail.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-smoke-13x1.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-smoke-13x1.time.txt
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-fixed-13x100.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-fixed-13x100.time.txt
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-v6-stable-projection.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-l11-stats.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/implementation-preflight-v6-denominator-separation.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-smoke-13x1-attempt1-identity-key-fail.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-smoke-13x1.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-smoke-13x1.time.txt
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-fixed-13x100.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-fixed-13x100.time.txt
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v5-v6-stable-projection.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-l11-stats.json
 ```
 
 ## Slice 8B V7 Coverage Provenance Contract, 2026-08-24
@@ -431,8 +431,8 @@ coverage. V2 added the missing tripwires without removing a prohibition and
 returned `READY_TO_IMPLEMENT`:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/implementation-preflight-v7-coverage-provenance.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/implementation-preflight-v7-coverage-provenance-v2.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/implementation-preflight-v7-coverage-provenance.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/implementation-preflight-v7-coverage-provenance-v2.json
 ```
 
 The remote focused compile and three V7 unit tests passed. The fixed `13x1`
@@ -482,10 +482,10 @@ Promotion eligible: `false`.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-smoke-13x1.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-fixed-13x100.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-v7-stable-projection.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-provenance-conservation.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-smoke-13x1.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-fixed-13x100.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v6-v7-stable-projection.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_TARGET_AUTHORITY_SLICE8_LEXICAL_READOUT_2026-08-23/slice8b-v7-provenance-conservation.json
 ```
 
 The next allowed action is a paper contract and structural critique for one
@@ -726,7 +726,7 @@ grounded form or manufacture singleton authority.
 The V7/V8 canonical package is exactly:
 
 ```text
-path    /home/e/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin
+path    /home/worker/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin
 bytes   140,556,462
 SHA-256 cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b
 forms   1,875,032
@@ -1805,7 +1805,7 @@ path publication is proven, but atomic publication of the final immutable bytes
 is not. The current completed bytes are read-only and pass their full manifest:
 
 ```text
-/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f/
+/home/local-user/.local/share/lay/provenance/slice8b-v10-f6178f/
 
 archive bytes                                              26,097,501
 archive files                                                      19
@@ -1820,7 +1820,7 @@ The overclaims in that immutable archive are superseded without rewriting its
 evidence bytes by:
 
 ```text
-/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f-correction-v1/
+/home/local-user/.local/share/lay/provenance/slice8b-v10-f6178f-correction-v1/
 
 correction files                                                    12
 correction file bytes                                           49,028
@@ -2188,7 +2188,7 @@ confirmed the complete parent route before any B0a mutation:
 
 ```text
 requested provenance root exists                         false
-nearest existing parent          /home/e/.local/share/lay
+nearest existing parent          /home/worker/.local/share/lay
 nearest parent device                                  66306
 V13 bytes / SHA                                   exact PASS
 remote writes / stages / markers                    0 / 0 / 0
@@ -2228,7 +2228,7 @@ controller self-check                              15/15 PASS
 runtime normalized-hash owners                              0
 exact-file-byte owners                                      4
 remote machine-id SHA                            5ac0bb... PASS
-parent / device                         /home/e/.local/share/lay / 66306
+parent / device                         /home/worker/.local/share/lay / 66306
 remote writes / stages / markers                    0 / 0 / 0
 B0a started                                        false
 ```
@@ -3980,7 +3980,7 @@ runtime authority changed   false
 
 The sealed candidate is:
 
-`/home/e/.local/share/lay/provenance/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/build-v1/d2-test-elf`
+`/home/worker/.local/share/lay/provenance/slice8b-v10-e1-traversal-d2-primary-only-v2-20260825/build-v1/d2-test-elf`
 
 Local build evidence:
 
@@ -5921,7 +5921,7 @@ independent exact auto-apply   false
 ```
 
 The pre-install `1.0.43` binaries and runtime configuration are retained at
-`/home/ubu/.local/lib/lay/rollback/1.0.43-before-1.0.44-20260827T130554Z`.
+`/home/local-user/.local/lib/lay/rollback/1.0.43-before-1.0.44-20260827T130554Z`.
 This release does not claim to repair the 31 inherited broad-suite failures,
 and its two-case live smoke is not an exhaustive desktop quality proof.
 
@@ -5983,7 +5983,7 @@ fixture was removed and the active engine restored to `lay-ime-ru`.
 ```text
 lay-ibus-engine SHA-256  342c79f422e38769424ce9ba111c3fc607ed312725d3fd5d0fb7a955b71b48e6
 lay-daemon SHA-256       1160738dc8d310cb1c67883e3e7ffffceb5eade9f10b093832de4a3c8b22f446
-rollback                 /home/ubu/.local/lib/lay/rollback/1.0.44-before-1.0.45-20260828T052241+0300
+rollback                 /home/local-user/.local/lib/lay/rollback/1.0.44-before-1.0.45-20260828T052241+0300
 ```
 
 Verdict: `LAY_1_0_45_KITTY_IME_REGRESSION_REPAIRED`.

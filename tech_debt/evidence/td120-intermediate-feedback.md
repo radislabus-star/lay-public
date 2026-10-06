@@ -3,8 +3,8 @@
 2026-09-05. While Sol's runtime patch was still in progress, parent transferred
 an isolated source snapshot and compiled it remotely through both guards.
 No local Cargo. Remote source manifest:
-`/home/e/projects/lay-td120-121-SUdh2I-intermediate-source.sha256`.
-Log `/home/e/projects/lay-td120-121-SUdh2I-intermediate.log`.
+`/workspace/worker/lay-td120-121-SUdh2I-intermediate-source.sha256`.
+Log `/workspace/worker/lay-td120-121-SUdh2I-intermediate.log`.
 
 Compilation2.44s PASS; current ten tests8 PASS/2 FAIL,0 ignored,0.34s.
 This is not final source parity, full acceptance or independent review.
@@ -27,7 +27,7 @@ implementation feedback, not one of the fresh independent review passes.
 
 ## Expanded intermediate v3
 
-Remote log `/home/e/projects/lay-td120-121-SUdh2I-intermediate-v3.log`.
+Remote log `/workspace/worker/lay-td120-121-SUdh2I-intermediate-v3.log`.
 Build2.48s,27 selected,19 PASS/8 FAIL,0 ignored,0.40s. Four atomic tests pass;
 real callback/foreign-ABA test fails at ibus_interface.rs:352 expected frame1
 but got0. Three tests use refused initial daemon_bridge edits (open duplicate,
@@ -58,7 +58,7 @@ matrix including all profiles and protected control now passes. Not final
 parity while Sol is finishing edits.
 
 Full current bin test snapshot:310 executed,309 PASS/1 FAIL,0 ignored,
-14.54s; log `/home/e/projects/lay-td120-121-SUdh2I-bin-regression-v1.log`.
+14.54s; log `/workspace/worker/lay-td120-121-SUdh2I-bin-regression-v1.log`.
 Failure `atomic::tests::deep_clone_isolates_shared_and_engine_state` at line551
 still expects live.active_path.is_none(), but common fixture was changed to
 bind focus. Preserve its isolation assertion by comparing live owner/state to

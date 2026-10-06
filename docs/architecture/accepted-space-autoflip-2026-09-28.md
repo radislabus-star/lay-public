@@ -7,18 +7,18 @@
 - Установленный и загруженный `lay-ibus-engine` при приёмке: SHA-256
   `58dcaacc5c1d403f095fb94aa9d88080a566361a3d4198ee3eb319cbc45accb5`.
   Receipt установки:
-  `/home/ubu/.cache/lay/development/layout-stack-sync-20260928/INSTALL.json`.
+  `/home/local-user/.cache/lay/development/layout-stack-sync-20260928/INSTALL.json`.
   Он локальный и не входит в Git.
 - Физический ввод в собственные поля Firefox, Chrome, изолированного Tor
   Browser, GTK, Qt и Kitty: **360/360** переходов после Space, отдельно 20
   чередующихся русских и английских слов длиной 3 и 4 буквы на каждом поле.
   Проверялись весь видимый текст, слово, GNOME source, IBus engine и штатное
   свойство `InputMode` после каждого Space. Общий локальный receipt:
-  `/home/ubu/.cache/lay/development/layout-stack-sync-20260928/ACCEPTANCE_ALL_CLIENTS.json`.
+  `/home/local-user/.cache/lay/development/layout-stack-sync-20260928/ACCEPTANCE_ALL_CLIENTS.json`.
   Он содержит SHA-256 всех 15 индивидуальных receipts и явную нормализацию
   U+00A0 в Tor `contenteditable` при сравнении пробелов.
 - Исходная проверка до фиксации принятой версии: 2939 PASS, receipt
-  `/home/ubu/.cache/lay/development/run-v0jwhi5k/RESULT.json`.
+  `/home/local-user/.cache/lay/development/run-v0jwhi5k/RESULT.json`.
   Детали и непроверенные области записаны в
   [плане стабилизации](runtime-stabilization-2026-09-26.md).
 
@@ -59,7 +59,7 @@ runtime для прохождения этих примеров.
 Что проверено: на удалённом worker полный source gate прошёл с новым тестом
 GNOME/IBus: **2940 выбрано, 2940 PASS, 0 известных семантических отказов и
 0 инфраструктурных отказов**. Точный отчёт:
-`/home/ubu/.cache/lay/development/run-ws9i1g1b/RESULT.json`; полный журнал
+`/home/local-user/.cache/lay/development/run-ws9i1g1b/RESULT.json`; полный журнал
 рядом. Отдельно 15/15 отрицательных и положительных тестов архитектурного
 guard прошли; проверка ссылок канона и покрытия всех изменённых защищённых
 путей новым решением вернула PASS. Удалённый

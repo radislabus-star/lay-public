@@ -444,8 +444,8 @@ tested: the 7B-7D operators, complete 13-class typed traversal, posting bounds,
 settlement parity, production latency, package representation, or deployment.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7A_2026-08-14/phase-7a.json
-/home/ubu/.cache/lay/l1-peak-search-phase7a-2026-08-14/full-3x20000.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7A_2026-08-14/phase-7a.json
+/home/local-user/.cache/lay/l1-peak-search-phase7a-2026-08-14/full-3x20000.json
 ```
 
 ## 15. Phase 7B Measured Result
@@ -538,8 +538,8 @@ traversal, posting-bound soundness, exact nonlinear settlement parity,
 production latency, package representation, or deployment.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7B_2026-08-14/phase-7b.json
-/home/ubu/.cache/lay/l1-peak-search-phase7b-2026-08-14/phase7b.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7B_2026-08-14/phase-7b.json
+/home/local-user/.cache/lay/l1-peak-search-phase7b-2026-08-14/phase7b.json
 ```
 
 ## 16. Phase 7C Measured Result
@@ -601,8 +601,8 @@ Runtime authority, installed package, daemon, and IBus remain unchanged.
 Training and crystallization runs remain zero.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7C_2026-08-14/phase-7c.json
-/home/ubu/.cache/lay/l1-peak-search-phase7c-2026-08-14/phase7c.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7C_2026-08-14/phase-7c.json
+/home/local-user/.cache/lay/l1-peak-search-phase7c-2026-08-14/phase7c.json
 ```
 
 ## 17. Phase 7D Measured Result
@@ -652,7 +652,7 @@ Cargo budget gates passed.
 One rejected invocation is retained as negative evidence. The first remote
 metrics binary lacked `lexical-compiler`; the unknown proof flag entered the
 legacy default training route and overwrote two developer artifacts under
-`/home/e/.local/share/lay/nanda_wave/`. No proof ran, and the local installed
+`/home/worker/.local/share/lay/nanda_wave/`. No proof ran, and the local installed
 Lay/package/daemon/IBus were untouched. Because no remote before-hashes existed,
 the files were not blindly rolled back. The accepted run rebuilt with the
 feature and required the Phase 7D command string before execution.
@@ -663,6 +663,6 @@ production latency, package representation, or deployment. Runtime authority
 remains unchanged. Phase 8 is the next admitted boundary.
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7D_2026-08-14/phase-7d.json
-/home/ubu/.cache/lay/l1-peak-search-phase7d-2026-08-14/phase7d.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_7D_2026-08-14/phase-7d.json
+/home/local-user/.cache/lay/l1-peak-search-phase7d-2026-08-14/phase7d.json
 ```

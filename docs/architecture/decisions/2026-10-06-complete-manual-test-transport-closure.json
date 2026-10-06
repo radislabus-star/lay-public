@@ -28,9 +28,17 @@
   "verification": "Measured full3003:2992 pass/11 unexpected failures; diagnostic11:0pass/11fail36.710s with exact TypeError UnknownObject serials3219,3224,7504,7604,3400,3600,3237,3200,3180,3215,3215. Final private patch/c4101c04457a02b3c506454711dcedf5d339eb7eeb697226042860d63bf6b67b pending independent final review/execution. Final actual-byte independent review PASS_WITH_LIMITS0 blockers; exact three-test-file patch imported, execution pending. Fixed scoped54 ALL_PASS59.313s; all11 prior failures and original43 controls pass, exact formatted source imported.",
   "not_tested": "Complete source release and changed-byte physical Firefox remain pending; exact79 installed and no new runtime authority.",
   "classification_sha256": "76676f5563d5c87d92b83798aa43887e23d58ec89bea5b7e154a02a6f6dcad04",
-  "header_receipt": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/manual-transport-closure-diagnostic-failed-import/HEADER_PACKET.json",
+  "header_receipt": "/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/manual-transport-closure-diagnostic-failed-import/HEADER_PACKET.json",
   "scope": "158 classified sites;105 remaining manual sites mapped explicitly. Normal5 registered RPC sites, strict_raw2, mixed original send_observed helper, original typed_key_message, exact receive filter and tracked legacy_key stay literal. Source proposal changes3 test files only.",
   "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
   "runtime_authority_changed": false,
-  "patch_sha256": "c4101c04457a02b3c506454711dcedf5d339eb7eeb697226042860d63bf6b67b"
+  "patch_sha256": "c4101c04457a02b3c506454711dcedf5d339eb7eeb697226042860d63bf6b67b",
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "133d324bade0efc7c99ea05f84a925d88b1f6891e0a173e528149a3376bb0bea",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

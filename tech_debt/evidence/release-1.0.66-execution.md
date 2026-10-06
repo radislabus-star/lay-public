@@ -71,15 +71,15 @@ passes V2 post-exact-ready5/5; receipt SHA256
 `80978ba5382d14a29a896eaff0b5d069aa5a17eeadb0815a84e3f08a6a26a9dc`.
 Service2.754s includes startup/drain, not key latency. Private daemon reaped,
 no candidate processes remaining. All remote files are under
-`/home/e/projects/lay-development-runner/release-1066-final-IFSMv9/`.
+`/workspace/worker/lay-development-runner/release-1066-final-IFSMv9/`.
 
 Cargo metadata verifies14binary targets; installed tree19files is a distinct
 denominator. Final package includes those14, exact V13 sidecar and receipt;
 local transfer16/16 SHA256 parity PASS. Final compiler remotely produced the
 sidecar, and the receipt binds canonical package/compiler/output hashes.
-Prepared binaries: `/home/ubu/projects/lay-tech-debt-20260831/target/release/`.
+Prepared binaries: `/workspace/local/lay-tech-debt-20260831/target/release/`.
 Preserved transfer/evidence cache:
-`/home/ubu/.cache/lay/development/release-1066-final-0pcIZl/`.
+`/home/local-user/.cache/lay/development/release-1066-final-0pcIZl/`.
 The old target/release was moved, not deleted, to that cache's
 `preexisting-target-release/`; local target is now10708MiB instead of12305MiB.
 Remote shared target9381158912bytes remains below12GiB; the separate test
@@ -101,7 +101,7 @@ tests,0semantic/0infrastructure failures,349.037s test-lane wall time. Protected
 composition contracts7/7 PASS with the annotation-only33739ccb successor.
 Archived changed SUMMARY SHA256
 `7714e1f598399bc403cfecf0271d36a97559150e27c630185b96abdfd61c462d` at
-`/home/e/projects/lay-development-runner/release-1066-final-IFSMv9/changed-final-results/SUMMARY.json`.
+`/workspace/worker/lay-development-runner/release-1066-final-IFSMv9/changed-final-results/SUMMARY.json`.
 Bounded lint-delta independent review10/10,H0/M0; runtime review9/10 unchanged.
 Full release gate is running on this source; final release-profile client,
 physical acceptance, installation and push have not happened. No local builds
@@ -110,7 +110,7 @@ or tests were run in this finalization. Details below are earlier checkpoints.
 Read-only live preflight12:58:38+03:00 confirms installed/loaded1.0.65,
 global IBus4715, and matching installed/process images for daemon,IME,L3 and
 L1.1. Rollback snapshot subsequently prepared without restarting anything:
-`/home/ubu/.local/state/lay/release-backups/1.0.66-preinstall-b4bd39`.
+`/home/local-user/.local/state/lay/release-backups/1.0.66-preinstall-b4bd39`.
 It preserves bin19files, extension9files, L2seven files and the installed L3
 unit including modes. The forward controller must revalidate exact parity
 immediately before any eventual installation; creation is not install authority.
@@ -143,7 +143,7 @@ Current base is accepted/pushed TD-120 `ad4bf0860cc2a79b3004f03b8018cc8d8cbca005
 TD-121 independent final pass2 returned4/10,H4/M0. Its four concrete residual
 schedules have a bounded existing-state repair and controlled RED/GREEN proof:
 7/7 focused tests,399/399 full IME tests,0ignored/filtered,15.49s. Full log:
-`/home/e/.cache/lay/td121-remote-sidecar/td121-residuals-full-20260907.log`, SHA256
+`/home/worker/.cache/lay/td121-remote-sidecar/td121-residuals-full-20260907.log`, SHA256
 `8e882054a95b4c4146b7ac9dab5cd74db91271303388e917a480b553bbbad185`.
 Exact test discovery is retained beside it as
 `td121-residuals-final-discovery-20260907.log` (seven residual identities).
@@ -201,7 +201,7 @@ interrupted the agent, notified the user, and resumed only the already-scoped
 code/test task with an explicit prohibition on the skill and all its bundled
 commands. Sol confirmed both processes had already exited, no live session
 remained, and no further such invocation is allowed. Preserve the cache
-artifacts under `/home/ubu/.cache/lay/td121-remote-sidecar/` named
+artifacts under `/home/local-user/.cache/lay/td121-remote-sidecar/` named
 `td121-foreign-seed-preflight-v1*` and `td121-foreign-seed-preflight-v2*`;
 their verdicts are **not** implementation admission, architecture evidence,
 or release acceptance. No test/build result or production state is inferred
@@ -281,7 +281,7 @@ not waive safety, hermetic testing, source binding, rollback or live checks.
 ## Resource execution contract
 
 The user explicitly requested all 20 CPUs on the remote host. Use
-`e@192.168.3.94`, `LAY_RESOURCE_PROFILE=dedicated-20cpu`,
+`builder@worker.example`, `LAY_RESOURCE_PROFILE=dedicated-20cpu`,
 `CARGO_BUILD_JOBS=20`, both resource/Cargo guards and one heavy-build owner.
 No local Cargo, local test suites, model training or concurrent Cargo trees.
 
@@ -293,8 +293,8 @@ precognition worker state and the shared prefetch slot. Build concurrency
 is 20; a claim of 20 safe in-process test threads would be false. Adding a
 parallel isolated-test scheduler is outside this release repair.
 
-Remote source: `/home/e/projects/lay-td120-121-SUdh2I`.
-Shared disposable target: `/home/e/projects/lay-td119-gate-v1/target`.
+Remote source: `/workspace/worker/lay-td120-121-SUdh2I`.
+Shared disposable target: `/workspace/worker/lay-td119-gate-v1/target`.
 Transfer refreshed sources with current mtimes and verify hashes and the
 selected test count; a stale Cargo executable previously returned zero tests.
 
@@ -350,7 +350,7 @@ subsequent `git ls-remote` returned that exact SHA. This is an unreleased source
 checkpoint, with version 1.0.65 unchanged, not an installed 1.0.66 claim.
 
 The post-documentary remote `scripts/update-architecture-graph.sh` also passed:
-`/home/e/projects/lay-td119-gate-v1/target/verification-logs/td120-final-20260906T1900Z/10-final-doc-architecture.log`,
+`/workspace/worker/lay-td119-gate-v1/target/verification-logs/td120-final-20260906T1900Z/10-final-doc-architecture.log`,
 SHA-256 `fd3736a6d70809acda686d0ad58ec7cec435ec5d2945e05eff995fd68aa07a59`.
 No runtime/test bytes changed after the canonical functional run. Generated
 artifacts were transferred before committing.
@@ -387,7 +387,7 @@ an isolated remote root. No system package is upgraded and the host loader/GI
 client is not replaced. Its bounded queue/identity run passed **22/22**; the
 parent independently verified the final remote receipt/log hashes and read
 `COMPLETED`, 22 cases and owned-PID cleanup. The final log is
-`/home/e/.cache/lay/td121-remote-deployed-ibus.qFnUzG/run4.log`, SHA-256
+`/home/worker/.cache/lay/td121-remote-deployed-ibus.qFnUzG/run4.log`, SHA-256
 `351e85feebfc1bb6dfd7136f637afc29e0dd489313e4117e0a353b58c98c8779`.
 This is transport feasibility only, not TD-121 runtime restoration or physical
 keyboard proof. Cargo and this probe share the parent's serial remote execution
@@ -399,7 +399,7 @@ exact-source TD-121 integration compile, whose result is still pending.
 The subsequently completed remote IME binary suite passed **379/379**, no
 failures/ignored/filtered cases, in 14.35 seconds. Parent read the final test
 summary and hashed its captured remote output:
-`/home/ubu/.cache/lay/td121-remote-sidecar/td121-lay-ibus-engine-full-pass1-20260906.raw.log`,
+`/home/local-user/.cache/lay/td121-remote-sidecar/td121-lay-ibus-engine-full-pass1-20260906.raw.log`,
 SHA-256 `b9d4f9e7587fa1e067cf45499c4b96fa6dff9aac440a176867d4cca990292804`.
 This is one source checkpoint, not the release/canonical denominator, a real
 client correction proof, or final acceptance of subsequent repairs.
@@ -413,7 +413,7 @@ accepted design; no second text owner or broader architecture is admitted.
 The 379-test result must not be used to waive these unresolved invariants.
 
 The isolated actual-client harness is prepared at
-`/home/ubu/.cache/lay/td121-private-actual-client.K7m3Qs`; its
+`/home/local-user/.cache/lay/td121-private-actual-client.K7m3Qs`; its
 [preflight](td121-private-client-proof.md) distinguishes tracking with policy
 off from correction authority. It has not run. Its owner is checking the
 real same-name factory transition and preparing a separate authority-on
@@ -438,7 +438,7 @@ snapshot, not a release receipt.
 
 [Fresh-context pass 1](td121-code-review-pass1.md) is **REPAIR_REQUIRED,
 3/10, High 6 / Medium 2**. It independently inspected the frozen snapshot
-`/home/ubu/.cache/lay/td121-review-pass1.hOPQUB`, not concurrently repaired
+`/home/local-user/.cache/lay/td121-review-pass1.hOPQUB`, not concurrently repaired
 runtime. The repository report is byte-identical to the captured final review,
 SHA-256 `a651e35ae9dc6b4b72a7b05803213cd9f74d4d935ee0384d0ca0feb82dcc3eea`.
 The report's reproduction schedules are static findings, not executed tests.
@@ -451,7 +451,7 @@ no builds/tests/services/Git writes. Its header confirmed the requested model,
 effort and existing `nando_remote` provider. The read-only orchestration process
 was limited to CPUQuota 75%, MemoryMax 1200M, swap 0 and TasksMax 96; it exited 0.
 This changed no Codex configuration. Captured output:
-`/home/ubu/.cache/lay/td121-review-pass1.hOPQUB/reviewer-run2.log`.
+`/home/local-user/.cache/lay/td121-review-pass1.hOPQUB/reviewer-run2.log`.
 An earlier launch failed before starting the reviewer because `Nice` is not a
 scope property; the successful command used `nice -n 15` for that process.
 
@@ -467,7 +467,7 @@ not a reason to fabricate acceptance or launch unlimited review iterations.
 The nonfinal standalone 1.0.66 diagnostic binary built remotely in 22.32s:
 SHA-256 `80f3d40b6fd9a66429b597f6c7004ce08cf461d124563488cef4b668082deaa1`,
 160178368 bytes. Parent verified its captured build-log hash:
-`/home/ubu/.cache/lay/td121-remote-sidecar/td121-standalone-nonfinal-pre-receive-order-20260906.raw.log`,
+`/home/local-user/.cache/lay/td121-remote-sidecar/td121-standalone-nonfinal-pre-receive-order-20260906.raw.log`,
 SHA-256 `e5f9bea790b7178477e392600135d58b8e3dba57e825bfd6b80f990ccd5af063`.
 It predates the consolidated repair and is not installable release evidence.
 The first private actual-client run failed at VisibleTailV3 admission after

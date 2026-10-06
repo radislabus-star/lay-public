@@ -5,13 +5,13 @@
   "runtime_authority_changed": false,
   "installed_runtime_changed": false,
   "source_head": "83ba0f42db5c87cdc4f17abf42197396566cb05b",
-  "local_root": "/home/ubu/.cache/lay/development/td126-final4-20260912-LHBMzvAX",
-  "remote_root": "/home/e/projects/lay-development-runner/td126-final4-LHBMzvAX",
+  "local_root": "/home/local-user/.cache/lay/development/td126-final4-20260912-LHBMzvAX",
+  "remote_root": "/workspace/worker/lay-development-runner/td126-final4-LHBMzvAX",
   "resource": {
     "profile": "dedicated-20cpu",
     "cargo_jobs": 20,
     "rust_test_threads": 1,
-    "target_dir": "/home/e/projects/lay-td119-gate-v1/target",
+    "target_dir": "/workspace/worker/lay-td119-gate-v1/target",
     "target_budget_bytes": 12884901888,
     "single_lease": true
   },
@@ -45,7 +45,7 @@
     "summary_fields_executed_passed_failed": "ABSENT_DERIVED_FROM_TARGET_AND_ISOLATED_PROCESS_LOGS",
     "summary_sha256": "108806a17c1d3eee4cb45606b71b909585fd4ad62eccb53f31a8fb7988a9977c",
     "log_sha256": "bd724774508009a38ee90d50ad85840ba564c10f72b363e7c95cc7d92042cda9",
-    "actual_counts_path": "/home/ubu/.cache/lay/development/td126-final4-20260912-LHBMzvAX/actual-test-counts.json",
+    "actual_counts_path": "/home/local-user/.cache/lay/development/td126-final4-20260912-LHBMzvAX/actual-test-counts.json",
     "actual_counts_sha256": "0e2f3e3dfe32d006995ca44f205ec84f88cb781e756092538c7badd771b4bdf2",
     "target_log_count": 32,
     "isolated_process_log_count": 15,
@@ -173,8 +173,8 @@
   },
   "historical_failed_attempts": [
     {
-      "local_root": "/home/ubu/.cache/lay/development/td126-final-20260912-TtqvKNCD",
-      "remote_root": "/home/e/projects/lay-development-runner/td126-final-TtqvKNCD",
+      "local_root": "/home/local-user/.cache/lay/development/td126-final-20260912-TtqvKNCD",
+      "remote_root": "/workspace/worker/lay-development-runner/td126-final-TtqvKNCD",
       "verdict": "FAIL_ARCHITECTURE_STALE_OWNER_MAP_BEFORE_CARGO",
       "archive_sha256": "108316b2eccdfc0e06697ce34835942d85ff816f08c74b05f54dc4da064b67dd",
       "request_sha256": "2146455ae778ee23d4999a41f410c0e558ba702c61b0057e7c1a51e83eba63e3",
@@ -186,8 +186,8 @@
       "rust_tests_or_lints_executed": false
     },
     {
-      "local_root": "/home/ubu/.cache/lay/development/td126-final2-20260912-tnERB58x",
-      "remote_root": "/home/e/projects/lay-development-runner/td126-final2-tnERB58x",
+      "local_root": "/home/local-user/.cache/lay/development/td126-final2-20260912-tnERB58x",
+      "remote_root": "/workspace/worker/lay-development-runner/td126-final2-tnERB58x",
       "verdict": "FAIL_STALE_TEST_SOURCE_ANCHOR_AFTER_ARCHITECTURE_PASS",
       "archive_sha256": "b5bdfa1c015ee3506d4a9d8dc892725f0a125471b036ce62f9323ae41788b86d",
       "request_sha256": "eba280f0a2beb9778bdcad397ad284f7175e061625423ef012d544d32d840973",
@@ -203,8 +203,8 @@
       "test_identity_or_manifest_changed": false
     },
     {
-      "local_root": "/home/ubu/.cache/lay/development/td126-final3-20260912-klRwgwwe",
-      "remote_root": "/home/e/projects/lay-development-runner/td126-final3-klRwgwwe",
+      "local_root": "/home/local-user/.cache/lay/development/td126-final3-20260912-klRwgwwe",
+      "remote_root": "/workspace/worker/lay-development-runner/td126-final3-klRwgwwe",
       "verdict": "FAIL_LINT_AFTER_CANONICAL_LANES_PASS",
       "archive_sha256": "bf3e10daf74f06612f6a76b983192a2f47e6d69f00b97dbaa34d2d14ce1de915",
       "request_sha256": "8045ef91e464087f25758e3efe0d2c9081d2d8c59c3c6083fb874cf05173b398",
@@ -247,7 +247,15 @@
     "single_outer_lease": true,
     "all_command_returncodes_zero": true,
     "result_sha256": "d3e44763d2b2075f7b08ea97e56a4a16806e219bc8c3b7be0edd48cd0f386855",
-    "local_artifact_root": "/home/ubu/.cache/lay/development/td126-final4-20260912-LHBMzvAX",
-    "remote_artifact_root": "/home/e/projects/lay-development-runner/td126-final4-LHBMzvAX"
+    "local_artifact_root": "/home/local-user/.cache/lay/development/td126-final4-20260912-LHBMzvAX",
+    "remote_artifact_root": "/workspace/worker/lay-development-runner/td126-final4-LHBMzvAX"
+  },
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "af592f56b07fefd77d112d36881c0a9eccad21806698083f1d7eb36b67c3b57f",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
   }
 }

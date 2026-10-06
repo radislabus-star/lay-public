@@ -35,7 +35,7 @@ classes plus backend disable/re-enable and standalone Alt release must leave no
 witness, no capturable frame and no ready lease. The following Space must emit
 zero DeleteSurroundingText effects and only the ordinary space commit. The
 focused remote gate passed 590/590. Result:
-`/home/ubu/.cache/lay/development/run-ekb6jas1/RESULT.json`, SHA-256
+`/home/local-user/.cache/lay/development/run-ekb6jas1/RESULT.json`, SHA-256
 `ad9442d37e357d27f1c6a9aede2cd0ae6695961dc0efe16c91277da2627dcfa9`;
 run log SHA-256
 `b9f264e409f61b8779bfe351db34d64d3927cef228b52cf05107d04bc1c4b972`;

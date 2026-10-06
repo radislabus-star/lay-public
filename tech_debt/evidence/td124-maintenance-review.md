@@ -50,8 +50,8 @@ The independent reviewer pinned:
 Remote post-repair self-test through the public command:
 `python3 scripts/dev-check.py self-test`,82 discovered,81 passed,1 explicit
 optional live-cgroup test skipped,0failures. Log:
-`/home/ubu/.cache/lay/development/run-pfo3ti2a/run.log`; remote result:
-`/home/e/projects/lay-development-runner/run-keb8Ia/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-pfo3ti2a/run.log`; remote result:
+`/workspace/worker/lay-development-runner/run-keb8Ia/RESULT.json`.
 Unittest1.023s; subprocess1.124s. Focused/client/architecture gates remain
 separately recorded in the task's execution evidence.
 
@@ -62,7 +62,7 @@ explicit candidate bind makes bwrap's arguments contain the candidate path.
 The observer therefore falsely counted wrapper PID1. A remote RED test proves
 both bwrap and Python wrappers were misidentified; the exact executable-token
 predicate then passed12/12 harness tests. Paths:
-`/home/e/.cache/lay/td124-tool-tests.6nNQvg/pid-red.log` and `pid-green.log`.
+`/home/worker/.cache/lay/td124-tool-tests.6nNQvg/pid-red.log` and `pid-green.log`.
 
 This is the second and final corrective pass. The same independent reviewer
 reviewed only this delta: **9/10,H0/M0**. Earlier rest-of-scope approval remains

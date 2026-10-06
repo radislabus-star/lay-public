@@ -178,7 +178,7 @@ remotely under the existing resource guard, not as a local parallel check.
 
 Parent read the actual production epoch-bind path and these two completed
 guarded remote logs, retained under
-`/home/ubu/.cache/lay/td121-remote-sidecar/`:
+`/home/local-user/.cache/lay/td121-remote-sidecar/`:
 
 | Focused regression | Result | Log and SHA-256 |
 |---|---|---|
@@ -214,10 +214,10 @@ Backspace and consecutive atomic receipts. It is a subset of the subsequent
 full IME suite: **390/390 PASS**, no failed/ignored/filtered tests, 15.61 s.
 Parent read the result and verified the full log SHA-256:
 `0b5a8f5882efc728f104e3861b0171d80a6f950e515ec168243bfc3ad2464f29`.
-Log: `/home/ubu/.cache/lay/td121-remote-sidecar/td121-lay-ibus-engine-full-pass2-native-preimage-20260907.raw.log`.
+Log: `/home/local-user/.cache/lay/td121-remote-sidecar/td121-lay-ibus-engine-full-pass2-native-preimage-20260907.raw.log`.
 
 The standalone debug candidate is
-`/home/e/projects/lay-td119-gate-v1/target/debug/lay-ibus-engine`, 160773008
+`/workspace/worker/lay-td119-gate-v1/target/debug/lay-ibus-engine`, 160773008
 bytes, SHA-256
 `b7e783753d03950e81ff31aab40f17257ada78e668cdceaff101d3f28124e81c`.
 Parent independently rehashed that remote file and compared Cargo.toml and
@@ -230,15 +230,15 @@ No dependency version changed in this reconciliation. This is selected source
 parity, not a claim that the remote staging Git HEAD is the source commit.
 
 Both exact inner commands ran from
-`/home/e/projects/lay-td120-121-SUdh2I` under the dedicated resource profile:
+`/workspace/worker/lay-td120-121-SUdh2I` under the dedicated resource profile:
 
 ```sh
-env LAY_RESOURCE_PROFILE=dedicated-20cpu CARGO_BUILD_JOBS=20 RUST_TEST_THREADS=1 CARGO_TARGET_DIR=/home/e/projects/lay-td119-gate-v1/target scripts/lay-resource-guard.sh -- scripts/cargo-guard.sh test --bin lay-ibus-engine -- --test-threads=1 --nocapture
-env LAY_RESOURCE_PROFILE=dedicated-20cpu CARGO_BUILD_JOBS=20 CARGO_TARGET_DIR=/home/e/projects/lay-td119-gate-v1/target scripts/lay-resource-guard.sh -- scripts/cargo-guard.sh build --bin lay-ibus-engine
+env LAY_RESOURCE_PROFILE=dedicated-20cpu CARGO_BUILD_JOBS=20 RUST_TEST_THREADS=1 CARGO_TARGET_DIR=/workspace/worker/lay-td119-gate-v1/target scripts/lay-resource-guard.sh -- scripts/cargo-guard.sh test --bin lay-ibus-engine -- --test-threads=1 --nocapture
+env LAY_RESOURCE_PROFILE=dedicated-20cpu CARGO_BUILD_JOBS=20 CARGO_TARGET_DIR=/workspace/worker/lay-td119-gate-v1/target scripts/lay-resource-guard.sh -- scripts/cargo-guard.sh build --bin lay-ibus-engine
 ```
 
 Both exited 0. The build log is
-`/home/ubu/.cache/lay/td121-remote-sidecar/td121-standalone-debug-candidate-native-preimage-20260907.raw.log`,
+`/home/local-user/.cache/lay/td121-remote-sidecar/td121-standalone-debug-candidate-native-preimage-20260907.raw.log`,
 SHA-256 `fdfb51fc9c2f9c056be16da87ff819f44c6d7cfa96525db6758afd8ba9a8f9f3`.
 The command supplied no release/feature/target/RUSTFLAGS override. Toolchain
 reported by the executor: rustc 1.97.1, Cargo 1.97.1, default stable
@@ -257,7 +257,7 @@ off-fresh-preedit produced a forbidden delete of `ljv` followed by commit
 `дом `. Both cleanups passed. Final source/candidate/dependency identities
 matched with zero audit errors. Runtime authority and installation did not
 change. Primary receipt:
-`/home/ubu/.cache/lay/development/td121-grouped-proof-20260913T020000Z-c1-PRIMARY-RESULTS/RESULT.json`
+`/home/local-user/.cache/lay/development/td121-grouped-proof-20260913T020000Z-c1-PRIMARY-RESULTS/RESULT.json`
 (SHA-256 `69efc77e4d9efb3ebca0a1b3a8cdda1413ae04124befd980393f7aca3a41035d`).
 
 ## C20 promotion coverage — 2026-09-13

@@ -3,7 +3,7 @@
 ## Evidence and verdict scope
 
 Evidence root:
-`/home/ubu/.cache/lay/development/release-1.0.72-td121-firefox-r5-20260914/`.
+`/home/local-user/.cache/lay/development/release-1.0.72-td121-firefox-r5-20260914/`.
 The recorded release gate is PASS, 2,841/2,841 tests, with four isolated client
 cells PASS. `final-native/two-toggle-visible-proof.json` is FAIL, **2/4**.
 Mixed prefix and trailing Space reach both expected surfaces. First word and
@@ -66,7 +66,7 @@ package reload, learning, cache identity, CPU/RSS and authority effects explicit
 
 ## First instrumented capture
 
-`/home/ubu/.cache/lay/development/td121-r5-delivery-diagnostic-20260914/native-control.json`
+`/home/local-user/.cache/lay/development/td121-r5-delivery-diagnostic-20260914/native-control.json`
 records first-word PASS and completion FAIL on the same R5 bytes. This single
 PASS does not supersede the saved final first-word FAIL. Completion again ends
 at three typed characters; this schedule has no fresh surrounding receipt
@@ -79,7 +79,7 @@ The requested `MOZ_LOG=timestamp,IME:5` emitted no Firefox IME records: the save
 exact Firefox source declares `gIMELog("IMEHandler")` at line 33. This diagnostic
 configuration error is corrected to `timestamp,IMEHandler:5`, verified in the
 owned process's allowlisted environment, for one completion-only capture at
-`/home/ubu/.cache/lay/development/td121-r5-imehandler-diagnostic-20260914/`.
+`/home/local-user/.cache/lay/development/td121-r5-imehandler-diagnostic-20260914/`.
 No production code changed. The first capture's `runtime-verification.json`
 confirms preserved main Firefox/global IBus and restored C20. No build, full
 gate, installation, or human keyboard acceptance was performed.
@@ -141,7 +141,7 @@ and the main browser are outside this diagnostic change.
 
 ## Synchronous control: rejected, no launcher change
 
-`/home/ubu/.cache/lay/development/td121-r5-sync-delivery-control-20260914/native-control.json`
+`/home/local-user/.cache/lay/development/td121-r5-sync-delivery-control-20260914/native-control.json`
 records **two PASS, one visible failure, one cancellation before input**. The
 actual Firefox environment verifies synchronous mode; this control omits the
 instrumentation log and keeps browser-created DOM timestamps. Mixed prefix
@@ -184,7 +184,7 @@ native retry, delay, extra Shift/Alt, source-word exception or weaker verifier.
 TD-121 remains open, and the original final R5 FAIL remains authoritative.
 
 The document-only architecture refresh has its separate source-bound receipt
-at `/home/ubu/.cache/lay/development/td121-r5-continuation-architecture-20260914/RESULT.json`.
+at `/home/local-user/.cache/lay/development/td121-r5-continuation-architecture-20260914/RESULT.json`.
 That receipt covers graph consistency and architecture checks only; it cannot
 change any of the runtime or native acceptance verdicts above.
 
@@ -228,7 +228,7 @@ will be recorded separately. Runtime code has not changed at this preflight.
 ## R6 controlled implementation and next native discriminator
 
 The selected replay predicate and inert-retention branch are implemented.
-`run-9e5i2hiu/RESULT.json` under `/home/ubu/.cache/lay/development/` proves the
+`run-9e5i2hiu/RESULT.json` under `/home/local-user/.cache/lay/development/` proves the
 new controlled regression fails on the old production code at its first source
 deletion-prefix receipt: 545/546 PASS. The final expanded focused receipt is
 `run-v02qq0_s/RESULT.json`: **548/548 PASS**, 28.2 seconds total. Three added
@@ -257,7 +257,7 @@ missing type qualification failed before test execution in separate development
 runs; these are not counted as runtime regressions or accepted proofs.
 
 The next source-bound experiment is
-`/home/ubu/.cache/lay/development/td121-r6-sync-replay-20260914/`.
+`/home/local-user/.cache/lay/development/td121-r6-sync-replay-20260914/`.
 Build the changed IME and refresh architecture remotely under the existing
 guards. Reuse the unchanged R5 daemon/test-input bytes with explicit hashes;
 keep the supported synchronous GTK setting confined to the owned Firefox child.
@@ -437,7 +437,7 @@ lock edge. Preserve this ordering and test the cold-fill distinction. Preserve
 latch still sees it. No additional hard blocker remained in this bounded audit.
 
 R7 controlled RED is now measured on unchanged R6 production:
-`/home/ubu/.cache/lay/development/run-rwowz8tt/RESULT.json`, 28.4 seconds,
+`/home/local-user/.cache/lay/development/run-rwowz8tt/RESULT.json`, 28.4 seconds,
 **549/550 PASS**. The only failure is
 `td121_exact_receipt_publishes_cached_current_suffix_before_alt`: after the
 actual exact client callback the suffix is `None`, although the ordinary shared
@@ -470,7 +470,7 @@ serial/error reply before invoking the actual engine callback, using the
 existing detached-callback proof helper. Client signals and mutation assertions
 remain unchanged. Shared library tests were 1,795/1,795 PASS in that run.
 
-`/home/ubu/.cache/lay/development/run-qo879484/RESULT.json` is **2,348/2,348
+`/home/local-user/.cache/lay/development/run-qo879484/RESULT.json` is **2,348/2,348
 PASS**, 156.7 seconds: 553 IME and 1,795 library tests. This includes both Alt
 orders, early scheduling with zero publication, complete-cache parity/miss,
 actual delayed-store-after-clear, material-generation mismatch, usage initial
@@ -513,20 +513,20 @@ no runtime condition, production timeout or candidate assertion changed.
 
 
 Final R7 focused IME proof is **554/554 PASS**, 28.9 seconds:
-`/home/ubu/.cache/lay/development/run-n3pbivsh/RESULT.json`. The added actual-worker
+`/home/local-user/.cache/lay/development/run-n3pbivsh/RESULT.json`. The added actual-worker
 cache-miss chain passes. The complete shared-library result remains 1,795/1,795
 PASS in `run-qo879484` on unchanged library production sources. Both independent
 review passes are complete. These are focused development proofs; R7 native
 and final release acceptance are still pending. The next frozen candidate builds
 all three native-smoke binaries (daemon, IME and sender), because the shared
 library changed. Its source/build/native evidence directory is
-`/home/ubu/.cache/lay/development/td121-r7-current-receipt-20260914/`.
+`/home/local-user/.cache/lay/development/td121-r7-current-receipt-20260914/`.
 
 
 ### R7 native result: completion repaired, delayed boundary still fails
 
 R7 build/source receipt:
-`/home/ubu/.cache/lay/development/td121-r7-current-receipt-20260914/BUILD-RESULT.json`.
+`/home/local-user/.cache/lay/development/td121-r7-current-receipt-20260914/BUILD-RESULT.json`.
 Architecture update PASS (43.464 s), three-bin release candidate build PASS
 (178.826 s), Cargo budget before/after PASS. IME SHA256
 `3c8e9a353dd8c02602ab1c7b1664bdb3719d91ed83b70c43746ac6298b44b804`;
@@ -599,7 +599,7 @@ Rollback removes only the new literal-Space eligibility term; R7 evidence and
 its separate acceptance limitation remain recorded.
 
 R8 controlled RED on unchanged R7 production:
-`/home/ubu/.cache/lay/development/run-1febvdnu/RESULT.json`, **555/556 PASS**,
+`/home/local-user/.cache/lay/development/run-1febvdnu/RESULT.json`, **555/556 PASS**,
 28.1 seconds. The positive grouped test fails for both append lengths at the
 same first loss: `retained_after_space=false`, no final exact authority,
 ManualToggleV3 returns `(0,false)` and VisibleTail is `passive:unknown-context`.
@@ -622,7 +622,7 @@ negative assertion unchanged. All later exact-receipt/Reset checks remain.
 
 
 R8 narrowed candidate focused check: **556/556 PASS**, 28.2 s,
-`/home/ubu/.cache/lay/development/run-6wh58qut/RESULT.json`. Both grouped
+`/home/local-user/.cache/lay/development/run-6wh58qut/RESULT.json`. Both grouped
 regressions and the pre-existing never-confirmed boundary refusal pass.
 Independent review pass 1 found no blocker: retained data grants no authority,
 owner/capability/content/focus invalidation is preserved, and only the final
@@ -633,7 +633,7 @@ the four original native scenarios and release gates are still pending.
 R8 review pass 2: PASS, no blocker in the narrowed boundary mechanism. Candidate
 build and graph refresh PASS (178.782 s and 43.675 s), with all 1,408 source
 identities verified. Exact receipt:
-`/home/ubu/.cache/lay/development/td121-r8-literal-boundary-20260914/BUILD-RESULT.json`.
+`/home/local-user/.cache/lay/development/td121-r8-literal-boundary-20260914/BUILD-RESULT.json`.
 The original four native inputs and schedules were each run once: **3/4 PASS,
 overall FAIL**. Trailing Space now reaches `текст ` then exact `ntrcn `;
 mixed prefix and accepted completion also pass both transitions. First word
@@ -691,7 +691,7 @@ Any native failure still blocks the full release/installation/publication gate.
 
 
 R9 controlled RED on unchanged R8 production: **557/558 PASS**, 28.9 s,
-`/home/ubu/.cache/lay/development/run-b4pvbpda/RESULT.json`. All six grouped
+`/home/local-user/.cache/lay/development/run-b4pvbpda/RESULT.json`. All six grouped
 positive contexts fail at the second callback: retained vectors begin
 `[true,false]`, no final exact authority, no authoritative VisibleTail, bridge
 returns `(0,false)`. Batch sizes 2/3/5 and plain/preserved-prefix boundary tails
@@ -729,7 +729,7 @@ production or authority change and no additional formal review pass consumed.
 
 
 R9 final focused check: **558/558 PASS**, 28.8 s,
-`/home/ubu/.cache/lay/development/run-caw92c8z/RESULT.json`. This includes all
+`/home/local-user/.cache/lay/development/run-caw92c8z/RESULT.json`. This includes all
 six positive batches, all six invalidations including duplicate ingress, and
 the prior 556 tests. No production change occurred after the original
 predecessor-preservation patch; subsequent changes corrected only the new
@@ -765,7 +765,7 @@ R9 final review pass 2: PASS. Candidate build/graph PASS (179.148 s/43.682 s),
 all 1,408 source identities checked; IME SHA-256
 `c01054056b07c50e3342a2c4c6c6eb708c2824e324d8cb15487e4b73b104f9ac`.
 Native original four-case proof remains **3/4 PASS, overall FAIL** at
-`/home/ubu/.cache/lay/development/td121-r9-batched-reset-20260914/two-toggle-visible-proof.json`.
+`/home/local-user/.cache/lay/development/td121-r9-batched-reset-20260914/two-toggle-visible-proof.json`.
 First word, mixed prefix and completion now each show both exact transitions.
 Space shows the first `текст ` and two manual delegations, but no second replay:
 the subsequent VisibleTailV3 capture returns `context admission deadline expired`.
@@ -803,7 +803,7 @@ systemic change. No unchanged retry-until-green is authorized by this plan.
 
 
 R10 metadata-only diagnostic check: **558/558 PASS**, 28.5 s,
-`/home/ubu/.cache/lay/development/run-i4v2oh4l/RESULT.json`. The existing
+`/home/local-user/.cache/lay/development/run-i4v2oh4l/RESULT.json`. The existing
 execution contract and strict bridge deadline tests pass. This validates the
 probe's compatibility, not the unresolved native capture timeout or latency.
 
@@ -826,7 +826,7 @@ R10 diagnostic native result: **4/4 PASS**, two delegations and both exact DOM
 surfaces in every original scenario, including both trailing-Space cases.
 Receipts: `td121-r10-bridge-timing-20260914/native-control.json`,
 `two-toggle-visible-proof.json`, and `bridge-timing-summary.json` under
-`/home/ubu/.cache/lay/development/`. All 67 nonce-correlated bridge groups
+`/home/local-user/.cache/lay/development/`. All 67 nonce-correlated bridge groups
 have actual successful take records: min 294 us, median 455 us,
 max 853 us, no observed refusal or incomplete group. Per-case maxima:
 first-word 853 us, mixed 851 us, completion 818 us, Space 633 us. These durations
@@ -904,7 +904,7 @@ client, but its new effect collector encountered the existing detached zbus
 object-dispatcher's UnknownObject response. Reused the existing exact-serial,
 exact-error transport reply consumer for both Enter callbacks; no production
 change or effect filtering relaxation. Final focused check **561/561 PASS**,
-28.8 s, `run-d7zen3gy/RESULT.json` under `/home/ubu/.cache/lay/development/`.
+28.8 s, `run-d7zen3gy/RESULT.json` under `/home/local-user/.cache/lay/development/`.
 The four Enter cases cover plain, trailing Space, preserved prefix and completed
 expired scope. Separate incomplete/mismatched scope tests retain refusal. The
 Bridge test proves two subsequent real fences and stale-expiry isolation; the
@@ -914,7 +914,7 @@ remain pending; this is timeout recovery proof, not the cause of R9's overrun.
 
 R11 final review pass 2: PASS. Build/architecture PASS (178.977/43.797 s),
 1,408 source identities verified. Native **3/4 PASS, overall FAIL**:
-`/home/ubu/.cache/lay/development/td121-r11-timeout-recovery-20260914/two-toggle-visible-proof.json`.
+`/home/local-user/.cache/lay/development/td121-r11-timeout-recovery-20260914/two-toggle-visible-proof.json`.
 First word, mixed prefix and completion show both exact transitions. Space has
 only one delegation. All 64 bridge calls were taken, 317–704 us; its six bridge
 calls took 446–630 us. No timeout occurred in this native failure. C20, the main
@@ -985,7 +985,7 @@ no-handoff/no-display assertions and retained the remaining passive readout,
 final exact receipt and one-shot delegation checks. This reflects the written
 R12 retention contract, not a weakened text-effect or authority assertion.
 Final focused **563/563 PASS**, 29.1 s, `run-7kvhd6mx/RESULT.json` under
-`/home/ubu/.cache/lay/development/`. The new positive asserts authoritative
+`/home/local-user/.cache/lay/development/`. The new positive asserts authoritative
 VisibleTailV3 contents and actual manual delegation; eight invalidations and
 past-versus-future delete bounds pass. Native/release/install remain pending.
 
@@ -993,7 +993,7 @@ past-versus-future delete bounds pass. Native/release/install remain pending.
 R12 final independent reviews: both PASS. Build/architecture PASS (179.062 and
 43.903 s), 1,408 source identities verified. Native **4/4 PASS**, two delegations
 and both exact DOM transitions in each original case, including trailing Space:
-`/home/ubu/.cache/lay/development/td121-r12-interleaved-replay-20260914/two-toggle-visible-proof.json`.
+`/home/local-user/.cache/lay/development/td121-r12-interleaved-replay-20260914/two-toggle-visible-proof.json`.
 Native result SHA-256: `a01ddacd252530159bf6eb1ff3c1648206d284e2769016b358749511a3fda7be`.
 C20/main Firefox/global IBus were restored/preserved. This accepts development
 candidate behavior; final release-byte native acceptance remains required.

@@ -29,7 +29,7 @@
     "src/nanda_wave/l2_field/mod.rs",
     "src/nanda_wave/mod.rs"
   ],
-  "verification": "Old-algorithm guarded remote lib proof:1809 selected/executed,1806 PASS,3 expected regression FAIL. /home/ubu/.cache/lay/development/run-yi9hutwk/RESULT.json. Cache parameter extraction only; old algorithms intact in snapshot. Repaired lib proof1809/1809 PASS run-3ri26fio. First exact8b native library build completed; external metadata probe failed E0463 because dependency lookup used release/ instead of release/deps/. A source review also caught private l2_field/identity access before the next compilation. Keep modules/types private and expose bounded structured read-only metadata through existing research fa\u00e7ade; fresh source snapshot required.",
+  "verification": "Old-algorithm guarded remote lib proof:1809 selected/executed,1806 PASS,3 expected regression FAIL. /home/local-user/.cache/lay/development/run-yi9hutwk/RESULT.json. Cache parameter extraction only; old algorithms intact in snapshot. Repaired lib proof1809/1809 PASS run-3ri26fio. First exact8b native library build completed; external metadata probe failed E0463 because dependency lookup used release/ instead of release/deps/. A source review also caught private l2_field/identity access before the next compilation. Keep modules/types private and expose bounded structured read-only metadata through existing research façade; fresh source snapshot required.",
   "what_was_tested": "Controlled dense material+score, fuzzy material+score, decoder-only prefix witnesses detect old failure.",
   "not_tested": "Full release proof, single-client resource/latency, installed changed bytes and physical acceptance pending.",
   "what_was_not_tested": [
@@ -47,5 +47,13 @@
     "Correction mode shortcut behavior unchanged",
     "No old or oracle receipt promotion"
   ],
-  "research_metadata": "Research-only probe of warmed cached canonical readings:256 surfaces/32 readings bounds, no cold load, candidates or authority. Required to keep pilot classifier inputs equal to native feature masks; missing/overflow remains UNKNOWN."
+  "research_metadata": "Research-only probe of warmed cached canonical readings:256 surfaces/32 readings bounds, no cold load, candidates or authority. Required to keep pilot classifier inputs equal to native feature masks; missing/overflow remains UNKNOWN.",
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "a6971734887e3c60732876060591326302902596512c672d819a3c9ea387a1dc",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

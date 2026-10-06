@@ -4,7 +4,7 @@
   "date": "2026-09-12",
   "runtime_authority_changed": false,
   "source_snapshot": {
-    "local_root": "/home/ubu/.cache/lay/development/exact-replay-native-graph2-20260912-EdsZyd3o",
+    "local_root": "/home/local-user/.cache/lay/development/exact-replay-native-graph2-20260912-EdsZyd3o",
     "source_archive_sha256": "e10a39ee3822af07b659963f267fa51abc1f09e938b7158239c5c0ea10b40348",
     "source_request_sha256": "a5cf22ee80edc9e36663bca9d7b2f841ab0b20b1c389da65be8e28e18cedd096",
     "files": 1394,
@@ -12,13 +12,13 @@
     "source_head": "83ba0f42db5c87cdc4f17abf42197396566cb05b"
   },
   "remote_execution": {
-    "host": "e@192.168.3.94",
-    "run": "/home/e/projects/lay-development-runner/exact-replay-native-graph2-EdsZyd3o",
+    "host": "builder@worker.example",
+    "run": "/workspace/worker/lay-development-runner/exact-replay-native-graph2-EdsZyd3o",
     "command": "scripts/update-architecture-graph.sh",
     "resource_profile": "dedicated-20cpu",
     "graphify_launcher": "/usr/local/bin/graphify",
     "graphify_version": "0.9.11",
-    "graphify_python": "/home/e/tools/graphifyy/bin/python",
+    "graphify_python": "/home/worker/tools/graphifyy/bin/python",
     "tree_sitter_version": "0.25.2",
     "tree_sitter_rust_version": "0.24.2",
     "returncode": 0,
@@ -65,5 +65,13 @@
     "GNOME Text Editor delivery",
     "physical repeat acceptance",
     "answer quality"
-  ]
+  ],
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "b4cb7db920ac3ee5b305666848dc320703371da4a783e68d6444f1996d4bcfc8",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

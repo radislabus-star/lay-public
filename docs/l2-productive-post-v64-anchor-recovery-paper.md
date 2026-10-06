@@ -11,7 +11,7 @@ literal-word rules, a wider candidate frontier, or a raw-corpus pass.
 The V64 package is unchanged:
 
 ```text
-path    /home/e/projects/lay-productive-v1-build-20260811/out/LAY-L2-PRODUCTIVE-PARADIGM-V1-SHADOW-V64.p2m
+path    /workspace/worker/lay-productive-v1-build-20260811/out/LAY-L2-PRODUCTIVE-PARADIGM-V1-SHADOW-V64.p2m
 bytes   17,309,944
 sha256  9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438
 ```
@@ -244,7 +244,7 @@ remain forbidden.
 
 Exact owning receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/hbs0-pos-diagnostic-13x100-receipt.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/hbs0-pos-diagnostic-13x100-receipt.json`.
 
 ## 10. V65 Measured Result
 
@@ -345,8 +345,8 @@ V64 canonical status             PRESERVED
 
 Exact V65 receipts:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V65_ANCHOR_RECOVERY_2026-08-11/build-receipt.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V65_ANCHOR_RECOVERY_2026-08-11/build-receipt.json`
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V65_ANCHOR_RECOVERY_2026-08-11/micro-13x10-receipt.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V65_ANCHOR_RECOVERY_2026-08-11/micro-13x10-receipt.json`
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V65_ANCHOR_RECOVERY_2026-08-11/full-13x100-receipt.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V65_ANCHOR_RECOVERY_2026-08-11/full-13x100-receipt.json`

@@ -42,7 +42,7 @@ not final-release acceptance. Installed C20 remains the preserved baseline;
 human keyboard acceptance is NOT_TESTED.
 
 Exact receipts under
-`/home/ubu/.cache/lay/development/release-1.0.72-td121-firefox-r5-20260914/`:
+`/home/local-user/.cache/lay/development/release-1.0.72-td121-firefox-r5-20260914/`:
 `raw/RESULT.json`, `final-native/native-control.json`, and
 `final-native/two-toggle-visible-proof.json`. No unchanged release gate is
 being repeated. Saved-trace analysis and the next discriminating evidence are
@@ -90,7 +90,7 @@ Historical attempts and their exact receipts are retained only in
 
 The bounded live trace has 2,727 JSON rows and SHA-256
 `65a86d3c6d37e95883764c8fd3ba81849610522c966579dac668bdd23652e57f`:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/ibus_engine_debug.jsonl`.
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/ibus_engine_debug.jsonl`.
 It contains no retained manual-toggle or suppression event, so it does not prove
 the earlier `LocalPending -> Reset` hypothesis. Application identity is not
 logged; Firefox scope comes from the user's report. The later caps9/purpose10
@@ -138,7 +138,7 @@ exact 1,410-file manifest. After removing one incidental assertion about the
 post-Reset release return value, the exact test executed **1** test and failed at
 the intended first assertion: fresh exact `SurroundingText` for advanced token
 `abcde` was rejected as a duplicate. Result:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/causal-red/RESULT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/causal-red/RESULT.json`,
 SHA-256 `871a20f66a24e13bc33a0e2c8d342e2207aa053f12792554acf248b118493824`;
 exact log SHA-256
 `0f609c58d6991f9a381932507448d0f68e552b05183b79481a1742064a7c21db`,
@@ -290,7 +290,7 @@ the focused denominator is **0 executed**, not a runtime FAIL. Source identity
 matched before and after with zero mismatches; nonzero remote shell and lease
 identities were recorded. No second lease, further patch, architecture refresh,
 release, installation, service, GUI or review action followed. Compact receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-green-20260913-c1/RESULT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-green-20260913-c1/RESULT.json`,
 SHA-256 `e2b46fb6f9ddfdc3de20c7a20410a0b62f648add8a883128e1a86e8cab078df5`;
 focused blocker log SHA-256
 `e09899051f6848dd5c43ea2f73d858399ff5dd7d124b56c2e628c48da3b6acac`.
@@ -337,7 +337,7 @@ the four changed graph outputs were copied back to the canonical checkout. Its
 log SHA-256 is
 `93b6518a3b40ae8a9af2c903be54d33f32396e97ebf080e13a4ba2757ec27504`.
 Compact C2 receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-green-20260913-c2/RESULT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-green-20260913-c2/RESULT.json`,
 SHA-256 `87980080d9814be78f76a55d9e83688b41fc9062a588831d3d63fe00e90b9b75`.
 This is source-only GREEN evidence. No release gate, installation, service, GUI,
 physical-keyboard action or scored review ran, and installed C20 authority did
@@ -428,7 +428,7 @@ The remote guarded focused target discovered 522 tests, selected all 519
 correctness tests, and passed 519/519 with zero failures; the three declared
 performance tests remained excluded. `cargo fmt --all --check` also passed.
 Receipt:
-`/home/ubu/.cache/lay/development/run-01_htg7j/RESULT.json`, SHA-256
+`/home/local-user/.cache/lay/development/run-01_htg7j/RESULT.json`, SHA-256
 `5c243730ae16f5af7a9dad4bb83df891f82f0632ab3378c16a3d96a2af388d83`.
 Verdict scope is test-only state ordering and controlled timing/cleanup. Actual
 Firefox compatibility reply, marker observation, expiry state and the first
@@ -445,7 +445,7 @@ violations are three `edit-plan-verifier` mutation sinks
 test-only discriminator adds no mutation sink and changes no runtime authority;
 the cause of the WATCH relative to the prior PASS receipt remains unresolved.
 Exact remote log:
-`/home/e/projects/lay-td121-compat-discriminator-graph-20260913/graph.log`.
+`/workspace/worker/lay-td121-compat-discriminator-graph-20260913/graph.log`.
 What was not established: an architecture `PASS` receipt or resolution of those
 three repository-level WATCH findings.
 
@@ -466,11 +466,11 @@ records compatibility reply acceptance, marker observation, deadline expiry, a
 failed readiness predicate, or the bridge fence failure phase.
 
 Native-environment receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-c20-user-env/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-c20-user-env/RECEIPT.json`,
 SHA-256
 `8a5f6f0d5b0ef3a7a4350b7b4fdc3b3c4cba8d19f775e074de1c91485c09f381`.
 The retained 195-row Fast trace is
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-c20-user-env/ghbdtn_fast_lshift_enter-89c9e61c9516dd2f6aa5/ibus_engine_debug.jsonl`;
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-c20-user-env/ghbdtn_fast_lshift_enter-89c9e61c9516dd2f6aa5/ibus_engine_debug.jsonl`;
 SHA-256
 `72297a544d831bad661ca8faa7c1d8d603e0aa7b5fe61b53620afb8961a03d8b`.
 The short case contains no fresh-surrounding duplicate, so it neither supports
@@ -523,7 +523,7 @@ passes `cargo fmt --all --check` and all 519/519 selected IME correctness tests
 from 522 discovered, including the prompt Transfer/SourceFree discriminator,
 the production-budget controlled exchange, unsettled bridge-fence refusal and
 post-fence ingress refusal. Baseline receipt:
-`/home/ubu/.cache/lay/development/run-01_htg7j/RESULT.json`, SHA-256
+`/home/local-user/.cache/lay/development/run-01_htg7j/RESULT.json`, SHA-256
 `5c243730ae16f5af7a9dad4bb83df891f82f0632ab3378c16a3d96a2af388d83`.
 The diagnostics candidate must rerun those exact routes and the complete focused
 IME correctness denominator. Trace-schema tests must assert field names,
@@ -563,7 +563,7 @@ focused target discovered 523 tests, selected all 520 correctness tests, and
 passed 520/520; three declared performance tests remained excluded. Formatting
 also passed. The schema test proves the fixed 12-field record and absence of
 text, context path, client, profile, body and decoded-key fields. Receipt:
-`/home/ubu/.cache/lay/development/run-xsmlst5_/RESULT.json`, SHA-256
+`/home/local-user/.cache/lay/development/run-xsmlst5_/RESULT.json`, SHA-256
 `1622d64f99a6c118385baaa57be9ca13303eadc8ca4b66b77dce2746f00675fc`.
 Two predecessor runs exposed and rejected diagnostics-induced drift: the first
 performed a config refresh in the marker path; the second mistakenly revoked an
@@ -581,25 +581,25 @@ After excluding observed Bridge fences from the compatibility expiry record, the
 final guarded remote rerun again discovered 523 tests and passed all 520/520
 selected correctness tests, with three performance tests excluded and formatting
 PASS. Final diagnostics receipt:
-`/home/ubu/.cache/lay/development/run-p0dvyx01/RESULT.json`, SHA-256
+`/home/local-user/.cache/lay/development/run-p0dvyx01/RESULT.json`, SHA-256
 `618b8e231e8876f2e79c3e63a0bd999db70d86baf1a11970d59a4527c1862a67`.
 
 The proper architecture refresh then ran under the remote dedicated-20cpu guard
-in the established `/home/e/projects/lay-development-runner/workspace` root,
+in the established `/workspace/worker/lay-development-runner/workspace` root,
 with relocated AST cache absent. The graph recovered the canonical
 `src_text_edit_executor_authorizededit` node and six `parameter_type` edges;
 `edit-plan-verifier` and every other architecture check passed. Coherent graph,
 source binding and architecture receipt outputs were copied back. Remote log:
-`/home/ubu/.cache/lay/development/td121-diagnostics-candidate-20260913/graph-final.log`,
+`/home/local-user/.cache/lay/development/td121-diagnostics-candidate-20260913/graph-final.log`,
 SHA-256 `08e1c935b38f3279fc1efa83a26efc60fc4ff2f7a0f32f9ab4a3238fc33aeda3`.
 
 Exactly one inactive release candidate, `lay-ibus-engine`, was built under the
 same remote guard with the shared target. It was not installed, activated or
 used for GUI input. Artifact:
-`/home/ubu/.cache/lay/development/td121-diagnostics-candidate-20260913/artifact/lay-ibus-engine`,
+`/home/local-user/.cache/lay/development/td121-diagnostics-candidate-20260913/artifact/lay-ibus-engine`,
 SHA-256 `5f94d028d197a49c76d7dfd7eac034471ace0cee78762aa6b9da44553b993956`,
 size 7,868,512 bytes. Its exact source/artifact/build binding is
-`/home/ubu/.cache/lay/development/td121-diagnostics-candidate-20260913/artifact-binding.json`,
+`/home/local-user/.cache/lay/development/td121-diagnostics-candidate-20260913/artifact-binding.json`,
 SHA-256 `aab59360949d7bcd534af9c8724a891c8acb7e04ce922176d562b85f5a4ed2b1`.
 The source-manifest SHA-256 is
 `91e2b2cd4dda03d6c2a48fab2fcad188b274b8bbfdf72d74dfbedf69df0ab7fa`.
@@ -619,7 +619,7 @@ this ordering; ContentType and later evidence cases were not reached in the RED.
 Combined focused IME was 500/502: all prior tests except the new RED and an
 incidental C28 pending-fence assertion passed. Source and dependencies remained
 unchanged and runtime authority did not change. Receipt:
-`/home/e/projects/lay-development-runner/td121-cross-profile-focused-red-20260913T035000Z-c10/RESULT.json`,
+`/workspace/worker/lay-development-runner/td121-cross-profile-focused-red-20260913T035000Z-c10/RESULT.json`,
 SHA-256 `e39a114f09e10693bd7f41de8e45a8a4917372840d2ad4e638639dba17a81856`.
 
 The admitted repair removes only the premature current-profile equality check
@@ -1353,8 +1353,8 @@ correction.
 следующей exact suppression/replay lease; после consumption повторного права
 нет. Это сохраняет существующий deadline, SafetyGate и verifier.
 
-Авторитетный RED выполнен на `e@192.168.3.94` из
-`/home/e/projects/lay-development-runner/td121-target-snapshot-red-20260913T-current/source`
+Авторитетный RED выполнен на `builder@worker.example` из
+`/workspace/worker/lay-development-runner/td121-target-snapshot-red-20260913T-current/source`
 под `dedicated-20cpu`, jobs 20, test_threads 1 и 12 GiB Cargo guard. Команда
 завершилась ожидаемым `rc=101`; полный log `../RED-PRIMARY.log`, SHA-256
 `7f056e9306dd41a5413d7463a4a18caca3132baa991fe3d8160ecf6571a41dfc`.
@@ -1389,8 +1389,8 @@ composition, видимый выбранный suffix `def` и точный св
 `ManualToggleV3` не может получить право, хотя append и word boundary уже
 произошли в авторизованном callback.
 
-Authoritative test-only RED выполнен 2026-09-13 на `e@192.168.3.94` в
-`/home/e/projects/lay-development-runner/td121-completion-release-red52/source`
+Authoritative test-only RED выполнен 2026-09-13 на `builder@worker.example` в
+`/workspace/worker/lay-development-runner/td121-completion-release-red52/source`
 под `dedicated-20cpu`, jobs20, test_threads1 и 12 GiB Cargo guard. Test
 `td121_successful_completion_release_settles_its_append_and_boundary_effect`
 завершился `rc=101` именно на post-effect completeness assertion; log
@@ -1439,7 +1439,7 @@ source-free и reset пути allocation не получают. Boxing всег�
 наличия manual receipt. Predicate, reducer state, authority, deadline,
 invalidation и proof semantics не меняются. Remote canonical storage proof выполнен под `dedicated-20cpu`, jobs20,
 `test_threads=1` и 12 GiB Cargo guard в
-`/home/e/projects/lay-development-runner/td121-storage-strict69`: rustfmt
+`/workspace/worker/lay-development-runner/td121-storage-strict69`: rustfmt
 apply/check `rc=0`; strict all-target Clippy с `-D warnings -A dead-code`
 `rc=0` и сохранённым JSONL diagnostics; полный IME target **515/515 PASS**,
 ignored 0; AST-only `graphify update .` `rc=0`; target остался в budget. Primary
@@ -1452,7 +1452,7 @@ build завершился `rc=1`: рассчитан `WATCH`, потому чт
 сообщил три `mutation_sink_without_capability` для существующих
 `apply_text_replacement_pipeline`, `call_replace_text` и
 `try_ime_replace_tail`. Точный log:
-`/home/e/projects/lay-development-runner/td121-storage-strict69/73-architecture-canonical.log`.
+`/workspace/worker/lay-development-runner/td121-storage-strict69/73-architecture-canonical.log`.
 Это не дефект storage predicate и не меняет принятые source mechanisms, но
 canonical architecture gate остаётся `FAILED`; старый PASS receipt не
 перезаписан и финальный release gate не допускается до отдельного разрешения
@@ -1461,12 +1461,12 @@ candidate, не как final release binary.
 
 До этого authoritative receipt были ошибочно запущены три предварительные
 локальные команды 05:31:45, 05:32:42 и 05:33:20 UTC в
-`/home/ubu/projects/lay-cleanup-20260908`: один compile с exact filter выполнил
+`/workspace/local/lay-cleanup-20260908`: один compile с exact filter выполнил
 0 tests, затем два focused RED запуска (последний через `tail`, скрывший shell
 status). Они использовали workstation Cargo guard и локальный disposable
 `target/`; это **NONCANONICAL** evidence и не remote C19 proof. Файлы и cache не
 удалялись. Все последующие fmt/test/graph действия выполняются только на
-`e@192.168.3.94` через resource и Cargo guards.
+`builder@worker.example` через resource и Cargo guards.
 
 После admission — focused tests на выделенном remote20CPU хосте, только
 `scripts/cargo-guard.sh --bin/--lib ...`, затем changed gate и
@@ -1513,7 +1513,7 @@ native Backspace, второй press был rejected. Release rejected press б�
 затем отдельно потерял точный хвост на `passive:unknown-context`.
 
 Raw receipt:
-`/home/ubu/.cache/lay/development/release-1.0.72-td121-prepared/td121-storage72-gui-diagnostic-20260913T064500Z/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/release-1.0.72-td121-prepared/td121-storage72-gui-diagnostic-20260913T064500Z/RECEIPT.json`,
 SHA-256 `dfbca1d42c8edec6aa89fb6ba198d830d3c7e5c7ba65cbe5cc335808446b41a9`.
 Cross-case causal table: `CROSS-CASE-CAUSAL-TABLE.md`, SHA-256
 `a7b297fc02287d0a61418921fe27ceafc85e58f9b2c7bcb25b08f75ec2619a9f`.
@@ -1548,7 +1548,7 @@ boundary `[(11,12)]`, native delete presses `1/2`. В обоих случаях 
 tail совпал с client sink, но каждый незащищённый text-free Reset потребил один
 progress epoch и следующий press. Focused proof закономерно RED (`rc=101`, один
 выбранный test). Receipt:
-`/home/e/projects/lay-development-runner/td121-soft-reset-red75/80-causal-red.log`,
+`/workspace/worker/lay-development-runner/td121-soft-reset-red75/80-causal-red.log`,
 SHA-256 `3163cedca4d4d78243f538c270bee06a328aa261edaf8e18d7aa8436a62b2a00`.
 Не проверялись production fix, queued extra toggle после полного replay и GTK
 acceptance. Verdict ограничен первым общим механизмом; runtime authority не
@@ -1575,7 +1575,7 @@ stale path, selection, active composition и expired in-progress: tail не
 изменяется, IME text effects отсутствуют, invalid scope не становится
 qualified; stale path также не меняет shared owner state. Итоговый focused
 TD-121 suite после обеих поправок: **45/45 PASS**, receipt
-`/home/e/projects/lay-development-runner/td121-soft-reset-red75/89-focused-green.log`,
+`/workspace/worker/lay-development-runner/td121-soft-reset-red75/89-focused-green.log`,
 SHA-256 `eef6c3d027dc34ec4a408dee0c4b093695dbb067852f32c6999b502e1b8e9cd7`.
 Rollback — удалить entry capture и
 одно финальное условие guard; runtime promotion пока не выполнена.
@@ -1588,7 +1588,7 @@ Rollback — удалить entry capture и
 `passive:unknown-context` с пустым tail/focus, тогда как следующий manual toggle
 самостоятельно прошёл `Ok((3,false))`. Focused RED: `rc=101`, один выбранный
 test; receipt
-`/home/e/projects/lay-development-runner/td121-soft-reset-red75/85-queued-tail-red.log`,
+`/workspace/worker/lay-development-runner/td121-soft-reset-red75/85-queued-tail-red.log`,
 SHA-256 `dded5a2e4abbd5b2fd0c15469e16476c635ada2778c684708f7cfb521662d4f9`.
 
 Рассмотрены три варианта. Повторное использование уже существующего
@@ -1630,7 +1630,7 @@ release pipeline ещё не запускались; эти PASS не являю
 ### Cold AST graph repair
 
 Неуспешное generated/cache состояние сохранено вне source в
-`/home/e/projects/lay-development-runner/td121-soft-reset-red75/81-failed-graph-before-cold`
+`/workspace/worker/lay-development-runner/td121-soft-reset-red75/81-failed-graph-before-cold`
 (`SHA256SUMS` SHA-256
 `92b1b05e9f9c85b4cdf3204762a7cb14c58d1fe2c518c1b1af4bbd2d6953e71e`).
 После удаления только remote `graphify-out/cache` canonical
@@ -1679,7 +1679,7 @@ changed: **false**.
 
 Remote `dedicated-20cpu` focused verification: rustfmt check PASS; causal test
 **1/1 PASS**; target budget 775,065,600 / 12,884,901,888 bytes. Receipt:
-`/home/e/projects/lay-development-runner/td121-post-replay-discriminator/focused.log`,
+`/workspace/worker/lay-development-runner/td121-post-replay-discriminator/focused.log`,
 SHA-256 `0bf56ca9887337fa2fbf9800b9829459b1e0fe6b65d53a91c0fef051d1789bad`.
 
 ### Confirmed reset-rereceipt readout consequence (2026-09-13)
@@ -1723,16 +1723,16 @@ Baseline RED used the exact coarse-order test with only the confirmed-control
 expectation changed. It failed at the intended authoritative-readout assertion:
 `rc=101`, with the pre-final-Reset/no-receipt and post-final-Reset/unconfirmed
 negative stages already passing. Receipt:
-`/home/e/projects/lay-development-runner/td121-confirmed-rereceipt-readout/baseline-red-v2.log`,
+`/workspace/worker/lay-development-runner/td121-confirmed-rereceipt-readout/baseline-red-v2.log`,
 SHA-256 `fd6bfb752c9752275df536597ef687e37316757fac1fbcee76abcf32b33146c0`.
 
 The production change is one read-only admission binding/disjunction in
 `VisibleTailV3`; it calls the existing predicate without consuming its token.
 Remote `scripts/dev-check.py check --target bin:lay-ibus-engine` on shared target
-`/home/e/projects/lay-td119-gate-v1/target` passed: discovered 524, selected and
+`/workspace/worker/lay-td119-gate-v1/target` passed: discovered 524, selected and
 executed **521/521**, failed 0, with 3 performance tests excluded and 0 ignored.
 Local result:
-`/home/ubu/.cache/lay/development/run-cwx9243y/RESULT.json`, SHA-256
+`/home/local-user/.cache/lay/development/run-cwx9243y/RESULT.json`, SHA-256
 `beccce8022fcb1f89c00711dcfbbc9c39ea17112f6b6d587071abe03d3ff301e`;
 remote summary SHA-256
 `40674c66f8933c18de50d4aa8b6694e9a3446065f2858e9871ac90a1036058f3`.
@@ -1741,7 +1741,7 @@ reset rereceipt; it is not built into a client, installed or promoted.
 
 Full canonical architecture refresh/check on the original remote workspace,
 under the dedicated-20cpu guard and shared target lease, passed. Receipt:
-`/home/e/projects/lay-development-runner/td121-confirmed-rereceipt-readout/full-architecture.log`,
+`/workspace/worker/lay-development-runner/td121-confirmed-rereceipt-readout/full-architecture.log`,
 SHA-256 `b4a07bf0fbc6ac6b2630871b7da8e43777657e4d11d99d057fbbcc58f42770b7`.
 
 ### Queued actual Shift-pair delivery consequence (2026-09-13)
@@ -1835,7 +1835,7 @@ route the complete event stream through one production FSM and the same
 production event processor, assert real `WordBuffer` effects, and independently
 cover failure after press with release cleanup. It must not repair only the test
 helper. Local result:
-`/home/ubu/.cache/lay/development/run-qm24tq96/RESULT.json`, SHA-256
+`/home/local-user/.cache/lay/development/run-qm24tq96/RESULT.json`, SHA-256
 `a081ebd4ad11ec0a2a6d6d2f69fe1c83d3d15849386aea47660ae2c414a40df7`;
 remote log SHA-256
 `452aeed135d73ffb54c8d4b98b5780140d8d6b0df8c208835c27f4e690c30c30`;
@@ -1899,18 +1899,18 @@ The combined guarded daemon/IME check passed **786/786** selected tests from
 791 discovered, with five performance tests excluded and no ignored tests.
 Selected and executed identities match exactly. All 705 source/Cargo rows match
 the tested archive before this documentation update. Local result:
-`/home/ubu/.cache/lay/development/run-g8pk7wpw/RESULT.json`, SHA-256
+`/home/local-user/.cache/lay/development/run-g8pk7wpw/RESULT.json`, SHA-256
 `28cb564d7a3cdcd74a11dcea7ea8d7d82d37efb6603ca43a7a598940ba3e9d39`;
 archive SHA-256
 `e2e474c2d475dca75cf039abd57f378d77f799c411e0719b26638440033c9c25`.
 Remote summary:
-`/home/e/projects/lay-development-runner/run-yiW6cU/tests/SUMMARY.json`, SHA-256
+`/workspace/worker/lay-development-runner/run-yiW6cU/tests/SUMMARY.json`, SHA-256
 `598b1052e3cf079285da52b09e701d1084936eb3a5837a52d170b19b6c1618b9`.
 The run took 154.03 seconds; this is development verification, not a release
 gate, human keyboard acceptance, measured latency or Wave-quality proof.
 
 An earlier IME run remains **520/521 PASS, one FAIL**:
-`/home/ubu/.cache/lay/development/run-9udxj1nz/RESULT.json`, SHA-256
+`/home/local-user/.cache/lay/development/run-9udxj1nz/RESULT.json`, SHA-256
 `f04b331fddf06d5d8ebc97c144d6eec34f81a04b29e1738cd8ca437154754116`.
 `td121_successful_completion_release_settles_its_append_and_boundary_effect`
 failed its observed-suffix display-frame precondition. An exact rerun and a
@@ -1927,7 +1927,7 @@ the original remote development workspace, whose AST cache is absent, then the
 unchanged full architecture wrapper under the dedicated-20cpu resource guard.
 No sink exception, gate change or authority promotion is permitted. The remote
 refresh completed with both architecture verdicts PASS. Its local log is
-`/home/ubu/.cache/lay/development/td121-queued-pair-root-20260913/architecture-final.log`,
+`/home/local-user/.cache/lay/development/td121-queued-pair-root-20260913/architecture-final.log`,
 SHA-256 `278c611140aa05967bfd268d97024c4ead4af2a8145801518cf3651114993ebb`.
 The guard recorded the required 20 jobs, one test thread, CPU 2000%, memory
 24/28 GiB, swap 1 GiB and 512 tasks. All 1,054 AST inputs were extracted without
@@ -2002,7 +2002,7 @@ the two-character delayed case reached the intended final assertion with
 `(retained_after_first, retained_after_append, retained_after_reset, recovered)
 = (false, false, false, false)`. The five-character schedule was not reached
 after that assertion. Local result:
-`/home/ubu/.cache/lay/development/run-yliu5_5p/RESULT.json`, SHA-256
+`/home/local-user/.cache/lay/development/run-yliu5_5p/RESULT.json`, SHA-256
 `96eb21a9e0df195ad1b80e561e591d5a804d97c17170d34bb77228ba491941a8`;
 archive SHA-256
 `93d001973fef2f89c210c36f7a61c0885890db7150333b790873b80eefbddc99`.
@@ -2027,7 +2027,7 @@ identity equality. All four positive schedules now reach confirmed typed
 delegation; all 12 adverse schedules refuse. Before confirmation, the tested
 readout is passive and manual requests emit no GUI edit. All 706 runtime/Cargo
 rows match the tested archive. Local result:
-`/home/ubu/.cache/lay/development/run-ap8vhmet/RESULT.json`, SHA-256
+`/home/local-user/.cache/lay/development/run-ap8vhmet/RESULT.json`, SHA-256
 `b1a7c6b71dade4914c80bb2d8a6d4a177d210fa9209e1dbd7a18e0e27a010242`;
 archive SHA-256
 `bcf1c25375b76556a17e7bf3f6c8f1b4961f104ef031693840c249197b1de6eb`.
@@ -2059,7 +2059,7 @@ the graph has 22,622 nodes, 60,090 links, no foreign checkout IDs and the requir
 AuthorizedEdit edges. Both executables were built under the required guard;
 target usage ended at 10,135,805,952 bytes below the 12 GiB limit. Exact 706-row
 source binding, graph/receipt/log hashes and artifact identities are in
-`/home/ubu/.cache/lay/development/td121-firefox-recovery-candidate-20260913/artifact-binding.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-recovery-candidate-20260913/artifact-binding.json`,
 SHA-256 `22d34b48c68de6e3e3d546fa52a1aad3e0c70022dd52a0a10e89bd5e1c724339`.
 IME SHA-256 is
 `458befda749cc055e4727cea6845116566b302d25aafaf2a96b513ef6e015300`;
@@ -2072,7 +2072,7 @@ The unchanged owned Firefox harness returned **1/3 scenarios PASS**: Fast has
 one toggle and `привет`; Extra has zero of two toggles and unchanged `ghbdtn`;
 autocomplete has no preedit/completion, zero of one toggle and `про`. The Extra
 surface alone is not a round-trip PASS. Receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-recovery/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-recovery/RECEIPT.json`,
 SHA-256 `4520b280ff6502901ba3e381db379a5aebb06ad9dbed534f5410fbde781f64ac`.
 All three exact IME and supervised daemon identities match the candidate.
 Restoration is verified, fatal error is null, C20 hashes are loaded again,
@@ -2259,7 +2259,7 @@ and do not justify increasing its deadline. Installed C20 remains unchanged.
 The full remote architecture wrapper passes with 22,627 nodes/60,111 links;
 graph SHA-256 `21bc032caa6fe6cea1f3c3967cfb562289bd5e6c95b1434a3b1a33d5bcb3d77d`.
 The frozen source/graph/build binding is
-`/home/ubu/.cache/lay/development/td121-firefox-suffix-display-20260913/artifact-binding.json`.
+`/home/local-user/.cache/lay/development/td121-firefox-suffix-display-20260913/artifact-binding.json`.
 The 705-row build manifest was verified before and after the guarded build.
 IME SHA-256 `793fa4abe42c7e510fca22326e4049fad57344f34850b0e5909e605bef1a89ba`;
 daemon bytes remain `22193b24914cf306d531e2733dcdafcf286480206c1dfb09ae7f8e4048c5edbd`.
@@ -2268,7 +2268,7 @@ Target ended at 10,135,883,776 bytes, below 12 GiB.
 Native result is **0/2 PASS**. Autocomplete ends at `про`, without a worker,
 preedit or toggle. Extra ends at `ghbdtn` with zero of two toggles; identical
 surface is not a round-trip success. Receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-suffix-display/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-suffix-display/RECEIPT.json`,
 SHA-256 `0ca7b2dd211d1aa1a450df4bf1d39b03196ed15f9bc6cfc8c63545597beb3ab9`.
 Both captures are valid; restoration is verified and fatal error is null.
 The driver independently verifies restored C20 loaded hashes and unchanged
@@ -2472,7 +2472,7 @@ Retain every failure and verify owned-browser cleanup and restoration afterward.
 ### Native producer counterevidence: reject right-boundary repair — 2026-09-13
 
 The frozen candidate is
-`/home/ubu/.cache/lay/development/td121-firefox-observation-continuity-20260913/`.
+`/home/local-user/.cache/lay/development/td121-firefox-observation-continuity-20260913/`.
 Its IME SHA-256 is
 `c8a97fb267021733a76903984a84fbd9cb7878f2e1560a4e78488482a75e3192`;
 daemon SHA-256 is
@@ -2493,7 +2493,7 @@ This run does not establish native release-retirement coverage or reproduce
 the earlier acquire deadline failure.
 
 Exact receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-observation-continuity-baseline/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-observation-continuity-baseline/RECEIPT.json`,
 SHA-256 `79094a9f474e1f0fb7248f73e22fbe122da3f5be576b8cd050beb90877026804`.
 The preregistered producer-log case also fails **0/1**, with zero of two
 toggles. Its receipt is the sibling
@@ -2660,7 +2660,7 @@ unscored implementation review. Native acceptance remains open.
 ### Published-preedit native result and remaining first losses — 2026-09-13
 
 The exact candidate in
-`/home/ubu/.cache/lay/development/td121-firefox-published-preedit-20260913/`
+`/home/local-user/.cache/lay/development/td121-firefox-published-preedit-20260913/`
 has IME SHA-256
 `d69e1506e9ab54de91c9826188cfc3fb3125f40843ad262a993b24a8ac1d110b`;
 the daemon remains
@@ -2676,7 +2676,7 @@ The fixed three-case harness reports **1/3**. Separate actual valid client
 captures from invalid capture: **1/2 valid cases pass**, and **1/1 capture is
 invalid after focus loss before input**. This is not aggregate product
 acceptance and cannot close TD-121. Receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-published-preedit-baseline/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-published-preedit-baseline/RECEIPT.json`,
 SHA-256 `744eb0a8b3bf3e7c98e2deab762e5d9e7bd5d93814c2428c9631e2fcd180de92`.
 
 - `ghbdtn_fast_lshift_enter-e9ada829a837e3cf92ba`: **PASS**, exact visible
@@ -2766,7 +2766,7 @@ blur; closed/malformed guard input cancels. The helper marks lost-focus capture
 invalid immediately. It neither polls the GUI nor reacquires focus, and keeps
 the original keystrokes/deadlines. Remote guarded cancellation proof passes
 **5/5** with no GUI input. Exact local proof is
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/focus-cancel-proof.log`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/focus-cancel-proof.log`,
 SHA-256 `8093e61bb5ee98c1b90fa10305de8dcb1a6816b66d708265a60b2b56b486b8ad`;
 the sibling `firefox-focus-cancel-variant.json` SHA-256 is
 `e57d44e2ef6b0ecbe29d0a5b6a9524b0292bdfa955a3dfde691607e59a2bb541`.
@@ -2777,7 +2777,7 @@ These are harness safety mechanics, not Firefox product or physical acceptance.
 ### Measured activation expiry and Alt preparation loss — 2026-09-13
 
 The diagnostic candidate is
-`/home/ubu/.cache/lay/development/td121-firefox-activation-timing-20260913/`:
+`/home/local-user/.cache/lay/development/td121-firefox-activation-timing-20260913/`:
 IME SHA-256 `ff6786b141bdbf8ff54e1e5ecee4b3fc99e5d14709c7f5c8273206a53606a0f6`,
 daemon unchanged `22193b24914cf306d531e2733dcdafcf286480206c1dfb09ae7f8e4048c5edbd`.
 The remote full architecture wrapper passed, graph SHA-256
@@ -2788,7 +2788,7 @@ Artifact binding SHA-256:
 
 All three captures are valid and none triggers focus cancellation: **1/3 PASS**.
 The exact receipt is
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-activation-timing-baseline/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-activation-timing-baseline/RECEIPT.json`,
 SHA-256 `7767eab755adf8b979aea702304680c185427af1a969174ecc7127054741f2d3`.
 The single fast pair yields exact `привет` and one toggle. Its 405-row trace
 SHA-256 is `cc68a767f9a82e1b813c0672eb049eb39eaa1a5756bd1cc0bed2c525cb0c4f3b`.
@@ -2893,7 +2893,7 @@ All 530 prior selected identities still pass. No runtime authority changed;
 these are controlled regressions, not native Firefox acceptance.
 
 Exact evidence directory:
-`/home/ubu/.cache/lay/development/run-w_cjlui5/`.
+`/home/local-user/.cache/lay/development/run-w_cjlui5/`.
 
 The RED `RESULT.json` SHA-256 is
 `611c8de6f6c0d8b95035855f5f7fd51ee127e9ac9a36c40b328382fe83abac92`,
@@ -2923,7 +2923,7 @@ are component proofs only; native Firefox, physical input, release, resource
 latency and runtime promotion remain open.
 
 Final focused evidence:
-`/home/ubu/.cache/lay/development/run-jtq8bzie/` (remote `run-2fdLlf`).
+`/home/local-user/.cache/lay/development/run-jtq8bzie/` (remote `run-2fdLlf`).
 
 Its `RESULT.json` SHA-256 is
 `70371762ae6164512b68ce57dc32904858a1f163ab6fb5fd702ce4aa85b64710`,
@@ -2933,7 +2933,7 @@ and summary `578496641a21acfbb0256b68a081d09963e63f03967f5071e576a45ebe5beaac`.
 ### Native activation/Alt candidate: remaining bridge conflict — 2026-09-13
 
 Frozen candidate directory:
-`/home/ubu/.cache/lay/development/td121-firefox-activation-alt-20260913/`.
+`/home/local-user/.cache/lay/development/td121-firefox-activation-alt-20260913/`.
 IME SHA-256 `0ddbf7bc6f5313e2e03496df8fe264a005a75a85772e50e8c49e5cc258c24be6`,
 daemon `22193b24914cf306d531e2733dcdafcf286480206c1dfb09ae7f8e4048c5edbd`.
 The guarded full graph wrapper and release build pass on the 705-row binding;
@@ -2944,7 +2944,7 @@ The fixed native run is **0/3 harness PASS**: both Shift captures are valid
 failures; the autocomplete capture is ultimately cancelled on later DOM focus
 loss. Its earlier acceptance and manual-refusal trace remains usable causal
 evidence, not an end-to-end PASS. Receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-activation-alt-baseline/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-activation-alt-baseline/RECEIPT.json`,
 SHA-256 `32de0170e733c73bb334bd949ca0b9e307d91c997b884875c04dbaba452c2b80`.
 All 13 observed activation chains publish, maximum 2,529 microseconds; none
 exercises the extended part of the deadline in this run. This is not a latency
@@ -3054,7 +3054,7 @@ the new conflicting-input/queue-capacity controls pass. Rename the queue test
 to describe its actual capacity scope; activation readiness is unchanged by
 construction and is not an additional measured claim of that test.
 
-Exact directory `/home/ubu/.cache/lay/development/run-ztuni7kn/`;
+Exact directory `/home/local-user/.cache/lay/development/run-ztuni7kn/`;
 `RESULT.json` SHA-256 `ba6aaee7343587e0db050d0a1c6777bb8723825877cec53adea9338a90a0314e`,
 archive `2b273e26a85a35e4000a06bb8315c98d69f9b0ebff92708718137f7c680f46c0`,
 summary `712c6c47b80fd428fc9a3a1f479a267dd730944422671fb51644b4ff9db9541f`.
@@ -3082,7 +3082,7 @@ speculation keeps the previous path. No word examples or case IDs enter
 runtime conditions. Native acceptance, CPU/RSS/latency and installation remain
 open, and the original pre-footprint native failures remain counterevidence.
 
-Evidence: `/home/ubu/.cache/lay/development/run-c_f_rxj2/`;
+Evidence: `/home/local-user/.cache/lay/development/run-c_f_rxj2/`;
 `RESULT.json` SHA-256 `92e9609f26fbeb9a76d00297f11dd7bce1b2b95fdefb9d8d35dfc1ac648982d1`,
 archive `d7a62284a5ba777fefeb8dd10b9e25b76995f1fd4f49d18e6aad205e33feee7e`,
 summary `b4ca3dcfeae2184b828771a6d1f7dca0a874fec6d749189bdc1e99dffdfa26a9`.
@@ -3126,7 +3126,7 @@ new single-Alt Case is separate. Candidate IME SHA-256 is
 daemon `22193b24914cf306d531e2733dcdafcf286480206c1dfb09ae7f8e4048c5edbd`,
 sender `cd6c89bb1beab99a8e6443c0e40051196e753571eaad042d564f90ea1a7f81ae`.
 Build and binding evidence:
-`/home/ubu/.cache/lay/development/td121-firefox-shift-footprint-20260913/`;
+`/home/local-user/.cache/lay/development/td121-firefox-shift-footprint-20260913/`;
 `artifact-binding.json` SHA-256
 `b924644cee9a69018491e546c02928637582bd0619dbf5fa1dcb882f2173e378`.
 
@@ -3161,7 +3161,7 @@ maximum is 5,065 us; this is an observed chain duration, not callback, mutation,
 end-to-end latency, speedup or physical acceptance. Installed C20 hashes were
 restored; the original Firefox and global IBus PID/start/hash rows are unchanged.
 Native receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-shift-footprint-baseline/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-shift-footprint-baseline/RECEIPT.json`,
 SHA-256 `cbd88c91685780e03d7d503258841da1d8c4fb85869e3433036789cfed951c07`.
 The repeat trace has SHA-256
 `7c87c31baad78d9af61ea8245d880b20fd1f4bafd08bb6d70047bff6c04b7658`;
@@ -3223,7 +3223,7 @@ Three native Backspaces return unhandled without emptying the mirror. This is
 a setup failure, not the promised causal RED. Select the IME text backend in
 the new input fixture, assert the live composition and replay scope, and repeat
 the tests-only discriminator. Production source remains unchanged.
-Receipt directory `/home/ubu/.cache/lay/development/run-s18e1nx0/`;
+Receipt directory `/home/local-user/.cache/lay/development/run-s18e1nx0/`;
 `RESULT.json` SHA-256 `b5f1cfa075089eae64e8815a116c4e8def67ab6ebc8e4bb6b59dabb2bde0e44c`,
 archive `76f68d532311dc41b07c60c1d3b35ea1b7cccb78f87888f3131a0def4fee761f`,
 summary `9db94829ea83309c13045f4429c2759956111ab6c2ffefae7f9eafda7c19ceb4`.
@@ -3234,7 +3234,7 @@ native-append test FAIL at predecessor retention. The native delete/replacement
 entrypoints and prefix Reset run before that assertion. All eight replay/
 context negative controls and the prior 541 identities pass. No production
 change is present in this archive. Runtime authority remains unchanged.
-Evidence `/home/ubu/.cache/lay/development/run-1l7yfz91/`;
+Evidence `/home/local-user/.cache/lay/development/run-1l7yfz91/`;
 `RESULT.json` SHA-256 `b963ad86cefdfc7f01073c849e15d75ef07e97e996701999900fc484e8f29bcf`,
 archive `1cfeccf141faab8128d8f11639eda7830bace1466cab17537420b1d38609fb3e`,
 summary `19ecece04965fbe979e3164ff7d1a3611240cf75e2bf0754fa3e2e9c2172e2a2`.
@@ -3247,7 +3247,7 @@ layout is asserted separately by `VisibleTailV3`. Correct only that fixture
 expectation to the typed enum. The run remains 542/543, not GREEN, and the
 remaining positive matrix rows have not yet executed. All negative controls
 and previous identities pass; the production predicate stays unchanged.
-Evidence `/home/ubu/.cache/lay/development/run-wnyegl_j/`;
+Evidence `/home/local-user/.cache/lay/development/run-wnyegl_j/`;
 `RESULT.json` SHA-256 `5ea75a79666a4090ead2445a2cad231937c565320809eb0111125f73dc1b06cb`,
 archive `33024dee2832b8336933b81fb9488b6e13a86a779fd48ba93b6a65ac70165e8d`,
 summary `1737f11a068bc7183d871d3ea5306697f0a7a3948d2f891dab2a9d463a9071c7`.
@@ -3264,7 +3264,7 @@ accepts only a handled append or a quarantined native append whose existing
 local/shared replay scope is still current, followed by the old exact append
 and identity checks. Native and physical acceptance remain open.
 
-Evidence `/home/ubu/.cache/lay/development/run-xmk6pjcw/`;
+Evidence `/home/local-user/.cache/lay/development/run-xmk6pjcw/`;
 `RESULT.json` SHA-256 `2de3f4acac7a54eec5c52885b1f92eac7f5b96973a536890342cc31b07974506`,
 archive `edf41ed6f7ebc465dee796b99ae63290e5a57a4a160a0cef0d2625e43f0c69fb`,
 summary `3fb1a7e85a484bc998ba989a3c511afc8191eb06caab67bcba6fbad9509cdd32`.
@@ -3279,7 +3279,7 @@ consumed to satisfy the harness. No installation or release authority changes.
 Canonical guarded architecture/build and all 766 freeze rows pass. Candidate
 IME SHA-256 is `a848dec1ceb1f05f93410bcd7a2314dab25b2ed375aa3ae86c12a0e33418909f`;
 daemon and sender match the preceding freeze. Evidence directory:
-`/home/ubu/.cache/lay/development/td121-firefox-replay-rereceipt-20260913/`,
+`/home/local-user/.cache/lay/development/td121-firefox-replay-rereceipt-20260913/`,
 binding SHA-256 `7256d8c072c13d2561509c2e3cbc50a072289f1a5ebf9bbf8592c64520404c59`.
 Native receipt is **1/4 harness PASS**: one pair passes; four taps still produce
 one of two required projections. The original Alt capture is focus-cancelled
@@ -3302,7 +3302,7 @@ runtime patch; do not lengthen the wait, manufacture a snapshot, add a probe
 keystroke or relax the two exact-tail validations.
 
 Receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-replay-rereceipt-baseline/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-replay-rereceipt-baseline/RECEIPT.json`,
 SHA-256 `e2b019f487a138ec42208dca5737a5352880f414df8ee182fb43d1e2b432931d`.
 Repeat trace SHA-256:
 `0484e6ff46d44537e33d0265415796c2679750b214f8102b3dffb8c61975d567`.
@@ -3319,7 +3319,7 @@ requests surrounding text before keys; its RequireSurroundingText callback
 disconnects after its first request. This IBus reference is not the exact
 client binary revision: Firefox maps the Snap GTK/IBus libraries, not the host
 dpkg libraries. Source URLs, hashes and full files are retained in
-`/home/ubu/.cache/lay/development/td121-firefox-replay-rereceipt-20260913/upstream/`.
+`/home/local-user/.cache/lay/development/td121-firefox-replay-rereceipt-20260913/upstream/`.
 The native trace above establishes the missing final callback; these sources
 explain a possible ordering mechanism, not a measured fix.
 
@@ -3375,7 +3375,7 @@ separate. Three former daemon helper test identities are replaced by the FIFO
 test and the two settlement-loop tests; the removed pair emitter's release
 failure contract remains covered by the existing closed-tap frame tests.
 
-Evidence `/home/ubu/.cache/lay/development/run-iz9ctton/`;
+Evidence `/home/local-user/.cache/lay/development/run-iz9ctton/`;
 `RESULT.json` SHA-256 `b9d8594b33894e109b634dc3b84c70c1f393c9aedc03868a0b09839944b51755`,
 archive `ce43a02f19717ee86ec1a7df443428e368cfbf028a24398ad1f24c35123cb0d3`,
 summary `e8d246ca3b38ecd16998c394bbc5f68a8ea7339251c7538c4138e3108f409b9e`.
@@ -3393,7 +3393,7 @@ mutation predicate. Its subsequent fresh-snapshot and exact-delegation
 assertions remain unchanged. No production change follows this run; reuse the
 266 daemon proof and rerun the IME component for this test-only correction.
 
-Evidence `/home/ubu/.cache/lay/development/run-wchb064l/`;
+Evidence `/home/local-user/.cache/lay/development/run-wchb064l/`;
 `RESULT.json` SHA-256 `78113f19a1d1324c96225a5011bf1743ecd97200a819866660f64aa682bb7ad4`,
 archive `f29122b2ca9a95a13f3ff51fb079666efb3dadb2a613ce651f2025f6cd3ad17d`,
 summary `94ef3bb3b7e9fdbb5da5294a0718f2f25f715294012f7a244952bd404fa9949e`.
@@ -3419,7 +3419,7 @@ captured tap is emitted once on client progress or existing exact-tail proof;
 missing snapshot, repeated progress, read/emit failure and timeout cannot
 authorize a second mutation. No new long-lived state or runtime authority.
 
-Evidence `/home/ubu/.cache/lay/development/run-08re75wd/`;
+Evidence `/home/local-user/.cache/lay/development/run-08re75wd/`;
 `RESULT.json` SHA-256 `4c3860e9a71d969d9183200c97b7bdba8269eac271ba0f2e11a2d215336f11b4`,
 archive `5bbb1b2a6ea9fe0610795e580152f4da6a8e9224e87afb3b95746f40de3f54ae`,
 summary `50000cee9208f9b9f3fdfe80faf5e4117a9709bdc8f7ea68ea29312be87e7b1c`.
@@ -3434,7 +3434,7 @@ SHA-256 `0646402d3866f1e1dfc29dd47521751f30465d37e32e8f55e3f26ebaaa9a4144`,
 daemon `d05e22eb4e15b814a3d97c84aa04254135a31e8d5288432fab04f148cea4a2e1`,
 sender remains `cd6c89bb1beab99a8e6443c0e40051196e753571eaad042d564f90ea1a7f81ae`.
 Freeze evidence:
-`/home/ubu/.cache/lay/development/td121-firefox-queued-client-progress-20260913/`;
+`/home/local-user/.cache/lay/development/td121-firefox-queued-client-progress-20260913/`;
 binding SHA-256 `aca5772c1a847de8b9b53cbdd8cb8e746d05f26f21f63c51db4f4fadced23c26`.
 
 The native result is still **1/4 harness PASS**. One fast pair passes. Four taps
@@ -3464,7 +3464,7 @@ log arrival times: the HTTP DOM recorder's arrival order is not DOM dispatch
 order. The fixed 1 ms replay pacing is unchanged.
 
 Receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-queued-client-progress-baseline/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-queued-client-progress-baseline/RECEIPT.json`,
 SHA-256 `ddb7932777fdedf9fd7e24b22132b14cc41a2aee0061de0b530df1fba65a04f0`.
 Repeat trace SHA-256 `76d73a0607799d38afdb66b671d591d0ddef665be70288b816e1a09ad6f7d90c`;
 single-Alt trace `7451f904d88ecb751f8243cc4d20bfa6f9b4a2febcde279d1387d3ea73eebd7f`.
@@ -3521,7 +3521,7 @@ assertion. The fixture inferred its keycode literals as signed integers, so its
 D-Bus body did not have the required `(u32,u32,u32)` schema. Give the event
 vector that explicit wire type and include error name/serial in any future
 diagnostic. This run is not a causal ordering RED and contains no production
-dispatch change. Evidence `/home/ubu/.cache/lay/development/run-7b49zgms/`;
+dispatch change. Evidence `/home/local-user/.cache/lay/development/run-7b49zgms/`;
 `RESULT.json` SHA-256 `9b58bf100a5a0ca3b4801b3b0c847dc4db7f3241d7644fdbc411b178cb13b462`,
 archive `8997cd8c4d44707b9289cd1ad9d6800bbb2e94140b0c0ef0f44d820ad3f706a5`,
 summary `4d92acd106e6dc847f6be09afc4d91bbdfb7b2904d7bed111b4cdeb9600aa354`.
@@ -3538,7 +3538,7 @@ native letter corruption. The native single-Alt trace separately proves that
 printable methods can overtake and corrupt output. All 543 earlier identities
 pass. No dispatch production change exists in this RED archive.
 
-Evidence `/home/ubu/.cache/lay/development/run-tt11wauw/`;
+Evidence `/home/local-user/.cache/lay/development/run-tt11wauw/`;
 `RESULT.json` SHA-256 `510a866477990aa9a84cfd836c4f247efc715e4a605f5c40ea32a4596c8e171a`,
 archive `60b93423c7f781a63b1b98ff43e679369f1a0264d32be2b99de31cc3243dca37`,
 summary `52879a7a101eb80a9186d41b817e7e0de48e99ebe1e96e7dff74fddad2e5c9d3`.
@@ -3559,7 +3559,7 @@ atomic and terminal unit contracts pass. No new runtime queue, timer, authority
 or relaxed validation is present. Native/client liveness is still a separate
 gate; this is not physical acceptance.
 
-Evidence `/home/ubu/.cache/lay/development/run-i44w58wy/`;
+Evidence `/home/local-user/.cache/lay/development/run-i44w58wy/`;
 `RESULT.json` SHA-256 `dd85b500a9193d5d6071d7b16184c4b994104639fae1007a48d99629e0e20127`,
 archive `ba74e48209c4d9ca1c19539e2955abbf9dbd25537b80fd1c783a735e3457ed23`,
 summary `d41daeb5b5f40965b9932a96ad9c1958e74650fb7e5146f15328e54f5a380bec`.
@@ -3580,7 +3580,7 @@ daemon and sender return to the preceding accepted replay-rereceipt bytes
 (`22193b24914cf306d531e2733dcdafcf286480206c1dfb09ae7f8e4048c5edbd`
 and `cd6c89bb1beab99a8e6443c0e40051196e753571eaad042d564f90ea1a7f81ae`).
 Freeze directory:
-`/home/ubu/.cache/lay/development/td121-firefox-ordered-dispatch-20260913/`;
+`/home/local-user/.cache/lay/development/td121-firefox-ordered-dispatch-20260913/`;
 binding SHA-256 `7d0692d24ed4d5c46017d88364c31edc02638f115f11721811ee0161e63531d2`.
 
 Native result is **2/4 harness PASS**. One fast pair produces `привет`.
@@ -3600,7 +3600,7 @@ No expectations or inputs changed. Installed C20 bytes are restored; original
 browser/global IBus identities remain unchanged. No physical/release PASS.
 
 Receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-ordered-dispatch-baseline/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-fast-repeat-20260913-t__qoo7d/firefox-ordered-dispatch-baseline/RECEIPT.json`,
 SHA-256 `1bbc70286222f6eb8048094ff534206363f3b5ff032f5c518e4ef730d77605a6`.
 Repeat trace SHA-256 `281f69046d886aae3c4823d6ebeb913a69da332f0061ae088ec0bac3d379bd29`;
 single-Alt trace `9eb576373dd7d44531686056f44a147c434c261dadb3540dcde388d0abee3103`.
@@ -3618,7 +3618,7 @@ explicitly selects `GTK_IM_MODULE=ibus`. The same Snap runtime contains
 RequireSurroundingText callback after its first invocation. This establishes a
 protocol difference, not native compatibility or exact binary source identity.
 Pinned primary source URLs, hashes and downloaded files are retained under
-`/home/ubu/.cache/lay/development/td121-firefox-wayland-control-20260913/`.
+`/home/local-user/.cache/lay/development/td121-firefox-wayland-control-20260913/`.
 
 Run a separate, explicitly labelled **client module control**, reusing the
 ordered-dispatch frozen binaries and the unchanged four cases/expectations.
@@ -3671,7 +3671,7 @@ locate why the existing observed-suffix preparation is not eligible here; do
 not relax completion or exact edit authority to force this control green.
 
 Receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-wayland-control-20260913/native-control/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-wayland-control-20260913/native-control/RECEIPT.json`,
 SHA-256 `a3c2c4e036ebf2c30296f9f42563389a7a5793a5af5b6cd1c4f921ee5b4611fc`;
 artifact binding `da881ba73f83e401d3714fadcbaa3c9cc7f4e6484d0cf7ca8fbe0826223f0d5b`.
 Repeat trace `a77adc8e79b9b1a3342c2458e55caecd6ea31448b8e5131b6070bc3299d7f499`;
@@ -3714,7 +3714,7 @@ loses the IME word across menu-related refocus and times out without a final
 textarea Enter. Neither invalid capture is a runtime PASS or a physical proof.
 
 Receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-sync-control-20260913/native-control/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/td121-firefox-sync-control-20260913/native-control/RECEIPT.json`,
 SHA-256 `da5705dc9ea979072eafc217d3c2fe2ee2bfbc5b7171e1fa02ebf1f5da043de0`;
 binding `d9d3aebbbfc4ad109f1705ee49572f317f5be63c39e975937361f76756d38208`.
 Repeat trace `b1725e8f9ea275959edd8b0e028f6c28383bac8e43ad0acbb7677950efd5f7c4`;
@@ -3765,7 +3765,7 @@ and the Alt cases contain interleaved manual input. The first single-pair case
 passed with the actual client notification. Do not classify the mixed records
 as runtime failures or use their extra acceptances as a new runtime defect.
 Batch receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-reset-notify-control-20260913/native-control/RECEIPT.json`
+`/home/local-user/.cache/lay/development/td121-firefox-reset-notify-control-20260913/native-control/RECEIPT.json`
 SHA-256 `1e8d807e78c577beb854d419128d3c6374104c8bb508eae312a7b86a2f64f0a7`.
 
 The separately guarded four-tap discriminator passed 1/1: exact visible
@@ -3775,7 +3775,7 @@ was followed by the real six-character snapshot at row 505 and second manual
 delegation at row 509. This reused unchanged ordered-dispatch Lay binaries,
 input and expectation; only the owned test Firefox loaded the client probe.
 Receipt:
-`/home/ubu/.cache/lay/development/td121-firefox-reset-notify-control-20260913/repeat-only/native-control/RECEIPT.json`
+`/home/local-user/.cache/lay/development/td121-firefox-reset-notify-control-20260913/repeat-only/native-control/RECEIPT.json`
 SHA-256 `d099310e9840c26457b6bc66cb0843fce8b6e4b66d2442488a61d262ee4e86ed`;
 trace SHA-256 `987950ebd3f10f8ba3cf704aa14252e8a3205f17bc842c023e59f7993611406e`.
 Verdict: causal notification mechanism demonstrated in the private test client;
@@ -3786,7 +3786,7 @@ The user's subsequent report is specifically DoubleShift failure in the
 ordinary Firefox; ordinary typing and DoubleShift in other applications work.
 The active next step is a bounded trace of that installed process, not another
 automated browser run. The passive observer in
-`/home/ubu/.cache/lay/development/td121-live-firefox-trace-20260913/`
+`/home/local-user/.cache/lay/development/td121-live-firefox-trace-20260913/`
 records physical Shift transitions, selected session bridge calls/replies and
 IBus callback metadata. It never grabs input, sends keys, restarts services or
 records the text of D-Bus payloads. A read-only Ping/GetGlobalEngine control
@@ -3864,8 +3864,8 @@ effects instead of requiring the internal candidate Option to be empty.
 
 Final focused result: **545/545 PASS**, including all three grouped cases and
 the stale-owner, missing snapshot, wrong selection and quarantine contracts.
-Receipt: `/home/ubu/.cache/lay/development/run-72tfxnuq/RESULT.json`;
-remote logs: `/home/e/projects/lay-development-runner/run-eO490o/tests/`.
+Receipt: `/home/local-user/.cache/lay/development/run-72tfxnuq/RESULT.json`;
+remote logs: `/workspace/worker/lay-development-runner/run-eO490o/tests/`.
 The first repair iteration exposed four regressions; all four were corrected
 before this result. No new runtime installation or physical acceptance.
 Next: freeze the graph and exact binaries, then run the owned Firefox cases
@@ -4285,7 +4285,7 @@ authority path, limits, and receipt are in
 
 ## 2026-09-23 candidate regression and revised gate
 
-The user installed candidate SHA-256 `f17191f43936e87a195ec28c0c09a41b2229fa4f340070741e5f5ca83321548c` and immediately reported that Firefox Tab did not accept a visible suggestion and Double Shift converted only one way. The candidate was rolled back; the accepted `daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88` is again the installed and loaded engine. The global IBus daemon and Lay daemon retained their PIDs. Incident receipt: `/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/incident-receipt.json`.
+The user installed candidate SHA-256 `f17191f43936e87a195ec28c0c09a41b2229fa4f340070741e5f5ca83321548c` and immediately reported that Firefox Tab did not accept a visible suggestion and Double Shift converted only one way. The candidate was rolled back; the accepted `daaa47bf400b8fb06d124a31c0790422f8a830aa26cecfdfd8152b2687687b88` is again the installed and loaded engine. The global IBus daemon and Lay daemon retained their PIDs. Incident receipt: `/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/incident-receipt.json`.
 
 The candidate trace has the causal Tab chain: a shortened preedit remained visible, Firefox delivered a stale preedit snapshot, `second_surrounding_receipt` revoked exact authority, and Tab returned `handled=false`. The earlier regression test placed the shortened publication **after** key settlement; production publishes it **before** the Reset lineage advances. A revised test reproduces that order, was red on the installed candidate source, and is green with the provisional one-character append witness fix. It also checks Tab acceptance after a fresh exact receipt and rejection of contradictory surfaces. This revised source is not installed. Two `ManualToggleV3` calls but only one new conversion plan were captured; the second RPC outcome was not recorded, so the one-way Shift cause is still open. The source now records scoped RPC outcomes for a later physical capture.
 
@@ -4399,7 +4399,7 @@ scoped-uinput attempts failed earlier; the exact first-success GitHub callback
 sequence is still unobserved. Its working IME, Tab and autocorrection are
 acceptance constraints, not evidence that an arbitrary recovered tail is safe.
 Receipts: `~/.cache/lay/development/td121-firefox-boundary-receipt-20260914/notification-combined/native-control/RECEIPT.json`,
-`/home/ubu/.cache/lay/development/firefox-double-shift-live-20260923-0355/persistent-firefox-window-20260923-103450/addressbar-neighbor-physical-receipt.json`,
+`/home/local-user/.cache/lay/development/firefox-double-shift-live-20260923-0355/persistent-firefox-window-20260923-103450/addressbar-neighbor-physical-receipt.json`,
 and the same directory's `engine-trace-after-lease.jsonl`; the GitHub receipts
 are linked in `docs/ime-daemon-route-map-2026-06-20.md`.
 
@@ -4482,7 +4482,7 @@ publication, target `Reset`, old-token revocation, transfer installation, no
 authority before the fresh target callback, exact callback acceptance,
 contradictory callback refusal, selection refusal, and changed-content-type
 refusal. The remote guarded focused run passed **595/595** tests; receipt:
-`/home/ubu/.cache/lay/development/run-tti_cilb/RESULT.json`. These are
+`/home/local-user/.cache/lay/development/run-tti_cilb/RESULT.json`. These are
 development tests, not a Firefox client verdict. Runtime authority changed:
 **false**; the installed/loaded accepted engine stayed `daaa47bf…687b88`.
 
@@ -4499,14 +4499,14 @@ promote the address-bar class.
 
 The exact-snapshot slice was transplanted alone to a clean worktree at accepted
 tag `v1.0.73` (`9c9fc3c6de7e119caf7479d956b3080b0e4b2764`). The remote guarded
-focused check passed **566/566** (`/home/ubu/.cache/lay/development/run-yr03g1hd/RESULT.json`).
+focused check passed **566/566** (`/home/local-user/.cache/lay/development/run-yr03g1hd/RESULT.json`).
 The built candidate SHA-256 is
 `42f0b37b1abfffaf448d24b3649d8b9aca1e152195b0b29fce31eee9a115c61c`.
 It was temporarily installed only inside guarded, owned Firefox textarea
 probes. The full input and DOM sequence after visible Tab was
 `просто ` → `ghjcnj ` → `просто ` → `ghjcnj ` → `просто `,
 with four daemon Double Shift delegations: PASS for that one input class.
-Receipt: `/home/ubu/.cache/lay/development/td121-accepted-base-20260923/installed-candidate-firefox-td121_tab_four_toggles-20260923-142031/`.
+Receipt: `/home/local-user/.cache/lay/development/td121-accepted-base-20260923/installed-candidate-firefox-td121_tab_four_toggles-20260923-142031/`.
 Its trace did **not** exercise the new ready-transfer Reset successor; the
 successful cycle therefore cannot be attributed to the proposed repair.
 
@@ -4517,10 +4517,10 @@ then made an ordinary layout conversion. Extending the pre-Space wait from
 950 to 2,500 ms did not change that observation. These are **NOT TESTED**
 verdicts for undo after *applied* autocorrection, not evidence that the undo
 handler itself failed. Receipts:
-`/home/ubu/.cache/lay/development/td121-accepted-base-20260923/installed-candidate-firefox-td121_known_autocorrect_undo-20260923-141712/`
+`/home/local-user/.cache/lay/development/td121-accepted-base-20260923/installed-candidate-firefox-td121_known_autocorrect_undo-20260923-141712/`
 and `...-20260923-142638/` under the same root. The accepted installed engine
 passed the exact-word apply-and-undo control earlier in
-`/home/ubu/.cache/lay/development/td121-exact-successor-20260923/baseline-autocorrect-undo-control/`.
+`/home/local-user/.cache/lay/development/td121-exact-successor-20260923/baseline-autocorrect-undo-control/`.
 
 **Verdict: reject promotion of this slice.** It does not reach the measured
 address-bar no-surrounding Reset path, the authenticated GitHub first-success
@@ -4550,7 +4550,7 @@ native Backspace/replacement replay, then a delayed surrounding snapshot of
 the pre-insertion surface after the first replacement character. That snapshot
 clears the Reset predecessor; later gestures reach the bridge but have no
 admitted edit. Ring:
-`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/current-engine-ring.jsonl`
+`/home/local-user/.cache/lay/development/firefox-repeat-cycle-20260924/current-engine-ring.jsonl`
 (SHA-256 `6123549b159db3ad105b27b43273f6867b96ac6c5f24a36abd3ad501f25481cd`).
 
 An isolated candidate now binds Firefox's external text prefix only when an
@@ -4561,7 +4561,7 @@ an authenticated, exact current receipt. The target-snapshot fixture with a
 delayed first-character receipt was RED before this edit and GREEN after it.
 The fixture also rejects a foreign prefix. The candidate is based on the
 current accepted source in
-`/home/ubu/projects/lay-td121-repeat-clean-20260924`; source diff is only six
+`/workspace/local/lay-td121-repeat-clean-20260924`; source diff is only six
 IME files. The earlier source copy contained unrelated rejected experiments
 and is not a build or installation source.
 
@@ -4573,7 +4573,7 @@ unmodified accepted source. The candidate's first parallel bin run on the
 earlier contaminated copy had 31 failures, mostly timing-sensitive, and is
 not an acceptance result. Logs: `clean-focused.log`, `clean-bin-serial.log`,
 and `accepted-baseline-pending-worker.log` under
-`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/`.
+`/home/local-user/.cache/lay/development/firefox-repeat-cycle-20260924/`.
 
 Verdict scope: source mechanism is supported and the candidate passes its
 focused proof; complete six-cycle Firefox visible-text behavior, Tab,
@@ -4632,7 +4632,7 @@ The user cleared the 96-character draft and typed in the existing authenticated
 Firefox comment field while the installed accepted engine ran. Capture was
 stopped on the user's `всё стоп`. The transient capture unit is inactive.
 Raw receipts are in
-`/home/ubu/.cache/lay/development/firefox-repeat-live-user-20260924/`:
+`/home/local-user/.cache/lay/development/firefox-repeat-live-user-20260924/`:
 `engine.jsonl` (10,212 events; SHA-256 `4ee8b9c7f126dfed9e8d6dcf1f4de7bd3fe0d858e013cce0ae75c3f116f46f24`),
 `physical_keys.jsonl` (326 relevant key events; SHA-256 `035591afff9ec18721f0b7d63595c896b2618868f3ad77bdda733ead430cc530`),
 `field.jsonl` (270 value changes; SHA-256 `cb7ebfe7d5aa86039fb7b791e8a2aa01d9dd4b670991dbd0989e8863c504e832`), and
@@ -4698,9 +4698,9 @@ external-prefix receipt, a final exact receipt, and a second `ManualToggleV3`.
 The accepted-source comparison compiled with the same new test and failed at
 the old receipt (`context_reset_rereceipt.is_some()`, test line 6358):
 **593/594**, sole failure this test. Remote receipt:
-`/home/ubu/.cache/lay/development/run-32djw3rt/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-32djw3rt/RESULT.json`.
 The isolated candidate passed **594/594**:
-`/home/ubu/.cache/lay/development/run-6969hmzg/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-6969hmzg/RESULT.json`.
 Both runs used the guarded remote `bin:lay-ibus-engine` development lane;
 this is an explicit component check, not a release gate. The baseline
 comparison used a separate scratch worktree with only the three candidate
@@ -4715,7 +4715,7 @@ after each run. The candidate's Tab acceptance produced visible `про` →
 `просто` and `ibus_completion_accept`/handled Tab; its applied-autocorrection
 undo produced visible `публекует` → `публикует ` → `публекует `.
 Receipts are under
-`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/human-order-native-20260925-000550/`
+`/home/local-user/.cache/lay/development/firefox-repeat-cycle-20260924/human-order-native-20260925-000550/`
 and `human-order-native-20260925-000638/`.
 
 The 179-character neutral-text native cycle attempt did **not** reach a first
@@ -4723,7 +4723,7 @@ flip: the eight Shift keydowns reached Firefox but there was no manual
 delegation or converted full surface. Its final-value-only runner said OK;
 the independent intermediate-surface check correctly rejected it (0/4).
 Receipt:
-`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/human-order-native-20260925-000352/VISIBLE-CYCLE-VERDICT.json`.
+`/home/local-user/.cache/lay/development/firefox-repeat-cycle-20260924/human-order-native-20260925-000352/VISIBLE-CYCLE-VERDICT.json`.
 The earlier faster attempt also had 0/4 and lost queued input when its virtual
 keyboard exited; its final-value-only OK is invalid. These attempts do not
 show candidate regression or repair of the human Issue #46 cycle. The
@@ -4741,15 +4741,15 @@ directory. After the baseline RED run, two candidate checks reused its stale
 test executable despite matching candidate source snapshots and failed at the
 baseline assertion. Touching only the three unchanged candidate runtime files
 forced a rebuild. The rebuilt focused IME suite passed **594/594**
-(`/home/ubu/.cache/lay/development/run-o27lxcm8/RESULT.json`), and the full
+(`/home/local-user/.cache/lay/development/run-o27lxcm8/RESULT.json`), and the full
 guarded development suite passed **2,895 selected, zero reported failures**
-(`/home/ubu/.cache/lay/development/run-3ukqj44h/RESULT.json`). The stale-cache
+(`/home/local-user/.cache/lay/development/run-3ukqj44h/RESULT.json`). The stale-cache
 failures are recorded in `run-wbtve846` and `run-wkfgmejv`; they are not
 candidate-source failures. No runtime source was edited in this gate.
 
 The second graph refresh failed in `prune-graphify-self-sources.py` because a
 self-sourced TD-117 query label survived report pruning; receipt:
-`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/human-order-graph-update-final.log`.
+`/home/local-user/.cache/lay/development/firefox-repeat-cycle-20260924/human-order-graph-update-final.log`.
 There is still **no PASS architecture receipt** and no release gate. This
 tooling failure does not establish the Firefox cycle's result.
 The partially refreshed generated graph files were restored to the scratch
@@ -4759,11 +4759,11 @@ test, its two test-lane manifests, and this owning document.
 At the user's request, candidate SHA-256
 `6351c890686a5f165d1a24628961ff470df761126726325a7f03b204aeb3f751`
 was installed as a **test IME build**, with the accepted binary saved at
-`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/candidate-installed-20260925-4TVAX3/accepted-lay-ibus-engine`.
+`/home/local-user/.cache/lay/development/firefox-repeat-cycle-20260924/candidate-installed-20260925-4TVAX3/accepted-lay-ibus-engine`.
 The installed file and loaded process both matched the candidate hash;
 `lay-daemon.service` was active. GNOME's current layout and the global IBus
 engine both read `lay-ime-ru` after the installation. Installation receipt:
-`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/candidate-installed-20260925-4TVAX3/INSTALL.txt`.
+`/home/local-user/.cache/lay/development/firefox-repeat-cycle-20260924/candidate-installed-20260925-4TVAX3/INSTALL.txt`.
 Runtime authority changed: **true, test installation only**. The user's
 physical-keyboard cyclic sequence in the authenticated Issue #46 field remains
 **NOT TESTED** on this installed candidate. Native Tab and autocorrection undo
@@ -4772,7 +4772,7 @@ and supplies no acceptance evidence. Do not publish or claim the cycle fixed
 until the same field visibly alternates through multiple Shift pairs.
 The read-only Firefox field/physical-key/engine capture was restarted as the
 active user unit `lay-firefox-double-shift-capture-20260925.service` from
-`/home/ubu/.cache/lay/development/firefox-repeat-live-user-20260924/capture.py`;
+`/home/local-user/.cache/lay/development/firefox-repeat-live-user-20260924/capture.py`;
 its `status.jsonl`, `physical_keys.jsonl`, `engine.jsonl`, and `field.jsonl`
 are the evidence for the next user-run sequence. The capture leaves the
 pre-existing GitHub draft out of the field log until the field becomes empty.
@@ -4799,7 +4799,7 @@ independent occurrences. The field-text collector recorded zero new values
 because the existing draft had not been observed empty. These facts establish
 an authority rejection during a physical test, but do **not yet prove** that
 this particular rejection was the first-word scenario. Receipts:
-`/home/ubu/.cache/lay/development/firefox-repeat-live-user-20260924/physical_keys.jsonl`,
+`/home/local-user/.cache/lay/development/firefox-repeat-live-user-20260924/physical_keys.jsonl`,
 `engine.jsonl`, `field.jsonl`, and `status.jsonl`. Runtime authority changed:
 **false in this investigation**; the test build remains installed and loaded.
 
@@ -4809,7 +4809,7 @@ Tested a source-free first word followed by Space against the Firefox receipt
 order seen in the live engine trace: a published completion surface at the old
 cursor, Reset, then the exact committed word and Space. Exact-only first-word
 receipts already passed. The new stale-surface fixture failed before the
-repair (595/596; `/home/ubu/.cache/lay/development/run-o8ru4uky/RESULT.json`):
+repair (595/596; `/home/local-user/.cache/lay/development/run-o8ru4uky/RESULT.json`):
 the old publication revoked the waiting predecessor before the exact receipt.
 The trace and fixture have the same receipt *shape*; no captured field value
 ties the fixture's literal text to the user's first-word failure.
@@ -4820,11 +4820,11 @@ predecessor before Reset. It still requires same-owner admission, the correct
 tail epoch and boundary, a subsequent Reset, and an exact fresh client receipt
 before a manual edit is authorized. A condition initially placed in the prior
 replay branch did not fix the fixture (595/596;
-`/home/ubu/.cache/lay/development/run-hc4ee1k5/RESULT.json`). Moving it to
+`/home/local-user/.cache/lay/development/run-hc4ee1k5/RESULT.json`). Moving it to
 the retired-preedit branch passed 596/596
-(`/home/ubu/.cache/lay/development/run-dc67j4zc/RESULT.json`). Repeating the
+(`/home/local-user/.cache/lay/development/run-dc67j4zc/RESULT.json`). Repeating the
 focused suite with wrong-surface and wrong-cursor negative cases also passed
-596/596 (`/home/ubu/.cache/lay/development/run-vjfxvkoh/RESULT.json`).
+596/596 (`/home/local-user/.cache/lay/development/run-vjfxvkoh/RESULT.json`).
 
 Verdict scope: **source-level mechanism supported**, not native Firefox or
 release acceptance. The user's exact failing field sequence, multiple
@@ -4832,20 +4832,20 @@ post-Space cycles, Tab and autocorrection-undo behavior on this new source,
 and the full development/release gates are **NOT TESTED** at this stage.
 Runtime authority changed: **false**; the previously accepted test binary
 remains installed and loaded. `graphify update .` completed; receipt:
-`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/first-word-graph-update-20260925.log`.
+`/home/local-user/.cache/lay/development/firefox-repeat-cycle-20260924/first-word-graph-update-20260925.log`.
 
 The complete guarded development check then passed **2,897 selected**
-(`/home/ubu/.cache/lay/development/run-jao09yph/RESULT.json`). The local
+(`/home/local-user/.cache/lay/development/run-jao09yph/RESULT.json`). The local
 guarded release build completed, producing `lay-ibus-engine` SHA-256
 `4bbe07233808d1d14ecd072b87c052d760c22fe17bcac5f63d8adf9e8d1c7328`;
 build log:
-`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/first-word-release-build-20260925.log`.
+`/home/local-user/.cache/lay/development/firefox-repeat-cycle-20260924/first-word-release-build-20260925.log`.
 The previous installed test binary SHA-256 `6351c890…3f751` was backed up
 before replacing it. The installed file and sole loaded IME process both
 matched `4bbe0723…d1c7328`; daemon, GNOME layout, and global IBus engine
 were active on `lay-ime-ru`, and the capture service stayed active. Installation
 receipt and backup:
-`/home/ubu/.cache/lay/development/firefox-repeat-cycle-20260924/first-word-installed-20260925-wvtejH/`.
+`/home/local-user/.cache/lay/development/firefox-repeat-cycle-20260924/first-word-installed-20260925-wvtejH/`.
 Runtime authority changed: **true, test installation only**. Human Firefox
 first-word and repeated-cycle acceptance, Tab, and autocorrection undo on this
 new installed binary remain **NOT TESTED**; no commit or publication occurred.
@@ -4887,9 +4887,9 @@ activation. Other bootstrap errors still fail closed. Its new P2P fixture
 reproduced the exact D-Bus error and failed against 1.0.75 source, then passed
 after this change; the RED run is recorded in the execution transcript but has
 no saved raw log. The GREEN focused receipt is
-`/home/ubu/.cache/lay/development/lay-1.0.76-bootstrap-focused.log`.
+`/home/local-user/.cache/lay/development/lay-1.0.76-bootstrap-focused.log`.
 The isolated IME development lane passed **597 selected, 0 failures**:
-`/home/ubu/.cache/lay/development/lay-1.0.76-focused/SUMMARY.json`.
+`/home/local-user/.cache/lay/development/lay-1.0.76-focused/SUMMARY.json`.
 
 Verdict scope: source mechanism supported by the focused fixture and IME lane.
 A full-service restart on this new binary, physical Tab/Double Shift, full
@@ -4904,7 +4904,7 @@ trace showed an all-uppercase terminal-passthrough run and a managed-commit run
 whose first letter was uppercase and later letters lowercase. The exact-word
 ring segment rotated before an immutable copy was made, so it is not a saved
 whole-word receipt. A retained segment at
-`/home/ubu/.cache/lay/development/ibus-held-shift-2026-09-25-1256.jsonl`
+`/home/local-user/.cache/lay/development/ibus-held-shift-2026-09-25-1256.jsonl`
 records Shift press, uppercase managed CommitText, Firefox Reset, then Shift
 release, in that order (parsed rows 1752, 1760, 1768, 1813). The first loss of
 modifier state is `reset_for_ibus_soft_reset`, which clears `shift_active`
@@ -4915,9 +4915,9 @@ accepted Reset. Disable and focus-change cleanup retain their existing clearing
 behavior, and legacy Double Shift detection remains daemon-owned. The real
 legacy callback/Reset regression failed against the previous source at the
 post-Reset `shift_active` assertion: 597 passed, 1 failed,
-`/home/ubu/.cache/lay/development/run-9x__g6__/RESULT.json`. With the repair,
+`/home/local-user/.cache/lay/development/run-9x__g6__/RESULT.json`. With the repair,
 the focused IME lane passed 598/598:
-`/home/ubu/.cache/lay/development/run-acvlgehx/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-acvlgehx/RESULT.json`.
 
 Verdict scope: source mechanism and focused legacy callback coverage. Physical
 Firefox same-field held Shift, Tab, Double Shift, Chrome, Kitty, full release
@@ -4927,12 +4927,12 @@ changed by this experiment: **false**; the installed IME remained at SHA-256
 
 The subsequent full release gate passed **2,899/2,899** correctness/package
 tests, lint, Firefox compatibility-adapter tests and release build; exact log:
-`/home/ubu/.cache/lay/development/held-shift-install-20260925/full-release-gate.log`.
+`/home/local-user/.cache/lay/development/held-shift-install-20260925/full-release-gate.log`.
 The candidate IME alone was installed and loaded at SHA-256
 `5adea0c1f4c83e16931bd80891b92e29df7de1fce09b7e28050e9b6add3a490a`.
 L1.1, L3, daemon and IME were restarted; `lay-ime-ru` and the L1.1 listening
 socket were verified. The previous IME is retained for rollback. Receipt:
-`/home/ubu/.cache/lay/development/held-shift-install-20260925/INSTALL.json`.
+`/home/local-user/.cache/lay/development/held-shift-install-20260925/INSTALL.json`.
 Physical same-field Firefox held Shift and the Tab/Double Shift/Chrome/Kitty
 matrix are **PENDING USER CHECK**, so this is installed candidate evidence,
 not a physical acceptance or publication claim.
@@ -4947,10 +4947,10 @@ one; subsequent letters committed but published no further suggestion. A
 second, read-only IBus wire capture identifies the intervening snapshot as
 `П\u{200b}` at cursor one, followed 25 ms later by exact `П` at cursor one.
 The extra character is U+200B ZERO WIDTH SPACE. The wire capture is
-`/home/ubu/.cache/lay/development/capture-proverka-raw-20260925/set-surrounding.dbus.txt`
+`/home/local-user/.cache/lay/development/capture-proverka-raw-20260925/set-surrounding.dbus.txt`
 (SHA-256 `ee110b964796d3fc40fb38d0c424eb09c1e73d0eaac518731432b24b4f8c6e99`);
 the IME ring snapshots and focus receipt are under
-`/home/ubu/.cache/lay/development/capture-proverka-20260925-185132/`
+`/home/local-user/.cache/lay/development/capture-proverka-20260925-185132/`
 (manifest SHA-256 `fd74f745fb4a79ee49e3577a2c1319c0d821ff1a8c08dd3e18e960aee7898146`).
 The user confirmed Shift was released after `П`, so this capture is not a
 held-Shift failure. Chrome and Tab were not exercised in these captures.
@@ -4999,22 +4999,22 @@ Consequence analysis before a candidate code change:
 Candidate result so far: the production-adapter regression first failed on
 the unchanged receipt logic (598 passed, 1 failed) precisely at retention of
 `a\u{200b}` after a confirmed `a`:
-`/home/ubu/.cache/lay/development/run-6m3d7iox/RESULT.json`. The candidate
+`/home/local-user/.cache/lay/development/run-6m3d7iox/RESULT.json`. The candidate
 keeps that right-side sentinel in the existing rereceipt as unconfirmed,
 without changing the global token boundary. The same test checks that the
 visible suggestion stays up, exact authority is absent while the sentinel is
 present, a new exact receipt permits Tab, and ordinary right-side letters,
 continuing text and selection do not recover. The focused remote IME lane
-passed 599/599: `/home/ubu/.cache/lay/development/run-kcv4av5q/RESULT.json`.
+passed 599/599: `/home/local-user/.cache/lay/development/run-kcv4av5q/RESULT.json`.
 This is source-level scope only; affected/full release checks and the actual
 Firefox field replay remain **NOT TESTED**. Runtime authority changed: **false**.
 
 The subsequent affected development check passed all 2,900 selected
 correctness/package tests with zero known semantic or infrastructure failures:
-`/home/ubu/.cache/lay/development/run-lsqpkdya/RESULT.json`. The guarded
+`/home/local-user/.cache/lay/development/run-lsqpkdya/RESULT.json`. The guarded
 remote full release gate then passed 2,900/2,900 tests, the architecture and
 lint contracts, Firefox compatibility adapter, release build and diff check:
-`/home/ubu/.cache/lay/development/zwsp-ime-install-20260925/full-release-gate.log`
+`/home/local-user/.cache/lay/development/zwsp-ime-install-20260925/full-release-gate.log`
 (SHA-256 `e6cd615843a34dfd51d8be6b3132afb4b616f3d3735bc9deea0cc6969e4b7a1f`).
 These are source and build verdicts; they do not establish physical browser
 behavior.
@@ -5025,7 +5025,7 @@ Only the IME executable was installed. The installed file and the live
 L1.1, L3, IBus/IME and `lay-daemon` were restarted; `lay-ime-ru` was restored
 as the active GNOME input source and the L1.1 socket was listening. The prior
 IME binary remains in the backup path in
-`/home/ubu/.cache/lay/development/zwsp-ime-install-20260925/INSTALL.json`.
+`/home/local-user/.cache/lay/development/zwsp-ime-install-20260925/INSTALL.json`.
 Runtime authority changed: **true, only the installed IME executable**.
 The original Firefox WhatsApp field replay, held Shift, Chrome, Kitty, Tab and
 Double Shift are **NOT TESTED** for this candidate until separately observed.
@@ -5037,8 +5037,8 @@ was tested in the user's existing authenticated Firefox `web.whatsapp.com`
 message composer using virtual physical keys. No message was sent; test text
 was removed and the composer was verified empty afterward. The window focus
 receipt and compressed IME/action ring snapshots are in
-`/home/ubu/.cache/lay/development/capture-whatsapp-live-20260925b/` and
-`/home/ubu/.cache/lay/development/capture-whatsapp-live-20260925c/`; their
+`/home/local-user/.cache/lay/development/capture-whatsapp-live-20260925b/` and
+`/home/local-user/.cache/lay/development/capture-whatsapp-live-20260925c/`; their
 manifest SHA-256 values are respectively
 `1b3ba36f6e6536a53d60d8a210827d88ec02693bd0b8232107fce987527d06b6`
 and `2bb1a0c80620f6758f0497c2990762a1102dda1b791fe1ec1cf8eb513029d81b`.
@@ -5086,7 +5086,7 @@ latency are not measurements; both remain untested for the next candidate.
 The production-adapter replay `firefox_zero_width_space_then_owned_append_requires_new_exact_token`
 first failed against the installed source at the stale published-suffix receipt:
 the predecessor record had already been cleared. Its red receipt is
-`/home/e/projects/lay-development-runner/zwsp-append-red-20260925.log`.
+`/workspace/worker/lay-development-runner/zwsp-append-red-20260925.log`.
 The candidate recognizes the exact old published suffix after one locally
 committed next character and retains that publication through an identical
 unconfirmed display refresh. It does not classify U+200B as a word boundary,
@@ -5094,7 +5094,7 @@ grant Tab/edit authority from the stale surface, or accept changed suffix or
 selection. A fresh exact receipt of the longer committed token is still
 required. The same replay, including a later Tab acceptance on a fresh
 candidate, passed in
-`/home/e/projects/lay-development-runner/zwsp-append-green-v2-20260925.log`
+`/workspace/worker/lay-development-runner/zwsp-append-green-v2-20260925.log`
 (one passed, 602 filtered). This is a focused source result, not a live-client
 PASS. The `Пров` WhatsApp replay, immediate Tab after the sentinel, Chrome,
 Kitty, held Shift, Double Shift, autocorrection undo and full release checks
@@ -5104,7 +5104,7 @@ remain untested for this candidate. Runtime authority changed: **false**.
 
 The guarded remote full release gate passed 2,901 selected tests, including
 600 `lay-ibus-engine` tests, the architecture/lint contracts and release build:
-`/home/e/projects/lay-development-runner/zwsp-full-v2-20260925.log`
+`/workspace/worker/lay-development-runner/zwsp-full-v2-20260925.log`
 (SHA-256 `b9842b08698183fbf08b9a3716365cf79b0b5729f16f8e8ff69313ce3339adf0`).
 The built IME SHA-256 was
 `3246f7379aabed25c6707403d4f6e58def280aa4abff5cf6e018fc59f462491d`.
@@ -5119,7 +5119,7 @@ candidate retained an identical unconfirmed old suffix but discarded it on
 this legitimate shortening, then rejected the stale snapshot with
 `surrounding_receipt_mismatch` and cleared preedit at Reset. Thus its focused
 synthetic GREEN did not cover the real callback order. The capture receipt is
-`/home/ubu/.cache/lay/development/capture-whatsapp-nextkey-20260925/`
+`/home/local-user/.cache/lay/development/capture-whatsapp-nextkey-20260925/`
 (manifest SHA-256
 `9f762361dea6e646fef1a31358635c84d4ed72cc9c1b9d1497adb751585836be`).
 No WhatsApp message was sent. The separate immediate-Tab question remains
@@ -5158,7 +5158,7 @@ the `460c53dc…3c70bf7bba` test build. Its `INSTALL.json` identifies the
 immediate predecessor as SHA-256
 `5adea0c1f4c83e16931bd80891b92e29df7de1fce09b7e28050e9b6add3a490a`,
 backed up at
-`/home/ubu/.cache/lay/development/zwsp-ime-install-20260925/lay-ibus-engine.previous-5adea0c1f4c8`.
+`/home/local-user/.cache/lay/development/zwsp-ime-install-20260925/lay-ibus-engine.previous-5adea0c1f4c8`.
 That exact binary was restored. The installed file and live IME executable
 matched; L1.1, L3, lay-daemon and IBus were restarted, `lay-ime-ru` selected,
 and the L1.1 socket listened. No build, test, browser input, commit or
@@ -5177,7 +5177,7 @@ first focus-probe candidate bound its proof to `focus_serial`, which native
 activation rotated before the first key. The second candidate survived one
 rotation but lost the proof on the first-key activation. Both failed the same
 owned Kitty Tab/two-Double-Shift test; receipts are under
-`/home/ubu/.cache/lay/development/kitty-focus-proof-20260925/kitty-tab-cycle/`
+`/home/local-user/.cache/lay/development/kitty-focus-proof-20260925/kitty-tab-cycle/`
 and `kitty-tab-cycle-race-fix/`.
 
 Chosen route: an exact GNOME focused-window `appId=kitty.desktop` with a
@@ -5204,17 +5204,17 @@ passed the owned Kitty sequence `ghj`, Tab, two Double Shift gestures with
 visible final text `просто `. The daemon trace records both physical gestures
 handled by the focused IME, and the IME trace records Tab plus two
 `double_shift_committed_tail` effects. Exact receipt:
-`/home/ubu/.cache/lay/development/kitty-focus-proof-20260925/kitty-tab-cycle-aligned/receipt.json`.
+`/home/local-user/.cache/lay/development/kitty-focus-proof-20260925/kitty-tab-cycle-aligned/receipt.json`.
 The installed and loaded executable hashes matched; L1.1, L3, lay-daemon and
 IBus were active with GNOME and IBus both on `lay-ime-ru`. Runtime authority
 changed: **true**, to this IME binary and GNOME source alignment.
 
 Three focused Kitty tests passed remotely (receipt
-`/home/e/projects/lay-development-runner/kitty-focus-receipt-tests-20260925.log`).
+`/workspace/worker/lay-development-runner/kitty-focus-receipt-tests-20260925.log`).
 The affected IME suite passed 601/605 serial tests; four existing completion
 fixtures failed before this focus route because the current package ranked
 `просто`/`сто` where they expected `проверка`/`верка` (receipt
-`/home/e/projects/lay-development-runner/kitty-focus-tests-20260925.log`).
+`/workspace/worker/lay-development-runner/kitty-focus-tests-20260925.log`).
 This is an installed candidate and owned-window PASS, not a release gate or a
 human-keyboard confirmation. Existing user Kitty, Chrome, Firefox, WhatsApp,
 autocorrection undo and the KDE route were not physically retested on this
@@ -5229,7 +5229,7 @@ zero-known-failure binding were updated. The guarded remote
 and package checks, zero known semantic failures, zero infrastructure failures,
 including 603 selected IME tests and 1,795 library tests. Format, version,
 Cargo check, transition replay and unsafe-edit gates also passed. Exact log:
-`/home/e/projects/lay-development-runner/kitty-focus-changed-v3-20260925.log`
+`/workspace/worker/lay-development-runner/kitty-focus-changed-v3-20260925.log`
 (SHA-256 `e0e5005856d7b88a354ef3b7217fe469d029b37cd95cc868668a37aaca6883ba`).
 This hermetic gate is distinct from the ambient direct IME run's 601/605 and
 from the owned Kitty client PASS. Performance, ignored tests, user-keyboard

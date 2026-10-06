@@ -1,6 +1,6 @@
 # TD-120 runtime implementation — Sol/High
 
-Worktree `/home/ubu/projects/lay-tech-debt-20260831`, baseline cc1e2207.
+Worktree `/workspace/local/lay-tech-debt-20260831`, baseline cc1e2207.
 User requests implementation through release 1.0.66 and push. Implement this
 bounded TD-120 task; parent owns remote checks, TD-121, review, commit/release.
 Do not stop at a plan. Use apply_patch. No local Cargo, services/config/binary
@@ -18,7 +18,7 @@ README is updated. TD-122 remains an explicit Stage 2 residual.
 Baseline test-only run on guarded 20-CPU remote: test module SHA
 2cec08d82a40d7a4f551998911e4f40b49f1a9c8e6f971d786734d973356f787,
 9 executed, 3 pass/6 fail, 0 ignored; compile 2.39s, tests 0.56s. Raw receipt
-remote `/home/e/projects/lay-td120-121-SUdh2I-td120-red-v2.log`.
+remote `/workspace/worker/lay-td120-121-SUdh2I-td120-red-v2.log`.
 Five failures reach stale-suppression assertions: full deletion, left context,
 same-text retype, undo boundary, duplicate. Candidate-boundary sixth failure
 is a TEST BUG: insertion optimization emits no deletion. Correct test output

@@ -9,7 +9,7 @@ Admission: 2026-09-05, явное поручение пользователя:
 
 ## Poor-input mechanics repair installed, physical pending, 2026-09-11
 
-Candidate `aec4f55310e7aded386d037176070e709523e3d4a66a231c7fdd951a24920c99` is installed with status `INSTALLED_VERIFIED_PHYSICAL_PENDING`. Installation receipt `/home/ubu/.cache/lay/development/poor-input-20260911-xoi17mif/final-mechanics-v1/installation-poor-input.json` has sha256 `706022c30e9f9bd3423db36340be6dcfe17ffdb41f1a4f87241ae88ae6af4551`; post-install runtime receipt `/home/ubu/.cache/lay/development/poor-input-20260911-xoi17mif/post-install-runtime.json` has sha256 `858931b908302163a85a92372ad3fb70b96df821870941383e2d412b87be55bb`. Physical keyboard acceptance is still `NOT_TESTED`; no general quality promotion is claimed.
+Candidate `aec4f55310e7aded386d037176070e709523e3d4a66a231c7fdd951a24920c99` is installed with status `INSTALLED_VERIFIED_PHYSICAL_PENDING`. Installation receipt `/home/local-user/.cache/lay/development/poor-input-20260911-xoi17mif/final-mechanics-v1/installation-poor-input.json` has sha256 `706022c30e9f9bd3423db36340be6dcfe17ffdb41f1a4f87241ae88ae6af4551`; post-install runtime receipt `/home/local-user/.cache/lay/development/poor-input-20260911-xoi17mif/post-install-runtime.json` has sha256 `858931b908302163a85a92372ad3fb70b96df821870941383e2d412b87be55bb`. Physical keyboard acceptance is still `NOT_TESTED`; no general quality promotion is claimed.
 
 The repair covers three mechanisms: L2 absolute phase competition preserves the actual margin for close repeated-letter repairs; generic L4 phase-bank availability is advisory unless exact transition evidence exists; Backspace raw retention and bounded pending-learning feedback now track the Lay target after within-word edits.
 
@@ -29,7 +29,7 @@ manual-toggle cold failures remain recorded separately for candidate and
 installed baseline. Installation is `INSTALLED_VERIFIED_PHYSICAL_PENDING`;
 physical keyboard acceptance is still PENDING. Final source-graph result is
 recorded in
-`/home/ubu/.cache/lay/development/clean-surface-20260911-2b8s_p8a/final-graph/fetch-receipt.json`;
+`/home/local-user/.cache/lay/development/clean-surface-20260911-2b8s_p8a/final-graph/fetch-receipt.json`;
 inspect that receipt for the verdict. No general latency improvement or
 general TD-123 quality PASS is claimed. Exact receipts, installed process
 identities, per-class percentages, resources and scope limits are in

@@ -10,7 +10,7 @@
   "predecessor": {
     "task": "IME-transient-boundary-Tab-2026-09-26",
     "binding": "tech_debt/evidence/ime-transient-boundary-tab-composition-successor.json",
-    "binding_sha256": "05af0c186eddc6d21ad24aff519aa502e264790877109df8831aaa80790618f4",
+    "binding_sha256": "c9846441b32c3d5ecb8c654c67736b3282ed722dbbbf1d500a021c38a2b1037e",
     "path": "src/bin/lay_ibus_engine/composition_commit.rs",
     "sha256": "1010b57153d612f8c34e8c83cb2526a78355b569cb81bf5829be4e87a538da30",
     "mode": "0664"
@@ -21,9 +21,9 @@
     "mode": "0664"
   },
   "source_proof": {
-    "red_receipt": "/home/ubu/.cache/lay/development/run-hfp1be91/RESULT.json",
+    "red_receipt": "/home/local-user/.cache/lay/development/run-hfp1be91/RESULT.json",
     "red_receipt_sha256": "1b2336c2af2a586f458c3b9a24972e8ca1d47602438a3e8f58983288a0bdf0e6",
-    "green_receipt": "/home/ubu/.cache/lay/development/run-sur7up7y/RESULT.json",
+    "green_receipt": "/home/local-user/.cache/lay/development/run-sur7up7y/RESULT.json",
     "green_receipt_sha256": "02fe88b84731631294e99fdfe8e8e9253335a67f371516298fee48ce82bd71b6"
   },
   "review": {
@@ -33,5 +33,17 @@
     "state": "NOT_TESTED"
   },
   "source_preedit_authority_changed": true,
-  "installed_runtime_authority_changed": false
+  "installed_runtime_authority_changed": false,
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "b4d89ec2b773d611c81d3b10c9f484bcf36375463cd23043f6391d785accfd58",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot",
+    "original_references": {
+      "/predecessor/binding_sha256": "05af0c186eddc6d21ad24aff519aa502e264790877109df8831aaa80790618f4"
+    },
+    "reference_semantics": "binding/report hashes identify current public files; original references retained here; runtime source SHA256 and verdict fields unchanged"
+  }
 }

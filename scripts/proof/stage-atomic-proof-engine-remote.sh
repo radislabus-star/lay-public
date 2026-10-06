@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-remote=${LAY_PROOF_REMOTE:-e@192.168.3.94}
-project_root=$(CDPATH='' cd -- "$(dirname -- "$0")/../.." && pwd)
-proof=/home/e/projects/lay-atomic-full-route-20260821
-target=/home/e/projects/lay-v22-canonical-20260821/target
+script_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+. "$script_dir/remote-config.sh"
+remote=${LAY_PROOF_REMOTE:?set LAY_PROOF_REMOTE to your SSH host or alias}
+proof=${LAY_PROOF_ROOT:?set LAY_PROOF_ROOT to your isolated proof directory}
+target=${LAY_PROOF_TARGET_DIR:?set LAY_PROOF_TARGET_DIR}
+source_parent=${LAY_PROOF_SOURCE_PARENT:?set LAY_PROOF_SOURCE_PARENT}
+lay_proof_validate_host "$remote"
+lay_proof_validate_path LAY_PROOF_ROOT "$proof"
+lay_proof_validate_path LAY_PROOF_TARGET_DIR "$target"
+lay_proof_validate_path LAY_PROOF_SOURCE_PARENT "$source_parent"
+project_root=$(CDPATH='' cd -- "$script_dir/../.." && pwd)
 
 source_inputs=(
     Cargo.toml
@@ -29,7 +36,7 @@ source_aggregate() {
 }
 
 local_source_sha=$(source_aggregate)
-source_root=/home/e/projects/lay-atomic-v25-src-$local_source_sha
+source_root=$source_parent/lay-atomic-v25-src-$local_source_sha
 
 ssh "$remote" "mkdir -p '$source_root' \
     '$proof/runtime/engines' '$proof/runtime/manifests' '$proof/runtime/bin' \

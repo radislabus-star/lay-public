@@ -9,10 +9,10 @@
   ],
   "captured_at_utc": "2026-09-12T15:22:51Z",
   "scope": "Test-only source-bound model of the Mutter 50.1 input-method event dispatch and GTK 4.22.4 text-input-v3 commit/done consumer callbacks. Proves that the tested callback ordering permits commit overwrite before one deferred done and that an unfiltered release flushes pending done.",
-  "artifact_root": "/home/ubu/.cache/lay/development/gnome-repeat-capture-d9q6uzjm/mutter-gtk-dispatch-probe-v1",
-  "command": "/home/ubu/projects/lay-cleanup-20260908/scripts/lay-resource-guard.sh -- ./build_probe.py",
+  "artifact_root": "/home/local-user/.cache/lay/development/gnome-repeat-capture-d9q6uzjm/mutter-gtk-dispatch-probe-v1",
+  "command": "/workspace/local/lay-cleanup-20260908/scripts/lay-resource-guard.sh -- ./build_probe.py",
   "source_provenance": {
-    "manifest": "/home/ubu/.cache/lay/development/gnome-repeat-capture-d9q6uzjm/upstream/manifest.json",
+    "manifest": "/home/local-user/.cache/lay/development/gnome-repeat-capture-d9q6uzjm/upstream/manifest.json",
     "mutter-50.1-meta-wayland-text-input.c": "8a388a0be267c5d0744920f862e36ff09f595589573bbfc2efd53177a336f4cb",
     "mutter-50.1-clutter-input-method.c": "89093206273858d7c419000667ad32dd7469d8343db3f12e40d49d7bdcf11a2b",
     "mutter-50.1-clutter-input-focus.c": "55726d45d7d2835b4aa9793191de3fe04083e92165655e828d1f7dd376ad09fa",
@@ -30,7 +30,10 @@
   },
   "toolchain": {
     "compiler": "gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
-    "sanitizers": ["address", "undefined"],
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
     "resource_profile": "workstation",
     "kernel": "Linux 7.0.0-22-generic x86_64"
   },
@@ -98,5 +101,13 @@
     "Latency, RSS, package size, answer quality, and installed runtime behavior"
   ],
   "verdict_scope": "The callback chain admits the coalesced overwrite schedule. This is mechanism feasibility only, not live transport attribution or proof of the cycle 9 cause. Unfiltered release is a transport-specific scheduling lever, not an accepted repair.",
-  "runtime_authority_changed": false
+  "runtime_authority_changed": false,
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "b1a7e643bec8f32a0ab3a2c66265824577ea8471984d842919ab1e92932067cc",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

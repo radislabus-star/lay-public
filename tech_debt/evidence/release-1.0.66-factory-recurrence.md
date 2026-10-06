@@ -30,7 +30,7 @@ only initial adapter availability, not durable live acceptance. The preceding
 patch therefore failed physical acceptance despite its scoped tests/review.
 
 Private preserved log (user text; never commit contents):
-`/home/ubu/.cache/lay/development/release-1066-observer-recurrence-L5XnoP/ibus_engine_debug.jsonl`.
+`/home/local-user/.cache/lay/development/release-1066-observer-recurrence-L5XnoP/ibus_engine_debug.jsonl`.
 SHA256 `198c1e4e9b8b09ae37844a8d4bf9b58bab288f37f055b079cbd287babc4f5ab6`.
 Events do not carry wall-clock timestamps; 17:17 is the observation time.
 
@@ -141,9 +141,9 @@ retain a native-input fallback on startup/bridge failure. Do not restart global
 IBus or the keyboard daemon, change input-source lists, or inject user input.
 
 Remote candidate build/architecture refresh:
-`/home/e/projects/lay-development-runner/ime-factory-hot-AtSYjX/`.
+`/workspace/worker/lay-development-runner/ime-factory-hot-AtSYjX/`.
 Local delivery cache:
-`/home/ubu/.cache/lay/development/ime-factory-hot-n600Z6/`.
+`/home/local-user/.cache/lay/development/ime-factory-hot-n600Z6/`.
 Independent bounded source review is running separately. This is the user-
 approved manual candidate session, not permanent installation, final release,
 task DONE or proof that the earlier timeout is fixed. Final release checks
@@ -354,7 +354,7 @@ Fresh-context review9/10,High0/Medium0 after the single bounded repair pass;
 static review is separate from actual-client/physical acceptance.
 
 Final optimized build58.67s, architecture PASS:
-`/home/e/projects/lay-development-runner/ime-reset-final-rQnmd5/`.
+`/workspace/worker/lay-development-runner/ime-reset-final-rQnmd5/`.
 Architecture log SHA256
 `9b557542eab32ae0cdf1dbb2534d84ca158911d3b2e370d17bdb7e995bfc63aa`.
 Final target9,381,564,416 /12,884,901,888 bytes. Candidate SHA256
@@ -374,7 +374,7 @@ Private client evidence is deliberately split:
   sleeps, per-key retries or deadline changes. Both private candidate/IBus
   process trees were reaped. This PASS does not replace the immediate failure.
 
-Local cache `/home/ubu/.cache/lay/development/ime-reset-hot-Azb9dB/` contains
+Local cache `/home/local-user/.cache/lay/development/ime-reset-hot-Azb9dB/` contains
 the exact candidate, client config and rollback-on-start-failure preview script.
 First launch was safely withdrawn BEFORE Lay selection: its startup probe
 incorrectly requested InputState authority while still on native/no-focus.
@@ -400,7 +400,7 @@ daemon272240 remain unchanged. Installed95348e4a bytes and source list unchanged
 Native selection is confirmed; no new claim about Lay functionality is made.
 
 Retained private trace (never commit its user text):
-`/home/ubu/.cache/lay/development/ime-reset-hot-Azb9dB/failed-physical-trace.jsonl`,
+`/home/local-user/.cache/lay/development/ime-reset-hot-Azb9dB/failed-physical-trace.jsonl`,
 SHA256 `a10c42640dee4c66ec6ba365f4112287787484e9eabf5ed3561d8d45ead2b964`.
 Metadata shows compatibility FocusIn14, source-free ready, FocusOut20 with
 local installation, FocusIn21, Properties Set24, then all151 retained legacy
@@ -413,7 +413,7 @@ a new causal proof; do not call the preceding focused/post-ready checks product
 acceptance or silently extend their completed review scope.
 
 Read-only rollback inspection verified the preinstall snapshot exists at
-`/home/ubu/.local/state/lay/release-backups/1.0.66-preinstall-b4bd39/` with bin,
+`/home/local-user/.local/state/lay/release-backups/1.0.66-preinstall-b4bd39/` with bin,
 extension,L2 and systemd artifacts. Snapshot lay and lay-ibus-engine both report
 1.0.65; extension metadata version1000065. No rollback was executed. Returning
 the whole prior release is a separate user decision, not an inferred license
@@ -557,7 +557,7 @@ The strict-order negative passed. Discovery4.673s, execution5.686s, complete
 remote action14.498s. SUMMARY SHA256
 `006e8b6c53e5b4ff7a066368b6a88853fde0c281b11cdd9e12ff6456575d85bb`.
 Command: `python3 scripts/dev-check.py check --target bin:lay-ibus-engine`.
-Local provenance: `/home/ubu/.cache/lay/development/run-ctg9ducl/`.
+Local provenance: `/home/local-user/.cache/lay/development/run-ctg9ducl/`.
 
 Actual-client proof extension is scoped to an explicit additional lifecycle
 scenario set, preserving the five original scenario bodies and cold/warm
@@ -576,17 +576,17 @@ handlers and the real zbus observer are used, not a simulated reducer.
 The prior two pure-transition failures now pass with their repairs.
 Remote action14.592s, SUMMARY SHA256
 `40d3643ff7707d30479a842296c9327d5917eb7d492860403f352e33d587e755`;
-local provenance `/home/ubu/.cache/lay/development/run-bp0njht5/`.
+local provenance `/home/local-user/.cache/lay/development/run-bp0njht5/`.
 Same explicit focused command as above. Prior `run-ZJOG1m` stopped at formatting;
 `run-ifMkj8` failed fixture setup before reaching the defect. Neither is a
 causal RED receipt. Fixture setup was corrected by rebuilding the real open
 word token before arming suppression; product expectations were not weakened.
 
 Actual-client lifecycle baseline, same failing physical-candidate bytes:
-`/home/e/projects/lay-development-runner/lifecycle-baseline-20260907-v1/receipt.json`.
+`/workspace/worker/lay-development-runner/lifecycle-baseline-20260907-v1/receipt.json`.
 Command: guarded remote `python3 scripts/proof/ime-client/run.py --remote-worker
---config /home/e/projects/lay-development-runner/ime-reset-final-rQnmd5/client-config.json
---output /home/e/projects/lay-development-runner/lifecycle-baseline-20260907-v1
+--config /workspace/worker/lay-development-runner/ime-reset-final-rQnmd5/client-config.json
+--output /workspace/worker/lay-development-runner/lifecycle-baseline-20260907-v1
 --scenario-set lifecycle` (default immediate schedule).
 Driver SHA256 `cd04de9791d26def51e61275fa40365f95c8ad5074525fb0828aba8241585def`;
 its28 tooling tests passed before launch.0/3 lifecycle cases completed:
@@ -630,7 +630,7 @@ witness9/10, High0/Medium0. No new runtime repair was requested or made.
 Final focused `run-c55BY8/tests/SUMMARY.json`:436 selected/executed,436 PASS,
 0 failures. Discovery4.700s, execution6.066s, remote action14.879s. SHA256
 `05c562fc86511ec45f0743131290f07d3f311d34f7c3551613132d8835778a8c`;
-local `/home/ubu/.cache/lay/development/run-e63w6apo/`.
+local `/home/local-user/.cache/lay/development/run-e63w6apo/`.
 Includes held Get, reply-before-marker, early-key then Set, actual plain
 FocusIn without Disable, predecessor binding/focus before and after successor
 installation, malformed/unrelated typed Set, and prior post-revocation recovery.
@@ -664,8 +664,8 @@ No production action occurred.
 `python3 scripts/dev-check.py check`:2671 selected/executed,2671 PASS
 (2635 correctness +36 package); registry2697 =2671 selected +15 ignored
 +11 performance exclusions. Tooling99 PASS with one explicit real-cgroup
-integration skip. Remote `/home/e/projects/lay-development-runner/run-it9K5U/`,
-local `/home/ubu/.cache/lay/development/run-hwu9s4v3/`. Tests SUMMARY SHA256
+integration skip. Remote `/workspace/worker/lay-development-runner/run-it9K5U/`,
+local `/home/local-user/.cache/lay/development/run-hwu9s4v3/`. Tests SUMMARY SHA256
 `cc3bcd1e3c399fd60d04cc63f287b5913d7e3c7ca775b184ffbc56e718e2f23e`;
 source archive SHA256
 `39e4fd178804dc49e6b346386e4e5a9522570df70d27c07df65a5b85fa249c4e`.
@@ -680,11 +680,11 @@ Initial optimized build in the same resource guard:
 `scripts/cargo-guard.sh build --release --locked --bin lay-ibus-engine`.
 Cargo59.02s, timed command59.17s; no profile overrides. Root for this build,
 architecture.log, build.log, client-config.json and all client receipts below:
-`/home/e/projects/lay-development-runner/lifecycle-final-vwafpP/`.
+`/workspace/worker/lay-development-runner/lifecycle-final-vwafpP/`.
 Candidate `lay-ibus-engine` SHA256
 `706b4d819e481feb0ccb4dab49751390745d7fe25c8683a8a0a6fac4471ae333`.
 Nine-role dependency manifest remains
-`/home/e/projects/lay-development-runner/boundary-deps-UjRxy5/dependency-manifest.json`,
+`/workspace/worker/lay-development-runner/boundary-deps-UjRxy5/dependency-manifest.json`,
 SHA256 `ea6c07b1ddd0d504f87578a39a40b552f301c618195ab0e84df9d9acd2f21c76`.
 Copied IBus24338c0e matches the installed IBus; no system-daemon substitute.
 
@@ -737,7 +737,7 @@ rejects missing/extra/reordered/duplicate identities. Final driver SHA256
 Finding-only reviewer confirmation:9/10, High0, Medium0; static read-only,
 no independent test execution. No third broad architecture audit was opened.
 Both candidates again passed3/3 with this exact driver. Final artifact root:
-`/home/e/projects/lay-development-runner/lifecycle-delivery-JCfGbv/`.
+`/workspace/worker/lay-development-runner/lifecycle-delivery-JCfGbv/`.
 
 - `client-lifecycle-old-final/receipt.json`, old15728764,1.667s, SHA256
   `a37796895c213569c4bdee36d8b53a342aff8abc9a234e40e201fb624c21dc3e`.
@@ -777,7 +777,7 @@ Pre-action live state: IBus4715, keyboard daemon272240, failed installed
 IME2249560/SHA95348e4a, selected lay-ime-ru, Focused=true and InputState error
 `metadata observer cancelled`. Sources remain exactly lay-ime-us/lay-ime-ru.
 Candidate706b4d81 is the byte-identical remote release artifact accepted above.
-Local preview root: `/home/ubu/.cache/lay/development/ime-lifecycle-hot-6LhiQT/`.
+Local preview root: `/home/local-user/.cache/lay/development/ime-lifecycle-hot-6LhiQT/`.
 Reuse the previously used start-hot.sh procedure with only this cache root
 changed: verified native xkb:ru::rus before stopping exact failed IME2249560;
 temporary hash-named unit; exact process hash and Ping; select Lay only after
@@ -860,7 +860,7 @@ This localizes that installed-process refusal, not the cause of the separate
 706b4d81 physical failure. Preserve all reducer acquisition statuses in the
 optional metadata snapshot so a precedence-based summary cannot conceal them.
 Private saved log:
-`/home/ubu/.cache/lay/development/ime-installed-failure-xiKj6N/ibus-engine-trace.jsonl`,
+`/home/local-user/.cache/lay/development/ime-installed-failure-xiKj6N/ibus-engine-trace.jsonl`,
 SHA256 `2f3907aa3eef2a2a48699413372aed0474b0a28ac3c04d882e3d498328571cf2`.
 No service action accompanied this refresh.
 
@@ -986,7 +986,7 @@ and unchanged installed95348e4a, with failed physical evidence retained.
 
 Shelving completed with apply_patch; adapter and trace exactly match the
 pre-debug436-test snapshot. Recoverable full copies of the three experimental
-files: `/home/ubu/.cache/lay/development/ime-debug-shelved-gzw9VY/`.
+files: `/home/local-user/.cache/lay/development/ime-debug-shelved-gzw9VY/`.
 No prior lifecycle source edit was reverted. The experiment was never built,
 installed or used for a PASS claim. Existing diagnostics are documented in
 DEVELOPMENT.md; LAY_IME_DEBUG is not a supported current-source option.
@@ -995,8 +995,8 @@ DEVELOPMENT.md; LAY_IME_DEBUG is not a supported current-source option.
 
 `python3 scripts/dev-check.py check --target bin:lay-ibus-engine` ran remotely
 under the unchanged dedicated-20cpu/resource guards. Remote
-`/home/e/projects/lay-development-runner/run-zxtrcc/tests/SUMMARY.json`, local
-`/home/ubu/.cache/lay/development/run-id2ww8vm/`.
+`/workspace/worker/lay-development-runner/run-zxtrcc/tests/SUMMARY.json`, local
+`/home/local-user/.cache/lay/development/run-id2ww8vm/`.
 Selected/executed437:436 PASS and exactly one expected FAIL, the new
 `context_admission::adapter::tests::word_scope::residuals::residual_declined_authenticated_factory_is_passive_and_later_factory_recovers`.
 At residuals.rs:781 the production observer returned Denied on a well-formed
@@ -1019,8 +1019,8 @@ The RED test assertions were unchanged for GREEN.
 
 Same explicit remote focused command:437 selected/executed/PASS,0 failures;
 3 performance tests excluded. Remote
-`/home/e/projects/lay-development-runner/run-qV3Dqa/tests/SUMMARY.json`, local
-`/home/ubu/.cache/lay/development/run-h6az0mbb/`.
+`/workspace/worker/lay-development-runner/run-qV3Dqa/tests/SUMMARY.json`, local
+`/home/local-user/.cache/lay/development/run-h6az0mbb/`.
 GREEN SUMMARY SHA25608bda221349d2ffcb9327ce7fe64387181e4a81988c771c5e2979e5dad220cc9;
 RED SUMMARY SHA2562bc5c6833583763e5fc376c06a482deaea4c9b9d4ab284f175a3b2819ce40461.
 GREEN source archive d2625e45f48d20a39840e8d18b091276722ba361f03f980c389db09db8dfe661.
@@ -1043,7 +1043,7 @@ consumer was checked statically. Physical input and release acceptance remain
 outside this review verdict.
 
 Remote architecture refresh PASS and optimized build PASS. Artifact root:
-`/home/e/projects/lay-development-runner/adapter-refusal-yYeGQt/`.
+`/workspace/worker/lay-development-runner/adapter-refusal-yYeGQt/`.
 Build command: `scripts/cargo-guard.sh build --release --locked --bin lay-ibus-engine`,
 inside the unchanged dedicated-20cpu resource scope. Cargo reported59.06s.
 The frozen `lay-ibus-engine` SHA256 is
@@ -1076,7 +1076,7 @@ Remote `scripts/check-lay-changed.sh` executed2672 selected tests:2671 PASS,
 one failure in the existing
 `residual_later_factory_retires_revoked_transfer_and_recovers_source_free`.
 The final verdict is BLOCKED_CONTRACT, not PASS. Saved output:
-`/home/e/projects/lay-development-runner/adapter-prod-mOnOK5/affected-failed/`;
+`/workspace/worker/lay-development-runner/adapter-prod-mOnOK5/affected-failed/`;
 wrapper log `changed-device-fixed.log` in the same parent. IME failed at the
 fresh pending-fence unwrap, residuals.rs:1047. The new factory-decline test
 passed. An earlier wrapper attempt (`changed.log`) could not open /dev/null
@@ -1106,7 +1106,7 @@ background publication failure. No retries-until-green are permitted.
 Oracle repair completed in one pass. Residuals SHA256
 `28dd8b76614de23e1fa1e42fc8a01284277bb4a924c10b0d4a354754edcba89b`.
 Focused remote437/437 PASS,0 failures,14.757s; receipt
-`/home/e/projects/lay-development-runner/run-Iq4qgM/tests/SUMMARY.json`,
+`/workspace/worker/lay-development-runner/run-Iq4qgM/tests/SUMMARY.json`,
 SHA256c6369d9374b093f7e51e40c9bfc613d76040885b3e0e33ea764c4985f0f956f2.
 Archive SHA256c13346c92a6dcbd0b306013d16fe79b9e14c81b5c7dca603b2cb7c22d64094fb.
 Fresh oracle review PASS10/10,H0/M0, unchanged production code and budgets.
@@ -1125,7 +1125,7 @@ All private processes were reaped. Warm startup does not replace cold failure.
 
 Remote `scripts/check-lay-lints.sh` refused one added dead-code diagnostic:
 `ReadyActivationState.request` is never read. Log:
-`/home/e/projects/lay-development-runner/adapter-prod-mOnOK5/lints.log`.
+`/workspace/worker/lay-development-runner/adapter-prod-mOnOK5/lints.log`.
 The earlier lifecycle repair made this ready-state copy redundant in production.
 No known-warning allowance is added. The initial read-only search missed two
 reads inside the test-only `take_ready_activation` helper; the rejected attempt
@@ -1146,7 +1146,7 @@ Focused assertions and both existing lint feature scopes remain mandatory.
 The initial two-line removal is REJECTED, never installed: focused discovery
 failed to compile the test binary (E0609 at adapter.rs:1752). Independent review
 also found the two remaining test-only identity reads:4/10,H1/M0. The exact run
-is `/home/e/projects/lay-development-runner/run-WhMvQY/`; no test executed there.
+is `/workspace/worker/lay-development-runner/run-WhMvQY/`; no test executed there.
 Corrected minimal design before repair: keep the request identity under
 `#[cfg(test)]` at both its declaration and constructor assignment. Its only
 consumer already has that same condition. This removes the unused production
@@ -1161,8 +1161,8 @@ Final source adapter SHA256
 The field and its initializer now share `#[cfg(test)]`, with a why-comment;
 the test-side identity comparisons are unchanged. Finding-only independent
 confirmation PASS10/10,H0/M0. Focused remote437/437 PASS after this correction,
-14.888s, `/home/e/projects/lay-development-runner/run-mCkKUs/tests/SUMMARY.json`;
-local `/home/ubu/.cache/lay/development/run-egvvscyu/RESULT.json`.
+14.888s, `/workspace/worker/lay-development-runner/run-mCkKUs/tests/SUMMARY.json`;
+local `/home/local-user/.cache/lay/development/run-egvvscyu/RESULT.json`.
 Snapshot SHA2560338dbefd4b09e4b286adf8f529f3353203f50d90d08dfc4f05b1918d90c8075.
 The final full release gate was run on that source after a fresh remote
 architecture update. Its non-PASS outcome is recorded below; it is no longer running.
@@ -1181,7 +1181,7 @@ The full correctness/package lane completed2672/2672 with zero failures in
 373.094s. The enclosing full-release script then exited1 during default clippy
 inventory (`Cargo build-finished reported failure`). It did not reach its
 all-binaries release build and is NOT a full-release PASS. Exact retained log:
-`/home/e/projects/lay-development-runner/adapter-prod-mOnOK5/full-final.log`.
+`/workspace/worker/lay-development-runner/adapter-prod-mOnOK5/full-final.log`.
 The user explicitly rejected further tests and requested production delivery,
 then specifically required a fresh build of the latest working source.
 
@@ -1196,7 +1196,7 @@ New artifact/installed/process SHA256:
 `12db8c00ebd23d1dbc1603dc1fbba337ddfed0c0aa308258b669df8fbc8c95dc`.
 Remote artifact and log under `adapter-prod-mOnOK5/`:
 `lay-ibus-engine-latest`, `build-latest-prod.log`.
-Permanent path `/home/ubu/.local/lib/lay/bin/lay-ibus-engine`; process147597,
+Permanent path `/home/local-user/.local/lib/lay/bin/lay-ibus-engine`; process147597,
 unit `lay-ime-release-12db8c00.service`; selected engine `lay-ime-ru`.
 Native `xkb:ru::rus` readback preceded both IME stops. Atomic replacement
 preserved backups; IBus4715/start2261 and daemon3757261/start44087079 unchanged,

@@ -30,12 +30,12 @@ Canonical V64:
 
 ```text
 package path on build host
-  /home/e/projects/lay-productive-v1-build-20260811/out/
+  /workspace/worker/lay-productive-v1-build-20260811/out/
   LAY-L2-PRODUCTIVE-PARADIGM-V1-SHADOW-V64.p2m
 package bytes        17,309,944
 package sha256       9fd8c950398fb8ba47a2c9f2236880239d9f4376b191a691b0d01c47ddd3e438
 proof spool path
-  /home/e/projects/lay-productive-v1-build-20260811/work/full-v1-v63-reinduce/
+  /workspace/worker/lay-productive-v1-build-20260811/work/full-v1-v63-reinduce/
   context-sorted/sorted-events-global.p2s
 proof spool bytes    1,154,794,811
 proof spool sha256   6e282474b26bf90dc61ee21c93c9dd7dd727c29a2b02650c513ffdd06746e807
@@ -102,7 +102,7 @@ post-intersection or post-dedup counts.
 
 Exact receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/fanout-profile.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/fanout-profile.json`
 
 ## 4. Formal Objects
 
@@ -533,15 +533,15 @@ installation and live promotion remain forbidden until all later gates pass.
 
 V64 corrected proof:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/hbs0-pos-diagnostic-13x100-receipt.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V64_SURFACE_BASIN_2026-08-11/hbs0-pos-diagnostic-13x100-receipt.json`
 
 V65 full proof and build:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V65_ANCHOR_RECOVERY_2026-08-11/`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V65_ANCHOR_RECOVERY_2026-08-11/`
 
 V66 paper measurement:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/fanout-profile.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/fanout-profile.json`
 
 V66 local implementation verification:
 
@@ -553,7 +553,7 @@ scripts/cargo-guard.sh test --lib \
 
 Owning predecessor paper:
 
-`/home/ubu/projects/lay/docs/l2-productive-post-v64-anchor-recovery-paper.md`
+`/workspace/local/lay/docs/l2-productive-post-v64-anchor-recovery-paper.md`
 
 ## 15. First Remote V66 Micro
 
@@ -622,10 +622,10 @@ authority threshold, SafetyGate, or verifier behavior may change.
 Measured receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/resume-build-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/resume-build.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/resume-build-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/resume-build.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-13x10.time.txt
 ```
 
 Not tested in this experiment: fixed `13 x 100 x 2`, slot-heldout,
@@ -678,12 +678,12 @@ projection against the independent oracle; any difference rejects the change.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-geometry-memo-symbolized-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-geometry-memo-symbolized-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-geometry-memo-symbolized-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-geometry-memo-symbolized-self-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-geometry-memo-symbolized-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-geometry-memo.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-geometry-memo-symbolized-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-geometry-memo-symbolized-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-geometry-memo-symbolized-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-geometry-memo-symbolized-self-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-geometry-memo-symbolized-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-geometry-memo.time.txt
 ```
 
 Not tested by this profile: fixed `13 x 100 x 2`, slot-heldout, multi-label,
@@ -737,13 +737,13 @@ authority change is authorized.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-deferred-simhash.log
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-deferred-simhash.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-deferred-simhash-v2.log
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-deferred-simhash-v2.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-deferred-simhash-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-deferred-simhash-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-deferred-simhash-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-deferred-simhash.log
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-deferred-simhash.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-deferred-simhash-v2.log
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-deferred-simhash-v2.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-deferred-simhash-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-deferred-simhash-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-deferred-simhash-13x10.time.txt
 ```
 
 Not tested in this experiment: fixed `13 x 100 x 2`, slot-heldout,
@@ -783,7 +783,7 @@ class `p99 <= 5 ms`.
 Receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-deferred-simhash-focused-tests.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-deferred-simhash-focused-tests.txt
 ```
 
 ## 25. Post-Preparation Symbolized Profile
@@ -827,12 +827,12 @@ must be tested before the remote micro.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-execution-symbolized-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-execution-symbolized-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-execution-symbolized-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-execution-symbolized-self-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-execution-symbolized-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-prepared-execution.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-execution-symbolized-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-execution-symbolized-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-execution-symbolized-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-execution-symbolized-self-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-execution-symbolized-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-prepared-execution.time.txt
 ```
 
 Not tested by this profile: fixed `13 x 100 x 2`, slot-heldout, multi-label,
@@ -886,9 +886,9 @@ the next micro.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-batch-geometry-symbolized-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-batch-geometry-symbolized-self-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-batch-geometry.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-batch-geometry-symbolized-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-batch-geometry-symbolized-self-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-batch-geometry.time.txt
 ```
 
 Not tested by this profile: fixed quality percentages, queue-inclusive product
@@ -943,10 +943,10 @@ verifier behavior remain frozen.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-execution-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-execution-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-execution-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-prepared-execution.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-execution-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-execution-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-execution-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-prepared-execution.time.txt
 ```
 
 Not tested in this experiment: fixed `13 x 100 x 2`, slot-heldout,
@@ -993,7 +993,7 @@ The next permitted change preserves the same candidate set and order while:
 
 Receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-bounded-frontier-13x10-receipt.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-bounded-frontier-13x10-receipt.json`
 
 No larger proof or installation was authorized. Runtime authority remained
 unchanged.
@@ -1050,7 +1050,7 @@ verifier behavior may change.
 
 Receipt:
 
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-allocation-cut-13x10-receipt.json`
+`/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-allocation-cut-13x10-receipt.json`
 
 Not tested in this experiment: fixed `13 x 100 x 2`, slot-heldout,
 multi-label, unsupported, integrated L1.1/L3/L4/verifier transfer,
@@ -1095,9 +1095,9 @@ denominators, authority, SafetyGate, and verifier remain frozen.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-reuse-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-reuse-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-geometry-reuse.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-reuse-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-reuse-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-geometry-reuse.time.txt
 ```
 
 Not tested in this experiment: fixed `13 x 100 x 2`, slot-heldout,
@@ -1143,9 +1143,9 @@ simhash support, candidate order, and all authority gates remain unchanged.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-geometry-reuse-symbolized-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-geometry-reuse-symbolized-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-profile.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-geometry-reuse-symbolized-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-geometry-reuse-symbolized-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-profile.time.txt
 ```
 
 Not tested by this profile: fixed quality percentages, queue-inclusive product
@@ -1195,9 +1195,9 @@ identifies the first shared remaining mechanism.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-batch-geometry-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-batch-geometry-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-batch-geometry.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-batch-geometry-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-batch-geometry-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-batch-geometry.time.txt
 ```
 
 Not tested in this experiment: fixed `13 x 100 x 2`, slot-heldout,
@@ -1241,9 +1241,9 @@ before that profile identifies the next shared owner.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-atom-hash-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-atom-hash-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-atom-hash.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-atom-hash-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-atom-hash-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-atom-hash.time.txt
 ```
 
 Not tested in this experiment: fixed `13 x 100 x 2`, slot-heldout,
@@ -1293,9 +1293,9 @@ not change.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-atom-hash-symbolized-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-atom-hash-symbolized-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-atom-hash.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-atom-hash-symbolized-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-atom-hash-symbolized-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-atom-hash.time.txt
 ```
 
 Not tested by this profile: fixed quality percentages, queue-inclusive product
@@ -1345,10 +1345,10 @@ mechanism.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-memo-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-memo-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-memo-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-geometry-memo.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-memo-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-memo-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-geometry-memo-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-geometry-memo.time.txt
 ```
 
 Not tested in this experiment: fixed `13 x 100 x 2`, slot-heldout,
@@ -1398,10 +1398,10 @@ authorized.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-unified-direct-replay-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-unified-direct-replay-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-unified-direct-replay-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-unified-direct-replay.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-unified-direct-replay-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-unified-direct-replay-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-unified-direct-replay-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-unified-direct-replay.time.txt
 ```
 
 Not tested in this experiment: fixed `13 x 100 x 2`, slot-heldout,
@@ -1458,12 +1458,12 @@ difference rejects the change.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-unified-direct-symbolized-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-unified-direct-symbolized-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-unified-direct-symbolized-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-unified-direct-symbolized-self-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-unified-direct-symbolized-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-unified-direct.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-unified-direct-symbolized-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-unified-direct-symbolized-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-unified-direct-symbolized-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-unified-direct-symbolized-self-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-unified-direct-symbolized-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-unified-direct.time.txt
 ```
 
 Not tested by this profile: fixed `13 x 100 x 2`, slot-heldout, multi-label,
@@ -1513,13 +1513,13 @@ same parity, safety, package, RSS, and `5 ms` gates.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-deferred-simhash-symbolized-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-deferred-simhash-symbolized-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-deferred-simhash-symbolized-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-deferred-simhash-symbolized-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-deferred-simhash-symbolized-self-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-deferred-simhash.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-prepared-sidecar-focused-tests.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-deferred-simhash-symbolized-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-deferred-simhash-symbolized-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-deferred-simhash-symbolized-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-deferred-simhash-symbolized-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-deferred-simhash-symbolized-self-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-deferred-simhash.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-prepared-sidecar-focused-tests.txt
 ```
 
 Not tested by the local prepared-sidecar implementation: normal remote
@@ -1563,11 +1563,11 @@ nor rejected before profiling this exact implementation.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-prepared-sidecar.log
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-prepared-sidecar.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-sidecar-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-sidecar-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-sidecar-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-prepared-sidecar.log
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-prepared-sidecar.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-sidecar-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-sidecar-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-sidecar-13x10.time.txt
 ```
 
 Not tested: fixed `13 x 100 x 2`, integrated transfer, queue-inclusive service
@@ -1626,11 +1626,11 @@ queue-inclusive 20-client product gate.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers1-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers2-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers4-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers8-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers20-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers1-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers2-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers4-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers8-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-hot-scheduler-workers20-13x10.stdout.json
 ```
 
 Not tested by the matrix: fixed quality percentages, queue-inclusive product
@@ -1660,7 +1660,7 @@ dense diagnostic memberships, and the existing compiler/runtime proof suite.
 Receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-streaming-exact-replay-focused-tests.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-streaming-exact-replay-focused-tests.txt
 ```
 
 Not tested locally: normal stripped latency, fixed `13 x 100 x 2`, integrated
@@ -1700,12 +1700,12 @@ change.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-sidecar-symbolized-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-sidecar-symbolized-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-sidecar-symbolized-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-sidecar-symbolized-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-sidecar-symbolized-self-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-prepared-sidecar.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-sidecar-symbolized-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-sidecar-symbolized-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-sidecar-symbolized-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-sidecar-symbolized-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-sidecar-symbolized-self-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-prepared-sidecar.time.txt
 ```
 
 Not tested by this profile: fixed proof, integration, queue-inclusive service
@@ -1768,12 +1768,12 @@ frontier, denominator, or runtime authority changes.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-dwarf-streaming-exact-replay.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-streaming-exact-replay-dwarf-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-streaming-exact-replay-dwarf-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-streaming-exact-replay-dwarf-self-report-no-inline.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-streaming-exact-replay-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-streaming-exact-replay-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-dwarf-streaming-exact-replay.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-streaming-exact-replay-dwarf-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-streaming-exact-replay-dwarf-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-streaming-exact-replay-dwarf-self-report-no-inline.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-streaming-exact-replay-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-streaming-exact-replay-13x10.time.txt
 ```
 
 Not tested: fixed `13 x 100 x 2`, integrated transfer, queue-inclusive service
@@ -1814,12 +1814,12 @@ permitted action is a symbolized profile of this exact runtime.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-prepared-slot-search-focused-tests.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-prepared-slot-search.log
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-prepared-slot-search.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-slot-search-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-slot-search-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-slot-search-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-prepared-slot-search-focused-tests.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-prepared-slot-search.log
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-prepared-slot-search.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-slot-search-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-slot-search-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-prepared-slot-search-13x10.time.txt
 ```
 
 Not tested: fixed proof, integrated transfer, queue-inclusive service latency,
@@ -1953,10 +1953,10 @@ unchanged frozen denominator.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/release-build.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/package-parity.sha256
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/micro-workers20-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/micro-workers20-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/release-build.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/package-parity.sha256
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/micro-workers20-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/micro-workers20-13x10.time.txt
 ```
 
 Measured by this gate: package parity and bytes, sampled stage retention,
@@ -2019,7 +2019,7 @@ program count from the fixed micro before any full proof.
 The critical review and corrected target architecture are now owned by:
 
 ```text
-/home/ubu/projects/lay/docs/l2-productive-v80-semantic-transducer-paper.md
+/workspace/local/lay/docs/l2-productive-v80-semantic-transducer-paper.md
 ```
 
 It corrects one overbroad V70 interpretation: `SEGMENT_POOL` references are
@@ -2031,11 +2031,11 @@ exact transient output matching plus owner-set intersection.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/local-focused-tests.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/release-build.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/package-parity.sha256
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/micro-workers20-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/micro-workers20-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/local-focused-tests.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/release-build.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/package-parity.sha256
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/micro-workers20-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V70_TRANSITION_EQUIVALENCE_2026-08-12/micro-workers20-13x10.time.txt
 ```
 
 Measured: package parity, sampled retention and quality, structural program
@@ -2116,11 +2116,11 @@ class, one-worker p99 `<=5 ms`, zero false singleton, and zero integrity error.
 Measured receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers1-13x100-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers1-13x100.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers20-13x100-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers20-13x100.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/control-v67-current-binary-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers1-13x100-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers1-13x100.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers20-13x100-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V68_SHARED_PROGRAM_2026-08-12/full-workers20-13x100.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V69_EXACT_REPLAY_2026-08-12/control-v67-current-binary-13x10-receipt.json
 ```
 
 Not tested by V68: integrated `L1.1 -> L2 -> L3 -> L4 -> verifier` transfer,
@@ -2171,10 +2171,10 @@ forbidden because the micro did not pass.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/resume-build-stage-root-fix-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/resume-build-stage-root-fix.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/micro-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/micro-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/resume-build-stage-root-fix-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/resume-build-stage-root-fix.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/micro-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/micro-13x10.time.txt
 ```
 
 Not tested: fixed `13 x 100 x 2`, integrated transfer, queue-inclusive
@@ -2254,11 +2254,11 @@ proof inputs, or runtime authority.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/release-build.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit-final.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit-final.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/resume-build.stderr.log
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/resume-build.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/release-build.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit-final.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit-final.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/resume-build.stderr.log
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/resume-build.time.txt
 ```
 
 Not tested by the failed resume: compiled V67 package size or parity, fixed
@@ -2321,10 +2321,10 @@ readout, run fixed proof, or change authority.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit.time.txt
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v67/anchor-support-audit.json
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v67/anchor-support-audit.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V67_SHARED_SUPPORT_2026-08-12/anchor-support-audit.time.txt
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v67/anchor-support-audit.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v67/anchor-support-audit.time.txt
 ```
 
 ### 51.2 Consequence
@@ -2454,10 +2454,10 @@ quality contract fails because `H -> B != 0` and three classes do not exceed
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/full-hot-gate-workers1-13x100.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/full-hot-gate-workers1-13x100.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/full-hot-gate-workers20-13x100.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/full-hot-gate-workers20-13x100.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/full-hot-gate-workers1-13x100.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/full-hot-gate-workers1-13x100.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/full-hot-gate-workers20-13x100.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/full-hot-gate-workers20-13x100.time.txt
 ```
 
 Measured by this gate: fixed quality, stage retention, exact probe parity,
@@ -2515,7 +2515,7 @@ survived the mixed frontier. It did not prove that the frozen oracle binding's
 exact source-anchor was generated. The receipt is:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v66/frontier-trace-13x100-receipt.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v66/frontier-trace-13x100-receipt.json
 ```
 
 The next shadow-only experiment is therefore authorized to partition that
@@ -2556,7 +2556,7 @@ authority changed.
 Rejected-experiment receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v66/typed-frontier-full-workers20-13x100-receipt.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v66/typed-frontier-full-workers20-13x100-receipt.json
 ```
 
 An exact source-anchor trace then compared identity-bridge candidates by
@@ -2580,7 +2580,7 @@ runtime authority changed                                false
 Receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v66/anchor-key-trace-full-workers20-13x100-receipt.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v66/anchor-key-trace-full-workers20-13x100-receipt.json
 ```
 
 The root diagnosis is therefore earlier than the mixed frontier: the recovery
@@ -2616,7 +2616,7 @@ runtime authority changed                                false
 Receipt:
 
 ```text
-/home/e/projects/lay-productive-v1-build-20260811/receipts/v66/pre-frontier-exact-full-workers20-13x100-receipt.json
+/workspace/worker/lay-productive-v1-build-20260811/receipts/v66/pre-frontier-exact-full-workers20-13x100-receipt.json
 ```
 
 This resolves the remaining distinction. The frontier is not hiding an exact
@@ -2688,13 +2688,13 @@ denominators, and authority must remain identical.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-clone-free-exact-replay.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-clone-free-exact-replay-symbolized-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-clone-free-exact-replay-symbolized-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-clone-free-exact-replay-symbolized-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-clone-free-exact-replay-symbolized-13x10.perf.log
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-clone-free-exact-replay-symbolized-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-clone-free-exact-replay-symbolized-self-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-clone-free-exact-replay.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-clone-free-exact-replay-symbolized-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-clone-free-exact-replay-symbolized-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-clone-free-exact-replay-symbolized-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-clone-free-exact-replay-symbolized-13x10.perf.log
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-clone-free-exact-replay-symbolized-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-clone-free-exact-replay-symbolized-self-report.txt
 ```
 
 Not tested by this profile: fixed proof, integrated transfer, queue-inclusive
@@ -2724,7 +2724,7 @@ unchanged.
 Receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-dense-diagnostic-flags-focused-tests.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-dense-diagnostic-flags-focused-tests.txt
 ```
 
 ## 45. Dense Diagnostic Flags Remote Micro And Profile
@@ -2781,14 +2781,14 @@ must remain identical.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-dwarf-dense-diagnostic-flags.log
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-dwarf-dense-diagnostic-flags.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-diagnostic-flags-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-diagnostic-flags-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-diagnostic-flags-dwarf-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-diagnostic-flags-dwarf-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-diagnostic-flags-dwarf-13x10.perf.log
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-dense-diagnostic-flags-dwarf-self-report-no-inline.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-dwarf-dense-diagnostic-flags.log
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-dwarf-dense-diagnostic-flags.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-diagnostic-flags-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-diagnostic-flags-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-diagnostic-flags-dwarf-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-diagnostic-flags-dwarf-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-diagnostic-flags-dwarf-13x10.perf.log
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-dense-diagnostic-flags-dwarf-self-report-no-inline.txt
 ```
 
 Not tested: fixed `13 x 100 x 2`, integrated transfer, queue-inclusive service
@@ -2826,12 +2826,12 @@ authorized.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-slot-search-symbolized-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-slot-search-symbolized-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-slot-search-symbolized-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-slot-search-symbolized-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-slot-search-symbolized-self-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-prepared-slot-search.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-slot-search-symbolized-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-slot-search-symbolized-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-prepared-slot-search-symbolized-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-slot-search-symbolized-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-prepared-slot-search-symbolized-self-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-prepared-slot-search.time.txt
 ```
 
 Not tested by this profile: fixed proof, integration, queue-inclusive service
@@ -2860,7 +2860,7 @@ runtime authority changed                              false
 Receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-dense-eligibility-focused-tests.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-dense-eligibility-focused-tests.txt
 ```
 
 This local gate does not measure normal stripped latency, fixed `13 x 100 x 2`
@@ -2906,11 +2906,11 @@ must remain in the evidence record. A repeat cannot erase this failed sample.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-dense-eligibility.log
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-dense-eligibility.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-dense-eligibility.log
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-dense-eligibility.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-13x10.time.txt
 ```
 
 Not tested: fixed `13 x 100 x 2`, integrated transfer, queue-inclusive service
@@ -2946,9 +2946,9 @@ Fixed proof and promotion remain forbidden.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-repeat1-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-repeat1-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-repeat1-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-repeat1-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-repeat1-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-dense-eligibility-repeat1-13x10.time.txt
 ```
 
 Not tested: fixed `13 x 100 x 2`, integrated transfer, queue-inclusive service
@@ -2989,13 +2989,13 @@ authority rejects the optimization.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-dense-eligibility.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-eligibility-symbolized-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-eligibility-symbolized-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-eligibility-symbolized-13x10.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-eligibility-symbolized-13x10.perf.log
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-dense-eligibility-symbolized-report.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-dense-eligibility-symbolized-self-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-symbolized-dense-eligibility.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-eligibility-symbolized-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-eligibility-symbolized-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-eligibility-symbolized-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/profile-dense-eligibility-symbolized-13x10.perf.log
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-dense-eligibility-symbolized-report.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/perf-dense-eligibility-symbolized-self-report.txt
 ```
 
 Not tested by this profile: fixed proof, integrated transfer, queue-inclusive
@@ -3020,7 +3020,7 @@ runtime authority changed                              false
 Receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-clone-free-exact-replay-focused-tests.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/local-clone-free-exact-replay-focused-tests.txt
 ```
 
 This local gate does not measure normal stripped latency, fixed proof,
@@ -3059,10 +3059,10 @@ profile of this exact implementation.
 Receipts:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-clone-free-exact-replay.time.txt
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-clone-free-exact-replay-13x10-receipt.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-clone-free-exact-replay-13x10.stdout.json
-/home/ubu/projects/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-clone-free-exact-replay-13x10.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/release-build-clone-free-exact-replay.time.txt
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-clone-free-exact-replay-13x10-receipt.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-clone-free-exact-replay-13x10.stdout.json
+/workspace/local/lay/docs/structural_gates/receipts/L2_PRODUCTIVE_V66_BOUNDED_RECOVERY_PAPER_2026-08-11/micro-clone-free-exact-replay-13x10.time.txt
 ```
 
 Not tested: fixed proof, integrated transfer, queue-inclusive service latency,

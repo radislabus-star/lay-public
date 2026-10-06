@@ -101,8 +101,8 @@
   "remote_check": {
     "command": "python3 scripts/dev-check.py check --target bin:lay-ibus-engine",
     "resource_profile": "dedicated-20cpu",
-    "local_receipt": "/home/ubu/.cache/lay/development/run-4tue0yaf",
-    "remote_run": "/home/e/projects/lay-development-runner/run-JBWPp7",
+    "local_receipt": "/home/local-user/.cache/lay/development/run-4tue0yaf",
+    "remote_run": "/workspace/worker/lay-development-runner/run-JBWPp7",
     "source_head": "83ba0f42db5c87cdc4f17abf42197396566cb05b",
     "source_archive_sha256": "6edfcff541122f4f61a938140958c42e4fb08e08c591495bcc673c1cf821bdae",
     "request_sha256": "18f12911ec6156078049caf3a21310c4a5b166e0a09eda3cbadff47bdb862ed6",
@@ -132,8 +132,8 @@
     "next_binding_gate": "final remote changed suite on the complete documented snapshot"
   },
   "rejected_predecessor": {
-    "local_receipt": "/home/ubu/.cache/lay/development/run-v33jokr1",
-    "remote_run": "/home/e/projects/lay-development-runner/run-MA3Wod",
+    "local_receipt": "/home/local-user/.cache/lay/development/run-v33jokr1",
+    "remote_run": "/workspace/worker/lay-development-runner/run-MA3Wod",
     "status": "REJECTED_TEST_PROCESS_STACK_OVERFLOW_NO_ACCEPTANCE",
     "cause_and_fix": "two additional independent async harness subcases enlarged one monolithic test future; splitting them into a separate test retained the same assertions and production source without changing runtime or test stack limits"
   },
@@ -156,5 +156,13 @@
     "many-cycle physical acceptance",
     "latency, RSS, package size",
     "answer quality"
-  ]
+  ],
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "09bd343eaacf96aa7e5e3f92417f7852ee448a80877f50124b108e76c46b46cd",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

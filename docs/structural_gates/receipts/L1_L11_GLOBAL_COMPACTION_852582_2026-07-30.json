@@ -3,7 +3,7 @@
   "date": "2026-07-30",
   "scope": "one V8 L1.1 base over RU 535410 plus 17172 Russian L2 lemma seeds plus EN 300000",
   "corpus": {
-    "path": "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/corpus-852582.txt",
+    "path": "/home/worker/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/corpus-852582.txt",
     "surfaces": 852582,
     "ru_surfaces": 552582,
     "en_surfaces": 300000,
@@ -11,7 +11,7 @@
     "sha256": "abb9d71495acc27b7619b24621568ea72263f9bd40201aab9fffa1188fbff8f6"
   },
   "package": {
-    "path": "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/package.v8.bin",
+    "path": "/home/worker/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/package.v8.bin",
     "format": "V8 lazy sharded postings",
     "atoms_per_shard": 32,
     "bytes": 190139182,
@@ -45,19 +45,71 @@
     "verdict": "PASS_shadow"
   },
   "classes": {
-    "adjacent_transposition": {"unique_top1_percent": 99.9582985821518, "lattice_percent": 99.995, "false_certainty": 0},
-    "double_substitution": {"unique_top1_percent": 97.88927879327503, "lattice_percent": 100.0, "false_certainty": 0},
-    "extra_letter": {"unique_top1_percent": 98.88285492629946, "lattice_percent": 100.0, "false_certainty": 0},
-    "layout_projection": {"unique_top1_percent": 98.3225672015003, "lattice_percent": 99.905, "false_certainty": 0},
-    "letter_substitution": {"unique_top1_percent": 99.9562937062937, "lattice_percent": 99.995, "false_certainty": 0},
-    "missing_letter": {"unique_top1_percent": 99.25713084308641, "lattice_percent": 99.85, "false_certainty": 0},
-    "non_adjacent_transposition": {"unique_top1_percent": 97.24845327254965, "lattice_percent": 100.0, "false_certainty": 0},
-    "omission_plus_transposition": {"unique_top1_percent": 97.02786787581915, "lattice_percent": 99.535, "false_certainty": 0},
-    "prefix_truncation": {"unique_top1_percent": 98.26553137811416, "lattice_percent": 99.99, "false_certainty": 0},
-    "punctuation_suffix": {"unique_top1_percent": 100.0, "lattice_percent": 100.0, "false_certainty": 0},
-    "repeated_fragment": {"unique_top1_percent": 98.80795373845997, "lattice_percent": 100.0, "false_certainty": 0},
-    "sparse_multi_omission": {"unique_top1_percent": 96.69433212740299, "lattice_percent": 99.67, "false_certainty": 0},
-    "suffix_truncation": {"unique_top1_percent": 99.14249684741488, "lattice_percent": 100.0, "false_certainty": 0}
+    "adjacent_transposition": {
+      "unique_top1_percent": 99.9582985821518,
+      "lattice_percent": 99.995,
+      "false_certainty": 0
+    },
+    "double_substitution": {
+      "unique_top1_percent": 97.88927879327503,
+      "lattice_percent": 100.0,
+      "false_certainty": 0
+    },
+    "extra_letter": {
+      "unique_top1_percent": 98.88285492629946,
+      "lattice_percent": 100.0,
+      "false_certainty": 0
+    },
+    "layout_projection": {
+      "unique_top1_percent": 98.3225672015003,
+      "lattice_percent": 99.905,
+      "false_certainty": 0
+    },
+    "letter_substitution": {
+      "unique_top1_percent": 99.9562937062937,
+      "lattice_percent": 99.995,
+      "false_certainty": 0
+    },
+    "missing_letter": {
+      "unique_top1_percent": 99.25713084308641,
+      "lattice_percent": 99.85,
+      "false_certainty": 0
+    },
+    "non_adjacent_transposition": {
+      "unique_top1_percent": 97.24845327254965,
+      "lattice_percent": 100.0,
+      "false_certainty": 0
+    },
+    "omission_plus_transposition": {
+      "unique_top1_percent": 97.02786787581915,
+      "lattice_percent": 99.535,
+      "false_certainty": 0
+    },
+    "prefix_truncation": {
+      "unique_top1_percent": 98.26553137811416,
+      "lattice_percent": 99.99,
+      "false_certainty": 0
+    },
+    "punctuation_suffix": {
+      "unique_top1_percent": 100.0,
+      "lattice_percent": 100.0,
+      "false_certainty": 0
+    },
+    "repeated_fragment": {
+      "unique_top1_percent": 98.80795373845997,
+      "lattice_percent": 100.0,
+      "false_certainty": 0
+    },
+    "sparse_multi_omission": {
+      "unique_top1_percent": 96.69433212740299,
+      "lattice_percent": 99.67,
+      "false_certainty": 0
+    },
+    "suffix_truncation": {
+      "unique_top1_percent": 99.14249684741488,
+      "lattice_percent": 100.0,
+      "false_certainty": 0
+    }
   },
   "tested": [
     "full fixed quality proof",
@@ -74,8 +126,16 @@
   ],
   "runtime_authority_changed": false,
   "evidence": [
-    "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/proof-full.json",
-    "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/proof-full.log",
-    "/home/e/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/proof-full.time"
-  ]
+    "/home/worker/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/proof-full.json",
+    "/home/worker/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/proof-full.log",
+    "/home/worker/build/lay-l1-shadow/artifacts/l11-l2-global-compaction-2026-07-30/proof-full.time"
+  ],
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "6799143414588c83b81c338032c463be2ae7ec12531115d4dcd19e0644a5206e",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

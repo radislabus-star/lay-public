@@ -25,8 +25,8 @@ binding the morphology records to those stable center IDs.
 As of 2026-07-26, this package is no longer only an offline teacher. A narrow
 runtime bridge now exists at:
 
-- `/home/ubu/projects/lay/src/nanda_wave/morphology_phase/runtime.rs`
-- `/home/ubu/projects/lay/src/nanda_wave/l2_field/bridge.rs`
+- `/workspace/local/lay/src/nanda_wave/morphology_phase/runtime.rs`
+- `/workspace/local/lay/src/nanda_wave/l2_field/bridge.rs`
 
 Scope of this runtime reuse:
 
@@ -44,7 +44,7 @@ What was tested for this runtime-reuse step:
 - `scripts/cargo-guard.sh test --lib same_lemma_`: passed;
 - `scripts/cargo-guard.sh test --lib l2_field_shadow_route_`: passed;
 - `target/debug/lay-nanda-wave-eval --l2-route-compare-report --limit 200 --examples 0`
-  on `/home/ubu/.local/share/lay/corrections.jsonl`:
+  on `/home/local-user/.local/share/lay/corrections.jsonl`:
   `records_used = 134`,
   `surface_diverged = 0 / 134`,
   `gate_diverged = 0 / 134`,
@@ -67,7 +67,7 @@ Verdict scope:
 
 Receipt:
 
-- `/home/ubu/projects/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_CORRECTIONS_200_SAME_LEMMA_MORPHOLOGY_2026-07-26.json`
+- `/workspace/local/lay/docs/structural_gates/receipts/L2FIELD_SHADOW_ROUTE_COMPARE_CORRECTIONS_200_SAME_LEMMA_MORPHOLOGY_2026-07-26.json`
 
 ## Ownership
 

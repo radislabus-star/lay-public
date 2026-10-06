@@ -127,7 +127,7 @@ oracle percentage certifies new runtime behavior.
 
 ## Controlled witness and repair — 2026-10-05
 
-Remote old-algorithm witness `/home/ubu/.cache/lay/development/run-yi9hutwk/RESULT.json`:1809 executed,1806 passed,3 expected new regressions failed.
+Remote old-algorithm witness `/home/local-user/.cache/lay/development/run-yi9hutwk/RESULT.json`:1809 executed,1806 passed,3 expected new regressions failed.
 Request binds1456 files to actual8bede373; reproduction149.5s end-to-end,
 build24.06s, test execution109.705s. Existing algorithms retained; only
 cache-parameter extraction allowed an isolated controlled parent. Dense fixture
@@ -145,7 +145,7 @@ admission, authority and input/output owners are unchanged. ADR
 Repaired library proof is complete below; release and physical scope remain
 pending.
 
-Repaired guarded library proof: `/home/ubu/.cache/lay/development/run-3ri26fio/RESULT.json`,1809/1809 PASS,149.9s end-to-end. Independent review: both projections absent, own-memory isolated fixtures, unchanged metadata/limits/Correction mode/authority, PASS_WITH_LIMITS. Full release gates/physical scope remain pending.
+Repaired guarded library proof: `/home/local-user/.cache/lay/development/run-3ri26fio/RESULT.json`,1809/1809 PASS,149.9s end-to-end. Independent review: both projections absent, own-memory isolated fixtures, unchanged metadata/limits/Correction mode/authority, PASS_WITH_LIMITS. Full release gates/physical scope remain pending.
 
 Private L11 dependency preparation first failed as intended by the service
 validator: no active installed admission receipt was provided. The private
@@ -207,7 +207,7 @@ Second native source snapshot binds1465 files to actual8b ancestry, manifest
 `49af2f23ddabf55cb035d8acc345e1c4c3a9c20bedae782a3901fb017d171dc2`.
 Remote guarded fmt, release research library and external probe build PASS,
 161.453s. Receipt:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/BUILD_RESULT.json`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/BUILD_RESULT.json`.
 Library SHA `a48861967c5cbe5cd9ec88fa1433a796abba1ad455e9063c52a21a310ed04767`.
 No installed binary or runtime authority changed. This is a build proof and
 does not establish completion quality, full gates or physical acceptance.
@@ -216,7 +216,7 @@ Exact current L11 private service contrast is complete: historical-library
 diagnostic panel frozen-personal7/20 eligible,5/7 hits; removing only signed
 transition maps7/20,5/7; no-personal6/20,4/6. Current service availability did
 not explain the missing candidates. Receipt:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/L11_BASELINE2_RESULT.json`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/L11_BASELINE2_RESULT.json`.
 Private READY proved; model/proof receipt paths alone translated, validators
 enabled, server/socket cleaned. This supplied-context contrast is not live IME
 parity or a natural heldout quality proof.
@@ -225,7 +225,7 @@ Frozen bottom-k200 UD corpus episodes:172TRAIN/28document-separated validation,
 545ready2/3/4-character requests; every3N prefix record retained. Corpus ancestry
 and derived XML document provenance remain explicit, validation is not a sealed
 new natural corpus. Data-only receipt remote:
-`/home/e/projects/lay-development-runner/contextual-completion-20261005-20261004T211126Z/release79-context-training/smoke200/PREPARE_RECEIPT.json`.
+`/workspace/worker/lay-development-runner/contextual-completion-20261005-20261004T211126Z/release79-context-training/smoke200/PREPARE_RECEIPT.json`.
 
 Private positive support helper emits all eligible TRAIN observed episodes;
 none from validation. Native tokenizer is token-local split/trim/lower;
@@ -249,7 +249,7 @@ absent surfaces. Each worker has an independent frozen personal profile,
 all four profile hashes unchanged. Independent source review PASS_WITH_LIMITS:
 document-key split and native tokenizer are consistent; possible XML/explicit
 document aliases remain unaudited. Collection receipt:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/COLLECTION_RESULT.json`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/COLLECTION_RESULT.json`.
 
 Full positive TRAIN support:687527episodes,539864unambiguous coarse class,
 111321warm missing readings,36319ambiguous,23unavailable. Fixed last1/tail2
@@ -269,7 +269,7 @@ All600 prefix records retained,545ready; short prefixes with no open suffix,
 empty pools and unknown classes stay in denominators. Exact attestation hits
 are not semantic error counts because alternatives can also be acceptable.
 Receipt:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/PILOT_RESULT.json`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/PILOT_RESULT.json`.
 Model SHA `e7d49d3e137e2417da77bd80b9ff344e6756d7d0b3612d3b7a55a9301d2e9f2c`.
 
 Verdict: no promotion. Validation tops changed10times without a reference
@@ -316,7 +316,7 @@ Paired native545requests at limits12/64 completed9.481s,1090actual calls,
 all600 episode/prefix records retained. Historical12 normalized material
 reproduced exactly545/545. Frozen profiles/shared models unchanged; exact
 private L11 admitted/READY and owned socket cleaned. Runtime unchanged.
-Receipt: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/BOUNDED_POOL_RESULT.json`.
+Receipt: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/BOUNDED_POOL_RESULT.json`.
 
 | Validation prefix | Ready | Reference in12→64 | Reference first12→64 | Gains/losses first |
 |---|---:|---:|---:|---:|
@@ -338,7 +338,7 @@ First full-source79 snapshot1466files manifest
 Remote discovery2997 tests and exact old-row parity passed; graph refreshed and
 canon passed. Full gate FAILED after421.673s (entire guarded scope516.457s).
 Four unexpected IME residual failures; known-failure ledger remains zero.
-Receipt: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/FULL_SOURCE_FAILED_RESULT.json`.
+Receipt: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/FULL_SOURCE_FAILED_RESULT.json`.
 
 Three fail at `td121_prime_completion_material` before adapter schedules: the
 actual first candidate for bare `про` is `просто`, fixture expects `проверка`.
@@ -397,7 +397,7 @@ architecture/canon, all release binaries, installer/public-issue regressions
 and both Rust1.88MSRV routes passed. Remote owning receipt:
 `release79-final-source2/RELEASE_GATE_RESULT.json` in the existing remote
 contextual-completion namespace. Exact local imported gate:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/verified-import/RELEASE_GATE_RESULT.json`,
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/verified-import/RELEASE_GATE_RESULT.json`,
 SHA `1243e0fa906cc228cf5211c82eb544f9941265dc99b109f4355d6260954bf40a`.
 Generated graph/manifest files and three artifacts imported by hash and mode;
 no rebuilding during installation.
@@ -992,7 +992,7 @@ Status SOURCE_IMPLEMENTED_PROOF_PENDING: no changed-byte result/installation.
 
 Controlled pending-guard removal fails the real production-helper test. New source
 passes78/78 focused tests across usage projection, memory publication, candidate
-ranking/cache, IME readout and worker. Receipt `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/MEMORY_FRESHNESS_RESULT.json`, SHA62644a848f399e67a95dd4e30b0bd7c0ad2d6dceac06ae82fa8d6c965975b8a4. The first authored schema3 fixture was invalid and rejected; constructors now provide actual schema/identity fields. Existing schema validation and learning weights remain unchanged. The tests model persistence ordering; actual writer/reader, full gate and physical clients remain pending. Installed runtime unchanged.
+ranking/cache, IME readout and worker. Receipt `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/MEMORY_FRESHNESS_RESULT.json`, SHA62644a848f399e67a95dd4e30b0bd7c0ad2d6dceac06ae82fa8d6c965975b8a4. The first authored schema3 fixture was invalid and rejected; constructors now provide actual schema/identity fields. Existing schema validation and learning weights remain unchanged. The tests model persistence ordering; actual writer/reader, full gate and physical clients remain pending. Installed runtime unchanged.
 
 ## First full-gate result for memory/terminal source
 
@@ -1062,23 +1062,23 @@ full-sentence understanding or comprehensive client acceptance is promoted.
 
 Exact private receipt locators (not public artifacts):
 
-- full_source: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/priority-memory-install/verified-import/RELEASE_GATE_RESULT.json`; SHA256 `23491e2ca777008c0c873c6937968613d60f82d9643c68696a4a5c1f38c4c712`.
+- full_source: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/priority-memory-install/verified-import/RELEASE_GATE_RESULT.json`; SHA256 `23491e2ca777008c0c873c6937968613d60f82d9643c68696a4a5c1f38c4c712`.
 
-- combined_latency: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/priority-memory-install/LATENCY_RESULT.json`; SHA256 `3228e5d63cc3bdc3a743f8b73158be11cd453a367b5d8601655c2e5e803dc6c7`.
+- combined_latency: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/priority-memory-install/LATENCY_RESULT.json`; SHA256 `3228e5d63cc3bdc3a743f8b73158be11cd453a367b5d8601655c2e5e803dc6c7`.
 
-- cross_process: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/priority-memory-install/CROSS_PROCESS_RESULT.json`; SHA256 `ca16943e98d2846c17100065ca37a0432986b2568d801a3cf0dd0777d9df46fa`.
+- cross_process: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/priority-memory-install/CROSS_PROCESS_RESULT.json`; SHA256 `ca16943e98d2846c17100065ca37a0432986b2568d801a3cf0dd0777d9df46fa`.
 
-- worker_resources: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/priority-memory-install/WORKER_RESOURCE_RESULT.json`; SHA256 `bec203af4ac74c31c625ceb83ec49ce4bd81b96ab1e8f2835e3c50fef03c07f6`.
+- worker_resources: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/priority-memory-install/WORKER_RESOURCE_RESULT.json`; SHA256 `bec203af4ac74c31c625ceb83ec49ce4bd81b96ab1e8f2835e3c50fef03c07f6`.
 
-- installation: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/priority-memory-install/INSTALL.json`; SHA256 `830b5c4a66425120ec73b68fd3238052ade34c8818f2bf182aef297eb91af2ee`.
+- installation: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/priority-memory-install/INSTALL.json`; SHA256 `830b5c4a66425120ec73b68fd3238052ade34c8818f2bf182aef297eb91af2ee`.
 
-- priority_physical: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/V17_RUN_20261005T165106_084211c67739/WIDE_MATRIX_V17_20261005T165106_084211c67739.json`; SHA256 `918db226576386fd945d3f829c4eeb1689f6f300a5facc5bdf76742e5000ce2e`.
+- priority_physical: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/V17_RUN_20261005T165106_084211c67739/WIDE_MATRIX_V17_20261005T165106_084211c67739.json`; SHA256 `918db226576386fd945d3f829c4eeb1689f6f300a5facc5bdf76742e5000ce2e`.
 
-- browser_controls: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/V17_RUN_20261005T165221_732174f15cbb/WIDE_MATRIX_V17_20261005T165221_732174f15cbb.json`; SHA256 `7e05c67a05431a5bec25cbdb18c6181fe982eb6a85bd3fc9fd0762178a3cd553`.
+- browser_controls: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/V17_RUN_20261005T165221_732174f15cbb/WIDE_MATRIX_V17_20261005T165221_732174f15cbb.json`; SHA256 `7e05c67a05431a5bec25cbdb18c6181fe982eb6a85bd3fc9fd0762178a3cd553`.
 
-- native_controls: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/V17_RUN_20261005T165343_618a970b6186/WIDE_MATRIX_V17_20261005T165343_618a970b6186.json`; SHA256 `2c823203558fac0bd22b7a18e7a4c89a974040b29e2e77b39828de7fecd20e58`.
+- native_controls: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/V17_RUN_20261005T165343_618a970b6186/WIDE_MATRIX_V17_20261005T165343_618a970b6186.json`; SHA256 `2c823203558fac0bd22b7a18e7a4c89a974040b29e2e77b39828de7fecd20e58`.
 
-- double_shift: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/V17_RUN_20261005T165546_fed016834aa7/WIDE_MATRIX_V17_20261005T165546_fed016834aa7.json`; SHA256 `42b9f74b73c349cd4c95ff7c18ad3b3f3fc4d9458c11f5f28375b2bd83121012`.
+- double_shift: `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/V17_RUN_20261005T165546_fed016834aa7/WIDE_MATRIX_V17_20261005T165546_fed016834aa7.json`; SHA256 `42b9f74b73c349cd4c95ff7c18ad3b3f3fc4d9458c11f5f28375b2bd83121012`.
 
 ## Additional installed terminal-command acceptance — 2026-10-05
 
@@ -1105,5 +1105,5 @@ were checked through the existing trace and confirmed by actual Tab output.
 Native feedback from Tab/Enter legitimately changes learning memory; no
 isolated or natural heldout quality claim. Commands themselves were never run.
 
-Receipt `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/V17_RUN_20261005T203328_2585bbe14206/WIDE_MATRIX_V17_20261005T203328_2585bbe14206.json`, SHA256 `289a98c8fc49ac7e65a79e9c8dfbd3daed5b24a8e7b5733d62ddd6c666f57613`.
-Detailed report `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/terminal-commands-physical-20261005T203145/REPORT.md`, SHA256 `88e324cac0c8485d64bf123321f1732189256d1e1c055bfec25b903f84654a83`.
+Receipt `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/V17_RUN_20261005T203328_2585bbe14206/WIDE_MATRIX_V17_20261005T203328_2585bbe14206.json`, SHA256 `289a98c8fc49ac7e65a79e9c8dfbd3daed5b24a8e7b5733d62ddd6c666f57613`.
+Detailed report `/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/terminal-commands-physical-20261005T203145/REPORT.md`, SHA256 `88e324cac0c8485d64bf123321f1732189256d1e1c055bfec25b903f84654a83`.

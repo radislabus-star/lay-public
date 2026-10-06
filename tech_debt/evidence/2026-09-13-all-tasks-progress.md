@@ -54,7 +54,7 @@ bytes и не закрывает задачу.
 Первый C19 механизм, typed same-context exact snapshot transfer, принят только в
 focused scope: remote rustfmt PASS и шесть test functions, **16/16 concrete cases
 PASS**. Immutable stage51 находится в
-`/home/e/projects/lay-development-runner/td121-typed-snapshot-stage51-frozen`;
+`/workspace/worker/lay-development-runner/td121-typed-snapshot-stage51-frozen`;
 `source.tar` SHA-256
 `73e15a091e08e3bd04b52c89ab3fd6304b6f85e99d2e1791449e81e67dc40131`,
 1408-file manifest SHA-256
@@ -66,7 +66,7 @@ production adapter. При `UnknownStart`, exact snapshot и stuck visible suffi
 Alt-release успешно коммитит только suffix+space (`def `), owned tail становится
 `abcdef `, но callback остаётся `UnknownStart`; post-effect assertion падает.
 Remote test-only receipt:
-`/home/e/projects/lay-development-runner/td121-completion-release-red52/57-causal-red.log`,
+`/workspace/worker/lay-development-runner/td121-completion-release-red52/57-causal-red.log`,
 `rc=101`, SHA-256
 `27e6e1c704f507a78a02de65de87daaf7f0deee8d99e01ff8ddee63a3e7da32b`.
 После независимой проверки RED принят общий effect-based settlement fix. Focused
@@ -97,14 +97,14 @@ gates each 2,807/2,807 with 11 intentional performance skips; compiled receipt, 
 SHA-256 is `02458047a539fb85be82b301fd1cf38b19af1f71241f34260713cf5c5dd90534`.
 The preceding focused 519/519 proof on the same runtime source passed separately.
 The subsequent owned GTK entry run passed 3/3 exact surfaces; its receipt is
-`/home/ubu/.cache/lay/development/release-1.0.72-td121-c20-20260913/gui-smoke-owned-c20/RECEIPT.json`,
+`/home/local-user/.cache/lay/development/release-1.0.72-td121-c20-20260913/gui-smoke-owned-c20/RECEIPT.json`,
 SHA-256 `27bf83fccd5a15e552dabd9afeada8f1bacfd9038b8f9a0046f2cb3d0fcd1eaf`.
 
 The unchanged reviewed installer installed all ten C20 release artifacts and
 verified four loaded owners plus extension version 1.0.72. Global IBus identity,
 input sources, configuration, immutable models, journals and learner state were
 preserved. Installation receipt:
-`/home/ubu/.cache/lay/development/release-1.0.72-td121-c20-20260913/installation-1.0.72.json`,
+`/home/local-user/.cache/lay/development/release-1.0.72-td121-c20-20260913/installation-1.0.72.json`,
 SHA-256 `ca7b0cb622f862cdb9a51678e640d27953fe798f3b37f291bdebce4f5e4735a4`.
 Runtime authority changed by installation. Human physical-keyboard confirmation
 remains `PENDING`; no TD-123 quality promotion follows from these routing and

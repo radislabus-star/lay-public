@@ -1,9 +1,9 @@
 {
   "status": "PASS_EXACT_EXTRACTED_SCHEDULE_EXISTS_RUNTIME_UNCHANGED",
-  "remote": "e@192.168.3.94",
-  "remote_run": "/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-k1FFeX",
-  "local_artifact": "/home/ubu/.cache/lay/development/gnome-repeat-capture-d9q6uzjm/mutter-gtk-dispatch-probe-v2-remote-run-k1FFeX",
-  "input_root": "/home/ubu/.cache/lay/development/gnome-repeat-capture-d9q6uzjm/mutter-gtk-dispatch-probe-v2-input",
+  "remote": "builder@worker.example",
+  "remote_run": "/workspace/worker/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-k1FFeX",
+  "local_artifact": "/home/local-user/.cache/lay/development/gnome-repeat-capture-d9q6uzjm/mutter-gtk-dispatch-probe-v2-remote-run-k1FFeX",
+  "input_root": "/home/local-user/.cache/lay/development/gnome-repeat-capture-d9q6uzjm/mutter-gtk-dispatch-probe-v2-input",
   "resource_profile": "dedicated-20cpu",
   "resource_guard_active": true,
   "cargo_build_jobs": 20,
@@ -24,13 +24,13 @@
     "asan_ubsan_findings": 0
   },
   "failed_predecessor": {
-    "remote_run": "/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b",
+    "remote_run": "/workspace/worker/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-wVWm0b",
     "receipt": "v2-remote-attempt1-build-failed.json",
     "receipt_sha256": "2c029150bbc5a59019ea542a9460e27cf6477e937ee791352c147d935ec377c0",
     "reason": "Original unused callback parameters were promoted to errors by the standalone -Werror build; the accepted fresh run adds only -Wno-unused-parameter and leaves the generated translation-unit hash unchanged."
   },
   "incomplete_predecessor": {
-    "remote_run": "/home/e/projects/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-fMNhxJ",
+    "remote_run": "/workspace/worker/lay-development-runner/mutter-gtk-dispatch-probe-v2/run-fMNhxJ",
     "receipt": "v2-remote-16-function-incomplete.json",
     "receipt_sha256": "8e1b517856fc8112338e66ba1c5848979854ddfc39aff6cc0e225e2a845090d2",
     "reason": "The first passing v2 still mirrored clutter_input_method_filter_key_event; the accepted run inserts that original function as fragment 17 and leaves only im_class->filter_key_event as the async platform callback."
@@ -44,5 +44,13 @@
     "Latency, RSS, package size, answer quality, or installed runtime behavior"
   ],
   "verdict_scope": "The exact callback bodies admit the tested coalesced overwrite schedule and the tested unfiltered-release redispatch flush. This is mechanism feasibility only; transport and cycle-9 causation remain UNKNOWN, and release-only forwarding is not authorized.",
-  "runtime_authority_changed": false
+  "runtime_authority_changed": false,
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "b7ea86a0734945111a0058ec20342f63b61e2d88d14beddb21aab7047cd19eb6",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

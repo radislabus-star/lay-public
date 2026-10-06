@@ -37,7 +37,7 @@ tail-memory, atomic and exact-replay paths; conclusions below also inspect code.
 ### Installed-byte reproduction, independently read
 
 Receipt:
-`/home/ubu/.cache/lay/layout-phase2-private-31hE0X/receipt.json`.
+`/home/local-user/.cache/lay/layout-phase2-private-31hE0X/receipt.json`.
 SHA-256: `d75822dd10425f422b5f7a2d5b942eeb79e8f742c913446936bd740483acd82c`.
 Installed engine SHA-256:
 `391b3b44025461a71d6867dc92584dfa1906c1f8ae72ea610a13d2265aaacfab`.
@@ -474,7 +474,7 @@ was performed for this addendum.
 
 Read [td121-real-ibus-transport-baseline.md](td121-real-ibus-transport-baseline.md)
 and the private receipt at
-`/home/ubu/.cache/lay/td121-real-ibus-imX7Og/receipt.json`.
+`/home/local-user/.cache/lay/td121-real-ibus-imX7Og/receipt.json`.
 The installed IBus passed 22/22 declared transport cases; 20 foreign ABA
 sequences preceded the marker. Get+marker maximum was 1,108 microseconds across
 21 observations, with no early-property-before-foreign example (0/20).
@@ -872,7 +872,7 @@ mirror at `l`. Source inspection explains it: the speculative Backspace updates
 its tail mirror, but `commit_native_observation` retains only gesture fields.
 This is a confirmed C20/C27 bookkeeping defect, not a reason to remove the
 empty-tail assertion. Raw result:
-`/home/ubu/.cache/lay/td121-remote-sidecar/td121-adapter-combined-pass2-wake-evdev-20260907.raw.log`.
+`/home/local-user/.cache/lay/td121-remote-sidecar/td121-adapter-combined-pass2-wake-evdev-20260907.raw.log`.
 The run was 20 PASS / 2 FAIL; the other failure is still being diagnosed and
 must not be dismissed as fixture contamination without evidence.
 
@@ -924,7 +924,7 @@ reuses the existing guarded live observation helper and emits no client effect.
 The C20 boundary, C21 deletion-to-empty, C22 command/navigation, C27 consecutive
 receipt, ready-outcome, foreign-profile and two late-native tests all passed in
 the same namespace run. Exact log:
-`/home/ubu/.cache/lay/td121-remote-sidecar/td121-adapter-combined-pass3-native-preimage-20260907.raw.log`.
+`/home/local-user/.cache/lay/td121-remote-sidecar/td121-adapter-combined-pass3-native-preimage-20260907.raw.log`.
 This is not a 390-test full-suite result, actual-client restoration, physical
 keyboard evidence, final review, installation, or release acceptance. No
 installed runtime authority changed. The earlier 17/22 and 20/22 failures and
@@ -1031,7 +1031,7 @@ first panic; retain that denominator distinction. The initial
 `td121-residuals-red-20260907.log` is a fixture failure for6/7 tests, not full
 RED evidence. Exact pre-repair hashes are in
 `td121-residuals-red-source-20260907.sha256` in the same remote log directory
-`/home/e/.cache/lay/td121-remote-sidecar/`.
+`/home/worker/.cache/lay/td121-remote-sidecar/`.
 
 An intermediate compile caught private AdmissionToken lineage access; the fix
 adds an equality query rather than making token fields writable. Subsequent
@@ -1052,7 +1052,7 @@ readiness, or either with actual correction/physical input acceptance.
 
 Remote guarded `scripts/update-architecture-graph.sh` exited0 and produced a
 PASS receipt plus `lay architecture check OK` after the repair. Exact log:
-`/home/e/.cache/lay/td121-remote-sidecar/td121-residuals-architecture-20260907.log`,
+`/home/worker/.cache/lay/td121-remote-sidecar/td121-residuals-architecture-20260907.log`,
 SHA256 `7f09986416fed2cfb40b7d1f92701b095f6202b8e36f0a5755c500bf6fc1b692`.
 AST navigation map:23514nodes,58701edges,1064communities;696Rust source bindings.
 Warning:805non-extracted sources (mostly JSON/docs) produced zero nodes, so
@@ -1077,7 +1077,7 @@ and execution. AGENTS.md is the rule owner; TD-121 remains the runtime owner.
 Facts: candidate SHA256
 `b7e783753d03950e81ff31aab40f17257ada78e668cdceaff101d3f28124e81c`
 passed22/22 adapter and390/390 IME tests (full harness15.61s). Remote private
-run `/home/e/.cache/lay/td121-private-five.cVZ7BN` completed0/5 client cases.
+run `/home/worker/.cache/lay/td121-private-five.cVZ7BN` completed0/5 client cases.
 Visible Space committed, but the first snapshot was passive:unknown-context.
 Shared active_path/epoch1 identifies successful source-free installation;
 the trace has no bootstrap/observer-stopped event. That does not identify

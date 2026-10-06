@@ -20,7 +20,7 @@ push were outside that then-active authorization. That boundary is historical:
 the user has since authorized the ordered task loop through `DONE`, commit and
 push. Git checkpoint status, exact commit and the verified
 `origin/codex/cleanup-20260908` remote ref belong to the external
-`/home/ubu/.cache/lay/development/td126-publication-20260913/publication.json`;
+`/home/local-user/.cache/lay/development/td126-publication-20260913/publication.json`;
 this source document does not duplicate that transition state. Temporary
 candidate activation requires a ready owned field/capture and activation
 preflight. Permanent installation and physical promotion remain separate and
@@ -44,10 +44,10 @@ Frozen pre-production-edit baseline:
 - Git HEAD: `83ba0f42db5c87cdc4f17abf42197396566cb05b`;
 - 1,042 source/test/script/owning-document files;
 - manifest:
-  `/home/ubu/.cache/lay/development/td126-common-window-before-20260912-V1/source-manifest.tsv`,
+  `/home/local-user/.cache/lay/development/td126-common-window-before-20260912-V1/source-manifest.tsv`,
   SHA-256 `82f3a71932df3ca5183e0a7857ea84024ce1084d815b828519a8621d94fb00a1`;
 - deterministic backup:
-  `/home/ubu/.cache/lay/development/td126-common-window-before-20260912-V1/source-before.tar.gz`,
+  `/home/local-user/.cache/lay/development/td126-common-window-before-20260912-V1/source-before.tar.gz`,
   SHA-256 `56b38bf935ee8ac44c18c8631b0dfe5dc9eda32fd52d20f0620d99a6aed26260`.
 
 Consequences are bounded as follows. Candidate generation, ranking, L1.1–L4,
@@ -72,11 +72,11 @@ change outside this list stops implementation for review.
 ## Focused-gate diagnosis and consequence amendment — 2026-09-12
 
 The first complete TD-126 snapshot was
-`/home/ubu/.cache/lay/development/run-7_xqay_4/source.tar` (SHA-256
+`/home/local-user/.cache/lay/development/run-7_xqay_4/source.tar` (SHA-256
 `687cafddbfdc32857fe01878a003fe18b66869e7e3ae653063744441c1c0e90c`),
-with remote run `/home/e/projects/lay-development-runner/run-YlHw4j` and copied
+with remote run `/workspace/worker/lay-development-runner/run-YlHw4j` and copied
 binary log
-`/home/ubu/.cache/lay/development/run-7_xqay_4/tests/logs/bin-lay-ibus-engine.log`.
+`/home/local-user/.cache/lay/development/run-7_xqay_4/tests/logs/bin-lay-ibus-engine.log`.
 Discovery and compilation passed. Of 484 target-isolated tests, 100 completed
 PASS, 14 completed FAIL, and the next test aborted on stack overflow; the abort
 prevented the harness from printing captured assertion blocks for the 14
@@ -101,8 +101,8 @@ not visible-success authority, does not bypass `admit_replace`, and does not
 allow any local destructive edit against a selection.
 
 The second complete diagnostic snapshot is
-`/home/ubu/.cache/lay/development/run-hvkra22o` with remote run
-`/home/e/projects/lay-development-runner/run-gei863`. It reproduced only the
+`/home/local-user/.cache/lay/development/run-hvkra22o` with remote run
+`/workspace/worker/lay-development-runner/run-gei863`. It reproduced only the
 typed-exact selection drift before the same stack overflow. Measured current
 object/future sizes were: `LayIbusEngine` 2,672 bytes,
 `process_key_event_with_output` 11,536 bytes,
@@ -130,14 +130,14 @@ test future; production allocation, latency, cancellation, owner, storage and
 runtime authority effects are zero.
 
 The repaired pre-review focused snapshot is
-`/home/ubu/.cache/lay/development/run-nl27bh04/source.tar` (SHA-256
+`/home/local-user/.cache/lay/development/run-nl27bh04/source.tar` (SHA-256
 `e20730621c3b519ff44ca1402dd26132495873da33605ae752ad94dbdcd9a1b0`),
-with remote run `/home/e/projects/lay-development-runner/run-4gkC8h`.
+with remote run `/workspace/worker/lay-development-runner/run-4gkC8h`.
 Formatting passed. The focused correctness denominator was `487/487`: `485`
 tests ran in the target process and two correctness tests ran with
 `isolation=process`; three performance tests were excluded by the selected
 correctness lanes. All `487` passed and none failed. The copied evidence packet
-is `/home/ubu/.cache/lay/development/run-nl27bh04/tests/`, including both
+is `/home/local-user/.cache/lay/development/run-nl27bh04/tests/`, including both
 process-isolated logs. This receipt predates the four source/test cleanup edits
 made for code review, so it is a repaired-route checkpoint, not the final
 affected-gate receipt. Those cleanup edits require coverage by the final
@@ -420,18 +420,18 @@ Current participating file sizes are: `text_target.rs` 229,
 ## Measured implementation accounting — 2026-09-12 final acceptance freeze
 
 The accepted pass-2 review freeze contains `928` files in
-`/home/ubu/.cache/lay/development/td126-review-freeze-pass2-20260912/source-tests-manifest.tsv`;
+`/home/local-user/.cache/lay/development/td126-review-freeze-pass2-20260912/source-tests-manifest.tsv`;
 its SHA-256 is
 `55b91409b82eeb1a5d16151f222816934bcd7212156da34d5ad6a878c7cda395`.
 After the mechanically reviewed lint convergence, the final acceptance freeze
 contains the same `928` paths in
-`/home/ubu/.cache/lay/development/td126-final4-20260912-LHBMzvAX/accepted-source-manifest.tsv`;
+`/home/local-user/.cache/lay/development/td126-final4-20260912-LHBMzvAX/accepted-source-manifest.tsv`;
 its SHA-256 is
 `8a9328b744e2845474db010a10138a249cfc1e2902035ee41a79a616360758d5`.
 Exactly seven module paths differ; the production bridge, RAII, callback and
 leaf-execution bodies remain unchanged.
 The detailed LOC receipt is
-`/home/ubu/.cache/lay/development/td126-final4-20260912-LHBMzvAX/loc-accounting.json`
+`/home/local-user/.cache/lay/development/td126-final4-20260912-LHBMzvAX/loc-accounting.json`
 (SHA-256
 `23dbcbc2df1aac884072ea85814587dbafebc3748540a1087c95630118844ecf`).
 
@@ -610,8 +610,8 @@ review pass 2 scored **8/10 `ACCEPT`**, High 0 / Medium 0, with no material
 finding. The two-pass implementation-review limit is complete.
 
 The causal focused RED is local
-`/home/ubu/.cache/lay/development/run-psg970b7`, remote
-`/home/e/projects/lay-development-runner/run-UPGeq9`, source archive SHA-256
+`/home/local-user/.cache/lay/development/run-psg970b7`, remote
+`/workspace/worker/lay-development-runner/run-UPGeq9`, source archive SHA-256
 `90585107b5ee4d54425c0bfe2164b0c860646d9b047d10ac6b1f3c7f65bd765f`.
 It executed `488` cases: `487` passed and the intended real
 `residual_known_numeric_word_bridge_refuses_without_delegation_or_output` failed
@@ -620,8 +620,8 @@ SHA-256 is
 `c5ca789616d161de319a570e13e8754577840c21a50e7cfc19db7e54737a9b2f`.
 
 The final focused GREEN is local
-`/home/ubu/.cache/lay/development/run-78cby16t`, remote
-`/home/e/projects/lay-development-runner/run-meUGIM`, source archive SHA-256
+`/home/local-user/.cache/lay/development/run-78cby16t`, remote
+`/workspace/worker/lay-development-runner/run-meUGIM`, source archive SHA-256
 `0004e1a73f1da4982ab57e13916b554feb65f2369a1c5141a5a759a05ccef8e6`.
 It executed **506/506 PASS**: the IME target contributed `490` selected cases
 (`488` in the target process plus `2` process-isolated) and the text-mutation
@@ -643,8 +643,8 @@ closure for its two targets. It does not replace the final affected denominator.
 ## Architecture-gate owner-map correction
 
 The first final snapshot was local
-`/home/ubu/.cache/lay/development/td126-final-20260912-TtqvKNCD`, remote
-`/home/e/projects/lay-development-runner/td126-final-TtqvKNCD`, with source
+`/home/local-user/.cache/lay/development/td126-final-20260912-TtqvKNCD`, remote
+`/workspace/worker/lay-development-runner/td126-final-TtqvKNCD`, with source
 archive SHA-256
 `108316b2eccdfc0e06697ce34835942d85ff816f08c74b05f54dc4da064b67dd`
 and request SHA-256
@@ -669,8 +669,8 @@ The shared Cargo target stayed at `8,501,657,600` of `12,884,901,888` bytes
 before and after. This failed run is historical and is not retried in place.
 
 The next fresh snapshot was local
-`/home/ubu/.cache/lay/development/td126-final2-20260912-tnERB58x`, remote
-`/home/e/projects/lay-development-runner/td126-final2-tnERB58x`, with archive
+`/home/local-user/.cache/lay/development/td126-final2-20260912-tnERB58x`, remote
+`/workspace/worker/lay-development-runner/td126-final2-tnERB58x`, with archive
 SHA-256 `b5bdfa1c015ee3506d4a9d8dc892725f0a125471b036ce62f9323ae41788b86d`
 and request SHA-256
 `eba280f0a2beb9778bdcad397ad284f7175e061625423ef012d544d32d840973`.
@@ -697,8 +697,8 @@ the blocked summary SHA-256 is
 It supplies no aggregate final PASS denominator and is not retried in place.
 
 The third fresh snapshot was local
-`/home/ubu/.cache/lay/development/td126-final3-20260912-klRwgwwe`, remote
-`/home/e/projects/lay-development-runner/td126-final3-klRwgwwe`, with archive
+`/home/local-user/.cache/lay/development/td126-final3-20260912-klRwgwwe`, remote
+`/workspace/worker/lay-development-runner/td126-final3-klRwgwwe`, with archive
 SHA-256 `bf3e10daf74f06612f6a76b983192a2f47e6d69f00b97dbaa34d2d14ce1de915`
 and request SHA-256
 `8045ef91e464087f25758e3efe0d2c9081d2d8c59c3c6083fb874cf05173b398`.
@@ -736,9 +736,9 @@ The Cargo target moved from `8,501,657,600` to `8,501,669,888` bytes, below the
 ## Final remote gate contract and receipts
 
 The final source and this owning document are frozen before graph refresh. One
-remote outer lease at `e@192.168.3.94` uses profile `dedicated-20cpu`, Cargo jobs
+remote outer lease at `builder@worker.example` uses profile `dedicated-20cpu`, Cargo jobs
 `20`, Rust test threads `1`, and shared target
-`/home/e/projects/lay-td119-gate-v1/target`. Within that single lease the exact
+`/workspace/worker/lay-td119-gate-v1/target`. Within that single lease the exact
 sequence is:
 
 1. `scripts/cargo-guard.sh --status`;
@@ -758,8 +758,8 @@ sequence is:
    `12 GiB`.
 
 The immutable final input/output root is
-`/home/ubu/.cache/lay/development/td126-final4-20260912-LHBMzvAX/`; the remote
-root is `/home/e/projects/lay-development-runner/td126-final4-LHBMzvAX/`. Logs are
+`/home/local-user/.cache/lay/development/td126-final4-20260912-LHBMzvAX/`; the remote
+root is `/workspace/worker/lay-development-runner/td126-final4-LHBMzvAX/`. Logs are
 named `00-budget-before.log`, `10-architecture-update.log`, `15-lints.log`,
 `20-changed.log`, `30-architecture-check.log`, `40-compiled-receipt.log`,
 `50-identities.json` and `60-budget-after.log`; canonical test output is under
@@ -789,7 +789,7 @@ predeclared fields after the run does not stale the architecture graph.
    receipts in `evidence/td126-final-acceptance.md`.
 9. Git checkpoint and publication state, including the exact commit, verified
    remote ref and clean-worktree result, are owned by the external
-   `/home/ubu/.cache/lay/development/td126-publication-20260913/publication.json`.
+   `/home/local-user/.cache/lay/development/td126-publication-20260913/publication.json`.
    The checkpoint scope is the previously accepted uncommitted
    IME/context/native prerequisite base plus the TD-126 extraction.
 

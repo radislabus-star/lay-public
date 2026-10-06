@@ -1,6 +1,6 @@
 **REPAIR_REQUIRED — 3/10. High: 6. Medium: 2.**
 
-Pass 1 reviewed snapshot `/home/ubu/.cache/lay/td121-review-pass1.hOPQUB` against baseline `ad4bf0860cc2a79b3004f03b8018cc8d8cbca005`. Applicable instructions, the owning task, and the complete context-admission analysis were read. Graphify supplied navigation; findings below use frozen source bytes.
+Pass 1 reviewed snapshot `/home/local-user/.cache/lay/td121-review-pass1.hOPQUB` against baseline `ad4bf0860cc2a79b3004f03b8018cc8d8cbca005`. Applicable instructions, the owning task, and the complete context-admission analysis were read. Graphify supplied navigation; findings below use frozen source bytes.
 
 This was static inspection only. Reproduction schedules below are derived from code, **not executed results**.
 

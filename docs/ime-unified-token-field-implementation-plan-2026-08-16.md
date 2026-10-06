@@ -344,9 +344,9 @@ Not tested yet:
 Exact local receipts:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/release-build.time.txt
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/resume-build-receipt.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/resume-build.time.txt
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/release-build.time.txt
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/resume-build-receipt.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/resume-build.time.txt
 ```
 
 #### Frozen proof generation bridge
@@ -426,9 +426,9 @@ rule changed.
 Exact normative receipts:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/baseline-v90-semantic-normative-clean-workers1-13x100.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-semantic-normative-clean-workers1-13x100.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_DEPLOY_DECISION_2026-08-16.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/baseline-v90-semantic-normative-clean-workers1-13x100.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_2026-08-16/productive-v90-active-v9-v13-semantic-normative-clean-workers1-13x100.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_DEPLOY_DECISION_2026-08-16.json
 ```
 
 #### Installed Slice 0 baseline
@@ -443,7 +443,7 @@ Productive status                         ready_live_owner
 installed Productive SHA-256              40fb6a9f0d92c3c7502e47f9c70230d9b86020f622b08a5c799342f13e09ce44
 installed recovery SHA-256                de7972c80448dc792759d70de99cda6ec48c3d6af337763856601db563ab167e
 daemon / engine package mappings          2 / 2
-rollback                                  /home/ubu/.local/lib/lay/rollback/1.0.33-pre-v90-v9-20260816-064416
+rollback                                  /home/local-user/.local/lib/lay/rollback/1.0.33-pre-v90-v9-20260816-064416
 
 legacy helper cold query range            1.542-2.113 s
 legacy helper hot p99 range               7.078-9.631 ms
@@ -468,13 +468,13 @@ same-process hot benchmark is required before the single-flight change.
 
 Exact live receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_LIVE_DEPLOY_2026-08-16.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L2_PRODUCTIVE_V90_ACTIVE_BINDINGS_LIVE_DEPLOY_2026-08-16.json`
 
 #### Route-bound same-process live-owner benchmark
 
 Tested:
 
-- a release binary built on `e@192.168.3.94` from a SHA-matched isolated
+- a release binary built on `builder@worker.example` from a SHA-matched isolated
   source snapshot;
 - direct repeated calls to
   `canonical_owned_text_candidates() -> live_productive_v1_readout()`;
@@ -524,10 +524,10 @@ expensive material; this measurement does not authorize deployment.
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/route-bound-morphology.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/route-bound-glued.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/route-bound-damaged-v2.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/route-bound-damaged.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/route-bound-morphology.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/route-bound-glued.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/route-bound-damaged-v2.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/route-bound-damaged.json
 ```
 
 ### Slice 1: pure Productive V90 field extraction
@@ -588,7 +588,7 @@ does not authorize deployment.
 
 Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice1-materialization-parity.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice1-materialization-parity.json`
 
 ### Slice 2: bounded single-flight reuse
 
@@ -662,7 +662,7 @@ identity and scheduling work, but it does not authorize deployment.
 
 Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice2-single-flight-reuse.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice2-single-flight-reuse.json`
 
 ### Slice 3: shared GUI identity and scheduling order
 
@@ -715,7 +715,7 @@ release build and deployment.
 
 Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice3-shared-gui-identity.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice3-shared-gui-identity.json`
 
 ### Slice 4: observability and duplicate removal
 
@@ -771,9 +771,9 @@ delivery, latency percentiles or aggregate restoration/false-split quality.
 
 Exact receipts:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observability-and-duplicate-removal.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observability-and-duplicate-removal.json`
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observed-source-route.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice4-observed-source-route.json`
 
 ### Slice 5: fixed immediate-Space delivery
 
@@ -907,9 +907,9 @@ the warmup GTK output remained `данорм мнесбросили Еленап
 Exact receipts:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-full-authority-attempt3.jsonl
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-full-authority-attempt3.harness.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-full-authority-attempt3.receipt.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-full-authority-attempt3.jsonl
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-full-authority-attempt3.harness.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-full-authority-attempt3.receipt.json
 ```
 
 #### Release profile and next route experiment
@@ -1035,23 +1035,23 @@ canonical producer [-> deterministic fallback producer when required]
 Exact design artifacts:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_CANONICAL_FIRST_CORRECTION_ROUTE_2026-08-16.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_CANONICAL_FIRST_CORRECTION_ROUTE_DESIGN_V3_COVERAGE_2026-08-16.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/preflights/LAY_IME_CANONICAL_FIRST_CORRECTION_ROUTE_2026-08-16.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_CANONICAL_FIRST_CORRECTION_ROUTE_DESIGN_V3_COVERAGE_2026-08-16.json
 ```
 
 Exact release profile:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-release-deterministic-profile-attempt3.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-release-deterministic-profile-attempt3.json`
 
 Implementation preflight:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/immediate-space-material-reuse-preflight-v2.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/immediate-space-material-reuse-preflight-v2.json`
 
 Exact receipts:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-replay-attempt2.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-replay-attempt2.json`
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-runtime-attempt2.jsonl`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/LAY_IME_UNIFIED_TOKEN_FIELD_2026-08-16/slice5/immediate-space-runtime-attempt2.jsonl`
 
 ## 9. Consequence Matrix
 
@@ -1097,7 +1097,7 @@ All gates are conjunctive.
 
 ## 11. Build, Deployment, and Rollback
 
-- Cargo builds and proof runs execute on `e@192.168.3.94`, using its available
+- Cargo builds and proof runs execute on `builder@worker.example`, using its available
   CPU, not on the local workstation.
 - Local work is limited to source inspection, documentation, small static
   gates, installation and physical GUI validation.

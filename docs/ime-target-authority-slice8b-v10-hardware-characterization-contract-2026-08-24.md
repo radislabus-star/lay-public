@@ -83,13 +83,13 @@ subject execution:
 
 ```text
 P0 original archive
-/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f
+/home/local-user/.local/share/lay/provenance/slice8b-v10-f6178f
 
 P0 PROVENANCE.json
 af26f90714460529c5778fb415a3c0aa7eb83ef1f51fdc97230417ac8f5c9faf
 
 P0 correction-v1
-/home/ubu/.local/share/lay/provenance/slice8b-v10-f6178f-correction-v1
+/home/local-user/.local/share/lay/provenance/slice8b-v10-f6178f-correction-v1
 
 CORRECTION.json
 74f66275a6e1f00b4dedea16ea2b62ab1ad2f4fffa6fada012bca19cc7a1ac90
@@ -130,7 +130,7 @@ cce259fe0ce5dce67702383363b66f0fe9b9ff5a87d8f01c4fcf342d91218d7b
 
 The required V13 package is not contained in P0. Before B execution it must be
 copied from the remote historical path
-`/home/e/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin` into a
+`/home/worker/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.bin` into a
 B-specific staging tree, checked for exact size and SHA-256, made read-only,
 and published by a same-filesystem final rename with zero post-rename
 mutations. A mutable installed package path is never a measurement input.
@@ -904,7 +904,7 @@ B3, parity, B5/B6 and V12 remain `NOT_ADMITTED`.
 
 The V5 transport repair worked: remote Python received the exact multiline
 argv and started. The probe then failed because it tried to `stat` the future
-`/home/e/.local/share/lay/provenance` output parent before B0a had created it.
+`/home/worker/.local/share/lay/provenance` output parent before B0a had created it.
 No remote write or marker occurred.
 
 A single read-only audit then checked the rest of the route instead of probing
@@ -944,9 +944,9 @@ Before another B0a attempt, the repaired read-only probe was run by itself. It
 proved the intended parent route:
 
 ```text
-requested output parent           /home/e/.local/share/lay/provenance
+requested output parent           /home/worker/.local/share/lay/provenance
 requested parent exists                                           false
-nearest existing parent                  /home/e/.local/share/lay
+nearest existing parent                  /home/worker/.local/share/lay
 nearest existing parent device                                  66306
 nearest existing parent inode                                23366571
 V13 bytes / SHA                                            exact PASS
@@ -988,7 +988,7 @@ control.
 local focused checks                                  15/15 PASS
 exact-file remote machine-id SHA                  5ac0bb... PASS
 known stripped digest                             ab7e08... REJECTED
-nearest output ancestor / device    /home/e/.local/share/lay / 66306
+nearest output ancestor / device    /home/worker/.local/share/lay / 66306
 V13 bytes / SHA                                      exact PASS
 post-probe provenance/state/stages                   false/false/0
 ```
@@ -1023,7 +1023,7 @@ rollback                       RETAIN_TOMBSTONE
 ```
 
 The exact state path is
-`/home/e/.local/state/lay/slice8b-v10-clean-speed-v2-20260825`. The old
+`/home/worker/.local/state/lay/slice8b-v10-clean-speed-v2-20260825`. The old
 controller observes this path as consumed and rejects `run` before admission
 or subject execution. A second supersession invocation was rejected and left
 the immutable local receipt unchanged.
@@ -1336,7 +1336,7 @@ changed: `false`.
 The admitted B0a owner published its final immutable closure:
 
 ```text
-remote path       /home/e/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2
+remote path       /home/worker/.local/share/lay/provenance/slice8b-v10-hardware-b0-b2-v3-20260824/b0a-input-closure-v2
 receipt SHA       48176ec6faae86f43ddda8404542367be5b6c9d6813762dedb829b4946593eb3
 mode              0555
 writable objects  0

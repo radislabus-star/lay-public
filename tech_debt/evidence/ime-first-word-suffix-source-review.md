@@ -23,6 +23,6 @@ Reviewed source SHA-256:
 | `src/bin/lay_ibus_engine/ibus_interface.rs` | `3ac43e41e4f31548ce13529efe7e33da2a72c96a5913416601c33a7f5e85d02d` |
 | `src/bin/lay_ibus_engine/preedit.rs` | `abf7294199e8d57def4663a21a7433db8185ae61609da91945fea9188465e59b` |
 
-Private evidence: `/home/ubu/.cache/lay/development/wechat-ime-no-functions-8isocthh/first-word-fix/independent-review-round1.json`, `candidate-build-v3.json`, `focused-tests-v3-SUMMARY.json`; native receipt `/home/e/projects/lay-development-runner/autocorrect-ojoasco5/phrase-first-word-candidate-v2/receipt.json`.
+Private evidence: `/home/local-user/.cache/lay/development/wechat-ime-no-functions-8isocthh/first-word-fix/independent-review-round1.json`, `candidate-build-v3.json`, `focused-tests-v3-SUMMARY.json`; native receipt `/workspace/worker/lay-development-runner/autocorrect-ojoasco5/phrase-first-word-candidate-v2/receipt.json`.
 
 Runtime authority changed by this source-review checkpoint: **false**.

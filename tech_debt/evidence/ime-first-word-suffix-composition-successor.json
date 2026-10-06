@@ -24,10 +24,22 @@
   "review": {
     "state": "PASS",
     "report": "tech_debt/evidence/ime-first-word-suffix-source-review.md",
-    "report_sha256": "820275c2bd052c92d2dff2e9bf521aaaf93c26e8d4ba8ff77fd842d674429e02",
+    "report_sha256": "bbb5fba6d8cc31b7cfb8963418ef039a988ebe1a5012ffd638e3499049baead7",
     "score": "9/10",
     "high_findings": 0,
     "medium_findings": 0
   },
-  "runtime_authority_changed": false
+  "runtime_authority_changed": false,
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "3e137c9c77cf3a22b178e4a9e90eeff2adecdb10934fb006a02e9fe7a8ecce9a",
+    "fields": "document reference hashes refreshed after public redaction",
+    "authority": "historical source and review verdicts retained; public file references identify projections",
+    "original_retention": "independent private archive; previous Git snapshot",
+    "original_references": {
+      "/review/report_sha256": "820275c2bd052c92d2dff2e9bf521aaaf93c26e8d4ba8ff77fd842d674429e02"
+    },
+    "reference_semantics": "binding/report hashes identify current public files; original references retained here; runtime source SHA256 and verdict fields unchanged"
+  }
 }

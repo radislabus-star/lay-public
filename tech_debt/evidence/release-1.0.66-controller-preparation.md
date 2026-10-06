@@ -144,7 +144,7 @@ below; it does not change that historical scope.
 
 The exact staged controller and harness were overlaid on a separate remote
 proof tree, not the TD-120 checkout or installed production tree:
-`e@192.168.3.94:/home/e/projects/lay-1066-controller-proof-pYa18kUp`.
+`builder@worker.example:/workspace/worker/lay-1066-controller-proof-pYa18kUp`.
 
 Command from that tree:
 

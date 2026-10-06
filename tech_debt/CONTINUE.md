@@ -142,7 +142,7 @@ affected gate `2 781/2 781 PASS`, lint/architecture/compiled receipt PASS.
 [TD-126 final acceptance](evidence/td126-final-acceptance.md).
 
 Перед TD-121 проверить внешний
-`/home/ubu/.cache/lay/development/td126-publication-20260913/publication.json`.
+`/home/local-user/.cache/lay/development/td126-publication-20260913/publication.json`.
 Если checkpoint ещё не подтверждён, выполнить один bounded canonical graph
 refresh, explicit compiled-receipt check и source/diff identity; затем commit и
 push только в `origin/codex/cleanup-20260908`, проверить remote ref и обновить
@@ -234,7 +234,7 @@ physical verdict OPEN. На переходах показывать актуал
   unitlay-ime-release-995b6093.service, timestamp2026-09-08T12:28:55.649410+00:00.
   File и /proc SHA совпадают. IBus4715,daemon3757261,L1.1service271400,
   два input sources и выбранный Lay RU сохранены. Backup6dc95148:
-  /home/ubu/.local/state/lay/release-backups/ime-autocorrect-20260908-71oibez0/lay-ibus-engine.
+  /home/local-user/.local/state/lay/release-backups/ime-autocorrect-20260908-71oibez0/lay-ibus-engine.
 - Две исправленные причины: первый cold V90 load больше не отбрасывает
   собственный подготовленный результат; L4 word/context-only prior больше
   не выдаётся за отрицательный transition. Полный прежний owner-precedence
@@ -257,7 +257,7 @@ physical verdict OPEN. На переходах показывать актуал
   profile отсутствует; existing sentence recurrence certifies distance1 only.
   L1 current geometry calibration0 — отдельный модельный вопрос, не разрешение
   поднять threshold без fixed proof. Модель после этой установки не менялась.
-- Текущие receipts: /home/ubu/.cache/lay/development/run-c1abdlhw/{installation.json,gates.json,candidate-identity.json},
+- Текущие receipts: /home/local-user/.cache/lay/development/run-c1abdlhw/{installation.json,gates.json,candidate-identity.json},
   ~/.cache/lay/development/autocorrect-live-ojoasco5/fixed-fixtures-v3-comparison.json.
   Все per-class результаты/ошибки reader и recorder сохранены в owning docs.
 - Продолжение после очистки: диагностическая9f8e99e0 измерила очередь; частная
@@ -312,7 +312,7 @@ physical verdict OPEN. На переходах показывать актуал
   Полные актуальные факты: конец docs/l2-l11-canonical-architecture.md;
   private autocorrect-live-ojoasco5/fixed-fixtures-v4-pair-memo-comparison-v2.json
   и fixed-fixtures-v5-short-layout-comparison.json. Build/component/native
-  receipts: /home/ubu/.cache/lay/development/run-xqb_96ka/. TD-123 остаётся ACTIVE.
+  receipts: /home/local-user/.cache/lay/development/run-xqb_96ka/. TD-123 остаётся ACTIVE.
 - Текущее продолжение после этого milestone: scoped capacity repair в частной
   1bceb869/run-X9Migg, без установки. Final L2 relation partitions больше не
   теряют полноту из-за вместимости raw set. Full fixed89, native13/resources и

@@ -36,7 +36,7 @@ prediction successes as current 1.0.66 results. Events lack wall timestamps;
 the observation time is not the exact failure time.
 
 Private preserved log (contains user text; do not commit its contents):
-`/home/ubu/.cache/lay/development/release-1066-incident-wbhHQr/ibus_engine_debug.jsonl`.
+`/home/local-user/.cache/lay/development/release-1066-incident-wbhHQr/ibus_engine_debug.jsonl`.
 SHA256: `2c3c69864e4846e4c2446eef95d468a428861271a290e934f0010c77df79117c`.
 
 ## First broken mechanism
@@ -97,13 +97,13 @@ the existing pending-before-reducer lock order and bounded stamp machinery.
 ## Verification and authority
 
 Old-source causal RED is reproduced remotely at
-`/home/e/projects/lay-development-runner/run-Umz8i4/tests/SUMMARY.json`:
+`/workspace/worker/lay-development-runner/run-Umz8i4/tests/SUMMARY.json`:
 414 selected IME tests, 411 passed and exactly three new lifecycle regressions
 failed with `Denied` at the observer survival assertions (repeated FocusOut,
 FocusOut after Reset/ContentType, Disable without a transferable ticket).
 Build 4.53 s; test-target execution 5.727 s. Remote action 14.582 s excludes
 archive/transport. An earlier formatter-only failed run
-`/home/e/projects/lay-development-runner/run-seuj5s` executed no tests and is
+`/workspace/worker/lay-development-runner/run-seuj5s` executed no tests and is
 not causal RED. Its two formatting differences were applied explicitly.
 
 The source successor changes only adapter lifecycle-refusal classification and
@@ -111,7 +111,7 @@ the existing FocusOut/Disable local-cleanup consumer. A fourth regression keeps
 bad-sender and malformed-payload observer termination intact. Source edits are
 not installed; the live 1.0.66 process remains the original failing image.
 
-Focused GREEN: `/home/e/projects/lay-development-runner/run-xehZP6/tests/SUMMARY.json`,
+Focused GREEN: `/workspace/worker/lay-development-runner/run-xehZP6/tests/SUMMARY.json`,
 415/415 selected IME tests PASS, zero failures. SHA256:
 `1d128ad12f2ceabad44686a2bf2cd9b74455ee6fa711fb525b309041517e5173`.
 Build 4.19 s; target execution 5.728 s; remote action 14.254 s excluding
@@ -132,14 +132,14 @@ point-in-time check does not claim to introduce a lease across all cleanup;
 the pre-existing successful-lifecycle race is not redesigned in this patch.
 
 The wider pre-repair run at
-`/home/e/projects/lay-development-runner/run-GeJKt5/tests/SUMMARY.json`
+`/workspace/worker/lay-development-runner/run-GeJKt5/tests/SUMMARY.json`
 executed all 2650 correctness/package tests with no per-target failures, then
 failed the known-failure ledger's manifest-hash binding (the four new test
 identities had been registered, but that binding was still old). Its overall
 gate is **FAIL**, not PASS. Update only the empty ledger's manifest hash after
 the final regression registration; add no allowed failures or exclusions.
 
-Repair-pass RED: `/home/e/projects/lay-development-runner/run-JIv6Uq/tests/SUMMARY.json`,
+Repair-pass RED: `/workspace/worker/lay-development-runner/run-JIv6Uq/tests/SUMMARY.json`,
 415/416 tests passed; the delayed-old-Revocation test failed because FocusOut
 cleared `old-local-stale` after a different-path successor had installed.
 Build 4.34 s, target 5.504 s. The final source adds the current-owner equality
@@ -150,7 +150,7 @@ performance 11, ignored 15. Its SHA256 and the empty known-failure ledger bindin
 are `6549cfffc83431cc4821ba9638977287e89895f65d6c105bd98624f5e6343789`.
 The allowed-failure set remains empty, and the historical observation is unchanged.
 
-Final focused GREEN: `/home/e/projects/lay-development-runner/run-stLTUo/tests/SUMMARY.json`,
+Final focused GREEN: `/workspace/worker/lay-development-runner/run-stLTUo/tests/SUMMARY.json`,
 **416/416 PASS**, zero failures. SHA256:
 `58486f13848019ad53181add7aa3af35a6d99866fd62b4e78089b2b863b124e6`.
 Build 4.43 s, target execution 5.737 s, remote action 14.479 s excluding
@@ -163,7 +163,7 @@ requested. Architecture/changed gates, release build, deployment and physical
 acceptance are separate evidence, not covered by the review score.
 
 Final remote architecture and changed gates are PASS at
-`/home/e/projects/lay-development-runner/release-1066-observer-1u2gDB/`:
+`/workspace/worker/lay-development-runner/release-1066-observer-1u2gDB/`:
 `scripts/update-architecture-graph.sh` followed by `scripts/check-lay-changed.sh`.
 Correctness/package denominator **2651/2651**, zero semantic/infrastructure
 failures; test-lane action 349.183 s. Performance 11 and ignored 15 are excluded,
@@ -214,9 +214,9 @@ quality, or exercise repeated-focus physical desktop behavior. Those claims
 must not be inferred from its five-case PASS.
 
 Local transfer matched the candidate hash. Delivery cache:
-`/home/ubu/.cache/lay/development/release-1066-observer-delivery-P0Lqte/`.
+`/home/local-user/.cache/lay/development/release-1066-observer-delivery-P0Lqte/`.
 Original 1.0.66 IME is preserved with its mode at
-`/home/ubu/.local/state/lay/release-backups/1.0.66-observer-7LOUmA/lay-ibus-engine`.
+`/home/local-user/.local/state/lay/release-backups/1.0.66-observer-7LOUmA/lay-ibus-engine`.
 This is not a rollback to 1.0.65, which was not authorized.
 
 First transaction at 17:00:44 replaced the binary and started PID1137330 but

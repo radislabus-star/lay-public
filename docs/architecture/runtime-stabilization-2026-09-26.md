@@ -6,12 +6,12 @@
 
 ## Проверенное исходное состояние
 
-- Основной checkout `/home/ubu/projects/lay`: HEAD `15dc9588`, версия 1.0.27,
+- Основной checkout `/workspace/local/lay`: HEAD `15dc9588`, версия 1.0.27,
   незавершённые изменения L1–L4. Он не является исходниками установленной 1.0.76.
 - Принятая опубликованная 1.0.76: checkout
-  `/home/ubu/projects/lay-public-release-1.0.76`, commit `58d36e3d`.
+  `/workspace/local/lay-public-release-1.0.76`, commit `58d36e3d`.
 - Кандидат исправления callback: checkout
-  `/home/ubu/projects/lay-context-focus-race-20260926`, commit `47a5b18a`.
+  `/workspace/local/lay-context-focus-race-20260926`, commit `47a5b18a`.
   Он прошёл 2 906 выбранных correctness/package тестов на соответствующем
   удалённом снимке. Он не установлен и не принят в реальных окнах.
 - В актуальном исходном маршруте уже существуют `ContextAdmissionReducer`,
@@ -55,9 +55,9 @@
 актуального checkout, начиная с раздела `Live Firefox and Kitty transition`.
 Локальные артефакты:
 
-- `/home/ubu/.cache/lay/development/live-transition-20260926/monitor-snapshot-0125.jsonl`
-- `/home/ubu/.cache/lay/development/live-transition-20260926/lay-combined-gate-v5.log`
-- `/home/ubu/.cache/lay/development/live-transition-20260926/lay-combined-v5-observation.json`
+- `/home/local-user/.cache/lay/development/live-transition-20260926/monitor-snapshot-0125.jsonl`
+- `/home/local-user/.cache/lay/development/live-transition-20260926/lay-combined-gate-v5.log`
+- `/home/local-user/.cache/lay/development/live-transition-20260926/lay-combined-v5-observation.json`
 
 Новая работа по канону меняет документацию, входные инструкции и проверку этих
 связей. Её отдельный результат записывается в
@@ -71,15 +71,15 @@
 защищённых изменений новым решением в обоих checkout; синтаксис двух runner
 скриптов; 13 тестов проверяющего модуля, включая его отрицательные сценарии.
 Результат: PASS, 13/13. Тесты модуля выполнены один раз на одинаковых байтах.
-Receipt: `/home/ubu/.cache/lay/development/architecture-canon-20260926-9p2aq_gh/RESULT.json`
+Receipt: `/home/local-user/.cache/lay/development/architecture-canon-20260926-9p2aq_gh/RESULT.json`
 SHA-256: `ed37a8f13a7c633f5b94cd949bb8a2a9e4006f7f1ffcd3dd28c4c6e6f65ea87e`. Полный вывод и снимок проверенной области лежат рядом.
 
 Граф основного checkout обновлён командой `graphify update .`; это AST-обновление,
 не семантическая проверка новых документов. Лог:
-`/home/ubu/.cache/lay/development/architecture-canon-20260926-graph-main.log`.
+`/home/local-user/.cache/lay/development/architecture-canon-20260926-graph-main.log`.
 На точном снимке актуального candidate удалённо прошёл существующий
 `scripts/update-architecture-graph.sh`, включая структурный architecture gate.
-Receipt: `/home/ubu/.cache/lay/development/architecture-canon-graph-20260926-pxcilevy/RESULT.json`
+Receipt: `/home/local-user/.cache/lay/development/architecture-canon-graph-20260926-pxcilevy/RESULT.json`
 SHA-256: `5d2506adab88967747f07efe53d66b8b73335e39a821baec00f6bb8bfcb01f38`. Файл `fetch.json` рядом фиксирует шесть возвращённых
 сгенерированных файлов и совпадение исходного снимка перед переносом.
 
@@ -111,9 +111,9 @@ shell-модули. Runtime authority changed: false для этой фикса�
 (1 FAIL из 606 выбранных). После изменения положительный Tab и отрицательные
 случаи смены поверхности, выделения и epoch прошли в удалённом целевом наборе
 IME: 607/607, 0 FAIL. Последний receipt:
-`/home/ubu/.cache/lay/development/run-i_34q96o/RESULT.json`, SHA-256
+`/home/local-user/.cache/lay/development/run-i_34q96o/RESULT.json`, SHA-256
 `c56afe4a611064c141ea10dfa22587881453290054d109f7697d15f0f0a21350`.
-Красный receipt: `/home/ubu/.cache/lay/development/run-lq3ona66/RESULT.json`.
+Красный receipt: `/home/local-user/.cache/lay/development/run-lq3ona66/RESULT.json`.
 
 Не проверено этим целевым набором: полный correctness/package gate,
 архитектурный граф после правки, установленный бинарник и физические поля. Изменение
@@ -131,11 +131,11 @@ binding и его review сохранены побайтно. Новый
 связывает оба точных hash и красный/зелёный receipts, имеет статус
 `SOURCE_PROVEN`, а независимый review и физическая приёмка остаются открытыми.
 TD-113 контракт после этого прошёл 7/7. Исходный FAIL receipt:
-`/home/ubu/.cache/lay/development/run-j2inr2ts/RESULT.json`; целевой PASS:
-`/home/ubu/.cache/lay/development/run-36u130lm/RESULT.json`. Установленный
+`/home/local-user/.cache/lay/development/run-j2inr2ts/RESULT.json`; целевой PASS:
+`/home/local-user/.cache/lay/development/run-36u130lm/RESULT.json`. Установленный
 runtime authority не менялся. Повтор общего удалённого gate прошёл:
 2 872 correctness и 36 package тестов, 2 908 выбранных, 0 отказов.
-Receipt: `/home/ubu/.cache/lay/development/run-bfyzz3o1/RESULT.json`,
+Receipt: `/home/local-user/.cache/lay/development/run-bfyzz3o1/RESULT.json`,
 SHA-256 `ea5e590872a3deb8d35a4ca048c0c010a6adf212a9d0f3660c512e14cac7e3f8`.
 Это source/package PASS, а не установка или физическая приёмка.
 
@@ -144,22 +144,22 @@ SHA-256 `ea5e590872a3deb8d35a4ca048c0c010a6adf212a9d0f3660c512e14cac7e3f8`.
 Проверено на исходниках после предыдущей записи: удалённый
 `scripts/check-lay-changed.sh` прошёл 2 908 выбранных тестов и `cargo check
 --lib --bins` под resource guard. Receipt:
-`/home/ubu/.cache/lay/development/tab-changed-4q0amz02/RESULT.json`;
+`/home/local-user/.cache/lay/development/tab-changed-4q0amz02/RESULT.json`;
 собранный из того же снимка IME имеет SHA-256
 `6168fc43a58043312b3087993b369a25be450758a8aeb8a56adcdf43712bdbb2`.
 Граф обновлён с проходом структурной проверки; receipt:
-`/home/ubu/.cache/lay/development/tab-graph-ae5vynop/RESULT.json`.
+`/home/local-user/.cache/lay/development/tab-graph-ae5vynop/RESULT.json`.
 
 Кандидат был временно установлен на действующий маршрут после точной копии
 принятого IME. L1.1, L3, daemon и managed IME перезапущены штатным скриптом;
 глобальный IBus остался тем же процессом, GNOME и IBus выбрали один Lay source.
-Установка: `/home/ubu/.cache/lay/development/live-tab-candidate-preflight-20260926/INSTALL.json`.
+Установка: `/home/local-user/.cache/lay/development/live-tab-candidate-preflight-20260926/INSTALL.json`.
 Первый ввод при несовпадении GNOME/IBus источников исключён из результата.
 
 При согласованных `lay-ime-ru` в собственном Qt QTextEdit кандидат напечатал
 `п`, показал `очему`, затем по Tab очистил подсказку и передал клиенту Tab:
 итог `п\t` вместо слова с пробелом. Снимок и события:
-`/home/ubu/.cache/lay/development/live-tab-candidate-preflight-20260926/qt-owned-2/events.jsonl`.
+`/home/local-user/.cache/lay/development/live-tab-candidate-preflight-20260926/qt-owned-2/events.jsonl`.
 Зажатый Shift при синтетическом вводе `ПРО` сохранил видимую подсказку,
 но это ещё не физическая проверка клавиатурой пользователя. Восемь пар Shift
 в этом запуске не достигли daemon: виртуальное устройство создано после
@@ -167,10 +167,10 @@ SHA-256 `ea5e590872a3deb8d35a4ca048c0c010a6adf212a9d0f3660c512e14cac7e3f8`.
 
 Кандидат откатан; установленный и загруженный IME снова имеют принятый хеш
 `a8b9d1686ec61fd7014ab7d2a43731deec1a830a25b78987b03fc622135589ea`.
-Receipt: `/home/ubu/.cache/lay/development/live-tab-candidate-preflight-20260926/ROLLBACK.json`.
+Receipt: `/home/local-user/.cache/lay/development/live-tab-candidate-preflight-20260926/ROLLBACK.json`.
 В таком же собственном Qt поле принятая версия повторила `п` → видимое
 `очему` → Tab → `п\t`; receipt:
-`/home/ubu/.cache/lay/development/live-tab-candidate-preflight-20260926/qt-owned-baseline/events.jsonl`.
+`/home/local-user/.cache/lay/development/live-tab-candidate-preflight-20260926/qt-owned-baseline/events.jsonl`.
 Это общий отказ ранней смены профиля поля, а не регрессия кандидата.
 Трасса кандидата: первый key callback ещё прошёл как `terminal_passthrough`,
 после него пришли SetCapabilities(41) и точный снимок `п`; новая подсказка
@@ -192,12 +192,12 @@ key callback завершился до SetCapabilities(41); подсказка �
 
 Тест через production callback/admission сначала получил 607 PASS и один
 FAIL на Tab при 608 выбранных IME тестах: receipt
-`/home/ubu/.cache/lay/development/run-r1zrjx8g/RESULT.json`. Исправление
+`/home/local-user/.cache/lay/development/run-r1zrjx8g/RESULT.json`. Исправление
 помечает на очистку только preedit, который уже виден в момент смены
 профиля. Старую видимую поверхность оно продолжает очищать; новая
 публикация после SetCapabilities сохраняется. На тех же исходниках с этим
 изменением целевой удалённый прогон прошёл 608/608, ноль отказов: receipt
-`/home/ubu/.cache/lay/development/run-k4mlgvys/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-k4mlgvys/RESULT.json`.
 
 Не проверено этим прогоном: реальное Qt поле после исправления, WhatsApp,
 восемь аппаратных Double Shift, остальные окна, общий release gate. Исходное
@@ -211,11 +211,11 @@ FAIL на Tab при 608 выбранных IME тестах: receipt
 Повторный полный удалённый `check-lay-changed.sh` прошёл на точном снимке:
 2 873 correctness и 36 package тестов (2 909 выбранных), `cargo check
 --lib --bins`, структурные и safety gates; receipt
-`/home/ubu/.cache/lay/development/tab-changed-3_5g1a7p/RESULT.json`.
+`/home/local-user/.cache/lay/development/tab-changed-3_5g1a7p/RESULT.json`.
 Из этого же снимка собран IME SHA-256
 `84ae59dceda5e0b8cc4da45b52b14fdba8fdaaf790f8d613e7cc36c7e186325b`;
 receipt `BUILD.json` рядом. Установка и откат:
-`/home/ubu/.cache/lay/development/live-qt-capability-candidate-20260926/INSTALL.json`
+`/home/local-user/.cache/lay/development/live-qt-capability-candidate-20260926/INSTALL.json`
 и `ROLLBACK.json`. Глобальный IBus не перезапускался; весь Lay route после
 отката активен, GNOME/IBus снова `lay-ime-us`, загруженный и установленный
 IME снова имеют принятый SHA `a8b9d168...`.
@@ -231,7 +231,7 @@ Double Shift были распознаны физическим маршруто
 и `manual_toggle_allowed=false`. Слово осталось `про` после каждого жеста,
 планируемые восемь чередований не получены. Это **FAIL для восьми циклов**
 на этом синтетическом evdev устройстве. События видимого текста:
-`/home/ubu/.cache/lay/development/live-qt-capability-candidate-20260926/qt-owned/events.jsonl`;
+`/home/local-user/.cache/lay/development/live-qt-capability-candidate-20260926/qt-owned/events.jsonl`;
 приватная трасса IME: `ime-debug-candidate.jsonl` в той же директории,
 SHA-256 `a82aa6693073849503949fb605b9dfe2fc482139f8b63fcebca910ce686d8bfa`.
 
@@ -263,11 +263,11 @@ SHA-256 `a82aa6693073849503949fb605b9dfe2fc482139f8b63fcebca910ce686d8bfa`.
 
 Новый production-callback тест на старом коде: 608 PASS, один FAIL — после
 Ctrl+A зеркало всё ещё `abc`; receipt
-`/home/ubu/.cache/lay/development/run-jkpqs2ls/RESULT.json`. Первая
+`/home/local-user/.cache/lay/development/run-jkpqs2ls/RESULT.json`. Первая
 слишком широкая правка задела старый терминальный контракт и была сужена
 по наблюдаемой возможности поля. На суженном кандидате 609/609 IME
 тестов прошли, включая этот терминальный отрицательный случай: receipt
-`/home/ubu/.cache/lay/development/run-0frdaq65/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-0frdaq65/RESULT.json`.
 
 Не проверено: повтор в реальном Qt после этой правки, восемь аппаратных
 жестов, WhatsApp и другие окна, общая проверка changed/release. Source
@@ -280,12 +280,12 @@ runtime authority остаётся на принятом хеше. Откат �
 Полный удалённый changed gate прошёл на новом снимке: 2 874 correctness
 и 36 package тестов, всего 2 910 выбранных, ноль отказов; структурный,
 safety и `cargo check --lib --bins` тоже PASS. Receipt:
-`/home/ubu/.cache/lay/development/tab-changed-b09xibki/RESULT.json`.
+`/home/local-user/.cache/lay/development/tab-changed-b09xibki/RESULT.json`.
 IME из того же снимка имеет SHA-256
 `2b21860c2f21e919527e199df3fa13d15e48b7dfebd6d420e3913c2a033f1095`;
 receipt `BUILD.json` рядом. Пробная установка и возврат принятого бинарника
 зафиксированы в
-`/home/ubu/.cache/lay/development/live-qt-mirror-candidate-20260926/INSTALL.json`
+`/home/local-user/.cache/lay/development/live-qt-mirror-candidate-20260926/INSTALL.json`
 и `ROLLBACK.json`. После отката L1.1, L3, daemon и IME активны, GNOME/IBus
 согласованы на `lay-ime-us`, загруженный и установленный IME SHA снова
 `a8b9d168...`.
@@ -306,9 +306,9 @@ receipt `BUILD.json` рядом. Пробная установка и возвр
 чередований `ghj↔про` и вернулся к `ghj`. Вердикт C10 — **FAIL,
 плавающий пропуск одного жеста**; успешный повтор не исправляет первый.
 Источник событий:
-`/home/ubu/.cache/lay/development/live-qt-mirror-candidate-20260926/qt-owned/events.jsonl`;
+`/home/local-user/.cache/lay/development/live-qt-mirror-candidate-20260926/qt-owned/events.jsonl`;
 приватная копия IME трассы:
-`/home/ubu/.cache/lay/development/live-qt-mirror-candidate-20260926/ime-debug-candidate-final.jsonl`
+`/home/local-user/.cache/lay/development/live-qt-mirror-candidate-20260926/ime-debug-candidate-final.jsonl`
 (SHA-256 `8f50b0b0832f598f51d75239fbbd2046c8c9a04237451351fc414dcb42b2a613`).
 Action log остаётся в `~/.local/share/lay/recent_actions.jsonl`; его восемь
 планов проверены по времени, направлению и типу без вывода посторонних слов.
@@ -337,7 +337,7 @@ Qt сохранял `про` до четвёртого жеста; его пла
 «текст не менялся», а не неопределённая частичная замена.
 
 Приватные исходные артефакты и отфильтрованная причинная выжимка:
-`/home/ubu/.cache/lay/development/live-qt-mirror-candidate-20260926/CAUSAL_PROOF.json`
+`/home/local-user/.cache/lay/development/live-qt-mirror-candidate-20260926/CAUSAL_PROOF.json`
 (SHA-256 `fff524e1782e5f80bf166379b750ea61b2d9255476ad9bf61bd5e7d48b384091`).
 Там же сохранена копия action log (SHA-256
 `e68c41d31c922d4259bbc2986b8a87030af7d8a5f7134e7ac9a03a4b234ed338`);
@@ -353,7 +353,7 @@ reducer-token, revocation и отказ после собственного ср
 границей callback и проверяет допуск в 20-мс границе bridge; второй тест
 проверяет отказ после 20 мс. Точный снимок кандидатного IME прошёл 610/610
 выбранных тестов без смены runtime authority; receipt:
-`/home/ubu/.cache/lay/development/run-coasz5u7/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-coasz5u7/RESULT.json`.
 
 Не проверено этой стадией: широкий correctness/package gate, реальный Qt
 на новом кандидате, восемь аппаратных жестов, WhatsApp, остальные окна,
@@ -364,7 +364,7 @@ undo автокоррекции и focus return. Принятый live-марш�
 Точный снимок после обновления манифеста и графа прошёл удалённый
 `check-lay-changed.sh`: 2 875 correctness и 36 package тестов, 0 отказов,
 структурные и unsafe-edit проверки. Receipt:
-`/home/ubu/.cache/lay/development/tab-changed-xgb2ozs4/RESULT.json`;
+`/home/local-user/.cache/lay/development/tab-changed-xgb2ozs4/RESULT.json`;
 архивный SHA-256 `cc6dd4716a68e5ef3acf222f27afbd2870b7fdff66809ce0752e8f49853227e5`.
 Guarded release IME из того же снимка получил SHA-256
 `f644a3f9fdbd7c72455b981f6bbd1f7c0a9d0bc29fda055d8d1be1e7f14a8490`;
@@ -385,7 +385,7 @@ IME ответил `status=3` восемь раз, в Qt реально прои
 L1.1/L3/daemon активны, GNOME и IBus согласованы на `lay-ime-ru`.
 Authority менялась временно для пробы и полностью восстановлена.
 Отфильтрованный receipt:
-`/home/ubu/.cache/lay/development/live-bridge-candidate-20260926/QT_ACCEPTANCE.json`
+`/home/local-user/.cache/lay/development/live-bridge-candidate-20260926/QT_ACCEPTANCE.json`
 (SHA-256 `37674ac19d45b5ab05f37cbd12a5ca04c80d8028950a61041b9d5f83e25dd6f1`);
 точные install/rollback receipts и приватные Qt/IME/action артефакты лежат
 рядом. После автоматического закрытия Qt финальный events SHA-256
@@ -419,7 +419,7 @@ Shift дали восемь ответов `ManualToggleV3=not_handled`, пла�
 **FAIL для Double Shift**. Это не позднее применение старого плана.
 
 Отфильтрованный результат:
-`/home/ubu/.cache/lay/development/live-bridge-candidate-20260926/WHATSAPP_PROBE.json`
+`/home/local-user/.cache/lay/development/live-bridge-candidate-20260926/WHATSAPP_PROBE.json`
 (SHA-256 `db2ee75ac036b39791322c3a3b1553f0586175730e7d950adba2bd75af4154dd`).
 Приватная IME трасса и action log лежат в подпапке `whatsapp-live` с
 SHA-256 `01fccbd6f20905e803b2866184f1d58be9b78c872c726bf08edcf31e4a9e5e31`
@@ -446,7 +446,7 @@ surrounding-text после очистки и набора, не ослабля�
 маршрут не менялся. Приватный raw monitor SHA-256
 `748d92bb8f8daf700a9e3c34bed20997a2ccb93eee575c61ab4cf12667362b1d`;
 отфильтрованный receipt:
-`/home/ubu/.cache/lay/development/live-bridge-candidate-20260926/whatsapp-live/WHATSAPP_IBUS_SURROUNDING_PROOF.json`
+`/home/local-user/.cache/lay/development/live-bridge-candidate-20260926/whatsapp-live/WHATSAPP_IBUS_SURROUNDING_PROOF.json`
 (SHA-256 `ae4c6e8d5320e806a998caacc81a91b339b750ee88b9e28526c8fa75ea03db03`).
 
 Причина **этой потери права** установлена: проверка старой публикации в
@@ -465,12 +465,12 @@ WhatsApp.
 дополнительный символ справа и выделение по-прежнему отбрасываются.
 Управляемый adapter-тест с реальными callback сначала дал 609/610 и
 отказал именно на этой форме (receipt
-`/home/ubu/.cache/lay/development/run-e411sp9v/RESULT.json`), затем
+`/home/local-user/.cache/lay/development/run-e411sp9v/RESULT.json`), затем
 прошёл 610/610 после изменения
-(`/home/ubu/.cache/lay/development/run-6p7wa_k7/RESULT.json`).
+(`/home/local-user/.cache/lay/development/run-6p7wa_k7/RESULT.json`).
 Продолжение через следующую локальную букву, Reset и новый точный снимок
 также прошло 610/610 на окончательной версии теста
-(`/home/ubu/.cache/lay/development/run-iirag3cd/RESULT.json`).
+(`/home/local-user/.cache/lay/development/run-iirag3cd/RESULT.json`).
 Это исходный тест, не приёмка окна. Широкий gate и живые окна на этих
 байтах ещё не проверены; runtime authority не менялась.
 
@@ -479,7 +479,7 @@ WhatsApp.
 Точный source archive SHA-256 `fa471cd805db93b5e0a2b0492424edd90a068e896e2f277a06c763c6d80467d0`
 прошёл общий guarded gate: 2 875 correctness и 36 package тестов,
 структурные проверки, 0 отказов; receipt
-`/home/ubu/.cache/lay/development/tab-changed-879jwh0x/RESULT.json`.
+`/home/local-user/.cache/lay/development/tab-changed-879jwh0x/RESULT.json`.
 Из этого же снимка собран release IME SHA-256
 `84925a04412c9063c860dc97f50ad530278e5a5d4126dd22cb507100273ba295`
 (`BUILD.json` рядом). Это исходная проверка, не оконная приёмка.
@@ -514,7 +514,7 @@ Alt+Tab из Firefox и обратно подсказка исчезла; нез
 `a8b9d1686ec61fd7014ab7d2a43731deec1a830a25b78987b03fc622135589ea`;
 L1.1/L3/daemon активны, GNOME/IBus `lay-ime-ru`. Authority менялась
 временно и полностью восстановлена. Отфильтрованный receipt:
-`/home/ubu/.cache/lay/development/live-whatsapp-zwsp-candidate-20260926/WHATSAPP_ACCEPTANCE.json`
+`/home/local-user/.cache/lay/development/live-whatsapp-zwsp-candidate-20260926/WHATSAPP_ACCEPTANCE.json`
 (SHA-256 `d2df85b2bca843b587aa98ac595f8bff9f8ff9979e6d6bc4d672b77f0a728894`);
 приватные raw trace/action, install/rollback и probe receipts лежат рядом.
 Другие окна, аппаратный Shift и undo автокоррекции на этом бинарнике не
@@ -527,7 +527,7 @@ L1.1/L3/daemon активны, GNOME/IBus `lay-ime-ru`. Authority менялас
 оставив тестовый черновик `про`; чат был открыт через его строку и исходный
 черновик восстановлен с прежним SHA-256. Сообщения не отправлялись,
 runtime authority не менялась. Отфильтрованный receipt:
-`/home/ubu/.cache/lay/development/live-whatsapp-zwsp-candidate-20260926/ESC_DIAGNOSTIC.json`
+`/home/local-user/.cache/lay/development/live-whatsapp-zwsp-candidate-20260926/ESC_DIAGNOSTIC.json`
 (SHA-256 `e8f90fd23cf9cd1645563ea0853631ca62d4e1273deb9e5e9a97ec7866e0c212`).
 
 ## Этап 4: кандидат обновления точного снимка в одном ручном жесте
@@ -553,7 +553,7 @@ bridge token запрашивается заново и применяются �
 клиента даёт одну явную передачу `DelegateExactImeTail` без IME
 Delete/Commit; другое слово в ответе даёт `NotHandled` без текстового
 эффекта. Финальный исходный IME suite: **611/611 PASS**, receipt
-`/home/ubu/.cache/lay/development/run-m1ko2_ol/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-m1ko2_ol/RESULT.json`.
 Реальный Firefox на этих исходных байтах, широкий gate, другие окна,
 аппаратный Shift и undo ещё **не проверены**. Runtime authority не
 менялась. Следующий gate должен включить обновлённый манифест 611 тестов,
@@ -596,10 +596,10 @@ autocorrect undo и повтор после ухода/возврата не п�
 откачен к принятому `a8b9d1686ec61fd7014ab7d2a43731deec1a830a25b78987b03fc622135589ea`;
 загруженный IME, службы, GNOME/IBus и исходный черновик проверены после
 отката. Receipt источников:
-`/home/ubu/.cache/lay/development/tab-changed-1s83u22b/RESULT.json`,
-`/home/ubu/.cache/lay/development/tab-changed-1s83u22b/BUILD.json`,
-`/home/ubu/.cache/lay/development/live-whatsapp-refresh-candidate-20260926/synchronous-timeout-run/WHATSAPP_PROBE.json`,
-`/home/ubu/.cache/lay/development/live-whatsapp-refresh-candidate-20260926/synchronous-timeout-run/ibus_engine_debug.jsonl`
+`/home/local-user/.cache/lay/development/tab-changed-1s83u22b/RESULT.json`,
+`/home/local-user/.cache/lay/development/tab-changed-1s83u22b/BUILD.json`,
+`/home/local-user/.cache/lay/development/live-whatsapp-refresh-candidate-20260926/synchronous-timeout-run/WHATSAPP_PROBE.json`,
+`/home/local-user/.cache/lay/development/live-whatsapp-refresh-candidate-20260926/synchronous-timeout-run/ibus_engine_debug.jsonl`
 (строки 2199–2208 и 2244–2254), `INSTALL.json` и `ROLLBACK.json` рядом.
 
 ## Этап 4: исходный кандидат отложенного завершения одного жеста
@@ -621,7 +621,7 @@ autocorrect undo и повтор после ухода/возврата не п�
 завершения RPC**: промежуточный `ax`+U+200B сохраняет ожидание без Delete/Commit,
 точный `ax` разрешает одну проверенную замену; противоречивый `ay` отменяет
 ожидание без текстового эффекта. Целевой IME suite: 611/611 PASS, receipt
-`/home/ubu/.cache/lay/development/run-ofdjgbff/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-ofdjgbff/RESULT.json`.
 Ещё не проверены общий gate, установленный Firefox, восемь промежуточных
 поверхностей и остальные окна; этот источник не объявляется исправленным
 runtime. Установленный runtime authority не менялся после отката к принятой
@@ -636,7 +636,7 @@ runtime. Установленный runtime authority не менялся пос
 Production-adapter тест расширен последовательностью sentinel → старая
 публикация → точный токен после ответа RPC; отдельный противоречивый ответ
 по-прежнему отменяет действие. Повторный целевой IME suite: **611/611 PASS**,
-receipt `/home/ubu/.cache/lay/development/run-tlp6c7qm/RESULT.json`.
+receipt `/home/local-user/.cache/lay/development/run-tlp6c7qm/RESULT.json`.
 Общий gate выше относится к снимку **до** этого расширения; окончательный
 исходный gate и физический Firefox ещё не проверены. Runtime authority не
 менялась.
@@ -680,10 +680,10 @@ Runtime authority временно менялась и затем откачен
 загруженный IME SHA-256 вновь `a8b9d1686ec61fd7014ab7d2a43731deec1a830a25b78987b03fc622135589ea`,
 L1.1/L3/daemon активны, GNOME/IBus `lay-ime-ru`, черновик восстановлен
 с исходным SHA-256, сообщение не отправлялось. Exact receipts:
-`/home/ubu/.cache/lay/development/tab-changed-jncs_byu/RESULT.json`,
-`/home/ubu/.cache/lay/development/tab-changed-jncs_byu/BUILD.json`,
-`/home/ubu/.cache/lay/development/live-whatsapp-refresh-candidate-20260926/deferred-refresh-run/WHATSAPP_PROBE.json`,
-`/home/ubu/.cache/lay/development/live-whatsapp-refresh-candidate-20260926/deferred-refresh-run/ibus_engine_debug.jsonl`
+`/home/local-user/.cache/lay/development/tab-changed-jncs_byu/RESULT.json`,
+`/home/local-user/.cache/lay/development/tab-changed-jncs_byu/BUILD.json`,
+`/home/local-user/.cache/lay/development/live-whatsapp-refresh-candidate-20260926/deferred-refresh-run/WHATSAPP_PROBE.json`,
+`/home/local-user/.cache/lay/development/live-whatsapp-refresh-candidate-20260926/deferred-refresh-run/ibus_engine_debug.jsonl`
 (строки 2192–2255), `INSTALL.json` и `ROLLBACK.json` рядом.
 
 ## Этап 4: точный поздний снимок передаётся тому же жесту демона
@@ -710,8 +710,8 @@ daemon suite **268/268 PASS**. Тест адаптера предъявил от
 первого RPC, промежуточные снимки и точный снимок, затем проверил status 3
 без IME Delete/Commit; противоречивый ответ отменил жест. Тест демона
 проверил продолжение одного ожидания до status 3. Exact receipts:
-`/home/ubu/.cache/lay/development/run-fkronypk/RESULT.json` и
-`/home/ubu/.cache/lay/development/run-r5lhwvut/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-fkronypk/RESULT.json` и
+`/home/local-user/.cache/lay/development/run-r5lhwvut/RESULT.json`.
 
 Не проверены на этом снимке: полный changed gate, release-бинарники,
 физические жесты в WhatsApp, восемь переходов в одном поле, остальные окна,
@@ -725,15 +725,15 @@ daemon suite **268/268 PASS**. Тест адаптера предъявил от
 Структурный graph/architecture gate этого первого снимка показал
 `unowned_thread_sleep` в `manual_trigger_runtime/ime.rs`, поэтому весь снимок
 получил **FAIL**; receipt
-`/home/ubu/.cache/lay/development/tab-graph-vauqympv/RESULT.json`.
+`/home/local-user/.cache/lay/development/tab-graph-vauqympv/RESULT.json`.
 Ожидание перенесено в существующий владелец задержек
 `layout_controller/ime_bridge.rs`; проверка `architecture_scope_gate.py sleep`
 затем прошла, daemon suite на исправленном снимке — **268/268 PASS**,
-receipt `/home/ubu/.cache/lay/development/run-opx4b90k/RESULT.json`.
+receipt `/home/local-user/.cache/lay/development/run-opx4b90k/RESULT.json`.
 Манифест тестов заново записан на исправленном снимке, receipt
-`/home/ubu/.cache/lay/development/tab-manifest-6p44844g/RESULT.json`.
+`/home/local-user/.cache/lay/development/tab-manifest-6p44844g/RESULT.json`.
 Повторный graph/architecture gate — **PASS**, receipt
-`/home/ubu/.cache/lay/development/tab-graph-q6wogizg/RESULT.json`.
+`/home/local-user/.cache/lay/development/tab-graph-q6wogizg/RESULT.json`.
 Общий gate и приложение всё ещё не проверены; runtime authority не менялась.
 
 ## Этап 4: Firefox Reset прервал ожидающий тот же жест
@@ -760,7 +760,7 @@ Firefox прислал Reset и старую видимую публикацию
 
 Production-adapter тест с Reset после HidePreeditText сначала дал **RED**:
 610/611, метка стерлась сразу после Reset, receipt
-`/home/ubu/.cache/lay/development/run-o_sxqppc/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-o_sxqppc/RESULT.json`.
 Исправление удерживает pending status 4 только при текущем owner/token,
 неистёкших 700 мс и подтверждённой Reset lineage; переносит прежнюю
 публикацию через этот Reset лишь как инертного свидетеля. Точный снимок
@@ -768,7 +768,7 @@ Production-adapter тест с Reset после HidePreeditText сначала �
 Тестовый D-Bus объект теперь снимается с регистрации перед прямым вызовом
 Reset, чтобы один искусственный callback не доставлялся дважды. После
 добавления отрицательной ветки IME suite — **611/611 PASS**, receipt
-`/home/ubu/.cache/lay/development/run-ar3hnu8i/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-ar3hnu8i/RESULT.json`.
 
 Новый снимок ещё не прошёл общий gate, release-сборку и проверку окон.
 Вердикт C10 для него **NOT TESTED**. Предыдущий live-кандидат откатан:
@@ -777,10 +777,10 @@ Reset, чтобы один искусственный callback не достав
 и `6ad64ec4746f72fa6f202d3786056bbf9d98479451f1f6698ec0dae13595578d`;
 GNOME/IBus `lay-ime-ru`, черновик WhatsApp с исходным SHA-256,
 сообщение не отправлялось. Exact receipts:
-`/home/ubu/.cache/lay/development/tab-changed-apnne864/RESULT.json`,
-`/home/ubu/.cache/lay/development/tab-changed-apnne864/BUILD_PAIR.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/WHATSAPP_PROBE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ibus_engine_debug-after-whatsapp.jsonl`
+`/home/local-user/.cache/lay/development/tab-changed-apnne864/RESULT.json`,
+`/home/local-user/.cache/lay/development/tab-changed-apnne864/BUILD_PAIR.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/WHATSAPP_PROBE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ibus_engine_debug-after-whatsapp.jsonl`
 (строки 2182–2208), `INSTALL-1790402346378521153.json` и
 `ROLLBACK-1790402457342537310.json` в том же каталоге.
 
@@ -837,16 +837,16 @@ identity, prior-replay surface, наличие replay scope и текущую id
 или редактирования не изменён. Затронуты C01, C03, C05, C08 и C10.
 
 Измерено: исходные IME тесты **611/611 PASS** на кандидатском снимке; receipt
-`/home/ubu/.cache/lay/development/run-fyy9zbp6/RESULT.json`. Проверка
+`/home/local-user/.cache/lay/development/run-fyy9zbp6/RESULT.json`. Проверка
 ссылок и записей канона: `canon_links_and_records=PASS`,
 `change_record=NOT_CHECKED`, `runtime_behavior=NOT_TESTED` при отдельном
 запуске; общий gate затем подтвердил `change_record=CHECKED`, 2 877
 correctness и 36 package тестов без ошибок, receipt
-`/home/ubu/.cache/lay/development/tab-changed-azkj1zez/RESULT.json`.
+`/home/local-user/.cache/lay/development/tab-changed-azkj1zez/RESULT.json`.
 Точная диагностическая пара собрана без установки: IME
 `c2ced61cb03c22e8b75198faccf53cf4e60f6351a35114b1b0c86bb9aa8edc01`,
 daemon `7838d2fa27f3b3fde92f86c21736d8ed33cc3e7956a6502c0ac188597b13febe`,
-receipt `/home/ubu/.cache/lay/development/tab-changed-azkj1zez/BUILD_PAIR.json`.
+receipt `/home/local-user/.cache/lay/development/tab-changed-azkj1zez/BUILD_PAIR.json`.
 Живой Firefox, эти новые байты, аппаратные жесты и остальные окна на этом
 диагностическом снимке **NOT TESTED**; причину односимвольного снимка пока
 нельзя назвать. Вердикт: source-only instrumentation PASS; клиентская приёмка
@@ -862,15 +862,15 @@ receipt `/home/ubu/.cache/lay/development/tab-changed-azkj1zez/BUILD_PAIR.json`.
 L1.1/L3/daemon активны, GNOME/IBus RU, исходный черновик WhatsApp
 восстановлен точно, отправки не было, временный debug режим удалён до
 окончательного отката. Exact receipts:
-`/home/ubu/.cache/lay/development/tab-changed-x_pxoepm/RESULT.json`,
-`/home/ubu/.cache/lay/development/tab-changed-x_pxoepm/BUILD_PAIR.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/WHATSAPP_PROBE-v2.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ibus_engine_debug-after-whatsapp-v2.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/WHATSAPP_PROBE-debug.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/lay-daemon-debug-whatsapp.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/WHATSAPP_SLOW_DIAGNOSTIC.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/lay-daemon-debug-whatsapp-slow.log`,
-`/home/ubu/.cache/lay/development/run-29jjw_i9/RESULT.json`;
+`/home/local-user/.cache/lay/development/tab-changed-x_pxoepm/RESULT.json`,
+`/home/local-user/.cache/lay/development/tab-changed-x_pxoepm/BUILD_PAIR.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/WHATSAPP_PROBE-v2.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ibus_engine_debug-after-whatsapp-v2.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/WHATSAPP_PROBE-debug.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/lay-daemon-debug-whatsapp.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/WHATSAPP_SLOW_DIAGNOSTIC.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/lay-daemon-debug-whatsapp-slow.log`,
+`/home/local-user/.cache/lay/development/run-29jjw_i9/RESULT.json`;
 точные `INSTALL-*` и `ROLLBACK-*` receipts лежат в том же приватном каталоге.
 
 ## Этап 4: один разрешённый диагностический запуск и прежняя публикация после следующей буквы
@@ -905,25 +905,25 @@ native replay из предыдущего опыта: данный прогон 
 старый префикс `ab`, локальный `c`, прежняя публикация `abcde` с U+200B,
 status 4, Reset, старый снимок, затем точный `abc`. До изменения тест дал
 **RED: 611/612**, receipt
-`/home/ubu/.cache/lay/development/run-zbmcplas/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-zbmcplas/RESULT.json`.
 Исправление сохраняет публикацию лишь как инертного свидетеля при том же
 owner/token/revision и ещё живом ожидании этого жеста; прежний префикс
 должен быть не длиннее текущего, а опубликованный текст должен начинаться
 с текущего токена. Старый снимок не разрешает IME Delete/Commit;
 только точный ответ может вернуть status 3. Focused suite после изменения:
 **GREEN: 612/612**, receipt
-`/home/ubu/.cache/lay/development/run-5v62zrig/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-5v62zrig/RESULT.json`.
 
 Вердикт опыта: **FAIL** для восьми Double Shift на установленной
 диагностической паре. Новый исходный снимок прошёл полный guarded changed
 gate: 2 878 correctness, 36 package, 0 semantic/infrastructure failures,
 `cargo check --lib --bins` и `canon_links_and_records=PASS` с
 `change_record=CHECKED`; receipt
-`/home/ubu/.cache/lay/development/tab-changed-tbr5aijz/RESULT.json`.
+`/home/local-user/.cache/lay/development/tab-changed-tbr5aijz/RESULT.json`.
 Из того же точного снимка без установки собрана release пара: IME
 `d6d7423cf6f62ae8840bcfa64776984e3d0e3c2d79b6f342ce344fa7bcfe81f7`,
 daemon `7dfd78ac13b6e4c71df7f53a99765a6aa436de8f459fc17a12a50510b3e3d02d`;
-receipt `/home/ubu/.cache/lay/development/tab-changed-tbr5aijz/BUILD_PAIR.json`.
+receipt `/home/local-user/.cache/lay/development/tab-changed-tbr5aijz/BUILD_PAIR.json`.
 Для новых бинарников живая проверка ещё не выполнялась. Аппаратный удержанный Shift, аппаратные
 восемь жестов, отмена реально применённой автокоррекции, возврат фокуса,
 остальные окна и отдельный post-native односимвольный механизм — **NOT TESTED**
@@ -935,11 +935,11 @@ receipt `/home/ubu/.cache/lay/development/tab-changed-tbr5aijz/BUILD_PAIR.json`.
 `6ad64ec4746f72fa6f202d3786056bbf9d98479451f1f6698ec0dae13595578d`;
 L1.1/L3/daemon активны, GNOME/IBus `lay-ime-ru`. Runtime authority **менялась
 только на время разрешённого запуска и возвращена**. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790420685815305400.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/diag-once-20260926/WHATSAPP_PROBE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/diag-once-20260926/ibus_engine_debug-after-probe.jsonl`
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790420685815305400.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/diag-once-20260926/WHATSAPP_PROBE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/diag-once-20260926/ibus_engine_debug-after-probe.jsonl`
 (строки 2420–2447) и
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790420758840482228.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790420758840482228.json`.
 
 ## Этап 4: Firefox GitHub Issue #46 как второе реальное веб поле
 
@@ -971,11 +971,11 @@ Double Shift на одном слове дали поверхности
 другие приложения и все их окна. PASS этого GitHub редактора не превращает
 общую матрицу в PASS. Runtime authority менялась только на время опыта и
 возвращена к принятой паре. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790428420025062369.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/baseline.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ISSUE46_PROBE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ibus_engine_debug-after-probe.jsonl`
-и `/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790428458730749645.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790428420025062369.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/baseline.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ISSUE46_PROBE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ibus_engine_debug-after-probe.jsonl`
+и `/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790428458730749645.json`.
 
 ## Этап 4: Issue #46 выявил зависимость восьми жестов от темпа
 
@@ -1003,10 +1003,10 @@ Double Shift на одном слове дали поверхности
 жесты, applied undo, другие окна и WhatsApp на новых байтах здесь
 **NOT TESTED**; runtime authority менялась только на время опыта.
 Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790428713939294339.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ISSUE46_FAST8_PROBE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ibus_engine_debug-after-fast8.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790428752468816206.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790428713939294339.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ISSUE46_FAST8_PROBE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ibus_engine_debug-after-fast8.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790428752468816206.json`.
 
 ### Измерительный повтор с тишиной после восьмого жеста
 
@@ -1043,11 +1043,11 @@ PASS; ни облегчение проверки, ни изменение runtim
 SHA-256. Новые байты больше не активны; аппаратные жесты, applied undo,
 возврат фокуса, WhatsApp на новых байтах и другие окна **NOT TESTED** этим
 повтором. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790429065280793007.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ISSUE46_FAST8_SETTLE_PROBE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ibus_engine_debug-after-fast8-settle.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/lay-daemon-fast8-settle.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790429104834066155.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790429065280793007.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ISSUE46_FAST8_SETTLE_PROBE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ibus_engine_debug-after-fast8-settle.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/lay-daemon-fast8-settle.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790429104834066155.json`.
 
 ### Проверка более длинной паузы внутри восьми жестов
 
@@ -1078,11 +1078,11 @@ replay в правильном чередовании, без `PhysicalInputGrab
 процессам. Runtime authority после опыта возвращена к принятой паре.
 Аппаратные Shift, WhatsApp, undo, focus return и другие окна этим опытом
 **NOT TESTED**. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790429545484639150.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ISSUE46_FAST8_160MS_PROBE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/lay-daemon-fast8-160ms.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ibus_engine_debug-after-fast8-160ms.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790429612762541431.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790429545484639150.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ISSUE46_FAST8_160MS_PROBE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/lay-daemon-fast8-160ms.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ibus_engine_debug-after-fast8-160ms.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790429612762541431.json`.
 
 ### Опыт с ожиданием каждой полной поверхности: прерван до ввода
 
@@ -1096,9 +1096,9 @@ Kitty `~ | Working`. Проверка точного `windowId` останови
 службы активны и GNOME/IBus показывают RU. Runtime authority менялась
 только на время установки и возвращена принятой паре. Данный запуск
 **NOT TESTED** для текстового поведения. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790429819707812147.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ISSUE46_FAST8_VISIBLE_CHAIN_PROBE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790429853118793494.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790429819707812147.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ISSUE46_FAST8_VISIBLE_CHAIN_PROBE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790429853118793494.json`.
 
 ### Issue #46: восемь переходов после полной поверхности каждого слова
 
@@ -1126,11 +1126,11 @@ AT-SPI поверхности перед следующей парой**. Это
 IME/daemon снова совпадают по установленным и загруженным SHA-256,
 GNOME/IBus RU. Runtime authority временно менялась на gated пару и
 возвращена принятой. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790430168067636657.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ISSUE46_FAST8_VISIBLE_CHAIN_PROBE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/lay-daemon-fast8-visible-chain.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ibus_engine_debug-after-visible-chain.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790430228766582951.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790430168067636657.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ISSUE46_FAST8_VISIBLE_CHAIN_PROBE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/lay-daemon-fast8-visible-chain.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-20260926-1605/ibus_engine_debug-after-visible-chain.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790430228766582951.json`.
 
 ### WhatsApp после Issue #46: поле недоступно
 
@@ -1151,9 +1151,9 @@ AT-SPI показал страницу подключения по QR коду, 
 проверки IME/Text Editor **NOT TESTED**. Собственное окно Text Editor
 закрыто, файл побайтно подтверждён пустым. На этой остановке никаких
 браузерных тестовых вкладок не открывали. Файлы подготовки:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/native-text-editor-20260926/text_editor_visible_chain.py`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/ime-fields.html`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/browser_field_probe.py`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/native-text-editor-20260926/text_editor_visible_chain.py`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/ime-fields.html`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/browser_field_probe.py`.
 
 ### GNOME Text Editor: собственный пустой файл, последовательные переходы
 
@@ -1177,10 +1177,10 @@ Tab и восемь полных последовательных AT-SPI пов�
 подсказка после второго символа, applied undo и уход/возврат фокуса
 **NOT TESTED/UNKNOWN**. Runtime authority временно переходила gated паре
 и возвращена принятой; GNOME/IBus RU. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790432385831154793.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/native-text-editor-20260926/TEXT_EDITOR_VISIBLE_CHAIN_PROBE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/native-text-editor-20260926/lay-daemon-text-editor.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790432567263575185.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790432385831154793.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/native-text-editor-20260926/TEXT_EDITOR_VISIBLE_CHAIN_PROBE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/native-text-editor-20260926/lay-daemon-text-editor.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790432567263575185.json`.
 
 ### Google Chrome: собственный локальный contenteditable
 
@@ -1209,10 +1209,10 @@ applied undo, уход/возврат фокуса, остальные поля 
 принятой паре; установленные и загруженные SHA-256 совпадают с
 `a8b9d168...` / `6ad64ec4...`, GNOME/IBus RU, debug env удалён.
 Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790433338863887944.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-contenteditable/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-contenteditable/CHROME_NBSP_CONTROL.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790433579022600344.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790433338863887944.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-contenteditable/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-contenteditable/CHROME_NBSP_CONTROL.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790433579022600344.json`.
 
 ### Qt QTextEdit: точная gated пара и восемь последовательных переходов
 
@@ -1236,10 +1236,10 @@ AT-SPI поверхностей **PASS в собственной синтети�
 applied undo, уход/возврат фокуса **NOT TESTED/UNKNOWN**. Runtime
 authority временно переходила gated паре и возвращена принятой;
 GNOME/IBus RU, debug env удалён. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790434065231192270.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/qt-owned-20260926/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/qt-owned-20260926/events.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790434122258750133.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790434065231192270.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/qt-owned-20260926/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/qt-owned-20260926/events.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790434122258750133.json`.
 
 ### GTK3 Entry и TextView: отдельные собственные пустые поля
 
@@ -1270,12 +1270,12 @@ AT-SPI чтения. TextView иногда возвращал промежуто
 undo и уход/возврат фокуса **NOT TESTED/UNKNOWN**. Runtime authority
 временно менялась на gated пару и восстановлена принятой; GNOME/IBus
 RU, debug env удалён. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790434289550538910.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gtk-owned-20260926/entry/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gtk-owned-20260926/multiline/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gtk-owned-20260926/multiline/ibus_engine_debug-after-multiline.jsonl` (SHA-256 `dfab3744...`),
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gtk-owned-20260926/events.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790434370622720427.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790434289550538910.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gtk-owned-20260926/entry/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gtk-owned-20260926/multiline/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gtk-owned-20260926/multiline/ibus_engine_debug-after-multiline.jsonl` (SHA-256 `dfab3744...`),
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gtk-owned-20260926/events.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790434370622720427.json`.
 
 ### GNOME Terminal: безопасный пробник остановлен до окна
 
@@ -1288,7 +1288,7 @@ PTY был 18/4096. Причина ошибки запуска отдельно 
 Вердикт для этого запуска **NOT TESTED**: Lay кандидат не устанавливался,
 синтетический ввод не отправлялся, runtime authority не менялась.
 Точное свидетельство:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/terminal-owned-20260926/GNOME_TERMINAL_PREFLIGHT.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/terminal-owned-20260926/GNOME_TERMINAL_PREFLIGHT.json`.
 
 ### Kitty: ошибка виртуального устройства и корректный повтор
 
@@ -1301,7 +1301,7 @@ PTY был 18/4096. Причина ошибки запуска отдельно 
 узел; IME получал отдельные Shift, но `ManualToggleV3` не вызывался.
 Runtime authority при опыте временно менялась и возвращена принятой;
 пустая строка завершила собственный `read`. Invalid receipt:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/terminal-owned-20260926/INVALID_NO_KEY_A_KITTY_RESULT.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/terminal-owned-20260926/INVALID_NO_KEY_A_KITTY_RESULT.json`.
 
 После добавления `KEY_A` повторно создана клавиатура `/dev/input/event24`
 и **до установки** gated пары проверены обе её клавиши допуска.
@@ -1325,10 +1325,10 @@ Double Shift с ожиданием полной строки Kitty между п
 фокуса **NOT TESTED**; пользовательские Kitty окна не трогались.
 Runtime authority временно менялась и возвращена принятой, debug env
 удалён, GNOME/IBus RU. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790435036951118889.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/terminal-owned-20260926/KITTY_RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/terminal-owned-20260926/ibus_engine_debug-after-kitty.jsonl` (SHA-256 `5bc1273b...`),
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790435082357465942.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790435036951118889.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/terminal-owned-20260926/KITTY_RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/terminal-owned-20260926/ibus_engine_debug-after-kitty.jsonl` (SHA-256 `5bc1273b...`),
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790435082357465942.json`.
 
 ### Chrome input и textarea: переход поля уничтожил ожидающее подтверждение
 
@@ -1368,12 +1368,12 @@ Chrome окна **NOT TESTED**. Все три собственных поля п
 CDP после пробы; изолированный браузер закрыт. Runtime authority
 временно менялась и возвращена принятой паре; debug env удалён,
 GNOME/IBus RU. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790435427721306545.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-textarea/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-textarea/ibus_engine_debug-after-textarea.jsonl` (SHA-256 `b97c3040...`),
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-textarea/CLEANUP.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790435536044538214.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790435427721306545.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-textarea/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-textarea/ibus_engine_debug-after-textarea.jsonl` (SHA-256 `b97c3040...`),
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-textarea/CLEANUP.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790435536044538214.json`.
 
 ### Кандидат обработки повторного native FocusInId до ответа IBus
 
@@ -1403,9 +1403,9 @@ PASS. Прямой параллельный запуск 217 контекстн�
 2878→2881; package/ignored/performance и прочие ключи, кроме
 `isolation_counts`, сохранились. После этого отправлен новый точный
 снимок на gate; его результат ещё ожидается. Exact receipts:
-`/home/ubu/.cache/lay/development/tab-changed-qs0_5g_d/RESULT.json`,
-`/home/ubu/.cache/lay/development/tab-changed-qs0_5g_d/run.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/native-focus-write-manifest.log`.
+`/home/local-user/.cache/lay/development/tab-changed-qs0_5g_d/RESULT.json`,
+`/home/local-user/.cache/lay/development/tab-changed-qs0_5g_d/run.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/native-focus-write-manifest.log`.
 Вторая попытка прошла manifest и cargo fmt, затем все 2881
 correctness и 36 package тестов отработали без ошибок, но общий gate
 остановился после них: `known-failure manifest is bound to a different
@@ -1414,17 +1414,17 @@ test manifest`. В реестре ноль известных отказов; о
 исторических нулевых отказов не выдаётся за доказательство нового
 набора: текущие нулевые результаты находятся в журнале этой попытки.
 Третья полная попытка ещё **NOT TESTED** на этой точке. Exact receipts:
-`/home/ubu/.cache/lay/development/tab-changed-1u8le__h/RESULT.json`,
-`/home/ubu/.cache/lay/development/tab-changed-1u8le__h/run.log`.
+`/home/local-user/.cache/lay/development/tab-changed-1u8le__h/RESULT.json`,
+`/home/local-user/.cache/lay/development/tab-changed-1u8le__h/run.log`.
 Runtime authority после Chrome опыта возвращена принятой и source
 правкой не менялась. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/native-duplicate-focus-targeted.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/native-duplicate-focus-adapter.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/native-duplicate-focus-fmt-pass.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/native-focus-context-suite-serial.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/native-focus-focusout-single.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/native-focus-worker-single.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/native-focus-worker-gate-baseline.log`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/native-duplicate-focus-targeted.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/native-duplicate-focus-adapter.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/native-duplicate-focus-fmt-pass.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/native-focus-context-suite-serial.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/native-focus-focusout-single.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/native-focus-worker-single.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/native-focus-worker-gate-baseline.log`.
 
 ### Exact native FocusIn candidate: third full gate
 
@@ -1436,8 +1436,8 @@ replay gate, and the unsafe-edit scoreboard (`gate_failures=0`,
 source-gated, while its Chrome textarea behavior remains **NOT TESTED** until
 the exact release pair is installed and probed. No local runtime authority
 changed during this gate. Exact receipt and full journal:
-`/home/ubu/.cache/lay/development/tab-changed-5km1uw9w/RESULT.json`,
-`/home/ubu/.cache/lay/development/tab-changed-5km1uw9w/run.log`.
+`/home/local-user/.cache/lay/development/tab-changed-5km1uw9w/RESULT.json`,
+`/home/local-user/.cache/lay/development/tab-changed-5km1uw9w/run.log`.
 
 ### Native duplicate-FocusIn fix: installed Chrome field transition
 
@@ -1477,17 +1477,17 @@ the accepted installed and loaded IME/daemon hashes were checked, GNOME/IBus
 both remained `lay-ime-ru`, and `LAY_DEBUG_LOG` was unset. Runtime authority
 changed only during the bounded probe and now belongs to the accepted pair.
 Exact receipts:
-`/home/ubu/.cache/lay/development/tab-changed-5km1uw9w/BUILD_PAIR.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790438562626589634.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-native-focus-fix/RESULT-initial.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-native-focus-fix/RESULT-after-field-cycle.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-native-focus-fix/RESULT-after-window-return.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-textarea-native-focus-fix/RESULT-after-field-cycle.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-textarea-native-focus-fix/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-textarea-native-focus-fix/FOCUS_RETURN.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-textarea-native-focus-fix/ibus_engine_debug-after-focus-cycle.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-textarea-native-focus-fix/CLEANUP.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790438873222609776.json`.
+`/home/local-user/.cache/lay/development/tab-changed-5km1uw9w/BUILD_PAIR.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790438562626589634.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-native-focus-fix/RESULT-initial.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-native-focus-fix/RESULT-after-field-cycle.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-native-focus-fix/RESULT-after-window-return.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-textarea-native-focus-fix/RESULT-after-field-cycle.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-textarea-native-focus-fix/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-textarea-native-focus-fix/FOCUS_RETURN.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-textarea-native-focus-fix/ibus_engine_debug-after-focus-cycle.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/chrome-input-textarea-native-focus-fix/CLEANUP.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790438873222609776.json`.
 
 ### Same new pair in Firefox GitHub Issue #46: fast gestures remain red
 
@@ -1520,13 +1520,13 @@ WhatsApp after login, other Firefox windows and physical Shift remain
 **NOT TESTED**. Runtime authority changed only during the bounded probe;
 it is back on the accepted installed/loaded IME and daemon hashes, with
 GNOME/IBus RU and debug logging unset. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790439298969508845.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-native-focus-fix-20260926/baseline.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-native-focus-fix-20260926/ISSUE46_FAST8_SETTLE_PROBE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-native-focus-fix-20260926/ISSUE46_FAST8_VISIBLE_CHAIN_PROBE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-native-focus-fix-20260926/lay-daemon-firefox.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/issue46-native-focus-fix-20260926/ibus_engine_debug-after-firefox.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790439449531142813.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790439298969508845.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-native-focus-fix-20260926/baseline.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-native-focus-fix-20260926/ISSUE46_FAST8_SETTLE_PROBE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-native-focus-fix-20260926/ISSUE46_FAST8_VISIBLE_CHAIN_PROBE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-native-focus-fix-20260926/lay-daemon-firefox.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/issue46-native-focus-fix-20260926/ibus_engine_debug-after-firefox.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790439449531142813.json`.
 
 ### New gated pair in isolated Chromium-GOST: ownership still fails
 
@@ -1564,14 +1564,14 @@ all three fixture fields empty, then the isolated browser closed. Runtime
 authority changed only during this probe; exact accepted installed/loaded
 hashes, GNOME/IBus RU and absent debug environment were checked after
 rollback. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790439854574644529.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-input/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-textarea/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-contenteditable/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-all-fields/ibus_engine_debug-after-gost.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-all-fields/lay-daemon-gost.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-all-fields/CLEANUP.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790440093428960454.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790439854574644529.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-input/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-textarea/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-contenteditable/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-all-fields/ibus_engine_debug-after-gost.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-all-fields/lay-daemon-gost.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-all-fields/CLEANUP.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790440093428960454.json`.
 
 ### Chromium-GOST fresh-field control: failure precedes test clearing
 
@@ -1601,13 +1601,13 @@ The field was cleared and DevTools confirmed all fixture fields empty.
 The isolated browser was closed after exact accepted IME/daemon rollback;
 GNOME/IBus remained RU and debug logging was removed. Runtime authority
 changed only during this bounded control. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790440434094099500.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-first-20260926/baseline.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-first-20260926/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-first-20260926/ibus_engine_debug-after-fresh-tab.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-first-20260926/lay-daemon-fresh-tab.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-first-20260926/CLEANUP.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790440633606519431.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790440434094099500.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-first-20260926/baseline.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-first-20260926/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-first-20260926/ibus_engine_debug-after-fresh-tab.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-first-20260926/lay-daemon-fresh-tab.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-first-20260926/CLEANUP.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790440633606519431.json`.
 
 ### Source candidate: accept only the current IME-owned no-snapshot preedit
 
@@ -1629,9 +1629,9 @@ passed 2/2; `cargo fmt --all` and `graphify update .` were run. This is a
 manual Double Shift, other clients and painted frames are **NOT TESTED** on
 these new bytes. Runtime authority remained on the accepted installed pair.
 Exact RED/GREEN/safety receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-red-test.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-green-test.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-safety-tests.log`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-red-test.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-green-test.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-owned-preedit-safety-tests.log`.
 
 The first full changed gate on this exact source snapshot finished **FAIL**:
 2,883 correctness cases were selected, and the sole observed failure was
@@ -1644,7 +1644,7 @@ the immutable predecessor binding. This is an evidence identity repair, not a
 change to runtime authority or to the Tab implementation. The targeted
 contract and a new full gate still require PASS before any release build or
 temporary install. First failed gate receipt:
-`/home/ubu/.cache/lay/development/tab-changed-l5ni6j4o/RESULT.json`;
+`/home/local-user/.cache/lay/development/tab-changed-l5ni6j4o/RESULT.json`;
 binding: `tech_debt/evidence/ime-transient-boundary-tab-composition-successor.json`.
 
 The repaired protected-artifact contract passed locally 1/1. The new exact
@@ -1654,7 +1654,7 @@ no unexpected semantic failures, and the changed-check safety scoreboard
 reported zero gate failures. This is **source PASS only**; installed client
 behavior, manual toggles and other windows remain untested on these bytes.
 No runtime authority changed during either gate. Receipt:
-`/home/ubu/.cache/lay/development/tab-changed-ww5_niyp/RESULT.json`.
+`/home/local-user/.cache/lay/development/tab-changed-ww5_niyp/RESULT.json`.
 
 ### Installed Chromium-GOST control on gated no-snapshot Tab candidate
 
@@ -1694,16 +1694,16 @@ and installed IME/daemon hashes were verified after rollback. GNOME and IBus
 were `lay-ime-ru`; global IBus was not restarted; `LAY_DEBUG_LOG` was removed.
 Runtime authority changed only for the bounded install/refresh and returned
 to the accepted pair. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790442987141008809.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-tab-preedit-fix/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-tab-preedit-fix/ibus_engine_debug-after-tab.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROUTE-REFRESH-1790443182761074463.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-shift-new-window-preedit-fix/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-shift-new-window-preedit-fix/ibus_engine_debug-after-shift.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-shift-new-window-preedit-fix/lay-daemon-shift.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790443248579962085.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-tab-preedit-fix/CLEANUP.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-shift-new-window-preedit-fix/CLEANUP.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790442987141008809.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-tab-preedit-fix/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-tab-preedit-fix/ibus_engine_debug-after-tab.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROUTE-REFRESH-1790443182761074463.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-shift-new-window-preedit-fix/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-shift-new-window-preedit-fix/ibus_engine_debug-after-shift.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-shift-new-window-preedit-fix/lay-daemon-shift.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790443248579962085.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-tab-preedit-fix/CLEANUP.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-fresh-shift-new-window-preedit-fix/CLEANUP.json`.
 
 ### Source candidate: first manual toggle of an owned no-snapshot preedit
 
@@ -1737,11 +1737,11 @@ unsafe-edit gate failures. This is still **source-only**: release build,
 installed first gesture, later seven gestures and other windows remain
 **NOT TESTED** on these new bytes. Runtime authority remains the accepted
 installed pair. Receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-manual-owned-preedit-red.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-manual-owned-preedit-green.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-manual-owned-preedit-rpc.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-manual-write-manifest.log`,
-`/home/ubu/.cache/lay/development/tab-changed-f7d60omf/RESULT.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-manual-owned-preedit-red.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-manual-owned-preedit-green.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-manual-owned-preedit-rpc.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-manual-write-manifest.log`,
+`/home/local-user/.cache/lay/development/tab-changed-f7d60omf/RESULT.json`.
 
 ### Installed Chromium-GOST result: first owned toggle fixed, committed successor blocked
 
@@ -1779,15 +1779,15 @@ install, then returned to the accepted pair. This client's full eight-gesture
 row is **FAIL**; suggestion continuity, held Shift, applied undo, painted
 frames, hardware keys, focus return and the user's other windows remain
 **NOT TESTED** on this pair. Exact receipts:
-`/home/ubu/.cache/lay/development/tab-changed-f7d60omf/BUILD_PAIR.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790444890699420959.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-manual-tab-20260926/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-manual-shift-20260926/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-manual-shift-20260926/ibus_engine_debug-after-shift.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-manual-shift-20260926/lay-daemon-shift.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790445025710493466.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-manual-tab-20260926/CLEANUP.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-manual-shift-20260926/CLEANUP.json`.
+`/home/local-user/.cache/lay/development/tab-changed-f7d60omf/BUILD_PAIR.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790444890699420959.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-manual-tab-20260926/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-manual-shift-20260926/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-manual-shift-20260926/ibus_engine_debug-after-shift.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-manual-shift-20260926/lay-daemon-shift.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790445025710493466.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-manual-tab-20260926/CLEANUP.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/all-window-fixture-20260926/gost-manual-shift-20260926/CLEANUP.json`.
 
 **Next architecture hypothesis, not a measured fix.** For a client with
 `caps=9`, preserve the still-uncommitted IME preedit across the authenticated
@@ -1906,8 +1906,8 @@ automatic fallback, repeated Double Shift, other browser fields, other
 clients, or physical hardware keys. Design A remains a hypothesis, with
 lossless failure handling unresolved. No runtime authority changed. Exact
 receipt and bounded driver:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ibus-preedit-clear-probe-20260926/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ibus-preedit-clear-probe-20260926.py`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ibus-preedit-clear-probe-20260926/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ibus-preedit-clear-probe-20260926.py`.
 
 ### Superseded source experiment: one owned preedit, deferred source switch
 
@@ -1954,7 +1954,7 @@ assertions (619 passed). The old route emitted no exact preedit update on
 gesture 1; it committed the word instead. This proves the regression tests
 detect the reported first ownership transition, not that the proposed route
 works. No installed runtime changed. Receipt:
-`/home/ubu/.cache/lay/development/run-hfp1be91/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-hfp1be91/RESULT.json`.
 
 **Source experiment and focused GREEN.** The candidate now applies the same
 authorized edit directly to the live, exact IME-owned preedit in this narrow
@@ -1982,9 +1982,9 @@ a temporary deserialization borrow in the new test. These runs prove source
 behavior only; no installed client, eight painted transitions, latency,
 memory, other window, or user indicator preference is established. Runtime
 authority never changed. Receipts:
-`/home/ubu/.cache/lay/development/run-pvf2c3o6/RESULT.json`,
-`/home/ubu/.cache/lay/development/run-uricpwcq/RESULT.json`,
-`/home/ubu/.cache/lay/development/run-sur7up7y/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-pvf2c3o6/RESULT.json`,
+`/home/local-user/.cache/lay/development/run-uricpwcq/RESULT.json`,
+`/home/local-user/.cache/lay/development/run-sur7up7y/RESULT.json`.
 
 **First full-gate lineage correction.** The guarded remote
 `check-lay-changed` snapshot passed the 2,949-test manifest, formatting,
@@ -2001,7 +2001,7 @@ receipts; the integration test now verifies both chain links and keeps
 physical acceptance separate. The amended tree still needs a new full gate.
 No candidate was installed and runtime authority did not change. Failed
 snapshot receipt:
-`/home/ubu/.cache/lay/development/tab-changed-gg1wl9ru/RESULT.json`.
+`/home/local-user/.cache/lay/development/tab-changed-gg1wl9ru/RESULT.json`.
 
 **Amended full gate.** The exact guarded remote source snapshot
 `d9e1d6e1e26743ea1fb060ecf32a2c70d73b085f96cced6a607e522fce112e0d`
@@ -2013,7 +2013,7 @@ the full lane. This is source and build-gate evidence only. Installed
 Chromium-GOST, eight visible gestures, word-boundary source sync, other
 clients, hardware keys, latency and memory on the release pair are still
 untested. No installed runtime authority changed. Receipt:
-`/home/ubu/.cache/lay/development/tab-changed-bl8f8rpm/RESULT.json`.
+`/home/local-user/.cache/lay/development/tab-changed-bl8f8rpm/RESULT.json`.
 
 **Installed sequential-field rejection, exact pair and rollback.** Release
 IME `a9b46f758b8414f90e3e418e7b674001fdfb22801af3ffac544da89cffc8907f`
@@ -2048,12 +2048,12 @@ loaded/installed binaries to accepted IME `a8b9d168…` and daemon
 `6ad64ec4…`, with GNOME/IBus `lay-ime-ru`; global IBus PID was preserved.
 No message or comment was sent. Runtime authority changed only during this
 bounded install, then returned to accepted. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/GOST_DEFERRED_CYCLE-1790450014729024529.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790450021148555349.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790450053291902963.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-owned-preedit-20260926/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-owned-preedit-20260926/PROBE_SUMMARY.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-owned-preedit-20260926/ibus_engine_debug-after-cycle.jsonl`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/GOST_DEFERRED_CYCLE-1790450014729024529.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790450021148555349.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790450053291902963.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-owned-preedit-20260926/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-owned-preedit-20260926/PROBE_SUMMARY.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-owned-preedit-20260926/ibus_engine_debug-after-cycle.jsonl`.
 
 **Fresh first-word probe was not a valid physical-gesture test.** The same
 gated release pair was installed again from 22:22:10 EEST with daemon debug
@@ -2074,12 +2074,12 @@ The exact accepted IME/daemon hashes were restored, GNOME/IBus returned to
 `lay-ime-ru`, the disposable browser closed, the field was byte-empty and
 `LAY_DEBUG_LOG` was removed from the user manager. Runtime authority changed
 only during the bounded install and was then restored. Receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/GOST_DEFERRED_CYCLE-1790450530188064894.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790450536144264389.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790450561337592097.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-fresh-shift-20260926/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-fresh-shift-20260926/ibus_engine_debug-after-cycle.jsonl`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-fresh-shift-20260926/lay-daemon-cycle.log`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/GOST_DEFERRED_CYCLE-1790450530188064894.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790450536144264389.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790450561337592097.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-fresh-shift-20260926/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-fresh-shift-20260926/ibus_engine_debug-after-cycle.jsonl`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-fresh-shift-20260926/lay-daemon-cycle.log`.
 
 ### Pre-enumerated GOST keyboard: eight visible Double Shift transitions
 
@@ -2107,12 +2107,12 @@ binaries returned to accepted IME `a8b9d168…` / daemon `6ad64ec4…`, with
 GNOME/IBus `lay-ime-ru`, original Kitty focus, and manager debug environment
 cleared. Runtime authority changed only during the bounded install and was
 restored after the probe. Exact receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-prestarted-keyboard-20260926/CYCLE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-prestarted-keyboard-20260926/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-prestarted-keyboard-20260926/daemon-before-gesture.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-prestarted-keyboard-20260926/lay-daemon-after-gesture.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790450935336177108.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790450959926369077.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-prestarted-keyboard-20260926/CYCLE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-prestarted-keyboard-20260926/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-prestarted-keyboard-20260926/daemon-before-gesture.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-prestarted-keyboard-20260926/lay-daemon-after-gesture.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790450935336177108.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ROLLBACK-1790450959926369077.json`.
 
 ### First-word GOST completion and held-Shift case on the same gated pair
 
@@ -2141,13 +2141,13 @@ were restored byte-empty, isolated browsers closed, debug manager environment
 removed, and the exact accepted loaded/installed pair and `lay-ime-ru`
 restored. Runtime authority changed only during each bounded install and was
 restored after each probe. Receipts:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-tab_one-20260926/CYCLE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-tab_one-20260926/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-suggestion_update-20260926/CYCLE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-suggestion_update-20260926/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-held_shift-20260926/CYCLE.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-held_shift-20260926/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-held_shift-20260926/ibus_engine_debug-after-gesture.jsonl`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-tab_one-20260926/CYCLE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-tab_one-20260926/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-suggestion_update-20260926/CYCLE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-suggestion_update-20260926/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-held_shift-20260926/CYCLE.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-held_shift-20260926/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-first-held_shift-20260926/ibus_engine_debug-after-gesture.jsonl`.
 
 ### Uppercase completion projection: source experiment
 
@@ -2171,7 +2171,7 @@ it is not evidence that the source change is ready. The repository's
 serialized correctness/package lane and fixed full changed gate remain to
 be run before any live install. No runtime authority changed in this source
 experiment. Local log:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/uppercase-local-ime-suite.log`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/uppercase-local-ime-suite.log`.
 
 The first serialized remote changed gate stopped at test discovery: the new
 case was absent from the frozen test-lane manifest, so no correctness or
@@ -2179,9 +2179,9 @@ package lane ran. `scripts/check-lay-tests.sh write-manifest` regenerated
 the manifest under the workstation resource guard (`total=2950`, including
 the new case and earlier source changes). Gate retry remains pending. No
 runtime authority changed. Receipts:
-`/home/ubu/.cache/lay/development/tab-changed-yycqluxb/RESULT.json`,
-`/home/ubu/.cache/lay/development/tab-changed-yycqluxb/run.log`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/uppercase-write-manifest.log`.
+`/home/local-user/.cache/lay/development/tab-changed-yycqluxb/RESULT.json`,
+`/home/local-user/.cache/lay/development/tab-changed-yycqluxb/run.log`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/uppercase-write-manifest.log`.
 
 ### User-confirmed indicator postcondition supersedes the deferred-source route
 
@@ -2204,7 +2204,7 @@ package tests (2,924 selected) with zero reported test failures, but its final c
 manifest SHA. The file now names the regenerated manifest SHA; this is
 metadata maintenance, not a functional PASS, and the gate has not been
 repeated. No runtime authority changed. Receipt:
-`/home/ubu/.cache/lay/development/tab-changed-8aj3sgyz/RESULT.json`.
+`/home/local-user/.cache/lay/development/tab-changed-8aj3sgyz/RESULT.json`.
 
 Next is a bounded feasibility proof for design A already described above:
 transfer the one uncommitted IME-owned preedit through the existing
@@ -2235,7 +2235,7 @@ for the no-surrounding browser field. The test-only text result is not an
 acceptance result. No new binary was installed and runtime authority did not
 change during this source cleanup. The source test output is in this session's
 terminal; the exact earlier live text-only receipt remains
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-prestarted-keyboard-20260926/CYCLE.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/gost-deferred-prestarted-keyboard-20260926/CYCLE.json`.
 The updated frozen test manifest and full changed gate are separate pending
 checks; the focused test does not establish all-window behavior.
 
@@ -2268,8 +2268,8 @@ window was active, so it was not changed back by the test. Installed and
 loaded Lay binary hashes still matched the accepted pair on the read-only
 check. Runtime binary authority did not change. Exact receipt and bounded
 driver:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ibus-preedit-clear-probe-with-trace-20260926/RESULT.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ibus-preedit-clear-probe-with-trace-20260926.py`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ibus-preedit-clear-probe-with-trace-20260926/RESULT.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ibus-preedit-clear-probe-with-trace-20260926.py`.
 
 ### User clarification: one Lay source with a native per-gesture mode indicator
 
@@ -2288,8 +2288,8 @@ path also emits that event. Local IBus GI serialization measured the
 `IBusProperty` and `IBusPropList` D-Bus shapes; a focused Rust wire-shape test
 passed 1/1 for `RU` and `EN`. Sources:
 `https://raw.githubusercontent.com/GNOME/gnome-shell/50.1/js/ui/status/keyboard.js`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/ibus-input-mode-wire-20260926.json`,
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/input-mode-wire-test.log`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/ibus-input-mode-wire-20260926.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/input-mode-wire-test.log`.
 
 **Candidate experiment.** The new uninstalled source branch restores an
 exact, uncommitted, IME-owned preedit toggle and emits `RegisterProperties`
@@ -2317,7 +2317,7 @@ signature, RU and EN next-key decoding, and refusal after context token loss
 borrow error; it was corrected before the passing run, with no runtime effect.
 These tests prove local method/signal behavior, not IBus forwarding, a painted
 GNOME icon, or any application widget. Exact output:
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/input-mode-owned-preedit-suite.log`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/input-mode-owned-preedit-suite.log`.
 
 ### Property-backed candidate installed for user acceptance, 2026-09-27
 
@@ -2354,12 +2354,12 @@ as working yet. No success claim follows from `RegisterProperties` emission
 or `CurrentInputMode` alone.
 
 **Exact receipts.** Gate
-`/home/ubu/.cache/lay/development/tab-changed-4aqznu3i/RESULT.json`,
-build `/home/ubu/.cache/lay/development/tab-changed-4aqznu3i/BUILD_PAIR.json`,
+`/home/local-user/.cache/lay/development/tab-changed-4aqznu3i/RESULT.json`,
+build `/home/local-user/.cache/lay/development/tab-changed-4aqznu3i/BUILD_PAIR.json`,
 installed pair
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790466513196827114.json`,
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/INSTALL-1790466513196827114.json`,
 extension
-`/home/ubu/.cache/lay/development/live-pair-candidate-20260926/EXTENSION-INSTALL-1790466338380810382.json`.
+`/home/local-user/.cache/lay/development/live-pair-candidate-20260926/EXTENSION-INSTALL-1790466338380810382.json`.
 
 ### User-selected intermediate checkpoint and L3 CPU cap, 2026-09-27
 
@@ -2371,7 +2371,7 @@ gesture number, word, icon and trace are not recorded. This is a
 IME and daemon have the hashes stated above. Their gated source snapshot,
 release binaries, GNOME extension files, accepted predecessor files and
 receipts were copied with SHA-256 verification to
-`/home/ubu/projects/lay-checkpoints/2026-09-27-input-mode-partial-pass/CHECKPOINT.json`.
+`/workspace/local/lay-checkpoints/2026-09-27-input-mode-partial-pass/CHECKPOINT.json`.
 Creating the checkpoint changed no runtime authority.
 
 **Protocol boundary.** The architecture canon C01–C10 remains in force and
@@ -2396,7 +2396,7 @@ so a new proof under load has **not** been measured against the cap. No IME,
 daemon, L1.1, L3 process, GNOME extension or IBus restart was performed for
 this CPU change. Runtime input authority stayed on the user-selected pair.
 Exact observation and action receipt:
-`/home/ubu/.cache/lay/development/l3-cpu-cap-20260927/CPU_CAP.json`.
+`/home/local-user/.cache/lay/development/l3-cpu-cap-20260927/CPU_CAP.json`.
 
 ### IME: подсказки только для буквенного текущего токена, 2026-09-27
 
@@ -2422,9 +2422,9 @@ IME readout и показа; оно не меняет ввод, `ManualToggleV3`
 локального поведения IME**, не all-window acceptance.
 
 **Точные журналы.**
-`/home/ubu/.cache/lay/development/nonletter-suggestions-20260927/preedit-tests-final.log`,
-`/home/ubu/.cache/lay/development/nonletter-suggestions-20260927/manifest-check.log`,
-`/home/ubu/.cache/lay/development/nonletter-suggestions-20260927/graphify-final.log`.
+`/home/local-user/.cache/lay/development/nonletter-suggestions-20260927/preedit-tests-final.log`,
+`/home/local-user/.cache/lay/development/nonletter-suggestions-20260927/manifest-check.log`,
+`/home/local-user/.cache/lay/development/nonletter-suggestions-20260927/graphify-final.log`.
 На момент этой записи установленная версия не менялась: runtime authority
 changed: false. Установка кандидата, если выполнена позже, имеет отдельный
 receipt и отдельную область вердикта.
@@ -2444,9 +2444,9 @@ PID. CPUQuota L3 после перезапуска осталась 25%. Рез�
 приёмка Tab/Double Shift в этом опыте **не проверялись**.
 
 Точный receipt установки и отката:
-`/home/ubu/.cache/lay/development/nonletter-suggestions-20260927/INSTALL.json`;
+`/home/local-user/.cache/lay/development/nonletter-suggestions-20260927/INSTALL.json`;
 сборка:
-`/home/ubu/.cache/lay/development/nonletter-suggestions-20260927/release-build.log`.
+`/home/local-user/.cache/lay/development/nonletter-suggestions-20260927/release-build.log`.
 
 ### Native terminal: подготовка исправления стирается на отпускании буквы, 2026-09-28
 
@@ -2469,7 +2469,7 @@ PID. CPUQuota L3 после перезапуска осталась 25%. Рез�
 готовый lease лишь после всех release и этого не обнаруживал. Перестановка
 установки lease перед последним release воспроизвела отказ на исходном
 `58d36e3d`: 602/603 теста IME прошли, один упал точно на Space; receipt
-`/home/ubu/.cache/lay/development/run-lzz_p7es/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-lzz_p7es/RESULT.json`.
 
 **Выбранное исправление и последствия.** Небольшой ограниченный журнал
 сопоставляет отпущенный keycode с ранее пропущенным буквенным нажатием в том
@@ -2496,8 +2496,8 @@ deadline и увеличить хвостовую задержку. Объём �
 
 **Промежуточная область вердикта.** На публичной базе узкая правка прошла
 603/603 IME-тестов и 2904 выбранных теста полного development-прогона;
-receipts `/home/ubu/.cache/lay/development/run-zynoxz68/RESULT.json` и
-`/home/ubu/.cache/lay/development/run-ijb9ckrr/RESULT.json`. Это доказывает
+receipts `/home/local-user/.cache/lay/development/run-zynoxz68/RESULT.json` и
+`/home/local-user/.cache/lay/development/run-ijb9ckrr/RESULT.json`. Это доказывает
 механизм, но не совместимость с точными исходниками установленной ветки.
 Следующие обязательные границы: тот же адаптерный тест и затронутые контракты
 на `fe5877ed`, новая сборка, реальный текст и режим в Kitty и GTK, затем
@@ -2526,7 +2526,7 @@ preedit для любой позиции мог бы захватить фраг
 RED-тест адаптера с `caps=41` и пустым начальным снимком воспроизвёл
 первую потерю: 625/626 тестов PASS, новый тест падает на первом
 `CommitText` вместо владения preedit; receipt
-`/home/ubu/.cache/lay/development/run-3uvlr7s4/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-3uvlr7s4/RESULT.json`.
 Следом нужны отрицательные случаи выделения/середины слова, source и
 физический GTK. Риск: preedit может менять поведение Tab/Double Shift,
 поэтому эти границы проверяются отдельно. На этом этапе новых байтов для
@@ -2538,7 +2538,7 @@ GTK нет; runtime authority changed: **false для GTK-правки**. Точ
 обе стороны курсора без выделения. Уже известный word-start сохраняет старый
 managed путь. Отрицательные адаптерные случаи середины слова и выделения
 остались `CommitText` без захвата preedit. Focused IME suite 627/627 PASS,
-receipt `/home/ubu/.cache/lay/development/run-6nqaoyot/RESULT.json`.
+receipt `/home/local-user/.cache/lay/development/run-6nqaoyot/RESULT.json`.
 Это **source-only**: реальный GTK, Tab, Double Shift, браузеры и full gate
 ещё не проверены. Новая версия в runtime не устанавливалась. Перед её
 установкой нужно удостовериться, что уже созданный GTK-owned preedit остаётся
@@ -2548,7 +2548,7 @@ receipt `/home/ubu/.cache/lay/development/run-6nqaoyot/RESULT.json`.
 **Source-проверка Tab и Double Shift.** Два новых адаптерных теста на том же
 `caps=41` и начальном пустом снимке были RED: 628/630, отказ на допуске
 Tab и на первом из восьми переворотов; receipt
-`/home/ubu/.cache/lay/development/run-szkzw6wt/RESULT.json`. Проверка
+`/home/local-user/.cache/lay/development/run-szkzw6wt/RESULT.json`. Проверка
 owned-preedit теперь опирается на живой context token, точное совпадение
 активной композиции с локальным хвостом, видимый чистый preedit и отсутствие
 выделения. Наличие SurroundingText само по себе не лишает IME права на его
@@ -2556,7 +2556,7 @@ owned-preedit теперь опирается на живой context token, т�
 действия, восемь последовательных переключений остаются без CommitText и
 DeleteSurroundingText, после каждого публикуется штатный InputMode. Весь
 focused IME suite: 630/630 PASS; receipt
-`/home/ubu/.cache/lay/development/run-bwpmsdhk/RESULT.json`. Источник
+`/home/local-user/.cache/lay/development/run-bwpmsdhk/RESULT.json`. Источник
 проверен, GTK runtime на этих байтах ещё **NOT TESTED**; runtime authority
 changed: **false для GTK-правки**.
 
@@ -2566,15 +2566,15 @@ IME из точного источника `fe5877ed` плюс парный-rele
 и установлен поверх SHA `309a1e623173b724` как
 `bbccb82022eeb2d785a7d69923c968d3e88d1f63ddafd6a6803d0aabf1297b1c`.
 Транзакционная установка с сохранённым старым бинарником прошла PASS:
-`/home/ubu/.cache/lay/development/native-release-space-20260928/INSTALL.json`.
+`/home/local-user/.cache/lay/development/native-release-space-20260928/INSTALL.json`.
 Runtime authority changed: **true только для IME-бинарника**; daemon,
 глобальный IBus, L1.1 и L3 сохранили PID и байты. В своём Wayland Kitty
 реальный `дфн` на Space стал `lay` с US mode; обратный `vbh` стал `мир`
 с RU mode. Быстрый Space после `lay` также сработал. Поочерёдный физический
 ввод 20 трёхбуквенных и 20 четырёхбуквенных слов дал 20/20 и 20/20
 совпадений видимого слова и GNOME/IBus/InputMode после каждого Space:
-`/home/ubu/.cache/lay/development/native-release-space-20260928/KITTY_ALTERNATING_3.json`,
-`/home/ubu/.cache/lay/development/native-release-space-20260928/KITTY_ALTERNATING_4.json`.
+`/home/local-user/.cache/lay/development/native-release-space-20260928/KITTY_ALTERNATING_3.json`,
+`/home/local-user/.cache/lay/development/native-release-space-20260928/KITTY_ALTERNATING_4.json`.
 Это **PASS только для данного Kitty-поля**. Латентность p50/p95/p99,
 пакет/RSS, false accepts, прочие окна и восемь Double Shift этим
 контролем не измерены. GTK first-word failure выше — отдельный первый
@@ -2584,17 +2584,17 @@ Runtime authority changed: **true только для IME-бинарника**; 
 прошёл (`gtk-changed-gate.log` в каталоге native-release-space), release
 IME SHA `beb09e2bea7a855f9dbdff5224579567c9a5d8e5129c60509a3f3d99e77f1f2e`
 установлен с проверкой PID и исходников; install receipt
-`/home/ubu/.cache/lay/development/gtk-owned-firstword-20260928/INSTALL.json`.
+`/home/local-user/.cache/lay/development/gtk-owned-firstword-20260928/INSTALL.json`.
 В собственном пустом GTK4 Entry первый физический `lay` в RU остался `дфн `,
 режим RU. Трасса показывает `caps=41` **до** первой буквы, но первый
 `SetSurroundingText` пришёл лишь **после** её `CommitText`. Условие для
 снимка до первой буквы было корректным для такого порядка, но не покрывало
 этот клиент. Точный первый отказ: строка trace 2668
 `printable_managed_commit`, 2671 первый `ibus_surrounding_text`; весь receipt
-`/home/ubu/.cache/lay/development/gtk-owned-firstword-20260928/GTK_FIRST_WORD_FAIL.json`.
+`/home/local-user/.cache/lay/development/gtk-owned-firstword-20260928/GTK_FIRST_WORD_FAIL.json`.
 Функциональный вердикт GTK: **FAIL**, несмотря на source PASS. IME откатан
 строго к терминальной версии `bbccb82022eeb2d785a7d69923c968d3e88d1f63ddafd6a6803d0aabf1297b1c`;
-receipt `/home/ubu/.cache/lay/development/gtk-owned-firstword-20260928/ROLLBACK.json`.
+receipt `/home/local-user/.cache/lay/development/gtk-owned-firstword-20260928/ROLLBACK.json`.
 Runtime authority changed: **true на время опыта, затем восстановлена
 исходная терминальная версия**; daemon и глобальный IBus не менялись.
 
@@ -2611,7 +2611,7 @@ Runtime authority changed: **true на время опыта, затем вос�
 установленный порядок: `caps=41`, первая буква без снимка, затем первый
 `SetSurroundingText`. Без второго исправления 629/630 PASS, новый тест падает
 на первом `CommitText`; receipt
-`/home/ubu/.cache/lay/development/run-_sseehfg/RESULT.json`. Условие
+`/home/local-user/.cache/lay/development/run-_sseehfg/RESULT.json`. Условие
 начала owned preedit теперь допускает отсутствие снимка при `UnknownStart`
 и preedit-capability. Появившийся снимок с выделением или курсором внутри
 слова всё ещё запрещает начало новой композиции; уже начатая композиция
@@ -2625,7 +2625,7 @@ authority changed: **false для второго варианта**.
 ожидали `CommitText`, а получили `UpdatePreeditText`; суммарно отчёт
 зафиксировал девять отказов. Общий первый механизм — смена маршрута
 первой буквы при отсутствии снимка, что ломает Reset/передачу точного хвоста.
-Receipt `/home/ubu/.cache/lay/development/run-kmwfr4bv/RESULT.json`.
+Receipt `/home/local-user/.cache/lay/development/run-kmwfr4bv/RESULT.json`.
 Условие отменено, эти тесты не ослаблялись.
 
 **Третий вариант и RED.** Живой GTK после каждого `CommitText` прислал
@@ -2636,7 +2636,7 @@ Firefox без такого нового точного снимка остаё�
 Адаптерный тест теперь воспроизводит `caps41 → CommitText → снимок` для
 каждой буквы и требует, чтобы старый снимок до последней буквы не давал
 Space-права. Без нового свидетельства тест RED при 629/630 PASS, receipt
-`/home/ubu/.cache/lay/development/run-q6jv8gm8/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-q6jv8gm8/RESULT.json`.
 Предлагаемая реализация привязывает новый receipt к тому же focus serial,
 epoch локального хвоста и revision снимка; снимок должен полностью совпасть
 со словом и обеими его границами, без выделения и при живом token. Она
@@ -2655,7 +2655,7 @@ focus serial, tail epoch и revision до нового callback. При отсу
 token дают отказ. Проверка не создаёт владельца слова и не меняет ветвь
 Firefox без точного послебуквенного снимка. Focused IME suite 630/630 PASS,
 включая отрицательный token case; receipt
-`/home/ubu/.cache/lay/development/run-qu_zs_vg/RESULT.json`. Full gate,
+`/home/local-user/.cache/lay/development/run-qu_zs_vg/RESULT.json`. Full gate,
 граф и установленный GTK на этих байтах ещё **NOT TESTED**. Runtime authority
 changed: **false для третьего варианта**.
 
@@ -2664,20 +2664,20 @@ changed: **false для третьего варианта**.
 Затронуты C03, C08, C09 и C10. Третий вариант IME был проверен удалённо:
 focused 630/630, полный development gate 2 932 выбранных теста и
 `check-lay-changed.sh` PASS без unsafe edit gate failures. Receipts:
-`/home/ubu/.cache/lay/development/run-qu_zs_vg/RESULT.json`,
-`/home/ubu/.cache/lay/development/run-2fqk2676/RESULT.json`,
-`/home/ubu/.cache/lay/development/gtk-owned-firstword-20260928/managed-snapshot-changed-gate.log`.
+`/home/local-user/.cache/lay/development/run-qu_zs_vg/RESULT.json`,
+`/home/local-user/.cache/lay/development/run-2fqk2676/RESULT.json`,
+`/home/local-user/.cache/lay/development/gtk-owned-firstword-20260928/managed-snapshot-changed-gate.log`.
 IME SHA `318fd6580cf99e40be82b6d74fd9e2dfa833d97cdd52079e98054a485410c200`
 установлен с сохранением терминального предшественника; receipt
-`/home/ubu/.cache/lay/development/managed-snapshot-20260928/INSTALL.json`.
+`/home/local-user/.cache/lay/development/managed-snapshot-20260928/INSTALL.json`.
 В собственном пустом GTK4 Entry первое физическое `дфн` на Space стало
 `lay ` и mode US: `.../managed-snapshot-20260928/GTK_FIRST_WORD_PASS.json`.
 
 Непрерывная серия того же GTK-поля остановилась на втором слове: после
 `lay ` физическое `vbh ` осталось `vbh `, mode US; receipt
-`/home/ubu/.cache/lay/development/gtk-owned-firstword-20260928/GTK_ALTERNATING_3.json`.
+`/home/local-user/.cache/lay/development/gtk-owned-firstword-20260928/GTK_ALTERNATING_3.json`.
 Ограниченная серия повторов также дала 1/2 на первой попытке, точная трасса
-`/home/ubu/.cache/lay/development/managed-snapshot-20260928/GTK_RACE_ATTEMPT_01.jsonl`
+`/home/local-user/.cache/lay/development/managed-snapshot-20260928/GTK_RACE_ATTEMPT_01.jsonl`
 и результат `.../managed-snapshot-20260928/GTK_RACE_SERIES.json`. При паузе
 3 с после первого слова оба слова прошли 2/2, receipt
 `.../gtk-owned-firstword-20260928/GTK_ALTERNATING_3_delay3000.json`.
@@ -2703,7 +2703,7 @@ ticket при точном совпадении нового engine path, бол
 отказываются. Регрессионный reducer-тест воспроизводит потерю factory
 handoff до позднего RU → US сигнала и запрещает неправильный профиль.
 Первый source-снимок с этим тестом прошёл focused 631/631, receipt
-`/home/ubu/.cache/lay/development/run-td0vcs5p/RESULT.json`;
+`/home/local-user/.cache/lay/development/run-td0vcs5p/RESULT.json`;
 после него добавлена проверка текущего Lay-профиля. Финальный gate и
 физический GTK на новых байтах ещё **NOT TESTED**. Runtime authority changed:
 **false для этой reducer-правки**; установленным остаётся IME SHA `318fd658...`.
@@ -2713,17 +2713,17 @@ handoff до позднего RU → US сигнала и запрещает н�
 На IME SHA `984cbc120f56612d6f19fea9ea04e18bc4b07b5793b20436942038850cbee145`
 собственное GTK4 Entry дало 16/20 точных переворотов слова и режима подряд;
 17-е физическое `web` в RU осталось `цуи` и режим RU. Измерение:
-`/home/ubu/.cache/lay/development/revoked-profile-20260928/GTK_ALTERNATING_3.json`;
+`/home/local-user/.cache/lay/development/revoked-profile-20260928/GTK_ALTERNATING_3.json`;
 полная трасса:
-`/home/ubu/.cache/lay/development/revoked-profile-20260928/GTK_ALTERNATING_3_FAIL.jsonl`.
+`/home/local-user/.cache/lay/development/revoked-profile-20260928/GTK_ALTERNATING_3_FAIL.jsonl`.
 Первые два слова без паузы прошли 2/2:
-`/home/ubu/.cache/lay/development/revoked-profile-20260928/GTK_ALTERNATING_3_delay0.json`.
+`/home/local-user/.cache/lay/development/revoked-profile-20260928/GTK_ALTERNATING_3_delay0.json`.
 Полный development gate исполнил 2933 теста без тестовых ошибок, но общий
 вердикт FAIL из-за устаревшего хеша known-failures manifest; после исправления
 хеша remote `load_known_failures` прошёл. Changed gate прошёл; лог:
-`/home/ubu/.cache/lay/development/revoked-profile-20260928/changed-gate.log`.
+`/home/local-user/.cache/lay/development/revoked-profile-20260928/changed-gate.log`.
 Установлена именно указанная SHA; установка:
-`/home/ubu/.cache/lay/development/revoked-profile-20260928/INSTALL.json`.
+`/home/local-user/.cache/lay/development/revoked-profile-20260928/INSTALL.json`.
 Runtime authority changed: **true** только для IME; глобальный IBus, daemon,
 L1.1 и L3 не перезапускались.
 
@@ -2739,13 +2739,13 @@ GTK 20/20, GTK 4 буквы, Kitty, браузеры и прочие окна: *
 следующем кандидате** до его установки.
 
 Диагностическая SHA `d1106aa8844e50d9086575a690bad8bb8828978827ebce1a88955fe3d5ebb9e4`
-прошла focused 631/631 (`/home/ubu/.cache/lay/development/run-zs7xmn40/RESULT.json`)
+прошла focused 631/631 (`/home/local-user/.cache/lay/development/run-zs7xmn40/RESULT.json`)
 и шесть повторов собственной GTK-серии по 20/20. Отдельные receipts и traces:
-`/home/ubu/.cache/lay/development/source-seal-diagnostic-20260928/GTK_3_RUN_01.json`
+`/home/local-user/.cache/lay/development/source-seal-diagnostic-20260928/GTK_3_RUN_01.json`
 … `GTK_3_RUN_06.json` и соответствующие `GTK_3_TRACE_*.jsonl` в том же каталоге.
 Эти успешные повторы не снимают ранее наблюдённый плавающий отказ.
 Установка диагностики:
-`/home/ubu/.cache/lay/development/source-seal-diagnostic-20260928/INSTALL.json`.
+`/home/local-user/.cache/lay/development/source-seal-diagnostic-20260928/INSTALL.json`.
 Runtime authority changed: **true** только для IME. Следующий диагностический
 снимок различает отказ stamp старого FocusOut/Disable и поздний
 `GlobalEngineChanged`; содержимое поля по-прежнему не записывается новой
@@ -2754,9 +2754,9 @@ Runtime authority changed: **true** только для IME. Следующий 
 На следующей диагностической SHA `1d991a52837efe2a297002fddce67875e4cfe21eaa38e969d5c2232f518f115a`
 корректный замер слова и режима выявил иной отказ: пятое физическое `git` в
 собственном GTK-поле осталось `пше`, режим RU. Receipt:
-`/home/ubu/.cache/lay/development/lifecycle-diagnostic-20260928/GTK_3_RUN_05.json`;
+`/home/local-user/.cache/lay/development/lifecycle-diagnostic-20260928/GTK_3_RUN_05.json`;
 trace:
-`/home/ubu/.cache/lay/development/lifecycle-diagnostic-20260928/GTK_3_TRACE_05.jsonl`.
+`/home/local-user/.cache/lay/development/lifecycle-diagnostic-20260928/GTK_3_TRACE_05.jsonl`.
 Предыдущие четыре слова в этом запуске прошли. В трассе Space получил
 `ibus_space_autocorrect=authorized`, но исполнитель ответил
 `exact_surrounding_snapshot_unavailable`, после чего отправил исходное слово.
@@ -2779,10 +2779,10 @@ changed для этой правки: **false до отдельной устан
 
 Контроль причины: новый `td125_known_boundary_without_exact_refresh_keeps_next_word_in_owned_preedit`
 дал ожидаемый RED на прежнем выборе маршрута (631 PASS, 1 FAIL):
-`/home/ubu/.cache/lay/development/run-usf7xhfy/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-usf7xhfy/RESULT.json`.
 После удаления только ограничения `!context_word_is_known()` тест и весь
 focused IME набор дали 632/632 PASS:
-`/home/ubu/.cache/lay/development/run-7pl7qlw_/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-7pl7qlw_/RESULT.json`.
 Тест проверяет полностью IME-owned preedit и один CommitText `привет ` без
 surrounding delete после известной границы с неточным refresh. Проверка
 восемнадцати остальных слов, всех окон и физической версии остаётся
@@ -2793,16 +2793,16 @@ SafetyGate и AuthorizedEdit, отдельный обработчик раскл
 ### 2026-09-28 — подтверждение preedit и отказ постусловия Firefox
 
 Правка известной границы прошла полный development gate: 2934 selected,
-PASS (`/home/ubu/.cache/lay/development/run-dn0zienb/RESULT.json`),
+PASS (`/home/local-user/.cache/lay/development/run-dn0zienb/RESULT.json`),
 changed gate с `gate_failures=0`
-(`/home/ubu/.cache/lay/development/known-boundary-preedit-20260928/changed-gate.log`).
+(`/home/local-user/.cache/lay/development/known-boundary-preedit-20260928/changed-gate.log`).
 Установлена только IME SHA
 `5225bbd645c1528cca14eadca1a38df5f8638e67633c159a743e0ab24ff77dce`;
-receipt `/home/ubu/.cache/lay/development/known-boundary-preedit-20260928/INSTALL.json`.
+receipt `/home/local-user/.cache/lay/development/known-boundary-preedit-20260928/INSTALL.json`.
 Физические серии в собственных полях прошли: GTK4 Entry 3 буквы 20/20 и
 4 буквы 20/20, Kitty `read` 3 буквы 20/20 и 4 буквы 20/20. Каждый шаг
 проверял видимое слово и режим RU/EN после Space. Receipts:
-`/home/ubu/.cache/lay/development/known-boundary-preedit-20260928/GTK_ALTERNATING_3.json`,
+`/home/local-user/.cache/lay/development/known-boundary-preedit-20260928/GTK_ALTERNATING_3.json`,
 `GTK_ALTERNATING_4.json`, `KITTY_ALTERNATING_3.json`, `KITTY_ALTERNATING_4.json`
 в том же каталоге. Runtime authority changed: **true**, только IME; daemon,
 глобальный IBus и L1.1/L3 не перезапускались. Другие окна этой серией не
@@ -2810,7 +2810,7 @@ receipt `/home/ubu/.cache/lay/development/known-boundary-preedit-20260928/INSTAL
 
 В собственном Firefox textarea первая физическая `lay` при RU стала `lay `,
 но режим остался RU за 1,2 с: 0/20 полных переходов. Receipt:
-`/home/ubu/.cache/lay/development/firefox-postcommit-refresh-20260928/FIREFOX_TEXTAREA_3_PRE_FIX.json`;
+`/home/local-user/.cache/lay/development/firefox-postcommit-refresh-20260928/FIREFOX_TEXTAREA_3_PRE_FIX.json`;
 trace `FIREFOX_TEXTAREA_3_FAIL.jsonl` рядом. Space прошёл DecisionCore и
 AuthorizedEdit; IME отправил DeleteSurroundingText и CommitText. Firefox
 послал только промежуточный SetSurroundingText после удаления (три символа,
@@ -2823,19 +2823,19 @@ Firefox пока не доказана.
 Экспериментальная правка запрашивает RequireSurroundingText после CommitText,
 сохраняя точное подтверждение перед сменой режима. Контрактный тест на старом
 коде дал ожидаемый RED: одна ошибка IME в полном прогоне
-`/home/ubu/.cache/lay/development/run-5cmbgvi1/RESULT.json`. Новый исходник,
+`/home/local-user/.cache/lay/development/run-5cmbgvi1/RESULT.json`. Новый исходник,
 физический Firefox и остальные браузеры на нём пока **NOT TESTED**. Runtime
 authority changed для этого эксперимента: **false до отдельной установки**.
 
 ### 2026-09-28 — Firefox: ответ на refresh и два Reset-перехода
 
 RequireSurroundingText после CommitText прошёл полный development gate:
-2934 selected, PASS (`/home/ubu/.cache/lay/development/run-ruqn_6uo/RESULT.json`),
+2934 selected, PASS (`/home/local-user/.cache/lay/development/run-ruqn_6uo/RESULT.json`),
 changed gate PASS с `gate_failures=0`
-(`/home/ubu/.cache/lay/development/firefox-postcommit-refresh-20260928/changed-gate.log`).
+(`/home/local-user/.cache/lay/development/firefox-postcommit-refresh-20260928/changed-gate.log`).
 IME SHA `0c4b9b0cbb0125c1ce0b92c1b64c66df08746c74efb63bd9ccd8ebd78f5b0191`
 установлена без перезапуска daemon/глобального IBus/L1.1/L3; receipt
-`/home/ubu/.cache/lay/development/firefox-postcommit-refresh-20260928/INSTALL.json`.
+`/home/local-user/.cache/lay/development/firefox-postcommit-refresh-20260928/INSTALL.json`.
 Runtime authority changed: **true**, только IME.
 
 В собственном Firefox textarea первое физическое `lay` при RU теперь даёт
@@ -2845,7 +2845,7 @@ RequireSurroundingText, что подтверждено трассой. При �
 `ibus_preedit=clear`, затем Reset с сохранённым билетом rereceipt; рабочий
 prefetch (`worker_generation=3`) стал `superseded`, а Space получил
 `prefetch_not_ready`. Receipt и trace:
-`/home/ubu/.cache/lay/development/firefox-postcommit-refresh-20260928/FIREFOX_TEXTAREA_3_FAIL.json`
+`/home/local-user/.cache/lay/development/firefox-postcommit-refresh-20260928/FIREFOX_TEXTAREA_3_FAIL.json`
 и `FIREFOX_TEXTAREA_3_FAIL.jsonl`.
 
 При диагностической паузе 500 мс то же второе слово уже стало `мир `, но
@@ -2868,18 +2868,18 @@ Space; они не доказывают сбой кандидата или Safet
 ### 2026-09-28 — точный Reset закрыт, Firefox задерживает финальный снимок
 
 Правка Reset прошла 2935 selected, PASS:
-`/home/ubu/.cache/lay/development/run-bzvl6udk/RESULT.json`;
+`/home/local-user/.cache/lay/development/run-bzvl6udk/RESULT.json`;
 архитектурный graph gate PASS:
-`/home/e/projects/lay-development-runner/firefox-reset-graph-20260928.log`.
+`/workspace/worker/lay-development-runner/firefox-reset-graph-20260928.log`.
 Установлена только IME SHA
 `a984b1ba8765fcf5fb53a866feaa22820b1bd354e9117ce94024245dfffd2cfb`;
-receipt `/home/ubu/.cache/lay/development/firefox-reset-refresh-20260928/INSTALL.json`.
+receipt `/home/local-user/.cache/lay/development/firefox-reset-refresh-20260928/INSTALL.json`.
 Runtime authority changed: **true**, только IME.
 
 В быстром собственном Firefox textarea первые `lay ` и EN подтвердились за
 25 мс. Второе физическое `vbh` заменилось на `мир `, но значок остался EN:
 полных переходов 1/20. Receipt и trace:
-`/home/ubu/.cache/lay/development/firefox-reset-refresh-20260928/FIREFOX_TEXTAREA_3_FAIL.json`
+`/home/local-user/.cache/lay/development/firefox-reset-refresh-20260928/FIREFOX_TEXTAREA_3_FAIL.json`
 и `FIREFOX_TEXTAREA_3_FAIL.jsonl`. На этом шаге Firefox прислал точный снимок
 после удаления (`lay `, cursor 4), но не финальный снимок после CommitText.
 Итог `pending_stale_observation` остался ожидающим. Прежний Reset после
@@ -2896,12 +2896,12 @@ CommitText здесь уже не наблюдался; word correction и Safet
 ### 2026-09-28 — Firefox не выдаёт финальный снимок после двух запросов
 
 Однократный повторный refresh прошёл 2936 selected, PASS:
-`/home/ubu/.cache/lay/development/run-zd80gemu/RESULT.json`;
+`/home/local-user/.cache/lay/development/run-zd80gemu/RESULT.json`;
 архитектурный graph gate PASS:
-`/home/e/projects/lay-development-runner/firefox-retry-graph-20260928.log`.
+`/workspace/worker/lay-development-runner/firefox-retry-graph-20260928.log`.
 IME SHA `448b48481e2a422a7276a55177cbee77a93a47e5ef672774668d3c3d2540149a`
 установлена отдельно; receipt
-`/home/ubu/.cache/lay/development/firefox-final-refresh-20260928/INSTALL.json`.
+`/home/local-user/.cache/lay/development/firefox-final-refresh-20260928/INSTALL.json`.
 Runtime authority changed: **true**, только IME.
 
 Физический собственный Firefox textarea дал `lay `, но режим RU: 0/20
@@ -2910,7 +2910,7 @@ Runtime authority changed: **true**, только IME.
 SetSurroundingText (`text_chars=3, cursor=0`). Точного финального
 SetSurroundingText не пришло в течение 1,2 с, хотя DOM показывает `lay `.
 Receipt и trace:
-`/home/ubu/.cache/lay/development/firefox-final-refresh-20260928/FIREFOX_TEXTAREA_3_FAIL.json`
+`/home/local-user/.cache/lay/development/firefox-final-refresh-20260928/FIREFOX_TEXTAREA_3_FAIL.json`
 и `FIREFOX_TEXTAREA_3_FAIL.jsonl`. Это ограниченный вывод для этого поля;
 не доказано, что все версии Firefox или все поля ведут себя так же.
 
@@ -2927,11 +2927,11 @@ Firefox на этой правке: **NOT TESTED**. Runtime authority changed:
 ### 2026-09-28 — IME-owned preedit: восемь подтверждённых переходов, затем stale snapshot
 
 Маршрут preedit с точной наблюдённой границей прошёл 2937 selected, PASS:
-`/home/ubu/.cache/lay/development/run-3k12kw6c/RESULT.json`;
-graph gate PASS: `/home/e/projects/lay-development-runner/exact-preedit-graph-20260928.log`.
+`/home/local-user/.cache/lay/development/run-3k12kw6c/RESULT.json`;
+graph gate PASS: `/workspace/worker/lay-development-runner/exact-preedit-graph-20260928.log`.
 Установлена только IME SHA
 `2d59b67aef76bd66dd26d0e892cf848f605b6add210242555ad8c16aae5647d4`;
-receipt `/home/ubu/.cache/lay/development/exact-boundary-preedit-20260928/INSTALL.json`.
+receipt `/home/local-user/.cache/lay/development/exact-boundary-preedit-20260928/INSTALL.json`.
 Runtime authority changed: **true**, только IME.
 
 В собственном Firefox textarea физическое чередование трёхбуквенных слов
@@ -2944,7 +2944,7 @@ Runtime authority changed: **true**, только IME.
 1,2 с не было. Следовательно, решение и применение слова прошли, а layout
 sync остался правильно заблокирован на неподтверждённом postcondition.
 Receipt и trace:
-`/home/ubu/.cache/lay/development/exact-boundary-preedit-20260928/FIREFOX_TEXTAREA_3_FAIL.json`
+`/home/local-user/.cache/lay/development/exact-boundary-preedit-20260928/FIREFOX_TEXTAREA_3_FAIL.json`
 и `FIREFOX_TEXTAREA_3_FAIL.jsonl`. GTK, Kitty и другие браузеры на этих байтах:
 **NOT TESTED**.
 
@@ -2958,19 +2958,19 @@ authority changed для этой правки: **false до отдельной 
 
 Однократный refresh для ожидающего результата IME-owned preedit прошёл
 636 targeted IME tests, PASS:
-`/home/ubu/.cache/lay/development/run-_sy8k9qo/RESULT.json`;
+`/home/local-user/.cache/lay/development/run-_sy8k9qo/RESULT.json`;
 graph gate PASS:
-`/home/e/projects/lay-development-runner/active-preedit-refresh-graph-20260928.log`.
+`/workspace/worker/lay-development-runner/active-preedit-refresh-graph-20260928.log`.
 Полный исходный gate на этих байтах: **NOT TESTED**. Установлена только IME
 SHA `212cad5eec2b07c49fd6e46960b396dde22cf55a63bfd8f1a9496bcd166719d4`;
-receipt `/home/ubu/.cache/lay/development/active-preedit-refresh-20260928/INSTALL.json`.
+receipt `/home/local-user/.cache/lay/development/active-preedit-refresh-20260928/INSTALL.json`.
 Runtime authority changed: **true**, только IME.
 
 Физический ввод с проверкой слова и RU/EN после каждого Space: Firefox
 textarea и contenteditable по 20/20 для 3 и 4 букв (80/80), Chrome textarea
 и contenteditable так же 80/80, GTK4 Entry 20/20 для каждой длины (40/40),
 Qt QLineEdit 20/20 для 3 букв. Receipts:
-`/home/ubu/.cache/lay/development/active-preedit-refresh-20260928/*_PASS.json`.
+`/home/local-user/.cache/lay/development/active-preedit-refresh-20260928/*_PASS.json`.
 Трасса Firefox textarea 3 букв содержит четыре реальных
 `requested_after_intermediate_snapshot`; один из сценариев ранее падал на
 девятом слове. Это подтверждает срабатывание read-only механизма в данном
@@ -2979,7 +2979,7 @@ Qt QLineEdit 20/20 для 3 букв. Receipts:
 Qt QLineEdit 4 букв подтвердил первые 10/20, затем видимое `work ` осталось
 при режиме RU. После `CommitText` не пришёл ни один SetSurroundingText; далее
 Qt прислал Reset и сменил input context. Receipt и trace:
-`/home/ubu/.cache/lay/development/active-preedit-refresh-20260928/QT_4_FAIL.json`
+`/home/local-user/.cache/lay/development/active-preedit-refresh-20260928/QT_4_FAIL.json`
 и `QT_4_FAIL.jsonl`. Tor на пользовательском профиле: **NOT TESTED** —
 существующий Tor Browser ответил, что не отвечает; этот процесс не завершали.
 Kitty на этих байтах: **NOT TESTED**.
@@ -2994,12 +2994,12 @@ Kitty на этих байтах: **NOT TESTED**.
 
 Немедленный `RequireSurroundingText` после IME-owned CommitText прошёл
 636 targeted IME tests, PASS:
-`/home/ubu/.cache/lay/development/run-41h80d6w/RESULT.json`;
+`/home/local-user/.cache/lay/development/run-41h80d6w/RESULT.json`;
 graph gate PASS:
-`/home/e/projects/lay-development-runner/qt-preedit-request-graph-20260928.log`.
+`/workspace/worker/lay-development-runner/qt-preedit-request-graph-20260928.log`.
 Полный исходный gate: **NOT TESTED**. Установлена только IME SHA
 `d777df7c3c356a949a345960c963ca3bd6a94830297acf8d593b26746abba2f6`;
-receipt `/home/ubu/.cache/lay/development/qt-preedit-request-20260928/INSTALL.json`.
+receipt `/home/local-user/.cache/lay/development/qt-preedit-request-20260928/INSTALL.json`.
 Runtime authority changed: **true**, только IME.
 
 В собственном Qt QLineEdit на четырёхбуквенной последовательности вновь
@@ -3007,7 +3007,7 @@ Runtime authority changed: **true**, только IME.
 доказывает успешную отправку `requested_after_owned_preedit_commit`, за которой
 не последовало SetSurroundingText; далее пришли Reset и FocusOut/FocusIn
 input context. Receipt и trace:
-`/home/ubu/.cache/lay/development/qt-preedit-request-20260928/QT_4_FAIL.json`
+`/home/local-user/.cache/lay/development/qt-preedit-request-20260928/QT_4_FAIL.json`
 и `QT_4_FAIL.jsonl`. Другие окна на этой SHA: **NOT TESTED**. Отсутствие
 ответа Qt нельзя чинить новым утверждением об успешном отображении слова.
 
@@ -3024,18 +3024,18 @@ authority changed: **false до установки**.
 ### 2026-09-28 — forward mode проходит Qt, затем обнаружен stale InputMode
 
 Forward-mode вариант прошёл 636 targeted IME tests, PASS:
-`/home/ubu/.cache/lay/development/run-ooxub323/RESULT.json`;
-graph gate PASS: `/home/e/projects/lay-development-runner/forward-layout-graph-20260928.log`.
+`/home/local-user/.cache/lay/development/run-ooxub323/RESULT.json`;
+graph gate PASS: `/workspace/worker/lay-development-runner/forward-layout-graph-20260928.log`.
 Полный исходный gate на этих байтах: **NOT TESTED**. Установлена только IME
 SHA `9f8aada2f7ce00219e60df4f465be4bf6b9a62164bd465919bf0f6b7ec319fe4`;
-receipt `/home/ubu/.cache/lay/development/forward-layout-20260928/INSTALL.json`.
+receipt `/home/local-user/.cache/lay/development/forward-layout-20260928/INSTALL.json`.
 Runtime authority changed: **true**, только IME.
 
 Физический Qt QLineEdit 3/4 букв прошёл 40/40, включая прежний отказ на
 одиннадцатом четырёхбуквенном слове `work`. Firefox textarea/contenteditable
 на изолированном атомарном браузерном измерителе прошёл 80/80, Chrome textarea
 40/40, Chrome contenteditable 3 буквы 20/20. Receipts в
-`/home/ubu/.cache/lay/development/forward-layout-20260928/` с префиксами
+`/home/local-user/.cache/lay/development/forward-layout-20260928/` с префиксами
 `QT_`, `FF2_`, `CH2_`. Ранний обрыв старого браузерного измерителя был вызван
 несколькими собственными окнами, писавшими в один неатомарный JSON; новый
 измеритель использует отдельный ID поля, точный FocusedWindowInfo и атомарную
@@ -3046,7 +3046,7 @@ GNOME и IBus выбрали `lay-ime-us`, но `CurrentInputMode` остава�
 1,2 с. Trace показывает готовую активацию нового US engine и последующие два
 SetSurroundingText. Это отдельный разрыв публикации свойства `InputMode`, а
 не отказ Candidate/AuthorizedEdit. Receipt и trace:
-`/home/ubu/.cache/lay/development/forward-layout-20260928/CH2_EDITABLE_4_MODE_RACE.json`
+`/home/local-user/.cache/lay/development/forward-layout-20260928/CH2_EDITABLE_4_MODE_RACE.json`
 и `CH2_EDITABLE_4_MODE_RACE.jsonl`. GTK, Kitty и Tor на этих байтах:
 **NOT TESTED**.
 
@@ -3059,9 +3059,9 @@ SetSurroundingText. Это отдельный разрыв публикации 
 Первая широкая версия, которая публиковала свойство на каждом новом focus
 serial, провалила 20 исходных fixture-тестов: она добавляла лишний D-Bus
 эффект в source-free маршруте. Receipt:
-`/home/ubu/.cache/lay/development/run-kiif4_7n/RESULT.json`. Узкая версия
+`/home/local-user/.cache/lay/development/run-kiif4_7n/RESULT.json`. Узкая версия
 после `Transfer` прошла 636/636 тестов IME; receipt:
-`/home/ubu/.cache/lay/development/run-6ihknknn/RESULT.json`.
+`/home/local-user/.cache/lay/development/run-6ihknknn/RESULT.json`.
 Физический результат узкой версии, полный исходный gate и graph gate:
 **NOT TESTED** на момент записи. Runtime authority changed: **false до
 установки**. Исходный отказ относится к публикации режима после смены
@@ -3071,24 +3071,24 @@ serial, провалила 20 исходных fixture-тестов: она до
 
 Узкая повторная публикация `InputMode` прошла полный исходный gate:
 2938 тестов, PASS,
-`/home/ubu/.cache/lay/development/run-m04_2lvt/RESULT.json`;
+`/home/local-user/.cache/lay/development/run-m04_2lvt/RESULT.json`;
 graph gate PASS:
-`/home/e/projects/lay-development-runner/input-mode-property-graph2-20260928.log`.
+`/workspace/worker/lay-development-runner/input-mode-property-graph2-20260928.log`.
 Первая попытка полного gate останавливалась на production-сборке из-за
 тестового `cfg` экспорта `ObservationReceipt`; экспорт исправлен до PASS.
 IME SHA `1fcd833b0c8d3840951b1a000c9a81f4a7428ef0010c7ce59e8cd792047c0c14`
 установлен только через IME channel; receipt:
-`/home/ubu/.cache/lay/development/input-mode-property-20260928/INSTALL.json`.
+`/home/local-user/.cache/lay/development/input-mode-property-20260928/INSTALL.json`.
 Runtime authority changed: **true, только IME**. Chrome contenteditable и
 textarea на чередующихся трёх- и четырёхбуквенных словах прошли 80/80,
 включая прежний отказ `game`; receipts
-`/home/ubu/.cache/lay/development/known-boundary-preedit-20260928/BROWSER_chrome_*_ALTERNATING_*.json`.
+`/home/local-user/.cache/lay/development/known-boundary-preedit-20260928/BROWSER_chrome_*_ALTERNATING_*.json`.
 
 В новом Firefox textarea первое `дфн` → `lay ` было видимо правильно, но режим
 остался RU дольше 1,2 с: 0/20 по требованию полного перехода. Receipt:
-`/home/ubu/.cache/lay/development/input-mode-property-20260928/FIREFOX_TEXTAREA_3_FIRST_FAIL.json`;
+`/home/local-user/.cache/lay/development/input-mode-property-20260928/FIREFOX_TEXTAREA_3_FIRST_FAIL.json`;
 trace:
-`/home/ubu/.cache/lay/development/input-mode-property-20260928/FIREFOX_TEXTAREA_3_FIRST_FAIL.jsonl`.
+`/home/local-user/.cache/lay/development/input-mode-property-20260928/FIREFOX_TEXTAREA_3_FIRST_FAIL.jsonl`.
 Trace содержит `ImeAutocorrect` → `AuthorizedEdit`, точный
 `surrounding_text_immediate_delete_commit`, `CommitText("lay ")`, затем лишь
 промежуточное наблюдение удаления. Два успешных read-only
@@ -3099,7 +3099,7 @@ Trace содержит `ImeAutocorrect` → `AuthorizedEdit`, точный
 
 IME восстановлен до SHA `9f8aada2f7ce00219e60df4f465be4bf6b9a62164bd465919bf0f6b7ec319fe4`;
 receipt:
-`/home/ubu/.cache/lay/development/input-mode-property-20260928/ROLLBACK_AFTER_FIREFOX.json`.
+`/home/local-user/.cache/lay/development/input-mode-property-20260928/ROLLBACK_AFTER_FIREFOX.json`.
 Runtime authority changed: **true, IME возвращён**. Остальные окна на SHA
 `1fcd833...`: **NOT TESTED** после первого отказа Firefox.
 
@@ -3115,25 +3115,25 @@ authority changed: **false до установки**.
 ### 2026-09-28 — GNOME выбрал Lay EN, IBus сохранил системный US
 
 Forward exact autocorrect прошёл 637/637 тестов IME:
-`/home/ubu/.cache/lay/development/run-m4nx1eup/RESULT.json`;
+`/home/local-user/.cache/lay/development/run-m4nx1eup/RESULT.json`;
 graph gate PASS:
-`/home/e/projects/lay-development-runner/forward-exact-autocorrect-graph-20260928.log`.
+`/workspace/worker/lay-development-runner/forward-exact-autocorrect-graph-20260928.log`.
 Тестовый manifest пополнен одним новым тестом и перебинджен с
 `known_failures.json`; первая попытка полного gate остановилась именно на
 drift реестра, до выполнения тестов. После обновления реестра полный gate
-прошёл 2939 тестов: `/home/ubu/.cache/lay/development/run-bh3bd76i/RESULT.json`.
+прошёл 2939 тестов: `/home/local-user/.cache/lay/development/run-bh3bd76i/RESULT.json`.
 IME SHA
 `c07c0b9ddb979f1c2cb6f813abc5845e49372eaf71020de8cd0847c009e4721e`
 временно установлен только через IME channel; receipt:
-`/home/ubu/.cache/lay/development/forward-exact-autocorrect-20260928/INSTALL.json`.
+`/home/local-user/.cache/lay/development/forward-exact-autocorrect-20260928/INSTALL.json`.
 Runtime authority changed: **true, только IME**.
 
 В новом Firefox textarea первое `дфн` → `lay ` стало видимым, GNOME и
 `CurrentInputMode` показывали US, но `ibus engine` остался `xkb:us::eng`.
 Тест остановлен до следующего слова: 0/20 подтверждённых переходов. Receipt:
-`/home/ubu/.cache/lay/development/forward-exact-autocorrect-20260928/FIREFOX_TEXTAREA_3_FIRST_FAIL.json`;
+`/home/local-user/.cache/lay/development/forward-exact-autocorrect-20260928/FIREFOX_TEXTAREA_3_FIRST_FAIL.json`;
 trace:
-`/home/ubu/.cache/lay/development/forward-exact-autocorrect-20260928/FIREFOX_TEXTAREA_3_FIRST_FAIL.jsonl`.
+`/home/local-user/.cache/lay/development/forward-exact-autocorrect-20260928/FIREFOX_TEXTAREA_3_FIRST_FAIL.jsonl`.
 Trace подтвердил `authorized_surrounding_autocorrect_forward_mode`, затем
 `in_flight_context_conflict` при переключении GNOME. Проверенное ручное
 выполнение уже существующей операции `ibus engine lay-ime-us` восстановило
@@ -3143,7 +3143,7 @@ Trace подтвердил `authorized_surrounding_autocorrect_forward_mode`, з
 
 IME восстановлен до SHA `9f8aada2f7ce00219e60df4f465be4bf6b9a62164bd465919bf0f6b7ec319fe4`;
 receipt:
-`/home/ubu/.cache/lay/development/forward-exact-autocorrect-20260928/ROLLBACK_AFTER_FIREFOX.json`.
+`/home/local-user/.cache/lay/development/forward-exact-autocorrect-20260928/ROLLBACK_AFTER_FIREFOX.json`.
 Runtime authority changed: **true, IME возвращён**. Остальные окна на SHA
 `c07c0b9...`: **NOT TESTED** после первого отказа Firefox.
 
@@ -3165,28 +3165,28 @@ Chrome textarea/contenteditable, GTK Entry, Qt QLineEdit и Kitty. В каждо
 общие наборы с `lay`, `max`, `work`, `game` и парными русскими словами.
 
 Измерено: targeted IME 637/637 PASS:
-`/home/ubu/.cache/lay/development/run-lenhw45u/RESULT.json`;
+`/home/local-user/.cache/lay/development/run-lenhw45u/RESULT.json`;
 полный исходный gate 2939 PASS:
-`/home/ubu/.cache/lay/development/run-v0jwhi5k/RESULT.json`;
+`/home/local-user/.cache/lay/development/run-v0jwhi5k/RESULT.json`;
 graph gate PASS:
-`/home/e/projects/lay-development-runner/layout-stack-sync-graph-20260928.log`.
+`/workspace/worker/lay-development-runner/layout-stack-sync-graph-20260928.log`.
 IME SHA `58dcaacc5c1d403f095fb94aa9d88080a566361a3d4198ee3eb319cbc45accb5`
 установлен только через IME channel, receipt:
-`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/INSTALL.json`.
+`/home/local-user/.cache/lay/development/layout-stack-sync-20260928/INSTALL.json`.
 Runtime authority changed: **true, только IME**. Процессы демона, IBus,
 L1.1 и L3 остались прежними по receipt установщика.
 
 Физические итоги на этой SHA: Firefox 80/80, Chrome 80/80, GTK 40/40,
 Qt 40/40, Kitty 40/40; всего **280/280** подтверждённых переходов.
 Полный список 14 отдельных receipts, SHA каждого и статус:
-`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/ACCEPTANCE.json`.
+`/home/local-user/.cache/lay/development/layout-stack-sync-20260928/ACCEPTANCE.json`.
 Ранее воспроизведённые Firefox `дфн` → `lay ` без смены режима и Chrome
 `game ` с устаревшим InputMode на этих тестовых полях не повторились.
 
 Что не проверено: Tor Browser. Новый изолированный профиль остановился на
 странице `Connect to Tor`: доступный диалог `Tor Launcher` сообщил `Tor exited
 during startup`. Локальный тестовый URL не открылся; receipt:
-`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/TOR_ATTEMPT.json`.
+`/home/local-user/.cache/lay/development/layout-stack-sync-20260928/TOR_ATTEMPT.json`.
 Все собственные тестовые процессы Tor закрыты, пользовательский процесс
 PID 776563 не завершали. Собственные тестовые окна Firefox/Chrome/Kitty и
 два локальных браузерных сервера после записи receipts тоже закрыты.
@@ -3207,7 +3207,7 @@ Space-теста. Вердикт: **PASS на перечисленных тес�
 и `CurrentInputMode`; все восемь переходов прошли за 60–179 мс после второй
 клавиши. Изолированный daemon завершился штатно, основного PID не меняли.
 Точный receipt:
-`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/EIGHT_SHIFT_ATTACHED_KITTY.json`.
+`/home/local-user/.cache/lay/development/layout-stack-sync-20260928/EIGHT_SHIFT_ATTACHED_KITTY.json`.
 
 Первый вспомогательный опыт не был проверкой демона: тестовый uinput создан
 после запуска основного daemon, который перечисляет клавиатуры только при
@@ -3218,9 +3218,9 @@ tail: трасса содержала 12 символов после повто�
 добавил явную границу Enter, получил полный tail из шести символов и
 **8/8 PASS**. Эти два неудачных вспомогательных опыта не являются регрессией
 переключения. Журнал итогового отдельного daemon:
-`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/EIGHT_SHIFT_ATTACHED_DAEMON.log`;
+`/home/local-user/.cache/lay/development/layout-stack-sync-20260928/EIGHT_SHIFT_ATTACHED_DAEMON.log`;
 снимок трассы IME:
-`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/EIGHT_SHIFT_ATTACHED_IME.jsonl`.
+`/home/local-user/.cache/lay/development/layout-stack-sync-20260928/EIGHT_SHIFT_ATTACHED_IME.jsonl`.
 
 Что не проверено: восемь Double Shift на физической клавиатуре и в остальных
 окнах, а также Tab и удержание Shift на этой SHA. Вердикт этого опыта:
@@ -3238,12 +3238,12 @@ daemon и uinput завершены, исходные процессы daemon/IB
 подсказки отдельным экранным снимком не проверяли. Firefox: перед Tab DOM
 сообщил композицию `почему` с курсором 1, после Tab — обычный текст
 `почему ` с курсором 7 и прежним фокусом. Точные receipts:
-`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/GTK_TAB_SHIFT.json`,
-`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/FIREFOX_TAB.json`;
+`/home/local-user/.cache/lay/development/layout-stack-sync-20260928/GTK_TAB_SHIFT.json`,
+`/home/local-user/.cache/lay/development/layout-stack-sync-20260928/FIREFOX_TAB.json`;
 снимок GTK IME трассы:
-`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/GTK_TAB_SHIFT_IME.jsonl`;
+`/home/local-user/.cache/lay/development/layout-stack-sync-20260928/GTK_TAB_SHIFT_IME.jsonl`;
 DOM события Firefox:
-`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/firefox-tab-owned/FIREFOX-DOM-EVENTS.json`.
+`/home/local-user/.cache/lay/development/layout-stack-sync-20260928/firefox-tab-owned/FIREFOX-DOM-EVENTS.json`.
 
 Что не проверено: Tab и удержанный Shift в WhatsApp, GitHub, Tor, WPS,
 Chrome и Qt; удержанный Shift в Firefox. Вердикт: **PASS только в названных
@@ -3269,10 +3269,10 @@ Tor `contenteditable` представлял часть пробелов как 
 строке receipt. Первый отказ проверки такого поля был только несовпадением
 формата пробела в тестовом сравнении: слово `lay` и переход RU→EN уже тогда
 были верны. Исходный маршрут текста не менялся. Точный Tor receipt:
-`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/TOR_ALTERNATING.json`.
+`/home/local-user/.cache/lay/development/layout-stack-sync-20260928/TOR_ALTERNATING.json`.
 Новый агрегат проверяет SHA всех 15 receipts: **360/360 PASS** в локальных
 полях Firefox, Chrome, Tor, GTK, Qt и Kitty:
-`/home/ubu/.cache/lay/development/layout-stack-sync-20260928/ACCEPTANCE_ALL_CLIENTS.json`.
+`/home/local-user/.cache/lay/development/layout-stack-sync-20260928/ACCEPTANCE_ALL_CLIENTS.json`.
 
 Что не проверено: конкретные поля пользовательского Tor, WhatsApp, GitHub
 issue и WPS на этой SHA; Tor Tab, удержанный Shift и восемь Double Shift.
@@ -3284,7 +3284,7 @@ Tor процесс закрыт, пользовательский PID остал
 
 ## Этап 3, 2026-10-04: managed mirror без SurroundingText — source candidate NOT_RUN
 
-В checkout `/home/ubu/projects/lay-ranker-release-20261004`, HEAD `79b09d06`,
+В checkout `/workspace/local/lay-ranker-release-20261004`, HEAD `79b09d06`,
 установленная экспериментальная 78 с C09 IME SHA
 `71ad8f2e5a2d72df813881c89a5a26085ce8d047a1df60d2f98597d26dbd69f6`
 дала тот же первый C03 разрыв в Gost textarea и editable. При caps9
@@ -3294,7 +3294,7 @@ Backspace сокращает его 21→20, хотя owned browser readback п�
 отказывает в `context_authority` до плана и verifier; этот отказ корректен.
 Полный native selection/empty receipt и более глубокий admission predicate
 из этой трассы не доказаны. Measured receipt:
-`/home/ubu/.cache/lay/development/ranker-release-20261004/windows/GOST_MANUAL_OWNER_CAUSAL_AUDIT.md`,
+`/home/local-user/.cache/lay/development/ranker-release-20261004/windows/GOST_MANUAL_OWNER_CAUSAL_AUDIT.md`,
 SHA `ba6fdd911b3990b38dcdffb9ee71c2c6897bd21464b0bb9cec8919be28bfeefd`.
 
 Кандидат расширяет только существующий command guard в `managed.rs`: при
@@ -3365,7 +3365,7 @@ existing verifier and require independent owned-word/current-token/selection
 proof before extending any append grant. No C06 source repair or authority
 change follows from this read-only audit.
 
-Receipt `/home/ubu/.cache/lay/development/ranker-release-20261004/windows/FIREFOX_SECOND_WORD_TAB_CAUSAL_AUDIT.md`,
+Receipt `/home/local-user/.cache/lay/development/ranker-release-20261004/windows/FIREFOX_SECOND_WORD_TAB_CAUSAL_AUDIT.md`,
 SHA `36a7a47904ec4b0d9a115b7e5b85f2a75604fef08c9a8a2215233317bfd749c9`;
 source C09 immutable managed/observation bytes are bound to installed IME
 `71ad8f2e…dbd69f6`. Runtime bytes/authority changed: false. Changed-byte source
@@ -3420,7 +3420,7 @@ transitions show word/native GNOME icon before next pair, correct next letter,
 first/second Tab exactly one space, held Shift. Qt held-Shift proof retains
 explicit Escape settlement, not every active-preedit shortcut scenario.
 Gost contenteditable setup BLOCKED before input by OWNER_BIND_TIMEOUT; this
-is not physical PASS. Exact receipt `/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V8_RUN_20261004T124423_bb1e553d2a8d/WIDE_MATRIX_V7_20261004T124423_bb1e553d2a8d.json`, binding BOUND;
+is not physical PASS. Exact receipt `/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V8_RUN_20261004T124423_bb1e553d2a8d/WIDE_MATRIX_V7_20261004T124423_bb1e553d2a8d.json`, binding BOUND;
 unconditional own device teardown and global IBus preservation confirmed.
 Live direct guard-entry tuple is still not exported; physical repair plus
 source/callback proofs establish this tested sequence, not all client states.
@@ -3432,10 +3432,10 @@ remains paused.
 ## Additional C03 physical/setup evidence 2026-10-04T10:02:45.851519+00:00
 
 Installed byte identity remains `a1bdffe…baee`. These results do not promote all-window acceptance.
-- `/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V9_RUN_20261004T124859_73b2e1520ed5/WIDE_MATRIX_V7_20261004T124859_73b2e1520ed5.json`: 0/0 PASS; 8 BLOCKED; BOUND, own teardown/global IBus preserved.
-- `/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V9_RUN_20261004T125101_558d61b342d8/WIDE_MATRIX_V7_20261004T125101_558d61b342d8.json`: 2/8 PASS; 0 BLOCKED; BOUND, own teardown/global IBus preserved.
-- `/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T125525_943d930b82f5/WIDE_MATRIX_V7_20261004T125525_943d930b82f5.json`: 0/0 PASS; 1 BLOCKED; BOUND, own teardown/global IBus preserved.
-- `/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T125719_5b9235682f7f/WIDE_MATRIX_V7_20261004T125719_5b9235682f7f.json`: 32/35 PASS; 0 BLOCKED; BOUND, own teardown/global IBus preserved.
+- `/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V9_RUN_20261004T124859_73b2e1520ed5/WIDE_MATRIX_V7_20261004T124859_73b2e1520ed5.json`: 0/0 PASS; 8 BLOCKED; BOUND, own teardown/global IBus preserved.
+- `/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V9_RUN_20261004T125101_558d61b342d8/WIDE_MATRIX_V7_20261004T125101_558d61b342d8.json`: 2/8 PASS; 0 BLOCKED; BOUND, own teardown/global IBus preserved.
+- `/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T125525_943d930b82f5/WIDE_MATRIX_V7_20261004T125525_943d930b82f5.json`: 0/0 PASS; 1 BLOCKED; BOUND, own teardown/global IBus preserved.
+- `/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T125719_5b9235682f7f/WIDE_MATRIX_V7_20261004T125719_5b9235682f7f.json`: 32/35 PASS; 0 BLOCKED; BOUND, own teardown/global IBus preserved.
 
 GNOME Text Editor fresh standalone X11 automatic/forced IBus: exact own-XID activation succeeds. Escape-clean setup cannot observe preedit/composition, so8cases BLOCKED before keys. Separate raw run firstTab PASS both fields; next3cases each fail already at Ctrl+A/Backspace setup: previous `почему ` loses one character, not entire field. Their Tab/held/DoubleShift actions were not reached. This is a shortcut/clear first-transition audit, not three independent functional regressions. Default Wayland is NOT_TESTED by X11 evidence.
 Gedit standalone X11 owner-tree discovery exceeds its bound before keyboard input:0executed/1BLOCKED. No partial tree accepted or user document touched.
@@ -3445,9 +3445,9 @@ Metadata-only capture `C03_SPACE_WIRE_20261004_A/CAPTURE_RECEIPT.json` observed1
 
 ## C03 fresh GNOME/manual and browser negative proof 2026-10-04T10:15:48.892466+00:00
 
-`/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T125951_4e2ac0f46807/WIDE_MATRIX_V7_20261004T125951_4e2ac0f46807.json`: fresh separate GNOME X11 automatic/forced IBus fields, only Double Shift case requested to avoid earlier clear cascade.0/2PASS. Pair1 AT-SPI text reports `gпривет`, RU native icon/source/engine correct; diagnostic physical nextKEY_F reports `gпривета`. Rendered pixels and committed/preedit separation remain UNKNOWN; this is a current accessible-text failure, not a proven committed-duplicate cause. Exact raw traces are under that receipt; source ownership/commit/preedit path audit follows. Own app/device cleanup and global IBus preservation confirmed.
+`/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T125951_4e2ac0f46807/WIDE_MATRIX_V7_20261004T125951_4e2ac0f46807.json`: fresh separate GNOME X11 automatic/forced IBus fields, only Double Shift case requested to avoid earlier clear cascade.0/2PASS. Pair1 AT-SPI text reports `gпривет`, RU native icon/source/engine correct; diagnostic physical nextKEY_F reports `gпривета`. Rendered pixels and committed/preedit separation remain UNKNOWN; this is a current accessible-text failure, not a proven committed-duplicate cause. Exact raw traces are under that receipt; source ownership/commit/preedit path audit follows. Own app/device cleanup and global IBus preservation confirmed.
 
-`/home/ubu/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T130939_2391832ad083/WIDE_MATRIX_V7_20261004T130939_2391832ad083.json`: browser forbidden-prefix proof in Chrome/Firefox input/textarea/contenteditable119PASS/120attempted,0BLOCKED. One reported FAIL at Chrome input after-word `@g` occurs already in initial mode settlement, before that token is typed; not a observed forbidden hint. Other119 checks preserve expected text and no observable IME preedit for digits/special prefixes in first/later words. No all120PASS claim or all-window promotion. Installed bytes remain C03 `a1bdffe…baee`. Runtime policy/authority unchanged; no model fit.
+`/home/local-user/.cache/lay/development/ranker-release-20261004/windows/V10_RUN_20261004T130939_2391832ad083/WIDE_MATRIX_V7_20261004T130939_2391832ad083.json`: browser forbidden-prefix proof in Chrome/Firefox input/textarea/contenteditable119PASS/120attempted,0BLOCKED. One reported FAIL at Chrome input after-word `@g` occurs already in initial mode settlement, before that token is typed; not a observed forbidden hint. Other119 checks preserve expected text and no observable IME preedit for digits/special prefixes in first/later words. No all120PASS claim or all-window promotion. Installed bytes remain C03 `a1bdffe…baee`. Runtime policy/authority unchanged; no model fit.
 
 
 ## C06 observed-start append proof imported; NOT_INSTALLED — 2026-10-04T10:17:23.595665+00:00
@@ -3480,7 +3480,7 @@ bytes or authority policy changed by this source import. Research paused.
 
 ## C09 focused proof failure and bounded fixture replanning — 2026-10-04
 
-Actual continuation `/home/e/projects/lay-development-runner/ranker-release-20261004-c09-mode-continuation-O3I6VHDV/C09_FOCUSED_EXECUTION.json`: fmt PASS, 652 discovered, two actual native release callback positives PASS. The third negative fixture panicked at `context_owner.unwrap()` before its stale-owner assertion; fourth was not executed. `start_source_free_unknown` prepares but does not install engine authority. This is a fixture preparation failure, not a passing negative proof. Earlier temporary-borrow compiler failure is retained; no further unreported repair pass.
+Actual continuation `/workspace/worker/lay-development-runner/ranker-release-20261004-c09-mode-continuation-O3I6VHDV/C09_FOCUSED_EXECUTION.json`: fmt PASS, 652 discovered, two actual native release callback positives PASS. The third negative fixture panicked at `context_owner.unwrap()` before its stale-owner assertion; fourth was not executed. `start_source_free_unknown` prepares but does not install engine authority. This is a fixture preparation failure, not a passing negative proof. Earlier temporary-borrow compiler failure is retained; no further unreported repair pass.
 
 Explicit replan: retain the unchanged bounded C09 production proposal, use the existing activation-install path to establish an asserted live owner before negative corruption, and establish installed pending publication without draining it before transport-failure injection. Compare preparation through an actual release callback with the direct existing installation path; choose the latter for the transport-failure fixture to avoid falsely consuming the pending flag. Native SourceFree/Transfer positive fixtures retain actual production callback and output ordering. No new reducer/owner/callback/timer or bypass is added; all stale-owner and failed-transport assertions remain required. Controlled removal of the publication must fail a positive fixture. Four nonzero focused positives, existing canonical closure, original style policy and fresh graph/canon precede one combined IME build.
 
@@ -3519,7 +3519,7 @@ Latest user clarifies the live Firefox failure trigger: ordinary Tab works now, 
 
 ## Combined source gate first pass: style failure before canonical/build — 2026-10-04
 
-Actual frozen combined1458-file source stage `/home/e/projects/lay-development-runner/ranker-release-20261004-combined-c06-c09-0j6crwhh/PIPELINE_EXECUTION.json`: canonical inventory discovery PASS (all old rows literal,9 added), default strict original style Clippy FAIL at five concrete sites; no canonical correctness test or release build executed. Total53.91s, discovery29.95s. Findings: now-unused ObservationReceipt re-export after C09 consumer replacement; three C06 Option early-return let-else sites; one unnecessary &source argument in a borrowed-engine test helper. No runtime bytes/authority changed.
+Actual frozen combined1458-file source stage `/workspace/worker/lay-development-runner/ranker-release-20261004-combined-c06-c09-0j6crwhh/PIPELINE_EXECUTION.json`: canonical inventory discovery PASS (all old rows literal,9 added), default strict original style Clippy FAIL at five concrete sites; no canonical correctness test or release build executed. Total53.91s, discovery29.95s. Findings: now-unused ObservationReceipt re-export after C09 consumer replacement; three C06 Option early-return let-else sites; one unnecessary &source argument in a borrowed-engine test helper. No runtime bytes/authority changed.
 
 First mechanical repair pass is permitted: make the obsolete re-export test-only if still required by tests, replace the exact None-return sites with equivalent Option ?, and remove only the redundant test reference. No lint waiver or suppression is added, no semantic assertion weakened, and no owner/token/lease/display/decoder/ranker behavior changes. Candidate retention/ranks/false authority/deadlines/caches/packages/learning/concurrency/failure rollback remain semantically identical. Rebind exact changed bytes plus owning docs, continue the original two style commands then full selected canonical IME, mandatory graph/canon and onlyIME build. Reuse inventory discovery only if names/manifest semantics remain unchanged. No silent repair loop or zero-test PASS.
 
@@ -3690,18 +3690,18 @@ Decision `decisions/2026-10-04-preedit-suggestion-visual-boundary.json` records 
 
 ### Visual-boundary source proof and final pipeline freeze — 2026-10-04
 
-Root imported six remote-formatted files with exact SHA/mode0664, ROOT_FORMAT_IMPORT.json; only two files changed under rustfmt. Independent finite review of all six files and actual legacy raw-attribute assertion is PASS_WITH_LIMITS, zero blockers. Ten exact production-focused tests passed; controlled publisher suggestion_start=0 produced two required FAILs: direct publisher whole range0..6 instead of neutral0..2/hint2..6, and actual legacy wire whole0..3 instead of neutral0..1/hint1..3. Exact restored source hashes and modes produced2/2PASS. This is a controlled reproduction of the old rendering boundary, not a historical runtime rerun. Execution42.977s: `/home/ubu/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/focused/proof/FOCUSED_EXECUTION.json` SHAe966ca5ce38ad5b53798410f1bd8bc4de9793f824235169490a42f1c8f829b47. Original manifest/ledger remain unchanged.
+Root imported six remote-formatted files with exact SHA/mode0664, ROOT_FORMAT_IMPORT.json; only two files changed under rustfmt. Independent finite review of all six files and actual legacy raw-attribute assertion is PASS_WITH_LIMITS, zero blockers. Ten exact production-focused tests passed; controlled publisher suggestion_start=0 produced two required FAILs: direct publisher whole range0..6 instead of neutral0..2/hint2..6, and actual legacy wire whole0..3 instead of neutral0..1/hint1..3. Exact restored source hashes and modes produced2/2PASS. This is a controlled reproduction of the old rendering boundary, not a historical runtime rerun. Execution42.977s: `/home/local-user/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/focused/proof/FOCUSED_EXECUTION.json` SHAe966ca5ce38ad5b53798410f1bd8bc4de9793f824235169490a42f1c8f829b47. Original manifest/ledger remain unchanged.
 
 Final source freeze authorizes one fresh discovery retaining every original row/lane/isolation and adding only the two new visual tests, original default/research-tools style gates, nonzero canonical IME closure, mandatory graph/canon and ONLYIME release build on the guarded remote host. Installer and NoKeyboard owned-empty-Chrome wrapper were independently reviewed source-only,0blockers; prior2f813 exact rollback and all service/config/source identity checks preserved. Root alone executes any later installation/GUI. Wire/source facts do not certify Firefox rendering; current installed2f813 remains unchanged, physical pixels and changed-byte Tab/Backspace checks still NOT_TESTED. No transport, authority, model, ranking or architecture-canon change.
 
 
 ### Visual-boundary installed source and client final effects — 2026-10-04
 
-Original final source gates: fmt PASS2.732s, fresh discovery29.825s retains all2992 old rows/lane/isolation and adds exactly2, both original Clippy configurations PASS20.783s/21.670s, canonical655selected/executed/PASS0failed39.539s, mandatory graph/canon PASS. Parent pipeline records prebuild FileExistsError for reused TARGET_BEFORE.log, before any release Cargo. ROOT_BUILD_NAMESPACE_REPLAN authorizes only a fresh private build namespace with all1463 tested/generated hashes AND modes exact; original FAIL receipts retained. Actual ONLYIME release build194.991s / worker195.487s PASS, binary8,073,960bytes SHA8ef1f4de69a19d580bd0d9af1ff273294dc1b5ecff14f1f526ecbf9445440616. Build manifest `/home/ubu/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/final/delivery/BUILD_MANIFEST.json` SHA0f03cc78853010cd69f7a7d73924f5242a0161e61f79dfeb2ef9802d6596be8a; original remote manifest and exact five path translations preserved. Root imported exact10 graph/canonical files and checked all1463 source hashes/modes before installation; ROOT_EXACT_IMPORT.json. Inherited build-wrapper baseline/full-release labels are historical scope labels, not failures of these two measured style configurations and not an all-window release certificate.
+Original final source gates: fmt PASS2.732s, fresh discovery29.825s retains all2992 old rows/lane/isolation and adds exactly2, both original Clippy configurations PASS20.783s/21.670s, canonical655selected/executed/PASS0failed39.539s, mandatory graph/canon PASS. Parent pipeline records prebuild FileExistsError for reused TARGET_BEFORE.log, before any release Cargo. ROOT_BUILD_NAMESPACE_REPLAN authorizes only a fresh private build namespace with all1463 tested/generated hashes AND modes exact; original FAIL receipts retained. Actual ONLYIME release build194.991s / worker195.487s PASS, binary8,073,960bytes SHA8ef1f4de69a19d580bd0d9af1ff273294dc1b5ecff14f1f526ecbf9445440616. Build manifest `/home/local-user/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/final/delivery/BUILD_MANIFEST.json` SHA0f03cc78853010cd69f7a7d73924f5242a0161e61f79dfeb2ef9802d6596be8a; original remote manifest and exact five path translations preserved. Root imported exact10 graph/canonical files and checked all1463 source hashes/modes before installation; ROOT_EXACT_IMPORT.json. Inherited build-wrapper baseline/full-release labels are historical scope labels, not failures of these two measured style configurations and not an all-window release certificate.
 
-Root-only NoKeyboard owned-empty-Chrome installation PASS: `/home/ubu/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/install/INSTALL.json` SHA09a640c10040734e17a7fd29c01ebb126bf34bfdb0efec593c124f73d0d1ef77. Only existing IME channel reloaded; exact installed2f813 rollback saved and hashed. Daemon/L3/L11/globalIBus PIDs/bytes, config/input sources, extension/model packages remained unchanged during the transaction; no input protocol, ownership, SafetyGate, gesture or layout route changed. Subsequent root owned acceptance device attach/detach changes daemon PID only, bytes unchanged. Final read-only `/home/ubu/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/ROOT_FINAL_RUNTIME_HEALTH.json` SHA38dd1f41ebdc12b5f2888c19c9a0e12f2efa6d467ca08329abce1086839f0ac1: installed and loaded8ef1 match, IME2598471/daemon2637875/L3 3296775/L11 3296699/globalIBus270775, GNOME/IBus coherent, sources/config preserved.
+Root-only NoKeyboard owned-empty-Chrome installation PASS: `/home/local-user/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/install/INSTALL.json` SHA09a640c10040734e17a7fd29c01ebb126bf34bfdb0efec593c124f73d0d1ef77. Only existing IME channel reloaded; exact installed2f813 rollback saved and hashed. Daemon/L3/L11/globalIBus PIDs/bytes, config/input sources, extension/model packages remained unchanged during the transaction; no input protocol, ownership, SafetyGate, gesture or layout route changed. Subsequent root owned acceptance device attach/detach changes daemon PID only, bytes unchanged. Final read-only `/home/local-user/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/ROOT_FINAL_RUNTIME_HEALTH.json` SHA38dd1f41ebdc12b5f2888c19c9a0e12f2efa6d467ca08329abce1086839f0ac1: installed and loaded8ef1 match, IME2598471/daemon2637875/L3 3296775/L11 3296699/globalIBus270775, GNOME/IBus coherent, sources/config preserved.
 
-Physical final effects: new-byte V17 48executed/45PASS/3FAIL76.319s; three Firefox after-word partial-delete cases stop before actual Tab because the same full-composition event remains unchanged. Exact preexisting V18 retained-full observer separately executes those three and yields3/3PASS8.447s. Root union covers48unique successful scenarios,8each in Firefox/Chrome input/textarea/editable; never claim one uninterrupted48PASS or rewrite oldFAIL. Each successful physical Tab observes exact current surface plus one ASCII space, ended composition, collapsed correct UTF16 caret and same owned field. Aggregate `/home/ubu/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/ROOT_TAB_BACKSPACE_ACCEPTANCE.json` SHAf61ea8e6593945122c2c30c472cc75d4415a6affd7f0dd2a3f83fceb8066ea3b binds the two immutable receipts and8ef1 bytes.
+Physical final effects: new-byte V17 48executed/45PASS/3FAIL76.319s; three Firefox after-word partial-delete cases stop before actual Tab because the same full-composition event remains unchanged. Exact preexisting V18 retained-full observer separately executes those three and yields3/3PASS8.447s. Root union covers48unique successful scenarios,8each in Firefox/Chrome input/textarea/editable; never claim one uninterrupted48PASS or rewrite oldFAIL. Each successful physical Tab observes exact current surface plus one ASCII space, ended composition, collapsed correct UTF16 caret and same owned field. Aggregate `/home/local-user/.cache/lay/development/ranker-release-20261004/preedit-visual-boundary/ROOT_TAB_BACKSPACE_ACCEPTANCE.json` SHAf61ea8e6593945122c2c30c472cc75d4415a6affd7f0dd2a3f83fceb8066ea3b binds the two immutable receipts and8ef1 bytes.
 
 Firefox rendered decoration remains UNKNOWN, awaiting user observation requested asynchronously after physical input cleanup. Wire proof establishes neutral typed prefix and gray/single-underlined untyped suffix; payload/cursor/owned composition are intentionally unchanged. Four bounded baseline capture attempts never sent Tab and never established pixels: first helper print injection error0cases; gnome-screenshot returns0/noPNG; ordinary application name already owned; normal direct ScreenshotWindow raises an error. Last stderr is truncated, so exact GNOME rejection cause is UNKNOWN. ROOT_SCREENSHOT_TRANSPORT_REPLAN, ROOT_DIRECT_SCREENSHOT_API_REPLAN and ROOT_CAPTURE_STOPPED preserve failures; no screenshot permission/unsafe-mode or trusted owner change. All owned fields/devices closed and globalIBus preserved. Source/Tab final-effect PASS does not establish visual Firefox, private WhatsApp/GitHub, other windows, complete ranker quality or remaining Double Shift acceptance. Research stays paused. Final owning-document AST/source binding refresh follows without tests/build/runtime change.
 
@@ -3754,7 +3754,7 @@ justified by this receipt. Which internal start-witness predicate failed has
 not been directly instrumented or reproduced with the production reducer yet.
 
 Receipt:
-`/home/ubu/.cache/lay/development/ranker-release-20261004/instagram-tab-confirmed-20261004T195528-e3aae984/DIAGNOSIS.json`
+`/home/local-user/.cache/lay/development/ranker-release-20261004/instagram-tab-confirmed-20261004T195528-e3aae984/DIAGNOSIS.json`
 SHA2563e70f03d66e896e39ff5303fa42cb0d2998841a777e2325de2a96e387e25c204.
 It binds RESULT, empty/before/after/cleanup observations, WIRE and both runtime
 identity receipts. Earlier blocked helper/field observation attempts remain
@@ -3826,7 +3826,7 @@ prove a veto. Existing canonical start/admission/verifier gates stay unchanged;
 no lexical literal or example-specific runtime rule is introduced.
 
 Receipt root:
-`/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z`.
+`/home/local-user/.cache/lay/development/contextual-completion-20261005/20261004T211126Z`.
 SUMMARY SHA9f4ece063fef29f0ad40c0ac0874d893544e555a90146ee66bb309306c7bee36
 binds EXECUTION, frozen input manifest, exact helper/worker and both full outputs.
 The guarded dedicated20cpu remote run took28.180s: Rust link25.568s, profiles

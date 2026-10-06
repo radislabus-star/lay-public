@@ -119,7 +119,7 @@ not change candidate birth and cannot bypass the verifier. The read-only
 runtime reloads an atomically replaced package at most once per second without
 restarting IBus or the daemon.
 
-Measured full-source proof on `e@192.168.3.94`:
+Measured full-source proof on `builder@worker.example`:
 
 ```text
 RU eligible source tokens:             2 096 840
@@ -165,9 +165,9 @@ memory. Release binaries `0.2.346` are installed atomically without restarting
 global IBus, the managed engine or the daemon.
 
 Exact evidence:
-`/home/e/build/lay-l1-shadow/artifacts/l4-cross-scene-v1-2026-08-01/report.json`
+`/home/worker/build/lay-l1-shadow/artifacts/l4-cross-scene-v1-2026-08-01/report.json`
 and
-`/home/ubu/projects/lay/docs/structural_gates/receipts/L4_CROSS_SCENE_V1_SHADOW_2026-08-01.json`.
+`/workspace/local/lay/docs/structural_gates/receipts/L4_CROSS_SCENE_V1_SHADOW_2026-08-01.json`.
 
 ## 3. Architectural Defects To Remove
 
@@ -811,7 +811,7 @@ cross-scene package from the live usage journal plus exact correction receipts,
 validates that the package is `shadow_suggest_only`, and atomically publishes
 it. The older bounded usage-count snapshot remains a separate output of the
 same rebuild command. The published package was then verified at
-`/home/ubu/.local/share/lay/nanda_wave/l4_cross_scene_v1.bin` without granting
+`/home/local-user/.local/share/lay/nanda_wave/l4_cross_scene_v1.bin` without granting
 automatic edit authority.
 
 ### Measured facts
@@ -866,7 +866,7 @@ monopoly `15/15`, and the final unsafe-edit scoreboard with `0` gate failures.
 Exact receipt:
 
 ```text
-/home/ubu/projects/lay/docs/structural_gates/receipts/L3_PROCESS_REFRESH_L4_ROLLBACK_FEEDBACK_1_0_19_2026-08-10.json
+/workspace/local/lay/docs/structural_gates/receipts/L3_PROCESS_REFRESH_L4_ROLLBACK_FEEDBACK_1_0_19_2026-08-10.json
 ```
 
 ## TD-123 live scope regression preflight —2026-09-08
@@ -911,15 +911,15 @@ assertion failed and remains explicit. Per-file Rust identity supplements it;
 mandatory source architecture/release gates remain separate. Exact facts,
 all per-class denominators, failure records and untested scope are in the
 2026-09-08 measured-candidate section of l2-l11-canonical-architecture.md.
-Receipt: /home/ubu/.cache/lay/development/autocorrect-live-ojoasco5/fixed-fixtures-v3-comparison.json;
-build identity: /home/ubu/.cache/lay/development/run-c1abdlhw/candidate-identity.json.
+Receipt: /home/local-user/.cache/lay/development/autocorrect-live-ojoasco5/fixed-fixtures-v3-comparison.json;
+build identity: /home/local-user/.cache/lay/development/run-c1abdlhw/candidate-identity.json.
 Production runtime authority changed=false; model, history, learning writers,
 SafetyGate and verifier unchanged. Candidate is not installed yet.
 
 TD-123 installation follow-up2026-09-08: candidate995b6093 passed changed/full
 2684/2684 each and13 actual private client cases, then was installed as the
 identical file/process (PID3983217,unitlay-ime-release-995b6093.service). Receipt
-/home/ubu/.cache/lay/development/run-c1abdlhw/installation.json; gates at /home/ubu/.cache/lay/development/run-c1abdlhw/gates.json.
+/home/local-user/.cache/lay/development/run-c1abdlhw/installation.json; gates at /home/local-user/.cache/lay/development/run-c1abdlhw/gates.json.
 Installed IME runtime authority changed=true for the corrected negative-domain
 projection; model/package permissions, history writers and verifier unchanged.
 Normal-tempo physical confirmation remains pending. Fixed89-fixture scope,

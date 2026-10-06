@@ -182,7 +182,7 @@ continues to the existing bounded decision; an fd error logs and ends the
 drain. No retry loop, new timer, fallback output or authority is added.
 
 The failed receipt and architecture log are frozen under
-`/home/ubu/.cache/lay/development/release-1.0.73-final-20260920-r2/`.
+`/home/local-user/.cache/lay/development/release-1.0.73-final-20260920-r2/`.
 The next release attempt must use a fresh source archive and fresh remote run.
 
 The first compile after the fd-wait repair failed before discovery because the
@@ -217,7 +217,7 @@ timing, input authority or output effects. The next fresh run must reproduce
 the same manifest, pass the focused daemon and automatic lanes, and then pass
 the lint inventory without a baseline change. The failed run receipt and full
 log are frozen under
-`/home/ubu/.cache/lay/development/release-1.0.73-final-20260920-r3/`.
+`/home/local-user/.cache/lay/development/release-1.0.73-final-20260920-r3/`.
 
 The cfg ownership repair passed the remote daemon lane 267/267 at
 `run-n5nr_1c8` and the automatic lane 2,864/2,864 at `run-mfeo54is`; both used
@@ -241,7 +241,7 @@ profile through the ordinary production launcher environment: native Wayland,
 asynchronous GTK/IBus, no compatibility-library mapping and no forced
 `IBUS_ENABLE_SYNC_MODE`. Main Firefox and global IBus identities were preserved
 and installed 1.0.72 was restored after every cell. Receipt
-`/home/ubu/.cache/lay/development/release-1.0.73-final-20260920-r4/native/native-control-r5.json`
+`/home/local-user/.cache/lay/development/release-1.0.73-final-20260920-r4/native/native-control-r5.json`
 is **3/4 PASS, overall FAIL**. First word, mixed prefix and trailing Space each
 reach the exact target and return surface with two delegations. The completion
 cell leaves `про`, publishes no hint, accepts no completion and performs zero
@@ -289,7 +289,7 @@ release, installation and publication remain blocked until a fresh full gate
 and native rerun pass on the changed source.
 
 The first cache-only discriminator is **3/4 PASS, overall FAIL** at
-`/home/ubu/.cache/lay/development/release-1.0.73-final-20260920-r4/native-post-release-retrieve/native-control-post-release.json`.
+`/home/local-user/.cache/lay/development/release-1.0.73-final-20260920-r4/native-post-release-retrieve/native-control-post-release.json`.
 The exact adapter SHA-256
 `013f0f5a64be14883e0a36369e56845a14d2d28ca1116adbc3960e141d039820`
 was mapped in all four owned Firefox processes with synchronous mode absent.
@@ -310,7 +310,7 @@ input result, candidate state, timing wait or authority and will run once in an
 owned Firefox child with the same cleanup guards.
 
 That observation receipt is
-`/home/ubu/.cache/lay/development/release-1.0.73-final-20260920-r4/native-post-release-observe/native-control-observe.json`.
+`/home/local-user/.cache/lay/development/release-1.0.73-final-20260920-r4/native-post-release-observe/native-control-observe.json`.
 The mapped hook observed only Alt press/release. Both calls used an outer
 `GtkIMMulticontext` whose selected module was `wayland`; the printable keys did
 not cross `gtk_im_context_filter_keypress`. Completion remained at `про` and no
@@ -333,7 +333,7 @@ this client route; a PASS still requires controlled adapter tests, source
 review, fresh release gates and a final native rerun before installation.
 
 The direct-IBus asynchronous control is **3/4 PASS, overall FAIL** at
-`/home/ubu/.cache/lay/development/release-1.0.73-final-20260920-r4/native-direct-ibus-post-release/native-control-direct-ibus.json`.
+`/home/local-user/.cache/lay/development/release-1.0.73-final-20260920-r4/native-direct-ibus-post-release/native-control-direct-ibus.json`.
 Environment and mapping proofs confirm `GTK_IM_MODULE=ibus`, absent synchronous
 mode and the exact diagnostic adapter in all four children. Completion now
 publishes `верка`, accepts exact `проверка ` and completes both required
@@ -354,7 +354,7 @@ purpose is to find an existing client-visible discriminator between a managed
 adapter design is rejected rather than made word- or timing-specific.
 
 The direct-IBus observation at
-`/home/ubu/.cache/lay/development/release-1.0.73-final-20260920-r4/native-direct-ibus-observe/native-control-direct-observe.json`
+`/home/local-user/.cache/lay/development/release-1.0.73-final-20260920-r4/native-direct-ibus-observe/native-control-direct-observe.json`
 found no safe event-only discriminator. Original managed characters and replayed
 printable characters both produce successful release callbacks marked with
 `IBUS_HANDLED_MASK`; replay additionally produces ignored/duplicate callbacks,
@@ -376,7 +376,7 @@ cache-only library, and rerun the four fixed cells once. The existing four-cell
 conjunction and separate modifier control remain mandatory.
 
 The combined cache-only route is **4/4 PASS** at
-`/home/ubu/.cache/lay/development/release-1.0.73-final-20260920-r4/native-direct-ibus-combined/native-control-combined.json`.
+`/home/local-user/.cache/lay/development/release-1.0.73-final-20260920-r4/native-direct-ibus-combined/native-control-combined.json`.
 The adapter source SHA-256 is
 `916bb9cf23112448c1e9434c71de4ba9aa410dd02e9e0689049883de9caa1293` and
 the guarded shared-library SHA-256 is
@@ -395,7 +395,7 @@ product conclusion is drawn from that receipt. After correcting only the
 ephemeral sender, the same asynchronous direct-IBus route passed repeated
 `Shift+1`: exact DOM result `!!`, two managed `!` commits and zero manual
 toggles. Receipt:
-`/home/ubu/.cache/lay/development/release-1.0.73-final-20260920-r4/native-direct-ibus-modifier/native-control-modifier-r2.json`.
+`/home/local-user/.cache/lay/development/release-1.0.73-final-20260920-r4/native-direct-ibus-modifier/native-control-modifier-r2.json`.
 This is synthetic client-visible input evidence, not human-keyboard
 acceptance. Both accepted controls preserved the user's Firefox and global
 IBus identities, restored installed 1.0.72, and removed the temporary library.
@@ -424,7 +424,7 @@ the modifier control on the source-owned launcher/library.
 
 The source-owned adapter development check passed all **2,864/2,864** selected
 affected tests in 341.5 seconds at
-`/home/ubu/.cache/lay/development/run-1p9mnig3/RESULT.json`. The same guarded
+`/home/local-user/.cache/lay/development/run-1p9mnig3/RESULT.json`. The same guarded
 transaction compiled and executed the fake-GTK ABI regression, checked the
 launcher contract, and refreshed the architecture graph. Adapter source
 SHA-256 is
@@ -442,7 +442,7 @@ passed retained clippy, the byte-exact 2,890-test manifest and zero-failure
 binding, architecture refresh, changed gate in 357.0 seconds, full gate in
 416.1 seconds, compiled receipt, adapter build, ten release artifacts and all
 four isolated client profiles. Receipt:
-`/home/ubu/.cache/lay/development/release-1.0.73-final-20260920-r5/RESULT.json`.
+`/home/local-user/.cache/lay/development/release-1.0.73-final-20260920-r5/RESULT.json`.
 The release adapter SHA-256 is
 `ce9c258eec489a95dfadb8d23ba03d6f1afc79ab093ce63b7a3a54589a0887de`.
 
@@ -482,7 +482,7 @@ check, full release, four native cells and modifier control remain mandatory.
 
 The corrected launcher contract passed all **2,864/2,864** selected affected
 tests in 340.2 seconds at
-`/home/ubu/.cache/lay/development/run-od4752nt/RESULT.json`. Corrected launcher
+`/home/local-user/.cache/lay/development/run-od4752nt/RESULT.json`. Corrected launcher
 SHA-256 is
 `1ef03e5bdffbbd48645bd215e0b744a8f1463409e5f4e0e18dde5c76120763e8`.
 This remains development-only evidence; runtime authority is still 1.0.72.
@@ -496,7 +496,7 @@ binding, architecture refresh, the unique changed gate in 356.2 seconds, the
 full gate in 415.9 seconds, compiled receipt, adapter build, ten release
 artifacts and all four isolated client profiles. Remote receipt `run-uyAAv9`
 and the fetched aggregate are at
-`/home/ubu/.cache/lay/development/release-1.0.73-final-20260920-r6/RESULT.json`.
+`/home/local-user/.cache/lay/development/release-1.0.73-final-20260920-r6/RESULT.json`.
 The source launcher SHA-256 is
 `1ef03e5bdffbbd48645bd215e0b744a8f1463409e5f4e0e18dde5c76120763e8`;
 the release adapter SHA-256 is
@@ -616,7 +616,7 @@ No r6 artifact may be installed as r7 evidence.
 The frozen r7 source archive SHA-256 is
 `09b3b396bfec998764aef6d135797c1f03214ab7f0ad9f09fe557db291237981`.
 Remote receipt `run-bJ5E28`, fetched as
-`/home/ubu/.cache/lay/development/release-1.0.73-final-20260920-r7/RESULT.json`,
+`/home/local-user/.cache/lay/development/release-1.0.73-final-20260920-r7/RESULT.json`,
 is **PASS**. The hash-bound changed lane passed in 31.3 seconds; the canonical
 full gate passed all **2,891/2,891** discovered tests once in 477.4 seconds.
 Clippy reported zero compiler errors. Manifest/known-failure binding,
@@ -648,7 +648,7 @@ loaded hash parity before publication.
 
 The rollback-capable installation transaction completed with status
 `INSTALLED_LOADED_HASH_VERIFIED_PHYSICAL_PENDING`. Receipt:
-`/home/ubu/.cache/lay/development/release-1.0.73-final-20260920-r7/installation-1.0.73.json`.
+`/home/local-user/.cache/lay/development/release-1.0.73-final-20260920-r7/installation-1.0.73.json`.
 All ten installed files and their `~/.local/bin` links match the r7 artifact
 manifest. The loaded daemon, managed IBus engine, L3 watcher and L1.1 server
 match their installed hashes; the L1.1 health contract passed. CLI, daemon and
@@ -660,7 +660,7 @@ main Firefox retained PID 2748943 and executable identity; it was not restarted.
 GNOME input sources, current source `lay-ime-ru`, configuration bytes, desktop
 entries and Firefox CLI wrapper were unchanged. Only Lay-managed runtime owners
 were restarted. The pre-install 1.0.72 backup is
-`/home/ubu/.local/state/lay/release-backups/1.0.73-preinstall-20260920T054651Z`.
+`/home/local-user/.local/state/lay/release-backups/1.0.73-preinstall-20260920T054651Z`.
 Physical human-keyboard acceptance remains `NOT_TESTED`.
 
 ## Publication readback

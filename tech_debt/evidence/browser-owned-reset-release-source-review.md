@@ -10,7 +10,7 @@ the word. An exact six-character snapshot still matched the witness after
 `Reset`; the next key's release was unhandled because reset cleanup had cleared
 the keycode of its already handled press. That release revoked the witness and
 prepared Space path. This is evidenced by
-`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-firefox-reconcile-diag/receipt.json`
+`/home/local-user/.cache/lay/development/browser-autocorrect-20260922/physical-firefox-reconcile-diag/receipt.json`
 (SHA-256 `fa54f2d51ada151403ded3d7ee1bee34ffec8bff6f02e1200ae45644f15058fc`).
 
 The new snapshot arm requires managed input, exact surrounding refresh,
@@ -32,11 +32,11 @@ validation and visible postcondition verifier are unchanged.
 The focused callback test now uses `CommitText -> Reset -> release` order and
 asserts an exact correction. It also rejects a duplicate or late Reset. It
 passed 1/1 in
-`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/reset-release-focused-final.log`
+`/home/local-user/.cache/lay/development/browser-autocorrect-20260922/reset-release-focused-final.log`
 (SHA-256 `c0a52ab44597169721e670b2a7f9b0164dea87f138a21572cca9418a17e9820c`).
 The diagnostic Firefox run kept the suggestion continuous and changed
 `публекует ` to `публикует `, with zero composition events:
-`/home/ubu/.cache/lay/development/browser-autocorrect-20260922/physical-firefox-reset-release/receipt.json`
+`/home/local-user/.cache/lay/development/browser-autocorrect-20260922/physical-firefox-reset-release/receipt.json`
 (SHA-256 `c0cb13a12e698c278426d3ea5a7ad53093c2ca156baabbb108e1623c10b0101b`).
 
 Reviewed source identities (SHA-256):

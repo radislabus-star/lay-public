@@ -81,8 +81,8 @@ test gap identified in pass 1.
 
 ## Independently verified execution evidence and identities
 
-Read-only SSH target: `e@192.168.3.94`. Remote proof tree:
-`/home/e/projects/lay-1066-controller-proof-pYa18kUp`.
+Read-only SSH target: `builder@worker.example`. Remote proof tree:
+`/workspace/worker/lay-1066-controller-proof-pYa18kUp`.
 Remote raw log `/tmp/lay-release-1.0.66-remote-sidecar-repair-20260906-rerun2.log`
 contains the active resource-guard header, **32 controller + 7 L1.1 guard = 39
 passing test methods, 0 failures, 0 skips**, followed by `Ran 39 tests in 3.649s`

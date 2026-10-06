@@ -8,11 +8,14 @@ only. Nothing here installs binaries, restarts the desktop or accepts TD-121.
 Put the following in `~/.config/lay/development.json` (already configured on the
 current workstation). Paths belong to your worker, not to runtime source code:
 
+The address and paths below are display examples. Keep the actual SSH host,
+login and machine directories in your private configuration, outside Git.
+
 ```json
 {
-  "remote": "e@192.168.3.94",
-  "runs_dir": "/home/e/projects/lay-development-runner",
-  "target_dir": "/home/e/projects/lay-td119-gate-v1/target"
+  "remote": "builder@worker.example",
+  "runs_dir": "/workspace/worker/lay-development-runner",
+  "target_dir": "/workspace/worker/lay-td119-gate-v1/target"
 }
 ```
 
@@ -22,6 +25,14 @@ Another worker is selected with `--config /absolute/config.json`. A worker
 whose machine-id matches the origin is rejected; there is no local fallback.
 Keep `runs_dir` and `target_dir` outside Lay's `.cache/lay`, `.config/lay` and
 `.local/share/lay`: existing test isolation deliberately masks these locations.
+
+The historical atomic proof helpers in `scripts/proof/` also require explicit
+private environment settings; neither has a default worker address anymore.
+Both need `LAY_PROOF_REMOTE` and `LAY_PROOF_ROOT`. Staging additionally needs
+`LAY_PROOF_TARGET_DIR` and `LAY_PROOF_SOURCE_PARENT`; route execution needs
+`LAY_PROOF_MUTTER_ROOT`, `LAY_PROOF_SHELL_ROOT`, `LAY_PROOF_IBUS_BUILD` and
+`LAY_PROOF_MODELS_ROOT`. Use absolute paths without spaces, shell syntax or
+traversal. These isolated proof tools do not configure the installed desktop.
 
 ## Everyday commands, from the checkout being edited
 
@@ -102,7 +113,7 @@ expected hash explicitly.
 
 ```sh
 python3 scripts/dev-check.py client \
-  --client-config /home/e/projects/lay-development-runner/boundary-deps-UjRxy5/client-config-admitted.json
+  --client-config /workspace/worker/lay-development-runner/boundary-deps-UjRxy5/client-config-admitted.json
 ```
 
 The current config uses the nine-role manifest, including lexical phase memory.

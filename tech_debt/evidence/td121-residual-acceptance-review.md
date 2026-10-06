@@ -22,11 +22,11 @@ actual-Tab readiness rows in the final remote log. Nested module inclusion is
 suspicion of an orphan module was disproved and withdrawn, not patched.
 
 Authoritative retained run:
-`/home/e/projects/lay-development-runner/run-BgJ1c1/tests/SUMMARY.json`,
+`/workspace/worker/lay-development-runner/run-BgJ1c1/tests/SUMMARY.json`,
 SHA-256 `1e4c7615de11ef5925ce78ab2b6b5af117085f632ab0c8f0cef05b3227a454b4`.
 Union440/440, including IME402/402. Historical residual7/7 and IME399/399 are
 subsets/checkpoints, not additive denominators. Source archive/request:
-`/home/ubu/.cache/lay/development/run-xu9f9sp6/` and its remote run.
+`/home/local-user/.cache/lay/development/run-xu9f9sp6/` and its remote run.
 
 Composition source `src/bin/lay_ibus_engine/composition_commit.rs` is unchanged
 through this checkpoint: SHA-256

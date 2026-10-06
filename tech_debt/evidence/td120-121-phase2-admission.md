@@ -7,7 +7,7 @@
 на скрытую широкую миграцию. Release/install остаются отдельным этапом.
 
 Baseline: `cc1e2207519801ca0f9b7c6963897b55953a7751`, worktree
-`/home/ubu/projects/lay-tech-debt-20260831`. Phase-1 documents/review/graph
+`/workspace/local/lay-tech-debt-20260831`. Phase-1 documents/review/graph
 из предыдущего этапа сохраняются; старые untracked release receipts не трогать.
 Production-код на момент этого допуска не менялся.
 
@@ -22,7 +22,7 @@ Production-код на момент этого допуска не менялс�
 ## Новый диагностический bootstrap — последствия до изменения harness
 
 Старая проба immutable: `layout-phase1-private-WTVpDE`, 0/6. Новый writable
-каталог: `/home/ubu/.cache/lay/layout-phase2-private-31hE0X` (mktemp, mode0700).
+каталог: `/home/local-user/.cache/lay/layout-phase2-private-31hE0X` (mktemp, mode0700).
 Те же установленный бинарник/SHA, private PID/net/IPC/mount namespaces,
 read-only host filesystem, private `/tmp`/`/run`/`/dev`/`/proc`, без desktop
 environment, uinput, сети, live bus, learner/model и config writes.
@@ -48,7 +48,7 @@ source-bound тестам на remote, а не расширять права san
 
 ## Remote compilation boundary
 
-Read-only preflight: `e@192.168.3.94`, hostname `e-MEGA-MINI-M1-13th`, 20 CPU,
+Read-only preflight: `builder@worker.example`, hostname `e-MEGA-MINI-M1-13th`, 20 CPU,
 доступно RAM около29GiB, диск свободен371GiB. Это снимок, не reservation.
 Старые dirty remote checkouts не переписывать. Новый source checkout, явная
 source parity, Cargo через resource/cargo guards и dedicated-20cpu profile.

@@ -96,13 +96,13 @@ budget and identity checks. Its focused IME suite passed 610/610; the exact
 installed version used for the Qt row still failed and was rolled back.
 At that source-only stage the new bytes had **no physical-client verdict**.
 Causal proof:
-`/home/ubu/.cache/lay/development/live-qt-mirror-candidate-20260926/CAUSAL_PROOF.json`.
+`/home/local-user/.cache/lay/development/live-qt-mirror-candidate-20260926/CAUSAL_PROOF.json`.
 
 Subsequent owned Qt input on exact bridge-candidate SHA `f644a3f9...`
 passed the three listed synthetic scenarios. The source gate passed 2,875
 correctness and 36 package tests, but the Qt verdict is based on the
 installed binary and the observed widget text, not that gate. Receipt:
-`/home/ubu/.cache/lay/development/live-bridge-candidate-20260926/QT_ACCEPTANCE.json`.
+`/home/local-user/.cache/lay/development/live-bridge-candidate-20260926/QT_ACCEPTANCE.json`.
 The candidate was rolled back to accepted SHA `a8b9d168...`. This does not
 complete the row's hardware, undo or focus-return checks, nor any other row.
 

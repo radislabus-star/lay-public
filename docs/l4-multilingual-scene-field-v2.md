@@ -35,7 +35,7 @@ second candidate ranking, mutate text, or bypass the verifier.
 Measured locally on 2026-08-15 from the installed package and journals:
 
 ```text
-package path       /home/ubu/.local/share/lay/nanda_wave/l4_cross_scene_v1.bin
+package path       /home/local-user/.local/share/lay/nanda_wave/l4_cross_scene_v1.bin
 package bytes      13,228
 profiles           16
 pair profiles      58
@@ -432,7 +432,7 @@ authority-boundary correctness only. It is not a multilingual quality proof or
 a promotion receipt. The installed V1 package remains 13,228 bytes with
 SHA-256 `5a32cf50b94105679ec40bec7bd5c46c2937075ede864bd7961203427a6cf1b5`.
 
-Remote RU/EN proof iterations on `e@192.168.3.94`:
+Remote RU/EN proof iterations on `builder@worker.example`:
 
 ```text
 1. V1-shaped negative matrix
@@ -460,7 +460,7 @@ French, Spanish, morphology, semantic truth, or live automatic correction.
 
 ## 15. Organic V2 Compile Evidence, 2026-08-15
 
-Tested on `e@192.168.3.94` from private snapshots copied before the proof:
+Tested on `builder@worker.example` from private snapshots copied before the proof:
 
 ```text
 usage input rows                    1,608
@@ -493,15 +493,15 @@ live authority. It may be staged only as an inactive or shadow-only V2 package.
 Remote artifacts:
 
 ```text
-package  /home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/l4-cross-scene-organic-v2.bin
-report   /home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/l4-cross-scene-organic-v2.json
-status   /home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/l4-cross-scene-organic-v2-status.json
+package  /home/worker/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/l4-cross-scene-organic-v2.bin
+report   /home/worker/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/l4-cross-scene-organic-v2.json
+status   /home/worker/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/l4-cross-scene-organic-v2-status.json
 sha256   1a1e926c4b4c972add54ce3235b1f1527276365abe74952abb538a3132c97e3e
 ```
 
 ## 16. Lay 1.0.30 Shadow Deployment, 2026-08-15
 
-The release was built once on `e@192.168.3.94` after the version bump. The
+The release was built once on `builder@worker.example` after the version bump. The
 Cargo build itself passed; an initial post-build wrapper incorrectly required
 `--version` from utilities that do not implement that flag. The binary bytes
 were retained and the manifest gate was corrected without rebuilding.
@@ -557,7 +557,7 @@ new whole-route quality proof.
 
 Differential evidence is retained under:
 
-`/home/e/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/context-differential/`
+`/home/worker/build/lay-l4-v2-20260815/artifacts/l4-v2-20260815/context-differential/`
 
 The baseline L3 log SHA-256 is
 `c684492ba291f831449266eb29963159690a3bc6587c531ce232d3f9f4f9b39e`; the
@@ -575,7 +575,7 @@ installed release, and its environment selects the organic V2 package.
 Rollback:
 
 ```text
-/home/ubu/.local/lib/lay/rollback/1.0.29-pre-1.0.30-l4v2-shadow-20260815-210832
+/home/local-user/.local/lib/lay/rollback/1.0.29-pre-1.0.30-l4v2-shadow-20260815-210832
 files       32
 bytes       99,087,215
 manifest    f70dc96d8fe1f9090c4e931e8e9b6a029f0bc41f9f347531cab7d96e5db8f0e7
@@ -583,8 +583,8 @@ manifest    f70dc96d8fe1f9090c4e931e8e9b6a029f0bc41f9f347531cab7d96e5db8f0e7
 
 Exact receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L4_MULTILINGUAL_SCENE_FIELD_V2_INCREMENTAL_2026-08-15.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L4_MULTILINGUAL_SCENE_FIELD_V2_INCREMENTAL_2026-08-15.json`
 
 Deployment receipt:
 
-`/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L4_MULTILINGUAL_SCENE_FIELD_V2_DEPLOYMENT_2026-08-15.json`
+`/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L4_MULTILINGUAL_SCENE_FIELD_V2_DEPLOYMENT_2026-08-15.json`

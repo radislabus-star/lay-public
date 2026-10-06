@@ -145,8 +145,8 @@ metadata поля = +11 при прохождении tests, без hard veto. �
 - Existing `physical_double_shift_owner_`, suppression/exact/composition/atomic,
   changed gate; исходный fixed proof denominator не уменьшается.
 
-Remote: `e@192.168.3.94`, source checkout
-`/home/e/projects/lay-td120-121-SUdh2I`; source parity до каждого запуска.
+Remote: `builder@worker.example`, source checkout
+`/workspace/worker/lay-td120-121-SUdh2I`; source parity до каждого запуска.
 Cargo только через `scripts/lay-resource-guard.sh` с dedicated-20cpu и
 `scripts/cargo-guard.sh test --bin lay-ibus-engine <exact-filter>`.
 Кеш target явно scoped и ≤12GiB. Локально Cargo не запускать.
@@ -168,13 +168,13 @@ TD-121/TD-122 автоматически не закрываются. Release/in
   owner/capture исправлен; завершаются lexical-window invariant и реальные
   bridge/replay/feedback proofs. Source ещё не зафиксирован для финальной проверки.
 - Промежуточный remote IME run: 319/319 PASS, 14.46 s,
-  `/home/e/projects/lay-td120-repair-v3-ime.log`. Он предшествует последнему
+  `/workspace/worker/lay-td120-repair-v3-ime.log`. Он предшествует последнему
   repair delta и не доказывает окончательные bytes.
 - Промежуточный raw daemon run: 234 PASS / 2 FAIL, 142.11 s,
-  `/home/e/projects/lay-td120-repair-v3-daemon.log`. Устаревшая source-string
+  `/workspace/worker/lay-td120-repair-v3-daemon.log`. Устаревшая source-string
   assertion удалена; второй failure зависит от окружения и прошёл тем же
   executable в canonical hermetic runner (1/1,
-  `/home/e/projects/td120-neighbor-hermetic-2lbs0i_u/test.log`). Исходный RED
+  `/workspace/worker/td120-neighbor-hermetic-2lbs0i_u/test.log`). Исходный RED
   не скрыт; финальный gate должен пройти штатные hermetic lanes.
 - На этом промежуточном checkpoint финальный pass 2 и changed gate были
   незавершены. Он superseded следующим результатом, без удаления исходных RED.

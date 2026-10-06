@@ -3,7 +3,7 @@
   "status": "V3_CAUSAL_RED_RUNTIME_UNCHANGED",
   "date": "2026-09-12",
   "installed_v3_source": {
-    "archive": "/home/ubu/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2/source.tar",
+    "archive": "/home/local-user/.cache/lay/development/double-shift-window-20260912-49o8j3j9/receipt-fix-build-v3-compile2/source.tar",
     "archive_sha256": "bf8665188a62e077b7095843480b67b1d67aefc835ad4760fa024dee04d407a6",
     "immutable": true
   },
@@ -42,8 +42,8 @@
   "remote_check": {
     "command": "python3 scripts/dev-check.py check --target bin:lay-ibus-engine",
     "resource_profile": "dedicated-20cpu",
-    "local_receipt": "/home/ubu/.cache/lay/development/run-nv1eixc9",
-    "remote_run": "/home/e/projects/lay-development-runner/run-QRC4BO",
+    "local_receipt": "/home/local-user/.cache/lay/development/run-nv1eixc9",
+    "remote_run": "/workspace/worker/lay-development-runner/run-QRC4BO",
     "remote_snapshot_sha256": "5eb0ae955c0aae64b28931a025f4cfde9aec07894b5b69efc51279658583e26e",
     "format_check": "PASS",
     "focused_selected": 466,
@@ -75,8 +75,8 @@
     "failure": "assertion left empty, right вот",
     "touched_by_test_patch": false,
     "isolated_without_new_test": {
-      "local_receipt": "/home/ubu/.cache/lay/development/run-rivdkaou",
-      "remote_run": "/home/e/projects/lay-development-runner/run-n8n3et",
+      "local_receipt": "/home/local-user/.cache/lay/development/run-rivdkaou",
+      "remote_run": "/workspace/worker/lay-development-runner/run-n8n3et",
       "selected": 465,
       "failures": 1,
       "new_test_present": false
@@ -90,5 +90,13 @@
     "latency, RSS, package size",
     "installed runtime"
   ],
-  "runtime_authority_changed": false
+  "runtime_authority_changed": false,
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "505017c56985c3fa055e21d19e2f530b265e0a977e9cfaa449e39398f06d0c24",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
+  }
 }

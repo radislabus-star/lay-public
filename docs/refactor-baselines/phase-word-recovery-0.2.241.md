@@ -13,11 +13,11 @@ git_describe: v0.2.0-261-g2bf3f76-dirty
 package_version: 0.2.241
 
 lay-daemon:
-  executable: /home/ubu/projects/lay/target/release/lay-daemon
+  executable: /workspace/local/lay/target/release/lay-daemon
   sha256: 9987c0b9be516b139eb980f1295e79f48c99010a49c4630893f9c7bd55594844
 
 lay-ibus-engine:
-  executable: /home/ubu/projects/lay/target/release/lay-ibus-engine
+  executable: /workspace/local/lay/target/release/lay-ibus-engine
   sha256: b26f18eefc14e59bf54c722d77dfa33c41406ce76820934f9547457382d15108
 ```
 

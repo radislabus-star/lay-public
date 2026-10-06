@@ -16,7 +16,7 @@ readiness loop. Protocol client text and output signals remain separate from
 physical/GUI evidence. This preparation has executed zero new cases.
 
 Missing remote dependencies were copied into one isolated root:
-`/home/e/.cache/lay/td121-authority-deps.d9pohv` (0700), eight exact files.
+`/home/worker/.cache/lay/td121-authority-deps.d9pohv` (0700), eight exact files.
 No service/install path was overwritten. The copied L1.1 service is byte-equal
 to the currently installed local baseline, SHA-256
 `f0af549b9ac713a324020f5dded6ee4830df574406a92c2168ec6292ccb34bc3`.
@@ -26,7 +26,7 @@ The exact active receipt is read through a read-only namespace bind preserving
 its embedded paths, not rewritten or bypassed with `LAY_L11_PACKAGE`.
 
 Prepared local root remains
-`/home/ubu/.cache/lay/td121-private-actual-client.K7m3Qs`:
+`/home/local-user/.cache/lay/td121-private-actual-client.K7m3Qs`:
 
 ```text
 driver.py                 bcb8bbb0573c77bcd7c8ed6fc86ef1c16a0adc1d2a8c4d1a72142bb9f99bff9e
@@ -60,9 +60,9 @@ and the accepted owning analysis define preparation, not a passed proof.
 
 The lease `td121-private-five-20260907T0051-candidate-b7e78375` admitted the
 new standalone candidate `b7e783753d03950e81ff31aab40f17257ada78e668cdceaff101d3f28124e81c`.
-The preserved remote root is `/home/e/.cache/lay/td121-private-five.0JBSl0`.
+The preserved remote root is `/home/worker/.cache/lay/td121-private-five.0JBSl0`.
 The launcher exited 1 before the driver started: bubblewrap could not create
-the embedded `/home/ubu/.local/share/lay/nanda_wave/l1.1` mount target beneath
+the embedded `/home/local-user/.local/share/lay/nanda_wave/l1.1` mount target beneath
 the read-only host root. No receipt, client case, candidate trace, or correction
 result was produced. The executor reported no owned process remaining and an
 unchanged candidate hash before/after. Run-log SHA-256:
@@ -71,11 +71,11 @@ This is fixture setup failure, not an IME behavioral verdict.
 
 Before repair, the selected minimal change is a **namespace-only tmpfs /home**
 with the existing host `/home/e` restored read-only underneath it. The missing
-embedded `/home/ubu/...` mount point is then created only in that private tmpfs
+embedded `/home/local-user/...` mount point is then created only in that private tmpfs
 and receives the same read-only, hash-pinned L1.1 dependency bind. Host paths,
 HOME, package bytes, active receipt, candidate, driver, authority settings and
 all timing/resource limits stay unchanged. No host directory is created and
-the candidate's `/home/e/...` path remains readable. Failure remains a setup
+the candidate's `/home/worker/...` path remains readable. Failure remains a setup
 failure with owned-process cleanup; rollback is discarding the private namespace.
 Changing the installed receipt or creating directories in the remote host is
 unnecessary. The consumed lease is not reused; a corrected launcher needs its
@@ -174,7 +174,7 @@ fallback paths; the public `SetGlobalEngine` handler above does not call this
 helper.
 
 Pinned source root:
-`/home/ubu/.cache/lay/ibus-source-installed-1.5.34-rc2/ibus-1.5.34~rc2`.
+`/home/local-user/.cache/lay/ibus-source-installed-1.5.34-rc2/ibus-1.5.34~rc2`.
 
 ```text
 src/ibusbus.c      8146d108a9d6b8da4ef48d0c61a2a8d6a07b0991db6b1bfe7c8464d0dc6d3bb0
@@ -209,16 +209,16 @@ TD-121 retention failure.
 
 ## Prepared artifacts and execution gate
 
-Harness root: `/home/ubu/.cache/lay/td121-private-actual-client.K7m3Qs`.
+Harness root: `/home/local-user/.cache/lay/td121-private-actual-client.K7m3Qs`.
 It reuses remote bundle
-`/home/e/.cache/lay/td121-remote-deployed-ibus.qFnUzG/bundle` and targets
-`/home/e/projects/lay-td119-gate-v1/target/debug/lay-ibus-engine`.
+`/home/worker/.cache/lay/td121-remote-deployed-ibus.qFnUzG/bundle` and targets
+`/workspace/worker/lay-td119-gate-v1/target/debug/lay-ibus-engine`.
 
 Planned invocation, only after explicit parent admission:
 
 ```text
 EXPECTED_CANDIDATE_SHA256=<exact-64-hex> \
-  bash /home/e/.cache/lay/<transferred-fresh-root>/launch.sh
+  bash /home/worker/.cache/lay/<transferred-fresh-root>/launch.sh
 ```
 
 The preparation-only statement above is superseded by the two retained runs
@@ -231,7 +231,7 @@ Cases completed: `0/4`
 Runtime authority changed: `false`
 
 The admitted candidate was
-`/home/e/projects/lay-td119-gate-v1/target/debug/lay-ibus-engine`, size
+`/workspace/worker/lay-td119-gate-v1/target/debug/lay-ibus-engine`, size
 `160178368`, SHA-256
 `80f3d40b6fd9a66429b597f6c7004ce08cf461d124563488cef4b668082deaa1`.
 Its retained build-log SHA-256 was
@@ -254,7 +254,7 @@ Measured facts:
   not inferred from CPU time.
 
 Retained root:
-`/home/ubu/.cache/lay/td121-private-actual-client-run-nonfinal-pre-receive-order-20260906`.
+`/home/local-user/.cache/lay/td121-private-actual-client-run-nonfinal-pre-receive-order-20260906`.
 
 ```text
 receipt.json                 459849e8929f01787a63ee63b735aa49406096564660993251e6af4d33cddc8e
@@ -317,9 +317,9 @@ Measured facts:
   further run is admitted under the consumed diagnostic lease.
 
 Fresh remote root:
-`/home/e/.cache/lay/td121-private-actual-client-diagnostic.LCSzsj`.
+`/home/worker/.cache/lay/td121-private-actual-client-diagnostic.LCSzsj`.
 Retained local root:
-`/home/ubu/.cache/lay/td121-private-actual-client-run-nonfinal-readiness-diagnostic-20260906`.
+`/home/local-user/.cache/lay/td121-private-actual-client-run-nonfinal-readiness-diagnostic-20260906`.
 
 ```text
 receipt.json                 92890d88de92d3a4c7337e6b15dd6b7146896ec8fbc5ff713fc5ccd4770f3c02
@@ -348,7 +348,7 @@ verdict.
 This checkpoint supersedes old-candidate conclusions below, not their logs.
 Current candidate SHA256:
 `b7e783753d03950e81ff31aab40f17257ada78e668cdceaff101d3f28124e81c`.
-Run `/home/e/.cache/lay/td121-private-five.cVZ7BN`: RC1,
+Run `/home/worker/.cache/lay/td121-private-five.cVZ7BN`: RC1,
 `FAILED_FROZEN_BEFORE_TRACE_DRAIN`,0/5 cases completed. The first legacy Space
 was committed visibly; driver.py:289 failed because focus_receipt remained
 empty in passive:unknown-context. Full trace:1041 bytes/10 lines, including
@@ -404,8 +404,8 @@ the old driver/run hashes. Preparation is not execution admission; parent
 supplies exact candidate/hash and a new single-use lease after review.
 
 Parent-prepared successor: local
-`/home/ubu/.cache/lay/td121-private-ready.DNaDIK`, remote
-`/home/e/.cache/lay/td121-private-ready.b8WIue`.
+`/home/local-user/.cache/lay/td121-private-ready.DNaDIK`, remote
+`/home/worker/.cache/lay/td121-private-ready.b8WIue`.
 Driver SHA256 `3916b050100cdc7dd0e790801b8a70185cfad006b2ca414c289667f95437aba1`;
 unchanged launcher SHA256
 `792d1a0cc0227e153008a4237c9704b8ad3ce6e8adf7c5fdc73d4cec0018f5a8`.
@@ -452,14 +452,14 @@ Selected correction changes only this private driver's representation contract
 would alter an existing public/exact-tail contract and is rejected(1/10).
 No extra keys/Space, sleeps, retries, runtime policy, model, learning, packages,
 deadline or authority changes. Keep correction deletion/output assertions.
-Successor directory `/home/ubu/.cache/lay/td121-private-buffer-contract.ksWwiW`
+Successor directory `/home/local-user/.cache/lay/td121-private-buffer-contract.ksWwiW`
 preserves the previous driver/run. A fresh one-shot lease is required after
 the exact corrected syntax/hash is checked. This is not a rerun of unchanged
 failed evidence or a waiver of the original user-visible behavior.
 
 Corrected driver local/remote SHA256
 `2bcde38ce94bce7d6bf6ea17e02b3f4d2e27c8471ce3aebb0dcdd62ee8a6bdde`,
-remote `/home/e/.cache/lay/td121-private-buffer-contract.MrkbwD`; guarded
+remote `/home/worker/.cache/lay/td121-private-buffer-contract.MrkbwD`; guarded
 syntax check exit0. Launcher and candidate unchanged. Parent admits one run
 with lease `td121-private-buffer-contract-20260907-parent-1edc4e00`; same
 CPU200%/1536M/swap0/Tasks128/runtime90s envelope, no other heavy work.
@@ -482,7 +482,7 @@ These are **cold debug measurements under CPU200%**, not optimized-production
 latency or proof of lost context. No change to the3500us budget, added sleep,
 extra boundary or retry is admitted to turn this failure into a PASS.
 
-Exact remote artifacts: `/home/e/.cache/lay/td121-private-buffer-contract.MrkbwD`.
+Exact remote artifacts: `/home/worker/.cache/lay/td121-private-buffer-contract.MrkbwD`.
 Receipt SHA256 `5316f0992bb772454d2761278fa081cc5f2908378558d8319b1ec86ba33ead5a`;
 log SHA256 `f611de136bf52af40f47df6c4b74e260bb82e150a3a0deb72f9991843a2e5346`.
 Candidate/driver identities and envelope remain those recorded immediately
@@ -502,8 +502,8 @@ build log `td121-optimized-candidate-20260907.log`, SHA256
 `19688d34ed2725fe04043ff22796465d500c0477872931ecdc01b429c7c3c33e`.
 This is one binary for a diagnostic, not the complete19-binary accepted bundle.
 
-Fresh harness local `/home/ubu/.cache/lay/td121-private-optimized.heIQ1K`, remote
-`/home/e/.cache/lay/td121-private-optimized.X4XsvR`. Exactly three path changes
+Fresh harness local `/home/local-user/.cache/lay/td121-private-optimized.heIQ1K`, remote
+`/home/worker/.cache/lay/td121-private-optimized.X4XsvR`. Exactly three path changes
 select target/release instead of target/debug in the launcher, driver and XML;
 all behavior assertions, original single boundary, causal marker setup and
 private resource envelope stay unchanged. No sleeps, warmup lookup, retries,

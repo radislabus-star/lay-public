@@ -182,10 +182,10 @@ JSON encoding/decoding, and the Unix transport.
 Evidence currently resides on the build host under:
 
 ```text
-/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/v9-diverse-optimized-{1,2,3,4}.json
-/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/standalone-health.json
-/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/standalone-socket-latency-comparison.json
-/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/standalone-v9.log
+/workspace/worker/lay-phase8i-gate-d/artifacts/gate-d/v9-diverse-optimized-{1,2,3,4}.json
+/workspace/worker/lay-phase8i-gate-d/artifacts/gate-d/standalone-health.json
+/workspace/worker/lay-phase8i-gate-d/artifacts/gate-d/standalone-socket-latency-comparison.json
+/workspace/worker/lay-phase8i-gate-d/artifacts/gate-d/standalone-v9.log
 ```
 
 Verdict scope: package integrity, cold load, RSS, direct runtime latency, and
@@ -339,19 +339,19 @@ owner                              phase8i_exact_typed_basin
 The four direct-runtime receipts are:
 
 ```text
-/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/v9-diverse-shared-reconstruction-1.json
-/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/v9-diverse-shared-reconstruction-2.json
-/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/v9-diverse-shared-reconstruction-3.json
-/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/v9-diverse-shared-reconstruction-4.json
+/workspace/worker/lay-phase8i-gate-d/artifacts/gate-d/v9-diverse-shared-reconstruction-1.json
+/workspace/worker/lay-phase8i-gate-d/artifacts/gate-d/v9-diverse-shared-reconstruction-2.json
+/workspace/worker/lay-phase8i-gate-d/artifacts/gate-d/v9-diverse-shared-reconstruction-3.json
+/workspace/worker/lay-phase8i-gate-d/artifacts/gate-d/v9-diverse-shared-reconstruction-4.json
 ```
 
 The exact production-client and standalone receipts are:
 
 ```text
-/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/standalone-rust-client-latency-shared-reconstruction.txt
-/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/standalone-health-shared-reconstruction.json
-/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/standalone-ready-shared-reconstruction-ms.txt
-/home/e/projects/lay-phase8i-gate-d/artifacts/gate-d/standalone-v9-shared-reconstruction.log
+/workspace/worker/lay-phase8i-gate-d/artifacts/gate-d/standalone-rust-client-latency-shared-reconstruction.txt
+/workspace/worker/lay-phase8i-gate-d/artifacts/gate-d/standalone-health-shared-reconstruction.json
+/workspace/worker/lay-phase8i-gate-d/artifacts/gate-d/standalone-ready-shared-reconstruction-ms.txt
+/workspace/worker/lay-phase8i-gate-d/artifacts/gate-d/standalone-v9-shared-reconstruction.log
 ```
 
 Local pre-activation smoke used the staged release service and a unique socket.
@@ -382,9 +382,9 @@ live service query failures                                      0
 The live package and rollback roots are:
 
 ```text
-/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin
-/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.installed.json
-/home/ubu/.local/lib/lay/rollback/1.0.27-pre-1.0.28-phase8i-20260815-025951
+/home/local-user/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.v9.bin
+/home/local-user/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-PHASE8I-v9.installed.json
+/home/local-user/.local/lib/lay/rollback/1.0.27-pre-1.0.28-phase8i-20260815-025951
 ```
 
 Live smoke returned the exact clean winner for `морфология`, a safe tie for
@@ -444,9 +444,9 @@ runtime deployment by this branch                                  no
 Observed-source receipts:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lattice-route-receipt-v1.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lifecycle-route-receipt-v1.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-double-shift-route-receipt-v1.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lattice-route-receipt-v1.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lifecycle-route-receipt-v1.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-double-shift-route-receipt-v1.json
 ```
 
 This local result is not a replacement Gate C or Gate D PASS. The participating
@@ -517,7 +517,7 @@ previously installed Lay `1.0.28` V9 service. Global IBus was not restarted.
 The complete local evidence copy is:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/
 ```
 
 ## 13. Corrective Release 1.0.29 Deployment
@@ -531,7 +531,7 @@ SHA-256 before installation and again under the installed names.
 Before mutation, the complete Lay `1.0.28` runtime was captured at:
 
 ```text
-/home/ubu/.local/lib/lay/rollback/1.0.28-pre-1.0.29-phase8i-integrity-20260815-170702
+/home/local-user/.local/lib/lay/rollback/1.0.28-pre-1.0.29-phase8i-integrity-20260815-170702
 rollback bytes                                           789,183,548
 rollback SHA-256 verification                         42 / 42 PASS
 ```
@@ -587,5 +587,5 @@ gate and are not inferred from daemon health.
 Deployment receipt:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/deployment-receipt-v1.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/deployment-receipt-v1.json
 ```

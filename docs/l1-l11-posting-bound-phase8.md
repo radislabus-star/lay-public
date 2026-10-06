@@ -469,10 +469,10 @@ runtime authority                   unchanged
 
 ```text
 remote full evidence
-  /home/e/build/lay-l1-exact-phase2d-evidence/phase8-2026-08-14/
+  /home/worker/build/lay-l1-exact-phase2d-evidence/phase8-2026-08-14/
 
 local raw evidence cache
-  /home/ubu/.cache/lay/l1-peak-search-phase8-2026-08-14/
+  /home/local-user/.cache/lay/l1-peak-search-phase8-2026-08-14/
 
 repository summary receipt
   docs/structural_gates/receipts/L1_L11_PEAK_SEARCH_PHASE_8_2026-08-14/phase-8.json

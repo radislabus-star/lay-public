@@ -229,7 +229,7 @@ L2 Candidate Field Memory
 This is the intended evolution of `L2` above canonical `L1.1`.
 
 Internal package and runtime architecture:
-`/home/ubu/projects/lay/docs/l2-l11-canonical-architecture.md`.
+`/workspace/local/lay/docs/l2-l11-canonical-architecture.md`.
 
 ## 6. L2 Outputs
 

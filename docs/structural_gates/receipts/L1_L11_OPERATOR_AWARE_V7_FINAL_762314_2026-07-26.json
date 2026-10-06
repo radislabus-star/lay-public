@@ -107,9 +107,17 @@
   "verdict": "PASS_shadow",
   "runtime_authority_changed": false,
   "evidence": {
-    "package": "/home/e/build/lay-l1-shadow/artifacts/l11-final-depth0-implicit-v7-762314-2026-07-26/package.bin",
-    "proof_report": "/home/e/build/lay-l1-shadow/artifacts/l11-v7-operator-aware-final-proof-20k-762314-2026-07-26/report.json",
-    "proof_log": "/home/e/build/lay-l1-shadow/artifacts/l11-v7-operator-aware-final-proof-20k-762314-2026-07-26/run.log",
-    "time_report": "/home/e/build/lay-l1-shadow/artifacts/l11-v7-operator-aware-final-proof-20k-762314-2026-07-26/time.txt"
+    "package": "/home/worker/build/lay-l1-shadow/artifacts/l11-final-depth0-implicit-v7-762314-2026-07-26/package.bin",
+    "proof_report": "/home/worker/build/lay-l1-shadow/artifacts/l11-v7-operator-aware-final-proof-20k-762314-2026-07-26/report.json",
+    "proof_log": "/home/worker/build/lay-l1-shadow/artifacts/l11-v7-operator-aware-final-proof-20k-762314-2026-07-26/run.log",
+    "time_report": "/home/worker/build/lay-l1-shadow/artifacts/l11-v7-operator-aware-final-proof-20k-762314-2026-07-26/time.txt"
+  },
+  "public_redaction": {
+    "schema": "lay.public-evidence-redaction.v1",
+    "source_commit": "86290f95566a9639b5b05ad3e6cbd31718e1832b",
+    "original_sha256": "c8fdb5593fb0d57ab5dc11ae9ba9fd8c754ab6133488576534976f544ab54b0b",
+    "fields": "machine addresses, login identifiers and home paths normalized",
+    "authority": "historical assertions retained; this public projection does not replace original bytes for source-bound proof",
+    "original_retention": "independent private archive; previous Git snapshot"
   }
 }

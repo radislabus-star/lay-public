@@ -1247,7 +1247,7 @@ PASS.
 
 ## 17. Implementation checkpoint: FullField direct layout
 
-Удалённый focused proof на `e@192.168.3.94` закрыл прежний единственный FAIL
+Удалённый focused proof на `builder@worker.example` закрыл прежний единственный FAIL
 широкого `layout_projection` filter. Первая потеря находилась не в exact lease:
 `layout_converted_token()` строил `cnjq -> стой`, но общий admission не различал
 phase evidence и более широкую RU surface-authority. Исправление ввело явные
@@ -1288,7 +1288,7 @@ authority не менялась. Verdict: **P2_FOCUSED_PASS_NOT_PROMOTED**. Rece
 
 ## 18. Independent oracle and generated corpus checkpoint
 
-P2b/P3 выполнены на `e@192.168.3.94` независимым standalone oracle. Oracle
+P2b/P3 выполнены на `builder@worker.example` независимым standalone oracle. Oracle
 компилируется прямым `rustc`, не зависит от crate `lay`, не импортирует
 runtime projection/guard/certificate helpers и владеет отдельными keyboard
 table и lexical parsers. Remote `/usr/share/dict/words` отличался от локального
@@ -1802,7 +1802,7 @@ section 23. The snapshot contains only `source_path`, `shift_active`,
 Candidate rank, verifier, layout synchronization and Shift timing windows did
 not change.
 
-Targeted remote tests on `e@192.168.3.94` passed for cross-engine exact undo,
+Targeted remote tests on `builder@worker.example` passed for cross-engine exact undo,
 modifier use, one-shot transfer and expired/absent lease quarantine. The staged
 engine identity is:
 
@@ -1863,8 +1863,8 @@ the staged engine would invalidate the measured isolation. The next permitted
 edit is limited to the undo assertion and its shell parser in:
 
 ```text
-/home/ubu/projects/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js
-/home/ubu/projects/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh
+/workspace/local/gnome-shell-lay-atomic-proof/gnome-shell-50.1/tests/shell/atomicInputMethodRoute.js
+/workspace/local/lay-l1-exact-peak-search/scripts/proof/run-atomic-full-route-remote.sh
 ```
 
 Measured evidence receipt:
@@ -1939,7 +1939,7 @@ mechanically advanced from `1.0.33` to `1.0.34`; no production behavior source
 changed after the staged physical PASS.
 
 The complete build input aggregate was synchronized byte-for-byte to
-`e@192.168.3.94` and built through `cargo-guard` with `CARGO_BUILD_JOBS=20`.
+`builder@worker.example` and built through `cargo-guard` with `CARGO_BUILD_JOBS=20`.
 The release profile retained `codegen-units=1` and linker-plugin LTO, so the
 final crate optimization intentionally used one `rustc` core rather than a
 different faster build profile.
@@ -1970,7 +1970,7 @@ Space prefetch tests                                                 8/8
 Final release engine SHA-256 is
 `3bb009025f3bd12c676416aff637b439ccd4f4c0c2d69d4c7c34b0f49b904691`.
 The complete immutable stage is
-`/home/ubu/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf`.
+`/home/local-user/.cache/lay/releases/1.0.34-22f6a4198d7c2aa388e58ff806dade001e7d0d0fa16d96b7810d1bee804894cf`.
 
 Receipt:
 `docs/structural_gates/receipts/LAY_IME_ATOMIC_EXACT_LAYOUT_LEASE_V27_2026-08-22/release-1.0.34-remote-build-v1.json`.
@@ -2088,7 +2088,7 @@ into a pass. After age-normalized startup sampling, the final engine maximum was
 owners used at most `256694 KiB`, leaving `479368 KiB` in the total envelope.
 
 Rollback remains available at
-`/home/ubu/.local/lib/lay/rollback/1.0.33-pre-1.0.34-v27-20260822-1116`
+`/home/local-user/.local/lib/lay/rollback/1.0.33-pre-1.0.34-v27-20260822-1116`
 with `186671333` bytes and a mode-preserving `FILES.tsv` manifest. The exact
 transaction evidence is `evidence/live-install-attempt-v5.log`; the structured
 deployment receipt is `final-release-1.0.34-live-deployment-pass-v1.json` in

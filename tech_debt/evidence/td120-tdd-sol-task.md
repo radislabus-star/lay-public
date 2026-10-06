@@ -2,7 +2,7 @@
 
 User authorized continuing diagnosis → TDD → scoped implementation. This first
 Sol task is tests only, no production behavior change. Worktree is
-`/home/ubu/projects/lay-tech-debt-20260831`, base cc1e2207. Read AGENTS.md and
+`/workspace/local/lay-tech-debt-20260831`, base cc1e2207. Read AGENTS.md and
 applicable Graphify instructions. Do not use nanda-structural-gate, local Cargo,
 live services/config/binaries, user input devices, or /root files. Do not stage,
 commit, push, install, launch agents, or run broad commands.

@@ -673,7 +673,7 @@ Phase 8I support-width audit
 Installed immutable package:
 
 ```text
-/home/ubu/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin
+/home/local-user/.local/share/lay/nanda_wave/l1.1/LAY-L1.1-RU-COMPOSITE-EN300K-SHADOW-v4.v8.bin
 SHA-256 47fa757acac03b0f76e5397e965b9127884e245e9845ce0f1ca0896fb40f33e9
 bytes   190,139,182
 base     77,960,560
@@ -684,7 +684,7 @@ base     77,960,560
 Measured A0/A1/B0 evidence:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-13x1.json
 ```
 
@@ -719,7 +719,7 @@ screen only. They do not prove nonlinear ranking or product quality.
 Measured A2 evidence:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/phase-8i-13x1-a2.json
 ```
 
@@ -905,7 +905,7 @@ The separate Gate C harness was implemented and executed first at the fixed
 smoke denominator `13 x 100`. The receipt is:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/
 phase-8i-gate-c-13x100-smoke-v1.json
 ```
@@ -947,7 +947,7 @@ made current V8 mark unrelated surfaces as grounded. Complete classification of
 all 32 losses rejected that hypothesis. The machine-readable analysis is:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/
 phase-8i-gate-c-grounded-loss-analysis-v1.json
 ```
@@ -1030,7 +1030,7 @@ tests passed `14 / 14`, Gate C invariants passed `8 / 8`, and the remote release
 proof binary passed. The repeated smoke receipt is:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/
 phase-8i-gate-c-13x100-smoke-v2.json
 ```
@@ -1132,7 +1132,7 @@ The proof-only diagnostic passed the fixed `13 x 100` smoke without changing
 any stable v2 field. The receipt is:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/
 phase-8i-gate-c-13x100-smoke-v3-diagnostic.json
 ```
@@ -1247,7 +1247,7 @@ local/remote changed-source SHA parity                         PASS
 The fixed smoke receipt is:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/
 phase-8i-gate-c-13x100-smoke-v4-ranking-correction.json
 ```
@@ -1303,11 +1303,11 @@ damaged cases and all `852,582` clean primary centers. Its immutable receipts
 are:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/
 phase-8i-gate-c-13x20000-full-v1-ranking-correction.json
 
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/
 phase-8i-gate-c-13x20000-full-v1-ranking-correction.time.txt
 ```
@@ -1405,11 +1405,11 @@ The proof-only correction was exercised remotely with the unchanged shared
 projector and fixed package. The immutable receipts are:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/
 phase-8i-gate-c-omission-transposition-20k-bounded-projection-v1.json
 
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/
 phase-8i-gate-c-layout-projection-20k-bounded-projection-v1.json
 ```
@@ -1454,11 +1454,11 @@ The fixed full matrix was rerun once after both class-scoped bounded-projection
 diagnostics passed their admission gates. The immutable receipts are:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/
 phase-8i-gate-c-13x20000-full-v2-bounded-projection.json
 
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/evidence/
 phase-8i-gate-c-13x20000-full-v2-bounded-projection.time.txt
 ```
@@ -1545,11 +1545,11 @@ cargo fmt --all -- --check                                       PASS
 The observed-source contract and deterministic receipt are:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/
 bounded-projection-route-observed-source-v2.json
 
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/
 L1_L11_PEAK_SEARCH_PHASE_8I_2026-08-14/
 bounded-projection-route-observed-source-receipt-v2.json
 ```
@@ -1656,11 +1656,11 @@ final scripts/check-lay-changed.sh                              PASS
 The contracts and deterministic receipts are rooted at:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-v2.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-receipt-v2.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lattice-route-receipt-v1.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lifecycle-route-receipt-v1.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-double-shift-route-receipt-v1.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-v2.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/implementation-preflight-receipt-v2.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lattice-route-receipt-v1.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-v9-lifecycle-route-receipt-v1.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/observed-double-shift-route-receipt-v1.json
 ```
 
 Not yet tested for this corrective source packet:
@@ -1755,12 +1755,12 @@ did not change during these measurements.
 Evidence is rooted at:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-smoke-13x100.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-full-13x20000-all-clean.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/participating-source-parity-v2.log
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-cold-starts.tsv
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-production-client.txt
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/evidence.sha256
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-smoke-13x100.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-full-13x20000-all-clean.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/participating-source-parity-v2.log
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-cold-starts.tsv
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/direct-v9-runtime-production-client.txt
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/direct-v9-proof-v3/evidence.sha256
 ```
 
 Not yet tested by this corrective packet: installation of rebuilt release
@@ -1811,6 +1811,6 @@ readiness.
 The deployment evidence is recorded at:
 
 ```text
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/deployment-receipt-v1.json
-/home/ubu/projects/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/release-1.0.29/
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/deployment-receipt-v1.json
+/workspace/local/lay-l1-exact-peak-search/docs/structural_gates/receipts/L1_L11_PHASE8I_INTEGRITY_CLOSURE_2026-08-15/evidence/release-1.0.29/
 ```

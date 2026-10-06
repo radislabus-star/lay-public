@@ -3,7 +3,7 @@
 Status: INSTALLED_AND_LOADED / MINIMAL_ADAPTER_REFUSAL_REPAIR / PHYSICAL_CONFIRMATION_PENDING.
 
 **Latest, Sep8 03:05:52 +03:00:** fresh remote release IME installed permanently
-at `/home/ubu/.local/lib/lay/bin/lay-ibus-engine`, PID147597. Installed file and
+at `/home/local-user/.local/lib/lay/bin/lay-ibus-engine`, PID147597. Installed file and
 running process both have SHA256
 `12db8c00ebd23d1dbc1603dc1fbba337ddfed0c0aa308258b669df8fbc8c95dc`.
 IBus4715, daemon3757261 and input-source list unchanged. Focused=true;
@@ -74,11 +74,11 @@ acceptance; general Wave quality and mixed-token correction are not promoted.
 ## Executed transaction
 
 ```sh
-scripts/install-live-release-1.0.66.sh --snapshot /home/ubu/.local/state/lay/release-backups/1.0.66-preinstall-b4bd39
+scripts/install-live-release-1.0.66.sh --snapshot /home/local-user/.local/state/lay/release-backups/1.0.66-preinstall-b4bd39
 ```
 
 Exit0, `FORWARD_INSTALL_1_0_66=PASS`.
-Log: `/home/ubu/.cache/lay/development/release-1066-final-0pcIZl/install-live.log`.
+Log: `/home/local-user/.cache/lay/development/release-1066-final-0pcIZl/install-live.log`.
 SHA256: `f960c11d1466b03c251ab18fb36c5ed53e2a1fd95760a3ceeb52e9815f2ac8f7`.
 Initial L1.1 health-not-ready/refused-connect messages precede the successful
 bounded startup; the final process/package/health checks passed. No rollback

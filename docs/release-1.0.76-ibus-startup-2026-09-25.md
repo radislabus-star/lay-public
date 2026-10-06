@@ -16,10 +16,10 @@ receipt and restores native terminal input in that case. In an owned Kitty
 window, Tab and two Double Shift gestures completed
 `просто → ghjcnj → просто`; the user then confirmed the running version works.
 The receipt is
-`/home/ubu/.cache/lay/development/kitty-focus-proof-20260925/kitty-tab-cycle-aligned/receipt.json`.
+`/home/local-user/.cache/lay/development/kitty-focus-proof-20260925/kitty-tab-cycle-aligned/receipt.json`.
 The guarded changed-source gate passed 2,904/2,904 selected correctness and
 package checks; see
-`/home/e/projects/lay-development-runner/kitty-focus-changed-v3-20260925.log`.
+`/workspace/worker/lay-development-runner/kitty-focus-changed-v3-20260925.log`.
 L1.1, L3, daemon and IBus/IME were restarted after installation; GNOME and IBus
 both selected `lay-ime-ru`. The installed and loaded IME hashes matched.
 
@@ -44,18 +44,18 @@ installed and loaded SHA-256 was
 `5adea0c1f4c83e16931bd80891b92e29df7de1fce09b7e28050e9b6add3a490a`.
 L1.1, L3, daemon, and IME were restarted, and `lay-ime-ru` was restored. The
 earlier installation receipt at
-`/home/ubu/.cache/lay/development/held-shift-install-20260925/INSTALL.json`
+`/home/local-user/.cache/lay/development/held-shift-install-20260925/INSTALL.json`
 records the checks and rollback binary.
 
 Scoped native-client probes on this exact installed binary (2026-09-25) used a
 kernel virtual keyboard. The checked matrix is
-`/home/ubu/.cache/lay/development/chrome-current-20260925/MATRIX.json`:
+`/home/local-user/.cache/lay/development/chrome-current-20260925/MATRIX.json`:
 
 - Fresh ordinary Chrome Wayland `textarea` and `contenteditable`: held Shift
   produced `АРОДЕЗИАК` in all capitals; Tab accepted the visible completion;
   two daemon-owned Double Shift gestures completed
   `просто → ghjcnj → просто`. Receipts under
-  `/home/ubu/.cache/lay/development/chrome-current-20260925/` are
+  `/home/local-user/.cache/lay/development/chrome-current-20260925/` are
   `held-shift-retry/held-shift-receipt.json`,
   `contenteditable-held-shift/held-shift-receipt.json`,
   `tab_cycle/receipt.json`, and `contenteditable/tab_cycle/receipt.json`.

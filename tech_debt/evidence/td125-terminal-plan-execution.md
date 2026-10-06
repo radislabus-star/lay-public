@@ -40,7 +40,7 @@ Logical tail replacement retains request deletion count and full target text.
 GTK/surrounding deletion already used the plan. Cursor-moving plans retain
 their SurroundingText requirement. No fallback or new mutation is added.
 
-Command, run from `/home/ubu/projects/lay-tech-debt-20260831` for each distinct
+Command, run from `/workspace/local/lay-tech-debt-20260831` for each distinct
 source snapshot (never rerun an unchanged failure until green):
 
 ```sh
@@ -81,10 +81,10 @@ client's `prefetch_not_ready` remains open; its frozen driver was not modified.
 
 ## Evidence identities
 
-RED local: `/home/ubu/.cache/lay/development/run-555dzngz/`.
-RED remote: `/home/e/projects/lay-development-runner/run-WTAWbo/`.
-GREEN local: `/home/ubu/.cache/lay/development/run-hde026w2/`.
-GREEN remote: `/home/e/projects/lay-development-runner/run-JPEnUd/`.
+RED local: `/home/local-user/.cache/lay/development/run-555dzngz/`.
+RED remote: `/workspace/worker/lay-development-runner/run-WTAWbo/`.
+GREEN local: `/home/local-user/.cache/lay/development/run-hde026w2/`.
+GREEN remote: `/workspace/worker/lay-development-runner/run-JPEnUd/`.
 Each request owns the complete source archive and file identities; each remote
 `tests/SUMMARY.json` owns discovery, exact selected tests, exclusions and failures.
 
@@ -99,7 +99,7 @@ Each request owns the complete source archive and file identities; each remote
 | RED `tests/logs/bin-lay-ibus-engine.log` | `2ab37106b61eafe370c88019f0918680a4f51ff7268b9bb3546da07c37d2dd4c` |
 | GREEN `tests/logs/bin-lay-ibus-engine.log` | `27fbc4588db11ba3c7f576432e26d10182e6e6a64f316cae523347b02d16ba15` |
 
-Resource envelope: remote `e@192.168.3.94`, dedicated-20cpu, jobs20, test
+Resource envelope: remote `builder@worker.example`, dedicated-20cpu, jobs20, test
 threads1, CPU2000%, MemoryHigh24G/Max28G, swap1G, Tasks512, Cargo target12GiB;
 single existing heavy lease. No local test/build execution or service restart.
 
@@ -124,8 +124,8 @@ Four selected integration targets ran remotely:
 TD-121's protected successor remains `PROPOSED`, while that acceptance gate
 requires `ACCEPTED`. No protected receipt/status/assertion was changed to make
 this green. Exact receipt:
-`/home/e/projects/lay-development-runner/run-2jS1Sq/tests/SUMMARY.json`, local
-`/home/ubu/.cache/lay/development/run-kt2hr6in/`. This gate prevents broader
+`/workspace/worker/lay-development-runner/run-2jS1Sq/tests/SUMMARY.json`, local
+`/home/local-user/.cache/lay/development/run-kt2hr6in/`. This gate prevents broader
 acceptance; the focused executor PASS does not override it. One earlier
 pre-transfer snapshot was correctly refused after concurrent documentation
 editing (`run-1cwv0sb0`); it executed no tests and is not a runtime RED.
@@ -145,8 +145,8 @@ worker14.225s, tests5.740s. This union deliberately excludes the known failing
 TD-113/TD-121 protected-successor acceptance test above; it is not an all-gates
 PASS. The refusal is still open and must not be lost in the green denominator.
 
-Local: `/home/ubu/.cache/lay/development/run-xu9f9sp6/`.
-Remote: `/home/e/projects/lay-development-runner/run-BgJ1c1/`.
+Local: `/home/local-user/.cache/lay/development/run-xu9f9sp6/`.
+Remote: `/workspace/worker/lay-development-runner/run-BgJ1c1/`.
 Final `tests/SUMMARY.json` SHA-256:
 `1e4c7615de11ef5925ce78ab2b6b5af117085f632ab0c8f0cef05b3227a454b4`.
 Final `state.rs` SHA-256:
@@ -161,7 +161,7 @@ and final verification. No further generic TD-121 review round is claimed.
 Architecture refresh ran remotely under the same resource envelope after
 syncing the final owning documentation into the runner mirror:
 `scripts/update-architecture-graph.sh`, exit0, `lay architecture check OK`.
-Log: `/home/ubu/.cache/lay/development/run-xu9f9sp6/architecture.log`.
+Log: `/home/local-user/.cache/lay/development/run-xu9f9sp6/architecture.log`.
 File-length warnings remain navigation signals, not additional runtime defects
 or grounds for a new refactor. Generated graph/binding/receipt must be synced
 back into the local worktree; this is not the unresolved protected-successor
