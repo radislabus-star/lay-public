@@ -1,250 +1,226 @@
 <div align="center">
 
-# lay
+<img src="docs/publicity/readme-hero.svg" alt="Lay: ghbdtn превращается в привет после двух нажатий Shift" width="100%">
 
-**Double Shift RU/EN layout rescue для Linux**
+# Lay — помощник для русского и английского ввода
 
-`lay` исправляет слово, набранное не в той раскладке: нажмите
-**Shift два раза** и продолжайте писать.
+**Исправьте раскладку. Примите продолжение. Пишите дальше.**
 
-**Последний публичный релиз: [1.0.77](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.77). Статус: alpha.**
+Для тех, кто переключается между русским текстом, английскими словами и терминалом Linux.
 
-Изменения, результаты проверок и известные ограничения — в
-[описании релиза](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.77).
+[![Установить Lay](https://img.shields.io/badge/Установить_Lay-CCFF77?style=for-the-badge&logo=linux&logoColor=14181F)](#install)
+[![Демонстрация](https://img.shields.io/badge/Посмотреть_в_деле-242B35?style=for-the-badge)](#demo)
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
-```
+[Возможности](#features) · [Установка](#install) · [Совместимость](#compatibility) · [Вопросы](#faq) · [Документация](#docs) · [English](#english)
 
-[![Rust](https://img.shields.io/badge/Rust-1.88+-orange?logo=rust)](https://www.rust-lang.org/)
-[![GNOME](https://img.shields.io/badge/GNOME-45--47%2C%2050-4A86CF?logo=gnome)](https://gnome.org/)
-[![Wayland](https://img.shields.io/badge/Wayland-native-blue)](https://wayland.freedesktop.org/)
-[![Status](https://img.shields.io/badge/status-alpha-yellow)](#статус-и-ограничения)
-[![License: Non-Commercial](https://img.shields.io/badge/License-Non--Commercial-red)](#license)
+![RU / EN](https://img.shields.io/badge/языки-RU_%2F_EN-CCFF77?labelColor=242B35)
+![Wayland](https://img.shields.io/badge/Linux-Wayland-81B7FF?labelColor=242B35)
+[![Версия исходников](https://img.shields.io/badge/main-1.0.80-CCFF77?labelColor=242B35)](VERSIONING.md)
+[![Alpha](https://img.shields.io/badge/статус-alpha-FFD279?labelColor=242B35)](#compatibility)
+[![Лицензия](https://img.shields.io/badge/лицензия-Non--Commercial-C9B7FF?labelColor=242B35)](#license)
 
 </div>
 
-## Что это
+---
 
-`lay` — локальный клавиатурный помощник для Linux-пользователей,
-которые пишут на русском и английском вперемешку.
+## Уже написали `ghbdtn`?
 
-Главный сценарий:
-
-```text
-Набрано:   ghbdtn
-Команда:   Shift Shift
-Результат: привет
-```
-
-![lay demo](docs/publicity/demo.gif)
-
-Основной сценарий не использует буфер обмена и не требует облачной модели.
-Daemon локально слушает физические клавиши, хранит короткий хвост ввода и
-передаёт уже проверенную замену в `uinput` или IBus backend.
-
-По умолчанию double Shift исправляет одно последнее слово. Автопомощь после
-пробела и автоматическое применение исправлений выключены, пока пользователь
-сам их не включит.
-
-## Что изменилось в 1.0.77
-
-- После автопереворота короткого RU/EN слова на пробеле Lay согласует режим
-  следующей буквы с GNOME и IBus. Проверено 360/360 переходов в локальных
-  полях Firefox, Chrome, изолированного Tor Browser, GTK, Qt и Kitty.
-- Контракт автопереворота и регрессионный тест защищают этот маршрут от
-  незаметного изменения. Точная область проверки и открытые случаи записаны
-  в [документе принятой версии](docs/architecture/accepted-space-autoflip-2026-09-28.md).
-- Отдельные поля Tor Browser с неработающим Double Shift остаются открытым
-  случаем. Реальные поля WhatsApp, GitHub issue и WPS на этом SHA не проверены.
-
-[Подробности релиза](docs/architecture/accepted-space-autoflip-2026-09-28.md).
-
-[Документация](docs/README.md) ·
-[Сообщить об ошибке](https://github.com/radislabus-star/lay-public/issues) ·
-[История релизов](https://github.com/radislabus-star/lay-public/releases).
-
-## Текущая архитектура
+Нажмите <kbd>Shift</kbd> <kbd>Shift</kbd> — последнее слово превратится в `привет`.
+Переворот работает в обе стороны: `руддщ` → `hello`.
 
 ```text
-физический ввод
--> короткий typed tail
--> L1.1 bounded lexical lattice
--> immutable canonical V13 identities
--> exact V13 DAFSA typed owner
--> Productive L2 V90 PreparedCanonicalTokenField
--> bounded common candidate material
--> L3 phrase/context evidence
--> TransitionDecisionCore
--> structural verifier
--> AuthorizedEdit
--> uinput или IBus backend
+До                  Действие                После
+ghbdtn              Shift → Shift           привет
+руддщ               Shift → Shift           hello
 ```
 
-Границы владения:
+Lay работает с текущим вводом: для обычного исправления раскладки не нужно
+копировать слово, открывать переводчик или заново набирать текст.
 
-- **L1.1** восстанавливает сигнал слова и отдаёт bounded lattice, а не
-  единственную догадку.
-- **V13 exact owner** выполняет исчерпывающий поиск по неизменяемым canonical
-  identities и сохраняет certificate/provenance.
-- **Productive L2 V90** объединяет surface, grounded, layout, contour и exact
-  evidence в один `PreparedCanonicalTokenField`.
-- **L3** добавляет контекст фразы, но не печатает текст напрямую.
-- **TransitionDecisionCore** принимает `apply / suggest / keep / veto`.
-- **Verifier + AuthorizedEdit** являются единственным разрешённым путём
-  изменения текста.
-- **IME/uinput** исполняют решение и не содержат второго correction brain.
+<a id="features"></a>
 
-Запрещённое сокращение:
+## Меньше исправлений вручную
 
-```text
-слово -> частное правило -> прямая печать
-```
+<table>
+<tr>
+<td width="50%" valign="top">
+<h3>⌨️ Два Shift — слово на месте</h3>
+<p>Быстрый ручной переворот RU ↔ EN. По умолчанию исправляется одно последнее слово. После применённой автозамены немедленный Double Shift позволяет вернуть исходный ввод.</p>
+</td>
+<td width="50%" valign="top">
+<h3>↔️ Раскладка следует за текстом</h3>
+<p>При включённой автопомощи Lay может перевернуть слово на пробеле и согласовать язык следующей буквы. Словарное подтверждение помогает сохранить нормальные слова обеих раскладок.</p>
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<h3>⇥ Продолжение прямо в строке</h3>
+<p>IME предлагает окончание во время набора. <kbd>Tab</kbd> принимает актуальную подсказку и добавляет пробел. Подсказки предназначены для буквенного ввода: числа и специальные символы не должны запускать их.</p>
+</td>
+<td width="50%" valign="top">
+<h3>🧠 Ваш выбор имеет значение</h3>
+<p>Подтверждённые решения и история использования помогают упорядочивать следующие подсказки. При выборе вариантов Lay также учитывает доступный контекст фразы.</p>
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<h3>›_ Подсказки для терминала</h3>
+<p>В распознанном терминале английские команды получают приоритет среди подходящих продолжений. Например, для <code>gi</code> Lay может предложить <code>git</code>. Принятие подсказки не запускает команду.</p>
+</td>
+<td width="50%" valign="top">
+<h3>🔒 Локально, под вашим управлением</h3>
+<p>Обычный ввод обрабатывается на компьютере, без облачной модели и API-ключа. Автопомощь и автозамена включаются отдельно; для новой установки они выключены.</p>
+</td>
+</tr>
+</table>
 
-Layout, typo, boundary, morphology и exact-кандидаты обязаны пройти общий
-candidate material, DecisionCore и verifier.
+### Ещё несколько полезных деталей
 
-## Данные и lifetime
+- **Опечатки.** Автозамена может исправлять подтверждённые ошибки после границы слова; сомнительный вариант должен остаться без изменения.
+- **Аккуратный смешанный текст.** Режим Smart сохраняет нормальные соседние слова: `good ntrcn` → `good текст`.
+- **Управление из панели.** Включение Lay, язык, режим ввода, автопомощь, автозамена и диагностика доступны через меню.
+- **Прямой выбор RU или EN.** Настраиваемые горячие клавиши включают нужную раскладку без перебора остальных.
+- **Конвертация в консоли.** CLI принимает строку или стандартный ввод — удобно для скриптов и уже набранного текста.
+- **Настройки сохраняются при обновлении.** Пользовательская конфигурация хранится отдельно от исходников.
 
-Релиз использует три разных immutable представления:
+<a id="demo"></a>
 
-| Артефакт | Размер | Назначение |
-|---|---:|---|
-| canonical L2 V13 package | 140,556,462 B (134.05 MiB) | формы, леммы и canonical identities |
-| exact V13 DAFSA sidecar | 2,460,144 B | адресный индекс exact search |
-| process typed payload | 3,689,628 B | безопасный typed view hot path |
+## Посмотрите в деле
 
-Installer загружает canonical package из соответствующего GitHub Release,
-кэширует его в `~/.cache/lay/models/` и принимает только при
-совпадении размера и закреплённого SHA-256. Sidecar устанавливается в:
+![Демонстрация Lay: ручной переворот, смешанный текст и подсказки IME](docs/publicity/demo.gif)
 
-```text
-~/.local/share/lay/nanda_wave/l2/LAY-L2-RU-FULL-v13.dafsa
-```
+*Запись показывает базовые сценарии; внешний вид интерфейса может отличаться от текущей версии.*
 
-Typed owner живёт до завершения процесса. Замена поколения требует управляемого
-перезапуска Lay-процесса; request-local materialization отсутствует.
+| Ситуация | Как помогает Lay |
+|---|---|
+| Русское слово набрано латиницей | Два нажатия Shift переворачивают последнее слово |
+| В предложении встречается английское слово | Автопомощь проверяет обе раскладки, сохраняя допустимые слова |
+| Видите подходящее продолжение | Tab дописывает подсказку и ставит один пробел |
+| Часто выбираете один вариант | Подтверждённый выбор участвует в последующем ранжировании |
+| Пишете в терминале | Уже доступные командные продолжения получают приоритет |
 
-## Возможности
+<a id="install"></a>
 
-- **Double Shift** исправляет последнее слово в другой раскладке.
-- **Откат автозамены**: немедленный double Shift возвращает исходный ввод.
-- **Replay** физически перепечатывает хвост теми же keycode.
-- **Smart** сохраняет уже нормальные соседние слова.
-- **Помощь при наборе** после пробела предлагает только bounded-кандидаты.
-- **Автоподмена** применяет только допущенные общим authority route решения.
-- **Точный автопереворот RU/EN** требует словарного подтверждения целевого
-  слова и отсутствия исходного слова в активном языке.
-- **Неблокирующий Space** не ждёт тяжёлый контекстный расчёт.
-- **IME-подсказки** показывают кандидаты; Tab явно принимает продолжение.
-- **Прямые RU/EN hotkeys** включают конкретную раскладку без toggle.
-- **KDE, Niri и X11 backends** доступны с меньшим покрытием, чем GNOME.
+## Начните с одного слова
 
-Пример Smart-сценария:
-
-```text
-good ntrcn -> good текст
-```
-
-## Быстрый старт
-
-Установка:
+### 1. Установите
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
 ```
 
-После первой установки выйдите из пользовательской сессии и войдите снова.
-Это применяет группу `input`, права на `/dev/uinput` и
-desktop-интеграцию.
+Установщик скачивает исходники и необходимые данные. После первой установки
+**выйдите из пользовательской сессии и войдите снова**: это применяет группу
+`input`, доступ к `/dev/uinput` и интеграцию с рабочим столом.
 
-Проверка:
+### 2. Попробуйте Double Shift
 
-```text
-1. Включите русскую и английскую раскладки.
-2. Наберите ghbdtn.
-3. Нажмите Shift два раза.
-4. Должно получиться привет.
-```
+Включите русскую и английскую раскладки. Наберите `ghbdtn` и дважды быстро нажмите
+**левый Shift**. Ожидаемый результат — `привет`.
 
-Обновление:
+### 3. Настройте уровень помощи
+
+По умолчанию работает ручной переворот одного слова. Через меню Lay можно отдельно
+включить **«Помощь при наборе»** и **«Автозамену»**, настроить область действия и
+горячие клавиши. IME-подсказки и принятие Tab требуют активного ввода через Lay/IBus.
+
+<details>
+<summary><strong>Обновление, настройки и удаление</strong></summary>
+
+Обновление установленной копии:
 
 ```bash
 cd ~/projects/lay
 bash update.sh
 ```
 
-Updater сохраняет найденные изменения исходников в именованный
-`git stash`. Настройки из `~/.config/lay` не удаляются.
+Updater сохраняет найденные изменения исходников в именованный `git stash`.
+Пользовательские настройки находятся в `~/.config/lay/config.json`.
 
-Полное удаление runtime, настроек, памяти, логов и чистого checkout:
+Удаление программы с сохранением настроек и памяти:
 
 ```bash
 cd ~/projects/lay
+bash uninstall.sh
+```
+
+Полное удаление, **включая настройки, память и логи**:
+
+```bash
 bash uninstall.sh --purge
 ```
 
-Без `--purge` удаляются runtime и desktop-интеграция, но сохраняются
-настройки и память. Локально изменённый checkout автоматически не удаляется.
+Локально изменённый checkout автоматически не удаляется.
 
-### Bazzite / Fedora Atomic
+**Bazzite / Fedora Atomic:** если установщик добавил зависимости в следующий
+deployment через `rpm-ostree`, перезагрузите систему и повторите установку.
 
-Installer обнаруживает `rpm-ostree` раньше `dnf`. Если
-нужные пакеты добавлены в следующий deployment, перезагрузите систему и
-повторите команду установки. Read-only проверка маршрута:
+</details>
 
-```bash
-bash install.sh --check-platform
-```
+<a id="compatibility"></a>
 
-## Настройки
+## Для Linux. С основным фокусом на GNOME Wayland
 
-Для новой установки:
-
-- double Shift включён;
-- область double Shift — одно слово;
-- помощь после пробела выключена;
-- автоматическое применение выключено;
-- основной output backend — `uinput`;
-- `layout_backend=auto`;
-- сетевые LLM/API не используются.
-
-Настройки хранятся в:
-
-```text
-~/.config/lay/config.json
-```
-
-Основные пункты tray:
-
-- `Раскладка`;
-- `Lay включён`;
-- `Режим ввода`;
-- `Помощь при наборе`;
-- `Автозамена`;
-- `Следовать языку исправления`;
-- `Настройки`;
-- `Диагностика`.
-
-Веса моделей, research-визуализаторы и команды восстановления сервисов в
-пользовательском меню не показываются.
-
-## Поддержка окружений
-
-Основная проверенная среда — Ubuntu/GNOME Wayland с RU/EN раскладками.
-
-| Среда | Статус |
+| Окружение | Поддержка |
 |---|---|
-| GNOME Wayland | основной и наиболее проверенный маршрут |
-| KDE/Plasma Wayland | поддерживается, покрытие меньше |
-| Niri Wayland | прямой `niri-ipc`, требуется больше live-проверок |
-| X11 | native XKB backend, экспериментальный |
-| Sway/Hyprland/другие WM | пока не заявлены |
+| **Ubuntu / GNOME Wayland** | Основная среда разработки и наиболее проверенный маршрут |
+| **KDE / Plasma Wayland** | Доступен backend; проверенных сценариев меньше |
+| **Niri Wayland** | Есть прямой `niri-ipc`; требуется дальнейшая проверка |
+| **X11** | Экспериментальный native XKB backend |
+| **Другие оконные менеджеры** | Совместимость пока не заявлена |
 
-Текущая языковая цель — только RU/EN. Полная грамматика русского, исправление
-абзацев и другие пары раскладок не заявлены.
+Расширение GNOME заявляет версии **45, 46, 47 и 50**. Сейчас языковая пара — **RU/EN**.
 
-## CLI
+**Статус — alpha.** Поддержка окружения не гарантирует одинаковую работу каждого
+поля приложения. Firefox, терминалы и редакторы по-разному обрабатывают ввод;
+отдельные поля Tor Browser и веб-приложений остаются зоной доводки. Подсказки к
+командам не заменяют автодополнение вашей оболочки и не покрывают все команды.
+
+В `main` опубликованы исходники **1.0.80**. Эта версия улучшает обработку Reset,
+пробела и повторных действий в Firefox. Полная грамматика русского, понимание
+целого абзаца и безошибочная работа во всех окнах не заявлены.
+
+[Область проверки 1.0.80](docs/architecture/firefox-input-stability-2026-10-05.md) ·
+[Изменения версий](VERSIONING.md) ·
+[Доступные релизы](https://github.com/radislabus-star/lay-public/releases)
+
+<a id="faq"></a>
+
+## Несколько важных ответов
+
+<details>
+<summary><strong>Нужны интернет, подписка или облачная модель?</strong></summary>
+
+Для обычного набора и ручного переворота — нет. Установка и обновление скачивают
+файлы, но базовый маршрут обрабатывает ввод локально. Облачная LLM и API-ключ не нужны.
+
+</details>
+
+<details>
+<summary><strong>Что происходит с набранным текстом?</strong></summary>
+
+Демон читает клавиатурные события локально, чтобы распознавать жест и последнее
+слово. По умолчанию обычный маршрут не отправляет текст в сеть и не ведёт полный
+журнал нажатий. Диагностика включается отдельно. Включённая персонализация и
+автокоррекция могут сохранять локальную историю использования; эти данные остаются
+на устройстве. Текст также может попадать в явно включённые диагностические журналы.
+
+</details>
+
+<details>
+<summary><strong>Lay понимает всё предложение и исправляет любой текст?</strong></summary>
+
+Lay учитывает доступный контекст и подтверждённые решения при выборе из кандидатов.
+Это не гарантия понимания смысла или правильного окончания. Основной сценарий
+работает с недавно набранным хвостом; произвольное слово под курсором, выделение
+или весь документ не являются универсальной областью исправления.
+
+</details>
+
+<details>
+<summary><strong>Можно использовать Lay из скрипта?</strong></summary>
+
+Да. Конвертация раскладки доступна через CLI:
 
 ```bash
 lay "Ye djn ghbvth"
@@ -257,125 +233,53 @@ echo "ghbdtn" | lay
 # привет
 ```
 
-## Приватность
+</details>
 
-`lay-daemon` читает клавиатурные события локально, поскольку иначе
-double Shift rescue невозможен. По умолчанию он не отправляет набранный текст
-в сеть, не требует удалённой модели и не ведёт полный keylog.
+<a id="docs"></a>
 
-Опциональный learning log локальный и выключен по умолчанию:
+## Для тех, кто хочет разобраться глубже
 
-```text
-~/.local/share/lay/corrections.jsonl
-```
+[Документация](docs/README.md) · [Как это работает](HOW_IT_WORKS.md) ·
+[Архитектура](ARCHITECTURE.md) · [Настройки и меню](docs/lay-menu-settings-architecture.md) ·
+[Сообщить об ошибке](https://github.com/radislabus-star/lay-public/issues)
 
-Диагностические файлы также локальны:
+Lay написан на **Rust** и использует Linux-ввод, IBus и интеграцию с рабочим столом.
+Генерация вариантов, их выбор и проверенное применение разделены: подсказка сама
+по себе не даёт права заменить текст.
 
-```text
-~/.local/share/lay/recent_actions.jsonl
-~/.local/share/lay/learning_candidates.json
-~/.local/share/lay/stats.json
-```
+Разработка и обязательные проверки описаны в [DEVELOPMENT.md](DEVELOPMENT.md).
+Минимальный Rust для default features и `lexical-compiler` — **1.88.0**;
+рабочий toolchain и исключения — в [Rust Toolchain Policy](docs/rust-toolchain-policy.md).
 
-На Unix приватные runtime-файлы создаются с правами `0600`.
+<a id="license"></a>
 
-## Статус и ограничения
+## Лицензия
 
-Рабочее ядро:
+**Бесплатно для некоммерческого использования** по [Lay Non-Commercial License](LICENSE):
+личные задачи, обучение, исследование и тестирование. Для коммерческого
+использования требуется отдельное письменное разрешение правообладателей.
 
-- ручной double Shift и откат последней автозамены;
-- локальная RU/EN-конвертация;
-- V13 exact owner и Productive L2 V90 candidate material;
-- защищённый IBus/uinput output route;
-- фоновый, latest-only Space prefetch.
+<a id="english"></a>
 
-Активно проверяются автопомощь после пробела, mixed RU/EN, boundary-shift,
-редкие desktop text fields, KDE/X11 и экспериментальный IME/preedit.
+## English, briefly
 
-`lay` работает с коротким хвостом, который увидел daemon. Он не
-редактирует произвольное слово под курсором, выделенный текст или весь
-документ. Сомнительное автоматическое исправление должно быть пропущено.
+**Lay is a local RU/EN typing assistant for Linux.** Double-tap the left Shift to
+repair the last word typed in the wrong layout: `ghbdtn` → `привет`. Optional
+typing assistance, inline IBus completion with Tab, confirmed-choice preferences
+and terminal-command priority help with everyday mixed-language input.
 
-## Документация
+GNOME Wayland is the primary target; other backends have smaller coverage. The
+project is alpha, field compatibility varies, and only RU/EN is currently supported.
+The normal typing path needs no cloud API. Source version: **1.0.80**.
 
-- [Как это работает](HOW_IT_WORKS.md)
-- [Каноническая архитектура L2 над L1.1](docs/l2-l11-canonical-architecture.md)
-- [Маршрут интеллекта L1-L4](docs/l1-l4-intelligence-route.md)
-- [Архитектурное исследование V13 exact owner](docs/ime-target-authority-slice8-lexical-readout-2026-08-23.md)
-- [Память кристаллического ядра L1.1](docs/l1-crystal-kernel-memory-layout.md)
-- [Архитектура меню и настроек](docs/lay-menu-settings-architecture.md)
-- [Герметичные Rust test lanes](docs/test-lanes.md)
-- [Публичные материалы](docs/publicity/README.md)
+[Install](#install) · [Documentation](docs/README.md) · [Non-Commercial License](LICENSE)
 
-История старых alpha-релизов остаётся в Git и GitHub Releases; README описывает
-только текущий продукт.
+---
 
-## Разработка
+<div align="center">
 
-Минимальная поддерживаемая версия Rust — `1.88.0` для default features и
-`lexical-compiler`; optional `direct-llm` в этот контракт не входит. Обычная
-разработка, `rustfmt` и `clippy` закреплены на `1.97.1`; точные compiler
-identities и процедура обновления описаны в
-[Rust Toolchain Policy](docs/rust-toolchain-policy.md).
-Единый локальный и CI lint-контракт описан в
-[Rust Lint Policy](docs/lint-policy.md).
+**Меньше переключений. Больше законченных мыслей.**
 
-Разработка и проверки выполняются на удалённом worker через
-[DEVELOPMENT.md](DEVELOPMENT.md):
+[Установить Lay ↑](#install) · [Исходники](https://github.com/radislabus-star/lay-public) · [Обратная связь](https://github.com/radislabus-star/lay-public/issues)
 
-```bash
-python3 scripts/dev-check.py plan
-python3 scripts/dev-check.py check
-```
-
-Этот development PASS не заменяет обязательные changed/full release gates.
-Cargo-команды на worker проходят через `scripts/cargo-guard.sh`; budget
-`target/` — 12 GiB. Установленные бинарники лежат отдельно в
-`~/.local/lib/lay/bin`.
-
-После изменения кода или архитектурной документации на worker выполняется
-`scripts/update-architecture-graph.sh`: AST-only update, source binding,
-PASS receipt и обязательная architecture-проверка. Production desktop smoke
-и установка имеют отдельную область приёмки.
-
-## English
-
-`lay` 1.0.77 is a local Double Shift RU/EN layout rescue and bounded
-typing-correction tool for Linux desktops.
-
-```text
-Typed:   ghbdtn
-Press:   Shift Shift
-Result:  привет
-```
-
-The current route combines a bounded L1.1 lattice, immutable V13 identities,
-an exact process-lifetime DAFSA owner, Productive L2 V90 candidate material,
-L3 context, `TransitionDecisionCore`, and a structural verifier.
-Exact search contributes candidates and certificates but does not bypass final
-authority.
-
-The [1.0.77 release notes](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.77)
-cover the accepted short-word Space auto-flip, its exact client scope, and
-remaining browser limits.
-
-Quick install:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
-```
-
-Log out and back in after the first installation so the `input` group,
-`/dev/uinput` permissions, and desktop integration take effect.
-
-The primary tested target is GNOME Wayland. KDE/Plasma Wayland and Niri have a
-smaller compatibility matrix; X11 is experimental. Only RU/EN is currently
-supported.
-
-By default, `lay` uses no cloud API or remote LLM and sends no typed
-text anywhere.
-
-## License
-
-Lay Non-Commercial License v1.0. Commercial use is prohibited without prior
-written permission from the copyright holders. See [LICENSE](LICENSE).
+</div>
