@@ -40,3 +40,26 @@ __pycache__/
 /docs/structural_gates/receipts/*/*.failed-attempt-zero-byte
 /docs/structural_gates/receipts/*/D1_DECISION.json
 /docs/structural_gates/receipts/*/slice8b-v*-fixed-13x100*.json
+
+# Local Graphify query history and machine-generated caches.
+/graphify-out/memory/
+/graphify-out/reflections/
+/graphify-out/.graphify_python
+/graphify-out/.graphify_learning.json
+/graphify-out/.vocab.txt
+
+# Disposable editor, profiling and local execution artifacts.
+*.pyc
+*.pyo
+*.tmp
+*.bak
+*.orig
+*.swp
+*.swo
+*.stdout
+*.stderr
+/.pytest_cache/
+/.mypy_cache/
+/.ruff_cache/
+/.venv/
+/data/cleanup_metrics/

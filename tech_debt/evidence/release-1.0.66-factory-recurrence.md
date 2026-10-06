@@ -767,7 +767,8 @@ authorized by these source/test results. TD-121 remains IN_PROGRESS.
 ## Authorized lifecycle preview on the existing desktop IBus
 
 The user responded to the explicit temporary-preview permission request with
-«блять не останавливайся больше!!!!». Proceed with that preview, not a silent
+an instruction to continue (the quotation is sanitized for public documentation).
+Proceed with that preview, not a silent
 global IBus/keyboard-daemon restart or permanent installation. The subsequent
 question whether the old daemons are the cause is diagnostic, not restart
 authority. Specific stale capability-cache contents remain unmeasured.

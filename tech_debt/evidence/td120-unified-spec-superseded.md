@@ -21,7 +21,7 @@ Implementation model: `GPT-5.6 Sol / high`, после отдельного пе
 синтетический ввод, которым демон выполняет разрешённый ручной переворот.
 
 Задача не обещает исправить потерю первой буквы при смене экземпляра IME:
-это отдельная [TD-121](121-preserve-word-across-ime-layout-handoff.md).
+это отдельная [TD-121](../121-preserve-word-across-ime-layout-handoff.md).
 
 Причина подтверждена, но выбранная unified migration ещё **не допущена** к
 production-коду. Независимо можно подготовить failing lifecycle tests после
@@ -55,9 +55,10 @@ production-коду. Независимо можно подготовить fail
 числом кандидатов (`trace.rs::record_correction_projection_timing`).
 
 Снимки, SHA-256 и ограничения вывода:
-[общий аудит](AUDIT_2026-09-05_LAYOUT.md).
+общий исторический аудит `AUDIT_2026-09-05_LAYOUT.md`
+(архивный документ; в текущем дереве отсутствует).
 
-Phase2: [installed-byte baseline](evidence/td120-121-installed-baseline-phase2.md)
+Phase2: [installed-byte baseline](td120-121-installed-baseline-phase2.md)
 также воспроизвела ManualToggleV3 → полное удаление → новый токен →
 `manual_toggle_suppressed`. Качество последующей коррекции не проверялось.
 
@@ -254,12 +255,12 @@ IME regression class; отсутствие suppression само по себе н
 
 ## Ревью спецификации
 
-[Pass 1](evidence/td120-121-spec-review-pass1.md): overall 8/10, TD-120 7/10,
+[Pass 1](td120-121-spec-review-pass1.md): overall 8/10, TD-120 7/10,
 High=0, Medium=3. Единственный document repair явно закрыл неоднозначности
 описания R1–R3: dependency, общий V1 gate и atomic interleaving. Это не
 закрытие самих production gates.
 
-[Pass 2](evidence/td120-121-spec-review-pass2.md): TD-120 **8/10**, overall
+[Pass 2](td120-121-spec-review-pass2.md): TD-120 **8/10**, overall
 **8/10**, оставшиеся High=0/Medium=0 в проверенном scope. Описание принято
 как результат фазы 1. Статус `ANALYSIS_REQUIRED`, G120-1/2/3 OPEN; следующий
 шаг — доказательства допуска, не запуск общей миграции. Всего два review

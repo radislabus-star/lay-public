@@ -13,6 +13,7 @@
 - [L3](l3-online-phase-field.md), [L4](l4-causal-transition-memory-plan.md).
 - [Test lanes](test-lanes.md), [toolchain](rust-toolchain-policy.md),
   [lint policy](lint-policy.md).
+- [Аудит по 50 пунктам и очистка 2026-10-06](repository-audit-2026-10-06.md).
 - [Очистка 2026-09-08](project-cleanup-2026-09-08.md),
   [история и восстановление](../ARCHIVE.md).
 

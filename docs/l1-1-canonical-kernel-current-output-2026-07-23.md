@@ -417,9 +417,9 @@ L1.1-CANONICAL-SHADOW-10K
 +-- zero false authority gate
 ```
 
-Package: [l1_l11_crystallization_10k.bin](/home/ubu/projects/lay/data/lexical_grokking/l1_l11_crystallization_10k.bin)
+Package: [l1_l11_crystallization_10k.bin](https://github.com/radislabus-star/lay-public/blob/b934922/data/lexical_grokking/l1_l11_crystallization_10k.bin)
 
-Архитектура: [l1-crystal-kernel-memory-layout.md](/home/ubu/projects/lay/docs/l1-crystal-kernel-memory-layout.md:603)
+Архитектура: [l1-crystal-kernel-memory-layout.md](https://github.com/radislabus-star/lay-public/blob/b934922/docs/l1-crystal-kernel-memory-layout.md#L603)
 
 Коммит: `b934922 Complete L1.1 ambiguity-safe crystallization`.
 

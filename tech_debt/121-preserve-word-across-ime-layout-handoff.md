@@ -722,7 +722,7 @@ grouped run завершился FAILED: Python harness **36/36 PASS**; Rust dis
 выдал `DeleteSurroundingText(-3,3)` и `CommitText("дом ")`, что oracle отклонил;
 cleanup обоих cells чистый. After-audit подтвердил неизменные source, candidate
 и девять dependencies, errors 0. Задача не закрыта, authority не менялась.
-[Primary RESULT](/home/ubu/.cache/lay/development/td121-grouped-proof-20260913T020000Z-c1-PRIMARY-RESULTS/RESULT.json).
+`Primary RESULT` (локальный архив результатов).
 
 Причина off FAIL установлена в стенде: прежний профиль задавал только
 `nanda_autocorrect=false`, оставляя `auto_replace=true` и

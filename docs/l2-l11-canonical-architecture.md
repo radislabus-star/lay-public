@@ -2041,7 +2041,8 @@ Exact receipts:
 Not yet proven at this point in the change:
 
 - physical GUI application of `вотслов + Space -> вот слов `;
-- physical GUI application of `b ,kznm -> и блять`;
+- physical GUI application of the punctuation-key phrase projection
+  (the original regression phrase is omitted from public prose);
 - double-Shift rollback and stuck-key behavior with the release binary;
 - live Space latency and `prefetch_not_ready` frequency across applications;
 - broad glued-word recall and false-split percentages.
