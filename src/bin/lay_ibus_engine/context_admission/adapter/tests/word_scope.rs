@@ -80,12 +80,13 @@ fn td121_observed_bridge_expiry_releases_only_its_own_slot() {
     }));
 }
 
-async fn bounded<T>(work: impl std::future::Future<Output = T>) -> T {
-    future::race(work, async {
+fn bounded<T>(work: impl std::future::Future<Output = T>) -> impl std::future::Future<Output = T> {
+    // Keep large nested P2P fixture futures off the default test-thread stack.
+    // The same deadline and cancellation race still cover the entire work.
+    future::race(Box::pin(work), async {
         async_io::Timer::after(CALLBACK_BUDGET).await;
         panic!("bounded P2P word-scope choreography timed out")
     })
-    .await
 }
 
 async fn forward_marker_bounded(peer: &mut ControlledPeer) {
@@ -228,9 +229,17 @@ fn next_factory_keeps_ready_predecessor_until_delayed_source_installation() {
             .sender(DISPATCH_SENDER)
             .unwrap()
             .serial(NonZeroU32::new(4_100).unwrap())
+            .with_flags(zbus::message::Flags::NoReplyExpected)
+            .unwrap()
             .build(&"lay-us")
             .unwrap();
-        harness.peer.connection.send(&factory).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &factory,
+            "/org/freedesktop/IBus/Factory",
+            FACTORY_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
         let callback = harness
             .adapter
@@ -247,7 +256,13 @@ fn next_factory_keeps_ready_predecessor_until_delayed_source_installation() {
             ENGINE_INTERFACE,
             "FocusOut",
         );
-        harness.peer.connection.send(&focus_out).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &focus_out,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
         let disable = method_message(
             DISPATCH_SENDER,
@@ -256,7 +271,13 @@ fn next_factory_keeps_ready_predecessor_until_delayed_source_installation() {
             ENGINE_INTERFACE,
             "Disable",
         );
-        harness.peer.connection.send(&disable).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &disable,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
         let focus_in = method_message(
             DISPATCH_SENDER,
@@ -265,7 +286,13 @@ fn next_factory_keeps_ready_predecessor_until_delayed_source_installation() {
             ENGINE_INTERFACE,
             "FocusInId",
         );
-        harness.peer.connection.send(&focus_in).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &focus_in,
+            next_path,
+            ENGINE_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
         let observed = harness
             .adapter
@@ -386,13 +413,27 @@ fn next_factory_keeps_ready_predecessor_until_delayed_source_installation() {
 }
 
 fn legacy_message(serial: u32) -> Message {
-    method_message(
-        DISPATCH_SENDER,
-        serial,
-        TARGET_PATH,
-        ENGINE_INTERFACE,
-        "ProcessKeyEvent",
-    )
+    legacy_key_message_at(serial, TARGET_PATH, KEY_SPACE, 57, 0)
+}
+
+fn legacy_key_message_at(
+    serial: u32,
+    path: &str,
+    keyval: u32,
+    keycode: u32,
+    state: u32,
+) -> Message {
+    Message::method_call(path, "ProcessKeyEvent")
+        .unwrap()
+        .interface(ENGINE_INTERFACE)
+        .unwrap()
+        .sender(DISPATCH_SENDER)
+        .unwrap()
+        .serial(std::num::NonZeroU32::new(serial).unwrap())
+        .with_flags(zbus::message::Flags::NoReplyExpected)
+        .unwrap()
+        .build(&(keyval, keycode, state))
+        .unwrap()
 }
 
 async fn run_received_legacy_key(
@@ -418,7 +459,7 @@ async fn legacy_key(
     keycode: u32,
     state: u32,
 ) -> bool {
-    let key = legacy_message(serial);
+    let key = legacy_key_message_at(serial, TARGET_PATH, keyval, keycode, state);
     harness.peer.detached_callback_reply_serials.insert(serial);
     harness.peer.connection.send(&key).await.unwrap();
     // Semantic callback fixtures own a received observer stamp before the
@@ -514,6 +555,68 @@ pub(super) async fn next_legacy_text_effect(
     }
 }
 
+// ADR 2026-10-06-native-space-observed-boundary: ordinary Legacy NoApply
+// passes the one original Space. The pre-key display state fixes whether its
+// close must emit two clear/hide signals; no Commit/Delete may be present.
+pub(super) async fn expect_legacy_native_space(
+    harness: &mut Harness,
+    engine: &LayIbusEngine,
+    expected_mode: bool,
+    was_visible: bool,
+) {
+    let effects = terminal_delivery::legacy_effects(harness).await;
+    let first = if effects.first().is_some_and(|message| {
+        message
+            .header()
+            .member()
+            .is_some_and(|member| member.as_str() == "UpdateProperty")
+    }) {
+        assert_input_mode_update(&effects[0], engine, expected_mode);
+        1
+    } else {
+        0
+    };
+    let text_effects = &effects[first..];
+    if !was_visible {
+        assert!(
+            text_effects.is_empty(),
+            "native Space with no display must emit no text effect"
+        );
+        return;
+    }
+    assert_eq!(
+        text_effects.len(),
+        2,
+        "native Space closes exactly one visible display"
+    );
+    for effect in text_effects {
+        assert_eq!(effect.header().message_type(), Type::Signal);
+        assert_eq!(effect.header().path().unwrap().as_str(), engine.path);
+        assert_eq!(
+            effect.header().interface().unwrap().as_str(),
+            ENGINE_INTERFACE
+        );
+    }
+    assert_eq!(
+        text_effects[0].header().member().unwrap().as_str(),
+        "UpdatePreeditText"
+    );
+    assert_eq!(
+        text_effects[1].header().member().unwrap().as_str(),
+        "HidePreeditText"
+    );
+    let body = text_effects[0].body();
+    let (text, cursor, visible, mode) = body
+        .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+        .unwrap();
+    assert_eq!(
+        crate::ibus_interface::ibus_text_value_to_string(&text),
+        Some(String::new())
+    );
+    assert_eq!((cursor, visible, mode), (0, false, 0));
+    assert!(text_effects[1].body().deserialize::<()>().is_ok());
+}
+
 async fn expect_legacy_commit(
     peer: &mut ControlledPeer,
     engine: &LayIbusEngine,
@@ -545,7 +648,7 @@ async fn atomic_callback(
         ENGINE_INTERFACE,
         "ProcessKeyEventAtomicV1",
     );
-    harness.peer.connection.send(&key).await.unwrap();
+    send_manually_dispatched_callback(&mut harness.peer, &key, TARGET_PATH, ENGINE_INTERFACE).await;
     bounded(async {
         let (proposal, observed) = future::zip(
             crate::window_interaction::WindowInteraction::process_atomic_key(
@@ -642,8 +745,15 @@ fn legacy_marker_before_space_press_promotes_known_start() {
         start_source_free_unknown(&mut harness, &mut engine).await;
 
         let input_mode_before_key = engine.layout_gesture.layout_is_ru;
-        assert!(legacy_key(&mut harness, &mut engine, 1_780, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
+        let native_space_was_visible = engine.composition.preedit_visible;
+        assert!(!legacy_key(&mut harness, &mut engine, 1_780, KEY_SPACE, 57, 0).await);
+        expect_legacy_native_space(
+            &mut harness,
+            &engine,
+            input_mode_before_key,
+            native_space_was_visible,
+        )
+        .await;
         assert_eq!(engine.committed_tail.buffer, " ");
         assert!(engine.live_context_token().is_some());
         assert!(engine.context_word_is_known());
@@ -688,8 +798,15 @@ fn legacy_marker_before_space_press_promotes_known_start() {
         assert!(!engine.context_word_is_known());
 
         let input_mode_before_key = engine.layout_gesture.layout_is_ru;
-        assert!(legacy_key(&mut harness, &mut engine, 1_800, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
+        let native_space_was_visible = engine.composition.preedit_visible;
+        assert!(!legacy_key(&mut harness, &mut engine, 1_800, KEY_SPACE, 57, 0).await);
+        expect_legacy_native_space(
+            &mut harness,
+            &engine,
+            input_mode_before_key,
+            native_space_was_visible,
+        )
+        .await;
         assert_eq!(engine.committed_tail.buffer, " ");
         assert!(engine.live_context_token().is_some());
         assert!(engine.context_word_is_known());
@@ -706,7 +823,8 @@ fn legacy_pre_marker_space_schedules_remain_unknown_until_next_boundary() {
         let mut engine = new_engine(&harness);
         start_source_free_pending(&harness).await;
         let key = legacy_message(1_900);
-        harness.peer.connection.send(&key).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &key, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         assert!(bounded(harness.observer.process_next())
             .await
             .expect("pre-marker press observer result"));
@@ -716,26 +834,41 @@ fn legacy_pre_marker_space_schedules_remain_unknown_until_next_boundary() {
             .expect("marker observer result"));
 
         let input_mode_before_key = engine.layout_gesture.layout_is_ru;
-        assert!(run_received_legacy_key(&harness, &mut engine, &key, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
+        let native_space_was_visible = engine.composition.preedit_visible;
+        assert!(!run_received_legacy_key(&harness, &mut engine, &key, KEY_SPACE, 57, 0).await);
+        expect_legacy_native_space(
+            &mut harness,
+            &engine,
+            input_mode_before_key,
+            native_space_was_visible,
+        )
+        .await;
         assert_eq!(engine.committed_tail.buffer, " ");
         assert!(engine.live_context_token().is_some());
         assert!(!engine.context_word_is_known());
 
         let input_mode_before_key = engine.layout_gesture.layout_is_ru;
-        assert!(legacy_key(&mut harness, &mut engine, 1_901, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
+        let native_space_was_visible = engine.composition.preedit_visible;
+        assert!(!legacy_key(&mut harness, &mut engine, 1_901, KEY_SPACE, 57, 0).await);
+        expect_legacy_native_space(
+            &mut harness,
+            &engine,
+            input_mode_before_key,
+            native_space_was_visible,
+        )
+        .await;
         assert!(engine.context_word_is_known());
 
         // The private-client trace also permits a tighter schedule: the press
-        // handler commits before readiness, then source-free installation is
+        // native press is observed before readiness, then source-free installation is
         // consumed by its matching release. Installation, not release logic,
         // clears the unowned local tail and completeness stays UnknownStart.
         let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
         let mut engine = new_engine(&harness);
         start_source_free_pending(&harness).await;
         let input_mode_before_key = engine.layout_gesture.layout_is_ru;
-        assert!(legacy_key(&mut harness, &mut engine, 1_910, KEY_SPACE, 57, 0).await);
+        let native_space_was_visible = engine.composition.preedit_visible;
+        assert!(!legacy_key(&mut harness, &mut engine, 1_910, KEY_SPACE, 57, 0).await);
         assert_eq!(engine.committed_tail.buffer, " ");
         assert!(engine.live_context_token().is_none());
 
@@ -743,9 +876,15 @@ fn legacy_pre_marker_space_schedules_remain_unknown_until_next_boundary() {
         assert!(bounded(harness.observer.process_next())
             .await
             .expect("marker observer result"));
-        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
+        expect_legacy_native_space(
+            &mut harness,
+            &engine,
+            input_mode_before_key,
+            native_space_was_visible,
+        )
+        .await;
         assert!(
-            legacy_key(
+            !legacy_key(
                 &mut harness,
                 &mut engine,
                 1_911,
@@ -760,8 +899,15 @@ fn legacy_pre_marker_space_schedules_remain_unknown_until_next_boundary() {
         assert!(!engine.context_word_is_known());
 
         let input_mode_before_key = engine.layout_gesture.layout_is_ru;
-        assert!(legacy_key(&mut harness, &mut engine, 1_912, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
+        let native_space_was_visible = engine.composition.preedit_visible;
+        assert!(!legacy_key(&mut harness, &mut engine, 1_912, KEY_SPACE, 57, 0).await);
+        expect_legacy_native_space(
+            &mut harness,
+            &engine,
+            input_mode_before_key,
+            native_space_was_visible,
+        )
+        .await;
         assert_eq!(engine.committed_tail.buffer, " ");
         assert!(engine.context_word_is_known());
     }));

@@ -2964,3 +2964,117 @@ fn clearing_an_already_hidden_preedit_emits_no_empty_frame() {
     assert_eq!(builder.finish(false).0, PROPOSAL_NATIVE_UNHANDLED);
     assert!(engine.composition.preedit_fast.target_surface().is_none());
 }
+
+#[test]
+fn managed_space_clears_and_hides_suffix_before_one_commit_and_propagates_failure() {
+    use crate::engine::WordInputMode;
+    use crate::output::{EngineOutput, TestEngineOutput};
+    use crate::protocol::KEY_SPACE;
+
+    for fail_commit in [false, true] {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".to_string(),
+                nanda_precognition: false,
+                auto_replace: false,
+                ..LayConfig::default()
+            },
+        );
+        engine.committed_tail.buffer = "abcd".to_string();
+        engine.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
+        engine.composition.preedit_suffix = "e".to_string();
+        engine.composition.preedit_visible = true;
+        let mut observed = TestEngineOutput {
+            fail_commit,
+            ..Default::default()
+        };
+        let result = zbus::block_on(engine.process_pressed_key(
+            &mut EngineOutput::test(&mut observed),
+            KEY_SPACE,
+            57,
+            0,
+        ));
+
+        assert_eq!(
+            observed.effects,
+            ["update-preedit", "hide-preedit", "commit"]
+        );
+        assert_eq!(
+            observed.preedit_updates,
+            [(String::new(), 0, false, PREEDIT_MODE_CLEAR)]
+        );
+        // TestEngineOutput records commit attempts, including the injected failure.
+        assert_eq!(observed.committed_texts, [" "]);
+        assert!(observed.surrounding_deletes.is_empty());
+        assert!(!engine.composition.preedit_visible);
+        if fail_commit {
+            let emitted_error = zbus::fdo::Error::Failed("injected commit failure".into());
+            let propagated_error = zbus::fdo::Error::Failed(emitted_error.to_string());
+            assert_eq!(
+                result.unwrap_err().to_string(),
+                propagated_error.to_string()
+            );
+            assert_eq!(engine.committed_tail.buffer, "abcd");
+        } else {
+            assert!(result.unwrap());
+            assert_eq!(engine.committed_tail.buffer, "abcd ");
+        }
+    }
+}
+
+#[test]
+fn native_space_atomic_no_apply_and_manual_suppression_keep_one_commit() {
+    use crate::engine::WordInputMode;
+    use crate::output::{AtomicEffectBuilder, EngineOutput, PROPOSAL_FRAME_READY};
+    use crate::protocol::KEY_SPACE;
+
+    for suppressed in [false, true] {
+        let mut engine = LayIbusEngine::new(
+            "/native-space/atomic-control".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig {
+                text_backend: "ime".into(),
+                nanda_precognition: false,
+                auto_replace: false,
+                ..LayConfig::default()
+            },
+        );
+        assert!(engine.bind_focus_path());
+        for ch in "abc".chars() {
+            engine.push_tail_char(ch);
+        }
+        engine.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
+        engine.composition.preedit_suffix = "de".into();
+        engine.composition.preedit_visible = true;
+        if suppressed {
+            assert!(engine.arm_current_word_autocorrect_suppression());
+        }
+        let mut builder = AtomicEffectBuilder::default();
+        let handled = zbus::block_on(engine.process_pressed_key(
+            &mut EngineOutput::atomic(&mut builder),
+            KEY_SPACE,
+            57,
+            0,
+        ))
+        .unwrap();
+        assert!(handled);
+        assert_eq!(builder.preedit_calls(), ["update-hidden", "hide"]);
+        let proposal = builder.finish(handled);
+        assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
+        let texts: Vec<String> = proposal
+            .1
+            .iter()
+            .filter(|(tag, _)| *tag == 1)
+            .map(|(_, value)| String::try_from(value.clone()).unwrap())
+            .collect();
+        assert_eq!(texts, [" "]);
+        assert!(!proposal.1.iter().any(|(tag, _)| *tag == 2));
+        assert_eq!(engine.committed_tail.buffer, "abc ");
+    }
+}

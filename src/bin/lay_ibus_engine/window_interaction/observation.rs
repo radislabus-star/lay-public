@@ -4,7 +4,9 @@ use super::{
     IBUS_INPUT_PURPOSE_PASSWORD, IBUS_INPUT_PURPOSE_PIN,
 };
 use crate::atomic::{AtomicCapability, AtomicEnvelope, AtomicPriorReceipt};
-use crate::context_admission::AdmissionToken;
+use crate::context_admission::{
+    AdmissionToken, ContextAdmissionAdapter, PendingFence, RequestGeneration,
+};
 use crate::engine::WordInputMode;
 use crate::engine::{PendingSystemOutcomeFeedback, SystemOutcomeKind};
 use crate::output::EngineOutput;
@@ -66,6 +68,7 @@ async fn focused_window_is_kitty() -> bool {
 /// the authenticated Reset and the next exact snapshot create new authority.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ContextResetRereceiptCandidate {
+    completed_replay: Option<crate::protocol::ExactManualToggleSuppression>,
     pub(crate) token: AdmissionToken,
     pub(crate) tail_epoch: u64,
     pub(crate) token_text: String,
@@ -76,6 +79,7 @@ pub(crate) struct ContextResetRereceiptCandidate {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct PendingContextResetRereceipt {
+    completed_replay: Option<crate::protocol::ExactManualToggleSuppression>,
     pub(crate) token: AdmissionToken,
     pub(crate) predecessor_token: AdmissionToken,
     pub(crate) tail_epoch: u64,
@@ -83,6 +87,9 @@ pub(crate) struct PendingContextResetRereceipt {
     pub(crate) observed_suffix_chars: u32,
     pub(crate) armed_revision: u64,
     pub(crate) confirmed: bool,
+    // Inert one-shot echo of a previously confirmed managed word. It never
+    // grants authority until the immediately following exact full receipt.
+    strict_prefix_echo_revision: Option<u64>,
     published_preedit: Option<PublishedPreeditWitness>,
 }
 
@@ -461,6 +468,16 @@ impl LayIbusEngine {
         let accepted = observed.header.member == "Disable" && admission.disable(&owner, &observed);
         if !accepted {
             self.context_handoff_sealed = false;
+            if admission.disable_retired_by_later_ingress(&owner, &observed) {
+                // This exact source ticket is already revoked. A second global
+                // revocation would erase later authenticated FocusIn stamps.
+                // Retire only the matching local source, granting no handoff.
+                self.discard_context_activation();
+                trace::record(
+                    r#"{"kind":"ibus_focus","stage":"disable_retired_by_later_ingress"}"#,
+                );
+                return false;
+            }
             self.revoke_context_word();
         }
         accepted
@@ -476,6 +493,12 @@ impl LayIbusEngine {
             return true;
         }
         let reset_rereceipt_candidate = self.capture_context_reset_rereceipt_candidate();
+        let reset_rereceipt_candidate = reset_rereceipt_candidate.filter(|candidate| {
+            candidate.completed_replay.is_none()
+                || header
+                    .member()
+                    .is_some_and(|member| member.as_str() == "Reset")
+        });
         self.context_handoff_sealed = false;
         let mut installed_post_reset_scope = false;
         if let (Some(admission), Some(owner)) =
@@ -1268,11 +1291,57 @@ impl LayIbusEngine {
             self.fail_context_activation();
             return false;
         }
-        // The adapter owns the one-shot Get/marker future. Until a later
-        // callback consumes its target-bound result, this engine has no text
-        // authority and all input follows the literal UnknownStart route.
+        // The adapter owns the one-shot Get/marker future. Its completion task
+        // and normal callbacks consume the same target-bound ready slot. Until
+        // installation, input follows the literal UnknownStart route.
         self.fail_context_activation_local();
         true
+    }
+
+    pub(crate) async fn deliver_ready_context_activation(
+        connection: &zbus::Connection,
+        admission: &ContextAdmissionAdapter,
+        target_path: &EnginePath,
+        request: RequestGeneration,
+        fence: PendingFence,
+    ) {
+        let Ok(interface) = connection
+            .object_server()
+            .interface::<_, LayIbusEngine>(target_path.as_str())
+            .await
+        else {
+            return;
+        };
+        let mut engine = interface.get_mut().await;
+        if engine.path != target_path.as_str()
+            || engine.atomic.active
+            || engine
+                .context_admission
+                .as_ref()
+                .is_none_or(|current| !current.same_instance(admission))
+        {
+            return;
+        }
+        // Obtain the full outcome only AFTER both interface awaits. A Reset
+        // may have replaced it; a callback may have consumed it; a successor
+        // request on this path must never be installed by the old task.
+        let Some(outcome) = admission.pending_activation_for_request(target_path, request, fence)
+        else {
+            return;
+        };
+        if !engine.install_context_activation(outcome.clone()) {
+            return;
+        }
+        if !admission.acknowledge_activation(&outcome) {
+            engine.discard_context_activation();
+            return;
+        }
+        // No native Get/marker RPC or adapter mutex is held here. Only the
+        // existing guarded metadata signal publisher awaits under this guard.
+        let mut output = EngineOutput::legacy(interface.signal_emitter());
+        engine
+            .publish_pending_input_mode_property(&mut output)
+            .await;
     }
 
     pub(crate) fn try_install_pending_context_activation(&mut self) {
@@ -1672,6 +1741,26 @@ impl LayIbusEngine {
             self.revoke_context_word();
             return;
         };
+        if !self.atomic.active && !handled {
+            let validated_native_effect = is_key_press(state)
+                && self.exact_replay_tail_change_quarantined
+                && self.committed_tail.buffer != tail_before;
+            let unchanged_release =
+                !is_key_press(state) && self.committed_tail.buffer == tail_before;
+            if (validated_native_effect || unchanged_release)
+                && self
+                    .exact_replay_reset_provenance(false)
+                    .is_some_and(|replay| {
+                        replay.source_token.as_deref().is_some_and(|source| {
+                            admission.key_retired_by_observed_word_reset(callback, source)
+                        })
+                    })
+            {
+                // Retired native callbacks grant no authority. Keep the actual
+                // queued Reset and reconcile only after its exact client receipt.
+                return;
+            }
+        }
         if !self.atomic.active
             && !is_key_press(state)
             && tail_before == self.committed_tail.buffer
@@ -1851,8 +1940,9 @@ impl LayIbusEngine {
         state: u32,
         tail_before: &str,
         handled: bool,
-        boundary_candidate: Option<ContextResetRereceiptCandidate>,
+        boundary: (Option<ContextResetRereceiptCandidate>, bool),
     ) {
+        let (boundary_candidate, native_space_eligible) = boundary;
         let owned_append = handled
             || (self.exact_replay_tail_change_quarantined && self.exact_replay_quarantine_active());
         if is_key_press(state) && keyval == KEY_BACKSPACE {
@@ -1894,6 +1984,7 @@ impl LayIbusEngine {
                     return None;
                 }
                 Some(PendingContextResetRereceipt {
+                    completed_replay: None,
                     token,
                     predecessor_token: pending.predecessor_token.clone(),
                     tail_epoch: self.committed_tail.epoch,
@@ -1901,6 +1992,7 @@ impl LayIbusEngine {
                     observed_suffix_chars: chars as u32,
                     armed_revision: self.client_context.surrounding_observation_revision,
                     confirmed: false,
+                    strict_prefix_echo_revision: None,
                     published_preedit: None,
                 })
             })();
@@ -1915,7 +2007,23 @@ impl LayIbusEngine {
             } else {
                 state
             };
-        if owned_append && !has_command_modifier(boundary_modifier_state) {
+        // The callback-local eligibility came from the actual pre-effect Legacy
+        // ManagedCommit route. False native input alone is never an owned append.
+        let native_space_append = native_space_eligible
+            && !handled
+            && is_key_press(state)
+            && keyval == KEY_SPACE
+            && !self.atomic.active
+            && self.composition.buffer.is_empty()
+            && !self.composition.legacy_word_preedit_active
+            && !self.uses_native_terminal_input()
+            && !self.exact_replay_tail_change_quarantined
+            && !self.exact_replay_quarantine_active()
+            && !matches!(
+                self.committed_tail.autocorrect_suppression.as_ref(),
+                Some(AutocorrectSuppression::ExactReplay(_))
+            );
+        if (owned_append || native_space_append) && !has_command_modifier(boundary_modifier_state) {
             if let Some(candidate) = boundary_candidate {
                 if let Some(appended) = self.committed_tail.buffer.strip_prefix(tail_before) {
                     let closes_word = !appended.is_empty()
@@ -1924,7 +2032,15 @@ impl LayIbusEngine {
                             .trim_end_matches(char::is_whitespace)
                             .chars()
                             .all(|ch| !crate::preedit::is_observed_word_boundary(ch));
+                    let native_effect_is_exact = !native_space_append
+                        || (appended == " "
+                            && candidate.completed_replay.is_none()
+                            && candidate.tail_epoch.checked_add(1)
+                                == Some(self.committed_tail.epoch)
+                            && candidate.armed_revision
+                                == self.client_context.surrounding_observation_revision);
                     if closes_word
+                        && native_effect_is_exact
                         && tail_before.ends_with(candidate.token_text.as_str())
                         && self.committed_tail.epoch > candidate.tail_epoch
                     {
@@ -1941,12 +2057,14 @@ impl LayIbusEngine {
                                 && token.matches_owner(owner)
                                 && token.matches_word_scope(scope)
                                 && admission.revalidate(token)
+                                && (!native_space_append || !admission.revalidate(&candidate.token))
                                 && token_text.starts_with(candidate.token_text.as_str())
                             {
                                 // The real append closed a proved word. Retain
                                 // only its exact predecessor for a later Reset;
                                 // this is not authority for the next empty word.
                                 self.context_reset_rereceipt = Some(PendingContextResetRereceipt {
+                                    completed_replay: None,
                                     token: token.clone(),
                                     predecessor_token: candidate.token,
                                     tail_epoch: self.committed_tail.epoch,
@@ -1956,6 +2074,7 @@ impl LayIbusEngine {
                                         .client_context
                                         .surrounding_observation_revision,
                                     confirmed: false,
+                                    strict_prefix_echo_revision: None,
                                     published_preedit: candidate.published_preedit,
                                 });
                                 return;
@@ -2028,6 +2147,7 @@ impl LayIbusEngine {
             return;
         }
         self.context_reset_rereceipt = Some(PendingContextResetRereceipt {
+            completed_replay: None,
             token,
             predecessor_token: pending.predecessor_token,
             tail_epoch: self.committed_tail.epoch,
@@ -2035,6 +2155,7 @@ impl LayIbusEngine {
             observed_suffix_chars: next_chars as u32,
             armed_revision: self.client_context.surrounding_observation_revision,
             confirmed: pending.confirmed,
+            strict_prefix_echo_revision: None,
             published_preedit: pending.published_preedit,
         });
     }
@@ -2068,6 +2189,34 @@ impl LayIbusEngine {
     }
 
     fn capture_context_reset_rereceipt_candidate(&self) -> Option<ContextResetRereceiptCandidate> {
+        self.capture_owned_context_reset_rereceipt_candidate()
+            .or_else(|| {
+                if self.context_handoff_sealed
+                    || self.atomic.active
+                    || self.committed_tail.buffer.ends_with(char::is_whitespace)
+                {
+                    return None;
+                }
+                let replay = self.exact_replay_reset_provenance(true)?;
+                let token_text = self.last_tail_with_boundary();
+                if token_text.is_empty() || token_text != replay.replacement {
+                    return None;
+                }
+                Some(ContextResetRereceiptCandidate {
+                    token: replay.source_token.as_deref()?.clone(),
+                    tail_epoch: self.committed_tail.epoch,
+                    observed_suffix_chars: token_text.chars().count() as u32,
+                    token_text,
+                    armed_revision: self.client_context.surrounding_observation_revision,
+                    published_preedit: None,
+                    completed_replay: Some(replay),
+                })
+            })
+    }
+
+    fn capture_owned_context_reset_rereceipt_candidate(
+        &self,
+    ) -> Option<ContextResetRereceiptCandidate> {
         if self.context_handoff_sealed
             || self.atomic.active
             || !self.composition.buffer.is_empty()
@@ -2119,6 +2268,7 @@ impl LayIbusEngine {
                 })
                 .cloned();
             return Some(ContextResetRereceiptCandidate {
+                completed_replay: pending.completed_replay.clone(),
                 // Several Reset ingresses may already share the latest reducer
                 // token. Keep the original revoked provenance across callbacks.
                 token: pending.predecessor_token.clone(),
@@ -2141,6 +2291,7 @@ impl LayIbusEngine {
             return None;
         }
         Some(ContextResetRereceiptCandidate {
+            completed_replay: None,
             token: predecessor_token.clone(),
             tail_epoch: self.committed_tail.epoch,
             token_text,
@@ -2182,6 +2333,7 @@ impl LayIbusEngine {
                 .pending_manual_refresh_at
                 .is_some_and(|queued| queued.elapsed() <= std::time::Duration::from_millis(700));
         self.context_reset_rereceipt = Some(PendingContextResetRereceipt {
+            completed_replay: candidate.completed_replay,
             token,
             predecessor_token: candidate.token,
             tail_epoch,
@@ -2189,6 +2341,7 @@ impl LayIbusEngine {
             observed_suffix_chars,
             armed_revision: candidate.armed_revision,
             confirmed: false,
+            strict_prefix_echo_revision: None,
             // HidePreeditText can make Firefox Reset before its last echo of
             // this exact publication. Carry only the inert display witness
             // while the same physical gesture still owns the refresh lease.
@@ -2203,10 +2356,55 @@ impl LayIbusEngine {
         ));
     }
 
+    fn discard_exact_replay_reset_seed(&mut self) {
+        if self
+            .context_reset_rereceipt
+            .as_ref()
+            .is_some_and(|pending| pending.completed_replay.is_some())
+        {
+            self.context_reset_rereceipt = None;
+        }
+        let replay = match self.committed_tail.autocorrect_suppression.as_ref() {
+            Some(AutocorrectSuppression::ExactReplay(scope)) if scope.source_token.is_some() => {
+                Some(scope.clone())
+            }
+            _ => None,
+        };
+        if let Some(replay) = replay {
+            if !self.consume_exact_replay_reset_provenance(&replay) {
+                // Never touch another owner's shared scope. Retire this local
+                // seed even when the paired scope cannot be consumed.
+                if let Some(AutocorrectSuppression::ExactReplay(scope)) =
+                    self.committed_tail.autocorrect_suppression.as_mut()
+                {
+                    scope.source_token = None;
+                }
+            }
+        }
+    }
+
+    fn discard_context_reset_rereceipt(&mut self) {
+        self.context_reset_rereceipt = None;
+        self.discard_exact_replay_reset_seed();
+    }
+
     pub(crate) fn observe_context_reset_rereceipt_surrounding_text(&mut self) {
         let Some(pending) = self.context_reset_rereceipt.clone() else {
             return;
         };
+        // Spend the echo at the next observation, even if that observation is
+        // contradictory. Other inert cache/sentinel paths cannot manufacture it.
+        if let Some(current) = self.context_reset_rereceipt.as_mut() {
+            current.strict_prefix_echo_revision = None;
+        }
+        let exact_after_managed_prefix_echo = !pending.confirmed
+            && pending.strict_prefix_echo_revision.is_some_and(|revision| {
+                revision.checked_add(1)
+                    == Some(self.client_context.surrounding_observation_revision)
+                    && pending.armed_revision.checked_add(1) == Some(revision)
+            })
+            && self.managed_strict_prefix_echo_identity_is_current(&pending)
+            && self.context_reset_rereceipt_matches_current_snapshot();
         let revision_gap = self
             .client_context
             .surrounding_observation_revision
@@ -2279,12 +2477,17 @@ impl LayIbusEngine {
             == pending.armed_revision.saturating_add(1)
             && self.context_reset_rereceipt_strict_prefix_is_current(&pending)
         {
+            let echo_revision = (pending.confirmed
+                && self.managed_strict_prefix_echo_identity_is_current(&pending))
+            .then_some(self.client_context.surrounding_observation_revision);
             // A delayed strict prefix contradicts exact authority, but not the
             // observed token lineage. Retain it only as an inert predecessor;
-            // recovery still requires a later authenticated Reset and exact
-            // full receipt.
+            // an independently confirmed managed chain may accept only the
+            // immediately following full exact receipt. Other paths still
+            // require a later authenticated Reset and exact full receipt.
             if let Some(pending) = self.context_reset_rereceipt.as_mut() {
                 pending.confirmed = false;
+                pending.strict_prefix_echo_revision = echo_revision;
             }
             trace::record(format!(
                 r#"{{"kind":"ibus_context_reset_rereceipt","stage":"retained_unconfirmed","reason":"{}"}}"#,
@@ -2310,14 +2513,15 @@ impl LayIbusEngine {
                 ));
                 return;
             }
-            self.context_reset_rereceipt = None;
+            self.discard_context_reset_rereceipt();
             trace::record(
                 r#"{"kind":"ibus_context_reset_rereceipt","stage":"rejected","reason":"second_surrounding_receipt"}"#,
             );
             return;
         }
-        if self.client_context.surrounding_observation_revision
+        if (self.client_context.surrounding_observation_revision
             != pending.armed_revision.saturating_add(1)
+            && !exact_after_managed_prefix_echo)
             || !self.context_reset_rereceipt_matches_current_snapshot()
         {
             if trace::enabled() {
@@ -2353,13 +2557,61 @@ impl LayIbusEngine {
                     self.context_reset_rereceipt_identity_is_current(),
                 ));
             }
-            self.context_reset_rereceipt = None;
+            self.discard_context_reset_rereceipt();
             trace::record(
                 r#"{"kind":"ibus_context_reset_rereceipt","stage":"rejected","reason":"surrounding_receipt_mismatch"}"#,
             );
             return;
         }
+        if exact_after_managed_prefix_echo {
+            trace::record(
+                r#"{"kind":"ibus_context_reset_rereceipt","stage":"managed_prefix_echo_confirmed"}"#,
+            );
+        }
+        if let Some(replay) = pending.completed_replay.as_ref() {
+            let aligned = (|| {
+                if !self.context_reset_rereceipt_identity_is_current()
+                    || self.exact_replay_reset_provenance(true).as_ref() != Some(replay)
+                {
+                    return false;
+                }
+                let Some(prefix) = replay.observed_external_prefix.as_ref() else {
+                    return false;
+                };
+                let expected = format!(
+                    "{}{}{}",
+                    prefix, replay.unchanged_prefix, replay.replacement
+                );
+                let Some(snapshot) = self.client_context.surrounding_text_snapshot.as_ref() else {
+                    return false;
+                };
+                if snapshot.text != expected
+                    || snapshot.has_selection()
+                    || snapshot.cursor_pos as usize != expected.chars().count()
+                {
+                    return false;
+                }
+                let (Some(source), Some(admission)) = (
+                    replay.source_token.as_deref(),
+                    self.context_admission.as_ref(),
+                ) else {
+                    return false;
+                };
+                admission.align_completed_exact_replay_epoch(
+                    source,
+                    &pending.token,
+                    replay.epoch,
+                    pending.tail_epoch,
+                    replay.original_suffix.chars().count() + replay.replacement.chars().count(),
+                )
+            })();
+            if !aligned || !self.consume_exact_replay_reset_provenance(replay) {
+                self.discard_context_reset_rereceipt();
+                return;
+            }
+        }
         if let Some(pending) = self.context_reset_rereceipt.as_mut() {
+            pending.completed_replay = None;
             pending.confirmed = true;
             pending.published_preedit = None;
         }
@@ -2395,6 +2647,28 @@ impl LayIbusEngine {
                 .is_some_and(|snapshot| {
                     snapshot_exactly_bounds_strict_token_prefix(snapshot, &pending.token_text)
                 })
+    }
+
+    fn managed_strict_prefix_echo_identity_is_current(
+        &self,
+        pending: &PendingContextResetRereceipt,
+    ) -> bool {
+        pending.completed_replay.is_none()
+            && self.composition.word_input_mode == Some(WordInputMode::ManagedCommit)
+            && !self.exact_replay_tail_change_quarantined
+            && !self.exact_replay_quarantine_active()
+            && !matches!(
+                self.committed_tail.autocorrect_suppression.as_ref(),
+                Some(AutocorrectSuppression::ExactReplay(_))
+            )
+            && self.shared.lock().is_ok_and(|shared| {
+                !matches!(
+                    shared.autocorrect_suppression.as_ref(),
+                    Some(AutocorrectSuppression::ExactReplay(_))
+                )
+            })
+            && self.context_token.as_ref() == Some(&pending.token)
+            && self.context_reset_rereceipt_identity_is_current()
     }
 
     pub(crate) fn context_reset_rereceipt_exact_manual_handoff_allowed(&self) -> bool {
@@ -2703,7 +2977,7 @@ impl LayIbusEngine {
     pub(crate) fn revoke_context_word(&mut self) {
         self.layout_gesture.native_letter_release_focus.clear();
         self.exact_manual_target_snapshot = None;
-        self.context_reset_rereceipt = None;
+        self.discard_context_reset_rereceipt();
         if let Some(scope) = self.context_word_scope.as_mut() {
             scope.revoke_for_input_gap();
         }
@@ -2786,6 +3060,9 @@ impl LayIbusEngine {
         self.client_context.preedit_text_supported = caps & IBUS_CAP_PREEDIT_TEXT != 0;
         self.client_context.exact_surrounding_refresh_available =
             caps & IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH != 0;
+        if preedit_text_was_supported != self.client_context.preedit_text_supported {
+            self.discard_exact_replay_reset_seed();
+        }
         let legacy_word_preedit_is_supported = self.client_context.preedit_text_supported
             && !self.client_context.surrounding_text_supported
             && !self.client_context.exact_surrounding_refresh_available;
@@ -2793,6 +3070,7 @@ impl LayIbusEngine {
             || exact_surrounding_refresh_was_available
                 != self.client_context.exact_surrounding_refresh_available
         {
+            self.discard_exact_replay_reset_seed();
             self.client_context.managed_word_start = None;
             self.composition.legacy_preedit_start_boundary = None;
             self.invalidate_space_autocorrect_path();
@@ -2805,7 +3083,7 @@ impl LayIbusEngine {
             }
         }
         if surrounding_text_was_supported != self.client_context.surrounding_text_supported {
-            self.context_reset_rereceipt = None;
+            self.discard_context_reset_rereceipt();
             self.advance_surrounding_observation_revision();
         }
         if !surrounding_text_was_supported
@@ -2831,7 +3109,7 @@ impl LayIbusEngine {
         {
             return;
         }
-        self.context_reset_rereceipt = None;
+        self.discard_context_reset_rereceipt();
         if self.client_context.content_purpose != purpose {
             self.composition.word_input_mode = None;
         }
@@ -3123,6 +3401,28 @@ impl WindowInteraction {
                 None,
             );
         }
+        // Keep transport eligibility only on this callback's stack: whitespace
+        // clears word_input_mode, so post-effect mode cannot identify its route.
+        let native_space_eligible = callback.is_some()
+            && output.is_legacy()
+            && is_key_press(state)
+            && keyval == KEY_SPACE
+            && !has_command_modifier(state)
+            && !engine.atomic.active
+            && engine.composition.buffer.is_empty()
+            && !engine.composition.legacy_word_preedit_active
+            && !engine.uses_native_terminal_input()
+            && engine
+                .composition
+                .word_input_mode
+                .unwrap_or_else(|| engine.initial_word_input_mode())
+                == WordInputMode::ManagedCommit
+            && !engine.exact_replay_tail_change_quarantined
+            && !engine.exact_replay_quarantine_active()
+            && !matches!(
+                engine.committed_tail.autocorrect_suppression.as_ref(),
+                Some(AutocorrectSuppression::ExactReplay(_))
+            );
         let tail_before = engine.committed_tail.buffer.clone();
         let native_backspace_identity = (callback.is_some()
             && is_key_press(state)
@@ -3156,6 +3456,14 @@ impl WindowInteraction {
         };
         engine.exact_replay_tail_change_quarantined = false;
         engine.context_callback_entered = Some(callback_entered);
+        engine.trace_client_output_metadata(
+            "callback",
+            "binding",
+            trace::diagnostics_enabled_cached().then_some(callback_entered),
+            None,
+            None,
+            Some(callback_serial),
+        );
         engine.consume_shift_gesture_handoff();
         let mut result = engine
             .process_key_event_with_output(output, keyval, keycode, state)
@@ -3188,7 +3496,7 @@ impl WindowInteraction {
                 state,
                 &tail_before,
                 handled,
-                boundary_candidate,
+                (boundary_candidate, native_space_eligible),
             );
             if is_key_press(state)
                 && tail_before != engine.committed_tail.buffer

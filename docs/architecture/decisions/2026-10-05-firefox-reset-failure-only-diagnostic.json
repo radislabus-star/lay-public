@@ -1,0 +1,26 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-05",
+  "status": "PROPOSED_DIAGNOSTIC_ONLY",
+  "title": "Failure-only Reset metadata; preserve input and authority contracts",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "diagnostic_patch": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/RESET_FAILURE_ONLY.patch",
+  "diagnostic_patch_sha256": "a3be7bdaf1b89149b763608f9df832e82a07e348f6722d6a536d5c0e3d187c59",
+  "runtime_authority_changed": false,
+  "production_patch_selected": false,
+  "decision": "Add failure-only metadata to existing opt-in Reset diagnostics; preserve all decision predicates and authority.",
+  "reason": "Physical nonempty Reset rejection merges missing predecessor and post-reset token; original trace cannot identify first failed predicate.",
+  "verification": "Pending isolated remote formatter, architecture graph/canon, source closure and diagnostic-only IME compile; then finite actual-client trial with exact79 rollback.",
+  "not_tested": "No production repair selected; changed bytes and physical diagnostic not yet tested.",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs"
+  ]
+}

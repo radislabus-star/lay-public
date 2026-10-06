@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::BTreeMap;
 use std::num::NonZeroU32;
 use std::os::unix::net::UnixStream;
 use std::pin::Pin;
@@ -29,10 +29,41 @@ const SOURCE_PATH: &str = "/io/github/radislabus_star/LayIme/engine/source";
 const TARGET_PATH: &str = "/io/github/radislabus_star/LayIme/engine/target";
 const CONTEXT_PATH: &str = "/org/freedesktop/IBus/InputContext_1";
 
+// Test transport bookkeeping: one count per actual manual packet. A repeated
+// serial is a separate emission; it must not be collapsed or registered twice.
+#[derive(Default)]
+struct DetachedCallbackReplyCounts {
+    counts: BTreeMap<u32, usize>,
+}
+
+impl DetachedCallbackReplyCounts {
+    fn insert(&mut self, serial: u32) -> bool {
+        let count = self.counts.entry(serial).or_default();
+        let previously_absent = *count == 0;
+        *count += 1;
+        previously_absent
+    }
+
+    fn remove(&mut self, serial: &u32) -> bool {
+        let Some(count) = self.counts.get_mut(serial) else {
+            return false;
+        };
+        *count -= 1;
+        if *count == 0 {
+            self.counts.remove(serial);
+        }
+        true
+    }
+
+    fn contains(&self, serial: &u32) -> bool {
+        self.counts.contains_key(serial)
+    }
+}
+
 struct ControlledPeer {
     connection: Connection,
     incoming: MessageStream,
-    detached_callback_reply_serials: BTreeSet<u32>,
+    detached_callback_reply_serials: DetachedCallbackReplyCounts,
 }
 
 struct Harness {
@@ -55,6 +86,10 @@ fn controlled_pair() -> (Connection, ControlledPeer) {
                 .p2p()
                 .unique_name(ADAPTER_SENDER)
                 .unwrap()
+                // No engine exists under this standard ObjectManager leaf.
+                // Its subtree is disjoint from all controlled engine paths.
+                .serve_at("/org/lay/TestDispatcherReady", zbus::fdo::ObjectManager)
+                .unwrap()
                 .build()
                 .await
                 .unwrap()
@@ -75,7 +110,7 @@ fn controlled_pair() -> (Connection, ControlledPeer) {
         ControlledPeer {
             connection: peer_connection,
             incoming,
-            detached_callback_reply_serials: BTreeSet::new(),
+            detached_callback_reply_serials: DetachedCallbackReplyCounts::default(),
         },
     )
 }
@@ -103,6 +138,59 @@ async fn next_peer_message(peer: &mut ControlledPeer) -> Message {
     }
 }
 
+// This declaration is used only where the fixture observes a wire MethodCall
+// and invokes its adapter/engine callback directly. Registered RPCs, their
+// normal replies, bootstrap and client signals keep their original send path.
+fn declare_manually_dispatched_callback(
+    peer: &mut ControlledPeer,
+    message: &Message,
+    expected_path: &str,
+    expected_interface: &str,
+) {
+    let header = message.header();
+    assert_eq!(header.message_type(), Type::MethodCall);
+    assert_eq!(
+        header.sender().map(|sender| sender.as_str()),
+        Some(DISPATCH_SENDER)
+    );
+    assert_eq!(header.path().map(|path| path.as_str()), Some(expected_path));
+    assert_eq!(
+        header.interface().map(|interface| interface.as_str()),
+        Some(expected_interface)
+    );
+    assert!(header.member().is_some());
+    assert!(message
+        .primary_header()
+        .flags()
+        .contains(zbus::message::Flags::NoReplyExpected));
+    assert!(matches!(
+        expected_interface,
+        ENGINE_INTERFACE | FACTORY_INTERFACE | PROPERTIES_INTERFACE
+    ));
+    if expected_interface == FACTORY_INTERFACE {
+        assert_eq!(expected_path, "/org/freedesktop/IBus/Factory");
+        assert_eq!(
+            header.member().map(|member| member.as_str()),
+            Some("CreateEngine")
+        );
+    }
+    if expected_interface == PROPERTIES_INTERFACE {
+        assert_eq!(header.member().map(|member| member.as_str()), Some("Set"));
+    }
+    peer.detached_callback_reply_serials
+        .insert(message.primary_header().serial_num().get());
+}
+
+async fn send_manually_dispatched_callback(
+    peer: &mut ControlledPeer,
+    message: &Message,
+    expected_path: &str,
+    expected_interface: &str,
+) {
+    declare_manually_dispatched_callback(peer, message, expected_path, expected_interface);
+    peer.connection.send(message).await.unwrap();
+}
+
 fn global_engine_value(name: &str) -> OwnedValue {
     let descriptor = StructureBuilder::new()
         .add_field(name)
@@ -111,6 +199,54 @@ fn global_engine_value(name: &str) -> OwnedValue {
         .build()
         .unwrap();
     OwnedValue::try_from(descriptor).unwrap()
+}
+
+// The standard Peer interface is outside the adapter's observed IBus rules.
+// Builder::serve_at below starts its dispatcher before the socket reader; an
+// exact Ping reply then fences all prior absent-path manual callback errors.
+fn standard_dispatcher_ping() -> Message {
+    Message::method_call("/org/lay/TestDispatcherReady", "Ping")
+        .unwrap()
+        .interface("org.freedesktop.DBus.Peer")
+        .unwrap()
+        .destination(ADAPTER_SENDER)
+        .unwrap()
+        .sender(IBUS_SENDER)
+        .unwrap()
+        .build(&())
+        .unwrap()
+}
+
+fn assert_standard_dispatcher_ping_reply(reply: &Message, serial: NonZeroU32) {
+    assert_eq!(reply.header().message_type(), Type::MethodReturn);
+    assert_eq!(reply.header().reply_serial(), Some(serial));
+    assert_eq!(
+        reply.header().sender().map(|sender| sender.as_str()),
+        Some(ADAPTER_SENDER)
+    );
+    assert_eq!(
+        reply
+            .header()
+            .destination()
+            .map(|destination| destination.as_str()),
+        Some(IBUS_SENDER)
+    );
+    reply.body().deserialize::<()>().unwrap();
+}
+
+async fn complete_absent_manual_dispatch(peer: &mut ControlledPeer) {
+    let ping = standard_dispatcher_ping();
+    let serial = ping.primary_header().serial_num();
+    assert!(!peer.detached_callback_reply_serials.contains(&serial.get()));
+    peer.connection.send(&ping).await.unwrap();
+    // Only the existing exact UnknownObject+registered-serial filter applies.
+    // Any other signal, error or return fails the strict Ping assertion.
+    let reply = next_peer_message(peer).await;
+    assert_standard_dispatcher_ping_reply(&reply, serial);
+    assert!(
+        peer.detached_callback_reply_serials.counts.is_empty(),
+        "every emitted absent-path manual callback must have its exact reply"
+    );
 }
 
 async fn serve_bootstrap(peer: &mut ControlledPeer, profile_name: &str) {
@@ -201,7 +337,7 @@ fn td121_false_global_mode_refuses_authority_and_literal_delivery_is_exact() {
             ENGINE_INTERFACE,
             "ProcessKeyEvent",
         );
-        peer.connection.send(&key).await.unwrap();
+        send_manually_dispatched_callback(&mut peer, &key, TARGET_PATH, ENGINE_INTERFACE).await;
         let emitter = zbus::object_server::SignalEmitter::new(&connection, TARGET_PATH).unwrap();
         let (handled, observed) = future::zip(
             engine.process_key_event(key.header(), emitter, u32::from(b'a'), 30, 0),
@@ -242,9 +378,17 @@ fn no_global_engine_bootstrap_keeps_observer_for_later_verified_lay_profile() {
             .sender(DISPATCH_SENDER)
             .unwrap()
             .serial(NonZeroU32::new(5_900).unwrap())
+            .with_flags(zbus::message::Flags::NoReplyExpected)
+            .unwrap()
             .build(&"lay-us")
             .unwrap();
-        peer.connection.send(&factory).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut peer,
+            &factory,
+            "/org/freedesktop/IBus/Factory",
+            FACTORY_INTERFACE,
+        )
+        .await;
         assert!(observer.process_next().await.unwrap());
         let callback = adapter
             .begin_factory_callback(&factory.header(), Instant::now(), profile("lay-us"))
@@ -343,7 +487,8 @@ fn td121_unverified_bootstrap_failure_is_bounded_and_fresh_literal_has_no_transf
             ENGINE_INTERFACE,
             "ProcessKeyEvent",
         );
-        fresh.peer.connection.send(&key).await.unwrap();
+        send_manually_dispatched_callback(&mut fresh.peer, &key, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         let emitter =
             zbus::object_server::SignalEmitter::new(&fresh.connection, TARGET_PATH).unwrap();
         let (handled, observed) = future::zip(
@@ -401,6 +546,7 @@ async fn bootstrap_harness_with_profiles_and_budget(
 
 async fn bootstrap_harness_with_config(profile_name: &str, config: AdapterConfig) -> Harness {
     let (connection, mut peer) = controlled_pair();
+    complete_absent_manual_dispatch(&mut peer).await;
     let pending = PendingContextAdapter::subscribe(connection.clone(), config)
         .await
         .unwrap();
@@ -578,7 +724,7 @@ async fn complete_native_activation(harness: &mut Harness) -> ActivationGrant {
 }
 
 fn method_message(sender: &str, serial: u32, path: &str, interface: &str, member: &str) -> Message {
-    Message::method_call(path, member)
+    let builder = Message::method_call(path, member)
         .unwrap()
         .interface(interface)
         .unwrap()
@@ -586,9 +732,14 @@ fn method_message(sender: &str, serial: u32, path: &str, interface: &str, member
         .unwrap()
         .serial(NonZeroU32::new(serial).unwrap())
         .with_flags(zbus::message::Flags::NoReplyExpected)
-        .unwrap()
-        .build(&())
-        .unwrap()
+        .unwrap();
+    if interface == ENGINE_INTERFACE && member == "ProcessKeyEvent" {
+        // Header-only admission fixtures still need a valid wire signature.
+        // Semantic key fixtures send their actual tuple through typed helpers.
+        builder.build(&(0u32, 0u32, 0u32)).unwrap()
+    } else {
+        builder.build(&()).unwrap()
+    }
 }
 
 #[test]
@@ -659,7 +810,8 @@ fn td121_slow_compatibility_get_does_not_hold_actual_key_callback() {
             ENGINE_INTERFACE,
             "FocusIn",
         );
-        harness.peer.connection.send(&focus).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &focus, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         let activation = async {
             let (started, observed) = future::zip(
                 engine.activate_context_from_header(&focus.header(), Instant::now(), None),
@@ -693,7 +845,8 @@ fn td121_slow_compatibility_get_does_not_hold_actual_key_callback() {
             ENGINE_INTERFACE,
             "ProcessKeyEventAtomicV1",
         );
-        harness.peer.connection.send(&key).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &key, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         let key_callback_completed = future::race(
             async {
                 let (proposal, observed) = future::zip(
@@ -779,7 +932,8 @@ fn td121_legacy_letters_and_space_settle_exactly_before_held_get_release() {
             ENGINE_INTERFACE,
             "FocusIn",
         );
-        harness.peer.connection.send(&focus).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &focus, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         let (started, observed) = future::zip(
             engine.activate_context_from_header(&focus.header(), Instant::now(), None),
             harness.observer.process_next(),
@@ -792,7 +946,7 @@ fn td121_legacy_letters_and_space_settle_exactly_before_held_get_release() {
 
         let completed_before_get_budget = future::race(
             async {
-                let mut managed_literal = String::new();
+                let mut observed_literal = String::new();
                 for (serial, keyval, keycode) in [
                     (621, u32::from(b'a'), 30),
                     (622, u32::from(b'b'), 48),
@@ -805,7 +959,13 @@ fn td121_legacy_letters_and_space_settle_exactly_before_held_get_release() {
                         ENGINE_INTERFACE,
                         "ProcessKeyEvent",
                     );
-                    harness.peer.connection.send(&key).await.unwrap();
+                    send_manually_dispatched_callback(
+                        &mut harness.peer,
+                        &key,
+                        TARGET_PATH,
+                        ENGINE_INTERFACE,
+                    )
+                    .await;
                     let emitter =
                         zbus::object_server::SignalEmitter::new(&harness.connection, TARGET_PATH)
                             .unwrap();
@@ -825,10 +985,13 @@ fn td121_legacy_letters_and_space_settle_exactly_before_held_get_release() {
                         &expected,
                     )
                     .await;
-                    if handled {
-                        managed_literal.push_str(&expected);
+                    if keyval == crate::protocol::KEY_SPACE {
+                        assert!(!handled, "ordinary Legacy Space must remain native");
                     }
-                    assert_eq!(engine.committed_tail.buffer, managed_literal);
+                    if handled || keyval == crate::protocol::KEY_SPACE {
+                        observed_literal.push_str(&expected);
+                    }
+                    assert_eq!(engine.committed_tail.buffer, observed_literal);
                 }
                 true
             },
@@ -872,7 +1035,8 @@ fn delayed_focus_in_id_enriches_pending_compatibility_request_and_cancels_get() 
             ENGINE_INTERFACE,
             "FocusIn",
         );
-        harness.peer.connection.send(&focus).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &focus, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         let (started, observed) = future::zip(
             engine.activate_context_from_header(&focus.header(), Instant::now(), None),
             harness.observer.process_next(),
@@ -900,7 +1064,13 @@ fn delayed_focus_in_id_enriches_pending_compatibility_request_and_cancels_get() 
             ENGINE_INTERFACE,
             "FocusInId",
         );
-        harness.peer.connection.send(&delayed).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &delayed,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         let (enriched, observed) = future::zip(
             engine.activate_context_from_header(
                 &delayed.header(),
@@ -952,7 +1122,8 @@ fn delayed_focus_in_id_consumes_completed_compatibility_activation_without_rearm
             ENGINE_INTERFACE,
             "FocusIn",
         );
-        harness.peer.connection.send(&focus).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &focus, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         let (started, observed) = future::zip(
             engine.activate_context_from_header(&focus.header(), Instant::now(), None),
             harness.observer.process_next(),
@@ -988,7 +1159,13 @@ fn delayed_focus_in_id_consumes_completed_compatibility_activation_without_rearm
             ENGINE_INTERFACE,
             "FocusInId",
         );
-        harness.peer.connection.send(&delayed).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &delayed,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         let (enriched, observed) = future::zip(
             engine.activate_context_from_header(
                 &delayed.header(),
@@ -1054,7 +1231,8 @@ fn td121_marker_ready_owner_survives_deadline_until_first_atomic_key() {
             ENGINE_INTERFACE,
             "ProcessKeyEventAtomicV1",
         );
-        harness.peer.connection.send(&key).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &key, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         let (proposal, observed) = future::zip(
             crate::window_interaction::WindowInteraction::process_atomic_key(
                 &mut engine,
@@ -1093,7 +1271,8 @@ fn duplicate_native_focus_before_reply_keeps_exact_pending_activation() {
             ENGINE_INTERFACE,
             "FocusInId",
         );
-        harness.peer.connection.send(&first).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &first, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         assert!(harness.observer.process_next().await.unwrap());
         let first_observed = harness
             .adapter
@@ -1126,7 +1305,13 @@ fn duplicate_native_focus_before_reply_keeps_exact_pending_activation() {
             ENGINE_INTERFACE,
             "FocusInId",
         );
-        harness.peer.connection.send(&duplicate).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &duplicate,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
         let observed = harness
             .adapter
@@ -1178,7 +1363,13 @@ fn td121_marker_ready_owner_is_installed_before_focus_out_and_disable() {
             ENGINE_INTERFACE,
             "FocusOut",
         );
-        harness.peer.connection.send(&focus_out).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &focus_out,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         let (accepted, observed) = future::zip(
             engine.observe_context_focus_out(&focus_out.header(), Instant::now()),
             harness.observer.process_next(),
@@ -1200,7 +1391,13 @@ fn td121_marker_ready_owner_is_installed_before_focus_out_and_disable() {
             ENGINE_INTERFACE,
             "Disable",
         );
-        harness.peer.connection.send(&disable).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &disable,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         let (accepted, observed) = future::zip(
             engine.observe_context_disable(&disable.header(), Instant::now()),
             harness.observer.process_next(),
@@ -1298,9 +1495,17 @@ fn td121_marker_before_final_source_settlement_promotes_after_deadline() {
             .sender(DISPATCH_SENDER)
             .unwrap()
             .serial(NonZeroU32::new(620).unwrap())
+            .with_flags(zbus::message::Flags::NoReplyExpected)
+            .unwrap()
             .build(&"lay-us")
             .unwrap();
-        harness.peer.connection.send(&factory).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &factory,
+            "/org/freedesktop/IBus/Factory",
+            FACTORY_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
         let factory_callback = harness
             .adapter
@@ -1318,7 +1523,13 @@ fn td121_marker_before_final_source_settlement_promotes_after_deadline() {
             ENGINE_INTERFACE,
             "ProcessKeyEvent",
         );
-        harness.peer.connection.send(&source_key).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &source_key,
+            SOURCE_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
 
         let focus_out = method_message(
@@ -1328,7 +1539,13 @@ fn td121_marker_before_final_source_settlement_promotes_after_deadline() {
             ENGINE_INTERFACE,
             "FocusOut",
         );
-        harness.peer.connection.send(&focus_out).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &focus_out,
+            SOURCE_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
         let observed_focus_out = harness
             .adapter
@@ -1346,7 +1563,13 @@ fn td121_marker_before_final_source_settlement_promotes_after_deadline() {
             ENGINE_INTERFACE,
             "Disable",
         );
-        harness.peer.connection.send(&disable).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &disable,
+            SOURCE_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
         let observed_disable = harness
             .adapter
@@ -1364,7 +1587,13 @@ fn td121_marker_before_final_source_settlement_promotes_after_deadline() {
             ENGINE_INTERFACE,
             "FocusInId",
         );
-        harness.peer.connection.send(&focus_in).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &focus_in,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
         let observed_focus_in = harness
             .adapter
@@ -1433,9 +1662,17 @@ fn controlled_p2p_callback_rendezvous_stamps_factory_before_path_binding() {
             .sender(DISPATCH_SENDER)
             .unwrap()
             .serial(NonZeroU32::new(700).unwrap())
+            .with_flags(zbus::message::Flags::NoReplyExpected)
+            .unwrap()
             .build(&"lay-us")
             .unwrap();
-        harness.peer.connection.send(&call).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &call,
+            "/org/freedesktop/IBus/Factory",
+            FACTORY_INTERFACE,
+        )
+        .await;
         let captured = next_ordered_message(Pin::new(&mut capture))
             .await
             .unwrap()
@@ -1495,9 +1732,17 @@ fn foreign_bootstrap_factory_focus_waits_for_ordered_matching_lay_evidence() {
             .sender(DISPATCH_SENDER)
             .unwrap()
             .serial(NonZeroU32::new(705).unwrap())
+            .with_flags(zbus::message::Flags::NoReplyExpected)
+            .unwrap()
             .build(&"lay-us")
             .unwrap();
-        harness.peer.connection.send(&call).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &call,
+            "/org/freedesktop/IBus/Factory",
+            FACTORY_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
         let factory = harness
             .adapter
@@ -1515,7 +1760,8 @@ fn foreign_bootstrap_factory_focus_waits_for_ordered_matching_lay_evidence() {
             ENGINE_INTERFACE,
             "FocusInId",
         );
-        harness.peer.connection.send(&focus).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &focus, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         let shared = Arc::new(Mutex::new(SharedState::default()));
         let mut engine = LayIbusEngine::new_from_component(
             TARGET_PATH.to_string(),
@@ -1584,9 +1830,17 @@ fn foreign_bootstrap_factory_focus_final_foreign_profile_is_hard_negative() {
             .sender(DISPATCH_SENDER)
             .unwrap()
             .serial(NonZeroU32::new(708).unwrap())
+            .with_flags(zbus::message::Flags::NoReplyExpected)
+            .unwrap()
             .build(&"lay-us")
             .unwrap();
-        harness.peer.connection.send(&call).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &call,
+            "/org/freedesktop/IBus/Factory",
+            FACTORY_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
         let factory = harness
             .adapter
@@ -1604,7 +1858,8 @@ fn foreign_bootstrap_factory_focus_final_foreign_profile_is_hard_negative() {
             ENGINE_INTERFACE,
             "FocusInId",
         );
-        harness.peer.connection.send(&focus).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &focus, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         let observed = harness.observer.process_next().await.unwrap();
         assert!(observed);
         let focus_callback = harness
@@ -1653,7 +1908,8 @@ fn matching_lay_signal_does_not_discard_received_unsettled_key() {
             ENGINE_INTERFACE,
             "ProcessKeyEvent",
         );
-        harness.peer.connection.send(&key).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &key, SOURCE_PATH, ENGINE_INTERFACE)
+            .await;
         assert!(harness.observer.process_next().await.unwrap());
 
         let signal = Message::signal(IBUS_PATH, IBUS_INTERFACE, "GlobalEngineChanged")
@@ -1692,9 +1948,17 @@ fn receive_order_key_blocks_focus_out_seal_until_handler_settlement() {
             .sender(DISPATCH_SENDER)
             .unwrap()
             .serial(NonZeroU32::new(710).unwrap())
+            .with_flags(zbus::message::Flags::NoReplyExpected)
+            .unwrap()
             .build(&"lay-us")
             .unwrap();
-        harness.peer.connection.send(&factory).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &factory,
+            "/org/freedesktop/IBus/Factory",
+            FACTORY_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
 
         let key = method_message(
@@ -1704,7 +1968,8 @@ fn receive_order_key_blocks_focus_out_seal_until_handler_settlement() {
             ENGINE_INTERFACE,
             "ProcessKeyEvent",
         );
-        harness.peer.connection.send(&key).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &key, SOURCE_PATH, ENGINE_INTERFACE)
+            .await;
         assert!(harness.observer.process_next().await.unwrap());
 
         let focus_out = method_message(
@@ -1714,7 +1979,13 @@ fn receive_order_key_blocks_focus_out_seal_until_handler_settlement() {
             ENGINE_INTERFACE,
             "FocusOut",
         );
-        harness.peer.connection.send(&focus_out).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &focus_out,
+            SOURCE_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         assert!(harness.observer.process_next().await.unwrap());
         let observed_focus = harness
             .adapter
@@ -1753,9 +2024,12 @@ fn delayed_focus_out_id_for_old_context_does_not_touch_current_owner() {
             .sender(DISPATCH_SENDER)
             .unwrap()
             .serial(NonZeroU32::new(720).unwrap())
+            .with_flags(zbus::message::Flags::NoReplyExpected)
+            .unwrap()
             .build(&"/org/freedesktop/IBus/InputContext_old")
             .unwrap();
-        harness.peer.connection.send(&stale).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &stale, SOURCE_PATH, ENGINE_INTERFACE)
+            .await;
         assert!(harness.observer.process_next().await.unwrap());
 
         let observed = harness
@@ -1785,7 +2059,13 @@ fn delayed_reset_handler_cannot_revoke_owner_installed_after_ingress() {
             let first = complete_native_activation(&mut harness).await;
             let reset =
                 method_message(DISPATCH_SENDER, 730, SOURCE_PATH, ENGINE_INTERFACE, "Reset");
-            harness.peer.connection.send(&reset).await.unwrap();
+            send_manually_dispatched_callback(
+                &mut harness.peer,
+                &reset,
+                SOURCE_PATH,
+                ENGINE_INTERFACE,
+            )
+            .await;
             assert!(harness.observer.process_next().await.unwrap());
 
             let begin = harness.adapter.begin_native_activation(
@@ -1939,7 +2219,8 @@ fn td121_pending_acquisition_owner_loss_rejects_late_completion_and_fresh_litera
             ENGINE_INTERFACE,
             "ProcessKeyEvent",
         );
-        fresh.peer.connection.send(&key).await.unwrap();
+        send_manually_dispatched_callback(&mut fresh.peer, &key, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         let emitter =
             zbus::object_server::SignalEmitter::new(&fresh.connection, TARGET_PATH).unwrap();
         let (handled, observed) = future::zip(
@@ -1977,7 +2258,13 @@ fn controlled_p2p_bounded_callback_burst_is_drained_without_loss() {
                 ENGINE_INTERFACE,
                 "ProcessKeyEvent",
             );
-            harness.peer.connection.send(&call).await.unwrap();
+            send_manually_dispatched_callback(
+                &mut harness.peer,
+                &call,
+                SOURCE_PATH,
+                ENGINE_INTERFACE,
+            )
+            .await;
         }
         for _ in 0..32 {
             assert!(harness.observer.process_next().await.unwrap());

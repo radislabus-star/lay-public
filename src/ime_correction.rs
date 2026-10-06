@@ -45,6 +45,59 @@ pub struct ActiveCompositionAutocorrectDecision {
     pub input_gate: Option<RecentActionGateTrace>,
 }
 
+/// Opt-in projection of the already computed InputGate result, never authority.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ActiveCompositionGateMetadata {
+    pub action: &'static str,
+    pub reason: Option<&'static str>,
+    pub pool_count: Option<usize>,
+    pub scoreboard: Option<crate::correction_core::CorrectionScoreboard>,
+    pub selected_candidate_gate_action: Option<&'static str>,
+    pub selected_transition_present: Option<bool>,
+    pub frame_or_certificate_bound: bool,
+    pub final_decision_present: bool,
+}
+
+impl ActiveCompositionGateMetadata {
+    fn from_decision(decision: &crate::input_gate::InputGateDecision, bound: bool) -> Self {
+        use crate::correction_core::CandidateGateAction;
+        Self {
+            action: match &decision.action {
+                InputGateAction::Observe => "observe",
+                InputGateAction::KeepOriginal => "keep_original",
+                InputGateAction::ApplyReplacement { .. } => "apply",
+                InputGateAction::SuggestOnly { .. } => "suggest_only",
+                InputGateAction::Veto { .. } => "veto",
+            },
+            reason: decision.trace.as_ref().map(|trace| trace.reason),
+            pool_count: decision
+                .correction
+                .as_ref()
+                .map(|resolution| resolution.candidates.len()),
+            scoreboard: decision
+                .correction
+                .as_ref()
+                .map(|resolution| resolution.scoreboard),
+            selected_candidate_gate_action: decision.trace.as_ref().and_then(|trace| {
+                trace
+                    .selected_candidate_gate_action
+                    .map(|action| match action {
+                        CandidateGateAction::Eligible => "eligible",
+                        CandidateGateAction::SuggestOnly => "suggest_only",
+                        CandidateGateAction::KeepOriginal => "keep_original",
+                        CandidateGateAction::Veto => "veto",
+                    })
+            }),
+            selected_transition_present: decision
+                .correction
+                .as_ref()
+                .map(|resolution| resolution.selected_transition.is_some()),
+            frame_or_certificate_bound: bound,
+            final_decision_present: false,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct ActiveCompositionAutocorrectTelemetry {
     pub l11_us: u64,
@@ -56,6 +109,7 @@ pub struct ActiveCompositionAutocorrectTelemetry {
     pub correction_l3_us: u64,
     pub decision_total_us: u64,
     pub total_us: u64,
+    pub gate_metadata: Option<ActiveCompositionGateMetadata>,
 }
 
 pub struct ObservedActiveCompositionAutocorrect {
@@ -210,7 +264,7 @@ fn decide_active_composition_autocorrect_with_evidence(
         }
     };
     let route = observed.telemetry;
-    let telemetry = ActiveCompositionAutocorrectTelemetry {
+    let mut telemetry = ActiveCompositionAutocorrectTelemetry {
         l11_us: route.canonical_field.l11_us,
         productive_v90_us: route.canonical_field.productive_v90_us,
         field_total_us: route.canonical_field.total_us,
@@ -220,6 +274,9 @@ fn decide_active_composition_autocorrect_with_evidence(
         correction_l3_us: route.correction_l3_us,
         decision_total_us: route.decision_total_us,
         total_us: route.total_us,
+        gate_metadata: request.config.debug_action_log.then(|| {
+            ActiveCompositionGateMetadata::from_decision(&observed.decision, has_bound_authority)
+        }),
     };
     let gate_selected_apply = matches!(
         observed.decision.action,
@@ -290,6 +347,9 @@ fn decide_active_composition_autocorrect_with_evidence(
     } else {
         AutocorrectNoApplyStage::Rank
     });
+    if let Some(metadata) = telemetry.gate_metadata.as_mut() {
+        metadata.final_decision_present = decision.is_some();
+    }
     ObservedActiveCompositionAutocorrect {
         decision,
         no_apply_stage,

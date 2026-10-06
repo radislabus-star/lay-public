@@ -194,10 +194,25 @@ impl LayIbusEngine {
         if !ch.is_whitespace() {
             self.rebind_managed_word_start_before_first_commit();
         }
-        emitter
-            .commit_text(make_ibus_text(ch.to_string()))
-            .await
-            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        let diagnostic_started = trace::diagnostics_enabled_cached().then(Instant::now);
+        self.trace_client_output_metadata(
+            "commit",
+            "before",
+            diagnostic_started,
+            None,
+            Some(ch == ' '),
+            None,
+        );
+        let result = emitter.commit_text(make_ibus_text(ch.to_string())).await;
+        self.trace_client_output_metadata(
+            "commit",
+            "after",
+            diagnostic_started,
+            Some(result.is_ok()),
+            Some(ch == ' '),
+            None,
+        );
+        result.map_err(|e| fdo::Error::Failed(e.to_string()))?;
         self.committed_tail.last_commit_at = Some(Instant::now());
         self.push_tail_char(ch);
         self.client_context.managed_commit_snapshot_floor = (!ch.is_whitespace()).then_some((
@@ -238,10 +253,10 @@ impl LayIbusEngine {
     ) -> fdo::Result<()> {
         self.push_tail_char(ch);
         let frame = self.capture_input_frame_identity();
-        if self.uses_native_terminal_input() {
-            if ch.is_whitespace() {
-                self.invalidate_space_autocorrect_path();
-            }
+        // The same observation closes an ordinary Legacy Space boundary.
+        // Its local tail is not a client receipt or an owned text append.
+        if ch.is_whitespace() {
+            self.invalidate_space_autocorrect_path();
         }
         self.refresh_precognition_after_visible_input(emitter, frame)
             .await

@@ -18,7 +18,7 @@ use std::time::{Duration, Instant};
 pub(crate) use adapter::tests::word_scope::residuals::assert_window_interaction_reset_rereceipt_contract;
 pub(crate) use adapter::{
     ActivationOutcome, AdapterConfig, AdapterError, ContextAdmissionAdapter, KeyCallback,
-    PendingContextAdapter,
+    PendingContextAdapter, PendingFence,
 };
 pub(crate) use ordered_merge::{join_ordered_streams, next_ordered_message};
 pub(crate) use rendezvous::{
@@ -637,6 +637,9 @@ pub(crate) struct ContextAdmissionReducer<P = zbus::message::Sequence> {
     mode: GlobalEngineMode,
     profile: GlobalProfile,
     revocation: u64,
+    // Existing revocation counter, not another generation. Only authenticated
+    // word Reset can preserve inert native-replay provenance across this floor.
+    last_non_reset_revocation: u64,
     owner: Option<EngineOwner>,
     activation: Option<FocusActivation>,
     lineage: WordLineage,
@@ -670,6 +673,7 @@ where
             mode,
             profile,
             revocation: 1,
+            last_non_reset_revocation: 1,
             owner: None,
             activation: None,
             lineage: WordLineage {
@@ -1777,6 +1781,48 @@ where
         self.revoke();
     }
 
+    pub(crate) fn observed_word_reset(&mut self) {
+        let floor = self.last_non_reset_revocation;
+        self.revoke();
+        self.last_non_reset_revocation = floor;
+    }
+
+    fn exact_replay_reset_provenance_is_current(&self, source: &AdmissionToken) -> bool {
+        self.mode == GlobalEngineMode::Verified
+            && self.lifecycle_is_settled()
+            && source.connection == self.connection
+            && self.owner.as_ref() == Some(&source.owner)
+            && self.activation.as_ref() == Some(&source.activation)
+            && source.revocation >= self.last_non_reset_revocation
+            && source.revocation < self.revocation
+    }
+
+    /// A completed, independently receipted native replay can reconcile the
+    /// mirror epoch after Reset retired its callbacks. It cannot settle those
+    /// callbacks or restore any suffix/word authority.
+    fn align_completed_exact_replay_epoch(
+        &mut self,
+        source: &AdmissionToken,
+        reset_token: &AdmissionToken,
+        source_epoch: u64,
+        completed_epoch: u64,
+        projected_changes: usize,
+    ) -> bool {
+        if !self.exact_replay_reset_provenance_is_current(source)
+            || !self.revalidate_bridge(reset_token)
+            || self.lineage.completeness != WordCompleteness::UnknownStart
+            || self.lineage.observed_suffix_chars != 0
+            || source_epoch > self.latest_tail_epoch
+            || self.latest_tail_epoch > completed_epoch
+            || source_epoch.checked_add(projected_changes as u64) != Some(completed_epoch)
+            || projected_changes == 0
+        {
+            return false;
+        }
+        self.latest_tail_epoch = completed_epoch;
+        true
+    }
+
     pub(crate) fn consume(&mut self) -> Option<TransferGrant> {
         let (ticket_id, kind, source_owner, source_activation, target_path, seal, origin) = {
             let ticket = self.ticket.as_mut()?;
@@ -2269,6 +2315,7 @@ where
         self.settled_content_type = None;
         self.exact_manual_snapshot = None;
         self.revocation = next_generation(self.revocation);
+        self.last_non_reset_revocation = self.revocation;
         // A consumed receipt identifies a live admitted successor only until
         // revocation. It must not block a later empty recovery after word loss.
         if self

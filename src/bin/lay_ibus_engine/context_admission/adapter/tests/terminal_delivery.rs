@@ -9,10 +9,17 @@ async fn known_terminal(width: i32) -> (Harness, LayIbusEngine) {
     engine.config.nanda_precognition = false;
     start_source_free_unknown(&mut harness, &mut engine).await;
     let input_mode_before_key = engine.layout_gesture.layout_is_ru;
-    assert!(legacy_key(&mut harness, &mut engine, 20_000, KEY_SPACE, 57, 0).await);
-    expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
+    let native_space_was_visible = engine.composition.preedit_visible;
+    assert!(!legacy_key(&mut harness, &mut engine, 20_000, KEY_SPACE, 57, 0).await);
+    expect_legacy_native_space(
+        &mut harness,
+        &engine,
+        input_mode_before_key,
+        native_space_was_visible,
+    )
+    .await;
     assert!(
-        legacy_key(
+        !legacy_key(
             &mut harness,
             &mut engine,
             20_001,
@@ -43,10 +50,17 @@ async fn armed_exact_replay(
     start_source_free_unknown(&mut harness, &mut engine).await;
     if !reset_choreography {
         let input_mode_before_key = engine.layout_gesture.layout_is_ru;
-        assert!(legacy_key(&mut harness, &mut engine, 21_000, KEY_SPACE, 57, 0).await);
-        expect_legacy_commit(&mut harness.peer, &engine, input_mode_before_key).await;
+        let native_space_was_visible = engine.composition.preedit_visible;
+        assert!(!legacy_key(&mut harness, &mut engine, 21_000, KEY_SPACE, 57, 0).await);
+        expect_legacy_native_space(
+            &mut harness,
+            &engine,
+            input_mode_before_key,
+            native_space_was_visible,
+        )
+        .await;
         assert!(
-            legacy_key(
+            !legacy_key(
                 &mut harness,
                 &mut engine,
                 21_001,
@@ -372,7 +386,8 @@ async fn reset_to_unknown_start_with_one_preedit_clear(
         ENGINE_INTERFACE,
         "Reset",
     );
-    harness.peer.connection.send(&reset).await.unwrap();
+    send_manually_dispatched_callback(&mut harness.peer, &reset, TARGET_PATH, ENGINE_INTERFACE)
+        .await;
     assert!(bounded(harness.observer.process_next()).await.unwrap());
     engine
         .reset(
@@ -403,7 +418,8 @@ async fn text_free_owned_soft_reset(
         ENGINE_INTERFACE,
         "Reset",
     );
-    harness.peer.connection.send(&reset).await.unwrap();
+    send_manually_dispatched_callback(&mut harness.peer, &reset, TARGET_PATH, ENGINE_INTERFACE)
+        .await;
     assert!(bounded(harness.observer.process_next()).await.unwrap());
     engine
         .reset(
@@ -938,7 +954,8 @@ async fn td121_observe_reset_batch(harness: &mut Harness, count: u32) -> Vec<Mes
             ENGINE_INTERFACE,
             "Reset",
         );
-        harness.peer.connection.send(&reset).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &reset, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         assert!(bounded(harness.observer.process_next()).await.unwrap());
         messages.push(reset);
     }
@@ -1064,7 +1081,13 @@ fn td121_batched_reset_callbacks_cannot_restore_invalidated_provenance() {
                 }
                 "capabilities" => engine.set_client_capabilities(1 | 1 << 3),
                 "duplicate_ingress" => {
-                    harness.peer.connection.send(&resets[0]).await.unwrap();
+                    send_manually_dispatched_callback(
+                        &mut harness.peer,
+                        &resets[0],
+                        TARGET_PATH,
+                        ENGINE_INTERFACE,
+                    )
+                    .await;
                     assert!(matches!(
                         bounded(harness.observer.process_next()).await,
                         Err(AdapterError::Denied)
@@ -1607,10 +1630,16 @@ fn completed_exact_replay_retires_before_ordinary_managed_input() {
             assert!(engine.committed_tail.pending_completion_learning.is_none());
             assert!(legacy_key(&mut harness, &mut engine, 21_201, keyval, 30, RELEASE_MASK).await);
             no_legacy_output(&mut harness).await;
-            assert!(legacy_key(&mut harness, &mut engine, 21_202, KEY_SPACE, 57, 0).await);
-            let effects = legacy_effects(&mut harness).await;
-            assert_eq!(effects.len(), 1);
-            assert_eq!(effects[0].header().member().unwrap().as_str(), "CommitText");
+            let native_space_was_visible = engine.composition.preedit_visible;
+            let native_space_mode = engine.layout_gesture.layout_is_ru;
+            assert!(!legacy_key(&mut harness, &mut engine, 21_202, KEY_SPACE, 57, 0).await);
+            expect_legacy_native_space(
+                &mut harness,
+                &engine,
+                native_space_mode,
+                native_space_was_visible,
+            )
+            .await;
             assert_eq!(engine.committed_tail.buffer, format!("{replayed}{next} "));
             assert!(engine.committed_tail.autocorrect_suppression.is_none());
         }
@@ -2112,7 +2141,8 @@ fn terminal_delivery_purpose_and_capability_changes_preserve_transport_and_word_
             ('d', 32, 10, 41, false),
             // Losing SurroundingText must keep the already managed word.
             ('e', 18, 10, 9, false),
-            (' ', 57, 10, 9, false),
+            // This managed word still closes via the native Legacy separator.
+            (' ', 57, 10, 9, true),
             ('f', 33, 10, 9, true),
         ]
         .into_iter()
@@ -3139,7 +3169,8 @@ fn terminal_delivery_firefox_reset_keeps_physically_held_shift() {
             ENGINE_INTERFACE,
             "Reset",
         );
-        harness.peer.connection.send(&reset).await.unwrap();
+        send_manually_dispatched_callback(&mut harness.peer, &reset, TARGET_PATH, ENGINE_INTERFACE)
+            .await;
         assert!(bounded(harness.observer.process_next()).await.unwrap());
         engine
             .reset(

@@ -164,6 +164,10 @@ impl LayIbusEngine {
                 let setup_us = space_started.elapsed().as_micros();
                 let managed = mode == WordInputMode::ManagedCommit;
                 if managed || self.uses_native_terminal_input() {
+                    // In these ordinary boundary fallbacks, retire the display
+                    // through the existing path and pass Legacy physical Space.
+                    // Atomic retains its existing explicit boundary commit.
+                    let managed_commit = managed && !emitter.is_legacy();
                     if self.take_manual_toggle_autocorrect_suppression() {
                         super::trace::record(
                             r#"{"kind":"ibus_space_autocorrect","status":"manual_toggle_suppressed"}"#,
@@ -171,7 +175,7 @@ impl LayIbusEngine {
                         self.clear_preedit(emitter).await?;
                         self.cancel_precognition_display_generation();
                         let commit_started = Instant::now();
-                        if managed {
+                        if managed_commit {
                             self.commit_managed_passthrough_char(emitter, ' ').await?;
                         } else {
                             self.observe_terminal_passthrough_char(emitter, ' ').await?;
@@ -184,8 +188,10 @@ impl LayIbusEngine {
                             space_started.elapsed().as_micros(),
                         );
                         super::trace::record_space_key_timing(
-                            if managed {
+                            if managed_commit {
                                 "managed_manual_toggle_suppressed"
+                            } else if managed {
+                                "managed_native_manual_toggle_suppressed"
                             } else {
                                 "terminal_manual_toggle_suppressed"
                             },
@@ -195,17 +201,19 @@ impl LayIbusEngine {
                             space_started.elapsed().as_micros(),
                         );
                         self.trace_key(
-                            if managed {
+                            if managed_commit {
                                 "space_managed_commit"
+                            } else if managed {
+                                "space_managed_native_passthrough"
                             } else {
                                 "space_terminal_passthrough"
                             },
                             keyval,
                             keycode,
-                            managed,
+                            managed_commit,
                             Some(' '),
                         );
-                        return Ok(managed);
+                        return Ok(managed_commit);
                     }
                     let autocorrect_started = Instant::now();
                     let frame = self.capture_space_autocorrect_frame_identity();
@@ -252,7 +260,7 @@ impl LayIbusEngine {
                     }
                     let autocorrect_us = autocorrect_started.elapsed().as_micros();
                     let commit_started = Instant::now();
-                    if managed {
+                    if managed_commit {
                         self.commit_managed_passthrough_char(emitter, ' ').await?;
                     } else {
                         self.observe_terminal_passthrough_char(emitter, ' ').await?;
@@ -262,8 +270,10 @@ impl LayIbusEngine {
                     }
                     let commit_us = commit_started.elapsed().as_micros();
                     super::trace::record_space_key_timing(
-                        if managed {
+                        if managed_commit {
                             "managed_fallback_commit"
+                        } else if managed {
+                            "managed_fallback_native"
                         } else {
                             "terminal_fallback_native"
                         },
@@ -273,17 +283,19 @@ impl LayIbusEngine {
                         space_started.elapsed().as_micros(),
                     );
                     self.trace_key(
-                        if managed {
+                        if managed_commit {
                             "space_managed_commit"
+                        } else if managed {
+                            "space_managed_native_passthrough"
                         } else {
                             "space_terminal_passthrough"
                         },
                         keyval,
                         keycode,
-                        managed,
+                        managed_commit,
                         Some(' '),
                     );
-                    return Ok(managed);
+                    return Ok(managed_commit);
                 }
                 self.clear_preedit(emitter).await?;
                 self.cancel_precognition_display_generation();

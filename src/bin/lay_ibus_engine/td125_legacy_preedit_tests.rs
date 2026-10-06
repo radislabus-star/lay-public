@@ -45,6 +45,49 @@ fn shared_tail(engine: &LayIbusEngine) -> String {
         .clone()
 }
 
+// Only the uncapped Legacy ManagedCommit NoApply boundary uses native Space.
+// The fixture records IME effects and its local/shared observation, not delivery
+// of the physical Space into a real widget.
+fn assert_uncapped_legacy_native_space_no_edit(
+    engine: &mut LayIbusEngine,
+    output: &mut TestEngineOutput,
+) {
+    assert!(output.legacy_transport);
+    assert!(!engine.client_context.preedit_text_supported);
+    assert!(engine.composition.buffer.is_empty());
+    assert!(!engine.composition.legacy_word_preedit_active);
+    assert!(!engine.composition.preedit_visible);
+    assert_eq!(
+        engine.composition.word_input_mode,
+        Some(crate::engine::WordInputMode::ManagedCommit)
+    );
+    let tail_before = engine.committed_tail.buffer.clone();
+    assert_eq!(shared_tail(engine), tail_before);
+    let effects_before = output.effects.len();
+    let commits_before = output.committed_texts.len();
+    let deletes_before = output.surrounding_deletes.len();
+    let updates_before = output.preedit_updates.len();
+    let attrs_before = output.preedit_attribute_updates.len();
+    let modes_before = output.input_mode_updates.len();
+
+    assert!(!press(engine, output, KEY_SPACE));
+
+    // No visible preedit existed: no Clear/Hide, CommitText, DeleteSurrounding,
+    // key forwarding or mode publication may be emitted for this native key.
+    assert!(output.effects[effects_before..].is_empty());
+    assert_eq!(output.committed_texts.len(), commits_before);
+    assert_eq!(output.surrounding_deletes.len(), deletes_before);
+    assert_eq!(output.preedit_updates.len(), updates_before);
+    assert_eq!(output.preedit_attribute_updates.len(), attrs_before);
+    assert_eq!(output.input_mode_updates.len(), modes_before);
+    assert!(engine.composition.buffer.is_empty());
+    assert!(!engine.composition.legacy_word_preedit_active);
+    assert!(!engine.composition.preedit_visible);
+    // One observed delimiter in each mirror; a second Space is a failure.
+    assert_eq!(engine.committed_tail.buffer, format!("{tail_before} "));
+    assert_eq!(shared_tail(engine), format!("{tail_before} "));
+}
+
 #[test]
 fn td125_legacy_preedit_word_commits_ready_space_correction_without_delete() {
     lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
@@ -531,8 +574,8 @@ fn td125_soft_reset_discards_owned_preedit_from_local_and_shared_authority() {
     assert!(shared_tail(&engine).is_empty());
     engine.set_client_capabilities(IBUS_CAP_FOCUS);
     assert!(press(&mut engine, &mut output, 'c' as u32));
-    assert!(press(&mut engine, &mut output, KEY_SPACE));
-    assert_eq!(output.committed_texts, ["c", " "]);
+    assert_uncapped_legacy_native_space_no_edit(&mut engine, &mut output);
+    assert_eq!(output.committed_texts, ["c"]);
     assert!(output.surrounding_deletes.is_empty());
     assert_eq!(engine.committed_tail.buffer, "c ");
     assert_eq!(shared_tail(&engine), "c ");
@@ -590,7 +633,8 @@ fn td125_cursor_zero_backspace_cancels_owned_preedit_and_tracks_native_delete() 
         ..Default::default()
     };
     assert!(press(&mut engine, &mut output, 'x' as u32));
-    assert!(press(&mut engine, &mut output, KEY_SPACE));
+    assert_uncapped_legacy_native_space_no_edit(&mut engine, &mut output);
+    assert_eq!(output.committed_texts, ["x"]);
     assert_eq!(engine.committed_tail.buffer, "x ");
     engine.set_client_capabilities(IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_FOCUS);
     for ch in "ab".chars() {

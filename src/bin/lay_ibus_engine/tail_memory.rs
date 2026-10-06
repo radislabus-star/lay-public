@@ -708,6 +708,25 @@ impl LayIbusEngine {
             self.clear_identity_bound_exact_manual_toggle_authority();
             return false;
         }
+        let observed_external_prefix = self
+            .client_context
+            .surrounding_text_snapshot
+            .as_ref()
+            .filter(|snapshot| {
+                !snapshot.has_selection()
+                    && snapshot.cursor_pos as usize == snapshot.text.chars().count()
+            })
+            .and_then(|snapshot| snapshot.text.strip_suffix(&self.committed_tail.buffer))
+            .map(str::to_owned);
+        let source_token = self
+            .context_admission
+            .as_ref()
+            .and_then(|admission| {
+                self.context_token
+                    .as_ref()
+                    .and_then(|token| admission.exact_replay_source_token(token, expected_epoch))
+            })
+            .map(Box::new);
         let Ok(mut state) = self.shared.lock() else {
             return false;
         };
@@ -736,6 +755,7 @@ impl LayIbusEngine {
             .expect("validated exact suffix")
             .to_string();
         let suppression = AutocorrectSuppression::ExactReplay(ExactManualToggleSuppression {
+            source_token,
             path: expected_path.to_string(),
             epoch: expected_epoch,
             expires_at: Instant::now() + IME_LAYOUT_HANDOFF_MAX_AGE,
@@ -744,7 +764,7 @@ impl LayIbusEngine {
             original_tail: self.committed_tail.buffer.clone(),
             original_suffix: expected_suffix.to_string(),
             unchanged_prefix,
-            observed_external_prefix: None,
+            observed_external_prefix,
             replacement: plan.replacement,
         });
         state.autocorrect_suppression = Some(suppression.clone());
@@ -936,6 +956,53 @@ impl LayIbusEngine {
                 .count()
                 .saturating_add(scope.replacement.chars().count())
             && self.exact_replay_scope_is_current_except_expiry(scope)
+    }
+
+    pub(super) fn exact_replay_reset_provenance(
+        &self,
+        require_completed: bool,
+    ) -> Option<ExactManualToggleSuppression> {
+        let (Some(local), Some(shared)) = self.exact_replay_scope_pair() else {
+            return None;
+        };
+        let source = local.source_token.as_deref()?;
+        if local != shared
+            || !self.exact_replay_scope_is_current(&local)
+            || local.observed_external_prefix.is_none()
+            || (require_completed && !self.exact_replay_scope_is_completed(&local))
+            || !self
+                .context_admission
+                .as_ref()?
+                .exact_replay_reset_provenance_is_current(source)
+        {
+            return None;
+        }
+        Some(local)
+    }
+
+    pub(super) fn consume_exact_replay_reset_provenance(
+        &mut self,
+        scope: &ExactManualToggleSuppression,
+    ) -> bool {
+        let Ok(mut state) = self.shared.lock() else {
+            return false;
+        };
+        if !self.owns_shared_context_state(&state)
+            || state.active_path.as_deref() != Some(self.path.as_str())
+            || self.committed_tail.autocorrect_suppression.as_ref()
+                != Some(&AutocorrectSuppression::ExactReplay(scope.clone()))
+            || state.autocorrect_suppression.as_ref()
+                != self.committed_tail.autocorrect_suppression.as_ref()
+        {
+            return false;
+        }
+        let mut spent = scope.clone();
+        spent.source_token = None;
+        let spent = AutocorrectSuppression::ExactReplay(spent);
+        state.autocorrect_suppression = Some(spent.clone());
+        self.committed_tail.autocorrect_suppression = Some(spent);
+        advance_suppression_revision(&mut state);
+        true
     }
 
     fn retire_completed_exact_replay(&mut self, scope: &ExactManualToggleSuppression) {

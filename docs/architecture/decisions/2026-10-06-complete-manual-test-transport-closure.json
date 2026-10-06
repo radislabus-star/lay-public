@@ -1,0 +1,36 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-06",
+  "status": "FOCUSED_SOURCE_GREEN_PASS_FULL_PHYSICAL_PENDING",
+  "decision": "Extend the existing explicit manual callback sender to every classified observer/local-handler send. Keep separate real registered RPCs, adverse raw ingress and signals on their original route. No automatic classification or blanket reply filtering.",
+  "reason": "Full3003 proof reveals11 first UnknownObject replies before old Signal/member assertions after the earlier selective22-site correction. All11 exact headers reproduced. Complete inventory158 sites replaces selective repair.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/native_transfer.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs"
+  ],
+  "alternatives": [
+    "Keep selective callsite patches: rejected because full proof exposed incomplete closure.",
+    "Complete every explicit send classification and use existing per-emission counted helper only for manual fixtures: chosen.",
+    "Automatically track all NoReply traffic, hide every UnknownObject, change production lookup ownership or weaken old assertions: rejected."
+  ],
+  "verification": "Measured full3003:2992 pass/11 unexpected failures; diagnostic11:0pass/11fail36.710s with exact TypeError UnknownObject serials3219,3224,7504,7604,3400,3600,3237,3200,3180,3215,3215. Final private patch/c4101c04457a02b3c506454711dcedf5d339eb7eeb697226042860d63bf6b67b pending independent final review/execution. Final actual-byte independent review PASS_WITH_LIMITS0 blockers; exact three-test-file patch imported, execution pending. Fixed scoped54 ALL_PASS59.313s; all11 prior failures and original43 controls pass, exact formatted source imported.",
+  "not_tested": "Complete source release and changed-byte physical Firefox remain pending; exact79 installed and no new runtime authority.",
+  "classification_sha256": "76676f5563d5c87d92b83798aa43887e23d58ec89bea5b7e154a02a6f6dcad04",
+  "header_receipt": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/manual-transport-closure-diagnostic-failed-import/HEADER_PACKET.json",
+  "scope": "158 classified sites;105 remaining manual sites mapped explicitly. Normal5 registered RPC sites, strict_raw2, mixed original send_observed helper, original typed_key_message, exact receive filter and tracked legacy_key stay literal. Source proposal changes3 test files only.",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "runtime_authority_changed": false,
+  "patch_sha256": "c4101c04457a02b3c506454711dcedf5d339eb7eeb697226042860d63bf6b67b"
+}

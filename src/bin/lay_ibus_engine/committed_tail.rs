@@ -1057,6 +1057,7 @@ mod tests {
         );
         assert!(engine.bind_focus_path());
         let expired = ExactManualToggleSuppression {
+            source_token: None,
             path: engine.path.clone(),
             epoch: 7,
             expires_at: Instant::now() - Duration::from_millis(1),

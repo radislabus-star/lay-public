@@ -1,0 +1,39 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-06",
+  "status": "REVIEW_AND_FOCUSED_SOURCE_PASS_FULL_PHYSICAL_PENDING",
+  "decision": "Add opt-in metadata at existing Space gate, prepared-route and output stages to distinguish selected authority and signal completion from observed client insertion. Keep existing payloads, await order, errors, state changes and ownership contracts.",
+  "reason": "Saved editable-field Space trial has correct native key and successful managed path metadata but fresh DOM loses its delimiter. Old rank trace does not expose Keep/Suggest/Veto or selected gate. Neither observation establishes which first transition failed.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "src/bin/lay_ibus_engine/composition_commit.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/ime_correction.rs",
+    "src/bin/lay_ibus_engine/trace.rs"
+  ],
+  "alternatives": [
+    "Assume successful signal means insertion: rejected by fresh DOM result and C10.",
+    "Observe cached decision and existing output stages under current opt-in debug gate: exposes the boundary without adding an owner or retry.",
+    "Add output reordering, client-specific bypass, raw-text logging or reranking solely for trace: rejected."
+  ],
+  "verification": "Independent source reviews of Space output/gate patches PASS0 blockers; focused43/43 includes exact Clear/Hide/oneCommit and unchanged error propagation fixture. Full gate compile/discovery/graph passed before unrelated decision-schema failure.",
+  "not_tested": "Actual enriched telemetry on changed-byte Firefox, signal wire receipt, Gecko branch and real insertion remain UNKNOWN. Debug logging can perturb timing; orphan joins and full admitted lattice count remain UNKNOWN.",
+  "patch_sha256": [
+    "93af4ae12bcb269d7466ad50742415c9b03f9ce8c6d469b9770c573b9ff27af3",
+    "2177c92193f71089c1c95eeae9b86708992fd3c35dc5a4c442eba2a170f5f251"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "runtime_authority_changed": false
+}

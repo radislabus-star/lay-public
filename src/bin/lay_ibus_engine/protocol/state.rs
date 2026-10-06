@@ -28,6 +28,8 @@ pub(crate) struct ShiftGestureHandoff {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ExactManualToggleSuppression {
+    /// Inert admitted source. It never becomes live again after Reset.
+    pub(crate) source_token: Option<Box<crate::context_admission::AdmissionToken>>,
     pub(crate) path: String,
     pub(crate) epoch: u64,
     pub(crate) expires_at: Instant,

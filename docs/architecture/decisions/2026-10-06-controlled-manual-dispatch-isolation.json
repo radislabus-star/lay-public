@@ -1,0 +1,77 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-06",
+  "status": "V20_FULL_SOURCE_PASS_USER_DIRECTED80_INSTALLED_HARDWARE_UNCONFIRMED",
+  "decision": "Give controlled semantic fixtures one callback owner: start the absent engine dispatcher through the awaited public Builder::serve_at startup seam, then obtain an exact standard Peer.Ping completion fence before the refusal helper registers its locally handled engine.",
+  "reason": "The fixture sends real NoReply callback packets and invokes their handlers locally. Late registration can admit an automatic second handler. This is an independently established transport ownership defect; the mutator in the original V14 failure remains UNKNOWN. The fixed32 collection observed zero failures and cannot close that failure.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "alternatives": [
+    "Retrospective optional-reply count drain: rejected because packets can precede the dispatcher subscription and have no future reply.",
+    "An immediately sent startup Ping after object_server(): rejected because dispatcher subscription is asynchronous and can miss that Ping.",
+    "Awaited Builder::serve_at at a disjoint empty standard ObjectManager leaf, exact Peer.Ping replies, and zero per-emission remainder before registration: chosen for the controlled fixture.",
+    "Per-key waits, a production callback filter, relaxed assertions, changed SafetyGate or repeated full tests until success: rejected."
+  ],
+  "verification": "V20 full gate PASS15 stages; canonical3010 PASS twice; exact source manifest2b0a6cc5. Scoped Firefox proof recorded in owning document; actual local install80 PASSbd7b1757. Hardware confirmation not performed by user direction; combined80 client acceptance remains pending. See decisions/2026-10-06-user-directed-version80-install.json.",
+  "not_tested": "Real physical keyboard, combined installeddaemon80/IME80 physical acceptance, Instagram/WhatsApp and every Firefox field; historical causal unknowns remain unknown.",
+  "scope": "Two test transport files only; zero added canonical tests. Existing observer-first order, budgets, assertions, registered RPCs and exact optional UnknownObject filter remain. Unexpected messages fail. No runtime source or input authority changes.",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "runtime_authority_changed": false,
+  "receipt": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/dispatch-isolation-witness-v2-import/RESULT.json",
+  "focused_receipt": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/dispatch-isolation-helper-green-v1-import/RESULT.json",
+  "full_source_receipt": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v15-import/RELEASE_GATE_RESULT.json",
+  "physical_summary": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/V15_PHYSICAL_SUMMARY.json",
+  "registration_boundary_replan": {
+    "reason": "V17 full repeat failed pending auto-undo bridge with Ok(0,false) after focused136 and canonical3009 PASS. Original timing/refusal stage remains UNKNOWN.",
+    "full_gate_receipt": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v17-import-failed/RELEASE_GATE_RESULT.json",
+    "full_gate_sha256": "6b6c594fdf1a3c3af8581f2c6f8be5a2a5402a58b5692be7c63dfe57ab6e8950",
+    "failed_case": "context_admission::adapter::tests::word_scope::residuals::residual_pending_auto_undo_bridge_keeps_ime_ownership_without_delegation",
+    "first_measured_loss": "ManualToggleV3 returned0,false instead of1,false; later waiting-exact/no-delegation/known assertions were not reached. Ping/observer assertions passed and elapsed0.01s excludes the1s callback budget as a demonstrated cause.",
+    "hypothesis": "Final manually handled native Space RELEASE3001 is still queued on automatic dispatcher when .at registers TARGET_PATH. A duplicate may reuse the cached stamp but its header has already been settled and removed from reducer unsettled state; second settlement refuses and revokes word authority, yielding the same bridge refusal.",
+    "diagnostic": "One bounded actual registered-interface/manual-stamp/automatic duplicate witness using existing engine mutex and standard Peer completion; label it controlled violation, not reproduced original interleaving. Preserve actual header/token/serial evidence.",
+    "repair_if_supported": "Reuse existing complete_absent_manual_dispatch at the shared known_engine absent→served setup seam only after all callers checked for deliberate pending schedules. Preserve every prior semantic/negative assertion and zero failure ledger.",
+    "repair_round_limit": 2,
+    "runtime_source_changes_authorized_by_this_plan": false,
+    "promotion": "Focused expanded dependency closure and complete changed/full gate must pass; physical matrix, actual keyboard and ordinary installation still pending.",
+    "baseline_detector": {
+      "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/undo-registration-red-v1-import/RESULT.json",
+      "sha256": "64c26f67b081de2333b3f86199e0cd10e94f10b1c597e3e9d79d5736231bbfa7",
+      "executed": 5,
+      "passed": 4,
+      "expected_failed": 1,
+      "seconds": 33.736,
+      "verdict_scope": "unfinished handoff ledger guard; original V17 timing remainsUNKNOWN; forced duplicate cell not reached"
+    },
+    "green_proof": {
+      "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/undo-registration-green-v1-import/RESULT.json",
+      "sha256": "19be9d8d469ea3c38bde137307b7ea6f6057a6631eb1d4c6e7b4ecd664dca95e",
+      "executed": 137,
+      "passed": 137,
+      "failed": 0,
+      "seconds": 115.212,
+      "scope": "Initial absent-engine handoff completed and controlled actual registered duplicate revokes original token; all old semantic assertions preserved. Historical V17 timing remains UNKNOWN. Later publication seams excluded.",
+      "independent_review": {
+        "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/undo-dispatch-registration-replan-v1/INDEPENDENT_REVIEW.md",
+        "sha256": "a541911990d3f53c5521958ce982192f4d0b30ee972ffd39ef5d654c4ee47447",
+        "blockers": 0
+      },
+      "runtime_changed": false
+    }
+  },
+  "v18_failure": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v18-import-failed/RELEASE_GATE_RESULT.json",
+    "sha256": "597ae874b99f7997b1d33cac748d4a8afe510cf4bb34ee39fdd31dad037f945e",
+    "scope": "Both3010canonical passes; full gatefailed on stale lint expectation. No source-release or physical acceptance."
+  },
+  "historical_verification_before_v20": "Controlled exact two-test source proof ALL_PASS32.474s: original seven-gap assertions pass after isolation; one actual NoReply Reset processed manually and automatically, measured tail abcde/epoch6/token revocation4 unchanged. Existing alt_completion_active sentinel proves second body. This does not identify original V14 tail-loss mutator. Helpers-only affected proof remains pending. Helpers-only affected proof ALL_PASS58/58 in61.892s, including every direct refusal-helper caller and previous transport/prefix/acquisition controls; no private witness or recorder imported. Full3003 and changed-byte physical proof pending. FullV15 ALL_PASS15 stages/1260.297s, canonical3003/3003 twice, graph/canon/Clippy/MSRV1.88 PASS. Same frozen1483-row temporary IME80 physical trials: eightpairs3/3, wide86/92+1blocked, retained-hint actualTab3/3, SpaceDOM2/3; exact79 restored after each. No ordinary80 install."
+}

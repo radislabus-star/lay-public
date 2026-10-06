@@ -1,0 +1,31 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-06",
+  "status": "CONTROLLED_WITNESS_AND_STRICT_RED_PASS_CORRECTION_IMPORTED",
+  "decision": "After actual removal of a controlled test engine, consume its exact expected UnknownObject Reset reply by the existing exact-serial helper before the next bridge. Preserve all old assertions/deadlines and every production route.",
+  "evidence": {
+    "receipt": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/test29-detached-v1-import/RESULT.json",
+    "sha256": "fc3991079046d2622d483b8a1127cb340809d4f25b7c39bca85d76f084e10beb",
+    "tests": "1/1 PASS; actual raw TypeError UnknownObject and exact serial19315/19415, member absent",
+    "historical_offender": "UNKNOWN; this proves controlled harness gap, not unseen historical header identity"
+  },
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "alternatives": [
+    "Retain absent-engine false flag: leaves asynchronous transport error ahead of a later Ping and makes source control scheduling dependent.",
+    "Consume only expected detached reply serial with existing helper and maintain strict next Ping assertions.",
+    "Blanket error filtering, timeouts, sleeps and retry-until-green rejected."
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "runtime_authority_changed": false,
+  "verification": "New source RED must still fail only at missing autonomous property; original literal control assertions all must pass. Full source/physical gates unchanged.",
+  "reason": "Actual unregister leaves the controlled peer with an exact UnknownObject reply before its next bridge Ping; the measured detached Reset witness proves that test-only gap.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C08",
+    "C10"
+  ],
+  "not_tested": "Historical unseen offending header identity and client behavior are not established by this controlled witness. Accepted79 runtime unchanged."
+}

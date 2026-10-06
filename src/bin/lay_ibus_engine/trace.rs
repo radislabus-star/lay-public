@@ -549,6 +549,30 @@ pub(crate) fn record_correction_projection_timing(
         correction_total_us: telemetry.total_us,
         candidates: 0,
     }));
+    if let Some(metadata) = telemetry.gate_metadata {
+        write_record(serde_json::json!({
+            "kind": "ibus_correction_gate_metadata",
+            "publication_outcome": outcome,
+            "worker_generation": worker_generation,
+            "engine_path": &identity.path,
+            "tail_epoch": identity.tail_epoch,
+            "input_gate_action": metadata.action,
+            "input_gate_reason": metadata.reason,
+            "pool_scope": "CorrectionResolution.candidates",
+            "pool_count": metadata.pool_count,
+            "no_candidate": metadata.pool_count.map(|count| count == 0),
+            "scoreboard_total": metadata.scoreboard.map(|board| board.total_candidates),
+            "scoreboard_apply": metadata.scoreboard.map(|board| board.apply_candidates),
+            "scoreboard_suggest": metadata.scoreboard.map(|board| board.suggest_only_candidates),
+            "scoreboard_keep": metadata.scoreboard.map(|board| board.keep_original_candidates),
+            "scoreboard_veto": metadata.scoreboard.map(|board| board.veto_candidates),
+            "selected_candidate_gate_action": metadata.selected_candidate_gate_action,
+            "selected_transition_receipt_present": metadata.selected_transition_present,
+            "frame_or_certificate_bound": metadata.frame_or_certificate_bound,
+            "final_decision_present": metadata.final_decision_present,
+            "authority_admitted_pool_count": serde_json::Value::Null,
+        }).to_string());
+    }
 }
 
 pub(crate) fn record_correction_prefetch_timing(

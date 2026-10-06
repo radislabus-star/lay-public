@@ -1079,3 +1079,31 @@ Exact private receipt locators (not public artifacts):
 - native_controls: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/V17_RUN_20261005T165343_618a970b6186/WIDE_MATRIX_V17_20261005T165343_618a970b6186.json`; SHA256 `2c823203558fac0bd22b7a18e7a4c89a974040b29e2e77b39828de7fecd20e58`.
 
 - double_shift: `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/V17_RUN_20261005T165546_fed016834aa7/WIDE_MATRIX_V17_20261005T165546_fed016834aa7.json`; SHA256 `42b9f74b73c349cd4c95ff7c18ad3b3f3fc4d9458c11f5f28375b2bd83121012`.
+
+## Additional installed terminal-command acceptance — 2026-10-05
+
+User explicitly requested terminal commands/hints after publication. No source,
+configuration, model or installed-byte change. Test harness reattached the
+existing native device route using the same daemon bytes. Fresh owned Kitty
+nonexecuting readline,20 fixed English prefixes: matching suffix emitted20/20,
+Tab plus exactly one space and physical Enter readback20/20. Command resolves
+in current PATH/builtins16/20. These counts do not measure ranker correctness.
+Of17 cases whose authored example is locally available,16 yield a command:
+14 match the example and2 yield legitimate alternatives chgrp/firefox. Docker,
+htop and python authored examples do not resolve on this host.
+
+Observed gaps: do→docx, ht→http, py→python(unavailable), ls→lsat. The last case
+has installed/catalogued lsblk and live readout count1 with suffix at. Complete
+command candidate coverage is not established; candidate retention/admission
+must be traced before repair. Catalogue preference applies to already admitted
+candidates, not to a separately authorized shell completion path.
+
+First screenshot attempt lost owned focus before Tab; original20 dependent
+BLOCKED rows/executed0 retained. No-screenshot run20 executed/20 prefix and
+byte-consistency assertions PASS. Rendered pixels UNKNOWN: emitted suffixes
+were checked through the existing trace and confirmed by actual Tab output.
+Native feedback from Tab/Enter legitimately changes learning memory; no
+isolated or natural heldout quality claim. Commands themselves were never run.
+
+Receipt `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/windows/V17_RUN_20261005T203328_2585bbe14206/WIDE_MATRIX_V17_20261005T203328_2585bbe14206.json`, SHA256 `289a98c8fc49ac7e65a79e9c8dfbd3daed5b24a8e7b5733d62ddd6c666f57613`.
+Detailed report `/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/frequency-terminal-analysis/terminal-commands-physical-20261005T203145/REPORT.md`, SHA256 `88e324cac0c8485d64bf123321f1732189256d1e1c055bfec25b903f84654a83`.

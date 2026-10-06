@@ -1,0 +1,67 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-06",
+  "status": "V20_FULL_SOURCE_PASS_USER_DIRECTED80_INSTALLED_HARDWARE_UNCONFIRMED",
+  "decision": "Remove the obsolete module-local expect(clippy::collapsible_if) on composition_commit; retain strict warnings denial and every runtime and test statement.",
+  "reason": "V18 both canonical3010 passes succeeded, then full gate failed because the modified native-Space implementation no longer produces that warning. The old TD121 expectation is now itself an unfulfilled-lint-expectations error.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine.rs",
+    "src/bin/lay_ibus_engine/composition_commit.rs",
+    "scripts/check-lay-lints.sh",
+    "scripts/lint-baseline/dead_code.default.json",
+    "scripts/lint-baseline/dead_code.json"
+  ],
+  "change_scope": "Only four-line expect attribute removed; same module/path, no runtime control flow, assertions, deadlines, ownership, lint baselines or warning-denial options changed. Future collapsible-if warning is now denied rather than expected.",
+  "alternatives": [
+    "Allow unfulfilled-lint-expectations rejected because it would suppress stale expectation failures.",
+    "Change baseline or suppress warnings rejected.",
+    "Restore nested runtime branch solely to produce a lint rejected."
+  ],
+  "first_failed_transition": "Default Clippy: src/bin/lay_ibus_engine.rs15 unfulfilled expectation; exact narrow bin diagnostic exit101 in15.489s.",
+  "failed_receipt": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v18-import-failed/RELEASE_GATE_RESULT.json",
+    "sha256": "597ae874b99f7997b1d33cac748d4a8afe510cf4bb34ee39fdd31dad037f945e"
+  },
+  "diagnostic": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v18-import-failed/CLIPPY_FAILURE_DIAG.err",
+    "sha256": "50d870da4dda17c61f328b324194167fc52e308112ea13499f2c5b6a149ba9ee"
+  },
+  "canonical_second_observation": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v18-import-failed/CANONICAL_FULL_AFTER_FAILURE.json",
+    "sha256": "26706d3440bd1a55c803aab3443e9cd82df58f3436c54c4df8def412194a18b2",
+    "scope": "Postfailure capture of the sole ROOT-run canonical summary; not a full gate PASS."
+  },
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "runtime_authority_changed": false,
+  "promotion": "Independent actual-byte review, strict full all-target default/research Clippy, required complete source gates, changed-byte Firefox and actual-keyboard proof. No failure waived.",
+  "strict_clippy_proof": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/stale-composition-expect-clippy-v1-import/RESULT.json",
+    "sha256": "459aa389f257034d3a58afd7d0a974f05f4bc1e0698814eeffd9f8d4e1264220",
+    "seconds": 77.068,
+    "default_dead_code_inventory": 532,
+    "research_dead_code_inventory": 356,
+    "non_dead_diagnostics_each": 0,
+    "runtime_changed": false
+  },
+  "independent_review": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/composition-expectation-retirement-review-v1/INDEPENDENT_REVIEW.md",
+    "sha256": "59a25725dcb08d390c10a93454c31aae2db93d70d0b99b92e4c4a0ab3add8959",
+    "blockers": 0
+  },
+  "verification": "V20 full gate PASS15 stages; canonical3010 PASS twice; exact source manifest2b0a6cc5. Scoped Firefox proof recorded in owning document; actual local install80 PASSbd7b1757. Hardware confirmation not performed by user direction; combined80 client acceptance remains pending. See decisions/2026-10-06-user-directed-version80-install.json.",
+  "not_tested": "Real physical keyboard, combined installeddaemon80/IME80 physical acceptance, Instagram/WhatsApp and every Firefox field; historical causal unknowns remain unknown.",
+  "v19_schema_failure": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v19-import-failed/RELEASE_GATE_RESULT.json",
+    "sha256": "08cbcd3036fdcdf49af3f10c763d63b635ee9a86bb3d2408401e6530ed85a05b",
+    "scope": "CANON rejected missing verification; no canonical or release acceptance, no runtime changes."
+  },
+  "historical_verification_before_v20": "Strict guarded all-target default/research Clippy PASS77.068s; receipt459aa389. Independent review59a25725 confirms exact four-line annotation-only deletion and no suppressed warning. Prior both3010canonical runs passed before this annotation removal; new complete source gate is pending."
+}

@@ -34,24 +34,26 @@ async fn establish_known_source(
         ENGINE_INTERFACE,
         "ProcessKeyEvent",
     );
-    harness.peer.connection.send(&space).await.unwrap();
+    send_manually_dispatched_callback(&mut harness.peer, &space, SOURCE_PATH, ENGINE_INTERFACE)
+        .await;
     let emitter = zbus::object_server::SignalEmitter::new(&harness.connection, SOURCE_PATH)
         .expect("source signal emitter");
     let input_mode_before_key = source.layout_gesture.layout_is_ru;
+    let native_space_was_visible = source.composition.preedit_visible;
     let (handled, observed) = bounded(future::zip(
         source.process_key_event(space.header(), emitter, KEY_SPACE, 57, 0),
         harness.observer.process_next(),
     ))
     .await;
     assert!(observed.unwrap());
-    assert!(handled.unwrap());
-    let commit = super::word_scope::next_legacy_text_effect(
-        &mut harness.peer,
+    assert!(!handled.unwrap());
+    super::word_scope::expect_legacy_native_space(
+        harness,
         &source,
         input_mode_before_key,
+        native_space_was_visible,
     )
     .await;
-    assert_eq!(commit.header().member().unwrap().as_str(), "CommitText");
     assert!(source.context_word_is_known());
 
     source.committed_tail.buffer = "l".to_string();
@@ -98,7 +100,7 @@ async fn type_active_known_word(
             ENGINE_INTERFACE,
             "ProcessKeyEvent",
         );
-        send_observed(harness, &key).await;
+        send_manually_observed_callback(harness, &key, SOURCE_PATH, ENGINE_INTERFACE).await;
         let emitter =
             zbus::object_server::SignalEmitter::new(&harness.connection, SOURCE_PATH).unwrap();
         let handled = source
@@ -129,6 +131,8 @@ fn factory_message_for_profile(serial: u32, requested_profile: &str) -> Message 
         .sender(DISPATCH_SENDER)
         .unwrap()
         .serial(NonZeroU32::new(serial).unwrap())
+        .with_flags(zbus::message::Flags::NoReplyExpected)
+        .unwrap()
         .build(&requested_profile)
         .unwrap()
 }
@@ -156,6 +160,8 @@ fn focus_out_id_message_for(path: &str, serial: u32) -> Message {
         .sender(DISPATCH_SENDER)
         .unwrap()
         .serial(NonZeroU32::new(serial).unwrap())
+        .with_flags(zbus::message::Flags::NoReplyExpected)
+        .unwrap()
         .build(&CONTEXT_PATH)
         .unwrap()
 }
@@ -165,9 +171,31 @@ async fn send_observed(harness: &mut Harness, message: &Message) {
     assert!(bounded(harness.observer.process_next()).await.unwrap());
 }
 
+async fn send_manually_observed_callback(
+    harness: &mut Harness,
+    message: &Message,
+    expected_path: &str,
+    expected_interface: &str,
+) {
+    send_manually_dispatched_callback(
+        &mut harness.peer,
+        message,
+        expected_path,
+        expected_interface,
+    )
+    .await;
+    assert!(bounded(harness.observer.process_next()).await.unwrap());
+}
+
 async fn open_factory_for(harness: &mut Harness, target_path: &str, serial: u32) {
     let factory = factory_message(serial);
-    send_observed(harness, &factory).await;
+    send_manually_observed_callback(
+        harness,
+        &factory,
+        "/org/freedesktop/IBus/Factory",
+        FACTORY_INTERFACE,
+    )
+    .await;
     let callback = harness
         .adapter
         .begin_factory_callback(&factory.header(), Instant::now(), profile("lay-us"))
@@ -205,9 +233,11 @@ async fn start_native_focus_before_marker(
         .sender(DISPATCH_SENDER)
         .unwrap()
         .serial(NonZeroU32::new(serial).unwrap())
+        .with_flags(zbus::message::Flags::NoReplyExpected)
+        .unwrap()
         .build(&())
         .unwrap();
-    send_observed(harness, &focus).await;
+    send_manually_observed_callback(harness, &focus, target_path, ENGINE_INTERFACE).await;
     target
         .focus_in_id(
             focus.header(),
@@ -254,7 +284,13 @@ async fn pending_transfer_late_native_case(native_context: &str) {
     let mut source = establish_known_source(&mut harness, shared.clone()).await;
 
     let factory = factory_message(7_201);
-    harness.peer.connection.send(&factory).await.unwrap();
+    send_manually_dispatched_callback(
+        &mut harness.peer,
+        &factory,
+        "/org/freedesktop/IBus/Factory",
+        FACTORY_INTERFACE,
+    )
+    .await;
     assert!(bounded(harness.observer.process_next()).await.unwrap());
     let factory_callback = harness
         .adapter
@@ -266,7 +302,8 @@ async fn pending_transfer_late_native_case(native_context: &str) {
         .bind_factory_target(&factory_callback, engine_path(TARGET_PATH)));
 
     let focus_out = focus_out_id_message(7_202);
-    harness.peer.connection.send(&focus_out).await.unwrap();
+    send_manually_dispatched_callback(&mut harness.peer, &focus_out, SOURCE_PATH, ENGINE_INTERFACE)
+        .await;
     let (accepted, observed) = bounded(future::zip(
         source.observe_context_focus_out(&focus_out.header(), Instant::now()),
         harness.observer.process_next(),
@@ -282,7 +319,8 @@ async fn pending_transfer_late_native_case(native_context: &str) {
         ENGINE_INTERFACE,
         "Disable",
     );
-    harness.peer.connection.send(&disable).await.unwrap();
+    send_manually_dispatched_callback(&mut harness.peer, &disable, SOURCE_PATH, ENGINE_INTERFACE)
+        .await;
     let (accepted, observed) = bounded(future::zip(
         source.observe_context_disable(&disable.header(), Instant::now()),
         harness.observer.process_next(),
@@ -306,7 +344,8 @@ async fn pending_transfer_late_native_case(native_context: &str) {
         ENGINE_INTERFACE,
         "FocusIn",
     );
-    harness.peer.connection.send(&focus_in).await.unwrap();
+    send_manually_dispatched_callback(&mut harness.peer, &focus_in, TARGET_PATH, ENGINE_INTERFACE)
+        .await;
     let (started, observed) = bounded(future::zip(
         target.activate_context_from_header(&focus_in.header(), Instant::now(), None),
         harness.observer.process_next(),
@@ -336,7 +375,13 @@ async fn pending_transfer_late_native_case(native_context: &str) {
         ENGINE_INTERFACE,
         "FocusInId",
     );
-    harness.peer.connection.send(&focus_in_id).await.unwrap();
+    send_manually_dispatched_callback(
+        &mut harness.peer,
+        &focus_in_id,
+        TARGET_PATH,
+        ENGINE_INTERFACE,
+    )
+    .await;
     let ((), observed) = bounded(future::zip(
         target.focus_in_id(
             focus_in_id.header(),
@@ -398,7 +443,8 @@ async fn pending_transfer_late_native_case(native_context: &str) {
         ENGINE_INTERFACE,
         "Enable",
     );
-    harness.peer.connection.send(&enable).await.unwrap();
+    send_manually_dispatched_callback(&mut harness.peer, &enable, TARGET_PATH, ENGINE_INTERFACE)
+        .await;
     assert!(bounded(harness.observer.process_next()).await.unwrap());
     drop(held_get);
 }
@@ -428,7 +474,13 @@ fn td125_focus_out_refuses_transfer_of_cancelled_owned_preedit() {
         assert_eq!(shared.lock().unwrap().handoff_tail_buffer, "l ab");
 
         let factory = factory_message(7_207);
-        send_observed(&mut harness, &factory).await;
+        send_manually_observed_callback(
+            &mut harness,
+            &factory,
+            "/org/freedesktop/IBus/Factory",
+            FACTORY_INTERFACE,
+        )
+        .await;
         let factory_callback = harness
             .adapter
             .begin_factory_callback(&factory.header(), Instant::now(), profile("lay-us"))
@@ -439,7 +491,13 @@ fn td125_focus_out_refuses_transfer_of_cancelled_owned_preedit() {
             .bind_factory_target(&factory_callback, engine_path(TARGET_PATH)));
 
         let focus_out = focus_out_id_message(7_208);
-        harness.peer.connection.send(&focus_out).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &focus_out,
+            SOURCE_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         let (accepted, observed) = bounded(future::zip(
             source.observe_context_focus_out(&focus_out.header(), Instant::now()),
             harness.observer.process_next(),
@@ -500,7 +558,13 @@ fn td125_cursor_zero_cancellation_cannot_resettle_known_start_authority() {
             ENGINE_INTERFACE,
             "ProcessKeyEvent",
         );
-        harness.peer.connection.send(&backspace).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &backspace,
+            SOURCE_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         let emitter = zbus::object_server::SignalEmitter::new(&harness.connection, SOURCE_PATH)
             .expect("source signal emitter");
         let (handled, observed) = bounded(future::zip(
@@ -551,7 +615,8 @@ fn td121_e0_e1_e2_delayed_handlers_install_only_latest_and_reject_late_e1_frame(
         );
         open_factory_for(&mut harness, E1, 7_500).await;
         let e0_focus_out = focus_out_id_message_for(SOURCE_PATH, 7_501);
-        send_observed(&mut harness, &e0_focus_out).await;
+        send_manually_observed_callback(&mut harness, &e0_focus_out, SOURCE_PATH, ENGINE_INTERFACE)
+            .await;
         let e0_disable = method_message(
             DISPATCH_SENDER,
             7_502,
@@ -559,7 +624,8 @@ fn td121_e0_e1_e2_delayed_handlers_install_only_latest_and_reject_late_e1_frame(
             ENGINE_INTERFACE,
             "Disable",
         );
-        send_observed(&mut harness, &e0_disable).await;
+        send_manually_observed_callback(&mut harness, &e0_disable, SOURCE_PATH, ENGINE_INTERFACE)
+            .await;
         start_native_focus(&mut harness, &mut e1, E1, CONTEXT_PATH, 7_503).await;
         assert!(
             e0.observe_context_focus_out(&e0_focus_out.header(), Instant::now())
@@ -584,9 +650,9 @@ fn td121_e0_e1_e2_delayed_handlers_install_only_latest_and_reject_late_e1_frame(
         );
         open_factory_for(&mut harness, E2, 7_504).await;
         let e1_focus_out = focus_out_id_message_for(E1, 7_505);
-        send_observed(&mut harness, &e1_focus_out).await;
+        send_manually_observed_callback(&mut harness, &e1_focus_out, E1, ENGINE_INTERFACE).await;
         let e1_disable = method_message(DISPATCH_SENDER, 7_506, E1, ENGINE_INTERFACE, "Disable");
-        send_observed(&mut harness, &e1_disable).await;
+        send_manually_observed_callback(&mut harness, &e1_disable, E1, ENGINE_INTERFACE).await;
         start_native_focus(&mut harness, &mut e2, E2, CONTEXT_PATH, 7_507).await;
         assert!(harness.adapter.shared.pending.lock().unwrap().is_some());
 
@@ -629,7 +695,7 @@ fn td121_e0_e1_e2_delayed_handlers_install_only_latest_and_reject_late_e1_frame(
             ENGINE_INTERFACE,
             "ProcessKeyEvent",
         );
-        send_observed(&mut harness, &tab).await;
+        send_manually_observed_callback(&mut harness, &tab, E1, ENGINE_INTERFACE).await;
         let emitter = zbus::object_server::SignalEmitter::new(&harness.connection, E1).unwrap();
         let handled = e1
             .process_key_event(tab.header(), emitter, KEY_TAB, 15, 0)
@@ -691,7 +757,7 @@ async fn controlled_material_transfer_case(native_context: &str, serial: u32) {
     );
     open_factory_for(&mut harness, target_path, serial).await;
     let focus_out = focus_out_id_message_for(SOURCE_PATH, serial + 1);
-    send_observed(&mut harness, &focus_out).await;
+    send_manually_observed_callback(&mut harness, &focus_out, SOURCE_PATH, ENGINE_INTERFACE).await;
     let disable = method_message(
         DISPATCH_SENDER,
         serial + 2,
@@ -699,7 +765,7 @@ async fn controlled_material_transfer_case(native_context: &str, serial: u32) {
         ENGINE_INTERFACE,
         "Disable",
     );
-    send_observed(&mut harness, &disable).await;
+    send_manually_observed_callback(&mut harness, &disable, SOURCE_PATH, ENGINE_INTERFACE).await;
 
     source.config.auto_replace = !source.config.auto_replace;
     assert!(!source.input_frame_identity_matches(&stale_frame));
@@ -765,7 +831,7 @@ async fn controlled_material_transfer_case(native_context: &str, serial: u32) {
         ENGINE_INTERFACE,
         "ProcessKeyEvent",
     );
-    send_observed(&mut harness, &tab).await;
+    send_manually_observed_callback(&mut harness, &tab, SOURCE_PATH, ENGINE_INTERFACE).await;
     let emitter =
         zbus::object_server::SignalEmitter::new(&harness.connection, SOURCE_PATH).unwrap();
     let tab_handled = source
@@ -786,7 +852,7 @@ async fn controlled_material_transfer_case(native_context: &str, serial: u32) {
         ENGINE_INTERFACE,
         "ProcessKeyEvent",
     );
-    send_observed(&mut harness, &space).await;
+    send_manually_observed_callback(&mut harness, &space, SOURCE_PATH, ENGINE_INTERFACE).await;
     let emitter =
         zbus::object_server::SignalEmitter::new(&harness.connection, SOURCE_PATH).unwrap();
     let space_handled = source
@@ -847,7 +913,13 @@ async fn pending_cross_profile_word_loss_case(
     let mut source = establish_known_source(&mut harness, shared.clone()).await;
 
     let factory = factory_message_for_profile(serial, "lay-ru");
-    send_observed(&mut harness, &factory).await;
+    send_manually_observed_callback(
+        &mut harness,
+        &factory,
+        "/org/freedesktop/IBus/Factory",
+        FACTORY_INTERFACE,
+    )
+    .await;
     let factory_callback = harness
         .adapter
         .begin_factory_callback(&factory.header(), Instant::now(), profile("lay-ru"))
@@ -858,7 +930,7 @@ async fn pending_cross_profile_word_loss_case(
         .bind_factory_target(&factory_callback, engine_path(TARGET_PATH)));
 
     let focus_out = focus_out_id_message_for(SOURCE_PATH, serial + 1);
-    send_observed(&mut harness, &focus_out).await;
+    send_manually_observed_callback(&mut harness, &focus_out, SOURCE_PATH, ENGINE_INTERFACE).await;
     let disable = method_message(
         DISPATCH_SENDER,
         serial + 2,
@@ -866,7 +938,7 @@ async fn pending_cross_profile_word_loss_case(
         ENGINE_INTERFACE,
         "Disable",
     );
-    send_observed(&mut harness, &disable).await;
+    send_manually_observed_callback(&mut harness, &disable, SOURCE_PATH, ENGINE_INTERFACE).await;
     let mut target = LayIbusEngine::new_from_component(
         TARGET_PATH.to_string(),
         shared,
@@ -905,7 +977,13 @@ async fn pending_cross_profile_word_loss_case(
         ENGINE_INTERFACE,
         "Reset",
     );
-    send_observed(&mut harness, &unrelated).await;
+    send_manually_observed_callback(
+        &mut harness,
+        &unrelated,
+        "/io/github/radislabus_star/LayIme/engine/unrelated",
+        ENGINE_INTERFACE,
+    )
+    .await;
     {
         let reducer = harness.adapter.shared.reducer.lock().unwrap();
         let request = reducer
@@ -918,6 +996,10 @@ async fn pending_cross_profile_word_loss_case(
         );
     }
 
+    let word_loss_interface = match &word_loss {
+        PendingCrossProfileWordLoss::Reset => ENGINE_INTERFACE,
+        PendingCrossProfileWordLoss::ContentType => PROPERTIES_INTERFACE,
+    };
     let word_loss = match word_loss {
         PendingCrossProfileWordLoss::Reset => method_message(
             DISPATCH_SENDER,
@@ -933,6 +1015,8 @@ async fn pending_cross_profile_word_loss_case(
             .sender(DISPATCH_SENDER)
             .unwrap()
             .serial(NonZeroU32::new(serial + 5).unwrap())
+            .with_flags(zbus::message::Flags::NoReplyExpected)
+            .unwrap()
             .build(&(
                 ENGINE_INTERFACE,
                 "ContentType",
@@ -940,7 +1024,8 @@ async fn pending_cross_profile_word_loss_case(
             ))
             .unwrap(),
     };
-    send_observed(&mut harness, &word_loss).await;
+    send_manually_observed_callback(&mut harness, &word_loss, TARGET_PATH, word_loss_interface)
+        .await;
     {
         let reducer = harness.adapter.shared.reducer.lock().unwrap();
         let request = reducer
@@ -1051,7 +1136,13 @@ fn superseded_source_free_cannot_publish_its_stale_fence() {
         assert!(harness.adapter.shared.pending.lock().unwrap().is_none());
 
         let factory = factory_message(7_301);
-        harness.peer.connection.send(&factory).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &factory,
+            "/org/freedesktop/IBus/Factory",
+            FACTORY_INTERFACE,
+        )
+        .await;
         assert!(bounded(harness.observer.process_next()).await.unwrap());
         let factory_callback = harness
             .adapter
@@ -1110,7 +1201,13 @@ fn superseded_source_free_cannot_publish_its_stale_fence() {
             ENGINE_INTERFACE,
             "FocusInId",
         );
-        harness.peer.connection.send(&focus_in).await.unwrap();
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &focus_in,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
         assert!(bounded(harness.observer.process_next()).await.unwrap());
         let observed = harness
             .adapter

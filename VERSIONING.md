@@ -17,7 +17,21 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.79`
+- `1.0.80`
+
+1.0.80: installed Firefox Reset/native replay and native Space-boundary repair.
+Preserves the admitted replay seed and exact successor lifecycle through observed
+Reset/callback retirement. Double Shift detector, ManualToggleV3, SafetyGate and
+execution routes retain their existing owners. Full source gate PASS; both
+canonical runs 3010/3010. Temporary same-byte IME80/daemon79 controls pass Space,
+eight Double Shift with word/mode/icon changes, and actual Backspace→Tab in three
+Firefox field types. Wide matrix remains 87/93; unresolved failures are recorded.
+Exact IME80/daemon80/CLI80 and extension version80 were installed on 2026-10-06;
+global IBus, L3/L11, input sources, configuration and35 protected paths preserved.
+The user directed installation before real-keyboard confirmation; that check is
+NOT_PERFORMED, not PASS. Combined installed80 client acceptance and every Firefox
+site are not established. Publication reuses the existing bytes and evidence.
+See [Firefox evidence](docs/architecture/firefox-input-stability-2026-10-05.md).
 
 1.0.79: installed contextual-completion and terminal-command-preference release.
 Repairs current-prefix evidence, preserves confirmed L4 ordering and refreshes

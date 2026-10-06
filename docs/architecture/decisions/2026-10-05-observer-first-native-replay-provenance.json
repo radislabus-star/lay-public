@@ -1,0 +1,39 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-05",
+  "status": "SOURCE_FULL_GATE_PASS_PHYSICAL_PARTIAL_NEW_LIFECYCLE_FAILURE",
+  "decision": "Retain inert admitted ExactReplay source proof across Reset-only retirement; use existing reducer revocation watermark and align epoch only after fresh exact completed client receipt.",
+  "reason": "Two current-byte physical failures: observer Reset clears queued native inserts before callbacks; refusal adds poisoning, loses predecessor and prevents next Double Shift.",
+  "verification": "Full v8 gate PASS1258.344s canonical2993/2993 and strict lint/canon/MSRV/installer gates. Temporary IME80 input+contenteditable8/8 each; textarea pair1 lifecycle failure. Exact79 restored; not admitted for stable installation.",
+  "not_tested": "Broad93-case/retainedTab suites and changed-byte real-keyboard confirmation pending. New textarea lifecycle failure needs causal RED; historical41836/41837 remains UNKNOWN.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/protocol/state.rs",
+    "src/bin/lay_ibus_engine/committed_tail.rs",
+    "src/bin/lay_ibus_engine/td120_word_lifecycle_tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "runtime_authority_changed": true,
+  "authority_change_if_promoted": "Existing owner may restore only independently proved native append epoch plus fresh exact Reset receipt; no new edit route or weakened equality.",
+  "test_only_struct_update": "Existing expired-replay fixtures initialize the added inert source_token as None; no committed-tail runtime route change. Semantic fixtures use real key tuples; malformed negatives retain invalid signature and strict authority/output assertions."
+}

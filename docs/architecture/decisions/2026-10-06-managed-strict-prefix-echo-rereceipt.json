@@ -1,0 +1,43 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-06",
+  "status": "CAUSAL_RED_AND_FOCUSED_GREEN_PASS_FULL_PHYSICAL_PENDING",
+  "decision": "Within the existing PendingContextResetRereceipt, distinguish a single authenticated strict-prefix echo from a generic revision gap; only its immediately following exact full receipt may confirm the unchanged managed word.",
+  "reason": "V10 textarea native keys settle correctly. A previously confirmed pending word is made inert by a strict-prefix receipt, then next full-length snapshot is refused solely by revision gap2. Exact full-surface equality is not present in diagnostic metadata and must be proved by controlled callback fixture.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "runtime_authority_changed": false,
+  "authority_change_if_promoted": "New positive receipt proof for the same authenticated managed-append chain; the prefix remains inert. Existing exact bounded snapshot plus live same-owner admission grants confirmation; original reducer settlement and verifier apply effects. No generic gap relaxation or replay admission.",
+  "required_guards": [
+    "Previously confirmed pending receipt, unchanged current token/owner/word lineage/epoch",
+    "Genuinely managed committed word; no ExactReplay, quarantine or completed replay",
+    "Strict prefix is exactly bounded with collapsed caret; no authority/effects from this prefix",
+    "Single next surrounding revision, original gap exactly2, unchanged word identity",
+    "Fresh full exact bounded token receipt before any manual effect",
+    "Mismatch, selection, input/lifecycle gap, replay or extra revision destroys witness; rearm and native append reconstruct it empty",
+    "Original deadline/Shift detector/manual projection/output contracts unchanged"
+  ],
+  "alternatives": [
+    "Blanket revision gap2 admission rejected: erases generic input gaps.",
+    "Advance every strict prefix revision rejected: first-unconfirmed and replay snapshots have no confirmed append provenance.",
+    "One-shot inert echo witness in existing pending state proposed; old rejection paths stay literal outside independently proved positive case."
+  ],
+  "verification": "Old production causal RED expected1FAIL29PASS48.161s. GREENv1 29PASS1FAIL48.110s: causal assertion passed but new dependent whole-tail expectation wrong. New-only oracle corrected to exact seeded boundary+word and actual manual-first strict readout. GREENv2 ALL_PASS30/30 48.139s; exact1477 source import, independent production delta blockers0.",
+  "not_tested": "New full release source gate, changed-byte physical acceptance, real-keyboard confirmation and every Firefox site pending. Accepted exact79 still installed."
+}

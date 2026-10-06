@@ -1,0 +1,43 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-06",
+  "status": "FULL_SOURCE_PASS_PHYSICAL_PARTIAL_NEW_RERECEIPT_FAILURE",
+  "decision": "A delayed authenticated Disable belonging to an already revoked exact handoff ticket clears only matching local/source Shared state, preserving later observer lifecycle stamps through existing reducer SourceFree admission.",
+  "reason": "Prior textarea FocusOut timeout and delayed Disable can clear successor lifecycle stamps. Source-supported refinement: Factory Pending ticket retained Revoked after timeout; observer fills positions but Disable callback rejects Pending condition and revokes stamps again. Initial callback delay and exact physical ticket internals not logged. Controlled Reset fixture proves shared cancellation mechanism.",
+  "verification": "Controlled RED1FAIL6PASS; GREEN28/28; full v10 canonical2994/2994 PASS1256.802s. Three finite physical trials recorded, exact79 restored each. New textarea native keys admitted but strict-prefix/full receipt lineage discarded; lateDisable branch not exercised in that run.",
+  "not_tested": "Physical exercise of repaired lateDisable branch not established. Real-keyboard confirmation, every Firefox site, and normal full80 installation not established.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "runtime_authority_changed": false,
+  "authority_change_if_promoted": "Preserves later authenticated callback delivery only; old source word already independently revoked, no transfer seal, fresh SourceFree grant remains UnknownStart.",
+  "required_guards": [
+    "typed Disable observed owner equals local owner",
+    "reducer retained owner equals local owner",
+    "ticket source owner exact",
+    "ticket status Revoked",
+    "ticket disable_position equals this observed callback position",
+    "unchanged sender/path/context/native marker fences and deadlines"
+  ],
+  "alternatives": [
+    "Increasing callback deadline or retrying is rejected.",
+    "Blanket local-only failure cleanup is rejected because it may leave live reducer word authority.",
+    "Blanket stamp retention on every global revoke is rejected because it expands stale-key/lifecycle proof scope.",
+    "Narrowly retire an already revoked exact Disable source through existing local cleanup, matching the established FocusOut pattern."
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-06",
+  "status": "SOURCE_CANONICAL_TWICE_PASS_V18_FAILED_STALE_LINT_EXPECTATION",
+  "decision": "Ordinary managed Legacy NoApply/manual-suppressed Space uses the original native key after Clear/Hide. Retain an eligible predecessor inert in the existing PendingContextResetRereceipt using call-local pre-effect transport eligibility and strict post-effect revalidation. Original Reset, exact client receipt and manual consumers remain authoritative. Author one private connected RED/repair and semantic transport migration; import and release require subsequent proof.",
+  "reason": "The owned separator commit completed successfully but the own Firefox input lacked its space. The private native alternative preserved one space and the next symbol in 3/3 fields, and next-word hint plus actual Tab in 3/3 fields. Its false Space PRESS currently clears the predecessor; this remaining semantic regression blocks promotion.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/managed.rs",
+    "src/bin/lay_ibus_engine/composition_commit.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+    "src/bin/lay_ibus_engine/preedit/tests.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "src/bin/lay_ibus_engine/context_runtime/tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/native_transfer.rs",
+    "src/bin/lay_ibus_engine/td125_legacy_preedit_tests.rs"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "runtime_authority_changed": false,
+  "authority_change_if_promoted": "Ordinary Legacy NoApply separator transport becomes native physical input. Existing authenticated predecessor provenance may survive this boundary only as inert state; the existing live owner, Reset identity and fresh exact client receipt must independently establish permission. No new owner, editor, detector, cache, timer, authority source, generic false-key admission or verifier bypass.",
+  "required_guards": [
+    "Actual native managed NoApply/manual-suppressed Space PRESS, empty composition and no command modifier; exclude Atomic, terminal, Apply, replay and quarantine",
+    "Capture native eligibility locally before await from the actual Legacy output, authenticated Space PRESS, pre-effect ManagedCommit mode, empty composition and absence of terminal/replay/quarantine/command paths; carry it only through this same callback, without persistent state",
+    "Existing independently eligible pre-key boundary candidate; exact one-ASCII-Space local delta and candidate epoch+1; unchanged owner/revision/provenance and a distinct reducer-valid KnownStart successor",
+    "Existing pending payload only, completed_replay null, confirmed false and no prefix-echo grant; local observation and successful Clear/Hide are not client ACK",
+    "Original Reset arming, collapsed bounded snapshot, revision, selection, owner, token, epoch, content, focus, input-gap and UnknownStart manual identity predicates remain literal",
+    "ACK before Reset cannot grant UnknownStart manual identity; post-Reset reuse requires a fresh exact ACK",
+    "Failed Clear/Hide stops before native observation; no Commit/Delete or duplicate original key in the native branch",
+    "Transport migration asserts false/noCommit explicitly and preserves every old downstream/manual/negative assertion; no deleted identity, blanket assertion waiver or failure-ledger exception",
+    "Protected Double Shift detector, exact projection, output/SafetyGate, layout publication and terminal/Atomic/active-composition/Apply contracts remain required"
+  ],
+  "alternatives": [
+    "Repair owned CommitText after proving the actual Gecko branch: viable but its delivery cause remains UNKNOWN; speculative Clear/Commit reordering is rejected.",
+    "Use native ordinary Space with the existing strict predecessor and real-client confirmation: selected for reviewed private RED/repair because its delimiter and next-word effects are measured.",
+    "Treat all false keys as owned appends, infer authority from mirror equality, add a site/capability-name bypass or waive old semantic assertions: rejected."
+  ],
+  "consequence_analysis": {
+    "candidate_and_rank": "Candidate generation, retention, scoring and competition are unchanged. Native NoApply never accepts a suggestion; quality/clean/lattice/false-certainty gates remain conjunctive.",
+    "latency_and_resources": "One ordinary Legacy CommitText is removed; existing Clear/Hide, deadlines and refusal propagation remain. Bounded existing pending payload only, no extra model inference, polling, RPC, timer or queue. Changed-byte latency/RSS/package budgets remain to be measured.",
+    "cache_and_updates": "Whitespace invalidates existing word snapshot, correction/display generation and mode caches. Retained provenance cannot renew cached authority; model/package/delta updates do not supply client confirmation.",
+    "learning": "Native dispatch is not successful correction/completion feedback. Keep existing typed-boundary bookkeeping and confirmed feedback semantics.",
+    "concurrency": "Revalidate pre-key provenance against settled same-owner token, revision and exact epoch/delta. Reset, focus, content, selection, input gap and stale publication must continue to refuse.",
+    "rollback_and_consumers": "Exact79 transactional rollback and protected runtime/model/source guards remain. Legacy native, Atomic, active composition, authorized Apply and terminal transports have distinct unchanged semantic guarantees.",
+    "maintenance": "Extend the existing boundary-retention branch. Shared NoApply fixture setup migrates once with exact effects; immutable old failures are retained. No parallel runtime route owner or client exception."
+  },
+  "verification": "Private focused source 12/12 PASS; two unchanged old transport controls 0/2 FAIL, downstream semantics not reached. Same private artifact Space-DOM 3/3 in 11.229s, next-word current hint and actual Tab 3/3 in 11.278s, exact79 rollback and source/input closure PASS. Preflight SHA2307d18fe6bf061809034bc0b5634055e1bd5b2c4a65950680b4ada3b2cb82e3; static inventory 43 direct functions/64 Space sites plus shared users is not a FAIL allowlist.",
+  "not_tested": "New-byte complete source release gate, changed-byte physical Space/Tab/Backspace/held Shift/eight-pair word+icon/previous-word manual acceptance, actual keyboard, authenticated Instagram/WhatsApp fields and ordinary80 installation remain unproved. The actual Gecko internal branch remains UNKNOWN.",
+  "independent_preflight_review": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/native-space-diagnostic/PREFLIGHT_INDEPENDENT_REVIEW.md",
+    "sha256": "b837c7450465ce9d55e17a45678ec0af9ceab88e8b362b7ce25f88763db73ba0",
+    "verdict": "PASS_WITH_LIMITS_FOR_PREFLIGHT",
+    "blockers": []
+  },
+  "connected_source_evidence": [
+    {
+      "kind": "tests_only_authoring_failure",
+      "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/native-space-connected-red-v1-import/RESULT.json",
+      "sha256": "1fd3b3fe969174151288d7b39b86cbed47eb901fb8889fb5141c424d08d07505",
+      "status": "FAIL_ADMISSION_OR_EXECUTION",
+      "compile_succeeded": false,
+      "executed": 0,
+      "seconds": 28.879
+    },
+    {
+      "kind": "actual_causal_red",
+      "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/native-space-connected-red-v2-import/RESULT.json",
+      "sha256": "21337cf89a09a9378ca5bd41e006eee21e56ab5bc36947e4a16f5095af56490d",
+      "status": "OLD_FAILURE_REPRODUCED",
+      "executed": 8,
+      "passed": 7,
+      "failed": 1,
+      "exact_marker": "native Space erased eligible boundary predecessor",
+      "seconds": 35.401
+    },
+    {
+      "kind": "focused_connected_kernel_green",
+      "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/native-space-core-green-v1-import/RESULT.json",
+      "sha256": "d99b4daae990534fb3018ad174fc95f09bb91988cd15466e7a6f518d2c36e373",
+      "status": "ALL_PASS",
+      "executed": 5,
+      "passed": 5,
+      "failed": 0,
+      "positive_internal_cells": 4,
+      "unchanged_physical_owner_controls": 4,
+      "seconds": 33.87
+    },
+    {
+      "kind": "connected_affected_closure_round2",
+      "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/native-space-connected-green-v2-import/RESULT.json",
+      "sha256": "1477b664b6cd674af4af162cd58adc8e80562305ed11ea98e76540da5f29acbf",
+      "status": "ALL_PASS",
+      "executed": 117,
+      "passed": 117,
+      "failed": 0,
+      "seconds": 104.515
+    },
+    {
+      "kind": "full_source_v16_failed",
+      "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v16-import/RELEASE_GATE_RESULT.json",
+      "sha256": "2d9912c3183dd3ceded78eaf80210704673db886c14f4c572d51b6b90846b671",
+      "status": "FAILED",
+      "seconds": 472.991,
+      "canonical_selected": 3009,
+      "canonical_failed": 2,
+      "physical_acceptance": false,
+      "runtime_authority_changed": false
+    },
+    {
+      "kind": "expanded_td125_closure_green",
+      "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/native-space-full-closure-green-v1-import/RESULT.json",
+      "sha256": "cedc88318aa6451ba168acbaf2c0eeb896c809f4fb325801088b15edc78807a4",
+      "status": "ALL_PASS",
+      "executed": 136,
+      "passed": 136,
+      "failed": 0,
+      "seconds": 114.511,
+      "runtime_authority_changed": false
+    },
+    {
+      "kind": "full_v17_first_canonical_pass_second_canonical_failed",
+      "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v17-import-failed/RELEASE_GATE_RESULT.json",
+      "sha256": "6b6c594fdf1a3c3af8581f2c6f8be5a2a5402a58b5692be7c63dfe57ab6e8950",
+      "status": "FAILED",
+      "seconds": 886.238,
+      "first_canonical_selected": 3009,
+      "first_canonical_verdict": "PASS",
+      "second_canonical_unexpected_failures": 1,
+      "runtime_authority_changed": false
+    }
+  ],
+  "affected_canonical_closure": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/native-space-diagnostic/AFFECTED_FOCUS_111.json",
+    "sha256": "917cb44b83283567668ae9736d9d68d9a43101ea972068b7064dbb596058e562",
+    "existing_identities": 111,
+    "added_identities": 6,
+    "executed": 117,
+    "allowed_failures": []
+  },
+  "independent_connected_review": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/native-space-production-repair-v1/CONNECTED_INDEPENDENT_REVIEW.md",
+    "sha256": "e8098dd15b2cf4621d89e4af84c6abe1a98e855ab931bfd6ff535cbf8fd85d46",
+    "verdict": "PASS_WITH_LIMITS_FOR_CONNECTED_PROPOSAL_AND_ROUND2_REPAIR"
+  },
+  "replan": {
+    "date": "2026-10-06",
+    "reason": "Two review/repair rounds of the 117-identity lexical closure completed; full V16 proved that closure omitted two direct uncapped Legacy Space setup calls in TD125. Explicitly end that closure plan before further repair.",
+    "first_failed_transition": "Both actual panics require handled=true for ordinary uncapped Legacy Managed NoApply Space, at td125_legacy_preedit_tests.rs:534 and593. Downstream Reset/Backspace semantics were not reached.",
+    "scope": "Tests-only migrate the two direct transport expectations with exact false/noCommit/native clear-hide-or-empty effects; preserve all existing downstream local/shared tail, native delete, preedit cancellation, focus and Reset assertions. Runtime source remains unchanged.",
+    "closure": "All canonical TD125 legacy preedit identities plus prior117, then complete changed/full source gates. No failure allowlist or removed identity.",
+    "repair_budget": 2,
+    "promotion": "Full source PASS, changed-byte own Firefox Space/Tab/Backspace/heldShift/eight-pair word+icon+nextletter, and real keyboard confirmation before ordinary installation.",
+    "runtime_authority_changed": false,
+    "exact_selection": {
+      "prior": 117,
+      "td125_module": 19,
+      "overlap": 0,
+      "total": 136,
+      "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/native-space-full-closure-replan-v1/FOCUSED_IDENTITIES.json"
+    },
+    "independent_review": {
+      "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/native-space-full-closure-replan-v1/INDEPENDENT_REVIEW.md",
+      "sha256": "bfe13aa043003ceb8dccbadaa9eb70ead7f08cdd408f35b0351e52a727bc1ea9",
+      "verdict": "PASS_WITH_LIMITS_FOR_TEST_ONLY_MIGRATION",
+      "blockers": []
+    }
+  },
+  "registration_boundary_proof": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/undo-registration-green-v1-import/RESULT.json",
+    "sha256": "19be9d8d469ea3c38bde137307b7ea6f6057a6631eb1d4c6e7b4ecd664dca95e",
+    "executed": 137,
+    "passed": 137,
+    "failed": 0,
+    "seconds": 115.212,
+    "scope": "Initial absent-engine handoff completed and controlled actual registered duplicate revokes original token; all old semantic assertions preserved. Historical V17 timing remains UNKNOWN. Later publication seams excluded.",
+    "independent_review": {
+      "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/undo-dispatch-registration-replan-v1/INDEPENDENT_REVIEW.md",
+      "sha256": "a541911990d3f53c5521958ce982192f4d0b30ee972ffd39ef5d654c4ee47447",
+      "blockers": 0
+    },
+    "runtime_changed": false
+  },
+  "v18_failure": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v18-import-failed/RELEASE_GATE_RESULT.json",
+    "sha256": "597ae874b99f7997b1d33cac748d4a8afe510cf4bb34ee39fdd31dad037f945e",
+    "scope": "Both3010canonical passes; full gatefailed on stale lint expectation. No source-release or physical acceptance."
+  }
+}

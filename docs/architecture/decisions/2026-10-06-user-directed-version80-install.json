@@ -1,0 +1,55 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-06",
+  "status": "ONE_USER_DIRECTED80_INSTALL_COMPLETED_HARDWARE_UNCONFIRMED",
+  "decision": "Install the exact V20 version80 artifact now, before the one real-keyboard confirmation, following the repeated user installation command after the prerequisite and opt-out were explained.",
+  "reason": "User twice requested installation; the last instruction was «установи 80» after the assistant offered readiness or installation without the hardware check. This interpretation authorizes this local installation only; it is not a hardware attestation or general change to AGENTS.md.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "AGENTS.md",
+    "ARCHITECTURE.md",
+    "src/bin/lay_daemon.rs",
+    "src/bin/lay_ibus_engine.rs"
+  ],
+  "change_scope": "One local install: three exact binaries and two extension version files. Original ordinary installer/hardware guards stay intact. No source ownership, SafetyGate, physical gesture detector, input source ID or global IBus change. Future installations retain the existing hardware requirement unless explicitly superseded by the user.",
+  "verification": "V20 complete source gate PASS, both canonical3010 runs PASS; same-candidate temporary IME80/daemon79 Space3/3, native-Space eight-pair3/3, active eight-pair3/3, retained Backspace→Tab3/3 PASS, wide87/93 with6FAIL retained. Ordinary installation receipt PASS: actual IME80/daemon80/CLI80 loaded, icon version80; all35 protected inputs, config/input sources and global IBus/L3/L11 preserved. Independent post-install /proc executable hashes and CLI version matched.",
+  "not_tested": "Real-keyboard confirmation NOT_PERFORMED_BY_USER_DIRECTION. Combined ordinarydaemon80/IME80 physical-client acceptance, Instagram, WhatsApp and all Firefox fields are not established. Three correction failures and three strict DOM event prerequisites remain unresolved; no user acceptance or publication is inferred.",
+  "user_messages": [
+    "сборке 80 установи",
+    "установи 80"
+  ],
+  "private_install_decision": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/USER_DIRECTED80_INSTALL_DECISION.json",
+    "sha256": "a396eec0bafb2e0043b06a76255894d1042c28fe60feb5d0e2d0b849675b4518"
+  },
+  "install_receipt": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/ordinary80-install-109a2c631bd746c9bdf687efe77e8308/INSTALL.json",
+    "sha256": "bd7b1757999440f739b033eec8b783fb3368c0deda1fe4068bd596e0433e4ad3"
+  },
+  "full_source_receipt": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v20-import/RELEASE_GATE_RESULT.json",
+    "sha256": "7685d75b6da165cae6c7eda937d58a29971299ce9b0d6fcc1a6f7db05e629767"
+  },
+  "compiled_source_manifest": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/release80-v20-import/SOURCE_AFTER.json",
+    "sha256": "2b0a6cc5f5496815a2367325ff9f0f141c0844755630d1ed97d3a097fb7c1ae3"
+  },
+  "runtime_sha256": {
+    "lay": "4b40cfbcdae09d0eed57d3e267bf919c1945ac65855c0117108b8273363944ec",
+    "lay-daemon": "8cbbfb83fbb7f2e0812632b0358c7ab312182e352516a73ec1f040c11df54238",
+    "lay-ibus-engine": "03a8ef6023e15afcf315bfe4c8ec941550dad4a498f4a9163bcaf4194f82dc6a"
+  },
+  "rollback_manifest": {
+    "path": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/ordinary80-install-109a2c631bd746c9bdf687efe77e8308/ROLLBACK_ACTUAL79.json",
+    "sha256": "cef29d46ba7e3fcf3927b85edc7a8c70539e72119464c8ea24f6bfbf64e5ae51"
+  },
+  "documentation_boundary": "This decision and owning-document outcome are written after the installer completed its exact1485-file source closure. They are documentation changes, not new compiled bytes; the full-source proof still identifies the frozen V20 manifest."
+}

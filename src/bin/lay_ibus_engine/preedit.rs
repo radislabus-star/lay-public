@@ -384,6 +384,48 @@ impl LayIbusEngine {
             .await
     }
 
+    // Metadata only: the existing callback Instant is a join key, not authority.
+    // Null callback_serial on output rows joins to the one matching binding row.
+    pub(super) fn trace_client_output_metadata(
+        &self,
+        operation: &'static str,
+        phase: &'static str,
+        started: Option<Instant>,
+        success: Option<bool>,
+        separator: Option<bool>,
+        callback_serial: Option<u32>,
+    ) {
+        let Some(started) = started else {
+            return;
+        };
+        let snapshot = self.client_context.surrounding_text_snapshot.as_ref();
+        trace::record(serde_json::json!({
+            "kind": "ibus_client_output_metadata",
+            "operation": operation,
+            "phase": phase,
+            "engine_path": &self.path,
+            "process_id": std::process::id(),
+            "callback_clock": self.context_callback_entered.map(|at| format!("{at:?}")),
+            "callback_serial": callback_serial,
+            "callback_elapsed_us": self.context_callback_entered.map(|at| at.elapsed().as_micros()),
+            "operation_elapsed_us": started.elapsed().as_micros(),
+            "owner_generation": self.context_owner.as_ref().map(|owner| owner.generation.0),
+            "focus_serial": self.client_context.focus_serial,
+            "tail_epoch": self.committed_tail.epoch,
+            "surrounding_revision": self.client_context.surrounding_observation_revision,
+            "buffer_chars": self.committed_tail.buffer.chars().count(),
+            "composition_chars": self.composition.buffer.chars().count(),
+            "composition_cursor": self.composition.cursor,
+            "preedit_visible": self.composition.preedit_visible,
+            "preedit_suffix_chars": self.composition.preedit_suffix.chars().count(),
+            "snapshot_chars": snapshot.map(|snapshot| snapshot.text.chars().count()),
+            "snapshot_cursor": snapshot.map(|snapshot| snapshot.cursor_pos),
+            "snapshot_anchor": snapshot.map(|snapshot| snapshot.anchor_pos),
+            "success": success,
+            "separator": separator,
+        }).to_string());
+    }
+
     pub(crate) async fn clear_preedit(
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
@@ -401,14 +443,32 @@ impl LayIbusEngine {
             return Ok(());
         }
         trace::record_preedit("clear", false, 0, 0, None);
-        emitter
+        let diagnostic_started = trace::diagnostics_enabled_cached().then(Instant::now);
+        self.trace_client_output_metadata("clear", "before", diagnostic_started, None, None, None);
+        let result = emitter
             .update_preedit_text(make_ibus_text(String::new()), 0, false, PREEDIT_MODE_CLEAR)
-            .await
-            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        emitter
-            .hide_preedit_text()
-            .await
-            .map_err(|e| fdo::Error::Failed(e.to_string()))?;
+            .await;
+        self.trace_client_output_metadata(
+            "clear",
+            "after",
+            diagnostic_started,
+            Some(result.is_ok()),
+            None,
+            None,
+        );
+        result.map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        let diagnostic_started = trace::diagnostics_enabled_cached().then(Instant::now);
+        self.trace_client_output_metadata("hide", "before", diagnostic_started, None, None, None);
+        let result = emitter.hide_preedit_text().await;
+        self.trace_client_output_metadata(
+            "hide",
+            "after",
+            diagnostic_started,
+            Some(result.is_ok()),
+            None,
+            None,
+        );
+        result.map_err(|e| fdo::Error::Failed(e.to_string()))?;
         self.composition.preedit_visible = false;
         Ok(())
     }

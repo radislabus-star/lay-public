@@ -1,0 +1,37 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-06",
+  "status": "FOCUSED_SOURCE_PASS_FULL_PHYSICAL_PENDING",
+  "decision": "Explicit manually dispatched test callbacks declare one optional UnknownObject reply per actual send; preserve exact serial filtering, FIFO, old assertions and deadlines. Repeated serials use counted accounting.",
+  "first_failed_transition": "Starting the real served-interface lookup also starts zbus lazy dispatch. Artificial callbacks to absent test objects produce UnknownObject before the expected Signal or Ping.",
+  "measured_evidence": "FIFO diagnostic: three existing controls fail with exact UnknownObject replies 30100, 21020, 41100. Remaining nine historical error headers were not individually identified.",
+  "receipt": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/fifo-header-v1-failed-import/RESULT.json",
+  "patch_sha256": "735a2643d6593da7decacf39e343f80b78f06b0053b0480db5c98ef752e613f2",
+  "alternatives": [
+    "Use an existing-server-only lookup: dependency offers no public API; a runtime registration cache or vendor workaround would add an unjustified ownership seam.",
+    "Declare optional replies only in explicit manual callback fixtures: preserves real served callbacks and makes their synthetic transport explicit.",
+    "Blanket filtering, sleeps, skipped assertions and retry-until-green are rejected."
+  ],
+  "scope": "Four controlled-test files only. Normal served ProcessKeyEvent boolean replies, real-wire acquisition fixtures, existing tracked legacy_key, raw exact reply consumer and strict filter remain unchanged.",
+  "proof_required": "Original forty scoped identities plus exact repeated-serial witness, post-interface-wait delivery refusals and registered forty-eight boolean replies. Full source and physical gates remain required.",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "runtime_authority_changed": false,
+  "reason": "Starting the real served-interface lookup also starts zbus lazy dispatch. Artificial callbacks to absent test objects produce UnknownObject before the expected Signal or Ping.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs"
+  ],
+  "verification": "Focused GREENv4 ALL_PASS43/43,53.950s, zero failures/ignored. Exact repeated-serial accounting, original forty controls, guarded delivery and registered48 boolean replies included.",
+  "not_tested": "Full changed-source release gate and physical changed-byte Firefox acceptance remain pending. Test-only correction adds no runtime authority."
+}

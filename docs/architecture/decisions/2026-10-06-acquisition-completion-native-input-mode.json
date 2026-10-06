@@ -1,0 +1,48 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-06",
+  "status": "CAUSAL_RED_AND_INDEPENDENT_REVIEW_PASS_IMPLEMENTED_GREEN_PENDING",
+  "decision": "Complete the existing native/compatibility acquisition task by delivering only its exact published target outcome to the existing engine installation/acknowledgment and guarded native InputMode publisher.",
+  "reason": "Saved Firefox setup failures have matching selected source and GlobalEngine and published activation_ready, but no matching engine install/property update before setup deadline. This does not prove hint-rule failure or decoder correctness before a key. The current completion task waits only for expiry; the grant remains for a later callback.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "runtime_authority_changed": false,
+  "authority_change_if_promoted": "Only delivery of a grant independently created by the same existing reducer. No different readiness, token, owner, text or layout decision. One native property publication may happen without a later client callback.",
+  "required_guards": [
+    "Existing acquisition request and same Get/marker/fence budgets; no synthetic wake key or new polling",
+    "Same IBus connection/object server hosts the target engine",
+    "Match original request, exact nonce/deadline, target path, adapter instance and full current outcome token AFTER interface awaits",
+    "No adapter or reducer mutex across interface wait or signal output",
+    "Existing install_context_activation plus exact acknowledge; failure uses existing matching local discard",
+    "Revoked/replaced/consumed/foreign grant is inert and cannot clear a successor",
+    "Legacy delivery is inert for active atomic route",
+    "Existing guarded native InputMode publisher; property failure does not revoke authority or invent retry",
+    "No text output, model work, config change, global IBus restart or source migration",
+    "Acquisition-specific coherent pending/ready/request observation under existing pending\u2192ready\u2192reducer locks; generic Bridge wait unchanged."
+  ],
+  "alternatives": [
+    "Later-callback-only installation preserved as normal consumer but cannot be the only completion path.",
+    "Same existing acquisition-task completion delivery proposed; no second queue, timer, owner or RPC.",
+    "Polling, synthetic wake keys, longer deadline or independent decoder/property state rejected."
+  ],
+  "verification": "Native old-production actual-wire RED36:35PASS/1expectedFAIL50.600s. Corrected V2 design review blockers0. New combined source GREEN/full/physical pending; compatibility new-positive not executed yet.",
+  "not_tested": "No production delivery implementation or new changed-byte runtime acceptance. Accepted exact79 remains installed.",
+  "review": "/home/ubu/.cache/lay/development/contextual-completion-20261005/20261004T211126Z/release79/firefox-repair-20261005/V2_REVIEW.md"
+}

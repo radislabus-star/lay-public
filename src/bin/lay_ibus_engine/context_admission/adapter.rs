@@ -1,8 +1,9 @@
 //! Same-IBus-connection metadata adapter for TD-121.
 //!
-//! This module owns no text and performs no engine, Shared, layout or model
-//! work. The observer awaits only ordered zbus input, then publishes bounded
-//! metadata after releasing its short locks.
+//! This module owns no text, Shared, layout or model state. Its observer
+//! publishes bounded metadata after releasing its short locks. The existing
+//! acquisition task delivers only an exact ready grant to WindowInteraction;
+//! engine installation and output remain on that existing owner.
 
 use std::fmt;
 use std::future::{poll_fn, Future};
@@ -412,8 +413,7 @@ pub(crate) struct PendingFence {
 #[derive(Debug, Clone)]
 struct ReadyActivationState {
     fence: PendingFence,
-    // Only the test-side snapshot/consume witness compares request identities.
-    #[cfg(test)]
+    // Bind completion delivery to its original request, not just a reused path.
     request: RequestGeneration,
     target_path: EnginePath,
     owner: EngineOwner,
@@ -805,6 +805,60 @@ impl ContextAdmissionAdapter {
         retired
     }
 
+    pub(crate) fn key_retired_by_observed_word_reset(
+        &self,
+        callback: &KeyCallback,
+        source: &AdmissionToken,
+    ) -> bool {
+        let IngressDisposition::Key { owner, revocation } = &callback.observed.disposition else {
+            return false;
+        };
+        self.shared.reducer.lock().is_ok_and(|reducer| {
+            owner == &callback.owner
+                && source.matches_owner(owner)
+                && *revocation >= source.revocation
+                && *revocation < reducer.revocation_generation()
+                && reducer.exact_replay_reset_provenance_is_current(source)
+        })
+    }
+
+    pub(crate) fn exact_replay_reset_provenance_is_current(&self, source: &AdmissionToken) -> bool {
+        self.shared
+            .reducer
+            .lock()
+            .is_ok_and(|reducer| reducer.exact_replay_reset_provenance_is_current(source))
+    }
+
+    pub(crate) fn exact_replay_source_token(
+        &self,
+        token: &AdmissionToken,
+        tail_epoch: u64,
+    ) -> Option<AdmissionToken> {
+        self.shared.reducer.lock().ok().and_then(|reducer| {
+            (reducer.latest_tail_epoch == tail_epoch && reducer.revalidate_bridge(token))
+                .then(|| token.clone())
+        })
+    }
+
+    pub(crate) fn align_completed_exact_replay_epoch(
+        &self,
+        source: &AdmissionToken,
+        reset_token: &AdmissionToken,
+        source_epoch: u64,
+        completed_epoch: u64,
+        projected_changes: usize,
+    ) -> bool {
+        self.shared.reducer.lock().is_ok_and(|mut reducer| {
+            reducer.align_completed_exact_replay_epoch(
+                source,
+                reset_token,
+                source_epoch,
+                completed_epoch,
+                projected_changes,
+            )
+        })
+    }
+
     pub(crate) fn settle_key_callback(
         &self,
         callback: &KeyCallback,
@@ -942,6 +996,27 @@ impl ContextAdmissionAdapter {
         })
     }
 
+    pub(crate) fn disable_retired_by_later_ingress(
+        &self,
+        owner: &EngineOwner,
+        stamp: &ObservedCallback,
+    ) -> bool {
+        if !matches!(
+            &stamp.disposition,
+            IngressDisposition::Disable { owner: observed_owner } if observed_owner == owner
+        ) {
+            return false;
+        }
+        self.shared.reducer.lock().is_ok_and(|reducer| {
+            reducer.owner() == Some(owner)
+                && reducer.ticket.as_ref().is_some_and(|ticket| {
+                    ticket.source_owner == *owner
+                        && ticket.status == TicketStatus::Revoked
+                        && ticket.disable_position.as_ref() == Some(&stamp.position)
+                })
+        })
+    }
+
     pub(crate) fn callback_is_stale(&self, stamp: &ObservedCallback) -> bool {
         matches!(stamp.disposition, IngressDisposition::StaleContext)
     }
@@ -1054,11 +1129,17 @@ impl ContextAdmissionAdapter {
             .spawn(
                 async move {
                     if let Ok(fence) = adapter
-                        .finish_compatibility_activation(target_path, request, nonce, deadline)
+                        .finish_compatibility_activation(
+                            target_path.clone(),
+                            request,
+                            nonce,
+                            deadline,
+                        )
                         .await
                     {
-                        async_io::Timer::at(fence.deadline).await;
-                        adapter.expire_fence(fence);
+                        adapter
+                            .deliver_completed_activation(&target_path, request, fence)
+                            .await;
                     }
                 },
                 "lay-context-compatibility-acquisition",
@@ -1196,7 +1277,7 @@ impl ContextAdmissionAdapter {
                 async move {
                     if let Ok(fence) = adapter
                         .finish_native_activation(
-                            target_path,
+                            target_path.clone(),
                             context,
                             focus_position,
                             request,
@@ -1205,8 +1286,9 @@ impl ContextAdmissionAdapter {
                         )
                         .await
                     {
-                        async_io::Timer::at(fence.deadline).await;
-                        adapter.expire_fence(fence);
+                        adapter
+                            .deliver_completed_activation(&target_path, request, fence)
+                            .await;
                     }
                 },
                 "lay-context-native-acquisition",
@@ -1266,6 +1348,32 @@ impl ContextAdmissionAdapter {
         result
     }
 
+    async fn deliver_completed_activation(
+        &self,
+        target_path: &EnginePath,
+        request: RequestGeneration,
+        fence: PendingFence,
+    ) {
+        // Reuse the acquisition's event/deadline/cancellation wait. Native
+        // Get/marker work finishes before taking any engine interface guard.
+        if self
+            .wait_for_acquisition_completion(target_path, request, fence)
+            .await
+            .is_err()
+        {
+            self.expire_fence(fence);
+            return;
+        }
+        crate::engine::LayIbusEngine::deliver_ready_context_activation(
+            &self.shared.connection,
+            self,
+            target_path,
+            request,
+            fence,
+        )
+        .await;
+    }
+
     #[cfg(test)]
     pub(crate) fn finish_activation(
         &self,
@@ -1295,6 +1403,36 @@ impl ContextAdmissionAdapter {
             .as_ref()
             .filter(|ready| &ready.target_path == target_path)
             .map(|ready| ready.outcome.clone())
+    }
+
+    pub(crate) fn same_instance(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.shared, &other.shared)
+    }
+
+    pub(crate) fn pending_activation_for_request(
+        &self,
+        target_path: &EnginePath,
+        request: RequestGeneration,
+        fence: PendingFence,
+    ) -> Option<ActivationOutcome> {
+        if self.shared.cancelled.load(Ordering::Acquire) {
+            return None;
+        }
+        // Match and revalidate under the existing ready -> reducer order.
+        // Do not take a grant before the target engine can install it.
+        let ready = self.shared.ready_activation.lock().ok()?;
+        let ready = ready.as_ref()?;
+        if ready.request != request
+            || ready.fence != fence
+            || &ready.target_path != target_path
+            || &ready.owner.path != target_path
+        {
+            return None;
+        }
+        let reducer = self.shared.reducer.lock().ok()?;
+        let token = ready.outcome.token();
+        (token.matches_owner(&ready.owner) && reducer.revalidate(&token))
+            .then(|| ready.outcome.clone())
     }
 
     pub(crate) fn acknowledge_activation(&self, outcome: &ActivationOutcome) -> bool {
@@ -2176,7 +2314,6 @@ impl ContextAdmissionAdapter {
                 nonce: pending.nonce,
                 deadline: pending.deadline,
             },
-            #[cfg(test)]
             request,
             target_path,
             owner,
@@ -2312,6 +2449,101 @@ impl ContextAdmissionAdapter {
     fn next_nonce(&self) -> BarrierNonce {
         let nonce = self.shared.next_nonce.fetch_add(1, Ordering::AcqRel);
         BarrierNonce(if nonce == 0 { 1 } else { nonce })
+    }
+
+    async fn wait_for_acquisition_completion(
+        &self,
+        target_path: &EnginePath,
+        request: RequestGeneration,
+        fence: PendingFence,
+    ) -> Result<(), AdapterError> {
+        loop {
+            // Subscribe before the coherent state check. Publication and ACK
+            // use this same event; a notification never extends the deadline.
+            let mut changed = Box::pin(self.shared.changed.listen());
+            let mut cancellation = Box::pin(self.shared.cancellation.listen());
+            if self.shared.cancelled.load(Ordering::Acquire) {
+                return Err(AdapterError::Cancelled);
+            }
+            {
+                // Same order as publication: pending -> ready -> reducer.
+                // No lock survives the event/timer await below.
+                let slot = self
+                    .shared
+                    .pending
+                    .lock()
+                    .map_err(|_| AdapterError::Denied)?;
+                let ready = self
+                    .shared
+                    .ready_activation
+                    .lock()
+                    .map_err(|_| AdapterError::Denied)?;
+                let reducer = self
+                    .shared
+                    .reducer
+                    .lock()
+                    .map_err(|_| AdapterError::Denied)?;
+                if self.shared.cancelled.load(Ordering::Acquire) {
+                    return Err(AdapterError::Cancelled);
+                }
+                if let Some(ready) = ready.as_ref().filter(|ready| ready.fence == fence) {
+                    if ready.request != request
+                        || &ready.target_path != target_path
+                        || &ready.owner.path != target_path
+                    {
+                        return Err(AdapterError::Denied);
+                    }
+                    let token = ready.outcome.token();
+                    if !token.matches_owner(&ready.owner) || !reducer.revalidate(&token) {
+                        return Err(AdapterError::Denied);
+                    }
+                    // A ready predecessor may coexist with a successor
+                    // reducer.request. Its exact current token decides here.
+                    // Preserve the existing admitted-ready deadline contract.
+                    return Ok(());
+                }
+                let pending = slot.as_ref().ok_or(AdapterError::Denied)?;
+                let FenceKind::Acquisition {
+                    request: pending_request,
+                    target_path: pending_target,
+                } = &pending.kind
+                else {
+                    return Err(AdapterError::Denied);
+                };
+                if pending.nonce != fence.nonce
+                    || pending.deadline != fence.deadline
+                    || *pending_request != request
+                    || pending_target != target_path
+                    || reducer
+                        .request
+                        .as_ref()
+                        .is_none_or(|current| current.generation != request)
+                {
+                    return Err(AdapterError::Denied);
+                }
+                // Acquisition marker_observed is not Bridge ready. If a
+                // predecessor occupies ready_activation, wait for its ACK.
+            }
+            if Instant::now() >= fence.deadline {
+                return Err(AdapterError::Timeout);
+            }
+            let mut timer = Box::pin(async_io::Timer::at(fence.deadline));
+            poll_fn(|context| {
+                if changed.as_mut().poll(context).is_ready() {
+                    return Poll::Ready(Ok(()));
+                }
+                if cancellation.as_mut().poll(context).is_ready()
+                    || self.shared.cancelled.load(Ordering::Acquire)
+                {
+                    return Poll::Ready(Err(AdapterError::Cancelled));
+                }
+                if timer.as_mut().poll(context).is_ready() {
+                    return Poll::Ready(Err(AdapterError::Timeout));
+                }
+                Poll::Pending
+            })
+            .await?;
+        }
     }
 
     async fn wait_for_fence(&self, fence: PendingFence, bridge: bool) -> Result<(), AdapterError> {
@@ -2624,14 +2856,14 @@ impl ContextAdmissionObserver {
             if let Some(token) = unchanged {
                 return Ok(IngressDisposition::UnchangedContentType { token, value });
             }
-            return self.apply_word_reset(path);
+            return self.apply_word_reset(path, false);
         }
         if interface == ENGINE_INTERFACE && member == "Reset" {
             message
                 .body()
                 .deserialize::<()>()
                 .map_err(|_| AdapterError::Denied)?;
-            return self.apply_word_reset(path);
+            return self.apply_word_reset(path, true);
         }
         let mut reducer = self
             .shared
@@ -2716,11 +2948,20 @@ impl ContextAdmissionObserver {
         match member {
             "ProcessKeyEvent" | "ProcessKeyEventAtomicV1" => {
                 if let Some(owner) = path_owner {
+                    let legacy_key = if member == "ProcessKeyEvent" {
+                        match message.body().deserialize::<(u32, u32, u32)>() {
+                            Ok(key) => Some(key),
+                            Err(_) => {
+                                reducer.malformed_or_unobserved_lifecycle();
+                                return Err(AdapterError::Denied);
+                            }
+                        }
+                    } else {
+                        None
+                    };
                     let word_effect = if member == "ProcessKeyEvent"
-                        && message
-                            .body()
-                            .deserialize::<(u32, u32, u32)>()
-                            .is_ok_and(|(keyval, _, _)| crate::protocol::is_shift_key(keyval))
+                        && legacy_key
+                            .is_some_and(|(keyval, _, _)| crate::protocol::is_shift_key(keyval))
                     {
                         KeyWordEffect::LegacyShiftObservation
                     } else {
@@ -2800,7 +3041,11 @@ impl ContextAdmissionObserver {
         }
     }
 
-    fn apply_word_reset(&self, path: &str) -> Result<IngressDisposition, AdapterError> {
+    fn apply_word_reset(
+        &self,
+        path: &str,
+        authenticated_reset: bool,
+    ) -> Result<IngressDisposition, AdapterError> {
         // Keep the same uninstalled witness, not a remembered current owner.
         // Other revocations cannot enter this authenticated Reset/Set route.
         let mut ready = self
@@ -2848,7 +3093,11 @@ impl ContextAdmissionObserver {
                     (grant.target_activation.clone(), grant.receipt_origin)
                 }
             });
-        reducer.malformed_or_unobserved_lifecycle();
+        if authenticated_reset {
+            reducer.observed_word_reset();
+        } else {
+            reducer.malformed_or_unobserved_lifecycle();
+        }
         if let (Some((activation, origin)), Some(current)) = (retained, ready.as_mut()) {
             current.outcome = ActivationOutcome::ResetUnknown(ActivationGrant {
                 revocation: reducer.revocation,

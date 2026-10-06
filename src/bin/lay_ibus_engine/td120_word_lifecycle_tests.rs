@@ -833,6 +833,7 @@ fn td120_exact_v2_admission_revoke_and_expiry_keep_transport_scope() {
     ));
 
     let expired = ExactManualToggleSuppression {
+        source_token: None,
         path: "/td120/exact-v2/target".to_string(),
         epoch,
         expires_at: Instant::now() - std::time::Duration::from_millis(1),
