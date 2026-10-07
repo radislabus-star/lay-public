@@ -1,0 +1,25 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-07",
+  "status": "INSTALLED_COLD_TRAINER_SOURCE_PARITY_AND_INITIAL_RESOURCE_CHECKS_PASS",
+  "decision": "Allow opt-in execution of the unchanged full L3 differential on a content-bound trusted worker; register four newly discovered trainer regressions in the canonical test manifest.",
+  "reason": "The user explicitly requested a CPU fix after measured local full-proof passes lasting 19\u201324 minutes. The existing local learner remains the only publisher. Full discovery reported exactly four added tests, zero removals and zero changed test policies.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "owning_document": "docs/l3-online-phase-field.md",
+  "implementation_preflight": "docs/architecture/l3-proof-offload-2026-10-07.md",
+  "change_scope": "Cold trainer execution, transport, bounded failure sleep and stronger test coverage. No keyboard owner, classifier, input route, safety threshold or existing assertion changes.",
+  "runtime_authority_changed": false,
+  "verification": "Focused trainer 44/44, transport 10/10, complete mandatory release gate with 3014 Rust tests and zero exceptions PASS. Real fixed full differential and original-78/candidate-80 comparison on identical frozen inputs PASS: 15704 fragments, 41064 comparisons, all five regression counters zero. Installed exact bytes and unchanged IME/daemon PIDs/hashes verified. Whole-service 10-second idle sample: 0.0494% of one core. Manifest binding refresh adds four tests and changes only the zero-failure ledger manifest hash.",
+  "not_tested": "New organic live admission after installation, multi-day resource cadence, physical-client changes (none installed), hard-kill/power-loss and pre-start interrupted transfer cleanup.",
+  "results_document": "docs/architecture/l3-proof-offload-2026-10-07.md"
+}

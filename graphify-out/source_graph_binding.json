@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "32ddc1e124a6af559e8e11ee4ec1cbbae3ceb7f61173b9b4decd242fa3e65ec7",
-  "manifest_fingerprint": "d188702dbcd168ea5b373e2644ecb34b2d76d4cdb397ccd86a9c1b463eb5464e",
+  "graph_fingerprint": "ca265b5ac9e0de4d52da2ac20b52cadf7948cb244ffd7dc7ae72eaa8078bed2f",
+  "manifest_fingerprint": "79309df16e6287a2a5545f0942f15911a3378518d7729177114cb6d9e1b400b1",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -231,10 +231,11 @@
     "src/bin/lay_nanda_wave_eval/status.rs": "1ffa6eb0a55f07bf17815d9fe46807e6016aab9ec4bdd0333519876e53b91981",
     "src/bin/lay_nanda_wave_eval/transition_phase_proof.rs": "38803601422f131c406ea4a219bc0c06e77c363badf65b447595c3e407456a77",
     "src/bin/lay_nanda_wave_train.rs": "9367cf4c0f3fbd1c0896df9e0682e8482f169b6402b5e7e1c5625552980f8af9",
-    "src/bin/lay_nanda_wave_train/l3_online.rs": "9961f8ccc03069462baf792c36320f52820d7b14d0532e58e2c77b127ca7dc6f",
+    "src/bin/lay_nanda_wave_train/l3_online.rs": "244ec4603d54ed933e79a551e4452594a97b2e91c29858f08098e06800cd3077",
     "src/bin/lay_nanda_wave_train/l3_online/feedback.rs": "12ebc04603a5739a7f1b809cff69c47999bfbeba0926e2f93337e5a8dd3cb9df",
     "src/bin/lay_nanda_wave_train/l3_online/journal.rs": "8022e78425cc21cf964c3ff23a487326d98455c9c7c570adafe2ed741ad22de4",
-    "src/bin/lay_nanda_wave_train/l3_online/proof_chain.rs": "149ab129709b97fba3ae4edcf71f1a3aba095468ab126dfd0f976a8b057a3f49",
+    "src/bin/lay_nanda_wave_train/l3_online/proof_chain.rs": "aa18d9e5ce9136829fe2a6d38f2aa55a7635a1f1806cb9553349ff8cec764330",
+    "src/bin/lay_nanda_wave_train/l3_online/remote_proof.rs": "7d67793dd270daae4d6ef73e4b6274eed8547eafdbfa6e3993c36bb80d4d8757",
     "src/bin/lay_nanda_wave_train/l3_online/selector.rs": "940a7ae99a87ae6ff26be50e4c62dd1561f2bcafbfcbbd797581f3ac7f8a179f",
     "src/bin/lay_nanda_wave_train/lexical_phase_compile.rs": "547423e1a01ba5eefc0adbd7c79bbc4557606c54a4d1c622f9966e0d3d8e2aae",
     "src/bin/lay_ngram_corpus.rs": "125619ae7a311fd97763883acbfa58ec2768316169a483972208ab8f26310f14",

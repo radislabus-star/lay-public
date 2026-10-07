@@ -1,5 +1,11 @@
 # L3 Online Context Phase Field
 
+Installed execution-placement change: see
+[2026-10-07 full-proof execution and results](architecture/l3-proof-offload-2026-10-07.md).
+The existing local online owner delegates only the frozen full differential to
+a content-bound remote evaluator. Release gates, paired evaluator parity and
+initial installed resource measurements passed; input ownership is unchanged.
+
 This document is the canonical learning contract for the Lay L3 context field.
 It replaces the old multipass corpus compiler. It does not change text-edit
 authority: L3 can emit only `Support`, `Suppress`, `Neutral`, or `Unavailable`.

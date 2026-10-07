@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2974,
+    "correctness": 2978,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 252,
-    "target": 2784
+    "target": 2788
   },
   "package_fixtures": [
     {
@@ -5723,6 +5723,27 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "l3_online::remote_proof::tests::actual_runner_result_requires_matching_targeted_and_full_content",
+      "target": "bin:lay-nanda-wave-train"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "l3_online::remote_proof::tests::failed_configured_runner_keeps_pending_artifacts_and_never_reuses_old_receipt",
+      "target": "bin:lay-nanda-wave-train"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "l3_online::remote_proof::tests::remote_receipt_cannot_use_local_paths_to_bypass_portable_identity",
+      "target": "bin:lay-nanda-wave-train"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "l3_online::selector::tests::selector_prefers_more_diverse_then_more_recent_evidence",
       "target": "bin:lay-nanda-wave-train"
     },
@@ -5738,6 +5759,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "l3_online::tests::empty_journal_initialization_does_not_skip_first_appended_events",
+      "target": "bin:lay-nanda-wave-train"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "l3_online::tests::failed_online_cycles_back_off_without_changing_success_polling",
       "target": "bin:lay-nanda-wave-train"
     },
     {
