@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2978,
+    "correctness": 2998,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 252,
-    "target": 2788
+    "target": 2808
   },
   "package_fixtures": [
     {
@@ -232,6 +232,9 @@
     },
     {
       "target": "test:restore_word_cli"
+    },
+    {
+      "target": "test:space_boundary_shift_mechanism"
     },
     {
       "target": "test:td113_hybrid_source_contract"
@@ -2314,6 +2317,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "canonical_known_right_form_cannot_supply_a_moved_prefix",
+      "target": "test:space_boundary_shift_mechanism"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "canonical_l1_l2::tests::canonical_l1_l2_report_input_keeps_short_service_words",
       "target": "bin:lay-nanda-wave-eval"
     },
@@ -2365,6 +2375,13 @@
       "lane": "correctness",
       "name": "changing_input_mode_cannot_reenable_a_disabled_runtime",
       "target": "test:tray_ui_contract"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "clean_right_words_and_unsupported_transfers_never_become_boundary_edits",
+      "target": "test:space_boundary_shift_mechanism"
     },
     {
       "isolation": "target",
@@ -2470,6 +2487,13 @@
       "lane": "correctness",
       "name": "committed_tail::tests::stuck_completion_is_an_authorized_ime_edit",
       "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "competing_or_suggested_shift_stays_in_the_shared_lattice",
+      "target": "test:space_boundary_shift_mechanism"
     },
     {
       "isolation": "target",
@@ -4036,6 +4060,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "current_word_scope_cannot_apply_last_pair_from_read_only_context",
+      "target": "test:space_boundary_shift_mechanism"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "daemon_runtime::route_contract::busy_key_queue_polls_completed_boundary_decisions_between_events",
       "target": "bin:lay-daemon"
     },
@@ -4757,6 +4788,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "exact_pair_request_preserves_winner_and_one_space",
+      "target": "test:space_boundary_shift_mechanism"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "frameless_layout_projection_does_not_gain_autocorrect_authority",
       "target": "test:input_gate_space_contract"
     },
@@ -4835,6 +4873,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "hot_field::tests::test_policy_override_does_not_leak_to_another_test_worker",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "hot_field::tests::warm_provider_absence_preserves_independent_reference_attestation",
       "target": "lib:lay"
     },
     {
@@ -15236,6 +15281,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "recorded_pair_inverse_is_bound_to_the_forward_receipt",
+      "target": "test:space_boundary_shift_mechanism"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "rejected_transition_compiles_into_exact_and_phase_memory",
       "target": "test:l4_feedback_memory_contract"
     },
@@ -15586,6 +15638,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "selected_boundary_pair_projects_pending_space_through_the_same_receipt",
+      "target": "test:space_boundary_shift_mechanism"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "server::tests::startup_gate_accepts_completed_unavailable_exact_capability",
       "target": "bin:lay-ibus-engine"
     },
@@ -15776,6 +15835,90 @@
       "kind": "test",
       "lane": "correctness",
       "name": "space_autocorrect_prefetch::tests::worker_pool_isolates_paths_and_evicts_to_the_fixed_bound",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_both_spaces_preserve_left_then_apply_the_verified_pair",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_client_commit_continuation_is_exact_one_shot_and_revocable",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_committed_client_deletes_exact_full_pair",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_native_atomic_output_has_exactly_one_edit_frame",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_native_mirror_cannot_manufacture_an_earlier_word_start",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_native_observed_scope_uses_one_terminal_frame_and_exact_undo",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_owned_and_committed_corrections_undo_the_exact_original_pair",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_owned_preedit_deletes_only_client_prefix_and_commits_once",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_partial_commit_failure_never_falls_back_or_arms_undo",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_partial_inverse_consumes_the_record_without_retry",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_pending_calculation_and_actual_commit_join_once_in_either_order",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_stale_preedit_witness_refuses_the_prior_text_edit",
       "target": "bin:lay-ibus-engine"
     },
     {

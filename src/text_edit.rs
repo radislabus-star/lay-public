@@ -49,7 +49,8 @@ pub use executor::{
 pub(crate) use gate::plan_decision_transition_edit;
 pub use gate::{
     plan_ime_candidate_accept_edit, plan_ime_manual_toggle_edit, plan_input_gate_edit,
-    plan_manual_edit, plan_native_edit, plan_recorded_undo_edit,
+    plan_manual_edit, plan_native_edit, plan_recorded_boundary_inverse, plan_recorded_undo_edit,
+    plan_space_boundary_edit,
 };
 pub use mutation::{TransitionAudit, TransitionOperator, TransitionProof};
 pub use safety::{autocorrect_edit_safety, EditPlanSafetyReport};

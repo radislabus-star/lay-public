@@ -1,0 +1,34 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-08",
+  "status": "SOURCE_PASS_INSTALLED_PARTIAL_PHYSICAL_TIMING_REPLAN",
+  "decision": "Use already warmed exact canonical surface bindings as additive positive HotField word evidence; reconcile independently attested closing-Space BoundaryShift within the existing DecisionCore after ordinary ordering, preserving retained exact layout and selected frame-bound lexical authority.",
+  "reason": "Old-source negative control retained the exact lossless pair but selected a letter insertion or abstained. The focused new source correctly refused a SuggestOnly unverified target whose exact canonical bindings were not reaching the existing verifier lexical-mass consumer.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C06",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/hot_field.rs",
+    "src/nanda_wave/l2_field/mod.rs",
+    "src/nanda_wave/l2_field/runtime.rs",
+    "src/typing_transition/decision.rs",
+    "src/typing_transition/decision/admission.rs",
+    "src/typing_transition/verifier.rs",
+    "src/text_edit/gate.rs",
+    "tests/space_boundary_shift_mechanism.rs"
+  ],
+  "owning_document": "docs/architecture/space-boundary-shift-2026-10-07.md",
+  "runtime_authority_changed": true,
+  "verification": "Focused source1824/1824 PASS; full source3032/3032 PASS and17mandatory checks. Artifact4d885d227fc083b7823502e825628fa7477d5ffc1fd27d54a75a4fa2fc76de12 installed again after provenance-bound removal of4own QA-negative rows;828others andfeedbackbase preserved. GTK3 pair+nextword1/1 PASS; subsequent partial7executed/4PASS/3FAIL. Calc andfocus-return have final Apply decisions butmissed3500-us leases; iconprobeNOT_CAPTURED. Seeowningdocumentforreceiptpaths.",
+  "source_review": {
+    "reviewer": "/root",
+    "independent_agent": false,
+    "scope": "Root implementation and review as explicitly requested by the user; no independent-agent review claimed."
+  },
+  "not_tested": "Remainingwindows,inverse,stableprefetchpublicationandiconcapture. No newfunctionalrepairorfullphysicalacceptanceclaimed. Replanaccounts forcandidateproductionandobsoleteworkerworkwithoutsecondchooser/deadlineextension."
+}

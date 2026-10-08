@@ -297,7 +297,10 @@ impl HotFieldSnapshot {
             HotWordAuthority::Unknown
         } else if crate::lexicon::is_common_ru_word(&lower) {
             HotWordAuthority::CommonSurface
-        } else if crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower) {
+        } else if crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower)
+            || crate::nanda_wave::l2_field::cached_surface_has_imported_binding(&lower)
+                == Some(true)
+        {
             HotWordAuthority::L2SurfaceCenter
         } else {
             HotWordAuthority::Unknown
@@ -336,6 +339,36 @@ impl HotFieldSnapshot {
             surface.authority
         };
         HotWordReadout { authority }
+    }
+
+    /// New pending-Space pair permission requires an attested target, not a plausible suffix
+    /// attached to a known stem. This point read never admits a cold package.
+    pub(crate) fn boundary_form_is_attested(&self, word: &str) -> bool {
+        let lower = word.trim().to_lowercase();
+        if lower.is_empty() {
+            return false;
+        }
+        if self.word_readout(&lower).has_structural_center() {
+            return true;
+        }
+        if crate::nanda_wave::l2_field::cached_morphology_slot_identities_for_surface(&lower, 32)
+            .is_some_and(|readings| !readings.is_empty())
+        {
+            return true;
+        }
+        process_policy().allows_full_reference_authority()
+            && crate::russian_lexicon::russian_dictionary().contains(&lower)
+    }
+
+    /// Only an available bounded provider answer can attest absence. A cold,
+    /// failed or overflowed lookup is unknown and cannot grant pair permission.
+    pub(crate) fn boundary_observed_form_is_unknown(&self, word: &str) -> bool {
+        let lower = word.trim().to_lowercase();
+        !self.boundary_form_is_attested(&lower)
+            && crate::nanda_wave::l2_field::cached_morphology_slot_identities_for_surface(
+                &lower, 32,
+            )
+            .is_some_and(|readings| readings.is_empty())
     }
 
     /// Input authority is intentionally narrower than candidate plausibility.
@@ -401,6 +434,80 @@ impl HotFieldSnapshot {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn warm_provider_absence_preserves_independent_reference_attestation() {
+        const CHILD: &str = "LAY_TEST_BOUNDARY_REFERENCE_CHILD";
+        if std::env::var_os(CHILD).is_none() {
+            let output = std::process::Command::new(std::env::current_exe().expect("test executable"))
+                .args([
+                    "--exact",
+                    "hot_field::tests::warm_provider_absence_preserves_independent_reference_attestation",
+                    "--nocapture",
+                ])
+                .env(CHILD, "1")
+                .env(
+                    "LAY_L2_PACKAGE",
+                    concat!(
+                        env!("CARGO_MANIFEST_DIR"),
+                        "/tests/fixtures/space_boundary_lexical_v2.bin"
+                    ),
+                )
+                .output()
+                .expect("isolated reference/provider proof");
+            assert!(
+                output.status.success(),
+                "child stdout={} stderr={}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            return;
+        }
+
+        set_process_policy(HotFieldPolicy::daemon_for_text_backend(
+            TextBackendPreference::Uinput,
+        ));
+        let field = HotFieldSnapshot::current();
+        assert!(
+            crate::nanda_wave::l2_field::cached_morphology_slot_identities_for_surface("ыбыть", 32)
+                .is_none()
+        );
+        assert!(!field.boundary_observed_form_is_unknown("ыбыть"));
+        assert_eq!(
+            crate::nanda_wave::l2_field::cached_surface_has_imported_binding("набираю"),
+            None
+        );
+        let status = crate::nanda_wave::canonical_l2_status();
+        assert_eq!(status["status"], "ready", "{status}");
+        assert_eq!(
+            crate::nanda_wave::l2_field::cached_surface_has_imported_binding("набираю"),
+            Some(true)
+        );
+        assert_eq!(
+            field.word_readout("набираю").authority,
+            HotWordAuthority::L2SurfaceCenter
+        );
+        assert!(field.input_surface_readout("набираю").is_known());
+        assert!(!field.word_readout("мнабираю").is_known());
+        assert!(field.boundary_observed_form_is_unknown("ыбыть"));
+        let word = crate::russian_lexicon::russian_dictionary()
+            .iter()
+            .take(4096)
+            .find(|word| {
+                !field.word_readout(word).has_structural_center()
+                    && crate::nanda_wave::l2_field::cached_morphology_slot_identities_for_surface(
+                        word, 32,
+                    )
+                    .is_some_and(|readings| readings.is_empty())
+            })
+            .expect("independent exact reference surface absent from incomplete provider");
+        assert!(field.boundary_form_is_attested(word));
+        assert!(!field.boundary_observed_form_is_unknown(word));
+
+        set_process_policy(HotFieldPolicy::ime());
+        assert!(!field.boundary_form_is_attested(word));
+        assert!(field.boundary_observed_form_is_unknown(word));
+    }
 
     #[test]
     fn daemon_auto_backend_uses_field_snapshot_only() {

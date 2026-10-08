@@ -1,0 +1,69 @@
+{
+  "decision_id": "2026-10-08-space-boundary-client-commit-order",
+  "status": "SOURCE_SUCCESSOR_BINDING_RECORDED_RELEASE_AND_PHYSICAL_PENDING",
+  "owning_document": "docs/architecture/space-boundary-shift-2026-10-07.md",
+  "invariants": [
+    "C02",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "first_failed_transition": "Legacy owned preedit clear -> client prefix DeleteSurroundingText inside synchronous ProcessKeyEvent: Chromium preserves the old left word while replacing the active composition.",
+  "evidence": "/home/ubu/.cache/lay/development/space-boundary-authority-physical-20261008/CHROME_CONNECTED_LEGACY_1.log",
+  "primary_source": "Chromium 152.0.7977.82 input_method_auralinux.cc OnCommit, OnDeleteSurroundingText and OnPreeditEnd; SHA256 2b798560e9b12ac9d1974b1f96c3c17708710568f2933631b6bd063c932fc7fd",
+  "decision": "For an already admitted legacy owned-preedit BoundaryShift only, complete the ordinary user Space composition first. Attach a one-shot selected-action continuation to its existing PendingVisiblePostcondition. Existing SurroundingText observation may execute the existing committed-tail output only after an exact full original-plus-Space snapshot in the unchanged field/input lease. No new chooser, worker, timer, polling, backend or second correction attempt.",
+  "replacement_boundary": "Replaces immediate mixed client/preedit partition dispatch for this boundary action. Ordinary corrections, full committed input, terminal and atomic transports retain their current routes.",
+  "prior_decision_revised": "The 2026-10-07 rejection of dispatching Space first was a precaution without the now measured Chromium composition ordering failure. Ordinary Space is user input; only one subsequent correction mutates text, guarded by the actual complete client snapshot.",
+  "safety": "Preserve the sealed semantic pair proof. Reverse only its pending-Space physical projection and rerun edit-plan safety. Reject selection, focus/owner/layout/config/material changes, next pressed key, contradictory snapshot, timeout, or partial output. Keep existing 1500ms postcondition bound; no renewed deadline and no retry after an output attempt.",
+  "validation": "Production reducer/output tests must prove no delete during ProcessKeyEvent, exact callback dispatch once, no dispatch from the old partial snapshot, invalidation cases, and consumption on partial output. Remote focused/full release and all available physical fields required before acceptance.",
+  "runtime_authority_changed": false,
+  "inverse": "The actual full original-plus-Space snapshot is retained separately as an inert recorded boundary precondition, bound to the unchanged post-dispatch field/input lease. Only its sealed exact inverse with equal scalar and UTF-8 lengths may use existing causal-precondition authority when the live snapshot is absent. Any present contradictory snapshot wins. It never populates client_context.surrounding_text_snapshot, acknowledges success, or releases positive learning.",
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-08",
+  "reason": "Legacy owned preedit clear -> client prefix DeleteSurroundingText inside synchronous ProcessKeyEvent: Chromium preserves the old left word while replacing the active composition.",
+  "verification": "Owner-placement focused2520/2520PASS: /home/ubu/.cache/lay/development/run-8zsv8w1u/RESULT.json,210.9s. Same semantic ordering/invalidation/inverse/partial-output proof. Existing active-composition owner guard unchanged. Full source and physical acceptance remain pending.",
+  "not_tested": "Current complete source release and all physical client fields remain pending. First forward-only focused2520/2520PASS does not certify subsequent inverse receipt edits.",
+  "protected_paths": [
+    "scripts/test-lanes/known_failures.json",
+    "scripts/test-lanes/manifest.json",
+    "src/bin/lay_ibus_engine/committed_tail.rs",
+    "src/bin/lay_ibus_engine/engine/types.rs",
+    "src/bin/lay_ibus_engine/managed.rs",
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "src/bin/lay_ibus_engine/protocol.rs",
+    "src/bin/lay_ibus_engine/protocol/state.rs",
+    "src/bin/lay_ibus_engine/state.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/text_edit/action.rs",
+    "src/text_edit/gate.rs",
+    "tests/td113_hybrid_source_contract.rs"
+  ],
+  "mutex_repair": "Factor the existing input-frame predicate, preserving all local checks and shared-owner validation. The recorded inverse path already holds SharedState and must not acquire its mutex again.",
+  "canon_metadata_repair": "First full attempt b2UqrR refused CANON_PRECHECK because managed.rs was missing from this explicit protected-path list. Add that actual changed entrypoint; all Rust bytes and focused evidence remain unchanged. No guard is weakened.",
+  "owner_replan": "GRAPH_REFRESH source guard rejected ordinary active composition commit outside managed.rs. Return the ordinary Space commit and one continuation attachment to the existing managed input owner; keep exact committed-tail execution in its existing owner. Preserve the guard unchanged and rerun focused/full source proof. Retain both earlier full FAIL receipts.",
+  "protected_artifact_successor": {
+    "predecessor": {
+      "decision": "docs/architecture/decisions/2026-10-07-space-boundary-authority-scope.json",
+      "decision_sha256": "1121e41ad3fded93cb865e0ba74babfa770d16c9374cdb06af3bb04510af6064",
+      "path": "src/text_edit/gate.rs",
+      "sha256": "ef5c53b43df58adfdb0c42319db0930c216f53c07ec2da94e4ef8d66ca42fd31",
+      "mode": "0664"
+    },
+    "successor": {
+      "path": "src/text_edit/gate.rs",
+      "sha256": "547bc3797badb0b6b2e2dccc46ef8574a05aa760fe45363245283f4f75553d55",
+      "mode": "0664"
+    },
+    "scope": "Only restore the sealed pending-Space physical projection to its original-plus-Space plan for the exact observed client commit. Original seal issuance, semantic authority and safety checks remain unchanged.",
+    "source_review": {
+      "reviewer": "/root",
+      "independent_agent": false,
+      "verdict": "PASS_ROOT_STATIC_PREFLIGHT",
+      "evidence": "/home/ubu/.cache/lay/development/run-8zsv8w1u/RESULT.json"
+    }
+  },
+  "protected_binding_replan": "Full PYgC4h retained FAIL: the immutable October7 successor correctly rejected the later commit_pending_space addition. Preserve that complete predecessor binding and pin this explicit successor decision and exact gate bytes in the same existing source-contract test. All other protected artifacts, test identities and failure ledger remain unchanged. This decision is immutable after its source-contract pin; later validation belongs in the owning document."
+}

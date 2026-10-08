@@ -799,6 +799,10 @@ impl StandaloneL2Field {
             .collect()
     }
 
+    pub(super) fn imported_form_has_binding(&self, form_ref: u32) -> bool {
+        self.bindings_for_form(form_ref).next().is_some()
+    }
+
     pub(super) fn imported_binding_identities_for_form_bounded(
         &self,
         form_ref: u32,

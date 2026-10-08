@@ -1,0 +1,32 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-08",
+  "status": "CANONICAL_ORDER_REPLAN_BEFORE_SECOND_METADATA_PASS",
+  "decision": "Refresh only the byte coordinates of the two existing PreparedCorrectionLease dead-code inventory records in both feature baselines after removing115bytes of unused imports. Warning messages, subjects, targets, occurrence counts, inventory cardinality and linter rules remain literal exact.",
+  "reason": "The new full run passed all3032 correctness/package identities but the release gate refused the unchanged warning records at moved source locations. Old worker_generation span1273..1290 becomes1158..1175; old kind span1353..1357 becomes1238..1242. No warning was introduced or removed.",
+  "invariants": [
+    "C01",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+    "scripts/lint-baseline/dead_code.default.json",
+    "scripts/lint-baseline/dead_code.json",
+    "scripts/check-lay-lints.sh",
+    "scripts/lint_inventory.py"
+  ],
+  "owning_document": "docs/architecture/space-boundary-shift-2026-10-07.md",
+  "runtime_authority_changed": false,
+  "verification": "Exact structural and source-span comparison PASS: three location objects refreshed per baseline; default532 and research356 entries preserved. Every field outside locations remains literal exact. Each new span resolves to the current field name; runtime source and linter rules are unchanged. Receipt /home/ubu/.cache/lay/development/space-boundary-obsolete-source-20261008/LINT_LOCATION_REFRESH.json. A fresh unchanged full release gate remains required. No failure budget or semantic test expectation changes.",
+  "not_tested": "New full release and installed physical acceptance are pending. The preceding3032/3032 source test result is retained as test evidence only, not release PASS.",
+  "source_review": {
+    "reviewer": "/root",
+    "independent_agent": false
+  },
+  "canonical_order_replan": {
+    "reason": "Second full run again passed3032 tests but rejected the updated inventories because the changed byte spans change the existing canonical sort order. Root omitted the required resort; no functional failure or new diagnostic occurred.",
+    "failed_receipt": "/home/ubu/.cache/lay/development/space-boundary-obsolete-source-20261008/frozen-lint-locations/RELEASE_GATE_RESULT.json",
+    "decision": "Sort the same exact refreshed entries with scripts/lint_inventory.py canonical key. Entry multiset, every entry field and inventory cardinality remain unchanged. Validate the real lint contract on freshly staged remote source before rerunning the complete release gate.",
+    "runtime_authority_changed": false
+  }
+}

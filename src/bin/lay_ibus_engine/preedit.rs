@@ -1116,10 +1116,23 @@ impl LayIbusEngine {
             self.layout_gesture.layout_generation,
             identity.config.identity_fingerprint(),
         );
-        Some(identity.with_lexical_coordinates(coordinates))
+        let mut identity = identity.with_lexical_coordinates(coordinates);
+        identity.space_boundary_pair = self.capture_space_boundary_pair_scope();
+        Some(identity)
     }
 
     pub(super) fn input_frame_authority_matches(&self, expected: &InputFrameIdentity) -> bool {
+        self.input_frame_local_authority_matches(expected)
+            && self
+                .shared
+                .lock()
+                .is_ok_and(|state| state.active_path.as_deref() == Some(self.path.as_str()))
+    }
+
+    pub(super) fn input_frame_local_authority_matches(
+        &self,
+        expected: &InputFrameIdentity,
+    ) -> bool {
         self.path == expected.path
             && self.client_context.focus_receipt == expected.focus_receipt
             && self.client_context.focus_serial == expected.lexical_coordinates.as_ref().map_or(
@@ -1140,10 +1153,6 @@ impl LayIbusEngine {
             && self.client_context.factory_engine_profile == expected.factory_engine_profile
             && self.output_capability_fingerprint() == expected.output_capability_fingerprint
             && expected.config_matches(&self.config)
-            && self
-                .shared
-                .lock()
-                .is_ok_and(|state| state.active_path.as_deref() == Some(self.path.as_str()))
     }
 
     fn output_capability_fingerprint(&self) -> u64 {

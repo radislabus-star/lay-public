@@ -8428,6 +8428,92 @@ async fn firefox_empty_reset_expect_commit(
     cycle09_assert_no_local_text_effect(harness).await;
 }
 
+async fn firefox_empty_reset_expect_probe_commit(
+    harness: &mut Harness,
+    engine: &LayIbusEngine,
+    expected_mode: bool,
+    expected_text: &str,
+    serial: u32,
+) {
+    // The production handler and detached dispatcher may write in either
+    // order. Keep every client effect and filter only the registered exact
+    // UnknownObject reply, then fence the dispatcher before the next key.
+    firefox_empty_reset_expect_commit(harness, engine, expected_mode, expected_text).await;
+    bounded(complete_absent_manual_dispatch(&mut harness.peer)).await;
+    assert!(!harness
+        .peer
+        .detached_callback_reply_serials
+        .contains(&serial));
+    assert!(harness
+        .peer
+        .detached_callback_reply_serials
+        .counts
+        .is_empty());
+}
+
+async fn firefox_detached_probe_transport_orders() {
+    for signal_first in [true, false] {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let engine = new_engine(&harness);
+        let serial = 30_900;
+        let callback = observed_callback_without_reply(serial, &engine.path, "Reset");
+        let mut reply_observer = MessageStream::from(&harness.peer.connection);
+        if signal_first {
+            harness
+                .connection
+                .emit_signal(
+                    None::<&str>,
+                    engine.path.as_str(),
+                    ENGINE_INTERFACE,
+                    "CommitText",
+                    &crate::text::make_ibus_text("probe".to_string()),
+                )
+                .await
+                .unwrap();
+        }
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &callback,
+            &engine.path,
+            ENGINE_INTERFACE,
+        )
+        .await;
+        if !signal_first {
+            // This independent stream fences Error arrival while the primary
+            // peer stream still contains that exact packet for its filter.
+            let reply = bounded(next_ordered_message(Pin::new(&mut reply_observer)))
+                .await
+                .unwrap()
+                .unwrap();
+            assert_eq!(reply.header().message_type(), Type::Error);
+            assert_eq!(reply.header().reply_serial().map(|n| n.get()), Some(serial));
+            assert_eq!(
+                reply.header().error_name().map(|n| n.as_str()),
+                Some("org.freedesktop.DBus.Error.UnknownObject")
+            );
+            harness
+                .connection
+                .emit_signal(
+                    None::<&str>,
+                    engine.path.as_str(),
+                    ENGINE_INTERFACE,
+                    "CommitText",
+                    &crate::text::make_ibus_text("probe".to_string()),
+                )
+                .await
+                .unwrap();
+        }
+        firefox_empty_reset_expect_probe_commit(
+            &mut harness,
+            &engine,
+            engine.layout_gesture.layout_is_ru,
+            "probe",
+            serial,
+        )
+        .await;
+    }
+}
+
 async fn firefox_empty_reset_six_scalar_handoff(
     serial: u32,
 ) -> (Harness, LayIbusEngine, String, u64) {
@@ -8549,6 +8635,7 @@ fn firefox_empty_reset_assert_unknown_lineage(engine: &LayIbusEngine, count: u32
 #[test]
 fn firefox_native_replay_empty_reset_six_inserts_probe_and_manual_handoff() {
     zbus::block_on(bounded(async {
+        firefox_detached_probe_transport_orders().await;
         let mut serial = 31_000;
         let (mut harness, target, path, epoch) =
             firefox_empty_reset_six_scalar_handoff(serial).await;
@@ -8694,9 +8781,8 @@ fn firefox_native_replay_empty_reset_six_inserts_probe_and_manual_handoff() {
             )
             .await
         );
-        consume_detached_callback_reply(&mut harness.peer, serial).await;
+        firefox_empty_reset_expect_probe_commit(&mut harness, &engine, mode, "а", serial).await;
         serial += 1;
-        firefox_empty_reset_expect_commit(&mut harness, &engine, mode, "а").await;
         assert_eq!(engine.committed_tail.buffer, "привета");
         assert_eq!(engine.committed_tail.epoch, before_epoch.wrapping_add(1));
         assert!(
@@ -9032,9 +9118,8 @@ fn firefox_observer_first_native_insert_reset_recovers_only_after_exact_receipt(
             )
             .await
         );
-        consume_detached_callback_reply(&mut harness.peer, serial).await;
+        firefox_empty_reset_expect_probe_commit(&mut harness, &engine, mode, "а", serial).await;
         serial += 1;
-        firefox_empty_reset_expect_commit(&mut harness, &engine, mode, "а").await;
         assert_eq!(engine.committed_tail.buffer, "привета");
         assert!(
             firefox_replay_callback(

@@ -1,0 +1,31 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-08",
+  "status": "SOURCE_RELEASE_PASS_PHYSICAL_INCOMPLETE",
+  "decision": "The existing Space prefetch worker cooperatively stops obsolete full-field computations between existing correction production and decision stages, using its existing latest_request_generation atomic. Cancellation discards the calculation; it does not publish NoApply, select a candidate or execute an edit.",
+  "reason": "Actual installed GTK3 frames had correct final Apply decisions but missed the unchanged Space lease. The calculation pair waited64117us behind obsolete work, then evaluated53442us. Focus-return likewise obtained Apply after69945us. Existing generation validation prevents stale publication but currently permits the entire obsolete calculation to block the newest request.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/correction_core.rs",
+    "src/input_gate.rs",
+    "src/ime_correction.rs",
+    "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+    "src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs",
+    "tests/space_boundary_shift_mechanism.rs"
+  ],
+  "owning_document": "docs/architecture/space-boundary-shift-2026-10-07.md",
+  "runtime_authority_changed": false,
+  "verification": "Focused2519/2519 and unchanged complete release3032/3032 plus all17 commands PASS. Exact artifact08be0e60a0bab2e35af19a54ae552dee613bc549e6352c190fbb73bb7e967188,8162832bytes. Receipt /home/ubu/.cache/lay/development/space-boundary-obsolete-source-20261008/frozen-canonical-order/FETCHED/RELEASE_GATE_RESULT.json. The two earlier lint-metadata failures remain FAIL. No installed latency reduction or new physical acceptance claimed. Installed exact bytes; first physical pilot4/7 and repeat1/3 PASS. Correct final focus Apply arrives after60038us total; full physical acceptance remains pending. Receipts in owning document.",
+  "not_tested": "No latency reduction or physical acceptance is claimed. No new worker, timer, queue, cache, deadline, candidate-pruning policy, verifier exception or delivery route is added.",
+  "source_review": {
+    "reviewer": "/root",
+    "independent_agent": false
+  }
+}

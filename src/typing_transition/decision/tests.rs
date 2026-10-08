@@ -684,22 +684,28 @@ fn frame_bound_lexical_authority_survives_only_advisory_l4_ambiguity() {
         project_advisory_hidden_ambiguity(&event, &candidates, &mut evaluations, phase_margin);
         let admissions = context.admissions_for_event(&event, &candidates);
         assert_eq!(admissions, [true, false]);
+        let mut authority_lanes = super::AuthorityLaneBatch::new(&candidates, &evaluations);
         for (profile, expected) in [
             (CorrectionSafety::Normal, true),
             (CorrectionSafety::Experimental, true),
             (CorrectionSafety::Strict, false),
         ] {
-            let admission = super::authority_lane_allows_apply(
+            let admission = authority_lanes.admit(
                 &event,
                 0,
-                &candidates,
-                &evaluations,
                 super::TransitionDecisionPolicy {
                     l2_phase_apply: false,
                     correction_safety: profile,
                 },
                 candidates[0].clone(),
                 admissions[0],
+            );
+            let (scratch_candidates, scratch_evaluations) =
+                authority_lanes.scratch.as_ref().unwrap();
+            assert_eq!(scratch_candidates, &candidates);
+            assert_eq!(
+                format!("{scratch_evaluations:?}"),
+                format!("{evaluations:?}")
             );
             observations.push((phase_margin, profile, admission.is_some(), expected));
             if let Some(admission) = admission {

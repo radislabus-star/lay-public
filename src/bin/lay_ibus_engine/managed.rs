@@ -10,6 +10,53 @@ use super::protocol::{
 };
 
 impl LayIbusEngine {
+    /// The managed input owner finishes ordinary user Space before an already
+    /// selected boundary action may use the existing client postcondition.
+    pub(super) async fn commit_legacy_space_boundary_continuation(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        mut pending: super::engine::PendingSpaceBoundaryCommit,
+    ) -> fdo::Result<bool> {
+        if !emitter.is_legacy()
+            || !self.composition.legacy_word_preedit_active
+            || !self.input_frame_authority_matches(&pending.frame)
+            || self.capture_space_boundary_pair_scope() != pending.frame.space_boundary_pair
+            || pending.material_generation != lay::nanda_wave::candidate_material_generation()
+        {
+            return Ok(false);
+        }
+        let request = if matches!(
+            pending.selection,
+            super::engine::PendingSpaceBoundarySelection::Computing { .. }
+        ) {
+            if self.layout_gesture.layout_is_ru
+                != self
+                    .client_context
+                    .factory_engine_profile
+                    .initial_layout_is_ru()
+            {
+                return Ok(false);
+            }
+            ActiveCompositionCommit::with_space_in_current_layout()
+        } else {
+            ActiveCompositionCommit::with_space()
+        };
+        self.commit_active_composition(emitter, request).await?;
+        self.retire_legacy_word_preedit_ownership_if_empty();
+        pending.frame.tail_epoch = self.committed_tail.epoch;
+        pending.frame.committed_tail = self.committed_tail.buffer.clone();
+        pending.frame.active_composition = false;
+        if let Some(receipt) = self.committed_tail.pending_visible_postcondition.as_mut() {
+            receipt.space_boundary_commit = Some(pending);
+        }
+        // One read-only request within the same receipt; no retry or new timer.
+        emitter
+            .require_surrounding_text()
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+        Ok(true)
+    }
+
     pub(super) async fn process_pressed_key(
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
@@ -18,6 +65,16 @@ impl LayIbusEngine {
         state: u32,
     ) -> fdo::Result<bool> {
         let pressed_started = Instant::now();
+        if let Some(pending) = self.committed_tail.pending_visible_postcondition.as_mut() {
+            if let Some(continuation) = pending.space_boundary_commit.take() {
+                if let super::engine::PendingSpaceBoundarySelection::Computing {
+                    identity, ..
+                } = continuation.selection
+                {
+                    super::space_autocorrect_prefetch::invalidate(&identity);
+                }
+            }
+        }
         if self.composition.pending_passthrough_preedit_clear {
             self.clear_preedit(emitter).await?;
             self.composition.pending_passthrough_preedit_clear = false;
@@ -137,8 +194,21 @@ impl LayIbusEngine {
                     }
                     _ => false,
                 };
-                if let Some(identity) = frame.as_ref() {
-                    self.invalidate_space_autocorrect_lease(identity);
+                let calculation_retained = self
+                    .committed_tail
+                    .pending_visible_postcondition
+                    .as_ref()
+                    .and_then(|receipt| receipt.space_boundary_commit.as_ref())
+                    .is_some_and(|pending| {
+                        matches!(
+                            pending.selection,
+                            super::engine::PendingSpaceBoundarySelection::Computing { .. }
+                        )
+                    });
+                if !calculation_retained {
+                    if let Some(identity) = frame.as_ref() {
+                        self.invalidate_space_autocorrect_lease(identity);
+                    }
                 }
                 if !autocorrected {
                     self.commit_active_composition(emitter, ActiveCompositionCommit::with_space())

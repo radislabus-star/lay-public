@@ -1,5 +1,5 @@
 use super::gate::VerifiedTransitionReceipt;
-use super::mutation::TransitionAudit;
+use super::mutation::{TransitionAudit, TransitionOperator, TransitionProof};
 use super::safety::{autocorrect_edit_safety, EditPlanSafetyReport};
 use super::types::TextReplacement;
 
@@ -120,6 +120,127 @@ impl EditAction {
 
     pub(super) fn attach_verification(&mut self, receipt: VerifiedTransitionReceipt) {
         self.verification = Some(receipt);
+    }
+
+    /// Projects only a verified full pair plus the one Space which the client
+    /// has not received yet. Semantic safety is retained; physical dry-run is
+    /// checked independently before replacing the sealed receipt.
+    pub(super) fn project_pending_boundary_space(mut self) -> Option<Self> {
+        if !self.allow_apply()
+            || self.transition.operator() != Some(TransitionOperator::BoundaryShift)
+            || self.transition.proof() != Some(TransitionProof::Boundary)
+            || self.transition.changed_tokens() != Some(2)
+        {
+            return None;
+        }
+        let physical_from = self.from_text.strip_suffix(' ')?;
+        let physical_to_core = self.to_text.strip_suffix(' ')?;
+        if physical_from.ends_with(char::is_whitespace)
+            || physical_to_core.ends_with(char::is_whitespace)
+            || physical_from.split_whitespace().count() != 2
+            || !super::safety::surface_preserving_right_to_left_boundary_shift(
+                &self.from_text,
+                &self.to_text,
+            )
+        {
+            return None;
+        }
+        let semantic_plan = self.plan.as_ref()?;
+        if semantic_plan.move_left != 0
+            || semantic_plan.move_right != 0
+            || semantic_plan.backspaces as usize != self.from_text.chars().count()
+            || semantic_plan.insert != self.to_text
+        {
+            return None;
+        }
+        let plan = TextReplacement {
+            move_left: 0,
+            backspaces: u32::try_from(physical_from.chars().count()).ok()?,
+            insert: self.to_text.clone(),
+            move_right: 0,
+        };
+        if !super::diff_plan::replacement_plan_matches(physical_from, &self.to_text, &plan) {
+            return None;
+        }
+        let receipt = self
+            .verification
+            .as_ref()?
+            .project_pending_space(&self, &plan)?;
+        self.from_text = physical_from.to_string();
+        self.plan = Some(plan);
+        let safety = self.safety.as_mut()?;
+        safety.deleted_text = self.from_text.clone();
+        safety.reason = "verified_pending_space_boundary_projection";
+        self.verification = Some(receipt);
+        self.allow_apply().then_some(self)
+    }
+
+    /// Restore the same sealed semantic plan after its one ordinary Space has
+    /// actually committed. This changes physical coordinates, never the winner.
+    pub fn with_committed_boundary_space(mut self) -> Option<Self> {
+        if !self.allow_apply() {
+            return None;
+        }
+        let from = format!("{} ", self.from_text);
+        let plan = TextReplacement {
+            move_left: 0,
+            backspaces: u32::try_from(from.chars().count()).ok()?,
+            insert: self.to_text.clone(),
+            move_right: 0,
+        };
+        let receipt = self
+            .verification
+            .as_ref()?
+            .commit_pending_space(&self, &plan)?;
+        let safety = autocorrect_edit_safety(&from, &self.to_text, &plan, &self.transition);
+        if !safety.allow_apply
+            || !super::diff_plan::replacement_plan_matches(&from, &self.to_text, &plan)
+        {
+            return None;
+        }
+        self.from_text = from;
+        self.plan = Some(plan);
+        self.kind = classify_planned_replacement(&safety);
+        self.safety = Some(safety);
+        self.verification = Some(receipt);
+        self.allow_apply().then_some(self)
+    }
+
+    pub(super) fn validate_recorded_boundary_inverse(&mut self, forward: &Self) -> bool {
+        if !forward.allow_apply()
+            || forward.transition.operator() != Some(TransitionOperator::BoundaryShift)
+            || forward.transition.changed_tokens() != Some(2)
+            || !forward
+                .verification
+                .as_ref()
+                .is_some_and(|receipt| receipt.is_pending_boundary_projection())
+            || self.from_text != forward.to_text
+            || self.to_text != format!("{} ", forward.from_text)
+            || self.transition.operator() != Some(TransitionOperator::Undo)
+            || self.transition.proof() != Some(TransitionProof::UndoRecord)
+        {
+            return false;
+        }
+        let Some(plan) = self.plan.as_ref() else {
+            return false;
+        };
+        if plan.move_left != 0
+            || plan.move_right != 0
+            || plan.backspaces as usize != self.from_text.chars().count()
+            || plan.insert != self.to_text
+            || !super::diff_plan::replacement_plan_matches(&self.from_text, &self.to_text, plan)
+        {
+            return false;
+        }
+        let Some(safety) = self.safety.as_mut() else {
+            return false;
+        };
+        // The inverse is authorized by the sealed forward boundary and the
+        // existing recorded-undo owner, not by generic multiword UndoRecord.
+        safety.allow_apply = true;
+        safety.reason = "verified_recorded_boundary_inverse";
+        self.kind = classify_planned_replacement(safety);
+        true
     }
 
     pub(super) fn mark_ime_accept(&mut self) {

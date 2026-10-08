@@ -932,7 +932,161 @@ impl LayIbusEngine {
         {
             return None;
         }
-        self.managed_word_start_from_current_snapshot("")
+        self.observed_word_start_from_current_snapshot("", false)
+    }
+
+    pub(crate) fn capture_space_boundary_pair_scope(
+        &self,
+    ) -> Option<crate::engine::SpaceBoundaryPairScope> {
+        use crate::engine::{SpaceBoundaryPairProvenance, SpaceBoundaryPairScope};
+        if self.content_is_sensitive() || self.context_handoff_sealed {
+            return None;
+        }
+        let tail = &self.committed_tail.buffer;
+        // Only the final two plain Cyrillic words and one ordinary separator
+        // belong to this mechanism; no newline/punctuation/multi-space scope.
+        let (prefix, right) = tail.rsplit_once(' ')?;
+        let left = prefix.rsplit(char::is_whitespace).next()?;
+        if !lay::word_reader::is_cyrillic_letters_only(left)
+            || !lay::word_reader::is_cyrillic_letters_only(right)
+        {
+            return None;
+        }
+        let pair = format!("{left} {right}");
+        let pair_chars = pair.chars().count();
+        let start = tail.chars().count().checked_sub(pair_chars)?;
+        let snapshot_proves = |snapshot: &SurroundingTextSnapshot, suffix: &str| {
+            let count = suffix.chars().count();
+            let cursor = snapshot.cursor_pos as usize;
+            !snapshot.has_selection()
+                && snapshot.suffix_before_cursor(count).as_deref() == Some(suffix)
+                && cursor.checked_sub(count).is_some_and(|start| {
+                    start == 0
+                        || snapshot
+                            .text
+                            .chars()
+                            .nth(start - 1)
+                            .is_some_and(crate::preedit::is_observed_word_boundary)
+                })
+                && snapshot
+                    .text
+                    .chars()
+                    .nth(cursor)
+                    .is_none_or(crate::preedit::is_observed_word_boundary)
+        };
+        let provenance = if self.composition.legacy_word_preedit_active {
+            let witness = self.composition.legacy_preedit_start_boundary.as_ref()?;
+            if !self.owned_preedit_start_boundary_matches(witness)
+                || self.composition.buffer != right
+                || self.composition.cursor != right.chars().count()
+            {
+                return None;
+            }
+            let before_left = witness.snapshot_prefix.strip_suffix(&format!("{left} "))?;
+            if (!before_left.is_empty()
+                && !before_left
+                    .chars()
+                    .last()
+                    .is_some_and(crate::preedit::is_observed_word_boundary))
+                || !witness
+                    .snapshot_suffix
+                    .chars()
+                    .next()
+                    .is_none_or(crate::preedit::is_observed_word_boundary)
+            {
+                return None;
+            }
+            SpaceBoundaryPairProvenance::OwnedPreedit {
+                witness_identity: witness.identity,
+                cursor: witness.start_cursor,
+                preedit: right.to_string(),
+            }
+        } else if self.uses_native_terminal_input() {
+            let scope = self.context_word_scope.as_ref()?;
+            let token = self.live_context_token()?;
+            let floor = scope.lineage().observed_boundary_floor?;
+            if !token.matches_word_scope(scope)
+                || scope.lineage().completeness != WordCompleteness::KnownStart
+                || start <= floor as usize
+                || !tail
+                    .chars()
+                    .nth(start - 1)
+                    .is_some_and(crate::preedit::is_observed_word_boundary)
+            {
+                return None;
+            }
+            SpaceBoundaryPairProvenance::Observed {
+                token,
+                boundary_floor: floor,
+            }
+        } else {
+            let cursor = if self.exact_managed_surrounding_word_is_current() {
+                let snapshot = self.client_context.surrounding_text_snapshot.as_ref()?;
+                if !snapshot_proves(snapshot, &pair) {
+                    return None;
+                }
+                snapshot.cursor_pos
+            } else {
+                self.managed_word_start_is_current().then_some(())?;
+                let witness = self.client_context.managed_word_start.as_ref()?;
+                let client_prefix = pair.strip_suffix(right)?;
+                let before_left = witness.snapshot_prefix.strip_suffix(client_prefix)?;
+                if (!before_left.is_empty()
+                    && !before_left
+                        .chars()
+                        .last()
+                        .is_some_and(crate::preedit::is_observed_word_boundary))
+                    || !witness
+                        .snapshot_suffix
+                        .chars()
+                        .next()
+                        .is_none_or(crate::preedit::is_observed_word_boundary)
+                {
+                    return None;
+                }
+                witness
+                    .start_cursor
+                    .checked_add(u32::try_from(right.chars().count()).ok()?)?
+            };
+            SpaceBoundaryPairProvenance::Client {
+                revision: self.client_context.surrounding_observation_revision,
+                cursor,
+            }
+        };
+        Some(SpaceBoundaryPairScope {
+            text: pair,
+            provenance,
+        })
+    }
+
+    /// Reconstruct at dispatch only. Pair identities keep bounded text and
+    /// existing revision/witness IDs instead of cloning a whole client field
+    /// on every printable key.
+    pub(crate) fn space_pair_client_snapshot(
+        &self,
+        scope: &crate::engine::SpaceBoundaryPairScope,
+    ) -> Option<SurroundingTextSnapshot> {
+        if self.capture_space_boundary_pair_scope().as_ref() != Some(scope) {
+            return None;
+        }
+        match &scope.provenance {
+            crate::engine::SpaceBoundaryPairProvenance::Client { .. } => {
+                if self.exact_managed_surrounding_word_is_current() {
+                    self.client_context.surrounding_text_snapshot.clone()
+                } else {
+                    self.managed_word_start_projected_snapshot()
+                }
+            }
+            crate::engine::SpaceBoundaryPairProvenance::OwnedPreedit { .. } => {
+                let witness = self.composition.legacy_preedit_start_boundary.as_ref()?;
+                Some(SurroundingTextSnapshot::new(
+                    format!("{}{}", witness.snapshot_prefix, witness.snapshot_suffix),
+                    witness.start_cursor,
+                    witness.start_cursor,
+                ))
+            }
+            crate::engine::SpaceBoundaryPairProvenance::Observed { .. } => None,
+        }
     }
 
     fn owned_preedit_start_boundary_is_current(&self) -> bool {
@@ -1042,8 +1196,16 @@ impl LayIbusEngine {
         &self,
         token: &str,
     ) -> Option<ManagedWordStartWitness> {
+        self.observed_word_start_from_current_snapshot(token, true)
+    }
+
+    fn observed_word_start_from_current_snapshot(
+        &self,
+        token: &str,
+        require_exact_refresh: bool,
+    ) -> Option<ManagedWordStartWitness> {
         if !self.client_context.managed_input
-            || !self.client_context.exact_surrounding_refresh_available
+            || (require_exact_refresh && !self.client_context.exact_surrounding_refresh_available)
             || !self.client_context.surrounding_text_supported
             || self.context_handoff_sealed
             || self.atomic.active
@@ -3815,6 +3977,20 @@ impl WindowInteraction {
                 let output = output.ok_or_else(|| {
                     fdo::Error::Failed("surrounding observation requires output".into())
                 })?;
+                let boundary_applied = engine
+                    .apply_space_boundary_after_client_commit(output)
+                    .await?;
+                if boundary_applied
+                    || engine
+                        .committed_tail
+                        .pending_visible_postcondition
+                        .as_ref()
+                        .is_some_and(|receipt| receipt.space_boundary_commit.is_some())
+                {
+                    return Ok(ObservationReceipt::SurroundingText(
+                        OutcomeProof::ExistingPostconditionPending,
+                    ));
+                }
                 if engine
                     .apply_pending_manual_toggle_after_surrounding_snapshot(output)
                     .await?
@@ -4031,6 +4207,7 @@ impl LayIbusEngine {
                 final_refresh_retry_sent: false,
                 feedback,
                 layout_sync_text,
+                space_boundary_commit: None,
             });
     }
     pub(crate) fn observe_visible_postcondition(&mut self) -> OutcomeProof {

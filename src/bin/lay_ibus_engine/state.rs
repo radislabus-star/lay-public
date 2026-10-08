@@ -31,12 +31,14 @@ pub(crate) struct CommittedTailReplaceRequest {
     proved_managed_external_snapshot: Option<SurroundingTextSnapshot>,
     boundary_elided_external_snapshot: bool,
     causal_precondition_external_snapshot: Option<String>,
+    recorded_boundary_precondition: Option<super::protocol::RecordedBoundaryPrecondition>,
     /// Authority selected before this adapter boundary. When present, the
     /// committed-tail backend must preserve this exact action after structural
     /// verification instead of reconstructing a replacement from strings.
     winner_action: Option<EditAction>,
     outcome_feedback: Option<PendingSystemOutcomeFeedback>,
     layout_postcondition_owner: LayoutPostconditionOwner,
+    space_pair_scope: Option<super::engine::SpaceBoundaryPairScope>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -57,9 +59,11 @@ impl CommittedTailReplaceRequest {
             proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
+            recorded_boundary_precondition: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Ime,
+            space_pair_scope: None,
         }
     }
 
@@ -78,9 +82,11 @@ impl CommittedTailReplaceRequest {
             proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
+            recorded_boundary_precondition: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Ime,
+            space_pair_scope: None,
         }
     }
 
@@ -95,9 +101,11 @@ impl CommittedTailReplaceRequest {
             proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
+            recorded_boundary_precondition: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Ime,
+            space_pair_scope: None,
         }
     }
 
@@ -112,9 +120,11 @@ impl CommittedTailReplaceRequest {
             proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
+            recorded_boundary_precondition: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Ime,
+            space_pair_scope: None,
         }
     }
 
@@ -133,9 +143,11 @@ impl CommittedTailReplaceRequest {
             proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
+            recorded_boundary_precondition: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Caller,
+            space_pair_scope: None,
         }
     }
 
@@ -165,8 +177,24 @@ impl CommittedTailReplaceRequest {
         self
     }
 
+    pub(crate) fn with_recorded_boundary_precondition(
+        mut self,
+        receipt: Option<super::protocol::RecordedBoundaryPrecondition>,
+    ) -> Self {
+        self.recorded_boundary_precondition = receipt;
+        self
+    }
+
     pub(crate) fn with_winner_action(mut self, winner_action: EditAction) -> Self {
         self.winner_action = Some(winner_action);
+        self
+    }
+
+    pub(crate) fn with_space_pair_scope(
+        mut self,
+        scope: Option<super::engine::SpaceBoundaryPairScope>,
+    ) -> Self {
+        self.space_pair_scope = scope;
         self
     }
 
@@ -493,15 +521,72 @@ impl LayIbusEngine {
         let source = request.source;
         let backspaces = request.backspaces;
         let intent = request.intent;
+        let pair_scope = request.space_pair_scope.as_ref();
+        if let Some(scope) = pair_scope {
+            let exact = self.capture_space_boundary_pair_scope().as_ref() == Some(scope)
+                && !matches!(
+                    scope.provenance,
+                    super::engine::SpaceBoundaryPairProvenance::OwnedPreedit { .. }
+                )
+                && intent == TextTransitionIntent::ImeAutocorrect
+                && request.winner_action.as_ref().is_some_and(|action| {
+                    action.from_text() == scope.text
+                        && action.transition().operator()
+                            == Some(lay::text_edit::TransitionOperator::BoundaryShift)
+                        && action.transition().changed_tokens() == Some(2)
+                });
+            if !exact {
+                return Ok(false);
+            }
+        }
         let boundary_elided_external_snapshot = request.boundary_elided_external_snapshot;
         let causal_precondition_external_snapshot =
             request.causal_precondition_external_snapshot.clone();
         let proved_managed_external_snapshot = request.proved_managed_external_snapshot.clone();
+        // This is a prior *observed* full client precondition of the recorded
+        // boundary action, never a new client snapshot or a mirrored target.
+        // A present observation always wins; only the exact equal-length
+        // recorded inverse in the unchanged lease may use it causally.
+        let recorded_precondition =
+            request
+                .recorded_boundary_precondition
+                .as_ref()
+                .filter(|receipt| {
+                    intent == TextTransitionIntent::ImeAutoUndo
+                        && self.client_context.surrounding_text_snapshot.is_none()
+                        && self.input_frame_authority_matches(&receipt.frame)
+                        && !receipt.snapshot.has_selection()
+                        && causal_precondition_external_snapshot
+                            .as_ref()
+                            .is_some_and(|original| {
+                                original == &request.text
+                                    && original.chars().count() == backspaces as usize
+                                    && original.len()
+                                        == lay::text_edit::tail_chars(
+                                            &self.committed_tail.buffer,
+                                            backspaces as usize,
+                                        )
+                                        .len()
+                                    && receipt
+                                        .snapshot
+                                        .suffix_before_cursor(backspaces as usize)
+                                        .as_deref()
+                                        == Some(original.as_str())
+                            })
+                        && request.winner_action.as_ref().is_some_and(|action| {
+                            action.allow_apply()
+                                && action.transition().operator()
+                                    == Some(lay::text_edit::TransitionOperator::Undo)
+                                && action.transition().proof()
+                                    == Some(lay::text_edit::TransitionProof::UndoRecord)
+                        })
+                });
         let external_snapshot = self
             .client_context
             .surrounding_text_snapshot
             .as_ref()
-            .or(proved_managed_external_snapshot.as_ref());
+            .or(proved_managed_external_snapshot.as_ref())
+            .or(recorded_precondition.map(|receipt| &receipt.snapshot));
         if !matches!(
             intent,
             TextTransitionIntent::ImeAutocorrect | TextTransitionIntent::ImeAutoUndo
@@ -618,6 +703,7 @@ impl LayIbusEngine {
             );
             return Ok(false);
         };
+        let physical_backspaces = authorized_plan.backspaces;
         if authorized_plan != &plan {
             trace::record_committed_tail_replace(
                 source,
@@ -661,7 +747,7 @@ impl LayIbusEngine {
         {
             let Some(snapshot) = surrounding_replacement_final_snapshot(
                 external_snapshot,
-                authorized_plan.backspaces,
+                physical_backspaces,
                 &text,
             ) else {
                 trace::record_committed_tail_replace_guard(
@@ -712,7 +798,7 @@ impl LayIbusEngine {
         let mut delete_us = 0;
         let commit_text = if output_profile.uses_terminal_erase() {
             // The request covers the logical old token; execute only the verified physical edit.
-            terminal_erase_prefix(authorized_plan.backspaces) + &text
+            terminal_erase_prefix(physical_backspaces) + &text
         } else {
             forward_cursor_steps(emitter, KEY_LEFT, authorized_plan.move_left)
                 .await
@@ -720,12 +806,9 @@ impl LayIbusEngine {
                     LocalExecutionFailure::new(LocalEffectProgress::CursorOrPreedit, source)
                 })?;
             let delete_started = Instant::now();
-            if authorized_plan.backspaces > 0 {
+            if physical_backspaces > 0 {
                 emitter
-                    .delete_surrounding_text(
-                        -(authorized_plan.backspaces as i32),
-                        authorized_plan.backspaces,
-                    )
+                    .delete_surrounding_text(-(physical_backspaces as i32), physical_backspaces)
                     .await
                     .map_err(|source| {
                         LocalExecutionFailure::new(LocalEffectProgress::DeleteDispatched, source)

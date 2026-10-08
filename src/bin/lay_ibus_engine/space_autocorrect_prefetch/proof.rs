@@ -56,6 +56,7 @@ fn worker_with_terminal(identity: InputFrameIdentity, generation: u64) -> Worker
             Mutex::new(WorkerState {
                 generation,
                 slot: Some(PreparedDecisionSlot {
+                    boundary_completion: None,
                     identity,
                     request_generation: generation,
                     material_generation,
@@ -370,6 +371,7 @@ fn pending_worker(identity: InputFrameIdentity, generation: u64) -> Worker {
             Mutex::new(WorkerState {
                 generation,
                 slot: Some(PreparedDecisionSlot {
+                    boundary_completion: None,
                     identity,
                     request_generation: generation,
                     material_generation,
@@ -402,7 +404,7 @@ fn v27_component_latency_denominators() {
         exact_certificate: None,
         enqueued_at: None,
     };
-    let _ = evaluate_full(&stale, Instant::now());
+    let _ = evaluate_full(&stale, Instant::now(), &|| true);
 
     let running = Arc::new(AtomicBool::new(true));
     let ready = Arc::new(Barrier::new(2));
@@ -411,7 +413,7 @@ fn v27_component_latency_denominators() {
     let busy = std::thread::spawn(move || {
         worker_ready.wait();
         while worker_running.load(Ordering::Acquire) {
-            std::hint::black_box(evaluate_full(&stale, Instant::now()));
+            std::hint::black_box(evaluate_full(&stale, Instant::now(), &|| true));
         }
     });
     ready.wait();
@@ -556,7 +558,8 @@ pub(crate) fn install_full_lease(identity: &InputFrameIdentity, config: &LayConf
         exact_certificate: None,
         enqueued_at: None,
     };
-    let (outcome, _) = evaluate_full(&desired, Instant::now());
+    let (outcome, _) =
+        evaluate_full(&desired, Instant::now(), &|| true).expect("uncancelled proof computation");
     assert!(
         matches!(outcome, PreparedFullOutcome::Apply(_)),
         "proof fixture requires an authorized full correction"
@@ -565,6 +568,7 @@ pub(crate) fn install_full_lease(identity: &InputFrameIdentity, config: &LayConf
     let mut state = lock.lock().expect("global proof slot");
     state.generation = generation;
     state.slot = Some(PreparedDecisionSlot {
+        boundary_completion: None,
         identity: identity.clone(),
         request_generation: generation,
         material_generation,
@@ -588,6 +592,70 @@ pub(crate) fn has_current_slot(identity: &InputFrameIdentity) -> bool {
             && slot.request_generation == worker.latest_request_generation.load(Ordering::Acquire)
             && slot.material_generation == lay::nanda_wave::candidate_material_generation()
     })
+}
+
+pub(crate) fn hold_full_lease(
+    identity: &InputFrameIdentity,
+    config: &LayConfig,
+) -> PreparedCorrectionLease {
+    install_full_lease(identity, config);
+    let SpaceAutocorrectLookup::Ready(mut lease) =
+        take_with_budget(identity, Duration::ZERO).lookup
+    else {
+        panic!("full proof lease");
+    };
+    let worker = existing_worker(&identity.path).unwrap();
+    let generation = reserve_generation(&worker.latest_request_generation);
+    lease.worker_generation = generation;
+    let mut state = worker.state.0.lock().unwrap();
+    state.generation = generation;
+    state.slot = Some(PreparedDecisionSlot {
+        identity: identity.clone(),
+        request_generation: generation,
+        material_generation: lease.material_generation,
+        full: FullSlotState::Pending,
+        exact: ExactSlotState::Absent,
+        boundary_completion: None,
+    });
+    state.desired = None;
+    lease
+}
+
+pub(crate) fn publish_held_full_lease(lease: PreparedCorrectionLease) -> bool {
+    publish_held_outcome(lease, false)
+}
+
+pub(crate) fn publish_held_no_apply(lease: PreparedCorrectionLease) -> bool {
+    publish_held_outcome(lease, true)
+}
+
+fn publish_held_outcome(lease: PreparedCorrectionLease, no_apply: bool) -> bool {
+    let Some(worker) = existing_worker(&lease.identity.path) else {
+        return false;
+    };
+    let mut state = worker.state.0.lock().unwrap();
+    let current = state.generation;
+    let Some(slot) = state.slot.as_mut() else {
+        return false;
+    };
+    if slot.identity != lease.identity
+        || slot.request_generation != current
+        || slot.request_generation != lease.worker_generation
+        || slot.request_generation != worker.latest_request_generation.load(Ordering::Acquire)
+        || slot.material_generation != lay::nanda_wave::candidate_material_generation()
+    {
+        return false;
+    }
+    slot.full = FullSlotState::Terminal(if no_apply {
+        PreparedFullOutcome::NoApply {
+            stage: PreparedNoApplyStage::Rank,
+            decision_us: lease.decision_us,
+        }
+    } else {
+        PreparedFullOutcome::Apply(lease)
+    });
+    worker.state.1.notify_all();
+    true
 }
 
 pub(crate) fn has_current_terminal_full_slot(identity: &InputFrameIdentity) -> bool {
@@ -620,6 +688,7 @@ pub(crate) fn install_exact_lease_with_material_generation(
     let mut state = lock.lock().expect("global proof slot");
     state.generation = generation;
     state.slot = Some(PreparedDecisionSlot {
+        boundary_completion: None,
         identity: identity.clone(),
         request_generation: generation,
         material_generation,

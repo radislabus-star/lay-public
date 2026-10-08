@@ -1,0 +1,30 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision_id": "2026-10-08-space-boundary-pending-calculation",
+  "date": "2026-10-08",
+  "status": "IMPLEMENTATION_AND_PROOF_PENDING",
+  "owning_document": "docs/architecture/space-boundary-shift-2026-10-07.md",
+  "invariants": ["C02", "C03", "C05", "C07", "C08", "C10"],
+  "reason": "Native Qt closing Space retires the one current full-field calculation after its unchanged 3500us lookup budget. The existing chooser obtains the boundary result at43995us, after invalidation. A source PASS cannot establish this asynchronous client acceptance.",
+  "evidence": "/home/ubu/.cache/lay/development/space-boundary-client-commit-physical-20261008/windows/traces/20261008T113535_qt.entry_autocorrect_focus_roundtrip_boundary_pair_v3_fresh_owned_focus/after_flush_ibus_engine_debug.jsonl",
+  "decision": "For a proved legacy owned-preedit pair only, retain a NotReady current calculation in the existing prefetch slot through the ordinary user Space commit. The existing PendingVisiblePostcondition contains either that exact computation identity or its already-selected action, never both. The same prefetch worker notifies the same engine once after its full terminal result. Completion and SurroundingText enter the same existing committed-tail continuation; both the selected sealed BoundaryShift and the actual complete original-plus-Space snapshot are required, in either arrival order.",
+  "replacement_boundary": "Replaces cancellation on closing Space for this exact owned-preedit pair. All other timeout retirement, exact-layout, ordinary correction, native terminal and atomic routes retain their contracts. No new worker, queue, chooser, cache, timer, backend or second output attempt.",
+  "safety": "Keep the3500us blocking budget and existing1500ms postcondition deadline. Retention additionally requires decoder and factory layout already equal; ordinary user Space uses the existing current-layout commit options, avoiding a redundant layout synchronization that invalidates this calculation. No decoder change is omitted. Recheck owner, focus, config, material, decoder, epoch, exact source pair, actual collapsed client snapshot and sealed action before output. Next pressed key, focus loss, changed text/selection, stale producer, non-boundary winner or expired receipt revoke the operation. No predicted snapshot enters live client state. Consume before dispatch; partial output is never retried.",
+  "verification": "Pending source proof must cover both result/snapshot arrival orders, no output while calculation is pending, full NoApply and non-boundary result refusal, next-key/focus/material/timeout revocation and notification one-shot/generation guards. Remote focused/full source and physical client scope are required before acceptance.",
+  "not_tested": "Actual D-Bus completion notification, installed changed runtime, physical local-client acceptance, ignored/performance lanes and live full-provider parity remain unproved by the focused source check. No remote desktop is invoked.",
+  "runtime_authority_changed": false,
+  "lint_inventory": "The deferred continuation now reads PreparedCorrectionLease.worker_generation and kind in production. Regenerate both existing inventories through check-lay-lints.sh --write-baseline, removing only the obsolete corresponding dead-code observations; no new warning allowance or lint relaxation. Preserve every other warning identity and check both feature scopes.",
+  "protected_paths": [
+    "scripts/lint-baseline/dead_code.default.json",
+    "scripts/lint-baseline/dead_code.json",
+    "src/bin/lay_ibus_engine/committed_tail.rs",
+    "src/bin/lay_ibus_engine/composition_commit.rs",
+    "src/bin/lay_ibus_engine/engine.rs",
+    "src/bin/lay_ibus_engine/engine/types.rs",
+    "src/bin/lay_ibus_engine/managed.rs",
+    "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ]
+}

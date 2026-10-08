@@ -67,6 +67,28 @@ impl LayIbusEngine {
         replacement: String,
         transition: lay::typing_cpu::ObservedSystemTransition,
     ) {
+        self.remember_pending_ime_auto_undo_with_action(original, replacement, transition, None);
+    }
+
+    pub(super) fn remember_pending_ime_boundary_undo(&self, forward: lay::text_edit::EditAction) {
+        if lay::text_edit::plan_recorded_boundary_inverse(&forward).is_none() {
+            return;
+        }
+        self.remember_pending_ime_auto_undo_with_action(
+            format!("{} ", forward.from_text()),
+            forward.to_text().to_string(),
+            lay::typing_cpu::ObservedSystemTransition::Correction,
+            Some(forward),
+        );
+    }
+
+    fn remember_pending_ime_auto_undo_with_action(
+        &self,
+        original: String,
+        replacement: String,
+        transition: lay::typing_cpu::ObservedSystemTransition,
+        boundary_forward_action: Option<lay::text_edit::EditAction>,
+    ) {
         let Ok(mut state) = self.shared.lock() else {
             return;
         };
@@ -82,6 +104,8 @@ impl LayIbusEngine {
             transition,
             recorded_at: Instant::now(),
             atomic_submission_proven: false,
+            boundary_forward_action,
+            recorded_boundary_precondition: None,
         });
         record_pending_ime_auto_undo_lifecycle(
             self,
@@ -171,10 +195,7 @@ impl LayIbusEngine {
             state.pending_auto_undo_retry = None;
             return false;
         }
-        let snapshot_match = pending_ime_auto_undo_snapshot_match(
-            self.client_context.surrounding_text_snapshot.as_ref(),
-            pending,
-        );
+        let snapshot_match = self.pending_ime_auto_undo_snapshot_match_for(pending, &state);
         if matches!(
             snapshot_match,
             SurroundingSnapshotMatch::Exact | SurroundingSnapshotMatch::AtomicSubmission
@@ -255,10 +276,7 @@ impl LayIbusEngine {
             state.pending_auto_undo_retry = None;
             return "invalidated";
         }
-        match pending_ime_auto_undo_snapshot_match(
-            self.client_context.surrounding_text_snapshot.as_ref(),
-            pending,
-        ) {
+        match self.pending_ime_auto_undo_snapshot_match_for(pending, &state) {
             SurroundingSnapshotMatch::Exact | SurroundingSnapshotMatch::AtomicSubmission => "ready",
             SurroundingSnapshotMatch::TrailingBoundaryElided => "ready_boundary_elided",
             SurroundingSnapshotMatch::CausalPrecondition => "ready_causal_precondition",
@@ -282,10 +300,57 @@ impl LayIbusEngine {
         let Some(pending) = state.pending_auto_undo.as_ref() else {
             return SurroundingSnapshotMatch::Missing;
         };
-        pending_ime_auto_undo_snapshot_match(
+        self.pending_ime_auto_undo_snapshot_match_for(pending, &state)
+    }
+
+    fn pending_ime_auto_undo_snapshot_match_for(
+        &self,
+        pending: &PendingImeAutoUndo,
+        state: &SharedState,
+    ) -> SurroundingSnapshotMatch {
+        let observed = pending_ime_auto_undo_snapshot_match(
             self.client_context.surrounding_text_snapshot.as_ref(),
             pending,
-        )
+        );
+        if observed == SurroundingSnapshotMatch::Missing
+            && self.client_context.surrounding_text_snapshot.is_none()
+            && pending
+                .recorded_boundary_precondition
+                .as_ref()
+                .is_some_and(|receipt| {
+                    self.owns_shared_context_state(state)
+                        && state.active_path.as_deref() == Some(self.path.as_str())
+                        && self.input_frame_local_authority_matches(&receipt.frame)
+                        && receipt
+                            .snapshot
+                            .suffix_before_cursor(pending.original.chars().count())
+                            .as_deref()
+                            == Some(pending.original.as_str())
+                        && pending.original.chars().count() == pending.replacement.chars().count()
+                        && pending.original.len() == pending.replacement.len()
+                })
+        {
+            SurroundingSnapshotMatch::CausalPrecondition
+        } else {
+            observed
+        }
+    }
+
+    pub(super) fn current_recorded_boundary_precondition(
+        &self,
+    ) -> Option<super::protocol::RecordedBoundaryPrecondition> {
+        if self.client_context.surrounding_text_snapshot.is_some() {
+            return None;
+        }
+        let state = self.shared.lock().ok()?;
+        let pending = state.pending_auto_undo.as_ref()?;
+        if pending_ime_auto_undo_invalid_reason(self, pending).is_some()
+            || self.pending_ime_auto_undo_snapshot_match_for(pending, &state)
+                != SurroundingSnapshotMatch::CausalPrecondition
+        {
+            return None;
+        }
+        pending.recorded_boundary_precondition.clone()
     }
 
     pub(super) fn arm_pending_ime_completion_learning(

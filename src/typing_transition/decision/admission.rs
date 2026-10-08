@@ -520,6 +520,88 @@ pub(super) fn suggest_boundary_allows_authority_evaluation(
         && hard_structural_veto::verified_tail_boundary_shift(event, candidate, evaluation)
 }
 
+/// Closing-Space rule, evaluated after ordinary ordering. The caller preserves
+/// grounded lexical authority and existing lossless selections.
+/// Exact vocabulary evidence settles this lossless boundary operation; phase
+/// uncertainty is not evidence against the independently attested pair.
+pub(super) fn attested_space_boundary_admission(
+    event: &TypingErrorEvent,
+    candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &[CandidateDecisionEvaluation],
+    policy: TransitionDecisionPolicy,
+) -> Option<(usize, AuthorityLaneAdmission)> {
+    let (head, right) = event.original.strip_suffix(' ')?.rsplit_once(' ')?;
+    let left_start = head.rfind(' ').map_or(0, |index| index + 1);
+    let left = &head[left_start..];
+    if !crate::word_reader::is_cyrillic_letters_only(left)
+        || !crate::word_reader::is_cyrillic_letters_only(right)
+    {
+        return None;
+    }
+    let moved = right.chars().next()?;
+    let remaining_right = right.strip_prefix(moved)?;
+    if remaining_right.is_empty() {
+        return None;
+    }
+    let target_left = format!("{left}{moved}");
+    let field = crate::hot_field::HotFieldSnapshot::current();
+    if !field.boundary_observed_form_is_unknown(right)
+        || crate::russian_lexicon::has_clean_russian_surface_certificate(right)
+        || !field.boundary_form_is_attested(&target_left)
+        || !field.boundary_form_is_attested(remaining_right)
+    {
+        return None;
+    }
+    let expected = format!("{}{target_left} {remaining_right} ", &head[..left_start]);
+    let mut admitted = None;
+    for (index, (candidate, evaluation)) in candidates.iter().zip(evaluations).enumerate() {
+        let action = evaluation.action;
+        let l4 = evaluation.transition.l4_signed_signal;
+        if candidate.replacement != expected
+            || candidate.error_class != TypingErrorClass::BoundaryShift
+            || candidate.origin.source_role() != CorrectionSourceRole::Boundary
+            || candidate.gate.action != CandidateGateAction::Eligible
+            || candidate.has_authority_conflict()
+            || action.edit_operator != verifier::EditTransitionOperator::BoundaryShift
+            || !action.verifier_passed
+            || action.changed_tokens != 2
+            || (l4.state_specific && l4.negative)
+            || (evaluation.signals.l4_hidden_plan_commitment != 0
+                && !evaluation.signals.l4_hidden_certificate_valid)
+            || (evaluation.signals.l4_hidden_selected_witnessed
+                && evaluation.signals.l4_hidden_certificate_valid
+                && evaluation.signals.l4_hidden_disposition
+                    == crate::nanda_wave::l4_hidden_state::L4HiddenDisposition::Rejected)
+        {
+            continue;
+        }
+        let safety = observe_correction_safety(
+            candidate,
+            policy.correction_safety,
+            CorrectionSafetyEvidence {
+                high_precision_boundary: true,
+                ..CorrectionSafetyEvidence::default()
+            },
+        );
+        if !safety.allow_apply {
+            continue;
+        }
+        // The operation has one exact target. Conflicting duplicate owners
+        // must not acquire authority through iteration order.
+        if admitted.is_some() {
+            return None;
+        }
+        admitted = Some((
+            index,
+            AuthorityLaneAdmission {
+                candidate: candidate.clone(),
+                evaluation: evaluation.clone(),
+            },
+        ));
+    }
+    admitted
+}
+
 /// A swap between two already valid lexical states is ambiguous by surface
 /// alone. L2 may propose it, but only a directional L3 pair certificate or an
 /// exact accepted L4 transition can authorize changing user text.

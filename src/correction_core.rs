@@ -860,6 +860,30 @@ fn resolve_text_correction_observed_internal(
     req: CorrectionRequest<'_>,
     scope: CorrectionEvidenceScope<'_>,
 ) -> ObservedCorrectionResolution {
+    resolve_text_correction_observed_if_current(req, scope, &|| true)
+        .expect("uncancelled correction computation")
+}
+
+pub(crate) fn resolve_full_text_correction_observed_if_current(
+    req: CorrectionRequest<'_>,
+    certificate: Option<&crate::exact_layout_authority::ExactLayoutContourCertificate>,
+    is_current: &dyn Fn() -> bool,
+) -> Option<ObservedCorrectionResolution> {
+    resolve_text_correction_observed_if_current(
+        req,
+        CorrectionEvidenceScope::FullField(certificate),
+        is_current,
+    )
+}
+
+fn resolve_text_correction_observed_if_current(
+    req: CorrectionRequest<'_>,
+    scope: CorrectionEvidenceScope<'_>,
+    is_current: &dyn Fn() -> bool,
+) -> Option<ObservedCorrectionResolution> {
+    if !is_current() {
+        return None;
+    }
     let started = Instant::now();
     let timing_enabled = std::env::var_os("LAY_CORRECTION_CORE_TIMING").is_some();
     let mut l2_peak_context = None;
@@ -885,12 +909,18 @@ fn resolve_text_correction_observed_internal(
     if matches!(scope, CorrectionEvidenceScope::FullField(_)) {
         let candidate_sources = L2CandidateSource::for_mode(req.mode);
         for source in candidate_sources {
+            if !is_current() {
+                return None;
+            }
             source.push_candidates(
                 &req,
                 &mut lattice,
                 l2_peak_context.as_ref(),
                 &mut canonical_telemetry,
             );
+        }
+        if !is_current() {
+            return None;
         }
         if candidate_sources.contains(&L2CandidateSource::Nanda) {
             lattice.push_source(proposal_only_substitution_competitor(&req));
@@ -901,12 +931,19 @@ fn resolve_text_correction_observed_internal(
     }
     let candidates_ready = Instant::now();
 
+    if !is_current() {
+        return None;
+    }
+
     if matches!(scope, CorrectionEvidenceScope::FullField(_))
         && !lattice.is_empty()
         && l2_peak_context.is_none()
     {
         l2_peak_context =
             Some(crate::nanda_wave::l2_wave_peak::prepare_correction_peak_context(req.text));
+    }
+    if !is_current() {
+        return None;
     }
     let (resolution, decision_timing) = match scope {
         CorrectionEvidenceScope::FullField(_) => {
@@ -928,7 +965,7 @@ fn resolve_text_correction_observed_internal(
         );
     }
     record_correction_gate_stats(started, &resolution);
-    ObservedCorrectionResolution {
+    Some(ObservedCorrectionResolution {
         resolution,
         telemetry: CorrectionRouteTelemetry {
             canonical_field: canonical_telemetry,
@@ -936,7 +973,7 @@ fn resolve_text_correction_observed_internal(
             decision_total_us: decision_timing.total_us,
             total_us: started.elapsed().as_micros().min(u128::from(u64::MAX)) as u64,
         },
-    }
+    })
 }
 
 pub fn correction_gate_stats_json() -> serde_json::Value {

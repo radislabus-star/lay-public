@@ -5,8 +5,6 @@ use std::time::{Duration, Instant};
 
 use lay::config::LayConfig;
 use lay::ime_correction::{
-    decide_active_composition_autocorrect_observed,
-    decide_active_composition_autocorrect_observed_with_exact,
     prepare_exact_layout_active_composition_autocorrect_observed,
     ActiveCompositionAutocorrectDecision, ActiveCompositionAutocorrectRequest,
     ActiveCompositionAutocorrectTelemetry, AutocorrectNoApplyStage,
@@ -102,6 +100,7 @@ struct PreparedDecisionSlot {
     material_generation: u64,
     full: FullSlotState,
     exact: ExactSlotState,
+    boundary_completion: Option<zbus::Connection>,
 }
 
 struct DesiredWork {
@@ -257,6 +256,7 @@ impl Worker {
             material_generation: confirmed_material_generation,
             full: FullSlotState::Pending,
             exact: ExactSlotState::Absent,
+            boundary_completion: None,
         });
         state.desired = None;
         wake.notify_all();
@@ -285,6 +285,7 @@ impl Worker {
             material_generation,
             full: FullSlotState::Pending,
             exact: ExactSlotState::Absent,
+            boundary_completion: None,
         });
         state.desired = None;
         wake.notify_all();
@@ -358,6 +359,15 @@ impl Worker {
         identity: &InputFrameIdentity,
         wait_budget: Duration,
     ) -> SpaceAutocorrectLookupReceipt {
+        self.take_with_timeout_policy(identity, wait_budget, false)
+    }
+
+    fn take_with_timeout_policy(
+        &self,
+        identity: &InputFrameIdentity,
+        wait_budget: Duration,
+        retain_pending: bool,
+    ) -> SpaceAutocorrectLookupReceipt {
         let started = Instant::now();
         let (lock, wake) = &*self.state;
         let Ok(mut state) = lock.lock() else {
@@ -420,8 +430,10 @@ impl Worker {
             let remaining = wait_budget.saturating_sub(started.elapsed());
             if remaining.is_zero() {
                 let generation = state.generation;
-                retire_slot(&mut state, &self.latest_request_generation, generation);
-                wake.notify_all();
+                if !retain_pending {
+                    retire_slot(&mut state, &self.latest_request_generation, generation);
+                    wake.notify_all();
+                }
                 return lookup_receipt(SpaceAutocorrectLookup::NotReady, started, generation);
             }
             let Ok((next, timeout)) = wake.wait_timeout(state, remaining) else {
@@ -435,11 +447,42 @@ impl Worker {
                     .is_some_and(|slot| matches!(slot.full, FullSlotState::Pending))
             {
                 let generation = state.generation;
-                retire_slot(&mut state, &self.latest_request_generation, generation);
-                wake.notify_all();
+                if !retain_pending {
+                    retire_slot(&mut state, &self.latest_request_generation, generation);
+                    wake.notify_all();
+                }
                 return lookup_receipt(SpaceAutocorrectLookup::NotReady, started, generation);
             }
         }
+    }
+
+    fn arm_boundary_completion(
+        &self,
+        identity: &InputFrameIdentity,
+        generation: u64,
+        connection: zbus::Connection,
+    ) -> bool {
+        let (lock, wake) = &*self.state;
+        let Ok(mut state) = lock.lock() else {
+            return false;
+        };
+        let current = state.generation;
+        let Some(slot) = state.slot.as_mut() else {
+            return false;
+        };
+        if generation == 0
+            || generation != current
+            || generation != self.latest_request_generation.load(Ordering::Acquire)
+            || slot.request_generation != generation
+            || slot.identity != *identity
+            || slot.material_generation != lay::nanda_wave::candidate_material_generation()
+            || slot.boundary_completion.is_some()
+        {
+            return false;
+        }
+        slot.boundary_completion = Some(connection);
+        wake.notify_one();
+        true
     }
 
     fn invalidate(&self, identity: &InputFrameIdentity) {
@@ -595,7 +638,13 @@ fn run_worker(
             let Ok(mut state) = lock.lock() else {
                 return;
             };
-            while state.desired.is_none() && !stop.load(Ordering::Acquire) {
+            while state.desired.is_none()
+                && !state.slot.as_ref().is_some_and(|slot| {
+                    slot.boundary_completion.is_some()
+                        && matches!(slot.full, FullSlotState::Terminal(_))
+                })
+                && !stop.load(Ordering::Acquire)
+            {
                 let Ok(next) = wake.wait(state) else {
                     return;
                 };
@@ -604,11 +653,35 @@ fn run_worker(
             if stop.load(Ordering::Acquire) {
                 return;
             }
+            if let Some(slot) = state.slot.as_mut() {
+                if matches!(slot.full, FullSlotState::Terminal(_)) {
+                    if let Some(connection) = slot.boundary_completion.take() {
+                        let identity = slot.identity.clone();
+                        let generation = slot.request_generation;
+                        drop(state);
+                        zbus::block_on(notify_boundary_completion(
+                            connection, identity, generation,
+                        ));
+                        continue;
+                    }
+                }
+            }
             state.desired.take().expect("desired work checked above")
         };
 
         let started = Instant::now();
-        let (outcome, telemetry) = evaluate_full(&desired, started);
+        let Some((outcome, telemetry)) = evaluate_full(&desired, started, &|| {
+            latest_request_generation.load(Ordering::Acquire) == desired.worker_generation
+                && !stop.load(Ordering::Acquire)
+        }) else {
+            trace::record(format!(
+                r#"{{"kind":"ibus_space_computation_cancelled","worker_generation":{},"tail_epoch":{},"elapsed_us":{}}}"#,
+                desired.worker_generation,
+                desired.work.identity.tail_epoch,
+                started.elapsed().as_micros(),
+            ));
+            continue;
+        };
         let evaluated_at = desired.enqueued_at.map(|_| Instant::now());
         let trace_identity = desired.work.identity.clone();
         let current_material_generation = lay::nanda_wave::candidate_material_generation();
@@ -654,27 +727,70 @@ fn run_worker(
     }
 }
 
+async fn notify_boundary_completion(
+    connection: zbus::Connection,
+    identity: InputFrameIdentity,
+    generation: u64,
+) {
+    let Ok(interface) = connection
+        .object_server()
+        .interface::<_, super::engine::LayIbusEngine>(identity.path.as_str())
+        .await
+    else {
+        invalidate(&identity);
+        return;
+    };
+    let emitter = interface.signal_emitter();
+    let mut engine = interface.get_mut().await;
+    let matches = engine
+        .committed_tail
+        .pending_visible_postcondition
+        .as_ref()
+        .and_then(|receipt| receipt.space_boundary_commit.as_ref())
+        .is_some_and(|pending| {
+            matches!(
+                &pending.selection,
+                super::engine::PendingSpaceBoundarySelection::Computing {
+                    identity: expected,
+                    worker_generation,
+            } if expected.as_ref() == &identity && *worker_generation == generation
+            )
+        });
+    if matches {
+        let mut output = super::output::EngineOutput::legacy(emitter);
+        let _ = engine
+            .apply_space_boundary_after_client_commit(&mut output)
+            .await;
+    } else {
+        invalidate(&identity);
+    }
+}
+
 fn evaluate_full(
     desired: &DesiredWork,
     started: Instant,
-) -> (PreparedFullOutcome, ActiveCompositionAutocorrectTelemetry) {
+    is_current: &dyn Fn() -> bool,
+) -> Option<(PreparedFullOutcome, ActiveCompositionAutocorrectTelemetry)> {
+    if !is_current() {
+        return None;
+    }
     if !desired.work.identity.config_matches(&desired.work.config) {
-        return (
+        return Some((
             PreparedFullOutcome::NoApply {
                 stage: PreparedNoApplyStage::Infrastructure,
                 decision_us: started.elapsed().as_micros(),
             },
             ActiveCompositionAutocorrectTelemetry::default(),
-        );
+        ));
     }
     if desired.work.identity.boundary_text().is_none() {
-        return (
+        return Some((
             PreparedFullOutcome::NoApply {
                 stage: PreparedNoApplyStage::Infrastructure,
                 decision_us: started.elapsed().as_micros(),
             },
             ActiveCompositionAutocorrectTelemetry::default(),
-        );
+        ));
     }
     let active_token_text = format!("{} ", desired.work.identity.observed_token);
     let lexical_authority_frame = desired.work.identity.lexical_authority_frame();
@@ -685,12 +801,17 @@ fn evaluate_full(
         lexical_authority_frame: Some(&lexical_authority_frame),
         active_layout_is_ru: Some(desired.work.identity.active_layout_is_ru),
     };
-    let observed = match desired.exact_certificate.as_ref() {
-        Some(certificate) => {
-            decide_active_composition_autocorrect_observed_with_exact(request, certificate)
-        }
-        None => decide_active_composition_autocorrect_observed(request),
-    };
+    let observed = lay::ime_correction::decide_space_autocorrect_observed_if_current(
+        request,
+        desired.exact_certificate.as_ref(),
+        desired
+            .work
+            .identity
+            .space_boundary_pair
+            .as_ref()
+            .map(|pair| pair.text.as_str()),
+        is_current,
+    )?;
     let decision_us = started.elapsed().as_micros();
     let telemetry = observed.telemetry;
     let outcome = match observed.decision {
@@ -712,7 +833,7 @@ fn evaluate_full(
             decision_us,
         },
     };
-    (outcome, telemetry)
+    Some((outcome, telemetry))
 }
 
 fn full_outcome_may_publish(
@@ -801,6 +922,29 @@ pub(crate) fn take_with_budget(
         };
     };
     worker.take_with_budget(identity, wait_budget)
+}
+
+pub(crate) fn take_boundary_with_budget(
+    identity: &InputFrameIdentity,
+    wait_budget: Duration,
+) -> SpaceAutocorrectLookupReceipt {
+    let Some(worker) = existing_worker(&identity.path) else {
+        return SpaceAutocorrectLookupReceipt {
+            lookup: SpaceAutocorrectLookup::NotReady,
+            wait_us: 0,
+            worker_generation: 0,
+        };
+    };
+    worker.take_with_timeout_policy(identity, wait_budget, true)
+}
+
+pub(crate) fn arm_boundary_completion(
+    identity: &InputFrameIdentity,
+    generation: u64,
+    connection: zbus::Connection,
+) -> bool {
+    existing_worker(&identity.path)
+        .is_some_and(|worker| worker.arm_boundary_completion(identity, generation, connection))
 }
 
 pub(crate) fn invalidate(identity: &InputFrameIdentity) {
@@ -942,7 +1086,9 @@ mod tests {
             enqueued_at: None,
         };
 
-        let (outcome, _) = evaluate_full(&desired, Instant::now());
+        assert!(evaluate_full(&desired, Instant::now(), &|| false).is_none());
+        let (outcome, _) = evaluate_full(&desired, Instant::now(), &|| true)
+            .expect("current computation is not cancelled");
         let PreparedFullOutcome::Apply(lease) = outcome else {
             panic!("contextual deterministic typo must produce one prepared correction")
         };
@@ -1059,6 +1205,7 @@ mod tests {
         let state = WorkerState {
             generation: 11,
             slot: Some(PreparedDecisionSlot {
+                boundary_completion: None,
                 identity: expected.clone(),
                 request_generation: 11,
                 material_generation: lay::nanda_wave::candidate_material_generation(),
@@ -1092,6 +1239,7 @@ mod tests {
         let state = WorkerState {
             generation: 11,
             slot: Some(PreparedDecisionSlot {
+                boundary_completion: None,
                 identity: expected.clone(),
                 request_generation: 11,
                 material_generation,
@@ -1130,6 +1278,7 @@ mod tests {
         let state = WorkerState {
             generation: 11,
             slot: Some(PreparedDecisionSlot {
+                boundary_completion: None,
                 identity: expected.clone(),
                 request_generation: 11,
                 material_generation,
@@ -1163,6 +1312,7 @@ mod tests {
         let state = WorkerState {
             generation: 12,
             slot: Some(PreparedDecisionSlot {
+                boundary_completion: None,
                 identity: current.clone(),
                 request_generation: 12,
                 material_generation: lay::nanda_wave::candidate_material_generation(),
@@ -1204,6 +1354,7 @@ mod tests {
         let state = WorkerState {
             generation: 14,
             slot: Some(PreparedDecisionSlot {
+                boundary_completion: None,
                 identity: expected,
                 request_generation: 14,
                 material_generation,
@@ -1240,6 +1391,7 @@ mod tests {
         let state = WorkerState {
             generation: 14,
             slot: Some(PreparedDecisionSlot {
+                boundary_completion: None,
                 identity: expected.clone(),
                 request_generation: 14,
                 material_generation: next_generation(current_material_generation),

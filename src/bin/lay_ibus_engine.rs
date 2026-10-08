@@ -91,3 +91,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     zbus::block_on(server::run(&args))?;
     Ok(())
 }
+#[cfg(test)]
+#[path = "lay_ibus_engine/space_boundary_pair_tests.rs"]
+mod space_boundary_pair_tests;

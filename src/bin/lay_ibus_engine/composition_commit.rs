@@ -40,6 +40,13 @@ impl ActiveCompositionCommit {
             autocorrect: false,
         }
     }
+
+    pub(super) fn with_space_in_current_layout() -> Self {
+        Self {
+            sync_layout: false,
+            ..Self::with_space()
+        }
+    }
 }
 
 impl LayIbusEngine {

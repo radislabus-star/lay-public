@@ -11,9 +11,15 @@ pub(super) struct VerifiedTransitionReceipt {
     plan: TextReplacement,
     operator: TransitionOperator,
     proof: TransitionProof,
+    semantic_pending_space_from: Option<String>,
 }
 
 impl VerifiedTransitionReceipt {
+    pub(super) fn is_pending_boundary_projection(&self) -> bool {
+        self.semantic_pending_space_from.is_some()
+            && self.operator == TransitionOperator::BoundaryShift
+            && self.proof == TransitionProof::Boundary
+    }
     fn issue(authority: &TransitionAuthority, action: &EditAction) -> Option<Self> {
         let plan = action.plan()?.clone();
         if !authority.matches_transition(action.transition()) {
@@ -28,6 +34,7 @@ impl VerifiedTransitionReceipt {
             plan,
             operator,
             proof,
+            semantic_pending_space_from: None,
         })
     }
 
@@ -38,7 +45,130 @@ impl VerifiedTransitionReceipt {
             && action.transition().operator() == Some(self.operator)
             && action.transition().proof() == Some(self.proof)
             && action.transition().is_verified()
+            && self
+                .semantic_pending_space_from
+                .as_ref()
+                .is_none_or(|semantic| {
+                    semantic == &format!("{} ", action.from_text())
+                        && action.transition().operator() == Some(TransitionOperator::BoundaryShift)
+                        && action.transition().changed_tokens() == Some(2)
+                        && action.to_text().ends_with(' ')
+                        && super::diff_plan::replacement_plan_matches(
+                            action.from_text(),
+                            action.to_text(),
+                            &self.plan,
+                        )
+                })
     }
+
+    pub(super) fn project_pending_space(
+        &self,
+        action: &EditAction,
+        physical_plan: &TextReplacement,
+    ) -> Option<Self> {
+        if !self.matches(action) || self.semantic_pending_space_from.is_some() {
+            return None;
+        }
+        Some(Self {
+            from_text: action.from_text().strip_suffix(' ')?.to_string(),
+            to_text: self.to_text.clone(),
+            plan: physical_plan.clone(),
+            operator: self.operator,
+            proof: self.proof,
+            semantic_pending_space_from: Some(action.from_text().to_string()),
+        })
+    }
+
+    pub(super) fn commit_pending_space(
+        &self,
+        action: &EditAction,
+        plan: &TextReplacement,
+    ) -> Option<Self> {
+        if !self.matches(action) || !self.is_pending_boundary_projection() {
+            return None;
+        }
+        Some(Self {
+            from_text: self.semantic_pending_space_from.clone()?,
+            to_text: self.to_text.clone(),
+            plan: plan.clone(),
+            operator: self.operator,
+            proof: self.proof,
+            semantic_pending_space_from: None,
+        })
+    }
+}
+
+/// An exact inverse of the recorded, sealed Space pair action. No unrelated
+/// multiword undo or a target reconstructed from strings can obtain this proof.
+pub fn plan_recorded_boundary_inverse(forward: &EditAction) -> Option<EditAction> {
+    let from_text = forward.to_text();
+    let to_text = format!("{} ", forward.from_text());
+    let authority = TransitionAuthority::recorded_undo(from_text, &to_text);
+    let mut action = EditAction::planned_replacement(PlannedReplacementInput {
+        source: "ime-recorded-boundary-inverse",
+        confidence_milli: 1_000,
+        from_text,
+        to_text: &to_text,
+        plan: TextReplacement {
+            move_left: 0,
+            backspaces: u32::try_from(from_text.chars().count()).ok()?,
+            insert: to_text.clone(),
+            move_right: 0,
+        },
+        selected_source_id: Some("recorded_boundary_inverse"),
+        selected_error_class: Some("boundary-shift"),
+        transition: authority.transition().clone(),
+    });
+    if !action.validate_recorded_boundary_inverse(forward) {
+        return None;
+    }
+    let action = seal_ready_action(action, Some(&authority));
+    action.allow_apply().then_some(action)
+}
+
+/// A physical last-pair edit consumes exactly one pending ASCII Space. The
+/// ordinary planner still rejects a boundary edit with changed whitespace.
+pub fn plan_space_boundary_edit(
+    source: &str,
+    physical_from: &str,
+    physical_to: &str,
+    decision: &crate::input_gate::InputGateDecision,
+) -> Option<EditAction> {
+    if decision.trigger != crate::input_gate::InputGateTrigger::Space {
+        return None;
+    }
+    let (original_left, original_right) = physical_from.split_once(' ')?;
+    let (target_left, target_right) = physical_to.strip_suffix(' ')?.split_once(' ')?;
+    if [original_left, original_right, target_left, target_right]
+        .iter()
+        .any(|word| !crate::word_reader::is_cyrillic_word(word))
+    {
+        return None;
+    }
+    // General form candidates stay in the shared lattice. This stricter lexical
+    // evidence grants only the new final-pair pending-Space physical scope.
+    let field = crate::hot_field::HotFieldSnapshot::current();
+    if !field.boundary_observed_form_is_unknown(original_right)
+        || crate::russian_lexicon::has_clean_russian_surface_certificate(original_right)
+        || !field.boundary_form_is_attested(target_left)
+        || !field.boundary_form_is_attested(target_right)
+    {
+        return None;
+    }
+    let semantic_from = format!("{physical_from} ");
+    plan_input_gate_edit(
+        source,
+        &semantic_from,
+        physical_to,
+        TextReplacement {
+            move_left: 0,
+            backspaces: u32::try_from(semantic_from.chars().count()).ok()?,
+            insert: physical_to.to_string(),
+            move_right: 0,
+        },
+        decision,
+    )
+    .project_pending_boundary_space()
 }
 
 pub(crate) fn plan_decision_transition_edit(
@@ -257,7 +387,13 @@ fn seal_authorized_action(
     input: PlannedReplacementInput<'_>,
     authority: Option<&TransitionAuthority>,
 ) -> EditAction {
-    let mut action = EditAction::planned_replacement(input);
+    seal_ready_action(EditAction::planned_replacement(input), authority)
+}
+
+fn seal_ready_action(
+    mut action: EditAction,
+    authority: Option<&TransitionAuthority>,
+) -> EditAction {
     if action.safety().is_some_and(|safety| safety.allow_apply) {
         if let Some(receipt) =
             authority.and_then(|authority| VerifiedTransitionReceipt::issue(authority, &action))

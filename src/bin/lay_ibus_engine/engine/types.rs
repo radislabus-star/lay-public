@@ -74,6 +74,32 @@ pub(crate) struct InputFrameIdentity {
     /// boundary observed before its first local character. The witness lives
     /// outside callback admission so a client Reset cannot erase it.
     pub(crate) space_autocorrect_managed_start_identity: Option<u64>,
+    pub(crate) space_boundary_pair: Option<SpaceBoundaryPairScope>,
+}
+
+/// Exact edit provenance within the existing input lease, distinct from the
+/// lexical frame's read-only context and current-token source window.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct SpaceBoundaryPairScope {
+    pub(crate) text: String,
+    pub(crate) provenance: SpaceBoundaryPairProvenance,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum SpaceBoundaryPairProvenance {
+    Observed {
+        token: crate::context_admission::AdmissionToken,
+        boundary_floor: u32,
+    },
+    Client {
+        revision: u64,
+        cursor: u32,
+    },
+    OwnedPreedit {
+        witness_identity: u64,
+        cursor: u32,
+        preedit: String,
+    },
 }
 
 impl InputFrameIdentity {
@@ -173,6 +199,7 @@ impl InputFrameIdentity {
             space_autocorrect_suffix_token: None,
             space_autocorrect_surrounding_revision: None,
             space_autocorrect_managed_start_identity: None,
+            space_boundary_pair: None,
         }
     }
 
@@ -382,6 +409,24 @@ pub(crate) struct RecentCommittedTailReplace {
 }
 
 #[derive(Debug, Clone)]
+pub(crate) enum PendingSpaceBoundarySelection {
+    Selected(Box<lay::text_edit::EditAction>),
+    Computing {
+        identity: Box<InputFrameIdentity>,
+        worker_generation: u64,
+    },
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct PendingSpaceBoundaryCommit {
+    pub(crate) frame: InputFrameIdentity,
+    pub(crate) material_generation: u64,
+    pub(crate) before_commit: SurroundingTextSnapshot,
+    pub(crate) after_commit: SurroundingTextSnapshot,
+    pub(crate) selection: PendingSpaceBoundarySelection,
+}
+
+#[derive(Debug, Clone)]
 pub(crate) struct PendingVisiblePostcondition {
     pub(crate) expected_suffix: String,
     /// Full client snapshot expected by a staged surrounding-text replacement.
@@ -401,6 +446,9 @@ pub(crate) struct PendingVisiblePostcondition {
     /// Keeping it on the receipt prevents an engine switch from destroying the
     /// observation path before the client publishes the new surrounding tail.
     pub(crate) layout_sync_text: Option<String>,
+    /// One selected boundary action waits for the ordinary Space's actual
+    /// committed client snapshot. It shares this receipt's epoch and deadline.
+    pub(crate) space_boundary_commit: Option<PendingSpaceBoundaryCommit>,
 }
 
 /// Payload retained until IBus exposes the post-dispatch visible state.
