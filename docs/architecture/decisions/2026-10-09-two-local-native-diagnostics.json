@@ -1,0 +1,15 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "The user explicitly authorizes one local diagnostic batch of two fresh owned native fields, as a narrow exception to remote-only tests. All builds, source tests, training and architecture refresh remain remote-only.",
+  "reason": "Original accepted2bd GTK3 Entry and Qt rich invalid-left FAIL receipts have files=[] and unknown activation readiness. A remote test cannot reconstruct the absent order in these local clients.",
+  "proof": "One GTK3 Entry and one Qt rich input stream, each once, original18/12ms taps and1.5s visible-control deadline. Capture raw-clear, ownership/process identity and existing opt-in engine trace. No inverse or shared feedback cleanup. Behavior verdict is frozen before logger drain. Diagnostic denominator2 is separate from original native64; logging may affect scheduling, so no frequency or universal acceptance claim.",
+  "not_tested": "No source implementation, new runtime bytes, installation, service restart, full matrix or general correction quality. An unreproduced control does not close TD-133. No remote desktop.",
+  "invariants": ["C01", "C03", "C05", "C07", "C08", "C10"],
+  "protected_paths": [],
+  "runtime_authority_changed": false,
+  "baseline_commit": "b7786398e90054b25567fe9c7c736b193f408788",
+  "owner": "Existing installed IME and existing native fixture/input observer; root agent operates the prepared probe",
+  "owning_document": "docs/architecture/space-boundary-shift-2026-10-07.md",
+  "user_authorization": "Current-turn asynchronous answer: Разрешаю один локальный прогон",
+  "consequences": "No change to candidate lattice, rank, verifier, output routes, cache/package reload or learning semantics. Existing debug_action_log flag is temporarily enabled and restored only when the config still equals this probe's write. Private receipts may contain synthetic text and incidental engine logs and stay outside Git. Fresh owned fixtures and uinput are closed; unrelated processes remain untouched. The two controls can generate ordinary positive learning through the existing learner, but do not deliberately produce rejected/inverse episodes or delete any shared journal/counters. Resource envelope is human-safe-run768MiB inside the verified shared desktop ceiling. Any unknown/partial observation stops the diagnostic; no retry-until-green. If config/runtime changes concurrently, preserve the other actor's state and report BLOCKED. This decision grants no general local-test exception and no future host inverse cleanup authority."
+}

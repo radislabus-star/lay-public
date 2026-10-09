@@ -57,14 +57,19 @@ TD-129 завершён и опубликован: `2401a4e4dca5f99cc87c42415ab5
 открытых сложных задач. TD-131 final source packet: [evidence](evidence/2026-10-09-td131-final-source.json);
 publication receipt: `/home/ubu/.cache/lay/development/td129-publication-20261009.json`.
 
-## Этап2 — открытые задачи для отдельного обсуждения
+## Этап2 — разрешённая работа, 2026-10-09
 
 Таблица отсортирована по продуктовой важности; prerequisites определяют порядок
-исполнения. Обсуждение/карточка не означают разрешённый runtime experiment или DONE.
+исполнения. Пользователь разрешил продолжение («делай»). Работа начинается с
+причинного TD-133; карточка/разрешение не означают доказанный runtime fix или DONE.
+Отдельный разрешённый local diagnostic batch выполнен: два visible controls
+PASS, исходный сбой не повторился; [измеренная сводка](evidence/2026-10-09-td133-local-diagnostic.json).
+Это узкое исключение исчерпано; остальные builds/tests/graph refresh остаются
+remote-only. Original native62/64 и два FAIL сохраняются.
 
 | Приоритет | Задача / статус | Первый результат и зависимости |
 | --- | --- | --- |
-| P0 | [TD-133 — rapid Space ordering](133-causal-rapid-space-ordering.md), DEFERRED | Read-only first failed transition по двум native FAIL; перед новым physical proof case binding130 и partial recovery137 либо эквивалентно доказанная существующая граница |
+| P0 | [TD-133 — rapid Space ordering](133-causal-rapid-space-ordering.md), IN_PROGRESS | Оригинальные trace отсутствуют; разрешён separate two-field diagnostic без inverse и shared cleanup. Новый полный physical proof требует130/137 либо эквивалентно доказанной безопасной границы |
 | P1 | [TD-130 — case-bound feedback cleanup](130-offline-inverse-feedback-case-binding.md), DEFERRED | Named versioned consumer, immutable case binding, проверка receipt status; standalone offline selector не закрывает дефект |
 | P1 | [TD-137 — partial cleanup recovery](137-owned-feedback-partial-cleanup-recovery.md), DEFERRED | Existing loader generation и failure injection на temporary data; неизвестный/частичный результат останавливает dependent cases |
 | P1 | [TD-128 — Chrome после Tab](128-chrome-focus-transfer-autocorrect.md), OPEN | Точный исходный переход поля на нынешних bytes; ownership/Reset contracts сохранить |

@@ -2502,3 +2502,50 @@ Verification of these accepted bytes is closed. Publication reuses the
 recorded evidence and changes only Git/source metadata; it does not rebuild,
 reinstall, restart services, repeat tests or alter runtime authority. No tag
 or GitHub release was requested in this publication instruction.
+
+### TD-133 causal investigation and bounded local exception — 2026-10-09
+
+Stage2 is now requested by the user. The two original native FAIL snapshots
+were inspected directly: both have `files=[]`, and raw-clear still labels
+activation readiness UNKNOWN. A separate old successful prefixed Qt trace
+does not explain these two first-word failures. First failed transition
+remains UNKNOWN; no runtime patch is selected.
+
+The user explicitly approved one local diagnostic batch in two new owned
+GTK3 Entry / Qt rich fields, after seeing its exact scope and the remote-only
+constraint. [The narrow decision](decisions/2026-10-09-two-local-native-diagnostics.json)
+records that exception. Prepared private script:
+`/home/ubu/.cache/lay/development/td133-native-diagnostic-20261009.py`.
+It reuses the existing native fixture and per-key ownership guard, retains
+18/12ms taps and1.5s assertion, enables the existing debug flag temporarily,
+and captures behavior before asynchronous trace drain. No inverse, shared
+journal/counter cleanup, installation, restart, model copy or remote desktop
+is included. This diagnostic2 is separate from the fixed64 proof.
+
+The preparation is source/read-only evidence, not a measured result. Logging
+can affect scheduling, and a fresh standalone fixture is not the original
+whole-matrix predecessor state. A PASS or missing trace cannot be called a
+causal fix. Source gates/graph refresh remain remote-only. Installed2bd and
+all delivery/authority contracts are preserved; actual post-run preservation
+and the first failed transition will be recorded with the resulting receipt.
+
+Measured diagnostic outcome: [the bounded evidence packet](../../tech_debt/evidence/2026-10-09-td133-local-diagnostic.json)
+binds private `/home/ubu/.cache/lay/development/td133-native-once-jrdlshgi/RESULT.json`
+and both trace hashes. An earlier preflight stopped before fields/input/config
+writes because the coherent current source was US. The user selected RU; the
+approved two input streams then completed once each: GTK3 Entry and Qt rich
+both visible-control PASS, `должен ыбыть `, empty preedit. Each trace has13
+matching typed press callbacks with serial and monotonic interval bindings.
+In these successful streams first Space is native passthrough, and a7-character
+surrounding receipt precedes the next decoded letter. Trace does not identify
+the owned field PID at its client-context boundary, so raw-clear activation
+readiness and the original first failed transition remain UNKNOWN.
+
+Measured post-run preservation: exact PID/starttick and loaded/installed2bd,
+coherent RU source/engine/decoder tuple, logging configuration restored, no
+cleanup errors. No inverse, shared cleanup, installation or restart occurred.
+Static probe review9/10 used exactly two passes. Original fixed64 remains
+62 PASS /2 FAIL /0 BLOCKED; diagnostic2 is a separate denominator. TD-133 is
+not closed by this unreproduced control. The one-batch local-input exception
+is exhausted; builds/source tests/graph refresh remain remote-only. Runtime
+authority and delivery routes are unchanged.

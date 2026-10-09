@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1791554545.2430208,
-    "ast_hash": "b4d6bcf8324622ae24b9985b20e76bc1",
+    "mtime": 1791555345.5377238,
+    "ast_hash": "f4fb28322696afad1dad221f7d95d1eb",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1791553223.5289412,
-    "ast_hash": "ea5c52b4482d08ce72c18f2032094573",
+    "mtime": 1791560446.7958937,
+    "ast_hash": "1d67cdc9e4cb4abbb98e415f897bae8a",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5630,8 +5630,8 @@
     "semantic_hash": ""
   },
   "tech_debt/CONTINUE.md": {
-    "mtime": 1791553223.529597,
-    "ast_hash": "6896ad969e43998c1b2318ae60308ee5",
+    "mtime": 1791556077.3702464,
+    "ast_hash": "6ccc3ff1872b7d16b1a6686ec8ba9e71",
     "semantic_hash": ""
   },
   "tech_debt/evidence/release-1.0.66-double-shift-recurrence.md": {
@@ -5650,8 +5650,8 @@
     "semantic_hash": ""
   },
   "CONTINUE.md": {
-    "mtime": 1791553223.5293472,
-    "ast_hash": "ac40177a540f1a601056eea3f74f8b45",
+    "mtime": 1791556077.3700511,
+    "ast_hash": "396587c5fb6be02f116b6b6411425553",
     "semantic_hash": ""
   },
   "docs/README.md": {
@@ -6245,8 +6245,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/space-boundary-shift-2026-10-07.md": {
-    "mtime": 1791549336.2437341,
-    "ast_hash": "084044a58b71058c83ee95e06c4cc24a",
+    "mtime": 1791560446.7958937,
+    "ast_hash": "1ca632c3f678aaaca6e6b5ccfe91585f",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-08-space-boundary-canonical-evidence.json": {
@@ -6325,8 +6325,8 @@
     "semantic_hash": ""
   },
   "tech_debt/131-one-unicode-tail-limit.md": {
-    "mtime": 1791554130.2785761,
-    "ast_hash": "751151b5772a52fe064ece194c541593",
+    "mtime": 1791556077.3696933,
+    "ast_hash": "b3fc89e4d8d722e6e6a6993f23a7ef17",
     "semantic_hash": ""
   },
   "tech_debt/132-isolate-inert-retired-preedit-predicates.md": {
@@ -6335,8 +6335,8 @@
     "semantic_hash": ""
   },
   "tech_debt/133-causal-rapid-space-ordering.md": {
-    "mtime": 1791551702.2338486,
-    "ast_hash": "28a062d71a28ffae7e1ec19c33f37fe5",
+    "mtime": 1791560446.7078927,
+    "ast_hash": "1fc95feec724e059ea49004f89dcbdce",
     "semantic_hash": ""
   },
   "tech_debt/134-god-component-boundaries-without-new-owners.md": {
@@ -6380,8 +6380,8 @@
     "semantic_hash": ""
   },
   "tech_debt/evidence/2026-10-09-td131-final-source.json": {
-    "mtime": 1791555289.0043097,
-    "ast_hash": "1e4c0f103517f932c7a08d0475c87437",
+    "mtime": 1791555875.3449185,
+    "ast_hash": "27332e79cb8a9a1a37af5a522c7beb1a",
     "semantic_hash": ""
   },
   "tech_debt/evidence/2026-10-09-td131-proof-reuse.json": {
@@ -6397,6 +6397,16 @@
   "tech_debt/evidence/2026-10-09-td131-review-pass2.md": {
     "mtime": 1791555289.0024636,
     "ast_hash": "6157d4ab700f55afb6fac83fd648eaea",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-09-two-local-native-diagnostics.json": {
+    "mtime": 1791558556.7112966,
+    "ast_hash": "1a5b4cc5df2213d073afae6d69f05fdb",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td133-local-diagnostic.json": {
+    "mtime": 1791560353.2103899,
+    "ast_hash": "bc008686edfb98495dc2f421f3610ab3",
     "semantic_hash": ""
   }
 }
