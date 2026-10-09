@@ -1,0 +1,663 @@
+{
+  "schema": "lay.td133.original-activation-diagnostic-result.v1",
+  "status": "DIAGNOSTIC2_COMMITTED_CONTROL_PASS_RENDER_LIMIT_ORIGINAL_CAUSE_UNKNOWN",
+  "recorded_at_utc": "2026-10-09T20:43:31.625623+00:00",
+  "probe_checkout_head": "89e075e2932bee020731fc5e90a4c65648d38329",
+  "user_grant": "Разрешаю один такой локальный прогон",
+  "grant_scope": "Exactly one two-field original-activation diagnostic; executed2streams once each; no further local streams authorized.",
+  "input_streams": 2,
+  "additional_local_streams_authorized": false,
+  "private_receipt": "/home/ubu/.cache/lay/development/td133-original-activation-once-9pkdjzdi/RESULT.json",
+  "private_receipt_sha256": "1d30fe73234f93f3cd8f70250b133d87a28c438a52c152746f4768b4ee5ee4c2",
+  "probe_sha256": "ff3d3a19fb62d193e51ea301a00c99d4e0cdc01214011a80c327dd6d59f25f7b",
+  "runtime_before": {
+    "pid": 3139840,
+    "starttick": "316158626",
+    "loaded_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+    "installed_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559"
+  },
+  "runtime_after": {
+    "pid": 3139840,
+    "starttick": "316158626",
+    "loaded_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+    "installed_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559"
+  },
+  "runtime_and_mode_preserved": true,
+  "logging_config_restored": true,
+  "cleanup_errors": [],
+  "inverse_executed": false,
+  "shared_feedback_cleanup": false,
+  "runtime_install_or_restart": false,
+  "normal_same_ru_activation_executed": true,
+  "model_copy_or_fit": false,
+  "key_timing_ms": [
+    18,
+    12
+  ],
+  "visible_deadline_seconds": 1.5,
+  "rows": [
+    {
+      "field": "gtk3.entry",
+      "field_pid": 1993447,
+      "field_starttick": "319947455",
+      "observed_text": "должен ыбыть ",
+      "preedit_empty": true,
+      "trace_path": "/home/ubu/.cache/lay/development/td133-original-activation-once-9pkdjzdi/td133-gtk3-entry-f86d9c81-trace.private.jsonl",
+      "trace_sha256": "0101ca54926b9c70e437bb16691ba83d04833e49bcd6cc5bc3fa09cceea60024",
+      "records": 525,
+      "typed_press_count": 13,
+      "physical_keycode_sequence_matches": true,
+      "binding_serial_and_monotonic_interval_matches": true,
+      "native_field_pid_to_context_binding": "UNKNOWN; correlated owned-window/field/engine interval, not unique native relay context",
+      "activation_ready_before_input": "UNKNOWN; publication records are not a unique field-PID witness",
+      "sequence": [
+        {
+          "line": 144,
+          "decoded": "д",
+          "keycode": 38,
+          "stage": "printable_managed_commit",
+          "handled": true,
+          "callback_serial": 28069,
+          "binding_serial": 28069,
+          "owner_generation": 634,
+          "callback_monotonic_ns": 3199476002144978,
+          "inside_observed_field_interval": true,
+          "surrounding_before": null
+        },
+        {
+          "line": 175,
+          "decoded": "о",
+          "keycode": 36,
+          "stage": "printable_managed_commit",
+          "handled": true,
+          "callback_serial": 28073,
+          "binding_serial": 28073,
+          "owner_generation": 634,
+          "callback_monotonic_ns": 3199476038639818,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 147,
+            "chars": 1,
+            "cursor": 1,
+            "anchor": 1
+          }
+        },
+        {
+          "line": 205,
+          "decoded": "л",
+          "keycode": 37,
+          "stage": "printable_managed_commit",
+          "handled": true,
+          "callback_serial": 28077,
+          "binding_serial": 28077,
+          "owner_generation": 634,
+          "callback_monotonic_ns": 3199476076096841,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 179,
+            "chars": 2,
+            "cursor": 2,
+            "anchor": 2
+          }
+        },
+        {
+          "line": 238,
+          "decoded": "ж",
+          "keycode": 39,
+          "stage": "printable_managed_commit",
+          "handled": true,
+          "callback_serial": 28081,
+          "binding_serial": 28081,
+          "owner_generation": 634,
+          "callback_monotonic_ns": 3199476114066069,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 210,
+            "chars": 3,
+            "cursor": 3,
+            "anchor": 3
+          }
+        },
+        {
+          "line": 276,
+          "decoded": "е",
+          "keycode": 20,
+          "stage": "printable_managed_commit",
+          "handled": true,
+          "callback_serial": 28085,
+          "binding_serial": 28085,
+          "owner_generation": 634,
+          "callback_monotonic_ns": 3199476150180130,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 246,
+            "chars": 4,
+            "cursor": 4,
+            "anchor": 4
+          }
+        },
+        {
+          "line": 314,
+          "decoded": "н",
+          "keycode": 21,
+          "stage": "printable_managed_commit",
+          "handled": true,
+          "callback_serial": 28089,
+          "binding_serial": 28089,
+          "owner_generation": 634,
+          "callback_monotonic_ns": 3199476191114200,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 281,
+            "chars": 5,
+            "cursor": 5,
+            "anchor": 5
+          }
+        },
+        {
+          "line": 351,
+          "decoded": " ",
+          "keycode": 57,
+          "stage": "space_managed_native_passthrough",
+          "handled": false,
+          "callback_serial": 28093,
+          "binding_serial": 28093,
+          "owner_generation": 634,
+          "callback_monotonic_ns": 3199476233402828,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 317,
+            "chars": 6,
+            "cursor": 6,
+            "anchor": 6
+          }
+        },
+        {
+          "line": 370,
+          "decoded": "ы",
+          "keycode": 31,
+          "stage": "printable_legacy_preedit",
+          "handled": true,
+          "callback_serial": 28097,
+          "binding_serial": 28097,
+          "owner_generation": 634,
+          "callback_monotonic_ns": 3199476273545684,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 354,
+            "chars": 7,
+            "cursor": 7,
+            "anchor": 7
+          }
+        },
+        {
+          "line": 396,
+          "decoded": "б",
+          "keycode": 51,
+          "stage": "printable",
+          "handled": true,
+          "callback_serial": 28100,
+          "binding_serial": 28100,
+          "owner_generation": 634,
+          "callback_monotonic_ns": 3199476309998074,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 354,
+            "chars": 7,
+            "cursor": 7,
+            "anchor": 7
+          }
+        },
+        {
+          "line": 418,
+          "decoded": "ы",
+          "keycode": 31,
+          "stage": "printable",
+          "handled": true,
+          "callback_serial": 28103,
+          "binding_serial": 28103,
+          "owner_generation": 634,
+          "callback_monotonic_ns": 3199476351507983,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 354,
+            "chars": 7,
+            "cursor": 7,
+            "anchor": 7
+          }
+        },
+        {
+          "line": 445,
+          "decoded": "т",
+          "keycode": 49,
+          "stage": "printable",
+          "handled": true,
+          "callback_serial": 28106,
+          "binding_serial": 28106,
+          "owner_generation": 634,
+          "callback_monotonic_ns": 3199476395801100,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 354,
+            "chars": 7,
+            "cursor": 7,
+            "anchor": 7
+          }
+        },
+        {
+          "line": 474,
+          "decoded": "ь",
+          "keycode": 50,
+          "stage": "printable",
+          "handled": true,
+          "callback_serial": 28109,
+          "binding_serial": 28109,
+          "owner_generation": 634,
+          "callback_monotonic_ns": 3199476431093286,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 354,
+            "chars": 7,
+            "cursor": 7,
+            "anchor": 7
+          }
+        },
+        {
+          "line": 513,
+          "decoded": " ",
+          "keycode": 57,
+          "stage": "space_legacy_preedit_commit",
+          "handled": true,
+          "callback_serial": 28112,
+          "binding_serial": 28112,
+          "owner_generation": 634,
+          "callback_monotonic_ns": 3199476468115205,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 354,
+            "chars": 7,
+            "cursor": 7,
+            "anchor": 7
+          }
+        }
+      ],
+      "raw_script_status": "PASS_VISIBLE_CONTROL",
+      "control_verdict": "PASS_COMMITTED_TEXT_PREEDIT_CARET",
+      "assertion_observation": {
+        "schema": "lay.native-field-fixture.v1",
+        "title": "Lay78 td133-gtk3-entry-f86d9c81",
+        "pid": 1993447,
+        "toolkit": "gtk3",
+        "kind": "entry",
+        "sequence": 52,
+        "at": 1791578140.9006653,
+        "monotonic_ns": 3199476471104314,
+        "closed": false,
+        "text": "должен ыбыть ",
+        "committed_text": "должен ыбыть ",
+        "has_focus": true,
+        "caret": 13,
+        "caret_unit": "unicode_characters",
+        "preedit": "",
+        "preedit_available": true,
+        "render_text": "должен ыбыть ыбыть",
+        "render_text_available": true,
+        "effective_field": "Gtk.Entry",
+        "rich_formatting": false,
+        "kind_note": null
+      },
+      "later_retained_state": {
+        "path": "/home/ubu/.cache/lay/development/td133-original-activation-once-9pkdjzdi/td133-gtk3-entry-f86d9c81_state.json",
+        "sha256": "5e71d4d46b8b102620e2c9061d5b39305a8501c95ef24f399f7d331d3aafe10d",
+        "observation": {
+          "schema": "lay.native-field-fixture.v1",
+          "title": "Lay78 td133-gtk3-entry-f86d9c81",
+          "pid": 1993447,
+          "toolkit": "gtk3",
+          "kind": "entry",
+          "sequence": 82,
+          "at": 1791578142.1764042,
+          "monotonic_ns": 3199477746843413,
+          "closed": false,
+          "text": "должен ыбыть ",
+          "committed_text": "должен ыбыть ",
+          "has_focus": true,
+          "caret": 13,
+          "caret_unit": "unicode_characters",
+          "preedit": "",
+          "preedit_available": true,
+          "render_text": "должен ыбыть ",
+          "render_text_available": true,
+          "effective_field": "Gtk.Entry",
+          "rich_formatting": false,
+          "kind_note": null
+        },
+        "elapsed_since_assertion_observation_ns": 1275739099,
+        "scope": "One later retained state in the same executed stream, not a new input or continuous rendering proof."
+      },
+      "render_verdict": "RAW_GTK_LAYOUT_CONFLICT_THEN_LATE_LAYOUT_MATCH"
+    },
+    {
+      "field": "qt.rich",
+      "field_pid": 1993924,
+      "field_starttick": "319947781",
+      "observed_text": "должен ыбыть ",
+      "preedit_empty": true,
+      "trace_path": "/home/ubu/.cache/lay/development/td133-original-activation-once-9pkdjzdi/td133-qt-rich-3ca2db7c-trace.private.jsonl",
+      "trace_sha256": "a5cfcde86fb97a5d3cf20eb073d9be877d41f69cc3ad65e6ce1aba0280e04c75",
+      "records": 587,
+      "typed_press_count": 13,
+      "physical_keycode_sequence_matches": true,
+      "binding_serial_and_monotonic_interval_matches": true,
+      "native_field_pid_to_context_binding": "UNKNOWN; correlated owned-window/field/engine interval, not unique native relay context",
+      "activation_ready_before_input": "UNKNOWN; publication records are not a unique field-PID witness",
+      "sequence": [
+        {
+          "line": 198,
+          "decoded": "д",
+          "keycode": 38,
+          "stage": "terminal_passthrough",
+          "handled": false,
+          "callback_serial": 28160,
+          "binding_serial": 28160,
+          "owner_generation": 639,
+          "callback_monotonic_ns": 3199478574058398,
+          "inside_observed_field_interval": true,
+          "surrounding_before": null
+        },
+        {
+          "line": 225,
+          "decoded": "о",
+          "keycode": 36,
+          "stage": "printable_managed_commit",
+          "handled": true,
+          "callback_serial": 28165,
+          "binding_serial": 28165,
+          "owner_generation": 639,
+          "callback_monotonic_ns": 3199478611347309,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 202,
+            "chars": 1,
+            "cursor": 1,
+            "anchor": 1
+          }
+        },
+        {
+          "line": 255,
+          "decoded": "л",
+          "keycode": 37,
+          "stage": "printable_managed_commit",
+          "handled": true,
+          "callback_serial": 28169,
+          "binding_serial": 28169,
+          "owner_generation": 639,
+          "callback_monotonic_ns": 3199478651692815,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 229,
+            "chars": 2,
+            "cursor": 2,
+            "anchor": 2
+          }
+        },
+        {
+          "line": 288,
+          "decoded": "ж",
+          "keycode": 39,
+          "stage": "printable_managed_commit",
+          "handled": true,
+          "callback_serial": 28173,
+          "binding_serial": 28173,
+          "owner_generation": 639,
+          "callback_monotonic_ns": 3199478690292847,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 260,
+            "chars": 3,
+            "cursor": 3,
+            "anchor": 3
+          }
+        },
+        {
+          "line": 326,
+          "decoded": "е",
+          "keycode": 20,
+          "stage": "printable_managed_commit",
+          "handled": true,
+          "callback_serial": 28177,
+          "binding_serial": 28177,
+          "owner_generation": 639,
+          "callback_monotonic_ns": 3199478725750200,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 296,
+            "chars": 4,
+            "cursor": 4,
+            "anchor": 4
+          }
+        },
+        {
+          "line": 364,
+          "decoded": "н",
+          "keycode": 21,
+          "stage": "printable_managed_commit",
+          "handled": true,
+          "callback_serial": 28181,
+          "binding_serial": 28181,
+          "owner_generation": 639,
+          "callback_monotonic_ns": 3199478761897092,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 331,
+            "chars": 5,
+            "cursor": 5,
+            "anchor": 5
+          }
+        },
+        {
+          "line": 401,
+          "decoded": " ",
+          "keycode": 57,
+          "stage": "space_managed_native_passthrough",
+          "handled": false,
+          "callback_serial": 28185,
+          "binding_serial": 28185,
+          "owner_generation": 639,
+          "callback_monotonic_ns": 3199478798723875,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 367,
+            "chars": 6,
+            "cursor": 6,
+            "anchor": 6
+          }
+        },
+        {
+          "line": 420,
+          "decoded": "ы",
+          "keycode": 31,
+          "stage": "printable_legacy_preedit",
+          "handled": true,
+          "callback_serial": 28189,
+          "binding_serial": 28189,
+          "owner_generation": 639,
+          "callback_monotonic_ns": 3199478834859779,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 404,
+            "chars": 7,
+            "cursor": 7,
+            "anchor": 7
+          }
+        },
+        {
+          "line": 449,
+          "decoded": "б",
+          "keycode": 51,
+          "stage": "printable",
+          "handled": true,
+          "callback_serial": 28192,
+          "binding_serial": 28192,
+          "owner_generation": 639,
+          "callback_monotonic_ns": 3199478870571747,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 404,
+            "chars": 7,
+            "cursor": 7,
+            "anchor": 7
+          }
+        },
+        {
+          "line": 478,
+          "decoded": "ы",
+          "keycode": 31,
+          "stage": "printable",
+          "handled": true,
+          "callback_serial": 28195,
+          "binding_serial": 28195,
+          "owner_generation": 639,
+          "callback_monotonic_ns": 3199478910058894,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 404,
+            "chars": 7,
+            "cursor": 7,
+            "anchor": 7
+          }
+        },
+        {
+          "line": 507,
+          "decoded": "т",
+          "keycode": 49,
+          "stage": "printable",
+          "handled": true,
+          "callback_serial": 28198,
+          "binding_serial": 28198,
+          "owner_generation": 639,
+          "callback_monotonic_ns": 3199478946885204,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 404,
+            "chars": 7,
+            "cursor": 7,
+            "anchor": 7
+          }
+        },
+        {
+          "line": 536,
+          "decoded": "ь",
+          "keycode": 50,
+          "stage": "printable",
+          "handled": true,
+          "callback_serial": 28201,
+          "binding_serial": 28201,
+          "owner_generation": 639,
+          "callback_monotonic_ns": 3199478982955095,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 404,
+            "chars": 7,
+            "cursor": 7,
+            "anchor": 7
+          }
+        },
+        {
+          "line": 575,
+          "decoded": " ",
+          "keycode": 57,
+          "stage": "space_legacy_preedit_commit",
+          "handled": true,
+          "callback_serial": 28204,
+          "binding_serial": 28204,
+          "owner_generation": 639,
+          "callback_monotonic_ns": 3199479021248858,
+          "inside_observed_field_interval": true,
+          "surrounding_before": {
+            "line": 404,
+            "chars": 7,
+            "cursor": 7,
+            "anchor": 7
+          }
+        }
+      ],
+      "raw_script_status": "PASS_VISIBLE_CONTROL",
+      "control_verdict": "PASS_COMMITTED_TEXT_PREEDIT_CARET",
+      "assertion_observation": {
+        "schema": "lay.native-field-fixture.v1",
+        "title": "Lay78 td133-qt-rich-3ca2db7c",
+        "pid": 1993924,
+        "toolkit": "qt",
+        "kind": "rich",
+        "sequence": 34,
+        "at": 1791578143.456099,
+        "monotonic_ns": 3199479026537843,
+        "closed": false,
+        "text": "должен ыбыть ",
+        "committed_text": "должен ыбыть ",
+        "has_focus": true,
+        "caret": 13,
+        "caret_unit": "utf16_code_units",
+        "preedit": "",
+        "preedit_available": true,
+        "render_text": null,
+        "render_text_available": false,
+        "effective_field": "Qt.QTextEdit",
+        "rich_formatting": true,
+        "kind_note": null
+      },
+      "later_retained_state": {
+        "path": "/home/ubu/.cache/lay/development/td133-original-activation-once-9pkdjzdi/td133-qt-rich-3ca2db7c_state.json",
+        "sha256": "c7190acea9b0031209fc1a0834a02a00146d80ae93c15597901d0ed68807f080",
+        "observation": {
+          "schema": "lay.native-field-fixture.v1",
+          "title": "Lay78 td133-qt-rich-3ca2db7c",
+          "pid": 1993924,
+          "toolkit": "qt",
+          "kind": "rich",
+          "sequence": 66,
+          "at": 1791578144.7365055,
+          "monotonic_ns": 3199480306944400,
+          "closed": false,
+          "text": "должен ыбыть ",
+          "committed_text": "должен ыбыть ",
+          "has_focus": true,
+          "caret": 13,
+          "caret_unit": "utf16_code_units",
+          "preedit": "",
+          "preedit_available": true,
+          "render_text": null,
+          "render_text_available": false,
+          "effective_field": "Qt.QTextEdit",
+          "rich_formatting": true,
+          "kind_note": null
+        },
+        "elapsed_since_assertion_observation_ns": 1280406557,
+        "scope": "One later retained state in the same executed stream, not a new input or continuous rendering proof."
+      },
+      "render_verdict": "NOT_OBSERVED_RENDER_TEXT_UNAVAILABLE"
+    }
+  ],
+  "observed_boundary": "Both streams use native-passthrough first Space. A7-char/cursor7 surrounding receipt appears before the next right-token letter. Committed text, empty preedit and caret13 match in both assertion observations. GTK raw render_text has an extra right token, then matches in one retained state1.275739099s later; Qt render_text is unavailable. This is not unqualified rendered or pixel acceptance.",
+  "causal_conclusion": "Original committed-surface failure NOT_REPRODUCED. Original62PASS/2FAIL/64 remains; no first failed original transition or runtime fix is established. GTK assertion layout mismatch is a separately retained observation, not erased by the late matching state. Earlier standalone diagnostic2 is separate. Normal RU activation alone did not reproduce the original committed-surface failure in these2 streams; prior full-matrix predecessor and warm/learning state are not recreated.",
+  "source_hypothesis": "Legacy managed fallback returns native Space(false), while other printables may use CommitText; source spawn=false serializes callbacks. Cross-client delivery ordering is a hypothesis, not measured failing causality. Do not change delivery routes or add an owner based on successful streams.",
+  "review_pass2": {
+    "status": "ACCEPT_DIAGNOSTIC_CHECKPOINT",
+    "score": 9,
+    "passes": 2,
+    "path": "tech_debt/evidence/2026-10-09-td133-original-setup-review-pass2.md",
+    "sha256": "a3f426b18e33cab7f7db61f5646190975407dbd5dcef3c2116c60d40b0a93c51",
+    "scope": "Committed/preedit/caret controls and bounded evidence only; original causality, rendered/native acceptance and TD133 completion remain OPEN/UNKNOWN. Historical review cutoff packet hash precedes this metadata."
+  },
+  "runtime_authority_changed": false,
+  "render_observation_audited_at_utc": "2026-10-09T20:51:08.219647+00:00",
+  "render_interpretation": {
+    "gtk_assertion_layout_conflict_preserved": true,
+    "qt_render_available": false,
+    "continuous_rendering": "NOT_OBSERVED",
+    "pixel_acceptance": "NOT_TESTED",
+    "exact_settlement_time": "UNKNOWN; only two retained GTK observations, not the first matching layout frame",
+    "possible_fixture_observation_order": "INFERENCE_ONLY: synchronous signal callbacks publish field/preedit and Pango layout immediately; the existing40ms timer publishes again. These values can be sampled at different stages. No failing cause is established."
+  }
+}

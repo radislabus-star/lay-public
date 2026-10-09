@@ -12,8 +12,17 @@ universal acceptance NOT_MET. Остальные old scopes не закрыты 
 План debt review ACCEPT9/10 после двух проходов. TD-129 current index
 DONE_METADATA_SCOPE, review9/10, опубликован `2401a4e4`. TD-131
 one Unicode tail limit DONE_SOURCE_ONLY, review7→9/10, runtime unchanged.
-Первый этап завершён. Stage2/old open tasks остаются открытыми для отдельного
-обсуждения; descriptions не implementation. Source receipts/publication status
+Первый этап завершён; пользователь разрешил Stage2 («делай»). В нём завершены
+TD-130 connected private proof и TD-137 retirement unsafe shared cleanup
+(review9/10 каждый), TD-136 bounded map + cap41 callback characterization
+(review8/10, published89e075e2). Source3045 successful bodies и separate
+metadata admission не заменяют original command FAIL или native acceptance.
+TD-133 остаётся IN_PROGRESS: два отдельно разрешённых diagnostic2 не повторили
+original committed-surface FAIL. Во втором committed/preedit/caret2/2 PASS,
+GTK assertion layout отличается, один поздний layout совпадает; Qt render
+недоступен. Final diagnostic review9/10 не закрывает причину или отображение.
+Оба local grants исчерпаны; remote-only policy сохраняется. Deferred scopes
+не объявлены DONE. Source receipts/publication status
 смотреть в единственном current index. Каждая выполненная source-only
 задача получает fresh-context review, scopedDONE, commit/push/remote verification
 перед следующей. Никакой installation/restart из metadata task не следует.

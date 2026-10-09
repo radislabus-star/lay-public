@@ -97,3 +97,66 @@ installation/restart не исполнялись. Probe final review9/10, два
 FAIL сохранены. Fresh standalone fields, отсутствие old ActivateLayout/select
 и opt-in logging отличаются от original matrix predecessor state. Ни причина,
 ни runtime fix не доказаны; дополнительного local input это разрешение не даёт.
+
+
+## Diagnostic2 preparation cutoff; new local grant was required
+
+[Prepared contrast and exact review/script binding](evidence/2026-10-09-td133-original-activation-plan.json).
+Root cause remains UNKNOWN; no production implementation is selected. Repeat
+unchanged standalone raw-only setup4/10; original same-RU activation setup
+contrast9/10 recommended; new complete native private protocol3/10 now, stage2.
+Exactly two proposed streams in fresh GTK3Entry/Qt rich, same18/12ms and1.5s,
+using the already reviewed teardown/logger fixture. The only selected setup
+contrast restores original Field.select/ActivateLayout(ru) after raw clear;
+prior full-matrix predecessor/learning state is not recreated. No Ready wait,
+input retry, inverse, cleanup, install/restart or RDP is introduced.
+
+Preparation review1/2 accepted9/10 without changes. At that cutoff execution was NOT_AUTHORIZED:
+DEVELOPMENT.md requires remote-only, and the earlier one-shot local exception
+has already been consumed. The TD-137 isolation choice is a design decision.
+The two old successful traces use the same InputContext_7 relay ID; it is not
+a unique PID-to-native-field witness. Pre-key Ready/first original failure
+stay UNKNOWN. If the contrast succeeds, do not declare a cause/fix or replace
+original62/64. If it fails, identify the first actually bound divergent event
+before proposing runtime options or a controlled source RED.
+
+
+## Authorized original-activation diagnostic2 result
+
+The user explicitly granted one such two-field local run. Exact reviewed script
+ff3d3a19… ran once with both declared flags through human-safe-run:
+[result](evidence/2026-10-09-td133-original-activation-result.json).
+GTK3Entry and Qt rich each preserve committed `должен ыбыть `, empty preedit
+and caret13. This is a committed-text/preedit/caret control, not unqualified
+rendered acceptance. GTK's assertion observation(sequence52) also records
+`render_text=должен ыбыть ыбыть`, available=true. One later retained state
+(sequence82,1.275739099s later) has the matching layout text. Both observations
+are preserved; they do not identify the exact settlement time or establish
+continuous/pixel correctness. Qt render_text is unavailable in both snapshots.
+The fixture publishes synchronously from widget signals and every40ms; a
+sampling-order explanation is an inference, not a measured causal conclusion.
+Each trace has13 exact physical press/decoded events, joined callback/admission
+serials and monotonic clocks within the owned field observation interval.
+First Space is native passthrough(false); a real7-char/cursor7 surrounding
+receipt precedes the first right-token letter in both successful streams.
+
+Runtime PID/starttick/loaded+installed2bd and RU tuple are equal before/after;
+logger setting is restored, cleanup_errors empty. Normal same-RU activation
+was part of the approved setup. No inverse, shared learning cleanup, install,
+restart, model copy/fit or RDP. This grant is consumed; no additional streams
+are authorized. [Final diagnostic checkpoint review2/2](evidence/2026-10-09-td133-original-setup-review-pass2.md)
+accepted9/10 with no checkpoint blockers. It does not close the original
+defect, establish rendered acceptance or authorize a runtime repair.
+
+**Original committed-surface failure NOT_REPRODUCED; root cause and first
+original failed transition remain UNKNOWN.** The separate GTK layout conflict
+does not disappear from the evidence when a later state matches. This result
+neither closes TD133 nor overwrites original
+62PASS/2FAIL/64. Previous standalone raw-only2 and current original-activation2
+are independent diagnostics, not a new64-case acceptance percentage. Normal
+activation alone did not reproduce the original committed-surface failure in
+these2 streams; original full
+predecessor/warm/learning state was not recreated. Native field-PID/context
+identity and pre-keyReady remain unproved. Source keeps spawn=false callback
+ordering and native-Space/IME-printable fallbacks; their client consumption
+order is a hypothesis until a failing bound trace. No runtime repair is chosen.

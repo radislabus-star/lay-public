@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1791577303.4564059,
-    "ast_hash": "da03bbeed31e189c31d8d290f108861a",
+    "mtime": 1791577494.995192,
+    "ast_hash": "60002c17ae6a34634af648d61c7b5ea1",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1791577431.1662223,
-    "ast_hash": "cc0ba92fecf0974e05bac01666ecaa39",
+    "mtime": 1791579137.765019,
+    "ast_hash": "69f96ac5e01e3e7797556153a2c6036d",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5630,8 +5630,8 @@
     "semantic_hash": ""
   },
   "tech_debt/CONTINUE.md": {
-    "mtime": 1791556077.3702464,
-    "ast_hash": "6ccc3ff1872b7d16b1a6686ec8ba9e71",
+    "mtime": 1791579286.3010108,
+    "ast_hash": "88cbed5d969dc390e03d5d8b3131145e",
     "semantic_hash": ""
   },
   "tech_debt/evidence/release-1.0.66-double-shift-recurrence.md": {
@@ -5650,8 +5650,8 @@
     "semantic_hash": ""
   },
   "CONTINUE.md": {
-    "mtime": 1791556077.3700511,
-    "ast_hash": "396587c5fb6be02f116b6b6411425553",
+    "mtime": 1791579286.3010108,
+    "ast_hash": "8b1ed00895cb0fb4fe17c3743e5de027",
     "semantic_hash": ""
   },
   "docs/README.md": {
@@ -6310,8 +6310,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/tech-debt-maintenance-2026-10-09.md": {
-    "mtime": 1791577431.166522,
-    "ast_hash": "4f6014dc73aa6732bb892703bc2c074c",
+    "mtime": 1791579286.300011,
+    "ast_hash": "f2f22133f61ae6e22e13217f8118dbf4",
     "semantic_hash": ""
   },
   "tech_debt/129-current-debt-and-acceptance-index.md": {
@@ -6335,8 +6335,8 @@
     "semantic_hash": ""
   },
   "tech_debt/133-causal-rapid-space-ordering.md": {
-    "mtime": 1791570843.11842,
-    "ast_hash": "b835e2a7078aa8586bf69ab5dd2efd9d",
+    "mtime": 1791579286.300011,
+    "ast_hash": "df208590590e5c36fe924de13f8fa1e6",
     "semantic_hash": ""
   },
   "tech_debt/134-god-component-boundaries-without-new-owners.md": {
@@ -6497,6 +6497,26 @@
   "tech_debt/evidence/2026-10-09-td136-finalization.json": {
     "mtime": 1791577431.1654458,
     "ast_hash": "5fc37a1bfa85698ba711496b72fe7d7d",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td133-original-activation-plan.json": {
+    "mtime": 1791578022.6703684,
+    "ast_hash": "b24beea058117187244c5f8dbfc4c820",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td133-original-activation-result.json": {
+    "mtime": 1791579286.2701774,
+    "ast_hash": "42be803d53082023bb8c84387c9446c5",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td133-original-setup-review-pass1.md": {
+    "mtime": 1791579286.269506,
+    "ast_hash": "5ad92a4dce2f3d12936439bd8f4778e6",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td133-original-setup-review-pass2.md": {
+    "mtime": 1791579286.269631,
+    "ast_hash": "78fe2c80a94c7efe04aefc9c61978384",
     "semantic_hash": ""
   }
 }

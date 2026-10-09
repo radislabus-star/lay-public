@@ -1,0 +1,57 @@
+{
+  "schema": "lay.td133.original-activation-plan.v1",
+  "status": "PREPARED_REVIEWED_NOT_EXECUTED_NEEDS_FRESH_LOCAL_GRANT",
+  "source_checkout_head": "89e075e2932bee020731fc5e90a4c65648d38329",
+  "installed_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+  "root_cause": "UNKNOWN: original2 failures have empty saved trace snapshots; prior separate2 successful streams exclude original activation/predecessor state.",
+  "hypothesis": "Original same-RU ActivateLayout/select setup may affect first-word admission/output ordering; this is not a proven cause. Prior full-matrix predecessor/warm/learning state is not recreated.",
+  "options": [
+    {
+      "option": "Repeat unchanged standalone raw-only diagnostic",
+      "score": 4,
+      "reason": "Already2 successful streams; adds little causal information."
+    },
+    {
+      "option": "One original-activation setup diagnostic with preserved timings and full trace",
+      "score": 9,
+      "reason": "Minimum targeted contrast in existing setup; no runtime source, inverse, cleanup, install or restart. Recommended."
+    },
+    {
+      "option": "New full native private integration protocol / complete matrix",
+      "score": 3,
+      "reason": "Larger prerequisite for stage2; unavailable ordinary-native parity/usage isolation is not solved by the atomic stand."
+    }
+  ],
+  "selected_script": "/home/ubu/.cache/lay/development/td133-original-activation-diagnostic-20261009.py",
+  "script_sha256": "ff3d3a19fb62d193e51ea301a00c99d4e0cdc01214011a80c327dd6d59f25f7b",
+  "parent_script_sha256": "b023e68924a20ba8caf19b619bf9a44d6d8e5bd53af392d04b282592ca69354e",
+  "review": {
+    "path": "/home/ubu/.cache/lay/development/td133-original-setup-review-pass1-20261009.md",
+    "sha256": "35db18ebbdf1327c01be1d647440d2ac7606d094a92e7215bb3783aac330ec69",
+    "pass": 1,
+    "score": 9,
+    "verdict": "PREPARATION_ACCEPTED",
+    "execution_granted": false
+  },
+  "proposed_input_streams": 2,
+  "fields": [
+    "GTK3 Entry",
+    "Qt QTextEdit rich"
+  ],
+  "input": "должен ыбыть ",
+  "key_timing_ms": [
+    18,
+    12
+  ],
+  "assertion_deadline_seconds": 1.5,
+  "proposed_runtime_setup": "Existing raw Ctrl+A/Backspace then same-RU Field.select/ActivateLayout, as original source. Temporary opt-in debug_action_log with parent restoration/teardown. No retry/readiness wait.",
+  "execution_completed": false,
+  "original_matrix": "62PASS/2FAIL/64 remains unchanged",
+  "source_of_permission_boundary": "DEVELOPMENT.md: Build/test execution is remote only. Previous explicit one-shot local exception was consumed; TD137 design choice is not an execution grant.",
+  "limits": [
+    "No unique field-PID->IBus context binding; both old traces share InputContext_7 relay ID.",
+    "Pre-key Ready remains UNKNOWN unless the actual new trace establishes it.",
+    "Separate diagnostic cannot close original64/native parity or prove root cause from a PASS alone.",
+    "No inverse/shared-feedback cleanup/install/restart or remote desktop."
+  ]
+}

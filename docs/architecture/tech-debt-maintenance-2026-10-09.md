@@ -413,3 +413,53 @@ quality/per-class heldout gates, latency/RSS and universal acceptance remain
 OPEN/UNKNOWN/NOT_TESTED in their owning scopes. Larger file extraction has no
 measured benefit here and remains a stage2 decision. Completion of the bounded
 source task does not erase these limits or change runtime authority.
+
+
+## TD-133 — prospective original-activation setup contrast
+
+[Prepared plan](../../tech_debt/evidence/2026-10-09-td133-original-activation-plan.json)
+binds the unchanged parent probe, a minimal private successor and prospective
+review9/10 pass1/2. It has NOT_EXECUTED/NOT_AUTHORIZED status: exactly2 streams
+are proposed with original18/12ms input and1.5s visible deadline, restoring the
+original same-RU normal ActivateLayout/select setup after raw clear. No new
+production code, authority, delivery route, inverse/cleanup, install/restart or
+remote desktop. Root cause remains UNKNOWN; full predecessor state is not
+recreated and a successful contrast cannot prove a cause or close original64.
+Earlier2 visiblePASS and original62PASS/2FAIL/64 remain separate unchanged facts.
+Both old traces share InputContext_7; exact native PID/context binding and
+pre-key Ready remain UNKNOWN. A fresh explicit local-test exception is required
+by DEVELOPMENT.md; the prior one-shot grant is consumed and TD137's isolation
+selection grants no new execution. This is a preparation record, not a runtime
+experiment or proof. Further dependent execution remains stopped.
+
+
+### Authorized measured successor
+
+The user later granted exactly one original-activation diagnostic2. It ran
+once using the exact reviewed ff3d3a19… script; the preparation packet/review
+retain their previous NOT_AUTHORIZED cutoff. [Actual result](../../tech_debt/evidence/2026-10-09-td133-original-activation-result.json)
+records2/2 committed-text/preedit/caret controls PASS, exact13 press codes/decoded characters per
+field, callback serial/time joins and actual7-char/cursor7 surrounding receipt
+between native first Space(false) and next right-token letter. Runtime
+PID/starttick/2bd and RU tuple are preserved; debug logging restored; cleanup
+errors0. No inverse/shared cleanup, install/restart, model copy/fit or RDP.
+The new local grant is consumed. Source authorities/delivery routes unchanged.
+
+This is not unqualified rendered acceptance: GTK's assertion snapshot has
+`render_text=должен ыбыть ыбыть`(available=true,sequence52). A later retained
+state(sequence82,1.275739099s later) has the matching `должен ыбыть ` layout.
+Both observations remain in the result packet; exact settlement time and
+continuous/pixel correctness are unproved. Qt render_text is unavailable.
+The fixture's synchronous signal publication plus40ms timer is a possible
+sampling-order explanation only, not a proved runtime or fixture cause.
+
+ORIGINAL_COMMITTED_SURFACE_FAILURE_NOT_REPRODUCED; first original failing transition remains UNKNOWN.
+Original62PASS/2FAIL/64 and previous standalone2 successful controls remain
+separate. Same-RU normal activation alone did not reproduce the original
+committed-surface failure in these2 observations;
+full predecessor/warm/learning state was not recreated. No field-PID/context
+or pre-keyReady proof is invented. Existing mixed native Space/IME printable
+source paths are only an ordering hypothesis, not a measured causal defect.
+No production repair is selected. [Final checkpoint review2/2](../../tech_debt/evidence/2026-10-09-td133-original-setup-review-pass2.md)
+accepted9/10 without checkpoint blockers; its score applies to the bounded
+diagnostic evidence, not original causality, rendered acceptance or TD133 DONE.

@@ -62,9 +62,14 @@ publication receipt: `/home/ubu/.cache/lay/development/td129-publication-2026100
 Таблица отсортирована по продуктовой важности; prerequisites определяют порядок
 исполнения. Пользователь разрешил продолжение («делай»). Работа начинается с
 причинного TD-133; карточка/разрешение не означают доказанный runtime fix или DONE.
-Отдельный разрешённый local diagnostic batch выполнен: два visible controls
+Первый разрешённый local diagnostic batch выполнен: два visible controls
 PASS, исходный сбой не повторился; [измеренная сводка](evidence/2026-10-09-td133-local-diagnostic.json).
-Это узкое исключение исчерпано; остальные builds/tests/graph refresh остаются
+Второй отдельно разрешённый batch восстановил исходный same-RU activation
+setup: два committed-text/preedit/caret controls PASS, но GTK assertion layout
+содержит лишнее `ыбыть`; поздний сохранённый layout совпал. Qt render_text
+недоступен. [Раздельные наблюдения](evidence/2026-10-09-td133-original-activation-result.json)
+не дают rendered/pixel acceptance или причины original FAIL.
+Оба узких исключения исчерпаны; остальные builds/tests/graph refresh остаются
 remote-only. Original native62/64 и два FAIL сохраняются.
 
 | Приоритет | Задача / статус | Первый результат и зависимости |
