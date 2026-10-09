@@ -1,0 +1,23 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Publish a V3 successor of the existing private IBus proof consumer with opt-in one-case inverse scenarios bound to one immutable specification. Preserve immutable V1/V2 provenance and the frozen default five-case function. Observe rejection feedback without deleting or rewriting journal/counters.",
+  "reason": "The historical host caller selected a different pair from the observed inverse and accepted receipt existence without checking its status. Shared two-file cleanup also has an independent partial-write race. The existing sandbox already isolates all four learning paths.",
+  "not_tested": "No GTK/Qt/browser physical acceptance, daemon Double Shift detector, shared host cleanup or recovery, new runtime bytes, installation, model fitting or general quality promotion. TD-133 and TD-137 remain open.",
+  "invariants": [
+    "C02",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "scripts/proof/ime-client/run.py",
+    "scripts/proof/ime-client/driver.py",
+    "scripts/proof/ime-client/feedback_case.py"
+  ],
+  "runtime_authority_changed": false,
+  "baseline_commit": "55fd32bf418bf6331a29d0522892a8df689499f2",
+  "owner": "Existing private IBus harness and production IME apply/undo/learning owners",
+  "owning_document": "docs/architecture/tech-debt-maintenance-2026-10-09.md",
+  "consequences": "No new runtime owner, queue, transport or cleanup authority. Immutable case data feeds input, expected effects and derived feedback selection. Each opt-in case receives a fresh existing sandbox and all four existing private learning paths; no dependent case can consume unchecked feedback. Historical tools and receipts remain immutable. Selection is read-only and runs after the measured gesture within the existing1.5s feedback bound. Source tests/builds and real private IBus smoke remain remote-only under existing resource and Cargo guards. Reuse exact admitted assets rather than fit or replace installed models. Source proof and physical acceptance remain separate. Rollback reverts tooling only, never shared user learning bytes.",
+  "verification": "Semantic tests through the existing Python suite, controlled wrong-pair and exact-geometry/complete-effect violations, and real private IBus apply/undo smoke for first-word and prefixed scenarios. Validate exact requested deletion, ordered effects, final surface/cursor and observed context through case closure; serialize feedback interval endpoints. Exactly one inverse per fresh sandbox; missing, ambiguous or contradictory evidence stops the case."
+}

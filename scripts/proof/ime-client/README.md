@@ -1,11 +1,11 @@
 # Repository-owned private IME client proof
 
-This is the versioned V2 portable TD-121 actual-client harness. It keeps the five
-real `IBus.InputContext` scenario bodies, callback assertions, waits, hard
-deadline, post-verdict trace drain and cleanup from V1. V2 corrects the client
-contract: it advertises and publishes `SurroundingText`, and applies a fixture
-printable press once when Lay returns native-unhandled. This is a successor
-contract, not baseline parity with V1.
+This is the versioned V3 portable actual-client harness. It retains the V2
+default five-case function, callbacks, waits, deadline, post-verdict trace drain
+and cleanup. V3 adds two opt-in bound inverse feedback cases in fresh private
+learning files. The existing V2 client contract still advertises and publishes
+`SurroundingText` and applies a fixture printable press once when Lay returns
+native-unhandled. V1 and V2 evidence remains immutable history.
 
 V1 remains immutable in Git at commit
 `708245298a3f553ac3c52243728c02ba6344a140`, path
@@ -14,11 +14,11 @@ V1 remains immutable in Git at commit
 `9ece223f6689323e5cae3fc5f27cf990d37b86dff5e9f6e0ff3212d4dd488750`,
 and historical normalized SHA-256
 `669e3ef88cc2639794fde79dcb9132b99ebcaf142cafe39065376f42c4a056dc`.
-The maintained V2 driver is pinned directly at SHA-256
-`d80447f21db4d689ea49d39742feb36e2202b23979d820380c1fcef916b88c12`;
-the canonical runner is pinned at SHA-256
-`3d40b60f54b6224edb760203e3b9ea740a60641976edb2665a4ca946cfa33441`;
-there is no copied legacy driver or source-rewriting loader.
+V2 remains at commit `55fd32bf418bf6331a29d0522892a8df689499f2`, driver blob
+`b9ae78c38b663fb4f380eaafd969be09dbf64336`, SHA-256
+`d80447f21db4d689ea49d39742feb36e2202b23979d820380c1fcef916b88c12`.
+The current V3 driver has an exact pin in `run.py` and run metadata, with both
+predecessors recorded; there is no copied legacy driver or source-rewriting loader.
 Publication uses the public `InputContext.needs_surrounding_text()` accessor;
 `RequireSurroundingText` is consumed internally by libibus, not exposed as a
 public InputContext GObject signal.
@@ -93,8 +93,8 @@ The output path must be absent and its parent must already exist; an existing
 file, directory or symlink is never overwritten.
 
 The public configuration shape remains `lay.ime-client-harness.v1`. Generated
-run metadata is `lay.ime-client-harness.run-metadata.v2` and identifies the V2
-proof contract, exact active-driver hash and immutable V1 Git provenance.
+run metadata is `lay.ime-client-harness.run-metadata.v3` and identifies the V3
+proof contract, exact active-driver/selector hashes and immutable V1/V2 provenance.
 
 Before creating the output or launching anything, the runner validates the
 candidate hash, the exact dependency-manifest hash, every file size and hash
@@ -112,7 +112,7 @@ a TD-124 harness follow-up for a discovered undeclared dependency, not a third
 TD-121 runtime repair.
 
 The configured candidate is mounted at `/tmp/candidate/lay-ibus-engine`, which
-is injected identically into the generated component XML and V2 driver.
+is injected identically into the generated component XML and V3 driver.
 The run remains inside private bwrap namespaces and a private D-Bus/IBus pair,
 with CPU 200%, memory 1536M, swap 0, Tasks 128 and RuntimeMaxSec 90s. It does
 not install anything, restart production IBus/daemon processes or change live
@@ -198,3 +198,30 @@ a quality result.
 The post-verdict candidate identity row reads that candidate PID's `/proc/PID/status`
 once before cleanup and records `VmRSS` and kernel `VmHWM`. These are descriptive
 per-process samples, not a production RSS distribution.
+# Bound inverse feedback cases
+
+The existing guarded remote runner accepts `--scenario-set inverse-first-word`
+and `--scenario-set inverse-prefixed` with the legacy proof profile. Each fresh
+sandbox runs exactly one boundary correction and one `ManualToggleV3` inverse.
+The immutable case supplies typed, applied and restored surfaces; actual input
+records, real context and candidate identity bind read-only feedback selection.
+The copied selector's hash is recorded and checked before the case.
+Forward and inverse frames must request the exact deletion geometry derived
+from the case and contain one ordered delete/commit with exact context, text
+and cursor. A clamped projection alone cannot establish an exact request.
+The feedback observation dispatches pending GLib callbacks within its existing
+bound. Final context/engine, the complete inverse output frame and restored
+surface/cursor are checked through focus-out before PASS; the receipt records
+the feedback interval's two Unix-nanosecond endpoints.
+
+`MATCHED_CASE_FEEDBACK` requires the complete unique changed-target episode.
+Wrong pair, extra/duplicate/mixed records, contradictory retained bytes or
+missing feedback produce a nonzero proof result within the existing1.5s feedback
+bound. No subsequent case consumes that sandbox's unchecked state. All four
+usage paths remain private. No journal/counter deletion, feedback compiler or
+shared cleanup is invoked; positive and other-owner rows remain intact.
+
+This proves the connected private consumer and actual IBus apply/undo/learning
+effects. GUI windows, physical Double Shift and shared host cleanup/recovery are
+separate proof scopes. Historical host helpers and receipts remain immutable.
+The default five restoration cases and their frozen function are preserved.

@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Run the versioned V2 actual-client IME proof in a private remote sandbox."""
+"""Run the versioned V3 actual-client IME proof in a private remote sandbox."""
 
 from __future__ import annotations
 
@@ -18,9 +18,15 @@ import xml.etree.ElementTree as ET
 
 
 SCHEMA = "lay.ime-client-harness.v1"
-PROOF_CONTRACT = "lay.ime-client.actual-input-context.v2"
-RUN_METADATA_SCHEMA = "lay.ime-client-harness.run-metadata.v2"
-V2_DRIVER_SHA256 = "d80447f21db4d689ea49d39742feb36e2202b23979d820380c1fcef916b88c12"
+PROOF_CONTRACT = "lay.ime-client.actual-input-context.v3"
+RUN_METADATA_SCHEMA = "lay.ime-client-harness.run-metadata.v3"
+V3_DRIVER_SHA256 = "0518d043d23bf8e931569a316d52306105cd6bbff6085ce53c2a8a7fcc93035f"
+V2_DRIVER_PROVENANCE = {
+    "version": "v2",
+    "git_commit": "55fd32bf418bf6331a29d0522892a8df689499f2",
+    "git_blob": "b9ae78c38b663fb4f380eaafd969be09dbf64336",
+    "sha256": "d80447f21db4d689ea49d39742feb36e2202b23979d820380c1fcef916b88c12",
+}
 V1_DRIVER_PROVENANCE = {
     "version": "v1",
     "git_commit": "708245298a3f553ac3c52243728c02ba6344a140",
@@ -168,10 +174,10 @@ def _require_hash(path: Path, expected: str, label: str) -> None:
 def verify_driver_identity(harness_root: Path | None = None) -> str:
     root = harness_root or Path(__file__).resolve().parent
     actual = sha256(root / "driver.py")
-    if actual != V2_DRIVER_SHA256:
+    if actual != V3_DRIVER_SHA256:
         raise HarnessError(
-            "V2 driver contract drift: "
-            f"expected SHA-256 {V2_DRIVER_SHA256}, got {actual}"
+            "V3 driver contract drift: "
+            f"expected SHA-256 {V3_DRIVER_SHA256}, got {actual}"
         )
     return actual
 
@@ -361,9 +367,9 @@ def prepare_output(plan: Plan, output: Path, harness_root: Path | None = None) -
         component = output / "component"
         component.mkdir(mode=0o700)
         (output / "home").mkdir(mode=0o700)
-        for name in ("driver.py", "dbus.conf", "config.json", "readline_consumer.py"):
+        for name in ("driver.py", "dbus.conf", "config.json", "readline_consumer.py", "feedback_case.py"):
             shutil.copyfile(root / name, output / name)
-        if (plan.scenario_set in ("manual-toggle", "terminal-delivery", "first-word", "first-word-us", "first-word-ru", "fresh-preedit")
+        if (plan.scenario_set in ("manual-toggle", "terminal-delivery", "first-word", "first-word-us", "first-word-ru", "fresh-preedit", "inverse-first-word", "inverse-prefixed")
                 or plan.startup_proof_profile != "legacy"):
             config_path = output / "config.json"
             config = json.loads(config_path.read_text(encoding="utf-8"))
@@ -387,6 +393,7 @@ def prepare_output(plan: Plan, output: Path, harness_root: Path | None = None) -
             "scenario_set": plan.scenario_set,
             "startup_proof_profile": plan.startup_proof_profile,
             "readline_consumer_sha256": sha256(root / "readline_consumer.py"),
+            "feedback_case_sha256": sha256(root / "feedback_case.py"),
             "private_config_sha256": sha256(output / "config.json"),
             "runtime_authority_changed": False,
             "config_sha256": plan.config_sha256,
@@ -402,13 +409,15 @@ def prepare_output(plan: Plan, output: Path, harness_root: Path | None = None) -
                 "receipt_embedded_mount_path": str(plan.receipt_embedded_mount_path),
             },
             "driver": {
-                "version": "v2",
+                "version": "v3",
                 "sha256": driver_sha256,
-                "predecessor": V1_DRIVER_PROVENANCE,
+                "predecessor": V2_DRIVER_PROVENANCE,
+                "older_predecessor": V1_DRIVER_PROVENANCE,
                 "comparison": "SUCCESSOR_CONTRACT_NOT_BASELINE_PARITY",
                 "contract_changes": [
-                    "advertise and publish SurroundingText",
-                    "apply native-unhandled fixture input in the client",
+                    "add opt-in one-case inverse scenarios with immutable feedback binding",
+                    "observe feedback in existing private learning paths without cleanup writes",
+                    "preserve the V2 default five-case function and input delivery contract",
                 ],
             },
             "resource_envelope": {
@@ -613,7 +622,7 @@ def execute(command: list[str], output: Path) -> int:
 
 def validate_startup_proof_combination(plan: Plan) -> None:
     allowed = {
-        "legacy": {"restoration", "lifecycle", "manual-toggle", "terminal-delivery", "first-word", "first-word-us", "first-word-ru"},
+        "legacy": {"restoration", "lifecycle", "manual-toggle", "terminal-delivery", "first-word", "first-word-us", "first-word-ru", "inverse-first-word", "inverse-prefixed"},
         "on": {"first-word", "first-word-us", "first-word-ru", "fresh-preedit", "startup-only"},
         "off": {"fresh-preedit", "startup-only"},
         "absent": {"packages-absent-literal", "startup-only"},
@@ -631,7 +640,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--startup-schedule", choices=("immediate", "post-exact-ready"),
                         default="immediate")
     result.add_argument("--scenario-set", choices=("restoration", "lifecycle", "manual-toggle", "terminal-delivery", "first-word",
-                                                   "first-word-us", "first-word-ru", "fresh-preedit", "startup-only", "packages-absent-literal"),
+                                                    "first-word-us", "first-word-ru", "fresh-preedit", "startup-only", "packages-absent-literal", "inverse-first-word", "inverse-prefixed"),
                         default="restoration")
     result.add_argument("--startup-proof-profile", choices=("legacy", "on", "off", "absent"), default="legacy")
     return result

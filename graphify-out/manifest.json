@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1791555345.5377238,
-    "ast_hash": "f4fb28322696afad1dad221f7d95d1eb",
+    "mtime": 1791560554.7424104,
+    "ast_hash": "0c6b33cd6604ed265dfb7c93fa8d58b0",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1791560446.7958937,
-    "ast_hash": "1d67cdc9e4cb4abbb98e415f897bae8a",
+    "mtime": 1791562772.5551925,
+    "ast_hash": "69e15876472d8779f8178b18ea19d00e",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5485,13 +5485,13 @@
     "semantic_hash": ""
   },
   "scripts/proof/ime-client/driver.py": {
-    "mtime": 1791386348.0431707,
-    "ast_hash": "789383ea0635ab1b3a9c0734c6f3b123",
+    "mtime": 1791566010.6454089,
+    "ast_hash": "5aaeed9c52df894ad0e7e8ec323d3005",
     "semantic_hash": ""
   },
   "scripts/proof/ime-client/run.py": {
-    "mtime": 1791386348.0431707,
-    "ast_hash": "d28358560cfbf6a5fe4b8edb571ae93a",
+    "mtime": 1791566132.8254387,
+    "ast_hash": "d580e373995a284ff77344a7ee21a7ef",
     "semantic_hash": ""
   },
   "scripts/test_lanes/focused.py": {
@@ -5515,8 +5515,8 @@
     "semantic_hash": ""
   },
   "tests/test_ime_client_harness.py": {
-    "mtime": 1791386348.1645422,
-    "ast_hash": "09d0c3e4987f6a56d084843046ce92a9",
+    "mtime": 1791566132.8257701,
+    "ast_hash": "6af0f547c6c0869b276281e6ac62758f",
     "semantic_hash": ""
   },
   "DEVELOPMENT.md": {
@@ -5525,8 +5525,8 @@
     "semantic_hash": ""
   },
   "scripts/proof/ime-client/README.md": {
-    "mtime": 1791386348.0421708,
-    "ast_hash": "6914eb2abb20855325285ec2b8b401ef",
+    "mtime": 1791566215.995158,
+    "ast_hash": "fee0b20b5b8d761a06b9266e0ccbab02",
     "semantic_hash": ""
   },
   "tech_debt/124-reproducible-maintenance-loop.md": {
@@ -6310,8 +6310,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/tech-debt-maintenance-2026-10-09.md": {
-    "mtime": 1791555289.0040703,
-    "ast_hash": "8e08ec7bbc070df3fdc27746ab22c65f",
+    "mtime": 1791566859.5369644,
+    "ast_hash": "040ad880d6952e20dbbfb1c5d4de2d5a",
     "semantic_hash": ""
   },
   "tech_debt/129-current-debt-and-acceptance-index.md": {
@@ -6320,8 +6320,8 @@
     "semantic_hash": ""
   },
   "tech_debt/130-offline-inverse-feedback-case-binding.md": {
-    "mtime": 1791551647.7302148,
-    "ast_hash": "f60b18c268008826d498273aea0f3455",
+    "mtime": 1791566859.537093,
+    "ast_hash": "7796204dbceb6dbbabc70f203136dc72",
     "semantic_hash": ""
   },
   "tech_debt/131-one-unicode-tail-limit.md": {
@@ -6407,6 +6407,26 @@
   "tech_debt/evidence/2026-10-09-td133-local-diagnostic.json": {
     "mtime": 1791560353.2103899,
     "ast_hash": "bc008686edfb98495dc2f421f3610ab3",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-09-isolated-inverse-proof-binding.json": {
+    "mtime": 1791566294.6260138,
+    "ast_hash": "14c054f8c0f8486a514e651bbacc5e51",
+    "semantic_hash": ""
+  },
+  "scripts/proof/ime-client/feedback_case.py": {
+    "mtime": 1791566010.6444087,
+    "ast_hash": "e4f9f7fdd96b114e2d2fe82b90240371",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td130-connected-inverse.json": {
+    "mtime": 1791566859.536768,
+    "ast_hash": "064cb65ce64e97015d9396fc04a51124",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td130-review-pass2.md": {
+    "mtime": 1791566859.5364623,
+    "ast_hash": "146256d74a5b99cafcc59e001c8225de",
     "semantic_hash": ""
   }
 }

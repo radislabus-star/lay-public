@@ -53,8 +53,8 @@ entry, перечисленные в карточке. Граф обновляе
 После каждого завершённого task: scoped DONE → commit → push обоим названным
 remotes → exact ref verification → чистый worktree → следующий task.
 TD-129 завершён и опубликован: `2401a4e4dca5f99cc87c42415ab52c108c26bd74`.
-Этап1 завершён: TD-129 и TD-131; следующий этап — отдельное обсуждение
-открытых сложных задач. TD-131 final source packet: [evidence](evidence/2026-10-09-td131-final-source.json);
+Этап1 завершён: TD-129 и TD-131; разрешённое продолжение описано в этапе2.
+TD-131 final source packet: [evidence](evidence/2026-10-09-td131-final-source.json);
 publication receipt: `/home/ubu/.cache/lay/development/td129-publication-20261009.json`.
 
 ## Этап2 — разрешённая работа, 2026-10-09
@@ -70,7 +70,7 @@ remote-only. Original native62/64 и два FAIL сохраняются.
 | Приоритет | Задача / статус | Первый результат и зависимости |
 | --- | --- | --- |
 | P0 | [TD-133 — rapid Space ordering](133-causal-rapid-space-ordering.md), IN_PROGRESS | Оригинальные trace отсутствуют; разрешён separate two-field diagnostic без inverse и shared cleanup. Новый полный physical proof требует130/137 либо эквивалентно доказанной безопасной границы |
-| P1 | [TD-130 — case-bound feedback cleanup](130-offline-inverse-feedback-case-binding.md), DEFERRED | Named versioned consumer, immutable case binding, проверка receipt status; standalone offline selector не закрывает дефект |
+| P1 | [TD-130 — case-bound feedback](130-offline-inverse-feedback-case-binding.md), DONE_CONNECTED_PRIVATE_PROOF | 14 new semantic tests, controlled RED,2 real private IBus cases PASS; review9/10,2passes; shared cleanup/recovery остаётся137 |
 | P1 | [TD-137 — partial cleanup recovery](137-owned-feedback-partial-cleanup-recovery.md), DEFERRED | Existing loader generation и failure injection на temporary data; неизвестный/частичный результат останавливает dependent cases |
 | P1 | [TD-128 — Chrome после Tab](128-chrome-focus-transfer-autocorrect.md), OPEN | Точный исходный переход поля на нынешних bytes; ownership/Reset contracts сохранить |
 | P1 | [TD-127 — Kitty Tab/Space](127-kitty-space-correction-diverges-from-tab.md), OPEN | Один frozen frame и first divergence, без literal-word exception |

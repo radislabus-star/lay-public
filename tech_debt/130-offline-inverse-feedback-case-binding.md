@@ -1,115 +1,122 @@
-# TD-130 — Привязка inverse cleanup к исполняемому case
+# TD-130 — Привязка inverse feedback к исполняемому case
 
-Status: DEFERRED_STAGE2_DISCUSSION. Priority: P1. Stage: 2. Size: M/UNKNOWN.
-Depends: versioned caller и immutable case/receipt binding;
-recovery partial cleanup отдельно TD-137. Standalone offline tool не реализуем.
-Owner: existing scripts/proof/ime-client tooling, не runtime learner.
-Invariants: C02, C05, C10. Baseline: e7a25705 и immutable browser receipts.
+Status: DONE_CONNECTED_PRIVATE_PROOF. Priority: P1. Stage: 2.
+Owner: existing scripts/proof/ime-client tooling; runtime learner не меняется.
+Invariants: C02, C05, C08, C10. Source baseline: 55fd32bf.
+Shared cleanup/recovery остаётся отдельным TD-137; native ordering — TD-133.
 
 ## Доказанный корень
 
-В Gost input inverse была отменена prefixed pair, а helper выбрал unprefixed
-pair и вернул NO_OWNED_INVERSE_REJECTIONS. Две отрицательные строки остались,
-последующие шесть prefixed случаев потеряли rank authority. После оригинальной
-точной prefix cleanup тот же runtime прошёл зависимые20/20. Сохранены исходный
-24/30 FAIL, wrong-selector driver и точный cleanup receipt.
+В историческом Gost input consumer отменена prefixed pair, но helper выбрал
+unprefixed pair и вернул NO_OWNED_INVERSE_REJECTIONS. Caller принял существующий
+receipt path без проверки status. Две отрицательные строки остались; шесть
+следующих prefixed cases потеряли rank authority. Исходный24/30 FAIL и отдельный
+точный cleanup + dependent20/20 сохраняются; это разные denominators.
+Исторические helpers/receipts не переписывать и не запускать для новых cases.
 
-## Варианты
+Episode PID/time сами по себе не доказывают поле: исходная ошибка находится
+между исполняемым case и selector, до cleanup. Снятие SafetyGate, смена моделей
+или транспортов не исправляют эту связь. Двухфайловая shared cleanup также
+имеет самостоятельный partial-write/CAS defect, который нельзя закрыть одним
+совпадением case или изоляцией нового proof.
 
-- Ещё одна копия helper с literal pair: 2/10, причина воспроизводится.
-- Переписать transactional live cleanup и compiler: 3/10, лишний authority/race риск.
-- Только offline classifier с переданными from/to: 6/10, audit aid;
-  не устраняет обход caller и не закрывает этот task.
-- Deferred до versioned caller/case binding: 9/10 сейчас, рекомендуется.
-- Подключённый обязательный preflight и checked result: условно8/10 после
-  доказательства caller/provenance и обсуждения stage2.
+## Варианты и выбранная граница
 
-## Выбранная граница и prerequisites
+- Новая копия literal-pair helper:2/10, повторяет исходную ошибку.
+- Только offline classifier/CLI с caller-supplied from/to:6/10, audit aid без
+  обязательного consumer; не выбран. Старый проект этого CLI/test module
+  снят с текущей приёмки, а не реализован параллельно.
+- Параметризованный existing shared cleanup:5/10, сохраняет риск TD-137.
+- Immutable case и обязательная read-only проверка в existing private IBus
+  consumer:9/10, выбран. Новый runner/compiler/live cleanup не нужен.
 
-Нынешний consumer — приватный `gost-evidence-carrier/client_probe.py`,212–217,
-269–277/284–299: helper pinned по SHA/path, expected pair не передана в finish;
-receipt path принимается без проверки status. Native callers инвентаризировать.
-Будущий repository consumer выбирается в существующем
-`scripts/proof/ime-client/run.py`/`driver.py` только после подтверждения,
-что его scenario set исполняет этот inverse. Сейчас connected host-window case
-не выбран; новый вспомогательный файл сам по себе не является fix.
-
-Единый immutable case binding должен породить набираемый input, expected
-applied/undo surface, field/process receipt, interval, helper hash и selector
-expectation. Caller-supplied строки или PID/time не доказывают field ownership:
-episode ID не содержит case/field identity. Scope закрепить observed apply/undo
-цепочкой и журналом до действия, не принимая чужие строки.
-Caller читает cleanup receipt и разрешает dependent cases только после exact
-proven cleanup. NO_OWNED/partial/missing/ambiguous — BLOCKED либо явно NOT_TESTED
-при доказанно неактивном feedback, никогда PASS из существования path.
-
-До кода назвать exact versioned consumer, binding IO, backward policy frozen
-helpers, original timings и positive preservation. Никаких runtime rules,
-model fit, новой mutation authority или cleanup retry. Live writes сохраняют
-reviewed contract; partial generation не восстановлена без TD-137.
-Старые helpers/receipts не переписывать.
-
-Tests разместить в уже исполняемом `tests/test_ime_client_harness.py`, входящем
-в SELF_TESTS `scripts/dev-check.py` и `scripts/check-lay-tests.sh`.
-Remote route: `python3 scripts/dev-check.py self-test --compact`; nonzero new
-test identities/counts сохранить. Если нужен новый module, добавить его в оба
-списка до DONE; нового runner не создавать.
-
-## Предыдущий offline вариант — не выбран для первого этапа
-
-Следующий contract оставлен как возможный audit aid. Его реализация без
-connected caller закроет только classification, не текущий TD-130.
-Новых tool/tests/live cleanup изменений в stage1 нет.
+Реализация: existing `scripts/proof/ime-client/run.py` → V3 `driver.py`, opt-in
+`inverse-first-word` и `inverse-prefixed`. Каждый запуск — один boundary apply
+и один ManualToggleV3 inverse в fresh private D-Bus/IBus sandbox, с четырьмя
+existing private usage paths. Следующих dependent cases в этом sandbox нет.
+Это repository proof consumer; исторический host helper не стал безопасным
+для повторного исполнения. GTK/Qt/browser/physical acceptance отдельно.
 
 ## Минимальный контракт
 
-Добавить `scripts/proof/ime-client/inverse_feedback.py` с importable pure
-selection и CLI, работающим с сохранёнными files/receipts. Никаких записей в
-журналы, compiler calls, sleeps, process control или service access.
-Inputs: journal before/current, BEFORE scope (IME PID, began time, before SHA),
-ended time, expected from/to и exact changed target words. Вывод: status и
-counts, не raw typed text. CLI документировать в существующем harness README.
+Один frozen case задаёт typed/applied/undo и derived changed target words.
+Observed actual text-key input и applied surface должны совпасть с case.
+Binding включает настоящий IBus context, candidate PID/starttick/SHA и journal
+before/interval. Copied selector SHA проверяется до case. Readiness Shift,
+release и other-context records не входят в набранный текст; malformed text
+press вызывает отказ.
 
-Проверить unique unchanged retained suffix при native rotation (500KiB contract),
-новую область после before, exact rejection/reverted kind/outcome, PID episode
-prefix и interval, одну episode, ровно две уникальные строки и ожидаемые слова.
-Wrong-pair rejection в собственной новой области не должен тихо становиться
-NO_OWNED: вернуть BLOCKED/неоднозначность. Старые/чужие/positive записи не
-выбираются. Повтор идентичной строки, частичная/лишняя pair, смешанная episode,
-изменённый old suffix, пустая/неоднозначная rotation — отказ, не guessed cleanup.
-Допустимая нулевая выборка отдельно обозначается, не заявляет факта live cleanup.
+Forward/inverse — ровно один ordered delete/commit frame. Requested offset,
+count и deleted text выводятся из case suffix, а не из clamped visible result.
+Context, prefix, commit, итоговая поверхность и cursor должны совпасть точно.
+Pending GLib callbacks обрабатываются в existing1.5s feedback bound; полный
+inverse и результат перепроверяются через focus-out до PASS. Final context и
+engine проверяются один раз existing snapshot route. Receipt сохраняет оба
+Unix-nanosecond endpoint обратной связи.
 
-Это preflight/audit aid, не новый исполнитель. Actual removal остаётся у
-оригинального reviewed helper с compiler SHA, тройным CAS, unchanged1.5s bound.
-Полный перенос live/window harness из cache — отдельная задача второго этапа;
-в этом task не копировать 25 файлов, модели и профили.
+Selector `feedback_case.py` не пишет файлы и не предоставляет cleanup authority.
+Проверяются unchanged journal prefix либо unique byte-identical retained suffix
+при native500KiB rotation; только новые rejected/reverted строки собственной
+PID episode и interval; одна episode, ровно derived unique changed targets.
+Wrong own pair, extra/duplicate/mixed episode, rewritten/ambiguous/partial bytes
+— отказ. Missing/partial feedback остаётся PENDING; connected caller обязан
+завершиться nonzero по существующей границе, никогда PASS из receipt path.
+Positive и other-owner bytes остаются неизменными. Никакого removal/recovery.
 
-## TDD и proof
+## Последствия и backward policy
 
-Remote Python tests в новом `tests/test_inverse_feedback_binding.py` на временных
-fixture bytes: correct prefixed/unprefixed pair, wrong selector, zero legitimate
-rows, one/three/duplicate/mixed-episode rows, interval/PID mismatch, positive and
-other-owner preservation, valid rotation и ambiguous/rewrite rejection.
-Доказать на RED минимальный wrong-selector fixture до classifier implementation;
-после GREEN показать immutable input hashes до/после unchanged. Fixtures искусственные;
-настоящие journal bytes не попадут в Git. Тест должен проверять public selection
-и CLI exit/status, не строки source или копию реализации.
+V3 — explicit successor с exact driver/module hashes. V1/V2 commit/blob/SHA
+сохраняются; default five-case run_cases function неизменна. Config schema V1
+сохраняется; proof/run metadata V3 не объявляют baseline parity.
 
-## Последствия и rollback
+Lattice/rank/weights/verifier/models/transports/owners/hot-key deadlines не
+меняются. Journal observation после gesture, не per-key. Все проверки remote
+через existing resource/Cargo guards. Read-only worker assets имеют собственные
+pins; модельная parity с installed desktop этим не установлена. Rollback —
+revert tooling commit; shared learning bytes не восстанавливать поверх чужих.
 
-Runtime candidates/ranking, model/packages, caches и feedback writer неизменны.
-Новый cost — одно offline O(journal bytes) чтение bounded journal; не per-key path.
-Главный риск — ошибочная классификация как authority удаления: API/doc прямо
-не выдаёт такой authority и не содержит delete/write. Concurrent current journal
-не используется как CAS proof; inputs frozen receipts. Revert tool/tests/doc
-commit восстанавливает исходную tooling surface, без runtime rollback.
+## Измерения и исправления
 
-## Приёмка будущей выбранной реализации
+- Первое расширение правильно отклонено V2 identity guard: это не semantic RED.
+  V3 опубликован как отдельный контракт, guard не снят.
+- Controlled wrong-pair equality violation: один named semantic test FAIL как
+  ожидалось; это controlled RED, а не воспроизведение runtime failure.
+- Real private pilot FAIL до inverse: collector захватил fixture Shift без
+  character. Исправлен text-key selector и добавлен semantic regression;
+  исходный FAIL сохранён, delivery/runtime unchanged.
+- Collector revision: remote116 selected/115 passed/1 skipped/0 failed,
+  8 new tests PASS; оба private IBus scenarios PASS с двумя feedback rows.
+- Review pass1:7.5/10, GROUPED_REPAIR_REQUIRED. Найдены oversized clamping
+  false accept и delayed callback gap. Root выполнил одну grouped repair:
+  strict case geometry, complete effects through closure, interval recording.
+  Final remote122 selected/121 passed/1 skipped/0 failed; all14 new tests PASS.
+  Три controlled guard violations дают ожидаемый semantic RED; оба final
+  real private IBus cases PASS, exact effects и feedback2/2. Старые PASS
+  не перепривязываются.
+- Final review pass2:9/10, ACCEPT connected private proof; оба finding закрыты,
+  дополнительных implementation правок не требуется.
+- Canonical graph/check PASS,8 stable fetched exports; compiled generated
+  receipt1/1 PASS. Exact receipts и hashes — в final evidence packet.
 
-- [ ] Semantic RED/GREEN и все fixed offline negative cases remote PASS.
-- [ ] Ни один input не меняется; live cleanup/deadlines/compiler неизменны.
-- [ ] Новый test включён в подходящий Python verification route, не orphan suite.
-- [ ] Independent review >=8/10, максимум два прохода; receipts и caveats записаны.
-- [ ] Versioned caller использует один binding и проверяет actual cleanup status.
-- [ ] Private historical wrong-selector case проверен отдельно; input bytes сохранены.
-- [ ] Commit/push. Offline/source PASS не заменяет physical/lifecycle/cleanup proof.
+Owning document: [tech-debt maintenance](../docs/architecture/tech-debt-maintenance-2026-10-09.md).
+Decision: [private inverse proof binding](../docs/architecture/decisions/2026-10-09-isolated-inverse-proof-binding.json).
+Final packet: [connected inverse evidence](evidence/2026-10-09-td130-connected-inverse.json).
+Private receipts: `/home/ubu/.cache/lay/development/td130-*` и `run-os6fuz1y`.
+Raw journal/user text logs не коммитить.
+
+## Приёмка выбранного scope
+
+- [x] Existing remote self-test route executes all new semantic identities;
+  nonzero selection, controlled RED и final GREEN bound к source/dependencies.
+- [x] Oversized clamped delete и callbacks during feedback/focus-out дают отказ
+  через actual Client/driver consumer; missing feedback nonzero bounded.
+- [x] Final real private IBus smoke: first-word и prefixed, один apply/inverse,
+  точные effects/caret и complete episode, private daemon/candidate reaped.
+- [x] Final independent review >=8/10, всего максимум2passes; owning evidence,
+  canonical remote graph/check и generated receipt обновлены.
+- [x] Scope DONE только connected private proof; historical host reuse,
+  shared cleanup/recovery и native/physical acceptance остаются отдельно.
+Publication receipt с exact commit/refs после commit/push:
+`/home/ubu/.cache/lay/development/td130-publication-20261009.json`.
+Source/private PASS не объявлять runtime installation, physical acceptance,
+quality promotion или закрытием133/137.

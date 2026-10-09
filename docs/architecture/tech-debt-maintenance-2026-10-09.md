@@ -129,3 +129,74 @@ check и фактический verdict записываются в единст
 operations, не объявляется заранее. Runtime authority NOT_CHANGED, accepted2bd
 сохраняется, native62/64FAIL и original browser24/30FAIL остаются историей.
 Rollback: source revert всего TD131 (call/visibility/removal/guard/test вместе).
+### TD-130 connected private inverse proof — 2026-10-09
+
+The user requested Stage2 continuation. First shared tooling failure is the
+historical caller's inconsistent pair selection and unchecked cleanup status;
+the independent shared two-file cleanup defect remains TD-137. Compared viable
+designs: parameterized shared cleanup5/10, and immutable case plus mandatory
+feedback observation in the existing private consumer9/10. The latter is selected
+under [the explicit decision](decisions/2026-10-09-isolated-inverse-proof-binding.json).
+
+Actual consumer is `scripts/proof/ime-client/run.py` → `driver.py`, opt-in
+`inverse-first-word` / `inverse-prefixed`. One frozen case supplies input,
+expected apply/undo and changed target words. Its observed real context,
+candidate identity, effects and interval bind the read-only selector. Each run
+has one case and all four existing learning paths in its fresh private sandbox;
+no shared host journal/counters are deleted or overwritten. Historical helpers
+and receipts are not modified. Missing/partial/contradictory feedback stops the
+case and cannot release dependent work.
+
+Consequence analysis: no change to candidate lattice/rank, verifier, models,
+learning weights, hot key timing, delivery routes, cache/reload or runtime
+authority. Bounded journal work occurs after the measured gesture; retain the
+existing1.5s feedback bound. Resource/Cargo guards and asset hash admission remain
+required. New work is remote-only. Rollback reverts proof tooling, never user
+data. Planned tests and real IBus smoke are NOT_TESTED until receipts exist;
+this entry is implementation scope, not DONE or original host-window acceptance.
+
+The expanded driver is an explicit V3 successor, not a rewrite of V2 evidence.
+V2 SHA `d80447f21db4d689ea49d39742feb36e2202b23979d820380c1fcef916b88c12`
+is preserved with commit55fd32bf/blobb9ae78c3; V1 provenance remains recorded.
+The default five-case function retains its exact digest. Configuration schema
+V1 remains accepted; current proof/run metadata use V3 with exact new driver and
+selector pins. A first remote self-test correctly rejected the unversioned
+expansion at the V2 identity guard; that is not a semantic RED or a runtime fault.
+
+Measured first tooling verification: remote Python suite selected115, passed114, skipped1, failed0 (`run-a792hqb5/RESULT.json`). The wrong-pair equality guard was removed only in a separate temporary remote copy: exactly one named semantic test failed as expected (`td130-selector-red-20261009.json`); this is a controlled violation, not an original runtime RED.
+
+Real private IBus pilot `td130-connected-BKOyAG/inverse-first-word/receipt.json` failed before inverse with `KeyError: character`: readiness `fixture_shift` telemetry was included in text presses. Saved effects establish one exact forward delete(-12,12) and `должны быть ` commit in the real client. Private daemon reaped, no candidate remains; no inverse/shared cleanup executed. The collector now selects actual ProcessKeyEvent text presses and rejects malformed text events; a regression covers fixture Shift, releases and other contexts. This is a tooling collector fix; delivery routes and runtime bytes remain unchanged. The revised collector suite and smokes are recorded below.
+
+The collector revision then passed the remote suite:116 selected/115 passed/
+1 skipped/0 failed (`run-e6bf4tww/RESULT.json`), including8 new case tests.
+Both real private IBus scenarios passed, each with one observed forward edit,
+one inverse and a complete two-row episode. Exact source and execution bindings
+are in `td130-bound-inverse-execution-20261009.json`. Those receipts remain
+evidence for that revision, not the following changed proof guards.
+
+Independent review pass1 scored7.5/10 and identified two future false accepts:
+oversized deletion could be hidden by client projection clamping; inverse
+outputs were sliced before pending callbacks during feedback/focus-out.
+One grouped repair now derives exact requested geometry and full ordered
+effects from the immutable case, dispatches callbacks in the existing feedback
+bound, and revalidates the full inverse through focus-out before PASS. The final
+context/engine checkpoint uses the existing snapshot route once, never RPC
+polling; typing/readiness/feedback deadlines are unchanged. Interval endpoints
+are serialized with feedback. Semantic tests use the actual Client callback
+projection, actual driver finish function and actual GLib drain with controlled
+external callbacks; they do not implement a second runtime reducer. Final remote semantic proof selected122/passed121/skipped1/failed0, all14 new
+identities PASS. Three isolated guard violations selected one identity each
+and produced the expected1/2/6 failed assertions, with no errors or skips.
+The final source hashes match the suite archive and both real private IBus
+smokes; each has exact forward/inverse frames, complete2/2 feedback and no
+remaining candidate after cleanup. Times are4.579s and4.621s, descriptive
+samples only. [The bounded evidence packet](../../tech_debt/evidence/2026-10-09-td130-connected-inverse.json)
+records exact paths/hashes and the preserved pilot failure. Final independent
+review pass2 accepted the connected private proof at9/10, closing both findings
+in one grouped repair; no implementation repair remains. The evidence packet
+supplies the final canonical refresh/compiled metadata verdict separately.
+The original host receipts and unresolved133/137 are not relabelled; physical
+acceptance and shared cleanup/recovery remain NOT_TESTED. Runtime authority
+and installed/loaded2bd bytes remain unchanged.
+
+Remote proof assets are existing read-only hard-link aliases: all9 roles, model bytes copied0. The accepted2bd executable is staged only for the private factory (8185744 bytes), without installation/restart. The worker phase artifact has its own recorded SHA; this environment is not physical acceptance or equality with the user's installed model set. Exact setup/execution receipts remain private under `/home/ubu/.cache/lay/development/td130-*`.
