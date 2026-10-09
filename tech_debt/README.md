@@ -77,7 +77,7 @@ remote-only. Original native62/64 и два FAIL сохраняются.
 | P1 | [TD-121 — whole-word handoff](121-preserve-word-across-ime-layout-handoff.md), OPEN_CURRENT_SCOPE | Карта исходных Firefox cases на2bd; новый pair PASS не заменяет их |
 | P1 | [TD-123 — Wave quality](123-improve-wave-restoration-quality-for-1.0.67.md), OPEN_EXTERNAL_OWNER | Единственный current roadmap в syntax-agreement checkout; stage/protocol оттуда, не второй fit здесь |
 | P2 | [TD-122 — LegacyV1](122-bind-legacy-replay-suppression-request.md), DECISION_REQUIRED | Current reachability, synthetic stream completion, backward policy до протокола или retirement |
-| P2 | [TD-136 — functional gaps](136-functional-test-gaps-and-test-file-boundaries.md), DEFERRED | Bounded semantic test/effect map; named test counts не coverage% |
+| P2 | [TD-136 — functional gaps](136-functional-test-gaps-and-test-file-boundaries.md), DONE_BOUNDED_MAP_AND_SOURCE_CHARACTERIZATION, review8/10 | 12-family map; one joined caps41 callback test;3045 successful bodies + separate metadata admission, original command FAIL preserved; native128/133 remain open |
 | P2 | [TD-134 — component boundaries](134-god-component-boundaries-without-new-owners.md), DEFERRED | После136: concrete ownership/coupling benefit; новый leaf сохраняет guard protection |
 | P2 | [TD-132 — retired-preedit predicates](132-isolate-inert-retired-preedit-predicates.md), DEFERRED | Уже есть pure block и semantic negatives; extraction только при измеримой maintenance пользе, не prerequisite134 |
 | P3 | [TD-135 — research/runtime boundary](135-research-runtime-build-boundary.md), DEFERRED | Reachability/build baseline; public exports не доказательство RSS/bloat |

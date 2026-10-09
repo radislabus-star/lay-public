@@ -13,13 +13,13 @@
     "project": []
   },
   "counts": {
-    "correctness": 3008,
+    "correctness": 3009,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 256,
+    "process": 257,
     "target": 2814
   },
   "package_fixtures": [
@@ -1856,6 +1856,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_space_ready_and_refusal_outcomes_have_one_text_owner",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt",
       "target": "bin:lay-ibus-engine"
     },
     {

@@ -1,0 +1,34 @@
+{
+  "schema": "lay.td136.final-metadata.v1",
+  "status": "PASS_BOUNDED_SOURCE_COMPLETION",
+  "source_baseline": "60e0d095f4468d744762831d56336fe428583fb4",
+  "graph": {
+    "result": "/home/ubu/.cache/lay/development/tab-graph-bwfjxhqy/RESULT.json",
+    "result_sha256": "1ebe9a671f56619915dc2ebcbccb6175c9a07bbcc6a862eaa58aff0ee03982a4",
+    "canon": "/home/ubu/.cache/lay/development/tab-graph-bwfjxhqy/CANON_RESULT.json",
+    "status": "PASS",
+    "errors": [],
+    "fetch": "/home/ubu/.cache/lay/development/tab-graph-bwfjxhqy/fetch.json",
+    "fetch_sha256": "331d93b3f275b2ec03e5bfd650032ea074efaaa8b3614d9a7fcad0fc29d2a8d3",
+    "stable_outputs": 8
+  },
+  "compiled_metadata": {
+    "result": "/home/ubu/.cache/lay/development/tab-compiled-receipt-test-2oeqgkwx/RESULT.json",
+    "result_sha256": "d740a75e6c1ee8ed429801d602d8726614002326d498d52bf06ef6048fd0cc43",
+    "selected": 1,
+    "passed": 1,
+    "failed": 0,
+    "test": "architecture_contract::tests::generated_receipt_proves_every_required_architecture_check",
+    "embedded_receipt_sha256": "9c2390c1100749a0533e320e375748d957ec9b5d3dfcb80cf19f4fd0e60ab4d1"
+  },
+  "functional_scope": "Completed3045 unchanged harness bodies plus fresh guarded metadata adjudication. Original all-command FAIL/exit1 remains. No functional retest needed for final docs/review/metadata successors.",
+  "review": {
+    "passes": 2,
+    "score": 8,
+    "verdict": "ACCEPT",
+    "report": "tech_debt/evidence/2026-10-09-td136-code-review-pass2.md"
+  },
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": false,
+  "scope": "Bounded12-family map and one source callback gap; native128/133, reload/cold data semantics, worker timing, floor-sensitivity, latency/RSS and quality remain unproven."
+}

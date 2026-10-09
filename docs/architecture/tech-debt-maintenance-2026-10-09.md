@@ -277,3 +277,139 @@ source characterization and fixture rebuilds retain their narrower verdicts.
 Final review found that the default `dev-check.py client` wrapper does not
 forward scenario-set. The contract therefore names the guarded direct runner
 used by the exact existing inverse receipts; no executable change is needed.
+
+## TD-136 — bounded effect map and one joined callback characterization
+
+Status: DONE_BOUNDED_MAP_AND_SOURCE_CHARACTERIZATION. Baseline:60e0d095.
+[Task](../../tech_debt/136-functional-test-gaps-and-test-file-boundaries.md) ·
+[Decision](decisions/2026-10-09-cap41-focus-callback-characterization.json) ·
+[Pre-test source map](../../tech_debt/evidence/2026-10-09-td136-effect-map.md).
+The map review accepted8/10:12 inspected families,24 exact manifest identities
+and13 source/manifest identities matching the historical3044 proof request.
+This is a bounded pre-change audit, not coverage% or fresh execution. The new
+test/manifest successor needs its own proof and hashes; the old map is not
+silently rebound to changed source.
+
+The measured test gap is within the inspected families: native Tab after a
+first-field prefix, real FocusOut/FocusInId to a distinct context, caps41 before
+the first new-field printable, actual SetSurroundingText and exact Space output.
+Existing Chrome starts caps9 then gains41; existing caps41 uses direct facts.
+No runtime defect follows from this gap. The selected minimal source test uses
+the existing P2P helpers/reducer/WindowInteraction, with no synthetic keyboard,
+additional state owner, clock, wait, protocol or file extraction. Three existing
+callback primitives are composed; the small glyph helper only captures effects.
+
+Assert old owner revocation and prefix exclusion, native Tab without text edit,
+no Space frame before a fresh receipt, managed per-character CommitText, and
+real Backspace/retype equal-text ABA rejection. A fresh equal-text rereceipt
+then permits one exact DeleteSurroundingText(-7,7)/CommitText("работает ") and
+silent handled Space release. Deterministic prepared worker evidence separates
+authority/output from asynchronous worker scheduling. Adjacent stronger
+selection/fragment/focus negatives remain; no duplicate broad matrix is added.
+
+Remote original-code GREEN is characterization, not a repaired runtime RED.
+One narrowly declared private legacy-output geometry violation must fail the
+exact delete assertion; never change the accepted production source. Run the whole affected fixed
+proof, canonical discovery/manifest/graph/canon, then independent fresh-context
+implementation review, maximum2passes. Actual measured results follow below.
+Installed2bd/delivery/learning/models remain unchanged. Native TD-128 and TD-133
+causality, heldout/per-class quality, package-reload/cold reader semantics,
+latency/RSS and universal acceptance remain UNKNOWN/NOT_TESTED, separately owned.
+
+
+### Characterization results and limits
+
+[Source evidence](../../tech_debt/evidence/2026-10-09-td136-source-characterization.json)
+records all five phases and exact raw receipt hashes. Initial keycode failure
+(п mapped to з) and then US-factory/RU-mode disagreement failed before the new
+field correction. Fixture now starts with an actual agreeing RU factory and
+bootstrap profile, not a manually restored layout after FocusIn. Original-code
+GREEN:1selected/1passed/0failed,1.7603s execution; no runtime defect repaired.
+
+The first controlled mutation removing only fresh-local-receipt SURVIVED:
+1passed/0failed. Managed glyph append also clears surrounding_text_snapshot
+(preedit.rs); the new sequence proves snapshot retirement and frame denial,
+not isolated floor-guard sensitivity. Keep this failed sensitivity experiment
+visible. It does not count as RED or justify removing the guard. Source phase
+inspectors never claim a stale Space effect merely from frame=None.
+
+Controlled legacy-output mutation changes only emitted nchars to nchars+1 in
+one independent private remote source copy. The same test then fails at exact
+geometry (-7,8) vs (-7,7), while authorized plan/focus/epoch/model contracts
+remain unchanged. This is CONTROLLED_TRANSPORT_RED, not baseline runtime RED.
+Prepared lease separates deterministic authority/output from worker latency.
+The pre-test map stays bound to60e0d095; new test/manifest hashes are successors.
+At that initial cutoff, whole affected proof, canonical artifact checks and code review were pending; the measured successor is below.
+
+Canonical remote manifest refresh PASS:
+`/home/ubu/.cache/lay/development/tab-manifest-m_zsgmld/RESULT.json`.
+Exactly one added correctness/test/process identity, no removed or reclassified
+identity and unchanged38targets:3071listed/3045required. Formatting fetch kept
+terminal_delivery.rs byte-identical to the GREEN and both mutation experiments
+(SHA29e23c2c…), so those scopes are reused without re-execution. Manifest totals
+remain inventory, not coverage. Canonical graph and automatic whole affected
+check are next, followed by the independent implementation review.
+
+
+### Completed bodies and separate metadata admission
+
+The automatic remote check retained its **FAIL/exit1**, not a generic PASS:
+`/home/ubu/.cache/lay/development/run-zib5c0pj/RESULT.json`. Formatting and the
+existing five-suite self-test returned0. All3045 required bodies completed
+(3009correctness+36package,33targets); only the post-body known-failure admission
+failed, because its manifest SHA still referenced the old inventory. The lane
+receipt is BLOCKED_CONTRACT; neither receipt nor original logs are rewritten.
+
+The new decision covers this protected metadata change. Only manifest_sha256
+in known_failures.json is rebound to the discovered successor. Zero failure
+records and the historical observation path/hash stay byte-equivalent in
+value. That older observation is historical ledger provenance, not current
+quality or source evidence. No failure/test is waived or reclassified.
+
+[Guarded evidence adjudication](../../tech_debt/evidence/2026-10-09-td136-fixed-proof-adjudication.json)
+replays278 retained harness logs with the existing parser: exact3045 identities,
+3045ok,0failed, exact success totals, no missing/extra log. All1176 archived and
+current relevant source/data/fixture/tooling files and modes match; known ledger
+and embedded graph receipt are explicitly separate metadata. Unchanged lane
+code reaches the ledger only after source stability and every harness exit/
+status check. Existing load_known_failures and compare_known_failures now PASS
+against the fresh guarded remote snapshot. This is **PASS_BODY_REUSE_AND_METADATA_ADMISSION**,
+not a repeated execution or PASS of the failed all-command. Canon/link/decision
+checks report0errors. No 3045 unchanged bodies are rerun to fix one fingerprint.
+
+[Implementation review1](../../tech_debt/evidence/2026-10-09-td136-code-review-pass1.md)
+accepted the source characterization8/10 without blocking findings; its older
+whole-gate PENDING cutoff is retained. Final implementation review2 and final
+canonical graph/embedded-receipt checks still gate the bounded completion.
+
+
+### Final implementation review
+
+[Review2](../../tech_debt/evidence/2026-10-09-td136-code-review-pass2.md)
+ACCEPT8/10, no blockers, final implementation pass2/2. The reviewer separately
+verified all278 raw log hashes,3045 unique expected successful identities,
+no duplicate/missing/extra status lines,1176 file hashes/modes and the pinned
+toolchain specification, plus the empty-ledger admission. Original FAILED
+command and separate adjudication stay distinct. No production logic changed.
+The original review cutoff leaves final graph/compiled metadata pending;
+root must record their measured successor before the bounded task is DONE.
+
+
+### Bounded completion and publication boundary
+
+[Measured final metadata](../../tech_debt/evidence/2026-10-09-td136-finalization.json)
+records graph/canon PASS,0errors,8 stable exports and the exact compiled
+architecture receipt test1selected/1passed/0failed. Review8/10 in2implementation
+passes and the body-proof/metadata successor close the bounded map plus one
+source callback gap. The original automatic command remains FAIL/exit1; its
+3045successful bodies are reused under the explicit ledger-only successor,
+not relabeled as a fresh full-run PASS. Final docs/generated-artifact successors
+require only their own canonical freshness/compiled metadata check, not another
+3045-body run. Installed accepted2bd remains unchanged.
+
+TD-128 native focus behavior, TD-133 original causal failure, package-reload/cold
+reader semantics, actual worker scheduling, isolated freshness-floor sensitivity,
+quality/per-class heldout gates, latency/RSS and universal acceptance remain
+OPEN/UNKNOWN/NOT_TESTED in their owning scopes. Larger file extraction has no
+measured benefit here and remains a stage2 decision. Completion of the bounded
+source task does not erase these limits or change runtime authority.

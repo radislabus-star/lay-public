@@ -1,0 +1,26 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Characterize one joined native Tab -> FocusOut -> FocusInId(other context) -> first managed caps41 word -> real SetSurroundingText -> Space path in the existing P2P adapter test family. Preserve every existing identity/isolation and add one discovered correctness/process identity. No production code or input route change.",
+  "reason": "The bounded TD-136 audit found separate Tab/refocus and first-word tests, but no equivalent joined ordinary caps41 path in the inspected families. Chrome's existing test starts caps9 before gaining41; the existing caps41 first-word test supplies facts directly. Historical TD-128 lacks a word-start witness, and its behavior on installed2bd remains untested.",
+  "verification": "Real existing key and focus callback helpers; actual SetSurroundingText callback; old owner rejection, exact per-key commits, no Tab text edit, absent-receipt denial, actual Backspace/retype equal-text stale-receipt denial, one exact DeleteSurroundingText(-7,7)/CommitText and silent handled Space release. Remote GREEN characterization, one narrowly declared private legacy-output geometry violation, unchanged whole affected fixed proof, canonical manifest/graph/canon and fresh-context code review with at most two implementation passes.",
+  "not_tested": "Native GTK/Qt/Chrome/Firefox/Kitty widget delivery or the historical TD-128 first failure; actual shell/layout activation, installed model parity, restoration heldout quality, cold/package reload, live learning cleanup, performance/RSS and universal acceptance. Prepared full worker lease is test-only deterministic correction evidence, not worker scheduling or physical acceptance.",
+  "invariants": [
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "runtime_authority_changed": false,
+  "baseline_commit": "60e0d095f4468d744762831d56336fe428583fb4",
+  "owner": "Existing ContextAdmissionReducer, WindowInteraction and adapter P2P tests",
+  "owning_document": "docs/architecture/tech-debt-maintenance-2026-10-09.md",
+  "consequences": "One test-only callback sequence, no file splitting, new runtime owner, service, protocol, queue, clock, model, package or SafetyGate relaxation. Keep the old 24-identity map as a pre-test baseline and record successor hashes separately. TD-128 native acceptance and TD-133 causal diagnosis remain open. Revert this task's test/metadata commit to roll back; never user learning or the accepted installed runtime.",
+  "experiment_limit": "The first freshness-guard mutation survived because another receipt-retirement barrier still denied the frame. Preserve that receipt; claim sensitivity only for the measured legacy-output geometry mutation, not for the independent floor guard.",
+  "known_failure_binding": "Refresh only manifest_sha256 after adding the one discovered identity. Preserve the empty failure ledger and the immutable historical zero-failure observation path/hash; that historical observation is not current quality evidence. Keep the automatic full run's BLOCKED_CONTRACT/exit1 unchanged, verify its actual 3045 status identities from retained logs, then run the existing ledger admission/empty-set comparison on the current remote snapshot. Report this as body-proof reuse plus metadata adjudication, never a rerun or a PASS of the original failed command."
+}

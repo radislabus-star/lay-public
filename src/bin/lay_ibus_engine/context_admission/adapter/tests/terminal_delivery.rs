@@ -4157,3 +4157,246 @@ fn terminal_delivery_space_ready_and_refusal_outcomes_have_one_text_owner() {
         }
     });
 }
+
+#[test]
+fn terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt() {
+    fn commits(effects: &[Message]) -> Vec<String> {
+        effects
+            .iter()
+            .filter(|effect| {
+                effect
+                    .header()
+                    .member()
+                    .is_some_and(|member| member.as_str() == "CommitText")
+            })
+            .map(|effect| {
+                let body = effect.body();
+                let text = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+                crate::ibus_interface::ibus_text_value_to_string(&text).unwrap()
+            })
+            .collect()
+    }
+
+    async fn committed_glyph(
+        harness: &mut Harness,
+        engine: &mut LayIbusEngine,
+        serial: u32,
+        ch: char,
+        code: u32,
+    ) {
+        assert!(legacy_key(harness, engine, serial, replay_keyval(ch), code, 0).await);
+        let effects = legacy_effects(harness).await;
+        assert_eq!(commits(&effects), [ch.to_string()]);
+        assert!(effects.iter().all(|effect| effect
+            .header()
+            .member()
+            .is_none_or(|member| member.as_str() != "DeleteSurroundingText")));
+        assert!(
+            legacy_key(
+                harness,
+                engine,
+                serial + 1,
+                replay_keyval(ch),
+                code,
+                RELEASE_MASK,
+            )
+            .await
+        );
+        no_legacy_output(harness).await;
+    }
+
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness_with_profiles_and_budget(
+            "lay-ru",
+            vec![profile("lay-ru")],
+            CALLBACK_BUDGET,
+        )
+        .await;
+        let mut engine = LayIbusEngine::new_from_component(
+            TARGET_PATH.to_string(),
+            Arc::new(Mutex::new(SharedState::default())),
+            Some(harness.adapter.clone()),
+            "lay-ime-ru",
+            true,
+            ime_config(),
+        );
+        engine.config.auto_replace = true;
+        engine.config.auto_switch_layout = true;
+        engine.config.nanda_autocorrect = true;
+        engine.config.nanda_precognition = false;
+        engine.config.correction_safety = "experimental".into();
+        let config = engine.config.clone();
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_content_type_state(0, 0);
+        engine.set_client_capabilities(41);
+        assert!(engine.layout_gesture.layout_is_ru);
+        for (index, (ch, code)) in [('п', 34), ('у', 18)].into_iter().enumerate() {
+            committed_glyph(
+                &mut harness,
+                &mut engine,
+                25_000 + index as u32 * 2,
+                ch,
+                code,
+            )
+            .await;
+        }
+        let previous = engine.live_context_token().unwrap();
+        super::residuals::surrounding_receipt(&mut harness, &mut engine, "пу", 2, 2).await;
+        assert_eq!(engine.committed_tail.buffer, "пу");
+
+        // No completion is presented. Tab belongs to native focus motion and
+        // must not append a text boundary or accept a nonexistent candidate.
+        assert!(!legacy_key(&mut harness, &mut engine, 25_010, KEY_TAB, 15, 0).await);
+        no_legacy_text_output(&mut harness).await;
+        assert!(!legacy_key(&mut harness, &mut engine, 25_011, KEY_TAB, 15, RELEASE_MASK).await);
+        no_legacy_output(&mut harness).await;
+        super::residuals::actual_focus_out(&mut harness, &mut engine, 25_012).await;
+
+        let next_context = "/org/freedesktop/IBus/InputContext_2";
+        let focus_in = method_message(
+            DISPATCH_SENDER,
+            25_013,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+            "FocusInId",
+        );
+        send_manually_dispatched_callback(
+            &mut harness.peer,
+            &focus_in,
+            TARGET_PATH,
+            ENGINE_INTERFACE,
+        )
+        .await;
+        assert!(bounded(harness.observer.process_next()).await.unwrap());
+        bounded(engine.focus_in_id(
+            focus_in.header(),
+            next_context.to_string(),
+            "test-client".to_string(),
+        ))
+        .await;
+        // FocusIn reloads host config; restore only the controlled test config.
+        engine.config = config;
+        engine.set_client_capabilities(41);
+        assert!(engine.layout_gesture.layout_is_ru);
+        assert!(engine.client_context.surrounding_text_snapshot.is_none());
+        forward_marker_bounded(&mut harness.peer).await;
+        assert!(bounded(harness.observer.process_next()).await.unwrap());
+        no_legacy_text_output(&mut harness).await;
+
+        // Caps41 holds before the first printable. No Shift, Space, empty
+        // snapshot or manual reactivation is inserted into the new field.
+        for (index, (ch, code)) in [
+            ('р', 35),
+            ('а', 33),
+            ('б', 51),
+            ('о', 36),
+            ('а', 33),
+            ('е', 20),
+            ('т', 49),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            committed_glyph(
+                &mut harness,
+                &mut engine,
+                25_020 + index as u32 * 2,
+                ch,
+                code,
+            )
+            .await;
+        }
+        let current = engine.live_context_token().unwrap();
+        assert_ne!(current.owner.generation, previous.owner.generation);
+        assert_ne!(
+            current.activation.generation,
+            previous.activation.generation
+        );
+        assert_eq!(current.activation.context.path.as_str(), next_context);
+        assert!(!harness.adapter.revalidate(&previous));
+        assert!(!engine.context_word_is_known());
+        assert!(engine.composition.buffer.is_empty());
+        assert!(!engine.composition.legacy_word_preedit_active);
+        assert_eq!(engine.committed_tail.buffer, "рабоает");
+        assert!(engine.capture_space_autocorrect_frame_identity().is_none());
+
+        super::residuals::surrounding_receipt(&mut harness, &mut engine, "рабоает", 7, 7).await;
+        let witnessed_epoch = engine.committed_tail.epoch;
+        let witnessed_revision = engine.client_context.surrounding_observation_revision;
+        assert!(engine.capture_space_autocorrect_frame_identity().is_some());
+
+        // Actual callbacks delete/retype the final glyph. Literal equality
+        // cannot revive the receipt from an earlier local commit epoch.
+        assert!(!legacy_key(&mut harness, &mut engine, 25_040, KEY_BACKSPACE, 14, 0).await);
+        no_legacy_text_output(&mut harness).await;
+        assert_eq!(engine.committed_tail.buffer, "рабоае");
+        assert!(
+            !legacy_key(
+                &mut harness,
+                &mut engine,
+                25_041,
+                KEY_BACKSPACE,
+                14,
+                RELEASE_MASK
+            )
+            .await
+        );
+        no_legacy_output(&mut harness).await;
+        committed_glyph(&mut harness, &mut engine, 25_042, 'т', 49).await;
+        assert_eq!(engine.committed_tail.buffer, "рабоает");
+        assert_ne!(engine.committed_tail.epoch, witnessed_epoch);
+        assert_eq!(
+            engine.client_context.surrounding_observation_revision,
+            witnessed_revision
+        );
+        assert!(
+            engine.capture_space_autocorrect_frame_identity().is_none(),
+            "equal text cannot reuse a pre-delete receipt"
+        );
+
+        super::residuals::surrounding_receipt(&mut harness, &mut engine, "рабоает", 7, 7).await;
+        let frame = engine.capture_space_autocorrect_frame_identity().unwrap();
+        assert_eq!(
+            frame.space_autocorrect_surrounding_revision,
+            Some(engine.client_context.surrounding_observation_revision)
+        );
+        crate::space_autocorrect_prefetch::proof::install_full_lease(&frame, &engine.config);
+        assert!(legacy_key(&mut harness, &mut engine, 25_050, KEY_SPACE, 57, 0).await);
+        let effects = legacy_effects(&mut harness).await;
+        let deletes = effects
+            .iter()
+            .filter(|effect| {
+                effect
+                    .header()
+                    .member()
+                    .is_some_and(|member| member.as_str() == "DeleteSurroundingText")
+            })
+            .map(|effect| effect.body().deserialize::<(i32, u32)>().unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(deletes, [(-7, 7)]);
+        let text_order = effects
+            .iter()
+            .filter_map(|effect| {
+                effect.header().member().and_then(|member| {
+                    matches!(member.as_str(), "DeleteSurroundingText" | "CommitText")
+                        .then(|| member.as_str().to_string())
+                })
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(text_order, ["DeleteSurroundingText", "CommitText"]);
+        assert_eq!(commits(&effects), ["работает "]);
+        assert_eq!(engine.committed_tail.buffer, "работает ");
+        assert!(
+            legacy_key(
+                &mut harness,
+                &mut engine,
+                25_051,
+                KEY_SPACE,
+                57,
+                RELEASE_MASK
+            )
+            .await
+        );
+        no_legacy_output(&mut harness).await;
+    });
+}
