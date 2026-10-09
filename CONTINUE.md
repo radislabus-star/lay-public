@@ -1,3 +1,30 @@
+# Current checkpoint — 2026-10-09, accepted1.0.81 + technical-debt loop
+
+Единственная текущая очередь: [tech_debt/README.md](tech_debt/README.md).
+Authoritative checkout `/home/ubu/projects/lay-space-boundary-shift-20261007`,
+branch `codex/space-boundary-shift-20261007`, accepted source `e7a25705`.
+Принятый installed IME SHA-256:
+`2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559`.
+Пользователь подтвердил target pair/first-word correction; эта приёмка закрыта.
+Source3044/3044 и native62PASS/2FAIL/64 — разные denominators;
+universal acceptance NOT_MET. Остальные old scopes не закрыты pair acceptance.
+
+План debt review ACCEPT9/10 после двух проходов. TD-129 current index
+DONE_METADATA_SCOPE, implementation review9/10; после публикации — TD-131
+one Unicode tail limit. Stage2/old open tasks сначала
+обсуждаются; их descriptions не implementation. Каждая выполненная source-only
+задача получает fresh-context review, scopedDONE, commit/push/remote verification
+перед следующей. Никакой installation/restart из metadata task не следует.
+
+## Historical checkpoints below
+
+Весь последующий текст сохранён как история конкретных прежних версий.
+Слова Current/Latest, C20/R5/R7/R12, старые порядки задач и команды установки
+ниже не являются текущим заданием. За current source/status/rollback следовать
+единственному индексу выше и AGENTS.md; historical FAIL/receipts не стирать.
+
+---
+
 # Current: TD-121 acceptance, 2026-09-13
 
 ## Current TD-121 acceptance — 2026-09-13
