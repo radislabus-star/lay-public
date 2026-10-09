@@ -1,14 +1,19 @@
 # TD-131 — Один Unicode bounded-tail invariant
 
-Status: PLANNED. Priority: P1. Stage: 1. Size: S. Depends: TD-129.
+Status: DONE_SOURCE_ONLY. Priority: P1. Stage: 1. Size: S. Depends: TD-129 (DONE).
 Owner: существующий preedit tail helper и tail_memory consumer.
-Invariants: C03, C05, C08. Baseline: task-start commit.
+Invariants: C01, C03, C05, C08, C10. Baseline: 2401a4e4dca5f99cc87c42415ab52c108c26bd74.
 Owning architecture entry:
 `docs/architecture/tech-debt-maintenance-2026-10-09.md`.
 До production изменения создать новый explicit decision
 `docs/architecture/decisions/2026-10-09-one-unicode-tail-limit.json` для
 protected tail_memory.rs, preedit.rs и existing preedit test;
 если понадобится manifest/ledger delta, перечислить их тоже. Guards не ослаблять.
+Implementation pass1 выявил permanent guard gap существующего helper file.
+Один grouped repair включает existing exact PROTECTED preedit.rs entry и
+negative subcase в tests/test_architecture_canon.py; current decision дополнен
+обоими guard/test paths до их правок. Это сохранение прежней composition
+protection, не новый guard framework. Existing Python identity не меняется.
 
 ## Корень
 
@@ -62,8 +67,30 @@ refresh, zero/default limit из generic helper. Fixed160 consumer не прин
 
 ## DONE
 
-- [ ] Один fixed160 helper, сохранены Unicode suffix и callback ordering.
-- [ ] До кода новый explicit decision; outcome в owning architecture document.
-- [ ] Source/affected tests и graph/canon remote PASS; exact receipts сохранены.
-- [ ] Fresh-context review >=8/10, максимум два прохода.
-- [ ] Source-only DONE, runtime/physical NOT_CHANGED/NOT_TESTED; commit/push.
+- [x] Один fixed160 helper, сохранены Unicode suffix и callback ordering.
+- [x] До кода новый explicit decision; outcome в owning architecture document.
+- [x] Source/affected tests и graph/canon remote PASS; exact receipts сохранены.
+- [x] Fresh-context review >=8/10, максимум два прохода.
+- [x] Source-only DONE, runtime/physical NOT_CHANGED/NOT_TESTED; publication completion фиксируется отдельным post-Git receipt.
+
+## Outcome — 2026-10-09
+
+Один existing fixed160 helper, generic helper private; копия/localLIMIT удалены.
+Characterization707/707 GREEN до dedup. After-dedup automatic3044 selected
+strictPASS,0known/infra; existing identity assertions strengthened, manifest и
+ledger unchanged. Guard15/15 GREEN после causal14/15 RED old checker; protected
+helper coverage сохранена. Review7/10→9/10, ровно два passes/один grouped repair.
+[Final review](evidence/2026-10-09-td131-review-pass2.md).
+[Authoritative source packet](evidence/2026-10-09-td131-final-source.json)
+содержит exact receipts/hashes, finalgraph/canon8outputsPASS и current compiled
+receipt1/1PASS. 931 relevant implementation/fixtures/Cargo/lane files/modes
+совпадают с3044 snapshot; Python guard и generated metadata checked separately.
+Счётчики этих разных proof scopes не складываются в общий quality denominator.
+
+Runtime authority/installed2bd/delivery routes/models/rank/learning NOT_CHANGED.
+Physical/full release/latencyRSS/newheldout quality NOT_TESTED. Historical
+native2FAIL и browseroriginalFAIL сохранены. Source-only DONE не разрешает
+installation и не переносит prior physical acceptance на будущие bytes.
+Commit/push next; exact post-Git checkpoint будет в
+`/home/ubu/.cache/lay/development/td131-publication-20261009.json`.
+Rollback — один task revert, включая helper/consumer/guard/regressions.

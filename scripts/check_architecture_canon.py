@@ -35,6 +35,7 @@ PROTECTED = {
     "src/bin/lay_ibus_engine/ibus_interface.rs",
     "src/bin/lay_ibus_engine/managed.rs",
     "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/preedit.rs",
     "src/bin/lay_ibus_engine/window_interaction/observation.rs",
     "extension/lay@radislabus-star.github.io/dbus_service.js",
     "extension/lay@radislabus-star.github.io/lay-impl.js",

@@ -1614,7 +1614,7 @@ fn is_ime_candidate_russian_word(word: &str) -> bool {
         || lay::russian_lexicon::is_known_russian_word_or_form(word)
 }
 
-fn trim_tail_buffer(buffer: &mut String) {
+pub(super) fn trim_tail_buffer(buffer: &mut String) {
     trim_tail_buffer_to(buffer, PREEDIT_TAIL_LIMIT);
 }
 

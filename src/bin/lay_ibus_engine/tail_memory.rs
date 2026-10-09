@@ -498,7 +498,7 @@ impl LayIbusEngine {
         } else {
             self.rebuild_preedit_fast_from_tail();
         }
-        trim_committed_tail_buffer(&mut self.committed_tail.buffer);
+        crate::preedit::trim_tail_buffer(&mut self.committed_tail.buffer);
         self.publish_tail_handoff();
     }
 
@@ -1745,18 +1745,6 @@ fn last_tail_token_range(tail: &str) -> Option<(usize, usize)> {
         .find_map(|(idx, ch)| ch.is_whitespace().then_some(idx + ch.len_utf8()))
         .unwrap_or(0);
     Some((start, end))
-}
-
-fn trim_committed_tail_buffer(buffer: &mut String) {
-    const LIMIT: usize = 160;
-    let chars = buffer.chars().count();
-    if chars <= LIMIT {
-        return;
-    }
-    let remove = chars - LIMIT;
-    if let Some((idx, _)) = buffer.char_indices().nth(remove) {
-        buffer.drain(..idx);
-    }
 }
 
 #[cfg(test)]

@@ -2376,9 +2376,61 @@ fn preedit_for_surrounding_text_client_hides_probe_marker() {
 
 #[test]
 fn tail_buffer_stays_bounded() {
-    let mut text = "x".repeat(PREEDIT_TAIL_LIMIT + 10);
-    trim_tail_buffer(&mut text);
-    assert_eq!(text.chars().count(), PREEDIT_TAIL_LIMIT);
+    // The contract is a scalar suffix, not a byte or grapheme limit. Keep the
+    // oracle independent of both production trimmers and their constants.
+    let expected_tail = |text: &str| -> String {
+        text.chars()
+            .rev()
+            .take(160)
+            .collect::<Vec<_>>()
+            .into_iter()
+            .rev()
+            .collect()
+    };
+    for pattern in ["abCDxy", "абвёжя", "😀🦀🚀", "aб😀e\u{301}"] {
+        for len in [159, 160, 161, 177] {
+            let text: String = pattern.chars().cycle().take(len).collect();
+            let expected = expected_tail(&text);
+            let mut trimmed = text.clone();
+            trim_tail_buffer(&mut trimmed);
+            assert_eq!(trimmed, expected, "helper: {pattern:?}/{len}");
+
+            let mut appended = LayIbusEngine::new(
+                "/test".to_string(),
+                Arc::new(Mutex::new(Default::default())),
+                true,
+                true,
+                LayConfig::default(),
+            );
+            for ch in text.chars() {
+                appended.push_tail_char(ch);
+            }
+            assert_eq!(
+                appended.committed_tail.buffer, expected,
+                "ordinary append: {pattern:?}/{len}"
+            );
+
+            for closing_space in [false, true] {
+                let mut committed = LayIbusEngine::new(
+                    "/test".to_string(),
+                    Arc::new(Mutex::new(Default::default())),
+                    true,
+                    true,
+                    LayConfig::default(),
+                );
+                committed.committed_tail.buffer = "ctx old".to_string();
+                committed.composition.buffer = "old".to_string();
+                let word: String = pattern.chars().cycle().take(len - 4).collect();
+                let commit = format!("{word}{}", if closing_space { " " } else { "" });
+                let expected = expected_tail(&format!("ctx {commit}"));
+                committed.sync_tail_after_composition_commit(&commit);
+                assert_eq!(
+                    committed.committed_tail.buffer, expected,
+                    "composition commit: {pattern:?}/{len}/space={closing_space}"
+                );
+            }
+        }
+    }
 }
 
 #[test]

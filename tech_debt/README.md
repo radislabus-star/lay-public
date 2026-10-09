@@ -46,13 +46,15 @@ Exact receipts и последствия:
 | Порядок | Задача | Приоритет / статус | Приёмка |
 | --- | --- | --- | --- |
 | 1 | [TD-129 — current index](129-current-debt-and-acceptance-index.md) | P0 / DONE_METADATA_SCOPE, review9/10 | Один индекс, карта всех прежних scopes; metadata review, без новых functional tests |
-| 2 | [TD-131 — один Unicode tail limit](131-one-unicode-tail-limit.md) | P1 / PLANNED, после129 | Characterization обоих existing producers; fixed160 helper, remote affected contracts, graph/canon, independent review |
+| 2 | [TD-131 — один Unicode tail limit](131-one-unicode-tail-limit.md) | P1 / DONE_SOURCE_ONLY, review9/10 | Characterization обоих existing producers; fixed160 helper, remote affected contracts, graph/canon, independent review |
 
 До protected production change TD-131 нужен новый explicit decision и owning
 entry, перечисленные в карточке. Граф обновляется canonical remote wrapper.
 После каждого завершённого task: scoped DONE → commit → push обоим названным
 remotes → exact ref verification → чистый worktree → следующий task.
-TD-129 завершён в metadata scope. После exact commit/push checkpoint — TD-131;
+TD-129 завершён и опубликован: `2401a4e4dca5f99cc87c42415ab52c108c26bd74`.
+Этап1 завершён: TD-129 и TD-131; следующий этап — отдельное обсуждение
+открытых сложных задач. TD-131 final source packet: [evidence](evidence/2026-10-09-td131-final-source.json);
 publication receipt: `/home/ubu/.cache/lay/development/td129-publication-20261009.json`.
 
 ## Этап2 — открытые задачи для отдельного обсуждения

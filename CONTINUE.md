@@ -10,9 +10,11 @@ Source3044/3044 и native62PASS/2FAIL/64 — разные denominators;
 universal acceptance NOT_MET. Остальные old scopes не закрыты pair acceptance.
 
 План debt review ACCEPT9/10 после двух проходов. TD-129 current index
-DONE_METADATA_SCOPE, implementation review9/10; после публикации — TD-131
-one Unicode tail limit. Stage2/old open tasks сначала
-обсуждаются; их descriptions не implementation. Каждая выполненная source-only
+DONE_METADATA_SCOPE, review9/10, опубликован `2401a4e4`. TD-131
+one Unicode tail limit DONE_SOURCE_ONLY, review7→9/10, runtime unchanged.
+Первый этап завершён. Stage2/old open tasks остаются открытыми для отдельного
+обсуждения; descriptions не implementation. Source receipts/publication status
+смотреть в единственном current index. Каждая выполненная source-only
 задача получает fresh-context review, scopedDONE, commit/push/remote verification
 перед следующей. Никакой installation/restart из metadata task не следует.
 

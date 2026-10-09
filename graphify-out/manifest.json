@@ -910,8 +910,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit.rs": {
-    "mtime": 1791442607.146462,
-    "ast_hash": "f459b56bce404251b6f2a6d0d62ee1ce",
+    "mtime": 1791553196.3476782,
+    "ast_hash": "696c8e5837e487e5fbc76fdf74f44edc",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol.rs": {
@@ -950,8 +950,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
-    "mtime": 1791487877.084798,
-    "ast_hash": "cdaa29c2faa24d59a453c4a2af018919",
+    "mtime": 1791553196.348678,
+    "ast_hash": "dcdb538102ead80a9e5aebf1007f412c",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/text.rs": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1791537388.8711276,
-    "ast_hash": "876d2700434798177338ec06be5ef72a",
+    "mtime": 1791554545.2430208,
+    "ast_hash": "b4d6bcf8324622ae24b9985b20e76bc1",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -3240,8 +3240,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit/tests.rs": {
-    "mtime": 1791386348.070171,
-    "ast_hash": "c9371dd38434fcdbed5b6db4dd263f6a",
+    "mtime": 1791553022.9559724,
+    "ast_hash": "00598d3d07e385974e9b313e3c8ba8f3",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/grammar_adapter.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1791386348.1441722,
-    "ast_hash": "e64da120f8d13a7d2706ddf5e750f6cc",
+    "mtime": 1791553223.5289412,
+    "ast_hash": "ea5c52b4482d08ce72c18f2032094573",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5020,12 +5020,12 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1791539181.2511618,
+    "mtime": 1791540169.8058648,
     "ast_hash": "abdf5b3d27d85ebc47ce758a3bbaa3dc",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1791539181.2421618,
+    "mtime": 1791540169.8071663,
     "ast_hash": "ec9b9553128ef66a4c27ebd6a45c472f",
     "semantic_hash": ""
   },
@@ -5630,8 +5630,8 @@
     "semantic_hash": ""
   },
   "tech_debt/CONTINUE.md": {
-    "mtime": 1791386348.1441722,
-    "ast_hash": "679030dbeee2460ac15ceb6dd1b5c6dd",
+    "mtime": 1791553223.529597,
+    "ast_hash": "6896ad969e43998c1b2318ae60308ee5",
     "semantic_hash": ""
   },
   "tech_debt/evidence/release-1.0.66-double-shift-recurrence.md": {
@@ -5650,8 +5650,8 @@
     "semantic_hash": ""
   },
   "CONTINUE.md": {
-    "mtime": 1791386347.2971601,
-    "ast_hash": "0b0f96b65c04f90601403e21fdef80a3",
+    "mtime": 1791553223.5293472,
+    "ast_hash": "ac40177a540f1a601056eea3f74f8b45",
     "semantic_hash": ""
   },
   "docs/README.md": {
@@ -5880,13 +5880,13 @@
     "semantic_hash": ""
   },
   "scripts/check_architecture_canon.py": {
-    "mtime": 1791386348.0351706,
-    "ast_hash": "28c2f7ddb42ef92e68a30b77817aad58",
+    "mtime": 1791554130.2785761,
+    "ast_hash": "7e6414cf33e0d8820ccb3416e224a6e9",
     "semantic_hash": ""
   },
   "tests/test_architecture_canon.py": {
-    "mtime": 1791386348.1645422,
-    "ast_hash": "e14e0ed105320c850bb2c2093d587792",
+    "mtime": 1791553971.3958476,
+    "ast_hash": "1e36cee5c8793b6776af14e72686f5fc",
     "semantic_hash": ""
   },
   ".github/copilot-instructions.md": {
@@ -6245,8 +6245,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/space-boundary-shift-2026-10-07.md": {
-    "mtime": 1791539038.3887694,
-    "ast_hash": "3571a613d995f3ec576ff9b7f36024c9",
+    "mtime": 1791549336.2437341,
+    "ast_hash": "084044a58b71058c83ee95e06c4cc24a",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-08-space-boundary-canonical-evidence.json": {
@@ -6302,6 +6302,101 @@
   "docs/architecture/decisions/2026-10-09-first-word-evidence-carrier.json": {
     "mtime": 1791538698.9957056,
     "ast_hash": "9b979992ac4d0ca976b59b57ac06cb11",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-09-one-unicode-tail-limit.json": {
+    "mtime": 1791554678.5079627,
+    "ast_hash": "84146014b6a786d132272c2b8aef391a",
+    "semantic_hash": ""
+  },
+  "docs/architecture/tech-debt-maintenance-2026-10-09.md": {
+    "mtime": 1791555289.0040703,
+    "ast_hash": "8e08ec7bbc070df3fdc27746ab22c65f",
+    "semantic_hash": ""
+  },
+  "tech_debt/129-current-debt-and-acceptance-index.md": {
+    "mtime": 1791552877.5046074,
+    "ast_hash": "f959d7247afd009a10ef83ad36a91797",
+    "semantic_hash": ""
+  },
+  "tech_debt/130-offline-inverse-feedback-case-binding.md": {
+    "mtime": 1791551647.7302148,
+    "ast_hash": "f60b18c268008826d498273aea0f3455",
+    "semantic_hash": ""
+  },
+  "tech_debt/131-one-unicode-tail-limit.md": {
+    "mtime": 1791554130.2785761,
+    "ast_hash": "751151b5772a52fe064ece194c541593",
+    "semantic_hash": ""
+  },
+  "tech_debt/132-isolate-inert-retired-preedit-predicates.md": {
+    "mtime": 1791551702.2288487,
+    "ast_hash": "8bbc37eddfce15734449a71e71a4fde0",
+    "semantic_hash": ""
+  },
+  "tech_debt/133-causal-rapid-space-ordering.md": {
+    "mtime": 1791551702.2338486,
+    "ast_hash": "28a062d71a28ffae7e1ec19c33f37fe5",
+    "semantic_hash": ""
+  },
+  "tech_debt/134-god-component-boundaries-without-new-owners.md": {
+    "mtime": 1791551702.2338486,
+    "ast_hash": "bb37367eea9300f4843fa640e042dc2b",
+    "semantic_hash": ""
+  },
+  "tech_debt/135-research-runtime-build-boundary.md": {
+    "mtime": 1791550507.8512883,
+    "ast_hash": "cca8105c676ee04d15d554bef22d0128",
+    "semantic_hash": ""
+  },
+  "tech_debt/136-functional-test-gaps-and-test-file-boundaries.md": {
+    "mtime": 1791550507.8512883,
+    "ast_hash": "2ed658e8e036ac15e671e75e3dd6cc2c",
+    "semantic_hash": ""
+  },
+  "tech_debt/137-owned-feedback-partial-cleanup-recovery.md": {
+    "mtime": 1791551702.2338486,
+    "ast_hash": "b9b969c1357cd027f4f969aa40ff8d0b",
+    "semantic_hash": ""
+  },
+  "tech_debt/AUDIT_2026-10-09.md": {
+    "mtime": 1791552377.0403666,
+    "ast_hash": "037d916059c2d611229f2b5bc3547840",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-debt-plan-review-pass1.md": {
+    "mtime": 1791551229.297376,
+    "ast_hash": "d4aedf82dcb1cfee9c3326a8294d31cf",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-debt-plan-review-pass2.md": {
+    "mtime": 1791552213.9208179,
+    "ast_hash": "263bf455742bcc918cb9de6ff9c2b8b7",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td129-review-pass1.md": {
+    "mtime": 1791552809.0219913,
+    "ast_hash": "8e05054359eeee466983290706ae0af3",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td131-final-source.json": {
+    "mtime": 1791555289.0043097,
+    "ast_hash": "1e4c0f103517f932c7a08d0475c87437",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td131-proof-reuse.json": {
+    "mtime": 1791555289.0038357,
+    "ast_hash": "d70db6be04a779c00693b7612e5cd044",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td131-review-pass1.md": {
+    "mtime": 1791554045.8761795,
+    "ast_hash": "3cdb44ddc3b3f13aeda85beca4bc5ae5",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td131-review-pass2.md": {
+    "mtime": 1791555289.0024636,
+    "ast_hash": "6157d4ab700f55afb6fac83fd648eaea",
     "semantic_hash": ""
   }
 }

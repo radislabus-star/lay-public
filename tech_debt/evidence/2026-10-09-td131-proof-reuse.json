@@ -1,0 +1,18 @@
+{
+  "scope": "reuse3044 behavioral proof with exact unchanged implementation/fixtures/Cargo/lane identities; guard/graph metadata separately validated",
+  "baseline_commit": "2401a4e4dca5f99cc87c42415ab52c108c26bd74",
+  "full_proof": "/home/ubu/.cache/lay/development/run-i1rymxbv/RESULT.json",
+  "verified_relevant_files": 931,
+  "mismatches": [],
+  "excluded_metadata": [
+    "src/generated/architecture_graph_receipt.json"
+  ],
+  "separate_changed_python": [
+    "scripts/check_architecture_canon.py",
+    "tests/test_architecture_canon.py"
+  ],
+  "runtime_authority_changed": false,
+  "selector": "request.files: prefix(src/,tests/fixtures/,scripts/test_lanes/,scripts/test-lanes/) OR suffix(.rs) OR exact(Cargo.toml,Cargo.lock,rust-toolchain.toml,scripts/check-lay-tests.sh,scripts/cargo-guard.sh); exclude src/generated/architecture_graph_receipt.json",
+  "source_request_sha256": "72fb19ce8bc8bd2b792f58ebb69951f797f4de4e0cbd41559ea9dd2b75fcef3d",
+  "independent_review_confirmed_files": 931
+}
