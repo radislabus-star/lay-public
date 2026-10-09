@@ -1,0 +1,25 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Retire shared-learning host inverse/cleanup from supported test execution. Use existing run.py --remote-worker under the distinct remote resource guard with exact config, fresh output and one inverse scenario-set, then the private IBus V3 consumer with all four learning paths isolated and read-only feedback observation. The dev-check.py client wrapper remains default restoration and does not forward scenario-set. Preserve historical tools and receipts for forensic inspection.",
+  "reason": "Controlled execution of the immutable helper proved a FALSE PASS that loses an append between the last CAS and journal replacement. Two file replacements are not a transaction; surviving-journal rebuild cannot recover the lost row. The user explicitly selected test isolation and stopping live cleanup on 2026-10-09.",
+  "verification": "Reuse exact unchanged TD-130 runner/driver/selector/test bytes with its 122 selected,121 passed,1 skipped,0 failed remote suite and two actual private IBus inverse cases. Publish bounded historical caller path/size/SHA inventory and supported-entrypoint closure. Canonical remote graph/check and at most two independent review passes gate task completion; seven synthetic characterizations and seven quiescent native rebuilds remain separate evidence.",
+  "not_tested": "Generic live/shared recovery, live writer exclusion, hot cache and same-length production loader execution; native GUI/physical inverse parity and future native isolation; whole-machine caller absence or OS-level execution prevention; new runtime bytes, installation, restart, model fitting and general restoration quality.",
+  "invariants": [
+    "C02",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "DEVELOPMENT.md",
+    "scripts/proof/ime-client/README.md",
+    "docs/architecture/tech-debt-maintenance-2026-10-09.md"
+  ],
+  "runtime_authority_changed": false,
+  "baseline_commit": "fce8978b07aba23a7708b968c2cc328f70f208b1",
+  "owner": "Existing guarded private IBus proof consumer",
+  "owning_document": "docs/architecture/tech-debt-maintenance-2026-10-09.md",
+  "user_selection": "Изоляция данных тестов (рекомендую)",
+  "supersedes_scope": "TD-137 shared partial-cleanup repair is replaced by DONE_RETIRED_UNSAFE_SHARED_CLEANUP; the historical defect remains characterized, not repaired.",
+  "consequences": "No new runner, runtime owner, transport, timer, writer protocol or model copy. Exact historical host launchers and their snapshots are forensic-only. New native/physical shared-learning inverse is BLOCKED before input, even without the cleanup flag; headless PASS cannot release its gate. Future native proof must bind actual engine process/private usage paths and real client context, then obtain separate execution authorization. Files remain manually executable; retirement governs supported invocation only. User data/config/models and installed IME delivery remain unchanged. Rollback requires a new decision, never restoration of old user journal bytes."
+}

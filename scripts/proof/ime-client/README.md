@@ -225,3 +225,15 @@ This proves the connected private consumer and actual IBus apply/undo/learning
 effects. GUI windows, physical Double Shift and shared host cleanup/recovery are
 separate proof scopes. Historical host helpers and receipts remain immutable.
 The default five restoration cases and their frozen function are preserved.
+
+TD-137 retires shared host inverse/cleanup as a supported test capability.
+Use existing `run.py --remote-worker` under the remote resource guard with
+exact `--config`, fresh `--output` and one opt-in inverse `--scenario-set`.
+`scripts/dev-check.py client` remains the default five-case wrapper; it does
+not select these inverse cases. The exact caller inventory and immutable
+receipts are retained in [the task](../../../tech_debt/137-owned-feedback-partial-cleanup-recovery.md).
+Those host launchers are forensic-only; removing their cleanup flag does not
+admit shared-learning inverse. Native/physical inverse remains BLOCKED before
+input until an isolated native successor has its own evidence and execution
+authorization. This is a supported-route retirement, not an OS execution ban
+or a repair of the historical helper's shared-recovery race.

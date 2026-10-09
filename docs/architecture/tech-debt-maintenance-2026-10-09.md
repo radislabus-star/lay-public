@@ -200,3 +200,80 @@ acceptance and shared cleanup/recovery remain NOT_TESTED. Runtime authority
 and installed/loaded2bd bytes remain unchanged.
 
 Remote proof assets are existing read-only hard-link aliases: all9 roles, model bytes copied0. The accepted2bd executable is staged only for the private factory (8185744 bytes), without installation/restart. The worker phase artifact has its own recorded SHA; this environment is not physical acceptance or equality with the user's installed model set. Exact setup/execution receipts remain private under `/home/ubu/.cache/lay/development/td130-*`.
+
+### TD-137 source characterization — 2026-10-09
+
+Baseline fce8978b; current owner remains the existing usage-persist writer,
+native compiler/loader and historical maintenance helper. The demonstrated
+failure is a CAS refusal after counts replacement, before journal replacement.
+The source also leaves append-to-replace exposure after its last CAS; its
+false-success effects are now measured below. Two file replacements are not
+one transaction.
+
+Design options: retry/hash polling2/10 (no exclusion); existing native rebuild
+and fail-closed stop9/10 for investigation; a new writer/lock/transaction
+protocol3/10 before necessity is established; future private one-case proof
+isolation9/10 for the already completed130 scope, not shared recovery. Current
+learning flag is the OR of logging/precognition/autocorrect, so logging-off
+alone cannot quiesce the writer and all-off changes the tested feature.
+
+Next experiment runs exact historical helper and pinned existing compiler on
+remote temporary synthetic files with controlled external append at three
+commit points. No user journal/config/model writes, runtime build, installation,
+service restart, client launch or delivery-route change is authorized or needed.
+The result must preserve refusal/partial/false-PASS distinctions and separately
+record surviving-journal native rebuild. Runtime authority stays unchanged;
+field ownership, live recovery and physical acceptance are NOT_TESTED. The
+experiment selects a repair boundary; characterization alone is not task DONE.
+
+Measured TD-137 result:7 controlled temporary cases matched the expected
+mechanisms. The last-CAS-to-replace case returned PASS while losing the injected
+positive row; subsequent native rebuild could not restore it. The observed
+partial/crash/exception states remain distinct, and same-length replacement
+kept source_len compatible while cached counts differed from native reference.
+The production loader itself was not executed for that case. All7 quiescent
+fixture count rebuilds through the existing compiler matched the exact native
+reference and left journal/static feedback byte-identical. Old-row/other-owner
+preservation is measured; live exclusion/hot cache/field ownership are NOT_TESTED.
+[The bounded packet](../../tech_debt/evidence/2026-10-09-td137-characterization.json)
+records exact source/receipt hashes and the separate failed tooling pilot.
+
+Recommended next boundary is existing private isolation and retirement of
+unsafe shared mutation9/10, compared with more CAS/retries2/10 or coordinated
+writer/reader/cleanup protocol5/10. The user has been asked to choose this
+complex Stage2 boundary as requested; no live action or runtime fix is inferred.
+Source characterization is complete; TD-137 remains OPEN and no global user
+learning files/config/models or delivery routes were changed.
+
+### TD-137 approved retirement boundary, 2026-10-09
+
+The user selected test isolation and stopping old live cleanup. This supersedes
+the shared-recovery implementation scope with supported-entrypoint retirement;
+it does not repair the demonstrated historical helper defect. The explicit
+[decision](decisions/2026-10-09-retire-shared-inverse-cleanup.json) keeps one
+supported inverse route: existing `run.py --remote-worker` under the remote
+resource guard → private V3 IBus consumer, one immutable inverse case per
+fresh sandbox, all four usage paths
+set on its engine process, read-only observation and nonzero stop on missing
+or contradictory evidence. No executable or production-owner change is needed.
+
+[The retirement packet](../../tech_debt/evidence/2026-10-09-td137-retirement.json)
+binds exact unchanged consumer/test/development-wrapper bytes to the recorded
+TD-130 suite and two real private smokes. Bounded source inventory finds no
+historical cleanup dispatch in supported proof/development scripts. Exact
+historical helper/caller/snapshot paths, sizes, modes and hashes are recorded;
+they remain unchanged and forensic-only. Native/physical shared-learning
+inverse is BLOCKED before input; removing the cleanup flag does not admit it.
+This supported-route rule does not prevent manual OS execution and does not
+claim whole-machine absence of other callers. The existing atomic compositor
+stand and headless private PASS do not establish native legacy parity.
+
+Generic live recovery, hot-cache recovery, native/physical inverse and future
+native isolation remain NOT_TESTED. Original native62/64 and TD-133's two FAIL
+remain unchanged. Runtime authority, accepted installed2bd, user learning
+data/config/models and delivery routes remain unchanged. Final independent
+review and canonical remote refresh gate DONE_RETIRED_UNSAFE_SHARED_CLEANUP;
+source characterization and fixture rebuilds retain their narrower verdicts.
+Final review found that the default `dev-check.py client` wrapper does not
+forward scenario-set. The contract therefore names the guarded direct runner
+used by the exact existing inverse receipts; no executable change is needed.

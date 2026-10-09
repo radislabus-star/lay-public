@@ -71,7 +71,7 @@ remote-only. Original native62/64 и два FAIL сохраняются.
 | --- | --- | --- |
 | P0 | [TD-133 — rapid Space ordering](133-causal-rapid-space-ordering.md), IN_PROGRESS | Оригинальные trace отсутствуют; разрешён separate two-field diagnostic без inverse и shared cleanup. Новый полный physical proof требует130/137 либо эквивалентно доказанной безопасной границы |
 | P1 | [TD-130 — case-bound feedback](130-offline-inverse-feedback-case-binding.md), DONE_CONNECTED_PRIVATE_PROOF | 14 new semantic tests, controlled RED,2 real private IBus cases PASS; review9/10,2passes; shared cleanup/recovery остаётся137 |
-| P1 | [TD-137 — partial cleanup recovery](137-owned-feedback-partial-cleanup-recovery.md), DEFERRED | Existing loader generation и failure injection на temporary data; неизвестный/частичный результат останавливает dependent cases |
+| P1 | [TD-137 — isolation / unsafe cleanup retirement](137-owned-feedback-partial-cleanup-recovery.md), DONE_RETIRED_UNSAFE_SHARED_CLEANUP, review9/10 | Пользователь выбрал isolation/retirement; guarded private entrypoint,12 historical identities, unchanged TD-130 proof reused; live recovery/native inverse не заявляются |
 | P1 | [TD-128 — Chrome после Tab](128-chrome-focus-transfer-autocorrect.md), OPEN | Точный исходный переход поля на нынешних bytes; ownership/Reset contracts сохранить |
 | P1 | [TD-127 — Kitty Tab/Space](127-kitty-space-correction-diverges-from-tab.md), OPEN | Один frozen frame и first divergence, без literal-word exception |
 | P1 | [TD-121 — whole-word handoff](121-preserve-word-across-ime-layout-handoff.md), OPEN_CURRENT_SCOPE | Карта исходных Firefox cases на2bd; новый pair PASS не заменяет их |

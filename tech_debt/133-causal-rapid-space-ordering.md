@@ -3,10 +3,11 @@
 Status: IN_PROGRESS_CAUSAL_INVESTIGATION. Priority: P0. Size: unknown до trace.
 Owner: existing WindowInteraction/ContextAdmissionReducer/output.
 Depends: current exact-byte proof, не новая модель. C03,C05,C07,C08,C10.
-Новому physical run предшествуют case-binding130 и partial-cleanup recovery137
-либо доказанная эквивалентная существующая безопасная граница. Пока они open,
-разрешены read-only old trace и source event-order investigation; dependent
-live feedback cases не запускаются.
+Case-binding130 DONE в private scope. Пользователь выбрал retirement shared
+cleanup в137: его closure не даёт допуска native inverse. Новому physical
+inverse предшествует доказанная изоляция engine usage paths и separately
+authorized execution. Read-only old trace и source event-order investigation
+разрешены; dependent shared-learning inverse cases остаются BLOCKED.
 
 ## Факты и нерешённый переход
 

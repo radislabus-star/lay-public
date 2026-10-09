@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1791560554.7424104,
-    "ast_hash": "0c6b33cd6604ed265dfb7c93fa8d58b0",
+    "mtime": 1791570997.3589833,
+    "ast_hash": "eed8657b6ffa3789e31600683777cf53",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1791562772.5551925,
-    "ast_hash": "69e15876472d8779f8178b18ea19d00e",
+    "mtime": 1791570843.11842,
+    "ast_hash": "4c8d2834b69842845d5be031fd1400ef",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5520,13 +5520,13 @@
     "semantic_hash": ""
   },
   "DEVELOPMENT.md": {
-    "mtime": 1791386347.29816,
-    "ast_hash": "839134e251e206e37e9005f825c07d56",
+    "mtime": 1791571064.2203867,
+    "ast_hash": "649aa6c513c07e9d6f58dad1607bf63c",
     "semantic_hash": ""
   },
   "scripts/proof/ime-client/README.md": {
-    "mtime": 1791566215.995158,
-    "ast_hash": "fee0b20b5b8d761a06b9266e0ccbab02",
+    "mtime": 1791571064.2203867,
+    "ast_hash": "945c96ff32d3bbdcdcfbea859ac95f66",
     "semantic_hash": ""
   },
   "tech_debt/124-reproducible-maintenance-loop.md": {
@@ -6310,8 +6310,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/tech-debt-maintenance-2026-10-09.md": {
-    "mtime": 1791566859.5369644,
-    "ast_hash": "040ad880d6952e20dbbfb1c5d4de2d5a",
+    "mtime": 1791571064.2213867,
+    "ast_hash": "52801d2b782aadb91f89443d5d40c7e7",
     "semantic_hash": ""
   },
   "tech_debt/129-current-debt-and-acceptance-index.md": {
@@ -6320,8 +6320,8 @@
     "semantic_hash": ""
   },
   "tech_debt/130-offline-inverse-feedback-case-binding.md": {
-    "mtime": 1791566859.537093,
-    "ast_hash": "7796204dbceb6dbbabc70f203136dc72",
+    "mtime": 1791567062.0658,
+    "ast_hash": "ad38e81d59fa7c4c0468b7e47c5bdd2e",
     "semantic_hash": ""
   },
   "tech_debt/131-one-unicode-tail-limit.md": {
@@ -6335,8 +6335,8 @@
     "semantic_hash": ""
   },
   "tech_debt/133-causal-rapid-space-ordering.md": {
-    "mtime": 1791560446.7078927,
-    "ast_hash": "1fc95feec724e059ea49004f89dcbdce",
+    "mtime": 1791570843.11842,
+    "ast_hash": "b835e2a7078aa8586bf69ab5dd2efd9d",
     "semantic_hash": ""
   },
   "tech_debt/134-god-component-boundaries-without-new-owners.md": {
@@ -6355,8 +6355,8 @@
     "semantic_hash": ""
   },
   "tech_debt/137-owned-feedback-partial-cleanup-recovery.md": {
-    "mtime": 1791551702.2338486,
-    "ast_hash": "b9b969c1357cd027f4f969aa40ff8d0b",
+    "mtime": 1791571064.2213867,
+    "ast_hash": "31faea7ffdc6dba5ca05da668c2f2c27",
     "semantic_hash": ""
   },
   "tech_debt/AUDIT_2026-10-09.md": {
@@ -6420,13 +6420,33 @@
     "semantic_hash": ""
   },
   "tech_debt/evidence/2026-10-09-td130-connected-inverse.json": {
-    "mtime": 1791566859.536768,
-    "ast_hash": "064cb65ce64e97015d9396fc04a51124",
+    "mtime": 1791567062.0656197,
+    "ast_hash": "09925c2090883f1668ba9d75e1a65d57",
     "semantic_hash": ""
   },
   "tech_debt/evidence/2026-10-09-td130-review-pass2.md": {
     "mtime": 1791566859.5364623,
     "ast_hash": "146256d74a5b99cafcc59e001c8225de",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-09-retire-shared-inverse-cleanup.json": {
+    "mtime": 1791571064.3154156,
+    "ast_hash": "cd22bc2aafde6b52710a6efc170026a0",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td137-characterization.json": {
+    "mtime": 1791569860.1979902,
+    "ast_hash": "80b40f2b02f6f18cd5501f5eda0cbf92",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td137-retirement.json": {
+    "mtime": 1791571064.3152425,
+    "ast_hash": "d4d46d4652c7d69c9ba6e22a44cb2ae7",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-09-td137-review-pass1.md": {
+    "mtime": 1791570912.435849,
+    "ast_hash": "f1f88895b3922c4b55aa86acd065ac4e",
     "semantic_hash": ""
   }
 }
