@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 2998,
+    "correctness": 3008,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 252,
-    "target": 2808
+    "process": 256,
+    "target": 2814
   },
   "package_fixtures": [
     {
@@ -1792,6 +1792,27 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_first_observed_pair_uses_one_verified_frame_and_exact_inverse",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_first_observed_word_range_is_revoked_by_navigation_backspace_and_trim",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_first_pair_after_enter_preserves_known_start_and_one_exact_frame",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_gtk_first_word_preedit_rejects_selection_and_word_fragment",
       "target": "bin:lay-ibus-engine"
     },
@@ -1807,6 +1828,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_legacy_native_glyphs_preserve_mirror_without_commit_or_release_capture",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_line_clear_retires_native_prefix_without_granting_a_word_start",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -2752,6 +2780,34 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::tests::duplicate_native_focus_for_other_field_revokes_pending_request",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::tests::first_observed_word_range_does_not_infer_known_prefix_from_retained_boundary",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::tests::first_observed_word_range_is_retained_without_promoting_unknown_start",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::tests::first_observed_word_range_rejects_unobserved_and_unrepresentable_prefixes",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::tests::first_observed_word_range_retains_known_start_after_unretained_enter",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -15877,6 +15933,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "space_boundary_pair_tests::space_pair_native_observed_scope_uses_one_terminal_frame_and_exact_undo",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_native_partial_first_word_cannot_extend_its_observed_range",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_native_retains_the_first_observed_word_across_its_space",
       "target": "bin:lay-ibus-engine"
     },
     {

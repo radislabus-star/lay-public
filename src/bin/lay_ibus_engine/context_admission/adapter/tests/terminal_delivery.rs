@@ -1,6 +1,387 @@
 //! Real legacy callback and signal contracts; native desktop delivery is a
 //! separate consumer proof. No simulated keyboard encoder is used here.
 use super::*;
+use crate::protocol::KEY_ENTER;
+
+async fn type_observed_native_text(
+    harness: &mut Harness,
+    engine: &mut LayIbusEngine,
+    text: &str,
+    serial: &mut u32,
+) {
+    type_native_text_with_activation(harness, engine, text, serial, true).await;
+}
+
+async fn type_native_text_with_activation(
+    harness: &mut Harness,
+    engine: &mut LayIbusEngine,
+    text: &str,
+    serial: &mut u32,
+    first_key_publishes_mode: bool,
+) {
+    for ch in text.chars() {
+        let first = first_key_publishes_mode && engine.committed_tail.buffer.is_empty();
+        let mode_before = engine.layout_gesture.layout_is_ru;
+        let visible_before = engine.composition.preedit_visible;
+        let keyval = replay_keyval(ch);
+        let code = if ch == ' ' { 57 } else { 0 };
+        assert!(!legacy_key(harness, engine, *serial, keyval, code, 0).await);
+        if ch == ' ' {
+            expect_legacy_native_space(harness, engine, mode_before, visible_before).await;
+        } else {
+            if first {
+                expect_activation_input_mode_update(harness, engine, mode_before).await;
+            }
+            no_legacy_output(harness).await;
+        }
+        assert!(!legacy_key(harness, engine, *serial + 1, keyval, code, RELEASE_MASK).await);
+        no_legacy_output(harness).await;
+        *serial += 2;
+    }
+}
+
+async fn first_observed_terminal_word() -> (Harness, LayIbusEngine, u32) {
+    let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+    let mut engine = new_engine(&harness);
+    engine.config.auto_replace = false;
+    engine.config.nanda_precognition = false;
+    start_source_free_unknown(&mut harness, &mut engine).await;
+    engine.set_content_type_state(10, 0);
+    engine.set_client_capabilities(1 | 1 << 3);
+    engine.client_context.cursor_cell_width = 11;
+    engine.set_layout_is_ru(true);
+    let mut serial = 28_000;
+    type_observed_native_text(&mut harness, &mut engine, "должн ", &mut serial).await;
+    assert_eq!(
+        engine
+            .context_word_scope
+            .as_ref()
+            .unwrap()
+            .lineage()
+            .observed_first_word,
+        Some((0, 5))
+    );
+    (harness, engine, serial)
+}
+
+#[test]
+fn terminal_delivery_first_observed_pair_uses_one_verified_frame_and_exact_inverse() {
+    if !crate::space_boundary_pair_tests::isolated_case("context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_first_observed_pair_uses_one_verified_frame_and_exact_inverse") { return; }
+    crate::space_boundary_pair_tests::warm_pair_lexical_fixture();
+    zbus::block_on(async {
+        let (mut harness, mut engine, mut serial) = first_observed_terminal_word().await;
+        engine.config.auto_replace = true;
+        engine.config.typing_assist = true;
+        engine.config.nanda_autocorrect = true;
+        type_observed_native_text(&mut harness, &mut engine, "ыбыть", &mut serial).await;
+        let frame = engine.capture_space_autocorrect_frame_identity().unwrap();
+        assert_eq!(
+            frame.space_boundary_pair.as_ref().unwrap().text,
+            "должн ыбыть"
+        );
+        crate::space_autocorrect_prefetch::proof::install_full_lease(&frame, &engine.config);
+        assert!(legacy_key(&mut harness, &mut engine, serial, KEY_SPACE, 57, 0).await);
+        let effects = legacy_effects(&mut harness).await;
+        assert_eq!(effects.len(), 1, "one terminal replacement frame");
+        assert_eq!(effects[0].header().member().unwrap().as_str(), "CommitText");
+        let body = effects[0].body();
+        let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+        assert_eq!(
+            crate::ibus_interface::ibus_text_value_to_string(&value),
+            Some("\u{7f}".repeat(11) + "должны быть ")
+        );
+        assert_eq!(engine.committed_tail.buffer, "должны быть ");
+        assert!(
+            legacy_key(
+                &mut harness,
+                &mut engine,
+                serial + 1,
+                KEY_SPACE,
+                57,
+                RELEASE_MASK
+            )
+            .await
+        );
+        no_legacy_output(&mut harness).await;
+        let mut output = crate::output::TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        assert_eq!(
+            engine
+                .undo_last_ime_autocorrect(&mut EngineOutput::test(&mut output))
+                .await
+                .unwrap(),
+            Some(true)
+        );
+        assert_eq!(
+            output.committed_texts,
+            ["\u{7f}".repeat(12) + "должн ыбыть "]
+        );
+        assert_eq!(engine.committed_tail.buffer, "должн ыбыть ");
+    });
+}
+
+#[test]
+fn terminal_delivery_first_pair_after_enter_preserves_known_start_and_one_exact_frame() {
+    if !crate::space_boundary_pair_tests::isolated_case("context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_first_pair_after_enter_preserves_known_start_and_one_exact_frame") { return; }
+    crate::space_boundary_pair_tests::warm_pair_lexical_fixture();
+    zbus::block_on(async {
+        let (mut harness, mut engine, mut serial) = first_observed_terminal_word().await;
+        assert!(!legacy_key(&mut harness, &mut engine, serial, KEY_ENTER, 28, 0).await);
+        no_legacy_text_output(&mut harness).await;
+        assert!(
+            !legacy_key(
+                &mut harness,
+                &mut engine,
+                serial + 1,
+                KEY_ENTER,
+                28,
+                RELEASE_MASK
+            )
+            .await
+        );
+        no_legacy_text_output(&mut harness).await;
+        serial += 2;
+        assert!(engine.committed_tail.buffer.is_empty());
+        assert_eq!(
+            engine
+                .context_word_scope
+                .as_ref()
+                .unwrap()
+                .lineage()
+                .completeness,
+            WordCompleteness::KnownStart
+        );
+        assert_eq!(
+            engine
+                .context_word_scope
+                .as_ref()
+                .unwrap()
+                .lineage()
+                .observed_first_word,
+            None
+        );
+        type_native_text_with_activation(
+            &mut harness,
+            &mut engine,
+            "должн ыбыть",
+            &mut serial,
+            false,
+        )
+        .await;
+        assert_eq!(
+            engine
+                .context_word_scope
+                .as_ref()
+                .unwrap()
+                .lineage()
+                .completeness,
+            WordCompleteness::KnownStart
+        );
+        assert_eq!(
+            engine
+                .context_word_scope
+                .as_ref()
+                .unwrap()
+                .lineage()
+                .observed_first_word,
+            Some((0, 5))
+        );
+        engine.config.auto_replace = true;
+        engine.config.typing_assist = true;
+        engine.config.nanda_autocorrect = true;
+        let frame = engine.capture_space_autocorrect_frame_identity().unwrap();
+        assert_eq!(
+            frame.space_boundary_pair.as_ref().unwrap().text,
+            "должн ыбыть"
+        );
+        crate::space_autocorrect_prefetch::proof::install_full_lease(&frame, &engine.config);
+        assert!(legacy_key(&mut harness, &mut engine, serial, KEY_SPACE, 57, 0).await);
+        let effects = legacy_effects(&mut harness).await;
+        assert_eq!(effects.len(), 1);
+        assert_eq!(effects[0].header().member().unwrap().as_str(), "CommitText");
+        let body = effects[0].body();
+        let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+        assert_eq!(
+            crate::ibus_interface::ibus_text_value_to_string(&value),
+            Some("\u{7f}".repeat(11) + "должны быть ")
+        );
+        assert_eq!(engine.committed_tail.buffer, "должны быть ");
+        assert!(
+            legacy_key(
+                &mut harness,
+                &mut engine,
+                serial + 1,
+                KEY_SPACE,
+                57,
+                RELEASE_MASK
+            )
+            .await
+        );
+        no_legacy_output(&mut harness).await;
+    });
+}
+
+#[test]
+fn terminal_delivery_first_observed_word_range_is_revoked_by_navigation_backspace_and_trim() {
+    zbus::block_on(async {
+        for action in ["navigation", "backspace", "trim", "close_field"] {
+            let (mut harness, mut engine, mut serial) = first_observed_terminal_word().await;
+            match action {
+                "navigation" => {
+                    assert!(!legacy_key(&mut harness, &mut engine, serial, KEY_LEFT, 105, 0).await);
+                    no_legacy_text_output(&mut harness).await;
+                }
+                "backspace" => {
+                    assert!(
+                        !legacy_key(&mut harness, &mut engine, serial, KEY_BACKSPACE, 14, 0).await
+                    );
+                    no_legacy_text_output(&mut harness).await;
+                }
+                "trim" => {
+                    let text = "ы".repeat(crate::preedit::PREEDIT_TAIL_LIMIT);
+                    type_observed_native_text(&mut harness, &mut engine, &text, &mut serial).await;
+                }
+                "close_field" => engine.close_committed_tail_field(),
+                _ => unreachable!(),
+            }
+            assert_eq!(
+                engine
+                    .context_word_scope
+                    .as_ref()
+                    .unwrap()
+                    .lineage()
+                    .observed_first_word,
+                None,
+                "retained first-word proof survived {action}"
+            );
+            assert!(engine.capture_space_boundary_pair_scope().is_none());
+        }
+    });
+}
+
+#[test]
+fn terminal_delivery_line_clear_retires_native_prefix_without_granting_a_word_start() {
+    if !crate::space_boundary_pair_tests::isolated_case("context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_line_clear_retires_native_prefix_without_granting_a_word_start") { return; }
+    crate::space_boundary_pair_tests::warm_pair_lexical_fixture();
+    zbus::block_on(async {
+        for (keyval, keycode, modifiers, clears) in [
+            ('c' as u32, 46, 1 << 2, false),
+            ('u' as u32, 22, (1 << 2) | 1, false),
+            ('u' as u32, 22, (1 << 2) | (1 << 3), false),
+            ('u' as u32, 22, 1 << 2, true),
+            (replay_keyval('г'), 22, 1 << 2, true),
+        ] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = new_engine(&harness);
+            engine.config.auto_replace = false;
+            engine.config.nanda_precognition = false;
+            start_source_free_unknown(&mut harness, &mut engine).await;
+            engine.set_content_type_state(10, 0);
+            engine.set_client_capabilities(1 | 1 << 3);
+            engine.client_context.cursor_cell_width = 11;
+            engine.set_layout_is_ru(true);
+            let mut serial = 29_000;
+            type_observed_native_text(&mut harness, &mut engine, "пример", &mut serial).await;
+            assert!(
+                !legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    serial,
+                    keyval,
+                    keycode,
+                    modifiers
+                )
+                .await
+            );
+            no_legacy_text_output(&mut harness).await;
+            assert!(
+                !legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    serial + 1,
+                    keyval,
+                    keycode,
+                    modifiers | RELEASE_MASK,
+                )
+                .await
+            );
+            no_legacy_text_output(&mut harness).await;
+            serial += 2;
+            let lineage = engine.context_word_scope.as_ref().unwrap().lineage();
+            assert_eq!(
+                lineage.completeness,
+                crate::context_admission::WordCompleteness::UnknownStart
+            );
+            assert_eq!(lineage.observed_suffix_chars, 0);
+            assert_eq!(lineage.observed_first_word, None);
+            if !clears {
+                assert_eq!(engine.committed_tail.buffer, "пример");
+                continue;
+            }
+            assert_eq!(
+                engine.committed_tail.buffer, "",
+                "native line clear must retire its untrusted prefix before the next first word"
+            );
+            for ch in "должн ыбыть".chars() {
+                let mode_before = engine.layout_gesture.layout_is_ru;
+                let visible_before = engine.composition.preedit_visible;
+                let code = if ch == ' ' { 57 } else { 0 };
+                assert!(
+                    !legacy_key(
+                        &mut harness,
+                        &mut engine,
+                        serial,
+                        replay_keyval(ch),
+                        code,
+                        0,
+                    )
+                    .await
+                );
+                if ch == ' ' {
+                    expect_legacy_native_space(&mut harness, &engine, mode_before, visible_before)
+                        .await;
+                } else {
+                    no_legacy_text_output(&mut harness).await;
+                }
+                assert!(
+                    !legacy_key(
+                        &mut harness,
+                        &mut engine,
+                        serial + 1,
+                        replay_keyval(ch),
+                        code,
+                        RELEASE_MASK,
+                    )
+                    .await
+                );
+                no_legacy_text_output(&mut harness).await;
+                serial += 2;
+            }
+            engine.config.auto_replace = true;
+            engine.config.typing_assist = true;
+            engine.config.nanda_autocorrect = true;
+            let frame = engine.capture_space_autocorrect_frame_identity().unwrap();
+            assert_eq!(
+                frame.space_boundary_pair.as_ref().unwrap().text,
+                "должн ыбыть"
+            );
+            crate::space_autocorrect_prefetch::proof::install_full_lease(&frame, &engine.config);
+            assert!(legacy_key(&mut harness, &mut engine, serial, KEY_SPACE, 57, 0).await);
+            let effects = legacy_effects(&mut harness).await;
+            assert_eq!(effects.len(), 1);
+            assert_eq!(effects[0].header().member().unwrap().as_str(), "CommitText");
+            let body = effects[0].body();
+            let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+            assert_eq!(
+                crate::ibus_interface::ibus_text_value_to_string(&value),
+                Some("\u{7f}".repeat(11) + "должны быть ")
+            );
+            assert_eq!(engine.committed_tail.buffer, "должны быть ");
+        }
+    });
+}
 
 async fn known_terminal(width: i32) -> (Harness, LayIbusEngine) {
     let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;

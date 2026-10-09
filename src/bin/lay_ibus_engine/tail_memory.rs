@@ -1362,6 +1362,9 @@ impl LayIbusEngine {
     }
 
     pub(super) fn close_committed_tail_field(&mut self) {
+        if let Some(scope) = self.context_word_scope.as_mut() {
+            scope.forget_observed_first_word();
+        }
         self.committed_tail.pending_completion_learning = None;
         self.client_context.managed_word_start = None;
         self.committed_tail.buffer.clear();

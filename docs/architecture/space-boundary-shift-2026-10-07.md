@@ -1721,3 +1721,784 @@ rejects a pair starting at mirrored offset zero; other first-word failures need
 their own first-failed-transition evidence. The proposed first-word plan has not
 been implemented and is not included in this publication. Existing correction
 selection, safety checks and installed runtime bytes remain unchanged.
+
+
+## 2026-10-08 — First-word correction: bounded observed-span preflight
+
+User now authorizes implementation of the first-word correction plan after
+publishing accepted 1.0.80 as 9fdd1992. Work remains root-only, without remote
+desktop. Existing native single-word UnknownStart Space corrections already
+have an exact observed-suffix route; a global UnknownStart ban is not the cause
+of every first-word symptom.
+
+Actual unchanged-installed first-pair baseline: GTK3.entry PASS, Kitty.readline
+FAIL with exact original `должн ыбыть ` after closing Space. Two earlier setup
+attempts failed before client creation because root could not connect to the
+user session bus; ordinary-user execution with existing uinput access produced
+the actual 1/2 result. Receipts: `/home/ubu/.cache/lay/development/first-word-boundary-20261008/BASELINE_PHYSICAL.json`
+and `BASELINE_SETUP_FAILURES.json`. The existing physical harness closes its
+owned device/windows and attaches the same daemon bytes; global IBus and IME
+bytes are unchanged. No initial-word failure is inferred for GTK.
+
+Decision and full consequence analysis:
+`decisions/2026-10-08-first-word-boundary-span.json`. Preserve the first fully
+locally observed word range across its real first separator inside WordLineage.
+This carries the existing native first-word observed-suffix permission into an
+exact final-pair scope; it does not assert absolute field start. Preserve raw
+mirror refusal, lexical proof, generic SafetyGate, chooser and delivery routes.
+No new correction owner, queue, model copy, timer or polling. A connected
+reducer/executor RED precedes runtime edits, then real callback positive and
+stale/trim/backspace negatives. Remote focused and one final release gate plus
+physical candidate proof remain pending. No changed runtime is installed.
+
+First reducer/executor RED run `run-0d0ltxkz` stopped at remote rustfmt before
+compilation or tests (14.2s). Two multiline assertions in the new test needed
+formatting; no runtime change or RED semantic result yet. Formatting is
+corrected explicitly and the bounded focused RED is rerun.
+
+Reducer/executor RED established: `run-81shvu2a/RESULT.json`,698 executed,
+697 existing tests PASS and the sole new regression FAIL. The exact failure
+is scope capture returning None versus the first observed pair, before any
+edit. Production edits now proceed. Static layout analysis selected checked
+u8 offsets for the bounded160-scalar range, preserving the existing24-byte
+WordLineage and224-byte callback assertions without weakening them.
+
+Focused GREEN: `/home/ubu/.cache/lay/development/run-n_n7am38/RESULT.json`,
+703 selected/executed/PASS, zero failures, remote guarded run81.1s including
+transport. All697 prior tests remain present. Six new tests cover the first
+observed pair through scope/executor and authenticated legacy callbacks, exact
+one-frame replacement and inverse, partial/unobserved/overflow origins, and
+navigation, separator Backspace, tail clipping and field-close revocation.
+This is focused source evidence only, not installed or physical acceptance.
+The existing24-byte WordLineage and224-byte callback assertions pass unchanged.
+
+Root-only static preflight: the range is created at the existing observed
+boundary transition, remains stable while RIGHT is appended, participates in
+existing lineage/token equality, and cannot promote UnknownStart. The original
+observed-separator route and managed-client scope are preserved. Trimming or
+replacement clears the range without rebasing; existing revocation clears it
+on input gaps. No candidate/ranker/lexical/verifier/SafetyGate or transport code
+changes. This is the implementing author's review, not independent review.
+Candidate metadata is1.0.81; one frozen remote release gate, generated graph
+refresh, exact artifact binding and physical client checks follow. Installed
+1.0.80 remains unchanged at this milestone.
+
+First frozen release attempt `/home/ubu/.cache/lay/development/first-word-boundary-20261008/full/RELEASE_GATE_RESULT.json`
+stopped after passing format/canon/discovery, before full tests or artifact
+build. Discovery retains all3060 original rows and adds exactly six. The
+private allowlist incorrectly marked both new authenticated D-Bus callback
+tests as target-isolated; existing canonical discovery correctly assigns
+process isolation. Correct the private expected rows to match that stronger
+existing route, preserving every old row and exact six identities. No runtime,
+test implementation, discovery rule or gate is changed. The fresh successor
+records the failed preflight rather than retrying in its immutable directory.
+
+
+First-word frozen full release gate PASS:
+`/home/ubu/.cache/lay/development/first-word-boundary-20261008/full-isolation/FETCHED/RELEASE_GATE_RESULT.json`.
+All17 stages pass,909.94s: architecture/canon/AST graph, all3040 mandatory
+source tests (3004correctness+36package), lints, public/installer regressions,
+Rust1.88 default/lexical-compiler and exact release IME artifact. All3060 old
+discovery rows remain byte-identical; four target-isolated and two canonically
+process-isolated tests are added. Zero known failures or infrastructure failures.
+The ten approved generated graph/manifest/ledger exports are imported exactly.
+Artifact1.0.81 SHA-256
+`475871dbfc3b7d2f837939249c4d3c79c42ff28864cfae5d01b3c3678d0ffdfb`,8185488B,
+from frozen1505-file source binding
+`48e15019c9b20de120f9293bf81decb80c0c0b8aef98e8bb6fba9771bc2ea16e`.
+These are source/artifact proofs only. IME-only guarded installation with the
+accepted1.0.80 rollback and the distinct first-word physical protocol follows;
+installed candidate and physical acceptance are still pending at this milestone.
+The frozen decision and every functional/generated byte remain unchanged;
+only this owning document gains measured-result notes after the gate.
+
+
+Exact gated IME installed successfully,1.0.81/475871dbfc3b...;
+`/home/ubu/.cache/lay/development/first-word-boundary-20261008/physical/INSTALL.json`.
+The accepted5d99e01e bytes are preserved in that transaction's exact rollback.
+Only IME was replaced/restarted. Global IBus, daemon/L3/L1.1 bytes and processes,
+input sources, config, extension1.0.80 and models were unchanged by installation.
+The subsequent existing uinput fixture reconnects the same daemon bytes for QA.
+
+First-pair physical GREEN: GTK3.entry exact target/caret PASS in
+`CANDIDATE_INITIAL_PHYSICAL.json`; its Kitty setup was BLOCKED before input
+because the new owned window lacked focus. One distinct fresh Kitty-only setup
+then PASS in `CANDIDATE_KITTY_FIRST_PAIR.json`,3.719s, with exact terminal
+readline Enter-submission. Both receipts are under
+`/home/ubu/.cache/lay/development/first-word-boundary-20261008/`.
+The unchanged-installed Kitty baseline failed with the exact original pair;
+the exact new candidate corrects it after closing Space. GTK first pair passes
+before and after. The blocked preparation remains separate from semantic
+results; preservation controls and the other planned field probes follow.
+
+
+First-word preservation receipt `CANDIDATE_PRESERVATION.json`:20 executed,
+17PASS3FAIL, noBLOCKED/fatal. Both fields pass first/second-word Tab,
+continuation, clean/invalid preservation, valid original-left calculation,
+focus-return first pair and fast calculation. GTK inverse PASS and exact own
+rejection cleanup2rows; Kitty inverse scenario stops before inverse keys, in
+its forward repair (actual full terminal rank no_apply, original pair retained;
+no inverse rejection rows). Both eight-Shift controls fail at their first icon
+assertion because --icon-path was omitted (NOT_CAPTURED); actual first layout
+flip reaches the correct text. Fresh exact panel path631844 is independently
+visible/showing with RU label and nonempty extents. Retry only these three
+failed controls with the required observer connected and a fresh Kitty; keep
+all original FAILs. No runtime/source change is justified by missing icon input.
+
+
+Fresh first-word inverse PASS in Kitty (`CANDIDATE_KITTY_FRESH_INVERSE.json`),
+with exact own two-row rejection cleanup; both eight-Shift controls PASS with
+actual icon631844 (`CANDIDATE_KITTY_SHIFT_THEN_INVERSE.json` and
+`CANDIDATE_GTK_EIGHT_SHIFT.json`). The sequential Kitty forward still fails:
+after physical Ctrl+U, actual client is empty but the last right-letter trace
+retains17tail characters for the actual11-character pair. Six prior native
+word characters contaminate LEFT before pair scope/rank. This first failed
+transition belongs to existing native command memory, before inverse delivery.
+Source confirms managed shortcuts discard their mirrors while native shortcuts
+retain the native word contract. Extend only plain physical native Ctrl+U
+metadata invalidation; preserve other shortcuts, UnknownStart, output and all
+owners. Add authenticated callback RED first, then focused/full source and the
+same chained physical proof. Initial475871db runtime remains installed during
+source work. No ranker or delivery change is justified.
+
+
+Native line-clear callback RED confirmed:
+`/home/ubu/.cache/lay/development/run-8_5ec8y4/RESULT.json`,704executed,
+703priorPASS and1newFAIL,96.4s. Exact child log
+`run-lD0OgI/tests/logs/process/bin-lay-ibus-engine-b656c48c0f669e89.log`
+asserts remaining local prefix versus empty after plain Ctrl+U. Ctrl+C,
+Ctrl+Shift+U and Ctrl+Alt+U preservation cases pass before that failure.
+Implementation reuses the existing unhandled-shortcut mirror invalidation,
+only for native plain physical Ctrl+U; both Cyrillic/Latin keyvals use the same
+physical key identity. The shortcut still returns false to its client; no new
+output actor, edit authority, queue, timer or transport. UnknownStart persists
+until subsequent letters and their actual boundary supply observed provenance.
+
+
+Native line-clear successor focused GREEN:
+`/home/ubu/.cache/lay/development/run-6fu0_yuj/RESULT.json`,704/704PASS,
+zero failures,81.9s remote. The new authenticated callback regression keeps
+UnknownStart and zero observed authority after Ctrl+U, drops the old mirror,
+then proves newly observed first-pair scope and exactly one verified terminal
+replacement frame. Both Latin/Cyrillic keyvals use the physical U identity.
+Ctrl+C, Ctrl+Shift+U and Ctrl+Alt+U preserve their existing native mirrors.
+All703prior tests and24-byte/224-byte budgets pass. Source update is bounded
+to existing command invalidation and modifier classification; lexical models,
+ranker, verifier, SafetyGate, transports and input-source routing are unchanged.
+One new frozen full gate and exact successor artifact are required before
+installation; initial475871db candidate remains installed meanwhile.
+
+Native line-clear successor full release gate PASS:
+`/home/ubu/.cache/lay/development/first-word-boundary-20261008/full-native-clear/FETCHED/RELEASE_GATE_RESULT.json`.
+All 17 stages pass in 910.178s; 3041/3041 mandatory tests pass
+(3005 correctness, 36 package), with zero known or infrastructure failures.
+All 3066 predecessor discovery rows are preserved; the one new authenticated
+callback test uses canonical process isolation. Rust 1.88 default and lexical
+compiler checks, lints, architecture/canon, public/installer regressions and
+the exact release artifact pass. The ten generated exports are imported
+unchanged. Frozen source closure: 1505 files, SHA-256
+`8d078c2cba23770b7bdbf6afda46e4f0e5c165ae91da2318d68651b9fbdaa881`.
+Exact IME 1.0.81: 8185488 bytes, SHA-256
+`b59c1a0bd2fe34f2f07f3921f09292241e06756ccc9feafc9b7032d4ca4f4b46`.
+The decision and all functional/generated bytes remain frozen; only this
+owning document adds measured results. These are source/artifact proofs;
+performance, universal client acceptance and the successor physical checks
+are not established here. Runtime authority is unchanged at this milestone;
+guarded IME-only installation and the fixed native-clear physical protocol
+follow.
+
+Successor installed through the exact owned-empty-field transaction:
+`/home/ubu/.cache/lay/development/first-word-boundary-20261008/physical-native-clear/INSTALL.json`
+PASS, IME-only 1.0.81/b59c1a0bd2fe. Immediate predecessor 475871db and accepted
+1.0.80/5d99e01e rollback bytes remain available. Installation changed no other
+service, global IBus, input sources, extension 1.0.80, config or model package.
+Physical QA subsequently reattached the same daemon bytes to its own uinput
+device; installation preservation is distinct from those fixture restarts.
+
+Native first-word preservation is GREEN: 22/22 PASS, zero BLOCKED/fatal,
+47.634s, `CANDIDATE_NATIVE_CLEAR_PRESERVATION.json` under the same evidence root.
+Both Kitty.readline and GTK3.entry pass first pair, continuation, clean/invalid
+preservation, valid original LEFT, focus return, fast calculation, both Tab
+cases, eight double-Shift pairs with actual icon, and inverse. In Kitty the
+formerly failing sequence eight shifts -> physical Ctrl+U -> first-pair repair
+-> inverse now passes on exact successor bytes. Each own inverse removes
+exactly its two rejection rows; positive learning and model files are preserved.
+
+Primary remaining-field probe `CANDIDATE_NATIVE_CLEAR_WIDE_V1.json`: 24 planned,
+12 executed (9 PASS, 3 FAIL), 12 BLOCKED, zero fatal, 162.336s. Chrome's three
+controls, GTK3 multiline, both GTK4 controls and all three Qt controls PASS.
+All three GOST controls retain the original pair with caret 12; the final Space
+trace reports `full_no_apply` at `verifier` (30436us for input). This label
+identifies the adapter's authority/plan-validation boundary after selection;
+the trace does not identify the precise refusal, so do not infer a broader
+root cause or weaken that boundary. Existing GOST limitations are separately
+recorded in the predecessor acceptance summary. Firefox's three owner binds,
+Tor's three owned windows and Terminal's READY preparation are BLOCKED before
+input. The five native-editor/Writer routes lack the required clean preedit
+observation and remain BLOCKED. No client-specific bypass is added.
+
+One bounded preparation retry, after closing the own Chrome/controller,
+is retained separately in `CANDIDATE_NATIVE_CLEAR_PREPARATION_RETRY.json`:
+0 executed, 6 BLOCKED, zero fatal, 91.761s. The primary denominator is unchanged.
+Both guarded QA jobs have TasksMax 128; pids.events max is 15 then 82, with zero
+memory OOMs. Fewer concurrent task processes did not remove preparation blocks.
+All six private offline Tor launchers exited 139 before input; this is setup
+failure, not semantic acceptance. No further retry or universal acceptance is
+claimed. The source fix is physically established in the explicit passing
+fields; other delivery and observation limitations remain outside that verdict.
+
+Cleanup removes exactly two own Chrome and six own offline Tor profiles,
+427254187 bytes, after PID/starttick and fresh argv/cwd/open-FD checks. Raw
+receipts, run metadata, source and rollback artifacts remain. The exact own HTTP
+server is stopped and port 33645 is closed; the named agent-browser controller
+is closed. No recorded own UUID window remains in application/top-level AT-SPI
+metadata. Writer's original blocked-close receipt is preserved; its exact
+native PID is now gone and its private UserInstallation is absent. No shared
+editor, Terminal, Tor process or user profile was signalled for this cleanup.
+
+2026-10-09 version alignment, explicitly requested by the user: installed CLI
+and panel still report 1.0.80 while exact IME b59c1a0bd2fe is 1.0.81.
+The panel's APP_VERSION export is also still 1.0.80 in the tested source;
+change only that display constant and the metadata date, then refresh the AST
+graph. Reuse the already full-gated 1.0.81 CLI from the exact release build
+(6988088 bytes, SHA-256
+`5c262f2e3d0285a6348d56513ce1f100fc725e2e1964b6f8004d7d97d8e32991`).
+The CLI mtime lies inside the successful FULL_GATE build interval, its version
+is 1.0.81, and the same target's IME matches the gated artifact. No rebuild,
+model installation, core-service restart or renewed functional matrix is
+required for this metadata alignment. Before mutation pin the exact CLI and
+extension predecessors; use the existing extension-only reload and compare
+all service PIDs, IME bytes, selected source/mode and config afterwards.
+Plan and artifact binding:
+`/home/ubu/.cache/lay/development/first-word-version-alignment-20261009/CONSEQUENCE_CHECK.json`
+and `CLI_ARTIFACT.json` in that directory. Installation is pending here.
+
+The contemporaneous report used the literal pair `должен ыбыть`; a bounded
+passive decoded-key trace contains that six-letter LEFT. Moving its RIGHT
+prefix would form `должены`, unlike the proved `должн ыбыть` -> `должны быть`.
+The strict prefix-transfer rule must retain independent attestation of both
+reconstructed words. This observation does not justify a word-specific branch
+or relaxing the verifier; clarification of the user's intended input is pending.
+
+Version alignment installation completed on 2026-10-09. `INSTALL.json` in the
+version-alignment evidence directory reports PASS: CLI and the live panel both
+report 1.0.81. The IME remains PID 3444282 with exact gated SHA-256 b59c1a0bd2fe;
+daemon PID 3519638, L3 PID 1206382, L1.1 PID 3296699 and global IBus PID 270775
+are unchanged. Loaded and installed core hashes, GNOME/IBus source lay-ime-ru,
+input mode ru, configured input sources, configuration hash and canonical L2
+package hash are preserved. Only CLI bytes and the extension's metadata.json
+and tray_support.js were replaced; the existing extension-only reload loaded
+the new display constant. Exact three-file predecessors are in `rollback/`.
+No build, functional test, synthetic input, physical matrix, model installation
+or core-service restart was performed for version alignment. The earlier
+full-gate and bounded physical verdicts retain their original scopes.
+
+Metadata AST refresh is complete on the mini-PC through the existing shared
+resource guard. The inherited-cache attempt returned WATCH for three absent
+parameter-type capability references despite unchanged Rust sources; its
+receipt and log remain in `FETCHED/GRAPH_RESULT_INHERITED_CACHE_FAIL.json` and
+`FETCHED/GRAPH.log`. Following the existing release worker's cache-rejection
+procedure, the copied AST cache was moved outside the copied source. A fresh
+extraction then passed the canonical graph and architecture checks without
+source or guard changes. `FETCHED/GRAPH_RESULT.json` records the successful
+refresh, and its eight exact graph exports are imported. No functional tests
+were rerun. `FUNCTIONAL_SOURCE_PRESERVED.json` verifies all 734 frozen Rust
+files and the two display-literal changes; `FINAL_SOURCE_BINDING.json` binds
+the retained functional source, allowed metadata/graph delta and installation
+receipt. The current changes remain uncommitted and unpushed.
+
+### Literal valid LEFT plus extra RIGHT prefix: read-only inspection, 2026-10-09
+
+The user repeated `должен ыбыть`. The working expectation for this literal
+pair is `должен быть`; an optional question distinguishes that target from
+`должны быть`. The question concerns the intended surface; production code
+is unchanged.
+The existing boundary transfer would form `должены` and cannot attest that
+target. Separately, `src/ru_typo/extra.rs:25` calls
+`unknown_cyrillic_lower(word, 6)`, excluding the five-scalar RIGHT from the
+ordinary extra-letter producer before its safe-candidate checks. This is a
+measured source restriction, not proof of the entire client's refusal path.
+
+Read-only Lattice/Restore requests to the existing warm L1.1 service preserve
+PID 3296699 and executable SHA-256 fa1a7967b9a1. The installed live projection
+limit is 32: `быть` is retained at rank 6 with score 1993 and authority false;
+none of the 32 seeds grants authority. Restore independently reports ABSTAIN,
+`outside_calibrated_basin`, with `быть` at rank 4. An initial bounded limit-8
+inspection omits the target and must not be mistaken for the live projection.
+All three responses and limits remain in
+`/home/ubu/.cache/lay/development/extra-prefix-inspection-20261009/L11_READOUT.json`.
+Each query took less than 3 ms. There was no service start/reload, package
+copy, model fit, feedback write, input injection or runtime code change.
+
+L1 target retention at the actual live limit is established; L2/L3 selection
+and authority transfer for this exact client callback remain NOT TESTED.
+Recent passive metadata is not causally bound to this exact input and does
+not establish a verifier or delivery defect. No functional correction or
+new physical acceptance is claimed by this inspection.
+
+### User clarification: compare complete pairs, 2026-10-09
+
+The user corrected the preceding interpretation: the intended comparison is
+the whole damaged pair `должн ыбыть` against `должны быть`. L1.1's `быть`
+candidate is useful evidence and must not be changed to address this report.
+The earlier assumed singular target `должен быть` and the extra-letter
+minimum-length restriction are outside this requested repair. Preserve the
+existing L1.1 package, extra-letter rule and IME delivery routes.
+
+The existing `HotBoundaryShiftReadout::mass_gain` already compares the sum of
+both candidate-word masses against both original-word masses, and
+`candidate_settles` requires support for each reconstructed word. Preserve
+this joint candidate and the single TransitionDecisionCore decision; do not
+replace it with two independent word replacements or a parallel ranker.
+The next unresolved observation is the exact original pair presented to that
+comparison, including whether an earlier correction changed LEFT. Existing
+undo state is cleared on the next pressed key, but that source fact alone
+does not prove such a correction occurred in the user's reported field.
+No production code, model or installed runtime was changed for this clarification.
+
+2026-10-09 connected investigation authorized by the user: before a production
+patch, observe the exact installed 1.0.81/b59c1a0bd2fe in one disposable GTK3
+entry through the existing pinned physical-key and widget-state helpers.
+Compare an ordinary and a paused first-Space schedule for the original pair,
+plus the literal six-letter LEFT control. Capture the first boundary, the
+right word before its closing Space, and the final field. Pin original helper
+hashes, fixture PID/starttick and live core PIDs/hashes; close only that own
+field/device. No broad matrix, model/data copy, service restart, global IBus
+change, desktop automation session or source patch is part of this baseline.
+The result distinguishes an earlier LEFT correction from a later joint-pair
+generation/ranking/admission loss; it does not establish other clients.
+
+### Complete-pair comparison: measured client boundary, 2026-10-09
+
+Read-only source inspection and prospective physical observations preserve
+the installed 1.0.81 IME SHA-256
+`b59c1a0bd2fe34f2f07f3921f09292241e06756ccc9feafc9b7032d4ca4f4b46`.
+No production source, package, ranker, delivery route or installed artifact
+was changed. Root worked alone; no independent review is claimed.
+
+`/home/ubu/.cache/lay/development/pair-comparison-20261009/PHYSICAL_BASELINE.json`
+records three cases in one disposable GTK3 entry. Both the ordinary schedule
+and a one-second pause after LEFT produce `должны быть ` with caret 12 at
+the closing Space. The paused first-Space snapshot retains `должн `; the
+ordinary immediate snapshot predates publication of that Space, while its
+before-closing snapshot independently shows committed `должн ` and the full
+RIGHT in owned preedit. The literal
+six-letter LEFT control retains `должен ыбыть ` with caret 13. Moving the
+prefix in that control would produce unattested `должены`; it is not the
+same input as the requested five-letter LEFT. The earlier hypothesized
+premature LEFT correction is not reproduced in these GTK cases. The GTK
+trace slices are empty because the bounded log had already reached its
+rotation limit; their absent metadata is not evidence about the decision.
+The independently observed widget states establish only these visible cases.
+
+`/home/ubu/.cache/lay/development/pair-comparison-20261009/gost/PHYSICAL.json`
+records one fresh owned Chromium-Gost input. It retains `должн ` at the
+first Space, `должн ыбыть` before the closing Space, and the unchanged pair
+with one Space and caret 12 afterwards. `OWN_INTERVAL.jsonl` uses a retained
+4096-byte overlap anchor across bounded-log rotation and contains 340
+causally ordered records for this own input interval. At engine path
+`/io/github/radislabus_star/LayIme/engine/lay_ime_ru/76`, tail epoch 3150,
+worker generation 5, the common gate reports APPLY with one eligible
+candidate, a selected transition receipt and bound frame. Adapter projection
+reports no final decision; Space consumes ready NoApply/Verifier. Thus this
+failure occurs after selection, not because L1.1's RIGHT candidate is absent
+or because independent one-word ranking displaced the complete pair.
+
+All observed callback bindings in that own interval have surrounding revision
+0 and no surrounding snapshot. The existing owned-preedit pair scope requires
+a current `ManagedWordStartWitness` from an actual client snapshot. Without
+that witness `capture_space_boundary_pair_scope` cannot authorize the prior
+word; `ime_correction` cannot project a selected pair as a last-word-only edit.
+This is the first established capability/provenance boundary. The trace does
+not export the selected surface or the exact failed projection predicate;
+do not claim a more detailed live verifier reason. Later unbound capability
+records must not substitute for an exact callback-bound capability receipt.
+
+Consequences and stopping boundary: changing joint masses or L1.1 cannot
+manufacture the missing client observation. Treating a mirrored prefix as an
+exact snapshot would violate C03/C07 and allow deletion outside proven scope;
+adding another chooser or after-Space output fallback would violate C02/C04.
+These alternatives are rejected. Supporting that Gost capability contour
+requires a separately proved client-observation/output contract; no such
+transport change is hidden inside this pair-comparison investigation.
+The joint comparison is already implemented and GTK-visible; Gost remains
+FAIL in this bounded prospective case and universal acceptance is NOT MET.
+
+Both own fields and UInput devices are closed, the own Gost fixture server is
+stopped, and only the exact focused UUID browser tab received a close request.
+The shared browser process was not terminated. Both receipts verify unchanged
+core/global-IBus PIDs and loaded/installed hashes, config, input sources and
+the initial selected Lay source. No model/data copy, service restart, new fit,
+remote desktop, commit or push occurred. An initial Gost preflight stopped
+before fixture creation because the user's selected mode was US; the subsequent
+owned-field observation selects RU only within its own field and restores the
+initial mode before closing. No failed physical case was retried until green.
+
+The documentation-only AST refresh retains a separate initial WATCH receipt:
+the copied AST cache omits capability references at the same three unchanged
+mutation sinks observed in the earlier metadata refresh. All 734 frozen Rust
+files still match. Reject that copied cache and re-extract through the existing
+canonical remote guard; do not alter source or checks to obtain PASS. The
+initial failure and final maintenance verdict are retained under the same
+pair-comparison evidence root as `FETCHED/GRAPH_RESULT_COPIED_CACHE_FAIL.json`,
+`FETCHED/GRAPH_FAILURE_RECEIPT.json` and `FETCHED/GRAPH_RESULT.json`. These
+maintenance receipts do not reopen or expand functional/physical acceptance.
+
+### Gost refusal repaired through native client input, 2026-10-09
+
+The user authorized completing the remaining Gost refusal. The first failed
+transition above remains the governing diagnosis: a selected complete-pair
+candidate cannot modify the prior word without an actual client observation.
+The repair enables Gost's existing native Wayland IME connection with
+`--ozone-platform=wayland --enable-wayland-ime`; it adds no Lay owner,
+chooser, snapshot substitute, output fallback or delivery route. L1.1,
+joint-pair masses, ranker weights, models and all production Rust remain
+unchanged. Root worked alone, without remote desktop or independent review.
+
+Evidence root:
+`/home/ubu/.cache/lay/development/gost-boundary-repair-20261009/`.
+`PREFLIGHT.json` records the initial alternatives, resource and authority
+consequences, fixture repairs and the later activation decision.
+The same Gost 148.0.7778.216 binary and installed Lay 1.0.81 IME SHA-256
+`b59c1a0bd2fe34f2f07f3921f09292241e06756ccc9feafc9b7032d4ca4f4b46`
+were used in two sequential fresh empty-profile controls:
+
+- `wayland-bounded_scope_v3/PHYSICAL.json`: native input PASS, final
+  `должны быть `, caret 12. Its own trace contains surrounding observations;
+  the selected gate reaches a bound final decision.
+- `legacy-bounded_control_v3/PHYSICAL.json`: ordinary launch FAIL, final
+  `должн ыбыть `, caret 12. Its own trace has no surrounding observations;
+  the common gate selects APPLY but projection has no final decision and
+  closes with NoApply/Verifier. This expected baseline failure is retained.
+
+The trace includes unbound capability notifications from focus transitions;
+those notifications alone are not attributed to the tested callback. The
+client snapshots, gate metadata and exact owned-field observations establish
+the narrower causal result: changing the client input platform supplies the
+missing observation to the existing admission and output contracts.
+
+`THREE_FIELDS.json` records the prospective native panel: **30 executed,
+30 PASS**, ten cases each in input, textarea and contenteditable. Each field
+checks first-word and prefixed pairs, continuation after correction, clean
+preservation, an invalid reconstructed LEFT, another lexical pair, first-word
+Tab, held Shift, eight Double Shift pairs with a following letter/Backspace,
+and exact whole-pair inverse. Decoder/mode checks pass; actual rendered panel
+icons were not captured. The three original per-field `PHYSICAL.json` receipts
+retain their exact case observations and inverse-feedback cleanup links.
+
+Two earlier startup-only fixture refusals retain their receipts: Gost erased
+the launch arguments expected by the first ownership check, and GNOME moved
+the second browser out of the generic resource scope. Neither typed test text.
+The final launcher uses the existing pipe-blocked child/exact GNOME app-scope
+pattern under the unchanged shared desktop ceiling, splitting the admitted
+1536 MiB into 512 MiB supervisor and 1024 MiB browser. An expanded-panel v1
+receipt retains 7 PASS and 3 harness failures: missing generic physical `ё`
+mapping and an unattached hotplug test keyboard. The explicit v2 protocol
+supplies the generic key mapping and one persistent keyboard. It restarts only
+the same-byte Lay daemon once to attach that device and once after closing it,
+with FD and loaded-hash proof. No assertion, deadline or authority guard was
+weakened. These historical runs are separate from the fixed 30-case panel.
+
+`LAUNCHER_PLAN.json` and `ACTIVATION.json` record installation of two previously
+absent per-user overrides:
+`~/.local/share/applications/chromium-gost.desktop` and
+`~/.local/share/applications/org.chromium.Chromium.desktop`.
+Only their three Exec lines each gain the native input flags; ordinary,
+new-window and incognito actions retain their other arguments. Both validate
+with `desktop-file-validate`. System package launchers, default browser and
+the actual profile `~/.config/chromium` are preserved. Rollback removes only
+these own overrides if their recorded exact hashes still match.
+
+The existing user Gost PID 3049111/starttick 300918442 was pinned by pidfd,
+profile lock, executable and SHA-256. Verified private session/Preferences/
+Local State backups were made before and after one graceful SIGTERM; no
+SIGKILL or profile replacement occurred. The same profile was relaunched with
+`--restore-last-session` and the native flags, producing PID 534080/starttick
+312920549. Restoration was requested; user tab contents were not enumerated.
+The loaded Gost SHA-256 remains
+`47d3d7ff32251beed81b616d44fef6f1c92c061503c17474c070fb250e535f9b`.
+
+`actual-profile-probe/PHYSICAL.json` then records **1/1 PASS** in a new owned
+UUID input forwarded by an ordinary `--new-window` launch to that exact
+restored user browser. Physical typing of `должн ыбыть` followed by Space
+produces `должны быть ` with caret 12. Its debug interval is empty, so this
+receipt proves the visible owned DOM result and process binding, not a new
+callback-metadata claim. Only the focused own field received Ctrl+W; the user
+browser remains alive. The probe's own keyboard and loopback server are closed.
+
+All IME/L1.1/L3 loaded and installed hashes, their PIDs, global IBus PID,
+input-source list and Lay config remain unchanged. Only the daemon PID changed
+for the documented fixture attachment/detachment. Exact inverse rejection
+rows were removed through the original bounded cleanup helper; positive and
+unrelated feedback and model files were preserved. `CLEANUP.json` inventories
+and removes only eight fresh empty fixture profiles (92,405,622 bytes), after
+proving their browsers/servers closed, profile locks absent and no accessible
+same-user FD references. Receipts and private user-session backups remain.
+
+`RESULT.json` separates the pilot, expected ordinary-control failure, native
+30-case panel and connected user-profile probe. This supersedes the preceding
+unresolved Gost result only for the measured native client contour. Arbitrary
+direct CLI startup without these flags, other user windows and rendered panel
+icons remain NOT TESTED; universal acceptance remains NOT MET. There was no
+new build, fit, runtime installation, source gate or commit/push. The previous
+3041/3041 source result is reused without expanding its scope. Runtime decision
+and mutation authority did not change. The documentation-only graph refresh
+runs remotely through the canonical guard, rejecting copied AST cache before
+initial extraction; its receipt is `FETCHED/GRAPH_RESULT.json` under this root.
+
+### Native first pair after Enter: reproduced refusal and decision, 2026-10-09
+
+The user reports that `должн ыбыть` still fails. The preceding Gost repair
+does not certify their current Kitty input. Matched existing live native
+callbacks select APPLY but have no final projected decision and close with
+NoApply/Verifier. The current word is KnownStart; no actual surrounding client
+snapshot is present. This establishes a distinct post-selection refusal, not
+an L1.1 candidate or joint-pair ranking defect.
+
+Evidence root: `/home/ubu/.cache/lay/development/kitty-boundary-refusal-20261009/`.
+`USER_PAIR.json` and its bounded metadata interval retain the matched input
+and proof limits; there is no client-visible receipt from the user's window.
+`PHYSICAL_BASELINE.json` independently reproduces three fixed sequential cases
+in one fresh own Kitty GNU Readline window on installed 1.0.81/b59c1a0bd2fe:
+fresh-focus first pair PASS, the same first pair after physical Enter FAIL,
+prefixed pair after the next physical Enter PASS. Exact screen/caret and the
+original non-executing physical-submission observer agree. The own window and
+keyboard are closed; all core/global-IBus PIDs, hashes and sources are unchanged.
+
+The first failed mechanism is in existing WordScope provenance. Enter retires
+the local tail, then its observed-boundary settlement opens KnownStart without
+a retained separator. `observed_suffix_chars` is currently tracked only for
+UnknownStart. Consequently the next first word never acquires the closed-word
+range required by `capture_space_boundary_pair_scope`, although it was typed
+through the admitted owner. An extra preceding word supplies a retained
+separator and avoids this omission. The earlier fresh-focus first-word proof
+did not include this owner-preserving Enter transition.
+
+`docs/architecture/decisions/2026-10-09-enter-first-word-span.json` and
+`IMPLEMENTATION_PREFLIGHT.json` record the consequence analysis and selected
+route before production edits. Reuse the same observed suffix counter while
+the first locally closed-word range is pending, including KnownStart without
+a retained boundary or range. Preserve completeness, bounded observed input,
+revocations, one reducer/decision/verifier and every existing delivery route.
+No new field, authority owner, timer, queue, cache, chooser, model change,
+literal runtime exception or global IBus restart is authorized by this repair.
+Reject downgrading ordinary KnownStart after Enter and adding another reader or
+executor. The original 2/3 baseline remains FAIL; implementation, a regression
+RED on previous source, full final gates and installed physical successor
+results are pending. Root works alone; no independent review is claimed.
+
+Source successor: the existing WordScope suffix counter now tracks a pending
+first closed-word range even when the current start is already KnownStart
+and no retained boundary/range exists. Completeness remains unchanged; exact
+append/backspace, checked range bounds and original revocation rules remain
+required. Two production files and two test files change; no fields or output
+routes are added. `RED_RESULT.json` establishes two new regressions failing on
+previous production precisely at missing range None versus Some((0,5)). The
+initial test build error and subsequent fresh-activation observer timeout are
+retained separately; the explicit test-protocol replan uses the original
+text decoder and distinguishes first-focus property publication from the
+same-owner Enter continuation, keeping exact output checks and budgets.
+Focused IME check `/home/ubu/.cache/lay/development/run-gxgfg83_/RESULT.json`
+is 707/707 PASS, 86.1s, with three declared new identities and no canonical
+manifest mutation. This is development proof only. Mandatory full source gates,
+exact final artifact installation and native physical successor remain pending.
+
+Full-source preparation retained two separate failures: the original GitHub
+SSH transport lacked a usable key, so its successor fetches the same verified
+HEAD from an existing real Git repository on the development host. The next
+full gate stopped at CANON_PRECHECK because the new decision omitted required
+top-level `reason`, `verification` and `not_tested` fields. Those decision
+fields now state the measured cause, bounded focused proof and pending gates;
+the canon guard and production source are unchanged. The failed receipts are
+retained under `kitty-boundary-refusal-20261009/full-source` and
+`full-source-local-git`. Freeze a fresh successor after this documentation
+repair; no installed runtime or physical-success claim follows from it.
+
+The fresh full-source successor `kitty-boundary-refusal-20261009/full-source-canon-successor/FETCHED/RELEASE_GATE_RESULT.json`
+passes every required command, including both MSRV routes, with 3044/3044
+selected tests (3008 correctness, 36 package), zero failures and stable source.
+Its exact IME artifact is
+`ba0d4545ae7485c0c03bceaaa84c64feba5501ae0b7ceba22b4be24e53ebefe5`.
+`physical/INSTALL.json` records installation over b59 with only the IME PID
+changing; global IBus, models, sources and configuration are unchanged.
+`PHYSICAL_SUCCESSOR.json` records 5/5 native Kitty PASS: the original three
+cases plus two first-pair repetitions after Enter, exact screen/caret and
+physical Enter submission. This is a bounded repair proof, not universal
+acceptance.
+
+The fixed eight-field, eight-case native control matrix is separately
+61 PASS / 3 FAIL / 0 BLOCKED out of 64. The target first-pair correction,
+continuation, invalid-left refusal, focus return, eight decoder/icon probes
+and owned inverse pass in every field. Two uninterrupted clean-input cases
+(GTK3 TextView and Qt QPlainTextEdit) move the internal Space to the end;
+Qt QTextEdit has a shifted Space in the uninterrupted provider-calculation
+case. Do not erase those failures or claim the full physical matrix passed.
+The root-only paired byte-fixture protocol in
+`spacing-baseline-comparison/PREFLIGHT.json` freezes three fields, two input
+types and three repetitions (18 cases per version) to determine whether the
+first-Space ordering failure class already exists on exact accepted b59.
+It uses original key timing/observers/deadlines and existing IME-only
+activation in owned empty GTK fields, restores ba0 unconditionally, and
+changes no production source or delivery route. The attribution is pending.
+
+The paired raw comparison is measured: b59 18/18 PASS, ba0 16 PASS /2 FAIL.
+This is a regression signal, not a frequency/causal attribution proof. ba0
+is rejected and `REJECTED_CANDIDATE_ROLLBACK.json` restores exact b59 while
+all other model/global-IBus PIDs, sources and configuration remain unchanged.
+Two extended existing semantic tests execute on unchanged ba0 production:
+707 selected,705 PASS,2 expected FAIL in `run-igtciai8/RESULT.json`.
+They separately expose KnownStart becoming UnknownStart on a handled edit
+without mirror append/shortening, and a retired first-word range surviving
+unretained Enter. The initial format-only precheck failure is retained as
+`run-ttqxifut/RESULT.json`; it was not semantic RED.
+`decisions/2026-10-09-first-word-mirror-provenance-repair.json` records the
+repair consequences before production changes. Preserve known boundary
+completeness while invalidating an unobserved suffix; keep original unknown,
+navigation, command, reset and owner revocations. Discard retired first-word
+range on an unretained closing boundary. No added fields, owners, models or
+output routes. Fresh full artifact and all affected physical proof remain
+required; no acceptance of the rejected ba0 bytes is claimed.
+
+The provenance repair passes 707/707 focused tests in
+`run-lqzdn6xv/RESULT.json` and every mandatory full command with 3044/3044
+tests in `kitty-boundary-refusal-20261009/full-source-provenance-successor/FETCHED/RELEASE_GATE_RESULT.json`.
+The exact full-gated and installed IME is
+`7dd6ec67ce4b970e06bfd7f8e7e5de12cb4efe1d4f1eb9ab78688af856e0d5a3`;
+`physical-provenance-successor/INSTALL.json` preserves the other services,
+models, global IBus, sources and configuration. Its native Kitty proof is
+7/7 PASS, including first pair after Enter and after independently verified
+clean lines of lengths three and nine. The separate unchanged 64-case matrix
+is 60 PASS / 4 FAIL / 0 BLOCKED in
+`physical-provenance-controls/windows/WIDE_MATRIX_V2_20261009T122317.json`.
+All eight target-pair cases pass. Four clean/invalid-left rapid-input controls
+show a delayed first literal Space in GTK3 Entry, GTK3 TextView and Qt
+QPlainTextEdit. This is not full physical acceptance; retain the failed bytes
+and receipts. No causal attribution or rate estimate follows from 4/64.
+
+Before the next production edit, bound the pending KnownStart suffix to the
+existing native-terminal evidence carrier which consumes it. UnknownStart
+suffix observation remains generic. Exact token matching compares the entire
+WordLineage, so needless KnownStart suffix writes in managed GUI fields can
+invalidate an otherwise current frame. This is a source-level consequence;
+its connection to the measured delayed Space is a hypothesis requiring
+physical proof. The first-pair Observed projection already selects
+`uses_native_terminal_input`; GUI pair projections retain their existing
+owned-preedit/surrounding witnesses. Reuse that same existing classification
+in the four suffix-observation branches, with no new owner or client name.
+
+Consequence analysis: candidates, ranking, models, package reload and learning
+are untouched; no field, allocation, queue, cache, deadline, timer, RPC or
+output route is added. Preserve the known-boundary invalidation repair and
+retired-range clearing, original unknown/navigation/reset/owner revocation,
+and checked offsets. GUI KnownStart should retain its predecessor lineage
+until an actual boundary; native KnownStart retains the observed first-pair
+range. Risk: losing native provenance or silently changing generic UnknownStart
+would restore the original refusal; extend the existing semantic identity to
+assert both carriers on press/release before editing production. Design one
+(chosen) selects the existing evidence consumer; design two restores generic
+KnownStart writes and tries to refresh every affected frame, which broadens
+authority/concurrency changes without a demonstrated need. A new counter or
+timer has no justified owner/removal boundary and is rejected. Rollback is
+exact b59 through the existing guarded IME-only activation. Fresh focused,
+unchanged mandatory full and exact-byte physical denominators remain required.
+No full gate, assertion, key timing or deadline may be weakened for acceptance.
+
+The unchanged predecessor with the extended carrier test is semantic RED:
+`run-vh4oveuf/RESULT.json` executes707,706PASS,1FAIL at GUI KnownStart
+suffix3 versus established0, with format passing. The original frozen raw
+comparison is also retained for the provenance successor in
+`spacing-provenance-comparison/COMPARISON.json`: b59 17PASS/1FAIL,7dd
+16PASS/2FAIL out of18 each. Thus the delayed-Space failure class exists on
+b59 too; these small samples neither prove a new rate nor absolve changed
+bytes. Keep that limitation distinct from the independently proved needless
+managed-GUI lineage write. Production now selects the existing evidence
+carrier in the four suffix-observation branches; full/physical proof remains
+pending and the installed7dd result is not reclassified as acceptance.
+
+Carrier selection is focused GREEN:707/707, zero failures, in
+`run-utymfj7h/RESULT.json` (82.6seconds); the existing native/unknown and
+managed-lineage assertions all pass. The earlier format-only precheck is
+retained as `run-gqedkm6v/RESULT.json` and is not a semantic failure.
+Root-only static review and fresh exact-source full gate follow; no delegated
+review, installation or physical acceptance is inferred from focused PASS.
+
+The fresh carrier full gate passes all mandatory commands and3044/3044
+tests (3008correctness,36package), zero failures and stable1508-member source
+in `kitty-boundary-refusal-20261009/full-source-evidence-carrier/FETCHED/RELEASE_GATE_RESULT.json`
+(913.073seconds). Exact artifact:
+`2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559`.
+Remote graph refresh/canon and exact generated import pass. This does not
+establish installed or physical acceptance. Exact b59 remains installed at
+this checkpoint; `REJECTED_PROVENANCE_ROLLBACK.json` records its restoration.
+The separate b59 control attempt executes16:15PASS/1FAIL, then7setup blocks
+after inverse-cleanup journal CAS rejection; remaining cases are NOT_TESTED.
+Its immutable receipt is
+`physical-accepted-baseline-controls/windows/WIDE_MATRIX_V2_20261009T124849.json`.
+The stopped run's two exact owned negative rows are subsequently removed by
+the unchanged helper in `OWNED_INVERSE_CAS_RECOVERY/CLEANUP.json`, preserving
+all positive/other rows. Do not count this incomplete attempt as a64-case
+baseline or erase the original refusal. New native64, Kitty7 and existing
+Gost30-case proofs are pending; no user profiles or model packages are copied.
+
+The exact carrier artifact is now installed and loaded as1.0.81 in
+`physical-evidence-carrier/INSTALL.json`. Only the IME bytes changed;
+global IBus, model binaries/services, sources and configuration remain exact.
+The new native first-pair admission scope is active; authority owners,
+DecisionCore/verifier and all delivery routes remain unchanged. This is an
+installed experiment, not full physical acceptance or a published release.
+
+Target evidence on exact2bd88 bytes: `PHYSICAL_EVIDENCE_CARRIER.json` is7/7
+Kitty PASS; `PHYSICAL_UNINTERRUPTED_CARRIER.json` adds3/3 independent first
+pairs after physical Enter with the entire literal stream typed continuously,
+without intermediate LEFT/RIGHT waits. Both verify exact screen/caret and
+physical submission. The unchanged eight-field native matrix is62PASS/2FAIL,
+zero BLOCKED, in
+`physical-evidence-carrier-controls/windows/WIDE_MATRIX_V2_20261009T130841.json`.
+The exact requested target pair passes in all eight fields, as do its
+continuation, provider-calculation pair, focus return, eight decoder/icon
+steps and inverse. GTK3 Entry and Qt QTextEdit fail the rapid invalid-left
+control with a shifted first Space (`долженыбыть  ` and `долженыбы ть `).
+Keep those failures. The same ordering class was observed on b59 in the
+fixed raw comparison; this does not establish equal rates or full acceptance
+of the changed artifact. Universal acceptance remainsNOT_MET.
+
+The initial Gost run is24/30 and remainsFAIL in
+`gost-evidence-carrier/THREE_FIELDS.json`. Its input field passes10/10,
+then the harness accidentally uses the unprefixed first-word inverse cleanup
+for a prefixed inverse. The helper reportsNO_OWNED but leaves the two actual
+`они должн ыбыть -> они должны быть` rejection rows; subsequent prefixed
+cases in TextArea/contenteditable decline at rank. This is a harness/data
+fault, not evidence for another runtime patch. The original prefix-specific
+rotation-aware helper removes exactly those two rows in
+`RECOVER_ORIGINAL_PREFIX_INVERSE/CLEANUP.json`, retaining every positive and
+unrelated row. The unchanged runtime and original timings/assertions then
+pass all20 dependent cases in `TWO_FIELDS_CLEANUP_REPAIR.json`. Preserve the
+six earlier failures and the archived wrong-selector driver. Source/native
+proof and browser input10/10 are separate from the repaired20/20; browser
+rendered-panel-icon scope remainsNOT_TESTED. No rule, ranker or model package
+was changed to obtain those results.
+
+`CURRENT_RESULT.json` binds final installed/loaded SHA,3044 source tests,
+the separately reported physical denominators, exact functional source and
+the owner-document-only measured metadata update. Native inverse cleanup
+removes16 exact owned negative rows (all eight receiptsPASS); the recovered
+browser input and repaired two-field inverses use their matching original
+prefix selector. All own fields, UInput devices and fixture servers are
+closed. `OWNED_PROFILE_CLEANUP.json` removes five verified inactive temporary
+profiles (54031314bytes), retaining every receipt and all user profiles.
+No agents, remote desktop, new model copies, fit, push or release are used.
+
+### User acceptance and publication request — 2026-10-09
+
+The user confirmed `должны быть работает` for the installed 1.0.81 IME,
+SHA-256 `2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559`,
+then requested `Работаешь пушь!`. Acceptance covers the requested
+`должн ыбыть -> должны быть` correction, including the first pair after Enter.
+The existing source result is3044/3044 and the focused Kitty result is10/10.
+The broader native matrix remains62/64 with universal acceptanceNOT_MET;
+its two documented rapid-input failures and all earlier receipts are retained.
+
+Verification of these accepted bytes is closed. Publication reuses the
+recorded evidence and changes only Git/source metadata; it does not rebuild,
+reinstall, restart services, repeat tests or alter runtime authority. No tag
+or GitHub release was requested in this publication instruction.

@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1791386347.9550922,
-    "ast_hash": "a7e3fe0d722370f9baaeb9ce4a0bdf7b",
+    "mtime": 1791488164.5430932,
+    "ast_hash": "08865ddc9974eeedacda6f8dbef9bc58",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1791386347.9551694,
-    "ast_hash": "d0a7499a5b07ff5f4dd8cf3ff4b0ccfa",
+    "mtime": 1791500244.922931,
+    "ast_hash": "9d70d3949d935ab0684aff84e9f91f14",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -905,8 +905,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/managed.rs": {
-    "mtime": 1791450564.8126442,
-    "ast_hash": "5a08e2147bc8a88aa8e21c20aea27505",
+    "mtime": 1791490863.3613234,
+    "ast_hash": "cc660b3cfe0a728beceb76d3ae3eb221",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit.rs": {
@@ -915,8 +915,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol.rs": {
-    "mtime": 1791442241.3331099,
-    "ast_hash": "963fc34c36b447b0a4d3ea387a4618e2",
+    "mtime": 1791490863.7419615,
+    "ast_hash": "01572292068a6a44c1654458002b91fc",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol/keys.rs": {
@@ -925,8 +925,8 @@
     "semantic_hash": "0092b527d46a070e5c79d6e85c90da33"
   },
   "src/bin/lay_ibus_engine/protocol/modifiers.rs": {
-    "mtime": 1791386348.071904,
-    "ast_hash": "b4719dd494b54e2a0507bf128f2e0289",
+    "mtime": 1791490864.061055,
+    "ast_hash": "70bf2e850a38ef2c11ee3e1a8b76e446",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol/state.rs": {
@@ -950,8 +950,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
-    "mtime": 1791442607.084278,
-    "ast_hash": "19d283c818b3adf328c0df0395bd854d",
+    "mtime": 1791487877.084798,
+    "ast_hash": "cdaa29c2faa24d59a453c4a2af018919",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/text.rs": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1791446663.4890995,
-    "ast_hash": "b4e56be4f57bc432ad054863f14b6aeb",
+    "mtime": 1791537388.8711276,
+    "ast_hash": "876d2700434798177338ec06be5ef72a",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5020,13 +5020,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1791451774.5599823,
-    "ast_hash": "e3d392747b40aa3fe5432179b5d105c5",
+    "mtime": 1791539181.2511618,
+    "ast_hash": "abdf5b3d27d85ebc47ce758a3bbaa3dc",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1791451774.5489824,
-    "ast_hash": "b81d1b760570f1ca738051bd443d6094",
+    "mtime": 1791539181.2421618,
+    "ast_hash": "ec9b9553128ef66a4c27ebd6a45c472f",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -5400,8 +5400,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission.rs": {
-    "mtime": 1791386348.063171,
-    "ast_hash": "1a9b0e8bd9d1ec423862171fa5bbe41d",
+    "mtime": 1791536008.1796825,
+    "ast_hash": "813ba40406f2e4daec5f2d2009f768df",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter.rs": {
@@ -5435,13 +5435,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/tests.rs": {
-    "mtime": 1791386348.068171,
-    "ast_hash": "67d466fb06624bb25a4715f522d5da1e",
+    "mtime": 1791535621.6081753,
+    "ast_hash": "8d0444cf7ae0cfcfed0999a358b8b359",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_runtime/tests.rs": {
-    "mtime": 1791386348.068171,
-    "ast_hash": "a17ea541f0c42df153d8d9c037eeb165",
+    "mtime": 1791538698.9967055,
+    "ast_hash": "109aab2eef59d95e98ab80dc23d9ada7",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/layout_sync/tests.rs": {
@@ -5695,8 +5695,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs": {
-    "mtime": 1791386348.067171,
-    "ast_hash": "59f5b255f8aaa351873ea69a7d787022",
+    "mtime": 1791531894.0462472,
+    "ast_hash": "0e4599a1c45ec68c609910db94273ed0",
     "semantic_hash": ""
   },
   "tech_debt/evidence/ime-terminal-native-delivery-composition-successor.json": {
@@ -5745,8 +5745,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/observation.rs": {
-    "mtime": 1791450014.0780935,
-    "ast_hash": "8bde3974eb61ef25c4188419254581e8",
+    "mtime": 1791538899.9921114,
+    "ast_hash": "f508b5b9b7349bb75facbfb1b7be3761",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/tests.rs": {
@@ -6230,8 +6230,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/space_boundary_pair_tests.rs": {
-    "mtime": 1791450976.410319,
-    "ast_hash": "6feb1c412401b55565e3b4ddf8aba78e",
+    "mtime": 1791487877.0845041,
+    "ast_hash": "a64cf72cbad4dd44235e02331559c3fd",
     "semantic_hash": ""
   },
   "tests/common/space_boundary_lexical.rs": {
@@ -6245,8 +6245,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/space-boundary-shift-2026-10-07.md": {
-    "mtime": 1791451628.6919231,
-    "ast_hash": "6f8925a0216aded0d2da9826575f4168",
+    "mtime": 1791539038.3887694,
+    "ast_hash": "3571a613d995f3ec576ff9b7f36024c9",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-08-space-boundary-canonical-evidence.json": {
@@ -6282,6 +6282,26 @@
   "docs/architecture/decisions/2026-10-08-space-boundary-pending-calculation.json": {
     "mtime": 1791451628.687923,
     "ast_hash": "ac6c1ac52d60eae4b9d24c4203632033",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-08-first-word-boundary-span.json": {
+    "mtime": 1791491005.196771,
+    "ast_hash": "73b5dd22ae2c2765c0bae05614c2cebe",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-09-enter-first-word-span.json": {
+    "mtime": 1791532957.2236838,
+    "ast_hash": "2bbc187a98037ac736ee57d598171723",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-09-first-word-mirror-provenance-repair.json": {
+    "mtime": 1791535996.1302059,
+    "ast_hash": "3bb80d7b9aa55c30af12ea213f1e2c22",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-09-first-word-evidence-carrier.json": {
+    "mtime": 1791538698.9957056,
+    "ast_hash": "9b979992ac4d0ca976b59b57ac06cb11",
     "semantic_hash": ""
   }
 }

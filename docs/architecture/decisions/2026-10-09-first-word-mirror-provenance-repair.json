@@ -1,0 +1,46 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-09",
+  "status": "SOURCE_REPAIR_PREFLIGHT_AFTER_REJECTED_SUCCESSOR",
+  "decision": "Preserve an independently KnownStart boundary when a handled printable/backspace edit has no exact committed-mirror effect; invalidate only the pending suffix count. Keep existing full gap revocation for UnknownStart and existing navigation/command/reset revocation. On an unretained closing boundary, discard the retired line first-word range before tracking the next word. Reuse existing counters/ranges and delivery contracts.",
+  "reason": "The first successor passed the target Kitty cases but failed3/64 controls and2/18 paired rapid-input probes against0/18 on accepted b59. Two extended existing source tests independently prove KnownStart is incorrectly revoked on non-mirrored edits and an old first-word range survives Enter. The failed candidate has been rolled back.",
+  "verification": "Unchanged rejected production with the two extended semantic tests executes707:705PASS,2expectedFAIL at UnknownStart versusKnownStart and oldSome((0,3)) versusNone. Original successful target and full source receipts are retained separately.",
+  "not_tested": "This repair is not yet implemented, full-gated, installed or physically accepted at the decision checkpoint. Original61/64 control matrix and16/18 paired successor results remainFAIL. Universal acceptance is not established.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission.rs",
+    "src/bin/lay_ibus_engine/context_admission/tests.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_runtime/tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "runtime_authority_changed": false,
+  "owner": "Existing ContextAdmissionReducer/WordScope and WindowInteraction; existing single decision/verifier/output",
+  "red_proof": {
+    "path": "/home/ubu/.cache/lay/development/run-igtciai8/RESULT.json",
+    "sha256": "14f1abdc727cb3d2fccc8e23aa9842ba85b0004045054ccb8bf24d01ab96d2d7",
+    "selected": 707,
+    "passed": 705,
+    "failed": 2
+  },
+  "consequences": {
+    "authority": "No UnknownStart promotion. A missing exact mirror effect loses pending suffix provenance. Existing known boundary remains until the existing explicit navigation/command/reset/ownership revocation. Unretained Enter discards stale range; checked offsets and actual closing separator remain required.",
+    "candidate_rank_models": "No L1.1/L2/L3/L4/Bayes/DecisionCore/model/weight/literal changes.",
+    "output_concurrency": "No route, executor, RPC, queue, timer, replay, IBus restart, deadline or callback-budget changes. Existing scope settlement carries counter/range changes.",
+    "latency_memory": "Constant enum/Option/integer operations. No added fields or allocations; retain24byteWordLineage test and existing budgets.",
+    "evidence": "Two existing identities strengthened, no new test identities. Fresh focused/full and same physical contours required; retain all failure receipts.",
+    "rollback": "Accepted exact b59 is currently restored. Install only newly full-gated bytes; preserve other services/config/models/sources/global IBus. Reject an unresolved required regression."
+  },
+  "agents": false,
+  "remote_desktop": false
+}

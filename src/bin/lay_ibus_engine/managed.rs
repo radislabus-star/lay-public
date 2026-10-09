@@ -5,8 +5,8 @@ use zbus::fdo;
 use super::composition_commit::ActiveCompositionCommit;
 use super::engine::{LayIbusEngine, WordInputMode};
 use super::protocol::{
-    has_command_modifier, KEY_BACKSPACE, KEY_DOWN, KEY_ENTER, KEY_KP_ENTER, KEY_LEFT, KEY_RIGHT,
-    KEY_SPACE, KEY_TAB, KEY_UP,
+    has_command_modifier, has_only_control_modifier, KEY_BACKSPACE, KEY_DOWN, KEY_ENTER,
+    KEY_KP_ENTER, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_TAB, KEY_UP,
 };
 
 impl LayIbusEngine {
@@ -119,15 +119,21 @@ impl LayIbusEngine {
             let managed_legacy_mirror = emitter.is_legacy()
                 && self.client_context.preedit_text_supported
                 && self.composition.word_input_mode == Some(WordInputMode::ManagedCommit);
+            let native_line_clear = self.uses_native_terminal_input()
+                && has_only_control_modifier(state)
+                && keycode == u32::from(evdev::KeyCode::KEY_U.code());
             if self.composition.buffer.is_empty()
-                && (self.client_context.surrounding_text_supported || managed_legacy_mirror)
+                && (self.client_context.surrounding_text_supported
+                    || managed_legacy_mirror
+                    || native_line_clear)
             {
                 // The client owns an unhandled shortcut. Ctrl+A followed by
                 // Backspace can delete the whole field while a one-scalar
                 // local mirror would otherwise survive and contaminate the
                 // next word. Discard the managed mirror even when the client
-                // cannot refresh SurroundingText; TerminalPassthrough retains
-                // its native word contract. Clearing proves no word boundary:
+                // cannot refresh SurroundingText. Native plain Ctrl+U also
+                // retires an untrusted tail; other native shortcuts retain
+                // their word contract. Clearing proves no word boundary:
                 // a fresh receipt or newly owned preedit must supply authority.
                 self.cancel_precognition_display_generation();
                 self.clear_preedit(emitter).await?;

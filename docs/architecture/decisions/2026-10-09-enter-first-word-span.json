@@ -1,0 +1,84 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-09",
+  "title": "Retain first locally observed pair after an owner-preserving native Enter",
+  "status": "IMPLEMENTATION_PREFLIGHT",
+  "baseline_commit": "9fdd199282e5844c49c5b7e6bfe97b724f63552a",
+  "baseline_ime_sha256": "b59c1a0bd2fe34f2f07f3921f09292241e06756ccc9feafc9b7032d4ca4f4b46",
+  "owner": "ContextAdmissionReducer / WordScope; existing WindowInteraction",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "first_failed_transition": "Closing native Enter clears the local tail, then the admitted observed-boundary settlement starts KnownStart without a retained separator. Existing first-word suffix tracking only handles UnknownStart; therefore next LEFT never receives an observed_first_word range and pair projection is refused despite selected APPLY.",
+  "measured_proof": "/home/ubu/.cache/lay/development/kitty-boundary-refusal-20261009/PHYSICAL_BASELINE.json",
+  "decision": "Reuse existing contiguous observed_suffix_chars for the first locally typed word when there is no retained boundary floor or first-word range, including KnownStart after Enter. Derive the same bounded first-word range only from independently observed append/backspace events and an actual retained closing separator. Keep completeness unchanged. Do not infer range from empty mirror or reconstructed word text.",
+  "reason": "The installed predecessor corrects the first pair after fresh focus and with a preceding word, but refuses the same first pair after an owner-preserving Enter. That transition retains KnownStart while losing the independently observed closed-word range required by the existing pair projection. Extending the existing pending-range provenance repairs the first failed transition without changing completeness, candidate selection or delivery authority.",
+  "verification": "The exact installed predecessor has a retained three-case Kitty physical baseline: 2 PASS and 1 FAIL after Enter. Two new regressions fail on previous production at None versus Some((0,5)); the successor passes 707 of 707 focused IME checks. Mandatory full source gates and installed physical successor evidence are pending.",
+  "not_tested": "The successor is not installed at this decision checkpoint. Full release gates, successor native Kitty physical acceptance and universal client acceptance are not established by the focused source checks.",
+  "alternatives": [
+    {
+      "design": "Downgrade next word to UnknownStart after every Enter",
+      "verdict": "REJECT",
+      "reason": "Would change ordinary first-word correction authority although Enter is an independently observed boundary."
+    },
+    {
+      "design": "Add a separate first-line counter, snapshot reader or output fallback",
+      "verdict": "REJECT",
+      "reason": "Existing WordScope suffix provenance already tracks precisely the required local input; additional retained authority and transports are unnecessary."
+    },
+    {
+      "design": "Reuse suffix tracking while a first closed-word range is still pending",
+      "verdict": "SELECT",
+      "reason": "Preserves one owner and current token/frame/verifier contracts, no added fields or delivery change."
+    }
+  ],
+  "consequences": {
+    "candidate_lattice_rank": "No L1.1 generation/package/attestation, L2 retention, L3/L4/Bayes, joint mass or DecisionCore changes; no literal words or suffix rules in production.",
+    "false_authority": "KnownStart remains KnownStart; observed counts never promote UnknownStart. First range requires positive independent local observed suffix length and a real retained separator with checked u8 offsets. A retained boundary or existing first range suppresses extra KnownStart tracking. Navigation, unproven input, reset and ownership changes retain existing revocation.",
+    "latency_tail": "Constant integer/Option checks at existing callback settlement; no waits, queues, worker RPCs, deadline changes, allocations, new fields or timers. Existing <=24-byte WordLineage and callback budgets stay required.",
+    "cpu_rss": "No model/build/runtime package size or per-key allocation change expected; remote guards and desktop physical checks remain bounded.",
+    "cache_identity": "Existing WordLineage in tokens/frames carries counts and closes the range at the same boundary generation. All worker/cache/epoch/material checks remain unchanged.",
+    "package_reload": "No fits, model copies, package schemas, delta reloads or service ownership changes.",
+    "learning": "Only existing confirmed visible result semantics; any inverse rejection uses original exact owned cleanup.",
+    "concurrency": "Counts derive from exact append/right-backspace observations only. Unknown old callbacks cannot grant range; existing transfer/word token equality and stale-result invalidation remain authoritative.",
+    "compatibility": "All native terminal, GTK surrounding/preedit, atomic and daemon output routes untouched. UnknownStart manual suffix, Tab, first-word correction and modifier contracts must remain green.",
+    "failure_rollback": "Retain baseline FAIL and new-test RED evidence; reject if any required full gate or affected physical contour fails. Restore exact accepted b59 IME artifact if installed successor fails, without global IBus restart or input-source migration.",
+    "maintenance": "One existing provenance counter and predicate, no new source of truth; update existing first-word proof tests and owning document."
+  },
+  "proof_denominators": {
+    "baseline": "three fixed native cases, 2 PASS / 1 FAIL, exact screen/caret and physical Enter accepted text",
+    "new_regression": "new real legacy callback test must fail on previous runtime source; unit proofs cover KnownStart pending range and retained-boundary refusal",
+    "focused": "explicit existing remote Cargo/dev route, exact selected identities",
+    "release": "mandatory canonical full source gates for final bytes before installation",
+    "physical": "same three fresh native cases, repeated Enter boundaries, original safety revocations and original installed route probes; bounded results separate from universal acceptance"
+  },
+  "runtime_authority_changed": false,
+  "agents": false,
+  "remote_desktop": false,
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission.rs",
+    "src/bin/lay_ibus_engine/context_admission/tests.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "red_proof": {
+    "path": "/home/ubu/.cache/lay/development/kitty-boundary-refusal-20261009/RED_RESULT.json",
+    "sha256": "24da0f78e397b6ff9164e55e54236b79e93f27458ca87eac6c0b5b858506fe98",
+    "verdict": "two tests fail on the previous production at missing range None vs Some((0,5))"
+  },
+  "focused_green": {
+    "path": "/home/ubu/.cache/lay/development/run-gxgfg83_/RESULT.json",
+    "selected": 707,
+    "passed": 707,
+    "failed": 0,
+    "scope": "development_only_not_release"
+  }
+}

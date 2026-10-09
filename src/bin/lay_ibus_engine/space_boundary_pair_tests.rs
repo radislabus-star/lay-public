@@ -12,7 +12,12 @@ use lay::config::LayConfig;
 #[path = "../../../tests/common/space_boundary_lexical.rs"]
 mod lexical_fixture;
 
-fn isolated_case(name: &str) -> bool {
+pub(crate) fn warm_pair_lexical_fixture() {
+    lay::hot_field::set_process_policy(lay::hot_field::HotFieldPolicy::ime());
+    lexical_fixture::warm_lexical_fixture();
+}
+
+pub(crate) fn isolated_case(name: &str) -> bool {
     if std::env::var_os("LAY_SPACE_PAIR_TEST_CHILD").is_some() {
         return true;
     }
@@ -516,6 +521,79 @@ fn space_pair_native_mirror_cannot_manufacture_an_earlier_word_start() {
             "unproved prefix: {tail:?}"
         );
     }
+}
+
+#[test]
+fn space_pair_native_retains_the_first_observed_word_across_its_space() {
+    if !isolated_case("space_boundary_pair_tests::space_pair_native_retains_the_first_observed_word_across_its_space") { return; }
+    let (mut engine, _peer) = native_engine("", false);
+    let mut scope = *engine.context_word_scope.as_ref().unwrap();
+    scope.revoke_for_input_gap();
+    for ch in "должн".chars() {
+        engine.push_tail_char(ch);
+        scope.observe_tail_append(engine.committed_tail.buffer.chars().count() as u32);
+    }
+    engine.push_tail_char(' ');
+    scope.close_at_observed_boundary(engine.committed_tail.epoch, Some(5));
+    for ch in "ыбыть".chars() {
+        engine.push_tail_char(ch);
+    }
+    engine.composition.word_input_mode = Some(WordInputMode::TerminalPassthrough);
+    let adapter = engine.context_admission.as_ref().unwrap();
+    assert!(adapter.test_set_word_scope(
+        engine.context_owner.as_ref().unwrap(),
+        engine.committed_tail.epoch,
+        &scope,
+    ));
+    engine.context_word_scope = Some(scope);
+    engine.context_token = adapter.current_token();
+    assert_eq!(
+        engine
+            .capture_space_boundary_pair_scope()
+            .map(|pair| pair.text),
+        Some("должн ыбыть".into()),
+        "the actual first observed LEFT must survive its closing Space",
+    );
+    install(&engine);
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    assert!(press(&mut engine, &mut output, KEY_SPACE).unwrap());
+    assert!(output.surrounding_deletes.is_empty());
+    assert_eq!(
+        output.committed_texts,
+        [format!("{}должны быть ", "\u{7f}".repeat(11))]
+    );
+    assert_eq!(engine.committed_tail.buffer, "должны быть ");
+}
+
+#[test]
+fn space_pair_native_partial_first_word_cannot_extend_its_observed_range() {
+    if !isolated_case("space_boundary_pair_tests::space_pair_native_partial_first_word_cannot_extend_its_observed_range") { return; }
+    let (mut engine, _peer) = native_engine("до", false);
+    let mut scope = *engine.context_word_scope.as_ref().unwrap();
+    scope.revoke_for_input_gap();
+    for ch in "лжн".chars() {
+        engine.push_tail_char(ch);
+        scope.observe_tail_append(engine.committed_tail.buffer.chars().count() as u32);
+    }
+    engine.push_tail_char(' ');
+    scope.close_at_observed_boundary(engine.committed_tail.epoch, Some(5));
+    for ch in "ыбыть".chars() {
+        engine.push_tail_char(ch);
+    }
+    engine.composition.word_input_mode = Some(WordInputMode::TerminalPassthrough);
+    let adapter = engine.context_admission.as_ref().unwrap();
+    assert!(adapter.test_set_word_scope(
+        engine.context_owner.as_ref().unwrap(),
+        engine.committed_tail.epoch,
+        &scope,
+    ));
+    engine.context_word_scope = Some(scope);
+    engine.context_token = adapter.current_token();
+    assert_eq!(scope.lineage().observed_first_word, Some((2, 5)));
+    assert!(engine.capture_space_boundary_pair_scope().is_none());
 }
 
 #[test]

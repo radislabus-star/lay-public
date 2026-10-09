@@ -1,0 +1,96 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-08",
+  "title": "Retain the first locally observed word span across its closing boundary",
+  "status": "IMPLEMENTATION_PREFLIGHT",
+  "baseline_commit": "9fdd199282e5844c49c5b7e6bfe97b724f63552a",
+  "baseline_ime_sha256": "5d99e01ece1de986fb0b8269a869da6ed59b9d7ae3e77a12f5e9a01f26896615",
+  "owner": "ContextAdmissionReducer / WordScope and existing WindowInteraction",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "first_failed_transition": "Native pair scope cannot retain the exact first observed word after its first Space; boundary_floor points to the separator after LEFT. GTK first-pair physical baseline passes.",
+  "decision": "Retain a bounded scalar range for the first locally observed closed word in the existing WordLineage. Derive it only from the existing UnknownStart observed_suffix_chars and an actual observed closing boundary. Native pair scope may reuse that range only when it exactly covers LEFT and its separator in the unchanged admitted input chain. This is the same locally observed-span basis already used for native first-word Space correction; it does not assert absolute document start or promote UnknownStart. Mirror offset zero alone remains insufficient.",
+  "alternatives": [
+    {
+      "design": "Remove start/floor checks or infer a known start from activation/empty mirror",
+      "verdict": "REJECT",
+      "reason": "Would manufacture edit authority for unobserved text and truncated mirrors."
+    },
+    {
+      "design": "Add a new client text reader, polling path or separate first-pair corrector",
+      "verdict": "REJECT",
+      "reason": "The existing native first-word observed suffix already supplies the required bounded local edit range; parallel owners and transports are unnecessary."
+    },
+    {
+      "design": "Retain existing observed suffix provenance across its first boundary",
+      "verdict": "SELECT",
+      "reason": "Reuses the current reducer, callback settlement, input frame, chooser, verifier and output executor."
+    }
+  ],
+  "invalidation": "Clear on existing input-gap/focus/reset/owner revocation, backspace crossing the separator, or prefix trimming; never rebase the range from text similarity. Tokens and pair-frame equality bind the scalar range to the current lease.",
+  "consequences": {
+    "candidate_and_rank": "No candidate generation, lattice retention, lexical attestation, scoring or DecisionCore changes.",
+    "false_authority": "Only an entirely observed LEFT plus the actual separator can extend the existing final-pair scope. Raw or manually reconstructed mirror starts remain ineligible.",
+    "latency_and_resources": "Two checked u8 offsets in Option<(u8,u8)> for the existing <=160-scalar tail; preserve the existing <=24-byte WordLineage and <=224-byte callback outcome assertions unchanged. No strings, workers, timers, sleeps, polling or new allocations. Clear the range conservatively at the retained-tail limit. Measure Space behavior rather than claim an unmeasured speedup.",
+    "cache_and_concurrency": "Existing token equality and frame identity include WordLineage; derive the range at the same first-boundary settlement that already changes lineage generation. It remains stable while typing RIGHT. Existing epochs/deadlines and late-result cancellation stay authoritative.",
+    "packages_and_learning": "No models, package formats, delta reloads or learning rules change. Positive learning still requires existing result confirmation; inverse remains the existing sealed operation.",
+    "compatibility": "Managed surrounding/preedit branches and all delivery transports remain unchanged. Preserve existing native UnknownStart single-word correction, Tab, daemon Double Shift and atomic/legacy routes.",
+    "rollback": "Revert the source slice and restore the accepted 1.0.80 IME bytes; do not restart global IBus or alter input source names."
+  },
+  "proof": "Physical RED: original installed bytes, first pair only, GTK3.entry PASS and Kitty.readline FAIL with exact unchanged original pair. Add reducer/executor RED then full legacy callback regression, negative origin/trim/gap cases, existing affected source checks and one mandatory full release gate remotely; physical first-pair and preservation matrix on exact candidate bytes.",
+  "receipts": [
+    "/home/ubu/.cache/lay/development/first-word-boundary-20261008/BASELINE_PHYSICAL.json",
+    "/home/ubu/.cache/lay/development/first-word-boundary-20261008/BASELINE_SETUP_FAILURES.json",
+    "/home/ubu/.cache/lay/development/run-81shvu2a/RESULT.json",
+    "/home/ubu/.cache/lay/development/run-n_n7am38/RESULT.json",
+    "/home/ubu/.cache/lay/development/first-word-boundary-20261008/full/RELEASE_GATE_RESULT.json",
+    "/home/ubu/.cache/lay/development/run-8_5ec8y4/RESULT.json",
+    "/home/ubu/.cache/lay/development/run-6fu0_yuj/RESULT.json"
+  ],
+  "not_tested": "Source successor for native line-clear invalidation, its source gates and physical chained proof remain pending. Initial475871db candidate has full3040 source PASS and fresh GTK/Kitty first-pair/inverse and eight-Shift physical PASS; sequential native Ctrl+U rank refusal remains FAIL.",
+  "review": "Root-owned static consequence review; no sub-agents, per explicit user instruction.",
+  "owning_document": "docs/architecture/space-boundary-shift-2026-10-07.md",
+  "runtime_authority_changed": false,
+  "proof_red": "698 executed: all 697 old tests PASS; the one new reducer/executor regression FAIL at capture_space_boundary_pair_scope: None versus Some(first pair), before edit dispatch. 76.0 seconds, remote dedicated guard. Earlier run-0d0ltxkz stopped at rustfmt with zero tests.",
+  "reason": "The unchanged installed first-pair baseline passes in managed GTK but fails in Kitty because the native observed suffix proof for LEFT is discarded at its first Space. Retaining that existing bounded provenance fixes the failed scope transition without inferring a field start or adding correction or delivery owners.",
+  "verification": "Focused RED run-81shvu2a: 697 prior PASS and one new FAIL at pair scope. Focused GREEN run-n_n7am38: 703/703 PASS including real legacy callbacks, one verified terminal frame and inverse, partial/unobserved/overflow origins and navigation/Backspace/trim/field-close revocation; existing layout budgets unchanged. Root-only static review is not independent. One frozen remote full release gate and exact candidate physical matrix remain required. Native line-clear RED run-8_5ec8y4:703priorPASS/1newFAIL; GREEN run-6fu0_yuj:704/704PASS, all shortcut preservation and exact observed-pair/frame checks pass. Source-successor full gate and chained physical proof pending.",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission.rs",
+    "src/bin/lay_ibus_engine/context_admission/tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+    "src/bin/lay_ibus_engine/space_boundary_pair_tests.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "src/bin/lay_ibus_engine/managed.rs",
+    "src/bin/lay_ibus_engine/protocol.rs",
+    "src/bin/lay_ibus_engine/protocol/modifiers.rs"
+  ],
+  "proof_green": {
+    "receipt": "/home/ubu/.cache/lay/development/run-n_n7am38/RESULT.json",
+    "selected": 703,
+    "executed": 703,
+    "passed": 703,
+    "failed": 0,
+    "scope": "development_only_not_release"
+  },
+  "release_preflight": "Format/canon/discovery PASS, all3060 old rows intact and six added. Private allowlist target/process mismatch for two real D-Bus tests stopped the run before full tests/build. Fresh successor preserves canonical process isolation; no production or test-rule changes.",
+  "native_line_clear_successor": "Physical first-pair and fresh inverse pass. A sequential eight-Shift then Ctrl+U fixture exposes six stale mirror characters even though the actual client is empty; pair proof/rank is lost before inverse keys. In the existing unhandled command owner, a plain authenticated physical Ctrl+U for native terminal input may retire only the untrusted local tail and background work. Return false and emit no text operation; never infer a field start. Preserve Ctrl+C, Ctrl+Shift+U and Ctrl+Alt+U native contracts. Observed new letters and their actual Space must reconstruct the same first-word range and use the unchanged verifier/executor.",
+  "native_line_clear_green": {
+    "receipt": "/home/ubu/.cache/lay/development/run-6fu0_yuj/RESULT.json",
+    "tests": {
+      "selected": 704,
+      "executed": 704,
+      "passed": 704,
+      "failed": 0
+    },
+    "scope": "development_only_not_release"
+  }
+}

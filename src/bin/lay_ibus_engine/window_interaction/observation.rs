@@ -1005,13 +1005,22 @@ impl LayIbusEngine {
             let scope = self.context_word_scope.as_ref()?;
             let token = self.live_context_token()?;
             let floor = scope.lineage().observed_boundary_floor?;
-            if !token.matches_word_scope(scope)
-                || scope.lineage().completeness != WordCompleteness::KnownStart
-                || start <= floor as usize
-                || !tail
+            let observed_separator = start > floor as usize
+                && tail
                     .chars()
                     .nth(start - 1)
-                    .is_some_and(crate::preedit::is_observed_word_boundary)
+                    .is_some_and(crate::preedit::is_observed_word_boundary);
+            let observed_first_word =
+                scope
+                    .lineage()
+                    .observed_first_word
+                    .is_some_and(|(word_start, separator)| {
+                        start == usize::from(word_start)
+                            && start + left.chars().count() == usize::from(separator)
+                    });
+            if !token.matches_word_scope(scope)
+                || scope.lineage().completeness != WordCompleteness::KnownStart
+                || !(observed_separator || observed_first_word)
             {
                 return None;
             }
@@ -2003,10 +2012,11 @@ impl LayIbusEngine {
                 || keyval == KEY_TAB
                 || self.physical_char(keyval, keycode).is_none());
         let printable = self.physical_char(keyval, keycode).is_some();
-        let track_suffix = self
-            .context_word_scope
-            .as_ref()
-            .is_some_and(|scope| scope.lineage().completeness == WordCompleteness::UnknownStart);
+        let track_suffix = self.context_word_scope.as_ref().is_some_and(|scope| {
+            scope.tracks_observed_suffix()
+                && (scope.lineage().completeness == WordCompleteness::UnknownStart
+                    || self.uses_native_terminal_input())
+        });
         let observed_append = if track_suffix && printable && !is_backspace {
             observed_tail_append_length(tail_before, &self.committed_tail.buffer)
         } else {
@@ -2036,10 +2046,21 @@ impl LayIbusEngine {
         let Some(scope) = self.context_word_scope.as_mut() else {
             return;
         };
+        if scope.lineage().observed_first_word.is_some()
+            && tail_before != self.committed_tail.buffer
+            && (self.committed_tail.buffer.chars().count() >= crate::preedit::PREEDIT_TAIL_LIMIT
+                || !(self.committed_tail.buffer.starts_with(tail_before)
+                    || tail_before.starts_with(&self.committed_tail.buffer)))
+        {
+            // Do not rebase a retained start after prefix trimming or a
+            // replacement. Exact append/right Backspace preserve the range;
+            // crossing its separator revokes it below.
+            scope.forget_observed_first_word();
+        }
         if let Some((retained_chars, appended_chars, observed_boundary)) = appended_effect {
             if let Some(boundary) = observed_boundary {
                 scope.close_at_observed_boundary(self.committed_tail.epoch, Some(boundary));
-            } else if scope.lineage().completeness == WordCompleteness::UnknownStart {
+            } else if track_suffix {
                 scope.observe_tail_append_span(retained_chars, appended_chars);
             }
             return;
@@ -2071,11 +2092,11 @@ impl LayIbusEngine {
                         scope.lineage().completeness == WordCompleteness::KnownStart,
                     ));
                 }
-            } else if scope.lineage().completeness == WordCompleteness::UnknownStart {
+            } else if track_suffix {
                 if exact_backspace {
                     scope.observe_tail_backspace();
                 } else {
-                    scope.revoke_for_input_gap();
+                    scope.invalidate_observed_suffix();
                 }
             }
             return;
@@ -2086,11 +2107,11 @@ impl LayIbusEngine {
         }
         if unproven_external_input {
             scope.revoke_for_input_gap();
-        } else if printable && scope.lineage().completeness == WordCompleteness::UnknownStart {
+        } else if printable && track_suffix {
             if let Some(retained_chars) = observed_append {
                 scope.observe_tail_append(retained_chars);
             } else {
-                scope.revoke_for_input_gap();
+                scope.invalidate_observed_suffix();
             }
         }
     }

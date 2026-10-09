@@ -1,12 +1,29 @@
 const CONTROL_MASK: u32 = 1 << 2;
+const SHIFT_MASK: u32 = 1;
 pub(crate) const MOD1_MASK: u32 = 1 << 3;
+const MOD3_MASK: u32 = 1 << 5;
 const MOD4_MASK: u32 = 1 << 6;
+const MOD5_MASK: u32 = 1 << 7;
 const SUPER_MASK: u32 = 1 << 26;
 const HYPER_MASK: u32 = 1 << 27;
 const META_MASK: u32 = 1 << 28;
 
 pub(crate) fn has_command_modifier(state: u32) -> bool {
     state & (CONTROL_MASK | MOD1_MASK | MOD4_MASK | SUPER_MASK | HYPER_MASK | META_MASK) != 0
+}
+
+pub(crate) fn has_only_control_modifier(state: u32) -> bool {
+    state & CONTROL_MASK != 0
+        && state
+            & (SHIFT_MASK
+                | MOD1_MASK
+                | MOD3_MASK
+                | MOD4_MASK
+                | MOD5_MASK
+                | SUPER_MASK
+                | HYPER_MASK
+                | META_MASK)
+            == 0
 }
 
 #[cfg(test)]

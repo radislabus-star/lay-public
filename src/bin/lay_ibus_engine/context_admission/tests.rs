@@ -863,6 +863,7 @@ fn unknown_start_is_sticky_until_next_observed_boundary() {
         completeness: WordCompleteness::UnknownStart,
         observed_suffix_chars: 0,
         observed_boundary_floor: None,
+        observed_first_word: None,
     });
     scope.keep_or_revoke_unknown();
     assert_eq!(scope.lineage().completeness, WordCompleteness::UnknownStart);
@@ -1353,6 +1354,7 @@ fn stale_settlement_revokes_but_old_owner_callbacks_cannot_modify_the_new_owner(
                 completeness: WordCompleteness::KnownStart,
                 observed_suffix_chars: 0,
                 observed_boundary_floor: None,
+                observed_first_word: None,
             },
         },
     ));
@@ -1508,6 +1510,7 @@ fn expect_stamp(outcome: RendezvousOutcome<u64>, stamp: &IngressStamp<u64>) {
         completeness: WordCompleteness::KnownStart,
         observed_suffix_chars: 0,
         observed_boundary_floor: None,
+        observed_first_word: None,
     });
     if outcome == RendezvousOutcome::Stamp(stamp.clone()) {
         delivered += 1;
@@ -1997,6 +2000,7 @@ fn observed_boundary_floor_reopens_only_with_retained_provenance() {
         completeness: WordCompleteness::UnknownStart,
         observed_suffix_chars: 0,
         observed_boundary_floor: None,
+        observed_first_word: None,
     });
     assert_eq!(
         scope.close_at_observed_boundary(10, Some(3)),
@@ -2027,6 +2031,7 @@ fn observed_boundary_floor_rejects_deleted_or_unobserved_separators() {
             completeness: WordCompleteness::KnownStart,
             observed_suffix_chars: 0,
             observed_boundary_floor: Some(3),
+            observed_first_word: None,
         });
         scope.reopen_at_retained_boundary(retained);
         assert_eq!(scope.lineage().completeness, WordCompleteness::UnknownStart);
@@ -2042,6 +2047,7 @@ fn observed_boundary_floor_does_not_infer_leftward_prefix_rebasing() {
         completeness: WordCompleteness::KnownStart,
         observed_suffix_chars: 0,
         observed_boundary_floor: Some(100),
+        observed_first_word: None,
     });
     scope.close_at_observed_boundary(11, Some(159));
     assert_eq!(scope.lineage().observed_boundary_floor, Some(100));
@@ -2055,4 +2061,112 @@ fn observed_boundary_floor_does_not_infer_leftward_prefix_rebasing() {
     scope.reopen_at_retained_boundary(Some(19));
     assert_eq!(scope.lineage().completeness, WordCompleteness::UnknownStart);
     assert_eq!(scope.lineage().observed_boundary_floor, None);
+}
+
+#[test]
+fn first_observed_word_range_is_retained_without_promoting_unknown_start() {
+    let mut scope = WordScope::new(WordLineage {
+        generation: LineageGeneration(7),
+        completeness: WordCompleteness::UnknownStart,
+        observed_suffix_chars: 0,
+        observed_boundary_floor: None,
+        observed_first_word: None,
+    });
+    for count in 1..=5 {
+        scope.observe_tail_append(count);
+    }
+    assert_eq!(scope.lineage().completeness, WordCompleteness::UnknownStart);
+    assert_eq!(scope.lineage().observed_first_word, None);
+    assert_eq!(
+        scope.close_at_observed_boundary(10, Some(5)),
+        WordCompleteness::UnknownStart
+    );
+    assert_eq!(scope.lineage().observed_first_word, Some((0, 5)));
+    assert_eq!(scope.lineage().observed_suffix_chars, 0);
+    scope.close_at_observed_boundary(11, Some(11));
+    assert_eq!(scope.lineage().observed_first_word, Some((0, 5)));
+    scope.reopen_at_retained_boundary(Some(5));
+    assert_eq!(scope.lineage().observed_first_word, None);
+    scope.revoke_for_input_gap();
+    assert_eq!(scope.lineage().observed_first_word, None);
+    assert!(std::mem::size_of::<WordLineage>() <= 24);
+}
+
+#[test]
+fn first_observed_word_range_rejects_unobserved_and_unrepresentable_prefixes() {
+    for (observed, boundary, expected) in [
+        (0, Some(5), None),
+        (3, Some(5), Some((2, 5))),
+        (6, Some(5), None),
+        (5, None, None),
+        (300, Some(300), None),
+    ] {
+        let mut scope = WordScope::new(WordLineage {
+            generation: LineageGeneration(7),
+            completeness: WordCompleteness::UnknownStart,
+            observed_suffix_chars: observed,
+            observed_boundary_floor: None,
+            observed_first_word: None,
+        });
+        scope.close_at_observed_boundary(10, boundary);
+        assert_eq!(scope.lineage().observed_first_word, expected);
+    }
+}
+
+#[test]
+fn first_observed_word_range_retains_known_start_after_unretained_enter() {
+    let mut scope = WordScope::new(WordLineage {
+        generation: LineageGeneration(7),
+        completeness: WordCompleteness::UnknownStart,
+        observed_suffix_chars: 0,
+        observed_boundary_floor: None,
+        observed_first_word: None,
+    });
+    scope.close_at_observed_boundary(10, None);
+    assert_eq!(scope.lineage().completeness, WordCompleteness::KnownStart);
+    assert_eq!(scope.lineage().observed_first_word, None);
+    for count in 1..=5 {
+        scope.observe_tail_append(count);
+    }
+    assert_eq!(scope.lineage().completeness, WordCompleteness::KnownStart);
+    assert_eq!(
+        scope.close_at_observed_boundary(11, Some(5)),
+        WordCompleteness::KnownStart
+    );
+    assert_eq!(scope.lineage().observed_first_word, Some((0, 5)));
+    assert_eq!(scope.lineage().observed_suffix_chars, 0);
+    scope.revoke_for_input_gap();
+    assert_eq!(scope.lineage().observed_first_word, None);
+    for length in [3, 9] {
+        scope.revoke_for_input_gap();
+        scope.observe_tail_append_span(length, length);
+        scope.close_at_observed_boundary(12, Some(length));
+        assert!(scope.lineage().observed_first_word.is_some());
+        scope.close_at_observed_boundary(13, None);
+        assert_eq!(scope.lineage().completeness, WordCompleteness::KnownStart);
+        assert_eq!(scope.lineage().observed_boundary_floor, None);
+        assert_eq!(scope.lineage().observed_first_word, None);
+        for count in 1..=5 {
+            scope.observe_tail_append(count);
+        }
+        scope.close_at_observed_boundary(14, Some(5));
+        assert_eq!(scope.lineage().observed_first_word, Some((0, 5)));
+    }
+    assert!(std::mem::size_of::<WordLineage>() <= 24);
+}
+
+#[test]
+fn first_observed_word_range_does_not_infer_known_prefix_from_retained_boundary() {
+    let mut scope = WordScope::new(WordLineage {
+        generation: LineageGeneration(7),
+        completeness: WordCompleteness::KnownStart,
+        observed_suffix_chars: 0,
+        observed_boundary_floor: Some(3),
+        observed_first_word: None,
+    });
+    scope.observe_tail_append_span(8, 5);
+    assert_eq!(scope.lineage().observed_suffix_chars, 0);
+    scope.close_at_observed_boundary(11, Some(8));
+    assert_eq!(scope.lineage().observed_boundary_floor, Some(3));
+    assert_eq!(scope.lineage().observed_first_word, None);
 }
