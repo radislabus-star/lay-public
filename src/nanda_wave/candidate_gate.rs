@@ -2256,11 +2256,21 @@ mod tests {
 
     #[test]
     fn live_gate_short_prefixes_stay_under_hot_readout_budget() {
-        super::super::warm_up_l2_for_ime();
+        crate::hot_field::set_process_policy(crate::hot_field::HotFieldPolicy::ime());
+        assert_eq!(
+            crate::hot_field::process_policy(),
+            crate::hot_field::HotFieldPolicy::ime()
+        );
+        assert!(super::super::warm_up_l2_for_ime());
+        assert!(l2::ime_word_candidate_memory_is_warm());
         for partial in ["бу", "де", "дел"] {
             let started = Instant::now();
             let candidates = live_completion_candidates(request("", partial));
             let elapsed_us = started.elapsed().as_micros();
+            assert!(
+                !candidates.is_empty(),
+                "hot-readout budget must measure candidate work for {partial:?}"
+            );
             let budget_us = if cfg!(debug_assertions) {
                 50_000
             } else {
@@ -2282,13 +2292,23 @@ mod tests {
 
     #[test]
     fn unique_prefix_cache_misses_stay_under_hot_readout_budget() {
-        super::super::warm_up_l2_for_ime();
+        crate::hot_field::set_process_policy(crate::hot_field::HotFieldPolicy::ime());
+        assert_eq!(
+            crate::hot_field::process_policy(),
+            crate::hot_field::HotFieldPolicy::ime()
+        );
+        assert!(super::super::warm_up_l2_for_ime());
+        assert!(l2::ime_word_candidate_memory_is_warm());
         super::super::warm_up_l3_phrase_memory();
         let mut timings = Vec::new();
         for partial in ["пол", "цел", "рас", "оста", "дост", "остан"] {
             let started = Instant::now();
             let candidates = live_completion_candidates(request("проверяем скорость ", partial));
             timings.push((partial, started.elapsed().as_micros(), candidates.len()));
+            assert!(
+                !candidates.is_empty(),
+                "hot-readout budget must measure candidate work for {partial:?}"
+            );
         }
         let max_us = timings
             .iter()

@@ -3844,6 +3844,20 @@ impl WindowInteraction {
                 }
                 engine.discard_atomic_pending();
                 trace::record(r#"{"kind":"ibus_focus","stage":"reset"}"#);
+                // An immediate same-field Reset can follow our closing Space
+                // CommitText before its key release. Retain only existing
+                // handled-press receipts; no closed-word edit authority survives.
+                // Disable and focus changes do not enter this Reset-only path.
+                let boundary_releases = (!engine.atomic.active
+                    && engine.client_context.surrounding_text_supported
+                    && engine.client_context.content_purpose
+                        != crate::engine::IBUS_INPUT_PURPOSE_TERMINAL
+                    && engine.committed_tail.buffer.ends_with(' ')
+                    && engine
+                        .committed_tail
+                        .last_commit_at
+                        .is_some_and(|at| at.elapsed() <= std::time::Duration::from_millis(700)))
+                .then(|| engine.layout_gesture.handled_press_keycodes.clone());
                 let held_shift = engine.layout_gesture.shift_active;
                 let cleared = if engine.atomic.active {
                     Ok(())
@@ -3854,6 +3868,12 @@ impl WindowInteraction {
                     engine.clear_preedit(output).await
                 };
                 engine.reset_for_ibus_soft_reset();
+                if let Some(receipts) = boundary_releases {
+                    engine
+                        .layout_gesture
+                        .handled_press_keycodes
+                        .extend(receipts);
+                }
                 engine.layout_gesture.shift_active = held_shift;
                 cleared?;
                 // A browser can Reset in response to hiding our display-only

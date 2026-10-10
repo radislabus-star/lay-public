@@ -3,6 +3,351 @@
 use super::*;
 use crate::protocol::KEY_ENTER;
 
+#[test]
+fn terminal_delivery_opaque_or_terminal_managed_word_retains_native_space() {
+    zbus::block_on(async {
+        for (capabilities, purpose) in [(8, 0), (41, crate::engine::IBUS_INPUT_PURPOSE_TERMINAL)] {
+            let mut harness = bootstrap_harness_with_profiles_and_budget(
+                "lay-ru",
+                vec![profile("lay-ru")],
+                CALLBACK_BUDGET,
+            )
+            .await;
+            let mut engine = LayIbusEngine::new_from_component(
+                TARGET_PATH.to_string(),
+                Arc::new(Mutex::new(SharedState::default())),
+                Some(harness.adapter.clone()),
+                "lay-ime-ru",
+                true,
+                ime_config(),
+            );
+            engine.config.auto_replace = false;
+            engine.config.auto_switch_layout = false;
+            engine.config.nanda_autocorrect = false;
+            engine.config.nanda_precognition = false;
+            start_source_free_unknown(&mut harness, &mut engine).await;
+            engine.set_content_type_state(purpose, 0);
+            engine.set_client_capabilities(capabilities);
+            assert!(legacy_key(&mut harness, &mut engine, 27_000, replay_keyval('д'), 38, 0).await);
+            let effects = legacy_effects(&mut harness).await;
+            let commits: Vec<_> = effects
+                .iter()
+                .filter(|effect| {
+                    effect
+                        .header()
+                        .member()
+                        .is_some_and(|m| m.as_str() == "CommitText")
+                })
+                .collect();
+            assert_eq!(commits.len(), 1);
+            let body = commits[0].body();
+            let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+            assert_eq!(
+                crate::ibus_interface::ibus_text_value_to_string(&value),
+                Some("д".into())
+            );
+            assert_eq!(
+                engine.composition.word_input_mode,
+                Some(WordInputMode::ManagedCommit)
+            );
+            assert!(
+                legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    27_001,
+                    replay_keyval('д'),
+                    38,
+                    RELEASE_MASK
+                )
+                .await
+            );
+            no_legacy_output(&mut harness).await;
+
+            assert!(
+                !legacy_key(&mut harness, &mut engine, 27_002, KEY_SPACE, 57, 0).await,
+                "opaque or declared-terminal Legacy input keeps the native Space contract"
+            );
+            let effects = legacy_effects(&mut harness).await;
+            assert!(effects.iter().all(|effect| effect
+                .header()
+                .member()
+                .is_none_or(|m| !matches!(m.as_str(), "CommitText" | "DeleteSurroundingText"))));
+            assert_eq!(engine.committed_tail.buffer, "д ");
+            assert!(
+                !legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    27_003,
+                    KEY_SPACE,
+                    57,
+                    RELEASE_MASK
+                )
+                .await
+            );
+            no_legacy_output(&mut harness).await;
+        }
+    });
+}
+
+#[test]
+fn terminal_delivery_managed_no_apply_space_stays_in_commit_stream_without_receipt() {
+    fn commits(effects: &[Message]) -> Vec<String> {
+        effects
+            .iter()
+            .filter(|effect| {
+                effect
+                    .header()
+                    .member()
+                    .is_some_and(|m| m.as_str() == "CommitText")
+            })
+            .map(|effect| {
+                let body = effect.body();
+                let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+                crate::ibus_interface::ibus_text_value_to_string(&value).unwrap()
+            })
+            .collect()
+    }
+
+    zbus::block_on(async {
+        for (lagging_receipt, lifecycle) in [
+            (false, "none"),
+            (true, "none"),
+            (false, "reset"),
+            (true, "reset"),
+            (false, "expired_reset"),
+            (false, "focus_out"),
+            (false, "disable"),
+        ] {
+            let mut harness = bootstrap_harness_with_profiles_and_budget(
+                "lay-ru",
+                vec![profile("lay-ru")],
+                CALLBACK_BUDGET,
+            )
+            .await;
+            let mut engine = LayIbusEngine::new_from_component(
+                TARGET_PATH.to_string(),
+                Arc::new(Mutex::new(SharedState::default())),
+                Some(harness.adapter.clone()),
+                "lay-ime-ru",
+                true,
+                ime_config(),
+            );
+            engine.config.auto_replace = false;
+            engine.config.auto_switch_layout = false;
+            engine.config.nanda_autocorrect = false;
+            engine.config.nanda_precognition = false;
+            start_source_free_unknown(&mut harness, &mut engine).await;
+            engine.set_content_type_state(0, 0);
+            engine.set_client_capabilities(41);
+            let mut delivered = Vec::new();
+            for (ordinal, (ch, code)) in [
+                ('д', 38),
+                ('о', 36),
+                ('л', 37),
+                ('ж', 39),
+                ('е', 20),
+                ('н', 21),
+            ]
+            .into_iter()
+            .enumerate()
+            {
+                let serial = 26_000 + ordinal as u32 * 2;
+                assert!(
+                    legacy_key(
+                        &mut harness,
+                        &mut engine,
+                        serial,
+                        replay_keyval(ch),
+                        code,
+                        0
+                    )
+                    .await
+                );
+                let effects = legacy_effects(&mut harness).await;
+                assert_eq!(commits(&effects), [ch.to_string()]);
+                assert!(effects.iter().all(|effect| effect
+                    .header()
+                    .member()
+                    .is_none_or(|m| m.as_str() != "DeleteSurroundingText")));
+                delivered.extend(commits(&effects));
+                assert!(
+                    legacy_key(
+                        &mut harness,
+                        &mut engine,
+                        serial + 1,
+                        replay_keyval(ch),
+                        code,
+                        RELEASE_MASK
+                    )
+                    .await
+                );
+                no_legacy_output(&mut harness).await;
+            }
+            assert_eq!(delivered.concat(), "должен");
+            assert_eq!(engine.committed_tail.buffer, "должен");
+            assert!(engine.composition.buffer.is_empty());
+            assert_eq!(
+                engine.composition.word_input_mode,
+                Some(WordInputMode::ManagedCommit)
+            );
+            if lagging_receipt {
+                // The client still observes the preceding glyph, not the whole
+                // projected word. This is not permission to edit its text.
+                super::residuals::surrounding_receipt(&mut harness, &mut engine, "долже", 5, 5)
+                    .await;
+            } else {
+                assert!(engine.client_context.surrounding_text_snapshot.is_none());
+            }
+
+            let handled = legacy_key(&mut harness, &mut engine, 26_020, KEY_SPACE, 57, 0).await;
+            let effects = legacy_effects(&mut harness).await;
+            assert_eq!(
+                commits(&effects),
+                [" ".to_string()],
+                "managed Space must follow glyphs through the same ordered CommitText stream"
+            );
+            assert!(
+                handled,
+                "the original physical Space must be consumed exactly once"
+            );
+            assert!(effects.iter().all(|effect| effect
+                .header()
+                .member()
+                .is_none_or(|m| m.as_str() != "DeleteSurroundingText")));
+            delivered.extend(commits(&effects));
+            assert_eq!(engine.committed_tail.buffer, "должен ");
+            assert!(engine
+                .client_context
+                .managed_commit_snapshot_floor
+                .is_none());
+            if lifecycle != "none" {
+                // The client's Reset acknowledges no text. It revokes the
+                // closed word, but is not a release of the accepted Space.
+                match lifecycle {
+                    "reset" | "expired_reset" => {
+                        if lifecycle == "expired_reset" {
+                            engine.committed_tail.last_commit_at =
+                                Some(Instant::now() - Duration::from_millis(701));
+                        }
+                        super::residuals::actual_reset(&mut harness, &mut engine, 26_021, false)
+                            .await;
+                    }
+                    "focus_out" => {
+                        super::residuals::actual_focus_out(&mut harness, &mut engine, 26_021).await
+                    }
+                    "disable" => {
+                        super::residuals::actual_disable(&mut harness, &mut engine, 26_021).await
+                    }
+                    _ => unreachable!(),
+                }
+                let effects = legacy_effects(&mut harness).await;
+                assert!(commits(&effects).is_empty());
+                assert!(effects.iter().all(|effect| effect
+                    .header()
+                    .member()
+                    .is_none_or(|m| m.as_str() != "DeleteSurroundingText")));
+                if matches!(lifecycle, "reset" | "expired_reset") {
+                    assert!(engine.capture_space_autocorrect_frame_identity().is_none());
+                }
+                // FocusOut can retain inert KnownStart metadata for the
+                // existing sealed handoff; it cannot retain this press receipt.
+                assert!(engine.client_context.managed_word_start.is_none());
+                if !matches!(lifecycle, "focus_out" | "disable") {
+                    assert_eq!(engine.committed_tail.buffer, "должен ");
+                }
+            }
+            let retained_release = !matches!(lifecycle, "expired_reset" | "focus_out" | "disable");
+            assert_eq!(
+                legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    26_022,
+                    KEY_SPACE,
+                    57,
+                    RELEASE_MASK
+                )
+                .await,
+                retained_release,
+                "accepted Space release must match lifecycle={lifecycle}"
+            );
+            no_legacy_output(&mut harness).await;
+            if lifecycle == "reset" {
+                assert!(
+                    !legacy_key(
+                        &mut harness,
+                        &mut engine,
+                        26_023,
+                        KEY_SPACE,
+                        57,
+                        RELEASE_MASK,
+                    )
+                    .await,
+                    "the retained receipt is consumed only once"
+                );
+                no_legacy_output(&mut harness).await;
+            }
+            if matches!(lifecycle, "focus_out" | "disable") {
+                continue;
+            }
+
+            // No fresh client receipt is supplied before the next glyph. Its
+            // output still follows the literal closing Space in the same stream.
+            assert!(legacy_key(&mut harness, &mut engine, 26_024, replay_keyval('ы'), 31, 0).await);
+            let effects = legacy_effects(&mut harness).await;
+            assert_eq!(commits(&effects), ["ы".to_string()]);
+            assert!(effects.iter().all(|effect| effect
+                .header()
+                .member()
+                .is_none_or(|m| m.as_str() != "DeleteSurroundingText")));
+            delivered.extend(commits(&effects));
+            assert_eq!(delivered.concat(), "должен ы");
+            assert_eq!(engine.committed_tail.buffer, "должен ы");
+            assert!(
+                legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    26_025,
+                    replay_keyval('ы'),
+                    31,
+                    RELEASE_MASK
+                )
+                .await
+            );
+            no_legacy_output(&mut harness).await;
+            // A second boundary has no open word. Repeated literal Spaces
+            // must remain exact and must not manufacture edit authority.
+            for ordinal in 0..2 {
+                let serial = 26_026 + ordinal * 2;
+                assert!(legacy_key(&mut harness, &mut engine, serial, KEY_SPACE, 57, 0,).await);
+                let effects = legacy_effects(&mut harness).await;
+                assert_eq!(commits(&effects), [" ".to_string()]);
+                assert!(effects.iter().all(|effect| effect
+                    .header()
+                    .member()
+                    .is_none_or(|m| m.as_str() != "DeleteSurroundingText")));
+                delivered.extend(commits(&effects));
+                assert!(
+                    legacy_key(
+                        &mut harness,
+                        &mut engine,
+                        serial + 1,
+                        KEY_SPACE,
+                        57,
+                        RELEASE_MASK,
+                    )
+                    .await
+                );
+                no_legacy_output(&mut harness).await;
+                assert!(engine.committed_tail.buffer.ends_with(' '));
+                assert!(engine.client_context.managed_word_start.is_none());
+                assert!(engine.composition.word_input_mode.is_none());
+            }
+            assert_eq!(delivered.concat(), "должен ы  ");
+            assert_eq!(engine.committed_tail.buffer, "должен ы  ");
+        }
+    });
+}
+
 async fn type_observed_native_text(
     harness: &mut Harness,
     engine: &mut LayIbusEngine,
@@ -2013,8 +2358,8 @@ fn completed_exact_replay_retires_before_ordinary_managed_input() {
             no_legacy_output(&mut harness).await;
             let native_space_was_visible = engine.composition.preedit_visible;
             let native_space_mode = engine.layout_gesture.layout_is_ru;
-            assert!(!legacy_key(&mut harness, &mut engine, 21_202, KEY_SPACE, 57, 0).await);
-            expect_legacy_native_space(
+            assert!(legacy_key(&mut harness, &mut engine, 21_202, KEY_SPACE, 57, 0).await);
+            expect_legacy_managed_space(
                 &mut harness,
                 &engine,
                 native_space_mode,

@@ -69,12 +69,17 @@ setup: два committed-text/preedit/caret controls PASS, но GTK assertion lay
 содержит лишнее `ыбыть`; поздний сохранённый layout совпал. Qt render_text
 недоступен. [Раздельные наблюдения](evidence/2026-10-09-td133-original-activation-result.json)
 не дают rendered/pixel acceptance или причины original FAIL.
-Оба узких исключения исчерпаны; остальные builds/tests/graph refresh остаются
-remote-only. Original native62/64 и два FAIL сохраняются.
+Третий отдельно разрешённый four-stream batch также выполнен на старых2bd:
+4/4committed-text/preedit/caret PASS; original failure not reproduced. Все три
+local grants исчерпаны; остальные builds/tests/graph refresh remote-only.
+Original native62/64 и два FAIL сохраняются. Новый источник1.0.82 — кандидат;
+установленная1.0.81/2bd не менялась. Source review9/10 и3047functional PASS
+не закрывают full performance или новую native acceptance.
 
 | Приоритет | Задача / статус | Первый результат и зависимости |
 | --- | --- | --- |
-| P0 | [TD-133 — rapid Space ordering](133-causal-rapid-space-ordering.md), IN_PROGRESS | Оригинальные trace отсутствуют; разрешён separate two-field diagnostic без inverse и shared cleanup. Новый полный physical proof требует130/137 либо эквивалентно доказанной безопасной границы |
+| P0 | [TD-138 — IME latency proof authority](138-bind-ime-latency-proof-to-runtime-authority.md), DONE_SOURCE_SCOPE | Existing repeated-run geometry before lexical lookup; isolated RED then IME/reference6/6 GREEN; full3048+11performance PASS, final review9/10,2passes. All old FAILs retained; startup/native/RSS NOT_TESTED |
+| P0 | [TD-133 — rapid Space ordering](133-causal-rapid-space-ordering.md), REPLAN_REQUIRED_NATIVE_ACCEPTANCE | Scoped CommitText Space + Reset release receipt; implementation review9/10,2passes; complete source3048+11performance/lint/release PASS. Candidate82/5fe100db uninstalled, original62/64 retained, old-byte4stream grant consumed. Changed-byte native64 requires safe actual four-path isolation and fresh authorization |
 | P1 | [TD-130 — case-bound feedback](130-offline-inverse-feedback-case-binding.md), DONE_CONNECTED_PRIVATE_PROOF | 14 new semantic tests, controlled RED,2 real private IBus cases PASS; review9/10,2passes; shared cleanup/recovery остаётся137 |
 | P1 | [TD-137 — isolation / unsafe cleanup retirement](137-owned-feedback-partial-cleanup-recovery.md), DONE_RETIRED_UNSAFE_SHARED_CLEANUP, review9/10 | Пользователь выбрал isolation/retirement; guarded private entrypoint,12 historical identities, unchanged TD-130 proof reused; live recovery/native inverse не заявляются |
 | P1 | [TD-128 — Chrome после Tab](128-chrome-focus-transfer-autocorrect.md), OPEN | Точный исходный переход поля на нынешних bytes; ownership/Reset contracts сохранить |
@@ -99,6 +104,7 @@ remote-only. Original native62/64 и два FAIL сохраняются.
 | [121](121-preserve-word-across-ime-layout-handoff.md) | Поздняя history до2026-09-26; не R5 latest | Original first-word/mixed-prefix/completion/closing-Space Firefox scope на2bd UNKNOWN. Last Kitty a8b receipt: `kitty-focus-proof-20260925/kitty-tab-cycle-aligned/receipt.json`, visible `просто `, two Double Shift; changed gate2904/2904 отдельно. Current2bd native fixed matrix имеет successful eight-Double-Shift cells, но не закрывает original Firefox denominator. Сначала map exact original cases/first loss, затем обсуждение нового proof |
 | [127](127-kitty-space-correction-diverges-from-tab.md) | USER_REPORTED / NOT_REPRODUCED | `которую` visible/Tab против `котором` onSpace; frozen receipt отсутствует, first layer и current2bd UNKNOWN. Нужен один identity-bound frame обоих путей |
 | [128](128-chrome-focus-transfer-autocorrect.md) | Physically reproduced наdaaa… | `пу` в первом textarea → Tab → `публекует ` во втором без reactivation; original receipt `browser-autocorrect-20260922/physical-chrome-final-accepted-combined/receipt.json`, SHA6f469b2a…60fa. Current2bd exact scenario UNKNOWN; fresh-field/pair proof не эквивалентен. Исследовать FocusOut/FocusIn/first-printable/Space, сохранить11 rejected-contract negatives |
+| [139](139-account-for-owned-preedit-in-private-client.md) | DEFERRED_STAGE2_DISCUSSION / P1 | General V3 Client advertises preedit but ignores it; unchanged lifecycle0/3 FAIL on81 and82. Strict consumer/proof revision proposed, no runtime changes selected |
 | [122](122-bind-legacy-replay-suppression-request.md) | DECISION_REQUIRED | Source no-arg LegacyV1 dispatch/handler присутствуют; live current reachability и stream-completion authority UNKNOWN. Last owning inventory: [admission analysis](evidence/td120-suppression-admission-analysis.md); protocol не изобретать до trace/backward policy |
 | [123](123-improve-wave-restoration-quality-for-1.0.67.md) | ACTIVE_QUALITY / general quality OPEN | Historical poor-input aec4… installation и267/267 fixed89 outputs не general quality promotion. Current2bd heldout/per-class quality UNKNOWN. [Owning history](../docs/poor-input-authority-2026-09-11.md); current owner — `/home/ubu/projects/lay-syntax-agreement-20260929/docs/architecture/ru-agreement-roadmap-2026-09-30.md`. Читать его stage, baseline и R1/R2 gates перед любым fit |
 

@@ -1,0 +1,139 @@
+{
+  "schema": "lay.td133.historical-managed-space-evidence.v1",
+  "status": "OLDER_FAILED_DELIVERY_CLASS_BOUND_ORIGINAL_2BD_ATTRIBUTION_OPEN",
+  "summary": "/home/ubu/.cache/lay/development/td133-client-ordering-once-l6s_dtoc/HISTORICAL_NEGATIVE_TRACE_SUMMARY.private.json",
+  "summary_sha256": "ebb3c4d524a69b5542aee2df4bd4bdef4cc0c9f2ed97ce1ee261c5215000855d",
+  "frozen_source_head": "bee14b089d5d64c03b0a6fe5b06e8f12a16ffa7d",
+  "frozen_managed_source_sha256": "cc68da697412fd7d32b8fdfbf862f76bdd98210914de56445ad141e92fef3547",
+  "frozen_managed_hash_matches_final_source_manifest": true,
+  "same_predicate_in_current_source": "let managed_commit = managed && !emitter.is_legacy();",
+  "rows": [
+    {
+      "matrix": "/home/ubu/.cache/lay/development/space-boundary-client-commit-physical-20261008/windows/WIDE_MATRIX_V2_20261008T112302.json",
+      "window": "qt.entry",
+      "case": "autocorrect_boundary_actual_full_provider_calc",
+      "text": "онирасчётыготов  ы ",
+      "observed_ns": 3069075083142349,
+      "trace": "/home/ubu/.cache/lay/development/space-boundary-client-commit-physical-20261008/windows/traces/20261008T112219_qt.entry_autocorrect_boundary_actual_full_provider_calc/after_flush_ibus_engine_debug.jsonl",
+      "hash_matches": true,
+      "max_callback_ns": 3069073599905173,
+      "key_records": 126,
+      "bytes": 512000,
+      "installed_ime_sha256": "7b96e7403259813098291e17599ec0453887f194e4cea484df58767cdbe8d551",
+      "decoded_in_last_engine_instance": "они расчёт ыготовы ",
+      "owner_generation": 258,
+      "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/170",
+      "spaces": [
+        {
+          "prefix_typed_chars": 4,
+          "space_serial": 11632,
+          "space_stage": "space_managed_native_passthrough",
+          "space_handled": false,
+          "next_decoded": "р",
+          "next_stage": "printable_managed_commit",
+          "next_snapshot_chars": null,
+          "receipt_counts_before_next": []
+        },
+        {
+          "prefix_typed_chars": 11,
+          "space_serial": 11650,
+          "space_stage": "space_managed_native_passthrough",
+          "space_handled": false,
+          "next_decoded": "ы",
+          "next_stage": "printable_managed_commit",
+          "next_snapshot_chars": null,
+          "receipt_counts_before_next": []
+        }
+      ],
+      "scope": "Older7b96 failed cases; not causal attribution to original2bd failures. No widget-event chronology retained."
+    },
+    {
+      "matrix": "/home/ubu/.cache/lay/development/space-boundary-client-commit-physical-20261008/windows/WIDE_MATRIX_V2_20261008T112302.json",
+      "window": "qt.multiline",
+      "case": "autocorrect_boundary_invalid_left_refused",
+      "text": "онидолжен  ыбыть ",
+      "observed_ns": 3069089962852420,
+      "trace": "/home/ubu/.cache/lay/development/space-boundary-client-commit-physical-20261008/windows/traces/20261008T112234_qt.multiline_autocorrect_boundary_invalid_left_refused/after_flush_ibus_engine_debug.jsonl",
+      "hash_matches": true,
+      "max_callback_ns": 3069088454237138,
+      "key_records": 128,
+      "bytes": 512000,
+      "installed_ime_sha256": "7b96e7403259813098291e17599ec0453887f194e4cea484df58767cdbe8d551",
+      "decoded_in_last_engine_instance": "они должен ыбыть ",
+      "owner_generation": 277,
+      "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/185",
+      "spaces": [
+        {
+          "prefix_typed_chars": 4,
+          "space_serial": 12809,
+          "space_stage": "space_managed_native_passthrough",
+          "space_handled": false,
+          "next_decoded": "д",
+          "next_stage": "printable_managed_commit",
+          "next_snapshot_chars": null,
+          "receipt_counts_before_next": []
+        },
+        {
+          "prefix_typed_chars": 11,
+          "space_serial": 12839,
+          "space_stage": "space_managed_native_passthrough",
+          "space_handled": false,
+          "next_decoded": "ы",
+          "next_stage": "printable_legacy_preedit",
+          "next_snapshot_chars": 11,
+          "receipt_counts_before_next": [
+            11
+          ]
+        }
+      ],
+      "scope": "Older7b96 failed cases; not causal attribution to original2bd failures. No widget-event chronology retained."
+    },
+    {
+      "matrix": "/home/ubu/.cache/lay/development/space-boundary-client-commit-physical-20261008/windows/WIDE_MATRIX_V2_20261008T112302.json",
+      "window": "qt.rich",
+      "case": "autocorrect_boundary_actual_full_provider_calc",
+      "text": "онира счётыго товы ",
+      "observed_ns": 3069107227007311,
+      "trace": "/home/ubu/.cache/lay/development/space-boundary-client-commit-physical-20261008/windows/traces/20261008T112251_qt.rich_autocorrect_boundary_actual_full_provider_calc/after_flush_ibus_engine_debug.jsonl",
+      "hash_matches": true,
+      "max_callback_ns": 3069105726873508,
+      "key_records": 126,
+      "bytes": 512000,
+      "installed_ime_sha256": "7b96e7403259813098291e17599ec0453887f194e4cea484df58767cdbe8d551",
+      "decoded_in_last_engine_instance": "они расчёт ыготовы ",
+      "owner_generation": 300,
+      "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/202",
+      "spaces": [
+        {
+          "prefix_typed_chars": 4,
+          "space_serial": 14146,
+          "space_stage": "space_managed_native_passthrough",
+          "space_handled": false,
+          "next_decoded": "р",
+          "next_stage": "printable_managed_commit",
+          "next_snapshot_chars": 2,
+          "receipt_counts_before_next": [
+            2
+          ]
+        },
+        {
+          "prefix_typed_chars": 11,
+          "space_serial": 14178,
+          "space_stage": "space_managed_native_passthrough",
+          "space_handled": false,
+          "next_decoded": "ы",
+          "next_stage": "printable_managed_commit",
+          "next_snapshot_chars": null,
+          "receipt_counts_before_next": []
+        }
+      ],
+      "scope": "Older7b96 failed cases; not causal attribution to original2bd failures. No widget-event chronology retained."
+    }
+  ],
+  "limits": [
+    "Older7b96 evidence, not either original2bd first-word FAIL.",
+    "Truncated512000-byte historical tails have a partial initial JSON line; only complete records and the last unique engine instance are analysed.",
+    "Exact decoded typed streams and peer callback serials are retained; no widget-side event delivery timestamp or uniquely bound field-to-relay context is available.",
+    "This supports a narrow source transport-contract experiment, not definitive attribution, native fix or a frequency estimate."
+  ]
+}

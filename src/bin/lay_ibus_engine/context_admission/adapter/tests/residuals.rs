@@ -13,10 +13,10 @@ async fn td121_observed_append_then_unconfirmed_space(
     exact_surrounding_receipt(harness, &mut engine, "abc").await;
     assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
     let mut next = serial + 10;
-    retained_boundary_literal_keys(harness, &mut engine, &mut next, appended).await;
+    retained_boundary_literal_keys(harness, &mut engine, &mut next, appended, true).await;
     assert!(engine.context_reset_rereceipt_computation_allowed());
     assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
-    retained_boundary_literal_keys(harness, &mut engine, &mut next, " ").await;
+    retained_boundary_literal_keys(harness, &mut engine, &mut next, " ", true).await;
     assert_eq!(engine.committed_tail.buffer, format!("abc{appended} "));
     engine
 }
@@ -84,8 +84,14 @@ fn td121_late_boundary_receipt_cannot_restore_contradiction_or_intervening_input
                     retained_boundary_backspace(&mut harness, &mut engine, &mut 25_331).await
                 }
                 "printable" => {
-                    retained_boundary_literal_keys(&mut harness, &mut engine, &mut 25_331, "a")
-                        .await
+                    retained_boundary_literal_keys(
+                        &mut harness,
+                        &mut engine,
+                        &mut 25_331,
+                        "a",
+                        true,
+                    )
+                    .await
                 }
                 _ => unreachable!(),
             }
@@ -1326,7 +1332,7 @@ fn residual_repeated_focus_out_after_reset_or_content_type_revocation_survives()
     }));
 }
 
-async fn actual_disable(harness: &mut Harness, engine: &mut LayIbusEngine, serial: u32) {
+pub(super) async fn actual_disable(harness: &mut Harness, engine: &mut LayIbusEngine, serial: u32) {
     let disable = method_message(
         DISPATCH_SENDER,
         serial,
@@ -3445,8 +3451,8 @@ fn firefox_reset_retains_known_word_or_closed_observed_tail() {
                 if mode == "space_boundary" {
                     let native_space_was_visible = engine.composition.preedit_visible;
                     let native_space_mode = engine.layout_gesture.layout_is_ru;
-                    assert!(!legacy_key(&mut harness, &mut engine, 15_010, KEY_SPACE, 57, 0).await);
-                    expect_legacy_native_space(
+                    assert!(legacy_key(&mut harness, &mut engine, 15_010, KEY_SPACE, 57, 0).await);
+                    expect_legacy_managed_space(
                         &mut harness,
                         &engine,
                         native_space_mode,
@@ -3636,7 +3642,7 @@ async fn initial_observed_tail_reset(
     engine
 }
 
-async fn actual_reset(
+pub(super) async fn actual_reset(
     harness: &mut Harness,
     engine: &mut LayIbusEngine,
     serial: u32,
@@ -3792,8 +3798,8 @@ fn firefox_initial_delayed_prefix_cannot_survive_contradiction_or_input_gap() {
                 "boundary" => {
                     let input_mode_before_key = engine.layout_gesture.layout_is_ru;
                     let native_space_was_visible = engine.composition.preedit_visible;
-                    assert!(!legacy_key(&mut harness, &mut engine, 9_710, KEY_SPACE, 57, 0).await);
-                    expect_legacy_native_space(
+                    assert!(legacy_key(&mut harness, &mut engine, 9_710, KEY_SPACE, 57, 0).await);
+                    expect_legacy_managed_space(
                         &mut harness,
                         &engine,
                         input_mode_before_key,
@@ -6650,6 +6656,7 @@ async fn retained_boundary_literal_keys(
     engine: &mut LayIbusEngine,
     serial: &mut u32,
     text: &str,
+    space_committed: bool,
 ) {
     for ch in text.chars() {
         let keycode = match ch {
@@ -6661,19 +6668,35 @@ async fn retained_boundary_literal_keys(
         };
         let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         if ch == ' ' {
-            // ADR native-space-observed-boundary: the same physical separator
-            // is observed natively; retain every non-Space literal oracle below.
+            // Callers declare ordinary versus opaque transport independently
+            // of the production predicate. Both retain their authority oracle.
             let native_space_was_visible = engine.composition.preedit_visible;
-            assert!(!legacy_key(harness, engine, *serial, ch as u32, keycode, 0).await);
+            assert_eq!(
+                legacy_key(harness, engine, *serial, ch as u32, keycode, 0).await,
+                space_committed
+            );
             *serial += 1;
-            expect_legacy_native_space(
-                harness,
-                engine,
-                input_mode_before_key,
-                native_space_was_visible,
-            )
-            .await;
-            assert!(!legacy_key(harness, engine, *serial, ch as u32, keycode, RELEASE_MASK).await);
+            if space_committed {
+                expect_legacy_managed_space(
+                    harness,
+                    engine,
+                    input_mode_before_key,
+                    native_space_was_visible,
+                )
+                .await;
+            } else {
+                expect_legacy_native_space(
+                    harness,
+                    engine,
+                    input_mode_before_key,
+                    native_space_was_visible,
+                )
+                .await;
+            }
+            assert_eq!(
+                legacy_key(harness, engine, *serial, ch as u32, keycode, RELEASE_MASK).await,
+                space_committed
+            );
             *serial += 1;
             continue;
         }
@@ -6712,7 +6735,7 @@ async fn td121_unknown_start_completion_on_alt_release(
 ) -> LayIbusEngine {
     let mut engine = new_engine(harness);
     start_source_free_unknown(harness, &mut engine).await;
-    retained_boundary_literal_keys(harness, &mut engine, serial, "abc").await;
+    retained_boundary_literal_keys(harness, &mut engine, serial, "abc", false).await;
     assert_eq!(engine.committed_tail.buffer, "abc");
     assert!(!engine.context_word_is_known());
     if let Some((text, cursor, anchor)) = snapshot {
@@ -6844,8 +6867,8 @@ async fn c06_exact_refresh_owned_second_word(harness: &mut Harness, serial: u32)
     exact_surrounding_receipt(harness, &mut engine, "abc").await;
     let native_space_was_visible = engine.composition.preedit_visible;
     let native_space_mode = engine.layout_gesture.layout_is_ru;
-    assert!(!legacy_key(harness, &mut engine, serial + 10, KEY_SPACE, 57, 0).await);
-    expect_legacy_native_space(
+    assert!(legacy_key(harness, &mut engine, serial + 10, KEY_SPACE, 57, 0).await);
+    expect_legacy_managed_space(
         harness,
         &engine,
         native_space_mode,
@@ -7732,7 +7755,7 @@ fn residual_observed_boundary_backspace_keeps_start_and_retires_old_token() {
         let mut engine = known_engine(&mut harness).await;
         engine.config.auto_replace = false;
         let mut serial = 4_000;
-        retained_boundary_literal_keys(&mut harness, &mut engine, &mut serial, "ab ").await;
+        retained_boundary_literal_keys(&mut harness, &mut engine, &mut serial, "ab ", false).await;
         assert_eq!(engine.committed_tail.buffer, " ab ");
         let closed = engine.live_context_token().unwrap();
         retained_boundary_backspace(&mut harness, &mut engine, &mut serial).await;
@@ -7745,7 +7768,7 @@ fn residual_observed_boundary_backspace_keeps_start_and_retires_old_token() {
             assert_eq!(engine.committed_tail.buffer, expected);
             assert!(engine.context_word_is_known());
         }
-        retained_boundary_literal_keys(&mut harness, &mut engine, &mut serial, "c").await;
+        retained_boundary_literal_keys(&mut harness, &mut engine, &mut serial, "c", false).await;
         assert_eq!(engine.committed_tail.buffer, " c");
         assert!(engine.capture_input_frame_identity().is_some());
         assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
@@ -7776,7 +7799,7 @@ fn residual_observed_boundary_backspace_refuses_an_unobserved_mirror_separator()
         engine.committed_tail.buffer = "hidden prefix".into();
         assert!(!engine.context_word_is_known());
         let mut serial = 4_100;
-        retained_boundary_literal_keys(&mut harness, &mut engine, &mut serial, " ").await;
+        retained_boundary_literal_keys(&mut harness, &mut engine, &mut serial, " ", false).await;
         assert_eq!(engine.committed_tail.buffer, "hidden prefix ");
         assert_eq!(
             engine
@@ -7810,7 +7833,7 @@ fn residual_observed_boundary_backspace_cannot_cross_a_command_input_gap() {
         let mut engine = known_engine(&mut harness).await;
         engine.config.auto_replace = false;
         let mut serial = 4_200;
-        retained_boundary_literal_keys(&mut harness, &mut engine, &mut serial, "ab ").await;
+        retained_boundary_literal_keys(&mut harness, &mut engine, &mut serial, "ab ", false).await;
         assert!(!legacy_key(&mut harness, &mut engine, serial, b'a' as u32, 30, 1 << 2).await);
         serial += 1;
         assert!(!engine.context_word_is_known());
@@ -8072,8 +8095,8 @@ async fn cycle09_source(harness: &mut Harness) -> LayIbusEngine {
 async fn cycle09_add_trailing_boundary(harness: &mut Harness, source: &mut LayIbusEngine) {
     let input_mode_before_key = source.layout_gesture.layout_is_ru;
     let native_space_was_visible = source.composition.preedit_visible;
-    assert!(!legacy_key(harness, source, 11_910, KEY_SPACE, 57, 0).await);
-    expect_legacy_native_space(
+    assert!(legacy_key(harness, source, 11_910, KEY_SPACE, 57, 0).await);
+    expect_legacy_managed_space(
         harness,
         source,
         input_mode_before_key,
@@ -9453,8 +9476,8 @@ fn firefox_source_free_first_word_after_space_delegates_exact_tail() {
             cycle09_surrounding_receipt(&mut harness, &mut source, "abc", 3, 3).await;
             let input_mode_before_key = source.layout_gesture.layout_is_ru;
             let native_space_was_visible = source.composition.preedit_visible;
-            assert!(!legacy_key(&mut harness, &mut source, 27_010, KEY_SPACE, 57, 0).await);
-            expect_legacy_native_space(
+            assert!(legacy_key(&mut harness, &mut source, 27_010, KEY_SPACE, 57, 0).await);
+            expect_legacy_managed_space(
                 &mut harness,
                 &source,
                 input_mode_before_key,
@@ -9513,8 +9536,8 @@ fn firefox_first_word_space_retires_published_preedit_before_exact_receipt() {
 
             let native_space_was_visible = source.composition.preedit_visible;
             let native_space_mode = source.layout_gesture.layout_is_ru;
-            assert!(!legacy_key(&mut harness, &mut source, 27_102, KEY_SPACE, 57, 0).await);
-            expect_legacy_native_space(
+            assert!(legacy_key(&mut harness, &mut source, 27_102, KEY_SPACE, 57, 0).await);
+            expect_legacy_managed_space(
                 &mut harness,
                 &source,
                 native_space_mode,
@@ -10574,10 +10597,10 @@ async fn c06_native_confirmed_prefix_fixture(
         .await;
         if ch == ' ' {
             assert!(
-                !handled,
-                "ordinary Legacy separator is observed native input"
+                handled,
+                "ordinary ManagedCommit separator stays in the commit stream"
             );
-            expect_legacy_native_space(harness, &engine, mode, native_space_was_visible).await;
+            expect_legacy_managed_space(harness, &engine, mode, native_space_was_visible).await;
         } else {
             assert!(handled);
             expect_legacy_commit(&mut harness.peer, &engine, mode).await;
@@ -12625,13 +12648,16 @@ fn native_space_observed_boundary_retains_strict_predecessor_until_exact_reset_r
                 if suppressed {
                     assert!(engine.arm_current_word_autocorrect_suppression());
                 }
-                assert!(!legacy_key(&mut harness, &mut engine, 62_020, KEY_SPACE, 57, 0).await);
+                assert!(legacy_key(&mut harness, &mut engine, 62_020, KEY_SPACE, 57, 0).await);
                 let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
                 let members: Vec<_> = effects
                     .iter()
                     .map(|effect| effect.header().member().unwrap().as_str().to_string())
                     .collect();
-                assert_eq!(members, ["UpdatePreeditText", "HidePreeditText"]);
+                assert_eq!(
+                    members,
+                    ["UpdatePreeditText", "HidePreeditText", "CommitText"]
+                );
                 for effect in &effects {
                     assert_eq!(effect.header().message_type(), Type::Signal);
                     assert_eq!(effect.header().path().unwrap().as_str(), engine.path);
@@ -12649,6 +12675,12 @@ fn native_space_observed_boundary_retains_strict_predecessor_until_exact_reset_r
                     Some(String::new())
                 );
                 assert_eq!((cursor, visible, mode), (0, false, 0));
+                let body = effects[2].body();
+                let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+                assert_eq!(
+                    crate::ibus_interface::ibus_text_value_to_string(&value),
+                    Some(" ".into())
+                );
                 let expected = format!("{word} ");
                 assert_eq!(engine.committed_tail.buffer, expected);
                 assert_eq!(
@@ -12698,7 +12730,7 @@ fn native_space_observed_boundary_retains_strict_predecessor_until_exact_reset_r
                 assert!(!engine.composition.preedit_visible);
                 assert!(engine.composition.preedit_suffix.is_empty());
                 assert!(
-                    !legacy_key(
+                    legacy_key(
                         &mut harness,
                         &mut engine,
                         62_021,
@@ -12776,15 +12808,18 @@ fn native_space_legacy_no_apply_and_manual_suppression_close_scope_without_edit(
                 assert!(engine.arm_current_word_autocorrect_suppression());
             }
             assert!(
-                !legacy_key(&mut harness, &mut engine, 61_020, KEY_SPACE, 57, 0).await,
-                "plain Legacy Space must return the physical key, suppressed={suppressed}"
+                legacy_key(&mut harness, &mut engine, 61_020, KEY_SPACE, 57, 0).await,
+                "ordinary ManagedCommit Space must commit once, suppressed={suppressed}"
             );
             let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
             let members: Vec<_> = effects
                 .iter()
                 .map(|message| message.header().member().unwrap().as_str().to_string())
                 .collect();
-            assert_eq!(members, ["UpdatePreeditText", "HidePreeditText"]);
+            assert_eq!(
+                members,
+                ["UpdatePreeditText", "HidePreeditText", "CommitText"]
+            );
             let body = effects[0].body();
             let (text, cursor, visible, mode) = body
                 .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
@@ -12794,6 +12829,12 @@ fn native_space_legacy_no_apply_and_manual_suppression_close_scope_without_edit(
                 Some(String::new())
             );
             assert_eq!((cursor, visible, mode), (0, false, 0));
+            let body = effects[2].body();
+            let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+            assert_eq!(
+                crate::ibus_interface::ibus_text_value_to_string(&value),
+                Some(" ".into())
+            );
             assert_eq!(engine.committed_tail.buffer, "abc ");
             assert_eq!(
                 engine.committed_tail.epoch,
@@ -12803,7 +12844,7 @@ fn native_space_legacy_no_apply_and_manual_suppression_close_scope_without_edit(
             assert!(engine.context_word_is_known());
             assert_ne!(engine.live_context_token().as_ref(), Some(&before_token));
             // Replaces A's pending=None oracle explicitly: ADR retains only
-            // inert provenance. Native dispatch cannot confirm or grant edit.
+            // inert provenance. CommitText dispatch cannot confirm or grant edit.
             let pending = engine
                 .context_reset_rereceipt
                 .as_ref()
@@ -12825,7 +12866,7 @@ fn native_space_legacy_no_apply_and_manual_suppression_close_scope_without_edit(
             assert!(!engine.composition.preedit_visible);
             assert!(engine.composition.preedit_suffix.is_empty());
             assert!(
-                !legacy_key(
+                legacy_key(
                     &mut harness,
                     &mut engine,
                     61_021,
@@ -12934,8 +12975,8 @@ fn native_space_observed_boundary_refuses_missing_or_contradictory_receipts() {
             let before_epoch = engine.committed_tail.epoch;
             let mode = engine.layout_gesture.layout_is_ru;
             assert!(engine.composition.preedit_visible);
-            assert!(!legacy_key(&mut harness, &mut engine, 63_020, KEY_SPACE, 57, 0).await);
-            expect_legacy_native_space(&mut harness, &engine, mode, true).await;
+            assert!(legacy_key(&mut harness, &mut engine, 63_020, KEY_SPACE, 57, 0).await);
+            expect_legacy_managed_space(&mut harness, &engine, mode, true).await;
             assert_eq!(engine.committed_tail.buffer, "abc ");
             assert_eq!(
                 engine.committed_tail.epoch,

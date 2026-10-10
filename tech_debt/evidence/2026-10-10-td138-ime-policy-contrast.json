@@ -1,0 +1,45 @@
+{
+  "schema": "lay.td138.public-policy-contrast.v1",
+  "status": "POLICY_ONLY_EXPLANATION_FALSIFIED_REPLAN_REQUIRED",
+  "private_receipt": "/home/ubu/.cache/lay/development/tab-full-04obkqdi/TD138_AUTHORITY_CONTRAST.json",
+  "private_receipt_sha256": "401bd73114171df6a73e9dc87af6b4caf0fa53d14e36dda4de8fe1a852c502ff",
+  "record": {
+    "schema": "lay.td138.ime-authority-contrast.v1",
+    "status": "DIAGNOSTIC_COMPLETE_NOT_CONTRACT_MIGRATION",
+    "baseline_head": "24bcea5256661954d5aba97ff037d6a419e1e2cb",
+    "baseline_archive_sha256": "51bd32fecb0d135840d904cebd2307555f254c78b13ef7a56d2ca507fa29a105",
+    "only_changed_path": "src/nanda_wave/candidate_gate.rs",
+    "baseline_test_source_sha256": "3c76238a0f1fe1dca374b48e96968cf5bc67f6710c5b052cc357d9cc4c8ed44c",
+    "contrast_test_source_sha256": "c46851d4993aaef68965ea2ebd2f8524410b5dd955cfdeccc0df467226c0d29b",
+    "only_changes": "Existing production HotFieldPolicy::ime() selected and asserted before existing warmup in two benchmark fixtures; all inputs, requests, budgets, output assertions unchanged.",
+    "source_stable": true,
+    "selected": 2,
+    "passed": 1,
+    "failed": 1,
+    "results": [
+      {
+        "test": "nanda_wave::candidate_gate::tests::live_gate_short_prefixes_stay_under_hot_readout_budget",
+        "passed": true,
+        "failure": null,
+        "elapsed_seconds": 0.4275543100666255,
+        "log_sha256": "a260982cbd28ef5255d7e4e31c2ac642425f94d6da05159d8609d830cb8d547c",
+        "timing_lines": []
+      },
+      {
+        "test": "nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget",
+        "passed": false,
+        "failure": "performance test failed: lib:lay::nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget (see /home/e/projects/lay-development-runner/tab-full-YeJEQG/ime-authority-contrast/logs/unique_prefix_cache_misses_stay_under_hot_readout_budget.log)",
+        "elapsed_seconds": 1.0249080769717693,
+        "log_sha256": "405e2cbcd6a0829b6261b1273327af5b3508e4b9f5c79ea8d76e60aa234a25f0",
+        "timing_lines": [
+          "test nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget ... unique live prefix timings: [(\"пол\", 6812, 12), (\"цел\", 5143, 12), (\"рас\", 6996, 12), (\"оста\", 591846, 12), (\"дост\", 6362, 12), (\"остан\", 4077, 12)]; max=591846us; stages={\"authority_contract\":\"L2/L3/L4/Bayes are central field evidence; producers supply material, DecisionCore owns live display admission, verifier/AuthorizedEdit own mutation\",\"avg_us\":117056,\"l3_evaluated\":94,\"l3_supported\":0,\"l3_suppressed\":0,\"l4_scene\":{\"block\":0,\"suggest\":0,\"wait\":0},\"l4_scene_memory\":{\"authority\":\"central L4 field evidence; DecisionCore owns display admission and edit-plan safety stays final\",\"hits\":0},\"l4_signed_outcome\":{\"attract\":0,\"neutral\":94,\"repel\":0,\"transition_hits\":0,\"transition_repels\":0},\"live_completion_cache\":{\"hits\":0,\"misses\":7},\"max_us\":591843,\"no_candidate\":0,\"raw_candidates\":94,\"requests\":7,\"returned_candidates\":84,\"stage_us\":{\"decision_max\":134,\"decision_total\":302,\"l2_material_max\":591034,\"l2_material_total\":815243,\"l3_context_max\":409,\"l3_context_total\":447},\"usage_supported\":0}",
+          "unique live prefix readout exceeded 50000us: [(\"пол\", 6812, 12), (\"цел\", 5143, 12), (\"рас\", 6996, 12), (\"оста\", 591846, 12), (\"дост\", 6362, 12), (\"остан\", 4077, 12)]"
+        ]
+      }
+    ],
+    "runtime_authority_changed": false,
+    "installed_runtime_changed": false,
+    "native": "NOT_TESTED"
+  },
+  "not_tested": "Actual benchmark/runtime migration, expensive lexical subcall, general/native latency/RSS; no release admission."
+}

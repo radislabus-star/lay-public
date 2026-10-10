@@ -2549,3 +2549,268 @@ Static probe review9/10 used exactly two passes. Original fixed64 remains
 not closed by this unreproduced control. The one-batch local-input exception
 is exhausted; builds/source tests/graph refresh remain remote-only. Runtime
 authority and delivery routes are unchanged.
+
+### TD-133 client event-order capture preparation — 2026-10-10
+
+[The new preparation packet](../../tech_debt/evidence/2026-10-10-td133-client-ordering-plan.json)
+records a bounded observer-only contrast, not an execution receipt or runtime
+fix. Current source can mix native fallback Space with IME CommitText letters;
+the first original divergent client event remains UNKNOWN. A speculative
+CommitText-for-Space change is not selected because legacy Wayland aggregation
+and existing terminal/ordinary contracts have unresolved consequences.
+
+Two owned GTK3 Entry/Qt rich fields would each receive one clean opener, raw
+clear/normal same-RU activation, and one original invalid-left control: four
+declared streams, original18/12ms taps and1.5s assertions. New bounded widget
+events complement existing engine trace; normal default key/input-method
+handling remains in place. No inverse, shared cleanup, model work, installation,
+restart or remote desktop. Logging restoration and exact runtime/mode checks
+are inherited. This partial warm predecessor does not recreate the complete
+original matrix, and instrumentation can perturb timing. Runtime authority is
+unchanged; client bindings/first failure/native compatibility are NOT_TESTED.
+Preparation review completed in two passes,7/10 then9/10 after root repaired
+observer exception isolation, GTK key direction and the distinct single-boundary
+oracle. Partial aborted client evidence is preserved without blocking cleanup.
+A fresh local exception remains pending. Original62/64 and both prior
+separate positive diagnostics, including the GTK layout conflict, are retained.
+
+### TD-133 bounded chronology result and managed-Space experiment — 2026-10-10
+
+The explicitly granted four-stream batch completed once on unchanged2bd:
+[measured result](../../tech_debt/evidence/2026-10-10-td133-client-ordering-result.json).
+Four committed/preedit/caret controls pass, native first Space precedes the next
+glyph in both target streams, observer drops/errors are zero and owned children
+exit normally. Actual GTK/Qt versions and Wayland platforms are recorded; no
+universal or pixel acceptance is inferred. Runtime/mode/logging are preserved,
+the grant is consumed and original62/64 plus the older GTK layout conflict stay.
+
+[Retained older negative evidence](../../tech_debt/evidence/2026-10-10-td133-historical-managed-space-evidence.json)
+binds three failed7b96 Qt surfaces to correctly decoded last-engine streams and
+the frozen managed.rs manifest hash. Native fallback Space is followed by a
+ManagedCommit glyph before a matching receipt. The exact legacy Space predicate
+is shared with current source. This identifies a delivery mismatch worth a
+narrow experiment; absent native event chronology prevents claiming exact
+attribution to the original two2bd failures.
+
+[The consequence decision](decisions/2026-10-10-managed-space-single-stream-repair.json)
+selects closing Space through the existing CommitText stream only for ordinary
+surrounding-capable Legacy ManagedCommit words. Opaque Legacy and terminal
+purpose keep native Space even for a stored ManagedCommit word. Existing
+owned-preedit commits,
+successful verified replacements, Atomic mode, owner/revocation/candidate and
+SafetyGate/verifier contracts remain. [Source proof](../../tech_debt/evidence/2026-10-10-td133-managed-space-source-proof.json)
+records baseline1/1 expected source-contract failure and candidate2/2PASS
+covering four callback scenarios, including opaque/terminal preservation.
+Full canonical checks, independent implementation review and exact-byte
+native compatibility remain pending. No candidate bytes are installed. One
+real callback regression first captures the missing/lagging receipt edge;
+it is a source transport-contract proof rather than native failure reproduction.
+
+### TD-133 implementation review and bounded lifecycle repair — 2026-10-10
+
+Implementation pass1 rated6/10 and requested changes. An actual Reset callback
+between Space CommitText and its release confirms a second source RED:
+`td133-candidate-green-___tdko_/REGRESSION.json`,2selected/1PASS/1FAIL at
+the accepted-release assertion. WindowInteraction now retains only existing
+handled-press receipts through an immediate same-field, ordinary managed
+committed-boundary Reset (existing700ms recency bound). This restores no
+closed-word correction frame, snapshot or ranking authority. Disable and
+FocusOut retain their revocation; the consumed release cannot be reused.
+
+The affected source run `td133-affected-uhoo7thn/REGRESSION.json` remains
+692PASS/18FAIL/710. Seventeen tests stop at the former native-only Space
+transport oracle. Their twelve shared fixture functions migrate explicitly
+in the ADR; strict predecessor/owner/epoch/revision/late-receipt/refusal/manual
+replay assertions remain. Native opaque/terminal coverage stays strict.
+The new repetition test's extra assumption that even an empty KnownStart
+cannot have a generic input frame was incorrect: it now checks the exact
+repeated-Space surface, absent managed-word witness/mode and no text deletion.
+Neither this run nor its changes prove the original native failure.
+
+Candidate version is1.0.82 before the final source freeze/build; installed
+1.0.81/2bd is unchanged. Final source gates, implementation pass2 and
+authorization/exact-byte native acceptance remain pending.
+
+First complete source gate remains FAIL: `tab-full-n0esogkt/FULL_GATE.json`.
+All33required targets of the38-target manifest ran:3047selected/3044PASS/3FAIL.
+The lane verdict is BLOCKED_CONTRACT; the known-failure ledger stays empty.
+All three failures are opaque backspace fixtures sharing the migrated Space
+helper; caller-declared transport is now explicit (ordinary=true, opaque=false),
+independent of the runtime predicate. Production bytes are unchanged by this
+fixture correction. No authority/provenance assertion or guard is removed.
+Performance, lint and release steps were not reached in this failed full run;
+a fresh full successor is required. The consumed old-byte native grant remains
+consumed and installed2bd is unchanged.
+
+### Second full source gate: functional PASS, performance BLOCKED — 2026-10-10
+
+`tab-full-04obkqdi/FULL_GATE.json` SHA-256
+`94f3c55472cdbf7ba8a9c73a0c0ea789c041311ae4c06059954a08d1cf73b249`
+preserves full-command FAIL. All33required targets ran3047/3047PASS/0FAIL
+(3011correctness+36package;710IME); manifest, architecture and format pass.
+All11serialized performance tests ran:10PASS/1FAIL. The unchanged library
+`unique_prefix_cache_misses_stay_under_hot_readout_budget` measured298466us
+against50000us. This is not an IME callback test and the library/test source
+is byte-identical to24b; causality still needs the frozen baseline/stage contrast.
+Lint/release steps were not reached. No threshold, allowlist, guard, cache/ranker
+or model change is selected. No complete release PASS or installation admission
+is claimed. Original native62/64, consumed four-stream grant, installed1.0.81/2bd
+and all previous failures remain unchanged. Private performance packet and exact
+source bindings are linked in the source-proof packet. Root investigates the
+existing failure before further source acceptance; implementation review2 pending.
+
+Frozen baseline performance contrast also FAILS on unchanged24b:303677us
+versus50000us (one exact test, fresh sandbox, no retries). Candidate's opt-in
+stage trace independently fails299092us;298096us belongs to lexical material,
+canonical0us/layout70us/boundary2us. No IME boundary callback runs in this test.
+Both archives remain stable. This proves the performance blocker exists on the
+baseline source in this environment; it does not admit the candidate or quantify
+native latency. Exact receipts/log hashes are in the source-proof packet. No
+library/ranker/warmup or budget mutation is made as part of TD133.
+
+Implementation final review2/2 PASS9/10: R1/R2 resolved, no further material
+TD133 code finding. Public report `evidence/2026-10-10-td133-managed-space-code-review-pass2.md`
+separates code acceptance from release/native gates; no installation authority.
+The remaining-only canonical source attempt stopped in research lint compilation
+when worker Cargo target crossed12GiB. Default lint inventory530 baseline PASS,
+non-dead diagnostics0; remaining receipt FAIL retained, no release artifact.
+Inventory identifies disposable debug cache6468057416bytes, separate test-lanes
+cache5143137691bytes and release cache1602305650bytes. Recovery removes only
+worker debug cache under the existing lease, keeps installed binaries/models,
+fixed evidence and test-lanes/release caches, then reruns previously incomplete
+remaining steps. No disk-budget increase or source/runtime change is selected.
+
+Remaining canonical source successor PASS_REMAINING_ONLY:
+`tab-full-04obkqdi/REMAINING_SOURCE_SUCCESSOR.json`, SHA-256
+`4ef099d3ae9d3716351915112d7b77cf80135bce2a1bd67379a97f2646309c84`.
+Both lint profiles, GNOME/Python/shell syntax, Firefox regressions, CLI smoke,
+release allbins/research-tools and gitdiff passed. Worker Cargo cache after
+recovery/build8181911552bytes <12884901888; prior resource refusal is preserved.
+Artifact1.0.82 is8185488bytes, SHA-256
+`b8a664ccced4de2d4fece63d1779811c3256096c1090031b894ff442316db1e1`,
+kept privately/uninstalled; full command FAIL_PERFORMANCE still blocks admission.
+TD138 records a worker-only contrast of the benchmark's default full-reference
+policy against actual IME compact-field policy before warmup. Runtime/model,
+source Space repair bytes and installed2bd do not change in that characterization.
+
+TD138 proper-IME-authority contrast remains FAIL591846us/50000us, all six
+requests12candidates. Source-default policy mismatch is not a sufficient cause.
+The benchmark is not migrated; runtime/model/budget unchanged. Conditional
+plan review1/2 is9/10 with REPLAN_REQUIRED. Worker-only lexical substage observer
+is selected before any actual source repair. Exact result and review are linked
+from138; full133 gate FAIL, uninstalled82 and original native62/64 preserved.
+
+TD138 substage diagnostic localizes581798us to first repeated-letter selection
+inside single-deletion material, exact-deletion lookup613us. The full-reference
+lookup precedes pure repeated-run geometry; no-repeat input pays cold load then
+returns None. The selected minimal remedy performs existing geometry first and
+reuses its unchanged candidates. No-op cold-reference process test RED precedes
+runtime edit; old gate/diagnostic FAILs remain. IME proof-scope/nonvacuity
+correction is independent, with unchanged inputs/budgets. Protected Space
+repair/installed2bd remain unchanged; no full/native admission claimed.
+
+TD138 TDD RED:1818library correctnessselected,1817PASS and exactly the new
+no-repeat cold-reference test FAIL. Prior format-only refusal retained.
+Geometry-first selector repair now reuses the same repeated candidates and
+keeps all original guards/scoring. IME latency fixtures explicitly select
+production policy and require ready/nonempty work. All old failed timings
+remain; GREEN/reference contrast/new full gate pending. Installed2bd unchanged.
+
+TD138 controlled GREEN6/6 exact proofs: IME3/3 and old full-reference fixture
+setup3/3, unchanged limits/inputs. The no-repeat operation leaves reference
+cold. Unique readout maxima6958/6938us against50000us, each prefix12candidates
+and0cachehits/7misses. The old reference fixture source is baseline-byte-identical;
+systemic repair, not a scope-only migration, removes the measured blocker.
+Warmup timing is excluded and remains separately201ms/~7.66s. Public GREEN
+packet binds complete private archives/hashes; full/native gate still pending.
+Manifest3074/3048required, zero failure ledger and old observation unchanged.
+
+TD138 new AST graph PASS8 stable exports (`tab-graph-z4fes24f`). Worker-only
+disposable debug cache cleanup under canonical lease leaves6,959,198,735bytes
+of12GiB before new full gate; target/release and test-lanes retained. Source/
+model/user data/runtime/evidence untouched. Fresh full proof selected; no
+install/native acceptance yet.
+
+### Complete source successor and actual-client preparation — 2026-10-10
+
+[Complete source receipt](../../tech_debt/evidence/2026-10-10-td138-complete-source-proof.json)
+records3048/3048 required and11/11 serialized performance PASS, plus format,
+canon, manifest, default/research lint, desktop syntax/Firefox, CLI/release and
+gitdiff. Archive4c53a2e… stable; candidate82 SHA5fe100db…8185232bytes remains
+uninstalled. All older full-command FAILs, baseline303677us and policy-only
+591846us failures remain historical; none is relabeled. TD138 final read-only
+review2/2 is9/10 with no material finding; TD138 DONE_SOURCE_SCOPE.
+
+TD133 source repair is reviewed9/10/fullPASS, while original attribution and
+changed-byte native compatibility remain open. After two code review passes
+its task is REPLAN_REQUIRED_NATIVE_ACCEPTANCE; no third implementation review
+or DONE/native verdict is inferred. Current installed81/2bd is unchanged.
+
+Selected next source validation uses only the unchanged repository-owned remote
+V3 client and exact full-gated candidate: lifecycle3,terminal-delivery4,
+inverse-first-word1,inverse-prefixed1,restoration5. Each lane retains its own
+denominator, inputs, waits and startup schedule; no retry/readiness change.
+Existing nine-role TD130 dependency manifest is reused read-only, not copied or
+claimed equivalent to installed data. Existing bwrap private4usage paths precede
+actual engine launch; private IBus/Readline proof cannot replace physical64.
+Controller: `/home/ubu/.cache/lay/development/td133-candidate-private-client-20261010.py`.
+It runs one guarded remote lease, no install or production restart, and stops
+after a failed lane with partial receipts retained. New local inputs are not
+authorized; the four-stream old-byte grant is consumed. Native successor and
+installation will require a concrete reviewed plan and new explicit grant.
+
+### Private lifecycle characterization — 2026-10-10
+
+Candidate82/5fe100db unchanged V3 lifecycle fails before the first case completes:
+VisibleTailV3 active:composition `j` instead of committed-tail oracle ` j`.
+Same exact harness/dependencies on baseline81/2bd also fails at that assertion.
+Private receipts `td133-private-client-6tugjijb` and `td133-private-client-46qcok0a`
+retain both FAILs;0/3 complete, restoration5 not reached. Candidate trace shows
+real UpdatePreeditText/show `j`, committed separators preserved and no unsafe
+delete. Existing general Client advertises PREEDIT_TEXT but ignores its signals;
+VisibleTailV3 intentionally projects only composition when it owns the word.
+TD139 records the evidenced proof-consumer mismatch for separate stage2
+discussion; no runtime/oracle change or PASS is inferred.
+
+Continue only originally planned unaffected private terminal-delivery4 and two
+bound inverse cases1+1, with exact candidate and original timings/assertions.
+These are independent denominators, not substitutes for lifecycle/restoration
+or native64. No retry of the failed lane. Local installed2bd unchanged.
+
+### Candidate private controls and reversible native plan — 2026-10-10
+
+[Actual-client packet](../../tech_debt/evidence/2026-10-10-td133-actual-client-candidate-proof.json)
+records terminal-delivery4/4, first-word bound inverse1/1 and prefixed inverse1/1
+PASS on full-gated5fe100db. Source/harness stable; existing nine-role dependencies
+read-only, all feedback in fresh private namespaces, cleanup confirms factory
+processes reaped. Candidate and baseline lifecycle0/3 FAIL remain; restoration5
+was not reached. These independent six positives do not admit native64, release
+or a universal source/installed quality verdict. Installed2bd remains unchanged.
+
+[Prepared native experiment](../../tech_debt/evidence/2026-10-10-td133-runtime-candidate-plan.json)
+uses exact8,185,232byte candidate82, one already verified8MB2bd rollback file,
+existing atomic-copy/snapshot/IME-only runtime-control helpers and the metadata
+successor of the reviewed four-stream probe. Three windows total: one owned
+empty GTK install witness (no typed text), then GTK3 Entry/Qt rich four declared
+streams. No model copies, new runtime owner/queue/controller or shared-learning
+cleanup. All production-service/PID/source/config identities and rollback
+ownership must be checked at execution. Full source+review9/10 are complete;
+this new execution plan is reviewed separately, not a third code review.
+
+Read-only preflight verifies loaded/installed2bd, coherent RU, extension81 and
+existing IME3139840; no installation, restart or native input executed. New
+explicit install/restart+four-stream grant is required before the experiment.
+Its eventual four positives will not mark TD133 DONE; original64 requires safe
+actual-engine four-path isolation and its own new authorization. TD139 records
+the independent preedit consumer mismatch for separate stage2 discussion.
+
+Native execution-plan review pass1 is8/10 with one recovery-context blocker:
+the install witness was closed before diagnostics. The corrected plan retains
+that same empty witness through the whole experiment and revalidates its live
+PID/starttick/focus/fresh emptiness before rollback byte replacement/control.
+Loss blocks recovery without a fourth window or extra input. Final plan
+review2/2 is9/10 with no material blocker; both reports remain preserved in
+`tech_debt/evidence/2026-10-10-td133-candidate-execution-plan-review-pass{1,2}.md`.
+This is a new execution-plan review, not a third product-code review. Source
+publication does not grant execution. NEW explicit install+four-stream approval
+is pending, installed2bd untouched and TD133 native64 remains open.

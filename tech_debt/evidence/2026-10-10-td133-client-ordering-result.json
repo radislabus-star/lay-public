@@ -1,0 +1,195 @@
+{
+  "schema": "lay.td133.client-ordering-result.v1",
+  "status": "FOUR_COMMITTED_CONTROLS_PASS_ORIGINAL_FAILURE_NOT_REPRODUCED",
+  "private_result": "/home/ubu/.cache/lay/development/td133-client-ordering-once-l6s_dtoc/RESULT.json",
+  "private_result_sha256": "1dbf3f9df3f3fcb5745c5afdc3523e8b2d21f6a36f28a7a06e8b5b007184b43f",
+  "script_sha256": "3d45c368b075dd3b5fffaf040fa66ea655ac32f48b5406fb49806256b5d70cba",
+  "fixture_sha256": "e7cb7709323c49b94e59090a38dc1d7bbf9ce51af309c0b642811b7e572935c1",
+  "source_head": "24bcea5256661954d5aba97ff037d6a419e1e2cb",
+  "installed_runtime": {
+    "pid": 3139840,
+    "starttick": "316158626",
+    "loaded_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+    "installed_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559"
+  },
+  "rows": [
+    {
+      "toolkit": "gtk3",
+      "kind": "entry",
+      "phase": "clean_opener",
+      "field_pid": 2379269,
+      "field_starttick": "320419145",
+      "status": "PASS_COMMITTED_PREEDIT_CARET",
+      "client_trace": null,
+      "observation": {
+        "sequence": 35,
+        "monotonic_ns": 3204192984416325,
+        "text": "должен ",
+        "caret": 7,
+        "preedit": "",
+        "render_text": "должен ",
+        "render_text_available": true
+      },
+      "first_space": {
+        "callback_serial": 28886,
+        "callback_monotonic_ns": 3204192969895373,
+        "stage": "space_managed_native_passthrough",
+        "handled": false,
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/243",
+        "owner_generation": 654
+      },
+      "engine_trace": {
+        "path": "/home/ubu/.cache/lay/development/td133-client-ordering-once-l6s_dtoc/td133-gtk3-entry-153d5846-trace.private.jsonl",
+        "sha256": "69b91163a5637747de5f9a8c844d0be25c47ed8deaa6c2b9e388d078f7301982"
+      },
+      "prefix_inserted_after_space_callback_us": 3736.111
+    },
+    {
+      "toolkit": "gtk3",
+      "kind": "entry",
+      "phase": "warm_invalid_left_control",
+      "field_pid": 2379269,
+      "field_starttick": "320419145",
+      "status": "PASS_VISIBLE_CONTROL",
+      "client_trace": {
+        "path": "/home/ubu/.cache/lay/development/td133-client-ordering-once-l6s_dtoc/td133-gtk3-entry-153d5846-client-events.private.json",
+        "field_pid": 2379269,
+        "field_starttick": "320419145",
+        "child_returncode": 0,
+        "status": "CAPTURED_WIDGET_EVENTS_NOT_YET_BOUND",
+        "sha256": "2c9b779f3ce4eb8718be9122825a6a3b7cb9ec6536dbaa80a43d791b1418abb9",
+        "events": 138,
+        "dropped": 0,
+        "errors": [],
+        "toolkit_runtime": {
+          "gtk_version": "3.24.52",
+          "display_type": "GdkWaylandDisplay",
+          "GTK_IM_MODULE": null
+        }
+      },
+      "observation": {
+        "sequence": 81,
+        "monotonic_ns": 3204193688547680,
+        "text": "должен ыбыть ",
+        "caret": 13,
+        "preedit": "",
+        "render_text": "должен ыбыть ",
+        "render_text_available": true
+      },
+      "first_space": {
+        "callback_serial": 28936,
+        "callback_monotonic_ns": 3204193361991864,
+        "stage": "space_managed_native_passthrough",
+        "handled": false,
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/244",
+        "owner_generation": 655
+      },
+      "engine_trace": {
+        "path": "/home/ubu/.cache/lay/development/td133-client-ordering-once-l6s_dtoc/td133-gtk3-entry-153d5846-trace.private.jsonl",
+        "sha256": "69b91163a5637747de5f9a8c844d0be25c47ed8deaa6c2b9e388d078f7301982"
+      },
+      "prefix_inserted_after_space_callback_us": 3902.791,
+      "next_letter_after_space_callback_us": 38599.51,
+      "prefix_inserted_before_next_letter_us": 34696.719000000005
+    },
+    {
+      "toolkit": "qt",
+      "kind": "rich",
+      "phase": "clean_opener",
+      "field_pid": 2379824,
+      "field_starttick": "320419506",
+      "status": "PASS_COMMITTED_PREEDIT_CARET",
+      "client_trace": null,
+      "observation": {
+        "sequence": 22,
+        "monotonic_ns": 3204196946361562,
+        "text": "должен ",
+        "caret": 7,
+        "preedit": "",
+        "render_text": null,
+        "render_text_available": false
+      },
+      "first_space": {
+        "callback_serial": 29028,
+        "callback_monotonic_ns": 3204196939984854,
+        "stage": "space_managed_native_passthrough",
+        "handled": false,
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/245",
+        "owner_generation": 660
+      },
+      "engine_trace": {
+        "path": "/home/ubu/.cache/lay/development/td133-client-ordering-once-l6s_dtoc/td133-qt-rich-2da7e1f2-trace.private.jsonl",
+        "sha256": "e5ca469005e78452ea1ce84539424c27798e82c650b76436c04a6717bfed2dab"
+      },
+      "prefix_inserted_after_space_callback_us": 3073.39
+    },
+    {
+      "toolkit": "qt",
+      "kind": "rich",
+      "phase": "warm_invalid_left_control",
+      "field_pid": 2379824,
+      "field_starttick": "320419506",
+      "status": "PASS_VISIBLE_CONTROL",
+      "client_trace": {
+        "path": "/home/ubu/.cache/lay/development/td133-client-ordering-once-l6s_dtoc/td133-qt-rich-2da7e1f2-client-events.private.json",
+        "field_pid": 2379824,
+        "field_starttick": "320419506",
+        "child_returncode": 0,
+        "status": "CAPTURED_WIDGET_EVENTS_NOT_YET_BOUND",
+        "sha256": "0cb874009c7364717e48888fbaf70aa2dc8ab0b25d2471732270f18cc484ffb3",
+        "events": 77,
+        "dropped": 0,
+        "errors": [],
+        "toolkit_runtime": {
+          "qt_version": "6.10.2",
+          "pyside_version": "6.10.2",
+          "platform": "wayland",
+          "QT_IM_MODULE": "ibus"
+        }
+      },
+      "observation": {
+        "sequence": 54,
+        "monotonic_ns": 3204197586689563,
+        "text": "должен ыбыть ",
+        "caret": 13,
+        "preedit": "",
+        "render_text": null,
+        "render_text_available": false
+      },
+      "first_space": {
+        "callback_serial": 29075,
+        "callback_monotonic_ns": 3204197348104989,
+        "stage": "space_managed_native_passthrough",
+        "handled": false,
+        "engine_path": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/246",
+        "owner_generation": 661
+      },
+      "engine_trace": {
+        "path": "/home/ubu/.cache/lay/development/td133-client-ordering-once-l6s_dtoc/td133-qt-rich-2da7e1f2-trace.private.jsonl",
+        "sha256": "e5ca469005e78452ea1ce84539424c27798e82c650b76436c04a6717bfed2dab"
+      },
+      "prefix_inserted_after_space_callback_us": 3681.965,
+      "next_letter_after_space_callback_us": 37852.582,
+      "prefix_inserted_before_next_letter_us": 34170.617
+    }
+  ],
+  "runtime_and_mode_preserved": true,
+  "logging_config_restored": true,
+  "cleanup_errors": [],
+  "declared_streams": 4,
+  "attempted_streams": 4,
+  "key_timing_ms": [
+    18,
+    12
+  ],
+  "assertion_deadline_s": 1.5,
+  "grant_consumed": true,
+  "runtime_authority_changed": false,
+  "limits": [
+    "Both warm controls insert native first Space before the first right-word callback. This disproves neither a race under other scheduling nor the original failures.",
+    "GTK assertion layouts match in this batch; the older separate layout conflict is preserved, not explained. Qt rendered/pixel content remains unavailable.",
+    "No unique field-PID to relay-context ID mapping or full original predecessor/inverse/learning recreation. Observer overhead can perturb scheduling.",
+    "Source/runtime fixes and universal acceptance are not proved; original62PASS/2FAIL/64 remains unchanged.",
+    "No additional native streams, inverse, shared-feedback cleanup, install, restart, model copy/fit or RDP were executed."
+  ]
+}

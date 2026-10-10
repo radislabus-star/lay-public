@@ -33,6 +33,12 @@ fn select_repeated_letter_candidate(
     }
 
     let lower = word.to_lowercase();
+    // An absent repeated run makes this operator inapplicable without lexical
+    // evidence. Do not fault in the cold reference for an unchanged surface.
+    let mut candidates = repeated_run_deletion_candidates(&lower);
+    if candidates.is_empty() {
+        return None;
+    }
     if crate::nanda_wave::l2::l2_surface_foundation_has_authority(&lower)
         || crate::russian_lexicon::is_exact_reference_russian_word(&lower)
         || crate::lexicon::is_ru_live_protected_word(&lower)
@@ -54,13 +60,10 @@ fn select_repeated_letter_candidate(
         return None;
     }
 
-    let mut candidates = repeated_run_deletion_candidates(&lower)
-        .into_iter()
-        .filter(|candidate| {
-            authority == RepeatedLetterAuthority::ProposalOnly
-                || repeated_letter_autocorrect_has_authority(candidate)
-        })
-        .collect::<Vec<_>>();
+    candidates.retain(|candidate| {
+        authority == RepeatedLetterAuthority::ProposalOnly
+            || repeated_letter_autocorrect_has_authority(candidate)
+    });
     candidates.sort_unstable();
     candidates.dedup();
     best_ranked_dictionary_candidate(word, candidates, NGRAM_TYPO_REJECT_MARGIN, 0.40)
@@ -98,6 +101,23 @@ fn correct_short_repeated_function_word(original: &str, lower: &str) -> Option<S
 #[cfg(test)]
 mod tests {
     use super::{correct_repeated_letter, propose_repeated_letter_candidate};
+
+    #[test]
+    fn repeated_letter_without_a_repeated_run_keeps_reference_cold() {
+        assert!(!crate::russian_lexicon::russian_dictionary_is_warm());
+        for word in ["оста", "префикс", "молоко", "ОСТА"] {
+            assert_eq!(correct_repeated_letter(word), None, "word={word:?}");
+            assert_eq!(
+                propose_repeated_letter_candidate(word),
+                None,
+                "word={word:?}"
+            );
+            assert!(
+                !crate::russian_lexicon::russian_dictionary_is_warm(),
+                "an inapplicable repeated-letter operation must not load the reference: {word:?}"
+            );
+        }
+    }
 
     #[test]
     fn repeated_letter_requires_autocorrect_authority_for_the_replacement() {

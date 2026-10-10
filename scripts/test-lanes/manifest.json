@@ -13,13 +13,13 @@
     "project": []
   },
   "counts": {
-    "correctness": 3009,
+    "correctness": 3012,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 257,
+    "process": 260,
     "target": 2814
   },
   "package_fixtures": [
@@ -1841,7 +1841,21 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_managed_no_apply_space_stays_in_commit_stream_without_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_midword_exact_snapshot_survives_owned_commit_reset_echo",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_opaque_or_terminal_managed_word_retains_native_space",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -1948,6 +1962,13 @@
       "lane": "correctness",
       "name": "preedit::tests::manually_finished_visible_prediction_records_positive_usage",
       "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ru_typo::repeated::tests::repeated_letter_without_a_repeated_run_keeps_reference_cold",
+      "target": "lib:lay"
     },
     {
       "isolation": "process",

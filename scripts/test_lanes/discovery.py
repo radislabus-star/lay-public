@@ -64,6 +64,10 @@ PACKAGE_FIXTURE_PATHS = (
 
 PROCESS_ISOLATED_TESTS = {
     (
+        "lib:lay",
+        "ru_typo::repeated::tests::repeated_letter_without_a_repeated_run_keeps_reference_cold",
+    ),
+    (
         "bin:lay-daemon",
         "tests::runtime_state::terminal_enter_records_bounded_raw_typed_context_before_reset",
     ),

@@ -617,6 +617,68 @@ pub(super) async fn expect_legacy_native_space(
     assert!(text_effects[1].body().deserialize::<()>().is_ok());
 }
 
+// TD-133 migrates only surrounding-capable ordinary ManagedCommit boundaries.
+// The native helper above remains strict for opaque and terminal fixtures.
+pub(super) async fn expect_legacy_managed_space(
+    harness: &mut Harness,
+    engine: &LayIbusEngine,
+    expected_mode: bool,
+    was_visible: bool,
+) {
+    let effects = terminal_delivery::legacy_effects(harness).await;
+    let first = if effects.first().is_some_and(|message| {
+        message
+            .header()
+            .member()
+            .is_some_and(|member| member.as_str() == "UpdateProperty")
+    }) {
+        assert_input_mode_update(&effects[0], engine, expected_mode);
+        1
+    } else {
+        0
+    };
+    let text_effects = &effects[first..];
+    let members: Vec<_> = text_effects
+        .iter()
+        .map(|effect| effect.header().member().unwrap().as_str().to_string())
+        .collect();
+    let expected = if was_visible {
+        vec!["UpdatePreeditText", "HidePreeditText", "CommitText"]
+    } else {
+        vec!["CommitText"]
+    };
+    assert_eq!(
+        members, expected,
+        "one closing Space, without any deletion or fallback"
+    );
+    for effect in text_effects {
+        assert_eq!(effect.header().message_type(), Type::Signal);
+        assert_eq!(effect.header().path().unwrap().as_str(), engine.path);
+        assert_eq!(
+            effect.header().interface().unwrap().as_str(),
+            ENGINE_INTERFACE
+        );
+    }
+    if was_visible {
+        let body = text_effects[0].body();
+        let (text, cursor, visible, mode) = body
+            .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+            .unwrap();
+        assert_eq!(
+            crate::ibus_interface::ibus_text_value_to_string(&text),
+            Some(String::new())
+        );
+        assert_eq!((cursor, visible, mode), (0, false, 0));
+        assert!(text_effects[1].body().deserialize::<()>().is_ok());
+    }
+    let body = text_effects.last().unwrap().body();
+    let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+    assert_eq!(
+        crate::ibus_interface::ibus_text_value_to_string(&value),
+        Some(" ".into())
+    );
+}
+
 async fn expect_legacy_commit(
     peer: &mut ControlledPeer,
     engine: &LayIbusEngine,

@@ -1,0 +1,31 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "The user explicitly authorizes one four-stream local TD-133 client event-order diagnostic as a narrow exception to remote-only testing. Builds, source tests, training and architecture refresh remain remote-only.",
+  "reason": "Original native64 GTK3 Entry and Qt rich failures retain no key/client callback trace. Prior two independent positive two-stream diagnostics do not establish their cause. This probe adds the missing widget-side chronology on unchanged installed bytes.",
+  "proof": "Two fresh owned GTK3 Entry/Qt rich fields; in each one clean 'должен ' opener, raw clear and ordinary same-RU activation, then one 'должен ыбыть ' control. Exactly four declared streams, original18/12ms taps and1.5s assertions, no retries. Bounded observer-only widget trace complements existing engine metadata; the distinct diagnostic strengthens exactly-one-middle-Space validation while allowing ordinary right-token correction.",
+  "not_tested": "No runtime fix, new binary installation, service restart, full predecessor/learning recreation, inverse, shared-learning cleanup, frequency estimate or universal native acceptance. A positive or incomplete trace cannot close TD133. No remote desktop.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "DEVELOPMENT.md"
+  ],
+  "runtime_authority_changed": false,
+  "baseline_commit": "24bcea5256661954d5aba97ff037d6a419e1e2cb",
+  "installed_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+  "owner": "Existing installed IME and existing WindowInteraction/ContextAdmissionReducer/output; root operates prepared owned fixtures.",
+  "owning_document": "docs/architecture/space-boundary-shift-2026-10-07.md",
+  "user_authorization": "Current-turn asynchronous answer: Разрешаю один прогон четырёх вводов",
+  "authorization_observed_utc": "2026-10-09 21:53:39 UTC",
+  "script_sha256": "3d45c368b075dd3b5fffaf040fa66ea655ac32f48b5406fb49806256b5d70cba",
+  "client_fixture_sha256": "e7cb7709323c49b94e59090a38dc1d7bbf9ce51af309c0b642811b7e572935c1",
+  "review": "Preparation9/10, pass2/2; no execution or toolkit-binding result implied.",
+  "consequences": "No candidate/ranker/verifier/output-route/learning-policy changes. Ordinary completion may append ordinary positive learning; no rejected/inverse episodes or journal/counter deletion is intended. Existing debug_action_log is temporarily enabled and restored only when the config still equals this probe's write; preserve concurrent external changes and report BLOCKED. Owned uinput keys/device and two child windows are cleaned independently, no unrelated actor touched. Bounded4096 RAM event capture can perturb scheduling; toolkit default handlers are called exactly once even if payload capture fails. A partial or lost field stops dependent input with raw trace and available partial artifact metadata retained. The shared desktop ceiling is enforced by human-safe-run768MiB. Grant expires after this one batch and does not authorize additional local input.",
+  "verification": "Preparation review9/10 pass2/2; the explicitly authorized one batch completed four committed/preedit/caret controls. Client event logs have zero drops/errors; exact runtime/mode and logging were restored. See tech_debt/evidence/2026-10-10-td133-client-ordering-result.json. Original cause is not established and grant is consumed.",
+  "execution_rule_scope": "DEVELOPMENT.md identifies the remote-only rule affected by the one explicit execution exception; its file is not edited. No general exception or future input is granted."
+}

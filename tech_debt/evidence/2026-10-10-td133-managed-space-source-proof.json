@@ -1,0 +1,376 @@
+{
+  "schema": "lay.td133.managed-space-source-proof.v1",
+  "status": "COMPLETE_SOURCE_PASS_NATIVE_PENDING",
+  "proofs": [
+    {
+      "kind": "baseline_source_contract_red",
+      "path": "/home/ubu/.cache/lay/development/td133-baseline-red-s8wjawmz/REGRESSION.json",
+      "sha256": "b046adb6809f78afb5d34a2eaf11abde991208603ce5951b96832cd3292e1e84",
+      "selected": 1,
+      "passed": 0,
+      "failed": 1,
+      "failure": "Actual legacy Space emitted no CommitText, expected one literal Space; first missing-receipt case fails before lagging case."
+    },
+    {
+      "kind": "candidate_callback_green",
+      "path": "/home/ubu/.cache/lay/development/td133-candidate-green-9cqk5s77/REGRESSION.json",
+      "sha256": "6616dbba472ec8aa4186abdc3d55562eb4459dc27325c7eca5ef69634b177602",
+      "selected": 2,
+      "passed": 2,
+      "failed": 0,
+      "scenarios": 4,
+      "source_binding": [
+        {
+          "path": "scripts/test-lanes/manifest.json",
+          "executed_sha256": "d25685cfce7655d0a89c59209689cf8ba83a287512c44c46d65d703361801788",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "executed_sha256": "b6252344e08a7335b635969a5140839a3cf88b5d6b098c59f33da09e90d7cca4",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/managed.rs",
+          "executed_sha256": "718bb6ba3d046e99c93f7697d38a2993b1eec2010c0d862aefe5189ae08af913",
+          "mode": 436
+        }
+      ]
+    },
+    {
+      "kind": "review_reset_red",
+      "path": "/home/ubu/.cache/lay/development/td133-candidate-green-___tdko_/REGRESSION.json",
+      "sha256": "d98ced926824041062b5cd2bf80312d1484facdad90d82255b46ce25561d39e3",
+      "status": "UNEXPECTED_RESULT",
+      "selected": 2,
+      "passed": 1,
+      "failed": 1,
+      "source_binding": [
+        {
+          "path": "scripts/test-lanes/manifest.json",
+          "executed_sha256": "d25685cfce7655d0a89c59209689cf8ba83a287512c44c46d65d703361801788",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "executed_sha256": "a03c9810597b53b395d2a86ef44d699c8b03a5913f2173b64363687a304d7147",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/managed.rs",
+          "executed_sha256": "718bb6ba3d046e99c93f7697d38a2993b1eec2010c0d862aefe5189ae08af913",
+          "mode": 436
+        }
+      ]
+    },
+    {
+      "kind": "affected_before_oracle_migration",
+      "path": "/home/ubu/.cache/lay/development/td133-affected-uhoo7thn/REGRESSION.json",
+      "sha256": "794767661fde3aaec756d5556ccbab5f99779fc4a2c77cb603a7e54b0dc75481",
+      "status": "UNEXPECTED_RESULT",
+      "selected": 710,
+      "passed": 692,
+      "failed": 18,
+      "source_binding": [
+        {
+          "path": "scripts/test-lanes/manifest.json",
+          "executed_sha256": "d25685cfce7655d0a89c59209689cf8ba83a287512c44c46d65d703361801788",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "executed_sha256": "82cfc77cbb94fec6a9f633e2f6c65802a6b7ca5cdf8e10fa257a552e0d5d3f93",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/managed.rs",
+          "executed_sha256": "718bb6ba3d046e99c93f7697d38a2993b1eec2010c0d862aefe5189ae08af913",
+          "mode": 436
+        }
+      ]
+    },
+    {
+      "kind": "lifecycle_callback_green",
+      "path": "/home/ubu/.cache/lay/development/td133-candidate-green-tklilu14/REGRESSION.json",
+      "sha256": "388e7109b6798bdbbce0b38e50165aa99c535b48aadb444c5aedd5c118152906",
+      "status": "CANDIDATE_TRANSPORT_CONTRACT_GREEN",
+      "selected": 2,
+      "passed": 2,
+      "failed": 0,
+      "source_binding": [
+        {
+          "path": "scripts/test-lanes/manifest.json",
+          "executed_sha256": "d25685cfce7655d0a89c59209689cf8ba83a287512c44c46d65d703361801788",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "executed_sha256": "cd0bf1d14999a1b638d43cb5ed910a499055263b0c5cd5fb8d642e89d4a3869f",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/managed.rs",
+          "executed_sha256": "718bb6ba3d046e99c93f7697d38a2993b1eec2010c0d862aefe5189ae08af913",
+          "mode": 436
+        }
+      ]
+    },
+    {
+      "kind": "first_full_gate_failed",
+      "path": "/home/ubu/.cache/lay/development/tab-full-n0esogkt/FULL_GATE.json",
+      "sha256": "99321044b45c4377a3215c590b09f9c87d47fd4c2fc5b8bc3ca6018b77dd0cf6",
+      "status": "FAIL",
+      "command_returncode": 1,
+      "tests_from_complete_target_logs": {
+        "required_targets_executed": 33,
+        "manifest_targets": 38,
+        "selected": 3047,
+        "passed": 3044,
+        "failed": 3
+      },
+      "lane_verdict": "BLOCKED_CONTRACT",
+      "reason": "Three opaque fixtures share a helper migrated to the ordinary managed oracle. Production opaque/terminal policy is unchanged; helper callers now explicitly declare expected transport. No failures added to the allowlist. Full successor pending."
+    },
+    {
+      "kind": "second_full_gate_functional_green_performance_fail",
+      "path": "/home/ubu/.cache/lay/development/tab-full-04obkqdi/FULL_GATE.json",
+      "sha256": "94f3c55472cdbf7ba8a9c73a0c0ea789c041311ae4c06059954a08d1cf73b249",
+      "status": "FAIL",
+      "command_returncode": 1,
+      "source_archive_sha256": "8e757880b6130cf43f56379a7df8bc64eb22fae71055a665163c6d80f87c8fdd",
+      "source_archive_stable": true,
+      "functional": {
+        "verdict": "PASS",
+        "selected": 3047,
+        "passed": 3047,
+        "failed": 0,
+        "correctness": 3011,
+        "package": 36,
+        "required_targets_executed": 33,
+        "manifest_targets": 38
+      },
+      "performance": {
+        "verdict": "BLOCKED_PERFORMANCE",
+        "selected": 11,
+        "passed": 10,
+        "failed": 1,
+        "failed_test": "lib:lay::nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget",
+        "max_us": 298466,
+        "budget_us": 50000,
+        "packet": "/home/ubu/.cache/lay/development/tab-full-04obkqdi/PERFORMANCE_FAILURE_PACKET.private.json",
+        "packet_sha256": "4f12bd0fdcb6b372211d76fb5424aa90bd43be62ebae87a089caaa4fbc3849ed"
+      },
+      "source_binding": [
+        {
+          "path": "Cargo.lock",
+          "sha256": "65d50a2d8d70c260aee1e9b0c6771636534a0a77d6eaaa76bf1142316ffb7eea"
+        },
+        {
+          "path": "Cargo.toml",
+          "sha256": "ec3461a258390ae046e11e9c170b1d1ef9c55004a8a30a424da1bdc4021fd6c4"
+        },
+        {
+          "path": "scripts/test-lanes/known_failures.json",
+          "sha256": "a33184d9ede5d36cdf98c95d361b7a1fd1811557742b1491282a59c93c38bebe"
+        },
+        {
+          "path": "scripts/test-lanes/manifest.json",
+          "sha256": "51de8a5cdd45a2c79af0fb6a5485066e94725b8e5095f64930f73b40ddf16933"
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+          "sha256": "473eae29b61164538e8f15dfb787bdcd060452b1e9f33b46bd8260dce461f498"
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "sha256": "cd0bf1d14999a1b638d43cb5ed910a499055263b0c5cd5fb8d642e89d4a3869f"
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs",
+          "sha256": "f2ceb70a63670a90168e531116b0b143e4664e32f92ed35352da925b76671871"
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/managed.rs",
+          "sha256": "718bb6ba3d046e99c93f7697d38a2993b1eec2010c0d862aefe5189ae08af913"
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+          "sha256": "2dacbac0a87bb7b10767bc0490e8d2e2fa98bff8a29fb8b44aa6852f982c5697"
+        }
+      ],
+      "remaining_steps": "Lint, desktop syntax/compatibility and release build not reached; baseline/source-stage contrast pending. No install authority inferred."
+    },
+    {
+      "kind": "frozen_performance_baseline",
+      "path": "/home/ubu/.cache/lay/development/tab-full-04obkqdi/PERFORMANCE_CONTRAST_baseline_RESULT.json",
+      "sha256": "baa4d8633db7e6992f0d30f52dfc9ef01c97076625ce453e8bb75427cc866208",
+      "source_archive_sha256": "51bd32fecb0d135840d904cebd2307555f254c78b13ef7a56d2ca507fa29a105",
+      "selected": 1,
+      "passed": 0,
+      "failed": 1,
+      "source_stable": true,
+      "log": "/home/ubu/.cache/lay/development/tab-full-04obkqdi/PERFORMANCE_CONTRAST_baseline_test.log",
+      "log_sha256": "447e7ec7d034b73a65d2e60105882d321fbcd7663a00563049126f7a832ae4f6",
+      "max_us": 303677,
+      "budget_us": 50000,
+      "scope": "one baseline timing execution; candidate trace is diagnostic overhead, never a full-gate pass"
+    },
+    {
+      "kind": "frozen_performance_candidate-trace",
+      "path": "/home/ubu/.cache/lay/development/tab-full-04obkqdi/PERFORMANCE_CONTRAST_candidate-trace_RESULT.json",
+      "sha256": "929ac4c29545e459b94452b29c7846e6767cae4b41fbcd932c37090926f97dd7",
+      "source_archive_sha256": "8e757880b6130cf43f56379a7df8bc64eb22fae71055a665163c6d80f87c8fdd",
+      "selected": 1,
+      "passed": 0,
+      "failed": 1,
+      "source_stable": true,
+      "log": "/home/ubu/.cache/lay/development/tab-full-04obkqdi/PERFORMANCE_CONTRAST_candidate-trace_test.log",
+      "log_sha256": "a99fc618335ef31965be2073dedc86c528a75d1ff32cf084439258b4b85a5913",
+      "max_us": 299092,
+      "budget_us": 50000,
+      "scope": "one baseline timing execution; candidate trace is diagnostic overhead, never a full-gate pass"
+    },
+    {
+      "kind": "remaining_source_first_attempt_resource_refusal",
+      "path": "/home/ubu/.cache/lay/development/tab-full-04obkqdi/REMAINING_SOURCE.json",
+      "sha256": "fd69d0c4d56930650386c524b2900db75dff3bdf6eb0bd991328a3eab6f3e41c",
+      "status": "FAIL",
+      "returncode": 1,
+      "source_archive_stable": true,
+      "reason": "Default lint inventory530/dead-code baseline PASS, nondead0. Research lint compile stopped by Cargo12GiB guard, missing successful build-finished record; no candidate artifact. Disposable worker build-cache cleanup then fresh remaining-only attempt required. No budget increase or guard bypass."
+    },
+    {
+      "kind": "remaining_canonical_source_successor",
+      "path": "/home/ubu/.cache/lay/development/tab-full-04obkqdi/REMAINING_SOURCE_SUCCESSOR.json",
+      "sha256": "4ef099d3ae9d3716351915112d7b77cf80135bce2a1bd67379a97f2646309c84",
+      "status": "PASS_REMAINING_ONLY",
+      "returncode": 0,
+      "source_archive_stable": true,
+      "source_archive_sha256": "8e757880b6130cf43f56379a7df8bc64eb22fae71055a665163c6d80f87c8fdd",
+      "parent_full_sha256": "94f3c55472cdbf7ba8a9c73a0c0ea789c041311ae4c06059954a08d1cf73b249",
+      "elapsed_seconds": 335.0982816910837,
+      "verified": [
+        "default/research lint inventories530/354 baseline PASS",
+        "zero nondead diagnostics in both profiles",
+        "GNOME metadata/Node syntax",
+        "desktop Python/shell syntax",
+        "Firefox adapter regressions",
+        "CLI explain smoke",
+        "release allbins research-tools",
+        "git diff check",
+        "worker Cargo target8181911552bytes under12884901888budget"
+      ],
+      "candidate": {
+        "sha256": "b8a664ccced4de2d4fece63d1779811c3256096c1090031b894ff442316db1e1",
+        "bytes": 8185488,
+        "version": "1.0.82",
+        "install_admission": "BLOCKED_PARENT_PERFORMANCE_AND_NATIVE_PENDING"
+      },
+      "scope": "Only remaining steps PASS; parent full remains FAIL_PERFORMANCE, no native/installation admission."
+    },
+    {
+      "kind": "fresh_complete_canonical_full_source_successor",
+      "path": "/home/ubu/.cache/lay/development/tab-full-4reofpse/FULL_GATE.json",
+      "sha256": "248d9ecbd967fd39b1985a205041b514f798798f8640c0d6527999cf9e208212",
+      "status": "PASS",
+      "source_archive_sha256": "4c53a2e550a38c42f4e73ed7d84e157e32e3ab169775a4e33a3a5da0361f1753",
+      "source_archive_stable": true,
+      "functional": {
+        "selected": 3048,
+        "passed": 3048,
+        "failed": 0,
+        "correctness": 3012,
+        "package": 36,
+        "required_targets_executed": 33,
+        "manifest_targets": 38,
+        "ime": 710,
+        "known_failures": 0,
+        "infrastructure_failures": 0
+      },
+      "performance": {
+        "selected": 11,
+        "passed": 11,
+        "failed": 0,
+        "scope": "serialized unchanged identities and budgets; startup warmup excluded from prefix readout"
+      },
+      "candidate": {
+        "path": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
+        "sha256": "5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a",
+        "bytes": 8185232,
+        "version": "1.0.82",
+        "local_path": "/home/ubu/.cache/lay/development/tab-full-4reofpse/lay-ibus-engine",
+        "installed": false,
+        "native": "NOT_TESTED"
+      },
+      "td138_evidence": "tech_debt/evidence/2026-10-10-td138-complete-source-proof.json",
+      "scope": "complete source command PASS; historical FAILs remain, no native or installation acceptance"
+    }
+  ],
+  "runtime_authority_changed": false,
+  "source_delivery_changed": true,
+  "installed_runtime_changed": false,
+  "native": "NOT_TESTED",
+  "full_source_gate": "PASS_FUNCTIONAL3048_PERFORMANCE11_LINT_RELEASE",
+  "review": {
+    "status": "PASS_IMPLEMENTATION_ONLY",
+    "score": 9,
+    "passes": 2,
+    "report": "tech_debt/evidence/2026-10-10-td133-managed-space-code-review-pass2.md",
+    "sha256": "ee84864bcb68fb552a50a428d8d1f5ddd56e3e05c51ddeedd6be9afe4938cce9",
+    "release": "SOURCE_GATES_PASS_NATIVE_PENDING",
+    "native": "NOT_TESTED",
+    "remaining_notes": "No material TD133 code findings; leading Space is within the new predicate scope and belongs in authorized native compatibility. No third implementation review."
+  },
+  "format_refusal": {
+    "path": "/home/ubu/.cache/lay/development/td133-format-regression-lq07ulk1/CANON_REFUSAL.json",
+    "reason": "New local-exception decision had empty protected_paths. Its schema now names DEVELOPMENT.md as the execution-rule scope; no guard or instruction was weakened."
+  },
+  "manifest_admission": {
+    "old_sha256": "d25685cfce7655d0a89c59209689cf8ba83a287512c44c46d65d703361801788",
+    "new_sha256": "51de8a5cdd45a2c79af0fb6a5485066e94725b8e5095f64930f73b40ddf16933",
+    "counts": {
+      "correctness": 3011,
+      "ignored": 15,
+      "performance": 11,
+      "package": 36
+    },
+    "total": 3073,
+    "known_failures": 0,
+    "immutable_observation": "tech_debt/evidence/v28-ru-en-zero-failure-observation-v1.json",
+    "observation_sha256": "0bcddcfabdb78fd2bbbaa8d37222eb076eed490a9b805e73dc4a73ccc99ecf3c",
+    "scope": "Only fingerprint binding changed; no failures excluded and no new result inferred from historical observation.",
+    "successor_td138_manifest": {
+      "sha256": "0e6300d02a18c9862c3f4b5cc2d717565c506b61f0ab221b9212e49a8c4b7745",
+      "total": 3074,
+      "required": 3048,
+      "correctness": 3012,
+      "package": 36,
+      "performance": 11,
+      "ignored": 15,
+      "known_failures": 0
+    }
+  },
+  "candidate_scenarios": 9,
+  "candidate_version": "1.0.82",
+  "performance_attribution": "Reproduced on exact frozen baseline24b:303677us vs50000us. Candidate opt-in trace:299092us total,298096us lexical,0us canonical,70us layout,2us boundary. Shared library path unchanged; original full FAIL preserved. Trace overhead is diagnostic, not a promotion proof.",
+  "candidate_artifact": {
+    "path": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
+    "sha256": "5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a",
+    "bytes": 8185232,
+    "version": "1.0.82",
+    "local_path": "/home/ubu/.cache/lay/development/tab-full-4reofpse/lay-ibus-engine",
+    "installed": false,
+    "native": "NOT_TESTED",
+    "install_admission": "PENDING_NEW_EXPLICIT_EXPERIMENT_GRANT_NOT_RELEASE"
+  },
+  "actual_client_candidate": {
+    "packet": "tech_debt/evidence/2026-10-10-td133-actual-client-candidate-proof.json",
+    "terminal": "PASS4/4",
+    "bound_inverse_first_word": "PASS1/1",
+    "bound_inverse_prefixed": "PASS1/1",
+    "unchanged_lifecycle": "FAIL0/3 on candidate and baseline",
+    "restoration": "NOT_TESTED_NOT_REACHED",
+    "native": "NOT_TESTED",
+    "scope": "existing V3 private namespaces and Readline, not native64"
+  }
+}

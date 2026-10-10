@@ -3,7 +3,7 @@ use std::time::Instant;
 use zbus::fdo;
 
 use super::composition_commit::ActiveCompositionCommit;
-use super::engine::{LayIbusEngine, WordInputMode};
+use super::engine::{LayIbusEngine, WordInputMode, IBUS_INPUT_PURPOSE_TERMINAL};
 use super::protocol::{
     has_command_modifier, has_only_control_modifier, KEY_BACKSPACE, KEY_DOWN, KEY_ENTER,
     KEY_KP_ENTER, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_TAB, KEY_UP,
@@ -240,10 +240,14 @@ impl LayIbusEngine {
                 let setup_us = space_started.elapsed().as_micros();
                 let managed = mode == WordInputMode::ManagedCommit;
                 if managed || self.uses_native_terminal_input() {
-                    // In these ordinary boundary fallbacks, retire the display
-                    // through the existing path and pass Legacy physical Space.
-                    // Atomic retains its existing explicit boundary commit.
-                    let managed_commit = managed && !emitter.is_legacy();
+                    // Surrounding-capable ordinary managed inputs keep Space
+                    // in their CommitText stream. Opaque/terminal Legacy inputs
+                    // retain native Space; Atomic already uses this commit.
+                    let managed_commit = managed
+                        && (!emitter.is_legacy()
+                            || (self.client_context.surrounding_text_supported
+                                && self.client_context.content_purpose
+                                    != IBUS_INPUT_PURPOSE_TERMINAL));
                     if self.take_manual_toggle_autocorrect_suppression() {
                         super::trace::record(
                             r#"{"kind":"ibus_space_autocorrect","status":"manual_toggle_suppressed"}"#,
