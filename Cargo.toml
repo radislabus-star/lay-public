@@ -97,7 +97,7 @@ zbus = "5.15.0"
 x11rb = { version = "0.13", features = ["xkb"] }
 libc = "0.2"
 libm = "=0.2.16"
-zstd = "0.13"
+zstd = "0.14"
 rayon = "=1.10.0"
 niri-ipc = "26"
 llama_cpp = { version = "0.3.2", optional = true }
