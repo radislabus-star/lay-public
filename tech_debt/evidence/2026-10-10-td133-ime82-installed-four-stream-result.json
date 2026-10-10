@@ -1,0 +1,245 @@
+{
+  "schema": "lay.td133.ime82-native-four-stream-result.v1",
+  "status": "PASS_EXPERIMENTAL_INSTALL_FOUR_NATIVE_STREAMS",
+  "scope": "Exactly one approved IME-only experimental installation plus one four-stream batch; not full release/native64 acceptance.",
+  "source_commit": "fc38abd4e60f4455ef85039506a2cf782ca6188d",
+  "plan": "tech_debt/evidence/2026-10-10-td133-runtime-candidate-plan.json",
+  "plan_sha256": "ef88b4a8df2bbc033653b500f8b81f96d6e5517874cfd30ed53f30db3e648c4c",
+  "plan_review": "9/10, final pass2/2; product-code review separately9/10, pass2/2",
+  "user_grant": {
+    "reply": "разрешаю",
+    "request": "Install prepared IME1.0.82 and run four declared streams in GTK3 Entry and Qt rich, retaining one empty install/recovery witness.",
+    "execution_began_utc": "2026-10-10T08:44:07.833898+00:00",
+    "execution_ended_utc": "2026-10-10T08:44:20.654458+00:00",
+    "status": "CONSUMED_ONE_BATCH",
+    "additional_native_inputs_authorized": false
+  },
+  "installation": {
+    "path": "/home/ubu/.cache/lay/development/td133-runtime-candidate-20261010/INSTALL.json",
+    "sha256": "8d88b7cb3e6eaa16bea1aa2dc5df726c60592813f247970c0e2167437e3e8dc2",
+    "execution_copy": "/home/ubu/.cache/lay/development/td133-runtime-candidate-20261010/execution-uygkkhsr/INSTALL.json",
+    "operator_script": "/home/ubu/.cache/lay/development/td133-runtime-candidate-20261010/execute_approved.py",
+    "operator_script_sha256": "11f0d5a268f5c808c4ff621059b0f11e7d2e047cd72ecebcc438351b6ace4fe0",
+    "previous_ime_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+    "installed_loaded_ime_sha256": "5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a",
+    "installed_ime_version": "1.0.82",
+    "extension_version_preserved": "1.0.81",
+    "ime_pid_before": 3139840,
+    "ime_pid_after": 1297061,
+    "ime_starttick_after": "324318613",
+    "global_ibus_pid_preserved": true,
+    "other_role_pid_starttick_and_byte_identities_preserved": true,
+    "config_sha256_preserved": true,
+    "source_list_and_coherent_ru_preserved": true,
+    "installed_via_existing_atomic_copy_and_ime_only_channel": true,
+    "atomic_compare_and_swap_claimed": false,
+    "runtime_authority_changed": false,
+    "runtime_bytes_changed": true,
+    "rollback_path": "/home/ubu/.cache/lay/development/td133-runtime-candidate-20261010/rollback-ime-2bd88bfcbc53",
+    "rollback_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+    "rollback_exercised": false,
+    "new_windows": 3,
+    "install_witness_closed": true,
+    "actual_cgroup_limits": [
+      {
+        "cpu.max": "max 100000",
+        "memory.max": "805306368"
+      },
+      {
+        "cpu.max": "144000 20000",
+        "memory.max": "6442450944"
+      },
+      {
+        "cpu.max": "max 100000",
+        "memory.max": "max"
+      },
+      {
+        "cpu.max": "max 100000",
+        "memory.max": "max"
+      },
+      {
+        "cpu.max": "max 100000",
+        "memory.max": "max"
+      },
+      {
+        "cpu.max": "max 100000",
+        "memory.max": "max"
+      }
+    ]
+  },
+  "diagnostic": {
+    "path": "/home/ubu/.cache/lay/development/td133-client-ordering-once-9qb_236x/RESULT.json",
+    "sha256": "54ff18f07c091742e8baa28020a2b2e60635473555f9574c1290237a27353ee4",
+    "script_sha256": "6c0585778c0d72b178fb18c63c6bc7b891e37b0555618a9fabd83498d8af24a1",
+    "capture_status": "DIAGNOSTIC_CAPTURED_NOT_CAUSAL_VERDICT",
+    "runtime_and_mode_preserved": true,
+    "logging_config_restored": true,
+    "config_restore_contract": "best-effort unchanged-byte check, not an atomic compare-and-swap",
+    "cleanup_errors": [],
+    "selected": 4,
+    "passed": 4,
+    "failed": 0,
+    "blocked": 0,
+    "key_timing_ms": [
+      18,
+      12
+    ],
+    "assertion_deadline_s": 1.5,
+    "inputs_retried": false,
+    "inverse_executed": false,
+    "shared_feedback_cleanup": false,
+    "rows": [
+      {
+        "toolkit": "gtk3",
+        "kind": "entry",
+        "phase": "clean_opener",
+        "field_pid": 1297473,
+        "field_starttick": "324319006",
+        "status": "PASS_COMMITTED_PREEDIT_CARET",
+        "text": "должен ",
+        "caret": 7,
+        "preedit": "",
+        "preedit_available": true,
+        "has_focus": true,
+        "render_text_available": true,
+        "render_text": "должен "
+      },
+      {
+        "toolkit": "gtk3",
+        "kind": "entry",
+        "phase": "warm_invalid_left_control",
+        "field_pid": 1297473,
+        "field_starttick": "324319006",
+        "status": "PASS_VISIBLE_CONTROL",
+        "text": "должен ыбыть ",
+        "caret": 13,
+        "preedit": "",
+        "preedit_available": true,
+        "has_focus": true,
+        "render_text_available": true,
+        "render_text": "должен ыбыть ",
+        "client_trace": {
+          "path": "/home/ubu/.cache/lay/development/td133-client-ordering-once-9qb_236x/td133-gtk3-entry-eeba49f3-client-events.private.json",
+          "field_pid": 1297473,
+          "field_starttick": "324319006",
+          "child_returncode": 0,
+          "status": "CAPTURED_WIDGET_EVENTS_NOT_YET_BOUND",
+          "sha256": "071b36fd10c90de42db2ee8d31a3dcb17d810f74fb64e0e44d4116734cba5105",
+          "events": 128,
+          "dropped": 0,
+          "errors": [],
+          "toolkit_runtime": {
+            "gtk_version": "3.24.52",
+            "display_type": "GdkWaylandDisplay",
+            "GTK_IM_MODULE": null
+          }
+        },
+        "widget_order_observation": {
+          "completed_prefix_ns": 3243191248599334,
+          "next_right_display_ns": 3243191291571186,
+          "next_right_display_preedit": "ыть",
+          "interval_ms": 42.971852,
+          "scope": "Observed widget callbacks, with owned preedit included; not key-to-visible latency or attribution of original2bd failure."
+        },
+        "space_key_trace": {
+          "path": "/home/ubu/.cache/lay/development/td133-client-ordering-once-9qb_236x/td133-gtk3-entry-eeba49f3-trace.private.jsonl",
+          "sha256": "fee4e02d285dc18cebfd2b42847bee655090178ab51ce92442d65360e92807eb",
+          "press_stages": [
+            "space_managed_commit",
+            "space_managed_commit",
+            "space_legacy_preedit_autocorrect"
+          ],
+          "handled_press_count": 3,
+          "handled_release_count": 3,
+          "scope": "One opener Space plus two target Spaces in this guarded field; callback trace is not the original64 failure chronology."
+        }
+      },
+      {
+        "toolkit": "qt",
+        "kind": "rich",
+        "phase": "clean_opener",
+        "field_pid": 1297993,
+        "field_starttick": "324319285",
+        "status": "PASS_COMMITTED_PREEDIT_CARET",
+        "text": "должен ",
+        "caret": 7,
+        "preedit": "",
+        "preedit_available": true,
+        "has_focus": true,
+        "render_text_available": false,
+        "render_text": null
+      },
+      {
+        "toolkit": "qt",
+        "kind": "rich",
+        "phase": "warm_invalid_left_control",
+        "field_pid": 1297993,
+        "field_starttick": "324319285",
+        "status": "PASS_VISIBLE_CONTROL",
+        "text": "должен ыбыть ",
+        "caret": 13,
+        "preedit": "",
+        "preedit_available": true,
+        "has_focus": true,
+        "render_text_available": false,
+        "render_text": null,
+        "client_trace": {
+          "path": "/home/ubu/.cache/lay/development/td133-client-ordering-once-9qb_236x/td133-qt-rich-c6551eed-client-events.private.json",
+          "field_pid": 1297993,
+          "field_starttick": "324319285",
+          "child_returncode": 0,
+          "status": "CAPTURED_WIDGET_EVENTS_NOT_YET_BOUND",
+          "sha256": "f4795da2c5bfcda9c4d4c76f3f033638e51fcf3fc5e8a6bdd1bd5a89b0b458e3",
+          "events": 73,
+          "dropped": 0,
+          "errors": [],
+          "toolkit_runtime": {
+            "qt_version": "6.10.2",
+            "pyside_version": "6.10.2",
+            "platform": "wayland",
+            "QT_IM_MODULE": "ibus"
+          }
+        },
+        "widget_order_observation": {
+          "completed_prefix_ns": 3243194108575807,
+          "next_right_display_ns": 3243194147282150,
+          "next_right_display_preedit": "ыть",
+          "interval_ms": 38.706343,
+          "scope": "Observed widget callbacks, with owned preedit included; not key-to-visible latency or attribution of original2bd failure."
+        },
+        "space_key_trace": {
+          "path": "/home/ubu/.cache/lay/development/td133-client-ordering-once-9qb_236x/td133-qt-rich-c6551eed-trace.private.jsonl",
+          "sha256": "5672d818903204156f25039625c658891abf94ea445ac118c932581bba27547f",
+          "press_stages": [
+            "space_managed_commit",
+            "space_managed_commit",
+            "space_legacy_preedit_commit"
+          ],
+          "handled_press_count": 3,
+          "handled_release_count": 3,
+          "scope": "One opener Space plus two target Spaces in this guarded field; callback trace is not the original64 failure chronology."
+        }
+      }
+    ]
+  },
+  "interpretation": "Both widgets retain six-letter LEFT должен prefix, exactly one middle separator and one final Space; both controls finish должен ыбыть with caret13 and empty preedit. This refused joint correction control is distinct from accepted five-letter должн ыбыть -> должны быть, which was not typed in this batch. Engine first/opener Space stages are managed CommitText with consumed releases. GTK sampled render agrees; Qt render unavailable. The original failure was not reproduced, so its exact cause remains UNKNOWN.",
+  "not_tested": [
+    "New-byte original fixed64 matrix and its predecessor/inverse chronology",
+    "New-byte Kitty first pair after Enter and browser controls",
+    "Physical inverse with proven actual-engine four-path learning isolation",
+    "Original2bd failed callback attribution",
+    "Rendered/pixel Qt acceptance",
+    "Measured native key-to-visible latency, startup first-key or RSS",
+    "Rollback execution"
+  ],
+  "historical_results_preserved": {
+    "old_native64": "62 PASS / 2 FAIL / 0 BLOCKED, immutable old-byte result",
+    "old_four_stream_batch": "4/4 old-byte PASS; separate consumed grant",
+    "private_lifecycle_candidate": "FAIL0/3 completed",
+    "private_lifecycle_baseline": "FAIL0/3 completed",
+    "private_restoration5": "NOT_TESTED",
+    "private_terminal_and_bound_inverse": "4/4 +1/1 +1/1 PASS; separate remote/private scope"
+  },
+  "task133": "REPLAN_REQUIRED_NATIVE_ACCEPTANCE",
+  "task139": "DEFERRED_STAGE2_DISCUSSION"
+}

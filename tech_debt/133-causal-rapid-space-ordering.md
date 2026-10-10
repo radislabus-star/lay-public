@@ -1,6 +1,6 @@
 # TD-133 — Причина порядка первого Space в GTK/Qt
 
-Status: REPLAN_REQUIRED_NATIVE_ACCEPTANCE. Priority: P0. Source repair reviewed9/10, full source PASS; original attribution/native compatibility remain open.
+Status: REPLAN_REQUIRED_NATIVE_ACCEPTANCE. Priority: P0. Source repair reviewed9/10, full source PASS; experimental82 installed with new-byte native4/4 PASS. Original attribution/native compatibility remain open.
 Owner: existing WindowInteraction/ContextAdmissionReducer/output.
 Depends: current exact-byte proof, не новая модель. C03,C05,C07,C08,C10.
 Case-binding130 DONE в private scope. Пользователь выбрал retirement shared
@@ -408,3 +408,41 @@ review2/2 is9/10 with no material blocker; both reports remain preserved in
 This is a new execution-plan review, not a third product-code review. Source
 publication does not grant execution. NEW explicit install+four-stream approval
 is pending, installed2bd untouched and TD133 native64 remains open.
+
+### Approved IME82 experimental install and four-stream result — 2026-10-10
+
+The user replied «разрешаю» to the exact reviewed install-plus-four-stream
+request. One transaction ran08:44:07–08:44:20UTC through human-safe-run768MiB:
+one retained empty GTK install/recovery witness, IME-only atomic replacement
+and existing `channel ime`, then exactly two diagnostic fields/four streams.
+No new Ready delay, retry, inverse, shared-learning cleanup or model copies.
+[New decision](../docs/architecture/decisions/2026-10-10-experimental-ime82-install-four-streams.json)
+records the bounded exception to remote-only execution; this grant is consumed.
+
+[Exact-byte result](evidence/2026-10-10-td133-ime82-installed-four-stream-result.json):
+GTK3 Entry and Qt rich each retain `должен ` as the clean opener and
+`должен ыбыть ` as the invalid-left control,4/4 PASS,0 FAIL,0 BLOCKED.
+Both final controls have one middle separator, one final Space, caret13 and
+empty preedit. The six-letter valid LEFT must remain; this is distinct from
+the accepted five-letter pair `должн ыбыть → должны быть`, not retyped here.
+Widget traces:GTK128/Qt73events,0drops/errors, both children exit0. Opener and
+first-target Space use `space_managed_commit` with consumed releases. Target
+final Space follows its existing preedit route. GTK sampled render agrees;
+Qt render remains unavailable. Capture status alone was not treated as PASS.
+
+Installed and loaded IME is now1.0.82, SHA
+`5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a`,
+PID1297061/starttick324318613. Other role PID/startticks/loaded+installed hashes,
+global IBus270775, extension81, coherentRU, source list and config are preserved.
+Temporary logging restored and all three owned windows closed; cleanup errors0.
+Exact81 rollback remains prepared, not exercised. The candidate stays installed
+as the explicitly approved experiment, not an accepted release/tag.
+
+Full source3048+11performance and product/plan final reviews9/10 are reused:
+no rebuild, repeated tests or third review. Original62/64 and its two FAILs,
+old-byte four positives and private lifecycle0/3 failures remain immutable.
+New4/4 controls do not reproduce original failure chronology. Changed-byte
+fixed64, Kitty first pair after Enter and browser controls remain NOT_TESTED;
+actual-engine four-path isolated native inverse still needs a safe successor
+and separate grant. TD133 remains REPLAN_REQUIRED_NATIVE_ACCEPTANCE, TD139
+remains DEFERRED_STAGE2_DISCUSSION; no unrelated implementation starts here.

@@ -2814,3 +2814,45 @@ review2/2 is9/10 with no material blocker; both reports remain preserved in
 This is a new execution-plan review, not a third product-code review. Source
 publication does not grant execution. NEW explicit install+four-stream approval
 is pending, installed2bd untouched and TD133 native64 remains open.
+
+### IME82 approved experimental installation — 2026-10-10
+
+The user explicitly approved the prepared IME-only install and one four-stream
+native batch. Root executed the final reviewed9/10 transaction once, under
+human-safe-run768MiB,08:44:07–08:44:20UTC. The same empty owned GTK witness was
+retained through both diagnostic fields and closed only after the successful
+transaction. Existing atomic-copy/snapshot and `channel ime` were reused;
+no models copied, no global IBus/other service restart, retry, inverse or shared
+feedback cleanup. [Decision](decisions/2026-10-10-experimental-ime82-install-four-streams.json).
+
+[Measured result](../../tech_debt/evidence/2026-10-10-td133-ime82-installed-four-stream-result.json):
+exact5fe100db candidate82 installed/loaded, native4/4 PASS,0FAIL,0BLOCKED.
+GTK3 Entry/Qt rich each produce `должен ` and `должен ыбыть ` with the first
+separator preserved, final caret7/13 and empty preedit. Invalid six-letter LEFT
+is preserved as required; accepted five-letter pair was not retyped in this
+batch. Widget observers128/73events,0drops/errors and graceful child exits0.
+First/opener Space emits on the managed commit route, final target Space uses
+the existing preedit path; all three releases per field are handled once.
+GTK sampled render matches, Qt render unavailable; no pixel or latency claim.
+
+Runtime authority/owner/verifier are unchanged; installed bytes changed from2bd
+to5fe. New IME PID1297061/starttick324318613; other process PID/startticks and
+loaded/installed hashes, extension81/global IBus270775, coherentRU/source list
+and original config hash20fe9fa… remain. Temporary logging restored, owned
+windows closed, cleanup errors0. Full private transaction receipt:
+`/home/ubu/.cache/lay/development/td133-runtime-candidate-20261010/execution-uygkkhsr/INSTALL.json`,
+SHA8d88b7cb3e6eaa16bea1aa2dc5df726c60592813f247970c0e2167437e3e8dc2;
+diagnostic `td133-client-ordering-once-9qb_236x/RESULT.json`,
+SHA54ff18f07c091742e8baa28020a2b2e60635473555f9574c1290237a27353ee4.
+Rollback2bd remains verified but was not needed/exercised.
+
+The separate grant is consumed. Candidate82 remains the approved experimental
+runtime; no release/tag or full acceptance follows. Original native62/64 with
+two FAILs and exact original attributionUNKNOWN remain; unchanged private
+lifecycle0/3 candidate+baseline FAIL and restoration5NOT_TESTED remain. New-byte
+fixed64, Kitty first pair after Enter and browser controls are NOT_TESTED.
+Native inverse requires proven actual-engine four-path isolation and a new
+grant; retired shared-cleanup launchers remain forbidden. TD133 stays
+REPLAN_REQUIRED_NATIVE_ACCEPTANCE, TD139 stays DEFERRED_STAGE2_DISCUSSION.
+Source full3048/3048+11/11performance and final product/plan reviews9/10 were
+reused without rebuilding/retesting or a third review.

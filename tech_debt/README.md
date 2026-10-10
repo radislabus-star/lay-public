@@ -1,4 +1,4 @@
-# Lay — очередь технического долга, 2026-10-09
+# Lay — очередь технического долга, 2026-10-10
 
 Это единственный текущий индекс задач. Исторические статусы внутри карточек
 относятся к названным в них версиям и не переопределяют эту очередь.
@@ -17,11 +17,20 @@ Branch: `codex/space-boundary-shift-20261007`.
 Новые task commits добавляются поверх него; старый dirty `/home/ubu/projects/lay`
 не является источником принятого runtime.
 
-Принятый installed IME SHA-256:
+Последний принятый пользователем IME 1.0.81 SHA-256:
 `2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559`.
 Приёмка пользователем закрывает конкретное исправление
 `должн ыбыть → должны быть`, включая первую пару после Enter. Installed hash
-повторно прочитан при TD-129; новые source-only задачи этот бинарник не заменяют.
+повторно прочитан при TD-129; receipt относится к этой точной версии.
+
+Текущий экспериментальный IME: **1.0.82**, installed и loaded SHA-256
+`5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a`.
+10 октября пользователь отдельно разрешил установку и один four-stream batch:
+GTK3 Entry/Qt rich **4/4 PASS**, первый Space/committed text/preedit/caret.
+[Точный результат](evidence/2026-10-10-td133-ime82-installed-four-stream-result.json).
+Production source опубликован в `fc38abd4`; full source3048/3048 и11/11performance
+PASS. Extension остаётся1.0.81; другие runtime роли/global IBus/RU/config
+сохранены. Это экспериментальная установка, полная приёмка82 ещё не закрыта.
 
 | Доказательство принятой версии | Измеренный результат | Граница |
 | --- | --- | --- |
@@ -71,15 +80,16 @@ setup: два committed-text/preedit/caret controls PASS, но GTK assertion lay
 не дают rendered/pixel acceptance или причины original FAIL.
 Третий отдельно разрешённый four-stream batch также выполнен на старых2bd:
 4/4committed-text/preedit/caret PASS; original failure not reproduced. Все три
-local grants исчерпаны; остальные builds/tests/graph refresh remote-only.
-Original native62/64 и два FAIL сохраняются. Новый источник1.0.82 — кандидат;
-установленная1.0.81/2bd не менялась. Source review9/10 и3047functional PASS
-не закрывают full performance или новую native acceptance.
+прежних local grants исчерпаны. Новый отдельный install+four-stream grant
+выполнен один раз на82/5fe100db:4/4PASS,0FAIL,0BLOCKED; он также исчерпан.
+Остальные builds/tests/graph refresh remote-only. Original native62/64 и два
+FAIL сохраняются. Source review9/10 и full3048+11performance PASS завершены;
+новые четыре positive controls не закрывают original64/native acceptance.
 
 | Приоритет | Задача / статус | Первый результат и зависимости |
 | --- | --- | --- |
 | P0 | [TD-138 — IME latency proof authority](138-bind-ime-latency-proof-to-runtime-authority.md), DONE_SOURCE_SCOPE | Existing repeated-run geometry before lexical lookup; isolated RED then IME/reference6/6 GREEN; full3048+11performance PASS, final review9/10,2passes. All old FAILs retained; startup/native/RSS NOT_TESTED |
-| P0 | [TD-133 — rapid Space ordering](133-causal-rapid-space-ordering.md), REPLAN_REQUIRED_NATIVE_ACCEPTANCE | Scoped CommitText Space + Reset release receipt; implementation review9/10,2passes; complete source3048+11performance/lint/release PASS. Candidate82/5fe100db uninstalled, original62/64 retained, old-byte4stream grant consumed. Changed-byte native64 requires safe actual four-path isolation and fresh authorization |
+| P0 | [TD-133 — rapid Space ordering](133-causal-rapid-space-ordering.md), REPLAN_REQUIRED_NATIVE_ACCEPTANCE | Scoped CommitText Space + Reset release receipt; implementation review9/10,2passes; complete source3048+11performance/lint/release PASS. Experimental82/5fe100db installed, new-byte GTK3/Qt rich4/4PASS. Original62/64 retained; all local grants consumed. Changed-byte native64 requires safe actual four-path isolation and fresh authorization |
 | P1 | [TD-130 — case-bound feedback](130-offline-inverse-feedback-case-binding.md), DONE_CONNECTED_PRIVATE_PROOF | 14 new semantic tests, controlled RED,2 real private IBus cases PASS; review9/10,2passes; shared cleanup/recovery остаётся137 |
 | P1 | [TD-137 — isolation / unsafe cleanup retirement](137-owned-feedback-partial-cleanup-recovery.md), DONE_RETIRED_UNSAFE_SHARED_CLEANUP, review9/10 | Пользователь выбрал isolation/retirement; guarded private entrypoint,12 historical identities, unchanged TD-130 proof reused; live recovery/native inverse не заявляются |
 | P1 | [TD-128 — Chrome после Tab](128-chrome-focus-transfer-autocorrect.md), OPEN | Точный исходный переход поля на нынешних bytes; ownership/Reset contracts сохранить |
