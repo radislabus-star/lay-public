@@ -1,0 +1,88 @@
+{
+  "schema": "lay.browser-ten-field-standard-evidence.v1",
+  "source_parent": "d33944d8f8d4e7fa83beaae2057f0815695c35b7",
+  "scope": "Shared Firefox/Chrome fixture source and remote headless Firefox layout; no current-fixture/native Chrome PASS",
+  "source_receipt": "/home/ubu/.cache/lay/development/browser-standard-source-final25-20261010/RESULT.json",
+  "source_receipt_sha256": "03053d53fc4edf20713ead5366ae817025b52eddc70578e57074d3d57862c9aa",
+  "archive_sha256": "7878cd9a7ac08a78e20d81b8e43e833148784513807ee498cd7a63d583a9ce37",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "eedc6171d095e59cbf9cf2b9f945e4c95ac0142cd727ba73552b025e39d9b918"
+    },
+    {
+      "path": "scripts/check-lay-changed.sh",
+      "sha256": "1fa5939574efd7f317076f9dab07b3fa3e87869786ea4415f95765be733842d2"
+    },
+    {
+      "path": "tests/manual/firefox_double_shift.html",
+      "sha256": "234467eddbedbb0166909dd800a167ec0ae5514354986a7143b2b8aa37a0748c"
+    },
+    {
+      "path": "tests/manual/chrome_double_shift.html",
+      "sha256": "001f8e65d307ccd3a3809ff32013311aae42d7b8312c20c7782ca03a0b611fc1"
+    },
+    {
+      "path": "tests/manual/firefox_double_shift.js",
+      "sha256": "fdbfa7e2e52aad49fbd4736484e662ab70f8de8e213b4847b9244d6ff071cc04"
+    },
+    {
+      "path": "tests/manual/firefox_double_shift.test.cjs",
+      "sha256": "97568dd37a0f39f0bfde9cb7ddf5707c10fe5ff42b30cf9e0ab78c42547c5ae4"
+    },
+    {
+      "path": "tests/manual/firefox_double_shift.md",
+      "sha256": "9924ed4f5538f31dd1f4b36c08a4fc06bc8d88a7e595723b91716fc93c1307aa"
+    },
+    {
+      "path": "tests/manual/browser_ime_standard.md",
+      "sha256": "1317d6f21d58d3084b3b5f984202bbd6efc5a7a280db457d3c80da0a4b18919c"
+    },
+    {
+      "path": "tests/test_firefox_double_shift_probe.py",
+      "sha256": "4d4539396b15b9d444046217224fcbb4873664d7f0fe2623908ad170239d727a"
+    }
+  ],
+  "node_observer_cases": {
+    "passed": 25,
+    "failed": 0,
+    "skipped": 0
+  },
+  "python_checks": {
+    "shared_fixture": 3,
+    "existing_firefox_compat": 2,
+    "canon": 15,
+    "failed": 0
+  },
+  "syntax_and_canon": "PASS",
+  "remote_guard": "dedicated-20cpu with existing heavy lease",
+  "render": {
+    "browser": "remote headless Firefox",
+    "viewport": [
+      900,
+      600
+    ],
+    "sha256": "507ff9fa500cf093355f518f26f318952fd3a7088c1e4665986327a0fc1b372d",
+    "all_ten_fields_visible": true,
+    "keys_sent": 0
+  },
+  "review": [
+    {
+      "pass": 1,
+      "score": 6,
+      "findings": "Targets before their own pair, intervening keys, partial timing loss."
+    },
+    {
+      "pass": 2,
+      "score": 9,
+      "resolution": "All material findings fixed, including pre-release reversal timestamp donation; final25-case proof PASS."
+    }
+  ],
+  "graph_receipt": "/home/ubu/.cache/lay/development/browser-standard-graph-20261010/RESULT.json",
+  "native_firefox_predecessor": "See td121-firefox-five-shift-native-2026-10-10.json:2PASS/54FAIL/4BLOCKED; does not certify current fixture.",
+  "native_current_fixture": "NOT_TESTED",
+  "native_chrome": "NOT_TESTED",
+  "runtime_authority_changed": false,
+  "runtime_delivery_changed": false,
+  "installed_runtime_changed": false
+}

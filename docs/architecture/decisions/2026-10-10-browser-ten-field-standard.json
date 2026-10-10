@@ -1,0 +1,48 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Adopt the ten-field page as the standard owned-field Firefox and Chrome diagnostic. Reuse one fixture and observer, add a Chrome entry, five rapid Double Shift gestures and explicit latency evidence.",
+  "reason": "The user adopted the Firefox window, requested the same Chrome window, asked to persist the testing rule and required speed measurements. Actual Firefox82 burst failures are recorded separately from fixture source checks.",
+  "user_authorization": "User: make this window the Firefox standard, create the same Chrome window, record that these tests are always required, and measure speed. Earlier explicit local Firefox diagnostic grant remains scoped to the running owned-field experiment; this decision grants no installation, service restart or mutation of existing user fields.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "AGENTS.md",
+    "scripts/check-lay-changed.sh"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "options": [
+    {
+      "design": "One shared ten-field fixture, separate Firefox/Chrome entries, bounded observer and saved timings",
+      "score": 9,
+      "reason": "Equal coverage and one maintained implementation; no new production owner or delivery route."
+    },
+    {
+      "design": "Copy the entire page and observer for Chrome",
+      "score": 6,
+      "reason": "Initially simple, but field/protocol changes would drift between browsers."
+    },
+    {
+      "design": "Build a new cross-browser native framework",
+      "score": 4,
+      "reason": "Adds controllers and focus/profile ownership before the demonstrated production failure is repaired."
+    }
+  ],
+  "verification": "REMOTE_SOURCE_PASS:25/25 Node observer,3/3 shared fixture Python,2/2 existing Firefox compat,15/15 canon; JS/bash/canon PASS. Remote Firefox900x600 render only. Fresh review6/10 then9/10; final pre-release reversal edge regression included. No third pass. Native current fixture/Chrome NOT_TESTED; predecessor Firefox82 burst2PASS/54FAIL/4BLOCKED preserved separately.",
+  "not_tested": "Full original C10/TD121 acceptance, user-site fields, native Chrome input, per-gesture GNOME icon/IBus mode from HTML, producer timing inferred from DOM timing.",
+  "runtime_authority_changed": false,
+  "runtime_delivery_changed": false,
+  "installed_runtime_changed": false,
+  "consequences": "Five rapid pairs supplement the existing eight-pair native C10 acceptance and never replace it. Existing full checks and publication-only reuse remain. Keep failures, missing timing coverage and exact bytes explicit; no invented latency threshold or retry-until-green.",
+  "source_receipt": "/home/ubu/.cache/lay/development/browser-standard-source-final25-20261010/RESULT.json",
+  "source_receipt_sha256": "03053d53fc4edf20713ead5366ae817025b52eddc70578e57074d3d57862c9aa",
+  "source_archive_sha256": "7878cd9a7ac08a78e20d81b8e43e833148784513807ee498cd7a63d583a9ce37",
+  "graph_receipt": "/home/ubu/.cache/lay/development/browser-standard-graph-20261010/RESULT.json",
+  "evidence": "tech_debt/evidence/browser-ten-field-standard-2026-10-10.json"
+}

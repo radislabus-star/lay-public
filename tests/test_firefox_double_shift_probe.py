@@ -32,7 +32,7 @@ class FirefoxDoubleShiftProbeTests(unittest.TestCase):
                                 capture_output=True, text=True, timeout=30)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         counts = dict(re.findall(r"^# (tests|pass|fail|skipped) (\d+)$", result.stdout, re.M))
-        self.assertEqual(counts, {"tests": "15", "pass": "15", "fail": "0", "skipped": "0"}, result.stdout)
+        self.assertEqual(counts, {"tests": "25", "pass": "25", "fail": "0", "skipped": "0"}, result.stdout)
 
     def test_page_has_all_ten_expected_field_cards(self):
         parser = Fields()
@@ -54,6 +54,15 @@ class FirefoxDoubleShiftProbeTests(unittest.TestCase):
             nested.feed(attrs["srcdoc"])
             editor_tag, editor_attrs = nested.elements["field"]
             self.assertEqual((editor_tag, editor_attrs.get("type"), editor_attrs.get("contenteditable")), expected)
+
+    def test_chrome_entry_uses_the_same_page_and_observer(self):
+        entry = (ROOT / "tests/manual/chrome_double_shift.html").read_text()
+        self.assertIn('content="0;url=firefox_double_shift.html?browser=chrome"', entry)
+        self.assertIn('href="firefox_double_shift.html?browser=chrome"', entry)
+        page = PAGE.read_text()
+        self.assertIn('id="sequence"', page)
+        self.assertIn('value="burst5"', page)
+        self.assertIn('id="speed"', page)
 
 
 if __name__ == "__main__":

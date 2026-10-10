@@ -67,7 +67,7 @@ if [[ "${#python_files[@]}" -gt 0 ]]; then
   python3 -m py_compile "${python_files[@]}"
 fi
 
-if has_file_matching '(^scripts/compat/|^tests/test_firefox_(compat_adapter|double_shift_probe)\.py$|^tests/manual/firefox_double_shift\.)'; then
+if has_file_matching '(^scripts/compat/|^tests/test_firefox_(compat_adapter|double_shift_probe)\.py$|^tests/manual/(firefox_double_shift\.|chrome_double_shift\.|browser_ime_standard\.))'; then
   echo "== Firefox compatibility adapter regressions =="
   python3 -m unittest tests.test_firefox_compat_adapter tests.test_firefox_double_shift_probe
 fi

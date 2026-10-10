@@ -1,6 +1,83 @@
 # Firefox input stability — 2026-10-05
 
-## Current ten-field manual diagnostic — 2026-10-10
+## Current browser standard and native burst diagnostic — 2026-10-10
+
+The user adopted the ten-field Firefox window as the standard Lay browser
+diagnostic, requested the same Chrome window and required response-time
+measurements. [Standard](../../tests/manual/browser_ime_standard.md) and
+AGENTS.md require one shared fixture, separate Firefox/Chrome entries, all
+normal/private/fullscreen × active/after-Space cells, ordinary round trips and
+five rapid complete Double Shift gestures. Five gestures supplement the
+unchanged C09/C10 eight-gesture/icon/decoder acceptance. The new
+[decision](decisions/2026-10-10-browser-ten-field-standard.json) extends the
+affected guard/rule paths; no production input owner or delivery route changes.
+
+The shared observer now has roundtrip and burst5 modes. Burst5 requires ten
+observed Shift taps, all five targets, the final KeyZ decoder and Backspace.
+Targets cannot precede their own pair; intervening non-Shift keys invalidate
+the uninterrupted burst. Partial and failed-case timing samples are retained.
+The page shows median/p95/maximum and missing samples. DOM time means second
+Shift keydown to first exact target; signed DOM release delta is separate.
+Native timing instead uses the recorded injected release timestamp. Missing
+clocks stay UNKNOWN. Source contract is25Node cases and3fixture Python checks
+plus the existing2compat checks; final remote/review evidence follows below.
+Current shared-fixture native acceptance and Chrome input are NOT_TESTED.
+
+The explicitly authorized predecessor-fixture Firefox82 experiment completed
+all60selected cells: **2PASS /54FAIL /4BLOCKED /0NOT_TESTED cells**. This is not
+300 completed transformations: only41cells completed five native gestures;
+12cells retained all five targets. Of54FAIL,39failed burst text/mode/timing and
+15failed initial word setup. Normal2/17/1, private0/17/3, fullscreen0/20/0
+(PASS/FAIL/BLOCKED). Input was synthesized through the already attached AT
+keyboard's evdev interface; no human-hardware acceptance is claimed.
+Controllers resumed untouched cells and retained every
+selected failure; aborted setup receipts remain historical. Runtime IME82
+5fe100db and daemon PID/starttick/loaded bytes remained unchanged.
+
+Measured native response for60targets from12complete sequences: median
+101.679ms, p95(nearest rank)160.260ms, max259.984ms. Nineteen mapped targets
+missed their next-pair/last-target boundary. Intended denominator300targets;
+48cells lack complete per-gesture timing mapping. Cadence:18ms down,12ms up,
+75ms extra gap within a pair,90ms extra between pairs; actual timestamps are
+retained. No target waits between the five gestures; last-target limit500ms.
+Late correct text and absent transformations remain distinct from PASS.
+
+First observed failing API transition: `ManualToggleV3` reaches the existing
+IME context gate with a live bridge token, but `manual_toggle_allowed=false`
+and `manual_refresh_allowed=false`, returning `NotHandled/context_authority`
+(authority.rs653–683). Captured Reset receipts also include missing predecessor
+and surrounding-receipt mismatch. Trace continuity is UNKNOWN due bounded
+rotation/truncation; counts are observed lower bounds. This does not identify
+the exact failed predicate for every field or establish one cause for all54
+FAIL. Preserve the reducer/receipt safety rules and delivery routes; no runtime
+repair has been selected or installed in this change.
+
+Exact final receipt:
+`/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json`.
+[Compact native evidence](../../tech_debt/evidence/td121-firefox-five-shift-native-2026-10-10.json)
+pins each selected row to its actual originating capture and all four contributing
+receipts, input/DOM/trace identities and limitations. Native harness review was
+two passes6/10 and8/10 before root's later capture/recovery fixes; it does not
+certify their final source. Product code, installed bytes, authority and delivery
+routes are unchanged. Original TD121 acceptance remains OPEN_CURRENT_SCOPE.
+
+Shared standard final source proof:25/25Node observer cases (0FAIL/0SKIP),
+3/3fixture Python,2/2existing Firefox compat and15/15canon tests PASS;
+JS/bash/canon PASS. Remote900×600 render includes all10fields and the new
+sequence/speed controls, with zero keys sent. Fresh-context fixture review
+pass1 6/10, pass2 9/10. Fixed premature target attribution, extraneous burst
+keys and loss of partial timing. The final prescribed pass2 pre-release
+reversal fix clears disappearing provisional targets; its25th regression is
+included in the final source receipt. Two passes, no third.
+Receipt `/home/ubu/.cache/lay/development/browser-standard-source-final25-20261010/RESULT.json`.
+[Source evidence](../../tech_debt/evidence/browser-ten-field-standard-2026-10-10.json)
+pins the final files and proof. Mandatory remote source-bound/PASS-only graph
+wrapper receipt:
+`/home/ubu/.cache/lay/development/browser-standard-graph-20261010/RESULT.json`.
+No current-fixture native result or Chrome acceptance is inferred from source
+proof, rendering or merely opening a window.
+
+## Initial ten-field manual fixture proof — 2026-10-10 (historical)
 
 Source checkout lay-space-boundary-shift-20261007, parent14fec28d; live IME82
 5fe100db is not altered by this fixture. User requests one screen with10input

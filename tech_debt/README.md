@@ -32,6 +32,14 @@ Production source опубликован в `fc38abd4`; full source3048/3048 и1
 PASS. Extension остаётся1.0.81; другие runtime роли/global IBus/RU/config
 сохранены. Это экспериментальная установка, полная приёмка82 ещё не закрыта.
 
+Текущая браузерная проверка: общий [стенд Firefox/Chrome](../tests/manual/browser_ime_standard.md)
+с10полями, пятью быстрыми Double Shift и замерами скорости принят как стандарт.
+Firefox82 native-диагностика:60ячеек,2PASS/54FAIL/4BLOCKED;39отказов серии и15
+отказов начального ввода. TD-121 остаётся OPEN_CURRENT_SCOPE.
+[Native evidence](evidence/td121-firefox-five-shift-native-2026-10-10.json) и
+[source evidence](evidence/browser-ten-field-standard-2026-10-10.json) имеют
+разные границы; Chrome native input и изменённый стенд ещё NOT_TESTED.
+
 | Доказательство принятой версии | Измеренный результат | Граница |
 | --- | --- | --- |
 | Source release gate | 3044/3044, 3008 correctness + 36 package | Исходники, не все окна |

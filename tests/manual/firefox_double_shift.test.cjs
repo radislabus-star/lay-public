@@ -1,7 +1,7 @@
 "use strict";
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { createRun, FIELD_IDS } = require("./firefox_double_shift.js");
+const { createRun, FIELD_IDS, summarizeTimings } = require("./firefox_double_shift.js");
 const shot = (text, extra = {}) => ({ fieldId: "text", text, trusted: true, focused: true, composing: false, caret: text.length, ...extra });
 function key(run, code, type, text, extra = {}) {
     run.key({ fieldId: "text", code, type, trusted: true, repeat: false, ...extra }, shot(text));
@@ -117,4 +117,110 @@ test("unknown caret and active composition remain explicit separate observations
 test("fixture declares ten distinct fields and refuses unknown cases", () => {
     assert.equal(FIELD_IDS.length, 10); assert.equal(new Set(FIELD_IDS).size, 10);
     assert.throws(() => createRun("password")); assert.throws(() => createRun("text", "other"));
+    assert.throws(() => createRun("text", "active", "other"));
+});
+
+function timedKey(run, code, type, text, at) {
+    run.key({ fieldId: "text", code, type, trusted: true, repeat: false }, shot(text, { at }));
+}
+function timedPair(run, text, at) {
+    timedKey(run, "ShiftLeft", "keydown", text, at);
+    timedKey(run, "ShiftLeft", "keyup", text, at + 10);
+    timedKey(run, "ShiftLeft", "keydown", text, at + 20);
+    timedKey(run, "ShiftLeft", "keyup", text, at + 30);
+}
+function burst(scenario = "active", deliver = true) {
+    const run = createRun("text", scenario, "burst5"), suffix = scenario === "space" ? " " : "";
+    const ru = "привет" + suffix, en = "ghbdtn" + suffix;
+    run.observe(shot(ru, { at: 0 })); let text = ru;
+    for (let i = 0; i < 5; i++) {
+        timedPair(run, text, 10 + i * 80);
+        if (deliver) { text = i % 2 === 0 ? en : ru; run.observe(shot(text, { at: 45 + i * 80 })); }
+    }
+    return { run, ru, en };
+}
+test("five rapid gestures retain all targets and require final decoder and deletion", () => {
+    for (const scenario of ["active", "space"]) {
+        const { run, ru, en } = burst(scenario);
+        assert.equal(run.state.step, 2); assert.equal(run.state.status, "RUNNING");
+        assert.deepEqual(run.state.burstTargets.map(x => x.text), [en, ru, en, ru, en]);
+        assert.equal(run.state.milestones[1].shiftTaps, 10);
+        assert.deepEqual(run.state.timings.map(x => x.keydownToTargetMs), [15, 15, 15, 15, 15]);
+        assert.deepEqual(run.state.timings.map(x => x.releaseToTargetMs), [5, 5, 5, 5, 5]);
+        timedKey(run, "KeyZ", "keydown", en, 420); run.observe(shot(en + "z", { at: 421 }));
+        timedKey(run, "Backspace", "keydown", en + "z", 430); run.observe(shot(en, { at: 431 }));
+        assert.equal(run.state.status, "PASS_DOM"); assert.equal(run.state.milestones.length, 4);
+    }
+});
+test("an unchanged end or a lost burst target cannot hide missing conversions", () => {
+    const { run, en } = burst("active", false);
+    run.observe(shot(en, { at: 370 }));
+    assert.equal(run.state.status, "RUNNING"); assert.equal(run.state.step, 1);
+    assert.equal(run.state.burstTargets.length, 1);
+});
+test("five target surfaces without ten observed releases cannot pass", () => {
+    const run = createRun("text", "active", "burst5"); run.observe(shot("привет", { at: 0 }));
+    for (const text of ["ghbdtn", "привет", "ghbdtn", "привет", "ghbdtn"]) run.observe(shot(text, { at: 10 }));
+    assert.equal(run.state.burstTargets.length, 0); assert.equal(run.state.step, 1);
+    assert.equal(run.state.status, "FAIL_VISIBLE"); assert.equal(run.state.reason, "TARGET_WITHOUT_CORRESPONDING_PAIR");
+});
+test("all targets arriving after the last pair are a timing failure, not a burst pass", () => {
+    const { run, ru, en } = burst("active", false);
+    [en, ru, en, ru, en].forEach((text, i) => run.observe(shot(text, { at: 400 + i * 5 })));
+    assert.equal(run.state.status, "FAIL_VISIBLE"); assert.equal(run.state.reason, "TARGET_NOT_READY_BEFORE_NEXT_PAIR");
+    assert.equal(run.state.burstTargets.length, 5); assert.equal(run.state.timings.length, 5);
+    assert.equal(summarizeTimings([run.state]).samples, 5);
+});
+test("the decoder after five gestures must type Latin z", () => {
+    const { run, en } = burst(); timedKey(run, "KeyZ", "keydown", en, 420);
+    run.observe(shot(en + "я", { at: 421 }));
+    assert.equal(run.state.status, "FAIL_VISIBLE"); assert.equal(run.state.reason, "NEXT_LETTER_WRONG_LAYOUT");
+});
+test("speed summary retains slow and failed samples and reports missing timing", () => {
+    const a = { sequence: "burst5", status: "FAIL_VISIBLE", timings: [1, 2, 3, 4, 100].map(keydownToTargetMs => ({ keydownToTargetMs })) };
+    const b = { sequence: "roundtrip", status: "BLOCKED", timings: [{ keydownToTargetMs: null }] };
+    const stats = summarizeTimings([a, b]);
+    assert.equal(stats.samples, 5); assert.equal(stats.missing, 2);
+    assert.equal(stats.medianMs, 3); assert.equal(stats.p95Ms, 100); assert.equal(stats.maxMs, 100);
+});
+test("absent or reordered clocks stay unknown rather than becoming zero latency", () => {
+    const run = roundTrip("active");
+    assert.equal(run.state.status, "PASS_DOM"); assert.equal(summarizeTimings([run.state]).samples, 0);
+    assert.equal(summarizeTimings([run.state]).missing, 2);
+    const { run: other } = burst(); other.state.timings[0].keydownToTargetMs = -1;
+    assert.equal(summarizeTimings([other.state]).samples, 4);
+});
+test("a burst forbids intervening printable or modifier keys and keeps partial timings", () => {
+    for (const code of ["KeyZ", "Backspace", "Space", "Tab", "ControlLeft"]) {
+        const run = createRun("text", "active", "burst5"); run.observe(shot("привет", { at: 0 }));
+        timedPair(run, "привет", 10); run.observe(shot("ghbdtn", { at: 45 }));
+        timedKey(run, code, "keydown", "ghbdtn", 50);
+        assert.equal(run.state.status, "BLOCKED"); assert.equal(run.state.reason, "EXTRANEOUS_KEY_DURING_BURST");
+        assert.equal(summarizeTimings([run.state]).samples, 1); assert.equal(summarizeTimings([run.state]).missing, 4);
+    }
+});
+test("an early reversal cannot supply the next pair's missing target", () => {
+    const run = createRun("text", "active", "burst5"); run.observe(shot("привет", { at: 0 }));
+    timedPair(run, "привет", 10); run.observe(shot("ghbdtn", { at: 45 }));
+    run.observe(shot("привет", { at: 50 }));
+    timedPair(run, "привет", 90);
+    assert.equal(run.state.status, "FAIL_VISIBLE"); assert.equal(run.state.reason, "TARGET_WITHOUT_CORRESPONDING_PAIR");
+    assert.equal(run.state.burstTargets.length, 1); assert.equal(summarizeTimings([run.state]).samples, 1);
+});
+test("a pre-release target that disappears cannot donate its old timestamp to a later pair", () => {
+    const run = createRun("text", "active", "burst5"); run.observe(shot("привет", { at: 0 }));
+    timedKey(run, "ShiftLeft", "keydown", "привет", 10); timedKey(run, "ShiftLeft", "keyup", "привет", 20);
+    timedKey(run, "ShiftLeft", "keydown", "привет", 30);
+    run.observe(shot("ghbdtn", { at: 35 })); run.observe(shot("привет", { at: 36 }));
+    timedKey(run, "ShiftLeft", "keyup", "привет", 40);
+    timedKey(run, "ShiftLeft", "keydown", "привет", 90); timedKey(run, "ShiftLeft", "keyup", "привет", 100);
+    timedKey(run, "ShiftLeft", "keydown", "привет", 110);
+    run.observe(shot("ghbdtn", { at: 115 })); run.observe(shot("привет", { at: 116 }));
+    timedKey(run, "ShiftLeft", "keyup", "привет", 120);
+    for (let i = 2; i < 5; i++) {
+        timedPair(run, i % 2 ? "ghbdtn" : "привет", 10 + i * 80);
+        run.observe(shot(i % 2 ? "привет" : "ghbdtn", { at: 45 + i * 80 }));
+    }
+    assert.equal(run.state.status, "FAIL_VISIBLE"); assert.equal(run.state.reason, "TARGET_NOT_READY_BEFORE_NEXT_PAIR");
+    assert.equal(run.state.burstTargets[0].at, 115); assert.equal(run.state.timings.length, 5);
 });

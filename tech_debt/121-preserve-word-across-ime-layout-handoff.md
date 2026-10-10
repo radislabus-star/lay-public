@@ -1,6 +1,24 @@
 # TD-121: Сохранять целое слово при смене экземпляра IME
 
-## Current ten-field Firefox diagnostic — 2026-10-10
+## Current browser standard / rapid Firefox result — 2026-10-10
+
+Status remains **OPEN_CURRENT_SCOPE**. User adopted the shared ten-field
+[Firefox/Chrome standard](../tests/manual/browser_ime_standard.md), including
+five rapid gestures and latency coverage. This supplements original C09/C10
+acceptance; no delivery route or runtime fix is part of the fixture change.
+Predecessor-fixture native Firefox82:60cells,2PASS/54FAIL/4BLOCKED. Failures split
+39burst and15initial-word setup. Full five gestures41cells; all five targets12.
+Native response60samples: median101.679ms, p95 160.260ms, max259.984ms;48cells
+lack complete timing mapping. Existing context-authority RPC refusal is
+observed, but exhaustive per-field root attribution remains UNKNOWN.
+New shared-fixture and Chrome native input remain NOT_TESTED. See
+[native evidence](evidence/td121-firefox-five-shift-native-2026-10-10.json) and
+the current owning document; source checks never override these native failures.
+Shared standard SOURCE_READY:25/25Node,3/3fixture Python,2/2compat and15/15canon
+PASS; fresh reviews6/10 then9/10. Final source and graph receipts are in the
+[standard evidence](evidence/browser-ten-field-standard-2026-10-10.json).
+
+## Initial ten-field Firefox fixture proof — 2026-10-10 (historical)
 
 Authoritative current scope: OPEN_CURRENT_SCOPE, per tech_debt/README.md.
 The older R5/R12 paragraphs below remain their historical byte/scenario scopes.

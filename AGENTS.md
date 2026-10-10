@@ -68,6 +68,21 @@
 
 ## Automated checks and compact evidence
 
+- Browser input changes must use the [standard ten-field Firefox/Chrome
+  protocol](tests/manual/browser_ime_standard.md). Test each affected browser
+  in normal, private and fullscreen windows, with an active word and after
+  Space: 60 cells per browser. In each cell observe both ordinary directions
+  and five rapid complete Double Shift gestures (ten Shift taps), retain each
+  intermediate target and probe the next letter. Record gesture cadence and
+  response latency with sample coverage, median, p95 and maximum; missing
+  targets and FAIL/BLOCKED must not disappear from the denominator.
+- Use one shared fixture/observer for both browsers. Source/DOM checks do not
+  certify native input, installed bytes, GNOME icon or IBus mode. This focused
+  standard supplements, and never reduces, the existing eight-gesture C10
+  acceptance. Reuse unchanged accepted evidence for publication-only work;
+  a test requirement does not authorize installation, restart, shared-learning
+  cleanup or input into existing user fields.
+
 - Run development checks with one command:
   `python3 scripts/dev-check.py check --compact`. Use an explicit `--target`
   only when the affected component is known; a focused PASS is not release

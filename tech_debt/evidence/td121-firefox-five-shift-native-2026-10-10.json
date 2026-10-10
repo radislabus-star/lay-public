@@ -1,0 +1,1888 @@
+{
+  "schema": "lay.firefox-five-shift-native-evidence.v1",
+  "scope": "Finite Firefox82 diagnostic on predecessor d33944d8 fixture; not changed shared-fixture or Chrome acceptance",
+  "source_head": "d33944d8f8d4e7fa83beaae2057f0815695c35b7",
+  "final_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+  "final_receipt_sha256": "cbafbab46aaabc11daa9d35e6692e3537ffe9cabc62752ae43570509352e066e",
+  "runtime": {
+    "ime": {
+      "pid": 1297061,
+      "starttick": "324318613",
+      "sha256": "5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a"
+    },
+    "daemon": {
+      "pid": 3258474,
+      "starttick": "316256295",
+      "sha256": "8cbbfb83fbb7f2e0812632b0358c7ab312182e352516a73ec1f040c11df54238"
+    },
+    "unchanged": true
+  },
+  "plan": {
+    "windows": [
+      "normal",
+      "private",
+      "fullscreen"
+    ],
+    "words": [
+      "active",
+      "space"
+    ],
+    "fields": [
+      "text",
+      "search",
+      "url",
+      "tel",
+      "email",
+      "textarea",
+      "rich",
+      "plain",
+      "iframe-input",
+      "iframe-rich"
+    ],
+    "cases": 60,
+    "complete_gestures_per_case": 5,
+    "shift_taps_per_case": 10,
+    "key_down_ms": 18,
+    "key_up_ms": 12,
+    "intra_pair_gap_ms": 75,
+    "between_pairs_ms": 90,
+    "no_target_wait_between_gestures": true
+  },
+  "counts": {
+    "PASS": 2,
+    "FAIL": 54,
+    "BLOCKED": 4,
+    "RUNNING": 0
+  },
+  "not_tested_cells": 0,
+  "by_window": {
+    "normal": {
+      "FAIL": 17,
+      "PASS": 2,
+      "BLOCKED": 1
+    },
+    "private": {
+      "BLOCKED": 3,
+      "FAIL": 17
+    },
+    "fullscreen": {
+      "FAIL": 20
+    }
+  },
+  "failure_stage_counts": {
+    "FIVE_TOGGLES_TEXT_OR_MODE": 39,
+    "typed word deadline": 15,
+    "owned DOM focus/observation lost": 1,
+    "owned DOM observation stale": 3
+  },
+  "complete_five_gesture_cells": 41,
+  "complete_five_target_cells": 12,
+  "latency": {
+    "definition": "Native injected second Shift EV_KEY release to first exact target DOM snapshot; milliseconds, browser timestamp, full five-target sequences only.",
+    "samples": 60,
+    "median_ms": 101.679,
+    "p95_ms": 160.26,
+    "max_ms": 259.984,
+    "targets_late_in_mapped_sequences": 19,
+    "cells_without_complete_timing_mapping": 48,
+    "intended_target_denominator": 300,
+    "complete_sequences_with_timing": 12,
+    "partial_or_missing_target_sequences": "UNMAPPED; no per-gesture latency claim"
+  },
+  "receipts": [
+    {
+      "path": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "sha256": "21fd1ffbdb99c9ceef5ba294733f1f5aa5903ec9655a5e9b9c6a1fd7a20b4dcf",
+      "script_sha256": "c8b2af92be6c36fde23918b979dbe7714629181cb1481d4c03c7e0200dcced08",
+      "fixture_sha256": "828311296010c420f892db096466d3371f18dfe69d1d8756ee4a48d80f71e3a0",
+      "observer_sha256": "62a02bb506853b7080c039f969dfd28f3f487a541645179c96167b95870ff603",
+      "selected_original_rows": 16,
+      "trace_capture": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/IME-TRACE.private.jsonl",
+      "trace_sha256": "98cf266ca70a49f67cd0b55a988ff5e3e46f8bd78db2e6e6925dbbcb555ed66e",
+      "trace_continuity": "UNKNOWN; bounded files can rotate/truncate; counts are observed lower bounds",
+      "trace_notes": [
+        {
+          "at": 1791632665963.1375,
+          "kind": "rotation_or_rewrite",
+          "continuity": "UNKNOWN"
+        }
+      ],
+      "fragment_or_non_json_lines": 1,
+      "observed_rpc_counts": [
+        {
+          "stage": "not_handled",
+          "reason": "context_authority",
+          "status": null,
+          "count": 10
+        },
+        {
+          "stage": "complete",
+          "reason": null,
+          "status": 3,
+          "count": 3
+        }
+      ],
+      "observed_reset_receipt_counts": [
+        {
+          "stage": "armed",
+          "reason": null,
+          "count": 15
+        },
+        {
+          "stage": "mismatch_diagnostic",
+          "reason": null,
+          "count": 2
+        },
+        {
+          "stage": "rejected",
+          "reason": "surrounding_receipt_mismatch",
+          "count": 2
+        },
+        {
+          "stage": "rejected",
+          "reason": "missing_predecessor_or_post_reset_token",
+          "count": 18
+        },
+        {
+          "stage": "confirmed",
+          "reason": null,
+          "count": 18
+        },
+        {
+          "stage": "retained_unconfirmed",
+          "reason": "published_preedit_cache",
+          "count": 11
+        },
+        {
+          "stage": "consumed",
+          "reason": null,
+          "count": 3
+        },
+        {
+          "stage": "retained_unconfirmed",
+          "reason": "observed_replay_prior_surface",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "path": "/home/ubu/.cache/lay/development/firefox-five-shift-native-8j232fb9/RESULT.json",
+      "sha256": "74368e51ac751f4cf22d9719863d078ecb13eba69aa579df4e015356bdc1ecb6",
+      "script_sha256": "df09e617eba8e754d59bfdbf0edf72b86fef9808fed6635151fbd82aff814235",
+      "fixture_sha256": "828311296010c420f892db096466d3371f18dfe69d1d8756ee4a48d80f71e3a0",
+      "observer_sha256": "62a02bb506853b7080c039f969dfd28f3f487a541645179c96167b95870ff603",
+      "selected_original_rows": 1,
+      "trace_capture": "/home/ubu/.cache/lay/development/firefox-five-shift-native-8j232fb9/IME-TRACE.private.jsonl",
+      "trace_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "trace_continuity": "UNKNOWN; bounded files can rotate/truncate; counts are observed lower bounds",
+      "trace_notes": [],
+      "fragment_or_non_json_lines": 0,
+      "observed_rpc_counts": [],
+      "observed_reset_receipt_counts": []
+    },
+    {
+      "path": "/home/ubu/.cache/lay/development/firefox-five-shift-native-ux_muegx/RESULT.json",
+      "sha256": "cb5c6b84cde532f588497b4d72019ca7500b3d2a0c70a47aac01d1daf7d1784e",
+      "script_sha256": "28c8022d37d7d298acb20e9702590e1e94d41672b4eb95c0b691938b0173e85e",
+      "fixture_sha256": "828311296010c420f892db096466d3371f18dfe69d1d8756ee4a48d80f71e3a0",
+      "observer_sha256": "62a02bb506853b7080c039f969dfd28f3f487a541645179c96167b95870ff603",
+      "selected_original_rows": 6,
+      "trace_capture": "/home/ubu/.cache/lay/development/firefox-five-shift-native-ux_muegx/IME-TRACE.private.jsonl",
+      "trace_sha256": "f6dee4a9ab5232a6a3c05dc8b72a19b7ec0ac62f85526bd37fcb17b47e882d71",
+      "trace_continuity": "UNKNOWN; bounded files can rotate/truncate; counts are observed lower bounds",
+      "trace_notes": [
+        {
+          "at": 1791632871919.3523,
+          "kind": "rotation_or_rewrite",
+          "continuity": "UNKNOWN"
+        },
+        {
+          "at": 1791632881723.246,
+          "kind": "rotation_or_rewrite",
+          "continuity": "UNKNOWN"
+        },
+        {
+          "at": 1791632884524.7114,
+          "kind": "rotation_or_rewrite",
+          "continuity": "UNKNOWN"
+        }
+      ],
+      "fragment_or_non_json_lines": 2,
+      "observed_rpc_counts": [
+        {
+          "stage": "not_handled",
+          "reason": "context_authority",
+          "status": null,
+          "count": 22
+        },
+        {
+          "stage": "complete",
+          "reason": null,
+          "status": 3,
+          "count": 24
+        }
+      ],
+      "observed_reset_receipt_counts": [
+        {
+          "stage": "rejected",
+          "reason": "missing_predecessor_or_post_reset_token",
+          "count": 36
+        },
+        {
+          "stage": "armed",
+          "reason": null,
+          "count": 46
+        },
+        {
+          "stage": "confirmed",
+          "reason": null,
+          "count": 45
+        },
+        {
+          "stage": "advanced_confirmed",
+          "reason": null,
+          "count": 9
+        },
+        {
+          "stage": "retained_unconfirmed",
+          "reason": "published_preedit_cache",
+          "count": 24
+        },
+        {
+          "stage": "retained_unconfirmed",
+          "reason": "first_strict_prefix_receipt",
+          "count": 2
+        },
+        {
+          "stage": "mismatch_diagnostic",
+          "reason": null,
+          "count": 4
+        },
+        {
+          "stage": "rejected",
+          "reason": "surrounding_receipt_mismatch",
+          "count": 4
+        },
+        {
+          "stage": "consumed",
+          "reason": null,
+          "count": 13
+        },
+        {
+          "stage": "retained_unconfirmed",
+          "reason": "observed_replay_prior_surface",
+          "count": 19
+        }
+      ]
+    },
+    {
+      "path": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "sha256": "cbafbab46aaabc11daa9d35e6692e3537ffe9cabc62752ae43570509352e066e",
+      "script_sha256": "581e515346b5664e93f3fa76e21d2958cedd6f8e39e8fc3324d90c6ad717205c",
+      "fixture_sha256": "828311296010c420f892db096466d3371f18dfe69d1d8756ee4a48d80f71e3a0",
+      "observer_sha256": "62a02bb506853b7080c039f969dfd28f3f487a541645179c96167b95870ff603",
+      "selected_original_rows": 37,
+      "trace_capture": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/IME-TRACE.private.jsonl",
+      "trace_sha256": "d907d3faed5973b8b7405916f9afb960fb1f839e60610a2ae14e51c5f22666f1",
+      "trace_continuity": "UNKNOWN; bounded files can rotate/truncate; counts are observed lower bounds",
+      "trace_notes": [
+        {
+          "at": 1791633218994.56,
+          "kind": "rotation_or_rewrite",
+          "continuity": "UNKNOWN"
+        }
+      ],
+      "fragment_or_non_json_lines": 1,
+      "observed_rpc_counts": [
+        {
+          "stage": "complete",
+          "reason": null,
+          "status": 3,
+          "count": 7
+        },
+        {
+          "stage": "not_handled",
+          "reason": "context_authority",
+          "status": null,
+          "count": 4
+        }
+      ],
+      "observed_reset_receipt_counts": [
+        {
+          "stage": "armed",
+          "reason": null,
+          "count": 15
+        },
+        {
+          "stage": "confirmed",
+          "reason": null,
+          "count": 30
+        },
+        {
+          "stage": "retained_unconfirmed",
+          "reason": "published_preedit_cache",
+          "count": 19
+        },
+        {
+          "stage": "advanced_confirmed",
+          "reason": null,
+          "count": 4
+        },
+        {
+          "stage": "consumed",
+          "reason": null,
+          "count": 7
+        },
+        {
+          "stage": "rejected",
+          "reason": "missing_predecessor_or_post_reset_token",
+          "count": 26
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "window": "normal",
+      "scenario": "active",
+      "field": "text",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": true,
+      "targets_before_next_pair": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "latency_ms": [
+        132.995,
+        259.984,
+        115.019,
+        106.847,
+        125.766
+      ],
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "ghbdtn",
+      "next_letter_text": null,
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "active",
+      "field": "search",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": true,
+      "targets_before_next_pair": [
+        false,
+        true,
+        true,
+        true,
+        true
+      ],
+      "latency_ms": [
+        145.638,
+        101.428,
+        84.964,
+        101.934,
+        87.172
+      ],
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "ghbdtn",
+      "next_letter_text": null,
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "active",
+      "field": "url",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "привет",
+      "next_letter_text": null,
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "active",
+      "field": "tel",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "привет",
+      "next_letter_text": null,
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "active",
+      "field": "email",
+      "status": "PASS",
+      "reason": null,
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": true,
+      "targets_before_next_pair": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "latency_ms": [
+        85.146,
+        103.743,
+        82.89,
+        87.721,
+        85.649
+      ],
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "ghbdtn",
+      "next_letter_text": "ghbdtnz",
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "active",
+      "field": "textarea",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "привет",
+      "next_letter_text": null,
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "active",
+      "field": "rich",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": true,
+      "targets_before_next_pair": [
+        true,
+        false,
+        true,
+        true,
+        true
+      ],
+      "latency_ms": [
+        85.552,
+        106.391,
+        89.425,
+        89.237,
+        93.158
+      ],
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "ghbdtn",
+      "next_letter_text": null,
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "active",
+      "field": "plain",
+      "status": "PASS",
+      "reason": null,
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": true,
+      "targets_before_next_pair": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "latency_ms": [
+        102.609,
+        94.066,
+        87.624,
+        105.089,
+        81.97
+      ],
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "ghbdtn",
+      "next_letter_text": "ghbdtnz",
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "active",
+      "field": "iframe-input",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "привет",
+      "next_letter_text": null,
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "active",
+      "field": "iframe-rich",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "normal",
+      "scenario": "space",
+      "field": "text",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": null,
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "space",
+      "field": "search",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": true,
+      "targets_before_next_pair": [
+        true,
+        false,
+        true,
+        true,
+        true
+      ],
+      "latency_ms": [
+        101.38,
+        124.115,
+        86.892,
+        99.919,
+        112.298
+      ],
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "ghbdtn ",
+      "next_letter_text": null,
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "space",
+      "field": "url",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        true,
+        true,
+        true,
+        false,
+        true
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "ghbdtn ",
+      "next_letter_text": null,
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "space",
+      "field": "tel",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": null,
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "space",
+      "field": "email",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "normal",
+      "scenario": "space",
+      "field": "textarea",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-wzdhqgk0/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": null,
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "space",
+      "field": "rich",
+      "status": "BLOCKED",
+      "reason": "owned DOM focus/observation lost",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-8j232fb9/RESULT.json",
+      "complete_gestures": 4,
+      "before_text": "привет ",
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "normal",
+      "scenario": "space",
+      "field": "plain",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-ux_muegx/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет ",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "space",
+      "field": "iframe-input",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        true,
+        false,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-ux_muegx/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет явно",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "normal",
+      "scenario": "space",
+      "field": "iframe-rich",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-ux_muegx/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет явно",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "private",
+      "scenario": "active",
+      "field": "text",
+      "status": "BLOCKED",
+      "reason": "owned DOM observation stale",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-ux_muegx/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "private",
+      "scenario": "active",
+      "field": "search",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        false,
+        false,
+        true,
+        true
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-ux_muegx/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "привет",
+      "next_letter_text": "приветят",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "private",
+      "scenario": "active",
+      "field": "url",
+      "status": "BLOCKED",
+      "reason": "owned DOM observation stale",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-ux_muegx/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "private",
+      "scenario": "active",
+      "field": "tel",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "private",
+      "scenario": "active",
+      "field": "email",
+      "status": "BLOCKED",
+      "reason": "owned DOM observation stale",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "private",
+      "scenario": "active",
+      "field": "textarea",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": true,
+      "targets_before_next_pair": [
+        true,
+        false,
+        false,
+        false,
+        true
+      ],
+      "latency_ms": [
+        102.476,
+        127.614,
+        147.612,
+        108.501,
+        92.214
+      ],
+      "decoder_matches_expected": true,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "ghbdtn",
+      "next_letter_text": "ghbdtnz",
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "private",
+      "scenario": "active",
+      "field": "rich",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "private",
+      "scenario": "active",
+      "field": "plain",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "private",
+      "scenario": "active",
+      "field": "iframe-input",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "private",
+      "scenario": "active",
+      "field": "iframe-rich",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "private",
+      "scenario": "space",
+      "field": "text",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет явно",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "private",
+      "scenario": "space",
+      "field": "search",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": true,
+      "targets_before_next_pair": [
+        true,
+        true,
+        true,
+        false,
+        true
+      ],
+      "latency_ms": [
+        101.93,
+        91.796,
+        87.878,
+        116.035,
+        186.956
+      ],
+      "decoder_matches_expected": true,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "ghbdtn ",
+      "next_letter_text": "ghbdtn z",
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "private",
+      "scenario": "space",
+      "field": "url",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет явно",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "private",
+      "scenario": "space",
+      "field": "tel",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет явно",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "private",
+      "scenario": "space",
+      "field": "email",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "private",
+      "scenario": "space",
+      "field": "textarea",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": true,
+      "targets_before_next_pair": [
+        true,
+        false,
+        true,
+        false,
+        true
+      ],
+      "latency_ms": [
+        89.305,
+        113.689,
+        88.94,
+        160.26,
+        97.126
+      ],
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "ghbdtn ",
+      "next_letter_text": "ghbdtn zoom",
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "private",
+      "scenario": "space",
+      "field": "rich",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет явно",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "private",
+      "scenario": "space",
+      "field": "plain",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет явно",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "private",
+      "scenario": "space",
+      "field": "iframe-input",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": true,
+      "targets_before_next_pair": [
+        true,
+        false,
+        false,
+        false,
+        true
+      ],
+      "latency_ms": [
+        99.992,
+        119.734,
+        108.032,
+        105.599,
+        127.945
+      ],
+      "decoder_matches_expected": true,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "ghbdtn ",
+      "next_letter_text": "ghbdtn z",
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "private",
+      "scenario": "space",
+      "field": "iframe-rich",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет явно",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "active",
+      "field": "text",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "active",
+      "field": "search",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "привет",
+      "next_letter_text": "приветя",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "active",
+      "field": "url",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "привет",
+      "next_letter_text": "приветя",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "active",
+      "field": "tel",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "привет",
+      "next_letter_text": "приветя",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "active",
+      "field": "email",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "active",
+      "field": "textarea",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет",
+      "after_text": "привет",
+      "next_letter_text": "приветя",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "active",
+      "field": "rich",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "active",
+      "field": "plain",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "active",
+      "field": "iframe-input",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "active",
+      "field": "iframe-rich",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "space",
+      "field": "text",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": true,
+      "targets_before_next_pair": [
+        true,
+        true,
+        true,
+        false,
+        true
+      ],
+      "latency_ms": [
+        98.831,
+        90.207,
+        86.325,
+        114.951,
+        92.416
+      ],
+      "decoder_matches_expected": true,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "ghbdtn ",
+      "next_letter_text": "ghbdtn z",
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "space",
+      "field": "search",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет явно",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "space",
+      "field": "url",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет явно",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "space",
+      "field": "tel",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        true,
+        false,
+        true,
+        false,
+        true
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": true,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "ghbdtn ",
+      "next_letter_text": "ghbdtn z",
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "space",
+      "field": "email",
+      "status": "FAIL",
+      "reason": "typed word deadline",
+      "five_exact_gestures_sent": null,
+      "five_visible_targets": null,
+      "targets_before_next_pair": null,
+      "latency_ms": null,
+      "decoder_matches_expected": null,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 0,
+      "before_text": null,
+      "after_text": null,
+      "next_letter_text": null,
+      "mode_after": null
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "space",
+      "field": "textarea",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": true,
+      "targets_before_next_pair": [
+        false,
+        true,
+        true,
+        false,
+        true
+      ],
+      "latency_ms": [
+        108.681,
+        93.23,
+        82.241,
+        119.334,
+        199.603
+      ],
+      "decoder_matches_expected": true,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "ghbdtn ",
+      "next_letter_text": "ghbdtn z",
+      "mode_after": {
+        "source": "lay-ime-us",
+        "decoder": "us"
+      }
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "space",
+      "field": "rich",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет явно",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "space",
+      "field": "plain",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет явно",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "space",
+      "field": "iframe-input",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет я",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    },
+    {
+      "window": "fullscreen",
+      "scenario": "space",
+      "field": "iframe-rich",
+      "status": "FAIL",
+      "reason": "FIVE_TOGGLES_TEXT_OR_MODE",
+      "five_exact_gestures_sent": true,
+      "five_visible_targets": false,
+      "targets_before_next_pair": [
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "latency_ms": null,
+      "decoder_matches_expected": false,
+      "origin_receipt": "/home/ubu/.cache/lay/development/firefox-five-shift-native-i2wy1pcr/RESULT.json",
+      "complete_gestures": 5,
+      "before_text": "привет ",
+      "after_text": "привет ",
+      "next_letter_text": "привет явно",
+      "mode_after": {
+        "source": "lay-ime-ru",
+        "decoder": "ru"
+      }
+    }
+  ],
+  "first_observed_refusal": "ManualToggleV3 RPC: context_authority, bridge_token_live=true, manual_toggle_allowed=false, manual_refresh_allowed=false. A refusal inside existing context gate; not proof all cells failed for one reason. Exact predicate/field attribution remains UNKNOWN because trace continuity is incomplete.",
+  "untested": [
+    "Native current shared fixture",
+    "Native Chrome",
+    "Ordinary two-direction scenario for all60cells in this experiment",
+    "GNOME icon and decoder after every pair",
+    "Full original C09/C10/TD121 acceptance",
+    "User websites/addons",
+    "Per-cell exhaustive RPC counts"
+  ],
+  "runtime_authority_changed": false,
+  "runtime_delivery_changed": false,
+  "installed_runtime_changed": false,
+  "setup_incidents": "Earlier keyboard-hotplug precondition, trace chmod, serial HTTP capture and startup-title readiness errors were private harness errors. Aborted receipts remain on disk; they are not product FAILs. Selected rows are pinned to the receipt where actually created, correcting copied receipt_origin metadata.",
+  "input_device": {
+    "path": "/dev/input/event3",
+    "name": "AT Translated Set 2 keyboard",
+    "phys": "isa0060/serio0/input0",
+    "kind": "existing daemon-attached keyboard; evdev injection; no hotplug or restart"
+  },
+  "input_kind": "Native synthesized evdev input through the already attached physical keyboard; not human-hardware acceptance"
+}

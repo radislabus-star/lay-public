@@ -80,12 +80,12 @@
     "semantic_hash": ""
   },
   "scripts/check-lay-changed.sh": {
-    "mtime": 1791630629.844662,
-    "ast_hash": "376c807174260eacbd9194333091ca19",
+    "mtime": 1791634448.5879102,
+    "ast_hash": "143dcdb1502c758e503e4d3d735fb74e",
     "semantic_hash": ""
   },
   "scripts/check-lay-full.sh": {
-    "mtime": 1791630629.844662,
+    "mtime": 1791629425.264656,
     "ast_hash": "d04c7b5a43ead513b94f5fa5fdff4f76",
     "semantic_hash": ""
   },
@@ -2475,8 +2475,8 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1791386347.29616,
-    "ast_hash": "1508be36b991f7fcb4d19b91f5d3d360",
+    "mtime": 1791634448.5879102,
+    "ast_hash": "9d83ea7f8f0efc4faf2505c9e5b6bd7e",
     "semantic_hash": ""
   },
   "HOW_IT_WORKS.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1791591887.8863811,
-    "ast_hash": "67f82ab1477463cf77a9418f5cee6109",
+    "mtime": 1791630728.500384,
+    "ast_hash": "aa73a4da763876c5b42b2eafdce38101",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1791630629.844662,
-    "ast_hash": "9ea535b68a08bd0413209f988fc698f5",
+    "mtime": 1791634448.5879102,
+    "ast_hash": "c1967f5c65b0fac19836e75174ed8d42",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5260,8 +5260,8 @@
     "semantic_hash": ""
   },
   "tech_debt/121-preserve-word-across-ime-layout-handoff.md": {
-    "mtime": 1791630629.844662,
-    "ast_hash": "f33c37ab4a8e72d12d4e86fe8ef9a4f3",
+    "mtime": 1791634448.5879102,
+    "ast_hash": "8c1c7cdb046bf746a3a10a33d77179d4",
     "semantic_hash": ""
   },
   "tech_debt/122-bind-legacy-replay-suppression-request.md": {
@@ -6085,8 +6085,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/firefox-input-stability-2026-10-05.md": {
-    "mtime": 1791630629.843662,
-    "ast_hash": "ddec947d07c7cce6302403f0d0c8517e",
+    "mtime": 1791634448.5879102,
+    "ast_hash": "47cebd5423494507db7f0970fd611162",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-06-retired-disable-preserves-successor-lifecycle.json": {
@@ -6605,7 +6605,7 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-10-firefox-ten-field-manual-probe.json": {
-    "mtime": 1791630629.843662,
+    "mtime": 1791630619.546891,
     "ast_hash": "e994f080702751b25f1b595d5d0d36c7",
     "semantic_hash": ""
   },
@@ -6630,18 +6630,18 @@
     "semantic_hash": ""
   },
   "tech_debt/evidence/td121-firefox-ten-field-probe-2026-10-10.json": {
-    "mtime": 1791630629.8456619,
+    "mtime": 1791630619.5953035,
     "ast_hash": "047bf8acc4f5c222edf568da5d5d409a",
     "semantic_hash": ""
   },
   "tests/manual/firefox_double_shift.js": {
-    "mtime": 1791630629.8456619,
-    "ast_hash": "b0b5e70236d38f31b774307d0cedad4e",
+    "mtime": 1791634448.5879102,
+    "ast_hash": "5a284079f1d6b76291e188328f112da5",
     "semantic_hash": ""
   },
   "tests/test_firefox_double_shift_probe.py": {
-    "mtime": 1791630629.8456619,
-    "ast_hash": "7b14c2df468dcb620f1040e234cc81d9",
+    "mtime": 1791634448.5879102,
+    "ast_hash": "8c600c5e4f8e77e90d64327464ed9892",
     "semantic_hash": ""
   },
   "tech_debt/139-account-for-owned-preedit-in-private-client.md": {
@@ -6670,13 +6670,38 @@
     "semantic_hash": ""
   },
   "tests/manual/firefox_double_shift.html": {
-    "mtime": 1791630629.8456619,
-    "ast_hash": "91fb4ab76b080d3f468e38e4329a2e5f",
+    "mtime": 1791634448.5879102,
+    "ast_hash": "62b15415e5a6d5d6ddd1e85f1fa41a6f",
     "semantic_hash": ""
   },
   "tests/manual/firefox_double_shift.md": {
-    "mtime": 1791630629.8456619,
-    "ast_hash": "b7a3c9ae582110e44e76a83f7dc20c77",
+    "mtime": 1791634448.5879102,
+    "ast_hash": "763f5fb613687ce5eaabfff5f324778b",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-10-browser-ten-field-standard.json": {
+    "mtime": 1791634448.5879102,
+    "ast_hash": "c20e6fc311c44a0c85ab7bb558264ff1",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/browser-ten-field-standard-2026-10-10.json": {
+    "mtime": 1791634448.5879102,
+    "ast_hash": "98a356c52f04a21afa6166dccfe95579",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td121-firefox-five-shift-native-2026-10-10.json": {
+    "mtime": 1791634448.5879102,
+    "ast_hash": "7ce6a347d12ae3bf0931c2fd9a974982",
+    "semantic_hash": ""
+  },
+  "tests/manual/browser_ime_standard.md": {
+    "mtime": 1791634448.5879102,
+    "ast_hash": "ecb66096f1bef0390769c4054bc8f9b0",
+    "semantic_hash": ""
+  },
+  "tests/manual/chrome_double_shift.html": {
+    "mtime": 1791634448.5879102,
+    "ast_hash": "2002bfae76b2c7c896d6727ec2ab9f18",
     "semantic_hash": ""
   }
 }

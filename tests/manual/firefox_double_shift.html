@@ -35,6 +35,7 @@
 <h1>Double Shift: 10 типов полей Firefox</h1>
 <p>Все поля видны вместе. Клавиатура работает в одном активном поле; тест переводит фокус при переходе к следующему.</p>
 <div class="toolbar">
+  <label>Проверка <select id="sequence"><option value="roundtrip">туда и обратно</option><option value="burst5">5 Double Shift подряд</option></select></label>
   <label>Слово <select id="scenario"><option value="active">без пробела</option><option value="space">после пробела</option></select></label>
   <label>Окно <select id="window-mode"><option>обычное</option><option>приватное</option><option>полноэкранное</option></select></label>
   <button id="start">Начать с первого поля</button><button id="next" disabled>Следующее поле</button>
@@ -54,6 +55,7 @@
   <section class="card" data-field="iframe-rich"><div class="heading"><span>10. Редактор внутри iframe</span><output>Не проверено</output></div><iframe id="iframe-rich" title="Редактор внутри iframe" srcdoc="<!doctype html><html lang='ru'><meta charset='utf-8'><style>body{margin:0}div{box-sizing:border-box;width:100%;min-height:30px;padding:4px 6px;font:16px system-ui}</style><div id='field' contenteditable='true' role='textbox' aria-label='Редактор внутри iframe' spellcheck='false'></div>"></iframe></section>
 </div>
 <p id="summary">Пройдено: 0 · Сбой: 0 · Прервано: 0 · Не проверено: 10</p>
-<p class="help">После каждого Double Shift: Я/Z, затем Backspace. Два переключения: привет → ghbdtn → привет. Сбой: Esc в активном поле. Режим окна отмечается вручную. Для десяти полей вместе: область страницы от 900×600 при масштабе 100%.</p>
+<p id="speed" class="help">Скорость: ещё нет замеров.</p>
+<p class="help">Туда и обратно: после каждого Double Shift — Я/Z и Backspace. Пять подряд: десять Shift без других клавиш, затем Я/Z и Backspace. Сбой: Esc в поле. Режим окна — метка. Все поля вместе: от 900×600, масштаб 100%.</p>
 <script src="firefox_double_shift.js"></script>
 </html>
