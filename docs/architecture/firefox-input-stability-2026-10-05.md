@@ -1,5 +1,77 @@
 # Firefox input stability — 2026-10-05
 
+## Current ten-field manual diagnostic — 2026-10-10
+
+Source checkout lay-space-boundary-shift-20261007, parent14fec28d; live IME82
+5fe100db is not altered by this fixture. User requests one screen with10input
+types because Double Shift intermittently fails in Firefox. Current first
+failed production transition remains UNKNOWN until an exact focused capture.
+Historical source/native receipts below keep their original denominators.
+
+Selected minimal solution9/10: one owned HTML page, actual manual keyboard
+input, sequential focus and an observer of both conversions/next-letter
+decoding. Ten separate app windows6/10 add focus noise without better field
+coverage. JavaScript-dispatched Shift2/10 cannot validate native IME/daemon
+delivery. No production owner or Firefox-specific delivery bypass is added.
+
+[Page](../../tests/manual/firefox_double_shift.html) and
+[protocol](../../tests/manual/firefox_double_shift.md) separate two word modes,
+current-batch summaries and user-labelled window modes. Every PASS_DOM requires
+seven surface milestones including both target observations, two complete
+trusted DOM Shift pairs and actual KeyZ decoder probes. Held repeats, foreign
+callbacks, untrusted input, paste/drop, capture overflow and focus/visibility
+loss cannot yield PASS. Unknown caret and active composition remain separate
+observations; raw NBSP is preserved with render-equivalent comparison only.
+
+The page edits only its own field during setup and changes focus only on the
+operator's Start/Next action. It never projects a word, dispatches synthetic
+keys, calls IME APIs, changes global layout, installs/restarts services or
+cleans learning. Native keys remain daemon-owned. Browser chrome, password,
+cross-origin/user-site editors, RPC plan count, GNOME icon, exact runtime bytes
+and Wayland/X11 backend are outside the DOM proof. Private mode is declared,
+not inferred. Missing iframe/field support remains BLOCKED, not excluded.
+
+The layout has a compact desktop grid for a page viewport of at least900×600
+at100% zoom. Smaller/narrow windows may scroll. Trusted Escape reports failure
+without leaving the active field, including both iframes. The source page check
+asserts actual tags/types/contenteditable and both srcdoc editors, not card IDs
+alone.
+
+New fixture source contract15Node cases and two Python checks join the existing
+Firefox full/changed check routes without removing any old checks.
+[Decision](decisions/2026-10-10-firefox-ten-field-manual-probe.json) records the
+guard extension. Remote source proof and fresh-context fixture review are
+separate from native Firefox0/10 NOT_TESTED. No new local execution grant is
+implied.
+
+Remote source proof PASS:15/15 Node observer cases (0FAIL/0SKIP),4/4 Python
+Firefox checks (existing compat2 plus new fixture2),15/15 canon tests, JS/bash
+syntax and protected-path canon PASS. Existing dedicated-20cpu resource guard
+and heavy lease were active; no Cargo compile was needed. Exact frozen archive
+SHA2563a8841da80a8d27c50ca76bb42eb4be56aa0d7e5c9fc4577d11a74839f8948db.
+Receipt `/home/ubu/.cache/lay/development/firefox-ten-field-source-_un5vy17/RESULT.json`,
+SHA2569ac25324fce2bb4b57998962b532ced6929f76f46e48a9d3ee156170bed4feee;
+adjacent run.log retains all six commands and denominators. Remote headless
+Firefox render900×600 shows all ten fields together; screenshot SHA256
+3c205e035f9264959fa25aa559804bd8ff90e4922a824582957d631b709c4375.
+That render sent no keys and proves layout only, not any manual conversion.
+
+Fresh-context review pass1:8/10. Corrected keyboard-only failure reporting
+(trusted Escape in the focused editor, including iframe), compact desktop
+layout and semantic checking of actual HTML field types/srcdoc. Pass2:9/10,
+found one last Escape edge: the reporting snapshot could complete erase_ru
+before FAIL_REPORTED. Root applied the prescribed capture-without-advancement
+fix and extended the existing Escape case; the final remote receipt above
+includes this regression. No third review was requested. The earlier source
+receipt7kkg9vpf remains historical, before this edge fix.
+Mandatory graph refresh uses the existing source-binding/PASS-only receipt
+wrapper; exact controller receipt:
+`/home/ubu/.cache/lay/development/firefox-ten-field-final-graph-20261010/RESULT.json`.
+Compact [source evidence](../../tech_debt/evidence/td121-firefox-ten-field-probe-2026-10-10.json)
+pins tested fixture/guard hashes and separates native NOT_TESTED.
+No delivery route, runtime input owner, installed bytes or original
+Firefox acceptance denominator changed.
+
 ## Current route and goal
 
 Source: lay-contextual-completion-20261005, commit8c5cb609. Actual installed

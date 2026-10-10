@@ -1,5 +1,33 @@
 # TD-121: Сохранять целое слово при смене экземпляра IME
 
+## Current ten-field Firefox diagnostic — 2026-10-10
+
+Authoritative current scope: OPEN_CURRENT_SCOPE, per tech_debt/README.md.
+The older R5/R12 paragraphs below remain their historical byte/scenario scopes.
+User reports intermittent Double Shift refusal in Firefox and requests one
+screen with10field types. Physical input has one focused recipient; the new
+[manual page](../tests/manual/firefox_double_shift.html) tests them sequentially,
+with an explicit Next button and a shared current-batch summary.
+[Protocol](../tests/manual/firefox_double_shift.md) covers text/search/url/tel/
+email/textarea, rich/plaintext contenteditable and two same-origin iframe fields.
+Each case must observe both exact word transitions, two completed DOM Shift
+pairs and next-letter decoding in each direction. Active-word and after-Space
+are separate batches; normal/private/fullscreen are separately user-labelled
+windows, not a claim that the page can inspect privacy/backend.
+
+Production IME/delivery owners/routes are untouched. Existing installed82/5fe
+remains; user-site editors and the original Firefox denominator remain UNKNOWN.
+Fixture contract tests are remote-only. No local synthetic input, browser
+launch, installation, restart, learning cleanup or actual inverse was run
+while creating the page. Root owns implementation; fresh-context review is
+limited to this new fixture/observer/guard integration, max2passes.
+Exact execution result and review belong in the owning Firefox document.
+The fixture is SOURCE_READY:15/15 Node observer,4/4 Python Firefox checks and
+15/15 canon tests PASS; review passes8/10 and9/10, with prescribed final Escape
+edge fix covered in the final source receipt. Remote render shows10fields at
+900×600. Native input0/10 NOT_TESTED, original TD-121 stays OPEN_CURRENT_SCOPE.
+See the [compact source evidence](evidence/td121-firefox-ten-field-probe-2026-10-10.json).
+
 R12 development acceptance: **563/563 focused PASS**, two independent reviews,
 **4/4 Firefox native PASS**, with two exact visible transitions in every case.
 Final release, installation and publication status is recorded in the

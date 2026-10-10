@@ -80,13 +80,13 @@
     "semantic_hash": ""
   },
   "scripts/check-lay-changed.sh": {
-    "mtime": 1791386348.0351706,
-    "ast_hash": "565bd66c6ab59498828839b76664e24e",
+    "mtime": 1791630629.844662,
+    "ast_hash": "376c807174260eacbd9194333091ca19",
     "semantic_hash": ""
   },
   "scripts/check-lay-full.sh": {
-    "mtime": 1791386348.0351706,
-    "ast_hash": "88fc288bccb53a962a37137626e93c42",
+    "mtime": 1791630629.844662,
+    "ast_hash": "d04c7b5a43ead513b94f5fa5fdff4f76",
     "semantic_hash": ""
   },
   "scripts/eval_two_word_models.py": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1791588382.7222502,
-    "ast_hash": "6149c13c8d5f3315a538f7bd75868280",
+    "mtime": 1791591887.8863811,
+    "ast_hash": "67f82ab1477463cf77a9418f5cee6109",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1791591066.5162058,
-    "ast_hash": "5e118c5bc12c4f3e565277df80bc6063",
+    "mtime": 1791630629.844662,
+    "ast_hash": "9ea535b68a08bd0413209f988fc698f5",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5260,8 +5260,8 @@
     "semantic_hash": ""
   },
   "tech_debt/121-preserve-word-across-ime-layout-handoff.md": {
-    "mtime": 1791386348.140172,
-    "ast_hash": "28a842534632944c9582a5e5906a7d26",
+    "mtime": 1791630629.844662,
+    "ast_hash": "f33c37ab4a8e72d12d4e86fe8ef9a4f3",
     "semantic_hash": ""
   },
   "tech_debt/122-bind-legacy-replay-suppression-request.md": {
@@ -6085,8 +6085,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/firefox-input-stability-2026-10-05.md": {
-    "mtime": 1791386347.8981686,
-    "ast_hash": "5b509aa563900d703bd2e1903ada40e4",
+    "mtime": 1791630629.843662,
+    "ast_hash": "ddec947d07c7cce6302403f0d0c8517e",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-06-retired-disable-preserves-successor-lifecycle.json": {
@@ -6245,8 +6245,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/space-boundary-shift-2026-10-07.md": {
-    "mtime": 1791591829.4992707,
-    "ast_hash": "c326315c84c4bd754c9f49009f0730ed",
+    "mtime": 1791622185.0349672,
+    "ast_hash": "c426c997267822ce7495073fec154821",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-08-space-boundary-canonical-evidence.json": {
@@ -6335,8 +6335,8 @@
     "semantic_hash": ""
   },
   "tech_debt/133-causal-rapid-space-ordering.md": {
-    "mtime": 1791590789.8081446,
-    "ast_hash": "fc70cfb02bcb308819c01e85a700e66c",
+    "mtime": 1791622185.033967,
+    "ast_hash": "5cf36749675b377440dacd6c867d1220",
     "semantic_hash": ""
   },
   "tech_debt/134-god-component-boundaries-without-new-owners.md": {
@@ -6525,8 +6525,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-10-managed-space-single-stream-repair.json": {
-    "mtime": 1791590789.807076,
-    "ast_hash": "869561449022df52c53884f93ead1b60",
+    "mtime": 1791594110.847842,
+    "ast_hash": "9a3a306328fd5d3c30eac2e538e9a37e",
     "semantic_hash": ""
   },
   "tech_debt/evidence/2026-10-10-td133-client-ordering-plan.json": {
@@ -6545,8 +6545,8 @@
     "semantic_hash": ""
   },
   "tech_debt/evidence/2026-10-10-td133-managed-space-source-proof.json": {
-    "mtime": 1791590789.7269433,
-    "ast_hash": "b46dc5fa9a0932a74adc093a03b82463",
+    "mtime": 1791593856.6122277,
+    "ast_hash": "d3df9d9cd20ebd3e77e3516360864bf3",
     "semantic_hash": ""
   },
   "tech_debt/evidence/2026-10-10-td133-client-ordering-review-pass1.md": {
@@ -6565,8 +6565,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-10-ime-performance-authority-characterization.json": {
-    "mtime": 1791591829.4995122,
-    "ast_hash": "f2bfad94af690070f32ff4e58eb3ea41",
+    "mtime": 1791594110.8472502,
+    "ast_hash": "1d5e200816e2a1f61695c11b1b98302e",
     "semantic_hash": ""
   },
   "tech_debt/evidence/2026-10-10-td138-cold-repeated-operator-diagnostic.json": {
@@ -6585,8 +6585,8 @@
     "semantic_hash": ""
   },
   "tech_debt/138-bind-ime-latency-proof-to-runtime-authority.md": {
-    "mtime": 1791591829.4985256,
-    "ast_hash": "c580fc16bca22ad0968ebac8c6cb1ba2",
+    "mtime": 1791593230.0434983,
+    "ast_hash": "56481e4609fc161a373a0acbab426a66",
     "semantic_hash": ""
   },
   "tech_debt/evidence/2026-10-10-td133-managed-space-code-review-pass2.md": {
@@ -6597,6 +6597,86 @@
   "tech_debt/evidence/2026-10-10-td138-scope-review-pass1.md": {
     "mtime": 1791591066.5157983,
     "ast_hash": "4dc3f87ba5f5d3a460a5c79fa52c4333",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-10-experimental-ime82-install-four-streams.json": {
+    "mtime": 1791622104.626301,
+    "ast_hash": "e6bc149addcd4f4ce77641d6105abd00",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-10-firefox-ten-field-manual-probe.json": {
+    "mtime": 1791630629.843662,
+    "ast_hash": "e994f080702751b25f1b595d5d0d36c7",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-10-td133-actual-client-candidate-proof.json": {
+    "mtime": 1791593769.755358,
+    "ast_hash": "efacfe0e2dc743a8ab16505f4054a824",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-10-td133-ime82-installed-four-stream-result.json": {
+    "mtime": 1791622104.626125,
+    "ast_hash": "6a910a8b31cf45df2938e611ac8326eb",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-10-td133-runtime-candidate-plan.json": {
+    "mtime": 1791594149.7461789,
+    "ast_hash": "92dc29b885230e5277aa559f69ac2b85",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-10-td138-complete-source-proof.json": {
+    "mtime": 1791593229.5999207,
+    "ast_hash": "cd6705166e10cbe4e813d2607e03fd25",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/td121-firefox-ten-field-probe-2026-10-10.json": {
+    "mtime": 1791630629.8456619,
+    "ast_hash": "047bf8acc4f5c222edf568da5d5d409a",
+    "semantic_hash": ""
+  },
+  "tests/manual/firefox_double_shift.js": {
+    "mtime": 1791630629.8456619,
+    "ast_hash": "b0b5e70236d38f31b774307d0cedad4e",
+    "semantic_hash": ""
+  },
+  "tests/test_firefox_double_shift_probe.py": {
+    "mtime": 1791630629.8456619,
+    "ast_hash": "7b14c2df468dcb620f1040e234cc81d9",
+    "semantic_hash": ""
+  },
+  "tech_debt/139-account-for-owned-preedit-in-private-client.md": {
+    "mtime": 1791594149.746388,
+    "ast_hash": "fa9bff95b500d3621a1edffc2890fdd0",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-10-td133-candidate-execution-plan-review-pass1.md": {
+    "mtime": 1791594149.7455273,
+    "ast_hash": "360d68812d80d4561148bab62e5d67d3",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-10-td133-candidate-execution-plan-review-pass2.md": {
+    "mtime": 1791594149.745768,
+    "ast_hash": "50c798814c96a9584e84c48b9f00997a",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-10-td133-runtime-candidate-execution-plan.md": {
+    "mtime": 1791594009.6909573,
+    "ast_hash": "04c5a4e87ae3fe3192c53358f49a1695",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-10-td138-final-code-review-pass2.md": {
+    "mtime": 1791593229.0729373,
+    "ast_hash": "329cbd15964ca4445feb6831c953324a",
+    "semantic_hash": ""
+  },
+  "tests/manual/firefox_double_shift.html": {
+    "mtime": 1791630629.8456619,
+    "ast_hash": "91fb4ab76b080d3f468e38e4329a2e5f",
+    "semantic_hash": ""
+  },
+  "tests/manual/firefox_double_shift.md": {
+    "mtime": 1791630629.8456619,
+    "ast_hash": "b7a3c9ae582110e44e76a83f7dc20c77",
     "semantic_hash": ""
   }
 }

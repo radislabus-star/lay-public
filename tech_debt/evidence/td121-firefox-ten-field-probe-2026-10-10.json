@@ -1,0 +1,86 @@
+{
+  "schema": "lay.firefox-ten-field-fixture-evidence.v1",
+  "scope": "manual fixture source and remote headless layout only",
+  "source_parent": "14fec28db2e6a7e0dbdf5cc94f7181e1d472eb9f",
+  "source_archive_sha256": "3a8841da80a8d27c50ca76bb42eb4be56aa0d7e5c9fc4577d11a74839f8948db",
+  "source_receipt": "/home/ubu/.cache/lay/development/firefox-ten-field-source-_un5vy17/RESULT.json",
+  "source_receipt_sha256": "9ac25324fce2bb4b57998962b532ced6929f76f46e48a9d3ee156170bed4feee",
+  "source_files": [
+    {
+      "path": "scripts/check-lay-changed.sh",
+      "sha256": "7c8fddc7490d910fd80eb86235dfc30ec3d1fca3763591322d1d9d7068f758a9"
+    },
+    {
+      "path": "scripts/check-lay-full.sh",
+      "sha256": "d19b2687c2c2ca8ea8ad4edf42343b15147d876c9138c373606ca476b491c46f"
+    },
+    {
+      "path": "tests/manual/firefox_double_shift.html",
+      "sha256": "828311296010c420f892db096466d3371f18dfe69d1d8756ee4a48d80f71e3a0"
+    },
+    {
+      "path": "tests/manual/firefox_double_shift.js",
+      "sha256": "62a02bb506853b7080c039f969dfd28f3f487a541645179c96167b95870ff603"
+    },
+    {
+      "path": "tests/manual/firefox_double_shift.md",
+      "sha256": "9a3ecb13b0155939447a6792c3054fda46c5ff2b9fe272bd42fdef89e84c0bc9"
+    },
+    {
+      "path": "tests/manual/firefox_double_shift.test.cjs",
+      "sha256": "1b044407f9e43ecc61569eec2f68ee0da6f4d6bfaecedfa03164641d1ea5feab"
+    },
+    {
+      "path": "tests/test_firefox_double_shift_probe.py",
+      "sha256": "547b3cf2f79e8d252664ae80cc424411ec6398824477b65bedb856df6abacd5f"
+    }
+  ],
+  "observer_cases": {
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0
+  },
+  "python_firefox_checks": {
+    "existing_compat_passed": 2,
+    "new_fixture_passed": 2,
+    "failed": 0
+  },
+  "python_canon_checks": {
+    "passed": 15,
+    "failed": 0
+  },
+  "syntax_and_canon": "PASS",
+  "resource_profile": "dedicated-20cpu with existing heavy lease",
+  "render": {
+    "browser": "remote headless Firefox",
+    "viewport": [
+      900,
+      600
+    ],
+    "all_ten_fields_visible": true,
+    "screenshot_sha256": "3c205e035f9264959fa25aa559804bd8ff90e4922a824582957d631b709c4375",
+    "keys_sent": 0
+  },
+  "reviews": [
+    {
+      "pass": 1,
+      "score": 8,
+      "corrections": "Keyboard-only reporting, compact desktop layout, semantic HTML field checks."
+    },
+    {
+      "pass": 2,
+      "score": 9,
+      "final_prescribed_fix": "Escape captures and validates snapshot without advancing milestones; regression added within existing Escape case and final source checks rerun."
+    }
+  ],
+  "graph_receipt": "/home/ubu/.cache/lay/development/firefox-ten-field-final-graph-20261010/RESULT.json",
+  "native_firefox": {
+    "verdict": "NOT_TESTED",
+    "attempted": 0,
+    "required_field_types": 10
+  },
+  "td121_status": "OPEN_CURRENT_SCOPE",
+  "runtime_authority_changed": false,
+  "runtime_delivery_changed": false,
+  "installed_runtime_changed": false
+}

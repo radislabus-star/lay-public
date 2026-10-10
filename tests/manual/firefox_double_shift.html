@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lay — Double Shift в 10 полях Firefox</title>
+<style>
+  :root { color-scheme: light; font: 15px/1.35 system-ui, sans-serif; color: #182333; background: #f4f6fa; }
+  body { margin: 14px auto; max-width: 1160px; padding: 0 14px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  p { margin: 6px 0; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+  button, select { font: inherit; padding: 6px 10px; border: 1px solid #a8b3c4; border-radius: 5px; background: white; }
+  button { cursor: pointer; } button:disabled { cursor: default; opacity: .5; }
+  #instruction { padding: 12px; background: #e5edff; border-radius: 6px; min-height: 24px; }
+  #fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 12px 0; }
+  .card { padding: 9px 11px; border: 2px solid #dbe1eb; border-radius: 6px; background: white; }
+  .card.active { border-color: #2862d4; } .card.pass { border-color: #33986c; } .card.fail { border-color: #c85858; }
+  .heading { display: flex; gap: 8px; justify-content: space-between; margin-bottom: 6px; }
+  output { font-size: 13px; color: #45546b; }
+  .editor, iframe { box-sizing: border-box; width: 100%; height: 40px; min-height: 40px; border: 1px solid #a8b3c4; border-radius: 4px; padding: 7px; font: 18px/1.3 system-ui, sans-serif; background: white; }
+  textarea { resize: vertical; } iframe { padding: 0; } .editor:focus { outline: 2px solid #2862d4; outline-offset: 1px; }
+  #summary { font-weight: 600; } .help { color: #45546b; font-size: 13px; }
+  @media (max-width: 680px) { #fields { grid-template-columns: 1fr; } }
+  @media (min-width: 900px) and (max-height: 720px) {
+    :root { font-size: 13px; line-height: 1.25; }
+    body { margin: 8px auto; } h1 { font-size: 18px; margin-bottom: 4px; } p { margin: 4px 0; }
+    .toolbar { gap: 4px; margin: 6px 0; font-size: 12px; } button, select { padding: 4px 6px; }
+    #instruction { padding: 6px; min-height: 16px; }
+    #fields { gap: 6px; margin: 6px 0; } .card { padding: 4px 7px; }
+    .heading { margin-bottom: 3px; font-size: 12px; line-height: 15px; } output { font-size: 12px; }
+    .editor, iframe { height: 32px; min-height: 32px; padding: 4px 6px; font-size: 16px; } iframe { padding: 0; }
+    .help { font-size: 12px; }
+  }
+</style>
+<h1>Double Shift: 10 типов полей Firefox</h1>
+<p>Все поля видны вместе. Клавиатура работает в одном активном поле; тест переводит фокус при переходе к следующему.</p>
+<div class="toolbar">
+  <label>Слово <select id="scenario"><option value="active">без пробела</option><option value="space">после пробела</option></select></label>
+  <label>Окно <select id="window-mode"><option>обычное</option><option>приватное</option><option>полноэкранное</option></select></label>
+  <button id="start">Начать с первого поля</button><button id="next" disabled>Следующее поле</button>
+  <button id="failed" disabled title="Или Escape в активном поле">Не сработало (Esc)</button><button id="export">Скачать отчёт</button>
+</div>
+<div id="instruction" role="status" aria-live="polite">Выберите русскую раскладку Lay и нажмите «Начать». Вводите только указанное тестовое слово.</div>
+<div id="fields">
+  <section class="card" data-field="text"><div class="heading"><label for="text">1. Обычный input</label><output>Не проверено</output></div><input class="editor" id="text" type="text" spellcheck="false" autocomplete="off"></section>
+  <section class="card" data-field="search"><div class="heading"><label for="search">2. Поиск</label><output>Не проверено</output></div><input class="editor" id="search" type="search" spellcheck="false" autocomplete="off"></section>
+  <section class="card" data-field="url"><div class="heading"><label for="url">3. URL</label><output>Не проверено</output></div><input class="editor" id="url" type="url" spellcheck="false" autocomplete="off"></section>
+  <section class="card" data-field="tel"><div class="heading"><label for="tel">4. Телефон</label><output>Не проверено</output></div><input class="editor" id="tel" type="tel" autocomplete="off"></section>
+  <section class="card" data-field="email"><div class="heading"><label for="email">5. Email</label><output>Не проверено</output></div><input class="editor" id="email" type="email" spellcheck="false" autocomplete="off"></section>
+  <section class="card" data-field="textarea"><div class="heading"><label for="textarea">6. Textarea</label><output>Не проверено</output></div><textarea class="editor" id="textarea" rows="1" spellcheck="false" autocomplete="off"></textarea></section>
+  <section class="card" data-field="rich"><div class="heading"><label id="rich-label">7. Редактируемый блок</label><output>Не проверено</output></div><div class="editor" id="rich" contenteditable="true" role="textbox" aria-labelledby="rich-label" spellcheck="false"></div></section>
+  <section class="card" data-field="plain"><div class="heading"><label id="plain-label">8. Plaintext contenteditable</label><output>Не проверено</output></div><div class="editor" id="plain" contenteditable="plaintext-only" role="textbox" aria-labelledby="plain-label" spellcheck="false"></div></section>
+  <section class="card" data-field="iframe-input"><div class="heading"><span>9. Input внутри iframe</span><output>Не проверено</output></div><iframe id="iframe-input" title="Input внутри iframe" srcdoc="<!doctype html><html lang='ru'><meta charset='utf-8'><style>body{margin:0}input{box-sizing:border-box;width:100%;height:30px;border:0;padding:4px 6px;font:16px system-ui}</style><input id='field' type='text' aria-label='Input внутри iframe' spellcheck='false' autocomplete='off'>"></iframe></section>
+  <section class="card" data-field="iframe-rich"><div class="heading"><span>10. Редактор внутри iframe</span><output>Не проверено</output></div><iframe id="iframe-rich" title="Редактор внутри iframe" srcdoc="<!doctype html><html lang='ru'><meta charset='utf-8'><style>body{margin:0}div{box-sizing:border-box;width:100%;min-height:30px;padding:4px 6px;font:16px system-ui}</style><div id='field' contenteditable='true' role='textbox' aria-label='Редактор внутри iframe' spellcheck='false'></div>"></iframe></section>
+</div>
+<p id="summary">Пройдено: 0 · Сбой: 0 · Прервано: 0 · Не проверено: 10</p>
+<p class="help">После каждого Double Shift: Я/Z, затем Backspace. Два переключения: привет → ghbdtn → привет. Сбой: Esc в активном поле. Режим окна отмечается вручную. Для десяти полей вместе: область страницы от 900×600 при масштабе 100%.</p>
+<script src="firefox_double_shift.js"></script>
+</html>
